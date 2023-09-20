@@ -1,18 +1,21 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/matterfmt/parse"
+	"github.com/hasty/matterfmt/render"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	fmt.Printf("hello!!\n")
 
 	logrus.SetLevel(logrus.ErrorLevel)
 
@@ -27,6 +30,13 @@ func main() {
 		fmt.Printf("Rendering %s...\n", file)
 		doc, err := readFile(file)
 
+		cxt := output.NewContext(context.Background(), doc)
+
+		if 1 == 0 {
+			parse.Dump(cxt)
+			return
+		}
+
 		if err != nil {
 			panic(err)
 		}
@@ -35,7 +45,7 @@ func main() {
 			continue
 		}
 
-		out := postProcessFile(doc.render())
+		out := postProcessFile(render.Render(cxt, doc))
 		//fmt.Printf("Result:\n%s\n", out)
 
 		os.WriteFile(file, []byte(out), os.ModeAppend)
@@ -43,7 +53,7 @@ func main() {
 
 }
 
-func readFile(path string) (*doc, error) {
+func readFile(path string) (*ascii.Doc, error) {
 	config := configuration.NewConfiguration(
 		configuration.WithFilename(path),
 		configuration.WithAttribute("second-ballot", false),
@@ -59,23 +69,13 @@ func readFile(path string) (*doc, error) {
 		panic(err)
 	}
 
-	d, err := parseDocument(strings.NewReader(preprocessFile(string(file))), config)
+	d, err := parse.ParseDocument(strings.NewReader(preprocessFile(string(file))), config)
+
 	if err != nil {
 		panic(fmt.Errorf("failed parse: %w", err))
 	}
-	doc := &doc{base: d, root: &section{}}
-	if 1 == 0 {
-		dump(doc, d)
-		return nil, nil
-	}
-	for _, e := range d.BodyElements() {
-		switch el := e.(type) {
-		case *types.Section:
-			doc.addSection(doc.root, el)
-		default:
-			doc.root.elements = append(doc.root.elements, e)
-		}
-	}
+	doc := ascii.NewDoc(d)
+
 	return doc, nil
 }
 

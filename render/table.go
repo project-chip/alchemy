@@ -1,10 +1,11 @@
-package main
+package render
 
 import (
 	"fmt"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/matterfmt/output"
 )
 
 type table struct {
@@ -28,27 +29,27 @@ type tableHeaderSpan struct {
 	width  int
 }
 
-func (d *doc) renderTable(t *types.Table, out *output) {
+func renderTable(cxt *output.Context, t *types.Table) {
 
 	tbl := &table{header: &tableRow{}}
 
-	renderTableSubElements(t, d, tbl)
+	renderTableSubElements(cxt, t, tbl)
 
 	headerSpans, rowWidths := calculateCellWidths(tbl)
 
 	headerCount := len(tbl.header.cells)
 
-	d.renderAttributes(t, t.Attributes, out)
+	renderAttributes(cxt, t, t.Attributes)
 
-	out.WriteString("|===")
-	out.WriteNewline()
-	out.WriteString(renderTableHeaders(tbl, headerSpans, headerCount))
-	out.WriteNewline()
-	renderTableRows(tbl, out, rowWidths, headerCount)
-	out.WriteString("|===\n")
+	cxt.WriteString("|===")
+	cxt.WriteNewline()
+	cxt.WriteString(renderTableHeaders(tbl, headerSpans, headerCount))
+	cxt.WriteNewline()
+	renderTableRows(cxt, tbl, rowWidths, headerCount)
+	cxt.WriteString("|===\n")
 }
 
-func renderTableRows(tbl *table, out *output, rowWidths map[int]int, headerCount int) {
+func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]int, headerCount int) {
 	for _, tr := range tbl.rows {
 		var row strings.Builder
 		for i, c := range tr.cells {
@@ -80,7 +81,7 @@ func renderTableRows(tbl *table, out *output, rowWidths map[int]int, headerCount
 
 		}
 		row.WriteRune('\n')
-		out.WriteString(row.String())
+		cxt.WriteString(row.String())
 	}
 
 }
@@ -178,19 +179,19 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*tableHeaderSpan, rowW
 	return
 }
 
-func renderTableSubElements(t *types.Table, d *doc, tbl *table) {
+func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) {
 	for _, c := range t.Header.Cells {
-		var value output
-		d.renderElements("", c.Elements, &value)
-		tbl.header.cells = append(tbl.header.cells, &tableCell{value: value.String(), format: c.Format, formatter: c.Formatter})
+		renderContext := output.NewContext(cxt, cxt.Doc)
+		RenderElements(renderContext, "", c.Elements)
+		tbl.header.cells = append(tbl.header.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter})
 	}
 
 	for _, row := range t.Rows {
 		tr := &tableRow{}
 		for _, c := range row.Cells {
-			var value output
-			d.renderElements("", c.Elements, &value)
-			tr.cells = append(tr.cells, &tableCell{value: value.String(), format: c.Format, formatter: c.Formatter})
+			renderContext := output.NewContext(cxt, cxt.Doc)
+			RenderElements(renderContext, "", c.Elements)
+			tr.cells = append(tr.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter})
 		}
 		tbl.rows = append(tbl.rows, tr)
 	}

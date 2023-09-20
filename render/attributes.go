@@ -1,13 +1,14 @@
-package main
+package render
 
 import (
 	"fmt"
 	"sort"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/matterfmt/output"
 )
 
-func (d *doc) renderAttributes(el interface{}, attributes types.Attributes, out *output) {
+func renderAttributes(cxt *output.Context, el interface{}, attributes types.Attributes) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -27,9 +28,9 @@ func (d *doc) renderAttributes(el interface{}, attributes types.Attributes, out 
 			case string:
 				title = v
 			case []interface{}:
-				var s output
-				d.renderElements("", v, &s)
-				title = s.String()
+				renderContext := output.NewContext(cxt, cxt.Doc)
+				RenderElements(renderContext, "", v)
+				title = renderContext.String()
 				for _, p := range v {
 					fmt.Printf("title element: %T\n", p)
 				}
@@ -45,39 +46,39 @@ func (d *doc) renderAttributes(el interface{}, attributes types.Attributes, out 
 		case "NOTE", "IMPORTANT", "TIP", "CAUTION", "WARNING":
 			switch el.(type) {
 			case *types.Paragraph:
-				out.WriteString(fmt.Sprintf("%s: ", style))
+				cxt.WriteString(fmt.Sprintf("%s: ", style))
 			default:
-				out.WriteString(fmt.Sprintf("[%s]\n", style))
+				cxt.WriteString(fmt.Sprintf("[%s]\n", style))
 			}
 		case "none":
-			out.WriteString("[none]\n")
+			cxt.WriteString("[none]\n")
 		case "lowerroman":
-			out.WriteString("[lowerroman]\n")
+			cxt.WriteString("[lowerroman]\n")
 		case "arabic":
-			out.WriteString("[arabic]\n")
+			cxt.WriteString("[arabic]\n")
 		default:
 			fmt.Printf("Unknown style: %s\n", style)
 		}
 	}
 	if len(title) > 0 {
-		out.WriteRune('.')
-		out.WriteString(title)
-		out.WriteNewline()
+		cxt.WriteRune('.')
+		cxt.WriteString(title)
+		cxt.WriteNewline()
 	}
 	if len(id) > 0 && id[0] != '_' {
-		out.WriteString("[[")
-		out.WriteString(id)
-		out.WriteString("]]")
-		out.WriteRune('\n')
+		cxt.WriteString("[[")
+		cxt.WriteString(id)
+		cxt.WriteString("]]")
+		cxt.WriteRune('\n')
 	}
 	if len(keys) > 0 {
 		sort.Strings(keys)
 		switch el.(type) {
 		case *types.ImageBlock:
 		default:
-			out.WriteNewline()
+			cxt.WriteNewline()
 		}
-		out.WriteString("[")
+		cxt.WriteString("[")
 		count := 0
 		for _, key := range keys {
 			switch key {
@@ -86,32 +87,32 @@ func (d *doc) renderAttributes(el interface{}, attributes types.Attributes, out 
 			}
 			val := attributes[key]
 			if count > 0 {
-				out.WriteRune(',')
+				cxt.WriteRune(',')
 			}
-			out.WriteString(key)
-			out.WriteRune('=')
+			cxt.WriteString(key)
+			cxt.WriteRune('=')
 			switch v := val.(type) {
 			case string:
-				out.WriteRune('"')
-				out.WriteString(v)
-				out.WriteRune('"')
+				cxt.WriteRune('"')
+				cxt.WriteString(v)
+				cxt.WriteRune('"')
 			case types.Options:
-				out.WriteRune('"')
+				cxt.WriteRune('"')
 				for _, o := range v {
 					switch opt := o.(type) {
 					case string:
-						out.WriteString(opt)
+						cxt.WriteString(opt)
 					default:
 						fmt.Printf("unknown attribute option type: %T\n", o)
 					}
 				}
-				out.WriteRune('"')
+				cxt.WriteRune('"')
 			default:
 				fmt.Printf("unknown attribute type: %T\n", val)
 			}
 			count++
 		}
-		out.WriteRune(']')
-		out.WriteRune('\n')
+		cxt.WriteRune(']')
+		cxt.WriteRune('\n')
 	}
 }
