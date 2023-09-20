@@ -1,8 +1,8 @@
-module github.com/CHIP-Specifications/connectedhomeip-spec/tools/mtrfmt
+module github.com/hasty/matterfmt
 
 go 1.21
 
-replace github.com/bytesparadise/libasciidoc => ../../../libasciidoc
+replace github.com/bytesparadise/libasciidoc => ../libasciidoc
 
 require (
 	github.com/alecthomas/chroma/v2 v2.3.0 // indirect
