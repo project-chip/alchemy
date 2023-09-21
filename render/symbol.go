@@ -43,7 +43,7 @@ func renderSpecialCharacter(cxt *output.Context, s *types.SpecialCharacter) {
 	case "&":
 		cxt.WriteRune('&')
 	default:
-		fmt.Printf("unknown special character: %s\n", s.Name)
+		panic(fmt.Errorf("unknown special character: %s", s.Name))
 	}
 }
 
@@ -59,7 +59,11 @@ func renderSymbol(cxt *output.Context, s *types.Symbol) {
 		cxt.WriteString("<=")
 	case "<-":
 		cxt.WriteString("<-")
+	case "...":
+		cxt.WriteString("...")
+	case " -- ":
+		cxt.WriteString(" -- ")
 	default:
-		fmt.Printf("unknown symbol: %s\n", s.Name)
+		panic(fmt.Errorf("unknown symbol: \"%s\"", s.Name))
 	}
 }

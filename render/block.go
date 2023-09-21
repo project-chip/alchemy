@@ -15,8 +15,12 @@ func renderDelimitedBlock(cxt *output.Context, db *types.DelimitedBlock) {
 		renderSidebar(cxt, db)
 	case "example":
 		renderExample(cxt, db)
+	case "listing":
+		renderListing(cxt, db)
+	case "literal":
+		renderLiteral(cxt, db)
 	default:
-		fmt.Printf("unknown delimited block kind: %s\n", db.Kind)
+		panic(fmt.Errorf("unknown delimited block kind: %s", db.Kind))
 	}
 }
 
@@ -33,7 +37,7 @@ func renderComment(cxt *output.Context, comment *types.DelimitedBlock) {
 			cxt.WriteString("////")
 			cxt.WriteNewline()
 		default:
-			fmt.Printf("unknown comment element type: %T\n", el)
+			panic(fmt.Errorf("unknown comment element type: %T", el))
 		}
 	}
 }
@@ -46,6 +50,30 @@ func renderExample(cxt *output.Context, comment *types.DelimitedBlock) {
 	RenderElements(cxt, "", comment.Elements)
 	cxt.WriteNewline()
 	cxt.WriteString("====")
+	cxt.WriteNewline()
+
+}
+
+func renderListing(cxt *output.Context, comment *types.DelimitedBlock) {
+	renderAttributes(cxt, comment, comment.Attributes)
+	cxt.WriteNewline()
+	cxt.WriteString("----")
+	cxt.WriteNewline()
+	RenderElements(cxt, "", comment.Elements)
+	cxt.WriteNewline()
+	cxt.WriteString("----")
+	cxt.WriteNewline()
+
+}
+
+func renderLiteral(cxt *output.Context, comment *types.DelimitedBlock) {
+	renderAttributes(cxt, comment, comment.Attributes)
+	cxt.WriteNewline()
+	cxt.WriteString("----")
+	cxt.WriteNewline()
+	RenderElements(cxt, "", comment.Elements)
+	cxt.WriteNewline()
+	cxt.WriteString("----")
 	cxt.WriteNewline()
 
 }
@@ -72,7 +100,7 @@ func renderSidebar(cxt *output.Context, comment *types.DelimitedBlock) {
 			cxt.WriteString("****")
 			cxt.WriteNewline()
 		default:
-			fmt.Printf("unknown sidebar element type: %T\n", el)
+			panic(fmt.Errorf("unknown sidebar element type: %T", el))
 		}
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/output"
 	"github.com/hasty/matterfmt/render"
 )
@@ -40,9 +39,10 @@ func dumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			dumpElements(cxt, el.Elements, indent+1)
 		case *types.Section:
 			fmt.Printf("{sec %d}: ", el.Level)
-			fmt.Print(ascii.GetSectionTitle(el))
-			fmt.Print("\n")
-			dumpElements(cxt, el.Elements, indent+1)
+			fmt.Printf("\t{title:}\n")
+			dumpElements(cxt, el.Title, indent+2)
+			fmt.Printf("\t{body:}\n")
+			dumpElements(cxt, el.Elements, indent+2)
 		case *types.StringElement:
 			fmt.Print("{str}: ", snippet(el.Content))
 			fmt.Print("\n")
@@ -64,6 +64,8 @@ func dumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			fmt.Printf("{sc: %s}\n", el.Name)
 		case *types.Symbol:
 			fmt.Printf("{sym: %s}\n", el.Name)
+		case *types.InlineLink:
+			fmt.Printf("{link: %s %s}\n", el.Location.Scheme, el.Location.Path.(string))
 		default:
 			fmt.Printf("unknown element type: %T\n", el)
 		}

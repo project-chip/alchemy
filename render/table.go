@@ -23,7 +23,8 @@ type tableCell struct {
 	formatter *types.TableCellFormat
 }
 
-type tableHeaderSpan struct {
+type cellSpan struct {
+	indent int
 	column int
 	span   int
 	width  int
@@ -49,7 +50,7 @@ func renderTable(cxt *output.Context, t *types.Table) {
 	cxt.WriteString("|===\n")
 }
 
-func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]int, headerCount int) {
+func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpan, headerCount int) {
 	for _, tr := range tbl.rows {
 		var row strings.Builder
 		for i, c := range tr.cells {
@@ -57,7 +58,11 @@ func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]int, hea
 				row.WriteString(c.formatter.Content)
 			}
 			row.WriteRune('|')
-			width, ok := rowWidths[i]
+			var width int
+			rowSpan, ok := rowWidths[i]
+			if ok {
+				width = rowSpan.width
+			}
 
 			if i < len(tr.cells)-1 {
 				nextCell := tr.cells[i+1]
@@ -86,15 +91,18 @@ func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]int, hea
 
 }
 
-func renderTableHeaders(tbl *table, headerSpans map[int]*tableHeaderSpan, headerCount int) string {
+func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount int) string {
 	var out strings.Builder
 	for i, c := range tbl.header.cells {
+		hs, ok := headerSpans[i]
 		if c.formatter != nil {
 			out.WriteString(c.formatter.Content)
+		} else if ok && hs.indent > 0 {
+			out.WriteString(strings.Repeat(" ", hs.indent))
 		}
+
 		out.WriteString("| ")
 
-		hs, ok := headerSpans[i]
 		if ok && i+1 != headerCount {
 			w := hs.width
 			if i < len(tbl.header.cells)-1 {
@@ -116,17 +124,20 @@ func renderTableHeaders(tbl *table, headerSpans map[int]*tableHeaderSpan, header
 	return out.String()
 }
 
-func calculateCellWidths(tbl *table) (headerSpans map[int]*tableHeaderSpan, rowWidths map[int]int) {
-	headerSpans = make(map[int]*tableHeaderSpan)
-	rowWidths = make(map[int]int)
+func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans map[int]*cellSpan) {
+	headerSpans = make(map[int]*cellSpan)
+	rowSpans = make(map[int]*cellSpan)
 
 	columnIndex := 0
 	for i, c := range tbl.header.cells {
-		thw := &tableHeaderSpan{column: columnIndex, width: getCellWidth(c), span: 1}
+		thw := &cellSpan{column: columnIndex, width: getCellWidth(c), span: 1}
 		headerSpans[columnIndex] = thw
-		if c.formatter != nil && c.formatter.ColumnSpan > 0 {
-			thw.span = c.formatter.ColumnSpan
-			columnIndex += thw.span - 1
+		if c.formatter != nil {
+			if c.formatter.ColumnSpan > 0 {
+				thw.span = c.formatter.ColumnSpan
+				columnIndex += thw.span - 1
+			}
+			thw.indent = len(c.formatter.Content)
 		}
 		if i < len(tbl.header.cells)-1 {
 			nextHeader := tbl.header.cells[i+1]
@@ -138,21 +149,32 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*tableHeaderSpan, rowW
 	}
 
 	for _, tr := range tbl.rows {
-		var currentHeader *tableHeaderSpan
+		var currentHeader *cellSpan
 		var spanWidth int
 		for i, c := range tr.cells[0 : len(tr.cells)-1] {
 
-			if currentHeader == nil {
-				currentHeader = headerSpans[i]
+			var rowWidth int
+			rowSpan, ok := rowSpans[i]
+			if ok {
+				rowWidth = rowSpan.width
 			} else {
-				if hw, ok := headerSpans[i]; ok {
-					if currentHeader != hw {
+				rowSpan = &cellSpan{}
+				rowSpans[i] = rowSpan
+			}
+
+			if hw, ok := headerSpans[i]; ok {
+				if currentHeader != hw {
+					if currentHeader != nil {
 						currentHeader.width = max(currentHeader.width, spanWidth)
-						spanWidth = 0
-						currentHeader = hw
 					}
+					spanWidth = 0
+					if i == 0 && hw.indent > 0 {
+						rowSpan.indent = max(hw.indent, rowSpan.indent)
+					}
+					currentHeader = hw
 				}
 			}
+
 			l := getCellWidth(c)
 
 			nextCell := tr.cells[i+1]
@@ -160,7 +182,6 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*tableHeaderSpan, rowW
 			if nextCell.formatter != nil {
 				l += len(nextCell.formatter.Content)
 			}
-			rowWidth := rowWidths[i]
 
 			if currentHeader.span == 1 {
 				if currentHeader.width < max(l, rowWidth) {
@@ -172,7 +193,11 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*tableHeaderSpan, rowW
 				spanWidth += (l + 1)
 			}
 			if rowWidth < l {
-				rowWidths[i] = l
+				if !ok {
+					rowSpans[i] = &cellSpan{width: l}
+				} else {
+					rowSpan.width = l
+				}
 			}
 		}
 	}
@@ -180,10 +205,12 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*tableHeaderSpan, rowW
 }
 
 func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) {
-	for _, c := range t.Header.Cells {
-		renderContext := output.NewContext(cxt, cxt.Doc)
-		RenderElements(renderContext, "", c.Elements)
-		tbl.header.cells = append(tbl.header.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter})
+	if t.Header != nil {
+		for _, c := range t.Header.Cells {
+			renderContext := output.NewContext(cxt, cxt.Doc)
+			RenderElements(renderContext, "", c.Elements)
+			tbl.header.cells = append(tbl.header.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter})
+		}
 	}
 
 	for _, row := range t.Rows {
