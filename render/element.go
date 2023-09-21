@@ -38,7 +38,7 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		case *types.List:
 			renderList(cxt, el)
 		case *types.AttributeDeclaration:
-			cxt.WriteString(el.RawText())
+			renderAttributeDeclaration(cxt, el)
 		case *types.StringElement:
 			text, _ := el.RawText()
 			cxt.WriteString(text)
@@ -61,6 +61,7 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		case *types.DocumentHeader:
 			renderAttributes(cxt, el, el.Attributes)
 			renderSectionTitle(cxt, el.Title, 1)
+			RenderElements(cxt, "", el.Elements)
 			cxt.WriteRune('\n')
 		default:
 			panic(fmt.Errorf("unknown element type: %T", el))

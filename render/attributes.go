@@ -217,3 +217,37 @@ func renderDiagramAttributes(cxt *output.Context, style string, id string, keys 
 	cxt.WriteRune(']')
 	cxt.WriteRune('\n')
 }
+
+func renderAttributeDeclaration(cxt *output.Context, ad *types.AttributeDeclaration) {
+	switch ad.Name {
+	case "authors":
+		if authors, ok := ad.Value.(types.DocumentAuthors); ok {
+			for _, author := range authors {
+				if len(author.Email) > 0 {
+					cxt.WriteString(author.Email)
+					cxt.WriteString(" ")
+				}
+				if author.DocumentAuthorFullName != nil {
+					cxt.WriteString(author.DocumentAuthorFullName.FullName())
+				}
+				cxt.WriteRune('\n')
+			}
+		}
+	default:
+		cxt.WriteRune(':')
+		cxt.WriteString(ad.Name)
+		cxt.WriteString(":")
+		switch val := ad.Value.(type) {
+		case string:
+			cxt.WriteRune(' ')
+			cxt.WriteString(val)
+		case *types.Paragraph:
+			var previous interface{}
+			renderParagraph(cxt, val, &previous)
+		case nil:
+		default:
+			panic(fmt.Errorf("unknown attribute declaration value type: %T", ad.Value))
+		}
+		cxt.WriteRune('\n')
+	}
+}
