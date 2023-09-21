@@ -13,14 +13,20 @@ func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...par
 	done := make(chan interface{})
 	defer close(done)
 
+	newContext := func() *parser.ParseContext {
+		c := parser.NewParseContext(config, opts...)
+		c.IgnoreColumnDefs(true)
+		return c
+	}
+
 	footnotes := types.NewFootnotes()
-	doc, err := parser.Aggregate(parser.NewParseContext(config, opts...),
+	doc, err := parser.Aggregate(newContext(),
 		// SplitHeader(done,
 		parser.ArrangeLists(done,
 			parser.CollectFootnotes(footnotes, done,
-				parser.ApplySubstitutions(parser.NewParseContext(config, opts...), done, // needs to be before 'ArrangeLists'
-					parser.RefineFragments(parser.NewParseContext(config, opts...), r, done,
-						parser.ParseDocumentFragments(parser.NewParseContext(config, opts...), r, done),
+				parser.ApplySubstitutions(newContext(), done, // needs to be before 'ArrangeLists'
+					parser.RefineFragments(newContext(), r, done,
+						parser.ParseDocumentFragments(newContext(), r, done),
 					),
 				),
 			),

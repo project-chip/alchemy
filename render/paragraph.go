@@ -24,20 +24,19 @@ func renderParagraph(cxt *output.Context, p *types.Paragraph, previous *interfac
 		case *types.QuotedText:
 			renderQuotedText(cxt, el)
 		case *types.InlineLink:
-			text := el.Location.Scheme
-			cxt.WriteString(text)
-			switch p := el.Location.Path.(type) {
-			case string:
-				cxt.WriteString(p)
-			default:
-				fmt.Printf("unknown location path type: %T\n", p)
-			}
+			renderInlineLink(cxt, el)
 		case *types.LineBreak:
 			cxt.WriteString(" +")
 		case *types.PredefinedAttribute:
 			cxt.WriteString(fmt.Sprintf("{%s}", el.Name))
+		case *types.InlineImage:
+			renderInlineImage(cxt, el)
+		case *types.SinglelineComment:
+			cxt.WriteString("//")
+			cxt.WriteString(el.Content)
+			cxt.WriteNewline()
 		default:
-			fmt.Printf("unknown paragraph element type: %T\n", el)
+			panic(fmt.Errorf("unknown paragraph element type: %T", el))
 		}
 		*previous = e
 	}

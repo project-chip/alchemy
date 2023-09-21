@@ -23,6 +23,7 @@ func renderList(cxt *output.Context, l *types.List) {
 
 func renderOrderedList(cxt *output.Context, l *types.List) {
 	cxt.OrderedListDepth++
+	cxt.WriteNewline()
 	for _, e := range l.Elements {
 		switch el := e.(type) {
 		case *types.OrderedListElement:
@@ -30,7 +31,7 @@ func renderOrderedList(cxt *output.Context, l *types.List) {
 			RenderElements(cxt, strings.Repeat(".", cxt.OrderedListDepth)+" ", el.Elements)
 			cxt.WriteRune('\n')
 		default:
-			fmt.Printf("unknown ordered list element type: %T\n", el)
+			panic(fmt.Errorf("unknown ordered list element type: %T", el))
 		}
 	}
 	cxt.OrderedListDepth--
@@ -60,7 +61,7 @@ func renderUnorderedList(cxt *output.Context, l *types.List) {
 			RenderElements(cxt, bullet+" ", el.Elements)
 			cxt.WriteNewline()
 		default:
-			fmt.Printf("unknown unordered list element type: %T\n", el)
+			panic(fmt.Errorf("unknown unordered list element type: %T", el))
 		}
 	}
 }

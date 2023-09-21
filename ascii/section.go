@@ -1,6 +1,10 @@
 package ascii
 
-import "github.com/bytesparadise/libasciidoc/pkg/types"
+import (
+	"fmt"
+
+	"github.com/bytesparadise/libasciidoc/pkg/types"
+)
 
 type Section struct {
 	Name string
@@ -22,12 +26,34 @@ const (
 	DocSectionTypeCommands
 )
 
-func GetSectionTitle(s *types.Section) string {
-	for _, te := range s.GetTitle() {
+func NewSection(s *types.Section) *Section {
+	ss := &Section{Base: s}
+	for _, te := range s.Title {
 		switch tel := te.(type) {
 		case *types.StringElement:
-			return tel.Content
+			fmt.Printf("section title string: %s\n", tel.Content)
+			ss.Name = tel.Content
+		case *types.InlineLink:
+
+		default:
+			fmt.Printf("unknown section title element type: %T\n", te)
+			//ss.Elements = append(ss.Elements, te)
 		}
 	}
-	return ""
+	switch s.Level {
+	case 1:
+		fmt.Printf("Adding top level section %s...\n", ss.Name)
+		ss.SecType = DocSectionTypePreface
+	case 2:
+
+	}
+	for _, e := range s.Elements {
+		switch el := e.(type) {
+		case *types.Section:
+			ss.Elements = append(ss.Elements, NewSection(el))
+		default:
+			ss.Elements = append(ss.Elements, &Element{Base: e})
+		}
+	}
+	return ss
 }
