@@ -9,8 +9,12 @@ import (
 
 func renderSection(cxt *output.Context, s *types.Section) {
 	renderAttributes(cxt, s, s.Attributes)
-	cxt.WriteString(strings.Repeat("=", s.Level+1))
+	renderSectionTitle(cxt, s.Title, s.Level+1)
+}
+
+func renderSectionTitle(cxt *output.Context, title []interface{}, level int) {
+	cxt.WriteString(strings.Repeat("=", level))
 	cxt.WriteRune(' ')
-	RenderElements(cxt, "", s.Title)
+	RenderElements(cxt, "", title)
 	cxt.WriteRune('\n')
 }

@@ -9,7 +9,6 @@ import (
 )
 
 func renderInlineLink(cxt *output.Context, il *types.InlineLink) {
-	fmt.Println("Rendering inline link")
 	if il.Location == nil {
 		return
 	}

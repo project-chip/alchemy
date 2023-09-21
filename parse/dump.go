@@ -10,17 +10,18 @@ import (
 )
 
 func Dump(cxt *output.Context) {
-	dumpElements(cxt, cxt.Doc.Base.Elements, 0)
+	DumpElements(cxt, cxt.Doc.Base.Elements, 0)
 }
 
-func dumpElements(cxt *output.Context, elements []interface{}, indent int) {
+func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 	for _, e := range elements {
-		fmt.Print(strings.Repeat(" ", indent*5))
+		fmt.Print(strings.Repeat("\t", indent))
 		switch el := e.(type) {
 		case *types.BlankLine:
 			fmt.Print("{blank}\n")
 		case *types.DelimitedBlock:
 			fmt.Print("{delim}: ")
+			dumpAttributes(cxt, el.Attributes, indent+1)
 			switch el.Kind {
 			case "comment":
 				renderContext := output.NewContext(cxt, cxt.Doc)
@@ -36,28 +37,34 @@ func dumpElements(cxt *output.Context, elements []interface{}, indent int) {
 
 			fmt.Print("{para}: ")
 			fmt.Print("\n")
-			dumpElements(cxt, el.Elements, indent+1)
+			dumpAttributes(cxt, el.Attributes, indent+1)
+			DumpElements(cxt, el.Elements, indent+1)
 		case *types.Section:
 			fmt.Printf("{sec %d}: ", el.Level)
+			dumpAttributes(cxt, el.Attributes, indent+1)
 			fmt.Printf("\t{title:}\n")
-			dumpElements(cxt, el.Title, indent+2)
+			DumpElements(cxt, el.Title, indent+2)
 			fmt.Printf("\t{body:}\n")
-			dumpElements(cxt, el.Elements, indent+2)
+			DumpElements(cxt, el.Elements, indent+2)
 		case *types.StringElement:
 			fmt.Print("{str}: ", snippet(el.Content))
 			fmt.Print("\n")
 		case *types.Table:
 			fmt.Print("{tab}:\n")
+			dumpAttributes(cxt, el.Attributes, indent+1)
 			dumpTable(cxt, el, indent+1)
 		case *types.List:
 			fmt.Print("{list}:\n")
-			dumpElements(cxt, el.GetElements(), indent+1)
+			dumpAttributes(cxt, el.Attributes, indent+1)
+			DumpElements(cxt, el.GetElements(), indent+1)
 		case *types.OrderedListElement:
 			fmt.Print("{ole}:\n")
-			dumpElements(cxt, el.GetElements(), indent+1)
+			dumpAttributes(cxt, el.Attributes, indent+1)
+			DumpElements(cxt, el.GetElements(), indent+1)
 		case *types.UnorderedListElement:
 			fmt.Print("{uole}:\n")
-			dumpElements(cxt, el.GetElements(), indent+1)
+			dumpAttributes(cxt, el.Attributes, indent+1)
+			DumpElements(cxt, el.GetElements(), indent+1)
 		case *types.InternalCrossReference:
 			fmt.Print("{xref}\n")
 		case *types.SpecialCharacter:
@@ -66,17 +73,64 @@ func dumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			fmt.Printf("{sym: %s}\n", el.Name)
 		case *types.InlineLink:
 			fmt.Printf("{link: %s %s}\n", el.Location.Scheme, el.Location.Path.(string))
+			dumpAttributes(cxt, el.Attributes, indent+1)
+		case *types.DocumentHeader:
+			fmt.Printf("{head}\n")
+			fmt.Print(strings.Repeat("\t", indent+1))
+			dumpAttributes(cxt, el.Attributes, indent+1)
+			fmt.Printf("{title:}\n")
+			DumpElements(cxt, el.Title, indent+2)
+			fmt.Print(strings.Repeat("\t", indent+1))
+			fmt.Printf("{body:}\n")
+			DumpElements(cxt, el.Elements, indent+2)
+
+		case *types.Preamble:
+			fmt.Printf("{preamble}\n")
+			fmt.Print(strings.Repeat("\t", indent+1))
+			fmt.Printf("{body:}\n")
+			DumpElements(cxt, el.Elements, indent+2)
+			if el.TableOfContents != nil {
+				fmt.Print(strings.Repeat("\t", indent+1))
+				dumpTOC(cxt, el.TableOfContents.Sections, indent+2)
+			}
 		default:
 			fmt.Printf("unknown element type: %T\n", el)
 		}
 	}
 }
 
+func dumpAttributes(cxt *output.Context, attributes types.Attributes, indent int) {
+	if len(attributes) == 0 {
+		return
+	}
+	fmt.Print(strings.Repeat("\t", indent))
+	fmt.Print("{attr: ")
+	for key, val := range attributes {
+		fmt.Printf("%s=", key)
+		switch v := val.(type) {
+		case *types.StringElement:
+			fmt.Print(v.Content)
+		}
+	}
+	fmt.Print("}\n")
+}
+
+func dumpTOC(cxt *output.Context, tocs []*types.ToCSection, indent int) {
+	for _, toc := range tocs {
+		fmt.Print(strings.Repeat("\t", indent))
+		fmt.Printf("{toc %d} %s.%s\n", toc.Level, toc.Number, toc.Title)
+		if len(toc.Children) > 0 {
+			dumpTOC(cxt, toc.Children, indent+1)
+		}
+	}
+
+}
+
 func dumpTable(cxt *output.Context, tbl *types.Table, indent int) {
 	fmt.Print(strings.Repeat(" ", indent*5))
 	fmt.Print("{head}:\n")
 	dumpTableCells(cxt, tbl.Header.Cells, indent+1)
-	fmt.Print(strings.Repeat(" ", indent*5))
+	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{body}:\n")
 	for _, row := range tbl.Rows {
 		dumpTableRow(cxt, row, indent+1)
@@ -85,15 +139,15 @@ func dumpTable(cxt *output.Context, tbl *types.Table, indent int) {
 
 func dumpTableCells(cxt *output.Context, cells []*types.TableCell, indent int) {
 	for _, c := range cells {
-		fmt.Print(strings.Repeat(" ", indent*5))
+		fmt.Print(strings.Repeat("\t", indent))
 		fmt.Print("{cell}:\n")
-		dumpElements(cxt, c.Elements, indent+1)
+		DumpElements(cxt, c.Elements, indent+1)
 	}
 
 }
 
 func dumpTableRow(cxt *output.Context, row *types.TableRow, indent int) {
-	fmt.Print(strings.Repeat(" ", indent*5))
+	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{cell}:\n")
 	dumpTableCells(cxt, row.Cells, indent+1)
 }

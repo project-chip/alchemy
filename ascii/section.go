@@ -1,8 +1,6 @@
 package ascii
 
 import (
-	"fmt"
-
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
@@ -11,19 +9,32 @@ type Section struct {
 
 	Base *types.Section
 
-	SecType DocSectionType
+	SecType MatterSection
 
 	Elements []interface{}
 }
 
-type DocSectionType uint8
+type MatterSection uint8
 
 const (
-	DocSectionTypePreface DocSectionType = 0
-	DocSectionTypeAttributes
-	DocSectionTypeFeatures
-	DocSectionTypeDataTypes
-	DocSectionTypeCommands
+	MatterSectionUnknown MatterSection = iota
+	MatterSectionPrefix                // Special section type for everything that comes before any known sections
+	MatterSectionIntroduction
+	MatterSectionRevisionHistory
+	MatterSectionClassification
+	MatterSectionClusterID
+	MatterSectionFeatures
+	MatterSectionDependencies
+	MatterSectionDataTypes
+	MatterSectionStatusCodes
+	MatterSectionAttributes
+	MatterSectionCommands
+	MatterSectionEvents
+	MatterSectionConditions
+	MatterSectionClusterRequirements
+	MatterSectionClusterRestrictions
+	MatterSectionElementRequirements
+	MatterSectionEndpointComposition
 )
 
 func NewSection(s *types.Section) *Section {
@@ -31,21 +42,13 @@ func NewSection(s *types.Section) *Section {
 	for _, te := range s.Title {
 		switch tel := te.(type) {
 		case *types.StringElement:
-			fmt.Printf("section title string: %s\n", tel.Content)
 			ss.Name = tel.Content
 		case *types.InlineLink:
 
 		default:
-			fmt.Printf("unknown section title element type: %T\n", te)
+			//fmt.Printf("unknown section title element type: %T\n", te)
 			//ss.Elements = append(ss.Elements, te)
 		}
-	}
-	switch s.Level {
-	case 1:
-		fmt.Printf("Adding top level section %s...\n", ss.Name)
-		ss.SecType = DocSectionTypePreface
-	case 2:
-
 	}
 	for _, e := range s.Elements {
 		switch el := e.(type) {
@@ -56,4 +59,47 @@ func NewSection(s *types.Section) *Section {
 		}
 	}
 	return ss
+}
+
+func SectionTypeString(st MatterSection) string {
+	switch st {
+	case MatterSectionPrefix:
+		return "Prefix"
+	case MatterSectionUnknown:
+		return "Unknown"
+	case MatterSectionIntroduction:
+		return "Introduction"
+	case MatterSectionRevisionHistory:
+		return "RevisionHistory"
+	case MatterSectionClassification:
+		return "Classification"
+	case MatterSectionClusterID:
+		return "ClusterID"
+	case MatterSectionFeatures:
+		return "Features"
+	case MatterSectionDependencies:
+		return "Dependencies"
+	case MatterSectionDataTypes:
+		return "DataTypes"
+	case MatterSectionStatusCodes:
+		return "StatusCodes"
+	case MatterSectionAttributes:
+		return "Attributes"
+	case MatterSectionCommands:
+		return "Commands"
+	case MatterSectionEvents:
+		return "Events"
+	case MatterSectionConditions:
+		return "Conditions"
+	case MatterSectionClusterRequirements:
+		return "Cluster Requirements"
+	case MatterSectionClusterRestrictions:
+		return "Cluster Restrictions"
+	case MatterSectionElementRequirements:
+		return "Element Requirements"
+	case MatterSectionEndpointComposition:
+		return "Endpoint Composition"
+	default:
+		return "invalid"
+	}
 }

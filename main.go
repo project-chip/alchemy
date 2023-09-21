@@ -9,6 +9,7 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/matterfmt/disco"
 	"github.com/hasty/matterfmt/output"
 	"github.com/hasty/matterfmt/parse"
 	"github.com/hasty/matterfmt/render"
@@ -45,6 +46,8 @@ func main() {
 			continue
 		}
 
+		disco.Ball(doc)
+
 		out := postProcessFile(render.Render(cxt, doc))
 		//fmt.Printf("Result:\n%s\n", out)
 
@@ -75,6 +78,7 @@ func readFile(path string) (*ascii.Doc, error) {
 		panic(fmt.Errorf("failed parse: %w", err))
 	}
 	doc := ascii.NewDoc(d)
+	doc.Path = path
 
 	return doc, nil
 }

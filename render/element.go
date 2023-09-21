@@ -58,6 +58,10 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 			renderPreamble(cxt, el)
 		case *types.Symbol:
 			renderSymbol(cxt, el)
+		case *types.DocumentHeader:
+			renderAttributes(cxt, el, el.Attributes)
+			renderSectionTitle(cxt, el.Title, 1)
+			cxt.WriteRune('\n')
 		default:
 			panic(fmt.Errorf("unknown element type: %T", el))
 		}
