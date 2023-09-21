@@ -5,16 +5,17 @@ import (
 )
 
 type Doc struct {
-	Elements []interface{}
+	Path string
 
-	Base *types.Document
+	Base     *types.Document
+	Elements []interface{}
 }
 
 func NewDoc(d *types.Document) *Doc {
 	doc := &Doc{
 		Base: d,
 	}
-	for _, e := range d.BodyElements() {
+	for _, e := range d.Elements {
 		switch el := e.(type) {
 		case *types.Section:
 			doc.Elements = append(doc.Elements, NewSection(el))

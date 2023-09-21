@@ -29,8 +29,12 @@ const (
 	AttributeTypePDFWidth
 )
 
-func renderAttributeType(at AttributeType, include AttributeType, exclude AttributeType) bool {
+func shouldRenderAttributeType(at AttributeType, include AttributeType, exclude AttributeType) bool {
 	return ((at & include) == at) && ((at & exclude) != at)
+}
+
+func renderAttributes(cxt *output.Context, el interface{}, attributes types.Attributes) {
+	renderSelectAttributes(cxt, el, attributes, AttributeTypeAll, AttributeTypeCols)
 }
 
 func renderSelectAttributes(cxt *output.Context, el interface{}, attributes types.Attributes, include AttributeType, exclude AttributeType) {
@@ -56,9 +60,6 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 				renderContext := output.NewContext(cxt, cxt.Doc)
 				RenderElements(renderContext, "", v)
 				title = renderContext.String()
-				for _, p := range v {
-					fmt.Printf("title element: %T\n", p)
-				}
 			default:
 				panic(fmt.Sprintf("unknown title type: %T", v))
 			}
@@ -68,7 +69,7 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			keys = append(keys, key)
 		}
 	}
-	if len(style) > 0 && renderAttributeType(AttributeTypeStyle, include, exclude) {
+	if len(style) > 0 && shouldRenderAttributeType(AttributeTypeStyle, include, exclude) {
 		switch style {
 		case "NOTE", "IMPORTANT", "TIP", "CAUTION", "WARNING":
 			switch el.(type) {
@@ -83,20 +84,21 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			cxt.WriteString("[lowerroman]\n")
 		case "arabic":
 			cxt.WriteString("[arabic]\n")
-		case "plantuml":
-			cxt.WriteString("[plantuml]\n")
+		case "a2s", "actdiag", "plantuml", "qrcode", "blockdiag", "d2", "lilypond":
+			renderDiagramAttributes(cxt, style, id, keys, attributes)
+			return
 		case "literal_paragraph":
 		default:
 			panic(fmt.Errorf("unknown style: %s", style))
 		}
 	}
-	if len(title) > 0 && renderAttributeType(AttributeTypeTitle, include, exclude) {
+	if len(title) > 0 && shouldRenderAttributeType(AttributeTypeTitle, include, exclude) {
 		cxt.WriteNewline()
 		cxt.WriteRune('.')
 		cxt.WriteString(title)
 		cxt.WriteNewline()
 	}
-	if len(id) > 0 && id[0] != '_' && renderAttributeType(AttributeTypeID, include, exclude) {
+	if len(id) > 0 && id[0] != '_' && shouldRenderAttributeType(AttributeTypeID, include, exclude) {
 		cxt.WriteNewline()
 		cxt.WriteString("[[")
 		cxt.WriteString(id)
@@ -128,7 +130,7 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			case "pdfwidth":
 				attributeType = AttributeTypePDFWidth
 			}
-			if !renderAttributeType(AttributeTypeAlt, include, exclude) {
+			if !shouldRenderAttributeType(AttributeTypeAlt, include, exclude) {
 				continue
 			}
 			val := attributes[key]
@@ -190,7 +192,28 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 	}
 }
 
-func renderAttributes(cxt *output.Context, el interface{}, attributes types.Attributes) {
-	renderSelectAttributes(cxt, el, attributes, AttributeTypeAll, AttributeTypeCols)
-
+func renderDiagramAttributes(cxt *output.Context, style string, id string, keys []string, attributes types.Attributes) {
+	cxt.WriteString("[")
+	cxt.WriteString(style)
+	if len(id) > 0 {
+		cxt.WriteString(", id=\"")
+		cxt.WriteString(id)
+		cxt.WriteRune('"')
+	}
+	for _, k := range keys {
+		v, ok := attributes[k]
+		if !ok {
+			continue
+		}
+		cxt.WriteString(", ")
+		cxt.WriteString(k)
+		s, ok := v.(string)
+		if ok && len(s) > 0 {
+			cxt.WriteString(`="`)
+			cxt.WriteString(s)
+			cxt.WriteRune('"')
+		}
+	}
+	cxt.WriteRune(']')
+	cxt.WriteRune('\n')
 }

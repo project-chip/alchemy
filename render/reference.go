@@ -12,7 +12,7 @@ func renderInternalCrossReference(cxt *output.Context, cf *types.InternalCrossRe
 	//fmt.Printf("icf ID type: %T -> %v\n", cf.ID, cf.ID)
 	//fmt.Printf("icf Label type: %T -> %v\n", cf.Label, cf.Label)
 
-	switch el := cf.ID.(type) {
+	switch el := cf.OriginalID.(type) {
 	case string:
 		if strings.HasPrefix(el, "_") {
 			ref, ok := cxt.Doc.Base.ElementReferences[el]
