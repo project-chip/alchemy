@@ -30,8 +30,8 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			}
 			fmt.Print("\n")
 		case *types.AttributeDeclaration:
-			fmt.Print("{attrib}: ")
-			fmt.Print(snippet(el.RawText()))
+			fmt.Printf("{attrib}: %s", el.Name)
+			DumpElements(cxt, []interface{}{el.Value}, indent+1)
 			fmt.Print("\n")
 		case *types.Paragraph:
 
@@ -48,6 +48,9 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			DumpElements(cxt, el.Elements, indent+2)
 		case *types.StringElement:
 			fmt.Print("{str}: ", snippet(el.Content))
+			fmt.Print("\n")
+		case string:
+			fmt.Print("{str}: ", snippet(el))
 			fmt.Print("\n")
 		case *types.Table:
 			fmt.Print("{tab}:\n")
@@ -72,7 +75,13 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 		case *types.Symbol:
 			fmt.Printf("{sym: %s}\n", el.Name)
 		case *types.InlineLink:
-			fmt.Printf("{link: %s %s}\n", el.Location.Scheme, el.Location.Path.(string))
+			fmt.Printf("{link: ")
+			if el.Location != nil {
+				fmt.Printf("%s %s}", el.Location.Scheme, el.Location.Path.(string))
+			} else {
+				fmt.Printf("missing location")
+			}
+			fmt.Print("}\n")
 			dumpAttributes(cxt, el.Attributes, indent+1)
 		case *types.DocumentHeader:
 			fmt.Printf("{head}\n")
@@ -93,6 +102,17 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 				fmt.Print(strings.Repeat("\t", indent+1))
 				dumpTOC(cxt, el.TableOfContents.Sections, indent+2)
 			}
+		case types.DocumentAuthors:
+			fmt.Print("{authors}\n")
+			for _, a := range el {
+				DumpElements(cxt, []interface{}{a}, indent+1)
+			}
+		case *types.DocumentAuthor:
+			fmt.Printf("{author %s", el.Email)
+			if el.DocumentAuthorFullName != nil {
+				fmt.Printf("( %s %s %s)", el.DocumentAuthorFullName.FirstName, el.DocumentAuthorFullName.MiddleName, el.DocumentAuthorFullName.LastName)
+			}
+			fmt.Print("}\n")
 		default:
 			fmt.Printf("unknown element type: %T\n", el)
 		}
@@ -110,6 +130,8 @@ func dumpAttributes(cxt *output.Context, attributes types.Attributes, indent int
 		switch v := val.(type) {
 		case *types.StringElement:
 			fmt.Print(v.Content)
+		default:
+			fmt.Printf("unknown type: %T", val)
 		}
 	}
 	fmt.Print("}\n")
