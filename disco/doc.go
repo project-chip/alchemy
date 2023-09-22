@@ -9,16 +9,17 @@ import (
 	"unicode/utf8"
 
 	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/matterfmt/matter"
 )
 
-func getDocType(doc *ascii.Doc) (MatterDoc, error) {
+func getDocType(doc *ascii.Doc) (matter.Doc, error) {
 	if len(doc.Path) == 0 {
-		return MatterDocUnknown, fmt.Errorf("missing path")
+		return matter.DocUnknown, fmt.Errorf("missing path")
 	}
 
 	path, err := filepath.Abs(doc.Path)
 	if err != nil {
-		return MatterDocUnknown, err
+		return matter.DocUnknown, err
 	}
 	dir, file := filepath.Split(path)
 	pathParts := strings.Split(dir, string(os.PathSeparator))
@@ -28,17 +29,17 @@ func getDocType(doc *ascii.Doc) (MatterDoc, error) {
 		switch part {
 		case "device_types":
 			if firstLetterIsLower(file) {
-				return MatterDocDeviceTypeIndex, nil
+				return matter.DocDeviceTypeIndex, nil
 			}
-			return MatterDocDeviceType, nil
+			return matter.DocDeviceType, nil
 		case "app_clusters":
 			if firstLetterIsLower(file) {
-				return MatterDocAppClusterIndex, nil
+				return matter.DocAppClusterIndex, nil
 			}
-			return MatterDocAppCluster, nil
+			return matter.DocAppCluster, nil
 		}
 	}
-	return MatterDocUnknown, fmt.Errorf("could not determine doc type from path %s", doc.Path)
+	return matter.DocUnknown, fmt.Errorf("could not determine doc type from path %s", doc.Path)
 }
 
 func firstLetterIsLower(s string) bool {

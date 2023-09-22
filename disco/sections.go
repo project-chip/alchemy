@@ -4,60 +4,47 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/matterfmt/matter"
 )
 
-type MatterDoc uint8
-
-var topLevelSectionOrders map[MatterDoc][]ascii.MatterSection
-
-const (
-	MatterDocUnknown MatterDoc = iota
-	MatterDocAppCluster
-	MatterDocAppClusterIndex
-	MatterDocDeviceType
-	MatterDocDeviceTypeIndex
-	MatterDocCommonProtocol
-	MatterDocDataModel
-	MatterDocDeviceAttestation
-	MatterDocServiceDeviceManagement
-)
+var topLevelSectionOrders map[matter.Doc][]matter.Section
 
 func init() {
-	topLevelSectionOrders = make(map[MatterDoc][]ascii.MatterSection)
-	topLevelSectionOrders[MatterDocAppCluster] = []ascii.MatterSection{
-		ascii.MatterSectionPrefix,
-		ascii.MatterSectionRevisionHistory,
-		ascii.MatterSectionClassification,
-		ascii.MatterSectionClusterID,
-		ascii.MatterSectionFeatures,
-		ascii.MatterSectionDependencies,
-		ascii.MatterSectionDataTypes,
-		ascii.MatterSectionStatusCodes,
-		ascii.MatterSectionAttributes,
-		ascii.MatterSectionCommands,
-		ascii.MatterSectionEvents,
+	topLevelSectionOrders = make(map[matter.Doc][]matter.Section)
+	topLevelSectionOrders[matter.DocAppCluster] = []matter.Section{
+		matter.SectionPrefix,
+		matter.SectionRevisionHistory,
+		matter.SectionClassification,
+		matter.SectionClusterID,
+		matter.SectionFeatures,
+		matter.SectionDependencies,
+		matter.SectionDataTypes,
+		matter.SectionStatusCodes,
+		matter.SectionAttributes,
+		matter.SectionCommands,
+		matter.SectionEvents,
 	}
-	topLevelSectionOrders[MatterDocDeviceType] = []ascii.MatterSection{
-		ascii.MatterSectionPrefix,
-		ascii.MatterSectionRevisionHistory,
-		ascii.MatterSectionClassification,
-		ascii.MatterSectionConditions,
-		ascii.MatterSectionClusterRequirements,
-		ascii.MatterSectionClusterRestrictions,
-		ascii.MatterSectionElementRequirements,
-		ascii.MatterSectionEndpointComposition,
+	topLevelSectionOrders[matter.DocDeviceType] = []matter.Section{
+		matter.SectionPrefix,
+		matter.SectionRevisionHistory,
+		matter.SectionClassification,
+		matter.SectionConditions,
+		matter.SectionClusterRequirements,
+		matter.SectionClusterRestrictions,
+		matter.SectionElementRequirements,
+		matter.SectionEndpointComposition,
 	}
 }
 
-func reorderTopLevelSection(sec *ascii.Section, docType MatterDoc) {
-	//reorderedList := make([]interface{}, 0, len(sec.Elements))
+func reorderTopLevelSection(sec *ascii.Section, docType matter.Doc) {
 	sectionOrder, ok := topLevelSectionOrders[docType]
 	if !ok {
 		fmt.Printf("could not determine section order from doc type %d\n", docType)
 		return
 	}
-	validSectionTypes := make(map[ascii.MatterSection]struct{}, len(sectionOrder)+1)
+	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)
 	for _, st := range sectionOrder {
 		validSectionTypes[st] = struct{}{}
 	}
@@ -73,50 +60,16 @@ func reorderTopLevelSection(sec *ascii.Section, docType MatterDoc) {
 		panic(fmt.Errorf("non-empty section list after reordering"))
 	}
 	sec.Elements = newOrder
-
-	/*for _, st := range sectionOrder[0:1] {
-		fmt.Printf("looking for section %v...\n", st)
-		var sectionStart int = -1
-		var sectionEnd int = -1
-		for i, e := range sec.Elements {
-			switch el := e.(type) {
-			case *ascii.Section:
-				cst := getSectionType(el)
-				fmt.Printf("\t%s:\t%s\n", el.Name, ascii.SectionTypeString(cst))
-				if sectionStart == -1 {
-					if cst == st {
-						sectionStart = i
-					}
-				} else if sectionEnd == -1 {
-					if cst != ascii.MatterSectionUnknown {
-						sectionEnd = i
-					}
-				}
-			}
-			if sectionStart != -1 && sectionEnd != -1 {
-				//break
-			}
-		}
-		if sectionStart == -1 {
-			//fmt.Printf("failed to find section %v...\n", st)
-		} else {
-			if sectionEnd != -1 {
-				//	fmt.Printf("found section %v between %d and %d...\n", st, sectionStart, sectionEnd)
-			} else {
-				//fmt.Printf("found section %v between %d and end...\n", st, sectionStart)
-			}
-		}
-	}*/
 }
 
-func divyUpSection(sec *ascii.Section, validSectionTypes map[ascii.MatterSection]struct{}) map[ascii.MatterSection][]interface{} {
-	sections := make(map[ascii.MatterSection][]interface{})
-	lastSectionType := ascii.MatterSectionPrefix
+func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section][]interface{} {
+	sections := make(map[matter.Section][]interface{})
+	lastSectionType := matter.SectionPrefix
 	for _, e := range sec.Elements {
 		switch el := e.(type) {
 		case *ascii.Section:
 			el.SecType = getSectionType(el)
-			if el.SecType != ascii.MatterSectionUnknown {
+			if el.SecType != matter.SectionUnknown {
 				_, ok := validSectionTypes[el.SecType]
 				if ok {
 					lastSectionType = el.SecType
@@ -125,56 +78,52 @@ func divyUpSection(sec *ascii.Section, validSectionTypes map[ascii.MatterSection
 		}
 		sections[lastSectionType] = append(sections[lastSectionType], e)
 	}
-	for st, elements := range sections {
-		fmt.Printf("\t%s:\n", ascii.SectionTypeString(st))
-		for _, e := range elements {
-			switch el := e.(type) {
-			case *ascii.Section:
-				fmt.Printf("\t\t%s\n", el.Name)
-			case *ascii.Element:
-				fmt.Printf("\t\t{el} %T\n", el.Base)
-			default:
-				fmt.Printf("\t\t{el} %T\n", el)
-			}
-		}
-	}
 	return sections
 }
 
-func getSectionType(section *ascii.Section) ascii.MatterSection {
+func getSectionType(section *ascii.Section) matter.Section {
 	name := strings.ToLower(strings.TrimSpace(section.Name))
 	switch name {
 	case "introduction":
-		return ascii.MatterSectionIntroduction
+		return matter.SectionIntroduction
 	case "revision history":
-		return ascii.MatterSectionRevisionHistory
+		return matter.SectionRevisionHistory
 	case "classification":
-		return ascii.MatterSectionClassification
+		return matter.SectionClassification
 	case "cluster identifiers", "cluster id", "cluster ids":
-		return ascii.MatterSectionClusterID
+		return matter.SectionClusterID
 	case "features":
-		return ascii.MatterSectionFeatures
+		return matter.SectionFeatures
 	case "dependencies":
-		return ascii.MatterSectionDependencies
+		return matter.SectionDependencies
 	case "data types":
-		return ascii.MatterSectionDataTypes
+		return matter.SectionDataTypes
 	case "status codes":
-		return ascii.MatterSectionStatusCodes
+		return matter.SectionStatusCodes
 	case "attributes":
-		return ascii.MatterSectionAttributes
+		return matter.SectionAttributes
 	case "commands":
-		return ascii.MatterSectionCommands
+		return matter.SectionCommands
 	case "conditions":
-		return ascii.MatterSectionConditions
+		return matter.SectionConditions
 	case "cluster requirements":
-		return ascii.MatterSectionClusterRequirements
+		return matter.SectionClusterRequirements
 	case "cluster restrictions":
-		return ascii.MatterSectionClusterRestrictions
+		return matter.SectionClusterRestrictions
 	case "element requirements":
-		return ascii.MatterSectionElementRequirements
+		return matter.SectionElementRequirements
 	case "endpoint composition":
-		return ascii.MatterSectionEndpointComposition
+		return matter.SectionEndpointComposition
 	default:
-		return ascii.MatterSectionUnknown
+		return matter.SectionUnknown
+	}
+}
+
+func setSectionTitle(sec *ascii.Section, title string) {
+	for _, e := range sec.Base.Title {
+		switch el := e.(type) {
+		case *types.StringElement:
+			el.Content = title
+		}
 	}
 }

@@ -40,18 +40,26 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			dumpAttributes(cxt, el.Attributes, indent+1)
 			DumpElements(cxt, el.Elements, indent+1)
 		case *types.Section:
-			fmt.Printf("{sec %d}: ", el.Level)
+			fmt.Printf("{sec %d}:\n", el.Level)
 			dumpAttributes(cxt, el.Attributes, indent+1)
-			fmt.Printf("\t{title:}\n")
+			fmt.Print(strings.Repeat("\t", indent+1))
+			fmt.Printf("{title:}\n")
 			DumpElements(cxt, el.Title, indent+2)
-			fmt.Printf("\t{body:}\n")
+			fmt.Print(strings.Repeat("\t", indent+1))
+			fmt.Printf("{body:}\n")
 			DumpElements(cxt, el.Elements, indent+2)
 		case *types.StringElement:
-			fmt.Print("{str}: ", snippet(el.Content))
+			fmt.Print("{se}: ", snippet(el.Content))
 			fmt.Print("\n")
 		case string:
 			fmt.Print("{str}: ", snippet(el))
 			fmt.Print("\n")
+		case *types.QuotedText:
+			fmt.Printf("{qt %s}:\n", el.Kind)
+			dumpAttributes(cxt, el.Attributes, indent+1)
+			fmt.Print(strings.Repeat("\t", indent+1))
+			fmt.Printf("{body:}\n")
+			DumpElements(cxt, el.Elements, indent+2)
 		case *types.Table:
 			fmt.Print("{tab}:\n")
 			dumpAttributes(cxt, el.Attributes, indent+1)
@@ -124,12 +132,14 @@ func dumpAttributes(cxt *output.Context, attributes types.Attributes, indent int
 		return
 	}
 	fmt.Print(strings.Repeat("\t", indent))
-	fmt.Print("{attr: ")
+	fmt.Print("{attr:")
 	for key, val := range attributes {
-		fmt.Printf("%s=", key)
+		fmt.Printf(" %s=", key)
 		switch v := val.(type) {
 		case *types.StringElement:
 			fmt.Print(v.Content)
+		case string:
+			fmt.Print(v)
 		default:
 			fmt.Printf("unknown type: %T", val)
 		}
@@ -170,7 +180,7 @@ func dumpTableCells(cxt *output.Context, cells []*types.TableCell, indent int) {
 
 func dumpTableRow(cxt *output.Context, row *types.TableRow, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
-	fmt.Print("{cell}:\n")
+	fmt.Print("{row}:\n")
 	dumpTableCells(cxt, row.Cells, indent+1)
 }
 

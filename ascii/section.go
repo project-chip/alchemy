@@ -2,6 +2,7 @@ package ascii
 
 import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/matterfmt/matter"
 )
 
 type Section struct {
@@ -9,33 +10,10 @@ type Section struct {
 
 	Base *types.Section
 
-	SecType MatterSection
+	SecType matter.Section
 
 	Elements []interface{}
 }
-
-type MatterSection uint8
-
-const (
-	MatterSectionUnknown MatterSection = iota
-	MatterSectionPrefix                // Special section type for everything that comes before any known sections
-	MatterSectionIntroduction
-	MatterSectionRevisionHistory
-	MatterSectionClassification
-	MatterSectionClusterID
-	MatterSectionFeatures
-	MatterSectionDependencies
-	MatterSectionDataTypes
-	MatterSectionStatusCodes
-	MatterSectionAttributes
-	MatterSectionCommands
-	MatterSectionEvents
-	MatterSectionConditions
-	MatterSectionClusterRequirements
-	MatterSectionClusterRestrictions
-	MatterSectionElementRequirements
-	MatterSectionEndpointComposition
-)
 
 func NewSection(s *types.Section) *Section {
 	ss := &Section{Base: s}
@@ -59,47 +37,4 @@ func NewSection(s *types.Section) *Section {
 		}
 	}
 	return ss
-}
-
-func SectionTypeString(st MatterSection) string {
-	switch st {
-	case MatterSectionPrefix:
-		return "Prefix"
-	case MatterSectionUnknown:
-		return "Unknown"
-	case MatterSectionIntroduction:
-		return "Introduction"
-	case MatterSectionRevisionHistory:
-		return "RevisionHistory"
-	case MatterSectionClassification:
-		return "Classification"
-	case MatterSectionClusterID:
-		return "ClusterID"
-	case MatterSectionFeatures:
-		return "Features"
-	case MatterSectionDependencies:
-		return "Dependencies"
-	case MatterSectionDataTypes:
-		return "DataTypes"
-	case MatterSectionStatusCodes:
-		return "StatusCodes"
-	case MatterSectionAttributes:
-		return "Attributes"
-	case MatterSectionCommands:
-		return "Commands"
-	case MatterSectionEvents:
-		return "Events"
-	case MatterSectionConditions:
-		return "Conditions"
-	case MatterSectionClusterRequirements:
-		return "Cluster Requirements"
-	case MatterSectionClusterRestrictions:
-		return "Cluster Restrictions"
-	case MatterSectionElementRequirements:
-		return "Element Requirements"
-	case MatterSectionEndpointComposition:
-		return "Endpoint Composition"
-	default:
-		return "invalid"
-	}
 }

@@ -63,8 +63,6 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			default:
 				panic(fmt.Sprintf("unknown title type: %T", v))
 			}
-		case "cols":
-			continue
 		default:
 			keys = append(keys, key)
 		}
