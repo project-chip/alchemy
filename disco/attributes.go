@@ -53,26 +53,70 @@ func getAttributeNames(doc *ascii.Doc, rows []*types.TableRow, columnMap map[mat
 	return names
 }
 
-var accessPattern = regexp.MustCompile(`^(?:(?P<ColumnSpan>[0-9]+)?(?:\.(?P<RowSpan>[0-9]+))?\+)?(?:(?P<Duplication>[0-9]+)\*)?(?P<HorizontalAlignment>[<>^])?(?P<VerticalAlignment>\.[<>^])?(?P<Style>[adehlms])?$`)
+var accessPattern = regexp.MustCompile(`^(?:(?:^|\s+)(?:(?P<ReadWrite>(?:R\*W)|(?:R\[W\])|(?:[RW]+))|(?P<Fabric>[FS]+)|(?P<Privileges>[VOMA]+)|(?P<Timed>T)))+\s*$`)
+var accessPatternMatchMap map[int]matter.AccessCategory
+
+func init() {
+	accessPatternMatchMap = make(map[int]matter.AccessCategory)
+	for i, name := range accessPattern.SubexpNames() {
+		switch name {
+		case "ReadWrite":
+			accessPatternMatchMap[i] = matter.AccessCategoryReadWrite
+		case "Fabric":
+			accessPatternMatchMap[i] = matter.AccessCategoryFabric
+		case "Privileges":
+			accessPatternMatchMap[i] = matter.AccessCategoryPrivileges
+		case "Timed":
+			accessPatternMatchMap[i] = matter.AccessCategoryTimed
+		}
+	}
+}
 
 func fixAttributeAccess(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) {
+	if len(rows) < 2 {
+		return
+	}
 	accessIndex, ok := columnMap[matter.TableColumnAccess]
 	if !ok {
 		return
 	}
-	for _, row := range rows {
+	for _, row := range rows[1:] {
 		cell := row.Cells[accessIndex]
-		if len(cell.Elements) == 0 {
+		vc := getCellValue(cell)
+		if len(vc) == 0 {
 			continue
 		}
-		p, ok := cell.Elements[0].(*types.Paragraph)
-		if !ok || len(p.Elements) == 0 {
+		matches := accessPattern.FindStringSubmatch(vc)
+		if matches == nil {
 			continue
 		}
-		s, ok := p.Elements[0].(*types.StringElement)
-		if !ok && s != nil {
-			continue
+		access := make(map[matter.AccessCategory]string)
+		for i, s := range matches {
+			if s == "" {
+				continue
+			}
+			category, ok := accessPatternMatchMap[i]
+			if !ok {
+				continue
+			}
+			access[category] = s
 		}
-		//fmt.Printf("Access: %s\n", s.Content)
+		if len(access) > 0 {
+			var out strings.Builder
+			for _, ac := range matter.AccessCategoryOrder {
+				a, ok := access[ac]
+				if !ok {
+					continue
+				}
+				if ac == matter.AccessCategoryReadWrite && a == "R*W" { // fix deprecated form
+					a = "R[W]"
+				}
+				if out.Len() > 0 {
+					out.WriteRune(' ')
+				}
+				out.WriteString(a)
+			}
+			setCellValue(cell, out.String())
+		}
 	}
 }
