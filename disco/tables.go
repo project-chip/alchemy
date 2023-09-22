@@ -10,39 +10,17 @@ import (
 )
 
 func findFirstTable(section *ascii.Section) *types.Table {
-	for _, e := range section.Elements {
+	var table *types.Table
+	find(section.Elements, func(t *types.Table) bool {
+		table = t
+		return true
+	})
 
-		if ae, ok := e.(*ascii.Element); ok {
-			e = ae.Base
-		}
-		switch el := e.(type) {
-		case *types.Table:
-			return el
-		}
-	}
-	return nil
-}
-
-func findTables(elements []interface{}, callback func(t *types.Table) bool) {
-	for _, e := range elements {
-		if ae, ok := e.(*ascii.Element); ok {
-			e = ae.Base
-		}
-		switch el := e.(type) {
-		case *types.Table:
-			if callback(el) {
-				return
-			}
-		case *ascii.Section:
-			findTables(el.Elements, callback)
-		case *types.Section:
-			findTables(el.Elements, callback)
-		}
-	}
+	return table
 }
 
 func ensureTableOptions(elements []interface{}) {
-	findTables(elements, func(t *types.Table) bool {
+	find(elements, func(t *types.Table) bool {
 		if t.Attributes == nil {
 			t.Attributes = make(types.Attributes)
 		}

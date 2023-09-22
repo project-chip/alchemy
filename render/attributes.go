@@ -169,6 +169,11 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 						fmt.Printf("unknown attribute option type: %T\n", o)
 					}
 				}
+			case []interface{}:
+				for _, e := range v {
+					fmt.Printf("unknown attribute: %T\n", e)
+				}
+				//panic(fmt.Errorf("unknown attribute type: %T", val))
 			default:
 				panic(fmt.Errorf("unknown attribute type: %T", val))
 			}
