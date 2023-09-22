@@ -12,6 +12,8 @@ func Ball(doc *ascii.Doc) {
 
 func discoBallDoc(doc *ascii.Doc, docType matter.Doc) {
 	precleanStrings(doc.Elements)
+	fixUnrecognizedReferences(doc)
+	normalizeReferences(doc)
 	for _, e := range doc.Elements {
 		switch el := e.(type) {
 		case *ascii.Section:
