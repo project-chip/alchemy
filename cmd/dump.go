@@ -1,16 +1,31 @@
-package parse
+package cmd
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/output"
 	"github.com/hasty/matterfmt/render"
+	"github.com/urfave/cli/v2"
 )
 
-func Dump(cxt *output.Context) {
-	DumpElements(cxt, cxt.Doc.Base.Elements, 0)
+func Dump(cxt context.Context, cCtx *cli.Context) error {
+	files, err := getFilePaths(cCtx)
+	if err != nil {
+		return err
+	}
+	for i, f := range files {
+		fmt.Printf("Formatting %s (%d of %d)...", f, (i + 1), len(files))
+		out, err := getOutputContext(cxt, f)
+		if err != nil {
+			return err
+		}
+		DumpElements(out, out.Doc.Base.Elements, 0)
+	}
+	return nil
+
 }
 
 func DumpElements(cxt *output.Context, elements []interface{}, indent int) {

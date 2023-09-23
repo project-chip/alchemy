@@ -1,9 +1,16 @@
 package disco
 
 import (
+	"slices"
+
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 )
+
+type HasElements interface {
+	SetElements([]interface{}) error
+	GetElements() []interface{}
+}
 
 func find[T any](elements []interface{}, callback func(t T) bool) bool {
 	for _, e := range elements {
@@ -25,6 +32,37 @@ func find[T any](elements []interface{}, callback func(t T) bool) bool {
 
 	}
 	return false
+}
+
+func filter(parent HasElements, callback func(i interface{}) (remove bool, shortCircuit bool)) (remove bool, shortCircuit bool) {
+	i := 0
+	elements := parent.GetElements()
+	var removed bool
+	for i < len(elements) {
+		e := elements[i]
+		if ae, ok := e.(*ascii.Element); ok {
+			e = ae.Base
+		}
+		switch el := e.(type) {
+		case HasElements:
+			remove, shortCircuit = filter(el, callback)
+		}
+		var empty []interface{}
+		if remove {
+			elements = slices.Replace(elements, i, i+1, empty...)
+			removed = true
+			remove = false
+		} else {
+			i++
+		}
+		if shortCircuit {
+			return
+		}
+	}
+	if removed {
+		parent.SetElements(elements)
+	}
+	return
 }
 
 func traverse(parent types.WithElements, elements []interface{}, callback func(interface{}, types.WithElements, int) bool) bool {

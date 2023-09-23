@@ -10,47 +10,37 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func organizeAttributesSection(doc *ascii.Doc, section *ascii.Section) {
-	attributesTable := findFirstTable(section)
+func organizeAttributesSection(doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) {
+	attributesTable := findFirstTable(attributes)
 	if attributesTable != nil {
-		organizeAttributesTable(doc, section, attributesTable)
+		organizeAttributesTable(doc, attributes, top, attributesTable)
 	} else {
 		fmt.Printf("No attributes table!")
 	}
 }
 
-func organizeAttributesTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) {
+func organizeAttributesTable(doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
 	rows := combineRows(attributesTable)
 
-	_, columnMap, extraColumns := findColumns(rows, doc)
+	_, columnMap, extraColumns := findColumns(rows)
 
 	if columnMap == nil {
-		fmt.Println("can't rearrange attributes table without header row")
-		return
+		return fmt.Errorf("can't rearrange attributes table without header row")
 	}
 
 	if len(columnMap) < 5 {
-		fmt.Println("can't rearrange attributes table with so few matches")
-		return
+		return fmt.Errorf("can't rearrange attributes table with so few matches")
 	}
 
 	fixAttributeAccess(doc, rows, columnMap)
 
-	reorderColumns(doc, section, rows, matter.AttributesTableColumnOrder[:], columnMap, extraColumns)
+	sectionDataMap := getSectionDataTypeInfo(attributes, rows, columnMap)
 
-}
+	promoteDataTypes(top, attributes, sectionDataMap)
 
-func getAttributeNames(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (names []string) {
-	nameMap := make(map[string]bool)
-	if nameIndex, ok := columnMap[matter.TableColumnName]; ok {
-		for _, row := range rows {
-			val := strings.TrimSpace(getCellValue(row.Cells[nameIndex]))
-			if _, ok := nameMap[val]; !ok {
-				names = append(names, val)
-			}
-		}
-	}
-	return names
+	reorderColumns(doc, attributes, rows, matter.AttributesTableColumnOrder[:], columnMap, extraColumns)
+
+	return nil
 }
 
 var accessPattern = regexp.MustCompile(`^(?:(?:^|\s+)(?:(?P<ReadWrite>(?:R\*W)|(?:R\[W\])|(?:[RW]+))|(?P<Fabric>[FS]+)|(?P<Privileges>[VOMA]+)|(?P<Timed>T)))+\s*$`)

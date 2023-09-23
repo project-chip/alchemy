@@ -2,92 +2,53 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/disco"
-	"github.com/hasty/matterfmt/output"
-	"github.com/hasty/matterfmt/parse"
-	"github.com/hasty/matterfmt/render"
+	"github.com/hasty/matterfmt/cmd"
 	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
 
 	logrus.SetLevel(logrus.ErrorLevel)
 
-	files, err := filepath.Glob(os.Args[1])
-	if err != nil {
-		panic(err)
+	cxt := context.Background()
+
+	app := &cli.App{
+		Name:  "matterfmt",
+		Usage: "builds stuff",
+		Action: func(c *cli.Context) error {
+			return cmd.DiscoBall(cxt, c)
+		},
+		Commands: []*cli.Command{
+			{
+				Name:    "disco",
+				Aliases: []string{"c"},
+				Usage:   "discoball documents",
+				Action: func(cCtx *cli.Context) error {
+					return cmd.DiscoBall(cxt, cCtx)
+				},
+			},
+			{
+				Name:    "format",
+				Aliases: []string{"a"},
+				Usage:   "just format a Matter document",
+				Action: func(cCtx *cli.Context) error {
+					return cmd.Format(cxt, cCtx)
+				},
+			},
+			{
+				Name:    "dump",
+				Aliases: []string{"c"},
+				Usage:   "dump the parse tree of a document",
+				Action: func(cCtx *cli.Context) error {
+					return cmd.Dump(cxt, cCtx)
+				},
+			},
+		},
 	}
 
-	fmt.Printf("Rendering %d files from %s...\n", len(files), os.Args[1])
+	(app).Run(os.Args)
 
-	for _, file := range files {
-		fmt.Printf("Rendering %s...\n", file)
-		doc, err := readFile(file)
-
-		cxt := output.NewContext(context.Background(), doc)
-
-		if 1 == 0 {
-			parse.Dump(cxt)
-			return
-		}
-
-		if err != nil {
-			panic(err)
-		}
-
-		if doc == nil {
-			continue
-		}
-
-		disco.Ball(doc)
-
-		out := postProcessFile(render.Render(cxt, doc))
-		//fmt.Printf("Result:\n%s\n", out)
-
-		os.WriteFile(file, []byte(out), os.ModeAppend)
-	}
-
-}
-
-func readFile(path string) (*ascii.Doc, error) {
-	config := configuration.NewConfiguration(
-		configuration.WithFilename(path),
-		configuration.WithAttribute("second-ballot", false),
-		//configuration.WithAttributes(attrs),
-		//configuration.WithCSS(css),
-		//configuration.WithBackEnd(backend),
-		//configuration.WithHeaderFooter(!noHeaderFooter)
-
-	)
-
-	file, err := os.ReadFile(config.Filename)
-	if err != nil {
-		panic(err)
-	}
-
-	d, err := parse.ParseDocument(strings.NewReader(preprocessFile(string(file))), config)
-
-	if err != nil {
-		panic(fmt.Errorf("failed parse: %w", err))
-	}
-	doc := ascii.NewDoc(d)
-	doc.Path = path
-
-	return doc, nil
-}
-
-func preprocessFile(file string) string {
-	//file = strings.ReplaceAll(file, `\|`, "{ESCAPEDPIPE}")
-	return file
-}
-
-func postProcessFile(file string) string {
-	return file
 }
