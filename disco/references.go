@@ -2,6 +2,7 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 	"regexp"
 	"slices"
 	"strings"
@@ -82,7 +83,7 @@ func fixUnrecognizedReferences(doc *ascii.Doc) {
 type refInfo struct {
 	id      string
 	label   string
-	element interface{}
+	element types.WithAttributes
 	name    string
 }
 
@@ -111,7 +112,8 @@ func normalizeReferences(doc *ascii.Doc) {
 
 	references := make(map[string]*refInfo)
 	referenceNames := make(map[string]*refInfo)
-	traverse(nil, doc.Base.Elements, func(el interface{}, parent types.WithElements, index int) bool {
+
+	if traverse(nil, doc.Base.Elements, func(el interface{}, parent types.WithElements, index int) bool {
 		wa, ok := el.(types.WithAttributes)
 		if !ok {
 			return false
@@ -122,7 +124,7 @@ func normalizeReferences(doc *ascii.Doc) {
 			return false
 		}
 		id := strings.TrimSpace(idAttr.(string))
-		fmt.Printf("element: %T id: %s\n", el, id)
+		//fmt.Printf("element: %T id: %s\n", el, id)
 		var label string
 		if parts := strings.Split(id, ","); len(parts) > 1 {
 			id = strings.TrimSpace(parts[0])
@@ -131,18 +133,18 @@ func normalizeReferences(doc *ascii.Doc) {
 		info := &refInfo{
 			id:      id,
 			label:   label,
-			element: el,
+			element: wa,
 		}
 		name := getReferenceName(el)
 		if name != "" {
-			fmt.Printf("Setting id: %s to %s\n", id, name)
+			//fmt.Printf("Setting id: %s to %s\n", id, name)
 			info.name = name
 		} else if len(label) > 0 {
 			info.name = label
 		}
 		if _, ok := references[id]; ok {
-			fmt.Printf("duplicate reference! %s\n", id)
-			return false
+			slog.Warn("duplicate reference; can't fix references", "id", id)
+			return true
 		}
 		if info.name != "" {
 			referenceNames[info.name] = info
@@ -153,10 +155,11 @@ func normalizeReferences(doc *ascii.Doc) {
 			if ok {
 				references[id] = info
 			} else {
-				unescaped := strings.ReplaceAll(id, "_", " ")[1:]
+				unescaped := strings.TrimSpace(strings.ReplaceAll(id, "_", " "))
 				_, ok = crossReferences[unescaped]
 				if !ok {
-					fmt.Printf("ID not in use: %s -> %s\n", id, unescaped)
+					slog.Warn("cross reference id not in use", "id", unescaped)
+					//fmt.Printf("ID not in use: %s -> %s\n", id, unescaped)
 					return false
 				}
 				references[unescaped] = info
@@ -165,7 +168,9 @@ func normalizeReferences(doc *ascii.Doc) {
 			references[id] = info
 		}
 		return false
-	})
+	}) {
+		return
+	}
 
 	for _, ref := range references {
 		fixRef(ref)
@@ -181,14 +186,14 @@ func normalizeReferences(doc *ascii.Doc) {
 		newIDs[ref.id] = struct{}{}
 	}
 
-	fmt.Printf("reference count: %d names: %d\n", referenceCount, len(referenceNames))
+	//fmt.Printf("reference count: %d names: %d\n", referenceCount, len(referenceNames))
 	for id, xrefs := range crossReferences {
 		info, ok := references[id]
 		if !ok {
-			fmt.Printf("missing cross reference target id: %s\n", id)
+			//	fmt.Printf("missing cross reference target id: %s\n", id)
 			info, ok = referenceNames[id]
 			if !ok {
-				fmt.Printf("missing cross reference target name: %s\n", id)
+				slog.Warn("missing cross reference target", "name", id)
 				continue
 			}
 
@@ -203,27 +208,35 @@ func normalizeReferences(doc *ascii.Doc) {
 func fixRef(info *refInfo) {
 	match := properReferencePattern.FindStringSubmatch(info.id)
 	if len(match) > 0 {
-		fmt.Printf("Good reference: %s\n", info.id)
+		//	fmt.Printf("Good reference: %s\n", info.id)
 		return
 	}
 	var ref strings.Builder
-	ref.WriteString("ref_")
 	parts := strings.Split(info.name, " ")
 	for _, p := range parts {
 		ref.WriteString(p)
 	}
-	newId := ref.String()
-	newId = acronymPattern.ReplaceAllStringFunc(newId, func(match string) string {
+	label := ref.String()
+	label = stripReferenceSuffixes(label)
+	id := "ref_" + acronymPattern.ReplaceAllStringFunc(label, func(match string) string {
 		return string(match[0]) + strings.ToLower(string(match[1:len(match)-1])) + string(match[len(match)-1:])
 	})
+	//	fmt.Printf("Bad reference: %s (%s) to %s\n", info.id, info.name, newId)
+	info.id = id
+	info.label = label
+	newAttr := make(types.Attributes)
+	newAttr[types.AttrID] = info.id + ", " + info.label
+	info.element.SetAttributes(newAttr)
+}
+
+func stripReferenceSuffixes(newId string) string {
 	for _, suffix := range matter.DisallowedReferenceSuffixes {
 		if strings.HasSuffix(newId, suffix) {
 			newId = newId[0 : len(newId)-len(suffix)]
 			break
 		}
 	}
-	fmt.Printf("Bad reference: %s (%s) to %s\n", info.id, info.name, newId)
-	info.id = newId
+	return newId
 }
 
 func getReferenceName(element interface{}) string {

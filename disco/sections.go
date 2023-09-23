@@ -2,6 +2,7 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -9,39 +10,25 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-var topLevelSectionOrders map[matter.Doc][]matter.Section
+type sectionDataType struct {
+	name     string
+	dataType string
+	section  *ascii.Section
+}
 
-func init() {
-	topLevelSectionOrders = make(map[matter.Doc][]matter.Section)
-	topLevelSectionOrders[matter.DocAppCluster] = []matter.Section{
-		matter.SectionPrefix,
-		matter.SectionRevisionHistory,
-		matter.SectionClassification,
-		matter.SectionClusterID,
-		matter.SectionFeatures,
-		matter.SectionDependencies,
-		matter.SectionDataTypes,
-		matter.SectionStatusCodes,
-		matter.SectionAttributes,
-		matter.SectionCommands,
-		matter.SectionEvents,
-	}
-	topLevelSectionOrders[matter.DocDeviceType] = []matter.Section{
-		matter.SectionPrefix,
-		matter.SectionRevisionHistory,
-		matter.SectionClassification,
-		matter.SectionConditions,
-		matter.SectionClusterRequirements,
-		matter.SectionClusterRestrictions,
-		matter.SectionElementRequirements,
-		matter.SectionEndpointComposition,
+func assignTopLevelSectionTypes(top *ascii.Section) {
+	for _, e := range top.Elements {
+		switch el := e.(type) {
+		case *ascii.Section:
+			el.SecType = getSectionType(el)
+		}
 	}
 }
 
-func reorderTopLevelSection(sec *ascii.Section, docType matter.Doc) {
-	sectionOrder, ok := topLevelSectionOrders[docType]
+func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) {
+	sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 	if !ok {
-		fmt.Printf("could not determine section order from doc type %d\n", docType)
+		slog.Warn("could not determine section order", "docType", docType)
 		return
 	}
 	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)
@@ -126,4 +113,53 @@ func setSectionTitle(sec *ascii.Section, title string) {
 			el.Content = title
 		}
 	}
+}
+
+func findSectionByType(top *ascii.Section, sectionType matter.Section) *ascii.Section {
+	var found *ascii.Section
+	find(top.Elements, func(el interface{}) bool {
+		if s, ok := el.(*ascii.Section); ok {
+			if s.SecType == sectionType {
+				found = s
+				return true
+			}
+		}
+		return false
+	})
+	return found
+}
+
+func getSectionDataTypeInfo(section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (sectionDataMap map[string]*sectionDataType) {
+	sectionDataMap = make(map[string]*sectionDataType)
+	nameIndex, ok := columnMap[matter.TableColumnName]
+	if !ok {
+		return
+	}
+	typeIndex, ok := columnMap[matter.TableColumnType]
+	if !ok {
+		return
+	}
+	for _, row := range rows {
+		name := strings.TrimSpace(getCellValue(row.Cells[nameIndex]))
+		nameKey := strings.ToLower(name)
+		if _, ok := sectionDataMap[nameKey]; !ok {
+			sectionDataMap[nameKey] = &sectionDataType{name: name, dataType: strings.TrimSpace(getCellValue(row.Cells[typeIndex]))}
+		}
+	}
+	for _, el := range section.Elements {
+		if s, ok := el.(*ascii.Section); ok {
+			name := s.Name
+			fmt.Printf("Attribute: %s\n", name)
+			if strings.HasSuffix(name, " Attribute") {
+				name = name[0 : len(name)-len(" Attribute")]
+				fmt.Printf("\tAttribute: %s\n", name)
+			}
+			ai, ok := sectionDataMap[strings.ToLower(name)]
+			if !ok {
+				continue
+			}
+			ai.section = s
+		}
+	}
+	return
 }

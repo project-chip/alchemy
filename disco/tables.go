@@ -105,9 +105,9 @@ func setCellValue(cell *types.TableCell, v string) {
 	}
 }
 
-func getTableColumn(doc *ascii.Doc, cell *types.TableCell) matter.TableColumn {
+func getTableColumn(cell *types.TableCell) matter.TableColumn {
 	switch strings.ToLower(getCellValue(cell)) {
-	case "id":
+	case "id", "identifier":
 		return matter.TableColumnID
 	case "name":
 		return matter.TableColumnName
@@ -133,11 +133,15 @@ func getTableColumn(doc *ascii.Doc, cell *types.TableCell) matter.TableColumn {
 		return matter.TableColumnPICS
 	case "scope":
 		return matter.TableColumnScope
+	case "value":
+		return matter.TableColumnValue
+	case "bit":
+		return matter.TableColumnBit
 	}
 	return matter.TableColumnUnknown
 }
 
-func findColumns(rows []*types.TableRow, doc *ascii.Doc) (int, map[matter.TableColumn]int, []int) {
+func findColumns(rows []*types.TableRow) (int, map[matter.TableColumn]int, []int) {
 	var columnMap map[matter.TableColumn]int
 	var extraColumns []int
 	var cellCount = -1
@@ -160,7 +164,7 @@ func findColumns(rows []*types.TableRow, doc *ascii.Doc) (int, map[matter.TableC
 		if columnMap == nil {
 			var spares []int
 			for j, cell := range row.Cells {
-				attributeColumn := getTableColumn(doc, cell)
+				attributeColumn := getTableColumn(cell)
 				if attributeColumn != matter.TableColumnUnknown {
 					if columnMap == nil {
 						headerRow = i

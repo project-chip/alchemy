@@ -1,6 +1,9 @@
 package ascii
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/matter"
 )
@@ -15,26 +18,62 @@ type Section struct {
 	Elements []interface{}
 }
 
-func NewSection(s *types.Section) *Section {
+func NewSection(s *types.Section) (*Section, error) {
 	ss := &Section{Base: s}
-	for _, te := range s.Title {
-		switch tel := te.(type) {
-		case *types.StringElement:
-			ss.Name = tel.Content
-		case *types.InlineLink:
 
-		default:
-			//fmt.Printf("unknown section title element type: %T\n", te)
-			//ss.Elements = append(ss.Elements, te)
+	switch name := types.Reduce(s.Title).(type) {
+	case string:
+		ss.Name = name
+	case []interface{}:
+		var complexName strings.Builder
+		for _, e := range name {
+			switch v := e.(type) {
+			case *types.StringElement:
+				complexName.WriteString(v.Content)
+			case string:
+				complexName.WriteString(v)
+			case *types.Symbol:
+				complexName.WriteString(v.Name)
+			case *types.SpecialCharacter:
+				complexName.WriteString(v.Name)
+			case *types.InlineLink:
+			default:
+				return nil, fmt.Errorf("unknown section title component type: %T", e)
+			}
 		}
+		ss.Name = complexName.String()
+	default:
+		return nil, fmt.Errorf("unknown section title type: %T", name)
 	}
 	for _, e := range s.Elements {
 		switch el := e.(type) {
 		case *types.Section:
-			ss.Elements = append(ss.Elements, NewSection(el))
+			s, err := NewSection(el)
+			if err != nil {
+				return nil, err
+			}
+			ss.Elements = append(ss.Elements, s)
 		default:
 			ss.Elements = append(ss.Elements, &Element{Base: e})
 		}
 	}
-	return ss
+	return ss, nil
+}
+
+func (s *Section) AppendSection(ns *Section) error {
+	err := s.Base.AddElement(ns.Base)
+	if err != nil {
+		return err
+	}
+	s.Elements = append(s.Elements, ns)
+	return nil
+}
+
+func (s *Section) GetElements() []interface{} {
+	return s.Elements
+}
+
+func (s *Section) SetElements(elements []interface{}) error {
+	s.Elements = elements
+	return nil
 }

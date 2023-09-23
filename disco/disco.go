@@ -5,45 +5,42 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func Ball(doc *ascii.Doc) {
-	docType, _ := getDocType(doc)
-	discoBallDoc(doc, docType)
+func Ball(doc *ascii.Doc) error {
+	return discoBallDoc(doc)
 }
 
-func discoBallDoc(doc *ascii.Doc, docType matter.Doc) {
+func discoBallDoc(doc *ascii.Doc) error {
+	docType, err := doc.DocType()
+	if err != nil {
+		return err
+	}
 	precleanStrings(doc.Elements)
 	fixUnrecognizedReferences(doc)
 	normalizeReferences(doc)
-	for _, e := range doc.Elements {
-		switch el := e.(type) {
-		case *ascii.Section:
-			discoBallTopLevelSection(doc, el, docType)
-			return
-		}
-	}
+	find(doc.Elements, func(s *ascii.Section) bool {
+		discoBallTopLevelSection(doc, s, docType)
+		return true
+	})
+	return nil
 }
 
-func discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.Doc) {
-
-	for _, e := range top.Elements {
-		switch el := e.(type) {
-		case *ascii.Section:
-			el.SecType = getSectionType(el)
-			organizeSubSection(doc, docType, el)
-		}
-	}
+func discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.DocType) {
+	assignTopLevelSectionTypes(top)
+	find(top.Elements, func(s *ascii.Section) bool {
+		organizeSubSection(doc, docType, top, s)
+		return false
+	})
 	reorderTopLevelSection(top, docType)
 	ensureTableOptions(top.Elements)
 	postCleanUpStrings(top.Elements)
 }
 
-func organizeSubSection(doc *ascii.Doc, docType matter.Doc, section *ascii.Section) {
+func organizeSubSection(doc *ascii.Doc, docType matter.DocType, top *ascii.Section, section *ascii.Section) {
 	switch section.SecType {
 	case matter.SectionAttributes:
 		switch docType {
-		case matter.DocAppCluster:
-			organizeAttributesSection(doc, section)
-
+		case matter.DocTypeAppCluster:
+			organizeAttributesSection(doc, top, section)
 		}
 	case matter.SectionClassification:
 		organizeClassificationSection(doc, section)

@@ -16,5 +16,5 @@ func renderSectionTitle(cxt *output.Context, title []interface{}, level int) {
 	cxt.WriteString(strings.Repeat("=", level))
 	cxt.WriteRune(' ')
 	RenderElements(cxt, "", title)
-	cxt.WriteRune('\n')
+	cxt.WriteNewline()
 }

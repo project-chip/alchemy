@@ -23,6 +23,35 @@ const (
 	SectionEndpointComposition
 )
 
+var TopLevelSectionOrders map[DocType][]Section
+
+func init() {
+	TopLevelSectionOrders = make(map[DocType][]Section)
+	TopLevelSectionOrders[DocTypeAppCluster] = []Section{
+		SectionPrefix,
+		SectionRevisionHistory,
+		SectionClassification,
+		SectionClusterID,
+		SectionFeatures,
+		SectionDependencies,
+		SectionDataTypes,
+		SectionStatusCodes,
+		SectionAttributes,
+		SectionCommands,
+		SectionEvents,
+	}
+	TopLevelSectionOrders[DocTypeDeviceType] = []Section{
+		SectionPrefix,
+		SectionRevisionHistory,
+		SectionClassification,
+		SectionConditions,
+		SectionClusterRequirements,
+		SectionClusterRestrictions,
+		SectionElementRequirements,
+		SectionEndpointComposition,
+	}
+}
+
 func SectionTypeString(st Section) string {
 	switch st {
 	case SectionPrefix:

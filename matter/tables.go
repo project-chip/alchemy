@@ -19,6 +19,11 @@ const (
 	TableColumnContext
 	TableColumnScope
 	TableColumnPICS
+	TableColumnValue
+	TableColumnBit
+	TableColumnDeviceName
+	TableColumnSuperset
+	TableColumnClass
 )
 
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
@@ -34,7 +39,7 @@ var AttributesTableColumnOrder = [...]TableColumn{
 	TableColumnConformance,
 }
 
-var ClassificationTableColumnOrder = [...]TableColumn{
+var AppClusterClassificationTableColumnOrder = [...]TableColumn{
 	TableColumnHierarchy,
 	TableColumnRole,
 	TableColumnScope,
@@ -42,12 +47,24 @@ var ClassificationTableColumnOrder = [...]TableColumn{
 	TableColumnPICS,
 }
 
+var DeviceTypeClassificationTableColumnOrder = [...]TableColumn{
+	TableColumnID,
+	TableColumnDeviceName,
+	TableColumnSuperset,
+	TableColumnClass, // This will get renamed to Scope
+	TableColumnScope,
+}
+
 var ClassificationTableColumnNames = map[TableColumn]string{
-	TableColumnHierarchy: "Hierarchy",
-	TableColumnRole:      "Role",
-	TableColumnScope:     "Scope",
-	TableColumnContext:   "Scope", // Rename Context to Scope
-	TableColumnPICS:      "PICS Code",
+	TableColumnHierarchy:  "Hierarchy",
+	TableColumnRole:       "Role",
+	TableColumnScope:      "Scope",
+	TableColumnContext:    "Scope", // Rename Context to Scope
+	TableColumnPICS:       "PICS Code",
+	TableColumnID:         "ID",
+	TableColumnDeviceName: "Device Name",
+	TableColumnSuperset:   "Superset",
+	TableColumnClass:      "Class",
 }
 
 var ClusterIDSectionName = "Cluster ID"
@@ -67,4 +84,19 @@ var AllowedTableAttributes = types.Attributes{
 	"title":   nil,
 	"valign":  "middle",
 	"options": types.Options{"header"},
+}
+
+var StructTableColumnOrder = [...]TableColumn{
+	TableColumnValue,
+	TableColumnName,
+}
+
+var EnumTableColumnOrder = [...]TableColumn{
+	TableColumnValue,
+	TableColumnName,
+}
+
+var BitmapTableColumnOrder = [...]TableColumn{
+	TableColumnBit,
+	TableColumnName,
 }

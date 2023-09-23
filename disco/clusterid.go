@@ -21,7 +21,7 @@ func organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, attributesTa
 
 	rows := combineRows(attributesTable)
 
-	headerRowIndex, columnMap, extraColumns := findColumns(rows, doc)
+	headerRowIndex, columnMap, extraColumns := findColumns(rows)
 
 	if columnMap == nil {
 		fmt.Println("can't rearrange cluster id table without header row")
