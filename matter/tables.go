@@ -24,6 +24,8 @@ const (
 	TableColumnDeviceName
 	TableColumnSuperset
 	TableColumnClass
+	TableColumnDirection
+	TableColumnResponse
 )
 
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
@@ -77,6 +79,26 @@ var ClusterIDTableColumnOrder = [...]TableColumn{
 var ClusterIDTableColumnNames = map[TableColumn]string{
 	TableColumnID:   "ID",
 	TableColumnName: "Name",
+}
+
+var CommandsSectionName = "Commands"
+
+var CommandsTableColumnOrder = [...]TableColumn{
+	TableColumnID,
+	TableColumnName,
+	TableColumnDirection,
+	TableColumnResponse,
+	TableColumnAccess,
+	TableColumnConformance,
+}
+
+var CommandsTableColumnNames = map[TableColumn]string{
+	TableColumnID:          "ID",
+	TableColumnName:        "Name",
+	TableColumnDirection:   "Direction",
+	TableColumnResponse:    "Response",
+	TableColumnAccess:      "Access",
+	TableColumnConformance: "Conformance",
 }
 
 var AllowedTableAttributes = types.Attributes{

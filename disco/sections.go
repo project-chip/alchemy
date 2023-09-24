@@ -141,20 +141,23 @@ func getSectionDataTypeInfo(section *ascii.Section, rows []*types.TableRow, colu
 		return
 	}
 	for _, row := range rows {
-		name := strings.TrimSpace(getCellValue(row.Cells[nameIndex]))
+		cv, err := getCellValue(row.Cells[nameIndex])
+		if err != nil {
+			continue
+		}
+		dtv, err := getCellValue(row.Cells[typeIndex])
+		if err != nil {
+			continue
+		}
+		name := strings.TrimSpace(cv)
 		nameKey := strings.ToLower(name)
 		if _, ok := sectionDataMap[nameKey]; !ok {
-			sectionDataMap[nameKey] = &sectionDataType{name: name, dataType: strings.TrimSpace(getCellValue(row.Cells[typeIndex]))}
+			sectionDataMap[nameKey] = &sectionDataType{name: name, dataType: strings.TrimSpace(dtv)}
 		}
 	}
 	for _, el := range section.Elements {
 		if s, ok := el.(*ascii.Section); ok {
-			name := s.Name
-			fmt.Printf("Attribute: %s\n", name)
-			if strings.HasSuffix(name, " Attribute") {
-				name = name[0 : len(name)-len(" Attribute")]
-				fmt.Printf("\tAttribute: %s\n", name)
-			}
+			name := strings.TrimSuffix(s.Name, " Attribute")
 			ai, ok := sectionDataMap[strings.ToLower(name)]
 			if !ok {
 				continue
