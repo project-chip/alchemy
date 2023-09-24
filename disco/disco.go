@@ -1,6 +1,7 @@
 package disco
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/hasty/matterfmt/ascii"
@@ -18,18 +19,22 @@ func discoBallDoc(doc *ascii.Doc) error {
 	}
 	precleanStrings(doc.Elements)
 	fixUnrecognizedReferences(doc)
-	err = normalizeReferences(doc)
+	err = normalizeAnchors(doc)
 	if err != nil {
 		return err
 	}
+	var topLevelSection *ascii.Section
 	find(doc.Elements, func(s *ascii.Section) bool {
-		discoBallTopLevelSection(doc, s, docType)
+		topLevelSection = s
 		return true
 	})
-	return nil
+	if topLevelSection == nil {
+		return fmt.Errorf("missing top level section")
+	}
+	return discoBallTopLevelSection(doc, topLevelSection, docType)
 }
 
-func discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.DocType) {
+func discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.DocType) error {
 	assignTopLevelSectionTypes(top)
 	find(top.Elements, func(s *ascii.Section) bool {
 		err := organizeSubSection(doc, docType, top, s)
@@ -38,9 +43,13 @@ func discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter
 		}
 		return false
 	})
-	reorderTopLevelSection(top, docType)
+	err := reorderTopLevelSection(top, docType)
+	if err != nil {
+		return err
+	}
 	ensureTableOptions(top.Elements)
 	postCleanUpStrings(top.Elements)
+	return nil
 }
 
 func organizeSubSection(doc *ascii.Doc, docType matter.DocType, top *ascii.Section, section *ascii.Section) error {

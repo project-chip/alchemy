@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/matterfmt/output"
 )
 
-func renderQuotedText(cxt *output.Context, qt *types.QuotedText) {
+func renderQuotedText(cxt *output.Context, qt *types.QuotedText) (err error) {
 	renderAttributes(cxt, qt, qt.Attributes)
 	var wrapper string
 	switch qt.Kind {
@@ -26,15 +26,16 @@ func renderQuotedText(cxt *output.Context, qt *types.QuotedText) {
 	case types.DoubleQuoteItalic:
 		wrapper = "__"
 	default:
-		fmt.Printf("unsupported quoted text kind: %s\n", qt.Kind)
+		err = fmt.Errorf("unsupported quoted text kind: %s", qt.Kind)
 		return
 	}
 	cxt.WriteString(wrapper)
-	RenderElements(cxt, "", qt.Elements)
+	err = RenderElements(cxt, "", qt.Elements)
 	cxt.WriteString(wrapper)
+	return
 }
 
-func renderSpecialCharacter(cxt *output.Context, s *types.SpecialCharacter) {
+func renderSpecialCharacter(cxt *output.Context, s *types.SpecialCharacter) error {
 	switch s.Name {
 	case "<":
 		cxt.WriteRune('<')
@@ -43,11 +44,12 @@ func renderSpecialCharacter(cxt *output.Context, s *types.SpecialCharacter) {
 	case "&":
 		cxt.WriteRune('&')
 	default:
-		panic(fmt.Errorf("unknown special character: %s", s.Name))
+		return fmt.Errorf("unknown special character: %s", s.Name)
 	}
+	return nil
 }
 
-func renderSymbol(cxt *output.Context, s *types.Symbol) {
+func renderSymbol(cxt *output.Context, s *types.Symbol) error {
 	switch s.Name {
 	case "'":
 		cxt.WriteRune('\'')
@@ -64,6 +66,7 @@ func renderSymbol(cxt *output.Context, s *types.Symbol) {
 	case " -- ":
 		cxt.WriteString(" -- ")
 	default:
-		panic(fmt.Errorf("unknown symbol: \"%s\"", s.Name))
+		return fmt.Errorf("unknown symbol: \"%s\"", s.Name)
 	}
+	return nil
 }

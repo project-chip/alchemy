@@ -8,36 +8,40 @@ import (
 	"github.com/hasty/matterfmt/output"
 )
 
-func renderList(cxt *output.Context, l *types.List) {
+func renderList(cxt *output.Context, l *types.List) (err error) {
 	renderAttributes(cxt, l, l.Attributes)
 	switch l.Kind {
 	case types.OrderedListKind:
-		renderOrderedList(cxt, l)
+		err = renderOrderedList(cxt, l)
 	case types.UnorderedListKind:
-		renderUnorderedList(cxt, l)
+		err = renderUnorderedList(cxt, l)
 	default:
-		fmt.Printf("unsupported list type: %s", l.Kind)
+		err = fmt.Errorf("unsupported list type: %s", l.Kind)
 	}
-
+	return
 }
 
-func renderOrderedList(cxt *output.Context, l *types.List) {
+func renderOrderedList(cxt *output.Context, l *types.List) (err error) {
 	cxt.OrderedListDepth++
 	cxt.WriteNewline()
 	for _, e := range l.Elements {
 		switch el := e.(type) {
 		case *types.OrderedListElement:
 			renderAttributes(cxt, el, el.Attributes)
-			RenderElements(cxt, strings.Repeat(".", cxt.OrderedListDepth)+" ", el.Elements)
+			err = RenderElements(cxt, strings.Repeat(".", cxt.OrderedListDepth)+" ", el.Elements)
 			cxt.WriteRune('\n')
 		default:
-			panic(fmt.Errorf("unknown ordered list element type: %T", el))
+			err = fmt.Errorf("unknown ordered list element type: %T", el)
+		}
+		if err != nil {
+			break
 		}
 	}
 	cxt.OrderedListDepth--
+	return
 }
 
-func renderUnorderedList(cxt *output.Context, l *types.List) {
+func renderUnorderedList(cxt *output.Context, l *types.List) (err error) {
 	cxt.WriteNewline()
 	for _, e := range l.Elements {
 		switch el := e.(type) {
@@ -58,10 +62,14 @@ func renderUnorderedList(cxt *output.Context, l *types.List) {
 				bullet = "*****"
 			}
 			renderAttributes(cxt, el, el.Attributes)
-			RenderElements(cxt, bullet+" ", el.Elements)
+			err = RenderElements(cxt, bullet+" ", el.Elements)
 			cxt.WriteNewline()
 		default:
-			panic(fmt.Errorf("unknown unordered list element type: %T", el))
+			err = fmt.Errorf("unknown unordered list element type: %T", el)
+		}
+		if err != nil {
+			return
 		}
 	}
+	return
 }

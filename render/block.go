@@ -7,24 +7,25 @@ import (
 	"github.com/hasty/matterfmt/output"
 )
 
-func renderDelimitedBlock(cxt *output.Context, db *types.DelimitedBlock) {
+func renderDelimitedBlock(cxt *output.Context, db *types.DelimitedBlock) (err error) {
 	switch db.Kind {
 	case "comment":
-		renderComment(cxt, db)
+		err = renderComment(cxt, db)
 	case "sidebar":
-		renderSidebar(cxt, db)
+		err = renderSidebar(cxt, db)
 	case "example":
-		renderExample(cxt, db)
+		err = renderExample(cxt, db)
 	case "listing":
-		renderListing(cxt, db)
+		err = renderListing(cxt, db)
 	case "literal":
-		renderLiteral(cxt, db)
+		err = renderLiteral(cxt, db)
 	default:
-		panic(fmt.Errorf("unknown delimited block kind: %s", db.Kind))
+		err = fmt.Errorf("unknown delimited block kind: %s", db.Kind)
 	}
+	return
 }
 
-func renderComment(cxt *output.Context, comment *types.DelimitedBlock) {
+func renderComment(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
 	for _, e := range comment.Elements {
 		switch el := e.(type) {
 		case *types.StringElement:
@@ -37,48 +38,64 @@ func renderComment(cxt *output.Context, comment *types.DelimitedBlock) {
 			cxt.WriteString("////")
 			cxt.WriteNewline()
 		default:
-			panic(fmt.Errorf("unknown comment element type: %T", el))
+			err = fmt.Errorf("unknown comment element type: %T", el)
+		}
+		if err != nil {
+			return
 		}
 	}
+	return
 }
 
-func renderExample(cxt *output.Context, comment *types.DelimitedBlock) {
+func renderExample(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
 	renderAttributes(cxt, comment, comment.Attributes)
 	cxt.WriteNewline()
 	cxt.WriteString("====")
 	cxt.WriteNewline()
-	RenderElements(cxt, "", comment.Elements)
+	err = RenderElements(cxt, "", comment.Elements)
 	cxt.WriteNewline()
 	cxt.WriteString("====")
 	cxt.WriteNewline()
-
+	return
 }
 
-func renderListing(cxt *output.Context, comment *types.DelimitedBlock) {
-	renderAttributes(cxt, comment, comment.Attributes)
+func renderListing(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
+	err = renderAttributes(cxt, comment, comment.Attributes)
+	if err != nil {
+		return
+	}
 	cxt.WriteNewline()
 	cxt.WriteString("----")
 	cxt.WriteNewline()
-	RenderElements(cxt, "", comment.Elements)
+	err = RenderElements(cxt, "", comment.Elements)
+	if err != nil {
+		return
+	}
 	cxt.WriteNewline()
 	cxt.WriteString("----")
 	cxt.WriteNewline()
-
+	return
 }
 
-func renderLiteral(cxt *output.Context, comment *types.DelimitedBlock) {
-	renderAttributes(cxt, comment, comment.Attributes)
+func renderLiteral(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
+	err = renderAttributes(cxt, comment, comment.Attributes)
+	if err != nil {
+		return
+	}
 	cxt.WriteNewline()
 	cxt.WriteString("----")
 	cxt.WriteNewline()
-	RenderElements(cxt, "", comment.Elements)
+	err = RenderElements(cxt, "", comment.Elements)
+	if err != nil {
+		return
+	}
 	cxt.WriteNewline()
 	cxt.WriteString("----")
 	cxt.WriteNewline()
-
+	return
 }
 
-func renderSidebar(cxt *output.Context, comment *types.DelimitedBlock) {
+func renderSidebar(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
 	var previous interface{}
 	for _, e := range comment.Elements {
 		switch el := e.(type) {
@@ -86,7 +103,7 @@ func renderSidebar(cxt *output.Context, comment *types.DelimitedBlock) {
 			cxt.WriteNewline()
 			cxt.WriteString("****")
 			cxt.WriteNewline()
-			renderParagraph(cxt, el, &previous)
+			err = renderParagraph(cxt, el, &previous)
 			cxt.WriteNewline()
 			cxt.WriteString("****")
 			cxt.WriteNewline()
@@ -100,7 +117,11 @@ func renderSidebar(cxt *output.Context, comment *types.DelimitedBlock) {
 			cxt.WriteString("****")
 			cxt.WriteNewline()
 		default:
-			panic(fmt.Errorf("unknown sidebar element type: %T", el))
+			err = fmt.Errorf("unknown sidebar element type: %T", el)
+		}
+		if err != nil {
+			return
 		}
 	}
+	return
 }

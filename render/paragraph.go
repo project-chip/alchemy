@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/matterfmt/output"
 )
 
-func renderParagraph(cxt *output.Context, p *types.Paragraph, previous *interface{}) {
+func renderParagraph(cxt *output.Context, p *types.Paragraph, previous *interface{}) (err error) {
 	renderAttributes(cxt, p, p.Attributes)
 
 	for _, e := range p.Elements {
@@ -18,26 +18,30 @@ func renderParagraph(cxt *output.Context, p *types.Paragraph, previous *interfac
 		case *types.InternalCrossReference:
 			renderInternalCrossReference(cxt, el)
 		case *types.Symbol:
-			renderSymbol(cxt, el)
+			err = renderSymbol(cxt, el)
 		case *types.SpecialCharacter:
-			renderSpecialCharacter(cxt, el)
+			err = renderSpecialCharacter(cxt, el)
 		case *types.QuotedText:
-			renderQuotedText(cxt, el)
+			err = renderQuotedText(cxt, el)
 		case *types.InlineLink:
-			renderInlineLink(cxt, el)
+			err = renderInlineLink(cxt, el)
 		case *types.LineBreak:
 			cxt.WriteString(" +")
 		case *types.PredefinedAttribute:
 			cxt.WriteString(fmt.Sprintf("{%s}", el.Name))
 		case *types.InlineImage:
-			renderInlineImage(cxt, el)
+			err = renderInlineImage(cxt, el)
 		case *types.SinglelineComment:
 			cxt.WriteString("//")
 			cxt.WriteString(el.Content)
 			cxt.WriteNewline()
 		default:
-			panic(fmt.Errorf("unknown paragraph element type: %T", el))
+			err = fmt.Errorf("unknown paragraph element type: %T", el)
+		}
+		if err != nil {
+			return
 		}
 		*previous = e
 	}
+	return
 }

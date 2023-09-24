@@ -36,11 +36,11 @@ func getUnrecognizedReference(els []interface{}) string {
 	if !ok || sc.Name != ">" {
 		return ""
 	}
-	fmt.Printf("found unrecognized reference: %s\n", s.Content)
-
 	return s.Content
 }
 
+// The parser sometimes doesn't recognize inline references, and just returns them as "<", "<", "ref", ">", ">"
+// Rather than doing the right thing and fixing the parser, we'll just find these little suckers after the fact
 func fixUnrecognizedReferences(doc *ascii.Doc) {
 	var elementsWithUnrecognizedReferences []HasElements
 	traverse(nil, doc.Base.Elements, func(el interface{}, parent HasElements, index int) bool {
@@ -81,7 +81,7 @@ func fixUnrecognizedReferences(doc *ascii.Doc) {
 	}
 }
 
-type refInfo struct {
+type anchorInfo struct {
 	id      string
 	label   string
 	element types.WithAttributes
@@ -89,11 +89,42 @@ type refInfo struct {
 	name    string
 }
 
-var properReferencePattern = regexp.MustCompile(`^ref_[A-Z][a-z]+(?:[A-Z][a-z]*)*(_[A-Z][a-z]*(?:[A-Z][a-z]*)*)*$`)
+var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z][a-z]+(?:[A-Z][a-z]*)*(_[A-Z][a-z]*(?:[A-Z][a-z]*)*)*$`)
 var acronymPattern = regexp.MustCompile(`[A-Z]{3,}`)
 
-func normalizeReferences(doc *ascii.Doc) error {
+func normalizeAnchors(doc *ascii.Doc) error {
 
+	crossReferences := findCrossReferences(doc)
+
+	anchors, err := findAnchors(doc, crossReferences)
+	if err != nil {
+		return err
+	}
+
+	newAnchors := make(map[string][]*anchorInfo)
+	for _, info := range anchors {
+		// Fix all the bad references, and add to list of new anchors, ignoring duplicates for now
+		normalizeAnchor(info)
+		newAnchors[info.id] = append(newAnchors[info.id], info)
+	}
+
+	for _, infos := range newAnchors {
+		if len(infos) > 1 { // We ended up with some duplicate anchors
+			err := disambiguateAnchorSet(infos)
+			if err != nil {
+				return err
+			}
+		}
+		for _, info := range infos {
+			setAnchor(info)
+		}
+	}
+
+	rewriteCrossReferences(crossReferences, anchors)
+	return nil
+}
+
+func findCrossReferences(doc *ascii.Doc) map[string][]*types.InternalCrossReference {
 	crossReferences := make(map[string][]*types.InternalCrossReference)
 	traverse(nil, doc.Base.Elements, func(el interface{}, parent HasElements, index int) bool {
 		if icr, ok := el.(*types.InternalCrossReference); ok {
@@ -105,10 +136,11 @@ func normalizeReferences(doc *ascii.Doc) error {
 		}
 		return false
 	})
+	return crossReferences
+}
 
-	anchors := make(map[string]*refInfo)
-	newAnchors := make(map[string][]*refInfo)
-
+func findAnchors(doc *ascii.Doc, crossReferences map[string][]*types.InternalCrossReference) (map[string]*anchorInfo, error) {
+	anchors := make(map[string]*anchorInfo)
 	if traverse(doc, doc.Elements, func(el interface{}, parent HasElements, index int) bool {
 		var wa types.WithAttributes
 		e, ok := el.(*ascii.Element)
@@ -132,7 +164,7 @@ func normalizeReferences(doc *ascii.Doc) error {
 			id = strings.TrimSpace(parts[0])
 			label = strings.TrimSpace(parts[1])
 		}
-		info := &refInfo{
+		info := &anchorInfo{
 			id:      id,
 			label:   label,
 			element: wa,
@@ -167,53 +199,44 @@ func normalizeReferences(doc *ascii.Doc) error {
 		}
 		return false
 	}) {
-		return fmt.Errorf("error traversing tree")
+		return nil, fmt.Errorf("error traversing tree")
 	}
+	return anchors, nil
+}
 
-	for _, info := range anchors {
-		// Fix all the bad references, and add to list of new anchors, ignoring duplicates for now
-		fixRef(info)
-		newAnchors[info.id] = append(newAnchors[info.id], info)
-	}
-
-	for _, infos := range newAnchors {
-		if len(infos) > 1 {
-			err := disambiguateRefs(infos)
-			if err != nil {
-				return err
-			}
-		}
-		for _, info := range infos {
-			setRef(info)
-		}
-	}
-
+func rewriteCrossReferences(crossReferences map[string][]*types.InternalCrossReference, anchors map[string]*anchorInfo) {
 	for id, xrefs := range crossReferences {
 		info, ok := anchors[id]
 		if !ok {
-			slog.Warn("missing cross reference target", "name", id)
+			slog.Warn("cross reference points to non-existent anchor", "name", id)
 			continue
 		}
 
 		for _, xref := range xrefs {
 			xref.OriginalID = info.id
 			xref.ID = info.id
+			// If the cross reference has a label that's the same as the one we generated for the anchor, remove it
+			if label, ok := xref.Label.(string); ok && label == info.label {
+				xref.Label = nil
+			}
 		}
 	}
-	return nil
 }
 
-func fixRef(info *refInfo) {
-	match := properReferencePattern.FindStringSubmatch(info.id)
+func normalizeAnchor(info *anchorInfo) {
+	match := properAnchorPattern.FindStringSubmatch(info.id)
 	if len(match) > 0 {
+		if len(info.label) == 0 {
+			info.label = strings.TrimPrefix(info.id, "ref_")
+		}
 		return
 	}
-	id, label := getRefId(info.name)
+	id, label := normalizeAnchorID(info.name)
 	info.id = id
 	info.label = label
 }
 
-func getRefId(name string) (id string, label string) {
+func normalizeAnchorID(name string) (id string, label string) {
 	var ref strings.Builder
 	parts := strings.Split(name, " ")
 	for _, p := range parts {
@@ -227,13 +250,13 @@ func getRefId(name string) (id string, label string) {
 	return
 }
 
-func setRef(info *refInfo) {
+func setAnchor(info *anchorInfo) {
 	newAttr := make(types.Attributes)
 	newAttr[types.AttrID] = info.id + ", " + info.label
 	info.element.SetAttributes(newAttr)
 }
 
-func disambiguateRefs(infos []*refInfo) error {
+func disambiguateAnchorSet(infos []*anchorInfo) error {
 	parents := make([]interface{}, len(infos))
 	refIds := make([]string, len(infos))
 	for i, info := range infos {
@@ -248,7 +271,7 @@ func disambiguateRefs(infos []*refInfo) error {
 				return fmt.Errorf("duplicate reference: %s with invalid parent", refIds[i])
 			}
 			parentSections[i] = parentSection
-			refParentId, _ := getRefId(getReferenceName(parentSection.Base))
+			refParentId, _ := normalizeAnchorID(getReferenceName(parentSection.Base))
 			refIds[i] = refParentId + "_" + strings.TrimPrefix(refIds[i], "ref_")
 		}
 		ids := make(map[string]struct{})
@@ -268,45 +291,10 @@ func disambiguateRefs(infos []*refInfo) error {
 		}
 	}
 	for i, info := range infos {
-		fmt.Printf("switching duplicate id %s to %s\n", info.id, refIds[i])
+		slog.Debug("Switching duplicate anchor", "from", info.id, "to", refIds[i])
 		info.id = refIds[i]
 	}
 	return nil
-	/*
-		var refParent interface{} = ref.parent
-				var dupeParent interface{} = dupe.parent
-				var refId = ref.id
-				var dupeId = dupe.id
-				for {
-					refParentSection := findRefSection(refParent)
-					dupeParentSection := findRefSection(dupeParent)
-					if refParentSection == nil {
-						return fmt.Errorf("duplicate reference: %s with invalid parent", ref.id)
-					}
-					if dupeParentSection == nil {
-						return fmt.Errorf("duplicate reference: %s with invalid parent", ref.id)
-					}
-					refParentId, _ := getRefId(getReferenceName(refParentSection.Base))
-					refId = refParentId + "_" + strings.TrimPrefix(refId, "ref_")
-					dupeParentId, _ := getRefId(getReferenceName(dupeParentSection.Base))
-					dupeId = dupeParentId + "_" + strings.TrimPrefix(dupeId, "ref_")
-					if refId == dupeId {
-						refParent = refParentSection.Parent
-						dupeParent = dupeParentSection.Parent
-						continue
-						//return fmt.Errorf("duplicate reference: %s with identical ids %s", ref.id, refId)
-					}
-					fmt.Printf("splitting id %s into %s and %s\n", ref.id, refId, dupeId)
-					ref.id = refId
-					dupe.id = dupeId
-					setRef(ref)
-					setRef(dupe)
-					delete(existingReferences, id)
-					existingReferences[refId] = ref
-					existingReferences[dupeId] = dupe
-					newReferences[dupe.id] = dupe
-					break
-				}*/
 }
 
 func stripReferenceSuffixes(newId string) string {
@@ -350,7 +338,8 @@ func getReferenceName(element interface{}) string {
 			}
 		}
 	default:
-		fmt.Printf("Unknown type to get reference name: %T\n", element)
+		//slog.
+		slog.Debug("Unknown type to get reference name", "type", element)
 	}
 	return ""
 }

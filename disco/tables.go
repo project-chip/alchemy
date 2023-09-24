@@ -2,6 +2,7 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -89,9 +90,24 @@ func getCellValue(cell *types.TableCell) string {
 	return ""
 }
 
-func setCellValue(cell *types.TableCell, v string) {
-	p, ok := cell.Elements[0].(*types.Paragraph)
-	if !ok || len(p.Elements) == 0 {
+func setCellValue(cell *types.TableCell, v string) (err error) {
+	var p *types.Paragraph
+
+	if len(cell.Elements) == 0 {
+		p, err = types.NewParagraph(nil)
+		if err != nil {
+			return
+		}
+	} else {
+		var ok bool
+		p, ok = cell.Elements[0].(*types.Paragraph)
+		if !ok {
+			return fmt.Errorf("table cell does not have paragraph child")
+		}
+	}
+	if len(p.Elements) == 0 {
+		se, _ := types.NewStringElement(v)
+		p.AddElement(se)
 		return
 	}
 	switch val := p.Elements[0].(type) {
@@ -100,9 +116,9 @@ func setCellValue(cell *types.TableCell, v string) {
 	case string:
 		p.Elements[0] = v
 	default:
-		fmt.Printf("not a string %T!\n", p.Elements[0])
-
+		return fmt.Errorf("invalid paragraph child when setting table cell value: %T", p.Elements[0])
 	}
+	return
 }
 
 func getTableColumn(cell *types.TableCell) matter.TableColumn {
@@ -150,7 +166,7 @@ func findColumns(rows []*types.TableRow) (int, map[matter.TableColumn]int, []int
 		for _, cell := range row.Cells {
 			if cell.Formatter != nil {
 				if cell.Formatter.ColumnSpan > 0 || cell.Formatter.RowSpan > 0 {
-					fmt.Println("can't rearrange attributes table with row or column spanning")
+					slog.Debug("can't rearrange attributes table with row or column spanning")
 					return -1, nil, nil
 				}
 			}
@@ -158,7 +174,7 @@ func findColumns(rows []*types.TableRow) (int, map[matter.TableColumn]int, []int
 		if cellCount == -1 {
 			cellCount = len(row.Cells)
 		} else if cellCount != len(row.Cells) {
-			fmt.Println("can't rearrange attributes table with unequal cell counts between rows")
+			slog.Debug("can't rearrange attributes table with unequal cell counts between rows")
 			return -1, nil, nil
 		}
 		if columnMap == nil {
@@ -171,7 +187,7 @@ func findColumns(rows []*types.TableRow) (int, map[matter.TableColumn]int, []int
 						columnMap = make(map[matter.TableColumn]int)
 					}
 					if _, ok := columnMap[attributeColumn]; ok {
-						fmt.Println("can't rearrange attributes table duplicate columns")
+						slog.Debug("can't rearrange attributes table duplicate columns")
 						return -1, nil, nil
 					}
 					columnMap[attributeColumn] = j
@@ -187,7 +203,7 @@ func findColumns(rows []*types.TableRow) (int, map[matter.TableColumn]int, []int
 	return headerRow, columnMap, extraColumns
 }
 
-func renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, nameMap map[matter.TableColumn]string) {
+func renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, nameMap map[matter.TableColumn]string) (err error) {
 	headerRow := rows[headerRowIndex]
 	reverseMap := make(map[int]matter.TableColumn)
 	for k, v := range columnMap {
@@ -200,7 +216,11 @@ func renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMa
 		}
 		name, ok := nameMap[tc]
 		if ok {
-			setCellValue(cell, name)
+			err = setCellValue(cell, name)
+			if err != nil {
+				return
+			}
 		}
 	}
+	return
 }

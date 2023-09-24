@@ -32,7 +32,10 @@ func organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, attributesTa
 		return fmt.Errorf("can't rearrange cluster id table with so few matches")
 	}
 
-	renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClusterIDTableColumnNames)
+	err := renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClusterIDTableColumnNames)
+	if err != nil {
+		return err
+	}
 
 	reorderColumns(doc, section, rows, matter.ClusterIDTableColumnOrder[:], columnMap, extraColumns)
 	return nil

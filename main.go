@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/hasty/matterfmt/cmd"
@@ -22,7 +22,7 @@ func main() {
 		Action: func(c *cli.Context) error {
 			err := cmd.DiscoBall(cxt, c)
 			if err != nil {
-				fmt.Printf("error: %v\n", err)
+				slog.Error("error discoballing", "error", err)
 			}
 			return err
 		},

@@ -2,9 +2,11 @@ package render
 
 import (
 	"fmt"
+	"log/slog"
 	"math"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/output"
@@ -33,8 +35,8 @@ func shouldRenderAttributeType(at AttributeType, include AttributeType, exclude 
 	return ((at & include) == at) && ((at & exclude) != at)
 }
 
-func renderAttributes(cxt *output.Context, el interface{}, attributes types.Attributes) {
-	renderSelectAttributes(cxt, el, attributes, AttributeTypeAll, AttributeTypeCols)
+func renderAttributes(cxt *output.Context, el interface{}, attributes types.Attributes) error {
+	return renderSelectAttributes(cxt, el, attributes, AttributeTypeAll, AttributeTypeCols)
 }
 
 func renderSelectAttributes(cxt *output.Context, el interface{}, attributes types.Attributes, include AttributeType, exclude AttributeType) (err error) {
@@ -197,7 +199,6 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 						}
 					}
 					keyVal = strings.Join(columns, ",")
-					//panic(fmt.Errorf("unknown attribute type: %T", val))
 				default:
 					err = fmt.Errorf("unknown attribute type: %T", val)
 					return
@@ -257,7 +258,7 @@ func renderDiagramAttributes(cxt *output.Context, style string, id string, keys 
 	cxt.WriteRune('\n')
 }
 
-func renderAttributeDeclaration(cxt *output.Context, ad *types.AttributeDeclaration) {
+func renderAttributeDeclaration(cxt *output.Context, ad *types.AttributeDeclaration) (err error) {
 	switch ad.Name {
 	case "authors":
 		if authors, ok := ad.Value.(types.DocumentAuthors); ok {
@@ -282,11 +283,12 @@ func renderAttributeDeclaration(cxt *output.Context, ad *types.AttributeDeclarat
 			cxt.WriteString(val)
 		case *types.Paragraph:
 			var previous interface{}
-			renderParagraph(cxt, val, &previous)
+			err = renderParagraph(cxt, val, &previous)
 		case nil:
 		default:
-			panic(fmt.Errorf("unknown attribute declaration value type: %T", ad.Value))
+			err = fmt.Errorf("unknown attribute declaration value type: %T", ad.Value)
 		}
 		cxt.WriteRune('\n')
 	}
+	return
 }

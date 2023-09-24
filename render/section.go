@@ -7,14 +7,19 @@ import (
 	"github.com/hasty/matterfmt/output"
 )
 
-func renderSection(cxt *output.Context, s *types.Section) {
-	renderAttributes(cxt, s, s.Attributes)
-	renderSectionTitle(cxt, s.Title, s.Level+1)
+func renderSection(cxt *output.Context, s *types.Section) (err error) {
+	err = renderAttributes(cxt, s, s.Attributes)
+	if err != nil {
+		return
+	}
+	err = renderSectionTitle(cxt, s.Title, s.Level+1)
+	return
 }
 
-func renderSectionTitle(cxt *output.Context, title []interface{}, level int) {
+func renderSectionTitle(cxt *output.Context, title []interface{}, level int) (err error) {
 	cxt.WriteString(strings.Repeat("=", level))
 	cxt.WriteRune(' ')
-	RenderElements(cxt, "", title)
+	err = RenderElements(cxt, "", title)
 	cxt.WriteNewline()
+	return
 }
