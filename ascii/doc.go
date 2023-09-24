@@ -28,13 +28,13 @@ func NewDoc(d *types.Document) (*Doc, error) {
 	for _, e := range d.Elements {
 		switch el := e.(type) {
 		case *types.Section:
-			s, err := NewSection(el)
+			s, err := NewSection(doc, el)
 			if err != nil {
 				return nil, err
 			}
 			doc.Elements = append(doc.Elements, s)
 		default:
-			doc.Elements = append(doc.Elements, e)
+			doc.Elements = append(doc.Elements, NewElement(doc, e))
 		}
 	}
 	return doc, nil
@@ -76,4 +76,13 @@ func (doc *Doc) DocType() (matter.DocType, error) {
 func firstLetterIsLower(s string) bool {
 	firstLetter, _ := utf8.DecodeRuneInString(s)
 	return unicode.IsLower(firstLetter)
+}
+
+func (d *Doc) GetElements() []interface{} {
+	return d.Elements
+}
+
+func (d *Doc) SetElements(elements []interface{}) error {
+	d.Elements = elements
+	return nil
 }

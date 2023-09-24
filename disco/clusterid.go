@@ -8,14 +8,15 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func organizeClusterIDSection(doc *ascii.Doc, section *ascii.Section) {
+func organizeClusterIDSection(doc *ascii.Doc, section *ascii.Section) error {
 	t := findFirstTable(section)
-	if t != nil {
-		organizeClusterIDTable(doc, section, t)
+	if t == nil {
+		return fmt.Errorf("no cluster ID section found")
 	}
+	return organizeClusterIDTable(doc, section, t)
 }
 
-func organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) {
+func organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
 
 	setSectionTitle(section, matter.ClusterIDSectionName)
 
@@ -24,16 +25,15 @@ func organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, attributesTa
 	headerRowIndex, columnMap, extraColumns := findColumns(rows)
 
 	if columnMap == nil {
-		fmt.Println("can't rearrange cluster id table without header row")
-		return
+		return fmt.Errorf("can't rearrange cluster id table without header row")
 	}
 
 	if len(columnMap) < 2 {
-		fmt.Println("can't rearrange cluster id table with so few matches")
-		return
+		return fmt.Errorf("can't rearrange cluster id table with so few matches")
 	}
 
 	renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClusterIDTableColumnNames)
 
 	reorderColumns(doc, section, rows, matter.ClusterIDTableColumnOrder[:], columnMap, extraColumns)
+	return nil
 }
