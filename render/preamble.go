@@ -7,9 +7,9 @@ import (
 	"github.com/hasty/matterfmt/output"
 )
 
-func renderPreamble(cxt *output.Context, p *types.Preamble) {
+func renderPreamble(cxt *output.Context, p *types.Preamble) error {
 	for _, e := range p.Elements {
 		fmt.Printf("preamble element: %T\n", e)
 	}
-	RenderElements(cxt, "", p.Elements)
+	return RenderElements(cxt, "", p.Elements)
 }

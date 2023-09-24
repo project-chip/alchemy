@@ -8,12 +8,18 @@ import (
 	"github.com/hasty/matterfmt/output"
 )
 
-func RenderElements(cxt *output.Context, prefix string, elements []interface{}) {
+func RenderElements(cxt *output.Context, prefix string, elements []interface{}) (err error) {
 	var previous interface{}
 	for _, e := range elements {
 		if section, ok := e.(*ascii.Section); ok {
-			renderSection(cxt, section.Base)
-			RenderElements(cxt, "", section.Elements)
+			err = renderSection(cxt, section.Base)
+			if err != nil {
+				return
+			}
+			err = RenderElements(cxt, "", section.Elements)
+			if err != nil {
+				return
+			}
 			continue
 		}
 		if el, ok := e.(*ascii.Element); ok {
@@ -21,24 +27,27 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		}
 		switch el := e.(type) {
 		case *types.DelimitedBlock:
-			renderDelimitedBlock(cxt, el)
+			err = renderDelimitedBlock(cxt, el)
 		case *types.Paragraph:
 			cxt.WriteString(prefix)
-			renderParagraph(cxt, el, &previous)
+			err = renderParagraph(cxt, el, &previous)
+			if err != nil {
+				return
+			}
 			continue // skip setting previous to the paragraph itself
 		case *types.Table:
-			renderTable(cxt, el)
+			err = renderTable(cxt, el)
 		case *types.BlankLine:
 			if _, ok := previous.(*types.StringElement); ok {
 				cxt.WriteRune('\n')
 			}
 			cxt.WriteRune('\n')
 		case *types.InternalCrossReference:
-			renderInternalCrossReference(cxt, el)
+			err = renderInternalCrossReference(cxt, el)
 		case *types.List:
-			renderList(cxt, el)
+			err = renderList(cxt, el)
 		case *types.AttributeDeclaration:
-			renderAttributeDeclaration(cxt, el)
+			err = renderAttributeDeclaration(cxt, el)
 		case *types.StringElement:
 			text, _ := el.RawText()
 			cxt.WriteString(text)
@@ -47,25 +56,35 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 			cxt.WriteString(el.Content)
 			cxt.WriteNewline()
 		case *types.ImageBlock:
-			renderImageBlock(cxt, el)
+			err = renderImageBlock(cxt, el)
 		case *types.InlineLink:
-			renderInlineLink(cxt, el)
+			err = renderInlineLink(cxt, el)
 		case *types.SpecialCharacter:
-			renderSpecialCharacter(cxt, el)
+			err = renderSpecialCharacter(cxt, el)
 		case *types.QuotedText:
-			renderQuotedText(cxt, el)
+			err = renderQuotedText(cxt, el)
 		case *types.Preamble:
-			renderPreamble(cxt, el)
+			err = renderPreamble(cxt, el)
 		case *types.Symbol:
-			renderSymbol(cxt, el)
+			err = renderSymbol(cxt, el)
 		case *types.DocumentHeader:
-			renderAttributes(cxt, el, el.Attributes)
-			renderSectionTitle(cxt, el.Title, 1)
-			RenderElements(cxt, "", el.Elements)
+			err = renderAttributes(cxt, el, el.Attributes)
+			if err != nil {
+				return
+			}
+			err = renderSectionTitle(cxt, el.Title, 1)
+			if err != nil {
+				return
+			}
+			err = RenderElements(cxt, "", el.Elements)
 			cxt.WriteRune('\n')
 		default:
-			panic(fmt.Errorf("unknown element type: %T", el))
+			err = fmt.Errorf("unknown element type: %T", el)
+		}
+		if err != nil {
+			return
 		}
 		previous = e
 	}
+	return
 }

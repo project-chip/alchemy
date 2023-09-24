@@ -17,7 +17,9 @@ func Dump(cxt context.Context, cCtx *cli.Context) error {
 		return err
 	}
 	for i, f := range files {
-		fmt.Printf("Formatting %s (%d of %d)...", f, (i + 1), len(files))
+		if len(files) > 0 {
+			fmt.Printf("Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
+		}
 		out, err := getOutputContext(cxt, f)
 		if err != nil {
 			return err

@@ -25,11 +25,11 @@ func assignTopLevelSectionTypes(top *ascii.Section) {
 	}
 }
 
-func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) {
+func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) error {
 	sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 	if !ok {
 		slog.Warn("could not determine section order", "docType", docType)
-		return
+		return nil
 	}
 	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)
 	for _, st := range sectionOrder {
@@ -44,9 +44,10 @@ func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) {
 		}
 	}
 	if len(sections) > 0 {
-		panic(fmt.Errorf("non-empty section list after reordering"))
+		return fmt.Errorf("non-empty section list after reordering")
 	}
 	sec.Elements = newOrder
+	return nil
 }
 
 func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section][]interface{} {

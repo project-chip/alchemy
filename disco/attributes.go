@@ -36,7 +36,10 @@ func organizeAttributesTable(doc *ascii.Doc, top *ascii.Section, attributes *asc
 		return fmt.Errorf("can't rearrange attributes table with so few matches")
 	}
 
-	fixAttributeAccess(doc, rows, columnMap)
+	err := fixAttributeAccess(doc, rows, columnMap)
+	if err != nil {
+		return err
+	}
 
 	sectionDataMap := getSectionDataTypeInfo(attributes, rows, columnMap)
 
@@ -66,7 +69,7 @@ func init() {
 	}
 }
 
-func fixAttributeAccess(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) {
+func fixAttributeAccess(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
 	if len(rows) < 2 {
 		return
 	}
@@ -110,7 +113,11 @@ func fixAttributeAccess(doc *ascii.Doc, rows []*types.TableRow, columnMap map[ma
 				}
 				out.WriteString(a)
 			}
-			setCellValue(cell, out.String())
+			err = setCellValue(cell, out.String())
+			if err != nil {
+				return
+			}
 		}
 	}
+	return
 }

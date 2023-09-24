@@ -30,11 +30,14 @@ type cellSpan struct {
 	width  int
 }
 
-func renderTable(cxt *output.Context, t *types.Table) {
+func renderTable(cxt *output.Context, t *types.Table) (err error) {
 
 	tbl := &table{header: &tableRow{}}
 
-	renderTableSubElements(cxt, t, tbl)
+	err = renderTableSubElements(cxt, t, tbl)
+	if err != nil {
+		return
+	}
 
 	headerSpans, rowWidths := calculateCellWidths(tbl)
 
@@ -48,6 +51,7 @@ func renderTable(cxt *output.Context, t *types.Table) {
 	cxt.WriteNewline()
 	renderTableRows(cxt, tbl, rowWidths, headerCount)
 	cxt.WriteString("|===\n")
+	return
 }
 
 func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpan, headerCount int) {
@@ -204,11 +208,14 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans ma
 	return
 }
 
-func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) {
+func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) (err error) {
 	if t.Header != nil {
 		for _, c := range t.Header.Cells {
 			renderContext := output.NewContext(cxt, cxt.Doc)
-			RenderElements(renderContext, "", c.Elements)
+			err = RenderElements(renderContext, "", c.Elements)
+			if err != nil {
+				return
+			}
 			tbl.header.cells = append(tbl.header.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter})
 		}
 	}
@@ -217,11 +224,15 @@ func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) {
 		tr := &tableRow{}
 		for _, c := range row.Cells {
 			renderContext := output.NewContext(cxt, cxt.Doc)
-			RenderElements(renderContext, "", c.Elements)
+			err = RenderElements(renderContext, "", c.Elements)
+			if err != nil {
+				return
+			}
 			tr.cells = append(tr.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter})
 		}
 		tbl.rows = append(tbl.rows, tr)
 	}
+	return
 }
 
 func getCellWidth(c *tableCell) int {

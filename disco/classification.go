@@ -33,7 +33,10 @@ func organizeClassificationTable(doc *ascii.Doc, section *ascii.Section, attribu
 		return nil
 	}
 
-	renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClassificationTableColumnNames)
+	err := renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClassificationTableColumnNames)
+	if err != nil {
+		return err
+	}
 
 	var order []matter.TableColumn
 

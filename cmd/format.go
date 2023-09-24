@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/hasty/matterfmt/render"
@@ -15,7 +15,7 @@ func Format(cxt context.Context, cCtx *cli.Context) error {
 		return err
 	}
 	for i, f := range files {
-		fmt.Printf("Formatting %s (%d of %d)...", f, (i + 1), len(files))
+		slog.Info("Formatting", "file", f, "index", (i + 1), "count", len(files))
 		out, err := getOutputContext(cxt, f)
 		if err != nil {
 			return err
