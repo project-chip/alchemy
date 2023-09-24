@@ -37,7 +37,7 @@ func renderAttributes(cxt *output.Context, el interface{}, attributes types.Attr
 	renderSelectAttributes(cxt, el, attributes, AttributeTypeAll, AttributeTypeCols)
 }
 
-func renderSelectAttributes(cxt *output.Context, el interface{}, attributes types.Attributes, include AttributeType, exclude AttributeType) {
+func renderSelectAttributes(cxt *output.Context, el interface{}, attributes types.Attributes, include AttributeType, exclude AttributeType) (err error) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -61,7 +61,8 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 				RenderElements(renderContext, "", v)
 				title = renderContext.String()
 			default:
-				panic(fmt.Sprintf("unknown title type: %T", v))
+				err = fmt.Errorf("unknown title type: %T", v)
+				return
 			}
 		default:
 			keys = append(keys, key)
@@ -87,7 +88,8 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			return
 		case "literal_paragraph":
 		default:
-			panic(fmt.Errorf("unknown style: %s", style))
+			err = fmt.Errorf("unknown style: %s", style)
+			return
 		}
 	}
 	if len(title) > 0 && shouldRenderAttributeType(AttributeTypeTitle, include, exclude) {
@@ -132,67 +134,101 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 				continue
 			}
 			val := attributes[key]
-			if count == 0 {
-				cxt.WriteString("[")
-			} else {
-				cxt.WriteRune(',')
-			}
+			var keyVal string
+
 			switch attributeType {
 			case AttributeTypeText:
 				if s, ok := val.(string); ok {
-					cxt.WriteString(s)
-					count++
+					keyVal = s
 				}
-				continue
 			case AttributeTypeAlt:
 				if s, ok := val.(string); ok {
-					cxt.WriteString(s)
-					count++
+					keyVal = s
 				}
-				continue
-			}
-
-			cxt.WriteString(key)
-			cxt.WriteRune('=')
-			var keyVal string
-			switch v := val.(type) {
-			case string:
-				keyVal = v
-
-			case types.Options:
-				for _, o := range v {
-					switch opt := o.(type) {
-					case string:
-						keyVal = opt
-
-					default:
-						fmt.Printf("unknown attribute option type: %T\n", o)
-					}
-				}
-			case []interface{}:
-				for _, e := range v {
-					fmt.Printf("unknown attribute: %T\n", e)
-				}
-				//panic(fmt.Errorf("unknown attribute type: %T", val))
 			default:
-				panic(fmt.Errorf("unknown attribute type: %T", val))
+				switch v := val.(type) {
+				case string:
+					keyVal = v
+
+				case types.Options:
+					for _, o := range v {
+						switch opt := o.(type) {
+						case string:
+							keyVal = opt
+						default:
+							slog.Debug("unknown attribute option", "type", o)
+						}
+					}
+				case []interface{}:
+
+					var columns []string
+					for i, e := range v {
+						switch tc := e.(type) {
+						case *types.TableColumn:
+							var val strings.Builder
+							if tc.Multiplier > 1 {
+								val.WriteString(strconv.Itoa(tc.Multiplier))
+								val.WriteRune('*')
+							}
+							if tc.HAlign != types.HAlignDefault {
+								val.WriteString(string(tc.HAlign))
+							}
+							if tc.VAlign != types.VAlignDefault {
+								val.WriteString(string(tc.VAlign))
+							}
+							if tc.Autowidth {
+								val.WriteRune('~')
+							} else if tc.Weight > 1 {
+								val.WriteString(strconv.Itoa(tc.Weight))
+							}
+							if len(tc.Style) > 0 {
+								val.WriteString(string(tc.Style))
+							}
+							columns = append(columns, val.String())
+							if i == len(v)-1 && val.Len() == 0 {
+								// The parser looks for tokens ending with commas, but these values
+								// are actually joined with commas; if the last value is blank,
+								// the parser will report one fewer column def, so we add it back
+								columns = append(columns, "")
+							}
+						default:
+							err = fmt.Errorf("unknown attribute: %T", e)
+							return
+						}
+					}
+					keyVal = strings.Join(columns, ",")
+					//panic(fmt.Errorf("unknown attribute type: %T", val))
+				default:
+					err = fmt.Errorf("unknown attribute type: %T", val)
+					return
+				}
 			}
+
 			if len(keyVal) != 0 {
-				if _, err := strconv.Atoi(keyVal); err == nil {
+				if count == 0 {
+					cxt.WriteString("[")
+				} else {
+					cxt.WriteRune(',')
+				}
+				cxt.WriteString(key)
+				cxt.WriteRune('=')
+				if _, err := strconv.Atoi(strings.TrimSuffix(keyVal, "%")); err == nil {
 					cxt.WriteString(keyVal)
 				} else {
 					cxt.WriteRune('"')
 					cxt.WriteString(keyVal)
 					cxt.WriteRune('"')
 				}
+				count++
 			}
-			count++
+
 		}
 		if count > 0 {
 			cxt.WriteRune(']')
 			cxt.WriteRune('\n')
 		}
 	}
+	return
 }
 
 func renderDiagramAttributes(cxt *output.Context, style string, id string, keys []string, attributes types.Attributes) {
