@@ -92,7 +92,7 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			dumpAttributes(cxt, el.Attributes, indent+1)
 			DumpElements(cxt, el.GetElements(), indent+1)
 		case *types.InternalCrossReference:
-			fmt.Print("{xref}\n")
+			fmt.Printf("{xref id:%v label %v}\n", el.ID, el.Label)
 		case *types.SpecialCharacter:
 			fmt.Printf("{sc: %s}\n", el.Name)
 		case *types.Symbol:

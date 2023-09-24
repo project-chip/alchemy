@@ -11,15 +11,16 @@ import (
 type Section struct {
 	Name string
 
-	Base *types.Section
+	Parent interface{}
+	Base   *types.Section
 
 	SecType matter.Section
 
 	Elements []interface{}
 }
 
-func NewSection(s *types.Section) (*Section, error) {
-	ss := &Section{Base: s}
+func NewSection(parent interface{}, s *types.Section) (*Section, error) {
+	ss := &Section{Parent: parent, Base: s}
 
 	switch name := types.Reduce(s.Title).(type) {
 	case string:
@@ -48,13 +49,13 @@ func NewSection(s *types.Section) (*Section, error) {
 	for _, e := range s.Elements {
 		switch el := e.(type) {
 		case *types.Section:
-			s, err := NewSection(el)
+			s, err := NewSection(ss, el)
 			if err != nil {
 				return nil, err
 			}
 			ss.Elements = append(ss.Elements, s)
 		default:
-			ss.Elements = append(ss.Elements, &Element{Base: e})
+			ss.Elements = append(ss.Elements, NewElement(ss, e))
 		}
 	}
 	return ss, nil

@@ -48,12 +48,23 @@ func promoteDataTypes(top *ascii.Section, section *ascii.Section, sectionDataMap
 	dataTypesSection := findSectionByType(top, matter.SectionDataTypes)
 	if dataTypesSection == nil {
 		ts, _ := types.NewSection(top.Base.Level+1, []interface{}{"Data Types"})
-		s, err := ascii.NewSection(ts)
+		s, err := ascii.NewSection(top, ts)
 		if err != nil {
 			return err
 		}
 		dataTypesSection = s
 		top.AppendSection(dataTypesSection)
+	}
+	for _, enum := range enumFields {
+		if enum.section == nil {
+			fmt.Printf("skipping %s enum; no section\n", enum.name)
+			continue
+		}
+		t := findFirstTable(enum.section)
+		if t == nil {
+			fmt.Printf("skipping %s enum; no section\n", enum.name)
+			continue
+		}
 	}
 	for _, bitmap := range bitmapFields {
 		if bitmap.section == nil {
@@ -74,7 +85,7 @@ func promoteDataTypes(top *ascii.Section, section *ascii.Section, sectionDataMap
 		}
 		bitmapSection, _ := types.NewSection(top.Base.Level+1, []interface{}{bitmap.name + "Bitmap"})
 		bitmapSection.AddElement(t)
-		s, err := ascii.NewSection(bitmapSection)
+		s, err := ascii.NewSection(dataTypesSection, bitmapSection)
 		if err != nil {
 			return err
 		}

@@ -12,7 +12,7 @@ import (
 func organizeClassificationSection(doc *ascii.Doc, section *ascii.Section) error {
 	attributesTable := findFirstTable(section)
 	if attributesTable == nil {
-		return fmt.Errorf("No attributes table!")
+		return fmt.Errorf("no attributes table found")
 	}
 	organizeClassificationTable(doc, section, attributesTable)
 	return nil

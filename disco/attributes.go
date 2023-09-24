@@ -10,13 +10,17 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func organizeAttributesSection(doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) {
+func organizeAttributesSection(doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
 	attributesTable := findFirstTable(attributes)
 	if attributesTable != nil {
-		organizeAttributesTable(doc, attributes, top, attributesTable)
+		err := organizeAttributesTable(doc, attributes, top, attributesTable)
+		if err != nil {
+			return err
+		}
 	} else {
-		fmt.Printf("No attributes table!")
+		return fmt.Errorf("no attributes table found")
 	}
+	return nil
 }
 
 func organizeAttributesTable(doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {

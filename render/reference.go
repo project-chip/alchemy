@@ -15,23 +15,7 @@ func renderInternalCrossReference(cxt *output.Context, cf *types.InternalCrossRe
 	switch el := cf.OriginalID.(type) {
 	case string:
 		if strings.HasPrefix(el, "_") {
-			ref, ok := cxt.Doc.Base.ElementReferences[el]
-			if ok {
-				//fmt.Printf("id %s => icf ref type: %T\n", el, ref)
-				switch idref := ref.(type) {
-				case []interface{}:
-					for _, i := range idref {
-						//fmt.Printf("\ticf ref child type: %T\n", i)
-						switch iv := i.(type) {
-						case *types.StringElement:
-							t, _ := iv.RawText()
-
-							//fmt.Printf("val: %s\n", t)
-							el = t
-						}
-					}
-				}
-			}
+			return
 		}
 		cxt.WriteString("<<")
 		cxt.WriteString(el)

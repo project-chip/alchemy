@@ -65,14 +65,14 @@ func filter(parent HasElements, callback func(i interface{}) (remove bool, short
 	return
 }
 
-func traverse(parent types.WithElements, elements []interface{}, callback func(interface{}, types.WithElements, int) bool) bool {
+func traverse(parent HasElements, elements []interface{}, callback func(interface{}, HasElements, int) bool) bool {
 	for i, e := range elements {
 		if callback(e, parent, i) {
 			return true
 		}
 
 		switch el := e.(type) {
-		case types.WithElements:
+		case HasElements:
 			if traverse(el, el.GetElements(), callback) {
 				return true
 			}
