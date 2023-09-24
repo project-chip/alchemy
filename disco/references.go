@@ -227,24 +227,31 @@ func normalizeAnchor(info *anchorInfo) {
 	match := properAnchorPattern.FindStringSubmatch(info.id)
 	if len(match) > 0 {
 		if len(info.label) == 0 {
-			info.label = strings.TrimPrefix(info.id, "ref_")
+			info.label = getReferenceName(info.element)
 		}
 		return
 	}
-	id, label := normalizeAnchorID(info.name)
+	id, label := normalizeAnchorID(info.name, info.element)
 	info.id = id
 	info.label = label
 }
 
-func normalizeAnchorID(name string) (id string, label string) {
+func normalizeAnchorID(name string, element interface{}) (id string, label string) {
+	switch element.(type) {
+	case *types.Table:
+		label = strings.TrimSpace(name)
+	default:
+		label = strings.TrimSpace(stripReferenceSuffixes(name))
+	}
+
 	var ref strings.Builder
-	parts := strings.Split(name, " ")
+
+	parts := strings.Split(label, " ")
 	for _, p := range parts {
 		ref.WriteString(p)
 	}
-	label = ref.String()
-	label = stripReferenceSuffixes(label)
-	id = "ref_" + acronymPattern.ReplaceAllStringFunc(label, func(match string) string {
+	id = ref.String()
+	id = "ref_" + acronymPattern.ReplaceAllStringFunc(id, func(match string) string {
 		return string(match[0]) + strings.ToLower(string(match[1:len(match)-1])) + string(match[len(match)-1:])
 	})
 	return
@@ -271,7 +278,7 @@ func disambiguateAnchorSet(infos []*anchorInfo) error {
 				return fmt.Errorf("duplicate reference: %s with invalid parent", refIds[i])
 			}
 			parentSections[i] = parentSection
-			refParentId, _ := normalizeAnchorID(getReferenceName(parentSection.Base))
+			refParentId, _ := normalizeAnchorID(getReferenceName(parentSection.Base), parentSection.Base)
 			refIds[i] = refParentId + "_" + strings.TrimPrefix(refIds[i], "ref_")
 		}
 		ids := make(map[string]struct{})
