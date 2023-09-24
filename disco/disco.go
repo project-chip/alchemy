@@ -60,6 +60,8 @@ func organizeSubSection(doc *ascii.Doc, docType matter.DocType, top *ascii.Secti
 		case matter.DocTypeAppCluster:
 			err = organizeAttributesSection(doc, top, section)
 		}
+	case matter.SectionCommands:
+		err = organizeCommandsSection(doc, section)
 	case matter.SectionClassification:
 		err = organizeClassificationSection(doc, section)
 	case matter.SectionClusterID:

@@ -242,7 +242,6 @@ func getCellWidth(c *tableCell) int {
 	}
 	var width int
 	for _, line := range lines {
-
 		width = max(width, len(strings.TrimSpace(line)))
 	}
 	return width

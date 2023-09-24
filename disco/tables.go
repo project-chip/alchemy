@@ -1,6 +1,7 @@
 package disco
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -8,6 +9,8 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/matterfmt/render"
 )
 
 func findFirstTable(section *ascii.Section) *types.Table {
@@ -76,18 +79,24 @@ func reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableR
 	return newRows
 }
 
-func getCellValue(cell *types.TableCell) string {
+func getCellValue(cell *types.TableCell) (string, error) {
+	if len(cell.Elements) == 0 {
+		return "", fmt.Errorf("missing table cell elements")
+	}
 	p, ok := cell.Elements[0].(*types.Paragraph)
-	if !ok || len(p.Elements) == 0 {
-		return ""
+	if !ok {
+		return "", fmt.Errorf("missing paragraph in table cell")
 	}
-	switch v := p.Elements[0].(type) {
-	case *types.StringElement:
-		return v.Content
-	case string:
-		return v
+	if len(p.Elements) == 0 {
+		return "", fmt.Errorf("missing paragraph elements in table cell")
 	}
-	return ""
+	out := output.NewContext(context.Background(), nil)
+	err := render.RenderElements(out, "", p.Elements)
+	if err != nil {
+		fmt.Printf("error rendering table cell contents: %v", err)
+		return "", err
+	}
+	return out.String(), nil
 }
 
 func setCellValue(cell *types.TableCell, v string) (err error) {
@@ -105,24 +114,17 @@ func setCellValue(cell *types.TableCell, v string) (err error) {
 			return fmt.Errorf("table cell does not have paragraph child")
 		}
 	}
-	if len(p.Elements) == 0 {
-		se, _ := types.NewStringElement(v)
-		p.AddElement(se)
-		return
-	}
-	switch val := p.Elements[0].(type) {
-	case *types.StringElement:
-		val.Content = v
-	case string:
-		p.Elements[0] = v
-	default:
-		return fmt.Errorf("invalid paragraph child when setting table cell value: %T", p.Elements[0])
-	}
+	se, _ := types.NewStringElement(v)
+	p.SetElements([]interface{}{se})
 	return
 }
 
 func getTableColumn(cell *types.TableCell) matter.TableColumn {
-	switch strings.ToLower(getCellValue(cell)) {
+	cv, err := getCellValue(cell)
+	if err != nil {
+		return matter.TableColumnUnknown
+	}
+	switch strings.ToLower(cv) {
 	case "id", "identifier":
 		return matter.TableColumnID
 	case "name":
@@ -153,6 +155,16 @@ func getTableColumn(cell *types.TableCell) matter.TableColumn {
 		return matter.TableColumnValue
 	case "bit":
 		return matter.TableColumnBit
+	case "device name":
+		return matter.TableColumnDeviceName
+	case "superset":
+		return matter.TableColumnSuperset
+	case "class":
+		return matter.TableColumnClass
+	case "direction":
+		return matter.TableColumnDirection
+	case "response":
+		return matter.TableColumnResponse
 	}
 	return matter.TableColumnUnknown
 }

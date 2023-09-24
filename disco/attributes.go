@@ -36,7 +36,7 @@ func organizeAttributesTable(doc *ascii.Doc, top *ascii.Section, attributes *asc
 		return fmt.Errorf("can't rearrange attributes table with so few matches")
 	}
 
-	err := fixAttributeAccess(doc, rows, columnMap)
+	err := fixAccessCells(doc, rows, columnMap)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func init() {
 	}
 }
 
-func fixAttributeAccess(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
+func fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
 	if len(rows) < 2 {
 		return
 	}
@@ -79,8 +79,8 @@ func fixAttributeAccess(doc *ascii.Doc, rows []*types.TableRow, columnMap map[ma
 	}
 	for _, row := range rows[1:] {
 		cell := row.Cells[accessIndex]
-		vc := getCellValue(cell)
-		if len(vc) == 0 {
+		vc, e := getCellValue(cell)
+		if e != nil {
 			continue
 		}
 		matches := accessPattern.FindStringSubmatch(vc)
