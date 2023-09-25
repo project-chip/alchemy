@@ -52,45 +52,59 @@ func init() {
 	}
 }
 
+var sectionTypeStrings = map[Section]string{
+	SectionPrefix:              "Prefix",
+	SectionUnknown:             "Unknown",
+	SectionIntroduction:        "Introduction",
+	SectionRevisionHistory:     "RevisionHistory",
+	SectionClassification:      "Classification",
+	SectionClusterID:           "ClusterID",
+	SectionFeatures:            "Features",
+	SectionDependencies:        "Dependencies",
+	SectionDataTypes:           "DataTypes",
+	SectionStatusCodes:         "StatusCodes",
+	SectionAttributes:          "Attributes",
+	SectionCommands:            "Commands",
+	SectionEvents:              "Events",
+	SectionConditions:          "Conditions",
+	SectionClusterRequirements: "ClusterRequirements",
+	SectionClusterRestrictions: "ClusterRestrictions",
+	SectionElementRequirements: "ElementRequirements",
+	SectionEndpointComposition: "EndpointComposition",
+}
+
 func SectionTypeString(st Section) string {
-	switch st {
-	case SectionPrefix:
-		return "Prefix"
-	case SectionUnknown:
-		return "Unknown"
-	case SectionIntroduction:
-		return "Introduction"
-	case SectionRevisionHistory:
-		return "RevisionHistory"
-	case SectionClassification:
-		return "Classification"
-	case SectionClusterID:
-		return "ClusterID"
-	case SectionFeatures:
-		return "Features"
-	case SectionDependencies:
-		return "Dependencies"
-	case SectionDataTypes:
-		return "DataTypes"
-	case SectionStatusCodes:
-		return "StatusCodes"
-	case SectionAttributes:
-		return "Attributes"
-	case SectionCommands:
-		return "Commands"
-	case SectionEvents:
-		return "Events"
-	case SectionConditions:
-		return "Conditions"
-	case SectionClusterRequirements:
-		return "Cluster Requirements"
-	case SectionClusterRestrictions:
-		return "Cluster Restrictions"
-	case SectionElementRequirements:
-		return "Element Requirements"
-	case SectionEndpointComposition:
-		return "Endpoint Composition"
-	default:
-		return "invalid"
+	if s, ok := sectionTypeStrings[st]; ok {
+		return s
 	}
+	return "invalid"
+
+}
+
+var sectionTypeNames = map[Section]string{
+	SectionPrefix:              "Prefix",
+	SectionUnknown:             "Unknown",
+	SectionIntroduction:        "Introduction",
+	SectionRevisionHistory:     "Revision History",
+	SectionClassification:      "Classification",
+	SectionClusterID:           "Cluster ID",
+	SectionFeatures:            "Features",
+	SectionDependencies:        "Dependencies",
+	SectionDataTypes:           "Data Types",
+	SectionStatusCodes:         "Status Codes",
+	SectionAttributes:          "Attributes",
+	SectionCommands:            "Commands",
+	SectionEvents:              "Events",
+	SectionConditions:          "Conditions",
+	SectionClusterRequirements: "Cluster Requirements",
+	SectionClusterRestrictions: "Cluster Restrictions",
+	SectionElementRequirements: "Element Requirements",
+	SectionEndpointComposition: "Endpoint Composition",
+}
+
+func SectionTypeName(st Section) string {
+	if s, ok := sectionTypeNames[st]; ok {
+		return s
+	}
+	return ""
 }

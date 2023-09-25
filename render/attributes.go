@@ -50,11 +50,11 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 	var keys []string
 	for key, val := range attributes {
 		switch key {
-		case "id":
+		case types.AttrID:
 			id = val.(string)
-		case "style":
+		case types.AttrStyle:
 			style = val.(string)
-		case "title":
+		case types.AttrTitle:
 			switch v := val.(type) {
 			case string:
 				title = v
@@ -70,9 +70,10 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			keys = append(keys, key)
 		}
 	}
+
 	if len(style) > 0 && shouldRenderAttributeType(AttributeTypeStyle, include, exclude) {
 		switch style {
-		case "NOTE", "IMPORTANT", "TIP", "CAUTION", "WARNING":
+		case types.Tip, types.Note, types.Important, types.Warning, types.Caution:
 			switch el.(type) {
 			case *types.Paragraph:
 				cxt.WriteString(fmt.Sprintf("%s: ", style))
@@ -81,10 +82,10 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			}
 		case "none":
 			cxt.WriteString("[none]\n")
-		case "lowerroman":
-			cxt.WriteString("[lowerroman]\n")
-		case "arabic":
-			cxt.WriteString("[arabic]\n")
+		case types.UpperRoman, types.LowerRoman, types.Arabic, types.UpperAlpha, types.LowerAlpha:
+			cxt.WriteRune('[')
+			cxt.WriteString(style)
+			cxt.WriteString("]\n")
 		case "a2s", "actdiag", "plantuml", "qrcode", "blockdiag", "d2", "lilypond":
 			renderDiagramAttributes(cxt, style, id, keys, attributes)
 			return

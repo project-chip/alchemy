@@ -20,7 +20,11 @@ func Format(cxt context.Context, cCtx *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		os.WriteFile(f, []byte(render.Render(cxt, out.Doc)), os.ModeAppend)
+		result, err := render.Render(cxt, out.Doc)
+		if err != nil {
+			return err
+		}
+		os.WriteFile(f, []byte(result), os.ModeAppend)
 	}
 	return nil
 }

@@ -93,13 +93,13 @@ func getCellValue(cell *types.TableCell) (string, error) {
 	out := output.NewContext(context.Background(), nil)
 	err := render.RenderElements(out, "", p.Elements)
 	if err != nil {
-		fmt.Printf("error rendering table cell contents: %v", err)
+		fmt.Printf("error rendering table cell contents: %v\n", err)
 		return "", err
 	}
 	return out.String(), nil
 }
 
-func setCellValue(cell *types.TableCell, v string) (err error) {
+func setCellString(cell *types.TableCell, v string) (err error) {
 	var p *types.Paragraph
 
 	if len(cell.Elements) == 0 {
@@ -119,11 +119,32 @@ func setCellValue(cell *types.TableCell, v string) (err error) {
 	return
 }
 
+func setCellValue(cell *types.TableCell, val []interface{}) (err error) {
+	var p *types.Paragraph
+
+	if len(cell.Elements) == 0 {
+		p, err = types.NewParagraph(nil)
+		if err != nil {
+			return
+		}
+		cell.SetElements([]interface{}{p})
+	} else {
+		var ok bool
+		p, ok = cell.Elements[0].(*types.Paragraph)
+		if !ok {
+			return fmt.Errorf("table cell does not have paragraph child")
+		}
+	}
+	p.SetElements(val)
+	return
+}
+
 func getTableColumn(cell *types.TableCell) matter.TableColumn {
 	cv, err := getCellValue(cell)
 	if err != nil {
 		return matter.TableColumnUnknown
 	}
+	fmt.Printf("getTableColumn: %s\n", cv)
 	switch strings.ToLower(cv) {
 	case "id", "identifier":
 		return matter.TableColumnID
@@ -165,6 +186,8 @@ func getTableColumn(cell *types.TableCell) matter.TableColumn {
 		return matter.TableColumnDirection
 	case "response":
 		return matter.TableColumnResponse
+	case "description":
+		return matter.TableColumnDescription
 	}
 	return matter.TableColumnUnknown
 }
@@ -228,7 +251,7 @@ func renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMa
 		}
 		name, ok := nameMap[tc]
 		if ok {
-			err = setCellValue(cell, name)
+			err = setCellString(cell, name)
 			if err != nil {
 				return
 			}

@@ -62,10 +62,6 @@ func NewSection(parent interface{}, s *types.Section) (*Section, error) {
 }
 
 func (s *Section) AppendSection(ns *Section) error {
-	err := s.Base.AddElement(ns.Base)
-	if err != nil {
-		return err
-	}
 	s.Elements = append(s.Elements, ns)
 	return nil
 }

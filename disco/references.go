@@ -154,7 +154,7 @@ func findAnchors(doc *ascii.Doc, crossReferences map[string][]*types.InternalCro
 			return false
 		}
 		attrs := wa.GetAttributes()
-		idAttr, ok := attrs["id"]
+		idAttr, ok := attrs[types.AttrID]
 		if !ok {
 			return false
 		}

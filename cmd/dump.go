@@ -138,6 +138,19 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 				fmt.Printf("( %s %s %s)", el.DocumentAuthorFullName.FirstName, el.DocumentAuthorFullName.MiddleName, el.DocumentAuthorFullName.LastName)
 			}
 			fmt.Print("}\n")
+		case *types.FootnoteReference:
+			fmt.Printf("{footnote ID=%d, Ref=%s}\n", el.ID, el.Ref)
+			var fn *types.Footnote
+			for _, f := range cxt.Doc.Base.Footnotes {
+				if f.ID == el.ID {
+					fn = f
+					break
+				}
+			}
+			if fn != nil {
+				DumpElements(cxt, fn.Elements, indent+1)
+
+			}
 		default:
 			fmt.Printf("unknown element type: %T\n", el)
 		}

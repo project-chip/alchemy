@@ -25,7 +25,9 @@ const (
 	TableColumnSuperset
 	TableColumnClass
 	TableColumnDirection
+	TableColumnDescription
 	TableColumnResponse
+	TableColumnSummary
 )
 
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
@@ -116,6 +118,8 @@ var StructTableColumnOrder = [...]TableColumn{
 var EnumTableColumnOrder = [...]TableColumn{
 	TableColumnValue,
 	TableColumnName,
+	TableColumnSummary,
+	TableColumnConformance,
 }
 
 var BitmapTableColumnOrder = [...]TableColumn{

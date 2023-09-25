@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log/slog"
 	"os"
 
 	"github.com/hasty/matterfmt/cmd"
@@ -20,11 +19,7 @@ func main() {
 		Name:  "matterfmt",
 		Usage: "builds stuff",
 		Action: func(c *cli.Context) error {
-			err := cmd.DiscoBall(cxt, c)
-			if err != nil {
-				slog.Error("error discoballing", "error", err)
-			}
-			return err
+			return cmd.DiscoBall(cxt, c)
 		},
 		Commands: []*cli.Command{
 			{
@@ -54,6 +49,9 @@ func main() {
 		},
 	}
 
-	(app).Run(os.Args)
+	err := (app).Run(os.Args)
+	if err != nil {
+		panic(err)
+	}
 
 }

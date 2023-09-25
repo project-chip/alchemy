@@ -8,11 +8,14 @@ import (
 	"github.com/hasty/matterfmt/output"
 )
 
-func Render(cxt context.Context, doc *ascii.Doc) string {
+func Render(cxt context.Context, doc *ascii.Doc) (string, error) {
 	renderContext := output.NewContext(cxt, doc)
-	RenderElements(renderContext, "", renderContext.Doc.Elements)
+	err := RenderElements(renderContext, "", renderContext.Doc.Elements)
+	if err != nil {
+		return "", err
+	}
 	renderContext.WriteNewline()
-	return postProcess(renderContext.String())
+	return postProcess(renderContext.String()), nil
 }
 
 var eolWhitespacePattern = regexp.MustCompile(`[ ]+\n`)
