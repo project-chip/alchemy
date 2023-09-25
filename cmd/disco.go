@@ -22,10 +22,11 @@ func DiscoBall(cxt context.Context, cCtx *cli.Context) error {
 			return err
 		}
 		err = disco.Ball(out.Doc)
+		result, err := render.Render(cxt, out.Doc)
 		if err != nil {
 			return err
 		}
-		os.WriteFile(f, []byte(render.Render(cxt, out.Doc)), os.ModeAppend)
+		os.WriteFile(f, []byte(result), os.ModeAppend)
 	}
 	return nil
 }

@@ -34,7 +34,7 @@ func find[T any](elements []interface{}, callback func(t T) bool) bool {
 	return false
 }
 
-func filter(parent HasElements, callback func(i interface{}) (remove bool, shortCircuit bool)) (remove bool, shortCircuit bool) {
+func filter(parent HasElements, callback func(i interface{}) (remove bool, shortCircuit bool)) (shortCircuit bool) {
 	i := 0
 	elements := parent.GetElements()
 	var removed bool
@@ -45,8 +45,12 @@ func filter(parent HasElements, callback func(i interface{}) (remove bool, short
 		}
 		switch el := e.(type) {
 		case HasElements:
-			remove, shortCircuit = filter(el, callback)
+			shortCircuit = filter(el, callback)
 		}
+		if shortCircuit {
+			break
+		}
+		remove, shortCircuit := callback(e)
 		var empty []interface{}
 		if remove {
 			elements = slices.Replace(elements, i, i+1, empty...)
@@ -56,7 +60,7 @@ func filter(parent HasElements, callback func(i interface{}) (remove bool, short
 			i++
 		}
 		if shortCircuit {
-			return
+			break
 		}
 	}
 	if removed {

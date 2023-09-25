@@ -38,7 +38,8 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		case *types.Table:
 			err = renderTable(cxt, el)
 		case *types.BlankLine:
-			if _, ok := previous.(*types.StringElement); ok {
+			switch previous.(type) {
+			case *types.StringElement, *types.FootnoteReference:
 				cxt.WriteRune('\n')
 			}
 			cxt.WriteRune('\n')
@@ -67,6 +68,8 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 			err = renderPreamble(cxt, el)
 		case *types.Symbol:
 			err = renderSymbol(cxt, el)
+		case *types.LineBreak:
+			cxt.WriteString(" +")
 		case *types.DocumentHeader:
 			err = renderAttributes(cxt, el, el.Attributes)
 			if err != nil {

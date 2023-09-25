@@ -14,6 +14,7 @@ type sectionDataType struct {
 	name     string
 	dataType string
 	section  *ascii.Section
+	typeCell *types.TableCell
 }
 
 func assignTopLevelSectionTypes(top *ascii.Section) {
@@ -46,7 +47,7 @@ func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) error {
 	if len(sections) > 0 {
 		return fmt.Errorf("non-empty section list after reordering")
 	}
-	sec.Elements = newOrder
+	sec.SetElements(newOrder)
 	return nil
 }
 
@@ -103,6 +104,9 @@ func getSectionType(section *ascii.Section) matter.Section {
 	case "endpoint composition":
 		return matter.SectionEndpointComposition
 	default:
+		if strings.HasSuffix(name, " attribute set") {
+			return matter.SectionAttributes
+		}
 		return matter.SectionUnknown
 	}
 }
@@ -152,7 +156,7 @@ func getSectionDataTypeInfo(section *ascii.Section, rows []*types.TableRow, colu
 		name := strings.TrimSpace(cv)
 		nameKey := strings.ToLower(name)
 		if _, ok := sectionDataMap[nameKey]; !ok {
-			sectionDataMap[nameKey] = &sectionDataType{name: name, dataType: strings.TrimSpace(dtv)}
+			sectionDataMap[nameKey] = &sectionDataType{name: name, dataType: strings.TrimSpace(dtv), typeCell: row.Cells[typeIndex]}
 		}
 	}
 	for _, el := range section.Elements {

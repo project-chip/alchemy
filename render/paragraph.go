@@ -35,6 +35,8 @@ func renderParagraph(cxt *output.Context, p *types.Paragraph, previous *interfac
 			cxt.WriteString("//")
 			cxt.WriteString(el.Content)
 			cxt.WriteNewline()
+		case *types.FootnoteReference:
+			err = renderFootnoteReference(cxt, el)
 		default:
 			err = fmt.Errorf("unknown paragraph element type: %T", el)
 		}

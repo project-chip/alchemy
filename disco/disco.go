@@ -17,12 +17,10 @@ func discoBallDoc(doc *ascii.Doc) error {
 	if err != nil {
 		return err
 	}
+
 	precleanStrings(doc.Elements)
 	fixUnrecognizedReferences(doc)
-	err = normalizeAnchors(doc)
-	if err != nil {
-		return err
-	}
+
 	var topLevelSection *ascii.Section
 	find(doc.Elements, func(s *ascii.Section) bool {
 		topLevelSection = s
@@ -31,18 +29,26 @@ func discoBallDoc(doc *ascii.Doc) error {
 	if topLevelSection == nil {
 		return fmt.Errorf("missing top level section")
 	}
-	return discoBallTopLevelSection(doc, topLevelSection, docType)
-}
 
-func discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.DocType) error {
-	assignTopLevelSectionTypes(top)
-	find(top.Elements, func(s *ascii.Section) bool {
-		err := organizeSubSection(doc, docType, top, s)
+	assignTopLevelSectionTypes(topLevelSection)
+
+	find(topLevelSection.Elements, func(s *ascii.Section) bool {
+		err := organizeSubSection(doc, docType, topLevelSection, s)
 		if err != nil {
 			slog.Warn("error organizing subsection", "docType", docType, "sectionType", s.SecType, "error", err)
 		}
 		return false
 	})
+
+	err = normalizeAnchors(doc)
+	if err != nil {
+		return err
+	}
+
+	return discoBallTopLevelSection(doc, topLevelSection, docType)
+}
+
+func discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.DocType) error {
 	err := reorderTopLevelSection(top, docType)
 	if err != nil {
 		return err

@@ -14,7 +14,11 @@ func organizeCommandsSection(doc *ascii.Doc, section *ascii.Section) error {
 	if t == nil {
 		return fmt.Errorf("no commands section found")
 	}
-	return organizeCommandsTable(doc, section, t)
+	err := organizeCommandsTable(doc, section, t)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func organizeCommandsTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
@@ -67,7 +71,7 @@ func fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, columnMap map[m
 		if e != nil {
 			continue
 		}
-		err = setCellValue(cell, strings.ToLower(vc))
+		err = setCellString(cell, strings.ToLower(vc))
 		if err != nil {
 			return
 		}

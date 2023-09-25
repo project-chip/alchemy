@@ -13,7 +13,7 @@ import (
 func organizeAttributesSection(doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
 	attributesTable := findFirstTable(attributes)
 	if attributesTable != nil {
-		err := organizeAttributesTable(doc, attributes, top, attributesTable)
+		err := organizeAttributesTable(doc, top, attributes, attributesTable)
 		if err != nil {
 			return err
 		}
@@ -113,7 +113,7 @@ func fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter
 				}
 				out.WriteString(a)
 			}
-			err = setCellValue(cell, out.String())
+			err = setCellString(cell, out.String())
 			if err != nil {
 				return
 			}
