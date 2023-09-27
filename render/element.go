@@ -34,12 +34,11 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 			if err != nil {
 				return
 			}
-			continue // skip setting previous to the paragraph itself
 		case *types.Table:
 			err = renderTable(cxt, el)
 		case *types.BlankLine:
 			switch previous.(type) {
-			case *types.StringElement, *types.FootnoteReference:
+			case *types.StringElement, *types.FootnoteReference, *types.Paragraph:
 				cxt.WriteRune('\n')
 			}
 			cxt.WriteRune('\n')
@@ -81,6 +80,12 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 			}
 			err = RenderElements(cxt, "", el.Elements)
 			cxt.WriteRune('\n')
+		case *types.PredefinedAttribute:
+			cxt.WriteString(fmt.Sprintf("{%s}", el.Name))
+		case *types.InlineImage:
+			err = renderInlineImage(cxt, el)
+		case *types.FootnoteReference:
+			err = renderFootnoteReference(cxt, el)
 		default:
 			err = fmt.Errorf("unknown element type: %T", el)
 		}
