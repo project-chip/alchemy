@@ -29,7 +29,7 @@ func renderComment(cxt *output.Context, comment *types.DelimitedBlock) (err erro
 	for _, e := range comment.Elements {
 		switch el := e.(type) {
 		case *types.StringElement:
-			cxt.WriteRune('\n')
+			cxt.WriteNewline()
 			cxt.WriteString("////")
 			cxt.WriteNewline()
 			text, _ := el.RawText()
