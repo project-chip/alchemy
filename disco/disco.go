@@ -8,11 +8,7 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func Ball(doc *ascii.Doc) error {
-	return discoBallDoc(doc)
-}
-
-func discoBallDoc(doc *ascii.Doc) error {
+func Ball(cxt *Context, doc *ascii.Doc) error {
 	docType, err := doc.DocType()
 	if err != nil {
 		return err

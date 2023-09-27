@@ -159,6 +159,7 @@ func findAnchors(doc *ascii.Doc, crossReferences map[string][]*types.InternalCro
 			return false
 		}
 		id := strings.TrimSpace(idAttr.(string))
+		fmt.Printf("anchor id: \"%s\"\n", id)
 		var label string
 		if parts := strings.Split(id, ","); len(parts) > 1 {
 			id = strings.TrimSpace(parts[0])
@@ -259,7 +260,11 @@ func normalizeAnchorID(name string, element interface{}) (id string, label strin
 
 func setAnchor(info *anchorInfo) {
 	newAttr := make(types.Attributes)
-	newAttr[types.AttrID] = info.id + ", " + info.label
+	id := info.id
+	if len(info.label) > 0 {
+		id += ", " + info.label
+	}
+	newAttr[types.AttrID] = id
 	info.element.SetAttributes(newAttr)
 }
 
