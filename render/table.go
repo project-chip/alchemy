@@ -39,7 +39,7 @@ func renderTable(cxt *output.Context, t *types.Table) (err error) {
 		return
 	}
 
-	headerSpans, rowWidths := calculateCellWidths(tbl)
+	headerSpans, rowWidths, indent := calculateCellWidths(tbl)
 
 	headerCount := len(tbl.header.cells)
 
@@ -49,24 +49,35 @@ func renderTable(cxt *output.Context, t *types.Table) (err error) {
 	cxt.WriteNewline()
 	cxt.WriteString(renderTableHeaders(tbl, headerSpans, headerCount))
 	cxt.WriteNewline()
-	renderTableRows(cxt, tbl, rowWidths, headerCount)
+	renderTableRows(cxt, tbl, rowWidths, headerCount, indent)
 	cxt.WriteString("|===\n")
 	return
 }
 
-func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpan, headerCount int) {
+func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpan, headerCount int, indent int) {
 	for _, tr := range tbl.rows {
 		var row strings.Builder
 		for i, c := range tr.cells {
-			if c.formatter != nil {
-				row.WriteString(c.formatter.Content)
+			var ind = 0
+			if i == 0 {
+				ind = indent
 			}
-			row.WriteRune('|')
 			var width int
 			rowSpan, ok := rowWidths[i]
 			if ok {
 				width = rowSpan.width
+				ind = max(ind, rowSpan.indent)
 			}
+
+			var format string
+			if c.formatter != nil {
+				format = c.formatter.Content
+				ind = max(ind, len(format))
+			}
+
+			row.WriteString(fmt.Sprintf("%*s", ind, format))
+
+			row.WriteRune('|')
 
 			if i < len(tr.cells)-1 {
 				nextCell := tr.cells[i+1]
@@ -99,11 +110,17 @@ func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount i
 	var out strings.Builder
 	for i, c := range tbl.header.cells {
 		hs, ok := headerSpans[i]
-		if c.formatter != nil {
-			out.WriteString(c.formatter.Content)
-		} else if ok && hs.indent > 0 {
-			out.WriteString(strings.Repeat(" ", hs.indent))
+		var ind = 0
+		if ok {
+			ind = max(ind, hs.indent)
 		}
+		var format string
+		if c.formatter != nil {
+			format = c.formatter.Content
+			ind = max(ind, len(format))
+		}
+
+		out.WriteString(fmt.Sprintf("%*s", ind, format))
 
 		out.WriteString("| ")
 
@@ -128,7 +145,7 @@ func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount i
 	return out.String()
 }
 
-func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans map[int]*cellSpan) {
+func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans map[int]*cellSpan, indent int) {
 	headerSpans = make(map[int]*cellSpan)
 	rowSpans = make(map[int]*cellSpan)
 
@@ -148,6 +165,9 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans ma
 			if nextHeader.formatter != nil {
 				thw.width += len(nextHeader.formatter.Content)
 			}
+		}
+		if i == 0 {
+			indent = max(indent, thw.indent)
 		}
 		columnIndex++
 	}
