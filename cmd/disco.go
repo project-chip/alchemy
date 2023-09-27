@@ -21,7 +21,7 @@ func DiscoBall(cxt context.Context, cCtx *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		err = disco.Ball(out.Doc)
+		err = disco.Ball(disco.NewContext(cxt), out.Doc)
 		result, err := render.Render(cxt, out.Doc)
 		if err != nil {
 			return err
