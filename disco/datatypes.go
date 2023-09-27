@@ -9,10 +9,111 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func promoteDataTypes(top *ascii.Section, section *ascii.Section, sectionDataMap map[string]*sectionDataType) error {
+type potentialDataType struct {
+	name     string
+	dataType string
+	section  *ascii.Section
+	typeCell *types.TableCell
+	table    *types.Table
+	suffix   string
+}
+
+func getPotentialDataTypes(section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (sectionDataMap map[string]*potentialDataType) {
+	sectionDataMap = make(map[string]*potentialDataType)
+	nameIndex, ok := columnMap[matter.TableColumnName]
+	if !ok {
+		return
+	}
+	typeIndex, ok := columnMap[matter.TableColumnType]
+	if !ok {
+		return
+	}
+	for _, row := range rows {
+		cv, err := getCellValue(row.Cells[nameIndex])
+		if err != nil {
+			continue
+		}
+		dtv, err := getCellValue(row.Cells[typeIndex])
+		if err != nil {
+			continue
+		}
+		name := strings.TrimSpace(cv)
+		nameKey := strings.ToLower(name)
+		if _, ok := sectionDataMap[nameKey]; !ok {
+			sectionDataMap[nameKey] = &potentialDataType{name: name, dataType: strings.TrimSpace(dtv), typeCell: row.Cells[typeIndex]}
+		}
+	}
+	for _, el := range section.Elements {
+		if s, ok := el.(*ascii.Section); ok {
+			var name string
+			switch section.SecType {
+			case matter.SectionAttributes:
+				name = strings.TrimSuffix(s.Name, " Attribute")
+			default:
+				name = s.Name
+			}
+
+			ai, ok := sectionDataMap[strings.ToLower(name)]
+			if !ok {
+				continue
+			}
+			ai.section = s
+		}
+	}
+	return
+}
+
+/*func gatherDataTypes(cxt *Context, top *ascii.Section, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
+	sectionDataTypes := getPotentialDataTypes(section, rows, columnMap)
+	enumFields := make(map[string]*potentialDataType)
+	bitmapFields := make(map[string]*potentialDataType)
+	for field, info := range sectionDataMap {
+		fmt.Printf("\"field\": %s -> %s\n", field, info.dataType)
+		switch info.dataType {
+		case "enum8", "enum16", "enum32":
+			enumFields[field] = info
+		case "map8", "map16", "map32":
+			bitmapFields[field] = info
+		}
+	}
+	var dataTypeCount int
+	find(section.Elements, func(el interface{}) bool {
+		s, ok := el.(*ascii.Section)
+		if !ok {
+			return false
+		}
+		name := strings.TrimSpace(stripReferenceSuffixes(s.Name))
+		fmt.Printf("name: %s -> \"%s\"\n", s.Name, strings.ToLower(name))
+		if sdt, ok := enumFields[strings.ToLower(name)]; ok {
+			fmt.Printf("Enum field! %s\n", name)
+			sdt.section = s
+			dataTypeCount++
+		} else if sdt, ok := bitmapFields[strings.ToLower(name)]; ok {
+			fmt.Printf("Bitmap field! %s\n", name)
+			sdt.section = s
+			dataTypeCount++
+		}
+
+		return false
+	})
+	if dataTypeCount == 0 {
+		return nil
+	}
+	err := promoteDataType(top, section, "Bitmap", bitmapFields, matter.TableColumnBit)
+	if err != nil {
+		return err
+	}
+	err = promoteDataType(top, section, "Enum", enumFields, matter.TableColumnValue)
+	if err != nil {
+		return err
+	}
+	return nil
+}*/
+
+func promoteDataTypes(top *ascii.Section, section *ascii.Section, sectionDataMap map[string]*potentialDataType) error {
 	//return nil
-	enumFields := make(map[string]*sectionDataType)
-	bitmapFields := make(map[string]*sectionDataType)
+	enumFields := make(map[string]*potentialDataType)
+	bitmapFields := make(map[string]*potentialDataType)
 	for field, info := range sectionDataMap {
 		fmt.Printf("\"field\": %s -> %s\n", field, info.dataType)
 		switch info.dataType {
@@ -56,7 +157,7 @@ func promoteDataTypes(top *ascii.Section, section *ascii.Section, sectionDataMap
 	return nil
 }
 
-func promoteDataType(top *ascii.Section, section *ascii.Section, suffix string, dataTypeFields map[string]*sectionDataType, firstColumnType matter.TableColumn) error {
+func promoteDataType(top *ascii.Section, section *ascii.Section, suffix string, dataTypeFields map[string]*potentialDataType, firstColumnType matter.TableColumn) error {
 	var dataTypesSection *ascii.Section
 	for _, dt := range dataTypeFields {
 		if dt.section == nil {
@@ -137,7 +238,7 @@ func promoteDataType(top *ascii.Section, section *ascii.Section, suffix string, 
 	return nil
 }
 
-func promoteEnums(top *ascii.Section, section *ascii.Section, enumFields map[string]*sectionDataType) error {
+func promoteEnums(top *ascii.Section, section *ascii.Section, enumFields map[string]*potentialDataType) error {
 	var dataTypesSection *ascii.Section
 	for _, enum := range enumFields {
 		if enum.section == nil {
@@ -217,7 +318,7 @@ func promoteEnums(top *ascii.Section, section *ascii.Section, enumFields map[str
 	return nil
 }
 
-func promoteBitmaps(top *ascii.Section, section *ascii.Section, bitmapFields map[string]*sectionDataType) error {
+func promoteBitmaps(top *ascii.Section, section *ascii.Section, bitmapFields map[string]*potentialDataType) error {
 	var dataTypesSection *ascii.Section
 	for _, bitmap := range bitmapFields {
 		if bitmap.section == nil {

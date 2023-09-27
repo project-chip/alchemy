@@ -41,7 +41,7 @@ func organizeAttributesTable(doc *ascii.Doc, top *ascii.Section, attributes *asc
 		return err
 	}
 
-	sectionDataMap := getSectionDataTypeInfo(attributes, rows, columnMap)
+	sectionDataMap := getPotentialDataTypes(attributes, rows, columnMap)
 
 	promoteDataTypes(top, attributes, sectionDataMap)
 
