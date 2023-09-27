@@ -7,7 +7,6 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/output"
-	"github.com/hasty/matterfmt/render"
 	"github.com/urfave/cli/v2"
 )
 
@@ -37,15 +36,9 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 		case *types.BlankLine:
 			fmt.Print("{blank}\n")
 		case *types.DelimitedBlock:
-			fmt.Print("{delim}: ")
+			fmt.Printf("{delim kind=%s}:\n", el.Kind)
 			dumpAttributes(cxt, el.Attributes, indent+1)
-			switch el.Kind {
-			case "comment":
-				renderContext := output.NewContext(cxt, cxt.Doc)
-				render.RenderElements(renderContext, "", []interface{}{el})
-				fmt.Print(snippet(renderContext.String()))
-			}
-			fmt.Print("\n")
+			DumpElements(cxt, el.Elements, indent+1)
 		case *types.AttributeDeclaration:
 			fmt.Printf("{attrib}: %s", el.Name)
 			DumpElements(cxt, []interface{}{el.Value}, indent+1)
@@ -101,11 +94,7 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			fmt.Printf("{sym: %s}\n", el.Name)
 		case *types.InlineLink:
 			fmt.Printf("{link: ")
-			if el.Location != nil {
-				fmt.Printf("%s %s}", el.Location.Scheme, el.Location.Path.(string))
-			} else {
-				fmt.Printf("missing location")
-			}
+			dumpLocation(cxt, el.Location)
 			fmt.Print("}\n")
 			dumpAttributes(cxt, el.Attributes, indent+1)
 		case *types.DocumentHeader:
@@ -151,6 +140,16 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 				DumpElements(cxt, fn.Elements, indent+1)
 
 			}
+		case *types.InlineImage:
+			fmt.Printf("{image: ")
+			dumpLocation(cxt, el.Location)
+			fmt.Print("}\n")
+			dumpAttributes(cxt, el.Attributes, indent+1)
+		case *types.ImageBlock:
+			fmt.Printf("{imageblock: ")
+			dumpLocation(cxt, el.Location)
+			fmt.Print("}\n")
+			dumpAttributes(cxt, el.Attributes, indent+1)
 		default:
 			fmt.Printf("unknown element type: %T\n", el)
 		}
@@ -212,6 +211,14 @@ func dumpTableRow(cxt *output.Context, row *types.TableRow, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{row}:\n")
 	dumpTableCells(cxt, row.Cells, indent+1)
+}
+
+func dumpLocation(cxt *output.Context, l *types.Location) {
+	if l != nil {
+		fmt.Printf("%s %s}", l.Scheme, l.Path.(string))
+	} else {
+		fmt.Printf("missing location")
+	}
 }
 
 func snippet(str string) string {
