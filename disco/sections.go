@@ -10,10 +10,10 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func assignTopLevelSectionTypes(top *ascii.Section) {
+func assignSectionTypes(top *ascii.Section) {
 	top.SecType = matter.SectionTop
 
-	traverse(top, top.Elements, func(el interface{}, parent HasElements, index int) bool {
+	ascii.Traverse(top, top.Elements, func(el interface{}, parent ascii.HasElements, index int) bool {
 		section, ok := el.(*ascii.Section)
 		if !ok {
 			//	fmt.Printf("not an ascii.Section: %T\n", parent)
@@ -156,12 +156,10 @@ func setSectionTitle(sec *ascii.Section, title string) {
 
 func findSectionByType(top *ascii.Section, sectionType matter.Section) *ascii.Section {
 	var found *ascii.Section
-	find(top.Elements, func(el interface{}) bool {
-		if s, ok := el.(*ascii.Section); ok {
-			if s.SecType == sectionType {
-				found = s
-				return true
-			}
+	ascii.Search(top.Elements, func(s *ascii.Section) bool {
+		if s.SecType == sectionType {
+			found = s
+			return true
 		}
 		return false
 	})

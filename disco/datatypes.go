@@ -124,7 +124,8 @@ func promoteDataTypes(top *ascii.Section, section *ascii.Section, sectionDataMap
 		}
 	}
 	var dataTypeCount int
-	find(section.Elements, func(el interface{}) bool {
+
+	ascii.Search(section.Elements, func(el interface{}) bool {
 		s, ok := el.(*ascii.Section)
 		if !ok {
 			return false
@@ -187,7 +188,7 @@ func promoteDataType(top *ascii.Section, section *ascii.Section, suffix string, 
 		}
 
 		var removedTable bool
-		filter(dt.section, func(i interface{}) (remove bool, shortCircuit bool) {
+		ascii.Filter(dt.section, func(i interface{}) (remove bool, shortCircuit bool) {
 			if t, ok := i.(*types.Table); ok && table == t {
 				removedTable = true
 				return true, true
@@ -273,7 +274,7 @@ func promoteEnums(top *ascii.Section, section *ascii.Section, enumFields map[str
 		}
 
 		var removedTable bool
-		filter(enum.section, func(i interface{}) (remove bool, shortCircuit bool) {
+		ascii.Filter(enum.section, func(i interface{}) (remove bool, shortCircuit bool) {
 			if t, ok := i.(*types.Table); ok && table == t {
 				removedTable = true
 				return true, true
@@ -362,7 +363,7 @@ func promoteBitmaps(top *ascii.Section, section *ascii.Section, bitmapFields map
 		}
 
 		dataTypesSection.AppendSection(s)
-		filter(bitmap.section, func(i interface{}) (remove bool, shortCircuit bool) {
+		ascii.Filter(bitmap.section, func(i interface{}) (remove bool, shortCircuit bool) {
 			if i == bitmap.section {
 				fmt.Printf("removing existing section\n")
 				return true, true

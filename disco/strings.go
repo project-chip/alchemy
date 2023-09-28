@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/matterfmt/ascii"
 )
 
 var missingSpaceAfterPunctuationPattern = regexp.MustCompile(`([a-z])([.?!,])([A-Z])`)
@@ -13,14 +14,14 @@ var lowercaseHexPattern = regexp.MustCompile(`(\b0x[0-9a-f]*[a-f][0-9a-f]*\b)`)
 var lowercasePattern = regexp.MustCompile(`[a-f]+`)
 
 func precleanStrings(elements []interface{}) {
-	find(elements, func(t *types.StringElement) bool {
+	ascii.Search(elements, func(t *types.StringElement) bool {
 		t.Content = strings.ReplaceAll(t.Content, "\t", "  ")
 		return false
 	})
 }
 
 func postCleanUpStrings(elements []interface{}) {
-	find(elements, func(t *types.StringElement) bool {
+	ascii.Search(elements, func(t *types.StringElement) bool {
 		t.Content = missingSpaceAfterPunctuationPattern.ReplaceAllString(t.Content, "$1$2 $3")
 		t.Content = multipleSpacesPattern.ReplaceAllString(t.Content, "$1 $2")
 		t.Content = lowercaseHexPattern.ReplaceAllStringFunc(t.Content, func(s string) string {

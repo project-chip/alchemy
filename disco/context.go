@@ -9,5 +9,8 @@ type Context struct {
 }
 
 func NewContext(parent context.Context) *Context {
-	return &Context{Context: parent, potentialDataTypes: make(map[string][]*potentialDataType)}
+	return &Context{
+		Context:            parent,
+		potentialDataTypes: make(map[string][]*potentialDataType),
+	}
 }

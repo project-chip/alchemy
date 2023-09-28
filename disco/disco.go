@@ -17,18 +17,14 @@ func Ball(cxt *Context, doc *ascii.Doc) error {
 	precleanStrings(doc.Elements)
 	fixUnrecognizedReferences(doc)
 
-	var topLevelSection *ascii.Section
-	find(doc.Elements, func(s *ascii.Section) bool {
-		topLevelSection = s
-		return true
-	})
+	topLevelSection := ascii.FindFirst[*ascii.Section](doc.Elements)
 	if topLevelSection == nil {
 		return fmt.Errorf("missing top level section")
 	}
 
-	assignTopLevelSectionTypes(topLevelSection)
+	assignSectionTypes(topLevelSection)
 
-	find(topLevelSection.Elements, func(s *ascii.Section) bool {
+	ascii.Search(topLevelSection.Elements, func(s *ascii.Section) bool {
 		err := organizeSubSection(doc, docType, topLevelSection, s)
 		if err != nil {
 			slog.Warn("error organizing subsection", "docType", docType, "sectionType", s.SecType, "error", err)
