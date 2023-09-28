@@ -2,6 +2,7 @@ package disco
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -10,16 +11,51 @@ import (
 )
 
 type potentialDataType struct {
-	name     string
-	dataType string
-	section  *ascii.Section
-	typeCell *types.TableCell
-	table    *types.Table
-	suffix   string
+	name                string
+	ref                 string
+	dataType            string
+	dataTypeCategory    matter.DataTypeCategory
+	section             *ascii.Section
+	typeCell            *types.TableCell
+	definitionTable     *types.Table
+	indexColumn         matter.TableColumn
+	definitionColumnMap map[matter.TableColumn]int
+	existing            bool
 }
 
-func getPotentialDataTypes(section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (sectionDataMap map[string]*potentialDataType) {
-	sectionDataMap = make(map[string]*potentialDataType)
+var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
+
+func getExistingDataTypes(cxt *Context, top *ascii.Section) {
+	dataTypesSection := findSectionByType(top, matter.SectionDataTypes)
+	if dataTypesSection == nil {
+		return
+	}
+	for _, ss := range ascii.FindAll[*ascii.Section](dataTypesSection.Elements) {
+		name := stripDataTypeSuffixes(ss.Name)
+		nameKey := strings.ToLower(name)
+		var dataType string
+		se := ascii.FindFirst[*types.StringElement](ss.Elements)
+		if se != nil {
+			match := dataTypeDefinitionPattern.FindStringSubmatch(se.Content)
+			if match != nil {
+				dataType = match[1]
+			}
+		}
+		dataTypeCategory := getDataTypeCategory(dataType)
+		cxt.potentialDataTypes[nameKey] = append(cxt.potentialDataTypes[nameKey], &potentialDataType{
+			name:             name,
+			ref:              name,
+			section:          ss,
+			dataType:         dataType,
+			dataTypeCategory: dataTypeCategory,
+			existing:         true,
+			indexColumn:      getIndexColumnType(dataTypeCategory),
+		})
+	}
+}
+
+func getPotentialDataTypes(cxt *Context, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) {
+	sectionDataMap := make(map[string]*potentialDataType)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
 		return
@@ -39,130 +75,123 @@ func getPotentialDataTypes(section *ascii.Section, rows []*types.TableRow, colum
 		}
 		name := strings.TrimSpace(cv)
 		nameKey := strings.ToLower(name)
+
+		dataType := strings.TrimSpace(dtv)
+		dataTypeCategory := getDataTypeCategory(dataType)
+
+		if dataTypeCategory == matter.DataTypeCategoryUnknown {
+			continue
+		}
+
 		if _, ok := sectionDataMap[nameKey]; !ok {
-			sectionDataMap[nameKey] = &potentialDataType{name: name, dataType: strings.TrimSpace(dtv), typeCell: row.Cells[typeIndex]}
+			sectionDataMap[nameKey] = &potentialDataType{
+				name:             name,
+				ref:              name,
+				dataType:         dataType,
+				dataTypeCategory: dataTypeCategory,
+				typeCell:         row.Cells[typeIndex],
+			}
 		}
 	}
 	for _, el := range section.Elements {
 		if s, ok := el.(*ascii.Section); ok {
-			var name string
-			switch section.SecType {
-			case matter.SectionAttributes:
-				name = strings.TrimSuffix(s.Name, " Attribute")
-			default:
-				name = s.Name
-			}
+			name := strings.TrimSpace(stripReferenceSuffixes(s.Name))
 
-			ai, ok := sectionDataMap[strings.ToLower(name)]
+			dataType, ok := sectionDataMap[strings.ToLower(name)]
 			if !ok {
 				continue
 			}
-			ai.section = s
+			table := findFirstTable(s)
+			if table == nil {
+				continue
+			}
+			_, columnMap, _ := findColumns(combineRows(table))
+			dataType.indexColumn = getIndexColumnType(dataType.dataTypeCategory)
+
+			if valueIndex, ok := columnMap[dataType.indexColumn]; !ok || valueIndex > 0 {
+				continue
+			}
+			dataType.section = s
+			dataType.definitionTable = table
+
 		}
 	}
-	return
+	for name, dataType := range sectionDataMap {
+		if dataType.section != nil {
+			cxt.potentialDataTypes[name] = append(cxt.potentialDataTypes[name], dataType)
+		}
+	}
 }
 
-/*func gatherDataTypes(cxt *Context, top *ascii.Section, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
-	sectionDataTypes := getPotentialDataTypes(section, rows, columnMap)
-	enumFields := make(map[string]*potentialDataType)
-	bitmapFields := make(map[string]*potentialDataType)
-	for field, info := range sectionDataMap {
-		fmt.Printf("\"field\": %s -> %s\n", field, info.dataType)
-		switch info.dataType {
-		case "enum8", "enum16", "enum32":
-			enumFields[field] = info
-		case "map8", "map16", "map32":
-			bitmapFields[field] = info
-		}
-	}
-	var dataTypeCount int
-	find(section.Elements, func(el interface{}) bool {
-		s, ok := el.(*ascii.Section)
-		if !ok {
-			return false
-		}
-		name := strings.TrimSpace(stripReferenceSuffixes(s.Name))
-		fmt.Printf("name: %s -> \"%s\"\n", s.Name, strings.ToLower(name))
-		if sdt, ok := enumFields[strings.ToLower(name)]; ok {
-			fmt.Printf("Enum field! %s\n", name)
-			sdt.section = s
-			dataTypeCount++
-		} else if sdt, ok := bitmapFields[strings.ToLower(name)]; ok {
-			fmt.Printf("Bitmap field! %s\n", name)
-			sdt.section = s
-			dataTypeCount++
-		}
+func promoteDataTypes(cxt *Context, top *ascii.Section) error {
 
-		return false
-	})
-	if dataTypeCount == 0 {
-		return nil
-	}
-	err := promoteDataType(top, section, "Bitmap", bitmapFields, matter.TableColumnBit)
-	if err != nil {
-		return err
-	}
-	err = promoteDataType(top, section, "Enum", enumFields, matter.TableColumnValue)
-	if err != nil {
-		return err
-	}
-	return nil
-}*/
+	fields := make(map[matter.DataTypeCategory]map[string]*potentialDataType)
+	//var dataTypeCount int
+	//enumFields := make(map[string]*potentialDataType)
+	//bitmapFields := make(map[string]*potentialDataType)
+	for _, infos := range cxt.potentialDataTypes {
+		if len(infos) > 1 {
+			disambiguateDataTypes(cxt, infos)
+		}
+		for _, info := range infos {
+			fieldMap, ok := fields[info.dataTypeCategory]
+			if !ok {
+				fieldMap = make(map[string]*potentialDataType)
+				fields[info.dataTypeCategory] = fieldMap
+			}
+			fieldMap[info.name] = info
 
-func promoteDataTypes(top *ascii.Section, section *ascii.Section, sectionDataMap map[string]*potentialDataType) error {
-	//return nil
-	enumFields := make(map[string]*potentialDataType)
-	bitmapFields := make(map[string]*potentialDataType)
-	for field, info := range sectionDataMap {
-		fmt.Printf("\"field\": %s -> %s\n", field, info.dataType)
-		switch info.dataType {
-		case "enum8", "enum16", "enum32":
-			enumFields[field] = info
-		case "map8", "map16", "map32":
-			bitmapFields[field] = info
 		}
 	}
-	var dataTypeCount int
 
-	ascii.Search(section.Elements, func(el interface{}) bool {
-		s, ok := el.(*ascii.Section)
-		if !ok {
-			return false
+	if len(fields) > 0 {
+		for _, dtc := range matter.DataTypeOrder {
+			f, ok := fields[dtc]
+			if !ok {
+				continue
+			}
+			suffix := matter.DataTypeSuffixes[dtc]
+			idColumn := matter.DataTypeIdentityColumn[dtc]
+			err := promoteDataType(top, suffix, f, idColumn)
+			if err != nil {
+				return err
+			}
 		}
-		name := strings.TrimSpace(stripReferenceSuffixes(s.Name))
-		fmt.Printf("name: %s -> \"%s\"\n", s.Name, strings.ToLower(name))
-		if sdt, ok := enumFields[strings.ToLower(name)]; ok {
-			fmt.Printf("Enum field! %s\n", name)
-			sdt.section = s
-			dataTypeCount++
-		} else if sdt, ok := bitmapFields[strings.ToLower(name)]; ok {
-			fmt.Printf("Bitmap field! %s\n", name)
-			sdt.section = s
-			dataTypeCount++
-		}
-
-		return false
-	})
-	if dataTypeCount == 0 {
-		return nil
-	}
-	err := promoteDataType(top, section, "Bitmap", bitmapFields, matter.TableColumnBit)
-	if err != nil {
-		return err
-	}
-	err = promoteDataType(top, section, "Enum", enumFields, matter.TableColumnValue)
-	if err != nil {
-		return err
 	}
 	return nil
 }
 
-func promoteDataType(top *ascii.Section, section *ascii.Section, suffix string, dataTypeFields map[string]*potentialDataType, firstColumnType matter.TableColumn) error {
+func getIndexColumnType(dataTypeCategory matter.DataTypeCategory) matter.TableColumn {
+	switch dataTypeCategory {
+	case matter.DataTypeCategoryEnum:
+		return matter.TableColumnValue
+	case matter.DataTypeCategoryBitmap:
+		return matter.TableColumnBit
+	}
+	return matter.TableColumnUnknown
+}
+
+func getDataTypeCategory(dataType string) matter.DataTypeCategory {
+	switch dataType {
+	case "enum8", "enum16", "enum32":
+		return matter.DataTypeCategoryEnum
+	case "map8", "map16", "map32":
+		return matter.DataTypeCategoryBitmap
+	}
+	return matter.DataTypeCategoryUnknown
+}
+
+func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[string]*potentialDataType, firstColumnType matter.TableColumn) error {
+	if dataTypeFields == nil {
+		return nil
+	}
 	var dataTypesSection *ascii.Section
 	for _, dt := range dataTypeFields {
+		if dt.existing {
+			continue
+		}
+
 		if dt.section == nil {
-			fmt.Printf("skipping non-section\n")
 			continue
 		}
 		table := findFirstTable(dt.section)
@@ -171,7 +200,6 @@ func promoteDataType(top *ascii.Section, section *ascii.Section, suffix string, 
 		}
 		_, columnMap, _ := findColumns(combineRows(table))
 		if valueIndex, ok := columnMap[firstColumnType]; !ok || valueIndex > 0 {
-			fmt.Printf("missing value column\n")
 			continue
 		}
 
@@ -210,11 +238,14 @@ func promoteDataType(top *ascii.Section, section *ascii.Section, suffix string, 
 		dataTypeSection.AddElement(table)
 		dataTypeSection.AddElement(bl)
 		newAttr := make(types.Attributes)
+		var newId string
 		if id, ok := table.Attributes.GetAsString(types.AttrID); ok {
 			// Reuse the table's ID if it has one, so existing links get updated
-			newAttr[types.AttrID] = id
+			newId = id
+			newAttr[types.AttrID] = newId
 		} else {
-			newAttr[types.AttrID] = "ref_" + title.Content + ", " + title.Content
+			newId = "ref_" + dt.ref + suffix
+			newAttr[types.AttrID] = newId + ", " + dt.name + suffix
 		}
 
 		dataTypeSection.AddAttributes(newAttr)
@@ -230,147 +261,11 @@ func promoteDataType(top *ascii.Section, section *ascii.Section, suffix string, 
 		table.Attributes.Unset(types.AttrID)
 		table.Attributes.Unset(types.AttrTitle)
 
-		icr, _ := types.NewInternalCrossReference("ref_"+title.Content, "")
+		icr, _ := types.NewInternalCrossReference(newId, "")
 		err = setCellValue(dt.typeCell, []interface{}{icr})
 		if err != nil {
 			return err
 		}
-	}
-	return nil
-}
-
-func promoteEnums(top *ascii.Section, section *ascii.Section, enumFields map[string]*potentialDataType) error {
-	var dataTypesSection *ascii.Section
-	for _, enum := range enumFields {
-		if enum.section == nil {
-			fmt.Printf("skipping non-section\n")
-			continue
-		}
-		table := findFirstTable(enum.section)
-		if table == nil {
-			fmt.Printf("skipping no table\n")
-			continue
-		}
-		fmt.Printf("data table %s row count %d\n", enum.name, len(table.Rows))
-		_, columnMap, _ := findColumns(combineRows(table))
-		for ct, c := range columnMap {
-			fmt.Printf("%v -> %v\n", ct, c)
-		}
-		if valueIndex, ok := columnMap[matter.TableColumnValue]; !ok || valueIndex > 0 {
-			fmt.Printf("missing value column\n")
-			continue
-		}
-
-		title, err := types.NewStringElement(enum.name + "Enum")
-		if err != nil {
-			return err
-		}
-
-		if dataTypesSection == nil {
-			dataTypesSection, err = ensureDataTypesSection(top)
-			if err != nil {
-				return err
-			}
-		}
-
-		var removedTable bool
-		ascii.Filter(enum.section, func(i interface{}) (remove bool, shortCircuit bool) {
-			if t, ok := i.(*types.Table); ok && table == t {
-				removedTable = true
-				return true, true
-			}
-			return false, false
-		})
-
-		if !removedTable {
-			return fmt.Errorf("unable to relocate enum value table")
-		}
-
-		enumSection, _ := types.NewSection(dataTypesSection.Base.Level+1, []interface{}{title})
-
-		se, _ := types.NewStringElement(fmt.Sprintf("This data type is derived from %s", enum.dataType))
-		p, _ := types.NewParagraph(nil, se)
-		enumSection.AddElement(p)
-		bl, _ := types.NewBlankLine()
-		enumSection.AddElement(bl)
-		enumSection.AddElement(table)
-		enumSection.AddElement(bl)
-		newAttr := make(types.Attributes)
-		newAttr[types.AttrID] = "ref_" + title.Content + ", " + title.Content
-		enumSection.AddAttributes(newAttr)
-
-		s, err := ascii.NewSection(dataTypesSection, enumSection)
-
-		if err != nil {
-			return err
-		}
-
-		dataTypesSection.AppendSection(s)
-
-		table.Attributes.Unset(types.AttrID)
-		table.Attributes.Unset(types.AttrTitle)
-
-		icr, _ := types.NewInternalCrossReference("ref_"+title.Content, "")
-		err = setCellValue(enum.typeCell, []interface{}{icr})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func promoteBitmaps(top *ascii.Section, section *ascii.Section, bitmapFields map[string]*potentialDataType) error {
-	var dataTypesSection *ascii.Section
-	for _, bitmap := range bitmapFields {
-		if bitmap.section == nil {
-			fmt.Printf("skipping non-section\n")
-			continue
-		}
-		t := findFirstTable(bitmap.section)
-		if t == nil {
-			fmt.Printf("skipping no table\n")
-			continue
-		}
-		fmt.Printf("data table row count %d\n", len(t.Rows))
-		_, columnMap, _ := findColumns(combineRows(t))
-		if bitIndex, ok := columnMap[matter.TableColumnBit]; !ok || bitIndex > 0 {
-			fmt.Printf("missing bit column\n")
-			continue
-		}
-		title, err := types.NewStringElement(bitmap.name + "Bitmap")
-		if err != nil {
-			return err
-		}
-
-		if dataTypesSection == nil {
-			dataTypesSection, err = ensureDataTypesSection(top)
-			if err != nil {
-				return err
-			}
-		}
-
-		bitmapSection, _ := types.NewSection(dataTypesSection.Base.Level+1, []interface{}{title})
-		se, _ := types.NewStringElement(fmt.Sprintf("This data type is derived from %s", bitmap.dataType))
-		p, _ := types.NewParagraph(nil, se)
-		bitmapSection.AddElement(p)
-		bl, _ := types.NewBlankLine()
-		bitmapSection.AddElement(bl)
-		bitmapSection.AddElement(t)
-		bitmapSection.AddElement(bl)
-		s, err := ascii.NewSection(dataTypesSection, bitmapSection)
-		if err != nil {
-			return err
-		}
-
-		dataTypesSection.AppendSection(s)
-		ascii.Filter(bitmap.section, func(i interface{}) (remove bool, shortCircuit bool) {
-			if i == bitmap.section {
-				fmt.Printf("removing existing section\n")
-				return true, true
-			}
-			return false, false
-		})
-		t.Attributes.Set("tableSectionName", section.Name)
 	}
 	return nil
 }
@@ -397,4 +292,60 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 		return nil, err
 	}
 	return dataTypesSection, nil
+}
+
+func stripDataTypeSuffixes(dataType string) string {
+	for _, suffix := range matter.DataTypeSuffixes {
+		if strings.HasSuffix(dataType, suffix) {
+			dataType = dataType[0 : len(dataType)-len(suffix)]
+			break
+		}
+	}
+	return dataType
+}
+
+func disambiguateDataTypes(cxt *Context, infos []*potentialDataType) error {
+	parents := make([]interface{}, len(infos))
+	dataTypeNames := make([]string, len(infos))
+	dataTypeRefs := make([]string, len(infos))
+	for i, info := range infos {
+		parents[i] = info.section
+		dataTypeNames[i] = info.name
+		dataTypeRefs[i] = info.ref
+	}
+	parentSections := make([]*ascii.Section, len(infos))
+	for {
+		for i := range infos {
+			parentSection := findRefSection(parents[i])
+			if parentSection == nil {
+				return fmt.Errorf("duplicate reference: %s with invalid parent", dataTypeNames[i])
+			}
+			parentSections[i] = parentSection
+			refParentId := strings.TrimSpace(stripReferenceSuffixes(getReferenceName(parentSection.Base)))
+			dataTypeNames[i] = refParentId + " " + dataTypeNames[i]
+			dataTypeRefs[i] = refParentId + "_" + dataTypeNames[i]
+		}
+		ids := make(map[string]struct{})
+		var duplicateIds bool
+		for _, refId := range dataTypeRefs {
+			if _, ok := ids[refId]; ok {
+				duplicateIds = true
+			}
+			ids[refId] = struct{}{}
+		}
+		if duplicateIds {
+			for i, info := range infos {
+				parents[i] = parentSections[i].Parent
+				dataTypeNames[i] = info.name
+				dataTypeRefs[i] = info.ref
+			}
+		} else {
+			break
+		}
+	}
+	for i, info := range infos {
+		info.name = dataTypeNames[i]
+		info.ref = dataTypeRefs[i]
+	}
+	return nil
 }

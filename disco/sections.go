@@ -16,18 +16,14 @@ func assignSectionTypes(top *ascii.Section) {
 	ascii.Traverse(top, top.Elements, func(el interface{}, parent ascii.HasElements, index int) bool {
 		section, ok := el.(*ascii.Section)
 		if !ok {
-			//	fmt.Printf("not an ascii.Section: %T\n", parent)
 			return false
 		}
 		ps, ok := parent.(*ascii.Section)
 		if !ok {
-			//	fmt.Printf("parent not an ascii.Section: %T\n", parent)
 			return false
 		}
 
-		fmt.Printf("ascii.Section: %s\n", matter.SectionTypeName(ps.SecType))
 		section.SecType = getSectionType(ps, section)
-		fmt.Printf("%s -> %s!\n", section.Name, matter.SectionTypeName(section.SecType))
 		return false
 	})
 }

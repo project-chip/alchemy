@@ -2,7 +2,6 @@ package disco
 
 import (
 	"fmt"
-	"log/slog"
 
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
@@ -24,13 +23,19 @@ func Ball(cxt *Context, doc *ascii.Doc) error {
 
 	assignSectionTypes(topLevelSection)
 
-	ascii.Search(topLevelSection.Elements, func(s *ascii.Section) bool {
-		err := organizeSubSection(doc, docType, topLevelSection, s)
+	getExistingDataTypes(cxt, topLevelSection)
+
+	for _, s := range ascii.FindAll[*ascii.Section](topLevelSection.Elements) {
+		err := organizeSubSection(cxt, doc, docType, topLevelSection, s)
 		if err != nil {
-			slog.Warn("error organizing subsection", "docType", docType, "sectionType", s.SecType, "error", err)
+			return err
 		}
-		return false
-	})
+	}
+
+	err = promoteDataTypes(cxt, topLevelSection)
+	if err != nil {
+		return err
+	}
 
 	err = normalizeAnchors(doc)
 	if err != nil {
@@ -50,16 +55,16 @@ func discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter
 	return nil
 }
 
-func organizeSubSection(doc *ascii.Doc, docType matter.DocType, top *ascii.Section, section *ascii.Section) error {
+func organizeSubSection(cxt *Context, doc *ascii.Doc, docType matter.DocType, top *ascii.Section, section *ascii.Section) error {
 	var err error
 	switch section.SecType {
 	case matter.SectionAttributes:
 		switch docType {
 		case matter.DocTypeAppCluster:
-			err = organizeAttributesSection(doc, top, section)
+			err = organizeAttributesSection(cxt, doc, top, section)
 		}
 	case matter.SectionCommands:
-		err = organizeCommandsSection(doc, section)
+		err = organizeCommandsSection(cxt, doc, section)
 	case matter.SectionClassification:
 		err = organizeClassificationSection(doc, section)
 	case matter.SectionClusterID:
