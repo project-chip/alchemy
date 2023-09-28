@@ -15,7 +15,7 @@ import (
 
 func findFirstTable(section *ascii.Section) *types.Table {
 	var table *types.Table
-	find(section.Elements, func(t *types.Table) bool {
+	ascii.Search(section.Elements, func(t *types.Table) bool {
 		table = t
 		return true
 	})
@@ -24,7 +24,7 @@ func findFirstTable(section *ascii.Section) *types.Table {
 }
 
 func ensureTableOptions(elements []interface{}) {
-	find(elements, func(t *types.Table) bool {
+	ascii.Search(elements, func(t *types.Table) bool {
 		if t.Attributes == nil {
 			t.Attributes = make(types.Attributes)
 		}
