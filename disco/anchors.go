@@ -147,7 +147,7 @@ func normalizeAnchorID(name string, element interface{}) (id string, label strin
 		if i > 0 && pascalCasePattern.MatchString(p) {
 			ref.WriteString("_")
 		}
-		ref.WriteString(p)
+		ref.WriteString(strings.Title(p))
 	}
 	id = ref.String()
 	id = "ref_" + acronymPattern.ReplaceAllStringFunc(id, func(match string) string {
