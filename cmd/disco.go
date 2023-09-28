@@ -8,25 +8,36 @@ import (
 	"github.com/hasty/matterfmt/disco"
 	"github.com/hasty/matterfmt/render"
 	"github.com/urfave/cli/v2"
+	"golang.org/x/sync/errgroup"
 )
 
 func DiscoBall(cxt context.Context, cCtx *cli.Context) error {
+
 	files, err := getFilePaths(cCtx)
 	if err != nil {
 		return err
 	}
+	g, errCxt := errgroup.WithContext(cxt)
 	for i, f := range files {
-		fmt.Fprintf(os.Stderr, "Disco-balling %s (%d of %d)...\n", f, (i + 1), len(files))
-		out, err := getOutputContext(cxt, f)
-		if err != nil {
-			return err
-		}
-		err = disco.Ball(disco.NewContext(cxt), out.Doc)
-		result, err := render.Render(cxt, out.Doc)
-		if err != nil {
-			return err
-		}
-		os.WriteFile(f, []byte(result), os.ModeAppend)
+		func(file string, index int) {
+			g.Go(func() error {
+				fmt.Fprintf(os.Stderr, "Disco-balling %s (%d of %d)...\n", file, (index + 1), len(files))
+				out, err := getOutputContext(errCxt, file)
+				if err != nil {
+					return err
+				}
+				err = disco.Ball(disco.NewContext(errCxt), out.Doc)
+				if err != nil {
+					return err
+				}
+				result, err := render.Render(errCxt, out.Doc)
+				if err != nil {
+					return err
+				}
+				return os.WriteFile(file, []byte(result), os.ModeAppend)
+			})
+		}(f, i)
+
 	}
-	return nil
+	return g.Wait()
 }
