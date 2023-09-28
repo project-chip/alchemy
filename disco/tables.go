@@ -93,7 +93,6 @@ func getCellValue(cell *types.TableCell) (string, error) {
 	out := output.NewContext(context.Background(), nil)
 	err := render.RenderElements(out, "", p.Elements)
 	if err != nil {
-		fmt.Printf("error rendering table cell contents: %v\n", err)
 		return "", err
 	}
 	return out.String(), nil
@@ -144,7 +143,6 @@ func getTableColumn(cell *types.TableCell) matter.TableColumn {
 	if err != nil {
 		return matter.TableColumnUnknown
 	}
-	fmt.Printf("getTableColumn: %s\n", cv)
 	switch strings.ToLower(cv) {
 	case "id", "identifier":
 		return matter.TableColumnID

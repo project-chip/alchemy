@@ -73,7 +73,6 @@ func findAnchors(doc *ascii.Doc, crossReferences map[string][]*types.InternalCro
 			return false
 		}
 		id := strings.TrimSpace(idAttr.(string))
-		fmt.Printf("anchor id: \"%s\"\n", id)
 		var label string
 		if parts := strings.Split(id, ","); len(parts) > 1 {
 			id = strings.TrimSpace(parts[0])
@@ -131,6 +130,8 @@ func normalizeAnchor(info *anchorInfo) {
 	info.label = label
 }
 
+var pascalCasePattern = regexp.MustCompile(`^[A-Z][a-z]+([A-Z][a-z]+)+$`)
+
 func normalizeAnchorID(name string, element interface{}) (id string, label string) {
 	switch element.(type) {
 	case *types.Table:
@@ -142,7 +143,10 @@ func normalizeAnchorID(name string, element interface{}) (id string, label strin
 	var ref strings.Builder
 
 	parts := strings.Split(label, " ")
-	for _, p := range parts {
+	for i, p := range parts {
+		if i > 0 && pascalCasePattern.MatchString(p) {
+			ref.WriteString("_")
+		}
 		ref.WriteString(p)
 	}
 	id = ref.String()

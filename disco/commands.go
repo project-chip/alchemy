@@ -2,6 +2,7 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -9,23 +10,19 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func organizeCommandsSection(doc *ascii.Doc, section *ascii.Section) error {
-	t := findFirstTable(section)
+func organizeCommandsSection(cxt *Context, doc *ascii.Doc, commands *ascii.Section) error {
+	t := findFirstTable(commands)
 	if t == nil {
-		return fmt.Errorf("no commands section found")
+		return fmt.Errorf("no commands table found")
 	}
-	err := organizeCommandsTable(doc, section, t)
-	if err != nil {
-		return err
-	}
-	return nil
+	return organizeCommandsTable(cxt, doc, commands, t)
 }
 
-func organizeCommandsTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
+func organizeCommandsTable(cxt *Context, doc *ascii.Doc, commands *ascii.Section, commandsTable *types.Table) error {
 
-	setSectionTitle(section, matter.CommandsSectionName)
+	setSectionTitle(commands, matter.CommandsSectionName)
 
-	rows := combineRows(attributesTable)
+	rows := combineRows(commandsTable)
 
 	headerRowIndex, columnMap, extraColumns := findColumns(rows)
 
@@ -52,8 +49,43 @@ func organizeCommandsTable(doc *ascii.Doc, section *ascii.Section, attributesTab
 		return err
 	}
 
-	reorderColumns(doc, section, rows, matter.CommandsTableColumnOrder[:], columnMap, extraColumns)
+	organizeCommands(cxt, commands, commandsTable, columnMap)
+
+	reorderColumns(doc, commands, rows, matter.CommandsTableColumnOrder[:], columnMap, extraColumns)
 	return nil
+}
+
+func organizeCommands(cxt *Context, commands *ascii.Section, commandsTable *types.Table, columnMap map[matter.TableColumn]int) {
+	nameIndex, ok := columnMap[matter.TableColumnName]
+	if !ok {
+		return
+	}
+	commandNames := make(map[string]struct{}, len(commandsTable.Rows))
+	for _, row := range commandsTable.Rows {
+		commandName, err := getCellValue(row.Cells[nameIndex])
+		if err != nil {
+			slog.Warn("could not get cell value for command", "err", err)
+			continue
+		}
+		commandNames[commandName] = struct{}{}
+	}
+	subSections := ascii.FindAll[*ascii.Section](commands.Elements)
+	for _, ss := range subSections {
+		name := strings.TrimSuffix(ss.Name, " Command")
+		if _, ok := commandNames[name]; !ok {
+			continue
+		}
+		t := findFirstTable(ss)
+		if t == nil {
+			continue
+		}
+		rows := combineRows(t)
+
+		_, columnMap, _ := findColumns(rows)
+		getPotentialDataTypes(cxt, ss, rows, columnMap)
+	}
+
+	//getPotentialDataTypes(cxt, commands, rows, columnMap)
 }
 
 func fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {

@@ -10,20 +10,15 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func organizeAttributesSection(doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
+func organizeAttributesSection(cxt *Context, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
 	attributesTable := findFirstTable(attributes)
-	if attributesTable != nil {
-		err := organizeAttributesTable(doc, top, attributes, attributesTable)
-		if err != nil {
-			return err
-		}
-	} else {
+	if attributesTable == nil {
 		return fmt.Errorf("no attributes table found")
 	}
-	return nil
+	return organizeAttributesTable(cxt, doc, top, attributes, attributesTable)
 }
 
-func organizeAttributesTable(doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
+func organizeAttributesTable(cxt *Context, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
 	rows := combineRows(attributesTable)
 
 	_, columnMap, extraColumns := findColumns(rows)
@@ -41,9 +36,7 @@ func organizeAttributesTable(doc *ascii.Doc, top *ascii.Section, attributes *asc
 		return err
 	}
 
-	sectionDataMap := getPotentialDataTypes(attributes, rows, columnMap)
-
-	promoteDataTypes(top, attributes, sectionDataMap)
+	getPotentialDataTypes(cxt, attributes, rows, columnMap)
 
 	reorderColumns(doc, attributes, rows, matter.AttributesTableColumnOrder[:], columnMap, extraColumns)
 
