@@ -21,7 +21,10 @@ func organizeClassificationSection(doc *ascii.Doc, section *ascii.Section) error
 func organizeClassificationTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
 	rows := combineRows(attributesTable)
 
-	headerRowIndex, columnMap, extraColumns := findColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := findColumns(rows)
+	if err != nil {
+		return err
+	}
 
 	if columnMap == nil {
 		slog.Debug("can't rearrange classification table without header row")
@@ -33,7 +36,7 @@ func organizeClassificationTable(doc *ascii.Doc, section *ascii.Section, attribu
 		return nil
 	}
 
-	err := renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClassificationTableColumnNames)
+	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClassificationTableColumnNames)
 	if err != nil {
 		return err
 	}

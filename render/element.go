@@ -39,7 +39,7 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		case *types.BlankLine:
 			switch previous.(type) {
 			case *types.StringElement, *types.FootnoteReference, *types.Paragraph:
-				cxt.WriteRune('\n')
+				cxt.WriteNewline()
 			}
 			cxt.WriteRune('\n')
 		case *types.InternalCrossReference:
@@ -70,7 +70,7 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		case *types.LineBreak:
 			cxt.WriteString(" +")
 		case *types.DocumentHeader:
-			err = renderAttributes(cxt, el, el.Attributes)
+			err = renderAttributes(cxt, el, el.Attributes, false)
 			if err != nil {
 				return
 			}
@@ -86,6 +86,17 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 			err = renderInlineImage(cxt, el)
 		case *types.FootnoteReference:
 			err = renderFootnoteReference(cxt, el)
+		case *types.InlinePassthrough:
+			switch el.Kind {
+			case types.SinglePlusPassthrough, types.TriplePlusPassthrough:
+				cxt.WriteString(string(el.Kind))
+				err = RenderElements(cxt, "", el.Elements)
+				cxt.WriteString(string(el.Kind))
+			case types.PassthroughMacro:
+				cxt.WriteString("pass:[")
+				err = RenderElements(cxt, "", el.Elements)
+				cxt.WriteRune(']')
+			}
 		default:
 			err = fmt.Errorf("unknown element type: %T", el)
 		}

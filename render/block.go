@@ -48,7 +48,7 @@ func renderComment(cxt *output.Context, comment *types.DelimitedBlock) (err erro
 }
 
 func renderExample(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
-	renderAttributes(cxt, comment, comment.Attributes)
+	renderAttributes(cxt, comment, comment.Attributes, false)
 	cxt.WriteNewline()
 	cxt.WriteString("====")
 	cxt.WriteNewline()
@@ -60,7 +60,7 @@ func renderExample(cxt *output.Context, comment *types.DelimitedBlock) (err erro
 }
 
 func renderListing(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
-	err = renderAttributes(cxt, comment, comment.Attributes)
+	err = renderAttributes(cxt, comment, comment.Attributes, false)
 	if err != nil {
 		return
 	}
@@ -78,7 +78,7 @@ func renderListing(cxt *output.Context, comment *types.DelimitedBlock) (err erro
 }
 
 func renderLiteral(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
-	err = renderAttributes(cxt, comment, comment.Attributes)
+	err = renderAttributes(cxt, comment, comment.Attributes, false)
 	if err != nil {
 		return
 	}
@@ -96,32 +96,16 @@ func renderLiteral(cxt *output.Context, comment *types.DelimitedBlock) (err erro
 }
 
 func renderSidebar(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
-	var previous interface{}
-	for _, e := range comment.Elements {
-		switch el := e.(type) {
-		case *types.Paragraph:
-			cxt.WriteNewline()
-			cxt.WriteString("****")
-			cxt.WriteNewline()
-			err = renderParagraph(cxt, el, &previous)
-			cxt.WriteNewline()
-			cxt.WriteString("****")
-			cxt.WriteNewline()
-		case *types.StringElement:
-			cxt.WriteRune('\n')
-			cxt.WriteString("****")
-			cxt.WriteNewline()
-			text, _ := el.RawText()
-			cxt.WriteString(text)
-			cxt.WriteNewline()
-			cxt.WriteString("****")
-			cxt.WriteNewline()
-		default:
-			err = fmt.Errorf("unknown sidebar element type: %T", el)
-		}
-		if err != nil {
-			return
-		}
+	err = renderAttributes(cxt, comment, comment.Attributes, false)
+	if err != nil {
+		return
 	}
+	cxt.WriteNewline()
+	cxt.WriteString("****")
+	cxt.WriteNewline()
+	err = RenderElements(cxt, "", comment.Elements)
+	cxt.WriteNewline()
+	cxt.WriteString("****")
+	cxt.WriteNewline()
 	return
 }

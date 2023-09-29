@@ -24,7 +24,10 @@ func organizeCommandsTable(cxt *Context, doc *ascii.Doc, commands *ascii.Section
 
 	rows := combineRows(commandsTable)
 
-	headerRowIndex, columnMap, extraColumns := findColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := findColumns(rows)
+	if err != nil {
+		return err
+	}
 
 	if columnMap == nil {
 		return fmt.Errorf("can't rearrange commands table without header row")
@@ -34,7 +37,7 @@ func organizeCommandsTable(cxt *Context, doc *ascii.Doc, commands *ascii.Section
 		return fmt.Errorf("can't rearrange commands table with so few matches")
 	}
 
-	err := fixAccessCells(doc, rows, columnMap)
+	err = fixAccessCells(doc, rows, columnMap)
 	if err != nil {
 		return err
 	}
@@ -49,16 +52,19 @@ func organizeCommandsTable(cxt *Context, doc *ascii.Doc, commands *ascii.Section
 		return err
 	}
 
-	organizeCommands(cxt, commands, commandsTable, columnMap)
+	err = organizeCommands(cxt, commands, commandsTable, columnMap)
+	if err != nil {
+		return err
+	}
 
 	reorderColumns(doc, commands, rows, matter.CommandsTableColumnOrder[:], columnMap, extraColumns)
 	return nil
 }
 
-func organizeCommands(cxt *Context, commands *ascii.Section, commandsTable *types.Table, columnMap map[matter.TableColumn]int) {
+func organizeCommands(cxt *Context, commands *ascii.Section, commandsTable *types.Table, columnMap map[matter.TableColumn]int) error {
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
-		return
+		return nil
 	}
 	commandNames := make(map[string]struct{}, len(commandsTable.Rows))
 	for _, row := range commandsTable.Rows {
@@ -81,11 +87,17 @@ func organizeCommands(cxt *Context, commands *ascii.Section, commandsTable *type
 		}
 		rows := combineRows(t)
 
-		_, columnMap, _ := findColumns(rows)
-		getPotentialDataTypes(cxt, ss, rows, columnMap)
+		_, columnMap, _, err := findColumns(rows)
+		if err != nil {
+			return err
+		}
+		err = getPotentialDataTypes(cxt, ss, rows, columnMap)
+		if err != nil {
+			return err
+		}
 	}
 
-	//getPotentialDataTypes(cxt, commands, rows, columnMap)
+	return nil
 }
 
 func fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {

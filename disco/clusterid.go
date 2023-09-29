@@ -22,7 +22,10 @@ func organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, attributesTa
 
 	rows := combineRows(attributesTable)
 
-	headerRowIndex, columnMap, extraColumns := findColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := findColumns(rows)
+	if err != nil {
+		return err
+	}
 
 	if columnMap == nil {
 		return fmt.Errorf("can't rearrange cluster id table without header row")
@@ -32,7 +35,7 @@ func organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, attributesTa
 		return fmt.Errorf("can't rearrange cluster id table with so few matches")
 	}
 
-	err := renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClusterIDTableColumnNames)
+	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClusterIDTableColumnNames)
 	if err != nil {
 		return err
 	}
