@@ -201,8 +201,17 @@ func dumpTable(cxt *output.Context, tbl *types.Table, indent int) {
 func dumpTableCells(cxt *output.Context, cells []*types.TableCell, indent int) {
 	for _, c := range cells {
 		fmt.Print(strings.Repeat("\t", indent))
-		fmt.Print("{cell}:\n")
-		DumpElements(cxt, c.Elements, indent+1)
+		if c.Blank {
+			fmt.Print("{cellblank}:\n")
+		} else {
+			fmt.Print("{cell}:\n")
+			if c.Formatter != nil {
+				fmt.Print(strings.Repeat("\t", indent+1))
+				fmt.Printf("{format: %s (cell %d row %d)}\n", c.Formatter.Content, c.Formatter.ColumnSpan, c.Formatter.RowSpan)
+			}
+			DumpElements(cxt, c.Elements, indent+1)
+
+		}
 	}
 
 }

@@ -8,7 +8,7 @@ import (
 )
 
 func renderQuotedText(cxt *output.Context, qt *types.QuotedText) (err error) {
-	renderAttributes(cxt, qt, qt.Attributes)
+	renderAttributes(cxt, qt, qt.Attributes, false)
 	var wrapper string
 	switch qt.Kind {
 	case types.SingleQuoteBold:

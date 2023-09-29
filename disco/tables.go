@@ -3,7 +3,6 @@ package disco
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -190,25 +189,16 @@ func getTableColumn(cell *types.TableCell) matter.TableColumn {
 	return matter.TableColumnUnknown
 }
 
-func findColumns(rows []*types.TableRow) (int, map[matter.TableColumn]int, []int) {
+func findColumns(rows []*types.TableRow) (int, map[matter.TableColumn]int, []int, error) {
 	var columnMap map[matter.TableColumn]int
 	var extraColumns []int
 	var cellCount = -1
 	var headerRow = -1
 	for i, row := range rows {
-		for _, cell := range row.Cells {
-			if cell.Formatter != nil {
-				if cell.Formatter.ColumnSpan > 0 || cell.Formatter.RowSpan > 0 {
-					slog.Debug("can't rearrange attributes table with row or column spanning")
-					return -1, nil, nil
-				}
-			}
-		}
 		if cellCount == -1 {
 			cellCount = len(row.Cells)
 		} else if cellCount != len(row.Cells) {
-			slog.Debug("can't rearrange attributes table with unequal cell counts between rows")
-			return -1, nil, nil
+			return -1, nil, nil, fmt.Errorf("can't rearrange attributes table with unequal cell counts between rows")
 		}
 		if columnMap == nil {
 			var spares []int
@@ -220,8 +210,7 @@ func findColumns(rows []*types.TableRow) (int, map[matter.TableColumn]int, []int
 						columnMap = make(map[matter.TableColumn]int)
 					}
 					if _, ok := columnMap[attributeColumn]; ok {
-						slog.Debug("can't rearrange attributes table duplicate columns")
-						return -1, nil, nil
+						return -1, nil, nil, fmt.Errorf("can't rearrange attributes table duplicate columns")
 					}
 					columnMap[attributeColumn] = j
 				} else {
@@ -233,7 +222,7 @@ func findColumns(rows []*types.TableRow) (int, map[matter.TableColumn]int, []int
 			}
 		}
 	}
-	return headerRow, columnMap, extraColumns
+	return headerRow, columnMap, extraColumns, nil
 }
 
 func renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, nameMap map[matter.TableColumn]string) (err error) {

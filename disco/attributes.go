@@ -21,7 +21,10 @@ func organizeAttributesSection(cxt *Context, doc *ascii.Doc, top *ascii.Section,
 func organizeAttributesTable(cxt *Context, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
 	rows := combineRows(attributesTable)
 
-	_, columnMap, extraColumns := findColumns(rows)
+	_, columnMap, extraColumns, err := findColumns(rows)
+	if err != nil {
+		return err
+	}
 
 	if columnMap == nil {
 		return fmt.Errorf("can't rearrange attributes table without header row")
@@ -31,12 +34,15 @@ func organizeAttributesTable(cxt *Context, doc *ascii.Doc, top *ascii.Section, a
 		return fmt.Errorf("can't rearrange attributes table with so few matches")
 	}
 
-	err := fixAccessCells(doc, rows, columnMap)
+	err = fixAccessCells(doc, rows, columnMap)
 	if err != nil {
 		return err
 	}
 
-	getPotentialDataTypes(cxt, attributes, rows, columnMap)
+	err = getPotentialDataTypes(cxt, attributes, rows, columnMap)
+	if err != nil {
+		return err
+	}
 
 	reorderColumns(doc, attributes, rows, matter.AttributesTableColumnOrder[:], columnMap, extraColumns)
 

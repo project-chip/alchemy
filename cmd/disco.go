@@ -28,7 +28,7 @@ func DiscoBall(cxt context.Context, cCtx *cli.Context) error {
 				}
 				err = disco.Ball(disco.NewContext(errCxt), out.Doc)
 				if err != nil {
-					return err
+					return fmt.Errorf("error disco balling %s: %w", file, err)
 				}
 				result, err := render.Render(errCxt, out.Doc)
 				if err != nil {

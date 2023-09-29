@@ -6,7 +6,7 @@ import (
 )
 
 func renderParagraph(cxt *output.Context, p *types.Paragraph, previous *interface{}) (err error) {
-	err = renderAttributes(cxt, p, p.Attributes)
+	err = renderAttributes(cxt, p, p.Attributes, false)
 	if err != nil {
 		return
 	}

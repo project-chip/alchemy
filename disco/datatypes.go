@@ -54,15 +54,15 @@ func getExistingDataTypes(cxt *Context, top *ascii.Section) {
 	}
 }
 
-func getPotentialDataTypes(cxt *Context, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) {
+func getPotentialDataTypes(cxt *Context, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
 	sectionDataMap := make(map[string]*potentialDataType)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
-		return
+		return nil
 	}
 	typeIndex, ok := columnMap[matter.TableColumnType]
 	if !ok {
-		return
+		return nil
 	}
 	for _, row := range rows {
 		cv, err := getCellValue(row.Cells[nameIndex])
@@ -105,7 +105,10 @@ func getPotentialDataTypes(cxt *Context, section *ascii.Section, rows []*types.T
 			if table == nil {
 				continue
 			}
-			_, columnMap, _ := findColumns(combineRows(table))
+			_, columnMap, _, err := findColumns(combineRows(table))
+			if err != nil {
+				return err
+			}
 			dataType.indexColumn = getIndexColumnType(dataType.dataTypeCategory)
 
 			if valueIndex, ok := columnMap[dataType.indexColumn]; !ok || valueIndex > 0 {
@@ -121,6 +124,7 @@ func getPotentialDataTypes(cxt *Context, section *ascii.Section, rows []*types.T
 			cxt.potentialDataTypes[name] = append(cxt.potentialDataTypes[name], dataType)
 		}
 	}
+	return nil
 }
 
 func promoteDataTypes(cxt *Context, top *ascii.Section) error {
@@ -198,7 +202,10 @@ func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[strin
 		if table == nil {
 			continue
 		}
-		_, columnMap, _ := findColumns(combineRows(table))
+		_, columnMap, _, err := findColumns(combineRows(table))
+		if err != nil {
+			return err
+		}
 		if valueIndex, ok := columnMap[firstColumnType]; !ok || valueIndex > 0 {
 			continue
 		}

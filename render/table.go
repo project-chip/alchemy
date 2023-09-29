@@ -21,6 +21,7 @@ type tableCell struct {
 	value     string
 	format    string
 	formatter *types.TableCellFormat
+	blank     bool
 }
 
 type cellSpan struct {
@@ -39,17 +40,17 @@ func renderTable(cxt *output.Context, t *types.Table) (err error) {
 		return
 	}
 
-	headerSpans, rowWidths, indent := calculateCellWidths(tbl)
+	cellSpans, indent := calculateCellWidths(tbl)
 
 	headerCount := len(tbl.header.cells)
 
-	renderAttributes(cxt, t, t.Attributes)
+	renderAttributes(cxt, t, t.Attributes, false)
 
 	cxt.WriteString("|===")
 	cxt.WriteNewline()
-	cxt.WriteString(renderTableHeaders(tbl, headerSpans, headerCount))
+	cxt.WriteString(renderTableHeaders(tbl, cellSpans, headerCount, indent))
 	cxt.WriteNewline()
-	renderTableRows(cxt, tbl, rowWidths, headerCount, indent)
+	renderTableRows(cxt, tbl, cellSpans, headerCount, indent)
 	cxt.WriteString("|===\n")
 	return
 }
@@ -68,7 +69,6 @@ func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpa
 				width = rowSpan.width
 				ind = max(ind, rowSpan.indent)
 			}
-
 			var format string
 			if c.formatter != nil {
 				format = c.formatter.Content
@@ -77,7 +77,11 @@ func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpa
 
 			row.WriteString(fmt.Sprintf("%*s", ind, format))
 
-			row.WriteRune('|')
+			if c.blank {
+				row.WriteRune(' ')
+			} else {
+				row.WriteRune('|')
+			}
 
 			if i < len(tr.cells)-1 {
 				nextCell := tr.cells[i+1]
@@ -106,11 +110,15 @@ func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpa
 
 }
 
-func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount int) string {
+func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount int, indent int) string {
 	var out strings.Builder
 	for i, c := range tbl.header.cells {
+
+		var ind int
+		if i == 0 {
+			ind = indent
+		}
 		hs, ok := headerSpans[i]
-		var ind = 0
 		if ok {
 			ind = max(ind, hs.indent)
 		}
@@ -122,7 +130,11 @@ func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount i
 
 		out.WriteString(fmt.Sprintf("%*s", ind, format))
 
-		out.WriteString("| ")
+		if c.blank {
+			out.WriteString("  ")
+		} else {
+			out.WriteString("| ")
+		}
 
 		if ok && i+1 != headerCount {
 			w := hs.width
@@ -135,7 +147,6 @@ func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount i
 			writeCellValue(c, w, &out)
 		} else {
 			out.WriteString(c.value)
-
 		}
 		if i+1 != headerCount {
 			out.WriteRune(' ')
@@ -145,19 +156,20 @@ func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount i
 	return out.String()
 }
 
-func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans map[int]*cellSpan, indent int) {
-	headerSpans = make(map[int]*cellSpan)
-	rowSpans = make(map[int]*cellSpan)
+func calculateCellWidths(tbl *table) (cellSpans map[int]*cellSpan, indent int) {
+	//headerSpans = make(map[int]*cellSpan)
+	//rowSpans = make(map[int]*cellSpan)
+	cellSpans = make(map[int]*cellSpan)
 
 	columnIndex := 0
 	for i, c := range tbl.header.cells {
 		thw := &cellSpan{column: columnIndex, width: getCellWidth(c), span: 1}
-		headerSpans[columnIndex] = thw
+		cellSpans[columnIndex] = thw
 		if c.formatter != nil {
-			if c.formatter.ColumnSpan > 0 {
+			/*if c.formatter.ColumnSpan > 0 {
 				thw.span = c.formatter.ColumnSpan
 				columnIndex += thw.span - 1
-			}
+			}*/
 			thw.indent = len(c.formatter.Content)
 		}
 		if i < len(tbl.header.cells)-1 {
@@ -173,20 +185,20 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans ma
 	}
 
 	for _, tr := range tbl.rows {
-		var currentHeader *cellSpan
-		var spanWidth int
+		//var currentHeader *cellSpan
+		//var spanWidth int
 		for i, c := range tr.cells[0 : len(tr.cells)-1] {
 
-			var rowWidth int
-			rowSpan, ok := rowSpans[i]
-			if ok {
-				rowWidth = rowSpan.width
+			//var rowWidth int
+			rowSpan, rowOK := cellSpans[i]
+			if rowOK {
+				//rowWidth = rowSpan.width
 			} else {
 				rowSpan = &cellSpan{}
-				rowSpans[i] = rowSpan
+				cellSpans[i] = rowSpan
 			}
 
-			if hw, ok := headerSpans[i]; ok {
+			/*if hw, ok := headerSpans[i]; ok {
 				if currentHeader != hw {
 					if currentHeader != nil {
 						currentHeader.width = max(currentHeader.width, spanWidth)
@@ -197,6 +209,10 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans ma
 					}
 					currentHeader = hw
 				}
+			}*/
+
+			if i == 0 && c.formatter != nil {
+				indent = max(indent, len(c.formatter.Content))
 			}
 
 			l := getCellWidth(c)
@@ -207,7 +223,9 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans ma
 				l += len(nextCell.formatter.Content)
 			}
 
-			if currentHeader.span == 1 {
+			rowSpan.width = max(rowSpan.width, l)
+
+			/*if currentHeader.span == 1 {
 				if currentHeader.width < max(l, rowWidth) {
 					currentHeader.width = max(l, rowWidth)
 				} else {
@@ -217,12 +235,12 @@ func calculateCellWidths(tbl *table) (headerSpans map[int]*cellSpan, rowSpans ma
 				spanWidth += (l + 1)
 			}
 			if rowWidth < l {
-				if !ok {
+				if !rowOK {
 					rowSpans[i] = &cellSpan{width: l}
 				} else {
 					rowSpan.width = l
 				}
-			}
+			}*/
 		}
 	}
 	return
@@ -236,7 +254,7 @@ func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) (er
 			if err != nil {
 				return
 			}
-			tbl.header.cells = append(tbl.header.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter})
+			tbl.header.cells = append(tbl.header.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter, blank: c.Blank})
 		}
 	}
 
@@ -248,7 +266,7 @@ func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) (er
 			if err != nil {
 				return
 			}
-			tr.cells = append(tr.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter})
+			tr.cells = append(tr.cells, &tableCell{value: renderContext.String(), format: c.Format, formatter: c.Formatter, blank: c.Blank})
 		}
 		tbl.rows = append(tbl.rows, tr)
 	}
