@@ -4,18 +4,29 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
+	"github.com/bytesparadise/libasciidoc/pkg/parser"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/output"
 	"github.com/hasty/matterfmt/parse"
-	"github.com/urfave/cli/v2"
 )
 
-func getFilePaths(cCtx *cli.Context) ([]string, error) {
-	return filepath.Glob(cCtx.Args().First())
+func getFilePaths(filepath string) ([]string, error) {
+	paths, err := doublestar.FilepathGlob(filepath)
+	if err != nil {
+		return nil, err
+	}
+	filtered := make([]string, 0, len(paths))
+	for _, p := range paths {
+		/*if strings.HasSuffix(p, "secure_channel/Discovery.adoc") {
+			continue
+		}*/
+		filtered = append(filtered, p)
+	}
+	return filtered, nil
 }
 
 func getOutputContext(cxt context.Context, path string) (*output.Context, error) {
@@ -29,7 +40,7 @@ func getOutputContext(cxt context.Context, path string) (*output.Context, error)
 		return nil, err
 	}
 
-	d, err := parse.ParseDocument(strings.NewReader(string(file)), config)
+	d, err := parse.ParseDocument(strings.NewReader(string(file)), config, parser.MaxExpressions(2000000))
 
 	if err != nil {
 		return nil, fmt.Errorf("failed parse: %w", err)

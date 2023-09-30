@@ -38,6 +38,8 @@ func NewSection(parent interface{}, s *types.Section) (*Section, error) {
 			case *types.SpecialCharacter:
 				complexName.WriteString(v.Name)
 			case *types.InlineLink:
+			case *types.QuotedText:
+
 			default:
 				return nil, fmt.Errorf("unknown section title component type: %T", e)
 			}

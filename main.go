@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"os"
 
 	"github.com/hasty/matterfmt/cmd"
@@ -15,11 +16,27 @@ func main() {
 
 	cxt := context.Background()
 
+	var dryRun bool
+	var serial bool
+
 	app := &cli.App{
 		Name:  "matterfmt",
 		Usage: "builds stuff",
 		Action: func(c *cli.Context) error {
-			return cmd.DiscoBall(cxt, c)
+			return cmd.DiscoBall(cxt, c.Args().First(), dryRun, serial)
+		},
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        "dryrun",
+				Aliases:     []string{"dry"},
+				Usage:       "whether or not to actually output files",
+				Destination: &dryRun,
+			},
+			&cli.BoolFlag{
+				Name:        "serial",
+				Usage:       "process files one-by-one",
+				Destination: &serial,
+			},
 		},
 		Commands: []*cli.Command{
 			{
@@ -27,7 +44,11 @@ func main() {
 				Aliases: []string{"c"},
 				Usage:   "Discoball documents",
 				Action: func(cCtx *cli.Context) error {
-					return cmd.DiscoBall(cxt, cCtx)
+					err := cmd.DiscoBall(cxt, cCtx.Args().First(), dryRun, serial)
+					if err != nil {
+						return cli.Exit(err, -1)
+					}
+					return nil
 				},
 			},
 			{
@@ -35,7 +56,7 @@ func main() {
 				Aliases: []string{"a"},
 				Usage:   "just format Matter documents",
 				Action: func(cCtx *cli.Context) error {
-					return cmd.Format(cxt, cCtx)
+					return cmd.Format(cxt, cCtx.Args().First(), dryRun, serial)
 				},
 			},
 			{
@@ -43,15 +64,14 @@ func main() {
 				Aliases: []string{"c"},
 				Usage:   "dump the parse tree of Matter documents",
 				Action: func(cCtx *cli.Context) error {
-					return cmd.Dump(cxt, cCtx)
+					return cmd.Dump(cxt, cCtx.Args().First())
 				},
 			},
 		},
 	}
 
-	err := (app).Run(os.Args)
-	if err != nil {
-		panic(err)
+	if err := app.Run(os.Args); err != nil {
+		slog.Error("failed running", "error", err)
 	}
 
 }

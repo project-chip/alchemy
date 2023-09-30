@@ -2,7 +2,6 @@ package render
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/output"
@@ -29,9 +28,7 @@ func renderOrderedList(cxt *output.Context, l *types.List) (err error) {
 	for _, e := range l.Elements {
 		switch el := e.(type) {
 		case *types.OrderedListElement:
-			renderAttributes(cxt, el, el.Attributes, false)
-			err = RenderElements(cxt, strings.Repeat(".", cxt.OrderedListDepth)+" ", el.Elements)
-			cxt.WriteRune('\n')
+			err = renderOrderedListItem(cxt, el)
 		default:
 			err = fmt.Errorf("unknown ordered list element type: %T", el)
 		}
@@ -43,29 +40,32 @@ func renderOrderedList(cxt *output.Context, l *types.List) (err error) {
 	return
 }
 
+func renderOrderedListItem(cxt *output.Context, el *types.OrderedListElement) (err error) {
+	var bullet string
+	switch el.Style {
+	case types.Arabic:
+		bullet = "."
+	case types.LowerAlpha:
+		bullet = ".."
+	case types.LowerRoman:
+		bullet = "..."
+	case types.UpperAlpha:
+		bullet = "...."
+	case types.UpperRoman:
+		bullet = "....."
+	}
+	renderAttributes(cxt, el, el.Attributes, false)
+	err = RenderElements(cxt, bullet+" ", el.Elements)
+	cxt.WriteNewline()
+	return
+}
+
 func renderUnorderedList(cxt *output.Context, l *types.List) (err error) {
 	cxt.WriteNewline()
 	for _, e := range l.Elements {
 		switch el := e.(type) {
 		case *types.UnorderedListElement:
-			var bullet string
-			switch el.BulletStyle {
-			case types.Dash:
-				bullet = "-"
-			case types.OneAsterisk:
-				bullet = "*"
-			case types.TwoAsterisks:
-				bullet = "**"
-			case types.ThreeAsterisks:
-				bullet = "***"
-			case types.FourAsterisks:
-				bullet = "****"
-			case types.FiveAsterisks:
-				bullet = "*****"
-			}
-			renderAttributes(cxt, el, el.Attributes, false)
-			err = RenderElements(cxt, bullet+" ", el.Elements)
-			cxt.WriteNewline()
+			err = renderUnorderedListElement(cxt, el)
 		default:
 			err = fmt.Errorf("unknown unordered list element type: %T", el)
 		}
@@ -73,6 +73,28 @@ func renderUnorderedList(cxt *output.Context, l *types.List) (err error) {
 			return
 		}
 	}
+	return
+}
+
+func renderUnorderedListElement(cxt *output.Context, el *types.UnorderedListElement) (err error) {
+	var bullet string
+	switch el.BulletStyle {
+	case types.Dash:
+		bullet = "-"
+	case types.OneAsterisk:
+		bullet = "*"
+	case types.TwoAsterisks:
+		bullet = "**"
+	case types.ThreeAsterisks:
+		bullet = "***"
+	case types.FourAsterisks:
+		bullet = "****"
+	case types.FiveAsterisks:
+		bullet = "*****"
+	}
+	renderAttributes(cxt, el, el.Attributes, false)
+	err = RenderElements(cxt, bullet+" ", el.Elements)
+	cxt.WriteNewline()
 	return
 }
 

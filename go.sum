@@ -1,5 +1,7 @@
 github.com/alecthomas/chroma/v2 v2.3.0 h1:83xfxrnjv8eK+Cf8qZDzNo3PPF9IbTWHs7z28GY6D0U=
 github.com/alecthomas/chroma/v2 v2.3.0/go.mod h1:mZxeWZlxP2Dy+/8cBob2PYd8O2DwNAzave5AY7A2eQw=
+github.com/bmatcuk/doublestar/v4 v4.6.0 h1:HTuxyug8GyFbRkrffIpzNCSK4luc0TY3wzXvzIZhEXc=
+github.com/bmatcuk/doublestar/v4 v4.6.0/go.mod h1:xBQ8jztBU6kakFMg+8WGxn0c6z1fTSPVIjEY1Wr7jzc=
 github.com/bytesparadise/libasciidoc v0.8.0 h1:iWAlYR7gm4Aes3NSvuGQyzRavatQpUBAJZyU9uMmwm0=
 github.com/bytesparadise/libasciidoc v0.8.0/go.mod h1:Q2ZeBQ1fko5+NTUTs8rGu9gjTtbVaD6Qxg37GOPYdN4=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=

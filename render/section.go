@@ -8,6 +8,7 @@ import (
 )
 
 func renderSection(cxt *output.Context, s *types.Section) (err error) {
+	cxt.WriteNewline()
 	err = renderAttributes(cxt, s, s.Attributes, false)
 	if err != nil {
 		return

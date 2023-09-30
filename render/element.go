@@ -52,6 +52,7 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 			text, _ := el.RawText()
 			cxt.WriteString(text)
 		case *types.SinglelineComment:
+			cxt.WriteNewline()
 			cxt.WriteString("//")
 			cxt.WriteString(el.Content)
 			cxt.WriteNewline()
@@ -79,7 +80,7 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 				return
 			}
 			err = RenderElements(cxt, "", el.Elements)
-			cxt.WriteRune('\n')
+			cxt.WriteNewline()
 		case *types.PredefinedAttribute:
 			cxt.WriteString(fmt.Sprintf("{%s}", el.Name))
 		case *types.InlineImage:
@@ -97,6 +98,22 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 				err = RenderElements(cxt, "", el.Elements)
 				cxt.WriteRune(']')
 			}
+		case *types.AttributeReset:
+			err = renderAttributes(cxt, el, el.Attributes, false)
+			if err != nil {
+				return
+			}
+			renderAttributeReset(cxt, el)
+		case *types.RawLine:
+			cxt.WriteString(el.Content)
+			if el.EOL {
+				cxt.WriteRune('\n')
+			}
+		case *types.ListElements:
+			err = RenderElements(cxt, "", el.Elements)
+		case *types.UnorderedListElement:
+			err = renderUnorderedListElement(cxt, el)
+		case nil:
 		default:
 			err = fmt.Errorf("unknown element type: %T", el)
 		}

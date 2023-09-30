@@ -3,6 +3,7 @@ package render
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/output"
@@ -22,10 +23,14 @@ type tableCell struct {
 	format    string
 	formatter *types.TableCellFormat
 	blank     bool
+
+	width  int // width of the actual content in this cell
+	indent int // width of the formatter of this cell
+	margin int // width of the formatter of the next cell
 }
 
-type cellSpan struct {
-	indent int
+type colSpan struct {
+	//indent int
 	column int
 	span   int
 	width  int
@@ -55,7 +60,7 @@ func renderTable(cxt *output.Context, t *types.Table) (err error) {
 	return
 }
 
-func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpan, headerCount int, indent int) {
+func renderTableRows(cxt *output.Context, tbl *table, colSpans map[int]*colSpan, headerCount int, indent int) {
 	for _, tr := range tbl.rows {
 		var row strings.Builder
 		for i, c := range tr.cells {
@@ -64,15 +69,14 @@ func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpa
 				ind = indent
 			}
 			var width int
-			rowSpan, ok := rowWidths[i]
+			rowSpan, ok := colSpans[i]
 			if ok {
 				width = rowSpan.width
-				ind = max(ind, rowSpan.indent)
 			}
 			var format string
 			if c.formatter != nil {
 				format = c.formatter.Content
-				ind = max(ind, len(format))
+				ind = max(ind, utf8.RuneCountInString(format))
 			}
 
 			row.WriteString(fmt.Sprintf("%*s", ind, format))
@@ -83,25 +87,22 @@ func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpa
 				row.WriteRune('|')
 			}
 
-			if i < len(tr.cells)-1 {
-				nextCell := tr.cells[i+1]
-				if nextCell.formatter != nil {
-					width -= len(nextCell.formatter.Content)
-				}
+			if c.margin > 0 {
+				width -= (c.margin)
 			}
 
 			if ok && i+1 != len(tr.cells) {
 				row.WriteRune(' ')
 				writeCellValue(c, width, &row)
 			} else {
-				if len(c.value) > 0 {
+				if utf8.RuneCountInString(c.value) > 0 {
 					row.WriteRune(' ')
 					writeCellValue(c, 0, &row)
 				}
 			}
-			if i+1 != len(tr.cells) {
+			/*if i+1 != len(tr.cells) {
 				row.WriteRune(' ')
-			}
+			}*/
 
 		}
 		row.WriteRune('\n')
@@ -110,7 +111,7 @@ func renderTableRows(cxt *output.Context, tbl *table, rowWidths map[int]*cellSpa
 
 }
 
-func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount int, indent int) string {
+func renderTableHeaders(tbl *table, colSpans map[int]*colSpan, headerCount int, indent int) string {
 	var out strings.Builder
 	for i, c := range tbl.header.cells {
 
@@ -118,14 +119,10 @@ func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount i
 		if i == 0 {
 			ind = indent
 		}
-		hs, ok := headerSpans[i]
-		if ok {
-			ind = max(ind, hs.indent)
-		}
 		var format string
 		if c.formatter != nil {
 			format = c.formatter.Content
-			ind = max(ind, len(format))
+			ind = max(ind, utf8.RuneCountInString(format))
 		}
 
 		out.WriteString(fmt.Sprintf("%*s", ind, format))
@@ -136,111 +133,80 @@ func renderTableHeaders(tbl *table, headerSpans map[int]*cellSpan, headerCount i
 			out.WriteString("| ")
 		}
 
-		if ok && i+1 != headerCount {
-			w := hs.width
-			if i < len(tbl.header.cells)-1 {
-				next := tbl.header.cells[i+1]
-				if next.formatter != nil {
-					w -= len(next.formatter.Content)
-				}
+		if cs, ok := colSpans[i]; ok && i+1 != headerCount {
+			w := cs.width
+			if c.margin > 0 {
+				w -= c.margin
+			} else if i+1 == headerCount {
+				w -= 1
 			}
 			writeCellValue(c, w, &out)
 		} else {
 			out.WriteString(c.value)
 		}
-		if i+1 != headerCount {
+		/*if i+1 != headerCount {
 			out.WriteRune(' ')
-		}
+		}*/
 
 	}
 	return out.String()
 }
 
-func calculateCellWidths(tbl *table) (cellSpans map[int]*cellSpan, indent int) {
-	//headerSpans = make(map[int]*cellSpan)
-	//rowSpans = make(map[int]*cellSpan)
-	cellSpans = make(map[int]*cellSpan)
+func calculateCellWidths(tbl *table) (colSpans map[int]*colSpan, indent int) {
+
+	colSpans = make(map[int]*colSpan)
 
 	columnIndex := 0
 	for i, c := range tbl.header.cells {
-		thw := &cellSpan{column: columnIndex, width: getCellWidth(c), span: 1}
-		cellSpans[columnIndex] = thw
+		c.width = getCellWidth(c)
 		if c.formatter != nil {
-			/*if c.formatter.ColumnSpan > 0 {
-				thw.span = c.formatter.ColumnSpan
-				columnIndex += thw.span - 1
-			}*/
-			thw.indent = len(c.formatter.Content)
+			c.indent = utf8.RuneCountInString(c.formatter.Content)
 		}
 		if i < len(tbl.header.cells)-1 {
 			nextHeader := tbl.header.cells[i+1]
 			if nextHeader.formatter != nil {
-				thw.width += len(nextHeader.formatter.Content)
+				c.margin = utf8.RuneCountInString(nextHeader.formatter.Content)
 			}
 		}
 		if i == 0 {
-			indent = max(indent, thw.indent)
+			indent = max(indent, c.indent)
 		}
+		thw := &colSpan{column: columnIndex, width: c.width + 1, span: 1}
+		if c.margin > 0 {
+			thw.width += c.margin
+		}
+		colSpans[columnIndex] = thw
 		columnIndex++
 	}
 
 	for _, tr := range tbl.rows {
-		//var currentHeader *cellSpan
-		//var spanWidth int
+
 		for i, c := range tr.cells[0 : len(tr.cells)-1] {
 
-			//var rowWidth int
-			rowSpan, rowOK := cellSpans[i]
-			if rowOK {
-				//rowWidth = rowSpan.width
-			} else {
-				rowSpan = &cellSpan{}
-				cellSpans[i] = rowSpan
+			cs, rowOK := colSpans[i]
+			if !rowOK {
+				cs = &colSpan{}
+				colSpans[i] = cs
 			}
 
-			/*if hw, ok := headerSpans[i]; ok {
-				if currentHeader != hw {
-					if currentHeader != nil {
-						currentHeader.width = max(currentHeader.width, spanWidth)
-					}
-					spanWidth = 0
-					if i == 0 && hw.indent > 0 {
-						rowSpan.indent = max(hw.indent, rowSpan.indent)
-					}
-					currentHeader = hw
-				}
-			}*/
-
-			if i == 0 && c.formatter != nil {
-				indent = max(indent, len(c.formatter.Content))
+			c.width = getCellWidth(c)
+			if c.formatter != nil {
+				c.indent = utf8.RuneCountInString(c.formatter.Content)
 			}
-
-			l := getCellWidth(c)
 
 			nextCell := tr.cells[i+1]
 
 			if nextCell.formatter != nil {
-				l += len(nextCell.formatter.Content)
+				c.margin = utf8.RuneCountInString(nextCell.formatter.Content)
 			}
-
-			rowSpan.width = max(rowSpan.width, l)
-
-			/*if currentHeader.span == 1 {
-				if currentHeader.width < max(l, rowWidth) {
-					currentHeader.width = max(l, rowWidth)
-				} else {
-					l = currentHeader.width
-				}
-			} else {
-				spanWidth += (l + 1)
+			if i == 0 {
+				indent = max(indent, c.indent)
 			}
-			if rowWidth < l {
-				if !rowOK {
-					rowSpans[i] = &cellSpan{width: l}
-				} else {
-					rowSpan.width = l
-				}
-			}*/
+			width := c.width + 1
+			if c.margin > 0 {
+				width += c.margin
+			}
+			cs.width = max(cs.width, width)
 		}
 	}
 	return
@@ -276,11 +242,11 @@ func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) (er
 func getCellWidth(c *tableCell) int {
 	lines := strings.Split(c.value, "\n")
 	if len(lines) == 1 {
-		return len(c.value)
+		return utf8.RuneCountInString(c.value)
 	}
 	var width int
 	for _, line := range lines {
-		width = max(width, len(strings.TrimSpace(line)))
+		width = max(width, utf8.RuneCountInString(strings.TrimSpace(line)))
 	}
 	return width
 }
