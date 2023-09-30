@@ -3,6 +3,7 @@ package render
 import (
 	"context"
 	"regexp"
+	"strings"
 
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/output"
@@ -15,10 +16,11 @@ func Render(cxt context.Context, doc *ascii.Doc) (string, error) {
 		return "", err
 	}
 	renderContext.WriteNewline()
-	return postProcess(renderContext.String()), nil
+	output := strings.TrimSpace(renderContext.String())
+	return postProcess(output), nil
 }
 
-var eolWhitespacePattern = regexp.MustCompile(`[ ]+\n`)
+var eolWhitespacePattern = regexp.MustCompile(`(?m)[ ]+\n`)
 
 func postProcess(s string) string {
 	return eolWhitespacePattern.ReplaceAllString(s, "\n")

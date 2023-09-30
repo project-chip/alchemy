@@ -12,13 +12,19 @@ func renderDelimitedBlock(cxt *output.Context, db *types.DelimitedBlock) (err er
 	case "comment":
 		err = renderComment(cxt, db)
 	case "sidebar":
-		err = renderSidebar(cxt, db)
+		err = renderBlock(cxt, db, "****")
 	case "example":
-		err = renderExample(cxt, db)
+		err = renderBlock(cxt, db, "====")
 	case "listing":
-		err = renderListing(cxt, db)
+		err = renderBlock(cxt, db, "----")
 	case "literal":
-		err = renderLiteral(cxt, db)
+		err = renderBlock(cxt, db, "....")
+	case "fenced":
+		err = renderBlock(cxt, db, "```")
+	case "pass":
+		err = renderBlock(cxt, db, "++++")
+	case "open":
+		err = renderBlock(cxt, db, "--")
 	default:
 		err = fmt.Errorf("unknown delimited block kind: %s", db.Kind)
 	}
@@ -47,65 +53,17 @@ func renderComment(cxt *output.Context, comment *types.DelimitedBlock) (err erro
 	return
 }
 
-func renderExample(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
-	renderAttributes(cxt, comment, comment.Attributes, false)
-	cxt.WriteNewline()
-	cxt.WriteString("====")
-	cxt.WriteNewline()
-	err = RenderElements(cxt, "", comment.Elements)
-	cxt.WriteNewline()
-	cxt.WriteString("====")
-	cxt.WriteNewline()
-	return
-}
-
-func renderListing(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
-	err = renderAttributes(cxt, comment, comment.Attributes, false)
+func renderBlock(cxt *output.Context, block *types.DelimitedBlock, delimiter string) (err error) {
+	err = renderAttributes(cxt, block, block.Attributes, false)
 	if err != nil {
 		return
 	}
 	cxt.WriteNewline()
-	cxt.WriteString("----")
+	cxt.WriteString(delimiter)
 	cxt.WriteNewline()
-	err = RenderElements(cxt, "", comment.Elements)
-	if err != nil {
-		return
-	}
+	err = RenderElements(cxt, "", block.Elements)
 	cxt.WriteNewline()
-	cxt.WriteString("----")
-	cxt.WriteNewline()
-	return
-}
-
-func renderLiteral(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
-	err = renderAttributes(cxt, comment, comment.Attributes, false)
-	if err != nil {
-		return
-	}
-	cxt.WriteNewline()
-	cxt.WriteString("----")
-	cxt.WriteNewline()
-	err = RenderElements(cxt, "", comment.Elements)
-	if err != nil {
-		return
-	}
-	cxt.WriteNewline()
-	cxt.WriteString("----")
-	cxt.WriteNewline()
-	return
-}
-
-func renderSidebar(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
-	err = renderAttributes(cxt, comment, comment.Attributes, false)
-	if err != nil {
-		return
-	}
-	cxt.WriteNewline()
-	cxt.WriteString("****")
-	cxt.WriteNewline()
-	err = RenderElements(cxt, "", comment.Elements)
-	cxt.WriteNewline()
-	cxt.WriteString("****")
+	cxt.WriteString(delimiter)
 	cxt.WriteNewline()
 	return
 }

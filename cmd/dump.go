@@ -7,11 +7,10 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/output"
-	"github.com/urfave/cli/v2"
 )
 
-func Dump(cxt context.Context, cCtx *cli.Context) error {
-	files, err := getFilePaths(cCtx)
+func Dump(cxt context.Context, filepath string) error {
+	files, err := getFilePaths(filepath)
 	if err != nil {
 		return err
 	}
@@ -44,7 +43,6 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			DumpElements(cxt, []interface{}{el.Value}, indent+1)
 			fmt.Print("\n")
 		case *types.Paragraph:
-
 			fmt.Print("{para}: ")
 			fmt.Print("\n")
 			dumpAttributes(cxt, el.Attributes, indent+1)
@@ -83,7 +81,7 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			dumpAttributes(cxt, el.Attributes, indent+1)
 			DumpElements(cxt, el.GetElements(), indent+1)
 		case *types.UnorderedListElement:
-			fmt.Print("{uole}:\n")
+			fmt.Printf("{uole bs=%s cs=%s}:\n", el.BulletStyle, el.CheckStyle)
 			dumpAttributes(cxt, el.Attributes, indent+1)
 			DumpElements(cxt, el.GetElements(), indent+1)
 		case *types.InternalCrossReference:
@@ -150,6 +148,8 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			dumpLocation(cxt, el.Location)
 			fmt.Print("}\n")
 			dumpAttributes(cxt, el.Attributes, indent+1)
+		case *types.AttributeReset:
+			fmt.Printf("{attr_reset: %s}\n", el.Name)
 		default:
 			fmt.Printf("unknown element type: %T\n", el)
 		}

@@ -8,7 +8,7 @@ import (
 )
 
 func renderQuotedText(cxt *output.Context, qt *types.QuotedText) (err error) {
-	renderAttributes(cxt, qt, qt.Attributes, false)
+	renderAttributes(cxt, qt, qt.Attributes, true)
 	var wrapper string
 	switch qt.Kind {
 	case types.SingleQuoteBold:
@@ -17,6 +17,8 @@ func renderQuotedText(cxt *output.Context, qt *types.QuotedText) (err error) {
 		wrapper = "**"
 	case types.SingleQuoteMonospace:
 		wrapper = "`"
+	case types.DoubleQuoteMonospace:
+		wrapper = "``"
 	case types.SingleQuoteSuperscript:
 		wrapper = "^"
 	case types.SingleQuoteSubscript:
@@ -25,6 +27,10 @@ func renderQuotedText(cxt *output.Context, qt *types.QuotedText) (err error) {
 		wrapper = "_"
 	case types.DoubleQuoteItalic:
 		wrapper = "__"
+	case types.SingleQuoteMarked:
+		wrapper = "#"
+	case types.DoubleQuoteMarked:
+		wrapper = "##"
 	default:
 		err = fmt.Errorf("unsupported quoted text kind: %s", qt.Kind)
 		return
@@ -65,6 +71,14 @@ func renderSymbol(cxt *output.Context, s *types.Symbol) error {
 		cxt.WriteString("...")
 	case " -- ":
 		cxt.WriteString(" -- ")
+	case "(C)":
+		cxt.WriteString("(C)")
+	case "`\"":
+		cxt.WriteString("`\"")
+	case "\"`":
+		cxt.WriteString("\"`")
+	case "`'":
+		cxt.WriteString("`'")
 	default:
 		return fmt.Errorf("unknown symbol: \"%s\"", s.Name)
 	}
