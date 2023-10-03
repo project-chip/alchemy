@@ -23,4 +23,4 @@ jobs:
           project_path: "."
           binary_name: "matterfmt"
           ldflags: "-s -w"
-          extra_files: LICENSE Readme.md
+          extra_files: LICENSE README.md
