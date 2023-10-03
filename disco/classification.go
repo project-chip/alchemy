@@ -9,16 +9,16 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func organizeClassificationSection(doc *ascii.Doc, section *ascii.Section) error {
+func (b *Ball) organizeClassificationSection(doc *ascii.Doc, section *ascii.Section) error {
 	attributesTable := findFirstTable(section)
 	if attributesTable == nil {
 		return fmt.Errorf("no attributes table found")
 	}
-	organizeClassificationTable(doc, section, attributesTable)
+	b.organizeClassificationTable(doc, section, attributesTable)
 	return nil
 }
 
-func organizeClassificationTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
+func (b *Ball) organizeClassificationTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
 	rows := combineRows(attributesTable)
 
 	headerRowIndex, columnMap, extraColumns, err := findColumns(rows)

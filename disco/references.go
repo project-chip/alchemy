@@ -39,7 +39,7 @@ func getUnrecognizedReference(els []interface{}) string {
 
 // The parser sometimes doesn't recognize inline references, and just returns them as "<", "<", "ref", ">", ">"
 // Rather than doing the right thing and fixing the parser, we'll just find these little suckers after the fact
-func fixUnrecognizedReferences(doc *ascii.Doc) {
+func (b *Ball) fixUnrecognizedReferences(doc *ascii.Doc) {
 	var elementsWithUnrecognizedReferences []ascii.HasElements
 	ascii.Traverse(nil, doc.Base.Elements, func(el interface{}, parent ascii.HasElements, index int) bool {
 		sc, ok := el.(*types.SpecialCharacter)
@@ -79,7 +79,7 @@ func fixUnrecognizedReferences(doc *ascii.Doc) {
 	}
 }
 
-func findCrossReferences(doc *ascii.Doc) map[string][]*types.InternalCrossReference {
+func (b *Ball) findCrossReferences(doc *ascii.Doc) map[string][]*types.InternalCrossReference {
 	crossReferences := make(map[string][]*types.InternalCrossReference)
 	ascii.Traverse(nil, doc.Base.Elements, func(el interface{}, parent ascii.HasElements, index int) bool {
 		if icr, ok := el.(*types.InternalCrossReference); ok {

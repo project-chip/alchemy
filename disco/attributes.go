@@ -10,15 +10,15 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func organizeAttributesSection(cxt *Context, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
+func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
 	attributesTable := findFirstTable(attributes)
 	if attributesTable == nil {
 		return fmt.Errorf("no attributes table found")
 	}
-	return organizeAttributesTable(cxt, doc, top, attributes, attributesTable)
+	return b.organizeAttributesTable(cxt, doc, top, attributes, attributesTable)
 }
 
-func organizeAttributesTable(cxt *Context, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
+func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
 	rows := combineRows(attributesTable)
 
 	_, columnMap, extraColumns, err := findColumns(rows)
@@ -34,7 +34,7 @@ func organizeAttributesTable(cxt *Context, doc *ascii.Doc, top *ascii.Section, a
 		return fmt.Errorf("can't rearrange attributes table with so few matches")
 	}
 
-	err = fixAccessCells(doc, rows, columnMap)
+	err = b.fixAccessCells(doc, rows, columnMap)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func init() {
 	}
 }
 
-func fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
+func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
 	if len(rows) < 2 {
 		return
 	}

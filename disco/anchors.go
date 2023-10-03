@@ -21,11 +21,11 @@ type anchorInfo struct {
 var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z][a-z]+(?:[A-Z][a-z]*)*(_[A-Z][a-z]*(?:[A-Z][a-z]*)*)*$`)
 var acronymPattern = regexp.MustCompile(`[A-Z]{3,}`)
 
-func normalizeAnchors(doc *ascii.Doc) error {
+func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 
-	crossReferences := findCrossReferences(doc)
+	crossReferences := b.findCrossReferences(doc)
 
-	anchors, err := findAnchors(doc, crossReferences)
+	anchors, err := b.findAnchors(doc, crossReferences)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func normalizeAnchors(doc *ascii.Doc) error {
 	return nil
 }
 
-func findAnchors(doc *ascii.Doc, crossReferences map[string][]*types.InternalCrossReference) (map[string]*anchorInfo, error) {
+func (b *Ball) findAnchors(doc *ascii.Doc, crossReferences map[string][]*types.InternalCrossReference) (map[string]*anchorInfo, error) {
 	anchors := make(map[string]*anchorInfo)
 	ascii.Traverse(doc, doc.Elements, func(el interface{}, parent ascii.HasElements, index int) bool {
 		var wa types.WithAttributes
