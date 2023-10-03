@@ -14,8 +14,6 @@ type Context struct {
 
 	out      strings.Builder
 	lastRune rune
-
-	OrderedListDepth int
 }
 
 func NewContext(parent context.Context, doc *ascii.Doc) *Context {

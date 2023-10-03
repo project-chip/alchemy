@@ -39,8 +39,9 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		case *types.BlankLine:
 			switch previous.(type) {
 			case *types.StringElement, *types.FootnoteReference, *types.Paragraph:
-				cxt.WriteNewline()
+				//cxt.WriteNewline()
 			}
+			cxt.WriteNewline()
 			cxt.WriteRune('\n')
 		case *types.InternalCrossReference:
 			err = renderInternalCrossReference(cxt, el)
@@ -110,9 +111,11 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 				cxt.WriteRune('\n')
 			}
 		case *types.ListElements:
-			err = RenderElements(cxt, "", el.Elements)
+			err = renderListElements(cxt, el)
 		case *types.UnorderedListElement:
 			err = renderUnorderedListElement(cxt, el)
+		case *types.OrderedListElement:
+			err = renderOrderedListElement(cxt, el)
 		case nil:
 		default:
 			err = fmt.Errorf("unknown element type: %T", el)
