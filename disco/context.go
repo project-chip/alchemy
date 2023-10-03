@@ -2,14 +2,14 @@ package disco
 
 import "context"
 
-type Context struct {
+type discoContext struct {
 	context.Context
 
 	potentialDataTypes map[string][]*potentialDataType
 }
 
-func NewContext(parent context.Context) *Context {
-	return &Context{
+func newContext(parent context.Context) *discoContext {
+	return &discoContext{
 		Context:            parent,
 		potentialDataTypes: make(map[string][]*potentialDataType),
 	}

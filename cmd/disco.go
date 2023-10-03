@@ -58,17 +58,18 @@ func discoBallParallel(cxt context.Context, filepath string, dryRun bool) error 
 	return g.Wait()
 }
 
-func discoBall(errCxt context.Context, file string, dryRun bool) error {
-	out, err := getOutputContext(errCxt, file)
+func discoBall(cxt context.Context, file string, dryRun bool) error {
+	out, err := getOutputContext(cxt, file)
 	if err != nil {
 		return err
 	}
-	err = disco.Ball(disco.NewContext(errCxt), out.Doc)
+	b := disco.NewBall(out.Doc)
+	err = b.Run(cxt)
 	if err != nil {
 		slog.Error("error disco balling", "file", file, "error", err)
 		return nil
 	}
-	result, err := render.Render(errCxt, out.Doc)
+	result, err := render.Render(cxt, out.Doc)
 	if err != nil {
 		return err
 	}

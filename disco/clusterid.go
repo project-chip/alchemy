@@ -8,15 +8,15 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func organizeClusterIDSection(doc *ascii.Doc, section *ascii.Section) error {
+func (b *Ball) organizeClusterIDSection(doc *ascii.Doc, section *ascii.Section) error {
 	t := findFirstTable(section)
 	if t == nil {
 		return fmt.Errorf("no cluster ID section found")
 	}
-	return organizeClusterIDTable(doc, section, t)
+	return b.organizeClusterIDTable(doc, section, t)
 }
 
-func organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
+func (b *Ball) organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
 
 	setSectionTitle(section, matter.ClusterIDSectionName)
 

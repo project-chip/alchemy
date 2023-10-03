@@ -10,15 +10,15 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func organizeCommandsSection(cxt *Context, doc *ascii.Doc, commands *ascii.Section) error {
+func (b *Ball) organizeCommandsSection(cxt *discoContext, doc *ascii.Doc, commands *ascii.Section) error {
 	t := findFirstTable(commands)
 	if t == nil {
 		return fmt.Errorf("no commands table found")
 	}
-	return organizeCommandsTable(cxt, doc, commands, t)
+	return b.organizeCommandsTable(cxt, doc, commands, t)
 }
 
-func organizeCommandsTable(cxt *Context, doc *ascii.Doc, commands *ascii.Section, commandsTable *types.Table) error {
+func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands *ascii.Section, commandsTable *types.Table) error {
 
 	setSectionTitle(commands, matter.CommandsSectionName)
 
@@ -37,12 +37,12 @@ func organizeCommandsTable(cxt *Context, doc *ascii.Doc, commands *ascii.Section
 		return fmt.Errorf("can't rearrange commands table with so few matches")
 	}
 
-	err = fixAccessCells(doc, rows, columnMap)
+	err = b.fixAccessCells(doc, rows, columnMap)
 	if err != nil {
 		return err
 	}
 
-	err = fixCommandDirection(doc, rows, columnMap)
+	err = b.fixCommandDirection(doc, rows, columnMap)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func organizeCommandsTable(cxt *Context, doc *ascii.Doc, commands *ascii.Section
 	return nil
 }
 
-func organizeCommands(cxt *Context, commands *ascii.Section, commandsTable *types.Table, columnMap map[matter.TableColumn]int) error {
+func organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable *types.Table, columnMap map[matter.TableColumn]int) error {
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
@@ -100,7 +100,7 @@ func organizeCommands(cxt *Context, commands *ascii.Section, commandsTable *type
 	return nil
 }
 
-func fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
+func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
 	if len(rows) < 2 {
 		return
 	}

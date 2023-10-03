@@ -20,7 +20,7 @@ func precleanStrings(elements []interface{}) {
 	})
 }
 
-func postCleanUpStrings(elements []interface{}) {
+func (b *Ball) postCleanUpStrings(elements []interface{}) {
 	ascii.Search(elements, func(t *types.StringElement) bool {
 		t.Content = missingSpaceAfterPunctuationPattern.ReplaceAllString(t.Content, "$1$2 $3")
 		t.Content = multipleSpacesPattern.ReplaceAllString(t.Content, "$1 $2")

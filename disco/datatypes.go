@@ -25,7 +25,7 @@ type potentialDataType struct {
 
 var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
 
-func getExistingDataTypes(cxt *Context, top *ascii.Section) {
+func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 	dataTypesSection := findSectionByType(top, matter.SectionDataTypes)
 	if dataTypesSection == nil {
 		return
@@ -54,7 +54,7 @@ func getExistingDataTypes(cxt *Context, top *ascii.Section) {
 	}
 }
 
-func getPotentialDataTypes(cxt *Context, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
+func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
 	sectionDataMap := make(map[string]*potentialDataType)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
@@ -127,7 +127,7 @@ func getPotentialDataTypes(cxt *Context, section *ascii.Section, rows []*types.T
 	return nil
 }
 
-func promoteDataTypes(cxt *Context, top *ascii.Section) error {
+func promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
 
 	fields := make(map[matter.DataTypeCategory]map[string]*potentialDataType)
 	//var dataTypeCount int
@@ -311,7 +311,7 @@ func stripDataTypeSuffixes(dataType string) string {
 	return dataType
 }
 
-func disambiguateDataTypes(cxt *Context, infos []*potentialDataType) error {
+func disambiguateDataTypes(cxt *discoContext, infos []*potentialDataType) error {
 	parents := make([]interface{}, len(infos))
 	dataTypeNames := make([]string, len(infos))
 	dataTypeRefs := make([]string, len(infos))
