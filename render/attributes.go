@@ -38,7 +38,7 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 }
 
 func renderAttributes(cxt *output.Context, el interface{}, attributes types.Attributes, inline bool) error {
-	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterCols, inline)
+	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
 }
 
 func renderSelectAttributes(cxt *output.Context, el interface{}, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
@@ -102,6 +102,8 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			}
 		case "none":
 			cxt.WriteString("[none]\n")
+			renderAttributeTitle(cxt, title, include, exclude)
+			renderAttributeAnchor(cxt, id, include, exclude, inline)
 		case types.UpperRoman, types.LowerRoman, types.Arabic, types.UpperAlpha, types.LowerAlpha:
 			if !inline {
 				cxt.WriteNewline()
@@ -111,6 +113,8 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			cxt.WriteRune('[')
 			cxt.WriteString(style)
 			cxt.WriteString("]\n")
+			renderAttributeTitle(cxt, title, include, exclude)
+			renderAttributeAnchor(cxt, id, include, exclude, inline)
 			return
 		case "a2s", "actdiag", "plantuml", "qrcode", "blockdiag", "d2", "lilypond", "ditaa", "graphviz", "asciimath":
 			return renderDiagramAttributes(cxt, style, id, title, keys, inline, attributes, include, exclude)
@@ -129,6 +133,8 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 				cxt.WriteString(lang.(string))
 			}
 			cxt.WriteString("]\n")
+			renderAttributeTitle(cxt, title, include, exclude)
+			renderAttributeAnchor(cxt, id, include, exclude, inline)
 			return
 		default:
 			if !inline {
@@ -156,6 +162,8 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 				}
 			}
 			cxt.WriteString("]\n")
+			renderAttributeTitle(cxt, title, include, exclude)
+			renderAttributeAnchor(cxt, id, include, exclude, inline)
 			return
 		}
 	}
@@ -177,6 +185,8 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 		if !inline {
 			cxt.WriteNewline()
 		}
+		renderAttributeTitle(cxt, title, include, exclude)
+		renderAttributeAnchor(cxt, id, include, exclude, inline)
 		return
 	}
 	renderAttributeTitle(cxt, title, include, exclude)
@@ -324,6 +334,7 @@ func getKeyValue(cxt *output.Context, key string, val interface{}, include Attri
 						val.WriteString(string(tc.HAlign))
 					}
 					if tc.VAlign != types.VAlignDefault {
+						val.WriteRune('.')
 						val.WriteString(string(tc.VAlign))
 					}
 					if tc.Autowidth {
@@ -347,6 +358,8 @@ func getKeyValue(cxt *output.Context, key string, val interface{}, include Attri
 				}
 			}
 			keyVal = strings.Join(columns, ",")
+		case nil:
+			keyVal = ""
 		default:
 			err = fmt.Errorf("unknown attribute type: %T", val)
 			return
@@ -404,6 +417,7 @@ func renderAttributeDeclaration(cxt *output.Context, ad *types.AttributeDeclarat
 			}
 		}
 	default:
+		cxt.WriteNewline()
 		cxt.WriteRune(':')
 		cxt.WriteString(ad.Name)
 		cxt.WriteString(":")

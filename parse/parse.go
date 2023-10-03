@@ -8,29 +8,28 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
-// ParseDocument parses the content of the reader identitied by the filename and applies all the substitutions and arrangements
 func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...parser.Option) (*types.Document, error) {
 	done := make(chan interface{})
 	defer close(done)
 
 	newContext := func() *parser.ParseContext {
 		c := parser.NewParseContext(config, opts...)
-		c.IgnoreColumnDefs(true)
+		//c.IgnoreColumnDefs(true)
 		return c
 	}
 
 	footnotes := types.NewFootnotes()
 	doc, err := parser.Aggregate(newContext(),
 		// SplitHeader(done,
-		parser.ArrangeLists(done,
-			parser.CollectFootnotes(footnotes, done,
-				parser.ApplySubstitutions(newContext(), done, // needs to be before 'ArrangeLists'
-					parser.RefineFragments(newContext(), r, done,
-						parser.ParseDocumentFragments(newContext(), r, done),
-					),
+		//parser.ArrangeLists(done,
+		parser.CollectFootnotes(footnotes, done,
+			parser.ApplySubstitutions(newContext(), done, // needs to be before 'ArrangeLists'
+				parser.RefineFragments(newContext(), r, done,
+					parser.ParseDocumentFragments(newContext(), r, done),
 				),
 			),
 		),
+		//),
 
 		// ),
 	)

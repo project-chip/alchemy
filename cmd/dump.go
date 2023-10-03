@@ -150,6 +150,14 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 			dumpAttributes(cxt, el.Attributes, indent+1)
 		case *types.AttributeReset:
 			fmt.Printf("{attr_reset: %s}\n", el.Name)
+		case *types.ListElements:
+			fmt.Printf("{list els}\n")
+			DumpElements(cxt, el.Elements, indent+1)
+		case *types.ListContinuation:
+			fmt.Printf("{list con %d}\n", el.Offset)
+			DumpElements(cxt, []interface{}{el.Element}, indent+1)
+		case *types.PredefinedAttribute:
+			fmt.Printf("{predef %s}", el.Name)
 		default:
 			fmt.Printf("unknown element type: %T\n", el)
 		}
@@ -232,8 +240,8 @@ func dumpLocation(cxt *output.Context, l *types.Location) {
 
 func snippet(str string) string {
 	v := []rune(str)
-	if 25 < len(v) {
-		str = string(v[:25])
+	if 42 < len(v) {
+		str = string(v[:20]) + "…" + string(v[len(v)-20:])
 	}
 	return strings.ReplaceAll(str, "\n", "")
 }
