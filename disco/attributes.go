@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
@@ -35,6 +36,11 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 	}
 
 	err = b.fixAccessCells(doc, rows, columnMap)
+	if err != nil {
+		return err
+	}
+
+	err = fixConstraintCells(rows, columnMap)
 	if err != nil {
 		return err
 	}
@@ -116,6 +122,34 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap 
 			if err != nil {
 				return
 			}
+		}
+	}
+	return
+}
+
+var minMaxPattern = regexp.MustCompile(`^(Max|Min)( .*)$`)
+
+func fixConstraintCells(rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
+	if len(rows) < 2 {
+		return
+	}
+	constraintIndex, ok := columnMap[matter.TableColumnConstraint]
+	if !ok {
+		return
+	}
+	for _, row := range rows[1:] {
+		cell := row.Cells[constraintIndex]
+		vc, e := getCellValue(cell)
+		if e != nil {
+			continue
+		}
+		fixed := minMaxPattern.ReplaceAllStringFunc(vc, func(s string) string {
+			r := []rune(s)
+			r[0] = unicode.ToLower(r[0])
+			return string(r)
+		})
+		if vc != fixed {
+			setCellString(cell, fixed)
 		}
 	}
 	return
