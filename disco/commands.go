@@ -91,6 +91,10 @@ func organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable 
 		if err != nil {
 			return err
 		}
+		err = fixConstraintCells(rows, columnMap)
+		if err != nil {
+			return err
+		}
 		err = getPotentialDataTypes(cxt, ss, rows, columnMap)
 		if err != nil {
 			return err
