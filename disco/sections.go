@@ -2,7 +2,6 @@ package disco
 
 import (
 	"fmt"
-	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -31,7 +30,7 @@ func assignSectionTypes(top *ascii.Section) {
 func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) error {
 	sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 	if !ok {
-		slog.Warn("could not determine section order", "docType", docType)
+		//slog.Warn("could not determine section order", "docType", docType)
 		return nil
 	}
 	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)

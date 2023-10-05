@@ -17,6 +17,7 @@ import (
 var bannedPaths map[string]string = map[string]string{
 	"namespaces/Namespace-Common-Position.adoc":         "parser does not support nested tables",
 	"service_device_management/PowerSourceCluster.adoc": "parser gets stuck parsing",
+	"secure_channel/Discovery.adoc":                     "parser gets stuck parsing",
 }
 
 func getFilePaths(filepath string) ([]string, error) {
