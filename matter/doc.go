@@ -11,5 +11,11 @@ const (
 	DocTypeCommonProtocol
 	DocTypeDataModel
 	DocTypeDeviceAttestation
+	DocTypeMultiAdmin
+	DocTypeNamespaces
+	DocTypeQRCode
+	DocTypeRendezvous
+	DocTypeSecureChannel
 	DocTypeServiceDeviceManagement
+	DocTypeSoftAP
 )

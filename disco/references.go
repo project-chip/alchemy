@@ -66,7 +66,7 @@ func (b *Ball) fixUnrecognizedReferences(doc *ascii.Doc) {
 				var label string
 				parts := strings.Split(ref, ",")
 				id = parts[0]
-				if len(parts) > 0 {
+				if len(parts) > 1 {
 					label = parts[1]
 				}
 				icr, _ := types.NewInternalCrossReference(id, label)
@@ -94,11 +94,15 @@ func (b *Ball) findCrossReferences(doc *ascii.Doc) map[string][]*types.InternalC
 	return crossReferences
 }
 
-func rewriteCrossReferences(crossReferences map[string][]*types.InternalCrossReference, anchors map[string]*anchorInfo) {
+func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*types.InternalCrossReference, anchors map[string]*anchorInfo) {
 	for id, xrefs := range crossReferences {
 		info, ok := anchors[id]
 		if !ok {
-			slog.Warn("cross reference points to non-existent anchor", "name", id)
+			dt, _ := b.doc.DocType()
+			switch dt {
+			case matter.DocTypeAppCluster, matter.DocTypeDeviceType:
+				slog.Warn("cross reference points to non-existent anchor", "name", id)
+			}
 			continue
 		}
 
