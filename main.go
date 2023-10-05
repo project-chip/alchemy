@@ -19,11 +19,13 @@ func main() {
 	var dryRun bool
 	var serial bool
 
+	var linkAttributes bool
+
 	app := &cli.App{
 		Name:  "matterfmt",
 		Usage: "builds stuff",
 		Action: func(c *cli.Context) error {
-			return cmd.DiscoBall(cxt, c.Args().First(), dryRun, serial)
+			return cmd.DiscoBall(cxt, c.Args().First(), dryRun, serial, false)
 		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
@@ -43,8 +45,15 @@ func main() {
 				Name:    "disco",
 				Aliases: []string{"c"},
 				Usage:   "Discoball documents",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:        "linkAttributes",
+						Usage:       "whether or not to actually output files",
+						Destination: &linkAttributes,
+					},
+				},
 				Action: func(cCtx *cli.Context) error {
-					err := cmd.DiscoBall(cxt, cCtx.Args().First(), dryRun, serial)
+					err := cmd.DiscoBall(cxt, cCtx.Args().First(), dryRun, serial, linkAttributes)
 					if err != nil {
 						return cli.Exit(err, -1)
 					}

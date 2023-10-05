@@ -10,6 +10,8 @@ import (
 
 type Ball struct {
 	doc *ascii.Doc
+
+	ShouldLinkAttributes bool
 }
 
 func NewBall(doc *ascii.Doc) *Ball {

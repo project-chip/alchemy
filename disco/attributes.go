@@ -45,6 +45,13 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 		return err
 	}
 
+	if b.ShouldLinkAttributes {
+		err = b.linkAttributes(cxt, attributes, rows, columnMap)
+		if err != nil {
+			return err
+		}
+	}
+
 	err = getPotentialDataTypes(cxt, attributes, rows, columnMap)
 	if err != nil {
 		return err
@@ -153,4 +160,67 @@ func fixConstraintCells(rows []*types.TableRow, columnMap map[matter.TableColumn
 		}
 	}
 	return
+}
+
+func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
+	attributeCells := make(map[string]*types.Paragraph)
+	nameIndex, ok := columnMap[matter.TableColumnName]
+	if !ok {
+		return nil
+	}
+
+	for _, row := range rows {
+		cell := row.Cells[nameIndex]
+		cv, err := getCellValue(cell)
+		if err != nil {
+			continue
+		}
+
+		if len(cell.Elements) == 0 {
+			continue
+		}
+		p, ok := cell.Elements[0].(*types.Paragraph)
+		if !ok {
+			continue
+		}
+		if len(p.Elements) == 0 {
+			continue
+		}
+		_, ok = p.Elements[0].(*types.StringElement)
+		if !ok {
+			continue
+		}
+
+		name := strings.TrimSpace(cv)
+		nameKey := strings.ToLower(name)
+
+		if _, ok := attributeCells[nameKey]; !ok {
+			attributeCells[nameKey] = p
+		}
+	}
+	for _, el := range section.Elements {
+		if s, ok := el.(*ascii.Section); ok {
+			attributeName := stripReferenceSuffixes(s.Name)
+			name := strings.TrimSpace(attributeName)
+
+			p, ok := attributeCells[strings.ToLower(name)]
+			if !ok {
+				continue
+			}
+			var id string
+			ide, ok := s.Base.Attributes[types.AttrID]
+			if ok {
+				id, ok = ide.(string)
+			}
+			if !ok {
+				var label string
+				id, label = normalizeAnchorID(s.Name, nil)
+				setAnchorID(s.Base, id, label)
+			}
+			icr, _ := types.NewInternalCrossReference(id, nil)
+			p.SetElements([]interface{}{icr})
+		}
+	}
+
+	return nil
 }
