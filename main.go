@@ -25,7 +25,7 @@ func main() {
 		Name:  "matterfmt",
 		Usage: "builds stuff",
 		Action: func(c *cli.Context) error {
-			return cmd.DiscoBall(cxt, c.Args().First(), dryRun, serial, false)
+			return cmd.Format(cxt, c.Args().First(), dryRun, serial)
 		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
