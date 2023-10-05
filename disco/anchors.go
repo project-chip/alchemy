@@ -49,7 +49,7 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 		}
 	}
 
-	rewriteCrossReferences(crossReferences, anchors)
+	b.rewriteCrossReferences(crossReferences, anchors)
 	return nil
 }
 
@@ -157,13 +157,16 @@ func normalizeAnchorID(name string, element interface{}) (id string, label strin
 }
 
 func setAnchor(info *anchorInfo) {
+	setAnchorID(info.element, info.id, info.label)
+}
+
+func setAnchorID(element types.WithAttributes, id string, label string) {
 	newAttr := make(types.Attributes)
-	id := info.id
-	if len(info.label) > 0 {
-		id += ", " + info.label
+	if len(label) > 0 {
+		id += ", " + label
 	}
 	newAttr[types.AttrID] = id
-	info.element.AddAttributes(newAttr)
+	element.AddAttributes(newAttr)
 }
 
 func disambiguateAnchorSet(infos []*anchorInfo) error {

@@ -12,20 +12,20 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func DiscoBall(cxt context.Context, filepath string, dryRun bool, serial bool) error {
+func DiscoBall(cxt context.Context, filepath string, dryRun bool, serial bool, linkAttributes bool) error {
 	if serial {
-		return discoBallSerial(cxt, filepath, dryRun)
+		return discoBallSerial(cxt, filepath, dryRun, linkAttributes)
 	}
-	return discoBallParallel(cxt, filepath, dryRun)
+	return discoBallParallel(cxt, filepath, dryRun, linkAttributes)
 }
 
-func discoBallSerial(cxt context.Context, filepath string, dryRun bool) error {
+func discoBallSerial(cxt context.Context, filepath string, dryRun bool, linkAttributes bool) error {
 	files, err := getFilePaths(filepath)
 	if err != nil {
 		return err
 	}
 	for i, file := range files {
-		err := discoBall(cxt, file, dryRun)
+		err := discoBall(cxt, file, dryRun, linkAttributes)
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func discoBallSerial(cxt context.Context, filepath string, dryRun bool) error {
 	return nil
 }
 
-func discoBallParallel(cxt context.Context, filepath string, dryRun bool) error {
+func discoBallParallel(cxt context.Context, filepath string, dryRun bool, linkAttributes bool) error {
 	files, err := getFilePaths(filepath)
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func discoBallParallel(cxt context.Context, filepath string, dryRun bool) error 
 	for i, f := range files {
 		func(file string, index int) {
 			g.Go(func() error {
-				err := discoBall(errCxt, file, dryRun)
+				err := discoBall(errCxt, file, dryRun, linkAttributes)
 				if err != nil {
 					return err
 				}
@@ -58,12 +58,13 @@ func discoBallParallel(cxt context.Context, filepath string, dryRun bool) error 
 	return g.Wait()
 }
 
-func discoBall(cxt context.Context, file string, dryRun bool) error {
+func discoBall(cxt context.Context, file string, dryRun bool, linkAttributes bool) error {
 	out, err := getOutputContext(cxt, file)
 	if err != nil {
 		return err
 	}
 	b := disco.NewBall(out.Doc)
+	b.ShouldLinkAttributes = linkAttributes
 	err = b.Run(cxt)
 	if err != nil {
 		slog.Error("error disco balling", "file", file, "error", err)
