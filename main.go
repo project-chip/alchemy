@@ -25,7 +25,7 @@ func main() {
 		Name:  "matterfmt",
 		Usage: "builds stuff",
 		Action: func(c *cli.Context) error {
-			return cmd.Format(cxt, c.Args().First(), dryRun, serial)
+			return cmd.Format(cxt, c.Args().Slice(), dryRun, serial)
 		},
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
@@ -53,7 +53,7 @@ func main() {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
-					err := cmd.DiscoBall(cxt, cCtx.Args().First(), dryRun, serial, linkAttributes)
+					err := cmd.DiscoBall(cxt, cCtx.Args().Slice(), dryRun, serial, linkAttributes)
 					if err != nil {
 						return cli.Exit(err, -1)
 					}
@@ -65,7 +65,7 @@ func main() {
 				Aliases: []string{"a"},
 				Usage:   "just format Matter documents",
 				Action: func(cCtx *cli.Context) error {
-					return cmd.Format(cxt, cCtx.Args().First(), dryRun, serial)
+					return cmd.Format(cxt, cCtx.Args().Slice(), dryRun, serial)
 				},
 			},
 			{
@@ -73,7 +73,7 @@ func main() {
 				Aliases: []string{"c"},
 				Usage:   "dump the parse tree of Matter documents",
 				Action: func(cCtx *cli.Context) error {
-					return cmd.Dump(cxt, cCtx.Args().First())
+					return cmd.Dump(cxt, cCtx.Args().Slice())
 				},
 			},
 		},
@@ -82,5 +82,4 @@ func main() {
 	if err := app.Run(os.Args); err != nil {
 		slog.Error("failed running", "error", err)
 	}
-
 }

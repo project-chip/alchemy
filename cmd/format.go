@@ -10,8 +10,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func Format(cxt context.Context, filepath string, dryRun bool, serial bool) error {
-	files, err := getFilePaths(filepath)
+func Format(cxt context.Context, filepaths []string, dryRun bool, serial bool) error {
+	files, err := getFilePaths(filepaths)
 	if err != nil {
 		return err
 	}
