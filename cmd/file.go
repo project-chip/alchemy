@@ -20,24 +20,27 @@ var bannedPaths map[string]string = map[string]string{
 	"secure_channel/Discovery.adoc":                     "parser gets stuck parsing",
 }
 
-func getFilePaths(filepath string) ([]string, error) {
-	paths, err := doublestar.FilepathGlob(filepath)
-	if err != nil {
-		return nil, err
-	}
-	filtered := make([]string, 0, len(paths))
-	for _, p := range paths {
-		var banned bool
-		for ban, reason := range bannedPaths {
-			if strings.HasSuffix(p, ban) {
-				fmt.Printf("Skipping excluded file %s; %s...\n", p, reason)
-				banned = true
+func getFilePaths(filepaths []string) ([]string, error) {
+	filtered := make([]string, 0, len(filepaths))
+	for _, filepath := range filepaths {
+		paths, err := doublestar.FilepathGlob(filepath)
+		if err != nil {
+			return nil, err
+		}
+		for _, p := range paths {
+			var banned bool
+			for ban, reason := range bannedPaths {
+				if strings.HasSuffix(p, ban) {
+					fmt.Printf("Skipping excluded file %s; %s...\n", p, reason)
+					banned = true
+				}
 			}
+			if banned {
+				continue
+			}
+			filtered = append(filtered, p)
 		}
-		if banned {
-			continue
-		}
-		filtered = append(filtered, p)
+
 	}
 	return filtered, nil
 }

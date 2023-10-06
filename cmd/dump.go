@@ -9,8 +9,8 @@ import (
 	"github.com/hasty/matterfmt/output"
 )
 
-func Dump(cxt context.Context, filepath string) error {
-	files, err := getFilePaths(filepath)
+func Dump(cxt context.Context, filepaths []string) error {
+	files, err := getFilePaths(filepaths)
 	if err != nil {
 		return err
 	}

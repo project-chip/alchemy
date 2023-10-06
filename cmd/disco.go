@@ -12,15 +12,15 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func DiscoBall(cxt context.Context, filepath string, dryRun bool, serial bool, linkAttributes bool) error {
+func DiscoBall(cxt context.Context, filepaths []string, dryRun bool, serial bool, linkAttributes bool) error {
 	if serial {
-		return discoBallSerial(cxt, filepath, dryRun, linkAttributes)
+		return discoBallSerial(cxt, filepaths, dryRun, linkAttributes)
 	}
-	return discoBallParallel(cxt, filepath, dryRun, linkAttributes)
+	return discoBallParallel(cxt, filepaths, dryRun, linkAttributes)
 }
 
-func discoBallSerial(cxt context.Context, filepath string, dryRun bool, linkAttributes bool) error {
-	files, err := getFilePaths(filepath)
+func discoBallSerial(cxt context.Context, filepaths []string, dryRun bool, linkAttributes bool) error {
+	files, err := getFilePaths(filepaths)
 	if err != nil {
 		return err
 	}
@@ -34,8 +34,8 @@ func discoBallSerial(cxt context.Context, filepath string, dryRun bool, linkAttr
 	return nil
 }
 
-func discoBallParallel(cxt context.Context, filepath string, dryRun bool, linkAttributes bool) error {
-	files, err := getFilePaths(filepath)
+func discoBallParallel(cxt context.Context, filepaths []string, dryRun bool, linkAttributes bool) error {
+	files, err := getFilePaths(filepaths)
 	if err != nil {
 		return err
 	}
