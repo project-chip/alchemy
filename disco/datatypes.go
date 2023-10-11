@@ -8,9 +8,10 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
-type potentialDataType struct {
+type DataTypeEntry struct {
 	name                string
 	ref                 string
 	dataType            string
@@ -26,7 +27,7 @@ type potentialDataType struct {
 var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
 
 func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
-	dataTypesSection := findSectionByType(top, matter.SectionDataTypes)
+	dataTypesSection := parse.FindSectionByType(top, matter.SectionDataTypes)
 	if dataTypesSection == nil {
 		return
 	}
@@ -42,7 +43,7 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 			}
 		}
 		dataTypeCategory := getDataTypeCategory(dataType)
-		cxt.potentialDataTypes[nameKey] = append(cxt.potentialDataTypes[nameKey], &potentialDataType{
+		cxt.potentialDataTypes[nameKey] = append(cxt.potentialDataTypes[nameKey], &DataTypeEntry{
 			name:             name,
 			ref:              name,
 			section:          ss,
@@ -55,21 +56,34 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 }
 
 func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
-	sectionDataMap := make(map[string]*potentialDataType)
+	sectionDataMap, err := GetDataTypes(columnMap, rows, section)
+	if err != nil {
+		return err
+	}
+	for name, dataType := range sectionDataMap {
+		if dataType.section != nil {
+			cxt.potentialDataTypes[name] = append(cxt.potentialDataTypes[name], dataType)
+		}
+	}
+	return nil
+}
+
+func GetDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
+	sectionDataMap := make(map[string]*DataTypeEntry)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
-		return nil
+		return nil, nil
 	}
 	typeIndex, ok := columnMap[matter.TableColumnType]
 	if !ok {
-		return nil
+		return nil, nil
 	}
 	for _, row := range rows {
-		cv, err := getCellValue(row.Cells[nameIndex])
+		cv, err := parse.GetTableCellValue(row.Cells[nameIndex])
 		if err != nil {
 			continue
 		}
-		dtv, err := getCellValue(row.Cells[typeIndex])
+		dtv, err := parse.GetTableCellValue(row.Cells[typeIndex])
 		if err != nil {
 			continue
 		}
@@ -84,7 +98,7 @@ func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*ty
 		}
 
 		if _, ok := sectionDataMap[nameKey]; !ok {
-			sectionDataMap[nameKey] = &potentialDataType{
+			sectionDataMap[nameKey] = &DataTypeEntry{
 				name:             name,
 				ref:              name,
 				dataType:         dataType,
@@ -101,13 +115,13 @@ func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*ty
 			if !ok {
 				continue
 			}
-			table := findFirstTable(s)
+			table := parse.FindFirstTable(s)
 			if table == nil {
 				continue
 			}
-			_, columnMap, _, err := findColumns(combineRows(table))
+			_, columnMap, _, err := parse.MapTableColumns(parse.TableRows(table))
 			if err != nil {
-				return err
+				return nil, err
 			}
 			dataType.indexColumn = getIndexColumnType(dataType.dataTypeCategory)
 
@@ -119,17 +133,12 @@ func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*ty
 
 		}
 	}
-	for name, dataType := range sectionDataMap {
-		if dataType.section != nil {
-			cxt.potentialDataTypes[name] = append(cxt.potentialDataTypes[name], dataType)
-		}
-	}
-	return nil
+	return sectionDataMap, nil
 }
 
 func promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
 
-	fields := make(map[matter.DataTypeCategory]map[string]*potentialDataType)
+	fields := make(map[matter.DataTypeCategory]map[string]*DataTypeEntry)
 	//var dataTypeCount int
 	//enumFields := make(map[string]*potentialDataType)
 	//bitmapFields := make(map[string]*potentialDataType)
@@ -140,7 +149,7 @@ func promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
 		for _, info := range infos {
 			fieldMap, ok := fields[info.dataTypeCategory]
 			if !ok {
-				fieldMap = make(map[string]*potentialDataType)
+				fieldMap = make(map[string]*DataTypeEntry)
 				fields[info.dataTypeCategory] = fieldMap
 			}
 			fieldMap[info.name] = info
@@ -185,7 +194,7 @@ func getDataTypeCategory(dataType string) matter.DataTypeCategory {
 	return matter.DataTypeCategoryUnknown
 }
 
-func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[string]*potentialDataType, firstColumnType matter.TableColumn) error {
+func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn) error {
 	if dataTypeFields == nil {
 		return nil
 	}
@@ -198,11 +207,11 @@ func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[strin
 		if dt.section == nil {
 			continue
 		}
-		table := findFirstTable(dt.section)
+		table := parse.FindFirstTable(dt.section)
 		if table == nil {
 			continue
 		}
-		_, columnMap, _, err := findColumns(combineRows(table))
+		_, columnMap, _, err := parse.MapTableColumns(parse.TableRows(table))
 		if err != nil {
 			return err
 		}
@@ -278,7 +287,7 @@ func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[strin
 }
 
 func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
-	dataTypesSection := findSectionByType(top, matter.SectionDataTypes)
+	dataTypesSection := parse.FindSectionByType(top, matter.SectionDataTypes)
 	if dataTypesSection != nil {
 		return dataTypesSection, nil
 	}
@@ -311,7 +320,7 @@ func stripDataTypeSuffixes(dataType string) string {
 	return dataType
 }
 
-func disambiguateDataTypes(cxt *discoContext, infos []*potentialDataType) error {
+func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
 	parents := make([]interface{}, len(infos))
 	dataTypeNames := make([]string, len(infos))
 	dataTypeRefs := make([]string, len(infos))

@@ -8,10 +8,11 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 func (b *Ball) organizeCommandsSection(cxt *discoContext, doc *ascii.Doc, commands *ascii.Section) error {
-	t := findFirstTable(commands)
+	t := parse.FindFirstTable(commands)
 	if t == nil {
 		return fmt.Errorf("no commands table found")
 	}
@@ -22,9 +23,9 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 
 	setSectionTitle(commands, matter.CommandsSectionName)
 
-	rows := combineRows(commandsTable)
+	rows := parse.TableRows(commandsTable)
 
-	headerRowIndex, columnMap, extraColumns, err := findColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := parse.MapTableColumns(rows)
 	if err != nil {
 		return err
 	}
@@ -68,7 +69,7 @@ func organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable 
 	}
 	commandNames := make(map[string]struct{}, len(commandsTable.Rows))
 	for _, row := range commandsTable.Rows {
-		commandName, err := getCellValue(row.Cells[nameIndex])
+		commandName, err := parse.GetTableCellValue(row.Cells[nameIndex])
 		if err != nil {
 			slog.Warn("could not get cell value for command", "err", err)
 			continue
@@ -81,13 +82,13 @@ func organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable 
 		if _, ok := commandNames[name]; !ok {
 			continue
 		}
-		t := findFirstTable(ss)
+		t := parse.FindFirstTable(ss)
 		if t == nil {
 			continue
 		}
-		rows := combineRows(t)
+		rows := parse.TableRows(t)
 
-		_, columnMap, _, err := findColumns(rows)
+		_, columnMap, _, err := parse.MapTableColumns(rows)
 		if err != nil {
 			return err
 		}
@@ -115,7 +116,7 @@ func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, colum
 	for _, row := range rows[1:] {
 		cell := row.Cells[accessIndex]
 
-		vc, e := getCellValue(cell)
+		vc, e := parse.GetTableCellValue(cell)
 		if e != nil {
 			continue
 		}

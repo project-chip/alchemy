@@ -6,10 +6,11 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 func (b *Ball) organizeClusterIDSection(doc *ascii.Doc, section *ascii.Section) error {
-	t := findFirstTable(section)
+	t := parse.FindFirstTable(section)
 	if t == nil {
 		return fmt.Errorf("no cluster ID section found")
 	}
@@ -20,9 +21,9 @@ func (b *Ball) organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, at
 
 	setSectionTitle(section, matter.ClusterIDSectionName)
 
-	rows := combineRows(attributesTable)
+	rows := parse.TableRows(attributesTable)
 
-	headerRowIndex, columnMap, extraColumns, err := findColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := parse.MapTableColumns(rows)
 	if err != nil {
 		return err
 	}
