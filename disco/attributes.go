@@ -9,10 +9,11 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
-	attributesTable := findFirstTable(attributes)
+	attributesTable := parse.FindFirstTable(attributes)
 	if attributesTable == nil {
 		return fmt.Errorf("no attributes table found")
 	}
@@ -20,9 +21,9 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top 
 }
 
 func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
-	rows := combineRows(attributesTable)
+	rows := parse.TableRows(attributesTable)
 
-	_, columnMap, extraColumns, err := findColumns(rows)
+	_, columnMap, extraColumns, err := parse.MapTableColumns(rows)
 	if err != nil {
 		return err
 	}
@@ -91,7 +92,7 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap 
 	}
 	for _, row := range rows[1:] {
 		cell := row.Cells[accessIndex]
-		vc, e := getCellValue(cell)
+		vc, e := parse.GetTableCellValue(cell)
 		if e != nil {
 			continue
 		}
@@ -146,7 +147,7 @@ func fixConstraintCells(rows []*types.TableRow, columnMap map[matter.TableColumn
 	}
 	for _, row := range rows[1:] {
 		cell := row.Cells[constraintIndex]
-		vc, e := getCellValue(cell)
+		vc, e := parse.GetTableCellValue(cell)
 		if e != nil {
 			continue
 		}
@@ -171,7 +172,7 @@ func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []
 
 	for _, row := range rows {
 		cell := row.Cells[nameIndex]
-		cv, err := getCellValue(cell)
+		cv, err := parse.GetTableCellValue(cell)
 		if err != nil {
 			continue
 		}

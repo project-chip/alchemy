@@ -7,10 +7,11 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 func (b *Ball) organizeClassificationSection(doc *ascii.Doc, section *ascii.Section) error {
-	attributesTable := findFirstTable(section)
+	attributesTable := parse.FindFirstTable(section)
 	if attributesTable == nil {
 		return fmt.Errorf("no attributes table found")
 	}
@@ -19,9 +20,9 @@ func (b *Ball) organizeClassificationSection(doc *ascii.Doc, section *ascii.Sect
 }
 
 func (b *Ball) organizeClassificationTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
-	rows := combineRows(attributesTable)
+	rows := parse.TableRows(attributesTable)
 
-	headerRowIndex, columnMap, extraColumns, err := findColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := parse.MapTableColumns(rows)
 	if err != nil {
 		return err
 	}

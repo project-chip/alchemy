@@ -46,6 +46,15 @@ func getFilePaths(filepaths []string) ([]string, error) {
 }
 
 func getOutputContext(cxt context.Context, path string) (*output.Context, error) {
+	doc, err := getDoc(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return output.NewContext(cxt, doc), nil
+}
+
+func getDoc(path string) (*ascii.Doc, error) {
 	config := configuration.NewConfiguration(
 		configuration.WithFilename(path),
 		configuration.WithAttribute("second-ballot", false),
@@ -67,6 +76,5 @@ func getOutputContext(cxt context.Context, path string) (*output.Context, error)
 		return nil, err
 	}
 	doc.Path = path
-
-	return output.NewContext(cxt, doc), nil
+	return doc, nil
 }

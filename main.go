@@ -62,10 +62,17 @@ func main() {
 			},
 			{
 				Name:    "format",
-				Aliases: []string{"a"},
+				Aliases: []string{"fmt"},
 				Usage:   "just format Matter documents",
 				Action: func(cCtx *cli.Context) error {
 					return cmd.Format(cxt, cCtx.Args().Slice(), dryRun, serial)
+				},
+			},
+			{
+				Name:  "db",
+				Usage: "just format Matter documents",
+				Action: func(cCtx *cli.Context) error {
+					return cmd.Database(cxt, cCtx.Args().Slice(), serial)
 				},
 			},
 			{

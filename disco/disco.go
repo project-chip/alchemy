@@ -6,6 +6,7 @@ import (
 
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 type Ball struct {
@@ -30,14 +31,14 @@ func (b *Ball) Run(cxt context.Context) error {
 	}
 
 	precleanStrings(doc.Elements)
-	b.fixUnrecognizedReferences(doc)
+	parse.PatchUnrecognizedReferences(doc)
 
 	topLevelSection := ascii.FindFirst[*ascii.Section](doc.Elements)
 	if topLevelSection == nil {
 		return fmt.Errorf("missing top level section")
 	}
 
-	assignSectionTypes(topLevelSection)
+	parse.AssignSectionTypes(topLevelSection)
 
 	getExistingDataTypes(dc, topLevelSection)
 

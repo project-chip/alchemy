@@ -55,6 +55,21 @@ func find[T any](elements []interface{}, callback func(t T) bool) bool {
 	return false
 }
 
+func Skim[T any](elements []interface{}) []T {
+	var list []T
+	for _, e := range elements {
+		if ae, ok := e.(*Element); ok {
+			e = ae.Base
+		}
+		switch el := e.(type) {
+		case T:
+			list = append(list, el)
+		}
+
+	}
+	return list
+}
+
 func Filter(parent HasElements, callback func(i interface{}) (remove bool, shortCircuit bool)) (shortCircuit bool) {
 	i := 0
 	elements := parent.GetElements()
