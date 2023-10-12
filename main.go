@@ -20,6 +20,7 @@ func main() {
 	var serial bool
 
 	var linkAttributes bool
+	var dumpAscii bool
 
 	app := &cli.App{
 		Name:  "matterfmt",
@@ -79,8 +80,15 @@ func main() {
 				Name:    "dump",
 				Aliases: []string{"c"},
 				Usage:   "dump the parse tree of Matter documents",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:        "ascii",
+						Usage:       "dump asciidoc object model",
+						Destination: &dumpAscii,
+					},
+				},
 				Action: func(cCtx *cli.Context) error {
-					return cmd.Dump(cxt, cCtx.Args().Slice())
+					return cmd.Dump(cxt, cCtx.Args().Slice(), dumpAscii)
 				},
 			},
 		},

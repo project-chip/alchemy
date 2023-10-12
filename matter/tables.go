@@ -14,6 +14,7 @@ const (
 	TableColumnDefault
 	TableColumnAccess
 	TableColumnConformance
+	TableColumnPriority
 	TableColumnHierarchy
 	TableColumnRole
 	TableColumnContext
@@ -42,6 +43,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnDefault:     "Default",
 	TableColumnAccess:      "Access",
 	TableColumnConformance: "Conformance",
+	TableColumnPriority:    "Priority",
 	TableColumnHierarchy:   "Hierarchy",
 	TableColumnRole:        "Role",
 	TableColumnContext:     "Context",

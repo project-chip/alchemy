@@ -63,25 +63,6 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 	return nil
 }
 
-var accessPattern = regexp.MustCompile(`^(?:(?:^|\s+)(?:(?P<ReadWrite>(?:R\*W)|(?:R\[W\])|(?:[RW]+))|(?P<Fabric>[FS]+)|(?P<Privileges>[VOMA]+)|(?P<Timed>T)))+\s*$`)
-var accessPatternMatchMap map[int]matter.AccessCategory
-
-func init() {
-	accessPatternMatchMap = make(map[int]matter.AccessCategory)
-	for i, name := range accessPattern.SubexpNames() {
-		switch name {
-		case "ReadWrite":
-			accessPatternMatchMap[i] = matter.AccessCategoryReadWrite
-		case "Fabric":
-			accessPatternMatchMap[i] = matter.AccessCategoryFabric
-		case "Privileges":
-			accessPatternMatchMap[i] = matter.AccessCategoryPrivileges
-		case "Timed":
-			accessPatternMatchMap[i] = matter.AccessCategoryTimed
-		}
-	}
-}
-
 func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
 	if len(rows) < 2 {
 		return
@@ -96,21 +77,7 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap 
 		if e != nil {
 			continue
 		}
-		matches := accessPattern.FindStringSubmatch(vc)
-		if matches == nil {
-			continue
-		}
-		access := make(map[matter.AccessCategory]string)
-		for i, s := range matches {
-			if s == "" {
-				continue
-			}
-			category, ok := accessPatternMatchMap[i]
-			if !ok {
-				continue
-			}
-			access[category] = s
-		}
+		access := parse.ParseAccess(vc)
 		if len(access) > 0 {
 			var out strings.Builder
 			for _, ac := range matter.AccessCategoryOrder {
@@ -201,7 +168,7 @@ func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []
 	}
 	for _, el := range section.Elements {
 		if s, ok := el.(*ascii.Section); ok {
-			attributeName := stripReferenceSuffixes(s.Name)
+			attributeName := matter.StripReferenceSuffixes(s.Name)
 			name := strings.TrimSpace(attributeName)
 
 			p, ok := attributeCells[strings.ToLower(name)]

@@ -33,18 +33,6 @@ func ensureTableOptions(elements []interface{}) {
 
 }
 
-func TableRows(t *types.Table) (rows []*types.TableRow) {
-	rows = make([]*types.TableRow, 0, len(t.Rows)+2)
-	if t.Header != nil {
-		rows = append(rows, t.Header)
-	}
-	rows = append(rows, t.Rows...)
-	if t.Footer != nil {
-		rows = append(rows, t.Footer)
-	}
-	return
-}
-
 func reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap map[matter.TableColumn]int, extraColumns []parse.ExtraColumn) []*types.TableRow {
 	newRows := make([]*types.TableRow, 0, len(rows))
 	for _, row := range rows {

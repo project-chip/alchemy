@@ -8,6 +8,7 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/matterfmt/matter"
 )
 
 type anchorInfo struct {
@@ -78,6 +79,10 @@ func (b *Ball) findAnchors(doc *ascii.Doc, crossReferences map[string][]*types.I
 			id = strings.TrimSpace(parts[0])
 			label = strings.TrimSpace(parts[1])
 		}
+		reftext, ok := attrs.GetAsString("reftext")
+		if ok {
+			label = reftext
+		}
 		info := &anchorInfo{
 			id:      id,
 			label:   label,
@@ -131,23 +136,29 @@ func normalizeAnchor(info *anchorInfo) {
 }
 
 var pascalCasePattern = regexp.MustCompile(`^[A-Z][a-z]+([A-Z][a-z]+)+$`)
+var anchorInvalidCharacters = strings.NewReplacer(".", "", "(", "", ")", "")
 
 func normalizeAnchorID(name string, element interface{}) (id string, label string) {
 	switch element.(type) {
 	case *types.Table:
 		label = strings.TrimSpace(name)
 	default:
-		label = strings.TrimSpace(stripReferenceSuffixes(name))
+		label = strings.TrimSpace(matter.StripReferenceSuffixes(name))
 	}
 
 	var ref strings.Builder
 
 	parts := strings.Split(label, " ")
 	for i, p := range parts {
-		if i > 0 && pascalCasePattern.MatchString(p) {
-			ref.WriteString("_")
+		p = anchorInvalidCharacters.Replace(p)
+		if pascalCasePattern.MatchString(p) {
+			if i > 0 {
+				ref.WriteString("_")
+			}
+			ref.WriteString(p)
+		} else {
+			ref.WriteString(titleCaser.String(p))
 		}
-		ref.WriteString(strings.Title(p))
 	}
 	id = ref.String()
 	id = "ref_" + acronymPattern.ReplaceAllStringFunc(id, func(match string) string {
@@ -178,10 +189,13 @@ func disambiguateAnchorSet(infos []*anchorInfo) error {
 	}
 	parentSections := make([]*ascii.Section, len(infos))
 	for {
+		slog.Info("info", "i", infos)
 		for i := range infos {
+			slog.Info("info", "i", infos[i].name, "e", infos[i].element)
+
 			parentSection := findRefSection(parents[i])
 			if parentSection == nil {
-				return fmt.Errorf("duplicate reference: %s with invalid parent", refIds[i])
+				return fmt.Errorf("duplicate anchor: %s with invalid parent", refIds[i])
 			}
 			parentSections[i] = parentSection
 			refParentId, _ := normalizeAnchorID(getReferenceName(parentSection.Base), parentSection.Base)

@@ -19,3 +19,21 @@ const (
 	DocTypeServiceDeviceManagement
 	DocTypeSoftAP
 )
+
+var DocTypeNames = map[DocType]string{
+	DocTypeUnknown:                 "Unknown",
+	DocTypeAppCluster:              "AppCluster",
+	DocTypeAppClusterIndex:         "AppClusterIndex",
+	DocTypeDeviceType:              "DeviceType",
+	DocTypeDeviceTypeIndex:         "DeviceTypeIndex",
+	DocTypeCommonProtocol:          "CommonProtocol",
+	DocTypeDataModel:               "DataModel",
+	DocTypeDeviceAttestation:       "DeviceAttestation",
+	DocTypeMultiAdmin:              "MultiAdmin",
+	DocTypeNamespaces:              "Namespaces",
+	DocTypeQRCode:                  "QRCode",
+	DocTypeRendezvous:              "Rendezvous",
+	DocTypeSecureChannel:           "SecureChannel",
+	DocTypeServiceDeviceManagement: "ServiceDeviceManagement",
+	DocTypeSoftAP:                  "SoftAP",
+}

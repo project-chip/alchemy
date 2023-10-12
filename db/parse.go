@@ -10,7 +10,18 @@ import (
 	"github.com/hasty/matterfmt/parse"
 )
 
-func readSimpleSection(cxt context.Context, section *ascii.Section, row *dbRow) error {
+type sectionInfo struct {
+	id     int32
+	values *dbRow
+
+	parent *sectionInfo
+
+	children map[string][]*sectionInfo
+}
+
+var missingTable = fmt.Errorf("no table found")
+
+func appendSectionToRow(cxt context.Context, section *ascii.Section, row *dbRow) error {
 	t := parse.FindFirstTable(section)
 	if t == nil {
 		return fmt.Errorf("no table found")
@@ -39,6 +50,9 @@ func readSimpleSection(cxt context.Context, section *ascii.Section, row *dbRow) 
 
 func (h *Host) readTableSection(cxt context.Context, parent *sectionInfo, section *ascii.Section, name string) error {
 	rows, err := readTable(cxt, section)
+	if err == missingTable {
+		return nil
+	}
 	if err != nil {
 		return err
 	}
@@ -55,7 +69,7 @@ func (h *Host) readTableSection(cxt context.Context, parent *sectionInfo, sectio
 func readTable(cxt context.Context, section *ascii.Section) (rs []*dbRow, err error) {
 	t := parse.FindFirstTable(section)
 	if t == nil {
-		return nil, fmt.Errorf("no table found")
+		return nil, missingTable
 	}
 	rows := parse.TableRows(t)
 	if len(rows) < 2 {
