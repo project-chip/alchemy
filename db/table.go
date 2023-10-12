@@ -1,7 +1,6 @@
 package db
 
 import (
-	"log/slog"
 	"strings"
 
 	"github.com/dolthub/go-mysql-server/memory"
@@ -12,13 +11,19 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-var (
-	documentTable = "document"
-	clusterTable  = "cluster"
-	featureTable  = "feature"
-)
+func (h *Host) createTable(cxt *mms.Context, tableName string, parentTable string, sections []*sectionInfo, columns []matter.TableColumn) error {
+	schema, extra := buildTableSchema(sections, tableName, parentTable, columns)
+	t := memory.NewTable(tableName, mms.NewPrimaryKeySchema(schema), h.db.GetForeignKeyCollection())
+	h.tables[tableName] = t
+	h.db.AddTable(tableName, t)
+	err := populateTable(cxt, t, tableName, parentTable, sections, schema, columns, extra)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
-func (h *Host) createTable(cxt *mms.Context, tableName string, parentName string, sections []*sectionInfo, columns []matter.TableColumn) error {
+func buildTableSchema(sections []*sectionInfo, tableName string, parentName string, columns []matter.TableColumn) (mms.Schema, []parse.ExtraColumn) {
 	extraColumns := make(map[string]*parse.ExtraColumn)
 	for _, si := range sections {
 		for e := range si.values.extras {
@@ -37,12 +42,21 @@ func (h *Host) createTable(cxt *mms.Context, tableName string, parentName string
 		if !ok {
 			continue
 		}
+		var columnName = strcase.ToSnake(name)
 		var colType mms.Type = types.Text
 		switch col {
-		case matter.TableColumnType, matter.TableColumnID:
+		case matter.TableColumnAccess:
+			schema = append(schema, getAccessSchemaColumns(tableName)...)
+			continue
+		case matter.TableColumnQuality:
+			schema = append(schema, getQualitySchemaColumns(tableName)...)
+			continue
+		case matter.TableColumnID, matter.TableColumnBit, matter.TableColumnValue:
 			colType = types.Int64
+		case matter.TableColumnType:
+			columnName = "data_type"
 		}
-		schema = append(schema, &mms.Column{Name: strcase.ToSnake(name), Type: colType, Nullable: true, Source: tableName, PrimaryKey: false})
+		schema = append(schema, &mms.Column{Name: columnName, Type: colType, Nullable: true, Source: tableName, PrimaryKey: false})
 	}
 
 	offset := len(schema)
@@ -53,54 +67,56 @@ func (h *Host) createTable(cxt *mms.Context, tableName string, parentName string
 		e.Offset = offset
 		offset++
 	}
-	for _, s := range schema {
-		slog.Info("adding column", "table", s.Source, "column", s)
-	}
-	t := memory.NewTable(tableName, mms.NewPrimaryKeySchema(schema), h.db.GetForeignKeyCollection())
-	h.tables[tableName] = t
-	h.db.AddTable(tableName, t)
+	return schema, extra
+}
+
+func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTable string, sections []*sectionInfo, schema mms.Schema, columns []matter.TableColumn, extra []parse.ExtraColumn) error {
 	for _, si := range sections {
 		row := mms.NewRow(si.id)
-		offset := 1
-		if len(parentName) > 0 {
+		if len(parentTable) > 0 {
 			row = append(row, si.parent.id)
-			offset++
 		}
 		for _, col := range columns {
-			sr := schema[offset]
 			v, ok := si.values.values[col]
-			if ok {
-				var err error
-				switch sr.Type {
-				case types.Int64:
-					switch val := v.(type) {
-					case matter.DocType:
-						v = int64(val)
-					case string:
-						v, err = parseNumber(val)
+			switch col {
+			case matter.TableColumnAccess:
+				accessRows := getAccessSchemaColumnValues(tableName, v)
+				row = append(row, accessRows...)
+			case matter.TableColumnQuality:
+				qualityRows := getQualitySchemaColumnValues(v)
+				row = append(row, qualityRows...)
+			default:
+				if !ok {
+					row = append(row, nil)
+				} else {
+					sr := schema[len(row)]
+					var err error
+					switch sr.Type {
+					case types.Int64:
+						switch val := v.(type) {
+						case matter.DocType:
+							v = int64(val)
+						case string:
+							v, err = parseNumber(val)
+						}
 					}
+					if err != nil {
+						v = nil
+					}
+					row = append(row, v)
+
 				}
-				if err != nil {
-					v = nil
-				}
-				row = append(row, v)
-			} else {
-				slog.Info("missing col", "name", col)
-				row = append(row, nil)
 			}
-			offset++
 		}
 		for _, e := range extra {
 			v, ok := si.values.extras[e.Name]
 			if ok {
 				row = append(row, v)
 			} else {
-				slog.Info("missing val", "name", e.Name)
+				//slog.Info("missing val", "name", e.Name)
 				row = append(row, nil)
 			}
-			offset++
 		}
-		slog.Info("inserting row", "table", tableName, "row", row)
 		err := t.Insert(cxt, row)
 		if err != nil {
 			return err

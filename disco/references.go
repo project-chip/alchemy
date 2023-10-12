@@ -2,7 +2,6 @@ package disco
 
 import (
 	"log/slog"
-	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
@@ -47,16 +46,6 @@ func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*types.Intern
 	}
 }
 
-func stripReferenceSuffixes(newId string) string {
-	for _, suffix := range matter.DisallowedReferenceSuffixes {
-		if strings.HasSuffix(newId, suffix) {
-			newId = newId[0 : len(newId)-len(suffix)]
-			break
-		}
-	}
-	return newId
-}
-
 func findRefSection(parent interface{}) *ascii.Section {
 	switch p := parent.(type) {
 	case *ascii.Section:
@@ -78,13 +67,11 @@ func getReferenceName(element interface{}) string {
 		if s, ok := name.(string); ok {
 			return s
 		}
-	case *types.Table:
-		if el.Attributes != nil {
-
-			if title, ok := el.Attributes["title"]; ok {
-				if name, ok := title.(string); ok {
-					return name
-				}
+	case types.WithAttributes:
+		attr := el.GetAttributes()
+		if attr != nil {
+			if title, ok := attr.GetAsString("title"); ok {
+				return title
 			}
 		}
 	default:

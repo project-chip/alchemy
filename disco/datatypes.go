@@ -32,7 +32,7 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 		return
 	}
 	for _, ss := range ascii.FindAll[*ascii.Section](dataTypesSection.Elements) {
-		name := stripDataTypeSuffixes(ss.Name)
+		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		var dataType string
 		se := ascii.FindFirst[*types.StringElement](ss.Elements)
@@ -109,7 +109,7 @@ func GetDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, 
 	}
 	for _, el := range section.Elements {
 		if s, ok := el.(*ascii.Section); ok {
-			name := strings.TrimSpace(stripReferenceSuffixes(s.Name))
+			name := strings.TrimSpace(matter.StripReferenceSuffixes(s.Name))
 
 			dataType, ok := sectionDataMap[strings.ToLower(name)]
 			if !ok {
@@ -310,16 +310,6 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 	return dataTypesSection, nil
 }
 
-func stripDataTypeSuffixes(dataType string) string {
-	for _, suffix := range matter.DataTypeSuffixes {
-		if strings.HasSuffix(dataType, suffix) {
-			dataType = dataType[0 : len(dataType)-len(suffix)]
-			break
-		}
-	}
-	return dataType
-}
-
 func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
 	parents := make([]interface{}, len(infos))
 	dataTypeNames := make([]string, len(infos))
@@ -337,7 +327,7 @@ func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
 				return fmt.Errorf("duplicate reference: %s with invalid parent", dataTypeNames[i])
 			}
 			parentSections[i] = parentSection
-			refParentId := strings.TrimSpace(stripReferenceSuffixes(getReferenceName(parentSection.Base)))
+			refParentId := strings.TrimSpace(matter.StripReferenceSuffixes(getReferenceName(parentSection.Base)))
 			dataTypeNames[i] = refParentId + " " + dataTypeNames[i]
 			dataTypeRefs[i] = refParentId + "_" + dataTypeNames[i]
 		}

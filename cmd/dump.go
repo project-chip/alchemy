@@ -6,10 +6,13 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/matterfmt/parse"
 )
 
-func Dump(cxt context.Context, filepaths []string) error {
+func Dump(cxt context.Context, filepaths []string, dumpAscii bool) error {
 	files, err := getFilePaths(filepaths)
 	if err != nil {
 		return err
@@ -22,15 +25,41 @@ func Dump(cxt context.Context, filepaths []string) error {
 		if err != nil {
 			return err
 		}
-		DumpElements(out, out.Doc.Base.Elements, 0)
+		if dumpAscii {
+			for _, top := range ascii.Skim[*ascii.Section](out.Doc.Elements) {
+				parse.AssignSectionTypes(top)
+			}
+			DumpElements(out, out.Doc.Elements, 0)
+
+		} else {
+			DumpElements(out, out.Doc.Base.Elements, 0)
+		}
 	}
 	return nil
 
 }
 
 func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
+
 	for _, e := range elements {
 		fmt.Print(strings.Repeat("\t", indent))
+		as, ok := e.(*ascii.Section)
+		if ok {
+			fmt.Printf("{SEC %d (%s)}:\n", as.Base.Level, matter.SectionTypeString(as.SecType))
+
+			dumpAttributes(cxt, as.Base.Attributes, indent+1)
+			fmt.Print(strings.Repeat("\t", indent+1))
+			fmt.Printf("{title:}\n")
+			DumpElements(cxt, as.Base.Title, indent+2)
+			fmt.Print(strings.Repeat("\t", indent+1))
+			fmt.Printf("{body:}\n")
+			DumpElements(cxt, as.Elements, indent+2)
+			continue
+		}
+		ae, ok := e.(*ascii.Element)
+		if ok {
+			e = ae.Base
+		}
 		switch el := e.(type) {
 		case *types.BlankLine:
 			fmt.Print("{blank}\n")

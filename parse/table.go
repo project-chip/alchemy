@@ -43,7 +43,7 @@ func GetTableCellValue(cell *types.TableCell) (string, error) {
 		return "", fmt.Errorf("missing paragraph in table cell")
 	}
 	if len(p.Elements) == 0 {
-		return "", fmt.Errorf("missing paragraph elements in table cell")
+		return "", nil
 	}
 	out := output.NewContext(context.Background(), nil)
 	err := render.RenderElements(out, "", p.Elements)
@@ -97,7 +97,7 @@ func getTableColumn(val string) matter.TableColumn {
 	switch strings.ToLower(val) {
 	case "id", "identifier":
 		return matter.TableColumnID
-	case "name":
+	case "name", "field":
 		return matter.TableColumnName
 	case "type":
 		return matter.TableColumnType
@@ -111,6 +111,8 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnAccess
 	case "conformance":
 		return matter.TableColumnConformance
+	case "priority":
+		return matter.TableColumnPriority
 	case "hierarchy":
 		return matter.TableColumnHierarchy
 	case "role":

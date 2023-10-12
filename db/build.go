@@ -24,10 +24,9 @@ func (h *Host) Build(sc *sql.Context) error {
 
 func (h *Host) createTables(sc *sql.Context, bs *sectionInfo) error {
 	for _, tableName := range h.tableNames {
-		slog.Info("Creating table", "name", tableName)
 		ts, ok := tableSchema[tableName]
 		if !ok {
-			slog.Info("Table missing", "name", tableName)
+			slog.Error("Table missing", "name", tableName)
 			continue
 		}
 		sis := findSectionInfos(bs, tableName)
@@ -44,7 +43,6 @@ func findSectionInfos(base *sectionInfo, name string) []*sectionInfo {
 	si, ok := base.children[name]
 	if ok {
 		list = append(list, si...)
-		slog.Info("appending", "type", name, "count", len(si))
 	}
 	for _, c := range base.children {
 		for _, s := range c {

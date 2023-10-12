@@ -62,6 +62,8 @@ func getSectionType(parent *ascii.Section, section *ascii.Section) matter.Sectio
 			return matter.SectionAttributes
 		case "commands":
 			return matter.SectionCommands
+		case "events":
+			return matter.SectionEvents
 		case "conditions":
 			return matter.SectionConditions
 		case "cluster requirements":
@@ -89,7 +91,7 @@ func getSectionType(parent *ascii.Section, section *ascii.Section) matter.Sectio
 		if strings.HasSuffix(name, "enum type") {
 			return matter.SectionDataTypeEnum
 		}
-		if strings.HasSuffix(name, "struct type") {
+		if strings.HasSuffix(name, "struct type") || strings.HasSuffix(name, "structure") {
 			return matter.SectionDataTypeStruct
 		}
 	case matter.SectionCommand:
@@ -100,7 +102,10 @@ func getSectionType(parent *ascii.Section, section *ascii.Section) matter.Sectio
 		if strings.HasSuffix(name, " command") {
 			return matter.SectionCommand
 		}
-
+	case matter.SectionEvents:
+		if strings.HasSuffix(name, " event") {
+			return matter.SectionEvent
+		}
 	default:
 
 	}

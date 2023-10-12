@@ -20,7 +20,8 @@ import (
 func (h *Host) indexDoc(ctx context.Context, doc *ascii.Doc) (*sectionInfo, error) {
 	ds := &sectionInfo{id: h.nextId(documentTable), values: &dbRow{}, children: make(map[string][]*sectionInfo)}
 	dt, _ := doc.DocType()
-	ds.values.values = map[matter.TableColumn]interface{}{matter.TableColumnName: filepath.Base(doc.Path), matter.TableColumnType: dt}
+	dts := matter.DocTypeNames[dt]
+	ds.values.values = map[matter.TableColumn]interface{}{matter.TableColumnName: filepath.Base(doc.Path), matter.TableColumnType: dts}
 	ds.values.extras = map[string]interface{}{"path": doc.Path}
 	for _, top := range ascii.Skim[*ascii.Section](doc.Elements) {
 		parse.AssignSectionTypes(top)
