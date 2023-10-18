@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/hasty/matterfmt/cmd"
+	"github.com/hasty/matterfmt/disco"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
@@ -54,7 +55,12 @@ func main() {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
-					err := cmd.DiscoBall(cxt, cCtx.Args().Slice(), dryRun, serial, linkAttributes)
+					var options []disco.Option
+					if linkAttributes {
+						options = append(options, disco.LinkAttributes)
+					}
+
+					err := cmd.DiscoBall(cxt, cCtx.Args().Slice(), dryRun, serial, options...)
 					if err != nil {
 						return cli.Exit(err, -1)
 					}
