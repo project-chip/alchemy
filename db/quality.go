@@ -21,22 +21,29 @@ func getQualitySchemaColumnValues(access interface{}) []interface{} {
 	var nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton int8
 	if s, ok := access.(string); ok {
 		rs := []rune(s)
+		var val int8 = 1
 		for _, r := range rs {
 			switch r {
 			case 'X':
-				nullable = 1
+				nullable = val
 			case 'N':
-				nonVolatile = 1
+				nonVolatile = val
 			case 'F':
-				fixed = 1
+				fixed = val
 			case 'S':
-				scene = 1
+				scene = val
 			case 'P':
-				reportable = 1
+				reportable = val
 			case 'C':
-				changesOmitted = 1
+				changesOmitted = val
 			case 'I':
-				singleton = 1
+				singleton = val
+			case '!':
+				val = -1
+				continue
+			}
+			if val == -1 {
+				val = 1
 			}
 		}
 	}
