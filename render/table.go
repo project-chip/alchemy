@@ -40,37 +40,24 @@ func renderTable(cxt *output.Context, t *types.Table) (err error) {
 
 	renderAttributes(cxt, t, t.Attributes, false)
 
-	var colOffsets []int
-	colOffsets, err = calculateColumnOffsets(tbl)
-	if err != nil {
-		return
-	}
+	colOffsets := calculateColumnOffsets(tbl)
 
 	cxt.WriteString("|===")
 	cxt.WriteNewline()
-	err = renderRow(cxt, tbl.header.cells, colOffsets)
-	if err != nil {
-		return
-	}
+	renderRow(cxt, tbl.header.cells, colOffsets)
 	for _, row := range tbl.rows {
-		err = renderRow(cxt, row.cells, colOffsets)
-		if err != nil {
-			return
-		}
+		renderRow(cxt, row.cells, colOffsets)
 	}
-	err = renderRow(cxt, tbl.footer.cells, colOffsets)
-	if err != nil {
-		return
-	}
+	renderRow(cxt, tbl.footer.cells, colOffsets)
 	cxt.WriteString("|===\n")
 	return
 }
 
-func renderRow(cxt *output.Context, cells []*tableCell, colOffsets []int) (err error) {
+func renderRow(cxt *output.Context, cells []*tableCell, colOffsets []int) {
 	if len(cells) == 0 {
 		return
 	}
-	var row strings.Builder
+	//var row strings.Builder
 	var index int
 
 	for i, c := range cells {
@@ -89,69 +76,101 @@ func renderRow(cxt *output.Context, cells []*tableCell, colOffsets []int) (err e
 			colSpan = c.formatter.ColumnSpan
 		}
 		indent := fmt.Sprintf("%*s", indentLength, format)
-		row.WriteString(indent)
+		cxt.WriteString(indent)
 		index += utf8.RuneCountInString(indent)
-		row.WriteString("| ")
+		cxt.WriteString("| ")
 		index += 2
 		if i == len(cells)-1 || i+colSpan > len(cells)-1 {
-			writeCellValue(c, c.width, &row)
+			writeCellValue(cxt, c, c.width, index)
 			break
 		}
-		offset = colOffsets[i]
-		contentLength := offset - index
+		contentLength := c.width
 		if c.margin > 0 {
-			contentLength -= (c.margin - 1)
+			contentLength -= (c.margin + 1)
 		}
-		index += writeCellValue(c, contentLength, &row)
+		wb := writeCellValue(cxt, c, contentLength, index)
+		index += wb
+
 	}
-	row.WriteRune('\n')
-	cxt.WriteString(row.String())
-	return
+	cxt.WriteRune('\n')
 }
 
-func calculateColumnOffsets(tbl *table) (colOffsets []int, err error) {
+func calculateColumnOffsets(tbl *table) (colOffsets []int) {
 	colCount := len(tbl.header.cells)
 	colOffsets = make([]int, colCount)
-	// We do two passes on the column widths; first to make sure everything is spaced out
-	// enough for each cell, and then again to compact any unnecessary white space
-	for i := 0; i < 2; i++ {
-		err = calculateColumnOffsetsForRow(tbl.header.cells, colOffsets, i > 0)
-		if err != nil {
-			return
-		}
-		for _, r := range tbl.rows {
-			err = calculateColumnOffsetsForRow(r.cells, colOffsets, i > 0)
-			if err != nil {
-				return
+
+	offsetMatrix := offsetMatrixForTable(tbl)
+
+	for colIndex := 0; colIndex < colCount; colIndex++ {
+		var longestOffset int
+		var longestOffsetRowIndex int
+		for rowIndex := 0; rowIndex < len(offsetMatrix); rowIndex++ {
+			os := offsetMatrix[rowIndex]
+			if len(os) < colIndex+1 { // Empty header or footer
+				continue
+			}
+			o := os[colIndex]
+			if o > longestOffset {
+				longestOffset = o
+				longestOffsetRowIndex = rowIndex
 			}
 		}
-		err = calculateColumnOffsetsForRow(tbl.footer.cells, colOffsets, i > 0)
-		if err != nil {
-			return
+		colOffsets[colIndex] = longestOffset
+		for rowIndex := 0; rowIndex < len(offsetMatrix); rowIndex++ {
+			if rowIndex == longestOffsetRowIndex {
+				continue
+			}
+			offsets := offsetMatrix[rowIndex]
+			if len(offsets) < colIndex+1 {
+				continue
+			}
+			offset := offsets[colIndex]
+			if offset == -1 { // Skip empty cells
+				continue
+			}
+			shift := longestOffset - offset
+			offsets[colIndex] = longestOffset
+			if colIndex+2 > len(offsets) { // Last cell in row
+				continue
+			}
+			// Shift all subsequent cells by the amount we shifted this cell
+			for k := colIndex + 1; k < len(offsets); k++ {
+				nextOffset := offsets[k]
+				if nextOffset >= 0 { // ignore empty cells
+					nextOffset += shift
+					offsets[k] = nextOffset
+				}
+			}
 		}
 	}
 	return
 }
 
-func calculateColumnOffsetsForRow(cells []*tableCell, colOffsets []int, expand bool) (err error) {
-	if len(cells) > len(colOffsets) {
-		return fmt.Errorf("more cells than offsets: %d > %d", len(cells), len(colOffsets))
+func offsetMatrixForTable(tbl *table) [][]int {
+	offsetMatrix := make([][]int, len(tbl.rows)+2)
+
+	offsetMatrix[0] = offsetsForRow(tbl.header.cells)
+
+	for i, r := range tbl.rows {
+		offsetMatrix[i+1] = offsetsForRow(r.cells)
 	}
-	index := 0
+	offsetMatrix[len(offsetMatrix)-1] = offsetsForRow(tbl.footer.cells)
+	return offsetMatrix
+}
+
+func offsetsForRow(cells []*tableCell) (offsets []int) {
+	offsets = make([]int, len(cells))
 	for i, c := range cells {
 		colSpan := 1
 		if c.formatter != nil {
 			if i == 0 {
 				indent := utf8.RuneCountInString(c.formatter.Content)
-				offset := colOffsets[0]
-				if indent > offset {
-					shiftColumns(colOffsets, 0, indent-offset)
-					index += indent
-				}
+				offsets[i] = indent
 			}
 			colSpan = c.formatter.ColumnSpan
 		}
 		width := getCellWidth(c)
+		c.width = width
 		if width != 0 {
 			// 2 spaces on either side
 			width += 2
@@ -168,34 +187,21 @@ func calculateColumnOffsetsForRow(cells []*tableCell, colOffsets []int, expand b
 			if nextCell.formatter != nil {
 				c.margin = utf8.RuneCountInString(nextCell.formatter.Content)
 				width += c.margin
-				break
 			}
+			break
 		}
 
-		c.width = width
-
+		if c.blank {
+			offsets[i] = -1 // Blank cells don't have offsets
+			continue
+		}
 		if i+colSpan > len(cells)-1 {
 			continue
 		}
-
-		offset := colOffsets[i]
-		nextOffset := colOffsets[i+colSpan]
-		availableSpace := max(0, (nextOffset-offset)-1)
-		if availableSpace <= width {
-			if expand {
-				shiftColumns(colOffsets, i+colSpan, (width - availableSpace))
-			} else {
-				colOffsets[i+colSpan] = offset + width + 1
-			}
-		}
+		offset := offsets[i]
+		offsets[i+colSpan] = offset + width + 1
 	}
 	return
-}
-
-func shiftColumns(offsets []int, index int, amount int) {
-	for i := index; i < len(offsets); i++ {
-		offsets[i] += amount
-	}
 }
 
 func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) (err error) {
@@ -238,36 +244,31 @@ func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) (er
 func getCellWidth(c *tableCell) int {
 	lines := strings.Split(c.value, "\n")
 	if len(lines) == 1 {
-		return utf8.RuneCountInString(c.value)
+		return utf8.RuneCountInString(strings.TrimSpace(c.value))
 	}
-	return utf8.RuneCountInString(lines[len(lines)-1])
-	var width int
-	for _, line := range lines {
-		width = max(width, utf8.RuneCountInString(strings.TrimSpace(line)))
-	}
-	return width
+	return utf8.RuneCountInString(strings.TrimSpace(lines[len(lines)-1]))
 }
 
-func writeCellValue(c *tableCell, width int, out *strings.Builder) (index int) {
+func writeCellValue(out *output.Context, c *tableCell, width int, indent int) (count int) {
 	lines := strings.Split(c.value, "\n")
 	if len(lines) == 1 {
 		v := fmt.Sprintf("%-*s", width, c.value)
 		out.WriteString(v)
-		index = utf8.RuneCountInString(v)
+		count = utf8.RuneCountInString(v)
 		return
 	}
-	length := out.Len()
+	//length := out.Len()
 	for i, line := range lines {
 		line = strings.TrimSpace(line)
-		if i > 0 && !strings.HasPrefix(line, "// ") && !strings.HasPrefix(line, "ifdef::") && !strings.HasPrefix(line, "endif::") {
-			out.WriteString(strings.Repeat(" ", length))
+		if i > 0 && !strings.HasPrefix(line, "// ") && !strings.HasPrefix(line, "ifdef::") && !strings.HasPrefix(line, "ifndef::") && !strings.HasPrefix(line, "endif::") {
+			out.WriteString(strings.Repeat(" ", indent))
 		}
 		v := fmt.Sprintf("%-*s", width, line)
 		out.WriteString(v)
 		if i < len(lines)-1 {
 			out.WriteRune('\n')
 		} else {
-			index = utf8.RuneCountInString(v)
+			count = utf8.RuneCountInString(v)
 		}
 	}
 	return
