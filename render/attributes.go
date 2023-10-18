@@ -326,20 +326,20 @@ func getKeyValue(cxt *output.Context, key string, val interface{}, include Attri
 				switch tc := e.(type) {
 				case *types.TableColumn:
 					var val strings.Builder
-					if tc.Multiplier > 1 {
+					if tc.Multiplier > 1 || tc.MultiplierSpecified {
 						val.WriteString(strconv.Itoa(tc.Multiplier))
 						val.WriteRune('*')
 					}
-					if tc.HAlign != types.HAlignDefault {
+					if tc.HAlign != types.HAlignDefault || tc.HAlignSpecified {
 						val.WriteString(string(tc.HAlign))
 					}
-					if tc.VAlign != types.VAlignDefault {
+					if tc.VAlign != types.VAlignDefault || tc.VAlignSpecified {
 						val.WriteRune('.')
 						val.WriteString(string(tc.VAlign))
 					}
 					if tc.Autowidth {
 						val.WriteRune('~')
-					} else if tc.Weight > 1 {
+					} else if tc.Weight > 1 || tc.WeightSpecified {
 						val.WriteString(strconv.Itoa(tc.Weight))
 					}
 					if len(tc.Style) > 0 {

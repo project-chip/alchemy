@@ -259,7 +259,7 @@ func writeCellValue(c *tableCell, width int, out *strings.Builder) (index int) {
 	length := out.Len()
 	for i, line := range lines {
 		line = strings.TrimSpace(line)
-		if i > 0 && !strings.HasPrefix(line, "// ") {
+		if i > 0 && !strings.HasPrefix(line, "// ") && !strings.HasPrefix(line, "ifdef::") && !strings.HasPrefix(line, "endif::") {
 			out.WriteString(strings.Repeat(" ", length))
 		}
 		v := fmt.Sprintf("%-*s", width, line)
