@@ -5,20 +5,24 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"sync/atomic"
 
 	"github.com/hasty/matterfmt/disco"
-	"github.com/hasty/matterfmt/render"
-	"golang.org/x/sync/errgroup"
+	"github.com/hasty/matterfmt/render/adoc"
 )
 
 func DiscoBall(cxt context.Context, filepaths []string, dryRun bool, serial bool, options ...disco.Option) error {
-	if serial {
-		return discoBallSerial(cxt, filepaths, dryRun, options...)
-	}
-	return discoBallParallel(cxt, filepaths, dryRun, options...)
+	return processFiles(cxt, filepaths, serial, dryRun, func(cxt context.Context, file string, index int, total int) (result string, outPath string, err error) {
+		outPath = file
+		result, err = discoBall(cxt, file, options...)
+		if err != nil {
+			return
+		}
+		fmt.Fprintf(os.Stderr, "Disco-balled %s (%d of %d)...\n", file, index, total)
+		return
+	})
 }
 
+/*
 func discoBallSerial(cxt context.Context, filepaths []string, dryRun bool, options ...disco.Option) error {
 	files, err := getFilePaths(filepaths)
 	if err != nil {
@@ -68,7 +72,7 @@ func discoBallParallel(cxt context.Context, filepaths []string, dryRun bool, opt
 
 	}
 	return g.Wait()
-}
+}*/
 
 func discoBall(cxt context.Context, file string, options ...disco.Option) (string, error) {
 	out, err := getOutputContext(cxt, file)
@@ -84,5 +88,5 @@ func discoBall(cxt context.Context, file string, options ...disco.Option) (strin
 		slog.Error("error disco balling", "file", file, "error", err)
 		return "", nil
 	}
-	return render.Render(cxt, out.Doc)
+	return adoc.Render(cxt, out.Doc)
 }

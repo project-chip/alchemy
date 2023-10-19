@@ -1,4 +1,4 @@
-package render
+package adoc
 
 import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"

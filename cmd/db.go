@@ -7,6 +7,7 @@ import (
 	"sync/atomic"
 
 	"github.com/dolthub/go-mysql-server/sql"
+	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/db"
 	"golang.org/x/sync/errgroup"
 )
@@ -19,6 +20,7 @@ func Database(cxt context.Context, filepaths []string, serial bool) error {
 	fmt.Fprintf(os.Stderr, "Reading %d files...\n", len(files))
 
 	sc := sql.NewContext(cxt)
+	sc.SetCurrentDatabase("matter")
 
 	h := db.New()
 
@@ -40,7 +42,7 @@ func Database(cxt context.Context, filepaths []string, serial bool) error {
 func readDBSerial(cxt context.Context, h *db.Host, files []string) error {
 	for i, file := range files {
 		fmt.Fprintf(os.Stderr, "Loading %s (%d of %d)...\n", file, (i + 1), len(files))
-		doc, err := getDoc(file)
+		doc, err := ascii.Open(file)
 		if err != nil {
 			return err
 		}
@@ -58,7 +60,7 @@ func readDBParallel(cxt context.Context, h *db.Host, files []string) error {
 	for i, f := range files {
 		func(file string, index int) {
 			g.Go(func() error {
-				doc, err := getDoc(file)
+				doc, err := ascii.Open(file)
 				if err != nil {
 					return err
 				}

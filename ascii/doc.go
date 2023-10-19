@@ -9,8 +9,11 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/bytesparadise/libasciidoc/pkg/configuration"
+	"github.com/bytesparadise/libasciidoc/pkg/parser"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 type Doc struct {
@@ -48,8 +51,11 @@ func (doc *Doc) DocType() (matter.DocType, error) {
 	if len(doc.Path) == 0 {
 		return matter.DocTypeUnknown, fmt.Errorf("missing path")
 	}
+	return GetDocType(doc.Path)
+}
 
-	path, err := filepath.Abs(doc.Path)
+func GetDocType(docPath string) (matter.DocType, error) {
+	path, err := filepath.Abs(docPath)
 	if err != nil {
 		return matter.DocTypeUnknown, err
 	}
@@ -91,7 +97,7 @@ func (doc *Doc) DocType() (matter.DocType, error) {
 			return matter.DocTypeSoftAP, nil
 		}
 	}
-	slog.Warn("could not determine doc type", "path", doc.Path)
+	slog.Warn("could not determine doc type", "path", docPath)
 	return matter.DocTypeUnknown, nil
 }
 
@@ -107,4 +113,29 @@ func (d *Doc) GetElements() []interface{} {
 func (d *Doc) SetElements(elements []interface{}) error {
 	d.Elements = elements
 	return nil
+}
+
+func Open(path string) (*Doc, error) {
+	config := configuration.NewConfiguration(
+		configuration.WithFilename(path),
+		configuration.WithAttribute("second-ballot", false),
+	)
+
+	file, err := os.ReadFile(config.Filename)
+	if err != nil {
+		return nil, err
+	}
+
+	d, err := parse.ParseDocument(strings.NewReader(string(file)), config, parser.MaxExpressions(2000000))
+
+	if err != nil {
+		return nil, fmt.Errorf("failed parse: %w", err)
+	}
+
+	doc, err := NewDoc(d)
+	if err != nil {
+		return nil, err
+	}
+	doc.Path = path
+	return doc, nil
 }

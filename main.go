@@ -76,6 +76,13 @@ func main() {
 				},
 			},
 			{
+				Name:  "zcl",
+				Usage: "translate Matter spec to ZCL",
+				Action: func(cCtx *cli.Context) error {
+					return cmd.ZCL(cxt, cCtx.Args().Slice(), dryRun, serial)
+				},
+			},
+			{
 				Name:  "db",
 				Usage: "just format Matter documents",
 				Action: func(cCtx *cli.Context) error {
