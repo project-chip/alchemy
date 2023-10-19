@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/output"
-	"github.com/hasty/matterfmt/render"
+	"github.com/hasty/matterfmt/render/adoc"
 )
 
 func FindFirstTable(section *ascii.Section) *types.Table {
@@ -46,7 +46,7 @@ func GetTableCellValue(cell *types.TableCell) (string, error) {
 		return "", nil
 	}
 	out := output.NewContext(context.Background(), nil)
-	err := render.RenderElements(out, "", p.Elements)
+	err := adoc.RenderElements(out, "", p.Elements)
 	if err != nil {
 		return "", err
 	}
