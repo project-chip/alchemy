@@ -12,16 +12,17 @@ func getAccessSchemaColumns(tableName string) []*mms.Column {
 		{Name: "read_access", Type: types.Text, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "write_access", Type: types.Text, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "fabric_scoped", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
+		{Name: "fabric_sensitive", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "timed", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 	}
 }
 
 func getAccessSchemaColumnValues(tableName string, access interface{}) []interface{} {
-	readAccess, writeAccess, fabricScoped, timed := extractAccessValues(access)
-	return []interface{}{readAccess, writeAccess, fabricScoped, timed}
+	readAccess, writeAccess, fabricScoped, fabricSensitive, timed := extractAccessValues(access)
+	return []interface{}{readAccess, writeAccess, fabricScoped, fabricSensitive, timed}
 }
 
-func extractAccessValues(access interface{}) (readAccess string, writeAccess string, fabricScoped int8, timed int8) {
+func extractAccessValues(access interface{}) (readAccess string, writeAccess string, fabricScoped int8, fabricSensitive int8, timed int8) {
 	s, ok := access.(string)
 	if !ok {
 		return
@@ -32,6 +33,8 @@ func extractAccessValues(access interface{}) (readAccess string, writeAccess str
 	}
 	if am[matter.AccessCategoryFabric] == "F" {
 		fabricScoped = 1
+	} else if am[matter.AccessCategoryFabric] == "S" {
+		fabricSensitive = 1
 	}
 	if am[matter.AccessCategoryTimed] == "T" {
 		timed = 1
