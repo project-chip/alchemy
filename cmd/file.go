@@ -44,13 +44,13 @@ func getFilePaths(filepaths []string) ([]string, error) {
 	return filtered, nil
 }
 
-func getOutputContext(cxt context.Context, path string) (*output.Context, error) {
+func getOutputContext(cxt context.Context, path string) (*output.Context, *ascii.Doc, error) {
 	doc, err := ascii.Open(path)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return output.NewContext(cxt, doc), nil
+	return output.NewContext(cxt, doc), doc, nil
 }
 
 func processFiles(cxt context.Context, filepaths []string, serial bool, dryRun bool, processor func(cxt context.Context, file string, index int, total int) (result string, outPath string, err error)) error {

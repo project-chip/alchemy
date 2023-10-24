@@ -2,10 +2,12 @@ package ascii
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 type Section struct {
@@ -75,4 +77,125 @@ func (s *Section) GetElements() []interface{} {
 func (s *Section) SetElements(elements []interface{}) error {
 	s.Elements = elements
 	return nil
+}
+
+func AssignSectionTypes(docType matter.DocType, top *Section) {
+	switch docType {
+	case matter.DocTypeAppCluster:
+		top.SecType = matter.SectionCluster
+	default:
+		top.SecType = matter.SectionTop
+	}
+
+	parse.Traverse(top, top.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
+		section, ok := el.(*Section)
+		if !ok {
+			return false
+		}
+		ps, ok := parent.(*Section)
+		if !ok {
+			return false
+		}
+
+		section.SecType = getSectionType(ps, section)
+		return false
+	})
+}
+
+func FindSectionByType(top *Section, sectionType matter.Section) *Section {
+	var found *Section
+	parse.Search(top.Elements, func(s *Section) bool {
+		if s.SecType == sectionType {
+			found = s
+			return true
+		}
+		return false
+	})
+	return found
+}
+
+func getSectionType(parent *Section, section *Section) matter.Section {
+	name := strings.ToLower(strings.TrimSpace(section.Name))
+	switch parent.SecType {
+	case matter.SectionTop, matter.SectionCluster:
+		switch name {
+		case "introduction":
+			return matter.SectionIntroduction
+		case "revision history":
+			return matter.SectionRevisionHistory
+		case "classification":
+			return matter.SectionClassification
+		case "cluster identifiers", "cluster id", "cluster ids":
+			return matter.SectionClusterID
+		case "features":
+			return matter.SectionFeatures
+		case "dependencies":
+			return matter.SectionDependencies
+		case "data types":
+			return matter.SectionDataTypes
+		case "status codes":
+			return matter.SectionStatusCodes
+		case "attributes":
+			return matter.SectionAttributes
+		case "commands":
+			return matter.SectionCommands
+		case "events":
+			return matter.SectionEvents
+		case "conditions":
+			return matter.SectionConditions
+		case "cluster requirements":
+			return matter.SectionClusterRequirements
+		case "cluster restrictions":
+			return matter.SectionClusterRestrictions
+		case "element requirements":
+			return matter.SectionElementRequirements
+		case "endpoint composition":
+			return matter.SectionEndpointComposition
+		default:
+			if strings.HasSuffix(name, " attribute set") {
+				return matter.SectionAttributes
+			}
+			slog.Info("unknown top section type", "name", name)
+			return matter.SectionUnknown
+		}
+	case matter.SectionAttributes:
+		if strings.HasSuffix(name, " attribute") {
+			return matter.SectionAttribute
+		}
+	case matter.SectionDataTypes:
+		if strings.HasSuffix(name, "bitmap type") || strings.HasSuffix(name, "bitmap") {
+			return matter.SectionDataTypeBitmap
+		}
+		if strings.HasSuffix(name, "enum type") || strings.HasSuffix(name, "enum") {
+			return matter.SectionDataTypeEnum
+		}
+		if strings.HasSuffix(name, "struct type") || strings.HasSuffix(name, "struct") || strings.HasSuffix(name, "structure") {
+			return matter.SectionDataTypeStruct
+		}
+	case matter.SectionCommand:
+		if strings.HasSuffix(name, " field") {
+			return matter.SectionField
+		}
+	case matter.SectionCommands:
+		if strings.HasSuffix(name, " command") {
+			return matter.SectionCommand
+		}
+	case matter.SectionEvents:
+		if strings.HasSuffix(name, " event") {
+			return matter.SectionEvent
+		}
+	default:
+		slog.Info("unknown section type", "name", name)
+	}
+	return matter.SectionUnknown
+}
+
+func (s *Section) ToModel() (interface{}, error) {
+	switch s.SecType {
+	case matter.SectionCluster:
+		return s.toCluster()
+	default:
+		slog.Info("unknown section type", "secType", s.SecType)
+	}
+	return nil, nil
 }

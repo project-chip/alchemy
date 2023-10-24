@@ -27,15 +27,15 @@ type DataTypeEntry struct {
 var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
 
 func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
-	dataTypesSection := parse.FindSectionByType(top, matter.SectionDataTypes)
+	dataTypesSection := ascii.FindSectionByType(top, matter.SectionDataTypes)
 	if dataTypesSection == nil {
 		return
 	}
-	for _, ss := range ascii.FindAll[*ascii.Section](dataTypesSection.Elements) {
+	for _, ss := range parse.FindAll[*ascii.Section](dataTypesSection.Elements) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		var dataType string
-		se := ascii.FindFirst[*types.StringElement](ss.Elements)
+		se := parse.FindFirst[*types.StringElement](ss.Elements)
 		if se != nil {
 			match := dataTypeDefinitionPattern.FindStringSubmatch(se.Content)
 			if match != nil {
@@ -79,11 +79,11 @@ func GetDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, 
 		return nil, nil
 	}
 	for _, row := range rows {
-		cv, err := parse.GetTableCellValue(row.Cells[nameIndex])
+		cv, err := ascii.GetTableCellValue(row.Cells[nameIndex])
 		if err != nil {
 			continue
 		}
-		dtv, err := parse.GetTableCellValue(row.Cells[typeIndex])
+		dtv, err := ascii.GetTableCellValue(row.Cells[typeIndex])
 		if err != nil {
 			continue
 		}
@@ -115,11 +115,11 @@ func GetDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, 
 			if !ok {
 				continue
 			}
-			table := parse.FindFirstTable(s)
+			table := ascii.FindFirstTable(s)
 			if table == nil {
 				continue
 			}
-			_, columnMap, _, err := parse.MapTableColumns(parse.TableRows(table))
+			_, columnMap, _, err := ascii.MapTableColumns(ascii.TableRows(table))
 			if err != nil {
 				return nil, err
 			}
@@ -207,11 +207,11 @@ func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[strin
 		if dt.section == nil {
 			continue
 		}
-		table := parse.FindFirstTable(dt.section)
+		table := ascii.FindFirstTable(dt.section)
 		if table == nil {
 			continue
 		}
-		_, columnMap, _, err := parse.MapTableColumns(parse.TableRows(table))
+		_, columnMap, _, err := ascii.MapTableColumns(ascii.TableRows(table))
 		if err != nil {
 			return err
 		}
@@ -232,7 +232,7 @@ func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[strin
 		}
 
 		var removedTable bool
-		ascii.Filter(dt.section, func(i interface{}) (remove bool, shortCircuit bool) {
+		parse.Filter(dt.section, func(i interface{}) (remove bool, shortCircuit bool) {
 			if t, ok := i.(*types.Table); ok && table == t {
 				removedTable = true
 				return true, true
@@ -287,7 +287,7 @@ func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[strin
 }
 
 func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
-	dataTypesSection := parse.FindSectionByType(top, matter.SectionDataTypes)
+	dataTypesSection := ascii.FindSectionByType(top, matter.SectionDataTypes)
 	if dataTypesSection != nil {
 		return dataTypesSection, nil
 	}

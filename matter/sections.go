@@ -9,6 +9,7 @@ const (
 	SectionIntroduction
 	SectionRevisionHistory
 	SectionClassification
+	SectionCluster
 	SectionClusterID
 	SectionFeatures
 	SectionDependencies
@@ -16,6 +17,7 @@ const (
 	SectionDataTypeBitmap
 	SectionDataTypeEnum
 	SectionDataTypeStruct
+	SectionDeviceType
 	SectionStatusCodes
 	SectionAttributes
 	SectionAttribute
@@ -67,6 +69,7 @@ var sectionTypeStrings = map[Section]string{
 	SectionIntroduction:        "Introduction",
 	SectionRevisionHistory:     "RevisionHistory",
 	SectionClassification:      "Classification",
+	SectionCluster:             "Cluster",
 	SectionClusterID:           "ClusterID",
 	SectionFeatures:            "Features",
 	SectionDependencies:        "Dependencies",
@@ -74,6 +77,7 @@ var sectionTypeStrings = map[Section]string{
 	SectionDataTypeBitmap:      "Bitmap",
 	SectionDataTypeEnum:        "Enum",
 	SectionDataTypeStruct:      "Struct",
+	SectionDeviceType:          "DeviceType",
 	SectionStatusCodes:         "StatusCodes",
 	SectionAttributes:          "Attributes",
 	SectionAttribute:           "Attribute",
@@ -103,6 +107,7 @@ var sectionTypeNames = map[Section]string{
 	SectionIntroduction:        "Introduction",
 	SectionRevisionHistory:     "Revision History",
 	SectionClassification:      "Classification",
+	SectionCluster:             "Cluster",
 	SectionClusterID:           "Cluster ID",
 	SectionFeatures:            "Features",
 	SectionDependencies:        "Dependencies",
@@ -110,6 +115,7 @@ var sectionTypeNames = map[Section]string{
 	SectionDataTypeBitmap:      "Bitmap",
 	SectionDataTypeEnum:        "Enum",
 	SectionDataTypeStruct:      "Struct",
+	SectionDeviceType:          "Device Type",
 	SectionStatusCodes:         "Status Codes",
 	SectionAttributes:          "Attributes",
 	SectionAttribute:           "Attribute",

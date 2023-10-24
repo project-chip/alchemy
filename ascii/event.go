@@ -1,0 +1,73 @@
+package ascii
+
+import (
+	"log/slog"
+	"strings"
+
+	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
+)
+
+func (s *Section) toEvents() (events []*matter.Event, err error) {
+	var rows []*types.TableRow
+	var headerRowIndex int
+	var columnMap map[matter.TableColumn]int
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	if err != nil {
+		return
+	}
+	eventMap := make(map[string]*matter.Event)
+	for i := headerRowIndex + 1; i < len(rows); i++ {
+		row := rows[i]
+		e := &matter.Event{}
+		e.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		if err != nil {
+			return
+		}
+		e.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
+		if err != nil {
+			return
+		}
+		e.Description, err = readRowValue(row, columnMap, matter.TableColumnDescription)
+		if err != nil {
+			return
+		}
+		e.Priority, err = readRowValue(row, columnMap, matter.TableColumnPriority)
+		if err != nil {
+			return
+		}
+		var a string
+		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
+		if err != nil {
+			return
+		}
+		e.Access = matter.ParseAccess(a)
+		events = append(events, e)
+		slog.Info("registering event", "event", e.Name)
+
+		eventMap[e.Name] = e
+	}
+
+	for _, s := range parse.Skim[*Section](s.Elements) {
+		switch s.SecType {
+		case matter.SectionEvent:
+
+			name := strings.TrimSuffix(s.Name, " Event")
+			e, ok := eventMap[name]
+			if !ok {
+				slog.Info("unknown event", "event", name)
+				continue
+			}
+			var rows []*types.TableRow
+			var headerRowIndex int
+			var columnMap map[matter.TableColumn]int
+			rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+			if err != nil {
+				return
+			}
+			e.Fields, err = readFields(headerRowIndex, rows, columnMap)
+		}
+	}
+	return
+}

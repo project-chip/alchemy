@@ -10,7 +10,7 @@ import (
 )
 
 func ensureTableOptions(elements []interface{}) {
-	ascii.Search(elements, func(t *types.Table) bool {
+	parse.Search(elements, func(t *types.Table) bool {
 		if t.Attributes == nil {
 			t.Attributes = make(types.Attributes)
 		}
@@ -33,7 +33,7 @@ func ensureTableOptions(elements []interface{}) {
 
 }
 
-func reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap map[matter.TableColumn]int, extraColumns []parse.ExtraColumn) []*types.TableRow {
+func reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap map[matter.TableColumn]int, extraColumns []ascii.ExtraColumn) []*types.TableRow {
 	newRows := make([]*types.TableRow, 0, len(rows))
 	for _, row := range rows {
 		newRow := &types.TableRow{Cells: make([]*types.TableCell, len(columnMap)+len(extraColumns))}

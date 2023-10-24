@@ -7,7 +7,6 @@ import (
 	asciitypes "github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
 )
 
 type sectionInfo struct {
@@ -22,15 +21,15 @@ type sectionInfo struct {
 var missingTable = fmt.Errorf("no table found")
 
 func appendSectionToRow(cxt context.Context, section *ascii.Section, row *dbRow) error {
-	t := parse.FindFirstTable(section)
+	t := ascii.FindFirstTable(section)
 	if t == nil {
 		return fmt.Errorf("no table found")
 	}
-	rows := parse.TableRows(t)
+	rows := ascii.TableRows(t)
 	if len(rows) < 2 {
 		return fmt.Errorf("not enough rows in table")
 	}
-	headerRowIndex, columnMap, extraColumns, err := parse.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
 		return err
 	}
@@ -67,15 +66,15 @@ func (h *Host) readTableSection(cxt context.Context, parent *sectionInfo, sectio
 }
 
 func readTable(cxt context.Context, section *ascii.Section) (rs []*dbRow, err error) {
-	t := parse.FindFirstTable(section)
+	t := ascii.FindFirstTable(section)
 	if t == nil {
 		return nil, missingTable
 	}
-	rows := parse.TableRows(t)
+	rows := ascii.TableRows(t)
 	if len(rows) < 2 {
 		return nil, fmt.Errorf("not enough rows in table")
 	}
-	headerRowIndex, columnMap, extraColumns, err := parse.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
 		return nil, err
 	}
@@ -97,12 +96,12 @@ func readTable(cxt context.Context, section *ascii.Section) (rs []*dbRow, err er
 	return
 }
 
-func readTableRow(valueRow *asciitypes.TableRow, columnMap map[matter.TableColumn]int, extraColumns []parse.ExtraColumn, row *dbRow) error {
+func readTableRow(valueRow *asciitypes.TableRow, columnMap map[matter.TableColumn]int, extraColumns []ascii.ExtraColumn, row *dbRow) error {
 	if row.values == nil {
 		row.values = make(map[matter.TableColumn]interface{})
 	}
 	for col, index := range columnMap {
-		val, err := parse.GetTableCellValue(valueRow.Cells[index])
+		val, err := ascii.GetTableCellValue(valueRow.Cells[index])
 		if err != nil {
 			return err
 		}
@@ -114,7 +113,7 @@ func readTableRow(valueRow *asciitypes.TableRow, columnMap map[matter.TableColum
 
 		}
 		for _, e := range extraColumns {
-			val, err := parse.GetTableCellValue(valueRow.Cells[e.Offset])
+			val, err := ascii.GetTableCellValue(valueRow.Cells[e.Offset])
 			if err != nil {
 				return err
 			}

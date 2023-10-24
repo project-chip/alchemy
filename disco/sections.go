@@ -59,15 +59,3 @@ func setSectionTitle(sec *ascii.Section, title string) {
 		}
 	}
 }
-
-func FindSectionByType(top *ascii.Section, sectionType matter.Section) *ascii.Section {
-	var found *ascii.Section
-	ascii.Search(top.Elements, func(s *ascii.Section) bool {
-		if s.SecType == sectionType {
-			found = s
-			return true
-		}
-		return false
-	})
-	return found
-}

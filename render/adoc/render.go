@@ -5,13 +5,12 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/output"
 )
 
-func Render(cxt context.Context, doc *ascii.Doc) (string, error) {
+func Render(cxt context.Context, doc output.InputDocument) (string, error) {
 	renderContext := output.NewContext(cxt, doc)
-	err := RenderElements(renderContext, "", renderContext.Doc.Elements)
+	err := RenderElements(renderContext, "", doc.GetElements())
 	if err != nil {
 		return "", err
 	}

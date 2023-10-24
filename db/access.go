@@ -4,7 +4,6 @@ import (
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
 )
 
 func getAccessSchemaColumns(tableName string) []*mms.Column {
@@ -18,51 +17,6 @@ func getAccessSchemaColumns(tableName string) []*mms.Column {
 }
 
 func getAccessSchemaColumnValues(tableName string, access interface{}) []interface{} {
-	readAccess, writeAccess, fabricScoped, fabricSensitive, timed := extractAccessValues(access)
+	readAccess, writeAccess, fabricScoped, fabricSensitive, timed := matter.ExtractAccessValues(access)
 	return []interface{}{readAccess, writeAccess, fabricScoped, fabricSensitive, timed}
-}
-
-func extractAccessValues(access interface{}) (readAccess string, writeAccess string, fabricScoped int8, fabricSensitive int8, timed int8) {
-	s, ok := access.(string)
-	if !ok {
-		return
-	}
-	am := parse.ParseAccess(s)
-	if am == nil {
-		return
-	}
-	if am[matter.AccessCategoryFabric] == "F" {
-		fabricScoped = 1
-	} else if am[matter.AccessCategoryFabric] == "S" {
-		fabricSensitive = 1
-	}
-	if am[matter.AccessCategoryTimed] == "T" {
-		timed = 1
-	}
-	rw := am[matter.AccessCategoryReadWrite]
-	var hasRead, hasWrite bool
-	switch rw {
-	case "RW", "R[W]":
-		hasRead = true
-		hasWrite = true
-	case "R":
-		hasRead = true
-	case "W":
-		hasWrite = true
-	}
-	ps, ok := am[matter.AccessCategoryPrivileges]
-	if !ok {
-		return
-	}
-	for _, r := range []rune(ps) {
-		if hasRead {
-			readAccess = string(r)
-			hasRead = false
-		} else if hasWrite {
-			writeAccess = string(r)
-			break
-		}
-	}
-
-	return
 }

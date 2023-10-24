@@ -5,11 +5,12 @@ import (
 
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 func (h *Host) indexCluster(cxt context.Context, ds *sectionInfo, top *ascii.Section) error {
 	ci := &sectionInfo{id: h.nextId(clusterTable), parent: ds, values: &dbRow{}}
-	for _, s := range ascii.Skim[*ascii.Section](top.Elements) {
+	for _, s := range parse.Skim[*ascii.Section](top.Elements) {
 		var err error
 		switch s.SecType {
 		case matter.SectionClusterID:
@@ -29,7 +30,7 @@ func (h *Host) indexCluster(cxt context.Context, ds *sectionInfo, top *ascii.Sec
 			return err
 		}
 	}
-	for _, s := range ascii.Skim[*ascii.Section](top.Elements) {
+	for _, s := range parse.Skim[*ascii.Section](top.Elements) {
 		var err error
 		switch s.SecType {
 		case matter.SectionAttributes:
@@ -42,6 +43,3 @@ func (h *Host) indexCluster(cxt context.Context, ds *sectionInfo, top *ascii.Sec
 	ds.children[clusterTable] = append(ds.children[clusterTable], ci)
 	return nil
 }
-
-
-

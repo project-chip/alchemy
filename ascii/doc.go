@@ -115,6 +115,26 @@ func (d *Doc) SetElements(elements []interface{}) error {
 	return nil
 }
 
+func (d *Doc) Footnotes() []*types.Footnote {
+	return d.Base.Footnotes
+}
+
+func (d *Doc) ToModel() (models []interface{}, err error) {
+	dt, err := d.DocType()
+	for _, top := range parse.Skim[*Section](d.Elements) {
+		fmt.Printf("top section %s\n", top.Name)
+		AssignSectionTypes(dt, top)
+
+		var m interface{}
+		m, err = top.ToModel()
+		if err != nil {
+			return
+		}
+		models = append(models, m)
+	}
+	return
+}
+
 func Open(path string) (*Doc, error) {
 	config := configuration.NewConfiguration(
 		configuration.WithFilename(path),
