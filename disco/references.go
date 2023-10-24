@@ -6,11 +6,12 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 func (b *Ball) findCrossReferences(doc *ascii.Doc) map[string][]*types.InternalCrossReference {
 	crossReferences := make(map[string][]*types.InternalCrossReference)
-	ascii.Traverse(nil, doc.Base.Elements, func(el interface{}, parent ascii.HasElements, index int) bool {
+	parse.Traverse(nil, doc.Base.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
 		if icr, ok := el.(*types.InternalCrossReference); ok {
 			id, ok := icr.ID.(string)
 			if !ok {

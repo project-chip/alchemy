@@ -7,6 +7,7 @@ import (
 
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 func (h *Host) indexCommands(cxt context.Context, ci *sectionInfo, es *ascii.Section) error {
@@ -30,7 +31,7 @@ func (h *Host) indexCommands(cxt context.Context, ci *sectionInfo, es *ascii.Sec
 			}
 		}
 	}
-	for _, s := range ascii.Skim[*ascii.Section](es.Elements) {
+	for _, s := range parse.Skim[*ascii.Section](es.Elements) {
 		switch s.SecType {
 		case matter.SectionCommand:
 			name := strings.TrimSuffix(s.Name, " Command")

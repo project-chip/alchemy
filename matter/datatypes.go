@@ -29,6 +29,38 @@ var DataTypeIdentityColumn = map[DataTypeCategory]TableColumn{
 	DataTypeCategoryStruct: TableColumnID,
 }
 
+type Enum struct {
+	Name        string
+	Description string
+	Values      []*EnumValue
+}
+
+type EnumValue struct {
+	Value       int
+	Name        string
+	Summary     string
+	Conformance string
+}
+
+type Bitmap struct {
+	Name        string
+	Description string
+	Bits        []*BitmapValue
+}
+
+type BitmapValue struct {
+	Bit         int
+	Name        string
+	Summary     string
+	Conformance string
+}
+
+type Struct struct {
+	Name        string
+	Description string
+	Fields      []*Field
+}
+
 func StripDataTypeSuffixes(dataType string) string {
 	for _, suffix := range DataTypeSuffixes {
 		if strings.HasSuffix(dataType, suffix) {

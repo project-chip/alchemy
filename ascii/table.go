@@ -1,4 +1,4 @@
-package parse
+package ascii
 
 import (
 	"context"
@@ -6,15 +6,51 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/matterfmt/parse"
 	"github.com/hasty/matterfmt/render/adoc"
 )
 
-func FindFirstTable(section *ascii.Section) *types.Table {
+var NoTableFound = fmt.Errorf("no table found")
+
+func parseFirstTable(section *Section) (rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, extraColumns []ExtraColumn, err error) {
+	t := FindFirstTable(section)
+	if t == nil {
+		err = NoTableFound
+		return
+	}
+	rows = TableRows(t)
+	if len(rows) < 2 {
+		err = fmt.Errorf("not enough rows in table")
+		return
+	}
+	headerRowIndex, columnMap, extraColumns, err = MapTableColumns(rows)
+	if err != nil {
+		return
+	}
+	if len(rows) < headerRowIndex+2 {
+		err = fmt.Errorf("not enough value rows in table")
+		return
+	}
+	if columnMap == nil {
+		err = fmt.Errorf("can't read table without columns")
+	}
+	return
+}
+
+func readRowValue(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) (string, error) {
+	i, ok := columnMap[column]
+	if !ok {
+		return "", nil
+	}
+	cell := row.Cells[i]
+	return GetTableCellValue(cell)
+}
+
+func FindFirstTable(section *Section) *types.Table {
 	var table *types.Table
-	ascii.Search(section.Elements, func(t *types.Table) bool {
+	parse.Search(section.Elements, func(t *types.Table) bool {
 		table = t
 		return true
 	})

@@ -4,19 +4,26 @@ import (
 	"context"
 	"strings"
 
-	"github.com/hasty/matterfmt/ascii"
+	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/matterfmt/parse"
 )
 
 type Context struct {
 	context.Context
 
-	Doc *ascii.Doc
+	Doc InputDocument
 
 	out      strings.Builder
 	lastRune rune
 }
 
-func NewContext(parent context.Context, doc *ascii.Doc) *Context {
+type InputDocument interface {
+	parse.HasElements
+
+	Footnotes() []*types.Footnote
+}
+
+func NewContext(parent context.Context, doc InputDocument) *Context {
 	return &Context{
 		Context: parent,
 		Doc:     doc,

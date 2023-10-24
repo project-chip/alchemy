@@ -9,13 +9,14 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 type anchorInfo struct {
 	id      string
 	label   string
 	element types.WithAttributes
-	parent  ascii.HasElements
+	parent  parse.HasElements
 	name    string
 }
 
@@ -56,7 +57,7 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 
 func (b *Ball) findAnchors(doc *ascii.Doc, crossReferences map[string][]*types.InternalCrossReference) (map[string]*anchorInfo, error) {
 	anchors := make(map[string]*anchorInfo)
-	ascii.Traverse(doc, doc.Elements, func(el interface{}, parent ascii.HasElements, index int) bool {
+	parse.Traverse(doc, doc.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
 		var wa types.WithAttributes
 		e, ok := el.(*ascii.Element)
 		if ok {

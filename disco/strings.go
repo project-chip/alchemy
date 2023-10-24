@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/matterfmt/parse"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -18,14 +18,14 @@ var lowercasePattern = regexp.MustCompile(`[a-f]+`)
 var titleCaser = cases.Title(language.AmericanEnglish)
 
 func precleanStrings(elements []interface{}) {
-	ascii.Search(elements, func(t *types.StringElement) bool {
+	parse.Search(elements, func(t *types.StringElement) bool {
 		t.Content = strings.ReplaceAll(t.Content, "\t", "  ")
 		return false
 	})
 }
 
 func (b *Ball) postCleanUpStrings(elements []interface{}) {
-	ascii.Search(elements, func(t *types.StringElement) bool {
+	parse.Search(elements, func(t *types.StringElement) bool {
 		t.Content = missingSpaceAfterPunctuationPattern.ReplaceAllString(t.Content, "$1$2 $3")
 		t.Content = multipleSpacesPattern.ReplaceAllString(t.Content, "$1 $2")
 		t.Content = lowercaseHexPattern.ReplaceAllStringFunc(t.Content, func(s string) string {

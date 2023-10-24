@@ -4,28 +4,23 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/matterfmt/parse"
 )
 
 func RenderElements(cxt *output.Context, prefix string, elements []interface{}) (err error) {
 	var previous interface{}
 	for _, e := range elements {
-		if section, ok := e.(*ascii.Section); ok {
-			err = renderSection(cxt, section.Base)
-			if err != nil {
-				return
-			}
-			err = RenderElements(cxt, "", section.Elements)
-			if err != nil {
-				return
-			}
-			continue
+		var children []interface{}
+		if he, ok := e.(parse.HasElements); ok {
+			children = he.GetElements()
 		}
-		if el, ok := e.(*ascii.Element); ok {
-			e = el.Base
+		if hb, ok := e.(parse.HasBase); ok {
+			e = hb.GetBase()
 		}
 		switch el := e.(type) {
+		case *types.Section:
+			err = renderSection(cxt, el)
 		case *types.DelimitedBlock:
 			err = renderDelimitedBlock(cxt, el)
 		case *types.Paragraph:
@@ -119,6 +114,12 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		case nil:
 		default:
 			err = fmt.Errorf("unknown element type: %T", el)
+		}
+		if err != nil {
+			return
+		}
+		if len(children) > 0 {
+			err = RenderElements(cxt, "", children)
 		}
 		if err != nil {
 			return

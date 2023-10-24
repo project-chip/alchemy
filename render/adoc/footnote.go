@@ -9,7 +9,7 @@ import (
 
 func renderFootnoteReference(cxt *output.Context, fr *types.FootnoteReference) (err error) {
 	var fn *types.Footnote
-	for _, f := range cxt.Doc.Base.Footnotes {
+	for _, f := range cxt.Doc.Footnotes() {
 		if f.ID == fr.ID {
 			fn = f
 			break

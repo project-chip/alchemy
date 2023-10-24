@@ -21,18 +21,22 @@ func Dump(cxt context.Context, filepaths []string, dumpAscii bool) error {
 		if len(files) > 0 {
 			fmt.Printf("Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
 		}
-		out, err := getOutputContext(cxt, f)
+		out, doc, err := getOutputContext(cxt, f)
+		if err != nil {
+			return err
+		}
+		docType, err := doc.DocType()
 		if err != nil {
 			return err
 		}
 		if dumpAscii {
-			for _, top := range ascii.Skim[*ascii.Section](out.Doc.Elements) {
-				parse.AssignSectionTypes(top)
+			for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
+				ascii.AssignSectionTypes(docType, top)
 			}
-			DumpElements(out, out.Doc.Elements, 0)
+			DumpElements(out, doc.Elements, 0)
 
 		} else {
-			DumpElements(out, out.Doc.Base.Elements, 0)
+			DumpElements(out, doc.Base.Elements, 0)
 		}
 	}
 	return nil
@@ -157,7 +161,7 @@ func DumpElements(cxt *output.Context, elements []interface{}, indent int) {
 		case *types.FootnoteReference:
 			fmt.Printf("{footnote ID=%d, Ref=%s}\n", el.ID, el.Ref)
 			var fn *types.Footnote
-			for _, f := range cxt.Doc.Base.Footnotes {
+			for _, f := range cxt.Doc.Footnotes() {
 				if f.ID == el.ID {
 					fn = f
 					break

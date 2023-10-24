@@ -9,11 +9,10 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
 )
 
 func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
-	attributesTable := parse.FindFirstTable(attributes)
+	attributesTable := ascii.FindFirstTable(attributes)
 	if attributesTable == nil {
 		return fmt.Errorf("no attributes table found")
 	}
@@ -21,9 +20,9 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top 
 }
 
 func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
-	rows := parse.TableRows(attributesTable)
+	rows := ascii.TableRows(attributesTable)
 
-	_, columnMap, extraColumns, err := parse.MapTableColumns(rows)
+	_, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
 		return err
 	}
@@ -73,11 +72,11 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap 
 	}
 	for _, row := range rows[1:] {
 		cell := row.Cells[accessIndex]
-		vc, e := parse.GetTableCellValue(cell)
+		vc, e := ascii.GetTableCellValue(cell)
 		if e != nil {
 			continue
 		}
-		access := parse.ParseAccess(vc)
+		access := matter.ParseAccess(vc)
 		if len(access) > 0 {
 			var out strings.Builder
 			for _, ac := range matter.AccessCategoryOrder {
@@ -114,7 +113,7 @@ func fixConstraintCells(rows []*types.TableRow, columnMap map[matter.TableColumn
 	}
 	for _, row := range rows[1:] {
 		cell := row.Cells[constraintIndex]
-		vc, e := parse.GetTableCellValue(cell)
+		vc, e := ascii.GetTableCellValue(cell)
 		if e != nil {
 			continue
 		}
@@ -139,7 +138,7 @@ func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []
 
 	for _, row := range rows {
 		cell := row.Cells[nameIndex]
-		cv, err := parse.GetTableCellValue(cell)
+		cv, err := ascii.GetTableCellValue(cell)
 		if err != nil {
 			continue
 		}

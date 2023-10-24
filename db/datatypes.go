@@ -6,13 +6,14 @@ import (
 
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 )
 
 func (h *Host) indexDataTypes(cxt context.Context, ds *sectionInfo, dts *ascii.Section) error {
 	if ds.children == nil {
 		ds.children = make(map[string][]*sectionInfo)
 	}
-	for _, s := range ascii.Skim[*ascii.Section](dts.Elements) {
+	for _, s := range parse.Skim[*ascii.Section](dts.Elements) {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct:
 			var t string

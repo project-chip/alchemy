@@ -1,18 +1,18 @@
-package parse
+package ascii
 
 import (
 	"slices"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/matterfmt/parse"
 )
 
 // The parser sometimes doesn't recognize inline references, and just returns them as "<", "<", "ref", ">", ">"
 // Rather than doing the right thing and fixing the parser, we'll just find these little suckers after the fact
-func PatchUnrecognizedReferences(doc *ascii.Doc) {
-	var elementsWithUnrecognizedReferences []ascii.HasElements
-	ascii.Traverse(nil, doc.Base.Elements, func(el interface{}, parent ascii.HasElements, index int) bool {
+func PatchUnrecognizedReferences(doc *Doc) {
+	var elementsWithUnrecognizedReferences []parse.HasElements
+	parse.Traverse(nil, doc.Base.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
 		sc, ok := el.(*types.SpecialCharacter)
 		if !ok {
 			return false

@@ -31,18 +31,18 @@ func (b *Ball) Run(cxt context.Context) error {
 	}
 
 	precleanStrings(doc.Elements)
-	parse.PatchUnrecognizedReferences(doc)
+	ascii.PatchUnrecognizedReferences(doc)
 
-	topLevelSection := ascii.FindFirst[*ascii.Section](doc.Elements)
+	topLevelSection := parse.FindFirst[*ascii.Section](doc.Elements)
 	if topLevelSection == nil {
 		return fmt.Errorf("missing top level section")
 	}
 
-	parse.AssignSectionTypes(topLevelSection)
+	ascii.AssignSectionTypes(docType, topLevelSection)
 
 	getExistingDataTypes(dc, topLevelSection)
 
-	for _, s := range ascii.FindAll[*ascii.Section](topLevelSection.Elements) {
+	for _, s := range parse.FindAll[*ascii.Section](topLevelSection.Elements) {
 		err := b.organizeSubSection(dc, doc, docType, topLevelSection, s)
 		if err != nil {
 			return err

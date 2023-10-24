@@ -12,7 +12,7 @@ import (
 )
 
 func (b *Ball) organizeCommandsSection(cxt *discoContext, doc *ascii.Doc, commands *ascii.Section) error {
-	t := parse.FindFirstTable(commands)
+	t := ascii.FindFirstTable(commands)
 	if t == nil {
 		return fmt.Errorf("no commands table found")
 	}
@@ -23,9 +23,9 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 
 	setSectionTitle(commands, matter.CommandsSectionName)
 
-	rows := parse.TableRows(commandsTable)
+	rows := ascii.TableRows(commandsTable)
 
-	headerRowIndex, columnMap, extraColumns, err := parse.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
 		return err
 	}
@@ -69,26 +69,26 @@ func organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable 
 	}
 	commandNames := make(map[string]struct{}, len(commandsTable.Rows))
 	for _, row := range commandsTable.Rows {
-		commandName, err := parse.GetTableCellValue(row.Cells[nameIndex])
+		commandName, err := ascii.GetTableCellValue(row.Cells[nameIndex])
 		if err != nil {
 			slog.Warn("could not get cell value for command", "err", err)
 			continue
 		}
 		commandNames[commandName] = struct{}{}
 	}
-	subSections := ascii.FindAll[*ascii.Section](commands.Elements)
+	subSections := parse.FindAll[*ascii.Section](commands.Elements)
 	for _, ss := range subSections {
 		name := strings.TrimSuffix(ss.Name, " Command")
 		if _, ok := commandNames[name]; !ok {
 			continue
 		}
-		t := parse.FindFirstTable(ss)
+		t := ascii.FindFirstTable(ss)
 		if t == nil {
 			continue
 		}
-		rows := parse.TableRows(t)
+		rows := ascii.TableRows(t)
 
-		_, columnMap, _, err := parse.MapTableColumns(rows)
+		_, columnMap, _, err := ascii.MapTableColumns(rows)
 		if err != nil {
 			return err
 		}
@@ -116,7 +116,7 @@ func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, colum
 	for _, row := range rows[1:] {
 		cell := row.Cells[accessIndex]
 
-		vc, e := parse.GetTableCellValue(cell)
+		vc, e := ascii.GetTableCellValue(cell)
 		if e != nil {
 			continue
 		}

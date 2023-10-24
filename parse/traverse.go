@@ -1,15 +1,10 @@
-package ascii
+package parse
 
 import (
 	"slices"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
-
-type HasElements interface {
-	SetElements([]interface{}) error
-	GetElements() []interface{}
-}
 
 func FindAll[T any](elements []interface{}) []T {
 	var list []T
@@ -35,8 +30,8 @@ func Search[T any](elements []interface{}, callback func(t T) bool) {
 
 func find[T any](elements []interface{}, callback func(t T) bool) bool {
 	for _, e := range elements {
-		if ae, ok := e.(*Element); ok {
-			e = ae.Base
+		if ae, ok := e.(HasBase); ok {
+			e = ae.GetBase()
 		}
 		var shortCircuit bool
 		switch el := e.(type) {
@@ -44,8 +39,6 @@ func find[T any](elements []interface{}, callback func(t T) bool) bool {
 			shortCircuit = callback(el)
 		case types.WithElements:
 			shortCircuit = find(el.GetElements(), callback)
-		case *Section:
-			shortCircuit = find(el.Elements, callback)
 		}
 		if shortCircuit {
 			return true
@@ -58,8 +51,8 @@ func find[T any](elements []interface{}, callback func(t T) bool) bool {
 func Skim[T any](elements []interface{}) []T {
 	var list []T
 	for _, e := range elements {
-		if ae, ok := e.(*Element); ok {
-			e = ae.Base
+		if ae, ok := e.(HasBase); ok {
+			e = ae.GetBase()
 		}
 		switch el := e.(type) {
 		case T:
@@ -76,8 +69,8 @@ func Filter(parent HasElements, callback func(i interface{}) (remove bool, short
 	var removed bool
 	for i < len(elements) {
 		e := elements[i]
-		if ae, ok := e.(*Element); ok {
-			e = ae.Base
+		if ae, ok := e.(HasBase); ok {
+			e = ae.GetBase()
 		}
 		switch el := e.(type) {
 		case HasElements:

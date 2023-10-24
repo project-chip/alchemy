@@ -28,3 +28,7 @@ func (e *Element) SetElements(elements []interface{}) error {
 	}
 	return fmt.Errorf("base element does not have elements: %T", e.Base)
 }
+
+func (e *Element) GetBase() interface{} {
+	return e.Base
+}
