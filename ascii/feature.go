@@ -1,9 +1,10 @@
 package ascii
 
 import (
+	"fmt"
+
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
 )
 
 func (s *Section) toFeatures() (features []*matter.Feature, err error) {
@@ -12,11 +13,17 @@ func (s *Section) toFeatures() (features []*matter.Feature, err error) {
 	var columnMap map[matter.TableColumn]int
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("failed reading features: %w", err)
+
 	}
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		f := &matter.Feature{}
+		f.Bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
+		if err != nil {
+			return
+		}
+
 		f.Name, err = readRowValue(row, columnMap, matter.TableColumnFeature)
 		if err != nil {
 			return
@@ -33,17 +40,6 @@ func (s *Section) toFeatures() (features []*matter.Feature, err error) {
 		if err != nil {
 			return
 		}
-		var b string
-		b, err = readRowValue(row, columnMap, matter.TableColumnBit)
-		if err != nil {
-			return
-		}
-		var bv uint64
-		bv, err = parse.ID(b)
-		if err != nil {
-			return
-		}
-		f.Bit = int(bv)
 		features = append(features, f)
 	}
 	return

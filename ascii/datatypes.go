@@ -3,7 +3,7 @@ package ascii
 import (
 	"fmt"
 	"log/slog"
-	"strconv"
+	"regexp"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -37,7 +37,6 @@ func (s *Section) toDataTypes() (dataTypes []interface{}, err error) {
 			}
 			dataTypes = append(dataTypes, me)
 		default:
-			slog.Info("unknown data type section", "name", s.Name, "type", s.SecType)
 		}
 	}
 	return
@@ -49,11 +48,12 @@ func (s *Section) toEnum() (e *matter.Enum, err error) {
 	var columnMap map[matter.TableColumn]int
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("failed reading enum: %w", err)
 	}
 	name := strings.TrimSuffix(s.Name, " Type")
 	e = &matter.Enum{
 		Name: matter.StripDataTypeSuffixes(name),
+		Type: s.GetDataType(),
 	}
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
@@ -71,17 +71,10 @@ func (s *Section) toEnum() (e *matter.Enum, err error) {
 		if err != nil {
 			return
 		}
-		var b string
-		b, err = readRowValue(row, columnMap, matter.TableColumnValue)
+		ev.Value, err = readRowValue(row, columnMap, matter.TableColumnValue)
 		if err != nil {
 			return
 		}
-		var v uint64
-		v, err = parse.ID(b)
-		if err != nil {
-			return
-		}
-		ev.Value = int(v)
 		e.Values = append(e.Values, ev)
 	}
 	return
@@ -93,11 +86,12 @@ func (s *Section) toBitmap() (e *matter.Bitmap, err error) {
 	var columnMap map[matter.TableColumn]int
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("failed reading bitmap: %w", err)
 	}
 	name := strings.TrimSuffix(s.Name, " Type")
 	e = &matter.Bitmap{
 		Name: matter.StripDataTypeSuffixes(name),
+		Type: s.GetDataType(),
 	}
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
@@ -115,12 +109,7 @@ func (s *Section) toBitmap() (e *matter.Bitmap, err error) {
 		if err != nil {
 			return
 		}
-		var b string
-		b, err = readRowValue(row, columnMap, matter.TableColumnValue)
-		if err != nil {
-			return
-		}
-		bv.Bit, err = strconv.Atoi(b)
+		bv.Bit, err = readRowValue(row, columnMap, matter.TableColumnValue)
 		if err != nil {
 			return
 		}
@@ -135,7 +124,7 @@ func (s *Section) toStruct() (ms *matter.Struct, err error) {
 	var columnMap map[matter.TableColumn]int
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("failed reading struct: %w", err)
 	}
 	name := strings.TrimSuffix(s.Name, " Type")
 	ms = &matter.Struct{
@@ -177,48 +166,60 @@ func readFields(headerRowIndex int, rows []*types.TableRow, columnMap map[matter
 			return
 		}
 		f.Access = matter.ParseAccess(a)
-		var b string
-		b, err = readRowValue(row, columnMap, matter.TableColumnID)
+		f.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
 		}
-		var id uint64
-		id, err = parse.ID(b)
-		if err != nil {
-			return
-		}
-		f.ID = int(id)
+
 		fields = append(fields, f)
 	}
 	return
 }
 
-func getRowDataType(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) string {
+var listDataTypeDefinitionPattern = regexp.MustCompile(`list\[([^\]]+)\]`)
+
+func getRowDataType(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) *matter.DataType {
 	i, ok := columnMap[column]
 	if !ok {
-		return ""
+		return nil
 	}
 	cell := row.Cells[i]
 	if len(cell.Elements) == 0 {
-		return ""
+		return nil
 	}
 	p, ok := cell.Elements[0].(*types.Paragraph)
 	if !ok {
 		fmt.Printf("el type: %T\n", cell.Elements[0])
-		return ""
+		return nil
 	}
 	if len(p.Elements) == 0 {
-		return ""
+		return nil
 	}
-	el := p.Elements[0]
-	var val string
-	switch v := el.(type) {
-	case *types.StringElement:
-		val = v.Content
-	case *types.InternalCrossReference:
-		val = v.ID.(string)
-	default:
-		slog.Info("unknown value element", "type", v)
+	if len(p.Elements) == 1 {
+		se, ok := p.Elements[0].(*types.StringElement)
+		if ok {
+			match := listDataTypeDefinitionPattern.FindStringSubmatch(se.Content)
+			if match != nil {
+				return &matter.DataType{Name: match[1], IsArray: true}
+			}
+			return &matter.DataType{Name: se.Content}
+		}
+	}
+	val := &matter.DataType{}
+	for _, el := range p.Elements {
+		switch v := el.(type) {
+		case *types.StringElement:
+			if v.Content == "list[" {
+				val.IsArray = true
+			} else if val.Name == "" {
+				val.Name = v.Content
+			}
+		case *types.InternalCrossReference:
+			val.Name = v.ID.(string)
+			return val
+		default:
+			slog.Info("unknown value element", "type", v)
+		}
 	}
 	return val
 }

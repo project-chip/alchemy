@@ -2,7 +2,6 @@ package disco
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -24,8 +23,6 @@ type DataTypeEntry struct {
 	existing            bool
 }
 
-var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
-
 func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 	dataTypesSection := ascii.FindSectionByType(top, matter.SectionDataTypes)
 	if dataTypesSection == nil {
@@ -34,14 +31,7 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 	for _, ss := range parse.FindAll[*ascii.Section](dataTypesSection.Elements) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
-		var dataType string
-		se := parse.FindFirst[*types.StringElement](ss.Elements)
-		if se != nil {
-			match := dataTypeDefinitionPattern.FindStringSubmatch(se.Content)
-			if match != nil {
-				dataType = match[1]
-			}
-		}
+		dataType := ss.GetDataType()
 		dataTypeCategory := getDataTypeCategory(dataType)
 		cxt.potentialDataTypes[nameKey] = append(cxt.potentialDataTypes[nameKey], &DataTypeEntry{
 			name:             name,
@@ -327,7 +317,7 @@ func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
 				return fmt.Errorf("duplicate reference: %s with invalid parent", dataTypeNames[i])
 			}
 			parentSections[i] = parentSection
-			refParentId := strings.TrimSpace(matter.StripReferenceSuffixes(getReferenceName(parentSection.Base)))
+			refParentId := strings.TrimSpace(matter.StripReferenceSuffixes(ascii.ReferenceName(parentSection.Base)))
 			dataTypeNames[i] = refParentId + " " + dataTypeNames[i]
 			dataTypeRefs[i] = refParentId + "_" + dataTypeNames[i]
 		}

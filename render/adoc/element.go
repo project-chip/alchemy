@@ -8,12 +8,15 @@ import (
 	"github.com/hasty/matterfmt/parse"
 )
 
+type Section interface {
+	GetAsciiSection() *types.Section
+}
+
 func RenderElements(cxt *output.Context, prefix string, elements []interface{}) (err error) {
 	var previous interface{}
 	for _, e := range elements {
-		var children []interface{}
-		if he, ok := e.(parse.HasElements); ok {
-			children = he.GetElements()
+		if he, ok := e.(Section); ok {
+			e = he.GetAsciiSection()
 		}
 		if hb, ok := e.(parse.HasBase); ok {
 			e = hb.GetBase()
@@ -21,6 +24,9 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		switch el := e.(type) {
 		case *types.Section:
 			err = renderSection(cxt, el)
+			if err == nil {
+				err = RenderElements(cxt, "", el.Elements)
+			}
 		case *types.DelimitedBlock:
 			err = renderDelimitedBlock(cxt, el)
 		case *types.Paragraph:
@@ -114,12 +120,6 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 		case nil:
 		default:
 			err = fmt.Errorf("unknown element type: %T", el)
-		}
-		if err != nil {
-			return
-		}
-		if len(children) > 0 {
-			err = RenderElements(cxt, "", children)
 		}
 		if err != nil {
 			return

@@ -3,7 +3,6 @@ package ascii
 import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
 )
 
 func (s *Section) toAttributes() (attributes []*matter.Attribute, err error) {
@@ -20,6 +19,10 @@ func (s *Section) toAttributes() (attributes []*matter.Attribute, err error) {
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		attr := &matter.Attribute{}
+		attr.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
+		if err != nil {
+			return
+		}
 		attr.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
@@ -49,17 +52,6 @@ func (s *Section) toAttributes() (attributes []*matter.Attribute, err error) {
 			return
 		}
 		attr.Access = matter.ParseAccess(a)
-		var b string
-		b, err = readRowValue(row, columnMap, matter.TableColumnID)
-		if err != nil {
-			return
-		}
-		var id uint64
-		id, err = parse.ID(b)
-		if err != nil {
-			return
-		}
-		attr.ID = int(id)
 		attributes = append(attributes, attr)
 	}
 	return

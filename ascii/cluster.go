@@ -1,64 +1,95 @@
 package ascii
 
 import (
-	"log/slog"
+	"fmt"
+	"strings"
 
+	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/parse"
 )
 
-func (s *Section) toCluster() (*matter.Cluster, error) {
-	c := &matter.Cluster{}
+func (s *Section) toClusters() ([]*matter.Cluster, error) {
+	var clusters []*matter.Cluster
+	var description string
+	p := parse.FindFirst[*types.Paragraph](s.Elements)
+	if p != nil {
+		se := parse.FindFirst[*types.StringElement](p.Elements)
+		if se != nil {
+			description = strings.ReplaceAll(se.Content, "\n", " ")
+		}
+	}
+
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		var err error
 		switch s.SecType {
 		case matter.SectionClusterID:
-			err = readClusterID(c, s)
-		case matter.SectionAttributes:
-			c.Attributes, err = s.toAttributes()
-		case matter.SectionClassification:
-			err = readClusterClassification(c, s)
-		case matter.SectionFeatures:
-			c.Features, err = s.toFeatures()
-		case matter.SectionDataTypes:
-			slog.Info("parsing data types")
-			c.DataTypes, err = s.toDataTypes()
-			slog.Info("parsed data types", "count", len(c.DataTypes))
-		case matter.SectionEvents:
-			c.Events, err = s.toEvents()
-		case matter.SectionCommands:
-			c.Commands, err = s.toCommands()
-		default:
-			slog.Info("unknown section type", "name", s.Name, "type", s.SecType)
+
+			clusters, err = readClusterIDs(s)
 		}
 		if err != nil {
 			return nil, err
 		}
 	}
-	return c, nil
+
+	for _, c := range clusters {
+		c.Description = description
+		for _, s := range parse.Skim[*Section](s.Elements) {
+			var err error
+			switch s.SecType {
+			case matter.SectionAttributes:
+				var attr []*matter.Attribute
+				attr, err = s.toAttributes()
+				if err == nil {
+					c.Attributes = append(c.Attributes, attr...)
+				}
+			case matter.SectionClassification:
+				err = readClusterClassification(c, s)
+			case matter.SectionFeatures:
+				c.Features, err = s.toFeatures()
+			case matter.SectionDataTypes:
+				c.DataTypes, err = s.toDataTypes()
+			case matter.SectionEvents:
+				c.Events, err = s.toEvents()
+			case matter.SectionCommands:
+				c.Commands, err = s.toCommands()
+			default:
+			}
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	return clusters, nil
 }
 
-func readClusterID(c *matter.Cluster, s *Section) error {
+func readClusterIDs(s *Section) ([]*matter.Cluster, error) {
 	rows, headerRowIndex, columnMap, _, err := parseFirstTable(s)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("failed reading cluster ID: %w", err)
 	}
-	row := rows[headerRowIndex+1]
-	c.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
-	if err != nil {
-		return err
+	var clusters []*matter.Cluster
+	for i := headerRowIndex + 1; i < len(rows); i++ {
+		row := rows[i]
+		c := &matter.Cluster{}
+		c.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
+		if err != nil {
+			return nil, err
+		}
+		c.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		if err != nil {
+			return nil, err
+		}
+		clusters = append(clusters, c)
 	}
-	c.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return clusters, nil
 }
 
 func readClusterClassification(c *matter.Cluster, s *Section) error {
 	rows, headerRowIndex, columnMap, _, err := parseFirstTable(s)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed reading classification: %w", err)
 	}
 	row := rows[headerRowIndex+1]
 	c.Hierarchy, err = readRowValue(row, columnMap, matter.TableColumnHierarchy)

@@ -122,31 +122,41 @@ func (d *Doc) Footnotes() []*types.Footnote {
 func (d *Doc) ToModel() (models []interface{}, err error) {
 	dt, err := d.DocType()
 	for _, top := range parse.Skim[*Section](d.Elements) {
-		fmt.Printf("top section %s\n", top.Name)
 		AssignSectionTypes(dt, top)
 
-		var m interface{}
-		m, err = top.ToModel()
+		var m []interface{}
+		m, err = top.ToModels()
 		if err != nil {
 			return
 		}
-		models = append(models, m)
+		models = append(models, m...)
 	}
 	return
 }
 
-func Open(path string) (*Doc, error) {
-	config := configuration.NewConfiguration(
-		configuration.WithFilename(path),
-		configuration.WithAttribute("second-ballot", false),
-	)
+func Open(path string, settings ...configuration.Setting) (*Doc, error) {
+
+	baseConfig := []configuration.Setting{configuration.WithFilename(path)}
+
+	baseConfig = append(baseConfig, settings...)
+
+	config := configuration.NewConfiguration(baseConfig...)
 
 	file, err := os.ReadFile(config.Filename)
 	if err != nil {
 		return nil, err
 	}
 
-	d, err := parse.ParseDocument(strings.NewReader(string(file)), config, parser.MaxExpressions(2000000))
+	contents := string(file)
+
+	if len(config.Attributes) > 2 { // By default, there are two attributes in the renderer; if there are more, we need to pre-process
+		contents, err = parser.Preprocess(strings.NewReader(contents), config)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	d, err := parse.ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
 
 	if err != nil {
 		return nil, fmt.Errorf("failed parse: %w", err)

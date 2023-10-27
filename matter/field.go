@@ -1,9 +1,12 @@
 package matter
 
 type Field struct {
-	ID   int
+	ID   string
 	Name string
-	Type string
+	Type *DataType
+
+	MinLength int
+	MaxLength int
 
 	Constraint  string
 	Quality     string

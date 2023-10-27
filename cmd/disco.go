@@ -11,10 +11,23 @@ import (
 	"github.com/hasty/matterfmt/render/adoc"
 )
 
-func DiscoBall(cxt context.Context, filepaths []string, dryRun bool, serial bool, options ...disco.Option) error {
-	return processFiles(cxt, filepaths, serial, dryRun, func(cxt context.Context, file string, index int, total int) (result string, outPath string, err error) {
+type discoBall struct {
+	processor
+
+	options []disco.Option
+}
+
+func DiscoBall(cxt context.Context, filepaths []string, options ...Option) error {
+	db := &discoBall{}
+	for _, opt := range options {
+		err := opt(db)
+		if err != nil {
+			return err
+		}
+	}
+	return db.saveFiles(cxt, filepaths, func(cxt context.Context, file string, index int, total int) (result string, outPath string, err error) {
 		outPath = file
-		result, err = discoBall(cxt, file, options...)
+		result, err = db.run(cxt, file)
 		if err != nil {
 			return
 		}
@@ -23,13 +36,13 @@ func DiscoBall(cxt context.Context, filepaths []string, dryRun bool, serial bool
 	})
 }
 
-func discoBall(cxt context.Context, file string, options ...disco.Option) (string, error) {
+func (db *discoBall) run(cxt context.Context, file string) (string, error) {
 	doc, err := ascii.Open(file)
 	if err != nil {
 		return "", err
 	}
 	b := disco.NewBall(doc)
-	for _, option := range options {
+	for _, option := range db.options {
 		option(b)
 	}
 	err = b.Run(cxt)

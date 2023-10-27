@@ -101,7 +101,7 @@ func MapTableColumns(rows []*types.TableRow) (headerRow int, columnMap map[matte
 		if cellCount == -1 {
 			cellCount = len(row.Cells)
 		} else if cellCount != len(row.Cells) {
-			return -1, nil, nil, fmt.Errorf("can't rearrange attributes table with unequal cell counts between rows")
+			return -1, nil, nil, fmt.Errorf("can't map table columns with unequal cell counts between rows; cell count %d, row %d: %d", cellCount, i, len(row.Cells))
 		}
 		if columnMap == nil {
 			var spares []ExtraColumn
@@ -114,7 +114,7 @@ func MapTableColumns(rows []*types.TableRow) (headerRow int, columnMap map[matte
 						columnMap = make(map[matter.TableColumn]int)
 					}
 					if _, ok := columnMap[attributeColumn]; ok {
-						return -1, nil, nil, fmt.Errorf("can't rearrange attributes table duplicate columns")
+						return -1, nil, nil, fmt.Errorf("can't map table columns with duplicate columns")
 					}
 					columnMap[attributeColumn] = j
 				} else {

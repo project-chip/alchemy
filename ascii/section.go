@@ -2,7 +2,7 @@ package ascii
 
 import (
 	"fmt"
-	"log/slog"
+	"regexp"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -77,6 +77,10 @@ func (s *Section) GetElements() []interface{} {
 func (s *Section) SetElements(elements []interface{}) error {
 	s.Elements = elements
 	return nil
+}
+
+func (s *Section) GetAsciiSection() *types.Section {
+	return s.Base
 }
 
 func AssignSectionTypes(docType matter.DocType, top *Section) {
@@ -155,7 +159,6 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			if strings.HasSuffix(name, " attribute set") {
 				return matter.SectionAttributes
 			}
-			slog.Info("unknown top section type", "name", name)
 			return matter.SectionUnknown
 		}
 	case matter.SectionAttributes:
@@ -185,17 +188,38 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return matter.SectionEvent
 		}
 	default:
-		slog.Info("unknown section type", "name", name)
+		//slog.Info("unknown section type", "name", name)
 	}
 	return matter.SectionUnknown
 }
 
-func (s *Section) ToModel() (interface{}, error) {
+func (s *Section) ToModels() ([]interface{}, error) {
+	var models []interface{}
 	switch s.SecType {
 	case matter.SectionCluster:
-		return s.toCluster()
+		clusters, err := s.toClusters()
+		if err != nil {
+			return nil, err
+		}
+		for _, c := range clusters {
+			models = append(models, c)
+		}
 	default:
-		slog.Info("unknown section type", "secType", s.SecType)
+		//slog.Info("unknown section type", "secType", s.SecType)
 	}
-	return nil, nil
+	return models, nil
+}
+
+var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
+
+func (s *Section) GetDataType() string {
+	var dataType string
+	se := parse.FindFirst[*types.StringElement](s.Elements)
+	if se != nil {
+		match := dataTypeDefinitionPattern.FindStringSubmatch(se.Content)
+		if match != nil {
+			dataType = match[1]
+		}
+	}
+	return dataType
 }

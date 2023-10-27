@@ -23,12 +23,23 @@ func main() {
 	var linkAttributes bool
 	var dumpAscii bool
 
+	var specRoot string
+	var zclRoot string
+
+	var attributes cli.StringSlice
+
+	formatAction := func(cCtx *cli.Context) error {
+		options := []cmd.Option{
+			cmd.Serial(serial),
+			cmd.DryRun(dryRun),
+		}
+		return cmd.Format(cxt, cCtx.Args().Slice(), options...)
+	}
+
 	app := &cli.App{
-		Name:  "matterfmt",
-		Usage: "builds stuff",
-		Action: func(c *cli.Context) error {
-			return cmd.Format(cxt, c.Args().Slice(), dryRun, serial)
-		},
+		Name:   "alchemy",
+		Usage:  "builds stuff",
+		Action: formatAction,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:        "dryrun",
@@ -41,8 +52,19 @@ func main() {
 				Usage:       "process files one-by-one",
 				Destination: &serial,
 			},
+			&cli.StringSliceFlag{
+				Name:        "attribute",
+				Usage:       "attribute for preprocessing",
+				Destination: &attributes,
+			},
 		},
 		Commands: []*cli.Command{
+			{
+				Name:    "format",
+				Aliases: []string{"fmt"},
+				Usage:   "just format Matter documents",
+				Action:  formatAction,
+			},
 			{
 				Name:    "disco",
 				Aliases: []string{"c"},
@@ -55,38 +77,53 @@ func main() {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
-					var options []disco.Option
-					if linkAttributes {
-						options = append(options, disco.LinkAttributes)
+					options := []cmd.Option{
+						cmd.Serial(serial),
+						cmd.DryRun(dryRun),
+						cmd.Disco(disco.LinkAttributes(linkAttributes)),
 					}
 
-					err := cmd.DiscoBall(cxt, cCtx.Args().Slice(), dryRun, serial, options...)
+					err := cmd.DiscoBall(cxt, cCtx.Args().Slice(), options...)
 					if err != nil {
 						return cli.Exit(err, -1)
 					}
 					return nil
 				},
 			},
-			{
-				Name:    "format",
-				Aliases: []string{"fmt"},
-				Usage:   "just format Matter documents",
-				Action: func(cCtx *cli.Context) error {
-					return cmd.Format(cxt, cCtx.Args().Slice(), dryRun, serial)
-				},
-			},
+
 			{
 				Name:  "zcl",
 				Usage: "translate Matter spec to ZCL",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:        "specRoot",
+						Usage:       "the src root of the spec repo",
+						Destination: &specRoot,
+					},
+					&cli.StringFlag{
+						Name:        "zclRoot",
+						Usage:       "the zcl root of the connected-ip repo",
+						Destination: &zclRoot,
+					},
+				},
 				Action: func(cCtx *cli.Context) error {
-					return cmd.ZCL(cxt, cCtx.Args().Slice(), dryRun, serial)
+					options := []cmd.Option{
+						cmd.Serial(serial),
+						cmd.DryRun(dryRun),
+						cmd.AsciiAttributes(attributes.Value()),
+					}
+					return cmd.ZCL(cxt, specRoot, zclRoot, options...)
 				},
 			},
 			{
 				Name:  "db",
 				Usage: "just format Matter documents",
 				Action: func(cCtx *cli.Context) error {
-					return cmd.Database(cxt, cCtx.Args().Slice(), serial)
+					options := []cmd.Option{
+						cmd.Serial(serial),
+						cmd.AsciiAttributes(attributes.Value()),
+					}
+					return cmd.Database(cxt, cCtx.Args().Slice(), options...)
 				},
 			},
 			{
@@ -101,7 +138,11 @@ func main() {
 					},
 				},
 				Action: func(cCtx *cli.Context) error {
-					return cmd.Dump(cxt, cCtx.Args().Slice(), dumpAscii)
+					options := []cmd.Option{
+						cmd.DumpAscii(dumpAscii),
+						cmd.AsciiAttributes(attributes.Value()),
+					}
+					return cmd.Dump(cxt, cCtx.Args().Slice(), options...)
 				},
 			},
 		},
