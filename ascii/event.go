@@ -1,6 +1,7 @@
 package ascii
 
 import (
+	"fmt"
 	"log/slog"
 	"strings"
 
@@ -15,7 +16,7 @@ func (s *Section) toEvents() (events []*matter.Event, err error) {
 	var columnMap map[matter.TableColumn]int
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("failed reading events: %w", err)
 	}
 	eventMap := make(map[string]*matter.Event)
 	for i := headerRowIndex + 1; i < len(rows); i++ {
@@ -44,7 +45,6 @@ func (s *Section) toEvents() (events []*matter.Event, err error) {
 		}
 		e.Access = matter.ParseAccess(a)
 		events = append(events, e)
-		slog.Info("registering event", "event", e.Name)
 
 		eventMap[e.Name] = e
 	}
@@ -64,6 +64,11 @@ func (s *Section) toEvents() (events []*matter.Event, err error) {
 			var columnMap map[matter.TableColumn]int
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 			if err != nil {
+				if err == NoTableFound {
+					err = nil
+					continue
+				}
+				err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
 				return
 			}
 			e.Fields, err = readFields(headerRowIndex, rows, columnMap)

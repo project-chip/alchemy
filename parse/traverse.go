@@ -2,8 +2,6 @@ package parse
 
 import (
 	"slices"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
 func FindAll[T any](elements []interface{}) []T {
@@ -30,20 +28,29 @@ func Search[T any](elements []interface{}, callback func(t T) bool) {
 
 func find[T any](elements []interface{}, callback func(t T) bool) bool {
 	for _, e := range elements {
-		if ae, ok := e.(HasBase); ok {
-			e = ae.GetBase()
-		}
 		var shortCircuit bool
-		switch el := e.(type) {
-		case T:
+		if el, ok := e.(T); ok {
 			shortCircuit = callback(el)
-		case types.WithElements:
-			shortCircuit = find(el.GetElements(), callback)
+		} else if ae, ok := e.(HasBase); ok {
+			be := ae.GetBase()
+			if el, ok := be.(T); ok {
+				shortCircuit = callback(el)
+			}
 		}
 		if shortCircuit {
 			return true
 		}
-
+		if he, ok := e.(HasElements); ok {
+			shortCircuit = find(he.GetElements(), callback)
+		} else if ae, ok := e.(HasBase); ok {
+			be := ae.GetBase()
+			if el, ok := be.(HasElements); ok {
+				shortCircuit = find(el.GetElements(), callback)
+			}
+		}
+		if shortCircuit {
+			return true
+		}
 	}
 	return false
 }

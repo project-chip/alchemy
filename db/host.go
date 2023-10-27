@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 
 	sqle "github.com/dolthub/go-mysql-server"
 	"github.com/dolthub/go-mysql-server/memory"
@@ -16,6 +17,7 @@ import (
 type Host struct {
 	db *memory.Database
 
+	lock sync.RWMutex
 	docs []*ascii.Doc
 
 	tableNames []string
@@ -59,7 +61,9 @@ func New() *Host {
 }
 
 func (h *Host) Load(doc *ascii.Doc) error {
+	h.lock.Lock()
 	h.docs = append(h.docs, doc)
+	h.lock.Unlock()
 	return nil
 }
 

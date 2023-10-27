@@ -4,44 +4,35 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"sync/atomic"
 
 	"github.com/dolthub/go-mysql-server/sql"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/db"
-	"golang.org/x/sync/errgroup"
 )
 
-func Database(cxt context.Context, filepaths []string, serial bool) error {
-	files, err := getFilePaths(filepaths)
-	if err != nil {
-		return err
-	}
-	fmt.Fprintf(os.Stderr, "Reading %d files...\n", len(files))
+type databaseReader struct {
+	processor
+	asciiParser
+}
 
+func Database(cxt context.Context, filepaths []string, options ...Option) error {
+	dbr := &databaseReader{}
+	for _, opt := range options {
+		err := opt(dbr)
+		if err != nil {
+			return err
+		}
+	}
+	return dbr.run(cxt, filepaths)
+}
+
+func (dbr *databaseReader) run(cxt context.Context, filepaths []string) error {
 	sc := sql.NewContext(cxt)
 	sc.SetCurrentDatabase("matter")
 
 	h := db.New()
-
-	if serial {
-		err = readDBSerial(cxt, h, files)
-	} else {
-		err = readDBParallel(cxt, h, files)
-	}
-	if err != nil {
-		return err
-	}
-	err = h.Build(sc)
-	if err != nil {
-		return err
-	}
-	return h.Run()
-}
-
-func readDBSerial(cxt context.Context, h *db.Host, files []string) error {
-	for i, file := range files {
-		fmt.Fprintf(os.Stderr, "Loading %s (%d of %d)...\n", file, (i + 1), len(files))
+	err := dbr.processFiles(cxt, filepaths, func(cxt context.Context, file string, index, total int) error {
+		fmt.Fprintf(os.Stderr, "Loading %s (%d of %d)...\n", file, index, total)
 		doc, err := ascii.Open(file)
 		if err != nil {
 			return err
@@ -50,34 +41,14 @@ func readDBSerial(cxt context.Context, h *db.Host, files []string) error {
 		if err != nil {
 			return err
 		}
-	}
-	return nil
-}
-
-func readDBParallel(cxt context.Context, h *db.Host, files []string) error {
-	var complete int32
-	g, _ := errgroup.WithContext(cxt)
-	for i, f := range files {
-		func(file string, index int) {
-			g.Go(func() error {
-				doc, err := ascii.Open(file)
-				if err != nil {
-					return err
-				}
-				err = h.Load(doc)
-				if err != nil {
-					return err
-				}
-				done := atomic.AddInt32(&complete, 1)
-				fmt.Fprintf(os.Stderr, "Loaded %s (%d of %d)...\n", file, done, len(files))
-				return nil
-			})
-		}(f, i)
-
-	}
-	err := g.Wait()
+		return nil
+	})
 	if err != nil {
 		return err
 	}
-	return nil
+	err = h.Build(sc)
+	if err != nil {
+		return err
+	}
+	return h.Run()
 }

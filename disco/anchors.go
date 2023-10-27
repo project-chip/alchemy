@@ -9,34 +9,25 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
 )
-
-type anchorInfo struct {
-	id      string
-	label   string
-	element types.WithAttributes
-	parent  parse.HasElements
-	name    string
-}
 
 var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z][a-z]+(?:[A-Z][a-z]*)*(_[A-Z][a-z]*(?:[A-Z][a-z]*)*)*$`)
 var acronymPattern = regexp.MustCompile(`[A-Z]{3,}`)
 
 func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 
-	crossReferences := b.findCrossReferences(doc)
+	crossReferences := doc.CrossReferences()
 
-	anchors, err := b.findAnchors(doc, crossReferences)
+	anchors, err := doc.Anchors(crossReferences)
 	if err != nil {
 		return err
 	}
 
-	newAnchors := make(map[string][]*anchorInfo)
+	newAnchors := make(map[string][]*ascii.Anchor)
 	for _, info := range anchors {
 		// Fix all the bad references, and add to list of new anchors, ignoring duplicates for now
 		normalizeAnchor(info)
-		newAnchors[info.id] = append(newAnchors[info.id], info)
+		newAnchors[info.ID] = append(newAnchors[info.ID], info)
 	}
 
 	for _, infos := range newAnchors {
@@ -55,85 +46,17 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 	return nil
 }
 
-func (b *Ball) findAnchors(doc *ascii.Doc, crossReferences map[string][]*types.InternalCrossReference) (map[string]*anchorInfo, error) {
-	anchors := make(map[string]*anchorInfo)
-	parse.Traverse(doc, doc.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
-		var wa types.WithAttributes
-		e, ok := el.(*ascii.Element)
-		if ok {
-			if wa, ok = e.Base.(types.WithAttributes); !ok {
-				return false
-			}
-		} else if s, ok := el.(*ascii.Section); ok {
-			wa = s.Base
-		} else {
-			return false
-		}
-		attrs := wa.GetAttributes()
-		idAttr, ok := attrs[types.AttrID]
-		if !ok {
-			return false
-		}
-		id := strings.TrimSpace(idAttr.(string))
-		var label string
-		if parts := strings.Split(id, ","); len(parts) > 1 {
-			id = strings.TrimSpace(parts[0])
-			label = strings.TrimSpace(parts[1])
-		}
-		reftext, ok := attrs.GetAsString("reftext")
-		if ok {
-			label = reftext
-		}
-		info := &anchorInfo{
-			id:      id,
-			label:   label,
-			element: wa,
-			parent:  parent,
-		}
-		name := getReferenceName(wa)
-		if name != "" {
-			info.name = name
-		} else if len(label) > 0 {
-			info.name = label
-		}
-		if _, ok := anchors[id]; ok {
-			slog.Warn("duplicate anchor; can't fix", "id", id)
-			return false
-		}
-
-		if !strings.HasPrefix(id, "_") {
-			anchors[id] = info
-		} else { // Anchors prefaced with "_" may have been created by the parser
-			if _, ok := crossReferences[id]; ok { // If there's a cross-reference for it, then we'll render it
-				anchors[id] = info
-			} else { // If there isn't a cross reference to the id, there might be one to its original version
-				unescaped := strings.TrimSpace(strings.ReplaceAll(id, "_", " "))
-				if _, ok = crossReferences[unescaped]; ok {
-					if _, ok := anchors[unescaped]; ok {
-						slog.Warn("duplicate anchor; can't fix", "id", unescaped)
-						return false
-					}
-					anchors[unescaped] = info
-				}
-			}
-		}
-		return false
-	})
-
-	return anchors, nil
-}
-
-func normalizeAnchor(info *anchorInfo) {
-	match := properAnchorPattern.FindStringSubmatch(info.id)
+func normalizeAnchor(info *ascii.Anchor) {
+	match := properAnchorPattern.FindStringSubmatch(info.ID)
 	if len(match) > 0 {
-		if len(info.label) == 0 {
-			info.label = getReferenceName(info.element)
+		if len(info.Label) == 0 {
+			info.Label = ascii.ReferenceName(info.Element)
 		}
 		return
 	}
-	id, label := normalizeAnchorID(info.name, info.element)
-	info.id = id
-	info.label = label
+	id, label := normalizeAnchorID(info.Name, info.Element)
+	info.ID = id
+	info.Label = label
 }
 
 var pascalCasePattern = regexp.MustCompile(`^[A-Z][a-z]+([A-Z][a-z]+)+$`)
@@ -168,8 +91,8 @@ func normalizeAnchorID(name string, element interface{}) (id string, label strin
 	return
 }
 
-func setAnchor(info *anchorInfo) {
-	setAnchorID(info.element, info.id, info.label)
+func setAnchor(info *ascii.Anchor) {
+	setAnchorID(info.Element, info.ID, info.Label)
 }
 
 func setAnchorID(element types.WithAttributes, id string, label string) {
@@ -181,25 +104,25 @@ func setAnchorID(element types.WithAttributes, id string, label string) {
 	element.AddAttributes(newAttr)
 }
 
-func disambiguateAnchorSet(infos []*anchorInfo) error {
+func disambiguateAnchorSet(infos []*ascii.Anchor) error {
 	parents := make([]interface{}, len(infos))
 	refIds := make([]string, len(infos))
 	for i, info := range infos {
-		parents[i] = info.parent
-		refIds[i] = info.id
+		parents[i] = info.Parent
+		refIds[i] = info.ID
 	}
 	parentSections := make([]*ascii.Section, len(infos))
 	for {
 		slog.Info("info", "i", infos)
 		for i := range infos {
-			slog.Info("info", "i", infos[i].name, "e", infos[i].element)
+			slog.Info("info", "i", infos[i].Name, "e", infos[i].Element)
 
 			parentSection := findRefSection(parents[i])
 			if parentSection == nil {
 				return fmt.Errorf("duplicate anchor: %s with invalid parent", refIds[i])
 			}
 			parentSections[i] = parentSection
-			refParentId, _ := normalizeAnchorID(getReferenceName(parentSection.Base), parentSection.Base)
+			refParentId, _ := normalizeAnchorID(ascii.ReferenceName(parentSection.Base), parentSection.Base)
 			refIds[i] = refParentId + "_" + strings.TrimPrefix(refIds[i], "ref_")
 		}
 		ids := make(map[string]struct{})
@@ -219,8 +142,8 @@ func disambiguateAnchorSet(infos []*anchorInfo) error {
 		}
 	}
 	for i, info := range infos {
-		slog.Debug("Switching duplicate anchor", "from", info.id, "to", refIds[i])
-		info.id = refIds[i]
+		slog.Debug("Switching duplicate anchor", "from", info.ID, "to", refIds[i])
+		info.ID = refIds[i]
 	}
 	return nil
 }

@@ -1,9 +1,9 @@
 package matter
 
 type Attribute struct {
-	ID   int
+	ID   string
 	Name string
-	Type string
+	Type *DataType
 
 	Constraint  string
 	Quality     Quality

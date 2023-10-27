@@ -44,6 +44,7 @@ func (s *Section) toCommands() (commands []*matter.Command, err error) {
 		if err != nil {
 			return
 		}
+
 		var a string
 		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
@@ -51,20 +52,27 @@ func (s *Section) toCommands() (commands []*matter.Command, err error) {
 		}
 		cmd.Access = matter.ParseAccess(a)
 		commands = append(commands, cmd)
-		slog.Info("registering event", "event", cmd.Name)
-		commandMap[cmd.Name] = cmd
+		commandMap[strings.ToLower(cmd.Name)] = cmd
 	}
 
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		switch s.SecType {
 		case matter.SectionCommand:
 
-			name := strings.TrimSuffix(s.Name, " Command")
-			e, ok := commandMap[name]
+			name := strings.TrimSuffix(strings.ToLower(s.Name), " command")
+			c, ok := commandMap[name]
 			if !ok {
 				slog.Info("unknown command", "command", name)
 				continue
 			}
+			p := parse.FindFirst[*types.Paragraph](s.Elements)
+			if p != nil {
+				se := parse.FindFirst[*types.StringElement](p.Elements)
+				if se != nil {
+					c.Description = strings.ReplaceAll(se.Content, "\n", " ")
+				}
+			}
+
 			var rows []*types.TableRow
 			var headerRowIndex int
 			var columnMap map[matter.TableColumn]int
@@ -76,7 +84,7 @@ func (s *Section) toCommands() (commands []*matter.Command, err error) {
 				}
 				return
 			}
-			e.Fields, err = readFields(headerRowIndex, rows, columnMap)
+			c.Fields, err = readFields(headerRowIndex, rows, columnMap)
 		}
 	}
 	return

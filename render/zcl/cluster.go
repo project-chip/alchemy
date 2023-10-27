@@ -3,20 +3,38 @@ package zcl
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/beevik/etree"
 	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 	"github.com/iancoleman/strcase"
 )
 
-func renderCluster(cxt context.Context, cluster *matter.Cluster, w *etree.Element) error {
+func renderCluster(cxt context.Context, cluster *matter.Cluster, w *etree.Element, errata *errata) error {
+
 	cx := w.CreateElement("cluster")
 	dom := cx.CreateElement("domain")
 	dom.SetText("General")
 	cx.CreateElement("name").SetText(cluster.Name)
-	cx.CreateElement("code").SetText(fmt.Sprintf("%#04X", cluster.ID))
-	define := strcase.ToScreamingDelimited(cluster.Name+" Cluster", '_', "", true)
+	code := cx.CreateElement("code")
+	id, err := parse.ID(cluster.ID)
+	if err == nil {
+		code.SetText(fmt.Sprintf("%#04x", id))
+	} else {
+		code.SetText(cluster.ID)
+
+	}
+	var define string
+	var clusterPrefix string
+
+	define = strcase.ToScreamingDelimited(cluster.Name+" Cluster", '_', "", true)
+	if !errata.suppressClusterDefinePrefix {
+		clusterPrefix = strcase.ToScreamingDelimited(cluster.Name, '_', "", true) + "_"
+		if len(errata.clusterDefinePrefix) > 0 {
+			clusterPrefix = errata.clusterDefinePrefix
+		}
+	}
+
 	cx.CreateElement("define").SetText(define)
 	client := cx.CreateElement("client")
 	client.CreateAttr("init", "false")
@@ -26,82 +44,43 @@ func renderCluster(cxt context.Context, cluster *matter.Cluster, w *etree.Elemen
 	server.CreateAttr("init", "false")
 	server.CreateAttr("tick", "false")
 	server.SetText("true")
-	cx.CreateElement("description").SetText("")
+	cx.CreateElement("description").SetText(cluster.Description)
 
-	if len(cluster.Attributes) > 0 {
-		cx.CreateComment("Attributes")
-	}
-	for _, a := range cluster.Attributes {
-		mandatory := (a.Conformance == "M")
-		readAccess, writeAccess, _, _, _ := matter.ParseAccessValues(a.Access)
-
-		if !mandatory && len(a.Conformance) > 0 {
-			cx.CreateComment(fmt.Sprintf("Conformance feature %s - for now optional", a.Conformance))
-		}
-		attr := cx.CreateElement("attribute")
-		attr.CreateAttr("side", "server")
-		attr.CreateAttr("code", strconv.Itoa(a.ID))
-		define = strcase.ToScreamingDelimited(a.Name, '_', "", true)
-		attr.CreateAttr("define", define)
-		attr.CreateAttr("type", massageDataType(a.Type))
-		if a.Quality.Has(matter.QualityNullable) {
-			attr.CreateAttr("isNullable", "true")
-		}
-		if a.Quality.Has(matter.QualityReportable) {
-			attr.CreateAttr("reportable", "true")
-		}
-		if a.Quality.Has(matter.QualityFixed) || readAccess == "V" && writeAccess == "" {
-			attr.CreateAttr("writeable", "false")
-			attr.SetText(a.Name)
-		} else {
-			attr.CreateElement("description").SetText(a.Name)
-			if readAccess != "" {
-				ax := attr.CreateElement("access")
-				ax.CreateAttr("op", "read")
-				ax.CreateAttr("privilege", readAccess)
-			}
-			if writeAccess != "" {
-				ax := attr.CreateElement("access")
-				ax.CreateAttr("op", "write")
-				ax.CreateAttr("privilege", writeAccess)
-				attr.CreateAttr("writeable", "true")
-			} else {
-				attr.CreateAttr("writeable", "false")
-			}
-		}
-		if a.Conformance != "M" {
-			attr.CreateAttr("optional", "true")
-		}
-
-	}
-	for _, e := range cluster.Events {
-		readAccess, writeAccess, _, fabricSensitive, _ := matter.ParseAccessValues(e.Access)
-
-		ex := cx.CreateElement("event")
-		ex.CreateAttr("side", "server")
-		ex.CreateAttr("code", fmt.Sprintf("%#04x", e.ID))
-		ex.CreateAttr("name", e.Name)
-		if fabricSensitive != 0 {
-			ex.CreateAttr("isFabricSensitive", "true")
-		}
-		ex.CreateElement("description").SetText(e.Description)
-		for _, f := range e.Fields {
-			fx := ex.CreateElement("field")
-			fx.CreateAttr("id", strconv.Itoa(f.ID))
-			fx.CreateAttr("name", f.Name)
-			fx.CreateAttr("type", massageDataType(f.Type))
-		}
-		if readAccess != "" {
-			ax := ex.CreateElement("access")
-			ax.CreateAttr("op", "read")
-			ax.CreateAttr("privilege", readAccess)
-		}
-		if writeAccess != "" {
-			ax := ex.CreateElement("access")
-			ax.CreateAttr("op", "write")
-			ax.CreateAttr("privilege", writeAccess)
+	for _, s := range errata.clusterOrder {
+		switch s {
+		case matter.SectionAttributes:
+			renderAttributes(cluster, cx, clusterPrefix, errata)
+		case matter.SectionCommands:
+			renderCommands(cluster, cx)
+		case matter.SectionEvents:
+			renderEvents(cluster, cx)
 		}
 	}
 
 	return nil
+}
+
+func renderFeatures(cxt context.Context, cluster *matter.Cluster, w *etree.Element, errata *errata) {
+	id := cluster.ID
+	cid, err := parse.ID(id)
+	if err == nil {
+		id = fmt.Sprintf("%#04x", cid)
+	}
+	if len(cluster.Features) == 0 {
+		return
+	}
+	fb := w.CreateElement("bitmap")
+	fb.CreateAttr("name", "Feature")
+	fb.CreateAttr("type", "BITMAP32")
+	fb.CreateElement("cluster").CreateAttr("code", id)
+	for _, f := range cluster.Features {
+		bit, err := parse.ID(f.Bit)
+		if err != nil {
+			continue
+		}
+		fx := fb.CreateElement("field")
+		fx.CreateAttr("name", f.Name)
+		bit = (1 << bit)
+		fx.CreateAttr("mask", fmt.Sprintf("%#x", bit))
+	}
 }

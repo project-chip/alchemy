@@ -1,6 +1,8 @@
 package matter
 
-import "strings"
+import (
+	"strings"
+)
 
 type DataTypeCategory uint8
 
@@ -32,11 +34,12 @@ var DataTypeIdentityColumn = map[DataTypeCategory]TableColumn{
 type Enum struct {
 	Name        string
 	Description string
+	Type        string
 	Values      []*EnumValue
 }
 
 type EnumValue struct {
-	Value       int
+	Value       string
 	Name        string
 	Summary     string
 	Conformance string
@@ -45,11 +48,12 @@ type EnumValue struct {
 type Bitmap struct {
 	Name        string
 	Description string
+	Type        string
 	Bits        []*BitmapValue
 }
 
 type BitmapValue struct {
-	Bit         int
+	Bit         string
 	Name        string
 	Summary     string
 	Conformance string
@@ -69,4 +73,9 @@ func StripDataTypeSuffixes(dataType string) string {
 		}
 	}
 	return dataType
+}
+
+type DataType struct {
+	Name    string
+	IsArray bool
 }

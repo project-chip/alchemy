@@ -1,7 +1,7 @@
 package matter
 
 type Feature struct {
-	Bit         int
+	Bit         string
 	Code        string
 	Name        string
 	Description string

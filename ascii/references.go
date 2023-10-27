@@ -1,12 +1,28 @@
 package ascii
 
 import (
+	"log/slog"
 	"slices"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/matterfmt/parse"
 )
+
+func (doc *Doc) CrossReferences() map[string][]*types.InternalCrossReference {
+	crossReferences := make(map[string][]*types.InternalCrossReference)
+	parse.Traverse(nil, doc.Base.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
+		if icr, ok := el.(*types.InternalCrossReference); ok {
+			id, ok := icr.ID.(string)
+			if !ok {
+				return false
+			}
+			crossReferences[id] = append(crossReferences[id], icr)
+		}
+		return false
+	})
+	return crossReferences
+}
 
 // The parser sometimes doesn't recognize inline references, and just returns them as "<", "<", "ref", ">", ">"
 // Rather than doing the right thing and fixing the parser, we'll just find these little suckers after the fact
@@ -75,4 +91,25 @@ func getUnrecognizedReference(els []interface{}) string {
 		return ""
 	}
 	return s.Content
+}
+
+func ReferenceName(element interface{}) string {
+	switch el := element.(type) {
+	case *types.Section:
+		name := types.Reduce(el.Title)
+		if s, ok := name.(string); ok {
+			return s
+		}
+	case types.WithAttributes:
+		attr := el.GetAttributes()
+		if attr != nil {
+			if title, ok := attr.GetAsString("title"); ok {
+				return title
+			}
+		}
+	default:
+		//slog.
+		slog.Debug("Unknown type to get reference name", "type", element)
+	}
+	return ""
 }
