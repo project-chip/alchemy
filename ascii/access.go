@@ -36,10 +36,10 @@ func init() {
 	}
 }
 
-func ParseAccess(vc string) (a *matter.Access) {
+func ParseAccess(vc string) (a matter.Access) {
 	matches := accessPattern.FindStringSubmatch(vc)
 	if matches == nil {
-		return &matter.Access{}
+		return matter.Access{}
 	}
 	access := make(map[accessCategoryMatch]string)
 	for i, s := range matches {
@@ -52,7 +52,7 @@ func ParseAccess(vc string) (a *matter.Access) {
 		}
 		access[category] = s
 	}
-	a = &matter.Access{}
+	a = matter.Access{}
 	var readAccess, writeAccess, invokeAccess string
 	rw := access[accessCategoryMatchReadWrite]
 	var hasRead, hasWrite, optionalWrite bool
@@ -100,7 +100,7 @@ func ParseAccess(vc string) (a *matter.Access) {
 	return
 }
 
-func AccessToAsciiString(a *matter.Access) string {
+func AccessToAsciiString(a matter.Access) string {
 	var out strings.Builder
 	if a.Read != matter.PrivilegeUnknown || a.Write != matter.PrivilegeUnknown {
 		if a.Read != matter.PrivilegeUnknown {

@@ -56,7 +56,7 @@ func ConvertZapToDataType(s string) string {
 	return s
 }
 
-func renderDataTypes(dataTypes []interface{}, clusters []*matter.Cluster, cx *etree.Element, errata *errata) {
+func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *etree.Element, errata *errata) {
 	var clusterIDs []string
 	for _, cluster := range clusters {
 		id := cluster.ID
@@ -69,85 +69,75 @@ func renderDataTypes(dataTypes []interface{}, clusters []*matter.Cluster, cx *et
 	for _, s := range errata.dataTypeOrder {
 		switch s {
 		case matter.SectionDataTypeBitmap:
-			renderBitmaps(dataTypes, clusterIDs, cx)
+			renderBitmaps(cluster.Bitmaps, clusterIDs, cx)
 		case matter.SectionDataTypeEnum:
-			renderEnums(dataTypes, clusterIDs, cx)
+			renderEnums(cluster.Enums, clusterIDs, cx)
 		case matter.SectionDataTypeStruct:
-			renderStructs(dataTypes, clusterIDs, cx)
+			renderStructs(cluster.Structs, clusterIDs, cx)
 		}
 	}
 }
 
-func renderEnums(dataTypes []interface{}, clusterIDs []string, cx *etree.Element) {
-	for _, dt := range dataTypes {
-		switch v := dt.(type) {
-		case *matter.Enum:
-			en := cx.CreateElement("enum")
-			en.CreateAttr("name", v.Name)
-			en.CreateAttr("type", ConvertDataTypeToZap(v.Type))
-			for _, cid := range clusterIDs {
-				en.CreateElement("cluster").CreateAttr("code", cid)
-			}
-			for _, ev := range v.Values {
-				evx := en.CreateElement("item")
-				evx.CreateAttr("name", ev.Name)
-				val := ev.Value
-				valNum, err := parse.HexOrDec(val)
-				if err == nil {
-					val = fmt.Sprintf("%#02x", valNum)
-				}
-				evx.CreateAttr("value", val)
-			}
-
+func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
+	for _, v := range enums {
+		en := cx.CreateElement("enum")
+		en.CreateAttr("name", v.Name)
+		en.CreateAttr("type", ConvertDataTypeToZap(v.Type))
+		for _, cid := range clusterIDs {
+			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
+		for _, ev := range v.Values {
+			evx := en.CreateElement("item")
+			evx.CreateAttr("name", ev.Name)
+			val := ev.Value
+			valNum, err := parse.HexOrDec(val)
+			if err == nil {
+				val = fmt.Sprintf("%#02x", valNum)
+			}
+			evx.CreateAttr("value", val)
+		}
+
 	}
 }
 
-func renderBitmaps(dataTypes []interface{}, clusterIDs []string, cx *etree.Element) {
-	for _, dt := range dataTypes {
-		switch v := dt.(type) {
-
-		case *matter.Bitmap:
-			en := cx.CreateElement("bitmap")
-			name := matter.StripDataTypeSuffixes(v.Name)
-			en.CreateAttr("name", name)
-			en.CreateAttr("type", ConvertDataTypeToZap(v.Type))
-			for _, cid := range clusterIDs {
-				en.CreateElement("cluster").CreateAttr("code", cid)
-			}
-			for _, ev := range v.Bits {
-				bit, err := parse.HexOrDec(ev.Bit)
-				if err != nil {
-					continue
-				}
-				evx := en.CreateElement("item")
-				evx.CreateAttr("name", ev.Name)
-				evx.CreateAttr("value", fmt.Sprintf("%#02x", 1<<(bit-1)))
-			}
-
+func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Element) {
+	for _, v := range bitmaps {
+		en := cx.CreateElement("bitmap")
+		name := matter.StripDataTypeSuffixes(v.Name)
+		en.CreateAttr("name", name)
+		en.CreateAttr("type", ConvertDataTypeToZap(v.Type))
+		for _, cid := range clusterIDs {
+			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
+		for _, ev := range v.Bits {
+			bit, err := parse.HexOrDec(ev.Bit)
+			if err != nil {
+				continue
+			}
+			evx := en.CreateElement("item")
+			evx.CreateAttr("name", ev.Name)
+			evx.CreateAttr("value", fmt.Sprintf("%#02x", 1<<(bit-1)))
+		}
+
 	}
 }
 
-func renderStructs(dataTypes []interface{}, clusterIDs []string, cx *etree.Element) {
-	for _, dt := range dataTypes {
-		switch v := dt.(type) {
-
-		case *matter.Struct:
-			en := cx.CreateElement("struct")
-			en.CreateAttr("name", v.Name)
-			for _, cid := range clusterIDs {
-				en.CreateElement("cluster").CreateAttr("code", cid)
-			}
-			for _, f := range v.Fields {
-				fx := en.CreateElement("item")
-				if f.Quality.Has(matter.QualityNullable) {
-					fx.CreateAttr("isNullable", "true")
-				}
-				fx.CreateAttr("name", f.Name)
-				writeDataType(fx, f.Type)
-			}
+func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Element) {
+	for _, v := range structs {
+		en := cx.CreateElement("struct")
+		en.CreateAttr("name", v.Name)
+		for _, cid := range clusterIDs {
+			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
+		for _, f := range v.Fields {
+			fx := en.CreateElement("item")
+			if f.Quality.Has(matter.QualityNullable) {
+				fx.CreateAttr("isNullable", "true")
+			}
+			fx.CreateAttr("name", f.Name)
+			writeDataType(fx, f.Type)
+		}
+
 	}
 }
 

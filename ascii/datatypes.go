@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/matterfmt/parse"
 )
 
-func (s *Section) toDataTypes(d *Doc) (dataTypes []interface{}, err error) {
+func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster) (err error) {
 
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		switch s.SecType {
@@ -21,21 +21,21 @@ func (s *Section) toDataTypes(d *Doc) (dataTypes []interface{}, err error) {
 			if err != nil {
 				return
 			}
-			dataTypes = append(dataTypes, mb)
+			cluster.Bitmaps = append(cluster.Bitmaps, mb)
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
 			me, err = s.toEnum()
 			if err != nil {
 				return
 			}
-			dataTypes = append(dataTypes, me)
+			cluster.Enums = append(cluster.Enums, me)
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
 			me, err = s.toStruct(d)
 			if err != nil {
 				return
 			}
-			dataTypes = append(dataTypes, me)
+			cluster.Structs = append(cluster.Structs, me)
 		default:
 		}
 	}

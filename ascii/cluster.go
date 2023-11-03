@@ -40,7 +40,7 @@ func (s *Section) toClusters(d *Doc) ([]*matter.Cluster, error) {
 			var err error
 			switch s.SecType {
 			case matter.SectionDataTypes:
-				c.DataTypes, err = s.toDataTypes(d)
+				err = s.toDataTypes(d, c)
 			default:
 			}
 			if err != nil {

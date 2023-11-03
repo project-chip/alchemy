@@ -125,6 +125,9 @@ func (d *Doc) Footnotes() []*types.Footnote {
 
 func (d *Doc) ToModel() (models []interface{}, err error) {
 	dt, err := d.DocType()
+	if err != nil {
+		return nil, err
+	}
 
 	crossReferences := d.CrossReferences()
 
