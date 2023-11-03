@@ -5,7 +5,7 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func (s *Section) toAttributes() (attributes []*matter.Attribute, err error) {
+func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap map[matter.TableColumn]int
@@ -18,7 +18,7 @@ func (s *Section) toAttributes() (attributes []*matter.Attribute, err error) {
 	}
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		attr := &matter.Attribute{}
+		attr := &matter.Field{}
 		attr.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
@@ -27,8 +27,8 @@ func (s *Section) toAttributes() (attributes []*matter.Attribute, err error) {
 		if err != nil {
 			return
 		}
-		attr.Type = getRowDataType(row, columnMap, matter.TableColumnType)
-		attr.Constraint, err = readRowValue(row, columnMap, matter.TableColumnConstraint)
+		attr.Type = d.getRowDataType(row, columnMap, matter.TableColumnType)
+		attr.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, attr.Type)
 		if err != nil {
 			return
 		}
@@ -51,7 +51,7 @@ func (s *Section) toAttributes() (attributes []*matter.Attribute, err error) {
 		if err != nil {
 			return
 		}
-		attr.Access = matter.ParseAccess(a)
+		attr.Access = ParseAccess(a)
 		attributes = append(attributes, attr)
 	}
 	return

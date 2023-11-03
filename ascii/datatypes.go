@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/matterfmt/parse"
 )
 
-func (s *Section) toDataTypes() (dataTypes []interface{}, err error) {
+func (s *Section) toDataTypes(d *Doc) (dataTypes []interface{}, err error) {
 
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		switch s.SecType {
@@ -31,7 +31,7 @@ func (s *Section) toDataTypes() (dataTypes []interface{}, err error) {
 			dataTypes = append(dataTypes, me)
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
-			me, err = s.toStruct()
+			me, err = s.toStruct(d)
 			if err != nil {
 				return
 			}
@@ -52,7 +52,7 @@ func (s *Section) toEnum() (e *matter.Enum, err error) {
 	}
 	name := strings.TrimSuffix(s.Name, " Type")
 	e = &matter.Enum{
-		Name: matter.StripDataTypeSuffixes(name),
+		Name: name,
 		Type: s.GetDataType(),
 	}
 
@@ -90,7 +90,7 @@ func (s *Section) toBitmap() (e *matter.Bitmap, err error) {
 	}
 	name := strings.TrimSuffix(s.Name, " Type")
 	e = &matter.Bitmap{
-		Name: matter.StripDataTypeSuffixes(name),
+		Name: name,
 		Type: s.GetDataType(),
 	}
 
@@ -118,7 +118,7 @@ func (s *Section) toBitmap() (e *matter.Bitmap, err error) {
 	return
 }
 
-func (s *Section) toStruct() (ms *matter.Struct, err error) {
+func (s *Section) toStruct(d *Doc) (ms *matter.Struct, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap map[matter.TableColumn]int
@@ -128,14 +128,14 @@ func (s *Section) toStruct() (ms *matter.Struct, err error) {
 	}
 	name := strings.TrimSuffix(s.Name, " Type")
 	ms = &matter.Struct{
-		Name: matter.StripDataTypeSuffixes(name),
+		Name: name,
 	}
 
-	ms.Fields, err = readFields(headerRowIndex, rows, columnMap)
+	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
 	return
 }
 
-func readFields(headerRowIndex int, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (fields []*matter.Field, err error) {
+func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (fields []*matter.Field, err error) {
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		f := &matter.Field{}
@@ -143,12 +143,17 @@ func readFields(headerRowIndex int, rows []*types.TableRow, columnMap map[matter
 		if err != nil {
 			return
 		}
-		f.Type = getRowDataType(row, columnMap, matter.TableColumnType)
-		f.Constraint, err = readRowValue(row, columnMap, matter.TableColumnConstraint)
+		f.Type = d.getRowDataType(row, columnMap, matter.TableColumnType)
+		f.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, f.Type)
 		if err != nil {
 			return
 		}
-		f.Quality, err = readRowValue(row, columnMap, matter.TableColumnQuality)
+		var q string
+		q, err = readRowValue(row, columnMap, matter.TableColumnQuality)
+		if err != nil {
+			return
+		}
+		f.Quality = matter.ParseQuality(q)
 		if err != nil {
 			return
 		}
@@ -165,7 +170,7 @@ func readFields(headerRowIndex int, rows []*types.TableRow, columnMap map[matter
 		if err != nil {
 			return
 		}
-		f.Access = matter.ParseAccess(a)
+		f.Access = ParseAccess(a)
 		f.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
@@ -178,7 +183,7 @@ func readFields(headerRowIndex int, rows []*types.TableRow, columnMap map[matter
 
 var listDataTypeDefinitionPattern = regexp.MustCompile(`list\[([^\]]+)\]`)
 
-func getRowDataType(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) *matter.DataType {
+func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) *matter.DataType {
 	i, ok := columnMap[column]
 	if !ok {
 		return nil
@@ -195,30 +200,83 @@ func getRowDataType(row *types.TableRow, columnMap map[matter.TableColumn]int, c
 	if len(p.Elements) == 0 {
 		return nil
 	}
+	val := &matter.DataType{}
 	if len(p.Elements) == 1 {
 		se, ok := p.Elements[0].(*types.StringElement)
 		if ok {
 			match := listDataTypeDefinitionPattern.FindStringSubmatch(se.Content)
 			if match != nil {
-				return &matter.DataType{Name: match[1], IsArray: true}
+				val.Name = match[1]
+				val.IsArray = true
+			} else {
+				val.Name = se.Content
 			}
-			return &matter.DataType{Name: se.Content}
+		}
+	} else {
+		for _, el := range p.Elements {
+			switch v := el.(type) {
+			case *types.StringElement:
+				if v.Content == "list[" {
+					val.IsArray = true
+				} else if val.Name == "" {
+					anchor, ok := d.anchors[v.Content]
+					if ok {
+						fmt.Printf("array anchor: %v\n", anchor.Element)
+						val.Name = ReferenceName(anchor.Element)
+					} else {
+						val.Name = v.Content
+					}
+				}
+			case *types.InternalCrossReference:
+				anchor, ok := d.anchors[v.ID.(string)]
+				if ok {
+					fmt.Printf("type anchor: %v %T\n", anchor.Element, anchor.Element)
+					val.Name = ReferenceName(anchor.Element)
+				} else {
+					val.Name = v.ID.(string)
+				}
+				break
+			default:
+				slog.Info("unknown value element", "type", v)
+			}
 		}
 	}
-	val := &matter.DataType{}
-	for _, el := range p.Elements {
-		switch v := el.(type) {
-		case *types.StringElement:
-			if v.Content == "list[" {
-				val.IsArray = true
-			} else if val.Name == "" {
-				val.Name = v.Content
+	val.Name = strings.TrimSuffix(val.Name, " Type")
+
+	return val
+}
+
+func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn, parentDataType *matter.DataType) matter.Constraint {
+	i, ok := columnMap[column]
+	if !ok {
+		return nil
+	}
+	cell := row.Cells[i]
+	if len(cell.Elements) == 0 {
+		return nil
+	}
+	p, ok := cell.Elements[0].(*types.Paragraph)
+	if !ok {
+		fmt.Printf("el type: %T\n", cell.Elements[0])
+		return nil
+	}
+	if len(p.Elements) == 0 {
+		return nil
+	}
+	var val matter.Constraint
+	if len(p.Elements) == 1 {
+		se, ok := p.Elements[0].(*types.StringElement)
+		if ok {
+			val = ParseConstraint(parentDataType, se.Content)
+		}
+	} else {
+		for _, el := range p.Elements {
+			switch v := el.(type) {
+			case *types.StringElement:
+				val = ParseConstraint(parentDataType, v.Content)
+			default:
+				slog.Info("unknown value element", "type", v)
 			}
-		case *types.InternalCrossReference:
-			val.Name = v.ID.(string)
-			return val
-		default:
-			slog.Info("unknown value element", "type", v)
 		}
 	}
 	return val

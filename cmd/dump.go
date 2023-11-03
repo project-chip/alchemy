@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -15,6 +17,7 @@ type dumper struct {
 	asciiParser
 
 	dumpAscii bool
+	dumpJSON  bool
 }
 
 func Dump(cxt context.Context, filepaths []string, options ...Option) error {
@@ -47,7 +50,14 @@ func (d *dumper) run(cxt context.Context, filepaths []string) error {
 				ascii.AssignSectionTypes(docType, top)
 			}
 			dumpElements(doc, doc.Elements, 0)
-
+		} else if d.dumpJSON {
+			models, err := doc.ToModel()
+			if err != nil {
+				return err
+			}
+			encoder := json.NewEncoder(os.Stdout)
+			//encoder.SetIndent("", "\t")
+			return encoder.Encode(models)
 		} else {
 			dumpElements(doc, doc.Base.Elements, 0)
 		}

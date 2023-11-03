@@ -22,6 +22,7 @@ func main() {
 
 	var linkAttributes bool
 	var dumpAscii bool
+	var dumpJSON bool
 
 	var specRoot string
 	var zclRoot string
@@ -116,6 +117,30 @@ func main() {
 				},
 			},
 			{
+				Name:  "compare",
+				Usage: "compare Matter spec to ZAP",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:        "specRoot",
+						Usage:       "the src root of the spec repo",
+						Destination: &specRoot,
+					},
+					&cli.StringFlag{
+						Name:        "zclRoot",
+						Usage:       "the zcl root of the connected-ip repo",
+						Destination: &zclRoot,
+					},
+				},
+				Action: func(cCtx *cli.Context) error {
+					options := []cmd.Option{
+						cmd.Serial(serial),
+						cmd.DryRun(dryRun),
+						cmd.AsciiAttributes(attributes.Value()),
+					}
+					return cmd.Compare(cxt, specRoot, zclRoot, options...)
+				},
+			},
+			{
 				Name:  "db",
 				Usage: "just format Matter documents",
 				Action: func(cCtx *cli.Context) error {
@@ -136,10 +161,16 @@ func main() {
 						Usage:       "dump asciidoc object model",
 						Destination: &dumpAscii,
 					},
+					&cli.BoolFlag{
+						Name:        "json",
+						Usage:       "dump json object model",
+						Destination: &dumpJSON,
+					},
 				},
 				Action: func(cCtx *cli.Context) error {
 					options := []cmd.Option{
 						cmd.DumpAscii(dumpAscii),
+						cmd.DumpJSON(dumpJSON),
 						cmd.AsciiAttributes(attributes.Value()),
 					}
 					return cmd.Dump(cxt, cCtx.Args().Slice(), options...)

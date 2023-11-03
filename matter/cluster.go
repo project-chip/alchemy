@@ -1,18 +1,18 @@
 package matter
 
 type Cluster struct {
-	ID          string
-	Name        string
-	Description string
+	ID          string `json:"id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
 
-	Hierarchy string
-	Role      string
-	Scope     string
-	PICS      string
+	Hierarchy string `json:"hierarchy,omitempty"`
+	Role      string `json:"role,omitempty"`
+	Scope     string `json:"scope,omitempty"`
+	PICS      string `json:"pics,omitempty"`
 
-	Features   []*Feature
-	DataTypes  []interface{}
-	Attributes []*Attribute
-	Events     []*Event
-	Commands   []*Command
+	Features   []*Feature    `json:"features,omitempty"`
+	DataTypes  []interface{} `json:"dataTypes,omitempty"`
+	Attributes []*Field      `json:"attributes,omitempty"`
+	Events     []*Event      `json:"events,omitempty"`
+	Commands   []*Command    `json:"commands,omitempty"`
 }

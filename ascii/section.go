@@ -120,6 +120,7 @@ func FindSectionByType(top *Section, sectionType matter.Section) *Section {
 
 func getSectionType(parent *Section, section *Section) matter.Section {
 	name := strings.ToLower(strings.TrimSpace(section.Name))
+	fmt.Printf("Section type: %s\n", name)
 	switch parent.SecType {
 	case matter.SectionTop, matter.SectionCluster:
 		switch name {
@@ -175,6 +176,17 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		if strings.HasSuffix(name, "struct type") || strings.HasSuffix(name, "struct") || strings.HasSuffix(name, "structure") {
 			return matter.SectionDataTypeStruct
 		}
+		name = strings.ToLower(section.Base.GetID())
+		fmt.Printf("CHECKING DATA TYPE %s\n", name)
+		if strings.HasSuffix(name, "bitmap") {
+			return matter.SectionDataTypeBitmap
+		}
+		if strings.HasSuffix(name, "enum") {
+			return matter.SectionDataTypeEnum
+		}
+		if strings.HasSuffix(name, "struct") {
+			return matter.SectionDataTypeStruct
+		}
 	case matter.SectionCommand:
 		if strings.HasSuffix(name, " field") {
 			return matter.SectionField
@@ -193,11 +205,11 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 	return matter.SectionUnknown
 }
 
-func (s *Section) ToModels() ([]interface{}, error) {
+func (s *Section) ToModels(d *Doc) ([]interface{}, error) {
 	var models []interface{}
 	switch s.SecType {
 	case matter.SectionCluster:
-		clusters, err := s.toClusters()
+		clusters, err := s.toClusters(d)
 		if err != nil {
 			return nil, err
 		}

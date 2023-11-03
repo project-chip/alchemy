@@ -14,7 +14,7 @@ type HasBase interface {
 	GetBase() interface{}
 }
 
-func ID(s string) (uint64, error) {
+func HexOrDec(s string) (uint64, error) {
 	id, err := strconv.ParseUint(s, 10, 64)
 	if err == nil {
 		return id, err

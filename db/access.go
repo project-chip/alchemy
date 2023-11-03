@@ -3,13 +3,14 @@ package db
 import (
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/ascii"
 )
 
 func getAccessSchemaColumns(tableName string) []*mms.Column {
 	return []*mms.Column{
-		{Name: "read_access", Type: types.Text, Nullable: true, Source: tableName, PrimaryKey: false},
-		{Name: "write_access", Type: types.Text, Nullable: true, Source: tableName, PrimaryKey: false},
+		{Name: "read_access", Type: types.Int8, Nullable: true, Source: tableName, PrimaryKey: false},
+		{Name: "write_access", Type: types.Int8, Nullable: true, Source: tableName, PrimaryKey: false},
+		{Name: "invoke_access", Type: types.Int8, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "fabric_scoped", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "fabric_sensitive", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "timed", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
@@ -17,6 +18,21 @@ func getAccessSchemaColumns(tableName string) []*mms.Column {
 }
 
 func getAccessSchemaColumnValues(tableName string, access interface{}) []interface{} {
-	readAccess, writeAccess, fabricScoped, fabricSensitive, timed := matter.ExtractAccessValues(access)
-	return []interface{}{readAccess, writeAccess, fabricScoped, fabricSensitive, timed}
+	var readAccess, writeAccess, invokeAccess, fabricScoped, fabricSensitive, timed int8
+	s, ok := access.(string)
+	if ok {
+		a := ascii.ParseAccess(s)
+		if a != nil {
+			readAccess = int8(a.Read)
+			writeAccess = int8(a.Write)
+			invokeAccess = int8(a.Invoke)
+			if a.FabricScoped {
+				fabricScoped = 1
+			}
+			if a.FabricSensitive {
+				fabricSensitive = 1
+			}
+		}
+	}
+	return []interface{}{readAccess, writeAccess, invokeAccess, fabricScoped, fabricSensitive, timed}
 }

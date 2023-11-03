@@ -32,37 +32,37 @@ var DataTypeIdentityColumn = map[DataTypeCategory]TableColumn{
 }
 
 type Enum struct {
-	Name        string
-	Description string
-	Type        string
-	Values      []*EnumValue
+	Name        string       `json:"name,omitempty"`
+	Description string       `json:"description,omitempty"`
+	Type        string       `json:"type,omitempty"`
+	Values      []*EnumValue `json:"values,omitempty"`
 }
 
 type EnumValue struct {
-	Value       string
-	Name        string
-	Summary     string
-	Conformance string
+	Value       string `json:"value,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Summary     string `json:"summary,omitempty"`
+	Conformance string `json:"conformance,omitempty"`
 }
 
 type Bitmap struct {
-	Name        string
-	Description string
-	Type        string
-	Bits        []*BitmapValue
+	Name        string         `json:"name,omitempty"`
+	Description string         `json:"description,omitempty"`
+	Type        string         `json:"type,omitempty"`
+	Bits        []*BitmapValue `json:"bits,omitempty"`
 }
 
 type BitmapValue struct {
-	Bit         string
-	Name        string
-	Summary     string
-	Conformance string
+	Bit         string `json:"bit,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Summary     string `json:"summary,omitempty"`
+	Conformance string `json:"conformance,omitempty"`
 }
 
 type Struct struct {
-	Name        string
-	Description string
-	Fields      []*Field
+	Name        string   `json:"name,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Fields      []*Field `json:"fields,omitempty"`
 }
 
 func StripDataTypeSuffixes(dataType string) string {
@@ -76,6 +76,6 @@ func StripDataTypeSuffixes(dataType string) string {
 }
 
 type DataType struct {
-	Name    string
-	IsArray bool
+	Name    string `json:"name,omitempty"`
+	IsArray bool   `json:"isArray,omitempty"`
 }

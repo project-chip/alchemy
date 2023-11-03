@@ -1,5 +1,7 @@
 package matter
 
+import "strings"
+
 type Quality uint32
 
 const (
@@ -16,30 +18,33 @@ const (
 	QualitySourceAttribution         = 1 << (iota - 1)
 )
 
+var identifierQualities = map[rune]Quality{
+	'X': QualityNullable,
+	'N': QualityNonVolatile,
+	'F': QualityFixed,
+	'S': QualityScene,
+	'P': QualityReportable,
+	'C': QualityChangedOmitted,
+	'K': QualityDiagnostics,
+	'I': QualitySingleton,
+	'L': QualityLargeMessage,
+	'A': QualitySourceAttribution,
+}
+
+var qualityIdentifiers map[Quality]rune
+
+func init() {
+	qualityIdentifiers = make(map[Quality]rune, len(identifierQualities))
+	for i, q := range identifierQualities {
+		qualityIdentifiers[q] = i
+	}
+}
+
 func ParseQuality(s string) Quality {
 	var q Quality
 	for _, r := range s {
-		switch r {
-		case 'X':
-			q |= QualityNullable
-		case 'N':
-			q |= QualityNonVolatile
-		case 'F':
-			q |= QualityFixed
-		case 'S':
-			q |= QualityScene
-		case 'P':
-			q |= QualityReportable
-		case 'C':
-			q |= QualityChangedOmitted
-		case 'K':
-			q |= QualityDiagnostics
-		case 'I':
-			q |= QualitySingleton
-		case 'L':
-			q |= QualityLargeMessage
-		case 'A':
-			q |= QualitySourceAttribution
+		if qi, ok := identifierQualities[r]; ok {
+			q |= qi
 		}
 	}
 	return q
@@ -47,4 +52,14 @@ func ParseQuality(s string) Quality {
 
 func (q Quality) Has(o Quality) bool {
 	return (q & o) == o
+}
+
+func (q Quality) String() string {
+	var s strings.Builder
+	for tq, i := range qualityIdentifiers {
+		if (q & tq) == tq {
+			s.WriteRune(i)
+		}
+	}
+	return s.String()
 }

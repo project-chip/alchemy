@@ -36,14 +36,14 @@ func Render(cxt context.Context, doc *ascii.Doc) (*Result, error) {
 		errata = &defaultErrata
 	}
 
-	x.CreateComment(license)
+	//x.CreateComment(license)
 	c := x.CreateElement("configurator")
 	dom := c.CreateElement("domain")
 	dom.CreateAttr("name", "CHIP")
 	switch docType {
 	case matter.DocTypeAppCluster:
 
-		err = renderAppCluster(cxt, models, c, errata)
+		err = renderAppCluster(cxt, doc, models, c, errata)
 	}
 	if err != nil {
 		return nil, err

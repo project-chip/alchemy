@@ -3,6 +3,7 @@ package zcl
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/hasty/matterfmt/matter"
@@ -11,23 +12,32 @@ import (
 
 func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 	for _, e := range cluster.Events {
-		readAccess, writeAccess, _, fabricSensitive, _ := matter.ParseAccessValues(e.Access)
 
 		ex := cx.CreateElement("event")
 		ex.CreateAttr("side", "server")
 		id := e.ID
-		eid, err := parse.ID(id)
+		eid, err := parse.HexOrDec(id)
 		if err == nil {
-			id = fmt.Sprintf("%#04x", eid)
+			id = fmt.Sprintf("%#02x", eid)
 		}
 		ex.CreateAttr("code", id)
+		ex.CreateAttr("priority", strings.ToLower(e.Priority))
 		ex.CreateAttr("name", e.Name)
-		if fabricSensitive != 0 {
+		if e.Access.FabricSensitive {
 			ex.CreateAttr("isFabricSensitive", "true")
 		}
-		ex.CreateElement("description").SetText(e.Description)
+		if e.Conformance != "M" {
+			ex.CreateAttr("optional", "true")
+		}
+
+		if len(e.Description) > 0 {
+			ex.CreateElement("description").SetText(e.Description)
+		} else {
+			ex.CreateElement("description").SetText(e.Name)
+
+		}
 		for _, f := range e.Fields {
-			id, err := parse.ID(f.ID)
+			id, err := parse.HexOrDec(f.ID)
 			if err != nil {
 				continue
 			}
@@ -36,15 +46,15 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 			fx.CreateAttr("name", f.Name)
 			writeDataType(fx, f.Type)
 		}
-		if readAccess != "" {
+		if e.Access.Read != matter.PrivilegeUnknown {
 			ax := ex.CreateElement("access")
 			ax.CreateAttr("op", "read")
-			ax.CreateAttr("privilege", readAccess)
+			ax.CreateAttr("privilege", renderPrivilege(e.Access.Read))
 		}
-		if writeAccess != "" {
+		if e.Access.Write != matter.PrivilegeUnknown {
 			ax := ex.CreateElement("access")
 			ax.CreateAttr("op", "write")
-			ax.CreateAttr("privilege", writeAccess)
+			ax.CreateAttr("privilege", renderPrivilege(e.Access.Write))
 		}
 	}
 }
