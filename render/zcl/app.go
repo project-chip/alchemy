@@ -11,33 +11,33 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func renderAppCluster(cxt context.Context, models []interface{}, w *etree.Element, errata *errata) (err error) {
+func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{}, w *etree.Element, errata *errata) (err error) {
+
+	var clusters []*matter.Cluster
+	for _, m := range models {
+		switch v := m.(type) {
+		case *matter.Cluster:
+			clusters = append(clusters, v)
+		}
+	}
 
 	for _, top := range errata.topOrder {
 		switch top {
 		case matter.SectionCluster:
-			for _, m := range models {
-				switch v := m.(type) {
-				case *matter.Cluster:
-					err = renderCluster(cxt, v, w, errata)
-				}
+			for _, c := range clusters {
+				err = renderCluster(cxt, doc, c, w, errata)
 				if err != nil {
-					return err
+					return
 				}
 			}
 		case matter.SectionDataTypes:
-			for _, m := range models {
-				switch v := m.(type) {
-				case *matter.Cluster:
-					renderDataTypes(v, w, errata)
-				}
+			if len(clusters) > 0 {
+				renderDataTypes(clusters[0].DataTypes, clusters, w, errata)
 			}
+
 		case matter.SectionFeatures:
-			for _, m := range models {
-				switch v := m.(type) {
-				case *matter.Cluster:
-					renderFeatures(cxt, v, w, errata)
-				}
+			if len(clusters) > 0 {
+				renderFeatures(cxt, clusters[0].Features, clusters, w, errata)
 			}
 		}
 	}

@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/matterfmt/parse"
 )
 
-func (s *Section) toClusters() ([]*matter.Cluster, error) {
+func (s *Section) toClusters(d *Doc) ([]*matter.Cluster, error) {
 	var clusters []*matter.Cluster
 	var description string
 	p := parse.FindFirst[*types.Paragraph](s.Elements)
@@ -34,12 +34,25 @@ func (s *Section) toClusters() ([]*matter.Cluster, error) {
 
 	for _, c := range clusters {
 		c.Description = description
-		for _, s := range parse.Skim[*Section](s.Elements) {
+
+		elements := parse.Skim[*Section](s.Elements)
+		for _, s := range elements {
+			var err error
+			switch s.SecType {
+			case matter.SectionDataTypes:
+				c.DataTypes, err = s.toDataTypes(d)
+			default:
+			}
+			if err != nil {
+				return nil, err
+			}
+		}
+		for _, s := range elements {
 			var err error
 			switch s.SecType {
 			case matter.SectionAttributes:
-				var attr []*matter.Attribute
-				attr, err = s.toAttributes()
+				var attr []*matter.Field
+				attr, err = s.toAttributes(d)
 				if err == nil {
 					c.Attributes = append(c.Attributes, attr...)
 				}
@@ -47,12 +60,10 @@ func (s *Section) toClusters() ([]*matter.Cluster, error) {
 				err = readClusterClassification(c, s)
 			case matter.SectionFeatures:
 				c.Features, err = s.toFeatures()
-			case matter.SectionDataTypes:
-				c.DataTypes, err = s.toDataTypes()
 			case matter.SectionEvents:
-				c.Events, err = s.toEvents()
+				c.Events, err = s.toEvents(d)
 			case matter.SectionCommands:
-				c.Commands, err = s.toCommands()
+				c.Commands, err = s.toCommands(d)
 			default:
 			}
 			if err != nil {

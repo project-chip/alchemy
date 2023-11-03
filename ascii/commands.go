@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/matterfmt/parse"
 )
 
-func (s *Section) toCommands() (commands []*matter.Command, err error) {
+func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap map[matter.TableColumn]int
@@ -50,7 +50,7 @@ func (s *Section) toCommands() (commands []*matter.Command, err error) {
 		if err != nil {
 			return
 		}
-		cmd.Access = matter.ParseAccess(a)
+		cmd.Access = ParseAccess(a)
 		commands = append(commands, cmd)
 		commandMap[strings.ToLower(cmd.Name)] = cmd
 	}
@@ -84,7 +84,7 @@ func (s *Section) toCommands() (commands []*matter.Command, err error) {
 				}
 				return
 			}
-			c.Fields, err = readFields(headerRowIndex, rows, columnMap)
+			c.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
 		}
 	}
 	return

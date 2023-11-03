@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/matterfmt/parse"
 )
 
-func (s *Section) toEvents() (events []*matter.Event, err error) {
+func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap map[matter.TableColumn]int
@@ -43,7 +43,7 @@ func (s *Section) toEvents() (events []*matter.Event, err error) {
 		if err != nil {
 			return
 		}
-		e.Access = matter.ParseAccess(a)
+		e.Access = ParseAccess(a)
 		events = append(events, e)
 
 		eventMap[e.Name] = e
@@ -71,7 +71,7 @@ func (s *Section) toEvents() (events []*matter.Event, err error) {
 				err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
 				return
 			}
-			e.Fields, err = readFields(headerRowIndex, rows, columnMap)
+			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
 		}
 	}
 	return

@@ -23,6 +23,10 @@ type Doc struct {
 	Elements []interface{}
 
 	docType matter.DocType
+
+	Domain matter.Domain
+
+	anchors map[string]*Anchor
 }
 
 func NewDoc(d *types.Document) (*Doc, error) {
@@ -121,11 +125,19 @@ func (d *Doc) Footnotes() []*types.Footnote {
 
 func (d *Doc) ToModel() (models []interface{}, err error) {
 	dt, err := d.DocType()
+
+	crossReferences := d.CrossReferences()
+
+	d.anchors, err = d.Anchors(crossReferences)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, top := range parse.Skim[*Section](d.Elements) {
 		AssignSectionTypes(dt, top)
 
 		var m []interface{}
-		m, err = top.ToModels()
+		m, err = top.ToModels(d)
 		if err != nil {
 			return
 		}

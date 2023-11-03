@@ -2,43 +2,97 @@ package zcl
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/parse"
 )
 
-func renderDataTypes(cluster *matter.Cluster, cx *etree.Element, errata *errata) {
-	clusterID := cluster.ID
-	cid, err := parse.ID(cluster.ID)
-	if err == nil {
-		clusterID = fmt.Sprintf("%#04x", cid)
+var matterToZapMap = map[string]string{
+	"bool":        "boolean",
+	"uint8":       "INT8U",
+	"uint16":      "INT16U",
+	"uint32":      "INT32U",
+	"uint64":      "INT64U",
+	"enum8":       "ENUM8",
+	"enum16":      "ENUM16",
+	"enum32":      "ENUM32",
+	"map8":        "BITMAP8",
+	"map16":       "BITMAP16",
+	"map32":       "BITMAP32",
+	"string":      "CHAR_STRING",
+	"octstr":      "OCTET_STRING",
+	"elapsed-s":   "elapsed_s",
+	"epoch-s":     "epoch_s",
+	"epoch-us":    "epoch_us",
+	"fabric-idx":  "fabric_idx",
+	"node-id":     "NODE_ID",
+	"vendor-id":   "VENDOR_ID",
+	"group-id":    "group_id",
+	"endpoint-id": "endpoint_id",
+}
+
+var zapToMatterMap map[string]string
+
+func init() {
+	zapToMatterMap = make(map[string]string, len(matterToZapMap))
+	for k, v := range matterToZapMap {
+		zapToMatterMap[strings.ToLower(v)] = k
+	}
+}
+
+func ConvertDataTypeToZap(s string) string {
+	if z, ok := matterToZapMap[s]; ok {
+		return z
+	}
+	return s
+}
+
+func ConvertZapToDataType(s string) string {
+	if z, ok := zapToMatterMap[strings.ToLower(s)]; ok {
+		return z
+	}
+	return s
+}
+
+func renderDataTypes(dataTypes []interface{}, clusters []*matter.Cluster, cx *etree.Element, errata *errata) {
+	var clusterIDs []string
+	for _, cluster := range clusters {
+		id := cluster.ID
+		cid, err := parse.HexOrDec(id)
+		if err == nil {
+			id = fmt.Sprintf("%#04x", cid)
+		}
+		clusterIDs = append(clusterIDs, id)
 	}
 	for _, s := range errata.dataTypeOrder {
 		switch s {
 		case matter.SectionDataTypeBitmap:
-			renderBitmaps(cluster, cx, clusterID)
+			renderBitmaps(dataTypes, clusterIDs, cx)
 		case matter.SectionDataTypeEnum:
-			renderEnums(cluster, cx, clusterID)
+			renderEnums(dataTypes, clusterIDs, cx)
 		case matter.SectionDataTypeStruct:
-			renderStructs(cluster, cx, clusterID)
+			renderStructs(dataTypes, clusterIDs, cx)
 		}
 	}
 }
 
-func renderEnums(cluster *matter.Cluster, cx *etree.Element, clusterID string) {
-	for _, dt := range cluster.DataTypes {
+func renderEnums(dataTypes []interface{}, clusterIDs []string, cx *etree.Element) {
+	for _, dt := range dataTypes {
 		switch v := dt.(type) {
 		case *matter.Enum:
 			en := cx.CreateElement("enum")
 			en.CreateAttr("name", v.Name)
-			en.CreateAttr("type", massageDataType(v.Type))
-			en.CreateElement("cluster").CreateAttr("code", clusterID)
+			en.CreateAttr("type", ConvertDataTypeToZap(v.Type))
+			for _, cid := range clusterIDs {
+				en.CreateElement("cluster").CreateAttr("code", cid)
+			}
 			for _, ev := range v.Values {
 				evx := en.CreateElement("item")
 				evx.CreateAttr("name", ev.Name)
 				val := ev.Value
-				valNum, err := parse.ID(val)
+				valNum, err := parse.HexOrDec(val)
 				if err == nil {
 					val = fmt.Sprintf("%#02x", valNum)
 				}
@@ -49,18 +103,20 @@ func renderEnums(cluster *matter.Cluster, cx *etree.Element, clusterID string) {
 	}
 }
 
-func renderBitmaps(cluster *matter.Cluster, cx *etree.Element, clusterID string) {
-	for _, dt := range cluster.DataTypes {
+func renderBitmaps(dataTypes []interface{}, clusterIDs []string, cx *etree.Element) {
+	for _, dt := range dataTypes {
 		switch v := dt.(type) {
 
 		case *matter.Bitmap:
 			en := cx.CreateElement("bitmap")
 			name := matter.StripDataTypeSuffixes(v.Name)
 			en.CreateAttr("name", name)
-			en.CreateAttr("type", massageDataType(v.Type))
-			en.CreateElement("cluster").CreateAttr("code", clusterID)
+			en.CreateAttr("type", ConvertDataTypeToZap(v.Type))
+			for _, cid := range clusterIDs {
+				en.CreateElement("cluster").CreateAttr("code", cid)
+			}
 			for _, ev := range v.Bits {
-				bit, err := parse.ID(ev.Bit)
+				bit, err := parse.HexOrDec(ev.Bit)
 				if err != nil {
 					continue
 				}
@@ -73,16 +129,21 @@ func renderBitmaps(cluster *matter.Cluster, cx *etree.Element, clusterID string)
 	}
 }
 
-func renderStructs(cluster *matter.Cluster, cx *etree.Element, clusterID string) {
-	for _, dt := range cluster.DataTypes {
+func renderStructs(dataTypes []interface{}, clusterIDs []string, cx *etree.Element) {
+	for _, dt := range dataTypes {
 		switch v := dt.(type) {
 
 		case *matter.Struct:
 			en := cx.CreateElement("struct")
 			en.CreateAttr("name", v.Name)
-			en.CreateElement("cluster").CreateAttr("code", clusterID)
+			for _, cid := range clusterIDs {
+				en.CreateElement("cluster").CreateAttr("code", cid)
+			}
 			for _, f := range v.Fields {
 				fx := en.CreateElement("item")
+				if f.Quality.Has(matter.QualityNullable) {
+					fx.CreateAttr("isNullable", "true")
+				}
 				fx.CreateAttr("name", f.Name)
 				writeDataType(fx, f.Type)
 			}
@@ -94,48 +155,11 @@ func writeDataType(x *etree.Element, dt *matter.DataType) {
 	if dt == nil {
 		return
 	}
-	dts := massageDataType(dt.Name)
+	dts := ConvertDataTypeToZap(dt.Name)
 	if dt.IsArray {
 		x.CreateAttr("type", "ARRAY")
 		x.CreateAttr("entryType", dts)
 	} else {
 		x.CreateAttr("type", dts)
 	}
-}
-func massageDataType(s string) string {
-	switch s {
-	case "uint8":
-		return "INT8U"
-	case "uint16":
-		return "INT16U"
-	case "uint32":
-		return "INT32U"
-	case "fabric-idx":
-		return "fabric_idx"
-	case "node-id":
-		return "NODE_ID"
-	case "bool":
-		return "boolean"
-	case "string":
-		return "CHAR_STRING"
-	case "octstr":
-		return "OCTET_STRING"
-	case "vendor-id":
-		return "VENDOR_ID"
-	case "group-id":
-		return "group_id"
-	case "enum8":
-		return "ENUM8"
-	case "enum16":
-		return "ENUM16"
-	case "enum32":
-		return "ENUM32"
-	case "map8":
-		return "BITMAP8"
-	case "map16":
-		return "BITMAP16"
-	case "map32":
-		return "BITMAP32"
-	}
-	return s
 }

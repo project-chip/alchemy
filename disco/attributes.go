@@ -76,26 +76,9 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap 
 		if e != nil {
 			continue
 		}
-		access := matter.ParseAccess(vc)
-		if len(access) > 0 {
-			var out strings.Builder
-			for _, ac := range matter.AccessCategoryOrder {
-				a, ok := access[ac]
-				if !ok {
-					continue
-				}
-				if ac == matter.AccessCategoryReadWrite && a == "R*W" { // fix deprecated form
-					a = "R[W]"
-				}
-				if out.Len() > 0 {
-					out.WriteRune(' ')
-				}
-				out.WriteString(a)
-			}
-			err = setCellString(cell, out.String())
-			if err != nil {
-				return
-			}
+		err = setCellString(cell, ascii.AccessToAsciiString(ascii.ParseAccess(vc)))
+		if err != nil {
+			return
 		}
 	}
 	return

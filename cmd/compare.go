@@ -2,22 +2,15 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
-	"sync"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
-	"github.com/hasty/matterfmt/render/zcl"
-	"github.com/iancoleman/strcase"
+	"github.com/hasty/matterfmt/zap"
 )
 
-type zclRenderer struct {
+type zclConparer struct {
 	processor
 	asciiParser
 
@@ -25,8 +18,8 @@ type zclRenderer struct {
 	dryRun bool
 }
 
-func ZCL(cxt context.Context, specRoot string, zclRoot string, options ...Option) error {
-	z := &zclRenderer{}
+func Compare(cxt context.Context, specRoot string, zclRoot string, options ...Option) error {
+	z := &zclConparer{}
 	for _, o := range options {
 		err := o(z)
 		if err != nil {
@@ -36,8 +29,37 @@ func ZCL(cxt context.Context, specRoot string, zclRoot string, options ...Option
 	return z.run(cxt, specRoot, zclRoot)
 }
 
-func (z *zclRenderer) run(cxt context.Context, specRoot string, zclRoot string) error {
-	var appClusterPaths []string
+func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) error {
+
+	zapPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip/*.xml")
+	xmlFiles, err := filepath.Glob(zapPath)
+	if err != nil {
+		return err
+	}
+	for _, f := range xmlFiles {
+		fmt.Printf("ZAP file: %s\n", f)
+		/*_, err = zap.Read(f)
+		if err != nil {
+			return err
+		}*/
+		file, err := os.Open(f)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		var models []any
+		models, err = zap.Parse(file)
+		if err != nil {
+			return err
+		}
+		encoder := json.NewEncoder(os.Stdout)
+		//encoder.SetIndent("", "\t")
+		err = encoder.Encode(models)
+		if err != nil {
+			return err
+		}
+	}
+	/*var appClusterPaths []string
 	var appClusterIndexPaths []string
 	filepath.WalkDir(specRoot, func(path string, d fs.DirEntry, err error) error {
 		if filepath.Ext(path) == ".adoc" {
@@ -135,55 +157,6 @@ func (z *zclRenderer) run(cxt context.Context, specRoot string, zclRoot string) 
 				return err
 			}
 		}
-	}
+	}*/
 	return nil
-}
-
-func getZCLName(name string) string {
-	switch name {
-	case "OnOff":
-		name = "onoff"
-	case "Mode_Laundry":
-		name = "laundry washer mode"
-	case "LaundryWasherControls":
-		name = "Washer Controls"
-	case "Scenes":
-		return "scene"
-	case "ThreadBorderRouterDiagnostics":
-		return "thread-network-diagnostics-cluster"
-	case "WindowCovering":
-		return "window-covering"
-	case "RefrigeratorAlarm":
-		return "refrigerator-alarm"
-	case "OperationalState_RVC":
-		name = "Operational State RVC"
-	case "PumpConfigurationControl":
-		name = "PumpConfigurationAndControl"
-	case "ContentLauncher":
-		name = "Content Launch"
-	case "Mode_RVCClean":
-		name = "RVC Clean Mode"
-	case "Mode_RVCRun":
-		name = "RVC Run Mode"
-	case "Mode_Dishwasher":
-		name = "Dishwasher Mode"
-	}
-	return strcase.ToKebab(name + " Cluster")
-}
-
-func getDomain(name string) matter.Domain {
-	switch name {
-	case "Home Appliances":
-		name = "Appliances"
-	case "Measurement and Sensing":
-		name = "Measurement & Sensing"
-	}
-	var domain matter.Domain
-	for d, dn := range matter.DomainNames {
-		if dn == name {
-			domain = d
-			break
-		}
-	}
-	return domain
 }

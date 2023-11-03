@@ -5,19 +5,21 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/matterfmt/ascii"
 	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/parse"
 	"github.com/iancoleman/strcase"
 )
 
-func renderCluster(cxt context.Context, cluster *matter.Cluster, w *etree.Element, errata *errata) error {
+func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster, w *etree.Element, errata *errata) error {
 
 	cx := w.CreateElement("cluster")
-	dom := cx.CreateElement("domain")
-	dom.SetText("General")
 	cx.CreateElement("name").SetText(cluster.Name)
+	dom := cx.CreateElement("domain")
+	domainName := matter.DomainNames[doc.Domain]
+	dom.SetText(domainName)
 	code := cx.CreateElement("code")
-	id, err := parse.ID(cluster.ID)
+	id, err := parse.HexOrDec(cluster.ID)
 	if err == nil {
 		code.SetText(fmt.Sprintf("%#04x", id))
 	} else {
@@ -51,7 +53,7 @@ func renderCluster(cxt context.Context, cluster *matter.Cluster, w *etree.Elemen
 		case matter.SectionAttributes:
 			renderAttributes(cluster, cx, clusterPrefix, errata)
 		case matter.SectionCommands:
-			renderCommands(cluster, cx)
+			renderCommands(cluster, cx, errata)
 		case matter.SectionEvents:
 			renderEvents(cluster, cx)
 		}
@@ -60,21 +62,26 @@ func renderCluster(cxt context.Context, cluster *matter.Cluster, w *etree.Elemen
 	return nil
 }
 
-func renderFeatures(cxt context.Context, cluster *matter.Cluster, w *etree.Element, errata *errata) {
-	id := cluster.ID
-	cid, err := parse.ID(id)
-	if err == nil {
-		id = fmt.Sprintf("%#04x", cid)
-	}
-	if len(cluster.Features) == 0 {
+func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []*matter.Cluster, w *etree.Element, errata *errata) {
+	if len(features) == 0 {
 		return
 	}
 	fb := w.CreateElement("bitmap")
 	fb.CreateAttr("name", "Feature")
 	fb.CreateAttr("type", "BITMAP32")
-	fb.CreateElement("cluster").CreateAttr("code", id)
-	for _, f := range cluster.Features {
-		bit, err := parse.ID(f.Bit)
+	for _, cluster := range clusters {
+		id := cluster.ID
+		cid, err := parse.HexOrDec(id)
+		if err == nil {
+			id = fmt.Sprintf("%#04x", cid)
+		}
+		fb.CreateElement("cluster").CreateAttr("code", id)
+	}
+	for _, f := range features {
+		if f.Conformance == "Zigbee" {
+			continue
+		}
+		bit, err := parse.HexOrDec(f.Bit)
 		if err != nil {
 			continue
 		}

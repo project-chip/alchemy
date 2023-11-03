@@ -75,3 +75,15 @@ func DumpAscii(d bool) Option {
 		}
 	}
 }
+
+func DumpJSON(d bool) Option {
+	return func(o interface{}) error {
+		switch v := o.(type) {
+		case *dumper:
+			v.dumpJSON = d
+			return nil
+		default:
+			return fmt.Errorf("invalid option for %T", o)
+		}
+	}
+}

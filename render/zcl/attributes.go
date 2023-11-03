@@ -20,9 +20,8 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 			continue
 		}
 		mandatory := (a.Conformance == "M")
-		readAccess, writeAccess, _, _, _ := matter.ParseAccessValues(a.Access)
 
-		id, err := parse.ID(a.ID)
+		id, err := parse.HexOrDec(a.ID)
 		if err != nil {
 			continue
 		}
@@ -45,35 +44,27 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 			attr.CreateAttr("reportable", "true")
 		}
 		if a.Default != "" {
-			def, err := parse.ID(a.Default)
-			if err == nil {
-				attr.CreateAttr("default", strconv.Itoa(int(def)))
+			switch a.Default {
+			case "null":
+				switch a.Type.Name {
+				case "uint8":
+					attr.CreateAttr("default", "0xFF")
+				case "uint16":
+					attr.CreateAttr("default", "0xFFFF")
+				case "uint32":
+					attr.CreateAttr("default", "0xFFFFFFFF")
+				case "uint64":
+					attr.CreateAttr("default", "0xFFFFFFFFFFFFFFFF")
+				}
+			default:
+				def, err := parse.HexOrDec(a.Default)
+				if err == nil {
+					attr.CreateAttr("default", strconv.Itoa(int(def)))
+				}
 			}
 		}
-		if a.Quality.Has(matter.QualityFixed) || readAccess == "V" && writeAccess == "" || errata.suppressAttributePermissions {
-			if writeAccess != "" {
-				attr.CreateAttr("writeable", "true")
-			} else {
-				attr.CreateAttr("writeable", "false")
-
-			}
-			attr.SetText(a.Name)
-		} else {
-			attr.CreateElement("description").SetText(a.Name)
-			if readAccess != "" {
-				ax := attr.CreateElement("access")
-				ax.CreateAttr("op", "read")
-				ax.CreateAttr("privilege", renderAccess(readAccess))
-			}
-			if writeAccess != "" {
-				ax := attr.CreateElement("access")
-				ax.CreateAttr("op", "write")
-				ax.CreateAttr("privilege", renderAccess(writeAccess))
-				attr.CreateAttr("writeable", "true")
-			} else {
-				attr.CreateAttr("writeable", "false")
-			}
-		}
+		renderConstraint(a.Constraint, errata, attr)
+		renderAttributeAccess(a, errata, attr)
 		if a.Conformance != "M" {
 			attr.CreateAttr("optional", "true")
 		} else {
@@ -83,18 +74,63 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 	}
 }
 
-func renderAccess(a string) string {
+func renderConstraint(a matter.Constraint, errata *errata, attr *etree.Element) {
+	switch c := a.(type) {
+	case *matter.RangeConstraint:
+		attr.CreateAttr("min", c.Min.ZCLString())
+		attr.CreateAttr("max", c.Max.ZCLString())
+	case *matter.MinConstraint:
+		attr.CreateAttr("min", c.Min.ZCLString())
+	case *matter.MaxConstraint:
+		attr.CreateAttr("min", c.Max.ZCLString())
+	case *matter.MaxLengthConstraint:
+		attr.CreateAttr("length", c.Length.ZCLString())
+	case *matter.MinLengthConstraint:
+		attr.CreateAttr("minLength", c.Length.ZCLString())
+	case *matter.LengthRangeConstraint:
+		attr.CreateAttr("length", c.Max.ZCLString())
+		attr.CreateAttr("minLength", c.Min.ZCLString())
+	}
+}
+
+func renderAttributeAccess(a *matter.Field, errata *errata, attr *etree.Element) {
+	if a.Quality.Has(matter.QualityFixed) || a.Access.Read == matter.PrivilegeView && a.Access.Write == matter.PrivilegeUnknown || errata.suppressAttributePermissions {
+		if a.Access.Write != matter.PrivilegeUnknown {
+			attr.CreateAttr("writeable", "true")
+		} else {
+			attr.CreateAttr("writeable", "false")
+		}
+		attr.SetText(a.Name)
+	} else {
+		attr.CreateElement("description").SetText(a.Name)
+		if a.Access.Read != matter.PrivilegeUnknown {
+			ax := attr.CreateElement("access")
+			ax.CreateAttr("op", "read")
+			ax.CreateAttr("privilege", renderPrivilege(a.Access.Read))
+		}
+		if a.Access.Write != matter.PrivilegeUnknown {
+			ax := attr.CreateElement("access")
+			ax.CreateAttr("op", "write")
+			ax.CreateAttr("privilege", renderPrivilege(a.Access.Write))
+			attr.CreateAttr("writeable", "true")
+		} else {
+			attr.CreateAttr("writeable", "false")
+		}
+	}
+}
+
+func renderPrivilege(a matter.Privilege) string {
 	switch a {
-	case "V":
+	case matter.PrivilegeView:
 		return "view"
-	case "M":
+	case matter.PrivilegeManage:
 		return "manage"
-	case "A":
+	case matter.PrivilegeAdminister:
 		return "administer"
-	case "O":
+	case matter.PrivilegeOperate:
 		return "operate"
 	default:
-		return a
+		return ""
 	}
 }
 
