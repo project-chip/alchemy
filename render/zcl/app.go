@@ -32,7 +32,7 @@ func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{},
 			}
 		case matter.SectionDataTypes:
 			if len(clusters) > 0 {
-				renderDataTypes(clusters[0].DataTypes, clusters, w, errata)
+				renderDataTypes(clusters[0], clusters, w, errata)
 			}
 
 		case matter.SectionFeatures:

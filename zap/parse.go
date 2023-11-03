@@ -103,6 +103,10 @@ func ignore(d *xml.Decoder, name string) (err error) {
 }
 
 func readConfigurator(d *xml.Decoder) (models []any, err error) {
+	enums := make(map[string][]*matter.Enum)
+	bitmaps := make(map[string][]*matter.Bitmap)
+	structs := make(map[string][]*matter.Struct)
+	clusters := make(map[string]*matter.Cluster)
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
@@ -119,27 +123,40 @@ func readConfigurator(d *xml.Decoder) (models []any, err error) {
 				var cluster *matter.Cluster
 				cluster, err = readCluster(d, t)
 				if err == nil {
+					clusters[cluster.ID] = cluster
 					models = append(models, cluster)
 				}
 			case "domain":
 				_, err = readSimpleElement(d, t.Name.Local)
 			case "enum":
 				var en *matter.Enum
-				en, err = readEnum(d, t)
+				var clusterIDs []string
+				en, clusterIDs, err = readEnum(d, t)
 				if err == nil {
-					models = append(models, en)
+					for _, cid := range clusterIDs {
+						cid = strings.ToLower(cid)
+						enums[cid] = append(enums[cid], en)
+					}
 				}
 			case "struct":
 				var s *matter.Struct
-				s, err = readStruct(d, t)
+				var clusterIDs []string
+				s, clusterIDs, err = readStruct(d, t)
 				if err == nil {
-					models = append(models, s)
+					for _, cid := range clusterIDs {
+						cid = strings.ToLower(cid)
+						structs[cid] = append(structs[cid], s)
+					}
 				}
 			case "bitmap":
 				var bitmap *matter.Bitmap
-				bitmap, err = readBitmap(d, t)
+				var clusterIDs []string
+				bitmap, clusterIDs, err = readBitmap(d, t)
 				if err == nil {
-					models = append(models, bitmap)
+					for _, cid := range clusterIDs {
+						cid = strings.ToLower(cid)
+						bitmaps[cid] = append(bitmaps[cid], bitmap)
+					}
 				}
 			case "accessControl", "atomic", "clusterExtension", "global", "deviceType":
 				err = ignore(d, t.Name.Local)
@@ -149,6 +166,28 @@ func readConfigurator(d *xml.Decoder) (models []any, err error) {
 		case xml.EndElement:
 			switch t.Name.Local {
 			case "configurator":
+				for cid, b := range bitmaps {
+					if c, ok := clusters[cid]; ok {
+						c.Bitmaps = append(c.Bitmaps, b...)
+					} else {
+						fmt.Printf("orphan bitmaps: %s\n", cid)
+					}
+				}
+				for cid, e := range enums {
+					if c, ok := clusters[cid]; ok {
+						c.Enums = append(c.Enums, e...)
+					} else {
+						fmt.Printf("orphan enums: %s\n", cid)
+					}
+				}
+				for cid, s := range structs {
+					if c, ok := clusters[cid]; ok {
+						c.Structs = append(c.Structs, s...)
+					} else {
+						fmt.Printf("orphan structs: %s\n", cid)
+					}
+				}
+
 				return
 			default:
 				err = fmt.Errorf("unexpected configurator end element: %s", t.Name.Local)
@@ -211,7 +250,11 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 			case "name":
 				cluster.Name, err = readSimpleElement(d, t.Name.Local)
 			case "command":
-				err = readCommand(d, t)
+				var command *matter.Command
+				command, err = readCommand(d, t)
+				if err == nil {
+					cluster.Commands = append(cluster.Commands, command)
+				}
 			case "globalAttribute":
 				err = ignore(d, t.Name.Local)
 			default:
@@ -251,8 +294,8 @@ func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err 
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "access":
-				a := &matter.Access{}
-				err = readAccess(d, t, a)
+				a := matter.Access{}
+				err = readAccess(d, t, &a)
 			case "description":
 				_, err = readSimpleElement(d, t.Name.Local)
 			default:
@@ -436,10 +479,7 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "access":
-				if event.Access == nil {
-					event.Access = &matter.Access{}
-				}
-				err = readAccess(d, t, event.Access)
+				err = readAccess(d, t, &event.Access)
 			case "description":
 				event.Description, err = readSimpleElement(d, t.Name.Local)
 			case "field":
@@ -502,7 +542,7 @@ func readField(d *xml.Decoder, e xml.StartElement, name string) (field *matter.F
 }
 
 func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) error {
-	var max, min, length string
+	var max, min, length, minLength string
 	var fieldType, entryType string
 	var isArray bool
 	for _, a := range e.Attr {
@@ -512,9 +552,6 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 		case "name":
 			field.Name = a.Value
 		case "isFabricSensitive":
-			if field.Access == nil {
-				field.Access = &matter.Access{}
-			}
 			field.Access.FabricSensitive = a.Value == "true"
 		case "isNullable":
 			field.Quality |= matter.QualityNullable
@@ -528,7 +565,11 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 			entryType = a.Value
 		case "array":
 			isArray = (a.Value == "true")
-		case "length":
+		case "default":
+			field.Default = a.Value
+		case "length", "lenght": // Sigh
+			length = a.Value
+		case "minLength":
 			length = a.Value
 		case "optional":
 			if a.Value != "true" {
@@ -562,12 +603,16 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 	} else if len(min) > 0 {
 		field.Constraint = ascii.ParseConstraint(field.Type, fmt.Sprintf("min %s", min))
 	} else if len(length) > 0 {
-		field.Constraint = ascii.ParseConstraint(field.Type, fmt.Sprintf("max %s", length))
+		if len(minLength) > 0 {
+			field.Constraint = ascii.ParseConstraint(field.Type, fmt.Sprintf("%s to %s", minLength, length))
+		} else {
+			field.Constraint = ascii.ParseConstraint(field.Type, fmt.Sprintf("max %s", length))
+		}
 	}
 	return nil
 }
 
-func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, err error) {
+func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs []string, err error) {
 	en = &matter.Enum{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -576,7 +621,7 @@ func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, err error) {
 		case "type":
 			en.Type = zcl.ConvertZapToDataType(a.Value)
 		default:
-			return nil, fmt.Errorf("unexpected enum attribute: %s", a.Name.Local)
+			return nil, nil, fmt.Errorf("unexpected enum attribute: %s", a.Name.Local)
 		}
 	}
 	for {
@@ -603,7 +648,11 @@ func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, err error) {
 					en.Values = append(en.Values, ev)
 				}
 			case "cluster":
-				err = readClusterCode(d, t)
+				var cid string
+				cid, err = readClusterCode(d, t)
+				if err == nil {
+					clusterIDs = append(clusterIDs, cid)
+				}
 			default:
 				err = fmt.Errorf("unexpected enum level element: %s", t.Name.Local)
 			}
@@ -663,34 +712,36 @@ func readEnumItem(d *xml.Decoder, e xml.StartElement) (ev *matter.EnumValue, err
 	}
 }
 
-func readClusterCode(d *xml.Decoder, e xml.StartElement) (err error) {
+func readClusterCode(d *xml.Decoder, e xml.StartElement) (code string, err error) {
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "code":
+			code = a.Value
 		default:
-			return fmt.Errorf("unexpected cluster code attribute: %s", a.Name.Local)
+			return "", fmt.Errorf("unexpected cluster code attribute: %s", a.Name.Local)
 		}
 	}
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
 		if tok == nil || err == io.EOF {
-			return fmt.Errorf("EOF before end of cluster code")
+			err = fmt.Errorf("EOF before end of cluster code")
 
-		} else if err != nil {
+		}
+		if err != nil {
 			return
 		}
 		switch t := tok.(type) {
 		case xml.EndElement:
 			switch t.Name.Local {
 			case "cluster":
-				return nil
+				return
 			default:
-				return fmt.Errorf("unexpected cluster code end element: %s", t.Name.Local)
+				err = fmt.Errorf("unexpected cluster code end element: %s", t.Name.Local)
 			}
 		case xml.CharData:
 		default:
-			return fmt.Errorf("unexpected cluster code level type: %T", t)
+			err = fmt.Errorf("unexpected cluster code level type: %T", t)
 		}
 		if err != nil {
 			return
@@ -698,7 +749,7 @@ func readClusterCode(d *xml.Decoder, e xml.StartElement) (err error) {
 	}
 }
 
-func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, err error) {
+func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterIDs []string, err error) {
 	s = &matter.Struct{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -706,7 +757,7 @@ func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, err error
 			s.Name = a.Value
 		case "isFabricScoped":
 		default:
-			return nil, fmt.Errorf("unexpected struct attribute: %s", a.Name.Local)
+			return nil, nil, fmt.Errorf("unexpected struct attribute: %s", a.Name.Local)
 		}
 	}
 	for {
@@ -722,10 +773,11 @@ func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, err error
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "cluster":
-				err = readClusterCode(d, t)
-			/*case "access":
-			a := &matter.Access{}
-			err = readAccess(d, t, a)*/
+				var cid string
+				cid, err = readClusterCode(d, t)
+				if err == nil {
+					clusterIDs = append(clusterIDs, cid)
+				}
 			case "description":
 				s.Description, err = readSimpleElement(d, t.Name.Local)
 			case "item":
@@ -754,54 +806,69 @@ func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, err error
 	}
 }
 
-func readCommand(d *xml.Decoder, e xml.StartElement) (err error) {
+func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err error) {
+	c = &matter.Command{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "source":
+
 		case "code":
+			c.ID = a.Value
 		case "name":
+			c.Name = a.Value
 		case "isFabricScoped":
+			c.IsFabricScoped = a.Value == "true"
 		case "optional":
+			if a.Value == "false" {
+				c.Conformance = "M"
+			}
 		case "response":
+			c.Response = a.Value
 		case "mustUseTimedInvoke":
+			c.Access.Timed = a.Value == "true"
 		case "cli":
 		case "disableDefaultResponse":
+			c.Response = "N"
 		case "apiMaturity":
 		default:
-			return fmt.Errorf("unexpected command attribute: %s", a.Name.Local)
+			return nil, fmt.Errorf("unexpected command attribute: %s", a.Name.Local)
 		}
 	}
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
 		if tok == nil || err == io.EOF {
-			return fmt.Errorf("EOF before end of command")
-		} else if err != nil {
+			err = fmt.Errorf("EOF before end of command")
+		}
+		if err != nil {
 			return
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "access":
-				a := &matter.Access{}
-				err = readAccess(d, t, a)
+				err = readAccess(d, t, &c.Access)
 			case "description":
 				_, err = readSimpleElement(d, t.Name.Local)
 			case "arg":
-				err = readArg(d, t)
+				var f *matter.Field
+				f, err = readField(d, t, "arg")
+				if err != nil {
+					c.Fields = append(c.Fields, f)
+				}
 			default:
-				return fmt.Errorf("unexpected command level element: %s", t.Name.Local)
+				err = fmt.Errorf("unexpected command level element: %s", t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {
 			case "command":
-				return nil
+				return
 			default:
-				return fmt.Errorf("unexpected command end element: %s", t.Name.Local)
+				err = fmt.Errorf("unexpected command end element: %s", t.Name.Local)
 			}
 		case xml.CharData:
 		default:
-			return fmt.Errorf("unexpected command level type: %T", t)
+			err = fmt.Errorf("unexpected command level type: %T", t)
 		}
 		if err != nil {
 			return
@@ -853,7 +920,7 @@ func readArg(d *xml.Decoder, e xml.StartElement) (err error) {
 	}
 }
 
-func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, err error) {
+func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clusterIDs []string, err error) {
 	bitmap = &matter.Bitmap{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -863,7 +930,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, err 
 			bitmap.Type = zcl.ConvertZapToDataType(a.Value)
 		case "apiMaturity":
 		default:
-			return nil, fmt.Errorf("unexpected bitmap attribute: %s", a.Name.Local)
+			return nil, nil, fmt.Errorf("unexpected bitmap attribute: %s", a.Name.Local)
 		}
 	}
 	for {
@@ -879,7 +946,11 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, err 
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "cluster":
-				err = readClusterCode(d, t)
+				var cid string
+				cid, err = readClusterCode(d, t)
+				if err == nil {
+					clusterIDs = append(clusterIDs, cid)
+				}
 			case "description":
 				bitmap.Description, err = readSimpleElement(d, t.Name.Local)
 			case "field":

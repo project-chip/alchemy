@@ -22,17 +22,16 @@ func getAccessSchemaColumnValues(tableName string, access interface{}) []interfa
 	s, ok := access.(string)
 	if ok {
 		a := ascii.ParseAccess(s)
-		if a != nil {
-			readAccess = int8(a.Read)
-			writeAccess = int8(a.Write)
-			invokeAccess = int8(a.Invoke)
-			if a.FabricScoped {
-				fabricScoped = 1
-			}
-			if a.FabricSensitive {
-				fabricSensitive = 1
-			}
+		readAccess = int8(a.Read)
+		writeAccess = int8(a.Write)
+		invokeAccess = int8(a.Invoke)
+		if a.FabricScoped {
+			fabricScoped = 1
 		}
+		if a.FabricSensitive {
+			fabricSensitive = 1
+		}
+
 	}
 	return []interface{}{readAccess, writeAccess, invokeAccess, fabricScoped, fabricSensitive, timed}
 }

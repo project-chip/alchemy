@@ -203,13 +203,13 @@ func (config *XMLConfigurator) ToModels() (models []interface{}, err error) {
 			return
 		}
 		for _, b := range bitmaps {
-			mc.DataTypes = append(mc.DataTypes, b)
+			mc.Bitmaps = append(mc.Bitmaps, b)
 		}
 		for _, e := range enums {
-			mc.DataTypes = append(mc.DataTypes, e)
+			mc.Enums = append(mc.Enums, e)
 		}
 		for _, s := range structs {
-			mc.DataTypes = append(mc.DataTypes, s)
+			mc.Structs = append(mc.Structs, s)
 		}
 		clusters = append(clusters, mc)
 	}

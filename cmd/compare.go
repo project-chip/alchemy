@@ -2,12 +2,19 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
+	"sync"
 
+	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/matterfmt/parse"
 	"github.com/hasty/matterfmt/zap"
+	"github.com/iancoleman/strcase"
 )
 
 type zclConparer struct {
@@ -36,6 +43,7 @@ func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) 
 	if err != nil {
 		return err
 	}
+	zapModels := make(map[string][]any)
 	for _, f := range xmlFiles {
 		fmt.Printf("ZAP file: %s\n", f)
 		/*_, err = zap.Read(f)
@@ -52,14 +60,15 @@ func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) 
 		if err != nil {
 			return err
 		}
-		encoder := json.NewEncoder(os.Stdout)
+		/*encoder := json.NewEncoder(os.Stdout)
 		//encoder.SetIndent("", "\t")
 		err = encoder.Encode(models)
 		if err != nil {
 			return err
-		}
+		}*/
+		zapModels[f] = models
 	}
-	/*var appClusterPaths []string
+	var appClusterPaths []string
 	var appClusterIndexPaths []string
 	filepath.WalkDir(specRoot, func(path string, d fs.DirEntry, err error) error {
 		if filepath.Ext(path) == ".adoc" {
@@ -79,7 +88,7 @@ func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) 
 
 	domains := make(map[string]matter.Domain)
 
-	err := z.processFiles(cxt, appClusterIndexPaths, func(cxt context.Context, file string, index, total int) error {
+	err = z.processFiles(cxt, appClusterIndexPaths, func(cxt context.Context, file string, index, total int) error {
 		fmt.Fprintf(os.Stderr, "ZCLing index %s (%d of %d)...\n", file, index, total)
 		doc, err := ascii.Open(file, z.settings...)
 		if err != nil {
@@ -113,7 +122,7 @@ func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) 
 		return err
 	}
 
-	outputs := make(map[string]*zcl.Result)
+	specModels := make(map[string][]any)
 	var lock sync.Mutex
 	err = z.processFiles(cxt, appClusterPaths, func(cxt context.Context, file string, index int, total int) error {
 		doc, err := ascii.Open(file, z.settings...)
@@ -125,38 +134,77 @@ func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) 
 		} else {
 			doc.Domain = matter.DomainCHIP
 		}
-		var result *zcl.Result
-		result, err = zcl.Render(cxt, doc)
+
+		models, err := doc.ToModel()
 		if err != nil {
-			err = fmt.Errorf("failed rendering %s: %w", file, err)
 			return err
 		}
 
 		fmt.Fprintf(os.Stderr, "ZCL'd %s (%d of %d)...\n", file, index, total)
+
+		newFile := filepath.Base(file)
+		newFile = getZCLName(strings.TrimSuffix(newFile, filepath.Ext(file)))
+		newFile = strcase.ToKebab(newFile)
+
+		newPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip", newFile+".xml")
+
 		lock.Lock()
-		outputs[file] = result
+		specModels[newPath] = models
 		lock.Unlock()
 		return nil
 	})
 	if err != nil {
 		return err
 	}
-	for path, result := range outputs {
-		if len(result.Models) == 0 {
+	for path, sm := range specModels {
+		zm, ok := zapModels[path]
+		if !ok {
+			fmt.Printf("path %s missing from ZAP models\n", path)
 			continue
 		}
+		fmt.Printf("path %s found in ZAP models\n", path)
 
-		newFile := filepath.Base(path)
-		newFile = getZCLName(strings.TrimSuffix(newFile, filepath.Ext(path)))
-		newFile = strcase.ToKebab(newFile)
-
-		newPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip", newFile+".xml")
-		if !z.dryRun {
-			err = os.WriteFile(newPath, []byte(result.ZCL), os.ModeAppend|0644)
-			if err != nil {
-				return err
+		specClusters := make(map[string]*matter.Cluster)
+		for _, m := range sm {
+			switch v := m.(type) {
+			case *matter.Cluster:
+				fmt.Printf("adding spec cluster: %s\n", v.ID)
+				specClusters[strings.ToLower(v.ID)] = v
+			default:
+				fmt.Printf("unexpected spec model: %T\n", m)
 			}
 		}
-	}*/
+		zapClusters := make(map[string]*matter.Cluster)
+		for _, m := range zm {
+			switch v := m.(type) {
+			case *matter.Cluster:
+				fmt.Printf("adding ZAP cluster: %s\n", v.ID)
+				zapClusters[strings.ToLower(v.ID)] = v
+			default:
+				fmt.Printf("unexpected ZAP model: %T\n", m)
+			}
+
+		}
+		delete(zapModels, path)
+		for cid, sc := range specClusters {
+			if zc, ok := zapClusters[cid]; ok {
+				sc.Compare(zc)
+				delete(zapClusters, cid)
+			} else {
+				fmt.Printf("ZAP cluster %s missing from %s; ", cid, path)
+				for zid := range zapClusters {
+					fmt.Printf("have %s,", zid)
+				}
+				fmt.Println()
+			}
+		}
+		for cid := range zapClusters {
+			fmt.Printf("Spec cluster %s missing from %s\n", cid, path)
+		}
+	}
+
+	for path := range zapModels {
+		fmt.Printf("path %s missing from Spec models\n", path)
+	}
 	return nil
 }

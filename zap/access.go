@@ -14,8 +14,8 @@ type XMLAccess struct {
 	Modifier  string   `xml:"modifier,attr"`
 }
 
-func ToAccessModel(xas []XMLAccess) *matter.Access {
-	a := &matter.Access{}
+func ToAccessModel(xas []XMLAccess) matter.Access {
+	a := matter.Access{}
 	for _, xa := range xas {
 		p := parsePrivilege(xa.Privilege)
 		if p == matter.PrivilegeUnknown {

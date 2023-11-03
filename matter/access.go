@@ -60,3 +60,28 @@ type Access struct {
 
 	Timed bool `json:"timed,omitempty"`
 }
+
+func (a Access) Equal(oa Access) bool {
+	if a.Read != oa.Read {
+		return false
+	}
+	if a.Write != oa.Write {
+		return false
+	}
+	if a.Invoke != oa.Invoke {
+		return false
+	}
+	if a.OptionalWrite != oa.OptionalWrite {
+		return false
+	}
+	if a.FabricScoped != oa.FabricScoped {
+		return false
+	}
+	if a.FabricSensitive != oa.FabricSensitive {
+		return false
+	}
+	if a.Timed != oa.Timed {
+		return false
+	}
+	return true
+}
