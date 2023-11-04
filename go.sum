@@ -224,6 +224,8 @@ github.com/mitchellh/mapstructure v0.0.0-20160808181253-ca63d7c062ee/go.mod h1:F
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/mna/pigeon v1.1.0 h1:EjlvVbkGnNGemf8OrjeJX0nH8orujY/HkJgzJtd7kxc=
 github.com/mna/pigeon v1.1.0/go.mod h1:rkFeDZ0gc+YbnrXPw0q2RlI0QRuKBBPu67fgYIyGRNg=
+github.com/mna/pigeon v1.2.1 h1:m5FxEbGdQxLaiHF+QurbWUAjmRqd5cstjIPN89svYgg=
+github.com/mna/pigeon v1.2.1/go.mod h1:BUZAoRldTdU7Ac3WYkXy8hzIHfCgj1doJxGjlB+AbLI=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
