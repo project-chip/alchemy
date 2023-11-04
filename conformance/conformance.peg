@@ -1,0 +1,198 @@
+{
+package conformance
+
+import (
+    "fmt"
+    "strconv"
+)
+
+}
+
+Input <- conf:Conformance+  {
+    cs := conf.([]interface{})
+
+    if len(cs) == 1 {
+        return cs[0].(Conformance), nil
+    }
+    oc := &OtherwiseConformance{}
+    for _, i := range cs {
+        con := i.(Conformance)
+        oc.Conformances = append(oc.Conformances, con)
+    }
+    return oc, nil
+}
+
+Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
+    con := i.(Conformance)
+    o := &ChoiceIdentifier{Conformance:con}
+    if choice != nil {
+        o.Choice = choice.(*Choice)
+    }
+    return o, nil   
+} / 'M'  _ Comma? _ {
+    return &Mandatory{}, nil
+} / 'O' choice:Choice?  _ Comma? _ {
+    o := &Optional{}
+    if choice != nil {
+        o.Choice = choice.(*Choice)
+    }
+    return o, nil
+} / 'P'  _ Comma? _ {
+    return &Provisional{}, nil
+} / 'D'  _ Comma? _ {
+    return &Deprecated{}, nil
+} / 'X'  _ Comma? _ {
+    return &Disallowed{}, nil
+} / id:Equality _ Comma? _ {
+    return id, nil
+}
+
+Equality <- _ left:Logical right:EqualsOp* _ {
+    leftc := left.(Conformance)
+    if right != nil {
+        equalityOps := right.([]interface{}) 
+        if len(equalityOps) > 0 {
+            var ec *EqualityConformance
+            for _, equalityOp := range equalityOps {
+                ec = equalityOp.(*EqualityConformance) 
+                ec.Left = leftc
+                leftc = ec
+            }
+            return ec, nil
+        }
+    }
+    return left, nil
+}
+
+Logical <- _ left:FeatureTerm _ right:LogicalOp* _ {
+    leftc := left.(Conformance)
+    if right != nil {
+        logicalOps := right.([]interface{})
+        if len(logicalOps) > 0 {
+            var lc *LogicalConformance
+            for _, logicalOp := range logicalOps {
+                lc = logicalOp.(*LogicalConformance) 
+                lc.Left = leftc
+                leftc = lc
+            }
+            return lc, nil
+        }
+    }
+    return left, nil
+} 
+
+LogicalOperators <- ("|" / "&" / "^") {
+    return c.text, nil
+}
+
+LogicalOp <- _ logical:LogicalOperators _ f:FeatureTerm {
+    fc := f.(Conformance)
+    return &LogicalConformance{
+        Operand: string(logical.([]uint8)),
+        Right:fc,
+    }, nil
+}
+
+EqualsOp <- _ equals:("=="/"!=") _ f:Logical {
+    fc := f.(Conformance)
+    return &EqualityConformance{
+        Not: (string(equals.([]uint8)) == "!="),
+        Right:fc,
+    }, nil
+}
+
+FeatureTerm <- '(' _  eq:Equality _ ')' {
+    return eq, nil
+} / feature:IdentifierOp {
+    return feature, nil 
+}
+
+IdentifierOp <- not:'!'? identifier:Identifier {
+    id := identifier.(string)
+    switch id {
+        case "O", "M", "P":
+            return nil, fmt.Errorf("invalid optional conformance value: %s", id)
+    }
+    ic := &IdentifierConformance{ID:id}
+    if not != nil {
+        ic.Not = true
+    }
+    return ic, nil
+}
+
+Identifier <- [A-Z]+ {
+    return string(c.text), nil
+}
+
+ChoiceRange <- lower:Integer '-' upper:Integer {
+    minVal := lower.(int)
+    if minVal <= 0 {
+        return nil, fmt.Errorf("invalid minimum: %d", minVal)
+    } 
+    maxVal := upper.(int)
+    if maxVal <= 0  && minVal > maxVal {
+        return nil, fmt.Errorf("invalid maximum: %d", maxVal)
+    } 
+    return &ChoiceRangeLimit{Min:minVal, Max:maxVal}, nil
+}
+
+ChoiceMin <- limit:Integer? '+' {
+    if limit == nil {
+        return &ChoiceMinLimit{Min:1}, nil
+    }
+    minVal := limit.(int)
+    if minVal <= 0 {
+        return nil, fmt.Errorf("invalid minimum: %d", minVal)
+    }    
+    return &ChoiceMinLimit{Min:minVal}, nil
+}
+
+ChoiceMax <- limit:Integer? '-' {
+     if limit == nil {
+        return &ChoiceMaxLimit{Max:1}, nil
+    }
+    maxVal := limit.(int)
+    if maxVal <= 0 {
+        return nil, fmt.Errorf("invalid maximum: %d", maxVal)
+    } 
+    return &ChoiceMaxLimit{Max:maxVal}, nil
+}
+
+ChoiceExact <- limit:Integer {
+    exact := limit.(int)
+    if exact <= 0 {
+        return nil, fmt.Errorf("invalid exact: %d", exact)
+    } 
+    return &ChoiceExactLimit{Limit:exact}, nil
+}
+
+ChoiceLimit <- limit:(ChoiceRange / ChoiceMin / ChoiceMax / ChoiceExact) {
+    return limit.(ChoiceLimit), nil
+}
+
+Set <- [a-z]+ {
+    return string(c.text), nil
+}
+
+Choice <- '.' set:Set limit:ChoiceLimit? {
+    choice := &Choice{Set:set.(string)}
+    if limit != nil {
+        switch v := limit.(type) {
+            case ChoiceLimit:
+            choice.Limit = v
+            default:
+            return nil, fmt.Errorf("unexpected choice limit type: %T", limit)
+        }
+    }
+    return choice, nil
+}
+
+Integer <- ([0-9]+) {
+        return strconv.Atoi(string(c.text))
+    }
+
+_ "whitespace" ← [ \t\r\n]*
+
+Comma <- ',' 
+
+EOF ← !.

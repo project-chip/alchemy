@@ -34,6 +34,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/lestrrat-go/strftime v1.0.4 // indirect
 	github.com/mitchellh/hashstructure v1.1.0 // indirect
+	github.com/mna/pigeon v1.2.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
