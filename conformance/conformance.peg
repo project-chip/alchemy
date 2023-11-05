@@ -4,6 +4,8 @@ package conformance
 import (
     "fmt"
     "strconv"
+
+    "github.com/hasty/matterfmt/matter"
 )
 
 }
@@ -12,73 +14,76 @@ Input <- conf:Conformance+  {
     cs := conf.([]interface{})
 
     if len(cs) == 1 {
-        return cs[0].(Conformance), nil
+        return cs[0].(matter.Conformance), nil
     }
     oc := &OtherwiseConformance{}
     for _, i := range cs {
-        con := i.(Conformance)
+        con := i.(matter.Conformance)
         oc.Conformances = append(oc.Conformances, con)
     }
     return oc, nil
 }
 
 Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
-    con := i.(Conformance)
-    o := &ChoiceIdentifier{Conformance:con}
+    exp := i.(ConformanceExpression)
+    o := &OptionalConformance{Expression:exp}
     if choice != nil {
         o.Choice = choice.(*Choice)
     }
     return o, nil   
 } / 'M'  _ Comma? _ {
-    return &Mandatory{}, nil
+    return &MandatoryConformance{}, nil
 } / 'O' choice:Choice?  _ Comma? _ {
-    o := &Optional{}
+    o := &OptionalConformance{}
     if choice != nil {
         o.Choice = choice.(*Choice)
     }
     return o, nil
 } / 'P'  _ Comma? _ {
-    return &Provisional{}, nil
+    return &ProvisionalConformance{}, nil
 } / 'D'  _ Comma? _ {
-    return &Deprecated{}, nil
+    return &DeprecatedConformance{}, nil
 } / 'X'  _ Comma? _ {
-    return &Disallowed{}, nil
-} / id:Equality _ Comma? _ {
-    return id, nil
+    return &DisallowedConformance{}, nil
+} / eq:Equality _ Comma? _ {
+    exp := eq.(ConformanceExpression)
+    return &MandatoryConformance{Expression:exp}, nil
 }
 
 Equality <- _ left:Logical right:EqualsOp* _ {
-    leftc := left.(Conformance)
-    if right != nil {
-        equalityOps := right.([]interface{}) 
-        if len(equalityOps) > 0 {
-            var ec *EqualityConformance
-            for _, equalityOp := range equalityOps {
-                ec = equalityOp.(*EqualityConformance) 
-                ec.Left = leftc
-                leftc = ec
-            }
-            return ec, nil
-        }
+    if right == nil {
+        return left, nil
     }
-    return left, nil
+    equalityOps := right.([]interface{}) 
+    if len(equalityOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(ConformanceExpression)
+    var ee *EqualityExpression
+    for _, equalityOp := range equalityOps {
+        ee = equalityOp.(*EqualityExpression) 
+        ee.Left = leftCE
+        leftCE = ee
+    }
+    return ee, nil
 }
 
 Logical <- _ left:FeatureTerm _ right:LogicalOp* _ {
-    leftc := left.(Conformance)
-    if right != nil {
-        logicalOps := right.([]interface{})
-        if len(logicalOps) > 0 {
-            var lc *LogicalConformance
-            for _, logicalOp := range logicalOps {
-                lc = logicalOp.(*LogicalConformance) 
-                lc.Left = leftc
-                leftc = lc
-            }
-            return lc, nil
-        }
+    if right == nil {
+        return left, nil
     }
-    return left, nil
+    logicalOps := right.([]interface{})
+    if len(logicalOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(ConformanceExpression)
+    var le *LogicalExpression
+    for _, logicalOp := range logicalOps {
+        le = logicalOp.(*LogicalExpression) 
+        le.Left = leftCE
+        leftCE = le
+    }
+    return le, nil
 } 
 
 LogicalOperators <- ("|" / "&" / "^") {
@@ -86,16 +91,16 @@ LogicalOperators <- ("|" / "&" / "^") {
 }
 
 LogicalOp <- _ logical:LogicalOperators _ f:FeatureTerm {
-    fc := f.(Conformance)
-    return &LogicalConformance{
+    fc := f.(ConformanceExpression)
+    return &LogicalExpression{
         Operand: string(logical.([]uint8)),
         Right:fc,
     }, nil
 }
 
 EqualsOp <- _ equals:("=="/"!=") _ f:Logical {
-    fc := f.(Conformance)
-    return &EqualityConformance{
+    fc := f.(ConformanceExpression)
+    return &EqualityExpression{
         Not: (string(equals.([]uint8)) == "!="),
         Right:fc,
     }, nil
@@ -113,7 +118,7 @@ IdentifierOp <- not:'!'? identifier:Identifier {
         case "O", "M", "P":
             return nil, fmt.Errorf("invalid optional conformance value: %s", id)
     }
-    ic := &IdentifierConformance{ID:id}
+    ic := &IdentifierExpression{ID:id}
     if not != nil {
         ic.Not = true
     }
