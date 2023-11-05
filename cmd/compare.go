@@ -2,19 +2,8 @@ package cmd
 
 import (
 	"context"
-	"fmt"
-	"io/fs"
-	"os"
-	"path/filepath"
-	"strings"
-	"sync"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
-	"github.com/hasty/matterfmt/zap"
-	"github.com/iancoleman/strcase"
+	"github.com/hasty/matterfmt/compare"
 )
 
 type zclConparer struct {
@@ -33,11 +22,13 @@ func Compare(cxt context.Context, specRoot string, zclRoot string, options ...Op
 			return err
 		}
 	}
-	return z.run(cxt, specRoot, zclRoot)
+	return compare.Compare(cxt, specRoot, zclRoot, z.settings)
 }
 
+/*
 func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) error {
 
+	return
 	zapPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip/*.xml")
 	xmlFiles, err := filepath.Glob(zapPath)
 	if err != nil {
@@ -46,10 +37,7 @@ func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) 
 	zapModels := make(map[string][]any)
 	for _, f := range xmlFiles {
 		fmt.Printf("ZAP file: %s\n", f)
-		/*_, err = zap.Read(f)
-		if err != nil {
-			return err
-		}*/
+
 		file, err := os.Open(f)
 		if err != nil {
 			return err
@@ -60,12 +48,6 @@ func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) 
 		if err != nil {
 			return err
 		}
-		/*encoder := json.NewEncoder(os.Stdout)
-		//encoder.SetIndent("", "\t")
-		err = encoder.Encode(models)
-		if err != nil {
-			return err
-		}*/
 		zapModels[f] = models
 	}
 	var appClusterPaths []string
@@ -143,7 +125,7 @@ func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) 
 		fmt.Fprintf(os.Stderr, "ZCL'd %s (%d of %d)...\n", file, index, total)
 
 		newFile := filepath.Base(file)
-		newFile = getZCLName(strings.TrimSuffix(newFile, filepath.Ext(file)))
+		newFile = zap.ZAPName(strings.TrimSuffix(newFile, filepath.Ext(file)))
 		newFile = strcase.ToKebab(newFile)
 
 		newPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip", newFile+".xml")
@@ -208,3 +190,4 @@ func (z *zclConparer) run(cxt context.Context, specRoot string, zclRoot string) 
 	}
 	return nil
 }
+*/

@@ -257,6 +257,8 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 				}
 			case "globalAttribute":
 				err = ignore(d, t.Name.Local)
+			case "tag":
+				_, err = readTag(d, t)
 			default:
 				err = fmt.Errorf("unexpected cluster level element: %s", t.Name.Local)
 			}
@@ -309,6 +311,7 @@ func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err 
 				err = fmt.Errorf("unexpected attribute end element: %s", t.Name.Local)
 			}
 		case xml.CharData:
+			attr.Name = string(t)
 		default:
 			err = fmt.Errorf("unexpected attribute level type: %T", t)
 		}
@@ -830,6 +833,9 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 		case "disableDefaultResponse":
 			c.Response = "N"
 		case "apiMaturity":
+		case "cliFunctionName":
+		case "noDefaultImplementation":
+
 		default:
 			return nil, fmt.Errorf("unexpected command attribute: %s", a.Name.Local)
 		}
@@ -876,43 +882,38 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 	}
 }
 
-func readArg(d *xml.Decoder, e xml.StartElement) (err error) {
+func readTag(d *xml.Decoder, e xml.StartElement) (c *matter.Feature, err error) {
+	c = &matter.Feature{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "name":
-		case "length", "lenght":
-		case "minLength":
-		case "type":
-		case "entryType":
-		case "min":
-		case "max":
-		case "optional":
-		case "array":
-		case "default":
-		case "isNullable":
+			c.Name = a.Value
+		case "description":
+			c.Description = a.Value
 		default:
-			return fmt.Errorf("unexpected arg attribute: %s", a.Name.Local)
+			return nil, fmt.Errorf("unexpected tag attribute: %s", a.Name.Local)
 		}
 	}
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
 		if tok == nil || err == io.EOF {
-			return fmt.Errorf("EOF before end of arg")
-		} else if err != nil {
+			err = fmt.Errorf("EOF before end of field")
+		}
+		if err != nil {
 			return
 		}
 		switch t := tok.(type) {
 		case xml.EndElement:
 			switch t.Name.Local {
-			case "arg":
-				return nil
+			case "tag":
+				return
 			default:
-				return fmt.Errorf("unexpected arg end element: %s", t.Name.Local)
+				err = fmt.Errorf("unexpected tag end element: %s", t.Name.Local)
 			}
 		case xml.CharData:
 		default:
-			return fmt.Errorf("unexpected arg level type: %T", t)
+			err = fmt.Errorf("unexpected tag level type: %T", t)
 		}
 		if err != nil {
 			return
@@ -955,7 +956,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 				bitmap.Description, err = readSimpleElement(d, t.Name.Local)
 			case "field":
 				var bit *matter.BitmapValue
-				bit, err = readBitmapField(d, t)
+				bit, err = readBitmapField(bitmap, d, t)
 				if err == nil {
 					bitmap.Bits = append(bitmap.Bits, bit)
 				}
@@ -979,7 +980,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 	}
 }
 
-func readBitmapField(d *xml.Decoder, e xml.StartElement) (bv *matter.BitmapValue, err error) {
+func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) (bv *matter.BitmapValue, err error) {
 	bv = &matter.BitmapValue{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -991,19 +992,45 @@ func readBitmapField(d *xml.Decoder, e xml.StartElement) (bv *matter.BitmapValue
 			if err != nil {
 				return
 			}
-			bit := 0
-			for mask > 0 {
-				if (mask & 1) == 1 {
-					if mask > 1 {
-						err = fmt.Errorf("non-power of 2 mask: %s", a.Value)
-						return
+			startBit := -1
+			endBit := -1
+
+			var maxBit int
+			switch bitmap.Type {
+			case "map8":
+				maxBit = 8
+			case "map16":
+				maxBit = 16
+			case "map32":
+				maxBit = 32
+			case "map64":
+				maxBit = 64
+			default:
+				err = fmt.Errorf("unknown bitmap type: %s", bitmap.Type)
+				return
+			}
+			for offset := 0; offset < maxBit; offset++ {
+				if mask&(1<<offset) == 1 {
+					if startBit == -1 {
+						startBit = offset
+					} else {
+						endBit = offset
+					}
+				} else if startBit >= 0 {
+					if endBit == -1 {
+						endBit = startBit
 					}
 					break
 				}
-				bit++
-				mask >>= 1
 			}
-			bv.Bit = strconv.Itoa(bit)
+
+			if startBit >= 0 {
+				if startBit != endBit {
+					bv.Bit = fmt.Sprintf("%d..%d", startBit, endBit)
+				} else {
+					bv.Bit = strconv.Itoa(startBit)
+				}
+			}
 		case "optional":
 			if a.Value != "true" {
 				bv.Conformance = "M"

@@ -6,6 +6,7 @@ import (
 
 	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/parse"
+	"github.com/iancoleman/strcase"
 )
 
 type XMLCluster struct {
@@ -52,4 +53,36 @@ func (c *XMLCluster) ToModel() (mc *matter.Cluster, err error) {
 	}
 
 	return
+}
+
+func ZAPName(name string) string {
+	switch name {
+	case "OnOff":
+		name = "onoff"
+	case "Mode_Laundry":
+		name = "laundry washer mode"
+	case "LaundryWasherControls":
+		name = "Washer Controls"
+	case "Scenes":
+		return "scene"
+	case "ThreadBorderRouterDiagnostics":
+		return "thread-network-diagnostics-cluster"
+	case "WindowCovering":
+		return "window-covering"
+	case "RefrigeratorAlarm":
+		return "refrigerator-alarm"
+	case "OperationalState_RVC":
+		name = "Operational State RVC"
+	case "PumpConfigurationControl":
+		name = "PumpConfigurationAndControl"
+	case "ContentLauncher":
+		name = "Content Launch"
+	case "Mode_RVCClean":
+		name = "RVC Clean Mode"
+	case "Mode_RVCRun":
+		name = "RVC Run Mode"
+	case "Mode_Dishwasher":
+		name = "Dishwasher Mode"
+	}
+	return strcase.ToKebab(name + " Cluster")
 }

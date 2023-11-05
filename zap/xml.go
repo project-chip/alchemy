@@ -150,20 +150,6 @@ type XMLConfigurator struct {
 	Globals           []XMLGlobal           `xml:"global"`
 	AccessControl     []XMLAccessControl    `xml:"accessControl"`
 	DefaultAccess     []XMLDefaultAccess    `xml:"defaultAccess"`
-
-	/*
-			<xs:complexType>
-		      <xs:sequence>
-		        <xs:choice>
-		          <xs:element ref="callback"/>
-		          <xs:element minOccurs="0" maxOccurs="unbounded" ref="deviceType"/>
-		        </xs:choice>
-		        <xs:choice minOccurs="0" maxOccurs="unbounded">
-		          <xs:element ref="atomic"/>
-		        </xs:choice>
-		      </xs:sequence>
-		    </xs:complexType>
-	*/
 }
 
 func (config *XMLConfigurator) ToModels() (models []interface{}, err error) {

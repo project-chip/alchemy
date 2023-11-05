@@ -36,23 +36,48 @@ func (b *XMLBitmap) ToModel() (mb *matter.Bitmap, err error) {
 		if err != nil {
 			return
 		}
-		bit := 0
-		for mask > 0 {
-			if (mask & 1) == 1 {
-				if mask > 1 {
-					err = fmt.Errorf("non-power of 2 mask: %s", bi.Mask)
-					return
+
+		startBit := -1
+		endBit := -1
+
+		var maxBit int
+		switch mb.Type {
+		case "map8":
+			maxBit = 8
+		case "map16":
+			maxBit = 16
+		case "map32":
+			maxBit = 32
+		case "map64":
+			maxBit = 64
+		}
+		for offset := 0; offset < maxBit; offset++ {
+			if mask&(1<<offset) == 1 {
+				if startBit == -1 {
+					startBit = offset
+				} else {
+					endBit = offset
+				}
+			} else if startBit >= 0 {
+				if endBit == -1 {
+					endBit = startBit
 				}
 				break
 			}
-			bit++
-			mask >>= 1
 		}
 
-		mb.Bits = append(mb.Bits, &matter.BitmapValue{
-			Name: bi.Name,
-			Bit:  strconv.Itoa(bit),
-		})
+		if startBit >= 0 {
+			bv := &matter.BitmapValue{
+				Name: bi.Name,
+			}
+			if startBit != endBit {
+				bv.Bit = fmt.Sprintf("%d..%d", startBit, endBit)
+			} else {
+				bv.Bit = strconv.Itoa(startBit)
+			}
+			mb.Bits = append(mb.Bits, bv)
+
+		}
 	}
 	return
 }

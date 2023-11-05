@@ -29,6 +29,10 @@ func main() {
 
 	var attributes cli.StringSlice
 
+	var dbAddress = "localhost"
+	var dbPort = 3306
+	var dbRaw bool
+
 	formatAction := func(cCtx *cli.Context) error {
 		options := []cmd.Option{
 			cmd.Serial(serial),
@@ -143,10 +147,30 @@ func main() {
 			{
 				Name:  "db",
 				Usage: "just format Matter documents",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:        "address",
+						Usage:       "the address to host the database server on",
+						Destination: &dbAddress,
+					},
+					&cli.IntFlag{
+						Name:        "port",
+						Usage:       "the port to run the database server on",
+						Destination: &dbPort,
+					},
+					&cli.BoolFlag{
+						Name:        "raw",
+						Usage:       "parse the sections directly, bypassing model building",
+						Destination: &dbRaw,
+					},
+				},
 				Action: func(cCtx *cli.Context) error {
 					options := []cmd.Option{
 						cmd.Serial(serial),
 						cmd.AsciiAttributes(attributes.Value()),
+						cmd.DBAddress(dbAddress),
+						cmd.DBPort(dbPort),
+						cmd.DBRaw(dbRaw),
 					}
 					return cmd.Database(cxt, cCtx.Args().Slice(), options...)
 				},

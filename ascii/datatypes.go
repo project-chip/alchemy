@@ -109,9 +109,15 @@ func (s *Section) toBitmap() (e *matter.Bitmap, err error) {
 		if err != nil {
 			return
 		}
-		bv.Bit, err = readRowValue(row, columnMap, matter.TableColumnValue)
+		bv.Bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
 		if err != nil {
 			return
+		}
+		if len(bv.Bit) == 0 {
+			bv.Bit, err = readRowValue(row, columnMap, matter.TableColumnValue)
+			if err != nil {
+				return
+			}
 		}
 		e.Bits = append(e.Bits, bv)
 	}
@@ -198,19 +204,32 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 		return nil
 	}
 	if len(p.Elements) == 0 {
+		fmt.Printf("empty paragraph")
 		return nil
 	}
 	val := &matter.DataType{}
 	if len(p.Elements) == 1 {
-		se, ok := p.Elements[0].(*types.StringElement)
-		if ok {
-			match := listDataTypeDefinitionPattern.FindStringSubmatch(se.Content)
+		el := p.Elements[0]
+		switch v := el.(type) {
+		case *types.StringElement:
+			match := listDataTypeDefinitionPattern.FindStringSubmatch(v.Content)
 			if match != nil {
 				val.Name = match[1]
 				val.IsArray = true
 			} else {
-				val.Name = se.Content
+				val.Name = v.Content
 			}
+		case *types.InternalCrossReference:
+			anchor, ok := d.anchors[v.ID.(string)]
+			if ok {
+				//				fmt.Printf("type anchor: %v %T\n", anchor.Element, anchor.Element)
+				val.Name = ReferenceName(anchor.Element)
+			} else {
+				val.Name = v.ID.(string)
+			}
+			break
+		default:
+			fmt.Printf("unknown value element: %T\n", el)
 		}
 	} else {
 		for _, el := range p.Elements {
@@ -221,7 +240,7 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 				} else if val.Name == "" {
 					anchor, ok := d.anchors[v.Content]
 					if ok {
-						fmt.Printf("array anchor: %v\n", anchor.Element)
+						//fmt.Printf("array anchor: %v\n", anchor.Element)
 						val.Name = ReferenceName(anchor.Element)
 					} else {
 						val.Name = v.Content
@@ -230,13 +249,14 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 			case *types.InternalCrossReference:
 				anchor, ok := d.anchors[v.ID.(string)]
 				if ok {
-					fmt.Printf("type anchor: %v %T\n", anchor.Element, anchor.Element)
+					//fmt.Printf("type anchor: %v %T\n", anchor.Element, anchor.Element)
 					val.Name = ReferenceName(anchor.Element)
 				} else {
 					val.Name = v.ID.(string)
 				}
 				break
 			default:
+				fmt.Printf("unknown value element: %T\n", el)
 				slog.Info("unknown value element", "type", v)
 			}
 		}

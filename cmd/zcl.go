@@ -14,6 +14,7 @@ import (
 	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/parse"
 	"github.com/hasty/matterfmt/render/zcl"
+	"github.com/hasty/matterfmt/zap"
 	"github.com/iancoleman/strcase"
 )
 
@@ -69,7 +70,7 @@ func (z *zclRenderer) run(cxt context.Context, specRoot string, zclRoot string) 
 			return nil
 		}
 
-		domain := getDomain(top.Name)
+		domain := zap.StringToDomain(top.Name)
 		fmt.Printf("Index Name: %s domain: %v\n", top.Name, domain)
 
 		parse.Search[*types.Section](top.Base.Elements, func(t *types.Section) bool {
@@ -125,7 +126,7 @@ func (z *zclRenderer) run(cxt context.Context, specRoot string, zclRoot string) 
 		}
 
 		newFile := filepath.Base(path)
-		newFile = getZCLName(strings.TrimSuffix(newFile, filepath.Ext(path)))
+		newFile = zap.ZAPName(strings.TrimSuffix(newFile, filepath.Ext(path)))
 		newFile = strcase.ToKebab(newFile)
 
 		newPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip", newFile+".xml")
@@ -137,53 +138,4 @@ func (z *zclRenderer) run(cxt context.Context, specRoot string, zclRoot string) 
 		}
 	}
 	return nil
-}
-
-func getZCLName(name string) string {
-	switch name {
-	case "OnOff":
-		name = "onoff"
-	case "Mode_Laundry":
-		name = "laundry washer mode"
-	case "LaundryWasherControls":
-		name = "Washer Controls"
-	case "Scenes":
-		return "scene"
-	case "ThreadBorderRouterDiagnostics":
-		return "thread-network-diagnostics-cluster"
-	case "WindowCovering":
-		return "window-covering"
-	case "RefrigeratorAlarm":
-		return "refrigerator-alarm"
-	case "OperationalState_RVC":
-		name = "Operational State RVC"
-	case "PumpConfigurationControl":
-		name = "PumpConfigurationAndControl"
-	case "ContentLauncher":
-		name = "Content Launch"
-	case "Mode_RVCClean":
-		name = "RVC Clean Mode"
-	case "Mode_RVCRun":
-		name = "RVC Run Mode"
-	case "Mode_Dishwasher":
-		name = "Dishwasher Mode"
-	}
-	return strcase.ToKebab(name + " Cluster")
-}
-
-func getDomain(name string) matter.Domain {
-	switch name {
-	case "Home Appliances":
-		name = "Appliances"
-	case "Measurement and Sensing":
-		name = "Measurement & Sensing"
-	}
-	var domain matter.Domain
-	for d, dn := range matter.DomainNames {
-		if dn == name {
-			domain = d
-			break
-		}
-	}
-	return domain
 }

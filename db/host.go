@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -29,9 +30,7 @@ type Host struct {
 }
 
 var (
-	dbName  = "MatterSpec"
-	address = "localhost"
-	port    = 3306
+	dbName = "MatterSpec"
 )
 
 type dbRowSet struct {
@@ -41,6 +40,10 @@ type dbRowSet struct {
 type dbRow struct {
 	values map[matter.TableColumn]interface{}
 	extras map[string]interface{}
+}
+
+func newDBRow() *dbRow {
+	return &dbRow{values: make(map[matter.TableColumn]interface{})}
 }
 
 type extraInfo struct {
@@ -67,7 +70,7 @@ func (h *Host) Load(doc *ascii.Doc) error {
 	return nil
 }
 
-func (h *Host) Run() error {
+func (h *Host) Run(address string, port int) error {
 	config := server.Config{
 		Protocol: "tcp",
 		Address:  fmt.Sprintf("%s:%d", address, port),
@@ -80,6 +83,7 @@ func (h *Host) Run() error {
 	if err != nil {
 		return err
 	}
+	fmt.Fprintf(os.Stderr, "Starting DB at %s:%d...", address, port)
 	if err = s.Start(); err != nil {
 		return err
 	}
