@@ -51,6 +51,7 @@ var tableSchema = map[string]tableSchemaDef{
 		parent: clusterTable,
 		columns: []matter.TableColumn{
 			matter.TableColumnName,
+			matter.TableColumnClass,
 			matter.TableColumnType,
 		},
 	},

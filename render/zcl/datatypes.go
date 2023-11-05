@@ -21,6 +21,7 @@ var matterToZapMap = map[string]string{
 	"map8":        "BITMAP8",
 	"map16":       "BITMAP16",
 	"map32":       "BITMAP32",
+	"map64":       "BITMAP64",
 	"string":      "CHAR_STRING",
 	"octstr":      "OCTET_STRING",
 	"elapsed-s":   "elapsed_s",
@@ -43,7 +44,7 @@ func init() {
 }
 
 func ConvertDataTypeToZap(s string) string {
-	if z, ok := matterToZapMap[s]; ok {
+	if z, ok := matterToZapMap[strings.ToLower(s)]; ok {
 		return z
 	}
 	return s

@@ -87,3 +87,39 @@ func DumpJSON(d bool) Option {
 		}
 	}
 }
+
+func DBRaw(raw bool) Option {
+	return func(o interface{}) error {
+		switch v := o.(type) {
+		case *databaseReader:
+			v.raw = raw
+			return nil
+		default:
+			return fmt.Errorf("invalid option for %T", o)
+		}
+	}
+}
+
+func DBAddress(address string) Option {
+	return func(o interface{}) error {
+		switch v := o.(type) {
+		case *databaseReader:
+			v.address = address
+			return nil
+		default:
+			return fmt.Errorf("invalid option for %T", o)
+		}
+	}
+}
+
+func DBPort(port int) Option {
+	return func(o interface{}) error {
+		switch v := o.(type) {
+		case *databaseReader:
+			v.port = port
+			return nil
+		default:
+			return fmt.Errorf("invalid option for %T", o)
+		}
+	}
+}

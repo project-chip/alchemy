@@ -6,12 +6,12 @@ import (
 	"github.com/dolthub/go-mysql-server/sql"
 )
 
-func (h *Host) Build(sc *sql.Context) error {
+func (h *Host) Build(sc *sql.Context, raw bool) error {
 	h.base = &sectionInfo{children: make(map[string][]*sectionInfo)}
 	var sis []*sectionInfo
 	for _, d := range h.docs {
 		slog.InfoContext(sc, "Indexing", "path", d.Path)
-		si, err := h.indexDoc(sc, d)
+		si, err := h.indexDoc(sc, d, raw)
 		if err != nil {
 			return err
 		}

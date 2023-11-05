@@ -98,7 +98,7 @@ func readClusterIDs(s *Section) ([]*matter.Cluster, error) {
 }
 
 func readClusterClassification(c *matter.Cluster, s *Section) error {
-	rows, headerRowIndex, columnMap, _, err := parseFirstTable(s)
+	rows, headerRowIndex, columnMap, extraColumns, err := parseFirstTable(s)
 	if err != nil {
 		return fmt.Errorf("failed reading classification: %w", err)
 	}
@@ -115,9 +115,31 @@ func readClusterClassification(c *matter.Cluster, s *Section) error {
 	if err != nil {
 		return err
 	}
+
 	c.PICS, err = readRowValue(row, columnMap, matter.TableColumnPICS)
 	if err != nil {
 		return err
+	}
+	for _, ec := range extraColumns {
+		switch ec.Name {
+		case "Context":
+			if len(c.Scope) == 0 {
+				c.Scope, err = GetTableCellValue(row.Cells[ec.Offset])
+			}
+		case "Primary Transaction":
+			if len(c.Scope) == 0 {
+				var pt string
+				pt, err = GetTableCellValue(row.Cells[ec.Offset])
+				if err == nil {
+					if strings.HasPrefix(pt, "Type 1") {
+						c.Scope = "Endpoint"
+					}
+				}
+			}
+		}
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

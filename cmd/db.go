@@ -13,6 +13,11 @@ import (
 type databaseReader struct {
 	processor
 	asciiParser
+
+	raw bool
+
+	address string
+	port    int
 }
 
 func Database(cxt context.Context, filepaths []string, options ...Option) error {
@@ -46,9 +51,9 @@ func (dbr *databaseReader) run(cxt context.Context, filepaths []string) error {
 	if err != nil {
 		return err
 	}
-	err = h.Build(sc)
+	err = h.Build(sc, dbr.raw)
 	if err != nil {
 		return err
 	}
-	return h.Run()
+	return h.Run("localhost", 3306)
 }

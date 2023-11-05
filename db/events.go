@@ -10,6 +10,23 @@ import (
 	"github.com/hasty/matterfmt/parse"
 )
 
+func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluster *matter.Cluster) error {
+	for _, e := range cluster.Events {
+		row := newDBRow()
+		row.values[matter.TableColumnID] = e.ID
+		row.values[matter.TableColumnName] = e.Name
+		row.values[matter.TableColumnPriority] = e.Priority
+		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(e.Access)
+		row.values[matter.TableColumnConformance] = e.Conformance
+		ei := &sectionInfo{id: h.nextId(eventTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
+		parent.children[eventTable] = append(parent.children[eventTable], ei)
+		for _, ef := range e.Fields {
+			h.readField(ef, ei, eventFieldTable)
+		}
+	}
+	return nil
+}
+
 func (h *Host) indexEvents(cxt context.Context, ci *sectionInfo, es *ascii.Section) error {
 	if ci.children == nil {
 		ci.children = make(map[string][]*sectionInfo)
