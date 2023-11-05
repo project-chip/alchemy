@@ -1,11 +1,15 @@
 package conformance
 
-import "strings"
+import (
+	"strings"
 
-func ParseConformance(conformance string, options ...interface{}) (Conformance, error) {
+	"github.com/hasty/matterfmt/matter"
+)
+
+func ParseConformance(conformance string, options ...interface{}) (matter.Conformance, error) {
 	c, err := ParseReader("", strings.NewReader(conformance))
 	if err != nil {
 		return nil, err
 	}
-	return c.(Conformance), nil
+	return c.(matter.Conformance), nil
 }
