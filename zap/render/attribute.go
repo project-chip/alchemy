@@ -2,8 +2,6 @@ package render
 
 import (
 	"encoding/xml"
-	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/hasty/alchemy/matter"
@@ -194,7 +192,6 @@ func (r *renderer) amendAttribute(ts *tokenSet, e xmlEncoder, el xml.StartElemen
 	}
 
 	if field == nil {
-		fmt.Fprintf(os.Stderr, "no matching attribute for %s\n", attributeID.HexString())
 		return writeThrough(ts, e, el)
 	}
 

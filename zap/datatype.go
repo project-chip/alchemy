@@ -11,7 +11,7 @@ var matterToZapMap = map[string]string{
 	"int8":        "int8s",
 	"int16":       "int16s",
 	"int32":       "int32s",
-	"int64":       "in64s",
+	"int64":       "int64s",
 	"enum8":       "enum8",
 	"enum16":      "enum16",
 	"enum32":      "enum32",

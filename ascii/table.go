@@ -187,6 +187,8 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnResponse
 	case "description":
 		return matter.TableColumnDescription
+	case "summary":
+		return matter.TableColumnSummary
 	}
 	return matter.TableColumnUnknown
 }

@@ -29,11 +29,11 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 			cx.CreateComment(fmt.Sprintf("Conformance feature %s - for now optional", a.Conformance))
 		}
 		attr := cx.CreateElement("attribute")
-		attr.CreateAttr("side", "server")
 		attr.CreateAttr("code", a.ID.HexString())
+		attr.CreateAttr("side", "server")
+		writeDataType(attr, a.Type)
 		define := GetDefine(a.Name, clusterPrefix, errata)
 		attr.CreateAttr("define", define)
-		writeDataType(attr, a.Type)
 		if a.Quality.Has(matter.QualityNullable) {
 			attr.CreateAttr("isNullable", "true")
 		} else {
@@ -62,7 +62,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 				}
 			}
 		}
-		renderConstraint(a.Constraint, errata, attr)
+		renderConstraint(a.Constraint, attr)
 		renderAttributeAccess(a, errata, attr)
 		if a.Conformance != "M" {
 			attr.CreateAttr("optional", "true")
@@ -73,7 +73,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 	}
 }
 
-func renderConstraint(a matter.Constraint, errata *Errata, attr *etree.Element) {
+func renderConstraint(a matter.Constraint, attr *etree.Element) {
 	switch c := a.(type) {
 	case *matter.RangeConstraint:
 		attr.CreateAttr("min", c.Min.ZCLString())
@@ -93,7 +93,7 @@ func renderConstraint(a matter.Constraint, errata *Errata, attr *etree.Element) 
 }
 
 func renderAttributeAccess(a *matter.Field, errata *Errata, attr *etree.Element) {
-	if a.Quality.Has(matter.QualityFixed) || a.Access.Read == matter.PrivilegeView && a.Access.Write == matter.PrivilegeUnknown || errata.SuppressAttributePermissions {
+	if a.Quality.Has(matter.QualityFixed) || (a.Access.Read == matter.PrivilegeUnknown || a.Access.Read == matter.PrivilegeView) && a.Access.Write == matter.PrivilegeUnknown || errata.SuppressAttributePermissions {
 		if a.Access.Write != matter.PrivilegeUnknown {
 			attr.CreateAttr("writable", "true")
 		} else {
@@ -101,7 +101,6 @@ func renderAttributeAccess(a *matter.Field, errata *Errata, attr *etree.Element)
 		}
 		attr.SetText(a.Name)
 	} else {
-		attr.CreateElement("description").SetText(a.Name)
 		if a.Access.Read != matter.PrivilegeUnknown {
 			ax := attr.CreateElement("access")
 			ax.CreateAttr("op", "read")
@@ -115,6 +114,7 @@ func renderAttributeAccess(a *matter.Field, errata *Errata, attr *etree.Element)
 		} else {
 			attr.CreateAttr("writable", "false")
 		}
+		attr.CreateElement("description").SetText(a.Name)
 	}
 }
 

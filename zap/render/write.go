@@ -53,7 +53,6 @@ func (le *loggingDecoder) Token() (xml.Token, error) {
 
 type xmlEncoder interface {
 	EncodeToken(t xml.Token) error
-	WriteNewline()
 	Close() error
 }
 
@@ -101,9 +100,9 @@ func (le *loggingEncoder) Close() error {
 }
 
 func Render(doc *ascii.Doc, r io.Reader, w io.Writer, models []any) (err error) {
-	d := &loggingDecoder{d: xml.NewDecoder(r)}
-	e := &loggingEncoder{e: xml.NewEncoder(w), w: w}
-	e.e.Indent("", "  ")
+	d := xml.NewDecoder(r)
+	e := xml.NewEncoder(w)
+	e.Indent("", "  ")
 
 	errata, ok := zcl.Erratas[filepath.Base(doc.Path)]
 	if !ok {

@@ -2,16 +2,13 @@ package render
 
 import (
 	"encoding/xml"
-	"fmt"
 	"io"
-	"os"
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/iancoleman/strcase"
 )
 
 func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement, clusters map[*matter.Cluster]struct{}) (err error) {
-	fmt.Fprintf(os.Stderr, "AMEEND cluster!\n")
 	var clusterTokens []xml.Token
 	clusterTokens, err = Extract(d, el)
 	if err != nil {
@@ -38,7 +35,6 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 
 	if clusterID == nil {
 		// Can't find cluster ID, so dump
-		fmt.Fprintf(os.Stderr, "UNKNOWN cluster!\n")
 		err = writeTokens(e, clusterTokens)
 		return
 	}
@@ -53,13 +49,10 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 
 	if cluster == nil {
 		// We don't have this cluster in the spec; leave it here for now
-		fmt.Fprintf(os.Stderr, "UNKNOWN cluster: %s\n", clusterID.IntString())
 
 		err = writeTokens(e, clusterTokens)
 		return
 	}
-
-	fmt.Fprintf(os.Stderr, "Matched cluster: %s\n", clusterID.IntString())
 
 	var define string
 	var clusterPrefix string
@@ -118,7 +111,6 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
-			fmt.Fprintf(os.Stderr, "cluster start element: %s\n", t.Name.Local)
 			switch t.Name.Local {
 			case "attribute":
 				if lastSection != matter.SectionAttribute {
@@ -157,7 +149,6 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 				lastSection = matter.SectionCluster
 				val, ok := clusterValues[t.Name.Local]
 				if ok {
-					fmt.Fprintf(os.Stderr, "queuing char data: %s\n", val)
 					nextCharData = val
 					hasCharDataPending = true
 					delete(clusterValues, t.Name.Local)
@@ -167,14 +158,11 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 				}
 			}
 		case xml.CharData:
-			fmt.Fprintf(os.Stderr, "cluster char data: %s\n", string(t))
 			if hasCharDataPending {
-				fmt.Fprintf(os.Stderr, "substituting char data: %s\n", nextCharData)
 				err = e.EncodeToken(xml.CharData(nextCharData))
 				hasCharDataPending = false
 			}
 		case xml.EndElement:
-			fmt.Fprintf(os.Stderr, "cluster end element: %s\n", t.Name.Local)
 			switch t.Name.Local {
 			case "attribute", "command", "event":
 			case "cluster":
@@ -203,7 +191,6 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 				}
 			}
 		default:
-			fmt.Fprintf(os.Stderr, "cluster token: %T\n", t)
 			err = e.EncodeToken(t)
 		}
 		if err != nil {

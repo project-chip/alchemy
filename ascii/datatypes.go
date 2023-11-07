@@ -9,6 +9,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
+	"github.com/iancoleman/strcase"
 )
 
 func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster) (err error) {
@@ -118,6 +119,9 @@ func (s *Section) toBitmap() (e *matter.Bitmap, err error) {
 			if err != nil {
 				return
 			}
+		}
+		if len(bv.Name) == 0 && len(bv.Summary) > 0 {
+			bv.Name = strcase.ToCamel(bv.Summary)
 		}
 		e.Bits = append(e.Bits, bv)
 	}

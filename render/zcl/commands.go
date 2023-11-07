@@ -1,20 +1,18 @@
 package zcl
 
 import (
-	"strings"
-
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
 )
 
 func renderCommands(cluster *matter.Cluster, cx *etree.Element, errata *Errata) {
 	for _, c := range cluster.Commands {
-		if !strings.HasSuffix(c.Name, "Response") {
+		if c.Direction == matter.CommandDirectionClientToServer {
 			renderCommand(c, cx, errata)
 		}
 	}
 	for _, c := range cluster.Commands {
-		if strings.HasSuffix(c.Name, "Response") {
+		if c.Direction == matter.CommandDirectionServerToClient {
 			renderCommand(c, cx, errata)
 		}
 	}
@@ -51,20 +49,24 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		cx.CreateAttr("mustUseTimedInvoke", "true")
 	}
 
-	cx.CreateElement("description").SetText(c.Description)
 	if c.Access.Invoke != matter.PrivilegeUnknown {
 		ax := cx.CreateElement("access")
 		ax.CreateAttr("op", "invoke")
 		ax.CreateAttr("role", renderPrivilege(c.Access.Invoke))
 	}
 	for _, f := range c.Fields {
+		if f.Conformance == "Zigbee" {
+			continue
+		}
 		fx := cx.CreateElement("arg")
 		mandatory := (f.Conformance == "M")
-		renderConstraint(f.Constraint, errata, fx)
+		renderConstraint(f.Constraint, fx)
 		fx.CreateAttr("name", f.Name)
-		writeDataType(fx, f.Type)
+		writeCommandDataType(fx, f.Type)
 		if !mandatory {
 			fx.CreateAttr("optional", "true")
 		}
+		renderConstraint(f.Constraint, fx)
 	}
+	cx.CreateElement("description").SetText(c.Description)
 }

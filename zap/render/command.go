@@ -2,8 +2,6 @@ package render
 
 import (
 	"encoding/xml"
-	"fmt"
-	"os"
 
 	"github.com/hasty/alchemy/matter"
 )
@@ -30,7 +28,6 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 	}
 
 	if matchingCommand == nil {
-		fmt.Fprintf(os.Stderr, "no matching command for %s\n", commandID.HexString())
 		return writeThrough(ts, e, el)
 	}
 
