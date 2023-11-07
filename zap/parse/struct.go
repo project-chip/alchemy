@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterIDs []*matter.ID, err error) {

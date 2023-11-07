@@ -1,6 +1,6 @@
 package zap
 
-import "github.com/hasty/matterfmt/matter"
+import "github.com/hasty/alchemy/matter"
 
 func StringToDomain(name string) matter.Domain {
 	switch name {

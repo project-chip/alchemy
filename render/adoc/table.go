@@ -6,7 +6,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/alchemy/output"
 )
 
 type table struct {

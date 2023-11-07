@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 	"github.com/iancoleman/strcase"
 )
 

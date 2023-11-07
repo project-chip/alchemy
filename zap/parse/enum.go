@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/zap"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/zap"
 )
 
 func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs []*matter.ID, err error) {

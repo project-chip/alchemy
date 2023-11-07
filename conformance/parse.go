@@ -3,7 +3,7 @@ package conformance
 import (
 	"strings"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func ParseConformance(conformance string, options ...interface{}) (matter.Conformance, error) {

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 type constraintPatternMatch uint8

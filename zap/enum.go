@@ -3,7 +3,7 @@ package zap
 import (
 	"encoding/xml"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 type XMLEnumItem struct {

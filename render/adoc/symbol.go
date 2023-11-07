@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/alchemy/output"
 )
 
 func renderQuotedText(cxt *output.Context, qt *types.QuotedText) (err error) {

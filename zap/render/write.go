@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/render/zcl"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/render/zcl"
 )
 
 type renderer struct {

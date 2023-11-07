@@ -7,8 +7,8 @@ import (
 	"unicode"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
 )
 
 func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 )
 
 type XMLBitmapItem struct {

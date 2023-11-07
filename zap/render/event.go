@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func (r *renderer) amendEvent(ts *tokenSet, e xmlEncoder, el xml.StartElement, events map[*matter.Event]struct{}) (err error) {

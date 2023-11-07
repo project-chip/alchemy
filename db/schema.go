@@ -1,6 +1,6 @@
 package db
 
-import "github.com/hasty/matterfmt/matter"
+import "github.com/hasty/alchemy/matter"
 
 var (
 	documentTable     = "document"

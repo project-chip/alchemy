@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	asciitypes "github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
 )
 
 type sectionInfo struct {

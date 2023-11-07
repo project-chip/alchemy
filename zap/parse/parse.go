@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func ZAP(r io.Reader) (models []any, err error) {

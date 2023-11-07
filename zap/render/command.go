@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement, commands map[*matter.Command]struct{}) (err error) {

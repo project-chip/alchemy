@@ -1,6 +1,6 @@
 package conformance
 
-import "github.com/hasty/matterfmt/matter"
+import "github.com/hasty/alchemy/matter"
 
 type ProvisionalConformance struct {
 }

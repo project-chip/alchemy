@@ -10,8 +10,8 @@ import (
 	sqle "github.com/dolthub/go-mysql-server"
 	"github.com/dolthub/go-mysql-server/memory"
 	"github.com/dolthub/go-mysql-server/server"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
 	"github.com/iancoleman/strcase"
 )
 

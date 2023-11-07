@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/output"
-	"github.com/hasty/matterfmt/parse"
-	"github.com/hasty/matterfmt/render/adoc"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/output"
+	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/render/adoc"
 )
 
 var NoTableFound = fmt.Errorf("no table found")

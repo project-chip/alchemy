@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err error) {

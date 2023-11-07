@@ -11,11 +11,11 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
-	"github.com/hasty/matterfmt/zap"
-	zparse "github.com/hasty/matterfmt/zap/parse"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/zap"
+	zparse "github.com/hasty/alchemy/zap/parse"
 	"github.com/iancoleman/strcase"
 )
 

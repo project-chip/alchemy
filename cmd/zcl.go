@@ -13,12 +13,12 @@ import (
 	"sync"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
-	"github.com/hasty/matterfmt/render/zcl"
-	"github.com/hasty/matterfmt/zap"
-	zaprender "github.com/hasty/matterfmt/zap/render"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/render/zcl"
+	"github.com/hasty/alchemy/zap"
+	zaprender "github.com/hasty/alchemy/zap/render"
 	"github.com/iancoleman/strcase"
 )
 

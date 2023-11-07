@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
-	"github.com/hasty/matterfmt/zap"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/zap"
 )
 
 func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *etree.Element, errata *Errata) {

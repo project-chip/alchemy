@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/hasty/matterfmt/cmd"
-	"github.com/hasty/matterfmt/disco"
+	"github.com/hasty/alchemy/cmd"
+	"github.com/hasty/alchemy/disco"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )

@@ -2,7 +2,7 @@ package ascii
 
 import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/render/adoc"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/render/adoc"
 )
 
 type formatter struct {

@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 	"github.com/iancoleman/strcase"
 )
 

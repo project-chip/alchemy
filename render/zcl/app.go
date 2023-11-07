@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
 )
 
 func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{}, w *etree.Element, errata *Errata) (err error) {

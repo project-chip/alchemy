@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/alchemy/output"
 )
 
 func renderDelimitedBlock(cxt *output.Context, db *types.DelimitedBlock) (err error) {

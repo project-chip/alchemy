@@ -8,8 +8,8 @@ import (
 	"sync/atomic"
 
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/output"
 	"golang.org/x/sync/errgroup"
 )
 

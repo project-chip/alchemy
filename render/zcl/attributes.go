@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 	"github.com/iancoleman/strcase"
 )
 
