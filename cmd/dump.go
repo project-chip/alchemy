@@ -38,7 +38,7 @@ func (d *dumper) run(cxt context.Context, filepaths []string) error {
 	}
 	for i, f := range files {
 		if len(files) > 0 {
-			fmt.Printf("Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
+			fmt.Fprintf(os.Stderr, "Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
 		}
 		doc, err := ascii.Open(f, d.settings...)
 		docType, err := doc.DocType()

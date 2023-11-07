@@ -151,7 +151,11 @@ func (d *Doc) ToModel() (models []interface{}, err error) {
 
 func Open(path string, settings ...configuration.Setting) (*Doc, error) {
 
-	baseConfig := []configuration.Setting{configuration.WithFilename(path)}
+	var commonAttributes = map[string]interface{}{
+		"env-github": true,
+	}
+
+	baseConfig := []configuration.Setting{configuration.WithFilename(path), configuration.WithAttributes(commonAttributes)}
 
 	baseConfig = append(baseConfig, settings...)
 

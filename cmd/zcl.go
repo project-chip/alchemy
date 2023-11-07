@@ -138,7 +138,6 @@ func (z *zclRenderer) run(cxt context.Context, specRoot string, zclRoot string) 
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(os.Stderr, "existing:%s \n", existing)
 			err = zaprender.Render(doc, bytes.NewReader(existing), &buf, models)
 			if err != nil {
 				return err

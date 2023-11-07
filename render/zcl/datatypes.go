@@ -35,6 +35,9 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
 		for _, ev := range v.Values {
+			if ev.Conformance == "Zigbee" {
+				continue
+			}
 			evx := en.CreateElement("item")
 			evx.CreateAttr("name", ev.Name)
 			val := ev.Value
@@ -49,21 +52,24 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 }
 
 func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Element) {
-	for _, v := range bitmaps {
+	for _, bm := range bitmaps {
 		en := cx.CreateElement("bitmap")
-		name := matter.StripDataTypeSuffixes(v.Name)
-		en.CreateAttr("name", name)
-		en.CreateAttr("type", zap.ConvertDataTypeToZap(v.Type))
+		en.CreateAttr("name", bm.Name)
+		en.CreateAttr("type", zap.ConvertDataTypeToZap(bm.Type))
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
-		for _, ev := range v.Bits {
-			bit, err := parse.HexOrDec(ev.Bit)
+		for _, bv := range bm.Bits {
+			if bv.Conformance == "Zigbee" {
+				continue
+			}
+
+			bit, err := parse.HexOrDec(bv.Bit)
 			if err != nil {
 				continue
 			}
-			evx := en.CreateElement("item")
-			evx.CreateAttr("name", ev.Name)
+			evx := en.CreateElement("field")
+			evx.CreateAttr("name", bv.Name)
 			evx.CreateAttr("value", fmt.Sprintf("%#02x", 1<<(bit-1)))
 		}
 
@@ -79,11 +85,15 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 		}
 		for _, f := range v.Fields {
 			fx := en.CreateElement("item")
+			fx.CreateAttr("name", f.Name)
+			writeDataType(fx, f.Type)
 			if f.Quality.Has(matter.QualityNullable) {
 				fx.CreateAttr("isNullable", "true")
 			}
-			fx.CreateAttr("name", f.Name)
-			writeDataType(fx, f.Type)
+			if f.Conformance != "M" {
+				fx.CreateAttr("optional", "true")
+			}
+			renderConstraint(f.Constraint, fx)
 		}
 
 	}
@@ -100,4 +110,15 @@ func writeDataType(x *etree.Element, dt *matter.DataType) {
 	} else {
 		x.CreateAttr("type", dts)
 	}
+}
+
+func writeCommandDataType(x *etree.Element, dt *matter.DataType) {
+	if dt == nil {
+		return
+	}
+	dts := zap.ConvertDataTypeToZap(dt.Name)
+	if dt.IsArray {
+		x.CreateAttr("array", "true")
+	}
+	x.CreateAttr("type", dts)
 }

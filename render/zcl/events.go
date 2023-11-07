@@ -11,10 +11,10 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 	for _, e := range cluster.Events {
 
 		ex := cx.CreateElement("event")
-		ex.CreateAttr("side", "server")
 		ex.CreateAttr("code", e.ID.HexString())
-		ex.CreateAttr("priority", strings.ToLower(e.Priority))
 		ex.CreateAttr("name", e.Name)
+		ex.CreateAttr("priority", strings.ToLower(e.Priority))
+		ex.CreateAttr("side", "server")
 		if e.Access.FabricSensitive {
 			ex.CreateAttr("isFabricSensitive", "true")
 		}
@@ -29,11 +29,14 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 
 		}
 		for _, f := range e.Fields {
+			if f.Conformance == "Zigbee" {
+				continue
+			}
 			if !f.ID.Valid() {
 				continue
 			}
 			fx := ex.CreateElement("field")
-			fx.CreateAttr("id", f.ID.IntString())
+			fx.CreateAttr("fieldId", f.ID.IntString())
 			fx.CreateAttr("name", f.Name)
 			writeDataType(fx, f.Type)
 		}
