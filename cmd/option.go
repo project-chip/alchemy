@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-	"github.com/hasty/matterfmt/disco"
+	"github.com/hasty/alchemy/disco"
 )
 
 type Option func(o interface{}) error

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func readConfigurator(d *xml.Decoder) (models []any, err error) {

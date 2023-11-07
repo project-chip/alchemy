@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/parse"
+	"github.com/hasty/alchemy/parse"
 )
 
 func (doc *Doc) CrossReferences() map[string][]*types.InternalCrossReference {

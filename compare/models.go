@@ -3,7 +3,7 @@ package compare
 import (
 	"fmt"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func compareModels(specModels map[string][]any, zapModels map[string][]any) (diffs []any, err error) {

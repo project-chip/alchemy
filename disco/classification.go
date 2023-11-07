@@ -5,8 +5,8 @@ import (
 	"log/slog"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
 )
 
 func (b *Ball) organizeClassificationSection(doc *ascii.Doc, section *ascii.Section) error {

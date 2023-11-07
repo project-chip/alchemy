@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 )
 
 type dumper struct {

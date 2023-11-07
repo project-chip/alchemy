@@ -1,6 +1,6 @@
 package zcl
 
-import "github.com/hasty/matterfmt/matter"
+import "github.com/hasty/alchemy/matter"
 
 var defaultOrder = []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents}
 

@@ -3,7 +3,7 @@ package compare
 import (
 	"fmt"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 type FieldDiffs struct {

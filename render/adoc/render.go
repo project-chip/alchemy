@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/alchemy/output"
 )
 
 func Render(cxt context.Context, doc output.InputDocument) (string, error) {

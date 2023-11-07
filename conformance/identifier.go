@@ -3,7 +3,7 @@ package conformance
 import (
 	"fmt"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 type IdentifierExpression struct {

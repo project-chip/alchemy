@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/output"
-	"github.com/hasty/matterfmt/parse"
+	"github.com/hasty/alchemy/output"
+	"github.com/hasty/alchemy/parse"
 )
 
 type Section interface {

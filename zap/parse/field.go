@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/zap"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/zap"
 )
 
 func readField(d *xml.Decoder, e xml.StartElement, name string) (field *matter.Field, err error) {

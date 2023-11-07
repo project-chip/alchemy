@@ -1,4 +1,4 @@
-module github.com/hasty/matterfmt
+module github.com/hasty/alchemy
 
 go 1.21
 

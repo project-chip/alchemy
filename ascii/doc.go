@@ -12,8 +12,8 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/parser"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 )
 
 type Doc struct {

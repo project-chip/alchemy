@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err error) {

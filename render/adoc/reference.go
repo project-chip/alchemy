@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/output"
+	"github.com/hasty/alchemy/output"
 )
 
 func renderInternalCrossReference(cxt *output.Context, cf *types.InternalCrossReference) (err error) {

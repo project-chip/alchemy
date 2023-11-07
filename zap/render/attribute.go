@@ -6,10 +6,10 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
-	"github.com/hasty/matterfmt/render/zcl"
-	"github.com/hasty/matterfmt/zap"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/render/zcl"
+	"github.com/hasty/alchemy/zap"
 )
 
 func writeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {

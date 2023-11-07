@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, err error) {

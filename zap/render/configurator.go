@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"io"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {

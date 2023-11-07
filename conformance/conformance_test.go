@@ -3,7 +3,7 @@ package conformance
 import (
 	"testing"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func TestOptional(t *testing.T) {

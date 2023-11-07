@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/hasty/matterfmt/compare"
+	"github.com/hasty/alchemy/compare"
 )
 
 type zclConparer struct {

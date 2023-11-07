@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func (s *Section) toFeatures() (features []*matter.Feature, err error) {

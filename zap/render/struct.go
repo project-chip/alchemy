@@ -3,7 +3,7 @@ package render
 import (
 	"encoding/xml"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string, structs map[*matter.Struct]struct{}) (err error) {

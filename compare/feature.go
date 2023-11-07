@@ -3,7 +3,7 @@ package compare
 import (
 	"strings"
 
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/matter"
 )
 
 type FeatureDiffs struct {

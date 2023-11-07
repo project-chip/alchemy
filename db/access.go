@@ -3,7 +3,7 @@ package db
 import (
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
-	"github.com/hasty/matterfmt/ascii"
+	"github.com/hasty/alchemy/ascii"
 )
 
 func getAccessSchemaColumns(tableName string) []*mms.Column {

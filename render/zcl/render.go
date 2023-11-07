@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/matter"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
 )
 
 type Result struct {

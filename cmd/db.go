@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/dolthub/go-mysql-server/sql"
-	"github.com/hasty/matterfmt/ascii"
-	"github.com/hasty/matterfmt/db"
+	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/db"
 )
 
 type databaseReader struct {
