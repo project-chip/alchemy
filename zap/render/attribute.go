@@ -86,22 +86,8 @@ func (r *renderer) writeAttribute(e xmlEncoder, el xml.StartElement, a *matter.F
 	} else {
 		el.Attr = removeAttribute(el.Attr, "default")
 	}
-	switch c := a.Constraint.(type) {
-	case *matter.RangeConstraint:
-		el.Attr = setAttributeValue(el.Attr, "min", c.Min.ZCLString())
-		el.Attr = setAttributeValue(el.Attr, "max", c.Max.ZCLString())
-	case *matter.MinConstraint:
-		el.Attr = setAttributeValue(el.Attr, "min", c.Min.ZCLString())
-	case *matter.MaxConstraint:
-		el.Attr = setAttributeValue(el.Attr, "max", c.Max.ZCLString())
-	case *matter.MaxLengthConstraint:
-		el.Attr = setAttributeValue(el.Attr, "length", c.Length.ZCLString())
-	case *matter.MinLengthConstraint:
-		el.Attr = setAttributeValue(el.Attr, "minLength", c.Length.ZCLString())
-	case *matter.LengthRangeConstraint:
-		el.Attr = setAttributeValue(el.Attr, "length", c.Max.ZCLString())
-		el.Attr = setAttributeValue(el.Attr, "minLength", c.Min.ZCLString())
-	}
+
+	el.Attr = r.renderConstraint(el.Attr, a.Constraint)
 
 	if a.Conformance != "M" {
 		el.Attr = setAttributeValue(el.Attr, "optional", "true")
@@ -109,7 +95,7 @@ func (r *renderer) writeAttribute(e xmlEncoder, el xml.StartElement, a *matter.F
 		el.Attr = setAttributeValue(el.Attr, "optional", "false")
 	}
 
-	if a.Quality.Has(matter.QualityFixed) || a.Access.Read == matter.PrivilegeView && a.Access.Write == matter.PrivilegeUnknown || r.errata.SuppressAttributePermissions {
+	if a.Quality.Has(matter.QualityFixed) || (a.Access.Read == matter.PrivilegeUnknown || a.Access.Read == matter.PrivilegeView) && a.Access.Write == matter.PrivilegeUnknown || r.errata.SuppressAttributePermissions {
 		if a.Access.Write != matter.PrivilegeUnknown {
 			el.Attr = setAttributeValue(el.Attr, "writable", "true")
 		} else {
@@ -168,6 +154,26 @@ func (r *renderer) writeAttribute(e xmlEncoder, el xml.StartElement, a *matter.F
 		return
 	}
 	return
+}
+
+func (*renderer) renderConstraint(attr []xml.Attr, c matter.Constraint) []xml.Attr {
+	switch c := c.(type) {
+	case *matter.RangeConstraint:
+		attr = setAttributeValue(attr, "min", c.Min.ZCLString())
+		attr = setAttributeValue(attr, "max", c.Max.ZCLString())
+	case *matter.MinConstraint:
+		attr = setAttributeValue(attr, "min", c.Min.ZCLString())
+	case *matter.MaxConstraint:
+		attr = setAttributeValue(attr, "max", c.Max.ZCLString())
+	case *matter.MaxLengthConstraint:
+		attr = setAttributeValue(attr, "length", c.Length.ZCLString())
+	case *matter.MinLengthConstraint:
+		attr = setAttributeValue(attr, "minLength", c.Length.ZCLString())
+	case *matter.LengthRangeConstraint:
+		attr = setAttributeValue(attr, "length", c.Max.ZCLString())
+		attr = setAttributeValue(attr, "minLength", c.Min.ZCLString())
+	}
+	return attr
 }
 
 func (r *renderer) amendAttribute(ts *tokenSet, e xmlEncoder, el xml.StartElement, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {

@@ -27,7 +27,7 @@ const (
 	constraintPatternMatchItemConstraint
 )
 
-var rangePattern = regexp.MustCompile(`^(?:(?P<IntFrom>\-?[0-9]+)|(?P<HexFrom>0[xX][0-9A-Fa-f]+)|(?:(?P<TempFrom>\-?[0-9]+(?:\.[0-9]+)?)°C)|(?:(?P<PercentFrom>\-?[0-9]+)%))\s+to\s+(?:(?P<IntTo>\-?[0-9]+)|(?P<HexTo>0[xX][0-9A-Fa-f]+)|(?:(?P<TempTo>\-?[0-9]+(?:\.[0-9]+)?)°C)|(?:(?P<PercentTo>\-?[0-9]+)%))$`)
+var rangePattern = regexp.MustCompile(`^(?:(?P<IntFrom>\-?[0-9]+)|(?P<HexFrom>0[xX][0-9A-Fa-f]+)|(?:(?P<TempFrom>\-?[0-9]+(?:\.[0-9]+)?)°C)|(?:(?P<PercentFrom>\-?[0-9]+(?:\.[0-9]+)?)%))\s+to\s+(?:(?P<IntTo>\-?[0-9]+)|(?P<HexTo>0[xX][0-9A-Fa-f]+)|(?:(?P<TempTo>\-?[0-9]+(?:\.[0-9]+)?)°C)|(?:(?P<PercentTo>\-?[0-9]+(?:\.[0-9]+)?)%))$`)
 var rangePatternMatchMap map[int]constraintPatternMatch
 
 var limitPattern = regexp.MustCompile(`(?i)^(?P<MinMax>min|max)[\x{25A0}\x{00A0}\s]+(?:(?P<IntLimit>-?[0-9]+)|(?P<HexLimit>0[xX][0-9A-Fa-f]+))(?: chars)?(?:[\x{25A0}\x{00A0}\s]*\[(?P<ItemConstraint>[^\]]+)\])?$`)
@@ -83,14 +83,26 @@ func ParseConstraint(parentType *matter.DataType, s string) matter.Constraint {
 	if c != nil {
 		return c
 	}
-	c = parseRangeValue(parentType, s)
-	if c != nil {
-		return c
+	matches := rangePattern.FindStringSubmatch(s)
+	if matches != nil {
+		c = parseRangeValue(parentType, matches)
+		if c != nil {
+			return c
+		}
+		c = parseTempRange(parentType, matches)
+		if c != nil {
+			return c
+		}
+		c = parsePercentRange(parentType, matches)
+		if c != nil {
+			return c
+		}
 	}
 	c = parseLimitValue(parentType, s)
 	if c != nil {
 		return c
 	}
+
 	fmt.Printf("returning generic constraint: %s\n", s)
 	return &matter.GenericConstraint{Value: s}
 }
@@ -110,11 +122,8 @@ func parseNumConstraint(parentType *matter.DataType, s string) matter.Constraint
 	return nil
 }
 
-func parseRangeValue(parentType *matter.DataType, s string) matter.Constraint {
-	matches := rangePattern.FindStringSubmatch(s)
-	if matches == nil {
-		return nil
-	}
+func parseRangeValue(parentType *matter.DataType, matches []string) matter.Constraint {
+
 	var fromLimit matter.ConstraintLimit
 	var toLimit matter.ConstraintLimit
 	for i, s := range matches {
@@ -247,4 +256,100 @@ func parseLimitValue(parentType *matter.DataType, s string) matter.Constraint {
 	}
 	return minMaxConstraint
 
+}
+
+func parseTempRange(parentType *matter.DataType, matches []string) matter.Constraint {
+
+	var tempFrom *matter.TemperatureLimit
+	var tempTo *matter.TemperatureLimit
+	for i, s := range matches {
+		if s == "" {
+			continue
+		}
+		category, ok := rangePatternMatchMap[i]
+		if !ok {
+			continue
+		}
+		switch category {
+		case constraintPatternMatchTemperatureFrom:
+			minTemp, err := strconv.ParseFloat(s, 64)
+			if err != nil {
+				return nil
+			}
+			minTemp *= 100
+			tempFrom = &matter.TemperatureLimit{Value: uint64(minTemp)}
+		case constraintPatternMatchTemperatureTo:
+			maxTemp, err := strconv.ParseFloat(s, 64)
+			if err != nil {
+				return nil
+			}
+			maxTemp *= 100
+			tempTo = &matter.TemperatureLimit{Value: uint64(maxTemp)}
+		}
+	}
+	if tempFrom != nil && tempTo != nil {
+		return &matter.RangeConstraint{
+			Min: tempFrom,
+			Max: tempTo,
+		}
+
+	}
+	return nil
+}
+
+func parsePercentRange(parentType *matter.DataType, matches []string) matter.Constraint {
+
+	var hundredths bool
+	switch parentType.Name {
+	case "percent":
+	case "percent100ths":
+		hundredths = true
+	default:
+		return nil
+	}
+	var from *matter.PercentLimit
+	var to *matter.PercentLimit
+	for i, s := range matches {
+		if s == "" {
+			continue
+		}
+		category, ok := rangePatternMatchMap[i]
+		if !ok {
+			continue
+		}
+		switch category {
+		case constraintPatternMatchTemperatureFrom:
+			min, err := strconv.ParseFloat(s, 64)
+			if err != nil {
+				return nil
+			}
+			from = &matter.PercentLimit{Hundredths: hundredths}
+			if hundredths {
+				from.Value = uint64(min * 100)
+			} else {
+				from.Value = uint64(min)
+
+			}
+		case constraintPatternMatchTemperatureTo:
+			max, err := strconv.ParseFloat(s, 64)
+			if err != nil {
+				return nil
+			}
+			to = &matter.PercentLimit{Hundredths: hundredths}
+			if hundredths {
+				to.Value = uint64(max * 100)
+			} else {
+				to.Value = uint64(max)
+
+			}
+		}
+	}
+	if from != nil && to != nil {
+		return &matter.RangeConstraint{
+			Min: from,
+			Max: to,
+		}
+
+	}
+	return nil
 }

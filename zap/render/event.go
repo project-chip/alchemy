@@ -54,8 +54,9 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 	}
 
 	e.EncodeToken(xml.StartElement{Name: xml.Name{Local: "description"}})
-	if len(ev.Description) > 0 {
-		e.EncodeToken(xml.CharData(ev.Description))
+	desc := strings.TrimSpace(ev.Description)
+	if len(desc) > 0 {
+		e.EncodeToken(xml.CharData(desc))
 	} else {
 		e.EncodeToken(xml.CharData(ev.Name))
 	}

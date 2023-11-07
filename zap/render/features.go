@@ -44,8 +44,8 @@ func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 		bit = (1 << bit)
 		elName := xml.Name{Local: "field"}
 		xfs := xml.StartElement{Name: elName}
-		xfs.Attr = setAttributeValue(xfs.Attr, "name", f.Name)
 		xfs.Attr = setAttributeValue(xfs.Attr, "mask", fmt.Sprintf("%#x", bit))
+		xfs.Attr = setAttributeValue(xfs.Attr, "name", f.Name)
 		err = e.EncodeToken(xfs)
 		if err != nil {
 			return

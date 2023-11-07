@@ -29,7 +29,7 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 					structs[s] = struct{}{}
 				}
 			}
-			clusterIDs = append(clusterIDs, cluster.ID.HexString())
+			clusterIDs = append(clusterIDs, v.ID.HexString())
 			clusters[v] = struct{}{}
 		}
 	}

@@ -53,6 +53,10 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 		if v.Quality.Has(matter.QualityNullable) {
 			xfs.Attr = setAttributeValue(xfs.Attr, "isNullable", "true")
 		}
+		if v.Conformance != "M" {
+			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
+		}
+		xfs.Attr = r.renderConstraint(xfs.Attr, v.Constraint)
 		err = e.EncodeToken(xfs)
 		if err != nil {
 			return

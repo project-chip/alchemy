@@ -95,9 +95,9 @@ func renderConstraint(a matter.Constraint, errata *Errata, attr *etree.Element) 
 func renderAttributeAccess(a *matter.Field, errata *Errata, attr *etree.Element) {
 	if a.Quality.Has(matter.QualityFixed) || a.Access.Read == matter.PrivilegeView && a.Access.Write == matter.PrivilegeUnknown || errata.SuppressAttributePermissions {
 		if a.Access.Write != matter.PrivilegeUnknown {
-			attr.CreateAttr("writeable", "true")
+			attr.CreateAttr("writable", "true")
 		} else {
-			attr.CreateAttr("writeable", "false")
+			attr.CreateAttr("writable", "false")
 		}
 		attr.SetText(a.Name)
 	} else {
@@ -111,9 +111,9 @@ func renderAttributeAccess(a *matter.Field, errata *Errata, attr *etree.Element)
 			ax := attr.CreateElement("access")
 			ax.CreateAttr("op", "write")
 			ax.CreateAttr("privilege", renderPrivilege(a.Access.Write))
-			attr.CreateAttr("writeable", "true")
+			attr.CreateAttr("writable", "true")
 		} else {
-			attr.CreateAttr("writeable", "false")
+			attr.CreateAttr("writable", "false")
 		}
 	}
 }
