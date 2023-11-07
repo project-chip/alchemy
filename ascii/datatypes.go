@@ -177,7 +177,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap m
 			return
 		}
 		f.Access = ParseAccess(a)
-		f.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
+		f.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
 		}

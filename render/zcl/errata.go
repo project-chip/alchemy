@@ -4,140 +4,140 @@ import "github.com/hasty/matterfmt/matter"
 
 var defaultOrder = []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents}
 
-type errata struct {
+type Errata struct {
 	topOrder      []matter.Section
 	clusterOrder  []matter.Section
 	dataTypeOrder []matter.Section
 
-	suppressAttributePermissions bool
-	clusterDefinePrefix          string
-	suppressClusterDefinePrefix  bool
-	defineOverrides              map[string]string
+	SuppressAttributePermissions bool
+	ClusterDefinePrefix          string
+	SuppressClusterDefinePrefix  bool
+	DefineOverrides              map[string]string
 }
 
-var defaultErrata = errata{
+var DefaultErrata = &Errata{
 	topOrder:      []matter.Section{matter.SectionCluster, matter.SectionDataTypes},
 	clusterOrder:  []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents},
 	dataTypeOrder: []matter.Section{matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct},
 }
 
-var erratas = map[string]*errata{
+var Erratas = map[string]*Errata{
 	"ApplicationBasic.adoc": {
-		topOrder:            defaultErrata.topOrder,
-		clusterOrder:        defaultErrata.clusterOrder,
-		dataTypeOrder:       defaultErrata.dataTypeOrder,
-		clusterDefinePrefix: "APPLICATION_",
-		defineOverrides:     map[string]string{"APPLICATION_APPLICATION": "APPLICATION_APP"},
+		topOrder:            DefaultErrata.topOrder,
+		clusterOrder:        DefaultErrata.clusterOrder,
+		dataTypeOrder:       DefaultErrata.dataTypeOrder,
+		ClusterDefinePrefix: "APPLICATION_",
+		DefineOverrides:     map[string]string{"APPLICATION_APPLICATION": "APPLICATION_APP"},
 	},
 	"FanControl.adoc": {
 		topOrder:                     []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:                 defaultErrata.clusterOrder,
+		clusterOrder:                 DefaultErrata.clusterOrder,
 		dataTypeOrder:                []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
-		suppressAttributePermissions: true,
+		SuppressAttributePermissions: true,
 	},
 	"ConcentrationMeasurement.adoc": {
 		topOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
-		clusterOrder:                defaultErrata.clusterOrder,
-		dataTypeOrder:               defaultErrata.dataTypeOrder,
-		suppressClusterDefinePrefix: true,
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		SuppressClusterDefinePrefix: true,
 	},
 	"FlowMeasurement.adoc": {
-		topOrder:            defaultErrata.topOrder,
-		clusterOrder:        defaultErrata.clusterOrder,
-		dataTypeOrder:       defaultErrata.dataTypeOrder,
-		clusterDefinePrefix: "FLOW_",
+		topOrder:            DefaultErrata.topOrder,
+		clusterOrder:        DefaultErrata.clusterOrder,
+		dataTypeOrder:       DefaultErrata.dataTypeOrder,
+		ClusterDefinePrefix: "FLOW_",
 	},
 	"IlluminanceMeasurement.adoc": {
-		topOrder:            defaultErrata.topOrder,
-		clusterOrder:        defaultErrata.clusterOrder,
-		dataTypeOrder:       defaultErrata.dataTypeOrder,
-		clusterDefinePrefix: "ILLUM_",
+		topOrder:            DefaultErrata.topOrder,
+		clusterOrder:        DefaultErrata.clusterOrder,
+		dataTypeOrder:       DefaultErrata.dataTypeOrder,
+		ClusterDefinePrefix: "ILLUM_",
 	},
 	"KeypadInput.adoc": {
 		topOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:        defaultErrata.clusterOrder,
-		dataTypeOrder:       defaultErrata.dataTypeOrder,
-		clusterDefinePrefix: "ILLUM_",
+		clusterOrder:        DefaultErrata.clusterOrder,
+		dataTypeOrder:       DefaultErrata.dataTypeOrder,
+		ClusterDefinePrefix: "ILLUM_",
 	},
 	"LevelControl.adoc": {
 		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:                defaultErrata.clusterOrder,
-		dataTypeOrder:               defaultErrata.dataTypeOrder,
-		defineOverrides:             map[string]string{"REMAINING_TIME": "LEVEL_CONTROL_REMAINING_TIME"},
-		suppressClusterDefinePrefix: true,
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		DefineOverrides:             map[string]string{"REMAINING_TIME": "LEVEL_CONTROL_REMAINING_TIME"},
+		SuppressClusterDefinePrefix: true,
 	},
 	"MediaInput.adoc": {
-		topOrder:        defaultErrata.topOrder,
-		clusterOrder:    defaultErrata.clusterOrder,
-		dataTypeOrder:   defaultErrata.dataTypeOrder,
-		defineOverrides: map[string]string{"MEDIA_INPUT_INPUT_LIST": "MEDIA_INPUT_LIST"},
+		topOrder:        DefaultErrata.topOrder,
+		clusterOrder:    DefaultErrata.clusterOrder,
+		dataTypeOrder:   DefaultErrata.dataTypeOrder,
+		DefineOverrides: map[string]string{"MEDIA_INPUT_INPUT_LIST": "MEDIA_INPUT_LIST"},
 	},
 	"MicrowaveOvenControl.adoc": {
-		topOrder:                    defaultErrata.topOrder,
-		clusterOrder:                defaultErrata.clusterOrder,
-		dataTypeOrder:               defaultErrata.dataTypeOrder,
-		suppressClusterDefinePrefix: true,
+		topOrder:                    DefaultErrata.topOrder,
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		SuppressClusterDefinePrefix: true,
 	},
 	"Thermostat.adoc": {
 		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:                defaultErrata.clusterOrder,
-		dataTypeOrder:               defaultErrata.dataTypeOrder,
-		suppressClusterDefinePrefix: true,
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		SuppressClusterDefinePrefix: true,
 	},
 	"AudioOutput.adoc": {
-		topOrder:      defaultErrata.topOrder,
-		clusterOrder:  defaultErrata.clusterOrder,
+		topOrder:      DefaultErrata.topOrder,
+		clusterOrder:  DefaultErrata.clusterOrder,
 		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 	},
 	"ApplicationLauncher.adoc": {
 		topOrder:      []matter.Section{matter.SectionCluster, matter.SectionDataTypes, matter.SectionFeatures},
-		clusterOrder:  defaultErrata.clusterOrder,
+		clusterOrder:  DefaultErrata.clusterOrder,
 		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 	},
 	"AirQuality.adoc": {
 		topOrder:      []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
-		clusterOrder:  defaultErrata.clusterOrder,
+		clusterOrder:  DefaultErrata.clusterOrder,
 		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 	},
 	"Groups.adoc": {
 		topOrder:      []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:  defaultErrata.clusterOrder,
+		clusterOrder:  DefaultErrata.clusterOrder,
 		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 	},
 	"BooleanState.adoc": {
-		topOrder:                    defaultErrata.topOrder,
-		clusterOrder:                defaultErrata.clusterOrder,
-		dataTypeOrder:               defaultErrata.dataTypeOrder,
-		suppressClusterDefinePrefix: true,
+		topOrder:                    DefaultErrata.topOrder,
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		SuppressClusterDefinePrefix: true,
 	},
 	"BallastConfiguration.adoc": {
-		topOrder:                    defaultErrata.topOrder,
-		clusterOrder:                defaultErrata.clusterOrder,
-		dataTypeOrder:               defaultErrata.dataTypeOrder,
-		suppressClusterDefinePrefix: true,
+		topOrder:                    DefaultErrata.topOrder,
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		SuppressClusterDefinePrefix: true,
 	},
 	"WaterControls.adoc": {
 		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:                defaultErrata.clusterOrder,
-		dataTypeOrder:               defaultErrata.dataTypeOrder,
-		suppressClusterDefinePrefix: true,
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		SuppressClusterDefinePrefix: true,
 	},
 	"DiagnosticsThread.adoc": {
 		topOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
-		clusterOrder:                defaultErrata.clusterOrder,
-		dataTypeOrder:               defaultErrata.dataTypeOrder,
-		suppressClusterDefinePrefix: true,
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		SuppressClusterDefinePrefix: true,
 	},
 	"ThermostatUserInterfaceConfiguration.adoc": {
-		topOrder:                    defaultErrata.topOrder,
-		clusterOrder:                defaultErrata.clusterOrder,
-		dataTypeOrder:               defaultErrata.dataTypeOrder,
-		suppressClusterDefinePrefix: true,
+		topOrder:                    DefaultErrata.topOrder,
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		SuppressClusterDefinePrefix: true,
 	},
 	"EVSE.adoc": {
 		topOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
-		clusterOrder:                defaultErrata.clusterOrder,
+		clusterOrder:                DefaultErrata.clusterOrder,
 		dataTypeOrder:               []matter.Section{matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap, matter.SectionDataTypeStruct},
-		suppressClusterDefinePrefix: true,
+		SuppressClusterDefinePrefix: true,
 	},
 }

@@ -79,6 +79,8 @@ func renderSymbol(cxt *output.Context, s *types.Symbol) error {
 		cxt.WriteString("\"`")
 	case "`'":
 		cxt.WriteString("`'")
+	case "(TM)":
+		cxt.WriteString("(TM)")
 	default:
 		return fmt.Errorf("unknown symbol: \"%s\"", s.Name)
 	}

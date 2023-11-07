@@ -19,7 +19,7 @@ func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		attr := &matter.Field{}
-		attr.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
+		attr.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
 		}

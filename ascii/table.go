@@ -48,6 +48,14 @@ func readRowValue(row *types.TableRow, columnMap map[matter.TableColumn]int, col
 	return GetTableCellValue(cell)
 }
 
+func readRowID(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) (*matter.ID, error) {
+	id, err := readRowValue(row, columnMap, column)
+	if err != nil {
+		return matter.InvalidID, err
+	}
+	return matter.ParseID(id), nil
+}
+
 func FindFirstTable(section *Section) *types.Table {
 	var table *types.Table
 	parse.Search(section.Elements, func(t *types.Table) bool {

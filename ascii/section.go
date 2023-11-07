@@ -120,7 +120,6 @@ func FindSectionByType(top *Section, sectionType matter.Section) *Section {
 
 func getSectionType(parent *Section, section *Section) matter.Section {
 	name := strings.ToLower(strings.TrimSpace(section.Name))
-	fmt.Printf("Section type: %s\n", name)
 	switch parent.SecType {
 	case matter.SectionTop, matter.SectionCluster:
 		switch name {

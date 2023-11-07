@@ -1,11 +1,14 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -15,6 +18,7 @@ import (
 	"github.com/hasty/matterfmt/parse"
 	"github.com/hasty/matterfmt/render/zcl"
 	"github.com/hasty/matterfmt/zap"
+	zaprender "github.com/hasty/matterfmt/zap/render"
 	"github.com/iancoleman/strcase"
 )
 
@@ -25,6 +29,8 @@ type zclRenderer struct {
 	serial bool
 	dryRun bool
 }
+
+var selfClosingTags = regexp.MustCompile("></[^>]+>")
 
 func ZCL(cxt context.Context, specRoot string, zclRoot string, options ...Option) error {
 	z := &zclRenderer{}
@@ -104,17 +110,46 @@ func (z *zclRenderer) run(cxt context.Context, specRoot string, zclRoot string) 
 		} else {
 			doc.Domain = matter.DomainCHIP
 		}
-		var result *zcl.Result
-		result, err = zcl.Render(cxt, doc)
-		if err != nil {
-			err = fmt.Errorf("failed rendering %s: %w", file, err)
+
+		newFile := filepath.Base(file)
+		newFile = zap.ZAPName(strings.TrimSuffix(newFile, filepath.Ext(file)))
+		newFile = strcase.ToKebab(newFile)
+		newPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip", newFile+".xml")
+
+		existing, err := os.ReadFile(newPath)
+		if errors.Is(err, os.ErrNotExist) {
+			var result *zcl.Result
+			result, err = zcl.Render(cxt, doc)
+			if err != nil {
+				err = fmt.Errorf("failed rendering %s: %w", file, err)
+				return err
+			}
+			lock.Lock()
+			outputs[newPath] = result
+			lock.Unlock()
+			fmt.Fprintf(os.Stderr, "ZCL'd %s to %s (%d of %d)...\n", file, newPath, index, total)
+
+		} else if err != nil {
 			return err
+		} else {
+			fmt.Fprintf(os.Stderr, "ZCLing existing %s to %s (%d of %d)...\n", file, newPath, index, total)
+			var buf bytes.Buffer
+			models, err := doc.ToModel()
+			if err != nil {
+				return err
+			}
+			fmt.Fprintf(os.Stderr, "existing:%s \n", existing)
+			err = zaprender.Render(doc, bytes.NewReader(existing), &buf, models)
+			if err != nil {
+				return err
+			}
+			out := selfClosingTags.ReplaceAllString(buf.String(), "/>") // Lame limitation of Go's XML encoder
+			lock.Lock()
+			outputs[newPath] = &zcl.Result{ZCL: out, Doc: doc, Models: models}
+			lock.Unlock()
+			fmt.Fprintf(os.Stderr, "ZCL'd existing %s to %s (%d of %d)...\n", file, newPath, index, total)
 		}
 
-		fmt.Fprintf(os.Stderr, "ZCL'd %s (%d of %d)...\n", file, index, total)
-		lock.Lock()
-		outputs[file] = result
-		lock.Unlock()
 		return nil
 	})
 	if err != nil {
@@ -125,13 +160,8 @@ func (z *zclRenderer) run(cxt context.Context, specRoot string, zclRoot string) 
 			continue
 		}
 
-		newFile := filepath.Base(path)
-		newFile = zap.ZAPName(strings.TrimSuffix(newFile, filepath.Ext(path)))
-		newFile = strcase.ToKebab(newFile)
-
-		newPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip", newFile+".xml")
 		if !z.dryRun {
-			err = os.WriteFile(newPath, []byte(result.ZCL), os.ModeAppend|0644)
+			err = os.WriteFile(path, []byte(result.ZCL), os.ModeAppend|0644)
 			if err != nil {
 				return err
 			}

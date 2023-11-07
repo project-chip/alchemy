@@ -24,7 +24,7 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		cmd := &matter.Command{}
-		cmd.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
+		cmd.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
 		}
@@ -32,10 +32,12 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 		if err != nil {
 			return
 		}
-		cmd.Direction, err = readRowValue(row, columnMap, matter.TableColumnDirection)
+		var dir string
+		dir, err = readRowValue(row, columnMap, matter.TableColumnDirection)
 		if err != nil {
 			return
 		}
+		cmd.Direction = matter.ParseCommandDirection(dir)
 		cmd.Response, err = readRowValue(row, columnMap, matter.TableColumnResponse)
 		if err != nil {
 			return

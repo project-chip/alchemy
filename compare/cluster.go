@@ -3,7 +3,7 @@ package compare
 import "github.com/hasty/matterfmt/matter"
 
 type ClusterDifferences struct {
-	ID   string
+	ID   *matter.ID
 	Name string
 
 	Diffs []any `json:"diffs,omitempty"`

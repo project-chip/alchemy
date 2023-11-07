@@ -31,9 +31,9 @@ func Render(cxt context.Context, doc *ascii.Doc) (*Result, error) {
 
 	x.CreateProcInst("xml", `version="1.0"`)
 
-	errata, ok := erratas[filepath.Base(doc.Path)]
+	errata, ok := Erratas[filepath.Base(doc.Path)]
 	if !ok {
-		errata = &defaultErrata
+		errata = DefaultErrata
 	}
 
 	//x.CreateComment(license)

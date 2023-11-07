@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/matterfmt/matter"
 )
 
-func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{}, w *etree.Element, errata *errata) (err error) {
+func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{}, w *etree.Element, errata *Errata) (err error) {
 
 	var clusters []*matter.Cluster
 	for _, m := range models {

@@ -2,70 +2,17 @@ package zcl
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/parse"
+	"github.com/hasty/matterfmt/zap"
 )
 
-var matterToZapMap = map[string]string{
-	"bool":        "boolean",
-	"uint8":       "INT8U",
-	"uint16":      "INT16U",
-	"uint32":      "INT32U",
-	"uint64":      "INT64U",
-	"enum8":       "ENUM8",
-	"enum16":      "ENUM16",
-	"enum32":      "ENUM32",
-	"map8":        "BITMAP8",
-	"map16":       "BITMAP16",
-	"map32":       "BITMAP32",
-	"map64":       "BITMAP64",
-	"string":      "CHAR_STRING",
-	"octstr":      "OCTET_STRING",
-	"elapsed-s":   "elapsed_s",
-	"epoch-s":     "epoch_s",
-	"epoch-us":    "epoch_us",
-	"fabric-idx":  "fabric_idx",
-	"node-id":     "NODE_ID",
-	"vendor-id":   "VENDOR_ID",
-	"group-id":    "group_id",
-	"endpoint-id": "endpoint_id",
-}
-
-var zapToMatterMap map[string]string
-
-func init() {
-	zapToMatterMap = make(map[string]string, len(matterToZapMap))
-	for k, v := range matterToZapMap {
-		zapToMatterMap[strings.ToLower(v)] = k
-	}
-}
-
-func ConvertDataTypeToZap(s string) string {
-	if z, ok := matterToZapMap[strings.ToLower(s)]; ok {
-		return z
-	}
-	return s
-}
-
-func ConvertZapToDataType(s string) string {
-	if z, ok := zapToMatterMap[strings.ToLower(s)]; ok {
-		return z
-	}
-	return s
-}
-
-func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *etree.Element, errata *errata) {
+func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *etree.Element, errata *Errata) {
 	var clusterIDs []string
 	for _, cluster := range clusters {
-		id := cluster.ID
-		cid, err := parse.HexOrDec(id)
-		if err == nil {
-			id = fmt.Sprintf("%#04x", cid)
-		}
-		clusterIDs = append(clusterIDs, id)
+		clusterIDs = append(clusterIDs, cluster.ID.HexString())
 	}
 	for _, s := range errata.dataTypeOrder {
 		switch s {
@@ -83,7 +30,7 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 	for _, v := range enums {
 		en := cx.CreateElement("enum")
 		en.CreateAttr("name", v.Name)
-		en.CreateAttr("type", ConvertDataTypeToZap(v.Type))
+		en.CreateAttr("type", zap.ConvertDataTypeToZap(v.Type))
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
@@ -106,7 +53,7 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 		en := cx.CreateElement("bitmap")
 		name := matter.StripDataTypeSuffixes(v.Name)
 		en.CreateAttr("name", name)
-		en.CreateAttr("type", ConvertDataTypeToZap(v.Type))
+		en.CreateAttr("type", zap.ConvertDataTypeToZap(v.Type))
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
@@ -146,7 +93,7 @@ func writeDataType(x *etree.Element, dt *matter.DataType) {
 	if dt == nil {
 		return
 	}
-	dts := ConvertDataTypeToZap(dt.Name)
+	dts := zap.ConvertDataTypeToZap(dt.Name)
 	if dt.IsArray {
 		x.CreateAttr("type", "ARRAY")
 		x.CreateAttr("entryType", dts)
