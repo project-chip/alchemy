@@ -13,6 +13,8 @@ type Errata struct {
 	ClusterDefinePrefix          string
 	SuppressClusterDefinePrefix  bool
 	DefineOverrides              map[string]string
+
+	WriteRoleAsPrivilege bool
 }
 
 var DefaultErrata = &Errata{
@@ -83,6 +85,7 @@ var Erratas = map[string]*Errata{
 		clusterOrder:                DefaultErrata.clusterOrder,
 		dataTypeOrder:               DefaultErrata.dataTypeOrder,
 		SuppressClusterDefinePrefix: true,
+		WriteRoleAsPrivilege:        true,
 	},
 	"AudioOutput.adoc": {
 		topOrder:      DefaultErrata.topOrder,

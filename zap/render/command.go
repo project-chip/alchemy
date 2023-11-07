@@ -3,6 +3,7 @@ package render
 import (
 	"encoding/xml"
 	"fmt"
+	"os"
 
 	"github.com/hasty/matterfmt/matter"
 )
@@ -29,7 +30,7 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 	}
 
 	if matchingCommand == nil {
-		fmt.Errorf("no matching command for %s\n", commandID.HexString())
+		fmt.Fprintf(os.Stderr, "no matching command for %s\n", commandID.HexString())
 		return writeThrough(ts, e, el)
 	}
 
@@ -96,6 +97,7 @@ func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Com
 		if !mandatory {
 			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
 		}
+		xfs.Attr = r.renderConstraint(xfs.Attr, f.Constraint)
 		err = e.EncodeToken(xfs)
 		if err != nil {
 			return
@@ -114,10 +116,15 @@ func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Com
 	return e.EncodeToken(xml.EndElement{Name: xfb.Name})
 }
 
-func (*renderer) renderAccess(e xmlEncoder, op string, p matter.Privilege) (err error) {
+func (r *renderer) renderAccess(e xmlEncoder, op string, p matter.Privilege) (err error) {
 	ax := xml.StartElement{Name: xml.Name{Local: "access"}}
 	ax.Attr = setAttributeValue(ax.Attr, "op", op)
-	px, _ := p.MarshalXMLAttr(xml.Name{Local: "role"})
+	var px xml.Attr
+	if r.errata.WriteRoleAsPrivilege {
+		px, _ = p.MarshalXMLAttr(xml.Name{Local: "privilege"})
+	} else {
+		px, _ = p.MarshalXMLAttr(xml.Name{Local: "role"})
+	}
 	ax.Attr = append(ax.Attr, px)
 	err = e.EncodeToken(ax)
 	if err != nil {

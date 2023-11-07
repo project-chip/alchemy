@@ -86,10 +86,14 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 	commands := make(map[*matter.Command]struct{})
 
 	for _, a := range cluster.Attributes {
+		if a.Conformance == "Zigbee" {
+			continue
+		}
 		attributes[a] = struct{}{}
 	}
 
 	for _, e := range cluster.Events {
+
 		events[e] = struct{}{}
 	}
 

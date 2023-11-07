@@ -50,7 +50,7 @@ func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum,
 		val := v.Value
 		valNum, er := parse.HexOrDec(val)
 		if er == nil {
-			val = fmt.Sprintf("%#02x", valNum)
+			val = fmt.Sprintf("0x%02X", valNum)
 		}
 
 		elName := xml.Name{Local: "item"}

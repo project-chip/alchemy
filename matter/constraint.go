@@ -88,10 +88,17 @@ func (c *HexLimit) Equal(o ConstraintLimit) bool {
 }
 
 type PercentLimit struct {
-	Value uint64
+	Value      uint64
+	Hundredths bool
 }
 
 func (c *PercentLimit) AsciiDocString() string {
+	if c.Hundredths {
+		if c.Value%100 == 0 {
+			return strconv.FormatUint(c.Value/100, 10)
+		}
+		return fmt.Sprintf("%.2f", float64(c.Value)/100)
+	}
 	return strconv.FormatUint(c.Value, 10)
 }
 
@@ -101,7 +108,7 @@ func (c *PercentLimit) ZCLString() string {
 
 func (c *PercentLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*PercentLimit); ok {
-		return oc.Value == c.Value
+		return oc.Value == c.Value && oc.Hundredths == c.Hundredths
 	}
 	return false
 }
@@ -115,7 +122,6 @@ func (c *TemperatureLimit) AsciiDocString() string {
 }
 
 func (c *TemperatureLimit) ZCLString() string {
-	// TODO: Wrong encoding
 	return fmt.Sprintf("0x%x", c.Value)
 }
 
@@ -157,8 +163,8 @@ func (c *MinLengthConstraint) Equal(o Constraint) bool {
 }
 
 type LengthRangeConstraint struct {
-	Min ConstraintLimit
-	Max ConstraintLimit
+	Min ConstraintLimit `json:"min"`
+	Max ConstraintLimit `json:"max"`
 }
 
 func (c *LengthRangeConstraint) AsciiDocString() string {
@@ -173,7 +179,7 @@ func (c *LengthRangeConstraint) Equal(o Constraint) bool {
 }
 
 type MinConstraint struct {
-	Min ConstraintLimit
+	Min ConstraintLimit `json:"min"`
 }
 
 func (c *MinConstraint) AsciiDocString() string {
@@ -203,7 +209,7 @@ func (c *MaxConstraint) Equal(o Constraint) bool {
 }
 
 type RangeConstraint struct {
-	Min ConstraintLimit
+	Min ConstraintLimit `json:"min"`
 	Max ConstraintLimit
 }
 
