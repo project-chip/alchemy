@@ -2,7 +2,6 @@ package compare
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/hasty/matterfmt/matter"
 )
@@ -16,22 +15,22 @@ func compareModels(specModels map[string][]any, zapModels map[string][]any) (dif
 		}
 		fmt.Printf("path %s found in ZAP models\n", path)
 
-		specClusters := make(map[string]*matter.Cluster)
+		specClusters := make(map[uint64]*matter.Cluster)
 		for _, m := range sm {
 			switch v := m.(type) {
 			case *matter.Cluster:
 				fmt.Printf("adding spec cluster: %s\n", v.ID)
-				specClusters[strings.ToLower(v.ID)] = v
+				specClusters[v.ID.Value()] = v
 			default:
 				fmt.Printf("unexpected spec model: %T\n", m)
 			}
 		}
-		zapClusters := make(map[string]*matter.Cluster)
+		zapClusters := make(map[uint64]*matter.Cluster)
 		for _, m := range zm {
 			switch v := m.(type) {
 			case *matter.Cluster:
 				fmt.Printf("adding ZAP cluster: %s\n", v.ID)
-				zapClusters[strings.ToLower(v.ID)] = v
+				zapClusters[v.ID.Value()] = v
 			default:
 				fmt.Printf("unexpected ZAP model: %T\n", m)
 			}

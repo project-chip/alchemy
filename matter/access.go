@@ -2,6 +2,7 @@ package matter
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 )
 
@@ -45,6 +46,37 @@ func (p *Privilege) UnmarshalJSON(data []byte) error {
 	*p, ok = privilegeNameMap[privilege]
 	if !ok {
 		return fmt.Errorf("unknown privilege: %s", privilege)
+	}
+	return nil
+}
+
+func (p Privilege) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	switch p {
+	case PrivilegeView:
+		return xml.Attr{Name: name, Value: "view"}, nil
+	case PrivilegeManage:
+		return xml.Attr{Name: name, Value: "manage"}, nil
+	case PrivilegeAdminister:
+		return xml.Attr{Name: name, Value: "administer"}, nil
+	case PrivilegeOperate:
+		return xml.Attr{Name: name, Value: "operate"}, nil
+	default:
+		return xml.Attr{}, fmt.Errorf("unknown privilege value: %v", p)
+	}
+}
+
+func (p *Privilege) UnmarshalXMLAttr(attr xml.Attr) error {
+	switch attr.Value {
+	case "view":
+		*p = PrivilegeView
+	case "manage":
+		*p = PrivilegeManage
+	case "administer":
+		*p = PrivilegeAdminister
+	case "operate":
+		*p = PrivilegeOperate
+	default:
+		return fmt.Errorf("unknown privilege value: %s", attr.Value)
 	}
 	return nil
 }

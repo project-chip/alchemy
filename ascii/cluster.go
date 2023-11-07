@@ -83,7 +83,7 @@ func readClusterIDs(s *Section) ([]*matter.Cluster, error) {
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		c := &matter.Cluster{}
-		c.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
+		c.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return nil, err
 		}

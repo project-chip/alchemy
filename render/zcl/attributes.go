@@ -11,7 +11,7 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix string, errata *errata) {
+func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix string, errata *Errata) {
 	if len(cluster.Attributes) > 0 {
 		cx.CreateComment("Attributes")
 	}
@@ -21,8 +21,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		}
 		mandatory := (a.Conformance == "M")
 
-		id, err := parse.HexOrDec(a.ID)
-		if err != nil {
+		if !a.ID.Valid() {
 			continue
 		}
 
@@ -31,8 +30,8 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		}
 		attr := cx.CreateElement("attribute")
 		attr.CreateAttr("side", "server")
-		attr.CreateAttr("code", fmt.Sprintf("%#04x", id))
-		define := getDefine(a.Name, clusterPrefix, errata)
+		attr.CreateAttr("code", a.ID.HexString())
+		define := GetDefine(a.Name, clusterPrefix, errata)
 		attr.CreateAttr("define", define)
 		writeDataType(attr, a.Type)
 		if a.Quality.Has(matter.QualityNullable) {
@@ -74,7 +73,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 	}
 }
 
-func renderConstraint(a matter.Constraint, errata *errata, attr *etree.Element) {
+func renderConstraint(a matter.Constraint, errata *Errata, attr *etree.Element) {
 	switch c := a.(type) {
 	case *matter.RangeConstraint:
 		attr.CreateAttr("min", c.Min.ZCLString())
@@ -82,7 +81,7 @@ func renderConstraint(a matter.Constraint, errata *errata, attr *etree.Element) 
 	case *matter.MinConstraint:
 		attr.CreateAttr("min", c.Min.ZCLString())
 	case *matter.MaxConstraint:
-		attr.CreateAttr("min", c.Max.ZCLString())
+		attr.CreateAttr("max", c.Max.ZCLString())
 	case *matter.MaxLengthConstraint:
 		attr.CreateAttr("length", c.Length.ZCLString())
 	case *matter.MinLengthConstraint:
@@ -93,8 +92,8 @@ func renderConstraint(a matter.Constraint, errata *errata, attr *etree.Element) 
 	}
 }
 
-func renderAttributeAccess(a *matter.Field, errata *errata, attr *etree.Element) {
-	if a.Quality.Has(matter.QualityFixed) || a.Access.Read == matter.PrivilegeView && a.Access.Write == matter.PrivilegeUnknown || errata.suppressAttributePermissions {
+func renderAttributeAccess(a *matter.Field, errata *Errata, attr *etree.Element) {
+	if a.Quality.Has(matter.QualityFixed) || a.Access.Read == matter.PrivilegeView && a.Access.Write == matter.PrivilegeUnknown || errata.SuppressAttributePermissions {
 		if a.Access.Write != matter.PrivilegeUnknown {
 			attr.CreateAttr("writeable", "true")
 		} else {
@@ -134,13 +133,13 @@ func renderPrivilege(a matter.Privilege) string {
 	}
 }
 
-func getDefine(name string, prefix string, errata *errata) string {
+func GetDefine(name string, prefix string, errata *Errata) string {
 	define := strcase.ToScreamingDelimited(name, '_', "", true)
 	if !strings.HasPrefix(define, prefix) {
 		define = prefix + define
 	}
-	if errata.defineOverrides != nil {
-		if override, ok := errata.defineOverrides[define]; ok {
+	if errata.DefineOverrides != nil {
+		if override, ok := errata.DefineOverrides[define]; ok {
 			return override
 		}
 	}

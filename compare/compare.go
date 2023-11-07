@@ -15,6 +15,7 @@ import (
 	"github.com/hasty/matterfmt/matter"
 	"github.com/hasty/matterfmt/parse"
 	"github.com/hasty/matterfmt/zap"
+	zparse "github.com/hasty/matterfmt/zap/parse"
 	"github.com/iancoleman/strcase"
 )
 
@@ -145,7 +146,7 @@ func loadZAPModels(zclRoot string) (map[string][]any, error) {
 		}
 		defer file.Close()
 		var models []any
-		models, err = zap.Parse(file)
+		models, err = zparse.ZAP(file)
 		if err != nil {
 			return nil, err
 		}

@@ -49,10 +49,10 @@ func compareFeatures(specFeatures []*matter.Feature, zapFeatures []*matter.Featu
 		}
 	}
 	for _, f := range specFeatureMap {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, ID: f.Code, Source: SourceZAP})
+		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Code: f.Code, Source: SourceZAP})
 	}
 	for _, f := range zapFeatureMap {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, ID: f.Code, Source: SourceSpec})
+		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Code: f.Code, Source: SourceSpec})
 	}
 	return
 }

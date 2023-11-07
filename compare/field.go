@@ -4,19 +4,19 @@ import (
 	"fmt"
 
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
 )
 
 type FieldDiffs struct {
-	ID    string `json:"id"`
-	Diffs []any  `json:"diffs"`
+	ID    *matter.ID `json:"id"`
+	Diffs []any      `json:"diffs"`
 }
 
 type MissingDiff struct {
 	Type     DiffType     `json:"type"`
 	Source   Source       `json:"source,omitempty"`
 	Property DiffProperty `json:"property,omitempty"`
-	ID       string       `json:"id,omitempty"`
+	ID       *matter.ID   `json:"id,omitempty"`
+	Code     string       `json:"code,omitempty"`
 }
 
 type StringDiff struct {
@@ -109,24 +109,18 @@ func compareField(specField *matter.Field, zapField *matter.Field) (diffs []any)
 func compareFields(specFields []*matter.Field, zapFields []*matter.Field) (diffs []any, err error) {
 	specFieldMap := make(map[uint64]*matter.Field)
 	for _, f := range specFields {
-		var id uint64
-		id, err = parse.HexOrDec(f.ID)
-		if err != nil {
+		if !f.ID.Valid() {
 			err = fmt.Errorf("unable to parse spec field ID: %s; %w", f.ID, err)
-			return
 		}
-		specFieldMap[id] = f
+		specFieldMap[f.ID.Value()] = f
 	}
 
 	zapFieldMap := make(map[uint64]*matter.Field)
 	for _, f := range zapFields {
-		var id uint64
-		id, err = parse.HexOrDec(f.ID)
-		if err != nil {
+		if !f.ID.Valid() {
 			err = fmt.Errorf("unable to parse ZAP field ID: %s; %w", f.ID, err)
-			return
 		}
-		zapFieldMap[id] = f
+		zapFieldMap[f.ID.Value()] = f
 	}
 
 	for code, zapField := range zapFieldMap {

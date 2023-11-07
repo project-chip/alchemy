@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/render/zcl"
 )
 
 type XMLAttribute struct {
@@ -37,9 +36,9 @@ type XMLAttribute struct {
 
 func (xa *XMLAttribute) ToModel() (ma *matter.Field, err error) {
 	ma = &matter.Field{
-		ID:      convertNumber(xa.Code),
+		ID:      matter.ParseID(xa.Code),
 		Name:    xa.Name,
-		Type:    &matter.DataType{Name: zcl.ConvertZapToDataType(xa.Type), IsArray: xa.IsArray},
+		Type:    &matter.DataType{Name: ConvertZapToDataType(xa.Type), IsArray: xa.IsArray},
 		Default: xa.Default,
 	}
 	if xa.IsNullable {
@@ -54,9 +53,3 @@ func (xa *XMLAttribute) ToModel() (ma *matter.Field, err error) {
 	}
 	return
 }
-
-/*
-
-	Constraint  string
-	Access      map[AccessCategory]string
-*/

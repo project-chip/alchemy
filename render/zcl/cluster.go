@@ -11,29 +11,23 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster, w *etree.Element, errata *errata) error {
+func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster, w *etree.Element, errata *Errata) error {
 
 	cx := w.CreateElement("cluster")
 	cx.CreateElement("name").SetText(cluster.Name)
 	dom := cx.CreateElement("domain")
 	domainName := matter.DomainNames[doc.Domain]
 	dom.SetText(domainName)
-	code := cx.CreateElement("code")
-	id, err := parse.HexOrDec(cluster.ID)
-	if err == nil {
-		code.SetText(fmt.Sprintf("%#04x", id))
-	} else {
-		code.SetText(cluster.ID)
+	cx.CreateElement("code").SetText(cluster.ID.HexString())
 
-	}
 	var define string
 	var clusterPrefix string
 
 	define = strcase.ToScreamingDelimited(cluster.Name+" Cluster", '_', "", true)
-	if !errata.suppressClusterDefinePrefix {
+	if !errata.SuppressClusterDefinePrefix {
 		clusterPrefix = strcase.ToScreamingDelimited(cluster.Name, '_', "", true) + "_"
-		if len(errata.clusterDefinePrefix) > 0 {
-			clusterPrefix = errata.clusterDefinePrefix
+		if len(errata.ClusterDefinePrefix) > 0 {
+			clusterPrefix = errata.ClusterDefinePrefix
 		}
 	}
 
@@ -62,7 +56,7 @@ func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster,
 	return nil
 }
 
-func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []*matter.Cluster, w *etree.Element, errata *errata) {
+func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []*matter.Cluster, w *etree.Element, errata *Errata) {
 	if len(features) == 0 {
 		return
 	}
@@ -70,12 +64,7 @@ func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []
 	fb.CreateAttr("name", "Feature")
 	fb.CreateAttr("type", "BITMAP32")
 	for _, cluster := range clusters {
-		id := cluster.ID
-		cid, err := parse.HexOrDec(id)
-		if err == nil {
-			id = fmt.Sprintf("%#04x", cid)
-		}
-		fb.CreateElement("cluster").CreateAttr("code", id)
+		fb.CreateElement("cluster").CreateAttr("code", cluster.ID.HexString())
 	}
 	for _, f := range features {
 		if f.Conformance == "Zigbee" {

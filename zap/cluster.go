@@ -2,10 +2,8 @@ package zap
 
 import (
 	"encoding/xml"
-	"fmt"
 
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/parse"
 	"github.com/iancoleman/strcase"
 )
 
@@ -43,15 +41,8 @@ type XMLClusterExtension struct {
 func (c *XMLCluster) ToModel() (mc *matter.Cluster, err error) {
 	mc = &matter.Cluster{
 		Name: c.Name,
+		ID:   matter.ParseID(c.Code),
 	}
-	var code uint64
-	code, err = parse.HexOrDec(c.Code)
-	if err == nil {
-		mc.ID = fmt.Sprintf("%#04x", code)
-	} else {
-		mc.ID = c.Code
-	}
-
 	return
 }
 

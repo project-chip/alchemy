@@ -26,7 +26,7 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 		if err != nil {
 			return
 		}
-		e.ID, err = readRowValue(row, columnMap, matter.TableColumnID)
+		e.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
 		}

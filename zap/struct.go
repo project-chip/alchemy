@@ -2,10 +2,8 @@ package zap
 
 import (
 	"encoding/xml"
-	"fmt"
 
 	"github.com/hasty/matterfmt/matter"
-	"github.com/hasty/matterfmt/render/zcl"
 )
 
 type XMLStructField struct {
@@ -34,9 +32,9 @@ func (s *XMLStruct) ToModel() (ms *matter.Struct, err error) {
 	ms = &matter.Struct{Name: s.Name}
 	for _, sf := range s.Fields {
 		f := &matter.Field{
-			ID:   fmt.Sprintf("%#04x", sf.FieldID),
+			ID:   matter.NewID(uint64(sf.FieldID)),
 			Name: sf.Name,
-			Type: &matter.DataType{Name: zcl.ConvertZapToDataType(sf.Type), IsArray: sf.IsArray},
+			Type: &matter.DataType{Name: ConvertZapToDataType(sf.Type), IsArray: sf.IsArray},
 		}
 		var q matter.Quality
 		if sf.IsNullable {
@@ -47,15 +45,3 @@ func (s *XMLStruct) ToModel() (ms *matter.Struct, err error) {
 	}
 	return
 }
-
-/*
-
-	MinLength int
-	MaxLength int
-
-	Constraint  string
-	Quality     string
-	Access      map[AccessCategory]string
-	Default     string
-	Conformance string
-*/
