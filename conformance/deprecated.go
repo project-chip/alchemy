@@ -10,6 +10,10 @@ func (dc *DeprecatedConformance) RawText() string {
 	return dc.raw
 }
 
+func (dc *DeprecatedConformance) String() string {
+	return "deprecated"
+}
+
 func (dc *DeprecatedConformance) Eval(context matter.ConformanceContext) (matter.ConformanceState, error) {
 	return matter.ConformanceStateDeprecated, nil
 }
