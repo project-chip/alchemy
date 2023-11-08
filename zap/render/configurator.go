@@ -11,7 +11,7 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 	bitmaps := make(map[*matter.Bitmap]struct{})
 	enums := make(map[*matter.Enum]struct{})
 	clusters := make(map[*matter.Cluster]struct{})
-	structs := make(map[*matter.Struct]struct{})
+	structs := make(map[*matter.Struct]bool)
 	var cluster *matter.Cluster
 	var clusterIDs []string
 	for _, m := range r.models {
@@ -26,7 +26,7 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 					enums[en] = struct{}{}
 				}
 				for _, s := range v.Structs {
-					structs[s] = struct{}{}
+					structs[s] = false
 				}
 			}
 			clusterIDs = append(clusterIDs, v.ID.HexString())
@@ -133,7 +133,7 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 	}
 }
 
-func (r *renderer) flushUnusedConfiguratorValues(e xmlEncoder, lastSection matter.Section, configuratorValues map[string]string, clusterIDs []string, bitmaps map[*matter.Bitmap]struct{}, enums map[*matter.Enum]struct{}, structs map[*matter.Struct]struct{}) (err error) {
+func (r *renderer) flushUnusedConfiguratorValues(e xmlEncoder, lastSection matter.Section, configuratorValues map[string]string, clusterIDs []string, bitmaps map[*matter.Bitmap]struct{}, enums map[*matter.Enum]struct{}, structs map[*matter.Struct]bool) (err error) {
 	switch lastSection {
 	case matter.SectionUnknown:
 		for k, v := range configuratorValues {
@@ -159,7 +159,7 @@ func (r *renderer) flushUnusedConfiguratorValues(e xmlEncoder, lastSection matte
 
 func (r *renderer) flushBitmaps(e xmlEncoder, bitmaps map[*matter.Bitmap]struct{}, clusterIDs []string) (err error) {
 	for bm := range bitmaps {
-		err = r.writeBitmap(e, xml.StartElement{Name: xml.Name{Local: "bitmap"}}, bm, clusterIDs)
+		err = r.writeBitmap(e, xml.StartElement{Name: xml.Name{Local: "bitmap"}}, bm, clusterIDs, true)
 		delete(bitmaps, bm)
 		if err != nil {
 			return
@@ -170,7 +170,7 @@ func (r *renderer) flushBitmaps(e xmlEncoder, bitmaps map[*matter.Bitmap]struct{
 
 func (r *renderer) flushEnums(e xmlEncoder, enums map[*matter.Enum]struct{}, clusterIDs []string) (err error) {
 	for en := range enums {
-		err = r.writeEnum(e, xml.StartElement{Name: xml.Name{Local: "enum"}}, en, clusterIDs)
+		err = r.writeEnum(e, xml.StartElement{Name: xml.Name{Local: "enum"}}, en, clusterIDs, true)
 		delete(enums, en)
 		if err != nil {
 			return
@@ -179,10 +179,13 @@ func (r *renderer) flushEnums(e xmlEncoder, enums map[*matter.Enum]struct{}, clu
 	return
 }
 
-func (r *renderer) flushStructs(e xmlEncoder, structs map[*matter.Struct]struct{}, clusterIDs []string) (err error) {
-	for s := range structs {
-		err = r.writeStruct(e, xml.StartElement{Name: xml.Name{Local: "struct"}}, s, clusterIDs)
-		delete(structs, s)
+func (r *renderer) flushStructs(e xmlEncoder, structs map[*matter.Struct]bool, clusterIDs []string) (err error) {
+	for s, handled := range structs {
+		if handled {
+			continue
+		}
+		err = r.writeStruct(e, xml.StartElement{Name: xml.Name{Local: "struct"}}, s, clusterIDs, true)
+		structs[s] = true
 		if err != nil {
 			return
 		}

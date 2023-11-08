@@ -16,7 +16,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		cx.CreateComment("Attributes")
 	}
 	for _, a := range cluster.Attributes {
-		if a.Conformance == "Zigbee" {
+		if a.Conformance == "Zigbee" || a.Conformance == "D" {
 			continue
 		}
 		mandatory := (a.Conformance == "M")

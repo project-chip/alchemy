@@ -15,6 +15,7 @@ type Errata struct {
 	DefineOverrides              map[string]string
 
 	WriteRoleAsPrivilege bool
+	SeparateStructs      map[string]struct{}
 }
 
 var DefaultErrata = &Errata{
@@ -142,5 +143,11 @@ var Erratas = map[string]*Errata{
 		clusterOrder:                DefaultErrata.clusterOrder,
 		dataTypeOrder:               []matter.Section{matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap, matter.SectionDataTypeStruct},
 		SuppressClusterDefinePrefix: true,
+	},
+	"ResourceMonitoring.adoc": {
+		topOrder:        DefaultErrata.topOrder,
+		clusterOrder:    DefaultErrata.clusterOrder,
+		dataTypeOrder:   DefaultErrata.dataTypeOrder,
+		SeparateStructs: map[string]struct{}{"ReplacementProductStruct": {}},
 	},
 }

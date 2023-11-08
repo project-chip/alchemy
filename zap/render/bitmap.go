@@ -27,12 +27,16 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 
 	Ignore(d, "bitmap")
 
-	return r.writeBitmap(e, el, matchingBitmap, clusterIDs)
+	return r.writeBitmap(e, el, matchingBitmap, clusterIDs, false)
 }
 
-func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matter.Bitmap, clusterIDs []string) (err error) {
+func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matter.Bitmap, clusterIDs []string, provisional bool) (err error) {
 	xfb.Attr = setAttributeValue(xfb.Attr, "name", bitmap.Name)
 	xfb.Attr = setAttributeValue(xfb.Attr, "type", zap.ConvertDataTypeToZap(bitmap.Type))
+	if provisional {
+		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
+	}
+
 	err = e.EncodeToken(xfb)
 	if err != nil {
 		return

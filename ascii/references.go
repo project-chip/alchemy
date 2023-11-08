@@ -10,18 +10,21 @@ import (
 )
 
 func (doc *Doc) CrossReferences() map[string][]*types.InternalCrossReference {
-	crossReferences := make(map[string][]*types.InternalCrossReference)
+	if doc.crossReferences != nil {
+		return doc.crossReferences
+	}
+	doc.crossReferences = make(map[string][]*types.InternalCrossReference)
 	parse.Traverse(nil, doc.Base.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
 		if icr, ok := el.(*types.InternalCrossReference); ok {
 			id, ok := icr.ID.(string)
 			if !ok {
 				return false
 			}
-			crossReferences[id] = append(crossReferences[id], icr)
+			doc.crossReferences[id] = append(doc.crossReferences[id], icr)
 		}
 		return false
 	})
-	return crossReferences
+	return doc.crossReferences
 }
 
 // The parser sometimes doesn't recognize inline references, and just returns them as "<", "<", "ref", ">", ">"

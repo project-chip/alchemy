@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"unicode"
 	"unicode/utf8"
 
@@ -17,6 +18,7 @@ import (
 )
 
 type Doc struct {
+	lock sync.Mutex
 	Path string
 
 	Base     *types.Document
@@ -24,9 +26,11 @@ type Doc struct {
 
 	docType matter.DocType
 
-	Domain matter.Domain
+	Domain  matter.Domain
+	parents []*Doc
 
-	anchors map[string]*Anchor
+	anchors         map[string]*Anchor
+	crossReferences map[string][]*types.InternalCrossReference
 }
 
 func NewDoc(d *types.Document) (*Doc, error) {
@@ -59,6 +63,16 @@ func (doc *Doc) DocType() (matter.DocType, error) {
 }
 
 func GetDocType(docPath string) (matter.DocType, error) {
+
+	switch filepath.Base(docPath) {
+	case "appclusters.adoc":
+		return matter.DocTypeAppClusters, nil
+	case "standard_namespaces.adoc":
+		return matter.DocTypeNamespaces, nil
+	case "device_library.adoc":
+		return matter.DocTypeDeviceTypes, nil
+	}
+
 	path, err := filepath.Abs(docPath)
 	if err != nil {
 		return matter.DocTypeUnknown, err
@@ -88,7 +102,7 @@ func GetDocType(docPath string) (matter.DocType, error) {
 		case "multi_admin":
 			return matter.DocTypeMultiAdmin, nil
 		case "namespaces":
-			return matter.DocTypeNamespaces, nil
+			return matter.DocTypeNamespace, nil
 		case "qr_code":
 			return matter.DocTypeQRCode, nil
 		case "rendezvous":
@@ -123,15 +137,18 @@ func (d *Doc) Footnotes() []*types.Footnote {
 	return d.Base.Footnotes
 }
 
+func (d *Doc) Parents() []*Doc {
+	return d.parents
+}
+
+func (d *Doc) addParent(parent *Doc) {
+	d.lock.Lock()
+	d.parents = append(d.parents, parent)
+	d.lock.Unlock()
+}
+
 func (d *Doc) ToModel() (models []interface{}, err error) {
 	dt, err := d.DocType()
-	if err != nil {
-		return nil, err
-	}
-
-	crossReferences := d.CrossReferences()
-
-	d.anchors, err = d.Anchors(crossReferences)
 	if err != nil {
 		return nil, err
 	}
@@ -151,11 +168,7 @@ func (d *Doc) ToModel() (models []interface{}, err error) {
 
 func Open(path string, settings ...configuration.Setting) (*Doc, error) {
 
-	var commonAttributes = map[string]interface{}{
-		"env-github": true,
-	}
-
-	baseConfig := []configuration.Setting{configuration.WithFilename(path), configuration.WithAttributes(commonAttributes)}
+	baseConfig := []configuration.Setting{configuration.WithFilename(path)}
 
 	baseConfig = append(baseConfig, settings...)
 
@@ -188,3 +201,7 @@ func Open(path string, settings ...configuration.Setting) (*Doc, error) {
 	doc.Path = path
 	return doc, nil
 }
+
+var GithubSettings = []configuration.Setting{configuration.WithAttributes(map[string]interface{}{
+	"env-github": true,
+})}

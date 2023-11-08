@@ -31,6 +31,8 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 		en := cx.CreateElement("enum")
 		en.CreateAttr("name", v.Name)
 		en.CreateAttr("type", zap.ConvertDataTypeToZap(v.Type))
+		en.CreateAttr("apiMaturity", "provisional")
+
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
@@ -56,6 +58,8 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 		en := cx.CreateElement("bitmap")
 		en.CreateAttr("name", bm.Name)
 		en.CreateAttr("type", zap.ConvertDataTypeToZap(bm.Type))
+		en.CreateAttr("apiMaturity", "provisional")
+
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
@@ -71,6 +75,7 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 			evx := en.CreateElement("field")
 			evx.CreateAttr("name", bv.Name)
 			evx.CreateAttr("value", fmt.Sprintf("%#02x", 1<<(bit-1)))
+
 		}
 
 	}
@@ -80,6 +85,7 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 	for _, v := range structs {
 		en := cx.CreateElement("struct")
 		en.CreateAttr("name", v.Name)
+		en.CreateAttr("apiMaturity", "provisional")
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}

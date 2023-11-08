@@ -56,8 +56,6 @@ func ZAPName(name string) string {
 		name = "Washer Controls"
 	case "Scenes":
 		return "scene"
-	case "ThreadBorderRouterDiagnostics":
-		return "thread-network-diagnostics-cluster"
 	case "WindowCovering":
 		return "window-covering"
 	case "RefrigeratorAlarm":

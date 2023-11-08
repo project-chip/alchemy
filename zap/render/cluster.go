@@ -233,6 +233,10 @@ func (*renderer) flushClusterValues(e xmlEncoder, clusterValues map[string]strin
 
 func (r *renderer) flushAttributes(e xmlEncoder, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
 	for a := range attributes {
+		if a.Conformance == "D" {
+			delete(attributes, a)
+			continue
+		}
 		err = r.writeAttribute(e, xml.StartElement{Name: xml.Name{Local: "attribute"}}, a, clusterPrefix)
 		delete(attributes, a)
 		if err != nil {
@@ -255,7 +259,7 @@ func (r *renderer) flushCommands(e xmlEncoder, commands map[*matter.Command]stru
 
 func (r *renderer) flushEvents(e xmlEncoder, events map[*matter.Event]struct{}, clusterPrefix string) (err error) {
 	for ev := range events {
-		err = r.writeEvent(e, xml.StartElement{Name: xml.Name{Local: "event"}}, ev)
+		err = r.writeEvent(e, xml.StartElement{Name: xml.Name{Local: "event"}}, ev, true)
 		delete(events, ev)
 		if err != nil {
 			return

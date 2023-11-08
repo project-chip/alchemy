@@ -16,8 +16,12 @@ type Anchor struct {
 	Name    string
 }
 
-func (doc *Doc) Anchors(crossReferences map[string][]*types.InternalCrossReference) (map[string]*Anchor, error) {
+func (doc *Doc) Anchors() (map[string]*Anchor, error) {
+	if doc.anchors != nil {
+		return doc.anchors, nil
+	}
 	anchors := make(map[string]*Anchor)
+	crossReferences := doc.CrossReferences()
 	parse.Traverse(doc, doc.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
 		var wa types.WithAttributes
 		e, ok := el.(*Element)
@@ -80,6 +84,6 @@ func (doc *Doc) Anchors(crossReferences map[string][]*types.InternalCrossReferen
 		}
 		return false
 	})
-
+	doc.anchors = anchors
 	return anchors, nil
 }

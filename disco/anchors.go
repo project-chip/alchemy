@@ -16,9 +16,7 @@ var acronymPattern = regexp.MustCompile(`[A-Z]{3,}`)
 
 func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 
-	crossReferences := doc.CrossReferences()
-
-	anchors, err := doc.Anchors(crossReferences)
+	anchors, err := doc.Anchors()
 	if err != nil {
 		return err
 	}
@@ -42,7 +40,7 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 		}
 	}
 
-	b.rewriteCrossReferences(crossReferences, anchors)
+	b.rewriteCrossReferences(doc.CrossReferences(), anchors)
 	return nil
 }
 

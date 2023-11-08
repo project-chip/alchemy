@@ -45,6 +45,7 @@ var matterToZapMap = map[string]string{
 
 	"action-id":      "action_id",
 	"attrib-id":      "attrib_id",
+	"attribute-id":   "attrib_id",
 	"cluster-id":     "cluster_id",
 	"command-id":     "command_id",
 	"data-ver":       "data_ver",
