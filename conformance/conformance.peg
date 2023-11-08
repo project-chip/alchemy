@@ -13,15 +13,12 @@ import (
 Input <- conf:Conformance+  {
     cs := conf.([]interface{})
 
-    if len(cs) == 1 {
-        return cs[0].(matter.Conformance), nil
-    }
-    oc := &OtherwiseConformance{}
+    var set ConformanceSet
     for _, i := range cs {
         con := i.(matter.Conformance)
-        oc.Conformances = append(oc.Conformances, con)
+        set = append(set, con)
     }
-    return oc, nil
+    return set, nil
 }
 
 Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
@@ -108,24 +105,24 @@ EqualsOp <- _ equals:("=="/"!=") _ f:Logical {
 
 FeatureTerm <- '(' _  eq:Equality _ ')' {
     return eq, nil
-} / feature:IdentifierOp {
+} / feature:FeatureOp {
     return feature, nil 
 }
 
-IdentifierOp <- not:'!'? identifier:Identifier {
-    id := identifier.(string)
+FeatureOp <- not:'!'? feature:Feature {
+    id := feature.(string)
     switch id {
         case "O", "M", "P":
             return nil, fmt.Errorf("invalid optional conformance value: %s", id)
     }
-    ic := &IdentifierExpression{ID:id}
+    ic := &FeatureExpression{ID:id}
     if not != nil {
         ic.Not = true
     }
     return ic, nil
 }
 
-Identifier <- [A-Z]+ {
+Feature <- [A-Z]+ {
     return string(c.text), nil
 }
 

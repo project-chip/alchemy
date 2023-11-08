@@ -10,6 +10,10 @@ func (dc *DisallowedConformance) RawText() string {
 	return dc.raw
 }
 
+func (dc *DisallowedConformance) String() string {
+	return "disallowed"
+}
+
 func (id *DisallowedConformance) Eval(context matter.ConformanceContext) (matter.ConformanceState, error) {
 	return matter.ConformanceStateDisallowed, nil
 }
