@@ -9,9 +9,10 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.6.0
 	github.com/bytesparadise/libasciidoc v0.8.0
 	github.com/dolthub/go-mysql-server v0.17.0
+	github.com/iancoleman/orderedmap v0.3.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/urfave/cli/v2 v2.25.7
+	github.com/spf13/cobra v1.8.0
 	golang.org/x/sync v0.4.0
 	golang.org/x/text v0.13.0
 )
@@ -19,7 +20,6 @@ require (
 require (
 	github.com/alecthomas/chroma/v2 v2.3.0 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/dolthub/flatbuffers/v23 v23.3.3-dh.2 // indirect
@@ -32,19 +32,19 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lestrrat-go/strftime v1.0.4 // indirect
 	github.com/mitchellh/hashstructure v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tetratelabs/wazero v1.1.0 // indirect
-	github.com/tidwall/gjson v1.14.4 // indirect
+	github.com/tidwall/gjson v1.17.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
-	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	go.opentelemetry.io/otel v1.7.0 // indirect
 	go.opentelemetry.io/otel/trace v1.7.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect

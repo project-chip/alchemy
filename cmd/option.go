@@ -8,10 +8,10 @@ import (
 	"github.com/hasty/alchemy/disco"
 )
 
-type Option func(o interface{}) error
+type Option func(o any) error
 
 func DryRun(dry bool) Option {
-	return func(o interface{}) error {
+	return func(o any) error {
 		if fp, ok := o.(fileProcessor); ok {
 			fp.setDryRun(dry)
 			return nil
@@ -21,7 +21,7 @@ func DryRun(dry bool) Option {
 }
 
 func Serial(serial bool) Option {
-	return func(o interface{}) error {
+	return func(o any) error {
 		if fp, ok := o.(fileProcessor); ok {
 			fp.setSerial(serial)
 			return nil
@@ -31,7 +31,7 @@ func Serial(serial bool) Option {
 }
 
 func Disco(opt disco.Option) Option {
-	return func(o interface{}) error {
+	return func(o any) error {
 		switch v := o.(type) {
 		case *discoBall:
 			v.options = append(v.options, opt)
@@ -43,7 +43,7 @@ func Disco(opt disco.Option) Option {
 }
 
 func AsciiAttributes(attributes []string) Option {
-	return func(o interface{}) error {
+	return func(o any) error {
 		as, ok := o.(asciiSettings)
 		if !ok {
 			return fmt.Errorf("invalid option for %T", o)
@@ -61,65 +61,5 @@ func AsciiAttributes(attributes []string) Option {
 		}
 
 		return nil
-	}
-}
-
-func DumpAscii(d bool) Option {
-	return func(o interface{}) error {
-		switch v := o.(type) {
-		case *dumper:
-			v.dumpAscii = d
-			return nil
-		default:
-			return fmt.Errorf("invalid option for %T", o)
-		}
-	}
-}
-
-func DumpJSON(d bool) Option {
-	return func(o interface{}) error {
-		switch v := o.(type) {
-		case *dumper:
-			v.dumpJSON = d
-			return nil
-		default:
-			return fmt.Errorf("invalid option for %T", o)
-		}
-	}
-}
-
-func DBRaw(raw bool) Option {
-	return func(o interface{}) error {
-		switch v := o.(type) {
-		case *databaseReader:
-			v.raw = raw
-			return nil
-		default:
-			return fmt.Errorf("invalid option for %T", o)
-		}
-	}
-}
-
-func DBAddress(address string) Option {
-	return func(o interface{}) error {
-		switch v := o.(type) {
-		case *databaseReader:
-			v.address = address
-			return nil
-		default:
-			return fmt.Errorf("invalid option for %T", o)
-		}
-	}
-}
-
-func DBPort(port int) Option {
-	return func(o interface{}) error {
-		switch v := o.(type) {
-		case *databaseReader:
-			v.port = port
-			return nil
-		default:
-			return fmt.Errorf("invalid option for %T", o)
-		}
 	}
 }

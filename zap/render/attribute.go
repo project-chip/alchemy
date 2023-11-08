@@ -12,6 +12,7 @@ import (
 
 func writeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
 	if dt == nil {
+		panic("missing data type")
 		return attr
 	}
 	dts := zap.ConvertDataTypeToZap(dt.Name)
@@ -184,7 +185,7 @@ func (r *renderer) amendAttribute(ts *tokenSet, e xmlEncoder, el xml.StartElemen
 	}
 	var field *matter.Field
 	for a := range attributes {
-		if a.ID.Equals(attributeID) {
+		if a.ID.Equals(attributeID) && a.Conformance != "Zigbee" {
 			field = a
 			delete(attributes, a)
 			break
@@ -196,5 +197,10 @@ func (r *renderer) amendAttribute(ts *tokenSet, e xmlEncoder, el xml.StartElemen
 	}
 
 	Ignore(ts, "attribute")
+
+	if field.Conformance == "D" {
+		return nil
+	}
+
 	return r.writeAttribute(e, el, field, clusterPrefix)
 }

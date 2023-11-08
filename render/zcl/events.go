@@ -15,6 +15,7 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 		ex.CreateAttr("name", e.Name)
 		ex.CreateAttr("priority", strings.ToLower(e.Priority))
 		ex.CreateAttr("side", "server")
+		ex.CreateAttr("apiMaturity", "provisional")
 		if e.Access.FabricSensitive {
 			ex.CreateAttr("isFabricSensitive", "true")
 		}
@@ -39,6 +40,7 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 			fx.CreateAttr("fieldId", f.ID.IntString())
 			fx.CreateAttr("name", f.Name)
 			writeDataType(fx, f.Type)
+			fx.CreateAttr("apiMaturity", "provisional")
 		}
 		if e.Access.Read != matter.PrivilegeUnknown {
 			ax := ex.CreateElement("access")

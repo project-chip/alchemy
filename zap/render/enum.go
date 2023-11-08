@@ -26,13 +26,17 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 
 	Ignore(d, "enum")
 
-	return r.writeEnum(e, el, matchingEnum, clusterIDs)
+	return r.writeEnum(e, el, matchingEnum, clusterIDs, false)
 }
 
-func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum, clusterIDs []string) (err error) {
+func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum, clusterIDs []string, provisional bool) (err error) {
 	xfb := el.Copy()
 	xfb.Attr = setAttributeValue(xfb.Attr, "name", en.Name)
 	xfb.Attr = setAttributeValue(xfb.Attr, "type", en.Type)
+	if provisional {
+		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
+	}
+
 	err = e.EncodeToken(xfb)
 	if err != nil {
 		return

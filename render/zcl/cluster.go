@@ -14,6 +14,8 @@ import (
 func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster, w *etree.Element, errata *Errata) error {
 
 	cx := w.CreateElement("cluster")
+	cx.CreateAttr("apiMaturity", "provisional")
+
 	cx.CreateElement("name").SetText(cluster.Name)
 	dom := cx.CreateElement("domain")
 	domainName := matter.DomainNames[doc.Domain]

@@ -28,10 +28,10 @@ func (r *renderer) amendEvent(ts *tokenSet, e xmlEncoder, el xml.StartElement, e
 
 	Ignore(ts, "event")
 
-	return r.writeEvent(e, el, matchingEvent)
+	return r.writeEvent(e, el, matchingEvent, false)
 }
 
-func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Event) (err error) {
+func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Event, provisional bool) (err error) {
 
 	xfb := el.Copy()
 	xfb.Name = xml.Name{Local: "event"}
@@ -46,6 +46,9 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 	}
 	if ev.Conformance != "M" {
 		xfb.Attr = setAttributeValue(xfb.Attr, "optional", "true")
+	}
+	if provisional {
+		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
 	}
 
 	err = e.EncodeToken(xfb)

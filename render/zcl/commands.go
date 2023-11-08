@@ -48,6 +48,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 	if c.Access.Timed {
 		cx.CreateAttr("mustUseTimedInvoke", "true")
 	}
+	cx.CreateAttr("apiMaturity", "provisional")
 
 	if c.Access.Invoke != matter.PrivilegeUnknown {
 		ax := cx.CreateElement("access")
@@ -67,6 +68,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 			fx.CreateAttr("optional", "true")
 		}
 		renderConstraint(f.Constraint, fx)
+		fx.CreateAttr("apiMaturity", "provisional")
 	}
 	cx.CreateElement("description").SetText(c.Description)
 }

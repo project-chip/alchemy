@@ -242,21 +242,23 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 				if v.Content == "list[" {
 					val.IsArray = true
 				} else if val.Name == "" {
-					anchor, ok := d.anchors[v.Content]
-					if ok {
-						//fmt.Printf("array anchor: %v\n", anchor.Element)
+					anchor, _ := d.getAnchor(v.Content)
+					if anchor != nil {
+						fmt.Printf("array anchor: %v\n", anchor.Element)
 						val.Name = ReferenceName(anchor.Element)
 					} else {
-						val.Name = v.Content
+						name := strings.TrimPrefix(v.Content, "_")
+						val.Name = name
 					}
 				}
 			case *types.InternalCrossReference:
-				anchor, ok := d.anchors[v.ID.(string)]
-				if ok {
-					//fmt.Printf("type anchor: %v %T\n", anchor.Element, anchor.Element)
+				anchor, _ := d.getAnchor(v.ID.(string))
+				if anchor != nil {
+					fmt.Printf("type anchor: %v %T\n", anchor.Element, anchor.Element)
 					val.Name = ReferenceName(anchor.Element)
 				} else {
-					val.Name = v.ID.(string)
+					name := strings.TrimPrefix(v.ID.(string), "_")
+					val.Name = name
 				}
 				break
 			default:
@@ -268,6 +270,26 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 	val.Name = strings.TrimSuffix(val.Name, " Type")
 
 	return val
+}
+
+func (d *Doc) getAnchor(id string) (*Anchor, error) {
+	anchors, err := d.Anchors()
+	if err != nil {
+		return nil, err
+	}
+	if a, ok := anchors[id]; ok {
+		return a, nil
+	}
+	for _, p := range d.Parents() {
+		a, err := p.getAnchor(id)
+		if err != nil {
+			return nil, err
+		}
+		if a != nil {
+			return a, nil
+		}
+	}
+	return nil, nil
 }
 
 func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn, parentDataType *matter.DataType) matter.Constraint {
