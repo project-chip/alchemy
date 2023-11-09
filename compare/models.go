@@ -19,7 +19,7 @@ func compareModels(specModels map[string][]any, zapModels map[string][]any) (dif
 		for _, m := range sm {
 			switch v := m.(type) {
 			case *matter.Cluster:
-				fmt.Printf("adding spec cluster: %s\n", v.ID)
+				fmt.Printf("adding spec cluster: %s\n", v.ID.IntString())
 				specClusters[v.ID.Value()] = v
 			default:
 				fmt.Printf("unexpected spec model: %T\n", m)
@@ -29,7 +29,7 @@ func compareModels(specModels map[string][]any, zapModels map[string][]any) (dif
 		for _, m := range zm {
 			switch v := m.(type) {
 			case *matter.Cluster:
-				fmt.Printf("adding ZAP cluster: %s\n", v.ID)
+				fmt.Printf("adding ZAP cluster: %s\n", v.ID.IntString())
 				zapClusters[v.ID.Value()] = v
 			default:
 				fmt.Printf("unexpected ZAP model: %T\n", m)
@@ -42,22 +42,22 @@ func compareModels(specModels map[string][]any, zapModels map[string][]any) (dif
 				var clusterDiffs *ClusterDifferences
 				clusterDiffs, err = compareClusters(sc, zc)
 				if err != nil {
-					fmt.Printf("unable to compare clusters (%s): %v\n", cid, err)
+					fmt.Printf("unable to compare clusters (%d): %v\n", cid, err)
 					err = nil
 				} else if clusterDiffs != nil {
 					diffs = append(diffs, clusterDiffs)
 				}
 				delete(zapClusters, cid)
 			} else {
-				fmt.Printf("ZAP cluster %s missing from %s; ", cid, path)
+				fmt.Printf("ZAP cluster %d missing from %s; ", cid, path)
 				for zid := range zapClusters {
-					fmt.Printf("have %s,", zid)
+					fmt.Printf("have %d,", zid)
 				}
 				fmt.Println()
 			}
 		}
 		for cid := range zapClusters {
-			fmt.Printf("Spec cluster %s missing from %s\n", cid, path)
+			fmt.Printf("Spec cluster %d missing from %s\n", cid, path)
 		}
 	}
 

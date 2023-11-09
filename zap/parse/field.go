@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/zap"
 )
@@ -99,16 +99,16 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 		field.Type.Name = fieldType
 	}
 	if len(max) > 0 && len(min) > 0 {
-		field.Constraint = ascii.ParseConstraint(field.Type, fmt.Sprintf("%s to %s", min, max))
+		field.Constraint = constraint.ParseConstraint(fmt.Sprintf("%s to %s", min, max))
 	} else if len(max) > 0 {
-		field.Constraint = ascii.ParseConstraint(field.Type, fmt.Sprintf("max %s", max))
+		field.Constraint = constraint.ParseConstraint(fmt.Sprintf("max %s", max))
 	} else if len(min) > 0 {
-		field.Constraint = ascii.ParseConstraint(field.Type, fmt.Sprintf("min %s", min))
+		field.Constraint = constraint.ParseConstraint(fmt.Sprintf("min %s", min))
 	} else if len(length) > 0 {
 		if len(minLength) > 0 {
-			field.Constraint = ascii.ParseConstraint(field.Type, fmt.Sprintf("%s to %s", minLength, length))
+			field.Constraint = constraint.ParseConstraint(fmt.Sprintf("%s to %s", minLength, length))
 		} else {
-			field.Constraint = ascii.ParseConstraint(field.Type, fmt.Sprintf("max %s", length))
+			field.Constraint = constraint.ParseConstraint(fmt.Sprintf("max %s", length))
 		}
 	}
 	return nil

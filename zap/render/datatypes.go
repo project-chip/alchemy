@@ -1,4 +1,4 @@
-package zcl
+package render
 
 import (
 	"fmt"
@@ -99,7 +99,7 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 			if f.Conformance != "M" {
 				fx.CreateAttr("optional", "true")
 			}
-			renderConstraint(f.Constraint, fx)
+			renderConstraint(v.Fields, f.Type, f.Constraint, fx)
 		}
 
 	}

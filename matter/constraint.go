@@ -2,18 +2,25 @@ package matter
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 )
 
 type Constraint interface {
 	AsciiDocString() string
 	Equal(o Constraint) bool
+	MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme)
 }
 
 type ConstraintLimit interface {
 	AsciiDocString() string
-	ZCLString() string
 	Equal(o ConstraintLimit) bool
+	MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme)
+}
+
+type ConstraintExtreme struct {
+	Defined bool
+	Value   int64
 }
 
 type AllConstraint struct {
@@ -24,13 +31,13 @@ func (c *AllConstraint) AsciiDocString() string {
 	return c.Value
 }
 
-func (c *AllConstraint) ZCLString() string {
-	return ""
-}
-
 func (c *AllConstraint) Equal(o Constraint) bool {
 	_, ok := o.(*AllConstraint)
 	return ok
+}
+
+func (c *AllConstraint) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{}, ConstraintExtreme{}
 }
 
 type DescribedConstraint struct {
@@ -40,142 +47,13 @@ func (c *DescribedConstraint) AsciiDocString() string {
 	return "desc"
 }
 
-func (c *DescribedConstraint) ZCLString() string {
-	return ""
-}
-
 func (c *DescribedConstraint) Equal(o Constraint) bool {
 	_, ok := o.(*DescribedConstraint)
 	return ok
 }
 
-type IntLimit struct {
-	Value int64
-}
-
-func (c *IntLimit) AsciiDocString() string {
-	return strconv.FormatInt(c.Value, 10)
-}
-
-func (c *IntLimit) ZCLString() string {
-	return strconv.FormatInt(c.Value, 10)
-}
-
-func (c *IntLimit) Equal(o ConstraintLimit) bool {
-	if oc, ok := o.(*IntLimit); ok {
-		return oc.Value == c.Value
-	}
-	return false
-}
-
-type HexLimit struct {
-	Value uint64
-}
-
-func (c *HexLimit) AsciiDocString() string {
-	return fmt.Sprintf("0x%x", c.Value)
-}
-
-func (c *HexLimit) ZCLString() string {
-	return fmt.Sprintf("0x%x", c.Value)
-}
-
-func (c *HexLimit) Equal(o ConstraintLimit) bool {
-	if oc, ok := o.(*HexLimit); ok {
-		return oc.Value == c.Value
-	}
-	return false
-}
-
-type PercentLimit struct {
-	Value      uint64
-	Hundredths bool
-}
-
-func (c *PercentLimit) AsciiDocString() string {
-	if c.Hundredths {
-		if c.Value%100 == 0 {
-			return strconv.FormatUint(c.Value/100, 10)
-		}
-		return fmt.Sprintf("%.2f", float64(c.Value)/100)
-	}
-	return strconv.FormatUint(c.Value, 10)
-}
-
-func (c *PercentLimit) ZCLString() string {
-	return fmt.Sprintf("0x%x", c.Value)
-}
-
-func (c *PercentLimit) Equal(o ConstraintLimit) bool {
-	if oc, ok := o.(*PercentLimit); ok {
-		return oc.Value == c.Value && oc.Hundredths == c.Hundredths
-	}
-	return false
-}
-
-type TemperatureLimit struct {
-	Value uint64
-}
-
-func (c *TemperatureLimit) AsciiDocString() string {
-	return strconv.FormatUint(c.Value, 10)
-}
-
-func (c *TemperatureLimit) ZCLString() string {
-	return fmt.Sprintf("0x%x", c.Value)
-}
-
-func (c *TemperatureLimit) Equal(o ConstraintLimit) bool {
-	if oc, ok := o.(*TemperatureLimit); ok {
-		return oc.Value == c.Value
-	}
-	return false
-}
-
-type MaxLengthConstraint struct {
-	Length ConstraintLimit
-}
-
-func (c *MaxLengthConstraint) AsciiDocString() string {
-	return fmt.Sprintf("max %s", c.Length.AsciiDocString())
-}
-
-func (c *MaxLengthConstraint) Equal(o Constraint) bool {
-	if oc, ok := o.(*MaxLengthConstraint); ok {
-		return oc.Length.Equal(c.Length)
-	}
-	return false
-}
-
-type MinLengthConstraint struct {
-	Length ConstraintLimit
-}
-
-func (c *MinLengthConstraint) AsciiDocString() string {
-	return fmt.Sprintf("min %s", c.Length.AsciiDocString())
-}
-
-func (c *MinLengthConstraint) Equal(o Constraint) bool {
-	if oc, ok := o.(*MinLengthConstraint); ok {
-		return oc.Length.Equal(c.Length)
-	}
-	return false
-}
-
-type LengthRangeConstraint struct {
-	Min ConstraintLimit `json:"min"`
-	Max ConstraintLimit `json:"max"`
-}
-
-func (c *LengthRangeConstraint) AsciiDocString() string {
-	return fmt.Sprintf("%s to %s", c.Min.AsciiDocString(), c.Max.AsciiDocString())
-}
-
-func (c *LengthRangeConstraint) Equal(o Constraint) bool {
-	if oc, ok := o.(*LengthRangeConstraint); ok {
-		return oc.Min.Equal(c.Min) && oc.Max.Equal(c.Max)
-	}
-	return false
+func (c *DescribedConstraint) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{}, ConstraintExtreme{}
 }
 
 type MinConstraint struct {
@@ -193,6 +71,10 @@ func (c *MinConstraint) Equal(o Constraint) bool {
 	return false
 }
 
+func (c *MinConstraint) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{}, ConstraintExtreme{}
+}
+
 type MaxConstraint struct {
 	Max ConstraintLimit
 }
@@ -208,9 +90,13 @@ func (c *MaxConstraint) Equal(o Constraint) bool {
 	return false
 }
 
+func (c *MaxConstraint) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{}, ConstraintExtreme{}
+}
+
 type RangeConstraint struct {
 	Min ConstraintLimit `json:"min"`
-	Max ConstraintLimit
+	Max ConstraintLimit `json:"max"`
 }
 
 func (c *RangeConstraint) AsciiDocString() string {
@@ -222,6 +108,10 @@ func (c *RangeConstraint) Equal(o Constraint) bool {
 		return oc.Min.Equal(c.Min) && oc.Max.Equal(c.Max)
 	}
 	return false
+}
+
+func (c *RangeConstraint) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{}, ConstraintExtreme{}
 }
 
 type ListConstraint struct {
@@ -240,6 +130,10 @@ func (c *ListConstraint) Equal(o Constraint) bool {
 	return false
 }
 
+func (c *ListConstraint) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{}, ConstraintExtreme{}
+}
+
 type GenericConstraint struct {
 	Value string
 }
@@ -253,4 +147,184 @@ func (c *GenericConstraint) Equal(o Constraint) bool {
 		return oc.Value == c.Value
 	}
 	return false
+}
+
+func (c *GenericConstraint) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{}, ConstraintExtreme{}
+}
+
+type IntLimit struct {
+	Value int64
+}
+
+func (c *IntLimit) AsciiDocString() string {
+	return strconv.FormatInt(c.Value, 10)
+}
+
+func (c *IntLimit) Equal(o ConstraintLimit) bool {
+	if oc, ok := o.(*IntLimit); ok {
+		return oc.Value == c.Value
+	}
+	return false
+}
+
+func (c *IntLimit) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{Defined: true, Value: c.Value}, ConstraintExtreme{Defined: true, Value: c.Value}
+}
+
+type HexLimit struct {
+	Value uint64
+}
+
+func (c *HexLimit) AsciiDocString() string {
+	return fmt.Sprintf("0x%X", c.Value)
+}
+
+func (c *HexLimit) Equal(o ConstraintLimit) bool {
+	if oc, ok := o.(*HexLimit); ok {
+		return oc.Value == c.Value
+	}
+	return false
+}
+
+func (c *HexLimit) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{Defined: true, Value: int64(c.Value)}, ConstraintExtreme{Defined: true, Value: int64(c.Value)}
+}
+
+type PercentLimit struct {
+	Value      *big.Float
+	Hundredths bool
+}
+
+func (c *PercentLimit) AsciiDocString() string {
+	if c.Hundredths {
+		if c.Value.IsInt() {
+			i, _ := c.Value.Uint64()
+			return strconv.FormatUint(i/100, 10)
+		}
+		return fmt.Sprintf("%.2f", c.Value)
+	}
+	i, _ := c.Value.Uint64()
+	return strconv.FormatUint(i, 10)
+}
+
+func (c *PercentLimit) Equal(o ConstraintLimit) bool {
+	if oc, ok := o.(*PercentLimit); ok {
+		return oc.Value == c.Value && oc.Hundredths == c.Hundredths
+	}
+	return false
+}
+
+func (c *PercentLimit) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	i, _ := c.Value.Int64()
+	return ConstraintExtreme{Defined: true, Value: i}, ConstraintExtreme{Defined: true, Value: i}
+}
+
+type TemperatureLimit struct {
+	Value *big.Float
+}
+
+func (c *TemperatureLimit) AsciiDocString() string {
+	return c.Value.String() + "°C"
+}
+
+func (c *TemperatureLimit) Equal(o ConstraintLimit) bool {
+	if oc, ok := o.(*TemperatureLimit); ok {
+		return oc.Value == c.Value
+	}
+	return false
+}
+
+func (c *TemperatureLimit) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	return ConstraintExtreme{}, ConstraintExtreme{}
+}
+
+type ReferenceLimit struct {
+	Value string
+}
+
+func (c *ReferenceLimit) AsciiDocString() string {
+	return c.Value
+}
+
+func (c *ReferenceLimit) Equal(o ConstraintLimit) bool {
+	if oc, ok := o.(*ReferenceLimit); ok {
+		return oc.Value == c.Value
+	}
+	return false
+}
+
+func (c *ReferenceLimit) MinMax(fs FieldSet) (min ConstraintExtreme, max ConstraintExtreme) {
+	r := fs.GetField(c.Value)
+	if r == nil || r.Constraint == nil {
+		return ConstraintExtreme{}, ConstraintExtreme{}
+	}
+	return r.Constraint.MinMax(fs)
+}
+
+type MathExpressionLimit struct {
+	Operand string
+	Left    ConstraintLimit
+	Right   ConstraintLimit
+}
+
+func (c *MathExpressionLimit) AsciiDocString() string {
+	return fmt.Sprintf("(%s %s %s)", c.Left.AsciiDocString(), c.Operand, c.Right.AsciiDocString())
+}
+
+func (c *MathExpressionLimit) Equal(o ConstraintLimit) bool {
+	if oc, ok := o.(*MathExpressionLimit); ok {
+		return oc.Operand == c.Operand && oc.Left.Equal(c.Left) && oc.Right.Equal(c.Right)
+	}
+	return false
+}
+
+func (c *MathExpressionLimit) MinMax(fs FieldSet) (ConstraintExtreme, ConstraintExtreme) {
+	leftMin, leftMax := c.Left.MinMax(fs)
+	rightMin, rightMax := c.Right.MinMax(fs)
+	var min, max int64
+	switch c.Operand {
+	case "+":
+		min = leftMin.Value + rightMin.Value
+		max = leftMax.Value + rightMax.Value
+	case "-":
+		min = leftMin.Value - rightMin.Value
+		max = leftMax.Value - rightMax.Value
+	case "*":
+		min = leftMin.Value * rightMin.Value
+		max = leftMax.Value * rightMax.Value
+	case "/":
+		min = leftMin.Value / rightMin.Value
+		max = leftMax.Value / rightMax.Value
+	}
+	var minExtreme ConstraintExtreme
+	var maxExtreme ConstraintExtreme
+	if leftMin.Defined && rightMin.Defined {
+		minExtreme.Defined = true
+		minExtreme.Value = min
+	}
+	if leftMax.Defined && rightMax.Defined {
+		maxExtreme.Defined = true
+		maxExtreme.Value = max
+	}
+	return minExtreme, maxExtreme
+}
+
+type ManufacturerLimit struct {
+	Value string
+}
+
+func (c *ManufacturerLimit) AsciiDocString() string {
+	return c.Value
+}
+
+func (c *ManufacturerLimit) Equal(o ConstraintLimit) bool {
+	if oc, ok := o.(*ManufacturerLimit); ok {
+		return oc.Value == c.Value
+	}
+	return false
+}
+
+func (c *ManufacturerLimit) MinMax(fs FieldSet) (ConstraintExtreme, ConstraintExtreme) {
+	return ConstraintExtreme{}, ConstraintExtreme{}
 }

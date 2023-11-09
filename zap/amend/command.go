@@ -1,4 +1,4 @@
-package render
+package amend
 
 import (
 	"encoding/xml"
@@ -94,7 +94,7 @@ func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Com
 		if !mandatory {
 			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
 		}
-		xfs.Attr = r.renderConstraint(xfs.Attr, f.Constraint)
+		xfs.Attr = r.renderConstraint(c.Fields, xfs.Attr, f.Type, f.Constraint)
 		err = e.EncodeToken(xfs)
 		if err != nil {
 			return

@@ -65,6 +65,14 @@ Equality <- _ left:Logical right:EqualsOp* _ {
     return ee, nil
 }
 
+EqualsOp <- _ equals:("=="/"!=") _ f:Logical {
+    fc := f.(ConformanceExpression)
+    return &EqualityExpression{
+        Not: (string(equals.([]uint8)) == "!="),
+        Right:fc,
+    }, nil
+}
+
 Logical <- _ left:FeatureTerm _ right:LogicalOp* _ {
     if right == nil {
         return left, nil
@@ -83,10 +91,6 @@ Logical <- _ left:FeatureTerm _ right:LogicalOp* _ {
     return le, nil
 } 
 
-LogicalOperators <- ("|" / "&" / "^") {
-    return c.text, nil
-}
-
 LogicalOp <- _ logical:LogicalOperators _ f:FeatureTerm {
     fc := f.(ConformanceExpression)
     return &LogicalExpression{
@@ -95,12 +99,8 @@ LogicalOp <- _ logical:LogicalOperators _ f:FeatureTerm {
     }, nil
 }
 
-EqualsOp <- _ equals:("=="/"!=") _ f:Logical {
-    fc := f.(ConformanceExpression)
-    return &EqualityExpression{
-        Not: (string(equals.([]uint8)) == "!="),
-        Right:fc,
-    }, nil
+LogicalOperators <- ("|" / "&" / "^") {
+    return c.text, nil
 }
 
 FeatureTerm <- '(' _  eq:Equality _ ')' {
@@ -123,6 +123,10 @@ FeatureOp <- not:'!'? feature:Feature {
 }
 
 Feature <- [A-Z]+ {
+    return string(c.text), nil
+}
+
+Identifier <- ([A-Z]+[a-z]+)+ {
     return string(c.text), nil
 }
 

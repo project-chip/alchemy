@@ -1,4 +1,4 @@
-package render
+package amend
 
 import (
 	"encoding/xml"
@@ -9,14 +9,14 @@ import (
 	"slices"
 
 	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/render/zcl"
+	"github.com/hasty/alchemy/zap/render"
 )
 
 type renderer struct {
 	doc    *ascii.Doc
 	models []any
 
-	errata *zcl.Errata
+	errata *render.Errata
 }
 
 type xmlDecoder interface {
@@ -104,9 +104,9 @@ func Render(doc *ascii.Doc, r io.Reader, w io.Writer, models []any) (err error) 
 	e := xml.NewEncoder(w)
 	e.Indent("", "  ")
 
-	errata, ok := zcl.Erratas[filepath.Base(doc.Path)]
+	errata, ok := render.Erratas[filepath.Base(doc.Path)]
 	if !ok {
-		errata = zcl.DefaultErrata
+		errata = render.DefaultErrata
 	}
 
 	rend := &renderer{

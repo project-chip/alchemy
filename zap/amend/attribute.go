@@ -1,13 +1,14 @@
-package render
+package amend
 
 import (
 	"encoding/xml"
+	"fmt"
 	"strconv"
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
-	"github.com/hasty/alchemy/render/zcl"
 	"github.com/hasty/alchemy/zap"
+	"github.com/hasty/alchemy/zap/render"
 )
 
 func writeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
@@ -41,13 +42,13 @@ func writeCommandDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
 	return attr
 }
 
-func (r *renderer) writeAttribute(e xmlEncoder, el xml.StartElement, a *matter.Field, clusterPrefix string) (err error) {
+func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.StartElement, a *matter.Field, clusterPrefix string) (err error) {
 
 	el.Name = xml.Name{Local: "attribute"}
 	el.Attr = setAttributeValue(el.Attr, "code", a.ID.HexString())
 	el.Attr = setAttributeValue(el.Attr, "side", "server")
 	el.Attr = writeDataType(a.Type, el.Attr)
-	define := zcl.GetDefine(a.Name, clusterPrefix, r.errata)
+	define := render.GetDefine(a.Name, clusterPrefix, r.errata)
 	el.Attr = setAttributeValue(el.Attr, "define", define)
 	if a.Quality.Has(matter.QualityNullable) {
 		el.Attr = setAttributeValue(el.Attr, "isNullable", "true")
@@ -86,7 +87,7 @@ func (r *renderer) writeAttribute(e xmlEncoder, el xml.StartElement, a *matter.F
 		el.Attr = removeAttribute(el.Attr, "default")
 	}
 
-	el.Attr = r.renderConstraint(el.Attr, a.Constraint)
+	el.Attr = r.renderConstraint(cluster.Attributes, el.Attr, a.Type, a.Constraint)
 
 	if a.Conformance != "M" {
 		el.Attr = setAttributeValue(el.Attr, "optional", "true")
@@ -155,27 +156,34 @@ func (r *renderer) writeAttribute(e xmlEncoder, el xml.StartElement, a *matter.F
 	return
 }
 
-func (*renderer) renderConstraint(attr []xml.Attr, c matter.Constraint) []xml.Attr {
-	switch c := c.(type) {
-	case *matter.RangeConstraint:
-		attr = setAttributeValue(attr, "min", c.Min.ZCLString())
-		attr = setAttributeValue(attr, "max", c.Max.ZCLString())
-	case *matter.MinConstraint:
-		attr = setAttributeValue(attr, "min", c.Min.ZCLString())
-	case *matter.MaxConstraint:
-		attr = setAttributeValue(attr, "max", c.Max.ZCLString())
-	case *matter.MaxLengthConstraint:
-		attr = setAttributeValue(attr, "length", c.Length.ZCLString())
-	case *matter.MinLengthConstraint:
-		attr = setAttributeValue(attr, "minLength", c.Length.ZCLString())
-	case *matter.LengthRangeConstraint:
-		attr = setAttributeValue(attr, "length", c.Max.ZCLString())
-		attr = setAttributeValue(attr, "minLength", c.Min.ZCLString())
+func (*renderer) renderConstraint(fs matter.FieldSet, attr []xml.Attr, t *matter.DataType, c matter.Constraint) []xml.Attr {
+	if t == nil || t.IsArray {
+		return attr
+	}
+	if c == nil {
+		return attr
+	}
+
+	max, min := c.MinMax(fs)
+	if t.IsString() {
+		if max.Defined {
+			attr = setAttributeValue(attr, "length", fmt.Sprintf("0x%02X", max.Value))
+		}
+		if min.Defined {
+			attr = setAttributeValue(attr, "minLength", fmt.Sprintf("0x%02X", min.Value))
+		}
+	} else {
+		if min.Defined {
+			attr = setAttributeValue(attr, "min", fmt.Sprintf("0x%02X", min.Value))
+		}
+		if max.Defined {
+			attr = setAttributeValue(attr, "max", fmt.Sprintf("0x%02X", max.Value))
+		}
 	}
 	return attr
 }
 
-func (r *renderer) amendAttribute(ts *tokenSet, e xmlEncoder, el xml.StartElement, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
+func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
 	code := getAttributeValue(el.Attr, "code")
 
 	attributeID := matter.ParseID(code)
@@ -202,5 +210,5 @@ func (r *renderer) amendAttribute(ts *tokenSet, e xmlEncoder, el xml.StartElemen
 		return nil
 	}
 
-	return r.writeAttribute(e, el, field, clusterPrefix)
+	return r.writeAttribute(cluster, e, el, field, clusterPrefix)
 }

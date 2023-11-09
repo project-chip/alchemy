@@ -1,4 +1,4 @@
-package render
+package amend
 
 import (
 	"encoding/xml"

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/iancoleman/strcase"
@@ -313,13 +314,13 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableCo
 	if len(p.Elements) == 1 {
 		se, ok := p.Elements[0].(*types.StringElement)
 		if ok {
-			val = ParseConstraint(parentDataType, se.Content)
+			val = constraint.ParseConstraint(se.Content)
 		}
 	} else {
 		for _, el := range p.Elements {
 			switch v := el.(type) {
 			case *types.StringElement:
-				val = ParseConstraint(parentDataType, v.Content)
+				val = constraint.ParseConstraint(v.Content)
 			default:
 				slog.Info("unknown value element", "type", v)
 			}
