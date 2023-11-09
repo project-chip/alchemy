@@ -1,4 +1,4 @@
-package zcl
+package render
 
 import (
 	"fmt"
@@ -62,7 +62,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 				}
 			}
 		}
-		renderConstraint(a.Constraint, attr)
+		renderConstraint(cluster.Attributes, a.Type, a.Constraint, attr)
 		renderAttributeAccess(a, errata, attr)
 		if a.Conformance != "M" {
 			attr.CreateAttr("optional", "true")
@@ -73,22 +73,28 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 	}
 }
 
-func renderConstraint(a matter.Constraint, attr *etree.Element) {
-	switch c := a.(type) {
-	case *matter.RangeConstraint:
-		attr.CreateAttr("min", c.Min.ZCLString())
-		attr.CreateAttr("max", c.Max.ZCLString())
-	case *matter.MinConstraint:
-		attr.CreateAttr("min", c.Min.ZCLString())
-	case *matter.MaxConstraint:
-		attr.CreateAttr("max", c.Max.ZCLString())
-	case *matter.MaxLengthConstraint:
-		attr.CreateAttr("length", c.Length.ZCLString())
-	case *matter.MinLengthConstraint:
-		attr.CreateAttr("minLength", c.Length.ZCLString())
-	case *matter.LengthRangeConstraint:
-		attr.CreateAttr("length", c.Max.ZCLString())
-		attr.CreateAttr("minLength", c.Min.ZCLString())
+func renderConstraint(fs matter.FieldSet, t *matter.DataType, c matter.Constraint, attr *etree.Element) {
+	if t == nil || t.IsArray {
+		return
+	}
+	if c == nil {
+		return
+	}
+	max, min := c.MinMax(fs)
+	if t.IsString() {
+		if max.Defined {
+			attr.CreateAttr("length", fmt.Sprintf("0x%02X", max.Value))
+		}
+		if min.Defined {
+			attr.CreateAttr("minLength", fmt.Sprintf("0x%02X", min.Value))
+		}
+	} else {
+		if min.Defined {
+			attr.CreateAttr("min", fmt.Sprintf("0x%02X", min.Value))
+		}
+		if max.Defined {
+			attr.CreateAttr("max", fmt.Sprintf("0x%02X", max.Value))
+		}
 	}
 }
 

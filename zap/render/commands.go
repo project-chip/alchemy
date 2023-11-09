@@ -1,4 +1,4 @@
-package zcl
+package render
 
 import (
 	"github.com/beevik/etree"
@@ -61,13 +61,12 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		}
 		fx := cx.CreateElement("arg")
 		mandatory := (f.Conformance == "M")
-		renderConstraint(f.Constraint, fx)
+		renderConstraint(c.Fields, f.Type, f.Constraint, fx)
 		fx.CreateAttr("name", f.Name)
 		writeCommandDataType(fx, f.Type)
 		if !mandatory {
 			fx.CreateAttr("optional", "true")
 		}
-		renderConstraint(f.Constraint, fx)
 		fx.CreateAttr("apiMaturity", "provisional")
 	}
 	cx.CreateElement("description").SetText(c.Description)

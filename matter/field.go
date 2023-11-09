@@ -1,5 +1,7 @@
 package matter
 
+type FieldSet []*Field
+
 type Field struct {
 	ID   *ID       `json:"id,omitempty"`
 	Name string    `json:"name,omitempty"`
@@ -10,4 +12,13 @@ type Field struct {
 	Access      Access     `json:"access,omitempty"`
 	Default     string     `json:"default,omitempty"`
 	Conformance string     `json:"conformance,omitempty"`
+}
+
+func (fs FieldSet) GetField(name string) *Field {
+	for _, f := range fs {
+		if f.Name == name {
+			return f
+		}
+	}
+	return nil
 }

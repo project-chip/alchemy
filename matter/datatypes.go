@@ -62,7 +62,7 @@ type BitmapValue struct {
 type Struct struct {
 	Name        string   `json:"name,omitempty"`
 	Description string   `json:"description,omitempty"`
-	Fields      []*Field `json:"fields,omitempty"`
+	Fields      FieldSet `json:"fields,omitempty"`
 }
 
 func StripDataTypeSuffixes(dataType string) string {
@@ -78,4 +78,8 @@ func StripDataTypeSuffixes(dataType string) string {
 type DataType struct {
 	Name    string `json:"name,omitempty"`
 	IsArray bool   `json:"isArray,omitempty"`
+}
+
+func (dt *DataType) IsString() bool {
+	return dt.Name == "string" || dt.Name == "octstr"
 }

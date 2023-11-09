@@ -110,7 +110,7 @@ func compareFields(specFields []*matter.Field, zapFields []*matter.Field) (diffs
 	specFieldMap := make(map[uint64]*matter.Field)
 	for _, f := range specFields {
 		if !f.ID.Valid() {
-			err = fmt.Errorf("unable to parse spec field ID: %s; %w", f.ID, err)
+			err = fmt.Errorf("unable to parse spec field ID: %s; %w", f.ID.IntString(), err)
 		}
 		specFieldMap[f.ID.Value()] = f
 	}
@@ -118,7 +118,7 @@ func compareFields(specFields []*matter.Field, zapFields []*matter.Field) (diffs
 	zapFieldMap := make(map[uint64]*matter.Field)
 	for _, f := range zapFields {
 		if !f.ID.Valid() {
-			err = fmt.Errorf("unable to parse ZAP field ID: %s; %w", f.ID, err)
+			err = fmt.Errorf("unable to parse ZAP field ID: %s; %w", f.ID.IntString(), err)
 		}
 		zapFieldMap[f.ID.Value()] = f
 	}

@@ -23,9 +23,9 @@ import (
 	"github.com/hasty/alchemy/cmd/files"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
-	"github.com/hasty/alchemy/render/zcl"
 	"github.com/hasty/alchemy/zap"
-	zaprender "github.com/hasty/alchemy/zap/render"
+	"github.com/hasty/alchemy/zap/amend"
+	"github.com/hasty/alchemy/zap/render"
 	"github.com/iancoleman/orderedmap"
 	"github.com/iancoleman/strcase"
 )
@@ -90,7 +90,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 		return nil
 	}, filesOptions)
 
-	outputs := make(map[string]*zcl.Result)
+	outputs := make(map[string]*render.Result)
 	var provisionalZclFiles []string
 	files.ProcessDocs(cxt, appClusters, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 		path := doc.Path
@@ -102,8 +102,8 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 		existing, err := os.ReadFile(newPath)
 		if errors.Is(err, os.ErrNotExist) {
 			slog.InfoContext(cxt, "Rendering new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
-			var result *zcl.Result
-			result, err = zcl.Render(cxt, doc)
+			var result *render.Result
+			result, err = render.Render(cxt, doc)
 			if err != nil {
 				err = fmt.Errorf("failed rendering %s: %w", path, err)
 				return err
@@ -135,14 +135,14 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 				slog.InfoContext(cxt, "Skipped existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
 				return nil
 			}
-			err = zaprender.Render(doc, bytes.NewReader(existing), &buf, clusters)
+			err = amend.Render(doc, bytes.NewReader(existing), &buf, clusters)
 			if err != nil {
 				return err
 			}
 			out := selfClosingTags.ReplaceAllString(buf.String(), "/>") // Lame limitation of Go's XML encoder
 			lock.Lock()
 			if false {
-				outputs[newPath] = &zcl.Result{ZCL: out, Doc: doc, Models: models}
+				outputs[newPath] = &render.Result{ZCL: out, Doc: doc, Models: models}
 			}
 			lock.Unlock()
 			slog.InfoContext(cxt, "Rendered existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)

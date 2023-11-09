@@ -1,0 +1,187 @@
+{
+package constraint
+
+import (
+	"fmt"
+	"math/big"
+    "strconv"
+	"strings"
+
+	 "github.com/hasty/alchemy/matter"
+)
+
+func debug(format string, a ...any) (n int, err error) {
+	return
+	return fmt.Fprintf(os.Stdout, format, a...)
+}
+
+}
+
+Input <- cons:Constraint entry:EntryConstraint? EOF {
+	if entry != nil {
+		return &matter.ListConstraint {
+			Constraint:cons.(matter.Constraint),
+			EntryConstraint:entry.(matter.Constraint),
+		}, nil
+	}
+	return cons, nil
+}
+
+EntryConstraint <- _ "[" _ cons:Constraint _ "]" {
+	debug("found entry %s\n", string(c.text))
+	return cons.(matter.Constraint), nil
+}
+
+Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
+	switch cons := cons.(type) {
+		case matter.Constraint:
+			return cons, nil
+		case matter.ConstraintLimit:
+			return &matter.MaxConstraint{Max:cons}, nil
+		default:
+			return nil, fmt.Errorf("unexpected constraint type: %T", cons)
+	}
+}
+
+Range <- from:Limit " to " to:Limit {
+	debug("found range %s\n", string(c.text))
+	return &matter.RangeConstraint  {
+		Min:from.(matter.ConstraintLimit),
+		Max:to.(matter.ConstraintLimit),
+	}, nil
+}
+
+Min <- "min " _ limit:Limit {
+	debug("found min limit %s\n", string(c.text))
+	return &matter.MinConstraint{Min:limit.(matter.ConstraintLimit)}, nil
+}
+
+Max <- "max " _ limit:Limit (_ "chars")? {
+	debug("found max limit %s\n", string(c.text))
+	return &matter.MaxConstraint{Max:limit.(matter.ConstraintLimit)}, nil
+}
+
+Described <- "desc" {
+	return &matter.DescribedConstraint{}, nil
+}
+
+Any <- any:("any" / "all") {
+	return &matter.AllConstraint{Value:string(any.([]uint8))}, nil
+}
+
+Limit <- limit:(MSLimit / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / ReferenceLimit  ) {
+	debug("found limit %s\n", string(c.text))
+	return limit.(matter.ConstraintLimit), nil
+}
+
+MSLimit <- "MS" {
+	return &matter.ManufacturerLimit{Value:string(c.text)}, nil
+}
+
+Term <- '(' _ exp:Expression _ ')' {
+	debug("found term add/subtract %s\n", string(c.text))
+    return exp, nil
+} / exp:(Expression) {
+	debug("found term expression %s\n", string(c.text))
+    return exp, nil
+}
+
+Expression <- left:ReferenceLimit _ operand:('+'/'-'/'*'/'-') _ right:Limit {
+	debug("found expression %s\n", string(c.text))
+	var val []uint8
+	for _, d := range operand.([]uint8) {
+		val = append(val, d)
+	}
+	return &matter.MathExpressionLimit{
+		Operand:string(val),
+		Left:left.(matter.ConstraintLimit),
+		Right:right.(matter.ConstraintLimit),
+	}, nil
+}
+
+IntConstraint <- i:IntLimit {
+	debug("found int limit %s\n", string(c.text))
+	return &matter.MaxConstraint{Max:i.(matter.ConstraintLimit)}, nil
+}
+
+ReferenceLimit <- PascalCase {
+	debug("found reference limit %s\n", string(c.text))
+	return &matter.ReferenceLimit{Value:string(c.text)}, nil
+}
+
+TempLimit <- f:Float "°C" {
+	debug("found temp %s\n", string(c.text))
+	tl := &matter.TemperatureLimit{}
+	var err error
+	tl.Value, err = parseFloat(f.(string))
+	if err != nil {
+		return nil, err
+	}
+	return tl, nil
+}
+
+PercentageLimit <- f:Float "%" {
+	debug("found percent %s\n", string(c.text))
+	pl := &matter.PercentLimit{}
+	var err error
+	pl.Value, err = parseFloat(f.(string))
+	if err != nil {
+		return nil, err
+	}
+	return pl, nil
+}
+
+IntLimit <- i:Integer {
+	debug("found int limit %s\n", string(c.text))
+	return &matter.IntLimit{Value:i.(int64)}, nil
+}
+
+HexLimit <- h:Hex {
+	debug("found hex limit %s\n", string(c.text))
+	return &matter.HexLimit{Value:h.(uint64)}, nil
+}
+
+Float <- Integer ("." [0-9]+)? {
+	debug("found float %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Integer <- ('-'/'+')? [0-9]+ {
+	debug("found int %s\n", string(c.text))
+	return strconv.ParseInt(string(c.text), 10, 64)
+}
+
+Hex <- ("0x" / "0X") hex:[0-9A-Fa-f]+ {
+	var val []uint8
+	for _, d := range hex.([]interface{}) {
+		val = append(val, d.([]uint8)...)
+	}
+	debug("found hex %s\n", string(val))
+	return strconv.ParseUint(string(val), 16, 64)
+}
+
+PascalCase <- Capitalized+ Capitalized* {
+	debug("found pascal %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Capitalized <- Uppercase Lowercase+ {
+	debug("found capitalized %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Uppercase <- [A-Z] {
+	debug("found uppercase %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Lowercase <- [a-z] {
+	debug("found lowercase %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+_ "whitespace" ← [ \t\r\n]*
+
+Comma <- ',' 
+
+EOF ← !.
