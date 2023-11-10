@@ -82,6 +82,12 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 		if err != nil {
 			return err
 		}
+
+		slog.Info("Patching scripts/matter.lint...")
+		err = patchLint(zclRoot, provisionalZclFiles)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
