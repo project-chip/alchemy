@@ -87,6 +87,8 @@ func AssignSectionTypes(docType matter.DocType, top *Section) {
 	switch docType {
 	case matter.DocTypeAppCluster:
 		top.SecType = matter.SectionCluster
+	case matter.DocTypeDeviceType:
+		top.SecType = matter.SectionDeviceType
 	default:
 		top.SecType = matter.SectionTop
 	}
@@ -121,7 +123,7 @@ func FindSectionByType(top *Section, sectionType matter.Section) *Section {
 func getSectionType(parent *Section, section *Section) matter.Section {
 	name := strings.ToLower(strings.TrimSpace(section.Name))
 	switch parent.SecType {
-	case matter.SectionTop, matter.SectionCluster:
+	case matter.SectionTop, matter.SectionCluster, matter.SectionDeviceType:
 		switch name {
 		case "introduction":
 			return matter.SectionIntroduction
@@ -222,9 +224,13 @@ func (s *Section) ToModels(d *Doc) ([]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		for _, c := range clusters {
-			models = append(models, c)
+		models = append(models, clusters...)
+	case matter.SectionDeviceType:
+		deviceTypes, err := s.toDeviceTypes(d)
+		if err != nil {
+			return nil, err
 		}
+		models = append(models, deviceTypes...)
 	default:
 		//slog.Info("unknown section type", "secType", s.SecType)
 	}

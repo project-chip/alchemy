@@ -14,12 +14,12 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 	var matchingCommand *matter.Command
 	for c := range commands {
 		if c.ID.Equals(commandID) {
-			if c.Direction == matter.CommandDirectionClientToServer && source == "client" {
+			if c.Direction == matter.InterfaceServer && source == "client" {
 				matchingCommand = c
 				delete(commands, c)
 				break
 			}
-			if c.Direction == matter.CommandDirectionServerToClient && source == "server" {
+			if c.Direction == matter.InterfaceClient && source == "server" {
 				matchingCommand = c
 				delete(commands, c)
 				break
@@ -43,9 +43,9 @@ func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Com
 	xfb.Name = xml.Name{Local: "command"}
 
 	var serverSource bool
-	if c.Direction == matter.CommandDirectionClientToServer {
+	if c.Direction == matter.InterfaceServer {
 		xfb.Attr = setAttributeValue(xfb.Attr, "source", "client")
-	} else if c.Direction == matter.CommandDirectionServerToClient {
+	} else if c.Direction == matter.InterfaceClient {
 		xfb.Attr = setAttributeValue(xfb.Attr, "source", "server")
 		serverSource = true
 	}
