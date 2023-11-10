@@ -19,8 +19,8 @@ var zapCommand = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(zapCommand)
-	zapCommand.Flags().String("specRoot", "", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	zapCommand.Flags().String("zclRoot", "", "the src root of your clone of project-chip/connectedhomeip")
+	zapCommand.Flags().String("specRoot", "", "the root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	zapCommand.Flags().String("zclRoot", "", "the root of your clone of project-chip/connectedhomeip")
 	zapCommand.MarkFlagRequired("specRoot")
 	zapCommand.MarkFlagRequired("zclRoot")
 

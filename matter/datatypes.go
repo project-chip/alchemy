@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-type BaseDataType uint8
+type BaseDataType uint16
 
 const (
 	BaseDataTypeUnknown BaseDataType = iota
@@ -136,8 +136,12 @@ func (dt *DataType) MinMax(nullable bool) (from ConstraintExtreme, to Constraint
 		from = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0}
 		to = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 1}
 	case BaseDataTypeMap8:
-		from = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0}
-		to = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0xFF}
+		if nullable {
+
+		} else {
+			from = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0}
+			to = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0xFF}
+		}
 	case BaseDataTypeMap16:
 		from = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0}
 		to = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0xFFFF}

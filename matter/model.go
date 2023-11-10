@@ -8,8 +8,11 @@ const (
 	ModelTypeBitmap
 	ModelTypeEnum
 	ModelTypeStruct
+	ModelTypeAttribute
 	ModelTypeCommand
 	ModelTypeEvent
+	ModelTypeFeature
+	ModelTypeDeviceType
 )
 
 type Model interface {

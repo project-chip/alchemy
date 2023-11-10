@@ -7,12 +7,12 @@ import (
 
 func renderCommands(cluster *matter.Cluster, cx *etree.Element, errata *Errata) {
 	for _, c := range cluster.Commands {
-		if c.Direction == matter.CommandDirectionClientToServer {
+		if c.Direction == matter.InterfaceServer {
 			renderCommand(c, cx, errata)
 		}
 	}
 	for _, c := range cluster.Commands {
-		if c.Direction == matter.CommandDirectionServerToClient {
+		if c.Direction == matter.InterfaceClient {
 			renderCommand(c, cx, errata)
 		}
 	}
@@ -23,9 +23,9 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 
 	cx := e.CreateElement("command")
 	var serverSource bool
-	if c.Direction == matter.CommandDirectionClientToServer {
+	if c.Direction == matter.InterfaceServer {
 		cx.CreateAttr("source", "client")
-	} else if c.Direction == matter.CommandDirectionServerToClient {
+	} else if c.Direction == matter.InterfaceClient {
 		cx.CreateAttr("source", "server")
 		serverSource = true
 	}

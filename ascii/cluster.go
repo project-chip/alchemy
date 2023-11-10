@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toClusters(d *Doc) ([]*matter.Cluster, error) {
+func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 	var clusters []*matter.Cluster
 	var description string
 	p := parse.FindFirst[*types.Paragraph](s.Elements)
@@ -21,7 +21,6 @@ func (s *Section) toClusters(d *Doc) ([]*matter.Cluster, error) {
 	}
 
 	for _, s := range parse.Skim[*Section](s.Elements) {
-		var err error
 		switch s.SecType {
 		case matter.SectionClusterID:
 
@@ -37,7 +36,6 @@ func (s *Section) toClusters(d *Doc) ([]*matter.Cluster, error) {
 
 		elements := parse.Skim[*Section](s.Elements)
 		for _, s := range elements {
-			var err error
 			switch s.SecType {
 			case matter.SectionDataTypes:
 				err = s.toDataTypes(d, c)
@@ -48,7 +46,6 @@ func (s *Section) toClusters(d *Doc) ([]*matter.Cluster, error) {
 			}
 		}
 		for _, s := range elements {
-			var err error
 			switch s.SecType {
 			case matter.SectionAttributes:
 				var attr []*matter.Field
@@ -71,7 +68,10 @@ func (s *Section) toClusters(d *Doc) ([]*matter.Cluster, error) {
 			}
 		}
 	}
-	return clusters, nil
+	for _, c := range clusters {
+		models = append(models, c)
+	}
+	return models, nil
 }
 
 func readClusterIDs(s *Section) ([]*matter.Cluster, error) {

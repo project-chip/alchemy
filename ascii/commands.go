@@ -92,13 +92,13 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 	return
 }
 
-func parseCommandDirection(s string) matter.CommandDirection {
+func parseCommandDirection(s string) matter.Interface {
 	switch strings.TrimSpace(strings.ToLower(s)) {
 	case "client => server", "server <= client":
-		return matter.CommandDirectionClientToServer
+		return matter.InterfaceServer
 	case "server => client", "client <= server":
-		return matter.CommandDirectionServerToClient
+		return matter.InterfaceClient
 	default:
-		return matter.CommandDirectionUnknown
+		return matter.InterfaceUnknown
 	}
 }

@@ -31,35 +31,41 @@ const (
 	TableColumnDescription
 	TableColumnResponse
 	TableColumnSummary
+	TableColumnCluster
+	TableColumnElement
+	TableColumnClientServer
 )
 
 var TableColumnNames = map[TableColumn]string{
-	TableColumnUnknown:     "Unknown",
-	TableColumnID:          "ID",
-	TableColumnName:        "Name",
-	TableColumnType:        "Type",
-	TableColumnConstraint:  "Constraint",
-	TableColumnQuality:     "Quality",
-	TableColumnDefault:     "Default",
-	TableColumnAccess:      "Access",
-	TableColumnConformance: "Conformance",
-	TableColumnPriority:    "Priority",
-	TableColumnHierarchy:   "Hierarchy",
-	TableColumnRole:        "Role",
-	TableColumnContext:     "Context",
-	TableColumnScope:       "Scope",
-	TableColumnPICS:        "PICS",
-	TableColumnValue:       "Value",
-	TableColumnBit:         "Bit",
-	TableColumnCode:        "Code",
-	TableColumnFeature:     "Feature",
-	TableColumnDeviceName:  "DeviceName",
-	TableColumnSuperset:    "Superset",
-	TableColumnClass:       "Class",
-	TableColumnDirection:   "Direction",
-	TableColumnDescription: "Description",
-	TableColumnResponse:    "Response",
-	TableColumnSummary:     "Summary",
+	TableColumnUnknown:      "Unknown",
+	TableColumnID:           "ID",
+	TableColumnName:         "Name",
+	TableColumnType:         "Type",
+	TableColumnConstraint:   "Constraint",
+	TableColumnQuality:      "Quality",
+	TableColumnDefault:      "Default",
+	TableColumnAccess:       "Access",
+	TableColumnConformance:  "Conformance",
+	TableColumnPriority:     "Priority",
+	TableColumnHierarchy:    "Hierarchy",
+	TableColumnRole:         "Role",
+	TableColumnContext:      "Context",
+	TableColumnScope:        "Scope",
+	TableColumnPICS:         "PICS",
+	TableColumnValue:        "Value",
+	TableColumnBit:          "Bit",
+	TableColumnCode:         "Code",
+	TableColumnFeature:      "Feature",
+	TableColumnDeviceName:   "DeviceName",
+	TableColumnSuperset:     "Superset",
+	TableColumnClass:        "Class",
+	TableColumnDirection:    "Direction",
+	TableColumnDescription:  "Description",
+	TableColumnResponse:     "Response",
+	TableColumnSummary:      "Summary",
+	TableColumnCluster:      "Cluster",
+	TableColumnElement:      "Element",
+	TableColumnClientServer: "Client/Server",
 }
 
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}

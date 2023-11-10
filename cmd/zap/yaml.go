@@ -14,7 +14,7 @@ import (
 var appTemplates = regexp.MustCompile(`(?m)^ +(src/app/zap-templates/[^\. ]+.xml) +\\+\n`)
 
 func patchTestsYaml(zclRoot string, files []string) error {
-	testsYamlPath := path.Join(zclRoot, "../.github/workflows/tests.yaml")
+	testsYamlPath := path.Join(zclRoot, ".github/workflows/tests.yaml")
 	yamlBytes, err := os.ReadFile(testsYamlPath)
 	if err != nil {
 		return err
