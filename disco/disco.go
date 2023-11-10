@@ -86,6 +86,14 @@ func (b *Ball) organizeSubSection(cxt *discoContext, doc *ascii.Doc, docType mat
 		err = b.organizeClassificationSection(doc, section)
 	case matter.SectionClusterID:
 		err = b.organizeClusterIDSection(doc, section)
+	case matter.SectionDataTypeBitmap:
+		err = b.organizeBitmapSection(doc, section)
+	case matter.SectionDataTypeEnum:
+		err = b.organizeEnumSection(doc, section)
+	case matter.SectionDataTypeStruct:
+		err = b.organizeStructSection(doc, section)
+	case matter.SectionEvents:
+		err = b.organizeEventsSection(cxt, doc, section)
 	}
 	return err
 }

@@ -164,20 +164,20 @@ func (*renderer) renderConstraint(fs matter.FieldSet, attr []xml.Attr, t *matter
 		return attr
 	}
 
-	max, min := c.MinMax(fs)
+	max, min := c.MinMax(&matter.ConstraintContext{Fields: fs})
 	if t.IsString() {
-		if max.Defined {
-			attr = setAttributeValue(attr, "length", fmt.Sprintf("0x%02X", max.Value))
+		if max.Defined() {
+			attr = setAttributeValue(attr, "length", fmt.Sprintf("%d", max.Int64))
 		}
-		if min.Defined {
-			attr = setAttributeValue(attr, "minLength", fmt.Sprintf("0x%02X", min.Value))
+		if min.Defined() {
+			attr = setAttributeValue(attr, "minLength", fmt.Sprintf("%d", min.Int64))
 		}
 	} else {
-		if min.Defined {
-			attr = setAttributeValue(attr, "min", fmt.Sprintf("0x%02X", min.Value))
+		if min.Defined() {
+			attr = setAttributeValue(attr, "min", fmt.Sprintf("%d", min.Int64))
 		}
-		if max.Defined {
-			attr = setAttributeValue(attr, "max", fmt.Sprintf("0x%02X", max.Value))
+		if max.Defined() {
+			attr = setAttributeValue(attr, "max", fmt.Sprintf("%d", max.Int64))
 		}
 	}
 	return attr

@@ -168,9 +168,11 @@ func (d *Doc) ToModel() (models []interface{}, err error) {
 
 func Open(path string, settings ...configuration.Setting) (*Doc, error) {
 
-	baseConfig := []configuration.Setting{configuration.WithFilename(path)}
+	baseConfig := make([]configuration.Setting, len(settings)+1)
+	baseConfig[0] = configuration.WithFilename(path)
+	copy(baseConfig[1:], settings)
 
-	baseConfig = append(baseConfig, settings...)
+	//baseConfig = append(baseConfig, settings...)
 
 	config := configuration.NewConfiguration(baseConfig...)
 
@@ -202,6 +204,6 @@ func Open(path string, settings ...configuration.Setting) (*Doc, error) {
 	return doc, nil
 }
 
-var GithubSettings = []configuration.Setting{configuration.WithAttributes(map[string]interface{}{
-	"env-github": true,
-})}
+func GithubSettings() []configuration.Setting {
+	return []configuration.Setting{configuration.WithAttribute("env-github", true)}
+}

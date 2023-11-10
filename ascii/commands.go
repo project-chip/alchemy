@@ -37,7 +37,7 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 		if err != nil {
 			return
 		}
-		cmd.Direction = matter.ParseCommandDirection(dir)
+		cmd.Direction = parseCommandDirection(dir)
 		cmd.Response, err = readRowValue(row, columnMap, matter.TableColumnResponse)
 		if err != nil {
 			return
@@ -90,4 +90,15 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 		}
 	}
 	return
+}
+
+func parseCommandDirection(s string) matter.CommandDirection {
+	switch strings.TrimSpace(strings.ToLower(s)) {
+	case "client => server", "server <= client":
+		return matter.CommandDirectionClientToServer
+	case "server => client", "client <= server":
+		return matter.CommandDirectionServerToClient
+	default:
+		return matter.CommandDirectionUnknown
+	}
 }

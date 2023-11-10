@@ -18,3 +18,7 @@ type Cluster struct {
 	Events     []*Event   `json:"events,omitempty"`
 	Commands   []*Command `json:"commands,omitempty"`
 }
+
+func (c *Cluster) ModelType() ModelType {
+	return ModelTypeCluster
+}
