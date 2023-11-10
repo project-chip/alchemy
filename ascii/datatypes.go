@@ -225,8 +225,8 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 				val.Name = v.Content
 			}
 		case *types.InternalCrossReference:
-			anchor, ok := d.anchors[v.ID.(string)]
-			if ok {
+			anchor, _ := d.getAnchor(v.ID.(string))
+			if anchor != nil {
 				//				fmt.Printf("type anchor: %v %T\n", anchor.Element, anchor.Element)
 				val.Name = ReferenceName(anchor.Element)
 			} else {

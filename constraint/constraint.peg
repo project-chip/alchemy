@@ -19,7 +19,7 @@ func debug(format string, a ...any) (n int, err error) {
 
 Input <- cons:Constraint entry:EntryConstraint? EOF {
 	if entry != nil {
-		return &matter.ListConstraint {
+		return &ListConstraint {
 			Constraint:cons.(matter.Constraint),
 			EntryConstraint:entry.(matter.Constraint),
 		}, nil
@@ -37,7 +37,7 @@ Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
 		case matter.Constraint:
 			return cons, nil
 		case matter.ConstraintLimit:
-			return &matter.MaxConstraint{Max:cons}, nil
+			return &MaxConstraint{Max:cons}, nil
 		default:
 			return nil, fmt.Errorf("unexpected constraint type: %T", cons)
 	}
@@ -45,7 +45,7 @@ Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
 
 Range <- from:Limit " to " to:Limit {
 	debug("found range %s\n", string(c.text))
-	return &matter.RangeConstraint  {
+	return &RangeConstraint  {
 		Min:from.(matter.ConstraintLimit),
 		Max:to.(matter.ConstraintLimit),
 	}, nil
@@ -53,20 +53,20 @@ Range <- from:Limit " to " to:Limit {
 
 Min <- "min " _ limit:Limit {
 	debug("found min limit %s\n", string(c.text))
-	return &matter.MinConstraint{Min:limit.(matter.ConstraintLimit)}, nil
+	return &MinConstraint{Min:limit.(matter.ConstraintLimit)}, nil
 }
 
 Max <- "max " _ limit:Limit (_ "chars")? {
 	debug("found max limit %s\n", string(c.text))
-	return &matter.MaxConstraint{Max:limit.(matter.ConstraintLimit)}, nil
+	return &MaxConstraint{Max:limit.(matter.ConstraintLimit)}, nil
 }
 
 Described <- "desc" {
-	return &matter.DescribedConstraint{}, nil
+	return &DescribedConstraint{}, nil
 }
 
 Any <- any:("any" / "all") {
-	return &matter.AllConstraint{Value:string(any.([]uint8))}, nil
+	return &AllConstraint{Value:string(any.([]uint8))}, nil
 }
 
 Limit <- limit:(MSLimit / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / ReferenceLimit  ) {
@@ -75,7 +75,7 @@ Limit <- limit:(MSLimit / HexLimit / TempLimit / PercentageLimit / IntLimit / Te
 }
 
 MSLimit <- "MS" {
-	return &matter.ManufacturerLimit{Value:string(c.text)}, nil
+	return &ManufacturerLimit{Value:string(c.text)}, nil
 }
 
 Term <- '(' _ exp:Expression _ ')' {
@@ -92,7 +92,7 @@ Expression <- left:ReferenceLimit _ operand:('+'/'-'/'*'/'-') _ right:Limit {
 	for _, d := range operand.([]uint8) {
 		val = append(val, d)
 	}
-	return &matter.MathExpressionLimit{
+	return &MathExpressionLimit{
 		Operand:string(val),
 		Left:left.(matter.ConstraintLimit),
 		Right:right.(matter.ConstraintLimit),
@@ -101,17 +101,17 @@ Expression <- left:ReferenceLimit _ operand:('+'/'-'/'*'/'-') _ right:Limit {
 
 IntConstraint <- i:IntLimit {
 	debug("found int limit %s\n", string(c.text))
-	return &matter.MaxConstraint{Max:i.(matter.ConstraintLimit)}, nil
+	return &MaxConstraint{Max:i.(matter.ConstraintLimit)}, nil
 }
 
 ReferenceLimit <- PascalCase {
 	debug("found reference limit %s\n", string(c.text))
-	return &matter.ReferenceLimit{Value:string(c.text)}, nil
+	return &ReferenceLimit{Value:string(c.text)}, nil
 }
 
 TempLimit <- f:Float "°C" {
 	debug("found temp %s\n", string(c.text))
-	tl := &matter.TemperatureLimit{}
+	tl := &TemperatureLimit{}
 	var err error
 	tl.Value, err = parseFloat(f.(string))
 	if err != nil {
@@ -122,7 +122,7 @@ TempLimit <- f:Float "°C" {
 
 PercentageLimit <- f:Float "%" {
 	debug("found percent %s\n", string(c.text))
-	pl := &matter.PercentLimit{}
+	pl := &PercentLimit{}
 	var err error
 	pl.Value, err = parseFloat(f.(string))
 	if err != nil {
@@ -133,12 +133,12 @@ PercentageLimit <- f:Float "%" {
 
 IntLimit <- i:Integer {
 	debug("found int limit %s\n", string(c.text))
-	return &matter.IntLimit{Value:i.(int64)}, nil
+	return &IntLimit{Value:i.(int64)}, nil
 }
 
 HexLimit <- h:Hex {
 	debug("found hex limit %s\n", string(c.text))
-	return &matter.HexLimit{Value:h.(uint64)}, nil
+	return &HexLimit{Value:h.(uint64)}, nil
 }
 
 Float <- Integer ("." [0-9]+)? {

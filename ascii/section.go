@@ -176,7 +176,6 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return matter.SectionDataTypeStruct
 		}
 		name = strings.ToLower(section.Base.GetID())
-		fmt.Printf("CHECKING DATA TYPE %s\n", name)
 		if strings.HasSuffix(name, "bitmap") {
 			return matter.SectionDataTypeBitmap
 		}
@@ -200,6 +199,17 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		}
 	default:
 		//slog.Info("unknown section type", "name", name)
+		// Ugh, some heuristics now
+		name = strings.TrimSpace(section.Name)
+		if strings.HasSuffix(name, "Bitmap type") || strings.HasSuffix(name, "Bitmap") {
+			return matter.SectionDataTypeBitmap
+		}
+		if strings.HasSuffix(name, "Enum type") || strings.HasSuffix(name, "Enum") {
+			return matter.SectionDataTypeEnum
+		}
+		if strings.HasSuffix(name, "Struct type") || strings.HasSuffix(name, "Struct") {
+			return matter.SectionDataTypeStruct
+		}
 	}
 	return matter.SectionUnknown
 }

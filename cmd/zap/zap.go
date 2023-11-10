@@ -43,7 +43,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 
 	var docs []*ascii.Doc
 
-	asciiSettings = append(ascii.GithubSettings, asciiSettings...)
+	asciiSettings = append(ascii.GithubSettings(), asciiSettings...)
 
 	files.Process(cxt, specPaths, func(cxt context.Context, file string, index, total int) error {
 		if strings.HasSuffix(file, "-draft.adoc") {
@@ -94,10 +94,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 	var provisionalZclFiles []string
 	files.ProcessDocs(cxt, appClusters, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 		path := doc.Path
-		newFile := filepath.Base(path)
-		newFile = zap.ZAPName(strings.TrimSuffix(newFile, filepath.Ext(path)))
-		newFile = strcase.ToKebab(newFile)
-		newPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip", newFile+".xml")
+		newPath := getZapPath(zclRoot, path)
 
 		existing, err := os.ReadFile(newPath)
 		if errors.Is(err, os.ErrNotExist) {
@@ -141,9 +138,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 			}
 			out := selfClosingTags.ReplaceAllString(buf.String(), "/>") // Lame limitation of Go's XML encoder
 			lock.Lock()
-			if false {
-				outputs[newPath] = &render.Result{ZCL: out, Doc: doc, Models: models}
-			}
+			outputs[newPath] = &render.Result{ZCL: out, Doc: doc, Models: models}
 			lock.Unlock()
 			slog.InfoContext(cxt, "Rendered existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
 		}
@@ -167,8 +162,20 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 	}
 
 	if !filesOptions.DryRun {
+		slog.Info("Patching ")
 		err = patchZCLJson(zclRoot, provisionalZclFiles)
+
+		if err != nil {
+			return err
+		}
+
+		err = patchTestsYaml(zclRoot, provisionalZclFiles)
+		if err != nil {
+			return err
+		}
 	}
+
+	return nil
 
 	/*appClusterPaths, appClusterIndexPaths, err := splitAppClusterDocs(specRoot)
 	if err != nil {
@@ -311,13 +318,21 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 	return nil
 }
 
+func getZapPath(zclRoot string, path string) string {
+	newFile := filepath.Base(path)
+	newFile = zap.ZAPName(strings.TrimSuffix(newFile, filepath.Ext(path)))
+	newFile = strcase.ToKebab(newFile)
+	newPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip", newFile+".xml")
+	return newPath
+}
+
 func findIndexes(cxt context.Context, appClusterIndexPaths []string, asciiSettings []configuration.Setting, filesOptions files.Options) (indexes map[string]*ascii.Doc, domains map[string]matter.Domain, err error) {
 	indexes = make(map[string]*ascii.Doc)
 	domains = make(map[string]matter.Domain)
 
 	err = files.Process(cxt, appClusterIndexPaths, func(cxt context.Context, file string, index, total int) error {
 		fmt.Fprintf(os.Stderr, "ZCLing index %s (%d of %d)...\n", file, index, total)
-		doc, err := ascii.Open(file, append(ascii.GithubSettings, asciiSettings...)...)
+		doc, err := ascii.Open(file, append(ascii.GithubSettings(), asciiSettings...)...)
 		if err != nil {
 			return err
 		}
@@ -381,7 +396,7 @@ func loadSpecDocs(specRoot string, asciiSettings []configuration.Setting) (docs 
 	err = filepath.WalkDir(specRoot, func(path string, d fs.DirEntry, err error) error {
 		if filepath.Ext(path) == ".adoc" {
 			var doc *ascii.Doc
-			doc, err = ascii.Open(path, append(ascii.GithubSettings, asciiSettings...)...)
+			doc, err = ascii.Open(path, append(ascii.GithubSettings(), asciiSettings...)...)
 			if err != nil {
 				return err
 			}
@@ -433,9 +448,7 @@ func patchZCLJson(zclRoot string, files []string) error {
 		}
 		return false
 	})
-	//slices.Sort(xmls)
 	slices.Compact(xmls)
-	fmt.Printf("xml: %v\n", xmls)
 	o.Set("xmlFile", xmls)
 
 	zclJSONBytes, err = json.MarshalIndent(o, "", "    ")
@@ -443,20 +456,5 @@ func patchZCLJson(zclRoot string, files []string) error {
 		return err
 	}
 
-	/*v := gjson.GetBytes(zclJSONBytes, "xmlFile").Array()
-
-	xmls := make([]string, 0, len(v)+len(files))
-	for _, s := range v {
-		xmls = append(xmls, s.Str)
-	}
-	xmls = append(xmls, files...)
-	slices.Sort(xmls)
-	slices.Compact(xmls)
-	fmt.Printf("xml: %v\n", xmls)
-	zclJSONBytes, err = sjson.SetBytes(zclJSONBytes, "xmlFile", xmls)
-	if err != nil {
-		return err
-	}*/
-	err = os.WriteFile(zclJSONPath, []byte(zclJSONBytes), os.ModeAppend|0644)
-	return err
+	return os.WriteFile(zclJSONPath, []byte(zclJSONBytes), os.ModeAppend|0644)
 }

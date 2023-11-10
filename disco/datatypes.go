@@ -46,7 +46,7 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 }
 
 func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
-	sectionDataMap, err := GetDataTypes(columnMap, rows, section)
+	sectionDataMap, err := getDataTypes(columnMap, rows, section)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*ty
 	return nil
 }
 
-func GetDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
+func getDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
 	sectionDataMap := make(map[string]*DataTypeEntry)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
@@ -129,9 +129,6 @@ func GetDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, 
 func promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
 
 	fields := make(map[matter.DataTypeCategory]map[string]*DataTypeEntry)
-	//var dataTypeCount int
-	//enumFields := make(map[string]*potentialDataType)
-	//bitmapFields := make(map[string]*potentialDataType)
 	for _, infos := range cxt.potentialDataTypes {
 		if len(infos) > 1 {
 			disambiguateDataTypes(cxt, infos)

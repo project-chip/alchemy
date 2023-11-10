@@ -50,7 +50,7 @@ func Compare(cxt context.Context, specRoot string, zclRoot string, settings []co
 func loadSpecModels(appClusterPaths []string, settings []configuration.Setting, domains map[string]matter.Domain, zclRoot string) (map[string][]any, error) {
 	specModels := make(map[string][]any)
 	for i, file := range appClusterPaths {
-		doc, err := ascii.Open(file, append(ascii.GithubSettings, settings...)...)
+		doc, err := ascii.Open(file, append(ascii.GithubSettings(), settings...)...)
 		if err != nil {
 			return nil, err
 		}

@@ -143,8 +143,25 @@ var AllowedTableAttributes = types.Attributes{
 }
 
 var StructTableColumnOrder = [...]TableColumn{
-	TableColumnValue,
+	TableColumnID,
 	TableColumnName,
+	TableColumnType,
+	TableColumnConstraint,
+	TableColumnQuality,
+	TableColumnDefault,
+	TableColumnAccess,
+	TableColumnConformance,
+}
+
+var StructTableColumnNames = map[TableColumn]string{
+	TableColumnID:          "ID",
+	TableColumnName:        "Name",
+	TableColumnType:        "Type",
+	TableColumnConstraint:  "Constraint",
+	TableColumnQuality:     "Quality",
+	TableColumnDefault:     "Default",
+	TableColumnAccess:      "Access",
+	TableColumnConformance: "Conformance",
 }
 
 var EnumTableColumnOrder = [...]TableColumn{
@@ -154,7 +171,59 @@ var EnumTableColumnOrder = [...]TableColumn{
 	TableColumnConformance,
 }
 
+var EnumTableColumnNames = map[TableColumn]string{
+	TableColumnValue:       "Value",
+	TableColumnName:        "Name",
+	TableColumnSummary:     "Summary",
+	TableColumnConformance: "Conformance",
+}
+
 var BitmapTableColumnOrder = [...]TableColumn{
 	TableColumnBit,
 	TableColumnName,
+	TableColumnSummary,
+	TableColumnConformance,
+}
+
+var BitmapTableColumnNames = map[TableColumn]string{
+	TableColumnBit:         "ID",
+	TableColumnName:        "Name",
+	TableColumnSummary:     "Summary",
+	TableColumnConformance: "Conformance",
+}
+
+var EventsTableColumnOrder = [...]TableColumn{
+	TableColumnID,
+	TableColumnName,
+	TableColumnPriority,
+	TableColumnAccess,
+	TableColumnConformance,
+}
+
+var EventsTableColumnNames = map[TableColumn]string{
+	TableColumnID:          "ID",
+	TableColumnName:        "Name",
+	TableColumnPriority:    "Priority",
+	TableColumnAccess:      "Access",
+	TableColumnConformance: "Conformance",
+}
+
+var EventTableColumnOrder = [...]TableColumn{
+	TableColumnID,
+	TableColumnName,
+	TableColumnType,
+	TableColumnConstraint,
+	TableColumnQuality,
+	TableColumnDefault,
+	TableColumnConformance,
+}
+
+var EventTableColumnNames = map[TableColumn]string{
+	TableColumnID:          "ID",
+	TableColumnName:        "Name",
+	TableColumnType:        "Type",
+	TableColumnConstraint:  "Constraint",
+	TableColumnQuality:     "Quality",
+	TableColumnDefault:     "Default",
+	TableColumnConformance: "Conformance",
 }

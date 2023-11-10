@@ -1,4 +1,4 @@
-package render
+package zcl
 
 import (
 	"fmt"
@@ -80,20 +80,20 @@ func renderConstraint(fs matter.FieldSet, t *matter.DataType, c matter.Constrain
 	if c == nil {
 		return
 	}
-	max, min := c.MinMax(&matter.ConstraintContext{Fields: fs})
+	max, min := c.MinMax(fs)
 	if t.IsString() {
-		if max.Defined() {
-			attr.CreateAttr("length", fmt.Sprintf("%d", max.Int64))
+		if max.Defined {
+			attr.CreateAttr("length", fmt.Sprintf("0x%02X", max.Int64))
 		}
-		if min.Defined() {
-			attr.CreateAttr("minLength", fmt.Sprintf("%d", min.Int64))
+		if min.Defined {
+			attr.CreateAttr("minLength", fmt.Sprintf("0x%02X", min.Int64))
 		}
 	} else {
-		if min.Defined() {
-			attr.CreateAttr("min", fmt.Sprintf("%d", min.Int64))
+		if min.Defined {
+			attr.CreateAttr("min", fmt.Sprintf("0x%02X", min.Int64))
 		}
-		if max.Defined() {
-			attr.CreateAttr("max", fmt.Sprintf("%d", max.Int64))
+		if max.Defined {
+			attr.CreateAttr("max", fmt.Sprintf("0x%02X", max.Int64))
 		}
 	}
 }

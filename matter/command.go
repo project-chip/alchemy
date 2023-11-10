@@ -1,7 +1,5 @@
 package matter
 
-import "strings"
-
 type CommandDirection uint8
 
 const (
@@ -29,13 +27,6 @@ type Command struct {
 	Fields []*Field `json:"fields,omitempty"`
 }
 
-func ParseCommandDirection(s string) CommandDirection {
-	switch strings.TrimSpace(strings.ToLower(s)) {
-	case "client => server", "server <= client":
-		return CommandDirectionClientToServer
-	case "server => client", "client <= server":
-		return CommandDirectionServerToClient
-	default:
-		return CommandDirectionUnknown
-	}
+func (c *Command) ModelType() ModelType {
+	return ModelTypeCommand
 }
