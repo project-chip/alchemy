@@ -1,6 +1,10 @@
 package zap
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/hasty/alchemy/matter"
+)
 
 var matterToZapMap = map[string]string{
 	"bool": "boolean",
@@ -32,8 +36,12 @@ var matterToZapMap = map[string]string{
 	"map32": "bitmap32",
 	"map64": "bitmap64",
 
-	"string": "char_string",
-	"octstr": "octet_string",
+	"string":        "char_string",
+	"octstr":        "octet_string",
+	"percent":       "int8u",
+	"percent100ths": "int16u",
+	"ref_tempdiff":  "int16s",
+	"temperature":   "int16s",
 
 	"elapsed-s":  "elapsed_s",
 	"epoch-s":    "epoch_s",
@@ -105,4 +113,27 @@ func ConvertZapToDataType(s string) string {
 		return z
 	}
 	return s
+}
+
+func GetMinMax(fs matter.FieldSet, t *matter.DataType, c matter.Constraint) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
+	if t == nil || t.IsArray {
+		return
+	}
+	if c == nil {
+		switch t.Name {
+		case "percent":
+			from.Type = matter.ConstraintExtremeTypeInt64
+			from.Int64 = 0
+			to.Type = matter.ConstraintExtremeTypeInt64
+			to.Int64 = 100
+		case "percent100ths":
+			from.Type = matter.ConstraintExtremeTypeInt64
+			from.Int64 = 0
+			to.Type = matter.ConstraintExtremeTypeInt64
+			to.Int64 = 10000
+		}
+		return
+	}
+
+	return c.MinMax(&matter.ConstraintContext{Fields: fs})
 }

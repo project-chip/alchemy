@@ -1,6 +1,7 @@
 package matter
 
 import (
+	"math"
 	"strings"
 )
 
@@ -127,50 +128,109 @@ type DataType struct {
 }
 
 func (dt *DataType) IsString() bool {
-	return dt.Name == "string" || dt.Name == "octstr"
+	return dt != nil && dt.Name == "string" || dt.Name == "octstr"
+}
+
+type dataTypeRange struct {
+	et    ConstraintExtremeType
+	fromU uint64
+	fromI int64
+	toU   uint64
+	toI   int64
+}
+
+var maxUint24 uint64 = math.MaxUint16 | (math.MaxUint8 << 16)
+var maxUint40 uint64 = math.MaxUint32 | (math.MaxUint8 << 32)
+var maxUint48 uint64 = math.MaxUint32 | (math.MaxUint16 << 32)
+var maxUint56 uint64 = math.MaxUint32 | (maxUint24 << 32)
+
+var maxInt24 int64 = math.MaxUint16 | (math.MaxInt8 << 16)
+var maxInt40 int64 = math.MaxUint32 | (math.MaxInt8 << 32)
+var maxInt48 int64 = math.MaxUint32 | (math.MaxInt16 << 32)
+var maxInt56 int64 = math.MaxUint32 | (maxInt24 << 32)
+
+var minInt24 int64 = ^maxInt24
+var minInt40 int64 = ^maxInt40
+var minInt48 int64 = ^maxInt48
+var minInt56 int64 = ^maxInt56
+
+var ranges = map[BaseDataType]dataTypeRange{
+	BaseDataTypeBoolean:           {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: 1},
+	BaseDataTypeMap8:              {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint8},
+	BaseDataTypeMap16:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16},
+	BaseDataTypeMap32:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32},
+	BaseDataTypeMap64:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64},
+	BaseDataTypeUInt8:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint8},
+	BaseDataTypeUInt16:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16},
+	BaseDataTypeUInt24:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint24},
+	BaseDataTypeUInt32:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32},
+	BaseDataTypeUInt40:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint40},
+	BaseDataTypeUInt48:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint48},
+	BaseDataTypeUInt56:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint56},
+	BaseDataTypeUInt64:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64},
+	BaseDataTypeInt8:              {et: ConstraintExtremeTypeInt64, fromI: math.MinInt8, toI: math.MaxInt8},
+	BaseDataTypeInt16:             {et: ConstraintExtremeTypeInt64, fromI: math.MinInt16, toI: math.MaxInt16},
+	BaseDataTypeInt24:             {et: ConstraintExtremeTypeInt64, fromI: minInt24, toI: maxInt24},
+	BaseDataTypeInt32:             {et: ConstraintExtremeTypeInt64, fromI: math.MinInt32, toI: math.MaxInt32},
+	BaseDataTypeInt40:             {et: ConstraintExtremeTypeInt64, fromI: minInt40, toI: maxInt40},
+	BaseDataTypeInt48:             {et: ConstraintExtremeTypeInt64, fromI: minInt48, toI: maxInt48},
+	BaseDataTypeInt56:             {et: ConstraintExtremeTypeInt64, fromI: minInt56, toI: maxInt56},
+	BaseDataTypeInt64:             {et: ConstraintExtremeTypeInt64, fromI: math.MinInt64, toI: math.MaxInt64},
+	BaseDataTypePercent:           {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: 100},
+	BaseDataTypePercentHundredths: {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: 10000},
+	BaseDataTypeEpochMicroseconds: {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64},
+	BaseDataTypeEpochSeconds:      {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32},
+	BaseDataTypePosixMilliseconds: {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64},
+	BaseDataTypeTemperature:       {et: ConstraintExtremeTypeInt64, fromI: -27315, toI: math.MaxInt16},
+}
+
+var nullableRanges = map[BaseDataType]dataTypeRange{
+	BaseDataTypeMap8:              {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint8 & ^(1 << 7)},
+	BaseDataTypeMap16:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16 & ^(1 << 15)},
+	BaseDataTypeMap32:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32 & ^(1 << 31)},
+	BaseDataTypeMap64:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64 & ^(1 << 64)},
+	BaseDataTypeUInt8:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint8 - 1},
+	BaseDataTypeUInt16:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16 - 1},
+	BaseDataTypeUInt24:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint24 - 1},
+	BaseDataTypeUInt32:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32 - 1},
+	BaseDataTypeUInt40:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint40 - 1},
+	BaseDataTypeUInt48:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint48 - 1},
+	BaseDataTypeUInt56:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint56 - 1},
+	BaseDataTypeUInt64:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64 - 1},
+	BaseDataTypeInt8:              {et: ConstraintExtremeTypeInt64, fromI: math.MinInt8 + 1, toI: math.MaxInt8},
+	BaseDataTypeInt16:             {et: ConstraintExtremeTypeInt64, fromI: math.MinInt16 + 1, toI: math.MaxInt16},
+	BaseDataTypeInt24:             {et: ConstraintExtremeTypeInt64, fromI: minInt24 + 1, toI: maxInt24},
+	BaseDataTypeInt32:             {et: ConstraintExtremeTypeInt64, fromI: math.MinInt32 + 1, toI: math.MaxInt32},
+	BaseDataTypeInt40:             {et: ConstraintExtremeTypeInt64, fromI: minInt40 + 1, toI: maxInt40},
+	BaseDataTypeInt48:             {et: ConstraintExtremeTypeInt64, fromI: minInt48 + 1, toI: maxInt48},
+	BaseDataTypeInt56:             {et: ConstraintExtremeTypeInt64, fromI: minInt56 + 1, toI: maxInt56},
+	BaseDataTypeInt64:             {et: ConstraintExtremeTypeInt64, fromI: math.MinInt64 + 1, toI: math.MaxInt64},
+	BaseDataTypeEpochMicroseconds: {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64 - 1},
+	BaseDataTypeEpochSeconds:      {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32 - 1},
+	BaseDataTypePosixMilliseconds: {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64 - 1},
 }
 
 func (dt *DataType) MinMax(nullable bool) (from ConstraintExtreme, to ConstraintExtreme) {
-	switch dt.BaseType {
-	case BaseDataTypeBoolean:
-		from = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0}
-		to = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 1}
-	case BaseDataTypeMap8:
-		if nullable {
-
-		} else {
-			from = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0}
-			to = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0xFF}
-		}
-	case BaseDataTypeMap16:
-		from = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0}
-		to = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0xFFFF}
-	case BaseDataTypeMap32:
-		from = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0}
-		to = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0xFFFFFFFF}
-	case BaseDataTypeMap64:
-		from = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0}
-		to = ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, UInt64: 0xFFFFFFFFFFFFFFFF}
-	case BaseDataTypeUInt8:
-	case BaseDataTypeUInt16:
-	case BaseDataTypeUInt24:
-	case BaseDataTypeUInt32:
-	case BaseDataTypeUInt40:
-	case BaseDataTypeUInt48:
-	case BaseDataTypeUInt56:
-	case BaseDataTypeUInt64:
-	case BaseDataTypeInt8:
-	case BaseDataTypeInt16:
-	case BaseDataTypeInt24:
-	case BaseDataTypeInt32:
-	case BaseDataTypeInt40:
-	case BaseDataTypeInt48:
-	case BaseDataTypeInt56:
-	case BaseDataTypeInt64:
-	case BaseDataTypeSingle:
-	case BaseDataTypeDouble:
-	case BaseDataTypeList:
-	case BaseDataTypeStruct:
+	var r dataTypeRange
+	var ok bool
+	if nullable {
+		r, ok = nullableRanges[dt.BaseType]
 	}
+	if !ok {
+		r, ok = ranges[dt.BaseType]
+	}
+	if ok {
+		from.Type = r.et
+		to.Type = r.et
+		switch r.et {
+		case ConstraintExtremeTypeInt64:
+			from.Int64 = r.fromI
+			to.Int64 = r.toI
+		case ConstraintExtremeTypeUInt64:
+			from.UInt64 = r.fromU
+			to.UInt64 = r.toU
+		}
+	}
+
 	return
 }

@@ -312,19 +312,53 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableCo
 	}
 	var val matter.Constraint
 	if len(p.Elements) == 1 {
-		se, ok := p.Elements[0].(*types.StringElement)
-		if ok {
-			val = constraint.ParseConstraint(se.Content)
+		switch e := p.Elements[0].(type) {
+		case *types.StringElement:
+			val = constraint.ParseConstraint(e.Content)
+		case *types.InternalCrossReference:
+			anchor, _ := d.getAnchor(e.ID.(string))
+			var name string
+			if anchor != nil {
+				name = ReferenceName(anchor.Element)
+			} else {
+				name = strings.TrimPrefix(e.ID.(string), "_")
+			}
+			val = constraint.ParseConstraint(StripTypeSuffixes(name))
 		}
 	} else {
+		var sb strings.Builder
 		for _, el := range p.Elements {
 			switch v := el.(type) {
 			case *types.StringElement:
-				val = constraint.ParseConstraint(v.Content)
+				sb.WriteString(v.Content)
+			case *types.InternalCrossReference:
+				anchor, _ := d.getAnchor(v.ID.(string))
+				var name string
+				if anchor != nil {
+					name = ReferenceName(anchor.Element)
+				} else {
+					name = strings.TrimPrefix(v.ID.(string), "_")
+				}
+				sb.WriteString(name)
 			default:
+				fmt.Printf("unknown value element: %T\n", el)
 				slog.Info("unknown value element", "type", v)
 			}
 		}
+		fmt.Printf("parsing constraint %s\n", StripTypeSuffixes(sb.String()))
+		val = constraint.ParseConstraint(StripTypeSuffixes(sb.String()))
 	}
 	return val
+}
+
+var typeSuffixes = []string{" Attribute", " Type"}
+
+func StripTypeSuffixes(dataType string) string {
+	for _, suffix := range typeSuffixes {
+		if strings.HasSuffix(dataType, suffix) {
+			dataType = dataType[0 : len(dataType)-len(suffix)]
+			break
+		}
+	}
+	return dataType
 }

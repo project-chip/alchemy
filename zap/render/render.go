@@ -3,7 +3,9 @@ package render
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"path/filepath"
+	"time"
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/ascii"
@@ -36,7 +38,7 @@ func Render(cxt context.Context, doc *ascii.Doc) (*Result, error) {
 		errata = DefaultErrata
 	}
 
-	//x.CreateComment(license)
+	x.CreateComment(fmt.Sprintf(license, time.Now().Year()))
 	c := x.CreateElement("configurator")
 	dom := c.CreateElement("domain")
 	dom.CreateAttr("name", "CHIP")
@@ -56,7 +58,7 @@ func Render(cxt context.Context, doc *ascii.Doc) (*Result, error) {
 }
 
 var license = `
-Copyright (c) 2021 Project CHIP Authors
+Copyright (c) %d Project CHIP Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

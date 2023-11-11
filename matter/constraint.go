@@ -34,3 +34,14 @@ type ConstraintExtreme struct {
 func (ce *ConstraintExtreme) Defined() bool {
 	return ce.Type != ConstraintExtremeTypeUndefined
 }
+
+func (ce *ConstraintExtreme) Value() any {
+	switch ce.Type {
+	case ConstraintExtremeTypeInt64:
+		return ce.Int64
+	case ConstraintExtremeTypeUInt64:
+		return ce.UInt64
+	default:
+		return nil
+	}
+}

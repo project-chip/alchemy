@@ -157,27 +157,21 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 }
 
 func (*renderer) renderConstraint(fs matter.FieldSet, attr []xml.Attr, t *matter.DataType, c matter.Constraint) []xml.Attr {
-	if t == nil || t.IsArray {
-		return attr
-	}
-	if c == nil {
-		return attr
-	}
+	from, to := zap.GetMinMax(fs, t, c)
 
-	max, min := c.MinMax(&matter.ConstraintContext{Fields: fs})
-	if t.IsString() {
-		if max.Defined() {
-			attr = setAttributeValue(attr, "length", fmt.Sprintf("%d", max.Int64))
+	if t != nil && t.IsString() {
+		if to.Defined() {
+			attr = setAttributeValue(attr, "length", fmt.Sprintf("%d", to.Value()))
 		}
-		if min.Defined() {
-			attr = setAttributeValue(attr, "minLength", fmt.Sprintf("%d", min.Int64))
+		if from.Defined() {
+			attr = setAttributeValue(attr, "minLength", fmt.Sprintf("%d", from.Value()))
 		}
 	} else {
-		if min.Defined() {
-			attr = setAttributeValue(attr, "min", fmt.Sprintf("%d", min.Int64))
+		if from.Defined() {
+			attr = setAttributeValue(attr, "min", fmt.Sprintf("%d", from.Value()))
 		}
-		if max.Defined() {
-			attr = setAttributeValue(attr, "max", fmt.Sprintf("%d", max.Int64))
+		if to.Defined() {
+			attr = setAttributeValue(attr, "max", fmt.Sprintf("%d", to.Value()))
 		}
 	}
 	return attr

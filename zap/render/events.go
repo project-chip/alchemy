@@ -37,9 +37,10 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 				continue
 			}
 			fx := ex.CreateElement("field")
-			fx.CreateAttr("fieldId", f.ID.IntString())
+			fx.CreateAttr("id", f.ID.IntString())
 			fx.CreateAttr("name", f.Name)
 			writeDataType(fx, f.Type)
+			renderConstraint(e.Fields, f.Type, f.Constraint, fx)
 			fx.CreateAttr("apiMaturity", "provisional")
 		}
 		if e.Access.Read != matter.PrivilegeUnknown {

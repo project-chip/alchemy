@@ -8,6 +8,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/zap"
 	"github.com/iancoleman/strcase"
 )
 
@@ -74,26 +75,22 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 }
 
 func renderConstraint(fs matter.FieldSet, t *matter.DataType, c matter.Constraint, attr *etree.Element) {
-	if t == nil || t.IsArray {
-		return
-	}
-	if c == nil {
-		return
-	}
-	max, min := c.MinMax(&matter.ConstraintContext{Fields: fs})
-	if t.IsString() {
-		if max.Defined() {
-			attr.CreateAttr("length", fmt.Sprintf("%d", max.Int64))
+
+	from, to := zap.GetMinMax(fs, t, c)
+
+	if t != nil && t.IsString() {
+		if to.Defined() {
+			attr.CreateAttr("length", fmt.Sprintf("%d", to.Value()))
 		}
-		if min.Defined() {
-			attr.CreateAttr("minLength", fmt.Sprintf("%d", min.Int64))
+		if from.Defined() {
+			attr.CreateAttr("minLength", fmt.Sprintf("%d", from.Value()))
 		}
 	} else {
-		if min.Defined() {
-			attr.CreateAttr("min", fmt.Sprintf("%d", min.Int64))
+		if from.Defined() {
+			attr.CreateAttr("min", fmt.Sprintf("%d", from.Value()))
 		}
-		if max.Defined() {
-			attr.CreateAttr("max", fmt.Sprintf("%d", max.Int64))
+		if to.Defined() {
+			attr.CreateAttr("max", fmt.Sprintf("%d", to.Value()))
 		}
 	}
 }

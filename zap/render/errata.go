@@ -81,6 +81,11 @@ var Erratas = map[string]*Errata{
 		dataTypeOrder:               DefaultErrata.dataTypeOrder,
 		SuppressClusterDefinePrefix: true,
 	},
+	"DemandResponseLoadControl.adoc": {
+		topOrder:      []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		clusterOrder:  DefaultErrata.clusterOrder,
+		dataTypeOrder: DefaultErrata.dataTypeOrder,
+	},
 	"Thermostat.adoc": {
 		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
 		clusterOrder:                DefaultErrata.clusterOrder,

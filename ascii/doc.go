@@ -178,6 +178,8 @@ func Open(path string, settings ...configuration.Setting) (*Doc, error) {
 
 	file, err := os.ReadFile(config.Filename)
 	if err != nil {
+		wd, _ := os.Getwd()
+		panic(fmt.Errorf("failed opening %s: %v wd: %s", config.Filename, err, wd))
 		return nil, err
 	}
 
