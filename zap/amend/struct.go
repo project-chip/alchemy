@@ -69,6 +69,7 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 
 		elName := xml.Name{Local: "item"}
 		xfs := xml.StartElement{Name: elName}
+		xfs.Attr = setAttributeValue(xfs.Attr, "fieldId", v.ID.IntString())
 		xfs.Attr = setAttributeValue(xfs.Attr, "name", v.Name)
 		xfs.Attr = writeDataType(v.Type, xfs.Attr)
 		if v.Quality.Has(matter.QualityNullable) {

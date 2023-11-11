@@ -60,7 +60,7 @@ func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matte
 		elName := xml.Name{Local: "field"}
 		xfs := xml.StartElement{Name: elName}
 		xfs.Attr = setAttributeValue(xfs.Attr, "name", b.Name)
-		xfs.Attr = setAttributeValue(xfs.Attr, "value", fmt.Sprintf("%#02x", 1<<(bit-1)))
+		xfs.Attr = setAttributeValue(xfs.Attr, "mask", fmt.Sprintf("%#02x", 1<<(bit)))
 		err = e.EncodeToken(xfs)
 		if err != nil {
 			return

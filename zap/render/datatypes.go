@@ -74,7 +74,7 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 			}
 			evx := en.CreateElement("field")
 			evx.CreateAttr("name", bv.Name)
-			evx.CreateAttr("value", fmt.Sprintf("%#02x", 1<<(bit-1)))
+			evx.CreateAttr("mask", fmt.Sprintf("%#02x", 1<<(bit)))
 
 		}
 
@@ -90,7 +90,9 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
 		for _, f := range v.Fields {
+
 			fx := en.CreateElement("item")
+			fx.CreateAttr("fieldId", f.ID.IntString())
 			fx.CreateAttr("name", f.Name)
 			writeDataType(fx, f.Type)
 			if f.Quality.Has(matter.QualityNullable) {

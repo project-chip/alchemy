@@ -61,9 +61,9 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		}
 		fx := cx.CreateElement("arg")
 		mandatory := (f.Conformance == "M")
-		renderConstraint(c.Fields, f.Type, f.Constraint, fx)
 		fx.CreateAttr("name", f.Name)
 		writeCommandDataType(fx, f.Type)
+		renderConstraint(c.Fields, f.Type, f.Constraint, fx)
 		if !mandatory {
 			fx.CreateAttr("optional", "true")
 		}

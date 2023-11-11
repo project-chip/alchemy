@@ -1,8 +1,13 @@
 package constraint
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/hasty/alchemy/matter"
+)
 
 var constraints []string = []string{
+	"max (NumberOfEventsPerProgram * (1 + NumberOfLoadControlPrograms))",
 	"max (MaxTemperature - 1)",
 	"InstalledOpenLimitLift to InstalledClosedLimitLift",
 	"0x00 to 0x3C",
@@ -165,6 +170,18 @@ var constraints []string = []string{
 }
 
 func TestConstraints(t *testing.T) {
+	for _, s := range constraints {
+		c := ParseConstraint(s)
+
+		t.Logf("conformance: \"%s\" => \"%v\"", s, c.AsciiDocString())
+
+		break
+	}
+}
+
+func TestComplex(t *testing.T) {
+
+	var fs matter.FieldSet
 	for _, s := range constraints {
 		c := ParseConstraint(s)
 
