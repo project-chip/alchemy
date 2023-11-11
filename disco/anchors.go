@@ -48,7 +48,7 @@ func normalizeAnchor(info *ascii.Anchor) {
 	match := properAnchorPattern.FindStringSubmatch(info.ID)
 	if len(match) > 0 {
 		if len(info.Label) == 0 {
-			info.Label = ascii.ReferenceName(info.Element)
+			info.Label = strings.TrimSpace(matter.StripReferenceSuffixes(ascii.ReferenceName(info.Element)))
 		}
 		return
 	}
@@ -111,10 +111,7 @@ func disambiguateAnchorSet(infos []*ascii.Anchor) error {
 	}
 	parentSections := make([]*ascii.Section, len(infos))
 	for {
-		slog.Info("info", "i", infos)
 		for i := range infos {
-			slog.Info("info", "i", infos[i].Name, "e", infos[i].Element)
-
 			parentSection := findRefSection(parents[i])
 			if parentSection == nil {
 				return fmt.Errorf("duplicate anchor: %s with invalid parent", refIds[i])

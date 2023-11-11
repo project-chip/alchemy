@@ -25,7 +25,7 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed mapping table columns for events table in section %s: %w", events.Name, err)
 	}
 
 	if columnMap == nil {
@@ -74,27 +74,30 @@ func organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.Section, ev
 	subSections := parse.Skim[*ascii.Section](events.Elements)
 	for _, ss := range subSections {
 		name := strings.TrimSuffix(ss.Name, " Event")
-		fmt.Printf("looking for event %s\n", name)
 		if _, ok := eventNames[name]; !ok {
-			fmt.Printf("didn't find event %s\n", name)
 			continue
 		}
 		t := ascii.FindFirstTable(ss)
 		if t == nil {
-			fmt.Printf("didn't find table %s\n", name)
 			continue
 		}
 		rows := ascii.TableRows(t)
 
 		hri, cm, ec, err := ascii.MapTableColumns(rows)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed mapping table columns for event table in section %s: %w", ss.Name, err)
+
 		}
 		err = fixConstraintCells(rows, columnMap)
 		if err != nil {
 			return err
 		}
 		err = getPotentialDataTypes(cxt, ss, rows, columnMap)
+		if err != nil {
+			return err
+		}
+
+		err = renameTableHeaderCells(rows, hri, cm, matter.EventTableColumnNames)
 		if err != nil {
 			return err
 		}

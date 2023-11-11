@@ -2,7 +2,7 @@ package matter
 
 import "strings"
 
-var DisallowedReferenceSuffixes = []string{"Command", "Feature", "Attribute", "Field"}
+var DisallowedReferenceSuffixes = []string{"Command", "Feature", "Attribute", "Field", "Event"}
 
 func StripReferenceSuffixes(newId string) string {
 	for _, suffix := range DisallowedReferenceSuffixes {

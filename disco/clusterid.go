@@ -24,7 +24,7 @@ func (b *Ball) organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, at
 
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed mapping table columns for cluster ID table in section %s: %w", section.Name, err)
 	}
 
 	if columnMap == nil {

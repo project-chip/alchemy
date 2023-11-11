@@ -2,7 +2,6 @@ package zap
 
 import (
 	"encoding/xml"
-	"fmt"
 	"os"
 )
 
@@ -17,6 +16,5 @@ func Read(path string) (models []interface{}, err error) {
 	if err != nil {
 		return
 	}
-	fmt.Printf("zap file len %d\n", len(zap.Clusters))
 	return
 }

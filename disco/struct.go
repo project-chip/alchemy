@@ -27,7 +27,7 @@ func (b *Ball) organizeStructTable(doc *ascii.Doc, section *ascii.Section, field
 
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed mapping field table for %s struct: %w", section.Name, err)
 	}
 
 	if columnMap == nil {

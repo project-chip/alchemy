@@ -111,7 +111,7 @@ func getDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, 
 			}
 			_, columnMap, _, err := ascii.MapTableColumns(ascii.TableRows(table))
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", s.Name, err)
 			}
 			dataType.indexColumn = getIndexColumnType(dataType.dataTypeCategory)
 
@@ -200,7 +200,7 @@ func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[strin
 		}
 		_, columnMap, _, err := ascii.MapTableColumns(ascii.TableRows(table))
 		if err != nil {
-			return err
+			return fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", dt.section.Name, err)
 		}
 		if valueIndex, ok := columnMap[firstColumnType]; !ok || valueIndex > 0 {
 			continue

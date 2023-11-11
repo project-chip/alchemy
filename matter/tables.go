@@ -192,7 +192,7 @@ var BitmapTableColumnOrder = [...]TableColumn{
 }
 
 var BitmapTableColumnNames = map[TableColumn]string{
-	TableColumnBit:         "ID",
+	TableColumnBit:         "Bit",
 	TableColumnName:        "Name",
 	TableColumnSummary:     "Summary",
 	TableColumnConformance: "Conformance",
@@ -202,6 +202,7 @@ var EventsTableColumnOrder = [...]TableColumn{
 	TableColumnID,
 	TableColumnName,
 	TableColumnPriority,
+	TableColumnQuality,
 	TableColumnAccess,
 	TableColumnConformance,
 }
@@ -210,6 +211,7 @@ var EventsTableColumnNames = map[TableColumn]string{
 	TableColumnID:          "ID",
 	TableColumnName:        "Name",
 	TableColumnPriority:    "Priority",
+	TableColumnQuality:     "Quality",
 	TableColumnAccess:      "Access",
 	TableColumnConformance: "Conformance",
 }

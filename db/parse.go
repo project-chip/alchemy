@@ -31,7 +31,7 @@ func appendSectionToRow(cxt context.Context, section *ascii.Section, row *dbRow)
 	}
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed mapping table columns for section %s: %w", section.Name, err)
 	}
 	if len(rows) < headerRowIndex+2 {
 		return fmt.Errorf("not enough value rows in table")

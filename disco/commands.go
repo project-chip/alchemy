@@ -27,7 +27,7 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed mapping table columns for commands table in section %s: %w", commands.Name, err)
 	}
 
 	if columnMap == nil {
@@ -90,7 +90,7 @@ func organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable 
 
 		_, columnMap, _, err := ascii.MapTableColumns(rows)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed mapping table columns for fields table in section %s: %w", ss.Name, err)
 		}
 		err = fixConstraintCells(rows, columnMap)
 		if err != nil {

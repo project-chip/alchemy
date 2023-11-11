@@ -1,7 +1,6 @@
 package ascii
 
 import (
-	"fmt"
 	"log/slog"
 	"path/filepath"
 	"strings"
@@ -48,7 +47,7 @@ func BuildTree(docs []*Doc) {
 			if cd, ok := docPaths[child]; ok {
 				cd.addParent(doc)
 			} else {
-				fmt.Printf("unknown child path from %s to %s\n", doc.Path, child)
+				slog.Warn("unknown child path", "parent", doc.Path, "child", child)
 			}
 		}
 	}

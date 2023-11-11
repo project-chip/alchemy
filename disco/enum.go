@@ -8,20 +8,19 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 )
 
 func (b *Ball) organizeEnumSection(doc *ascii.Doc, section *ascii.Section) error {
-	attributesTable := ascii.FindFirstTable(section)
-	if attributesTable == nil {
-		return fmt.Errorf("no attributes table found")
+	enumTable := ascii.FindFirstTable(section)
+	if enumTable == nil {
+		return fmt.Errorf("no enum table found")
 	}
-	fmt.Printf("enum! %s\n", section.Name)
 	name := strings.TrimSpace(section.Name)
 	if strings.HasSuffix(strings.ToLower(name), "enum") {
 		setSectionTitle(section, name+" Type")
 	}
-	b.organizeEnumTable(doc, section, attributesTable)
-	return nil
+	return b.organizeEnumTable(doc, section, enumTable)
 }
 
 func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
@@ -29,7 +28,7 @@ func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attribu
 
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed mapping table columns for enum table in section %s: %w", section.Name, err)
 	}
 
 	if columnMap == nil {
@@ -44,6 +43,7 @@ func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attribu
 
 	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.EnumTableColumnNames)
 	if err != nil {
+		slog.Info("failed renaming", section.Name, err)
 		return err
 	}
 
@@ -51,5 +51,28 @@ func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attribu
 
 	reorderColumns(doc, section, rows, matter.EnumTableColumnOrder[:], columnMap, extraColumns)
 
+	nameIndex, ok := columnMap[matter.TableColumnName]
+	if ok {
+
+		valueNames := make(map[string]struct{}, len(rows))
+		for _, row := range rows {
+			valueName, err := ascii.GetTableCellValue(row.Cells[nameIndex])
+			if err != nil {
+				slog.Warn("could not get cell value for enum value", "err", err)
+				continue
+			}
+			valueNames[valueName] = struct{}{}
+		}
+		subSections := parse.FindAll[*ascii.Section](section.Elements)
+		for _, ss := range subSections {
+			name := strings.TrimSuffix(ss.Name, " Value")
+			if _, ok := valueNames[name]; !ok {
+				continue
+			}
+			if !strings.HasSuffix(strings.ToLower(ss.Name), " value") {
+				setSectionTitle(ss, ss.Name+" Value")
+			}
+		}
+	}
 	return nil
 }

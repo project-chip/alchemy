@@ -1,7 +1,7 @@
 package files
 
 import (
-	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -24,7 +24,7 @@ func Paths(filepaths []string) ([]string, error) {
 			var banned bool
 			for ban, reason := range bannedPaths {
 				if strings.HasSuffix(p, ban) {
-					fmt.Printf("Skipping excluded file %s; %s...\n", p, reason)
+					slog.Warn("Skipping excluded", "file", p, "reason", reason)
 					banned = true
 				}
 			}

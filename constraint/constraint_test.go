@@ -182,6 +182,7 @@ func TestConstraints(t *testing.T) {
 func TestComplex(t *testing.T) {
 
 	var fs matter.FieldSet
+	fs = append(fs, &matter.Field{})
 	for _, s := range constraints {
 		c := ParseConstraint(s)
 

@@ -205,11 +205,9 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 	}
 	p, ok := cell.Elements[0].(*types.Paragraph)
 	if !ok {
-		fmt.Printf("el type: %T\n", cell.Elements[0])
 		return nil
 	}
 	if len(p.Elements) == 0 {
-		fmt.Printf("empty paragraph")
 		return nil
 	}
 	val := &matter.DataType{}
@@ -227,14 +225,13 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 		case *types.InternalCrossReference:
 			anchor, _ := d.getAnchor(v.ID.(string))
 			if anchor != nil {
-				//				fmt.Printf("type anchor: %v %T\n", anchor.Element, anchor.Element)
 				val.Name = ReferenceName(anchor.Element)
 			} else {
 				val.Name = v.ID.(string)
 			}
 			break
 		default:
-			fmt.Printf("unknown value element: %T\n", el)
+			slog.Warn("unknown value element", "type", fmt.Sprintf("%T", el))
 		}
 	} else {
 		for _, el := range p.Elements {
@@ -245,7 +242,6 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 				} else if val.Name == "" {
 					anchor, _ := d.getAnchor(v.Content)
 					if anchor != nil {
-						fmt.Printf("array anchor: %v\n", anchor.Element)
 						val.Name = ReferenceName(anchor.Element)
 					} else {
 						name := strings.TrimPrefix(v.Content, "_")
@@ -255,7 +251,6 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 			case *types.InternalCrossReference:
 				anchor, _ := d.getAnchor(v.ID.(string))
 				if anchor != nil {
-					fmt.Printf("type anchor: %v %T\n", anchor.Element, anchor.Element)
 					val.Name = ReferenceName(anchor.Element)
 				} else {
 					name := strings.TrimPrefix(v.ID.(string), "_")
@@ -263,7 +258,6 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 				}
 				break
 			default:
-				fmt.Printf("unknown value element: %T\n", el)
 				slog.Info("unknown value element", "type", v)
 			}
 		}
@@ -304,7 +298,7 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableCo
 	}
 	p, ok := cell.Elements[0].(*types.Paragraph)
 	if !ok {
-		fmt.Printf("el type: %T\n", cell.Elements[0])
+		slog.Warn("unexpected non-paragraph in constraints cell", "type", fmt.Sprintf("%T", cell.Elements[0]))
 		return nil
 	}
 	if len(p.Elements) == 0 {
@@ -341,11 +335,9 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableCo
 				}
 				sb.WriteString(name)
 			default:
-				fmt.Printf("unknown value element: %T\n", el)
-				slog.Info("unknown value element", "type", v)
+				slog.Warn("unknown value element", "type", fmt.Sprintf("%T", el))
 			}
 		}
-		fmt.Printf("parsing constraint %s\n", StripTypeSuffixes(sb.String()))
 		val = constraint.ParseConstraint(StripTypeSuffixes(sb.String()))
 	}
 	return val
