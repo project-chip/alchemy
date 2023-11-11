@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 	"sync/atomic"
@@ -48,7 +48,7 @@ func getFilePaths(filepaths []string) ([]string, error) {
 			var banned bool
 			for ban, reason := range bannedPaths {
 				if strings.HasSuffix(p, ban) {
-					fmt.Printf("Skipping excluded file %s; %s...\n", p, reason)
+					slog.Info("Skipping excluded file", "file", p, "reason", reason)
 					banned = true
 				}
 			}

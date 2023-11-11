@@ -27,6 +27,7 @@ func parseFirstTable(section *Section) (rows []*types.TableRow, headerRowIndex i
 	}
 	headerRowIndex, columnMap, extraColumns, err = MapTableColumns(rows)
 	if err != nil {
+		err = fmt.Errorf("failed mapping table columns for first table in section %s: %w", section.Name, err)
 		return
 	}
 	if len(rows) < headerRowIndex+2 {
@@ -109,7 +110,7 @@ func MapTableColumns(rows []*types.TableRow) (headerRow int, columnMap map[matte
 		if cellCount == -1 {
 			cellCount = len(row.Cells)
 		} else if cellCount != len(row.Cells) {
-			return -1, nil, nil, fmt.Errorf("can't map table columns with unequal cell counts between rows; cell count %d, row %d: %d", cellCount, i, len(row.Cells))
+			return -1, nil, nil, fmt.Errorf("can't map table columns with unequal cell counts between rows; row %d has %d cells, expected %d", i, len(row.Cells), cellCount)
 		}
 		if columnMap == nil {
 			var spares []ExtraColumn

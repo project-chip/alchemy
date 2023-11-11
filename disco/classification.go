@@ -23,7 +23,7 @@ func (b *Ball) organizeClassificationTable(doc *ascii.Doc, section *ascii.Sectio
 
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed mapping table columns for classification table in section %s: %w", section.Name, err)
 	}
 
 	if columnMap == nil {

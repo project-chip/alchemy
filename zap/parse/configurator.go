@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log/slog"
 
 	"github.com/hasty/alchemy/matter"
 )
@@ -73,21 +74,21 @@ func readConfigurator(d *xml.Decoder) (models []any, err error) {
 					if c, ok := clusters[cid]; ok {
 						c.Bitmaps = append(c.Bitmaps, b...)
 					} else {
-						fmt.Printf("orphan bitmaps: %v\n", cid)
+						slog.Warn("orphan bitmaps", "clusterId", cid)
 					}
 				}
 				for cid, e := range enums {
 					if c, ok := clusters[cid]; ok {
 						c.Enums = append(c.Enums, e...)
 					} else {
-						fmt.Printf("orphan enums: %v\n", cid)
+						slog.Warn("orphan enums", "clusterId", cid)
 					}
 				}
 				for cid, s := range structs {
 					if c, ok := clusters[cid]; ok {
 						c.Structs = append(c.Structs, s...)
 					} else {
-						fmt.Printf("orphan structs: %v\n", cid)
+						slog.Warn("orphan structs", "clusterId", cid)
 					}
 				}
 

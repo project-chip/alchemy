@@ -33,31 +33,25 @@ func ensureTableOptions(elements []interface{}) {
 
 }
 
-func addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, nameMap map[matter.TableColumn]string, headerRowIndex int, columnMap map[matter.TableColumn]int) []*types.TableRow {
-	newRows := make([]*types.TableRow, 0, len(rows))
+func addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, nameMap map[matter.TableColumn]string, headerRowIndex int, columnMap map[matter.TableColumn]int) {
 	for _, column := range order {
 		if _, ok := columnMap[column]; !ok {
-			fmt.Printf("missing column %v\n", column)
 			for i, row := range rows {
 				cell := &types.TableCell{}
 				if i == headerRowIndex {
 					if headerRowIndex > 0 {
 						cell.Format = "h"
 					}
-					err := setCellString(cell, nameMap[column])
-					if err != nil {
-						fmt.Printf("errored: %v\n", err)
-					}
+					setCellString(cell, nameMap[column])
 				} else {
 					last := row.Cells[len(row.Cells)-1]
 					cell.Blank = last.Blank
 				}
-				fmt.Printf("added column %v\n", cell)
 				row.Cells = append(row.Cells, cell)
+				columnMap[column] = len(row.Cells) - 1
 			}
 		}
 	}
-	return newRows
 }
 
 func reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap map[matter.TableColumn]int, extraColumns []ascii.ExtraColumn) {

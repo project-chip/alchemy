@@ -24,7 +24,7 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 
 	_, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed mapping table columns for attributes table in section %s: %w", top.Name, err)
 	}
 
 	if columnMap == nil {

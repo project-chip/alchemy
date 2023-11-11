@@ -11,9 +11,10 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "alchemy",
-	Short: "",
-	Long:  ``,
+	Use:          "alchemy",
+	Short:        "",
+	Long:         ``,
+	SilenceUsage: true,
 }
 
 func Execute() {
