@@ -26,13 +26,20 @@ func precleanStrings(elements []interface{}) {
 
 func (b *Ball) postCleanUpStrings(elements []interface{}) {
 	parse.Search(elements, func(t *types.StringElement) bool {
-		t.Content = missingSpaceAfterPunctuationPattern.ReplaceAllString(t.Content, "$1$2 $3")
-		t.Content = multipleSpacesPattern.ReplaceAllString(t.Content, "$1 $2")
-		t.Content = lowercaseHexPattern.ReplaceAllStringFunc(t.Content, func(s string) string {
-			return lowercasePattern.ReplaceAllStringFunc(s, func(s string) string {
-				return strings.ToUpper(s)
+		if b.options.addSpaceAfterPunctuation {
+			t.Content = missingSpaceAfterPunctuationPattern.ReplaceAllString(t.Content, "$1$2 $3")
+		}
+		if b.options.removeExtraSpaces {
+			t.Content = multipleSpacesPattern.ReplaceAllString(t.Content, "$1 $2")
+
+		}
+		if b.options.uppercaseHex {
+			t.Content = lowercaseHexPattern.ReplaceAllStringFunc(t.Content, func(s string) string {
+				return lowercasePattern.ReplaceAllStringFunc(s, func(s string) string {
+					return strings.ToUpper(s)
+				})
 			})
-		})
+		}
 		return false
 	})
 }

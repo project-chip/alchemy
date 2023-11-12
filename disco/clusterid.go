@@ -35,11 +35,11 @@ func (b *Ball) organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, at
 		return fmt.Errorf("can't rearrange cluster id table with so few matches")
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		return err
 	}
 
-	reorderColumns(doc, section, rows, matter.ClusterIDTableColumnOrder[:], columnMap, extraColumns)
+	b.reorderColumns(doc, section, rows, matter.ClusterIDTableColumnOrder[:], columnMap, extraColumns)
 	return nil
 }

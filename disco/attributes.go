@@ -59,12 +59,15 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 		return err
 	}
 
-	reorderColumns(doc, attributes, rows, matter.AttributesTableColumnOrder[:], columnMap, extraColumns)
+	b.reorderColumns(doc, attributes, rows, matter.AttributesTableColumnOrder[:], columnMap, extraColumns)
 
 	return nil
 }
 
 func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
+	if !b.options.formatAccess {
+		return nil
+	}
 	if len(rows) < 2 {
 		return
 	}

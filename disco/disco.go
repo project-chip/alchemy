@@ -17,7 +17,8 @@ type Ball struct {
 
 func NewBall(doc *ascii.Doc) *Ball {
 	return &Ball{
-		doc: doc,
+		doc:     doc,
+		options: defaultOptions,
 	}
 }
 
@@ -49,7 +50,7 @@ func (b *Ball) Run(cxt context.Context) error {
 		}
 	}
 
-	err = promoteDataTypes(dc, topLevelSection)
+	err = b.promoteDataTypes(dc, topLevelSection)
 	if err != nil {
 		return err
 	}
@@ -63,11 +64,13 @@ func (b *Ball) Run(cxt context.Context) error {
 }
 
 func (b *Ball) discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.DocType) error {
-	err := reorderTopLevelSection(top, docType)
-	if err != nil {
-		return err
+	if b.options.reorderSections {
+		err := reorderTopLevelSection(top, docType)
+		if err != nil {
+			return err
+		}
 	}
-	ensureTableOptions(top.Elements)
+	b.ensureTableOptions(top.Elements)
 	b.postCleanUpStrings(top.Elements)
 	return nil
 }

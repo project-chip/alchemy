@@ -10,7 +10,10 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func ensureTableOptions(elements []interface{}) {
+func (b *Ball) ensureTableOptions(elements []interface{}) {
+	if !b.options.normalizeTableOptions {
+		return
+	}
 	parse.Search(elements, func(t *types.Table) bool {
 		if t.Attributes == nil {
 			t.Attributes = make(types.Attributes)
@@ -34,7 +37,10 @@ func ensureTableOptions(elements []interface{}) {
 
 }
 
-func addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap map[matter.TableColumn]int) {
+func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap map[matter.TableColumn]int) {
+	if !b.options.addMissingColumns {
+		return
+	}
 	for _, column := range order {
 		if _, ok := columnMap[column]; !ok {
 			for i, row := range rows {
@@ -56,7 +62,10 @@ func addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.Tab
 	}
 }
 
-func reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap map[matter.TableColumn]int, extraColumns []ascii.ExtraColumn) {
+func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap map[matter.TableColumn]int, extraColumns []ascii.ExtraColumn) {
+	if !b.options.reorderColumns {
+		return
+	}
 	for _, row := range rows {
 		newCells := make([]*types.TableCell, 0, len(order)+len(extraColumns))
 		for _, column := range order {
@@ -113,7 +122,10 @@ func setCellValue(cell *types.TableCell, val []interface{}) (err error) {
 	return
 }
 
-func renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, overrides map[matter.TableColumn]string) (err error) {
+func (b *Ball) renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, overrides map[matter.TableColumn]string) (err error) {
+	if !b.options.renameTableHeaders {
+		return
+	}
 	headerRow := rows[headerRowIndex]
 	reverseMap := make(map[int]matter.TableColumn)
 	for k, v := range columnMap {

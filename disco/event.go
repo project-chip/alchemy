@@ -41,23 +41,23 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 		return err
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		return err
 	}
 
-	err = organizeEvents(cxt, doc, events, eventsTable, columnMap)
+	err = b.organizeEvents(cxt, doc, events, eventsTable, columnMap)
 	if err != nil {
 		return err
 	}
 
-	addMissingColumns(doc, events, rows, matter.EventsTableColumnOrder[:], nil, headerRowIndex, columnMap)
+	b.addMissingColumns(doc, events, rows, matter.EventsTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
-	reorderColumns(doc, events, rows, matter.EventsTableColumnOrder[:], columnMap, extraColumns)
+	b.reorderColumns(doc, events, rows, matter.EventsTableColumnOrder[:], columnMap, extraColumns)
 	return nil
 }
 
-func organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.Section, eventsTable *types.Table, columnMap map[matter.TableColumn]int) error {
+func (b *Ball) organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.Section, eventsTable *types.Table, columnMap map[matter.TableColumn]int) error {
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
@@ -97,14 +97,16 @@ func organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.Section, ev
 			return err
 		}
 
-		err = renameTableHeaderCells(rows, hri, cm, nil)
+		err = b.renameTableHeaderCells(rows, hri, cm, nil)
 		if err != nil {
 			return err
 		}
 
-		addMissingColumns(doc, ss, rows, matter.EventTableColumnOrder[:], nil, hri, cm)
+		b.addMissingColumns(doc, ss, rows, matter.EventTableColumnOrder[:], nil, hri, cm)
 
-		reorderColumns(doc, ss, rows, matter.EventTableColumnOrder[:], cm, ec)
+		b.reorderColumns(doc, ss, rows, matter.EventTableColumnOrder[:], cm, ec)
+
+		b.appendSubsectionTypes(ss, cm, rows, "Field")
 
 	}
 

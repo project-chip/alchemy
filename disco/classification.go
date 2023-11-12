@@ -36,7 +36,7 @@ func (b *Ball) organizeClassificationTable(doc *ascii.Doc, section *ascii.Sectio
 		return nil
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClassificationTableColumnNames)
+	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClassificationTableColumnNames)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ func (b *Ball) organizeClassificationTable(doc *ascii.Doc, section *ascii.Sectio
 	}
 
 	if len(order) > 0 {
-		reorderColumns(doc, section, rows, order, columnMap, extraColumns)
+		b.reorderColumns(doc, section, rows, order, columnMap, extraColumns)
 	}
 	return nil
 }
