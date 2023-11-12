@@ -126,7 +126,10 @@ func getDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, 
 	return sectionDataMap, nil
 }
 
-func promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
+func (b *Ball) promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
+	if !b.options.promoteDataTypes {
+		return nil
+	}
 
 	fields := make(map[matter.DataTypeCategory]map[string]*DataTypeEntry)
 	for _, infos := range cxt.potentialDataTypes {

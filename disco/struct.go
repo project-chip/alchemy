@@ -41,14 +41,14 @@ func (b *Ball) organizeStructTable(doc *ascii.Doc, section *ascii.Section, field
 		return nil
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		return err
 	}
 
-	addMissingColumns(doc, section, rows, matter.StructTableColumnOrder[:], nil, headerRowIndex, columnMap)
+	b.addMissingColumns(doc, section, rows, matter.StructTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
-	reorderColumns(doc, section, rows, matter.StructTableColumnOrder[:], columnMap, extraColumns)
+	b.reorderColumns(doc, section, rows, matter.StructTableColumnOrder[:], columnMap, extraColumns)
 
 	return nil
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/parse"
 )
 
 func (b *Ball) organizeBitmapSection(doc *ascii.Doc, section *ascii.Section) error {
@@ -50,38 +49,16 @@ func (b *Ball) organizeBitmapTable(doc *ascii.Doc, section *ascii.Section, bitsT
 		}
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		return err
 	}
 
-	addMissingColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], nil, headerRowIndex, columnMap)
+	b.addMissingColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
-	reorderColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], columnMap, extraColumns)
+	b.reorderColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], columnMap, extraColumns)
 
-	nameIndex, ok := columnMap[matter.TableColumnName]
-	if ok {
-
-		bitNames := make(map[string]struct{}, len(rows))
-		for _, row := range rows {
-			bitName, err := ascii.GetTableCellValue(row.Cells[nameIndex])
-			if err != nil {
-				slog.Debug("could not get cell value for command", "err", err)
-				continue
-			}
-			bitNames[bitName] = struct{}{}
-		}
-		subSections := parse.FindAll[*ascii.Section](section.Elements)
-		for _, ss := range subSections {
-			name := strings.TrimSuffix(ss.Name, " Bit")
-			if _, ok := bitNames[name]; !ok {
-				continue
-			}
-			if !strings.HasSuffix(strings.ToLower(ss.Name), " bit") {
-				setSectionTitle(ss, ss.Name+" Bit")
-			}
-		}
-	}
+	b.appendSubsectionTypes(section, columnMap, rows, "Bit")
 
 	return nil
 }

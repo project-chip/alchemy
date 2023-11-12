@@ -8,7 +8,6 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/parse"
 )
 
 func (b *Ball) organizeEnumSection(doc *ascii.Doc, section *ascii.Section) error {
@@ -41,38 +40,17 @@ func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attribu
 		return nil
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		slog.Info("failed renaming", section.Name, err)
 		return err
 	}
 
-	addMissingColumns(doc, section, rows, matter.EnumTableColumnOrder[:], nil, headerRowIndex, columnMap)
+	b.addMissingColumns(doc, section, rows, matter.EnumTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
-	reorderColumns(doc, section, rows, matter.EnumTableColumnOrder[:], columnMap, extraColumns)
+	b.reorderColumns(doc, section, rows, matter.EnumTableColumnOrder[:], columnMap, extraColumns)
 
-	nameIndex, ok := columnMap[matter.TableColumnName]
-	if ok {
+	b.appendSubsectionTypes(section, columnMap, rows, "Value")
 
-		valueNames := make(map[string]struct{}, len(rows))
-		for _, row := range rows {
-			valueName, err := ascii.GetTableCellValue(row.Cells[nameIndex])
-			if err != nil {
-				slog.Debug("could not get cell value for enum value", "err", err)
-				continue
-			}
-			valueNames[valueName] = struct{}{}
-		}
-		subSections := parse.FindAll[*ascii.Section](section.Elements)
-		for _, ss := range subSections {
-			name := strings.TrimSuffix(ss.Name, " Value")
-			if _, ok := valueNames[name]; !ok {
-				continue
-			}
-			if !strings.HasSuffix(strings.ToLower(ss.Name), " value") {
-				setSectionTitle(ss, ss.Name+" Value")
-			}
-		}
-	}
 	return nil
 }

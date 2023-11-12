@@ -2,10 +2,13 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
+	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 )
 
 func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) error {
@@ -56,6 +59,36 @@ func setSectionTitle(sec *ascii.Section, title string) {
 		switch el := e.(type) {
 		case *types.StringElement:
 			el.Content = title
+		}
+	}
+}
+
+func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap map[matter.TableColumn]int, rows []*types.TableRow, subsectionType string) {
+	if !b.options.appendSubsectionTypes {
+		return
+	}
+	nameIndex, ok := columnMap[matter.TableColumnName]
+	if ok {
+
+		subSectionNames := make(map[string]struct{}, len(rows))
+		for _, row := range rows {
+			name, err := ascii.GetTableCellValue(row.Cells[nameIndex])
+			if err != nil {
+				slog.Debug("could not get cell value for subsection", "err", err)
+				continue
+			}
+			subSectionNames[name] = struct{}{}
+		}
+		subSections := parse.FindAll[*ascii.Section](section.Elements)
+		suffix := " " + subsectionType
+		for _, ss := range subSections {
+			name := strings.TrimSuffix(ss.Name, suffix)
+			if _, ok := subSectionNames[name]; !ok {
+				continue
+			}
+			if !strings.HasSuffix(strings.ToLower(ss.Name), strings.ToLower(suffix)) {
+				setSectionTitle(ss, ss.Name+suffix)
+			}
 		}
 	}
 }

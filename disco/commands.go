@@ -48,21 +48,21 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 		return err
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		return err
 	}
 
-	err = organizeCommands(cxt, commands, commandsTable, columnMap)
+	err = b.organizeCommands(cxt, commands, commandsTable, columnMap)
 	if err != nil {
 		return err
 	}
 
-	reorderColumns(doc, commands, rows, matter.CommandsTableColumnOrder[:], columnMap, extraColumns)
+	b.reorderColumns(doc, commands, rows, matter.CommandsTableColumnOrder[:], columnMap, extraColumns)
 	return nil
 }
 
-func organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable *types.Table, columnMap map[matter.TableColumn]int) error {
+func (b *Ball) organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable *types.Table, columnMap map[matter.TableColumn]int) error {
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
@@ -100,6 +100,7 @@ func organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable 
 		if err != nil {
 			return err
 		}
+		b.appendSubsectionTypes(ss, columnMap, rows, "Field")
 	}
 
 	return nil
