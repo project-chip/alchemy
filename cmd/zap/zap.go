@@ -15,7 +15,6 @@ import (
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 	"github.com/iancoleman/strcase"
-	"github.com/schollz/progressbar/v3"
 )
 
 var selfClosingTags = regexp.MustCompile("></[^>]+>")
@@ -40,7 +39,6 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 	appClusterIndexes := docsByType[matter.DocTypeAppClusterIndex]
 
 	slog.InfoContext(cxt, "Assigning index domains...")
-	bar := progressbar.Default(int64(len(appClusterIndexes)))
 
 	files.ProcessDocs(cxt, appClusterIndexes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 
@@ -49,8 +47,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 			return nil
 		}
 		doc.Domain = zap.StringToDomain(top.Name)
-		bar.Add(1)
-		slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
+		slog.InfoContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
 		return nil
 	}, filesOptions)
 

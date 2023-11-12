@@ -17,6 +17,19 @@ import (
 	"github.com/hasty/alchemy/zap/render"
 )
 
+func getDocDomain(doc *ascii.Doc) matter.Domain {
+	if doc.Domain != matter.DomainUnknown {
+		return doc.Domain
+	}
+	for _, p := range doc.Parents() {
+		d := getDocDomain(p)
+		if d != matter.DomainUnknown {
+			return d
+		}
+	}
+	return matter.DomainUnknown
+}
+
 func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot string, filesOptions files.Options) (outputs map[string]*render.Result, provisionalZclFiles []string, err error) {
 	var lock sync.Mutex
 	outputs = make(map[string]*render.Result)
@@ -25,6 +38,7 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 		path := doc.Path
 		newPath := getZapPath(zclRoot, path)
 
+		doc.Domain = getDocDomain(doc)
 		existing, err := os.ReadFile(newPath)
 		if errors.Is(err, os.ErrNotExist) {
 			if filesOptions.Serial {
