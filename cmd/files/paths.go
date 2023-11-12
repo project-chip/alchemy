@@ -24,7 +24,7 @@ func Paths(filepaths []string) ([]string, error) {
 			var banned bool
 			for ban, reason := range bannedPaths {
 				if strings.HasSuffix(p, ban) {
-					slog.Warn("Skipping excluded", "file", p, "reason", reason)
+					slog.Debug("Skipping excluded", "file", p, "reason", reason)
 					banned = true
 				}
 			}

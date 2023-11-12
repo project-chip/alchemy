@@ -15,7 +15,7 @@ func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*types.Intern
 			dt, _ := b.doc.DocType()
 			switch dt {
 			case matter.DocTypeAppCluster, matter.DocTypeDeviceType:
-				slog.Warn("cross reference points to non-existent anchor", "name", id)
+				slog.Debug("cross reference points to non-existent anchor", "name", id)
 			}
 			continue
 		}

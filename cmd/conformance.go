@@ -35,7 +35,3 @@ var conformanceCommand = &cobra.Command{
 		return nil
 	},
 }
-
-func init() {
-	rootCmd.AddCommand(conformanceCommand)
-}

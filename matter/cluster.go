@@ -19,6 +19,6 @@ type Cluster struct {
 	Commands   []*Command `json:"commands,omitempty"`
 }
 
-func (c *Cluster) ModelType() ModelType {
-	return ModelTypeCluster
+func (c *Cluster) ModelType() Entity {
+	return EntityCluster
 }

@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/alchemy/ascii/render"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/output"
 	"github.com/hasty/alchemy/parse"
-	"github.com/hasty/alchemy/render/adoc"
 )
 
 var NoTableFound = fmt.Errorf("no table found")
@@ -91,7 +91,7 @@ func GetTableCellValue(cell *types.TableCell) (string, error) {
 		return "", nil
 	}
 	out := output.NewContext(context.Background(), nil)
-	err := adoc.RenderElements(out, "", p.Elements)
+	err := render.RenderElements(out, "", p.Elements)
 	if err != nil {
 		return "", err
 	}

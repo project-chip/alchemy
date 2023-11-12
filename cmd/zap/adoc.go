@@ -25,9 +25,7 @@ func loadSpec(cxt context.Context, specRoot string, filesOptions files.Options, 
 	}
 
 	err = files.Process(cxt, specPaths, func(cxt context.Context, file string, index, total int) error {
-		if strings.HasSuffix(file, "-draft.adoc") {
-			return nil
-		}
+
 		doc, err := ascii.Open(file, asciiSettings...)
 		if err != nil {
 			return err
@@ -35,7 +33,9 @@ func loadSpec(cxt context.Context, specRoot string, filesOptions files.Options, 
 		lock.Lock()
 		docs = append(docs, doc)
 		lock.Unlock()
-		slog.InfoContext(cxt, "Parsed spec adoc", "file", file)
+		if filesOptions.Serial {
+			slog.InfoContext(cxt, "Parsed spec adoc", "file", file)
+		}
 		return nil
 	}, filesOptions)
 	return
@@ -44,7 +44,7 @@ func loadSpec(cxt context.Context, specRoot string, filesOptions files.Options, 
 func getSpecPaths(specRoot string) (paths []string, err error) {
 	srcRoot := filepath.Join(specRoot, "/src/")
 	err = filepath.WalkDir(srcRoot, func(path string, d fs.DirEntry, err error) error {
-		if filepath.Ext(path) == ".adoc" {
+		if filepath.Ext(path) == ".adoc" && !strings.HasSuffix(path, "-draft.adoc") {
 			paths = append(paths, path)
 		}
 		return nil

@@ -115,7 +115,7 @@ func GetDocType(docPath string) (matter.DocType, error) {
 			return matter.DocTypeSoftAP, nil
 		}
 	}
-	slog.Warn("could not determine doc type", "path", docPath)
+	slog.Debug("could not determine doc type", "path", docPath)
 	return matter.DocTypeUnknown, nil
 }
 

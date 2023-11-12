@@ -64,7 +64,7 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 			name := strings.TrimSuffix(strings.ToLower(s.Name), " command")
 			c, ok := commandMap[name]
 			if !ok {
-				slog.Info("unknown command", "command", name)
+				slog.Debug("unknown command", "command", name)
 				continue
 			}
 			p := parse.FindFirst[*types.Paragraph](s.Elements)

@@ -55,7 +55,7 @@ func (h *Host) indexCommands(cxt context.Context, ci *sectionInfo, es *ascii.Sec
 			name := strings.TrimSuffix(s.Name, " Command")
 			p, ok := em[name]
 			if !ok {
-				slog.Error("no matching command", "name", s.Name)
+				slog.Debug("no matching command", "name", s.Name)
 				continue
 			}
 			if p.children == nil {

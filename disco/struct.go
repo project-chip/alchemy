@@ -13,7 +13,8 @@ import (
 func (b *Ball) organizeStructSection(doc *ascii.Doc, section *ascii.Section) error {
 	fieldsTable := ascii.FindFirstTable(section)
 	if fieldsTable == nil {
-		return fmt.Errorf("no attributes table found")
+		slog.Debug("no struct table found")
+		return nil
 	}
 	name := strings.TrimSpace(section.Name)
 	if strings.HasSuffix(strings.ToLower(name), "struct") {
@@ -40,12 +41,12 @@ func (b *Ball) organizeStructTable(doc *ascii.Doc, section *ascii.Section, field
 		return nil
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.StructTableColumnNames)
+	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		return err
 	}
 
-	addMissingColumns(doc, section, rows, matter.StructTableColumnOrder[:], matter.StructTableColumnNames, headerRowIndex, columnMap)
+	addMissingColumns(doc, section, rows, matter.StructTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
 	reorderColumns(doc, section, rows, matter.StructTableColumnOrder[:], columnMap, extraColumns)
 

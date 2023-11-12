@@ -41,13 +41,13 @@ func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attribu
 		return nil
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.EnumTableColumnNames)
+	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		slog.Info("failed renaming", section.Name, err)
 		return err
 	}
 
-	addMissingColumns(doc, section, rows, matter.EnumTableColumnOrder[:], matter.EnumTableColumnNames, headerRowIndex, columnMap)
+	addMissingColumns(doc, section, rows, matter.EnumTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
 	reorderColumns(doc, section, rows, matter.EnumTableColumnOrder[:], columnMap, extraColumns)
 
@@ -58,7 +58,7 @@ func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attribu
 		for _, row := range rows {
 			valueName, err := ascii.GetTableCellValue(row.Cells[nameIndex])
 			if err != nil {
-				slog.Warn("could not get cell value for enum value", "err", err)
+				slog.Debug("could not get cell value for enum value", "err", err)
 				continue
 			}
 			valueNames[valueName] = struct{}{}

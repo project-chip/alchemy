@@ -89,11 +89,11 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		}
 		switch strings.ToLower(e) {
 		case "feature":
-			cr.Element = matter.ModelTypeFeature
+			cr.Element = matter.EntityFeature
 		case "attribute":
-			cr.Element = matter.ModelTypeAttribute
+			cr.Element = matter.EntityAttribute
 		case "command":
-			cr.Element = matter.ModelTypeCommand
+			cr.Element = matter.EntityCommand
 		default:
 			err = fmt.Errorf("unknown element type: %s", e)
 		}
@@ -121,14 +121,3 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 	}
 	return
 }
-
-/*
-	ID      *ID       `json:"id,omitempty"`
-	Cluster string    `json:"cluster,omitempty"`
-	Element ModelType `json:"element,omitempty"`
-	Name    string    `json:"name,omitempty"`
-
-	Constraint  Constraint `json:"constraint,omitempty"`
-	Access      Access     `json:"access,omitempty"`
-	Conformance string     `json:"conformance,omitempty"`
-*/

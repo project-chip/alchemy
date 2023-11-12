@@ -12,7 +12,7 @@ import (
 type Ball struct {
 	doc *ascii.Doc
 
-	ShouldLinkAttributes bool
+	options options
 }
 
 func NewBall(doc *ascii.Doc) *Ball {

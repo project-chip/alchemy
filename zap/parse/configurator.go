@@ -74,21 +74,21 @@ func readConfigurator(d *xml.Decoder) (models []any, err error) {
 					if c, ok := clusters[cid]; ok {
 						c.Bitmaps = append(c.Bitmaps, b...)
 					} else {
-						slog.Warn("orphan bitmaps", "clusterId", cid)
+						slog.Debug("orphan bitmaps", "clusterId", cid)
 					}
 				}
 				for cid, e := range enums {
 					if c, ok := clusters[cid]; ok {
 						c.Enums = append(c.Enums, e...)
 					} else {
-						slog.Warn("orphan enums", "clusterId", cid)
+						slog.Debug("orphan enums", "clusterId", cid)
 					}
 				}
 				for cid, s := range structs {
 					if c, ok := clusters[cid]; ok {
 						c.Structs = append(c.Structs, s...)
 					} else {
-						slog.Warn("orphan structs", "clusterId", cid)
+						slog.Debug("orphan structs", "clusterId", cid)
 					}
 				}
 
