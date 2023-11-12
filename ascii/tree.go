@@ -29,12 +29,10 @@ func BuildTree(docs []*Doc) {
 			if link != nil {
 				linkPath, ok := link.Location.Path.(string)
 				if ok {
-					if strings.HasSuffix(linkPath, "-draft.adoc") {
-						return false
-					}
+
 					linkPath = filepath.Join(filepath.Dir(path), linkPath)
 					linkPath = strings.ReplaceAll(linkPath, "energy-management.adoc", "energy_management.adoc")
-					slog.Info("linked file\n", "from", path, "to", linkPath)
+					slog.Debug("linked file\n", "from", path, "to", linkPath)
 					tree[doc] = append(tree[doc], linkPath)
 				}
 			}
@@ -47,7 +45,7 @@ func BuildTree(docs []*Doc) {
 			if cd, ok := docPaths[child]; ok {
 				cd.addParent(doc)
 			} else {
-				slog.Warn("unknown child path", "parent", doc.Path, "child", child)
+				slog.Debug("unknown child path", "parent", doc.Path, "child", child)
 			}
 		}
 	}

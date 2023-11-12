@@ -14,6 +14,6 @@ type BitmapValue struct {
 	Conformance string `json:"conformance,omitempty"`
 }
 
-func (c *Bitmap) ModelType() ModelType {
-	return ModelTypeBitmap
+func (c *Bitmap) ModelType() Entity {
+	return EntityBitmap
 }

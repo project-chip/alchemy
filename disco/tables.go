@@ -2,6 +2,7 @@ package disco
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
@@ -33,7 +34,7 @@ func ensureTableOptions(elements []interface{}) {
 
 }
 
-func addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, nameMap map[matter.TableColumn]string, headerRowIndex int, columnMap map[matter.TableColumn]int) {
+func addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap map[matter.TableColumn]int) {
 	for _, column := range order {
 		if _, ok := columnMap[column]; !ok {
 			for i, row := range rows {
@@ -42,7 +43,8 @@ func addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.Tab
 					if headerRowIndex > 0 {
 						cell.Format = "h"
 					}
-					setCellString(cell, nameMap[column])
+					name, _ := matter.GetColumnName(column, overrides)
+					setCellString(cell, name)
 				} else {
 					last := row.Cells[len(row.Cells)-1]
 					cell.Blank = last.Blank
@@ -56,18 +58,16 @@ func addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.Tab
 
 func reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap map[matter.TableColumn]int, extraColumns []ascii.ExtraColumn) {
 	for _, row := range rows {
-		newCells := make([]*types.TableCell, len(columnMap)+len(extraColumns))
-		var newOffset int
+		newCells := make([]*types.TableCell, 0, len(order)+len(extraColumns))
 		for _, column := range order {
 			if offset, ok := columnMap[column]; ok {
-				newCells[newOffset] = row.Cells[offset]
-				newOffset++
+				newCells = append(newCells, row.Cells[offset])
 			}
 		}
 		for _, extra := range extraColumns {
-			newCells[newOffset] = row.Cells[extra.Offset]
-			newOffset++
+			newCells = append(newCells, row.Cells[extra.Offset])
 		}
+		slices.Clip(newCells)
 		row.Cells = newCells
 	}
 }
@@ -113,7 +113,7 @@ func setCellValue(cell *types.TableCell, val []interface{}) (err error) {
 	return
 }
 
-func renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, nameMap map[matter.TableColumn]string) (err error) {
+func renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, overrides map[matter.TableColumn]string) (err error) {
 	headerRow := rows[headerRowIndex]
 	reverseMap := make(map[int]matter.TableColumn)
 	for k, v := range columnMap {
@@ -124,7 +124,7 @@ func renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMa
 		if !ok {
 			continue
 		}
-		name, ok := nameMap[tc]
+		name, ok := matter.GetColumnName(tc, overrides)
 		if ok {
 			err = setCellString(cell, name)
 			if err != nil {

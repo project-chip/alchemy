@@ -231,7 +231,7 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 			}
 			break
 		default:
-			slog.Warn("unknown value element", "type", fmt.Sprintf("%T", el))
+			slog.Debug("unknown value element", "type", fmt.Sprintf("%T", el))
 		}
 	} else {
 		for _, el := range p.Elements {
@@ -298,7 +298,7 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableCo
 	}
 	p, ok := cell.Elements[0].(*types.Paragraph)
 	if !ok {
-		slog.Warn("unexpected non-paragraph in constraints cell", "type", fmt.Sprintf("%T", cell.Elements[0]))
+		slog.Debug("unexpected non-paragraph in constraints cell", "type", fmt.Sprintf("%T", cell.Elements[0]))
 		return nil
 	}
 	if len(p.Elements) == 0 {
@@ -335,7 +335,7 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableCo
 				}
 				sb.WriteString(name)
 			default:
-				slog.Warn("unknown value element", "type", fmt.Sprintf("%T", el))
+				slog.Debug("unknown value element", "type", fmt.Sprintf("%T", el))
 			}
 		}
 		val = constraint.ParseConstraint(StripTypeSuffixes(sb.String()))

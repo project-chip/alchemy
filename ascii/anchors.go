@@ -62,7 +62,7 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 			info.Name = label
 		}
 		if _, ok := anchors[id]; ok {
-			slog.Warn("duplicate anchor; can't fix", "id", id)
+			slog.Debug("duplicate anchor; can't fix", "id", id)
 			return false
 		}
 
@@ -75,7 +75,7 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 				unescaped := strings.TrimSpace(strings.ReplaceAll(id, "_", " "))
 				if _, ok = crossReferences[unescaped]; ok {
 					if _, ok := anchors[unescaped]; ok {
-						slog.Warn("duplicate anchor; can't fix", "id", unescaped)
+						slog.Debug("duplicate anchor; can't fix", "id", unescaped)
 						return false
 					}
 					anchors[unescaped] = info

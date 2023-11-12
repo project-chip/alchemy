@@ -1,4 +1,4 @@
-package adoc
+package render
 
 import (
 	"fmt"
@@ -178,7 +178,7 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 				cxt.WriteRune('.')
 				cxt.WriteString(rs)
 			default:
-				slog.Warn("unknown role type", "role", r)
+				slog.Debug("unknown role type", "role", r)
 			}
 		}
 		cxt.WriteString("]")

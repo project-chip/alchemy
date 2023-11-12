@@ -48,7 +48,7 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 		return err
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.CommandsTableColumnNames)
+	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable 
 	for _, row := range commandsTable.Rows {
 		commandName, err := ascii.GetTableCellValue(row.Cells[nameIndex])
 		if err != nil {
-			slog.Warn("could not get cell value for command", "err", err)
+			slog.Debug("could not get cell value for command", "err", err)
 			continue
 		}
 		commandNames[commandName] = struct{}{}

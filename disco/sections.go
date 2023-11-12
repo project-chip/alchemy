@@ -11,7 +11,7 @@ import (
 func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) error {
 	sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 	if !ok {
-		//slog.Warn("could not determine section order", "docType", docType)
+		//slog.Debug("could not determine section order", "docType", docType)
 		return nil
 	}
 	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)

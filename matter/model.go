@@ -1,20 +1,20 @@
 package matter
 
-type ModelType uint8
+type Entity uint8
 
 const (
-	ModelTypeUnknown ModelType = iota
-	ModelTypeCluster
-	ModelTypeBitmap
-	ModelTypeEnum
-	ModelTypeStruct
-	ModelTypeAttribute
-	ModelTypeCommand
-	ModelTypeEvent
-	ModelTypeFeature
-	ModelTypeDeviceType
+	EntityUnknown Entity = iota
+	EntityCluster
+	EntityBitmap
+	EntityEnum
+	EntityStruct
+	EntityAttribute
+	EntityCommand
+	EntityEvent
+	EntityFeature
+	EntityDeviceType
 )
 
 type Model interface {
-	ModelType() ModelType
+	ModelType() Entity
 }

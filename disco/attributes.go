@@ -2,6 +2,7 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 	"regexp"
 	"strings"
 	"unicode"
@@ -14,7 +15,8 @@ import (
 func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
 	attributesTable := ascii.FindFirstTable(attributes)
 	if attributesTable == nil {
-		return fmt.Errorf("no attributes table found")
+		slog.Debug("no attributes table found", "sectionName", top.Name)
+		return nil
 	}
 	return b.organizeAttributesTable(cxt, doc, top, attributes, attributesTable)
 }
@@ -31,8 +33,8 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 		return fmt.Errorf("can't rearrange attributes table without header row")
 	}
 
-	if len(columnMap) < 5 {
-		return fmt.Errorf("can't rearrange attributes table with so few matches")
+	if len(columnMap) < 3 {
+		return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(columnMap))
 	}
 
 	err = b.fixAccessCells(doc, rows, columnMap)
@@ -45,7 +47,7 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 		return err
 	}
 
-	if b.ShouldLinkAttributes {
+	if b.options.linkAttributes {
 		err = b.linkAttributes(cxt, attributes, rows, columnMap)
 		if err != nil {
 			return err

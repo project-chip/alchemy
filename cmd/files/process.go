@@ -2,14 +2,20 @@ package files
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"path/filepath"
 	"sync/atomic"
+	"unicode/utf8"
 
 	"github.com/hasty/alchemy/ascii"
+	"github.com/schollz/progressbar/v3"
 	"golang.org/x/sync/errgroup"
 )
 
-func Process(cxt context.Context, filepaths []string, processor func(cxt context.Context, file string, index int, total int) error, options Options) error {
+type FileProcessor func(cxt context.Context, file string, index int, total int) error
+
+func process(cxt context.Context, filepaths []string, options Options, processor FileProcessor, showProgress bool) error {
 	files, err := Paths(filepaths)
 	if err != nil {
 		return err
@@ -25,11 +31,15 @@ func Process(cxt context.Context, filepaths []string, processor func(cxt context
 	}
 	var complete int32
 	g, errCxt := errgroup.WithContext(cxt)
+	bar := progressbar.Default(int64(len(files)))
 	for i, f := range files {
 		func(file string, index int) {
 			g.Go(func() error {
 				done := atomic.AddInt32(&complete, 1)
-				return processor(errCxt, file, int(done), len(files))
+				err := processor(errCxt, file, int(done), len(files))
+				bar.Describe(ProgressFileName(file))
+				bar.Add(1)
+				return err
 			})
 		}(f, i)
 
@@ -37,7 +47,13 @@ func Process(cxt context.Context, filepaths []string, processor func(cxt context
 	return g.Wait()
 }
 
-func ProcessDocs(cxt context.Context, docs []*ascii.Doc, processor func(cxt context.Context, doc *ascii.Doc, index int, total int) error, options Options) (err error) {
+func Process(cxt context.Context, filepaths []string, processor FileProcessor, options Options) error {
+	return process(cxt, filepaths, options, processor, true)
+}
+
+type DocProcessor func(cxt context.Context, doc *ascii.Doc, index int, total int) error
+
+func ProcessDocs(cxt context.Context, docs []*ascii.Doc, processor DocProcessor, options Options) (err error) {
 	if options.Serial {
 		for i, d := range docs {
 			err = processor(cxt, d, i, len(docs))
@@ -61,9 +77,11 @@ func ProcessDocs(cxt context.Context, docs []*ascii.Doc, processor func(cxt cont
 	return g.Wait()
 }
 
-func Save(cxt context.Context, filepaths []string, processor func(cxt context.Context, file string, index int, total int) (result string, outPath string, err error), options Options) error {
-	return Process(cxt, filepaths, func(cxt context.Context, file string, index, total int) error {
-		result, outPath, err := processor(cxt, file, index, total)
+type FileSaver func(cxt context.Context, file string, index int, total int) (result string, outPath string, err error)
+
+func Save(cxt context.Context, filepaths []string, saver FileSaver, options Options) error {
+	return process(cxt, filepaths, options, func(cxt context.Context, file string, index, total int) error {
+		result, outPath, err := saver(cxt, file, index, total)
 		if err != nil {
 			return err
 		}
@@ -74,5 +92,13 @@ func Save(cxt context.Context, filepaths []string, processor func(cxt context.Co
 			}
 		}
 		return nil
-	}, options)
+	}, false)
+}
+
+func ProgressFileName(file string) string {
+	file = filepath.Base(file)
+	if utf8.RuneCountInString(file) > 20 {
+		file = string([]rune(file)[:20]) + "..."
+	}
+	return fmt.Sprintf("%-20s", file)
 }

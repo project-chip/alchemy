@@ -13,8 +13,8 @@ type DeviceType struct {
 	ElementRequirements []*ElementRequirement `json:"elementRequirements,omitempty"`
 }
 
-func (c *DeviceType) ModelType() ModelType {
-	return ModelTypeDeviceType
+func (c *DeviceType) ModelType() Entity {
+	return EntityDeviceType
 }
 
 type ClusterRequirement struct {
@@ -26,10 +26,10 @@ type ClusterRequirement struct {
 }
 
 type ElementRequirement struct {
-	ID      *ID       `json:"id,omitempty"`
-	Cluster string    `json:"cluster,omitempty"`
-	Element ModelType `json:"element,omitempty"`
-	Name    string    `json:"name,omitempty"`
+	ID      *ID    `json:"id,omitempty"`
+	Cluster string `json:"cluster,omitempty"`
+	Element Entity `json:"element,omitempty"`
+	Name    string `json:"name,omitempty"`
 
 	Constraint  Constraint `json:"constraint,omitempty"`
 	Access      Access     `json:"access,omitempty"`

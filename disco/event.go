@@ -41,7 +41,7 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 		return err
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.EventsTableColumnNames)
+	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 		return err
 	}
 
-	addMissingColumns(doc, events, rows, matter.EventsTableColumnOrder[:], matter.EventTableColumnNames, headerRowIndex, columnMap)
+	addMissingColumns(doc, events, rows, matter.EventsTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
 	reorderColumns(doc, events, rows, matter.EventsTableColumnOrder[:], columnMap, extraColumns)
 	return nil
@@ -66,7 +66,7 @@ func organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.Section, ev
 	for _, row := range eventsTable.Rows {
 		eventName, err := ascii.GetTableCellValue(row.Cells[nameIndex])
 		if err != nil {
-			slog.Warn("could not get cell value for event", "err", err)
+			slog.Debug("could not get cell value for event", "err", err)
 			continue
 		}
 		eventNames[eventName] = struct{}{}
@@ -97,12 +97,12 @@ func organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.Section, ev
 			return err
 		}
 
-		err = renameTableHeaderCells(rows, hri, cm, matter.EventTableColumnNames)
+		err = renameTableHeaderCells(rows, hri, cm, nil)
 		if err != nil {
 			return err
 		}
 
-		addMissingColumns(doc, ss, rows, matter.EventTableColumnOrder[:], matter.EventTableColumnNames, hri, cm)
+		addMissingColumns(doc, ss, rows, matter.EventTableColumnOrder[:], nil, hri, cm)
 
 		reorderColumns(doc, ss, rows, matter.EventTableColumnOrder[:], cm, ec)
 

@@ -56,7 +56,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnBit:          "Bit",
 	TableColumnCode:         "Code",
 	TableColumnFeature:      "Feature",
-	TableColumnDeviceName:   "DeviceName",
+	TableColumnDeviceName:   "Device Name",
 	TableColumnSuperset:     "Superset",
 	TableColumnClass:        "Class",
 	TableColumnDirection:    "Direction",
@@ -68,7 +68,23 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnClientServer: "Client/Server",
 }
 
+var AllowedTableAttributes = types.Attributes{
+	"id":      nil,
+	"title":   nil,
+	"valign":  "middle",
+	"options": types.Options{"header"},
+}
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
+
+func GetColumnName(column TableColumn, overrides map[TableColumn]string) (name string, ok bool) {
+	if overrides != nil {
+		if name, ok = overrides[column]; ok {
+			return name, true
+		}
+	}
+	name, ok = TableColumnNames[column]
+	return
+}
 
 var AttributesTableColumnOrder = [...]TableColumn{
 	TableColumnID,
@@ -98,15 +114,8 @@ var DeviceTypeClassificationTableColumnOrder = [...]TableColumn{
 }
 
 var ClassificationTableColumnNames = map[TableColumn]string{
-	TableColumnHierarchy:  "Hierarchy",
-	TableColumnRole:       "Role",
-	TableColumnScope:      "Scope",
-	TableColumnContext:    "Scope", // Rename Context to Scope
-	TableColumnPICS:       "PICS Code",
-	TableColumnID:         "ID",
-	TableColumnDeviceName: "Device Name",
-	TableColumnSuperset:   "Superset",
-	TableColumnClass:      "Class",
+	TableColumnContext: "Scope", // Rename Context to Scope
+	TableColumnPICS:    "PICS Code",
 }
 
 var ClusterIDSectionName = "Cluster ID"
@@ -114,11 +123,6 @@ var ClusterIDSectionName = "Cluster ID"
 var ClusterIDTableColumnOrder = [...]TableColumn{
 	TableColumnID,
 	TableColumnName,
-}
-
-var ClusterIDTableColumnNames = map[TableColumn]string{
-	TableColumnID:   "ID",
-	TableColumnName: "Name",
 }
 
 var CommandsSectionName = "Commands"
@@ -132,22 +136,6 @@ var CommandsTableColumnOrder = [...]TableColumn{
 	TableColumnConformance,
 }
 
-var CommandsTableColumnNames = map[TableColumn]string{
-	TableColumnID:          "ID",
-	TableColumnName:        "Name",
-	TableColumnDirection:   "Direction",
-	TableColumnResponse:    "Response",
-	TableColumnAccess:      "Access",
-	TableColumnConformance: "Conformance",
-}
-
-var AllowedTableAttributes = types.Attributes{
-	"id":      nil,
-	"title":   nil,
-	"valign":  "middle",
-	"options": types.Options{"header"},
-}
-
 var StructTableColumnOrder = [...]TableColumn{
 	TableColumnID,
 	TableColumnName,
@@ -159,17 +147,6 @@ var StructTableColumnOrder = [...]TableColumn{
 	TableColumnConformance,
 }
 
-var StructTableColumnNames = map[TableColumn]string{
-	TableColumnID:          "ID",
-	TableColumnName:        "Name",
-	TableColumnType:        "Type",
-	TableColumnConstraint:  "Constraint",
-	TableColumnQuality:     "Quality",
-	TableColumnDefault:     "Default",
-	TableColumnAccess:      "Access",
-	TableColumnConformance: "Conformance",
-}
-
 var EnumTableColumnOrder = [...]TableColumn{
 	TableColumnValue,
 	TableColumnName,
@@ -177,25 +154,11 @@ var EnumTableColumnOrder = [...]TableColumn{
 	TableColumnConformance,
 }
 
-var EnumTableColumnNames = map[TableColumn]string{
-	TableColumnValue:       "Value",
-	TableColumnName:        "Name",
-	TableColumnSummary:     "Summary",
-	TableColumnConformance: "Conformance",
-}
-
 var BitmapTableColumnOrder = [...]TableColumn{
 	TableColumnBit,
 	TableColumnName,
 	TableColumnSummary,
 	TableColumnConformance,
-}
-
-var BitmapTableColumnNames = map[TableColumn]string{
-	TableColumnBit:         "Bit",
-	TableColumnName:        "Name",
-	TableColumnSummary:     "Summary",
-	TableColumnConformance: "Conformance",
 }
 
 var EventsTableColumnOrder = [...]TableColumn{
@@ -207,15 +170,6 @@ var EventsTableColumnOrder = [...]TableColumn{
 	TableColumnConformance,
 }
 
-var EventsTableColumnNames = map[TableColumn]string{
-	TableColumnID:          "ID",
-	TableColumnName:        "Name",
-	TableColumnPriority:    "Priority",
-	TableColumnQuality:     "Quality",
-	TableColumnAccess:      "Access",
-	TableColumnConformance: "Conformance",
-}
-
 var EventTableColumnOrder = [...]TableColumn{
 	TableColumnID,
 	TableColumnName,
@@ -224,14 +178,4 @@ var EventTableColumnOrder = [...]TableColumn{
 	TableColumnQuality,
 	TableColumnDefault,
 	TableColumnConformance,
-}
-
-var EventTableColumnNames = map[TableColumn]string{
-	TableColumnID:          "ID",
-	TableColumnName:        "Name",
-	TableColumnType:        "Type",
-	TableColumnConstraint:  "Constraint",
-	TableColumnQuality:     "Quality",
-	TableColumnDefault:     "Default",
-	TableColumnConformance: "Conformance",
 }

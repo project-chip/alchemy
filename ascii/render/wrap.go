@@ -1,4 +1,4 @@
-package adoc
+package render
 
 import "strings"
 

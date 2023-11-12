@@ -11,5 +11,5 @@ var start = time.Now()
 
 func main() {
 	cmd.Execute()
-	slog.Info("Complete", "runtime", time.Since(start))
+	slog.Debug("Complete", "runtime", time.Since(start))
 }

@@ -14,7 +14,7 @@ import (
 func (b *Ball) organizeBitmapSection(doc *ascii.Doc, section *ascii.Section) error {
 	bitsTable := ascii.FindFirstTable(section)
 	if bitsTable == nil {
-		return fmt.Errorf("no attributes table found")
+		return fmt.Errorf("no bitmap table found")
 	}
 	name := strings.TrimSpace(section.Name)
 	if strings.HasSuffix(strings.ToLower(name), "bitmap") {
@@ -50,12 +50,12 @@ func (b *Ball) organizeBitmapTable(doc *ascii.Doc, section *ascii.Section, bitsT
 		}
 	}
 
-	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.BitmapTableColumnNames)
+	err = renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
 		return err
 	}
 
-	addMissingColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], matter.BitmapTableColumnNames, headerRowIndex, columnMap)
+	addMissingColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
 	reorderColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], columnMap, extraColumns)
 
@@ -66,7 +66,7 @@ func (b *Ball) organizeBitmapTable(doc *ascii.Doc, section *ascii.Section, bitsT
 		for _, row := range rows {
 			bitName, err := ascii.GetTableCellValue(row.Cells[nameIndex])
 			if err != nil {
-				slog.Warn("could not get cell value for command", "err", err)
+				slog.Debug("could not get cell value for command", "err", err)
 				continue
 			}
 			bitNames[bitName] = struct{}{}

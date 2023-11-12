@@ -20,13 +20,16 @@ import (
 func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot string, filesOptions files.Options) (outputs map[string]*render.Result, provisionalZclFiles []string, err error) {
 	var lock sync.Mutex
 	outputs = make(map[string]*render.Result)
+	slog.InfoContext(cxt, "Rendering ZAP templates...")
 	err = files.ProcessDocs(cxt, appClusters, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 		path := doc.Path
 		newPath := getZapPath(zclRoot, path)
 
 		existing, err := os.ReadFile(newPath)
 		if errors.Is(err, os.ErrNotExist) {
-			slog.InfoContext(cxt, "Rendering new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
+			if filesOptions.Serial {
+				slog.InfoContext(cxt, "Rendering new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
+			}
 			var result *render.Result
 			result, err = render.Render(cxt, doc)
 			if err != nil {
@@ -37,11 +40,15 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 			outputs[newPath] = result
 			provisionalZclFiles = append(provisionalZclFiles, filepath.Base(newPath))
 			lock.Unlock()
-			slog.InfoContext(cxt, "Rendered new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
+			if filesOptions.Serial {
+				slog.InfoContext(cxt, "Rendered new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
+			}
 		} else if err != nil {
 			return err
 		} else {
-			slog.InfoContext(cxt, "Rendering existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
+			if filesOptions.Serial {
+				slog.InfoContext(cxt, "Rendering existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
+			}
 			var buf bytes.Buffer
 			models, err := doc.ToModel()
 			if err != nil {
@@ -57,7 +64,7 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 				}
 			}
 			if len(clusters) == 0 {
-				slog.InfoContext(cxt, "Skipped spec file with no clusters", "from", path, "to", newPath, "index", index, "count", total)
+				slog.DebugContext(cxt, "Skipped spec file with no clusters", "from", path, "to", newPath, "index", index, "count", total)
 				return err
 			}
 			err = amend.Render(doc, bytes.NewReader(existing), &buf, clusters)
@@ -68,7 +75,9 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 			lock.Lock()
 			outputs[newPath] = &render.Result{ZCL: out, Doc: doc, Models: models}
 			lock.Unlock()
-			slog.InfoContext(cxt, "Rendered existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
+			if filesOptions.Serial {
+				slog.InfoContext(cxt, "Rendered existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
+			}
 		}
 		return nil
 	}, filesOptions)

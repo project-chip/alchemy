@@ -15,6 +15,6 @@ type Command struct {
 	Fields []*Field `json:"fields,omitempty"`
 }
 
-func (c *Command) ModelType() ModelType {
-	return ModelTypeCommand
+func (c *Command) ModelType() Entity {
+	return EntityCommand
 }
