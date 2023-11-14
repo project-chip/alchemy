@@ -18,13 +18,8 @@ type Result struct {
 	Models []interface{}
 }
 
-func Render(cxt context.Context, doc *ascii.Doc) (*Result, error) {
+func Render(cxt context.Context, doc *ascii.Doc, models []any) (*Result, error) {
 	docType, err := doc.DocType()
-	if err != nil {
-		return nil, err
-	}
-
-	models, err := doc.ToModel()
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +36,8 @@ func Render(cxt context.Context, doc *ascii.Doc) (*Result, error) {
 	x.CreateComment(fmt.Sprintf(license, time.Now().Year()))
 	c := x.CreateElement("configurator")
 	dom := c.CreateElement("domain")
-	dom.CreateAttr("name", "CHIP")
+	domainName := matter.DomainNames[doc.Domain]
+	dom.CreateAttr("name", domainName)
 	switch docType {
 	case matter.DocTypeAppCluster:
 

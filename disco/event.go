@@ -106,7 +106,7 @@ func (b *Ball) organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.S
 
 		b.reorderColumns(doc, ss, rows, matter.EventTableColumnOrder[:], cm, ec)
 
-		b.appendSubsectionTypes(ss, cm, rows, "Field")
+		b.appendSubsectionTypes(ss, cm, rows)
 
 	}
 

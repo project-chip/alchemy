@@ -4,7 +4,9 @@ import (
 	"context"
 	"io/fs"
 	"log/slog"
+	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -13,6 +15,10 @@ import (
 	"github.com/hasty/alchemy/cmd/files"
 	"github.com/hasty/alchemy/matter"
 )
+
+// Hacky workaround: there's a nasty bit in one of the Door Lock tables where the name of the command has an asterisk reference in it
+// We just cut that out for now
+var doorLockPattern = regexp.MustCompile(`\n+\s*(Schedule ID|User ID)&#8224;\s+`)
 
 func loadSpec(cxt context.Context, specRoot string, filesOptions files.Options, asciiSettings []configuration.Setting) (docs []*ascii.Doc, err error) {
 	var lock sync.Mutex
@@ -24,12 +30,23 @@ func loadSpec(cxt context.Context, specRoot string, filesOptions files.Options, 
 		return
 	}
 
-	err = files.Process(cxt, specPaths, func(cxt context.Context, file string, index, total int) error {
+	err = files.Process(cxt, specPaths, func(cxt context.Context, path string, index, total int) error {
 
-		doc, err := ascii.Open(file, asciiSettings...)
+		var file []byte
+		file, err = os.ReadFile(path)
 		if err != nil {
 			return err
 		}
+		contents := string(file)
+		if filepath.Base(path) == "DoorLock.adoc" {
+			contents = doorLockPattern.ReplaceAllString(contents, "")
+		}
+
+		doc, err := ascii.Read(contents, path, asciiSettings...)
+		if err != nil {
+			return err
+		}
+
 		lock.Lock()
 		docs = append(docs, doc)
 		lock.Unlock()

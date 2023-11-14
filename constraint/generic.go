@@ -1,0 +1,22 @@
+package constraint
+
+import "github.com/hasty/alchemy/matter"
+
+type GenericConstraint struct {
+	Value string
+}
+
+func (c *GenericConstraint) AsciiDocString() string {
+	return c.Value
+}
+
+func (c *GenericConstraint) Equal(o matter.Constraint) bool {
+	if oc, ok := o.(*GenericConstraint); ok {
+		return oc.Value == c.Value
+	}
+	return false
+}
+
+func (c *GenericConstraint) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
+	return
+}

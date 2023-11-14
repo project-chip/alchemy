@@ -43,7 +43,7 @@ var Command = &cobra.Command{
 		h := db.New()
 		err = files.Process(sc, paths, func(cxt context.Context, file string, index, total int) error {
 			fmt.Fprintf(os.Stderr, "Loading %s (%d of %d)...\n", file, index, total)
-			doc, err := ascii.Open(file, asciiSettings...)
+			doc, err := ascii.OpenFile(file, asciiSettings...)
 			if err != nil {
 				return err
 			}

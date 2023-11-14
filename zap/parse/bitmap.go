@@ -60,7 +60,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 			default:
 				err = fmt.Errorf("unexpected bitmap end element: %s", t.Name.Local)
 			}
-		case xml.CharData:
+		//case xml.CharData:
 		default:
 			err = fmt.Errorf("unexpected bitmap level type: %T", t)
 		}

@@ -42,6 +42,7 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 	if err != nil {
 		return
 	}
+	inCluster := false
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
@@ -73,7 +74,7 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 				lastSection = matter.SectionDataTypeBitmap
 				err = r.amendBitmap(d, e, t, cluster, clusterIDs, bitmaps)
 			case "enum":
-				if lastSection != matter.SectionDataTypeBitmap {
+				if lastSection != matter.SectionDataTypeEnum {
 					err = r.flushUnusedConfiguratorValues(e, lastSection, configuratorAttributes, clusterIDs, bitmaps, enums, structs)
 					if err != nil {
 						return
@@ -94,8 +95,17 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 				err = r.amendStruct(d, e, t, cluster, clusterIDs, structs)
 
 			case "cluster":
+				if lastSection != matter.SectionCluster {
+					err = r.flushUnusedConfiguratorValues(e, lastSection, configuratorAttributes, clusterIDs, bitmaps, enums, structs)
+					if err != nil {
+						return
+					}
+				}
 				lastSection = matter.SectionCluster
 				err = r.amendCluster(d, e, t, clusters)
+				inCluster = true
+			case "clusterExtension":
+				err = writeThrough(d, e, t)
 			default:
 				if v, ok := configuratorAttributes[t.Name.Local]; ok {
 					t.Attr = setAttributeValue(t.Attr, "name", v)
@@ -105,7 +115,9 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 			}
 		case xml.EndElement:
 			switch t.Name.Local {
-			case "cluster", "enum", "struct", "bitmap":
+			case "cluster":
+				inCluster = false
+			case "enum", "struct", "bitmap":
 			case "configurator":
 				err = r.flushBitmaps(e, bitmaps, clusterIDs)
 				if err != nil {
@@ -124,6 +136,9 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 				err = e.EncodeToken(tok)
 			}
 		case xml.CharData:
+			if !inCluster {
+				err = e.EncodeToken(tok)
+			}
 		default:
 			err = e.EncodeToken(tok)
 		}

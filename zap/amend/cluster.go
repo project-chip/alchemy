@@ -97,6 +97,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 	var lastSection = matter.SectionUnknown
 	var nextCharData string
 	var hasCharDataPending bool
+	var hasCommentCharDataPending bool
 
 	ts := &tokenSet{tokens: clusterTokens}
 
@@ -161,6 +162,9 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 			if hasCharDataPending {
 				err = e.EncodeToken(xml.CharData(nextCharData))
 				hasCharDataPending = false
+			} else if hasCommentCharDataPending {
+				err = e.EncodeToken(t)
+				hasCommentCharDataPending = false
 			}
 		case xml.EndElement:
 			switch t.Name.Local {
@@ -190,6 +194,9 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 					clusterValuesWritten[t.Name.Local] = true
 				}
 			}
+		case xml.Comment:
+			err = e.EncodeToken(t)
+			hasCommentCharDataPending = true
 		default:
 			err = e.EncodeToken(t)
 		}

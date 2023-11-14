@@ -2,7 +2,6 @@ package amend
 
 import (
 	"encoding/xml"
-	"fmt"
 	"strconv"
 
 	"github.com/hasty/alchemy/matter"
@@ -11,11 +10,7 @@ import (
 	"github.com/hasty/alchemy/zap/render"
 )
 
-func writeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
-	if dt == nil {
-		panic("missing data type")
-		return attr
-	}
+func writeAttributeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
 	dts := zap.ConvertDataTypeToZap(dt.Name)
 	if dt.IsArray {
 		attr = setAttributeValue(attr, "type", "ARRAY")
@@ -27,7 +22,7 @@ func writeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
 	return attr
 }
 
-func writeCommandDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
+func writeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
 	if dt == nil {
 		return attr
 	}
@@ -47,7 +42,7 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 	el.Name = xml.Name{Local: "attribute"}
 	el.Attr = setAttributeValue(el.Attr, "code", a.ID.HexString())
 	el.Attr = setAttributeValue(el.Attr, "side", "server")
-	el.Attr = writeDataType(a.Type, el.Attr)
+	el.Attr = writeAttributeDataType(a.Type, el.Attr)
 	define := render.GetDefine(a.Name, clusterPrefix, r.errata)
 	el.Attr = setAttributeValue(el.Attr, "define", define)
 	if a.Quality.Has(matter.QualityNullable) {
@@ -87,7 +82,7 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 		el.Attr = removeAttribute(el.Attr, "default")
 	}
 
-	el.Attr = r.renderConstraint(cluster.Attributes, el.Attr, a.Type, a.Constraint)
+	el.Attr = r.renderConstraint(cluster.Attributes, a, el.Attr)
 
 	if a.Conformance != "M" {
 		el.Attr = setAttributeValue(el.Attr, "optional", "true")
@@ -156,22 +151,22 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 	return
 }
 
-func (*renderer) renderConstraint(fs matter.FieldSet, attr []xml.Attr, t *matter.DataType, c matter.Constraint) []xml.Attr {
-	from, to := zap.GetMinMax(fs, t, c)
+func (*renderer) renderConstraint(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.Attr {
+	from, to := zap.GetMinMax(fs, f)
 
-	if t != nil && t.IsString() {
+	if f.Type != nil && f.Type.IsString() {
 		if to.Defined() {
-			attr = setAttributeValue(attr, "length", fmt.Sprintf("%d", to.Value()))
+			attr = setAttributeValue(attr, "length", zap.FormatConstraintValue(to.Value()))
 		}
 		if from.Defined() {
-			attr = setAttributeValue(attr, "minLength", fmt.Sprintf("%d", from.Value()))
+			attr = setAttributeValue(attr, "minLength", zap.FormatConstraintValue(from.Value()))
 		}
 	} else {
 		if from.Defined() {
-			attr = setAttributeValue(attr, "min", fmt.Sprintf("%d", from.Value()))
+			attr = setAttributeValue(attr, "min", zap.FormatConstraintValue(from.Value()))
 		}
 		if to.Defined() {
-			attr = setAttributeValue(attr, "max", fmt.Sprintf("%d", to.Value()))
+			attr = setAttributeValue(attr, "max", zap.FormatConstraintValue(to.Value()))
 		}
 	}
 	return attr

@@ -40,7 +40,10 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 			fx.CreateAttr("id", f.ID.IntString())
 			fx.CreateAttr("name", f.Name)
 			writeDataType(fx, f.Type)
-			renderConstraint(e.Fields, f.Type, f.Constraint, fx)
+			renderConstraint(e.Fields, f, fx)
+			if f.Quality.Has(matter.QualityNullable) {
+				fx.CreateAttr("isNullable", "true")
+			}
 			fx.CreateAttr("apiMaturity", "provisional")
 		}
 		if e.Access.Read != matter.PrivilegeUnknown {

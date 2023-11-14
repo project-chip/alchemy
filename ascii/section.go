@@ -2,6 +2,7 @@ package ascii
 
 import (
 	"fmt"
+	"log/slog"
 	"regexp"
 	"strings"
 
@@ -76,6 +77,7 @@ func (s *Section) GetElements() []interface{} {
 
 func (s *Section) SetElements(elements []interface{}) error {
 	s.Elements = elements
+	s.Base.SetElements(elements)
 	return nil
 }
 
@@ -91,6 +93,9 @@ func AssignSectionTypes(docType matter.DocType, top *Section) {
 		top.SecType = matter.SectionDeviceType
 	default:
 		top.SecType = matter.SectionTop
+		if strings.HasSuffix(top.Name, " Cluster") {
+			top.SecType = matter.SectionCluster
+		}
 	}
 
 	parse.Traverse(top, top.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
@@ -104,6 +109,7 @@ func AssignSectionTypes(docType matter.DocType, top *Section) {
 		}
 
 		section.SecType = getSectionType(ps, section)
+		fmt.Printf("sec type: %s -> %s (parent %s)\n", section.Name, section.SecType, ps.SecType)
 		return false
 	})
 }
@@ -187,7 +193,7 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		if strings.HasSuffix(name, "struct") {
 			return matter.SectionDataTypeStruct
 		}
-	case matter.SectionCommand:
+	case matter.SectionCommand, matter.SectionDataTypeStruct:
 		if strings.HasSuffix(name, " field") {
 			return matter.SectionField
 		}
@@ -200,16 +206,16 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return matter.SectionEvent
 		}
 	default:
-		//slog.Info("unknown section type", "name", name)
+		slog.Info("unknown section type", "name", name)
 		// Ugh, some heuristics now
 		name = strings.TrimSpace(section.Name)
-		if strings.HasSuffix(name, "Bitmap type") || strings.HasSuffix(name, "Bitmap") {
+		if strings.HasSuffix(name, "Bitmap Type") || strings.HasSuffix(name, "Bitmap") {
 			return matter.SectionDataTypeBitmap
 		}
-		if strings.HasSuffix(name, "Enum type") || strings.HasSuffix(name, "Enum") {
+		if strings.HasSuffix(name, "Enum Type") || strings.HasSuffix(name, "Enum") {
 			return matter.SectionDataTypeEnum
 		}
-		if strings.HasSuffix(name, "Struct type") || strings.HasSuffix(name, "Struct") {
+		if strings.HasSuffix(name, "Struct Type") || strings.HasSuffix(name, "Struct") {
 			return matter.SectionDataTypeStruct
 		}
 	}

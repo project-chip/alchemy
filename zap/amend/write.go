@@ -224,7 +224,7 @@ func writeThrough(d xmlDecoder, e xmlEncoder, el xml.StartElement) (err error) {
 				return nil
 			default:
 			}
-		case xml.CharData:
+		//case xml.CharData:
 		default:
 			err = e.EncodeToken(tok)
 		}
@@ -308,61 +308,3 @@ func (ts *tokenSet) Token() (xml.Token, error) {
 	ts.index++
 	return t, nil
 }
-
-/*
-func (ts *tokenSet) ignore(name string) (err error) {
-	for {
-		var tok xml.Token
-		tok, err = ts.next()
-		if tok == nil || err == io.EOF {
-			panic(fmt.Errorf("EOF before end of %s", name))
-		} else if err != nil {
-			return
-		}
-		switch t := tok.(type) {
-		case xml.EndElement:
-			switch t.Name.Local {
-			case name:
-				return nil
-			default:
-			}
-		default:
-		}
-		if err != nil {
-			return
-		}
-	}
-}
-
-func (ts *tokenSet) writeThrough(e xmlEncoder, el xml.StartElement) (err error) {
-	name := el.Name.Local
-	err = e.EncodeToken(el)
-	if err != nil {
-		return
-	}
-	for {
-		var tok xml.Token
-		tok, err = ts.next()
-		if tok == nil || err == io.EOF {
-			return fmt.Errorf("EOF before end of %s", name)
-		} else if err != nil {
-			return
-		}
-		switch t := tok.(type) {
-		case xml.EndElement:
-			err = e.EncodeToken(tok)
-			switch t.Name.Local {
-			case name:
-				return nil
-			default:
-			}
-		case xml.CharData:
-		default:
-			err = e.EncodeToken(tok)
-		}
-		if err != nil {
-			return
-		}
-	}
-}
-*/

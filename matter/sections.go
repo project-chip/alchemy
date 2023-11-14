@@ -31,13 +31,12 @@ const (
 	SectionElementRequirements
 	SectionEndpointComposition
 	SectionField
+	SectionValue
+	SectionBit
 )
 
-var TopLevelSectionOrders map[DocType][]Section
-
-func init() {
-	TopLevelSectionOrders = make(map[DocType][]Section)
-	TopLevelSectionOrders[DocTypeAppCluster] = []Section{
+var TopLevelSectionOrders = map[DocType][]Section{
+	DocTypeAppCluster: {
 		SectionPrefix,
 		SectionRevisionHistory,
 		SectionClassification,
@@ -49,8 +48,8 @@ func init() {
 		SectionAttributes,
 		SectionCommands,
 		SectionEvents,
-	}
-	TopLevelSectionOrders[DocTypeDeviceType] = []Section{
+	},
+	DocTypeDeviceType: {
 		SectionPrefix,
 		SectionRevisionHistory,
 		SectionClassification,
@@ -59,8 +58,10 @@ func init() {
 		SectionClusterRestrictions,
 		SectionElementRequirements,
 		SectionEndpointComposition,
-	}
+	},
 }
+
+var DataTypeSectionOrder = []Section{SectionPrefix, SectionDataTypeBitmap, SectionDataTypeEnum, SectionDataTypeStruct}
 
 var sectionTypeStrings = map[Section]string{
 	SectionPrefix:              "Prefix",
@@ -92,12 +93,11 @@ var sectionTypeStrings = map[Section]string{
 	SectionField:               "Field",
 }
 
-func SectionTypeString(st Section) string {
+func (st Section) String() string {
 	if s, ok := sectionTypeStrings[st]; ok {
 		return s
 	}
 	return "invalid"
-
 }
 
 var sectionTypeNames = map[Section]string{

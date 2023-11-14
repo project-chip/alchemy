@@ -101,13 +101,13 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 			if f.Conformance != "M" {
 				fx.CreateAttr("optional", "true")
 			}
-			renderConstraint(v.Fields, f.Type, f.Constraint, fx)
+			renderConstraint(v.Fields, f, fx)
 		}
 
 	}
 }
 
-func writeDataType(x *etree.Element, dt *matter.DataType) {
+func writeAttributeDataType(x *etree.Element, dt *matter.DataType) {
 	if dt == nil {
 		return
 	}
@@ -120,7 +120,7 @@ func writeDataType(x *etree.Element, dt *matter.DataType) {
 	}
 }
 
-func writeCommandDataType(x *etree.Element, dt *matter.DataType) {
+func writeDataType(x *etree.Element, dt *matter.DataType) {
 	if dt == nil {
 		return
 	}

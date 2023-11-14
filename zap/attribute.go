@@ -38,7 +38,7 @@ func (xa *XMLAttribute) ToModel() (ma *matter.Field, err error) {
 	ma = &matter.Field{
 		ID:      matter.ParseID(xa.Code),
 		Name:    xa.Name,
-		Type:    &matter.DataType{Name: ConvertZapToDataType(xa.Type), IsArray: xa.IsArray},
+		Type:    matter.NewDataType(ConvertZapToDataType(xa.Type), xa.IsArray),
 		Default: xa.Default,
 	}
 	if xa.IsNullable {

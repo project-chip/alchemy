@@ -3,6 +3,7 @@ package disco
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
@@ -34,12 +35,14 @@ func (b *Ball) Run(cxt context.Context) error {
 	precleanStrings(doc.Elements)
 	ascii.PatchUnrecognizedReferences(doc)
 
+	for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
+		ascii.AssignSectionTypes(docType, top)
+	}
+
 	topLevelSection := parse.FindFirst[*ascii.Section](doc.Elements)
 	if topLevelSection == nil {
 		return fmt.Errorf("missing top level section")
 	}
-
-	ascii.AssignSectionTypes(docType, topLevelSection)
 
 	getExistingDataTypes(dc, topLevelSection)
 
@@ -65,9 +68,22 @@ func (b *Ball) Run(cxt context.Context) error {
 
 func (b *Ball) discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.DocType) error {
 	if b.options.reorderSections {
-		err := reorderTopLevelSection(top, docType)
-		if err != nil {
-			return err
+		sectionOrder, ok := matter.TopLevelSectionOrders[docType]
+		if !ok {
+			slog.Debug("could not determine section order", "docType", docType)
+
+		} else {
+			err := reorderSection(top, sectionOrder)
+			if err != nil {
+				return err
+			}
+		}
+		dataTypesSection := ascii.FindSectionByType(top, matter.SectionDataTypes)
+		if dataTypesSection != nil {
+			err := reorderSection(dataTypesSection, matter.DataTypeSectionOrder)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	b.ensureTableOptions(top.Elements)

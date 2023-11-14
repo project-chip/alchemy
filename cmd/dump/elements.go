@@ -6,7 +6,6 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/matter"
 )
 
 func dumpElements(doc *ascii.Doc, elements []interface{}, indent int) {
@@ -15,7 +14,7 @@ func dumpElements(doc *ascii.Doc, elements []interface{}, indent int) {
 		fmt.Print(strings.Repeat("\t", indent))
 		as, ok := e.(*ascii.Section)
 		if ok {
-			fmt.Printf("{SEC %d (%s)}:\n", as.Base.Level, matter.SectionTypeString(as.SecType))
+			fmt.Printf("{SEC %d (%s)}:\n", as.Base.Level, as.SecType)
 
 			dumpAttributes(as.Base.Attributes, indent+1)
 			fmt.Print(strings.Repeat("\t", indent+1))

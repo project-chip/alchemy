@@ -33,6 +33,7 @@ const (
 	BaseDataTypeInt64
 	BaseDataTypeSingle
 	BaseDataTypeDouble
+	BaseDataTypeOctStr
 	BaseDataTypeList
 	BaseDataTypeStruct
 
@@ -47,6 +48,10 @@ const (
 	BaseDataTypeSystimeMilliseconds
 	BaseDataTypeElapsedSeconds
 	BaseDataTypeTemperature
+	BaseDataTypeAmperage
+	BaseDataTypeVoltage
+	BaseDataTypePower
+	BaseDataTypeEnergy
 
 	BaseDataTypeEnum8
 	BaseDataTypeEnum16
@@ -54,6 +59,7 @@ const (
 	BaseDataTypeStatus
 
 	BaseDataTypeGroupID
+	BaseDataTypeEndpointID
 	BaseDataTypeEndpointNumber
 	BaseDataTypeVendorID
 	BaseDataTypeDeviceTypeID
@@ -127,6 +133,133 @@ type DataType struct {
 	IsArray  bool         `json:"isArray,omitempty"`
 }
 
+func NewDataType(name string, isArray bool) *DataType {
+	dt := &DataType{Name: name, IsArray: isArray}
+	switch strings.ToLower(name) {
+	case "bool", "boolean":
+		dt.BaseType = BaseDataTypeBoolean
+	case "uint8":
+		dt.BaseType = BaseDataTypeUInt8
+	case "uint16":
+		dt.BaseType = BaseDataTypeUInt16
+	case "uint24":
+		dt.BaseType = BaseDataTypeUInt24
+	case "uint32":
+		dt.BaseType = BaseDataTypeUInt32
+	case "uint40":
+		dt.BaseType = BaseDataTypeUInt40
+	case "uint48":
+		dt.BaseType = BaseDataTypeUInt48
+	case "uint56":
+		dt.BaseType = BaseDataTypeUInt56
+	case "uint64":
+		dt.BaseType = BaseDataTypeUInt64
+
+	case "int8":
+		dt.BaseType = BaseDataTypeInt8
+	case "int16":
+		dt.BaseType = BaseDataTypeInt16
+	case "int24":
+		dt.BaseType = BaseDataTypeInt24
+	case "int32":
+		dt.BaseType = BaseDataTypeInt32
+	case "int40":
+		dt.BaseType = BaseDataTypeInt40
+	case "int48":
+		dt.BaseType = BaseDataTypeInt48
+	case "int56":
+		dt.BaseType = BaseDataTypeInt56
+	case "int64":
+		dt.BaseType = BaseDataTypeInt64
+
+	case "enum8":
+		dt.BaseType = BaseDataTypeEnum8
+	case "enum16":
+		dt.BaseType = BaseDataTypeEnum16
+
+	case "map8":
+		dt.BaseType = BaseDataTypeMap8
+	case "map16":
+		dt.BaseType = BaseDataTypeMap16
+	case "map32":
+		dt.BaseType = BaseDataTypeMap32
+	case "map64":
+		dt.BaseType = BaseDataTypeMap64
+
+	case "string":
+		dt.BaseType = BaseDataTypeString
+	case "octstr":
+		dt.BaseType = BaseDataTypeOctStr
+	case "percent":
+		dt.BaseType = BaseDataTypePercent
+	case "percent100ths":
+		dt.BaseType = BaseDataTypePercentHundredths
+	case "temperature":
+		dt.BaseType = BaseDataTypeTemperature
+	case "amperage-ma":
+		dt.BaseType = BaseDataTypeAmperage
+	case "voltage-mv":
+		dt.BaseType = BaseDataTypeVoltage
+	case "power-mw":
+		dt.BaseType = BaseDataTypePower
+	case "energy-mwh":
+		dt.BaseType = BaseDataTypeEnergy
+
+	case "elapsed-s":
+		dt.BaseType = BaseDataTypeElapsedSeconds
+	case "epoch-s", "utc": // utc is deprecated
+		dt.BaseType = BaseDataTypeEpochSeconds
+	case "epoch-us":
+		dt.BaseType = BaseDataTypeEpochMicroseconds
+	case "systime_ms":
+		dt.BaseType = BaseDataTypeSystimeMilliseconds
+	case "systime_us":
+		dt.BaseType = BaseDataTypeSystimeMicroseconds
+	case "posix-ms":
+		dt.BaseType = BaseDataTypePosixMilliseconds
+
+	case "action-id":
+		dt.BaseType = BaseDataTypeActionID
+	case "attrib-id", "attribute-id":
+		dt.BaseType = BaseDataTypeAttributeID
+	case "cluster-id":
+		dt.BaseType = BaseDataTypeClusterID
+	case "command-id":
+		dt.BaseType = BaseDataTypeCommandID
+	case "data-ver":
+		dt.BaseType = BaseDataTypeDataVersion
+	case "devtype-id":
+		dt.BaseType = BaseDataTypeDeviceTypeID
+	case "entry-idx":
+		dt.BaseType = BaseDataTypeEntryIndex
+	case "event-id":
+		dt.BaseType = BaseDataTypeEventID
+	case "event-no":
+		dt.BaseType = BaseDataTypeEventNumber
+	case "fabric-id":
+		dt.BaseType = BaseDataTypeFabricID
+	case "fabric-idx":
+		dt.BaseType = BaseDataTypeFabricIndex
+	case "field-id":
+		dt.BaseType = BaseDataTypeFieldID
+	case "group-id":
+		dt.BaseType = BaseDataTypeGroupID
+	case "node-id":
+		dt.BaseType = BaseDataTypeNodeID
+	case "transaction-id":
+		dt.BaseType = BaseDataTypeTransactionID
+	case "vendor-id":
+		dt.BaseType = BaseDataTypeVendorID
+	case "endpoint-id":
+		dt.BaseType = BaseDataTypeEndpointID
+	case "endpoint-no":
+		dt.BaseType = BaseDataTypeEndpointNumber
+	case "eui64":
+		dt.BaseType = BaseDataTypeIeeeAddress
+	}
+	return dt
+}
+
 func (dt *DataType) IsString() bool {
 	return dt != nil && dt.Name == "string" || dt.Name == "octstr"
 }
@@ -148,11 +281,13 @@ var maxInt24 int64 = math.MaxUint16 | (math.MaxInt8 << 16)
 var maxInt40 int64 = math.MaxUint32 | (math.MaxInt8 << 32)
 var maxInt48 int64 = math.MaxUint32 | (math.MaxInt16 << 32)
 var maxInt56 int64 = math.MaxUint32 | (maxInt24 << 32)
+var maxInt62 int64 = math.MaxUint64 & ^(3 << 62)
 
 var minInt24 int64 = ^maxInt24
 var minInt40 int64 = ^maxInt40
 var minInt48 int64 = ^maxInt48
 var minInt56 int64 = ^maxInt56
+var minInt62 int64 = ^maxInt62
 
 var ranges = map[BaseDataType]dataTypeRange{
 	BaseDataTypeBoolean:           {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: 1},
@@ -160,6 +295,8 @@ var ranges = map[BaseDataType]dataTypeRange{
 	BaseDataTypeMap16:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16},
 	BaseDataTypeMap32:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32},
 	BaseDataTypeMap64:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64},
+	BaseDataTypeEnum8:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint8},
+	BaseDataTypeEnum16:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16},
 	BaseDataTypeUInt8:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint8},
 	BaseDataTypeUInt16:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16},
 	BaseDataTypeUInt24:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint24},
@@ -182,6 +319,10 @@ var ranges = map[BaseDataType]dataTypeRange{
 	BaseDataTypeEpochSeconds:      {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32},
 	BaseDataTypePosixMilliseconds: {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64},
 	BaseDataTypeTemperature:       {et: ConstraintExtremeTypeInt64, fromI: -27315, toI: math.MaxInt16},
+	BaseDataTypeAmperage:          {et: ConstraintExtremeTypeInt64, fromI: minInt62, toI: maxInt62},
+	BaseDataTypeVoltage:           {et: ConstraintExtremeTypeInt64, fromI: minInt62, toI: maxInt62},
+	BaseDataTypePower:             {et: ConstraintExtremeTypeInt64, fromI: minInt62, toI: maxInt62},
+	BaseDataTypeEnergy:            {et: ConstraintExtremeTypeInt64, fromI: minInt62, toI: maxInt62},
 }
 
 var nullableRanges = map[BaseDataType]dataTypeRange{
@@ -189,6 +330,8 @@ var nullableRanges = map[BaseDataType]dataTypeRange{
 	BaseDataTypeMap16:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16 & ^(1 << 15)},
 	BaseDataTypeMap32:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32 & ^(1 << 31)},
 	BaseDataTypeMap64:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64 & ^(1 << 64)},
+	BaseDataTypeEnum8:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint8 - 1},
+	BaseDataTypeEnum16:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16 - 1},
 	BaseDataTypeUInt8:             {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint8 - 1},
 	BaseDataTypeUInt16:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint16 - 1},
 	BaseDataTypeUInt24:            {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: maxUint24 - 1},
@@ -208,6 +351,10 @@ var nullableRanges = map[BaseDataType]dataTypeRange{
 	BaseDataTypeEpochMicroseconds: {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64 - 1},
 	BaseDataTypeEpochSeconds:      {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint32 - 1},
 	BaseDataTypePosixMilliseconds: {et: ConstraintExtremeTypeUInt64, fromU: 0, toU: math.MaxUint64 - 1},
+	BaseDataTypeAmperage:          {et: ConstraintExtremeTypeInt64, fromI: minInt62 + 1, toI: maxInt62},
+	BaseDataTypeVoltage:           {et: ConstraintExtremeTypeInt64, fromI: minInt62 + 1, toI: maxInt62},
+	BaseDataTypePower:             {et: ConstraintExtremeTypeInt64, fromI: minInt62 + 1, toI: maxInt62},
+	BaseDataTypeEnergy:            {et: ConstraintExtremeTypeInt64, fromI: minInt62 + 1, toI: maxInt62},
 }
 
 func (dt *DataType) MinMax(nullable bool) (from ConstraintExtreme, to ConstraintExtreme) {

@@ -100,7 +100,7 @@ func (b *Ball) organizeCommands(cxt *discoContext, commands *ascii.Section, comm
 		if err != nil {
 			return err
 		}
-		b.appendSubsectionTypes(ss, columnMap, rows, "Field")
+		b.appendSubsectionTypes(ss, columnMap, rows)
 	}
 
 	return nil

@@ -50,7 +50,7 @@ func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attribu
 
 	b.reorderColumns(doc, section, rows, matter.EnumTableColumnOrder[:], columnMap, extraColumns)
 
-	b.appendSubsectionTypes(section, columnMap, rows, "Value")
+	b.appendSubsectionTypes(section, columnMap, rows)
 
 	return nil
 }
