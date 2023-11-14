@@ -50,7 +50,7 @@ func Compare(cxt context.Context, specRoot string, zclRoot string, settings []co
 func loadSpecModels(appClusterPaths []string, settings []configuration.Setting, domains map[string]matter.Domain, zclRoot string) (map[string][]any, error) {
 	specModels := make(map[string][]any)
 	for i, file := range appClusterPaths {
-		doc, err := ascii.Open(file, append(ascii.GithubSettings(), settings...)...)
+		doc, err := ascii.OpenFile(file, append(ascii.GithubSettings(), settings...)...)
 		if err != nil {
 			return nil, err
 		}
@@ -101,7 +101,7 @@ func getAppDomains(specRoot string, settings []configuration.Setting) ([]string,
 
 	for i, file := range appClusterIndexPaths {
 		fmt.Fprintf(os.Stderr, "ZCLing index %s (%d of %d)...\n", file, i+1, len(appClusterIndexPaths))
-		doc, err := ascii.Open(file, settings...)
+		doc, err := ascii.OpenFile(file, settings...)
 		if err != nil {
 			return nil, nil, err
 		}

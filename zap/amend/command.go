@@ -90,11 +90,14 @@ func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Com
 		xfs := xml.StartElement{Name: elName}
 		mandatory := (f.Conformance == "M")
 		xfs.Attr = setAttributeValue(xfs.Attr, "name", f.Name)
-		xfs.Attr = writeCommandDataType(f.Type, xfs.Attr)
+		xfs.Attr = writeDataType(f.Type, xfs.Attr)
 		if !mandatory {
 			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
 		}
-		xfs.Attr = r.renderConstraint(c.Fields, xfs.Attr, f.Type, f.Constraint)
+		if f.Quality.Has(matter.QualityNullable) {
+			xfs.Attr = setAttributeValue(xfs.Attr, "isNullable", "true")
+		}
+		xfs.Attr = r.renderConstraint(c.Fields, f, xfs.Attr)
 		err = e.EncodeToken(xfs)
 		if err != nil {
 			return

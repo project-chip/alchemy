@@ -11,20 +11,20 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) error {
-	sectionOrder, ok := matter.TopLevelSectionOrders[docType]
-	if !ok {
-		//slog.Debug("could not determine section order", "docType", docType)
-		return nil
-	}
+func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)
 	for _, st := range sectionOrder {
 		validSectionTypes[st] = struct{}{}
 	}
 	sections := divyUpSection(sec, validSectionTypes)
+	for i, s := range sections {
+		fmt.Printf("after divy section type %s: %v\n", i, s)
+	}
 	newOrder := make([]interface{}, 0, len(sec.Elements))
 	for _, st := range sectionOrder {
+		fmt.Printf("section order: %v\n", st)
 		if els, ok := sections[st]; ok {
+
 			newOrder = append(newOrder, els...)
 			delete(sections, st)
 		}
@@ -32,8 +32,10 @@ func reorderTopLevelSection(sec *ascii.Section, docType matter.DocType) error {
 	if len(sections) > 0 {
 		return fmt.Errorf("non-empty section list after reordering")
 	}
-	sec.SetElements(newOrder)
-	return nil
+	for i, s := range newOrder {
+		fmt.Printf("after reorder section type %d: %v\n", i, s)
+	}
+	return sec.SetElements(newOrder)
 }
 
 func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section][]interface{} {
@@ -42,6 +44,7 @@ func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]stru
 	for _, e := range sec.Elements {
 		switch el := e.(type) {
 		case *ascii.Section:
+			fmt.Printf("divy section %s - %d\n", el.Name, el.SecType)
 			if el.SecType != matter.SectionUnknown {
 				_, ok := validSectionTypes[el.SecType]
 				if ok {
@@ -59,13 +62,24 @@ func setSectionTitle(sec *ascii.Section, title string) {
 		switch el := e.(type) {
 		case *types.StringElement:
 			el.Content = title
+			sec.Name = title
 		}
 	}
 }
 
-func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap map[matter.TableColumn]int, rows []*types.TableRow, subsectionType string) {
-	if !b.options.appendSubsectionTypes {
-		return
+func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap map[matter.TableColumn]int, rows []*types.TableRow) {
+	var subsectionSuffix string
+	var subsectionType matter.Section
+	switch section.SecType {
+	case matter.SectionDataTypeBitmap:
+		subsectionSuffix = "Bit"
+		subsectionType = matter.SectionBit
+	case matter.SectionDataTypeEnum:
+		subsectionSuffix = "Value"
+		subsectionType = matter.SectionValue
+	case matter.SectionCommand, matter.SectionEvent, matter.SectionDataTypeStruct:
+		subsectionSuffix = "Field"
+		subsectionType = matter.SectionField
 	}
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if ok {
@@ -80,10 +94,16 @@ func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap map[matte
 			subSectionNames[name] = struct{}{}
 		}
 		subSections := parse.FindAll[*ascii.Section](section.Elements)
-		suffix := " " + subsectionType
+		suffix := " " + subsectionSuffix
 		for _, ss := range subSections {
 			name := strings.TrimSuffix(ss.Name, suffix)
 			if _, ok := subSectionNames[name]; !ok {
+				continue
+			}
+			if ss.SecType == matter.SectionUnknown {
+				ss.SecType = subsectionType
+			}
+			if !b.options.appendSubsectionTypes {
 				continue
 			}
 			if !strings.HasSuffix(strings.ToLower(ss.Name), strings.ToLower(suffix)) {

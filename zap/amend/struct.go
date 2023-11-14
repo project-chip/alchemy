@@ -78,7 +78,7 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 		if v.Conformance != "M" {
 			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
 		}
-		xfs.Attr = r.renderConstraint(s.Fields, xfs.Attr, v.Type, v.Constraint)
+		xfs.Attr = r.renderConstraint(s.Fields, v, xfs.Attr)
 		err = e.EncodeToken(xfs)
 		if err != nil {
 			return

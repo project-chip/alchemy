@@ -11,7 +11,7 @@ import (
 )
 
 func readField(d *xml.Decoder, e xml.StartElement, name string) (field *matter.Field, err error) {
-	field = &matter.Field{Type: &matter.DataType{}}
+	field = &matter.Field{}
 	err = readFieldAttributes(e, field, name)
 	if err != nil {
 		return
@@ -87,16 +87,14 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 	entryType = zap.ConvertZapToDataType(entryType)
 	if isArray {
 		if len(entryType) > 0 {
-			field.Type.Name = entryType
+			field.Type = matter.NewDataType(entryType, true)
 		} else {
-			field.Type.Name = fieldType
+			field.Type = matter.NewDataType(fieldType, true)
 		}
-		field.Type.IsArray = true
 	} else if fieldType == "ARRAY" {
-		field.Type.Name = entryType
-		field.Type.IsArray = true
+		field.Type = matter.NewDataType(entryType, true)
 	} else {
-		field.Type.Name = fieldType
+		field.Type = matter.NewDataType(fieldType, false)
 	}
 	if len(max) > 0 && len(min) > 0 {
 		field.Constraint = constraint.ParseConstraint(fmt.Sprintf("%s to %s", min, max))

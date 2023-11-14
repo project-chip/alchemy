@@ -38,6 +38,11 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 		path := doc.Path
 		newPath := getZapPath(zclRoot, path)
 
+		models, err := doc.ToModel()
+		if err != nil {
+			return err
+		}
+
 		doc.Domain = getDocDomain(doc)
 		existing, err := os.ReadFile(newPath)
 		if errors.Is(err, os.ErrNotExist) {
@@ -45,7 +50,7 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 				slog.InfoContext(cxt, "Rendering new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
 			}
 			var result *render.Result
-			result, err = render.Render(cxt, doc)
+			result, err = render.Render(cxt, doc, models)
 			if err != nil {
 				err = fmt.Errorf("failed rendering %s: %w", path, err)
 				return err
@@ -64,10 +69,7 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 				slog.InfoContext(cxt, "Rendering existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
 			}
 			var buf bytes.Buffer
-			models, err := doc.ToModel()
-			if err != nil {
-				return err
-			}
+
 			var clusters []any
 			for _, m := range models {
 				switch m := m.(type) {
@@ -96,4 +98,8 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 		return nil
 	}, filesOptions)
 	return
+}
+
+func findMissingStructs(doc *ascii.Doc, models []any) {
+
 }

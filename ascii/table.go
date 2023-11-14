@@ -46,7 +46,12 @@ func readRowValue(row *types.TableRow, columnMap map[matter.TableColumn]int, col
 		return "", nil
 	}
 	cell := row.Cells[i]
-	return GetTableCellValue(cell)
+	val, err := GetTableCellValue(cell)
+	if err != nil {
+		return "", err
+	}
+	val = asteriskPattern.ReplaceAllString(val, "")
+	return val, nil
 }
 
 func readRowID(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) (*matter.ID, error) {

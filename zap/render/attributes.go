@@ -32,7 +32,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		attr := cx.CreateElement("attribute")
 		attr.CreateAttr("code", a.ID.HexString())
 		attr.CreateAttr("side", "server")
-		writeDataType(attr, a.Type)
+		writeAttributeDataType(attr, a.Type)
 		define := GetDefine(a.Name, clusterPrefix, errata)
 		attr.CreateAttr("define", define)
 		if a.Quality.Has(matter.QualityNullable) {
@@ -63,7 +63,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 				}
 			}
 		}
-		renderConstraint(cluster.Attributes, a.Type, a.Constraint, attr)
+		renderConstraint(cluster.Attributes, a, attr)
 		renderAttributeAccess(a, errata, attr)
 		if a.Conformance != "M" {
 			attr.CreateAttr("optional", "true")
@@ -74,23 +74,23 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 	}
 }
 
-func renderConstraint(fs matter.FieldSet, t *matter.DataType, c matter.Constraint, attr *etree.Element) {
+func renderConstraint(fs matter.FieldSet, f *matter.Field, attr *etree.Element) {
 
-	from, to := zap.GetMinMax(fs, t, c)
+	from, to := zap.GetMinMax(fs, f)
 
-	if t != nil && t.IsString() {
+	if f.Type != nil && f.Type.IsString() {
 		if to.Defined() {
-			attr.CreateAttr("length", fmt.Sprintf("%d", to.Value()))
+			attr.CreateAttr("length", zap.FormatConstraintValue(to.Value()))
 		}
 		if from.Defined() {
-			attr.CreateAttr("minLength", fmt.Sprintf("%d", from.Value()))
+			attr.CreateAttr("minLength", zap.FormatConstraintValue(from.Value()))
 		}
 	} else {
 		if from.Defined() {
-			attr.CreateAttr("min", fmt.Sprintf("%d", from.Value()))
+			attr.CreateAttr("min", zap.FormatConstraintValue(from.Value()))
 		}
 		if to.Defined() {
-			attr.CreateAttr("max", fmt.Sprintf("%d", to.Value()))
+			attr.CreateAttr("max", zap.FormatConstraintValue(to.Value()))
 		}
 	}
 }

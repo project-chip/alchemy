@@ -29,7 +29,7 @@ var Command = &cobra.Command{
 			if len(files) > 0 {
 				fmt.Fprintf(os.Stderr, "Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
 			}
-			doc, err := ascii.Open(f, asciiSettings...)
+			doc, err := ascii.OpenFile(f, asciiSettings...)
 			docType, err := doc.DocType()
 			if err != nil {
 				return err

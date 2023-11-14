@@ -62,10 +62,13 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		fx := cx.CreateElement("arg")
 		mandatory := (f.Conformance == "M")
 		fx.CreateAttr("name", f.Name)
-		writeCommandDataType(fx, f.Type)
-		renderConstraint(c.Fields, f.Type, f.Constraint, fx)
+		writeDataType(fx, f.Type)
+		renderConstraint(c.Fields, f, fx)
 		if !mandatory {
 			fx.CreateAttr("optional", "true")
+		}
+		if f.Quality.Has(matter.QualityNullable) {
+			fx.CreateAttr("isNullable", "true")
 		}
 		fx.CreateAttr("apiMaturity", "provisional")
 	}

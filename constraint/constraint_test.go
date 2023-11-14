@@ -1,12 +1,14 @@
 package constraint
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/hasty/alchemy/matter"
 )
 
 var constraints []string = []string{
+	"0 to 80000",
 	"max (NumberOfEventsPerProgram * (1 + NumberOfLoadControlPrograms))",
 	"max (MaxTemperature - 1)",
 	"InstalledOpenLimitLift to InstalledClosedLimitLift",
@@ -186,7 +188,26 @@ func TestComplex(t *testing.T) {
 	for _, s := range constraints {
 		c := ParseConstraint(s)
 
-		t.Logf("conformance: \"%s\" => \"%v\"", s, c.AsciiDocString())
+		t.Logf("conformance: \"%s\" => \"%v\" %T", s, c.AsciiDocString(), c)
+		min, max := c.MinMax(&matter.ConstraintContext{Fields: fs})
+		var from, to string
+		switch min.Type {
+		case matter.ConstraintExtremeTypeInt64:
+			from = strconv.FormatInt(min.Int64, 10)
+		case matter.ConstraintExtremeTypeUInt64:
+			from = strconv.FormatUint(min.UInt64, 10)
+		case matter.ConstraintExtremeTypeUndefined:
+			from = "undefined"
+		}
+		switch max.Type {
+		case matter.ConstraintExtremeTypeInt64:
+			to = strconv.FormatInt(max.Int64, 10)
+		case matter.ConstraintExtremeTypeUInt64:
+			to = strconv.FormatUint(max.UInt64, 10)
+		case matter.ConstraintExtremeTypeUndefined:
+			to = "undefined"
+		}
+		t.Logf("\t: %s => %s", from, to)
 
 		//break
 	}

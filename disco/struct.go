@@ -50,5 +50,7 @@ func (b *Ball) organizeStructTable(doc *ascii.Doc, section *ascii.Section, field
 
 	b.reorderColumns(doc, section, rows, matter.StructTableColumnOrder[:], columnMap, extraColumns)
 
+	b.appendSubsectionTypes(section, columnMap, rows)
+
 	return nil
 }

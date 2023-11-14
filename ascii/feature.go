@@ -23,6 +23,12 @@ func (s *Section) toFeatures() (features []*matter.Feature, err error) {
 		if err != nil {
 			return
 		}
+		if len(f.Bit) == 0 {
+			f.Bit, err = readRowValue(row, columnMap, matter.TableColumnID)
+			if err != nil {
+				return
+			}
+		}
 
 		f.Name, err = readRowValue(row, columnMap, matter.TableColumnFeature)
 		if err != nil {

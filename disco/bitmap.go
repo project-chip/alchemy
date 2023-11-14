@@ -58,7 +58,7 @@ func (b *Ball) organizeBitmapTable(doc *ascii.Doc, section *ascii.Section, bitsT
 
 	b.reorderColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], columnMap, extraColumns)
 
-	b.appendSubsectionTypes(section, columnMap, rows, "Bit")
+	b.appendSubsectionTypes(section, columnMap, rows)
 
 	return nil
 }

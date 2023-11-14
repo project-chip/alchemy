@@ -78,7 +78,7 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 		xfs.Attr = setAttributeValue(xfs.Attr, "id", f.ID.IntString())
 		xfs.Attr = setAttributeValue(xfs.Attr, "name", f.Name)
 		xfs.Attr = writeDataType(f.Type, xfs.Attr)
-		xfs.Attr = r.renderConstraint(ev.Fields, xfs.Attr, f.Type, f.Constraint)
+		xfs.Attr = r.renderConstraint(ev.Fields, f, xfs.Attr)
 
 		err = e.EncodeToken(xfs)
 		if err != nil {

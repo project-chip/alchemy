@@ -193,6 +193,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap m
 }
 
 var listDataTypeDefinitionPattern = regexp.MustCompile(`list\[([^\]]+)\]`)
+var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
 func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) *matter.DataType {
 	i, ok := columnMap[column]
@@ -210,24 +211,27 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 	if len(p.Elements) == 0 {
 		return nil
 	}
-	val := &matter.DataType{}
+	var name string
+	var isArray bool
 	if len(p.Elements) == 1 {
 		el := p.Elements[0]
 		switch v := el.(type) {
 		case *types.StringElement:
-			match := listDataTypeDefinitionPattern.FindStringSubmatch(v.Content)
+			content := v.Content
+			content = asteriskPattern.ReplaceAllString(content, "")
+			match := listDataTypeDefinitionPattern.FindStringSubmatch(content)
 			if match != nil {
-				val.Name = match[1]
-				val.IsArray = true
+				name = match[1]
+				isArray = true
 			} else {
-				val.Name = v.Content
+				name = v.Content
 			}
 		case *types.InternalCrossReference:
 			anchor, _ := d.getAnchor(v.ID.(string))
 			if anchor != nil {
-				val.Name = ReferenceName(anchor.Element)
+				name = ReferenceName(anchor.Element)
 			} else {
-				val.Name = v.ID.(string)
+				name = v.ID.(string)
 			}
 			break
 		default:
@@ -237,24 +241,32 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 		for _, el := range p.Elements {
 			switch v := el.(type) {
 			case *types.StringElement:
-				if v.Content == "list[" {
-					val.IsArray = true
-				} else if val.Name == "" {
-					anchor, _ := d.getAnchor(v.Content)
+				content := v.Content
+				content = asteriskPattern.ReplaceAllString(content, "")
+
+				if content == "list[" {
+					slog.Info("isArray", "content", content)
+					isArray = true
+				} else if name == "" {
+					slog.Info("inner list", "content", content)
+					anchor, _ := d.getAnchor(content)
 					if anchor != nil {
-						val.Name = ReferenceName(anchor.Element)
+						name = ReferenceName(anchor.Element)
 					} else {
-						name := strings.TrimPrefix(v.Content, "_")
-						val.Name = name
+						slog.Info("inner list", "no anchor", content)
+						name = strings.TrimPrefix(content, "_")
 					}
 				}
 			case *types.InternalCrossReference:
 				anchor, _ := d.getAnchor(v.ID.(string))
+				slog.Info("inner list", "icdr", v.ID.(string))
 				if anchor != nil {
-					val.Name = ReferenceName(anchor.Element)
+					slog.Info("inner list", "anchor", anchor.Element)
+					name = ReferenceName(anchor.Element)
 				} else {
-					name := strings.TrimPrefix(v.ID.(string), "_")
-					val.Name = name
+					slog.Info("inner list", "no anchor", v.ID.(string))
+					name = strings.TrimPrefix(v.ID.(string), "_")
+					name = strings.TrimPrefix(name, "ref_") // Trim, and hope someone else has it defined
 				}
 				break
 			default:
@@ -262,9 +274,8 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 			}
 		}
 	}
-	val.Name = strings.TrimSuffix(val.Name, " Type")
-
-	return val
+	name = strings.TrimSuffix(name, " Type")
+	return matter.NewDataType(name, isArray)
 }
 
 func (d *Doc) getAnchor(id string) (*Anchor, error) {
@@ -276,6 +287,7 @@ func (d *Doc) getAnchor(id string) (*Anchor, error) {
 		return a, nil
 	}
 	for _, p := range d.Parents() {
+		slog.Info("checking parents for anchor", "id", id)
 		a, err := p.getAnchor(id)
 		if err != nil {
 			return nil, err

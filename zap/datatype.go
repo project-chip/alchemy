@@ -1,6 +1,8 @@
 package zap
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
@@ -42,6 +44,10 @@ var matterToZapMap = map[string]string{
 	"percent100ths": "int16u",
 	"ref_tempdiff":  "int16s",
 	"temperature":   "int16s",
+	"amperage-ma":   "int64",
+	"voltage-mv":    "int64",
+	"power-mw":      "int64",
+	"energy-mwh":    "int64",
 
 	"elapsed-s":  "elapsed_s",
 	"epoch-s":    "epoch_s",
@@ -115,25 +121,39 @@ func ConvertZapToDataType(s string) string {
 	return s
 }
 
-func GetMinMax(fs matter.FieldSet, t *matter.DataType, c matter.Constraint) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
-	if t == nil || t.IsArray {
+func GetMinMax(fs matter.FieldSet, f *matter.Field) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
+	if f.Type == nil || f.Type.IsArray {
 		return
 	}
-	if c == nil {
-		switch t.Name {
-		case "percent":
-			from.Type = matter.ConstraintExtremeTypeInt64
-			from.Int64 = 0
-			to.Type = matter.ConstraintExtremeTypeInt64
-			to.Int64 = 100
-		case "percent100ths":
-			from.Type = matter.ConstraintExtremeTypeInt64
-			from.Int64 = 0
-			to.Type = matter.ConstraintExtremeTypeInt64
-			to.Int64 = 10000
+	if f.Constraint != nil {
+		from, to = f.Constraint.MinMax(&matter.ConstraintContext{Fields: fs})
+		return
+	}
+	if !from.Defined() || !to.Defined() {
+		f, t := f.Type.MinMax(f.Quality.Has(matter.QualityNullable))
+		if !from.Defined() && f.Defined() {
+			from = f
 		}
-		return
+		if !to.Defined() && t.Defined() {
+			to = t
+		}
 	}
+	return
+}
 
-	return c.MinMax(&matter.ConstraintContext{Fields: fs})
+func FormatConstraintValue(val any) string {
+	switch v := val.(type) {
+	case uint64:
+		if v > 0xFF {
+			return "0x" + strconv.FormatUint(v, 16)
+		}
+		return strconv.FormatUint(v, 10)
+	case int64:
+		if v > 255 || v < 256 {
+			return "0x" + strconv.FormatUint(uint64(v), 16)
+		}
+		return strconv.FormatInt(v, 10)
+	default:
+		return fmt.Sprintf("%d", val)
+	}
 }
