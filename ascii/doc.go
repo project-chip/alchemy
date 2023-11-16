@@ -18,7 +18,8 @@ import (
 )
 
 type Doc struct {
-	lock sync.Mutex
+	sync.RWMutex
+
 	Path string
 
 	Base     *types.Document
@@ -31,6 +32,8 @@ type Doc struct {
 
 	anchors         map[string]*Anchor
 	crossReferences map[string][]*types.InternalCrossReference
+
+	models []any
 }
 
 func NewDoc(d *types.Document) (*Doc, error) {
@@ -138,16 +141,23 @@ func (d *Doc) Footnotes() []*types.Footnote {
 }
 
 func (d *Doc) Parents() []*Doc {
-	return d.parents
+	d.RLock()
+	p := make([]*Doc, len(d.parents))
+	copy(p, d.parents)
+	d.RUnlock()
+	return p
 }
 
 func (d *Doc) addParent(parent *Doc) {
-	d.lock.Lock()
+	d.Lock()
 	d.parents = append(d.parents, parent)
-	d.lock.Unlock()
+	d.Unlock()
 }
 
 func (d *Doc) ToModel() (models []interface{}, err error) {
+	if len(d.models) > 0 {
+		return d.models, nil
+	}
 	dt, err := d.DocType()
 	if err != nil {
 		return nil, err
@@ -163,6 +173,7 @@ func (d *Doc) ToModel() (models []interface{}, err error) {
 		}
 		models = append(models, m...)
 	}
+	d.models = models
 	return
 }
 

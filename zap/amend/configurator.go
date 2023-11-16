@@ -137,7 +137,7 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 			}
 		case xml.CharData:
 			if !inCluster {
-				err = e.EncodeToken(tok)
+				//err = e.EncodeToken(tok)
 			}
 		default:
 			err = e.EncodeToken(tok)

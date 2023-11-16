@@ -11,8 +11,8 @@ type RangeConstraint struct {
 	Max matter.ConstraintLimit `json:"max"`
 }
 
-func (c *RangeConstraint) AsciiDocString() string {
-	return fmt.Sprintf("%s to %s", c.Min.AsciiDocString(), c.Max.AsciiDocString())
+func (c *RangeConstraint) AsciiDocString(dataType *matter.DataType) string {
+	return fmt.Sprintf("%s to %s", c.Min.AsciiDocString(dataType), c.Max.AsciiDocString(dataType))
 }
 
 func (c *RangeConstraint) Equal(o matter.Constraint) bool {

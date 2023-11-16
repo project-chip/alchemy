@@ -156,9 +156,9 @@ func getAttributeValue(attrs []xml.Attr, name string) string {
 }
 
 func setAttributeValue(attrs []xml.Attr, name string, value string) []xml.Attr {
-	for _, a := range attrs {
+	for i, a := range attrs {
 		if a.Name.Local == name {
-			a.Value = value
+			attrs[i] = xml.Attr{Name: a.Name, Value: value}
 			return attrs
 		}
 	}

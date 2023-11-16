@@ -1,28 +1,17 @@
 package constraint
 
 import (
-	"fmt"
-	"math/big"
-	"strconv"
-
 	"github.com/hasty/alchemy/matter"
+	"github.com/shopspring/decimal"
 )
 
 type PercentLimit struct {
-	Value      *big.Float
+	Value      decimal.Decimal
 	Hundredths bool
 }
 
-func (c *PercentLimit) AsciiDocString() string {
-	if c.Hundredths {
-		if c.Value.IsInt() {
-			i, _ := c.Value.Uint64()
-			return strconv.FormatUint(i/100, 10)
-		}
-		return fmt.Sprintf("%.2f", c.Value)
-	}
-	i, _ := c.Value.Uint64()
-	return strconv.FormatUint(i, 10)
+func (c *PercentLimit) AsciiDocString(dataType *matter.DataType) string {
+	return c.Value.String() + "%"
 }
 
 func (c *PercentLimit) Equal(o matter.ConstraintLimit) bool {
@@ -33,12 +22,18 @@ func (c *PercentLimit) Equal(o matter.ConstraintLimit) bool {
 }
 
 func (c *PercentLimit) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
-	i, _ := c.Value.Int64()
+	val := c.Value
+	if c.Hundredths {
+		val = val.Mul(decimal.NewFromInt(100))
+	}
+	v := val.IntPart()
 	return matter.ConstraintExtreme{
-			Type:  matter.ConstraintExtremeTypeInt64,
-			Int64: i},
+			Type:   matter.ConstraintExtremeTypeInt64,
+			Format: matter.ConstraintExtremeFormatInt,
+			Int64:  v},
 		matter.ConstraintExtreme{
-			Type:  matter.ConstraintExtremeTypeInt64,
-			Int64: i,
+			Type:   matter.ConstraintExtremeTypeInt64,
+			Format: matter.ConstraintExtremeFormatInt,
+			Int64:  val.IntPart(),
 		}
 }

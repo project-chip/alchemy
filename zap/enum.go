@@ -21,7 +21,7 @@ type XMLEnum struct {
 }
 
 func (e *XMLEnum) ToModel() (me *matter.Enum, err error) {
-	me = &matter.Enum{Name: e.Name, Type: ConvertZapToDataType(e.Type)}
+	me = &matter.Enum{Name: e.Name, Type: ConvertZapToDataTypeName(e.Type)}
 	for _, ei := range e.Items {
 		me.Values = append(me.Values, &matter.EnumValue{
 			Name:  ei.Name,

@@ -1,7 +1,6 @@
 package constraint
 
 import (
-	"math/big"
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
@@ -15,20 +14,11 @@ func ParseConstraint(constraint string) matter.Constraint {
 	return c.(matter.Constraint)
 }
 
-func parseFloat(s string) (*big.Float, error) {
-	var z big.Float
-	f, _, err := (&z).Parse(s, 10)
-	if err != nil {
-		return nil, err
-	}
-	return f, nil
-}
-
 type ManufacturerLimit struct {
 	Value string
 }
 
-func (c *ManufacturerLimit) AsciiDocString() string {
+func (c *ManufacturerLimit) AsciiDocString(dataType *matter.DataType) string {
 	return c.Value
 }
 

@@ -51,7 +51,7 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 		return err
 	}
 
-	b.addMissingColumns(doc, events, rows, matter.EventsTableColumnOrder[:], nil, headerRowIndex, columnMap)
+	b.addMissingColumns(doc, events, eventsTable, rows, matter.EventsTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
 	b.reorderColumns(doc, events, rows, matter.EventsTableColumnOrder[:], columnMap, extraColumns)
 	return nil
@@ -102,7 +102,7 @@ func (b *Ball) organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.S
 			return err
 		}
 
-		b.addMissingColumns(doc, ss, rows, matter.EventTableColumnOrder[:], nil, hri, cm)
+		b.addMissingColumns(doc, ss, t, rows, matter.EventTableColumnOrder[:], nil, hri, cm)
 
 		b.reorderColumns(doc, ss, rows, matter.EventTableColumnOrder[:], cm, ec)
 

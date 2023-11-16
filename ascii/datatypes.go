@@ -142,6 +142,18 @@ func (s *Section) toStruct(d *Doc) (ms *matter.Struct, err error) {
 		Name: name,
 	}
 
+	if headerRowIndex > 0 {
+		firstRow := rows[0]
+		if len(firstRow.Cells) > 0 {
+			cv, rowErr := GetTableCellValue(rows[0].Cells[0])
+			if rowErr == nil {
+				cv = strings.ToLower(cv)
+				if strings.Contains(cv, "fabric scoped") || strings.Contains(cv, "fabric-scoped") {
+					ms.FabricScoped = true
+				}
+			}
+		}
+	}
 	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
 	return
 }
@@ -245,32 +257,32 @@ func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColu
 				content = asteriskPattern.ReplaceAllString(content, "")
 
 				if content == "list[" {
-					slog.Info("isArray", "content", content)
+					slog.Debug("isArray", "content", content)
 					isArray = true
 				} else if name == "" {
-					slog.Info("inner list", "content", content)
+					slog.Debug("inner list", "content", content)
 					anchor, _ := d.getAnchor(content)
 					if anchor != nil {
 						name = ReferenceName(anchor.Element)
 					} else {
-						slog.Info("inner list", "no anchor", content)
+						slog.Debug("inner list", "no anchor", content)
 						name = strings.TrimPrefix(content, "_")
 					}
 				}
 			case *types.InternalCrossReference:
 				anchor, _ := d.getAnchor(v.ID.(string))
-				slog.Info("inner list", "icdr", v.ID.(string))
+				slog.Debug("inner list", "icdr", v.ID.(string))
 				if anchor != nil {
-					slog.Info("inner list", "anchor", anchor.Element)
+					slog.Debug("inner list", "anchor", anchor.Element)
 					name = ReferenceName(anchor.Element)
 				} else {
-					slog.Info("inner list", "no anchor", v.ID.(string))
+					slog.Debug("inner list", "no anchor", v.ID.(string))
 					name = strings.TrimPrefix(v.ID.(string), "_")
 					name = strings.TrimPrefix(name, "ref_") // Trim, and hope someone else has it defined
 				}
 				break
 			default:
-				slog.Info("unknown value element", "type", v)
+				slog.Debug("unknown value element", "type", v)
 			}
 		}
 	}
@@ -287,7 +299,7 @@ func (d *Doc) getAnchor(id string) (*Anchor, error) {
 		return a, nil
 	}
 	for _, p := range d.Parents() {
-		slog.Info("checking parents for anchor", "id", id)
+		slog.Debug("checking parents for anchor", "id", id)
 		a, err := p.getAnchor(id)
 		if err != nil {
 			return nil, err

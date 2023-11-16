@@ -6,7 +6,7 @@ type GenericConstraint struct {
 	Value string
 }
 
-func (c *GenericConstraint) AsciiDocString() string {
+func (c *GenericConstraint) AsciiDocString(dataType *matter.DataType) string {
 	return c.Value
 }
 

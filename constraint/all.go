@@ -7,7 +7,7 @@ type AllConstraint struct {
 	Value string
 }
 
-func (c *AllConstraint) AsciiDocString() string {
+func (c *AllConstraint) AsciiDocString(dataType *matter.DataType) string {
 	return c.Value
 }
 

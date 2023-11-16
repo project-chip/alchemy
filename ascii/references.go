@@ -10,7 +10,9 @@ import (
 )
 
 func (doc *Doc) CrossReferences() map[string][]*types.InternalCrossReference {
+	doc.Lock()
 	if doc.crossReferences != nil {
+		doc.Unlock()
 		return doc.crossReferences
 	}
 	doc.crossReferences = make(map[string][]*types.InternalCrossReference)
@@ -24,6 +26,7 @@ func (doc *Doc) CrossReferences() map[string][]*types.InternalCrossReference {
 		}
 		return false
 	})
+	doc.Unlock()
 	return doc.crossReferences
 }
 

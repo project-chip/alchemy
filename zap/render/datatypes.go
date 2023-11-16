@@ -30,7 +30,11 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 	for _, v := range enums {
 		en := cx.CreateElement("enum")
 		en.CreateAttr("name", v.Name)
-		en.CreateAttr("type", zap.ConvertDataTypeToZap(v.Type))
+		if v.Type != "" {
+			en.CreateAttr("type", zap.ConvertDataTypeNameToZap(v.Type))
+		} else {
+			en.CreateAttr("type", "enum8")
+		}
 		en.CreateAttr("apiMaturity", "provisional")
 
 		for _, cid := range clusterIDs {
@@ -57,7 +61,7 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 	for _, bm := range bitmaps {
 		en := cx.CreateElement("bitmap")
 		en.CreateAttr("name", bm.Name)
-		en.CreateAttr("type", zap.ConvertDataTypeToZap(bm.Type))
+		en.CreateAttr("type", zap.ConvertDataTypeNameToZap(bm.Type))
 		en.CreateAttr("apiMaturity", "provisional")
 
 		for _, cid := range clusterIDs {
@@ -86,22 +90,27 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 		en := cx.CreateElement("struct")
 		en.CreateAttr("name", v.Name)
 		en.CreateAttr("apiMaturity", "provisional")
+		if v.FabricScoped {
+			en.CreateAttr("isFabricScoped", "true")
+		}
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
 		for _, f := range v.Fields {
-
+			if f.Conformance == "Zigbee" {
+				continue
+			}
 			fx := en.CreateElement("item")
 			fx.CreateAttr("fieldId", f.ID.IntString())
 			fx.CreateAttr("name", f.Name)
 			writeDataType(fx, f.Type)
+			renderConstraint(v.Fields, f, fx)
 			if f.Quality.Has(matter.QualityNullable) {
 				fx.CreateAttr("isNullable", "true")
 			}
 			if f.Conformance != "M" {
 				fx.CreateAttr("optional", "true")
 			}
-			renderConstraint(v.Fields, f, fx)
 		}
 
 	}
@@ -111,7 +120,7 @@ func writeAttributeDataType(x *etree.Element, dt *matter.DataType) {
 	if dt == nil {
 		return
 	}
-	dts := zap.ConvertDataTypeToZap(dt.Name)
+	dts := zap.ConvertDataTypeNameToZap(dt.Name)
 	if dt.IsArray {
 		x.CreateAttr("type", "ARRAY")
 		x.CreateAttr("entryType", dts)
@@ -124,7 +133,7 @@ func writeDataType(x *etree.Element, dt *matter.DataType) {
 	if dt == nil {
 		return
 	}
-	dts := zap.ConvertDataTypeToZap(dt.Name)
+	dts := zap.ConvertDataTypeNameToZap(dt.Name)
 	if dt.IsArray {
 		x.CreateAttr("array", "true")
 	}

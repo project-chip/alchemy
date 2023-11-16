@@ -37,8 +37,6 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		attr.CreateAttr("define", define)
 		if a.Quality.Has(matter.QualityNullable) {
 			attr.CreateAttr("isNullable", "true")
-		} else {
-			attr.CreateAttr("isNullable", "false")
 		}
 		if a.Quality.Has(matter.QualityReportable) {
 			attr.CreateAttr("reportable", "true")
@@ -80,17 +78,17 @@ func renderConstraint(fs matter.FieldSet, f *matter.Field, attr *etree.Element) 
 
 	if f.Type != nil && f.Type.IsString() {
 		if to.Defined() {
-			attr.CreateAttr("length", zap.FormatConstraintValue(to.Value()))
+			attr.CreateAttr("length", to.ZapString(f.Type))
 		}
 		if from.Defined() {
-			attr.CreateAttr("minLength", zap.FormatConstraintValue(from.Value()))
+			attr.CreateAttr("minLength", from.ZapString(f.Type))
 		}
 	} else {
 		if from.Defined() {
-			attr.CreateAttr("min", zap.FormatConstraintValue(from.Value()))
+			attr.CreateAttr("min", from.ZapString(f.Type))
 		}
 		if to.Defined() {
-			attr.CreateAttr("max", zap.FormatConstraintValue(to.Value()))
+			attr.CreateAttr("max", to.ZapString(f.Type))
 		}
 	}
 }

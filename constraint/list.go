@@ -11,8 +11,8 @@ type ListConstraint struct {
 	EntryConstraint matter.Constraint
 }
 
-func (c *ListConstraint) AsciiDocString() string {
-	return fmt.Sprintf("%s[%s]", c.Constraint.AsciiDocString(), c.EntryConstraint.AsciiDocString())
+func (c *ListConstraint) AsciiDocString(dataType *matter.DataType) string {
+	return fmt.Sprintf("%s[%s]", c.Constraint.AsciiDocString(dataType), c.EntryConstraint.AsciiDocString(dataType))
 }
 
 func (c *ListConstraint) Equal(o matter.Constraint) bool {

@@ -140,6 +140,9 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 				}
 				lastSection = matter.SectionEvent
 				err = r.amendEvent(ts, e, t, events)
+			case "client", "server":
+				e.EncodeToken(t)
+				hasCommentCharDataPending = true
 			default:
 				if lastSection != matter.SectionCluster {
 					err = r.flushUnusedClusterElements(cluster, e, lastSection, clusterValues, attributes, events, commands, clusterPrefix)
@@ -168,6 +171,9 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 			}
 		case xml.EndElement:
 			switch t.Name.Local {
+			case "server", "client":
+				hasCommentCharDataPending = false
+				err = e.EncodeToken(t)
 			case "attribute", "command", "event":
 			case "cluster":
 				err = r.flushClusterValues(e, clusterValues)

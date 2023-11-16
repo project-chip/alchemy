@@ -22,8 +22,8 @@ func (b *Ball) organizeEnumSection(doc *ascii.Doc, section *ascii.Section) error
 	return b.organizeEnumTable(doc, section, enumTable)
 }
 
-func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
-	rows := ascii.TableRows(attributesTable)
+func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, enumTable *types.Table) error {
+	rows := ascii.TableRows(enumTable)
 
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
@@ -46,7 +46,7 @@ func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, attribu
 		return err
 	}
 
-	b.addMissingColumns(doc, section, rows, matter.EnumTableColumnOrder[:], nil, headerRowIndex, columnMap)
+	b.addMissingColumns(doc, section, enumTable, rows, matter.EnumTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
 	b.reorderColumns(doc, section, rows, matter.EnumTableColumnOrder[:], columnMap, extraColumns)
 

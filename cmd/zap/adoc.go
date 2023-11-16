@@ -51,7 +51,7 @@ func loadSpec(cxt context.Context, specRoot string, filesOptions files.Options, 
 		docs = append(docs, doc)
 		lock.Unlock()
 		if filesOptions.Serial {
-			slog.InfoContext(cxt, "Parsed spec adoc", "file", file)
+			slog.DebugContext(cxt, "Parsed spec adoc", "file", file)
 		}
 		return nil
 	}, filesOptions)

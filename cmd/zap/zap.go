@@ -19,7 +19,7 @@ import (
 
 var selfClosingTags = regexp.MustCompile("></[^>]+>")
 
-func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions files.Options, asciiSettings []configuration.Setting) error {
+func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions files.Options, paths []string, asciiSettings []configuration.Setting) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
 	docs, err := loadSpec(cxt, specRoot, filesOptions, asciiSettings)
@@ -41,15 +41,30 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 	slog.InfoContext(cxt, "Assigning index domains...")
 
 	files.ProcessDocs(cxt, appClusterIndexes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
-
 		top := parse.FindFirst[*ascii.Section](doc.Elements)
 		if top == nil {
 			return nil
 		}
 		doc.Domain = zap.StringToDomain(top.Name)
-		slog.InfoContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
+		slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
 		return nil
 	}, filesOptions)
+
+	if len(paths) > 0 {
+		filteredDocs := make([]*ascii.Doc, 0, len(paths))
+		pathMap := make(map[string]struct{})
+		for _, p := range paths {
+			pathMap[filepath.Base(p)] = struct{}{}
+		}
+		for _, ac := range appClusters {
+			p := filepath.Base(ac.Path)
+			if _, ok := pathMap[p]; ok {
+				filteredDocs = append(filteredDocs, ac)
+				delete(pathMap, p)
+			}
+		}
+		appClusters = filteredDocs
+	}
 
 	outputs, provisionalZclFiles, err := renderTemplates(cxt, appClusters, zclRoot, filesOptions)
 	if err != nil {
