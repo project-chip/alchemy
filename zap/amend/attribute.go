@@ -10,9 +10,9 @@ import (
 	"github.com/hasty/alchemy/zap/render"
 )
 
-func writeAttributeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
-	dts := zap.ConvertDataTypeToZap(dt.Name)
-	if dt.IsArray {
+func writeAttributeDataType(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.Attr {
+	dts := zap.FieldToZapDataType(fs, f)
+	if f.Type.IsArray {
 		attr = setAttributeValue(attr, "type", "ARRAY")
 		attr = setAttributeValue(attr, "entryType", dts)
 	} else {
@@ -22,12 +22,12 @@ func writeAttributeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
 	return attr
 }
 
-func writeDataType(dt *matter.DataType, attr []xml.Attr) []xml.Attr {
-	if dt == nil {
+func writeDataType(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.Attr {
+	if f.Type == nil {
 		return attr
 	}
-	dts := zap.ConvertDataTypeToZap(dt.Name)
-	if dt.IsArray {
+	dts := zap.FieldToZapDataType(fs, f)
+	if f.Type.IsArray {
 		attr = setAttributeValue(attr, "array", "true")
 		attr = setAttributeValue(attr, "type", dts)
 	} else {
@@ -42,7 +42,7 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 	el.Name = xml.Name{Local: "attribute"}
 	el.Attr = setAttributeValue(el.Attr, "code", a.ID.HexString())
 	el.Attr = setAttributeValue(el.Attr, "side", "server")
-	el.Attr = writeAttributeDataType(a.Type, el.Attr)
+	el.Attr = writeAttributeDataType(cluster.Attributes, a, el.Attr)
 	define := render.GetDefine(a.Name, clusterPrefix, r.errata)
 	el.Attr = setAttributeValue(el.Attr, "define", define)
 	if a.Quality.Has(matter.QualityNullable) {
@@ -84,17 +84,16 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 
 	el.Attr = r.renderConstraint(cluster.Attributes, a, el.Attr)
 
-	if a.Conformance != "M" {
-		el.Attr = setAttributeValue(el.Attr, "optional", "true")
-	} else {
-		el.Attr = setAttributeValue(el.Attr, "optional", "false")
-	}
-
 	if a.Quality.Has(matter.QualityFixed) || (a.Access.Read == matter.PrivilegeUnknown || a.Access.Read == matter.PrivilegeView) && a.Access.Write == matter.PrivilegeUnknown || r.errata.SuppressAttributePermissions {
 		if a.Access.Write != matter.PrivilegeUnknown {
 			el.Attr = setAttributeValue(el.Attr, "writable", "true")
 		} else {
 			el.Attr = setAttributeValue(el.Attr, "writable", "false")
+		}
+		if a.Conformance != "M" {
+			el.Attr = setAttributeValue(el.Attr, "optional", "true")
+		} else {
+			el.Attr = setAttributeValue(el.Attr, "optional", "false")
 		}
 		err = e.EncodeToken(el)
 		if err != nil {
@@ -110,7 +109,28 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 		} else {
 			el.Attr = setAttributeValue(el.Attr, "writable", "false")
 		}
+		if a.Conformance != "M" {
+			el.Attr = setAttributeValue(el.Attr, "optional", "true")
+		} else {
+			el.Attr = setAttributeValue(el.Attr, "optional", "false")
+		}
 		err = e.EncodeToken(el)
+		if err != nil {
+			return
+		}
+
+		elName := xml.Name{Local: "description"}
+		xfs := xml.StartElement{Name: elName}
+		err = e.EncodeToken(xfs)
+		if err != nil {
+			return
+		}
+		err = e.EncodeToken(xml.CharData(a.Name))
+		if err != nil {
+			return
+		}
+		xfe := xml.EndElement{Name: elName}
+		err = e.EncodeToken(xfe)
 		if err != nil {
 			return
 		}
@@ -127,21 +147,7 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 				return
 			}
 		}
-		elName := xml.Name{Local: "description"}
-		xfs := xml.StartElement{Name: elName}
-		err = e.EncodeToken(xfs)
-		if err != nil {
-			return
-		}
-		err = e.EncodeToken(xml.CharData(a.Name))
-		if err != nil {
-			return
-		}
-		xfe := xml.EndElement{Name: elName}
-		err = e.EncodeToken(xfe)
-		if err != nil {
-			return
-		}
+
 	}
 
 	err = e.EncodeToken(xml.EndElement{Name: xml.Name{Local: "attribute"}})
@@ -156,17 +162,21 @@ func (*renderer) renderConstraint(fs matter.FieldSet, f *matter.Field, attr []xm
 
 	if f.Type != nil && f.Type.IsString() {
 		if to.Defined() {
-			attr = setAttributeValue(attr, "length", zap.FormatConstraintValue(to.Value()))
+			attr = setAttributeValue(attr, "length", to.ZapString(f.Type))
 		}
 		if from.Defined() {
-			attr = setAttributeValue(attr, "minLength", zap.FormatConstraintValue(from.Value()))
+			attr = setAttributeValue(attr, "minLength", from.ZapString(f.Type))
 		}
+		attr = removeAttribute(attr, "min")
+		attr = removeAttribute(attr, "max")
 	} else {
+		attr = removeAttribute(attr, "length")
+		attr = removeAttribute(attr, "minLength")
 		if from.Defined() {
-			attr = setAttributeValue(attr, "min", zap.FormatConstraintValue(from.Value()))
+			attr = setAttributeValue(attr, "min", from.ZapString(f.Type))
 		}
 		if to.Defined() {
-			attr = setAttributeValue(attr, "max", zap.FormatConstraintValue(to.Value()))
+			attr = setAttributeValue(attr, "max", to.ZapString(f.Type))
 		}
 	}
 	return attr
@@ -175,10 +185,12 @@ func (*renderer) renderConstraint(fs matter.FieldSet, f *matter.Field, attr []xm
 func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
 	code := getAttributeValue(el.Attr, "code")
 
+	Ignore(ts, "attribute")
+
 	attributeID := matter.ParseID(code)
 	if !attributeID.Valid() {
 		//err = fmt.Errorf("invalid attribute code: %s", code)
-		return writeThrough(ts, e, el)
+		return nil
 	}
 	var field *matter.Field
 	for a := range attributes {
@@ -190,10 +202,8 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 	}
 
 	if field == nil {
-		return writeThrough(ts, e, el)
+		return nil
 	}
-
-	Ignore(ts, "attribute")
 
 	if field.Conformance == "D" {
 		return nil

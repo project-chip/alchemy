@@ -64,7 +64,7 @@ func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []
 	}
 	fb := w.CreateElement("bitmap")
 	fb.CreateAttr("name", "Feature")
-	fb.CreateAttr("type", "BITMAP32")
+	fb.CreateAttr("type", "bitmap32")
 	for _, cluster := range clusters {
 		fb.CreateElement("cluster").CreateAttr("code", cluster.ID.HexString())
 	}

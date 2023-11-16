@@ -18,6 +18,7 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed reading events: %w", err)
 	}
+
 	eventMap := make(map[string]*matter.Event)
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
@@ -35,6 +36,10 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 			return
 		}
 		e.Priority, err = readRowValue(row, columnMap, matter.TableColumnPriority)
+		if err != nil {
+			return
+		}
+		e.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
 		if err != nil {
 			return
 		}
@@ -56,13 +61,25 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 			name := strings.TrimSuffix(s.Name, " Event")
 			e, ok := eventMap[name]
 			if !ok {
-				slog.Info("unknown event", "event", name)
+				slog.Debug("unknown event", "event", name)
 				continue
 			}
 			var rows []*types.TableRow
 			var headerRowIndex int
 			var columnMap map[matter.TableColumn]int
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+			if headerRowIndex > 0 {
+				firstRow := rows[0]
+				if len(firstRow.Cells) > 0 {
+					cv, rowErr := GetTableCellValue(rows[0].Cells[0])
+					if rowErr == nil {
+						cv = strings.ToLower(cv)
+						if strings.Contains(cv, "fabric sensitive") || strings.Contains(cv, "fabric-sensitive") {
+							e.FabricSensitive = true
+						}
+					}
+				}
+			}
 			if err != nil {
 				if err == NoTableFound {
 					err = nil

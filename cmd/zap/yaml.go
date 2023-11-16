@@ -58,7 +58,7 @@ func patchTestsYaml(zclRoot string, files []string) error {
 	}
 	paths := make([]string, 0, len(files))
 	for _, f := range files {
-		paths = append(paths, strings.TrimPrefix(f, "connectedhomeip/")+" \\")
+		paths = append(paths, "src/app/zap-templates/zcl/data-model/chip/"+strings.TrimPrefix(f, "connectedhomeip/")+" \\")
 	}
 	matches := appTemplates.FindAllStringSubmatch(parserRun.Value, -1)
 	for _, m := range matches {

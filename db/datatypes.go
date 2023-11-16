@@ -74,7 +74,7 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string)
 	sr.values[matter.TableColumnName] = f.Name
 	sr.values[matter.TableColumnType] = t
 	if f.Constraint != nil {
-		sr.values[matter.TableColumnConstraint] = f.Constraint.AsciiDocString()
+		sr.values[matter.TableColumnConstraint] = f.Constraint.AsciiDocString(f.Type)
 	} else {
 		sr.values[matter.TableColumnConstraint] = ""
 	}

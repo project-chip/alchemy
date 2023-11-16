@@ -19,7 +19,7 @@ type Errata struct {
 }
 
 var DefaultErrata = &Errata{
-	topOrder:      []matter.Section{matter.SectionCluster, matter.SectionDataTypes},
+	topOrder:      []matter.Section{matter.SectionFeatures, matter.SectionCluster, matter.SectionDataTypes},
 	clusterOrder:  []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents},
 	dataTypeOrder: []matter.Section{matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct},
 }
@@ -37,6 +37,7 @@ var Erratas = map[string]*Errata{
 		clusterOrder:                 DefaultErrata.clusterOrder,
 		dataTypeOrder:                []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 		SuppressAttributePermissions: true,
+		SuppressClusterDefinePrefix:  true,
 	},
 	"ConcentrationMeasurement.adoc": {
 		topOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
@@ -82,9 +83,10 @@ var Erratas = map[string]*Errata{
 		SuppressClusterDefinePrefix: true,
 	},
 	"DemandResponseLoadControl.adoc": {
-		topOrder:      []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:  DefaultErrata.clusterOrder,
-		dataTypeOrder: DefaultErrata.dataTypeOrder,
+		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               DefaultErrata.dataTypeOrder,
+		SuppressClusterDefinePrefix: true,
 	},
 	"Thermostat.adoc": {
 		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
@@ -104,9 +106,10 @@ var Erratas = map[string]*Errata{
 		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 	},
 	"AirQuality.adoc": {
-		topOrder:      []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
-		clusterOrder:  DefaultErrata.clusterOrder,
-		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		topOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
+		clusterOrder:                DefaultErrata.clusterOrder,
+		dataTypeOrder:               []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		SuppressClusterDefinePrefix: true,
 	},
 	"Groups.adoc": {
 		topOrder:      []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},

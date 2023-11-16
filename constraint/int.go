@@ -10,7 +10,7 @@ type IntLimit struct {
 	Value int64
 }
 
-func (c *IntLimit) AsciiDocString() string {
+func (c *IntLimit) AsciiDocString(dataType *matter.DataType) string {
 	return strconv.FormatInt(c.Value, 10)
 }
 
@@ -23,10 +23,12 @@ func (c *IntLimit) Equal(o matter.ConstraintLimit) bool {
 
 func (c *IntLimit) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
 	return matter.ConstraintExtreme{
-			Type:  matter.ConstraintExtremeTypeInt64,
-			Int64: c.Value},
+			Type:   matter.ConstraintExtremeTypeInt64,
+			Format: matter.ConstraintExtremeFormatInt,
+			Int64:  c.Value},
 		matter.ConstraintExtreme{
-			Type:  matter.ConstraintExtremeTypeInt64,
-			Int64: c.Value,
+			Type:   matter.ConstraintExtremeTypeInt64,
+			Format: matter.ConstraintExtremeFormatInt,
+			Int64:  c.Value,
 		}
 }

@@ -2,7 +2,6 @@ package amend
 
 import (
 	"encoding/xml"
-	"fmt"
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
@@ -21,12 +20,11 @@ func (r *renderer) amendEvent(ts *tokenSet, e xmlEncoder, el xml.StartElement, e
 		}
 	}
 
-	if matchingEvent == nil {
-		fmt.Errorf("no matching event for %s\n", eventID.HexString())
-		return writeThrough(ts, e, el)
-	}
-
 	Ignore(ts, "event")
+
+	if matchingEvent == nil {
+		return nil
+	}
 
 	return r.writeEvent(e, el, matchingEvent, false)
 }
@@ -41,11 +39,15 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 	xfb.Attr = setAttributeValue(xfb.Attr, "priority", strings.ToLower(ev.Priority))
 	xfb.Attr = setAttributeValue(xfb.Attr, "side", "server")
 
-	if ev.Access.FabricSensitive {
+	if ev.FabricSensitive {
 		xfb.Attr = setAttributeValue(xfb.Attr, "isFabricSensitive", "true")
+	} else {
+		xfb.Attr = removeAttribute(xfb.Attr, "isFabricSensitive")
 	}
 	if ev.Conformance != "M" {
 		xfb.Attr = setAttributeValue(xfb.Attr, "optional", "true")
+	} else {
+		xfb.Attr = removeAttribute(xfb.Attr, "optional")
 	}
 	if provisional {
 		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
@@ -72,13 +74,25 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 		if !f.ID.Valid() {
 			continue
 		}
+		mandatory := (f.Conformance == "M")
 
 		elName := xml.Name{Local: "field"}
 		xfs := xml.StartElement{Name: elName}
 		xfs.Attr = setAttributeValue(xfs.Attr, "id", f.ID.IntString())
 		xfs.Attr = setAttributeValue(xfs.Attr, "name", f.Name)
-		xfs.Attr = writeDataType(f.Type, xfs.Attr)
+		xfs.Attr = writeDataType(ev.Fields, f, xfs.Attr)
 		xfs.Attr = r.renderConstraint(ev.Fields, f, xfs.Attr)
+
+		if f.Quality.Has(matter.QualityNullable) {
+			xfs.Attr = setAttributeValue(xfs.Attr, "isNullable", "true")
+		} else {
+			xfs.Attr = removeAttribute(xfs.Attr, "isNullable")
+		}
+		if !mandatory {
+			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
+		} else {
+			xfs.Attr = removeAttribute(xfs.Attr, "optional")
+		}
 
 		err = e.EncodeToken(xfs)
 		if err != nil {

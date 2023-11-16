@@ -1,214 +1,335 @@
 package constraint
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/hasty/alchemy/matter"
 )
 
-var constraints []string = []string{
-	"0 to 80000",
-	"max (NumberOfEventsPerProgram * (1 + NumberOfLoadControlPrograms))",
-	"max (MaxTemperature - 1)",
-	"InstalledOpenLimitLift to InstalledClosedLimitLift",
-	"0x00 to 0x3C",
-	"-32767 to MaxScaledValue-1",
-	"MaxScaledValue-1",
-	"-10000 to +10000",
-	"-127 to 127",
-	"-2.5°C to 2.5°C",
-	"-27315 to MaxMeasuredValue-1",
-	"-32767 to MaxMeasuredValue-1",
-	"-32767 to MaxScaledValue-1",
-	"0 to 0x001F",
-	"0 to 0xFEFF",
-	"0 to 1",
-	"0 to 100",
-	"0 to 10000",
-	"0 to 1000000",
-	"0 to 1439",
-	"0 to 1440",
-	"0 to 15",
-	"0 to 2",
-	"0 to 2048",
-	"0 to 254",
-	"0 to 3",
-	"0 to 31",
-	"0 to 4",
-	"0 to 5",
-	"0 to 6",
-	"0 to 65534",
-	"0 to 7",
-	"0 to MaxFrequency",
-	"0 to MaxLevel",
-	"0 to MaxMeasuredValue-1",
-	"0 to NumberOfCredentialsSupportedPerUser",
-	"0 to NumberOfPositions-1",
-	"0 to OccupiedSetbackMax",
-	"0 to SetTime",
-	"0 to SpeedMax",
-	"0 to UnoccupiedSetbackMax",
-	"0% to 100%",
-	"0, MinMeasuredValue to MaxMeasuredValue",
-	"00000xxx",
-	"0b0000 xxxx",
-	"0b00xx xxxx",
-	"0x00 to 0x0FE",
-	"0x01 to 0xFF",
-	"0x954D to 0x7FFF",
-	"0°C to 2.5°C",
-	"1 to 100",
-	"1 to 2047",
-	"1 to 254",
-	"1 to 255",
-	"1 to 2880",
-	"1 to 65535",
-	"1 to 8",
-	"1 to MaxLevel",
-	"1 to MaxMeasuredValue-1",
-	"1 to MaxPower",
-	"1 to MultiPressMax",
-	"1 to NumberOfCredentialsSupportedPerUser",
-	"1 to NumberOfTotalUsersSupported",
-	"1 to NumberOfTotalUsersSupported, 0xFFFE",
-	"1 to SupportedFabrics",
-	"100 to MS",
-	"16",
-	"16 to 100",
-	"16[2]",
-	"2",
-	"2 to 10",
-	"2 to 255",
-	"2 to MultiPressMax",
-	"20",
-	"32",
-	"48",
-	"500 to 2047",
-	"65",
-	"7,9",
-	"Add, Modify",
-	"ColorTempPhysicalMinMireds",
-	"InstalledOpenLimitLift to InstalledClosedLimitLift",
-	"InstalledOpenLimitTilt to InstalledClosedLimitTilt",
-	"MS",
-	"MinFrequency to MaxFrequency",
-	"MinLevel to 254",
-	"MinLevel to MaxLevel",
-	"MinLevel to PhysicalMaxLevel",
-	"MinMeasuredValue to MaxMeasuredValue",
-	"MinMeasuredValue+1 to 10000",
-	"MinMeasuredValue+1 to 32767",
-	"MinMeasuredValue+1 to 65534",
-	"MinPower to 100",
-	"MinPower to MaxPower",
-	"MinScaledValue to MaxScaledValue",
-	"MinScaledValue+1 to 32767",
-	"MinTemperature to MaxTemperature",
-	"OccupiedEnabled, OccupiedDisabled",
-	"OccupiedSetbackMin to 25.4°C",
-	"OccupiedSetbackMin to OccupiedSetbackMax",
-	"PhysicalMinLevel to MaxLevel",
-	"TODO",
-	"UnoccupiedSetbackMin to 25.4°C",
-	"UnoccupiedSetbackMin to UnoccupiedSetbackMax",
-	"UnrestrictedUser,",
-	"Unspecified,",
-	"all",
-	"all[min 1]",
-	"any",
-	"desc",
-	"max (MaxTemperature - 1)",
-	"max (MaxTemperature - MinTemperature)",
-	"max 0xFFFE",
-	"max 10",
-	"max 10 [max 50]",
-	"max 100[max 1024]",
-	"max 1024",
-	"max 12",
-	"max 120",
-	"max 140",
-	"max 1440",
-	"max 16",
-	"max 16[max 64]",
-	"max 20",
-	"max 253",
-	"max 254",
-	"max 255",
-	"max 256",
-	"max 259200",
-	"max 3",
-	"max 30",
-	"max 32",
-	"max 32 chars",
-	"max 32[max 16]",
-	"max 32[max 64]",
-	"max 4",
-	"max 5",
-	"max 6",
-	"max 6000",
-	"max 60000",
-	"max 604800",
-	"max 64",
-	"max 8",
-	"max 8192",
-	"max 900",
-	"max 999",
-	"max ClientTableSize",
-	"max MaxMeasuredValue",
-	"max NumberOfPositions-1",
-	"min -27315",
-	"min 0",
-	"min 1",
-	"min 10",
-	"min 11",
-	"min 2",
-	"min 3",
-	"min 5",
-	"min 8",
-	"min MinFrequency",
-	"min MinMeasuredValue",
-	"percent",
+type constraintTest struct {
+	constraint string
+	dataType   *matter.DataType
+	min        matter.ConstraintExtreme
+	max        matter.ConstraintExtreme
+	asciiDoc   string
+	zapMin     string
+	zapMax     string
+	fields     matter.FieldSet
+	generic    bool
 }
 
-func TestConstraints(t *testing.T) {
-	for _, s := range constraints {
-		c := ParseConstraint(s)
-
-		t.Logf("conformance: \"%s\" => \"%v\"", s, c.AsciiDocString())
-
-		break
-	}
+var constraintTests = []constraintTest{
+	{
+		constraint: "-2^62 to 2^62",
+		min:        matter.NewIntConstraintExtreme(-4611686018427387904, matter.ConstraintExtremeFormatHex),
+		max:        matter.NewIntConstraintExtreme(4611686018427387904, matter.ConstraintExtremeFormatHex),
+		zapMin:     "0xC000000000000000",
+		zapMax:     "0x4000000000000000",
+	},
+	{
+		constraint: "max 2^62 - 1",
+		asciiDoc:   "max (2^62 - 1)",
+		max:        matter.NewIntConstraintExtreme(4611686018427387903, matter.ConstraintExtremeFormatAuto),
+		zapMax:     "0x3FFFFFFFFFFFFFFF",
+	},
+	{
+		constraint: "0 to 80000",
+		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
+		max:        matter.NewIntConstraintExtreme(80000, matter.ConstraintExtremeFormatInt),
+		zapMin:     "0",
+		zapMax:     "80000",
+	},
+	{
+		constraint: "max (NumberOfEventsPerProgram * (1 + NumberOfLoadControlPrograms))",
+	},
+	{
+		constraint: "InstalledOpenLimitLift to InstalledClosedLimitLift",
+	},
+	{
+		constraint: "0x00 to 0x3C",
+		asciiDoc:   "0x0 to 0x3C",
+		min:        matter.NewUintConstraintExtreme(0, matter.ConstraintExtremeFormatHex),
+		max:        matter.NewUintConstraintExtreme(60, matter.ConstraintExtremeFormatHex),
+		zapMin:     "0x0",
+		zapMax:     "0x3C",
+	},
+	{
+		constraint: "-32767 to MaxScaledValue-1",
+		asciiDoc:   "-32767 to (MaxScaledValue - 1)",
+		min:        matter.NewIntConstraintExtreme(-32767, matter.ConstraintExtremeFormatInt),
+		zapMin:     "-32767",
+	},
+	{
+		constraint: "MaxScaledValue-1",
+		asciiDoc:   "max (MaxScaledValue - 1)",
+	},
+	{
+		constraint: "-10000 to +10000",
+		asciiDoc:   "-10000 to 10000",
+		min:        matter.NewIntConstraintExtreme(-10000, matter.ConstraintExtremeFormatInt),
+		max:        matter.NewIntConstraintExtreme(10000, matter.ConstraintExtremeFormatInt),
+		zapMin:     "-10000",
+		zapMax:     "10000",
+	},
+	{
+		constraint: "-127 to 127",
+		min:        matter.NewIntConstraintExtreme(-127, matter.ConstraintExtremeFormatInt),
+		max:        matter.NewIntConstraintExtreme(127, matter.ConstraintExtremeFormatInt),
+		zapMin:     "-127",
+		zapMax:     "127",
+	},
+	{
+		constraint: "-2.5°C to 2.5°C",
+		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
+		min:        matter.NewIntConstraintExtreme(-250, matter.ConstraintExtremeFormatHex),
+		max:        matter.NewIntConstraintExtreme(250, matter.ConstraintExtremeFormatHex),
+		zapMin:     "0xFF06",
+		zapMax:     "0x00FA",
+	},
+	{
+		constraint: "0 to 0x001F",
+		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeMap16},
+		asciiDoc:   "0 to 0x001F",
+		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
+		max:        matter.NewUintConstraintExtreme(31, matter.ConstraintExtremeFormatHex),
+		zapMin:     "0",
+		zapMax:     "0x001F",
+	},
+	{
+		constraint: "0 to 0xFEFF",
+		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
+		max:        matter.NewUintConstraintExtreme(65279, matter.ConstraintExtremeFormatHex),
+		zapMin:     "0",
+		zapMax:     "0xFEFF",
+	},
+	{
+		constraint: "0 to 1000000",
+		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
+		max:        matter.NewIntConstraintExtreme(1000000, matter.ConstraintExtremeFormatInt),
+		zapMin:     "0",
+		zapMax:     "1000000",
+	},
+	{
+		constraint: "0 to MaxFrequency",
+		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
+		zapMin:     "0",
+	},
+	{
+		constraint: "0% to 100%",
+		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
+		max:        matter.NewIntConstraintExtreme(100, matter.ConstraintExtremeFormatInt),
+		zapMin:     "0",
+		zapMax:     "100",
+	},
+	{
+		constraint: "0% to 100%",
+		dataType:   &matter.DataType{BaseType: matter.BaseDataTypePercentHundredths},
+		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
+		max:        matter.NewIntConstraintExtreme(100, matter.ConstraintExtremeFormatInt),
+		zapMin:     "0",
+		zapMax:     "10000",
+	},
+	{
+		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
+		generic:    true,
+	},
+	{
+		constraint: "00000xxx",
+		generic:    true,
+	},
+	{
+		constraint: "0b0000 xxxx",
+		generic:    true,
+	},
+	{
+		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
+		generic:    true,
+	},
+	{
+		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
+		generic:    true,
+	},
+	{
+		constraint: "0x954D to 0x7FFF",
+		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
+		asciiDoc:   "0x954D to 0x7FFF",
+		min:        matter.NewUintConstraintExtreme(38221, matter.ConstraintExtremeFormatHex),
+		max:        matter.NewUintConstraintExtreme(32767, matter.ConstraintExtremeFormatHex),
+		zapMin:     "0x954D",
+		zapMax:     "0x7FFF",
+	},
+	{
+		constraint: "0°C to 2.5°C",
+		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
+		asciiDoc:   "0°C to 2.5°C",
+		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatHex),
+		max:        matter.NewIntConstraintExtreme(250, matter.ConstraintExtremeFormatHex),
+		zapMin:     "0x0000",
+		zapMax:     "0x00FA",
+	},
+	{
+		constraint: "1 to 100",
+		min:        matter.NewIntConstraintExtreme(1, matter.ConstraintExtremeFormatInt),
+		max:        matter.NewIntConstraintExtreme(100, matter.ConstraintExtremeFormatInt),
+		zapMin:     "1",
+		zapMax:     "100",
+	},
+	{
+		constraint: "1 to MaxLevel",
+		min:        matter.NewIntConstraintExtreme(1, matter.ConstraintExtremeFormatInt),
+		zapMin:     "1",
+	},
+	{
+		constraint: "1 to MaxMeasuredValue-1",
+		asciiDoc:   "1 to (MaxMeasuredValue - 1)",
+		min:        matter.NewIntConstraintExtreme(1, matter.ConstraintExtremeFormatInt),
+		zapMin:     "1",
+	},
+	{
+		constraint: "100 to MS",
+		min:        matter.NewIntConstraintExtreme(100, matter.ConstraintExtremeFormatInt),
+		zapMin:     "100",
+	},
+	{
+		constraint: "16",
+		asciiDoc:   "max 16",
+		max:        matter.NewIntConstraintExtreme(16, matter.ConstraintExtremeFormatInt),
+		zapMax:     "16",
+	},
+	{
+		constraint: "16[2]",
+		asciiDoc:   "max 16[max 2]",
+		max:        matter.NewIntConstraintExtreme(16, matter.ConstraintExtremeFormatInt),
+		zapMax:     "16",
+	},
+	{
+		constraint: "InstalledOpenLimitLift to InstalledClosedLimitLift",
+	},
+	{
+		constraint: "MinMeasuredValue+1 to 10000",
+		asciiDoc:   "(MinMeasuredValue + 1) to 10000",
+		max:        matter.NewIntConstraintExtreme(10000, matter.ConstraintExtremeFormatInt),
+		zapMax:     "10000",
+	},
+	{
+		constraint: "MinPower to 100",
+		max:        matter.NewIntConstraintExtreme(100, matter.ConstraintExtremeFormatInt),
+		zapMax:     "100",
+	},
+	{
+		constraint: "OccupiedEnabled, OccupiedDisabled",
+		generic:    true,
+	},
+	{
+		constraint: "OccupiedSetbackMin to 25.4°C",
+		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
+		max:        matter.NewIntConstraintExtreme(2540, matter.ConstraintExtremeFormatHex),
+		zapMax:     "0x09EC",
+	},
+	{
+		constraint: "TODO",
+		generic:    true,
+	},
+	{
+		constraint: "all[min 1]",
+	},
+	{
+		constraint: "any",
+	},
+	{
+		constraint: "max MaxTemperature - 1",
+		asciiDoc:   "max (MaxTemperature - 1)",
+	},
+	{
+		constraint: "max MaxTemperature - MinTemperature",
+		asciiDoc:   "max (MaxTemperature - MinTemperature)",
+	},
+	{
+		constraint: "max 0xFFFE",
+		max:        matter.NewUintConstraintExtreme(65534, matter.ConstraintExtremeFormatHex),
+		zapMax:     "0xFFFE",
+	},
+	{
+		constraint: "max 10",
+		max:        matter.NewIntConstraintExtreme(10, matter.ConstraintExtremeFormatInt),
+		zapMax:     "10",
+	},
+	{
+		constraint: "max 10 [max 50]",
+		asciiDoc:   "max 10[max 50]",
+		max:        matter.NewIntConstraintExtreme(10, matter.ConstraintExtremeFormatInt),
+		zapMax:     "10",
+	},
+	{
+		constraint: "max 32 chars",
+		asciiDoc:   "max 32",
+		max:        matter.NewIntConstraintExtreme(32, matter.ConstraintExtremeFormatInt),
+		zapMax:     "32",
+	},
+	{
+		constraint: "max 604800",
+		max:        matter.NewIntConstraintExtreme(604800, matter.ConstraintExtremeFormatInt),
+		zapMax:     "604800",
+	},
+	{
+		constraint: "max NumberOfPositions-1",
+		asciiDoc:   "max (NumberOfPositions - 1)",
+	},
+	{
+		constraint: "min -27315",
+		min:        matter.NewIntConstraintExtreme(-27315, matter.ConstraintExtremeFormatInt),
+		zapMin:     "-27315",
+	},
+	{
+		constraint: "min 0",
+		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
+		zapMin:     "0",
+	},
+	{
+		constraint: "max MinFrequency",
+	},
+	{
+		constraint: "percent",
+		generic:    true,
+	},
 }
 
-func TestComplex(t *testing.T) {
-
-	var fs matter.FieldSet
-	fs = append(fs, &matter.Field{})
-	for _, s := range constraints {
-		c := ParseConstraint(s)
-
-		t.Logf("conformance: \"%s\" => \"%v\" %T", s, c.AsciiDocString(), c)
-		min, max := c.MinMax(&matter.ConstraintContext{Fields: fs})
-		var from, to string
-		switch min.Type {
-		case matter.ConstraintExtremeTypeInt64:
-			from = strconv.FormatInt(min.Int64, 10)
-		case matter.ConstraintExtremeTypeUInt64:
-			from = strconv.FormatUint(min.UInt64, 10)
-		case matter.ConstraintExtremeTypeUndefined:
-			from = "undefined"
+func TestSuite(t *testing.T) {
+	for _, ct := range constraintTests {
+		c := ParseConstraint(ct.constraint)
+		_, isGeneric := c.(*GenericConstraint)
+		if ct.generic {
+			if !isGeneric {
+				t.Errorf("expected generic constraint, got %T", c)
+			}
+			continue
+		} else if isGeneric {
+			t.Errorf("failed to parse constraint")
+			continue
 		}
-		switch max.Type {
-		case matter.ConstraintExtremeTypeInt64:
-			to = strconv.FormatInt(max.Int64, 10)
-		case matter.ConstraintExtremeTypeUInt64:
-			to = strconv.FormatUint(max.UInt64, 10)
-		case matter.ConstraintExtremeTypeUndefined:
-			to = "undefined"
+		min, max := c.MinMax(&matter.ConstraintContext{Fields: ct.fields})
+		if min != ct.min {
+			t.Errorf("incorrect min value for \"%s\": expected %d, got %d", ct.constraint, ct.min, min)
 		}
-		t.Logf("\t: %s => %s", from, to)
+		if max != ct.max {
+			t.Errorf("incorrect max value for \"%s\": expected %d, got %d", ct.constraint, ct.max, max)
+		}
+		as := c.AsciiDocString(ct.dataType)
+		es := ct.constraint
+		if len(ct.asciiDoc) > 0 {
+			es = ct.asciiDoc
+		}
+		if as != es {
+			t.Errorf("incorrect AsciiDoc value for \"%s\": expected %s, got %s", ct.constraint, es, as)
+		}
 
-		//break
+		if min.ZapString(ct.dataType) != ct.zapMin {
+			t.Errorf("incorrect ZAP min value for \"%s\": expected %s, got %s", ct.constraint, ct.zapMin, min.ZapString(ct.dataType))
+
+		}
+		if max.ZapString(ct.dataType) != ct.zapMax {
+			t.Errorf("incorrect ZAP max value for \"%s\": expected %s, got %s", ct.constraint, ct.zapMax, max.ZapString(ct.dataType))
+		}
+
 	}
 }

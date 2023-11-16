@@ -16,7 +16,7 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 		ex.CreateAttr("priority", strings.ToLower(e.Priority))
 		ex.CreateAttr("side", "server")
 		ex.CreateAttr("apiMaturity", "provisional")
-		if e.Access.FabricSensitive {
+		if e.FabricSensitive {
 			ex.CreateAttr("isFabricSensitive", "true")
 		}
 		if e.Conformance != "M" {
@@ -43,6 +43,9 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 			renderConstraint(e.Fields, f, fx)
 			if f.Quality.Has(matter.QualityNullable) {
 				fx.CreateAttr("isNullable", "true")
+			}
+			if f.Conformance != "M" {
+				fx.CreateAttr("optional", "true")
 			}
 			fx.CreateAttr("apiMaturity", "provisional")
 		}

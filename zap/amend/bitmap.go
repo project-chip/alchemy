@@ -6,7 +6,6 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
-	"github.com/hasty/alchemy/zap"
 )
 
 func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string, bitmaps map[*matter.Bitmap]struct{}) (err error) {
@@ -21,18 +20,22 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 		}
 	}
 
-	if matchingBitmap == nil {
-		return writeThrough(d, e, el)
-	}
-
 	Ignore(d, "bitmap")
+
+	if matchingBitmap == nil {
+		return nil
+	}
 
 	return r.writeBitmap(e, el, matchingBitmap, clusterIDs, false)
 }
 
 func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matter.Bitmap, clusterIDs []string, provisional bool) (err error) {
 	xfb.Attr = setAttributeValue(xfb.Attr, "name", bitmap.Name)
-	xfb.Attr = setAttributeValue(xfb.Attr, "type", zap.ConvertDataTypeToZap(bitmap.Type))
+	if bitmap.Type != "" {
+		xfb.Attr = setAttributeValue(xfb.Attr, "type", bitmap.Type)
+	} else {
+		xfb.Attr = setAttributeValue(xfb.Attr, "type", "enum8")
+	}
 	if provisional {
 		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
 	}

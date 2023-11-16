@@ -37,10 +37,11 @@ func (b *Ball) ensureTableOptions(elements []interface{}) {
 
 }
 
-func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap map[matter.TableColumn]int) {
+func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap map[matter.TableColumn]int) {
 	if !b.options.addMissingColumns {
 		return
 	}
+	delete(table.Attributes, "cols")
 	for _, column := range order {
 		if _, ok := columnMap[column]; !ok {
 			for i, row := range rows {

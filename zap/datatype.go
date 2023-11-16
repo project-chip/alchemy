@@ -1,8 +1,6 @@
 package zap
 
 import (
-	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
@@ -38,22 +36,19 @@ var matterToZapMap = map[string]string{
 	"map32": "bitmap32",
 	"map64": "bitmap64",
 
-	"string":        "char_string",
-	"octstr":        "octet_string",
-	"percent":       "int8u",
-	"percent100ths": "int16u",
-	"ref_tempdiff":  "int16s",
-	"temperature":   "int16s",
-	"amperage-ma":   "int64",
-	"voltage-mv":    "int64",
-	"power-mw":      "int64",
-	"energy-mwh":    "int64",
+	"string":       "char_string",
+	"octstr":       "octet_string",
+	"ref_tempdiff": "int16s",
+	"amperage-ma":  "int64s",
+	"voltage-mv":   "int64s",
+	"power-mw":     "int64s",
+	"energy-mwh":   "int64s",
 
 	"elapsed-s":  "elapsed_s",
 	"epoch-s":    "epoch_s",
 	"epoch-us":   "epoch_us",
-	"systime_ms": "systime_ms",
-	"systime_us": "systime_us",
+	"systime-ms": "systime_ms",
+	"systime-us": "systime_us",
 	"posix-ms":   "posix_ms",
 	"utc":        "epoch_s", //Deprecated
 
@@ -107,18 +102,39 @@ func init() {
 	}
 }
 
-func ConvertDataTypeToZap(s string) string {
+func ConvertDataTypeNameToZap(s string) string {
 	if z, ok := matterToZapMap[strings.ToLower(s)]; ok {
 		return z
 	}
 	return s
 }
 
-func ConvertZapToDataType(s string) string {
+func ConvertZapToDataTypeName(s string) string {
 	if z, ok := zapToMatterMap[strings.ToLower(s)]; ok {
 		return z
 	}
 	return s
+}
+
+func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
+	if f.Type == nil {
+		return ""
+	}
+	if f.Type.BaseType == matter.BaseDataTypeString {
+		// Special case; needs to be long_char_string if over 255
+		_, max := f.Constraint.MinMax(&matter.ConstraintContext{Fields: fs})
+		switch max.Type {
+		case matter.ConstraintExtremeTypeInt64:
+			if max.Int64 > 255 {
+				return "long_char_string"
+			}
+		case matter.ConstraintExtremeTypeUInt64:
+			if max.UInt64 > 255 {
+				return "long_char_string"
+			}
+		}
+	}
+	return ConvertDataTypeNameToZap(f.Type.Name)
 }
 
 func GetMinMax(fs matter.FieldSet, f *matter.Field) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
@@ -127,33 +143,12 @@ func GetMinMax(fs matter.FieldSet, f *matter.Field) (from matter.ConstraintExtre
 	}
 	if f.Constraint != nil {
 		from, to = f.Constraint.MinMax(&matter.ConstraintContext{Fields: fs})
-		return
 	}
-	if !from.Defined() || !to.Defined() {
-		f, t := f.Type.MinMax(f.Quality.Has(matter.QualityNullable))
-		if !from.Defined() && f.Defined() {
-			from = f
-		}
-		if !to.Defined() && t.Defined() {
-			to = t
-		}
+	if !from.Defined() {
+		from = f.Type.Min(f.Quality.Has(matter.QualityNullable))
+	}
+	if !to.Defined() {
+		to = f.Type.Max(f.Quality.Has(matter.QualityNullable))
 	}
 	return
-}
-
-func FormatConstraintValue(val any) string {
-	switch v := val.(type) {
-	case uint64:
-		if v > 0xFF {
-			return "0x" + strconv.FormatUint(v, 16)
-		}
-		return strconv.FormatUint(v, 10)
-	case int64:
-		if v > 255 || v < 256 {
-			return "0x" + strconv.FormatUint(uint64(v), 16)
-		}
-		return strconv.FormatInt(v, 10)
-	default:
-		return fmt.Sprintf("%d", val)
-	}
 }

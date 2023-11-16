@@ -8,12 +8,14 @@ import (
 	"strings"
 
 	 "github.com/hasty/alchemy/matter"
+	 "github.com/shopspring/decimal"
 )
 
 func debug(format string, a ...any) (n int, err error) {
 	return
-	return fmt.Fprintf(os.Stdout, format, a...)
+	//return fmt.Fprintf(os.Stdout, format, a...)
 }
+
 
 }
 
@@ -69,7 +71,7 @@ Any <- any:("any" / "all") {
 	return &AllConstraint{Value:string(any.([]uint8))}, nil
 }
 
-Limit <- limit:(MSLimit / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / ReferenceLimit  ) {
+Limit <- limit:(MSLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / ReferenceLimit  ) {
 	debug("found limit %s\n", string(c.text))
 	return limit.(matter.ConstraintLimit), nil
 }
@@ -86,7 +88,7 @@ Term <- '(' _ exp:Expression _ ')' {
     return exp, nil
 }
 
-Expression <- left:ReferenceLimit _ operand:('+'/'-'/'*'/'-') _ right:Limit {
+Expression <- left:(IntLimit / ReferenceLimit / HexLimit) _ operand:('+'/'-'/'*'/'-') _ right:Limit {
 	debug("found expression %s\n", string(c.text))
 	var val []uint8
 	for _, d := range operand.([]uint8) {
@@ -109,44 +111,51 @@ ReferenceLimit <- PascalCase {
 	return &ReferenceLimit{Value:string(c.text)}, nil
 }
 
-TempLimit <- f:Float "°C" {
+TempLimit <- f:( Float / Integer ) "°C" {
 	debug("found temp %s\n", string(c.text))
-	tl := &TemperatureLimit{}
-	var err error
-	tl.Value, err = parseFloat(f.(string))
-	if err != nil {
-		return nil, err
+	switch f := f.(type) {
+		case int64:
+			return &TemperatureLimit{Value:decimal.NewFromInt(f)}, nil
+		case decimal.Decimal:
+			return &TemperatureLimit{Value:f}, nil
+		default:
+			return nil, fmt.Errorf("unknown temperature limit type: %T", f)
 	}
-	return tl, nil
 }
 
-PercentageLimit <- f:Float "%" {
+PercentageLimit <- f:(Float / Integer) "%" {
 	debug("found percent %s\n", string(c.text))
-	pl := &PercentLimit{}
-	var err error
-	pl.Value, err = parseFloat(f.(string))
-	if err != nil {
-		return nil, err
+	switch f := f.(type) {
+		case int64:
+			return &PercentLimit{Value:decimal.NewFromInt(f)}, nil
+		case decimal.Decimal:
+			return &PercentLimit{Value:f}, nil
+		default:
+			return nil, fmt.Errorf("unknown percentage limit type: %T", f)
 	}
-	return pl, nil
 }
 
-IntLimit <- i:Integer {
+IntLimit <- i:Integer e:Exp? {
+	if e != nil {
+		debug("found exp limit %s\n", string(c.text))
+		return &ExpLimit{Value:i.(int64), Exp:e.(int64)}, nil
+	}
 	debug("found int limit %s\n", string(c.text))
 	return &IntLimit{Value:i.(int64)}, nil
 }
+
 
 HexLimit <- h:Hex {
 	debug("found hex limit %s\n", string(c.text))
 	return &HexLimit{Value:h.(uint64)}, nil
 }
 
-Float <- Integer ("." [0-9]+)? {
+Float <- Integer ("." [0-9]+) {
 	debug("found float %s\n", string(c.text))
-	return string(c.text), nil
+	return decimal.NewFromString(string(c.text))
 }
 
-Integer <- ('-'/'+')? [0-9]+ {
+Integer <- sign:('-'/'+')? digits:Digits  {
 	debug("found int %s\n", string(c.text))
 	return strconv.ParseInt(string(c.text), 10, 64)
 }
@@ -183,5 +192,13 @@ Lowercase <- [a-z] {
 _ "whitespace" ← [ \t\r\n]*
 
 Comma <- ',' 
+
+Digits <- [0-9]+ {
+	return strconv.ParseInt(string(c.text), 10, 64)
+}
+
+Exp <- "^" digits:Digits {
+	return digits, nil
+}
 
 EOF ← !.

@@ -11,10 +11,13 @@ require (
 	github.com/dolthub/go-mysql-server v0.17.0
 	github.com/iancoleman/orderedmap v0.3.0
 	github.com/iancoleman/strcase v0.3.0
+	github.com/schollz/progressbar/v3 v3.14.1
+	github.com/shopspring/decimal v1.3.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/sync v0.4.0
 	golang.org/x/text v0.13.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -39,8 +42,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
-	github.com/schollz/progressbar/v3 v3.14.1 // indirect
-	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tetratelabs/wazero v1.1.0 // indirect
@@ -61,5 +62,4 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/src-d/go-errors.v1 v1.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

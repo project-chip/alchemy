@@ -46,7 +46,7 @@ func (b *Ball) organizeStructTable(doc *ascii.Doc, section *ascii.Section, field
 		return err
 	}
 
-	b.addMissingColumns(doc, section, rows, matter.StructTableColumnOrder[:], nil, headerRowIndex, columnMap)
+	b.addMissingColumns(doc, section, fieldsTable, rows, matter.StructTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
 	b.reorderColumns(doc, section, rows, matter.StructTableColumnOrder[:], columnMap, extraColumns)
 

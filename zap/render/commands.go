@@ -53,7 +53,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 	if c.Access.Invoke != matter.PrivilegeUnknown {
 		ax := cx.CreateElement("access")
 		ax.CreateAttr("op", "invoke")
-		ax.CreateAttr("role", renderPrivilege(c.Access.Invoke))
+		ax.CreateAttr("privilege", renderPrivilege(c.Access.Invoke))
 	}
 	for _, f := range c.Fields {
 		if f.Conformance == "Zigbee" {

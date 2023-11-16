@@ -17,6 +17,11 @@ import (
 	"github.com/hasty/alchemy/zap/render"
 )
 
+type concurrentMap struct {
+	Map map[string]any
+	sync.Mutex
+}
+
 func getDocDomain(doc *ascii.Doc) matter.Domain {
 	if doc.Domain != matter.DomainUnknown {
 		return doc.Domain
@@ -34,6 +39,8 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 	var lock sync.Mutex
 	outputs = make(map[string]*render.Result)
 	slog.InfoContext(cxt, "Rendering ZAP templates...")
+
+	missingStructs := &concurrentMap{Map: make(map[string]any)}
 	err = files.ProcessDocs(cxt, appClusters, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 		path := doc.Path
 		newPath := getZapPath(zclRoot, path)
@@ -42,6 +49,8 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 		if err != nil {
 			return err
 		}
+
+		patchMissingTypes(doc, models, missingStructs)
 
 		doc.Domain = getDocDomain(doc)
 		existing, err := os.ReadFile(newPath)
@@ -98,8 +107,4 @@ func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot stri
 		return nil
 	}, filesOptions)
 	return
-}
-
-func findMissingStructs(doc *ascii.Doc, models []any) {
-
 }

@@ -54,6 +54,8 @@ func ZAPName(name string) string {
 		name = "laundry washer mode"
 	case "LaundryWasherControls":
 		name = "Washer Controls"
+	case "DemandResponseLoadControl":
+		name = "drlc"
 	case "Scenes":
 		return "scene"
 	case "WindowCovering":

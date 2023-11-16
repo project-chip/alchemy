@@ -6,7 +6,7 @@ type ReferenceLimit struct {
 	Value string
 }
 
-func (c *ReferenceLimit) AsciiDocString() string {
+func (c *ReferenceLimit) AsciiDocString(dataType *matter.DataType) string {
 	return c.Value
 }
 

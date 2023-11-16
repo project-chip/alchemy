@@ -20,13 +20,9 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 		}
 	}
 
-	if matchingStruct == nil && !skip {
-		return writeThrough(d, e, el)
-	}
-
 	Ignore(d, "struct")
 
-	if skip {
+	if matchingStruct == nil || skip {
 		return
 	}
 
@@ -52,6 +48,11 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 	if provisional {
 		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
 	}
+	if s.FabricScoped {
+		xfb.Attr = setAttributeValue(xfb.Attr, "isFabricScoped", "true")
+	} else {
+		xfb.Attr = removeAttribute(xfb.Attr, "isFabricScoped")
+	}
 	err = e.EncodeToken(xfb)
 	if err != nil {
 		return
@@ -71,14 +72,23 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 		xfs := xml.StartElement{Name: elName}
 		xfs.Attr = setAttributeValue(xfs.Attr, "fieldId", v.ID.IntString())
 		xfs.Attr = setAttributeValue(xfs.Attr, "name", v.Name)
-		xfs.Attr = writeDataType(v.Type, xfs.Attr)
+		xfs.Attr = writeDataType(s.Fields, v, xfs.Attr)
+		xfs.Attr = r.renderConstraint(s.Fields, v, xfs.Attr)
 		if v.Quality.Has(matter.QualityNullable) {
 			xfs.Attr = setAttributeValue(xfs.Attr, "isNullable", "true")
+		} else {
+			xfs.Attr = removeAttribute(xfs.Attr, "isNullable")
 		}
 		if v.Conformance != "M" {
 			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
+		} else {
+			xfs.Attr = removeAttribute(xfs.Attr, "optional")
 		}
-		xfs.Attr = r.renderConstraint(s.Fields, v, xfs.Attr)
+		if v.Access.FabricSensitive {
+			xfs.Attr = setAttributeValue(xfs.Attr, "isFabricSensitive", "true")
+		} else {
+			xfs.Attr = removeAttribute(xfs.Attr, "isFabricSensitive")
+		}
 		err = e.EncodeToken(xfs)
 		if err != nil {
 			return

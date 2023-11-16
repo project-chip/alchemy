@@ -1,16 +1,15 @@
 package constraint
 
 import (
-	"math/big"
-
 	"github.com/hasty/alchemy/matter"
+	"github.com/shopspring/decimal"
 )
 
 type TemperatureLimit struct {
-	Value *big.Float
+	Value decimal.Decimal
 }
 
-func (c *TemperatureLimit) AsciiDocString() string {
+func (c *TemperatureLimit) AsciiDocString(dataType *matter.DataType) string {
 	return c.Value.String() + "°C"
 }
 
@@ -22,15 +21,15 @@ func (c *TemperatureLimit) Equal(o matter.ConstraintLimit) bool {
 }
 
 func (c *TemperatureLimit) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
-	val := big.NewFloat(0)
-	val.Mul(c.Value, big.NewFloat(100))
-	i, _ := val.Int64()
+	i := c.Value.Mul(decimal.NewFromInt(100)).IntPart()
 	return matter.ConstraintExtreme{
-			Type:  matter.ConstraintExtremeTypeInt64,
-			Int64: i,
+			Type:   matter.ConstraintExtremeTypeInt64,
+			Format: matter.ConstraintExtremeFormatHex,
+			Int64:  i,
 		},
 		matter.ConstraintExtreme{
-			Type:  matter.ConstraintExtremeTypeInt64,
-			Int64: i,
+			Type:   matter.ConstraintExtremeTypeInt64,
+			Format: matter.ConstraintExtremeFormatHex,
+			Int64:  i,
 		}
 }

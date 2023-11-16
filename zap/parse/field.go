@@ -83,8 +83,8 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 			return fmt.Errorf("unexpected %s attribute: %s", name, a.Name.Local)
 		}
 	}
-	fieldType = zap.ConvertZapToDataType(fieldType)
-	entryType = zap.ConvertZapToDataType(entryType)
+	fieldType = zap.ConvertZapToDataTypeName(fieldType)
+	entryType = zap.ConvertZapToDataTypeName(entryType)
 	if isArray {
 		if len(entryType) > 0 {
 			field.Type = matter.NewDataType(entryType, true)

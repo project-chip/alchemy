@@ -4,7 +4,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"slices"
 	"strings"
 )
 
@@ -19,16 +18,22 @@ func patchLint(zclRoot string, files []string) error {
 	}
 	lint := string(lintBytes)
 
-	paths := make([]string, 0, len(files))
+	newPathMap := make(map[string]struct{})
+
 	for _, f := range files {
-		paths = append(paths, `load "../src/app/zap-templates/zcl/data-model/chip/`+filepath.Base(f)+"\";\n")
-	}
-	matches := deviceType.FindAllStringSubmatch(lint, -1)
-	for _, m := range matches {
-		paths = append(paths, m[0])
+		newPathMap[`load "../src/app/zap-templates/zcl/data-model/chip/`+filepath.Base(f)+"\";\n"] = struct{}{}
 	}
 
-	slices.Sort(paths)
+	matches := deviceType.FindAllStringSubmatch(lint, -1)
+	paths := make([]string, 0, len(files)+len(matches))
+	for _, m := range matches {
+		path := m[0]
+		delete(newPathMap, path)
+		paths = append(paths, path)
+	}
+	for path := range newPathMap {
+		paths = append(paths, path)
+	}
 
 	var sb strings.Builder
 	for _, p := range paths {

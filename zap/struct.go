@@ -34,7 +34,7 @@ func (s *XMLStruct) ToModel() (ms *matter.Struct, err error) {
 		f := &matter.Field{
 			ID:   matter.NewID(uint64(sf.FieldID)),
 			Name: sf.Name,
-			Type: matter.NewDataType(ConvertZapToDataType(sf.Type), sf.IsArray),
+			Type: matter.NewDataType(ConvertZapToDataTypeName(sf.Type), sf.IsArray),
 		}
 		var q matter.Quality
 		if sf.IsNullable {

@@ -14,7 +14,7 @@ import (
 type Section struct {
 	Name string
 
-	Parent interface{}
+	Parent any
 	Base   *types.Section
 
 	SecType matter.Section
@@ -22,7 +22,7 @@ type Section struct {
 	Elements []interface{}
 }
 
-func NewSection(parent interface{}, s *types.Section) (*Section, error) {
+func NewSection(parent any, s *types.Section) (*Section, error) {
 	ss := &Section{Parent: parent, Base: s}
 
 	switch name := types.Reduce(s.Title).(type) {
@@ -109,7 +109,7 @@ func AssignSectionTypes(docType matter.DocType, top *Section) {
 		}
 
 		section.SecType = getSectionType(ps, section)
-		fmt.Printf("sec type: %s -> %s (parent %s)\n", section.Name, section.SecType, ps.SecType)
+		slog.Debug("sec type", "name", section.Name, "type", section.SecType, "parent", ps.SecType)
 		return false
 	})
 }
@@ -206,7 +206,7 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return matter.SectionEvent
 		}
 	default:
-		slog.Info("unknown section type", "name", name)
+		slog.Debug("unknown section type", "name", name)
 		// Ugh, some heuristics now
 		name = strings.TrimSpace(section.Name)
 		if strings.HasSuffix(name, "Bitmap Type") || strings.HasSuffix(name, "Bitmap") {
@@ -238,6 +238,34 @@ func (s *Section) ToModels(d *Doc) ([]interface{}, error) {
 		}
 		models = append(models, deviceTypes...)
 	default:
+		parse.Traverse(d, s.Elements, func(section *Section, parent parse.HasElements, index int) bool {
+			var err error
+			switch section.SecType {
+			case matter.SectionDataTypeBitmap:
+				var bm *matter.Bitmap
+				bm, err = section.toBitmap()
+				if err == nil {
+					models = append(models, bm)
+				}
+			case matter.SectionDataTypeEnum:
+				var e *matter.Enum
+				e, err = section.toEnum()
+				if err == nil {
+					models = append(models, e)
+				}
+			case matter.SectionDataTypeStruct:
+				var s *matter.Struct
+				s, err = section.toStruct(d)
+				if err == nil {
+					models = append(models, s)
+				}
+			}
+			if err != nil {
+				slog.Error("error creating model", "error", err)
+				return true
+			}
+			return false
+		})
 		//slog.Info("unknown section type", "secType", s.SecType)
 	}
 	return models, nil

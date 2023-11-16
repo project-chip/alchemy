@@ -54,7 +54,7 @@ func (b *Ball) organizeBitmapTable(doc *ascii.Doc, section *ascii.Section, bitsT
 		return err
 	}
 
-	b.addMissingColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], nil, headerRowIndex, columnMap)
+	b.addMissingColumns(doc, section, bitsTable, rows, matter.BitmapTableColumnOrder[:], nil, headerRowIndex, columnMap)
 
 	b.reorderColumns(doc, section, rows, matter.BitmapTableColumnOrder[:], columnMap, extraColumns)
 
