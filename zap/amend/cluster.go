@@ -98,6 +98,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 	var nextCharData string
 	var hasCharDataPending bool
 	var hasCommentCharDataPending bool
+	var lastIgnoredCharData xml.CharData
 
 	ts := &tokenSet{tokens: clusterTokens}
 
@@ -110,6 +111,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 		} else if err != nil {
 			return
 		}
+
 		switch t := tok.(type) {
 		case xml.StartElement:
 			switch t.Name.Local {
@@ -161,14 +163,6 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 					err = e.EncodeToken(tok)
 				}
 			}
-		case xml.CharData:
-			if hasCharDataPending {
-				err = e.EncodeToken(xml.CharData(nextCharData))
-				hasCharDataPending = false
-			} else if hasCommentCharDataPending {
-				err = e.EncodeToken(t)
-				hasCommentCharDataPending = false
-			}
 		case xml.EndElement:
 			switch t.Name.Local {
 			case "server", "client":
@@ -201,16 +195,32 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 				}
 			}
 		case xml.Comment:
+			if lastIgnoredCharData != nil {
+				err = e.EncodeToken(lastIgnoredCharData)
+				lastIgnoredCharData = nil
+			}
 			err = e.EncodeToken(t)
 			hasCommentCharDataPending = true
+		case xml.CharData:
+			if hasCharDataPending {
+				err = e.EncodeToken(xml.CharData(nextCharData))
+				hasCharDataPending = false
+				lastIgnoredCharData = nil
+			} else if hasCommentCharDataPending {
+				err = e.EncodeToken(t)
+				hasCommentCharDataPending = false
+				lastIgnoredCharData = nil
+			} else {
+				lastIgnoredCharData = t
+			}
 		default:
 			err = e.EncodeToken(t)
+			lastIgnoredCharData = nil
 		}
 		if err != nil {
 			return
 		}
 	}
-	return nil
 }
 
 func (r *renderer) flushUnusedClusterElements(cluster *matter.Cluster, e xmlEncoder, lastSection matter.Section, clusterValues map[string]string, attributes map[*matter.Field]struct{}, events map[*matter.Event]struct{}, commands map[*matter.Command]struct{}, clusterPrefix string) (err error) {
