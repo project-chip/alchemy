@@ -70,7 +70,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		if f.Quality.Has(matter.QualityNullable) {
 			fx.CreateAttr("isNullable", "true")
 		}
-		fx.CreateAttr("apiMaturity", "provisional")
+		//fx.CreateAttr("apiMaturity", "provisional")
 	}
 	cx.CreateElement("description").SetText(c.Description)
 }

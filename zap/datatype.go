@@ -144,11 +144,11 @@ func GetMinMax(fs matter.FieldSet, f *matter.Field) (from matter.ConstraintExtre
 	if f.Constraint != nil {
 		from, to = f.Constraint.MinMax(&matter.ConstraintContext{Fields: fs})
 	}
-	if !from.Defined() {
-		from = f.Type.Min(f.Quality.Has(matter.QualityNullable))
+	if !from.Defined() && f.Quality.Has(matter.QualityNullable) {
+		from = f.Type.Min(true)
 	}
-	if !to.Defined() {
-		to = f.Type.Max(f.Quality.Has(matter.QualityNullable))
+	if !to.Defined() && f.Quality.Has(matter.QualityNullable) {
+		to = f.Type.Max(true)
 	}
 	return
 }

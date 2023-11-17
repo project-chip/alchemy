@@ -6,6 +6,7 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/zap"
 )
 
 func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string, enums map[*matter.Enum]struct{}) (err error) {
@@ -30,12 +31,24 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 
 func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum, clusterIDs []string, provisional bool) (err error) {
 	xfb := el.Copy()
-	xfb.Attr = setAttributeValue(xfb.Attr, "name", en.Name)
-	if en.Type != "" {
-		xfb.Attr = setAttributeValue(xfb.Attr, "type", en.Type)
+
+	enumType := en.Type
+	if enumType != "" {
+		enumType = zap.ConvertDataTypeNameToZap(en.Type)
 	} else {
-		xfb.Attr = setAttributeValue(xfb.Attr, "type", "enum8")
+		enumType = "enum8"
 	}
+	var valFormat string
+	switch enumType {
+	case "enum16":
+		valFormat = "0x%04X"
+	default:
+		valFormat = "0x%02X"
+	}
+
+	xfb.Attr = setAttributeValue(xfb.Attr, "name", en.Name)
+	xfb.Attr = setAttributeValue(xfb.Attr, "type", enumType)
+
 	if provisional {
 		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
 	}
@@ -57,7 +70,7 @@ func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum,
 		val := v.Value
 		valNum, er := parse.HexOrDec(val)
 		if er == nil {
-			val = fmt.Sprintf("0x%02X", valNum)
+			val = fmt.Sprintf(valFormat, valNum)
 		}
 
 		elName := xml.Name{Local: "item"}
