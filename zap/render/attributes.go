@@ -32,7 +32,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		attr := cx.CreateElement("attribute")
 		attr.CreateAttr("code", a.ID.HexString())
 		attr.CreateAttr("side", "server")
-		writeAttributeDataType(attr, a.Type)
+		writeAttributeDataType(attr, cluster.Attributes, a)
 		define := GetDefine(a.Name, clusterPrefix, errata)
 		attr.CreateAttr("define", define)
 		if a.Quality.Has(matter.QualityNullable) {

@@ -168,7 +168,7 @@ func setAttributeValue(attrs []xml.Attr, name string, value string) []xml.Attr {
 func removeAttribute(attrs []xml.Attr, name string) []xml.Attr {
 	for i, a := range attrs {
 		if a.Name.Local == name {
-			return slices.Delete(attrs, i, i)
+			return slices.Delete(attrs, i, i+1)
 		}
 	}
 	return attrs
@@ -208,6 +208,7 @@ func writeThrough(d xmlDecoder, e xmlEncoder, el xml.StartElement) (err error) {
 	if err != nil {
 		return
 	}
+	var skipNextCharData bool
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
@@ -223,8 +224,14 @@ func writeThrough(d xmlDecoder, e xmlEncoder, el xml.StartElement) (err error) {
 			case name:
 				return nil
 			default:
+				skipNextCharData = true
 			}
-		//case xml.CharData:
+		case xml.CharData:
+			if skipNextCharData {
+				skipNextCharData = false
+				continue
+			}
+			err = e.EncodeToken(tok)
 		default:
 			err = e.EncodeToken(tok)
 		}
