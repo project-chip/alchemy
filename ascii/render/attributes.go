@@ -322,7 +322,7 @@ func getKeyValue(cxt *output.Context, key string, val interface{}, include Attri
 		case []interface{}:
 
 			var columns []string
-			for i, e := range v {
+			for _, e := range v {
 				switch tc := e.(type) {
 				case *types.TableColumn:
 					var val strings.Builder
@@ -346,12 +346,7 @@ func getKeyValue(cxt *output.Context, key string, val interface{}, include Attri
 						val.WriteString(string(tc.Style))
 					}
 					columns = append(columns, val.String())
-					if i == len(v)-1 && val.Len() == 0 {
-						// The parser looks for tokens ending with commas, but these values
-						// are actually joined with commas; if the last value is blank,
-						// the parser will report one fewer column def, so we add it back
-						columns = append(columns, "")
-					}
+
 				default:
 					err = fmt.Errorf("unknown attribute: %T", e)
 					return
