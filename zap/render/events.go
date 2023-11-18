@@ -39,7 +39,7 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 			fx := ex.CreateElement("field")
 			fx.CreateAttr("id", f.ID.IntString())
 			fx.CreateAttr("name", f.Name)
-			writeDataType(fx, f.Type)
+			writeDataType(fx, e.Fields, f)
 			renderConstraint(e.Fields, f, fx)
 			if f.Quality.Has(matter.QualityNullable) {
 				fx.CreateAttr("isNullable", "true")

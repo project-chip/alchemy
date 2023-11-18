@@ -62,7 +62,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		fx := cx.CreateElement("arg")
 		mandatory := (f.Conformance == "M")
 		fx.CreateAttr("name", f.Name)
-		writeDataType(fx, f.Type)
+		writeDataType(fx, c.Fields, f)
 		renderConstraint(c.Fields, f, fx)
 		if !mandatory {
 			fx.CreateAttr("optional", "true")

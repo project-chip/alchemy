@@ -23,12 +23,12 @@ func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *et
 	}
 }
 
-func writeAttributeDataType(x *etree.Element, dt *matter.DataType) {
-	if dt == nil {
+func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Field) {
+	if f.Type == nil {
 		return
 	}
-	dts := zap.ConvertDataTypeNameToZap(dt.Name)
-	if dt.IsArray {
+	dts := zap.FieldToZapDataType(fs, f)
+	if f.Type.IsArray {
 		x.CreateAttr("type", "ARRAY")
 		x.CreateAttr("entryType", dts)
 	} else {
@@ -36,12 +36,12 @@ func writeAttributeDataType(x *etree.Element, dt *matter.DataType) {
 	}
 }
 
-func writeDataType(x *etree.Element, dt *matter.DataType) {
-	if dt == nil {
+func writeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Field) {
+	if f.Type == nil {
 		return
 	}
-	dts := zap.ConvertDataTypeNameToZap(dt.Name)
-	if dt.IsArray {
+	dts := zap.FieldToZapDataType(fs, f)
+	if f.Type.IsArray {
 		x.CreateAttr("array", "true")
 	}
 	x.CreateAttr("type", dts)
