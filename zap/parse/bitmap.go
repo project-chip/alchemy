@@ -6,6 +6,7 @@ import (
 	"io"
 	"strconv"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
@@ -124,7 +125,7 @@ func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) 
 			}
 		case "optional":
 			if a.Value != "true" {
-				bv.Conformance = "M"
+				bv.Conformance = &conformance.MandatoryConformance{}
 			}
 		default:
 			return nil, fmt.Errorf("unexpected bitmap field attribute: %s", a.Name.Local)

@@ -12,7 +12,7 @@ import (
 func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
-	var columnMap map[matter.TableColumn]int
+	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
 		if err == NoTableFound {
@@ -42,7 +42,7 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 		if err != nil {
 			return
 		}
-		cmd.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
+		cmd.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		if err != nil {
 			return
 		}
@@ -77,7 +77,7 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 
 			var rows []*types.TableRow
 			var headerRowIndex int
-			var columnMap map[matter.TableColumn]int
+			var columnMap ColumnIndex
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 			if err != nil {
 				if err == NoTableFound {

@@ -13,7 +13,7 @@ type ExpLimit struct {
 }
 
 func (c *ExpLimit) AsciiDocString(dataType *matter.DataType) string {
-	return strconv.FormatInt(c.Value, 10) + "^" + strconv.FormatInt(c.Exp, 10)
+	return strconv.FormatInt(c.Value, 10) + "^" + strconv.FormatInt(c.Exp, 10) + "^"
 }
 
 func (c *ExpLimit) Equal(o matter.ConstraintLimit) bool {
@@ -23,7 +23,8 @@ func (c *ExpLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *ExpLimit) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
+func (c *ExpLimit) minmax(cc *matter.ConstraintContext) (minmax matter.ConstraintExtreme) {
+
 	negative := c.Value < 0
 	base := c.Value
 	if negative {
@@ -40,14 +41,18 @@ func (c *ExpLimit) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintEx
 	if negative {
 		i *= -1
 	}
-	return matter.ConstraintExtreme{
-			Type:   matter.ConstraintExtremeTypeInt64,
-			Format: matter.ConstraintExtremeFormatHex,
-			Int64:  i,
-		},
-		matter.ConstraintExtreme{
-			Type:   matter.ConstraintExtremeTypeInt64,
-			Format: matter.ConstraintExtremeFormatHex,
-			Int64:  i,
-		}
+	minmax = matter.ConstraintExtreme{
+		Type:   matter.ConstraintExtremeTypeInt64,
+		Format: matter.ConstraintExtremeFormatHex,
+		Int64:  i,
+	}
+	return
+}
+
+func (c *ExpLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+	return c.minmax(cc)
+}
+
+func (c *ExpLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return c.minmax(cc)
 }

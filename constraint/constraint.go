@@ -29,6 +29,10 @@ func (c *ManufacturerLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *ManufacturerLimit) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
+func (c *ManufacturerLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+	return
+}
+
+func (c *ManufacturerLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
 }

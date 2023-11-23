@@ -1,9 +1,10 @@
 package matter
 
 type Cluster struct {
-	ID          *ID    `json:"id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
+	ID          *ID         `json:"id,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Description string      `json:"description,omitempty"`
+	Revisions   []*Revision `json:"revisions,omitempty"`
 
 	Hierarchy string `json:"hierarchy,omitempty"`
 	Role      string `json:"role,omitempty"`

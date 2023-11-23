@@ -2,6 +2,7 @@ package render
 
 import (
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -9,7 +10,6 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 	for _, s := range structs {
 		en := cx.CreateElement("struct")
 		en.CreateAttr("name", s.Name)
-		en.CreateAttr("apiMaturity", "provisional")
 		if s.FabricScoped {
 			en.CreateAttr("isFabricScoped", "true")
 		}
@@ -17,7 +17,7 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
 		for _, f := range s.Fields {
-			if f.Conformance == "Zigbee" {
+			if conformance.IsZigbee(f.Conformance) {
 				continue
 			}
 			fx := en.CreateElement("item")
@@ -28,7 +28,7 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 			if f.Quality.Has(matter.QualityNullable) {
 				fx.CreateAttr("isNullable", "true")
 			}
-			if f.Conformance != "M" {
+			if !conformance.IsMandatory(f.Conformance) {
 				fx.CreateAttr("optional", "true")
 			}
 		}

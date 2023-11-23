@@ -24,7 +24,7 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 		featureRow.values[matter.TableColumnBit] = f.Bit
 		featureRow.values[matter.TableColumnCode] = f.Code
 		featureRow.values[matter.TableColumnFeature] = f.Name
-		featureRow.values[matter.TableColumnSummary] = f.Description
+		featureRow.values[matter.TableColumnSummary] = f.Summary
 		fci := &sectionInfo{id: h.nextId(featureTable), parent: parent, values: featureRow}
 		parent.children[featureTable] = append(parent.children[featureTable], fci)
 	}

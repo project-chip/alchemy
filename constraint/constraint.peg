@@ -13,13 +13,26 @@ import (
 
 func debug(format string, a ...any) (n int, err error) {
 	return
-	//return fmt.Fprintf(os.Stdout, format, a...)
+	return fmt.Fprintf(os.Stdout, format, a...)
 }
 
-
 }
 
-Input <- cons:Constraint entry:EntryConstraint? EOF {
+Input <- conf:Cons+ EOF {
+    cs := conf.([]interface{})
+
+    var set ConstraintSet
+    for _, i := range cs {
+        con := i.(matter.Constraint)
+        set = append(set, con)
+    }
+	if len(set) == 1 {
+		return set[0], nil
+	}
+    return set, nil
+}
+
+Cons <- cons:Constraint entry:EntryConstraint? (_ Comma _)? {
 	if entry != nil {
 		return &ListConstraint {
 			Constraint:cons.(matter.Constraint),
@@ -39,7 +52,7 @@ Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
 		case matter.Constraint:
 			return cons, nil
 		case matter.ConstraintLimit:
-			return &MaxConstraint{Max:cons}, nil
+			return &ExactConstraint{Value:cons}, nil
 		default:
 			return nil, fmt.Errorf("unexpected constraint type: %T", cons)
 	}
@@ -48,19 +61,19 @@ Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
 Range <- from:Limit " to " to:Limit {
 	debug("found range %s\n", string(c.text))
 	return &RangeConstraint  {
-		Min:from.(matter.ConstraintLimit),
-		Max:to.(matter.ConstraintLimit),
+		Minimum:from.(matter.ConstraintLimit),
+		Maximum:to.(matter.ConstraintLimit),
 	}, nil
 }
 
-Min <- "min " _ limit:Limit {
+Min <- [Mm] "in " _ limit:Limit {
 	debug("found min limit %s\n", string(c.text))
-	return &MinConstraint{Min:limit.(matter.ConstraintLimit)}, nil
+	return &MinConstraint{Minimum:limit.(matter.ConstraintLimit)}, nil
 }
 
-Max <- "max " _ limit:Limit (_ "chars")? {
+Max <- [Mm] "ax " _ limit:Limit (_ "chars")? {
 	debug("found max limit %s\n", string(c.text))
-	return &MaxConstraint{Max:limit.(matter.ConstraintLimit)}, nil
+	return &MaxConstraint{Maximum:limit.(matter.ConstraintLimit)}, nil
 }
 
 Described <- "desc" {
@@ -197,7 +210,7 @@ Digits <- [0-9]+ {
 	return strconv.ParseInt(string(c.text), 10, 64)
 }
 
-Exp <- "^" digits:Digits {
+Exp <- "^" digits:Digits "^"? {
 	return digits, nil
 }
 

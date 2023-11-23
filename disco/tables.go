@@ -37,7 +37,7 @@ func (b *Ball) ensureTableOptions(elements []interface{}) {
 
 }
 
-func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap map[matter.TableColumn]int) {
+func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex) {
 	if !b.options.addMissingColumns {
 		return
 	}
@@ -63,7 +63,7 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	}
 }
 
-func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap map[matter.TableColumn]int, extraColumns []ascii.ExtraColumn) {
+func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap ascii.ColumnIndex, extraColumns []ascii.ExtraColumn) {
 	if !b.options.reorderColumns {
 		return
 	}
@@ -123,7 +123,7 @@ func setCellValue(cell *types.TableCell, val []interface{}) (err error) {
 	return
 }
 
-func (b *Ball) renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, overrides map[matter.TableColumn]string) (err error) {
+func (b *Ball) renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap ascii.ColumnIndex, overrides map[matter.TableColumn]string) (err error) {
 	if !b.options.renameTableHeaders {
 		return
 	}

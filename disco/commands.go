@@ -53,7 +53,7 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 		return err
 	}
 
-	err = b.organizeCommands(cxt, commands, commandsTable, columnMap)
+	err = b.organizeCommands(cxt, doc, commands, commandsTable, columnMap)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 	return nil
 }
 
-func (b *Ball) organizeCommands(cxt *discoContext, commands *ascii.Section, commandsTable *types.Table, columnMap map[matter.TableColumn]int) error {
+func (b *Ball) organizeCommands(cxt *discoContext, doc *ascii.Doc, commands *ascii.Section, commandsTable *types.Table, columnMap ascii.ColumnIndex) error {
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
@@ -92,7 +92,7 @@ func (b *Ball) organizeCommands(cxt *discoContext, commands *ascii.Section, comm
 		if err != nil {
 			return fmt.Errorf("failed mapping table columns for fields table in section %s: %w", ss.Name, err)
 		}
-		err = fixConstraintCells(rows, columnMap)
+		err = fixConstraintCells(doc, rows, columnMap)
 		if err != nil {
 			return err
 		}
@@ -106,7 +106,7 @@ func (b *Ball) organizeCommands(cxt *discoContext, commands *ascii.Section, comm
 	return nil
 }
 
-func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
+func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}

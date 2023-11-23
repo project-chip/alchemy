@@ -67,7 +67,7 @@ func setSectionTitle(sec *ascii.Section, title string) {
 	}
 }
 
-func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap map[matter.TableColumn]int, rows []*types.TableRow) {
+func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.ColumnIndex, rows []*types.TableRow) {
 	var subsectionSuffix string
 	var subsectionType matter.Section
 	switch section.SecType {

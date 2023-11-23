@@ -7,10 +7,10 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func (s *Section) toFeatures() (features []*matter.Feature, err error) {
+func (s *Section) toFeatures(d *Doc) (features []*matter.Feature, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
-	var columnMap map[matter.TableColumn]int
+	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading features: %w", err)
@@ -38,14 +38,11 @@ func (s *Section) toFeatures() (features []*matter.Feature, err error) {
 		if err != nil {
 			return
 		}
-		f.Description, err = readRowValue(row, columnMap, matter.TableColumnDescription)
+		f.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary)
 		if err != nil {
 			return
 		}
-		f.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
-		if err != nil {
-			return
-		}
+		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		features = append(features, f)
 	}
 	return

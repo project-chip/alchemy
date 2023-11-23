@@ -12,9 +12,11 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
+type ColumnIndex map[matter.TableColumn]int
+
 var NoTableFound = fmt.Errorf("no table found")
 
-func parseFirstTable(section *Section) (rows []*types.TableRow, headerRowIndex int, columnMap map[matter.TableColumn]int, extraColumns []ExtraColumn, err error) {
+func parseFirstTable(section *Section) (rows []*types.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 	t := FindFirstTable(section)
 	if t == nil {
 		err = NoTableFound
@@ -40,7 +42,7 @@ func parseFirstTable(section *Section) (rows []*types.TableRow, headerRowIndex i
 	return
 }
 
-func readRowValue(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) (string, error) {
+func readRowValue(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) (string, error) {
 	i, ok := columnMap[column]
 	if !ok {
 		return "", nil
@@ -54,7 +56,7 @@ func readRowValue(row *types.TableRow, columnMap map[matter.TableColumn]int, col
 	return val, nil
 }
 
-func readRowID(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) (*matter.ID, error) {
+func readRowID(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*matter.ID, error) {
 	id, err := readRowValue(row, columnMap, column)
 	if err != nil {
 		return matter.InvalidID, err
@@ -108,7 +110,7 @@ type ExtraColumn struct {
 	Offset int
 }
 
-func MapTableColumns(rows []*types.TableRow) (headerRow int, columnMap map[matter.TableColumn]int, extraColumns []ExtraColumn, err error) {
+func MapTableColumns(rows []*types.TableRow) (headerRow int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 	var cellCount = -1
 	headerRow = -1
 	for i, row := range rows {
@@ -125,7 +127,7 @@ func MapTableColumns(rows []*types.TableRow) (headerRow int, columnMap map[matte
 				if attributeColumn != matter.TableColumnUnknown {
 					if columnMap == nil {
 						headerRow = i
-						columnMap = make(map[matter.TableColumn]int)
+						columnMap = make(ColumnIndex)
 					}
 					if _, ok := columnMap[attributeColumn]; ok {
 						return -1, nil, nil, fmt.Errorf("can't map table columns with duplicate columns")
@@ -199,6 +201,8 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnCluster
 	case "client/server":
 		return matter.TableColumnClientServer
+	case "revision", "rev":
+		return matter.TableColumnRevision
 	}
 	return matter.TableColumnUnknown
 }

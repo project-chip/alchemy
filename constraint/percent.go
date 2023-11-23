@@ -21,19 +21,27 @@ func (c *PercentLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *PercentLimit) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
+func (c *PercentLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
 	val := c.Value
 	if c.Hundredths {
 		val = val.Mul(decimal.NewFromInt(100))
 	}
 	v := val.IntPart()
 	return matter.ConstraintExtreme{
-			Type:   matter.ConstraintExtremeTypeInt64,
-			Format: matter.ConstraintExtremeFormatInt,
-			Int64:  v},
-		matter.ConstraintExtreme{
-			Type:   matter.ConstraintExtremeTypeInt64,
-			Format: matter.ConstraintExtremeFormatInt,
-			Int64:  val.IntPart(),
-		}
+		Type:   matter.ConstraintExtremeTypeInt64,
+		Format: matter.ConstraintExtremeFormatInt,
+		Int64:  v}
+}
+
+func (c *PercentLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	val := c.Value
+	if c.Hundredths {
+		val = val.Mul(decimal.NewFromInt(100))
+	}
+	v := val.IntPart()
+	return matter.ConstraintExtreme{
+		Type:   matter.ConstraintExtremeTypeInt64,
+		Format: matter.ConstraintExtremeFormatInt,
+		Int64:  v}
+
 }

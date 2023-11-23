@@ -20,16 +20,20 @@ func (c *TemperatureLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *TemperatureLimit) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
+func (c *TemperatureLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
 	i := c.Value.Mul(decimal.NewFromInt(100)).IntPart()
 	return matter.ConstraintExtreme{
-			Type:   matter.ConstraintExtremeTypeInt64,
-			Format: matter.ConstraintExtremeFormatHex,
-			Int64:  i,
-		},
-		matter.ConstraintExtreme{
-			Type:   matter.ConstraintExtremeTypeInt64,
-			Format: matter.ConstraintExtremeFormatHex,
-			Int64:  i,
-		}
+		Type:   matter.ConstraintExtremeTypeInt64,
+		Format: matter.ConstraintExtremeFormatHex,
+		Int64:  i,
+	}
+}
+
+func (c *TemperatureLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	i := c.Value.Mul(decimal.NewFromInt(100)).IntPart()
+	return matter.ConstraintExtreme{
+		Type:   matter.ConstraintExtremeTypeInt64,
+		Format: matter.ConstraintExtremeFormatHex,
+		Int64:  i,
+	}
 }

@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
-	"github.com/iancoleman/strcase"
 )
 
 func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster) (err error) {
@@ -19,14 +19,14 @@ func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster) (err error) {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap:
 			var mb *matter.Bitmap
-			mb, err = s.toBitmap()
+			mb, err = s.toBitmap(d)
 			if err != nil {
 				return
 			}
 			cluster.Bitmaps = append(cluster.Bitmaps, mb)
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
-			me, err = s.toEnum()
+			me, err = s.toEnum(d)
 			if err != nil {
 				return
 			}
@@ -44,121 +44,7 @@ func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster) (err error) {
 	return
 }
 
-func (s *Section) toEnum() (e *matter.Enum, err error) {
-	var rows []*types.TableRow
-	var headerRowIndex int
-	var columnMap map[matter.TableColumn]int
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
-	if err != nil {
-		return nil, fmt.Errorf("failed reading enum: %w", err)
-	}
-	name := strings.TrimSuffix(s.Name, " Type")
-	e = &matter.Enum{
-		Name: name,
-		Type: s.GetDataType(),
-	}
-
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
-		ev := &matter.EnumValue{}
-		ev.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
-		if err != nil {
-			return
-		}
-		ev.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary)
-		if err != nil {
-			return
-		}
-		ev.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
-		if err != nil {
-			return
-		}
-		ev.Value, err = readRowValue(row, columnMap, matter.TableColumnValue)
-		if err != nil {
-			return
-		}
-		e.Values = append(e.Values, ev)
-	}
-	return
-}
-
-func (s *Section) toBitmap() (e *matter.Bitmap, err error) {
-	var rows []*types.TableRow
-	var headerRowIndex int
-	var columnMap map[matter.TableColumn]int
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
-	if err != nil {
-		return nil, fmt.Errorf("failed reading bitmap: %w", err)
-	}
-	name := strings.TrimSuffix(s.Name, " Type")
-	e = &matter.Bitmap{
-		Name: name,
-		Type: s.GetDataType(),
-	}
-
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
-		bv := &matter.BitmapValue{}
-		bv.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
-		if err != nil {
-			return
-		}
-		bv.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary)
-		if err != nil {
-			return
-		}
-		bv.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
-		if err != nil {
-			return
-		}
-		bv.Bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
-		if err != nil {
-			return
-		}
-		if len(bv.Bit) == 0 {
-			bv.Bit, err = readRowValue(row, columnMap, matter.TableColumnValue)
-			if err != nil {
-				return
-			}
-		}
-		if len(bv.Name) == 0 && len(bv.Summary) > 0 {
-			bv.Name = strcase.ToCamel(bv.Summary)
-		}
-		e.Bits = append(e.Bits, bv)
-	}
-	return
-}
-
-func (s *Section) toStruct(d *Doc) (ms *matter.Struct, err error) {
-	var rows []*types.TableRow
-	var headerRowIndex int
-	var columnMap map[matter.TableColumn]int
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
-	if err != nil {
-		return nil, fmt.Errorf("failed reading struct: %w", err)
-	}
-	name := strings.TrimSuffix(s.Name, " Type")
-	ms = &matter.Struct{
-		Name: name,
-	}
-
-	if headerRowIndex > 0 {
-		firstRow := rows[0]
-		if len(firstRow.Cells) > 0 {
-			cv, rowErr := GetTableCellValue(rows[0].Cells[0])
-			if rowErr == nil {
-				cv = strings.ToLower(cv)
-				if strings.Contains(cv, "fabric scoped") || strings.Contains(cv, "fabric-scoped") {
-					ms.FabricScoped = true
-				}
-			}
-		}
-	}
-	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
-	return
-}
-
-func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (fields []*matter.Field, err error) {
+func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap ColumnIndex) (fields []*matter.Field, err error) {
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		f := &matter.Field{}
@@ -166,7 +52,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap m
 		if err != nil {
 			return
 		}
-		f.Type = d.getRowDataType(row, columnMap, matter.TableColumnType)
+		f.Type = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		f.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, f.Type)
 		if err != nil {
 			return
@@ -184,7 +70,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap m
 		if err != nil {
 			return
 		}
-		f.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
+		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		if err != nil {
 			return
 		}
@@ -207,7 +93,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap m
 var listDataTypeDefinitionPattern = regexp.MustCompile(`list\[([^\]]+)\]`)
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
-func (d *Doc) getRowDataType(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn) *matter.DataType {
+func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) *matter.DataType {
 	i, ok := columnMap[column]
 	if !ok {
 		return nil
@@ -311,7 +197,7 @@ func (d *Doc) getAnchor(id string) (*Anchor, error) {
 	return nil, nil
 }
 
-func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableColumn]int, column matter.TableColumn, parentDataType *matter.DataType) matter.Constraint {
+func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *matter.DataType) matter.Constraint {
 	i, ok := columnMap[column]
 	if !ok {
 		return nil
@@ -363,6 +249,62 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap map[matter.TableCo
 			}
 		}
 		val = constraint.ParseConstraint(StripTypeSuffixes(sb.String()))
+	}
+	return val
+}
+
+func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) matter.Conformance {
+	i, ok := columnMap[column]
+	if !ok {
+		return &conformance.MandatoryConformance{}
+	}
+	cell := row.Cells[i]
+	if len(cell.Elements) == 0 {
+		return nil
+	}
+	p, ok := cell.Elements[0].(*types.Paragraph)
+	if !ok {
+		slog.Debug("unexpected non-paragraph in constraints cell", "type", fmt.Sprintf("%T", cell.Elements[0]))
+		return nil
+	}
+	if len(p.Elements) == 0 {
+		return nil
+	}
+	var val matter.Conformance
+	if len(p.Elements) == 1 {
+		switch e := p.Elements[0].(type) {
+		case *types.StringElement:
+			val = conformance.ParseConformance(e.Content)
+		case *types.InternalCrossReference:
+			anchor, _ := d.getAnchor(e.ID.(string))
+			var name string
+			if anchor != nil {
+				name = ReferenceName(anchor.Element)
+			} else {
+				name = strings.TrimPrefix(e.ID.(string), "_")
+			}
+			val = conformance.ParseConformance(StripTypeSuffixes(name))
+		}
+	} else {
+		var sb strings.Builder
+		for _, el := range p.Elements {
+			switch v := el.(type) {
+			case *types.StringElement:
+				sb.WriteString(v.Content)
+			case *types.InternalCrossReference:
+				anchor, _ := d.getAnchor(v.ID.(string))
+				var name string
+				if anchor != nil {
+					name = ReferenceName(anchor.Element)
+				} else {
+					name = strings.TrimPrefix(v.ID.(string), "_")
+				}
+				sb.WriteString(name)
+			default:
+				slog.Debug("unknown value element", "type", fmt.Sprintf("%T", el))
+			}
+		}
+		val = conformance.ParseConformance(StripTypeSuffixes(sb.String()))
 	}
 	return val
 }

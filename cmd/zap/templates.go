@@ -35,7 +35,7 @@ func getDocDomain(doc *ascii.Doc) matter.Domain {
 	return matter.DomainUnknown
 }
 
-func renderTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot string, filesOptions files.Options) (outputs map[string]*render.Result, provisionalZclFiles []string, err error) {
+func renderAppClusterTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot string, filesOptions files.Options) (outputs map[string]*render.Result, provisionalZclFiles []string, err error) {
 	var lock sync.Mutex
 	outputs = make(map[string]*render.Result)
 	slog.InfoContext(cxt, "Rendering ZAP templates...")

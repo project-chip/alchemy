@@ -3,6 +3,7 @@ package amend
 import (
 	"encoding/xml"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -37,9 +38,67 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 }
 
 func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Command) (err error) {
-	mandatory := c.Conformance == "M"
 
 	xfb := el.Copy()
+
+	xfb = r.setCommandElementAttributes(c, e, xfb)
+
+	err = e.EncodeToken(xfb)
+	if err != nil {
+		return
+	}
+
+	e.EncodeToken(xml.StartElement{Name: xml.Name{Local: "description"}})
+	e.EncodeToken(xml.CharData(c.Description))
+	e.EncodeToken(xml.EndElement{Name: xml.Name{Local: "description"}})
+
+	if c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate {
+
+		err = r.renderAccess(e, "invoke", c.Access.Invoke)
+		if err != nil {
+			return
+		}
+	}
+
+	for _, f := range c.Fields {
+		if conformance.IsZigbee(f.Conformance) {
+			continue
+		}
+
+		elName := xml.Name{Local: "arg"}
+		xfs := xml.StartElement{Name: elName}
+		mandatory := conformance.IsMandatory(f.Conformance)
+		xfs.Attr = setAttributeValue(xfs.Attr, "name", f.Name)
+		xfs.Attr = writeDataType(c.Fields, f, xfs.Attr)
+		if !mandatory {
+			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
+		} else {
+			xfs.Attr = removeAttribute(xfs.Attr, "optional")
+		}
+		if f.Quality.Has(matter.QualityNullable) {
+			xfs.Attr = setAttributeValue(xfs.Attr, "isNullable", "true")
+		} else {
+			xfs.Attr = removeAttribute(xfs.Attr, "isNullable")
+		}
+		xfs.Attr = r.renderConstraint(c.Fields, f, xfs.Attr)
+		err = e.EncodeToken(xfs)
+		if err != nil {
+			return
+		}
+		xfe := xml.EndElement{Name: elName}
+		err = e.EncodeToken(xfe)
+		if err != nil {
+			return
+		}
+
+	}
+
+	return e.EncodeToken(xml.EndElement{Name: xfb.Name})
+}
+
+func (*renderer) setCommandElementAttributes(c *matter.Command, e xmlEncoder, xfb xml.StartElement) xml.StartElement {
+	mandatory := conformance.IsMandatory(c.Conformance)
+
 	xfb.Name = xml.Name{Local: "command"}
 
 	var serverSource bool
@@ -76,58 +135,7 @@ func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Com
 	} else {
 		xfb.Attr = removeAttribute(xfb.Attr, "mustUseTimedInvoke")
 	}
-
-	err = e.EncodeToken(xfb)
-	if err != nil {
-		return
-	}
-
-	e.EncodeToken(xml.StartElement{Name: xml.Name{Local: "description"}})
-	e.EncodeToken(xml.CharData(c.Description))
-	e.EncodeToken(xml.EndElement{Name: xml.Name{Local: "description"}})
-
-	if c.Access.Invoke != matter.PrivilegeUnknown {
-
-		err = r.renderAccess(e, "invoke", c.Access.Invoke)
-		if err != nil {
-			return
-		}
-	}
-
-	for _, f := range c.Fields {
-		if f.Conformance == "Zigbee" {
-			continue
-		}
-
-		elName := xml.Name{Local: "arg"}
-		xfs := xml.StartElement{Name: elName}
-		mandatory := (f.Conformance == "M")
-		xfs.Attr = setAttributeValue(xfs.Attr, "name", f.Name)
-		xfs.Attr = writeDataType(c.Fields, f, xfs.Attr)
-		if !mandatory {
-			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
-		} else {
-			xfs.Attr = removeAttribute(xfs.Attr, "optional")
-		}
-		if f.Quality.Has(matter.QualityNullable) {
-			xfs.Attr = setAttributeValue(xfs.Attr, "isNullable", "true")
-		} else {
-			xfs.Attr = removeAttribute(xfs.Attr, "isNullable")
-		}
-		xfs.Attr = r.renderConstraint(c.Fields, f, xfs.Attr)
-		err = e.EncodeToken(xfs)
-		if err != nil {
-			return
-		}
-		xfe := xml.EndElement{Name: elName}
-		err = e.EncodeToken(xfe)
-		if err != nil {
-			return
-		}
-
-	}
-
-	return e.EncodeToken(xml.EndElement{Name: xfb.Name})
+	return xfb
 }
 
 func (r *renderer) renderAccess(e xmlEncoder, op string, p matter.Privilege) (err error) {

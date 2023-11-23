@@ -22,6 +22,10 @@ func (c *ListConstraint) Equal(o matter.Constraint) bool {
 	return false
 }
 
-func (c *ListConstraint) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
-	return c.Constraint.MinMax(cc)
+func (c *ListConstraint) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+	return c.Constraint.Min(cc)
+}
+
+func (c *ListConstraint) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return c.Constraint.Max(cc)
 }

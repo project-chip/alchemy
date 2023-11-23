@@ -6,19 +6,19 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-type FeatureExpression struct {
+type IdentifierExpression struct {
 	ID  string
 	Not bool
 }
 
-func (fe *FeatureExpression) String() string {
+func (fe *IdentifierExpression) String() string {
 	if fe.Not {
 		return fmt.Sprintf("not %s", fe.ID)
 	}
 	return fe.ID
 }
 
-func (fe *FeatureExpression) Eval(context matter.ConformanceContext) (bool, error) {
+func (fe *IdentifierExpression) Eval(context matter.ConformanceContext) (bool, error) {
 	v, ok := context[fe.ID]
 	if !ok {
 		return fe.Not, nil

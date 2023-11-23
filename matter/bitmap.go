@@ -8,10 +8,10 @@ type Bitmap struct {
 }
 
 type BitmapValue struct {
-	Bit         string `json:"bit,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Summary     string `json:"summary,omitempty"`
-	Conformance string `json:"conformance,omitempty"`
+	Bit         string      `json:"bit,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Summary     string      `json:"summary,omitempty"`
+	Conformance Conformance `json:"conformance,omitempty"`
 }
 
 func (c *Bitmap) ModelType() Entity {

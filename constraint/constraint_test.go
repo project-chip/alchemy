@@ -20,15 +20,68 @@ type constraintTest struct {
 
 var constraintTests = []constraintTest{
 	{
-		constraint: "-2^62 to 2^62",
+		constraint: "00000xxx",
+		generic:    true,
+	},
+	{
+		constraint: "0b0000 xxxx",
+		generic:    true,
+	},
+
+	{
+		constraint: "-2^62^ to 2^62^",
 		min:        matter.NewIntConstraintExtreme(-4611686018427387904, matter.ConstraintExtremeFormatHex),
 		max:        matter.NewIntConstraintExtreme(4611686018427387904, matter.ConstraintExtremeFormatHex),
 		zapMin:     "0xC000000000000000",
 		zapMax:     "0x4000000000000000",
 	},
 	{
+		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
+		fields: matter.FieldSet{
+			{Name: "MinMeasuredValue", Constraint: ParseConstraint("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: ParseConstraint("MinMeasuredValue+1 to 65534")},
+		},
+		min:    matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
+		max:    matter.NewIntConstraintExtreme(65534, matter.ConstraintExtremeFormatInt),
+		zapMin: "0",
+		zapMax: "65534",
+	},
+	{
+		constraint: "1 to MaxMeasuredValue-1",
+		fields: matter.FieldSet{
+			{Name: "MinMeasuredValue", Constraint: ParseConstraint("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: ParseConstraint("MinMeasuredValue+1 to 65534")},
+		},
+		min:      matter.NewIntConstraintExtreme(1, matter.ConstraintExtremeFormatInt),
+		max:      matter.NewIntConstraintExtreme(65533, matter.ConstraintExtremeFormatInt),
+		asciiDoc: "1 to (MaxMeasuredValue - 1)",
+		zapMin:   "1",
+		zapMax:   "65533",
+	},
+	{
+		constraint: "MinMeasuredValue+1 to 65534",
+		fields: matter.FieldSet{
+			{Name: "MinMeasuredValue", Constraint: ParseConstraint("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: ParseConstraint("MinMeasuredValue+1 to 65534")},
+		},
+		min:      matter.NewIntConstraintExtreme(2, matter.ConstraintExtremeFormatInt),
+		max:      matter.NewIntConstraintExtreme(65534, matter.ConstraintExtremeFormatInt),
+		asciiDoc: "(MinMeasuredValue + 1) to 65534",
+		zapMin:   "2",
+		zapMax:   "65534",
+	},
+	{
+		constraint: "-2^62 to 2^62",
+		asciiDoc:   "-2^62^ to 2^62^",
+		min:        matter.NewIntConstraintExtreme(-4611686018427387904, matter.ConstraintExtremeFormatHex),
+		max:        matter.NewIntConstraintExtreme(4611686018427387904, matter.ConstraintExtremeFormatHex),
+		zapMin:     "0xC000000000000000",
+		zapMax:     "0x4000000000000000",
+	},
+
+	{
 		constraint: "max 2^62 - 1",
-		asciiDoc:   "max (2^62 - 1)",
+		asciiDoc:   "max (2^62^ - 1)",
 		max:        matter.NewIntConstraintExtreme(4611686018427387903, matter.ConstraintExtremeFormatAuto),
 		zapMax:     "0x3FFFFFFFFFFFFFFF",
 	},
@@ -61,7 +114,7 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "MaxScaledValue-1",
-		asciiDoc:   "max (MaxScaledValue - 1)",
+		asciiDoc:   "(MaxScaledValue - 1)",
 	},
 	{
 		constraint: "-10000 to +10000",
@@ -129,26 +182,7 @@ var constraintTests = []constraintTest{
 		zapMin:     "0",
 		zapMax:     "10000",
 	},
-	{
-		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
-		generic:    true,
-	},
-	{
-		constraint: "00000xxx",
-		generic:    true,
-	},
-	{
-		constraint: "0b0000 xxxx",
-		generic:    true,
-	},
-	{
-		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
-		generic:    true,
-	},
-	{
-		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
-		generic:    true,
-	},
+
 	{
 		constraint: "0x954D to 0x7FFF",
 		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
@@ -192,14 +226,18 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "16",
-		asciiDoc:   "max 16",
+		asciiDoc:   "16",
+		min:        matter.NewIntConstraintExtreme(16, matter.ConstraintExtremeFormatInt),
 		max:        matter.NewIntConstraintExtreme(16, matter.ConstraintExtremeFormatInt),
+		zapMin:     "16",
 		zapMax:     "16",
 	},
 	{
 		constraint: "16[2]",
-		asciiDoc:   "max 16[max 2]",
+		asciiDoc:   "16[2]",
+		min:        matter.NewIntConstraintExtreme(16, matter.ConstraintExtremeFormatInt),
 		max:        matter.NewIntConstraintExtreme(16, matter.ConstraintExtremeFormatInt),
+		zapMin:     "16",
 		zapMax:     "16",
 	},
 	{
@@ -218,7 +256,6 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "OccupiedEnabled, OccupiedDisabled",
-		generic:    true,
 	},
 	{
 		constraint: "OccupiedSetbackMin to 25.4°C",
@@ -281,6 +318,12 @@ var constraintTests = []constraintTest{
 		zapMin:     "-27315",
 	},
 	{
+		constraint: "Min -27315",
+		asciiDoc:   "min -27315",
+		min:        matter.NewIntConstraintExtreme(-27315, matter.ConstraintExtremeFormatInt),
+		zapMin:     "-27315",
+	},
+	{
 		constraint: "min 0",
 		min:        matter.NewIntConstraintExtreme(0, matter.ConstraintExtremeFormatInt),
 		zapMin:     "0",
@@ -300,17 +343,18 @@ func TestSuite(t *testing.T) {
 		_, isGeneric := c.(*GenericConstraint)
 		if ct.generic {
 			if !isGeneric {
-				t.Errorf("expected generic constraint, got %T", c)
+				t.Errorf("expected generic constraint for %s, got %T", ct.constraint, c)
 			}
 			continue
 		} else if isGeneric {
-			t.Errorf("failed to parse constraint")
+			t.Errorf("failed to parse constraint %s", ct.constraint)
 			continue
 		}
-		min, max := c.MinMax(&matter.ConstraintContext{Fields: ct.fields})
+		min := c.Min(&matter.ConstraintContext{Fields: ct.fields})
 		if min != ct.min {
 			t.Errorf("incorrect min value for \"%s\": expected %d, got %d", ct.constraint, ct.min, min)
 		}
+		max := c.Max(&matter.ConstraintContext{Fields: ct.fields})
 		if max != ct.max {
 			t.Errorf("incorrect max value for \"%s\": expected %d, got %d", ct.constraint, ct.max, max)
 		}
@@ -330,6 +374,6 @@ func TestSuite(t *testing.T) {
 		if max.ZapString(ct.dataType) != ct.zapMax {
 			t.Errorf("incorrect ZAP max value for \"%s\": expected %s, got %s", ct.constraint, ct.zapMax, max.ZapString(ct.dataType))
 		}
-
 	}
+
 }

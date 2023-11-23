@@ -1,4 +1,4 @@
-package zap
+package files
 
 import (
 	"context"
@@ -12,7 +12,6 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/cmd/files"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -20,7 +19,7 @@ import (
 // We just cut that out for now
 var doorLockPattern = regexp.MustCompile(`\n+\s*(Schedule ID|User ID)&#8224;\s+`)
 
-func loadSpec(cxt context.Context, specRoot string, filesOptions files.Options, asciiSettings []configuration.Setting) (docs []*ascii.Doc, err error) {
+func LoadSpec(cxt context.Context, specRoot string, filesOptions Options, asciiSettings []configuration.Setting) (docs []*ascii.Doc, err error) {
 	var lock sync.Mutex
 	asciiSettings = append(ascii.GithubSettings(), asciiSettings...)
 
@@ -30,7 +29,7 @@ func loadSpec(cxt context.Context, specRoot string, filesOptions files.Options, 
 		return
 	}
 
-	err = files.Process(cxt, specPaths, func(cxt context.Context, path string, index, total int) error {
+	err = Process(cxt, specPaths, func(cxt context.Context, path string, index, total int) error {
 
 		var file []byte
 		file, err = os.ReadFile(path)
@@ -69,7 +68,7 @@ func getSpecPaths(specRoot string) (paths []string, err error) {
 	return
 }
 
-func splitSpec(docs []*ascii.Doc) (map[matter.DocType][]*ascii.Doc, error) {
+func SplitSpec(docs []*ascii.Doc) (map[matter.DocType][]*ascii.Doc, error) {
 	byType := make(map[matter.DocType][]*ascii.Doc)
 	for _, d := range docs {
 		docType, err := d.DocType()

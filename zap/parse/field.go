@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/zap"
@@ -75,7 +76,7 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 			length = a.Value
 		case "optional":
 			if a.Value != "true" {
-				field.Conformance = "M"
+				field.Conformance = &conformance.MandatoryConformance{}
 			}
 		case "writable": // Ugh
 

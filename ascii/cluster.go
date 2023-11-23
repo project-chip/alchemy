@@ -25,6 +25,7 @@ func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 		case matter.SectionClusterID:
 
 			clusters, err = readClusterIDs(s)
+		case matter.SectionRevisionHistory:
 		}
 		if err != nil {
 			return nil, err
@@ -56,11 +57,13 @@ func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 			case matter.SectionClassification:
 				err = readClusterClassification(c, s)
 			case matter.SectionFeatures:
-				c.Features, err = s.toFeatures()
+				c.Features, err = s.toFeatures(d)
 			case matter.SectionEvents:
 				c.Events, err = s.toEvents(d)
 			case matter.SectionCommands:
 				c.Commands, err = s.toCommands(d)
+			case matter.SectionRevisionHistory:
+				readRevisionHistory(c, s)
 			default:
 			}
 			if err != nil {
@@ -72,6 +75,28 @@ func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 		models = append(models, c)
 	}
 	return models, nil
+}
+
+func readRevisionHistory(c *matter.Cluster, s *Section) error {
+	rows, headerRowIndex, columnMap, _, err := parseFirstTable(s)
+	if err != nil {
+		return fmt.Errorf("failed reading revision history: %w", err)
+	}
+	for i := headerRowIndex + 1; i < len(rows); i++ {
+		row := rows[i]
+		rev := &matter.Revision{}
+		rev.Number, err = readRowValue(row, columnMap, matter.TableColumnRevision)
+		if err != nil {
+			return err
+		}
+		rev.Description, err = readRowValue(row, columnMap, matter.TableColumnDescription)
+		if err != nil {
+			return err
+		}
+		c.Revisions = append(c.Revisions, rev)
+	}
+
+	return nil
 }
 
 func readClusterIDs(s *Section) ([]*matter.Cluster, error) {

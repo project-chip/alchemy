@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -22,7 +23,7 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 			c.IsFabricScoped = a.Value == "true"
 		case "optional":
 			if a.Value == "false" {
-				c.Conformance = "M"
+				c.Conformance = &conformance.MandatoryConformance{}
 			}
 		case "response":
 			c.Response = a.Value

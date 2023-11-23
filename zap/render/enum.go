@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
@@ -33,13 +34,12 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 		} else {
 			en.CreateAttr("type", "enum8")
 		}
-		en.CreateAttr("apiMaturity", "provisional")
 
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
 		for _, ev := range v.Values {
-			if ev.Conformance == "Zigbee" {
+			if conformance.IsZigbee(ev.Conformance) {
 				continue
 			}
 			evx := en.CreateElement("item")

@@ -22,7 +22,7 @@ var selfClosingTags = regexp.MustCompile("></[^>]+>")
 func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions files.Options, paths []string, asciiSettings []configuration.Setting) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
-	docs, err := loadSpec(cxt, specRoot, filesOptions, asciiSettings)
+	docs, err := files.LoadSpec(cxt, specRoot, filesOptions, asciiSettings)
 	if err != nil {
 		return err
 	}
@@ -31,12 +31,13 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 	ascii.BuildTree(docs)
 
 	slog.InfoContext(cxt, "Splitting spec...")
-	docsByType, err := splitSpec(docs)
+	docsByType, err := files.SplitSpec(docs)
 	if err != nil {
 		return err
 	}
 	appClusters := docsByType[matter.DocTypeAppCluster]
 	appClusterIndexes := docsByType[matter.DocTypeAppClusterIndex]
+	deviceTypes := docsByType[matter.DocTypeDeviceType]
 
 	slog.InfoContext(cxt, "Assigning index domains...")
 
@@ -66,10 +67,23 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 		appClusters = filteredDocs
 	}
 
-	outputs, provisionalZclFiles, err := renderTemplates(cxt, appClusters, zclRoot, filesOptions)
+	outputs, provisionalZclFiles, err := renderAppClusterTemplates(cxt, appClusters, zclRoot, filesOptions)
 	if err != nil {
 		return err
 	}
+
+	files.ProcessDocs(cxt, deviceTypes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
+		slog.Info("Device type doc", "name", doc.Path)
+
+		models, err := doc.ToModel()
+		if err != nil {
+			return err
+		}
+		for _, m := range models {
+			slog.Info("model", "type", m)
+		}
+		return nil
+	}, filesOptions)
 
 	if !filesOptions.DryRun {
 
@@ -104,6 +118,19 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 		if err != nil {
 			return err
 		}
+
+		slog.Info("Patching src/controller/data_model/BUILD.gn...")
+		err = patchBuildGN(zclRoot, appClusters)
+		if err != nil {
+			return err
+		}
+
+		slog.Info("Patching src/app/zap_cluster_list.json...")
+		err = patchClusterList(zclRoot, appClusters)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil

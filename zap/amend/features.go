@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 )
@@ -34,7 +35,7 @@ func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 		}
 	}
 	for _, f := range cluster.Features {
-		if f.Conformance == "Zigbee" {
+		if conformance.IsZigbee(f.Conformance) {
 			continue
 		}
 		bit, er := parse.HexOrDec(f.Bit)

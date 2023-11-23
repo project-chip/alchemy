@@ -1,13 +1,13 @@
 package matter
 
 type Event struct {
-	ID              *ID    `json:"id,omitempty"`
-	Name            string `json:"name,omitempty"`
-	Description     string `json:"description,omitempty"`
-	Priority        string `json:"priority,omitempty"`
-	FabricSensitive bool   `json:"fabricSensitive,omitempty"`
-	Conformance     string `json:"conformance,omitempty"`
-	Access          Access `json:"access,omitempty"`
+	ID              *ID         `json:"id,omitempty"`
+	Name            string      `json:"name,omitempty"`
+	Description     string      `json:"description,omitempty"`
+	Priority        string      `json:"priority,omitempty"`
+	FabricSensitive bool        `json:"fabricSensitive,omitempty"`
+	Conformance     Conformance `json:"conformance,omitempty"`
+	Access          Access      `json:"access,omitempty"`
 
 	Fields []*Field `json:"fields,omitempty"`
 }

@@ -12,7 +12,7 @@ import (
 func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.ClusterRequirement, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
-	var columnMap map[matter.TableColumn]int
+	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
 		if err == NoTableFound {
@@ -63,7 +63,7 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.ElementRequirement, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
-	var columnMap map[matter.TableColumn]int
+	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
 		if err == NoTableFound {

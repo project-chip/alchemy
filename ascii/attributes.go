@@ -8,7 +8,7 @@ import (
 func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
-	var columnMap map[matter.TableColumn]int
+	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
 		if err == NoTableFound {
@@ -27,7 +27,7 @@ func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 		if err != nil {
 			return
 		}
-		attr.Type = d.getRowDataType(row, columnMap, matter.TableColumnType)
+		attr.Type = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		attr.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, attr.Type)
 		if err != nil {
 			return
@@ -42,7 +42,7 @@ func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 		if err != nil {
 			return
 		}
-		attr.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
+		attr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		if err != nil {
 			return
 		}

@@ -243,13 +243,13 @@ func (s *Section) ToModels(d *Doc) ([]interface{}, error) {
 			switch section.SecType {
 			case matter.SectionDataTypeBitmap:
 				var bm *matter.Bitmap
-				bm, err = section.toBitmap()
+				bm, err = section.toBitmap(d)
 				if err == nil {
 					models = append(models, bm)
 				}
 			case matter.SectionDataTypeEnum:
 				var e *matter.Enum
-				e, err = section.toEnum()
+				e, err = section.toEnum(d)
 				if err == nil {
 					models = append(models, e)
 				}

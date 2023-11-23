@@ -35,7 +35,7 @@ func (r *renderer) writeConfigurator(d xmlDecoder, e xmlEncoder) (err error) {
 	}
 
 	configuratorAttributes := map[string]string{
-		"domain": matter.DomainNames[r.doc.Domain],
+		//"domain": matter.DomainNames[r.doc.Domain],
 	}
 
 	err = e.EncodeToken(xml.StartElement{Name: xml.Name{Local: "configurator"}})

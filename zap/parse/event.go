@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -23,7 +24,7 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 			event.FabricSensitive = (a.Value == "true")
 		case "optional":
 			if a.Value == "true" {
-				event.Conformance = "M"
+				event.Conformance = &conformance.MandatoryConformance{}
 			}
 		default:
 			return nil, fmt.Errorf("unexpected event attribute: %s", a.Name.Local)

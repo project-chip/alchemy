@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
@@ -14,13 +15,12 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 		en := cx.CreateElement("bitmap")
 		en.CreateAttr("name", bm.Name)
 		en.CreateAttr("type", zap.ConvertDataTypeNameToZap(bm.Type))
-		en.CreateAttr("apiMaturity", "provisional")
 
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
 		for _, bv := range bm.Bits {
-			if bv.Conformance == "Zigbee" {
+			if conformance.IsZigbee(bv.Conformance) {
 				continue
 			}
 

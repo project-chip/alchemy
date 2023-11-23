@@ -20,7 +20,7 @@ func compareFeature(specFeature *matter.Feature, zapFeature *matter.Feature) (di
 
 	}
 	if specFeature.Conformance != zapFeature.Conformance {
-		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: specFeature.Conformance, ZAP: zapFeature.Conformance})
+		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: specFeature.Conformance.String(), ZAP: zapFeature.Conformance.String()})
 	}
 	return
 }

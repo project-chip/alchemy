@@ -2,6 +2,7 @@ package render
 
 import (
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -19,7 +20,7 @@ func renderCommands(cluster *matter.Cluster, cx *etree.Element, errata *Errata) 
 }
 
 func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
-	mandatory := (c.Conformance == "M")
+	mandatory := conformance.IsMandatory(c.Conformance)
 
 	cx := e.CreateElement("command")
 	var serverSource bool
@@ -48,19 +49,18 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 	if c.Access.Timed {
 		cx.CreateAttr("mustUseTimedInvoke", "true")
 	}
-	cx.CreateAttr("apiMaturity", "provisional")
 
-	if c.Access.Invoke != matter.PrivilegeUnknown {
+	if c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate {
 		ax := cx.CreateElement("access")
 		ax.CreateAttr("op", "invoke")
 		ax.CreateAttr("privilege", renderPrivilege(c.Access.Invoke))
 	}
 	for _, f := range c.Fields {
-		if f.Conformance == "Zigbee" {
+		if conformance.IsZigbee(f.Conformance) {
 			continue
 		}
 		fx := cx.CreateElement("arg")
-		mandatory := (f.Conformance == "M")
+		mandatory := conformance.IsMandatory(f.Conformance)
 		fx.CreateAttr("name", f.Name)
 		writeDataType(fx, c.Fields, f)
 		renderConstraint(c.Fields, f, fx)
@@ -70,7 +70,6 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		if f.Quality.Has(matter.QualityNullable) {
 			fx.CreateAttr("isNullable", "true")
 		}
-		//fx.CreateAttr("apiMaturity", "provisional")
 	}
 	cx.CreateElement("description").SetText(c.Description)
 }

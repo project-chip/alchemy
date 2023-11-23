@@ -3,12 +3,11 @@ package disco
 import (
 	"fmt"
 	"log/slog"
-	"regexp"
 	"strings"
-	"unicode"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -42,7 +41,7 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 		return err
 	}
 
-	err = fixConstraintCells(rows, columnMap)
+	err = fixConstraintCells(doc, rows, columnMap)
 	if err != nil {
 		return err
 	}
@@ -64,7 +63,7 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 	return nil
 }
 
-func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
+func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex) (err error) {
 	if !b.options.formatAccess {
 		return nil
 	}
@@ -89,9 +88,7 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap 
 	return
 }
 
-var minMaxPattern = regexp.MustCompile(`^(Max|Min)( .*)$`)
-
-func fixConstraintCells(rows []*types.TableRow, columnMap map[matter.TableColumn]int) (err error) {
+func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}
@@ -105,19 +102,21 @@ func fixConstraintCells(rows []*types.TableRow, columnMap map[matter.TableColumn
 		if e != nil {
 			continue
 		}
-		fixed := minMaxPattern.ReplaceAllStringFunc(vc, func(s string) string {
-			r := []rune(s)
-			r[0] = unicode.ToLower(r[0])
-			return string(r)
-		})
-		if vc != fixed {
-			setCellString(cell, fixed)
+
+		dataType := doc.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		if dataType != nil {
+			c := constraint.ParseConstraint(vc)
+			fixed := c.AsciiDocString(dataType)
+			if fixed != vc {
+				setCellString(cell, fixed)
+			}
 		}
+
 	}
 	return
 }
 
-func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
+func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap ascii.ColumnIndex) error {
 	attributeCells := make(map[string]*types.Paragraph)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {

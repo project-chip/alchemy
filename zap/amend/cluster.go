@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"io"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/iancoleman/strcase"
 )
@@ -79,7 +80,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 	commands := make(map[*matter.Command]struct{})
 
 	for _, a := range cluster.Attributes {
-		if a.Conformance == "Zigbee" {
+		if conformance.IsZigbee(a.Conformance) {
 			continue
 		}
 		attributes[a] = struct{}{}
@@ -256,7 +257,7 @@ func (*renderer) flushClusterValues(e xmlEncoder, clusterValues map[string]strin
 
 func (r *renderer) flushAttributes(cluster *matter.Cluster, e xmlEncoder, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
 	for a := range attributes {
-		if a.Conformance == "D" {
+		if conformance.IsDeprecated(a.Conformance) {
 			delete(attributes, a)
 			continue
 		}
