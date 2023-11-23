@@ -8,13 +8,15 @@ import (
 type Constraint interface {
 	AsciiDocString(dataType *DataType) string
 	Equal(o Constraint) bool
-	MinMax(c *ConstraintContext) (min ConstraintExtreme, max ConstraintExtreme)
+	Min(c *ConstraintContext) (min ConstraintExtreme)
+	Max(c *ConstraintContext) (max ConstraintExtreme)
 }
 
 type ConstraintLimit interface {
 	AsciiDocString(dataType *DataType) string
 	Equal(o ConstraintLimit) bool
-	MinMax(c *ConstraintContext) (min ConstraintExtreme, max ConstraintExtreme)
+	Min(c *ConstraintContext) (min ConstraintExtreme)
+	Max(c *ConstraintContext) (max ConstraintExtreme)
 }
 
 type ConstraintContext struct {

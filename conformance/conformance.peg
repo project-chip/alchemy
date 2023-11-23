@@ -42,6 +42,8 @@ Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
     return &DeprecatedConformance{}, nil
 } / 'X'  _ Comma? _ {
     return &DisallowedConformance{}, nil
+} / "desc"  _ Comma? _ { 
+     return &DescribedConformance{}, nil
 } / eq:Equality _ Comma? _ {
     exp := eq.(ConformanceExpression)
     return &MandatoryConformance{Expression:exp}, nil
@@ -103,11 +105,22 @@ LogicalOperators <- ("|" / "&" / "^") {
     return c.text, nil
 }
 
-FeatureTerm <- '(' _  eq:Equality _ ')' {
+FeatureTerm <- not:'!'? '(' _  eq:Equality _ ')' {
+    if not != nil {
+        switch eq := eq.(type) {
+            case *EqualityExpression:
+                eq.Not = true
+            case *LogicalExpression:
+                eq.Not = true
+        }
+    }
     return eq, nil
 } / feature:FeatureOp {
     return feature, nil 
+} / identifier:IdentifierOp {
+    return identifier, nil 
 }
+
 
 FeatureOp <- not:'!'? feature:Feature {
     id := feature.(string)
@@ -122,9 +135,20 @@ FeatureOp <- not:'!'? feature:Feature {
     return ic, nil
 }
 
-Feature <- [A-Z]+ {
+
+Feature <- [A-Z][A-Z0-9_]+ {
     return string(c.text), nil
 }
+
+IdentifierOp <- not:'!'? identifier:Identifier {
+    id := identifier.(string)
+    ic := &IdentifierExpression{ID:id}
+    if not != nil {
+        ic.Not = true
+    }
+    return ic, nil
+}
+
 
 Identifier <- ([A-Z]+[a-z]+)+ {
     return string(c.text), nil

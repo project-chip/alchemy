@@ -7,24 +7,26 @@ import (
 )
 
 type RangeConstraint struct {
-	Min matter.ConstraintLimit `json:"min"`
-	Max matter.ConstraintLimit `json:"max"`
+	Minimum matter.ConstraintLimit `json:"min"`
+	Maximum matter.ConstraintLimit `json:"max"`
 }
 
 func (c *RangeConstraint) AsciiDocString(dataType *matter.DataType) string {
-	return fmt.Sprintf("%s to %s", c.Min.AsciiDocString(dataType), c.Max.AsciiDocString(dataType))
+	return fmt.Sprintf("%s to %s", c.Minimum.AsciiDocString(dataType), c.Maximum.AsciiDocString(dataType))
 }
 
 func (c *RangeConstraint) Equal(o matter.Constraint) bool {
 	if oc, ok := o.(*RangeConstraint); ok {
-		return oc.Min.Equal(c.Min) && oc.Max.Equal(c.Max)
+		return oc.Minimum.Equal(c.Minimum) && oc.Maximum.Equal(c.Maximum)
 	}
 	return false
 }
 
-func (c *RangeConstraint) MinMax(cc *matter.ConstraintContext) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
-	from, _ = c.Min.MinMax(cc)
-	_, to = c.Max.MinMax(cc)
+func (c *RangeConstraint) Min(cc *matter.ConstraintContext) (from matter.ConstraintExtreme) {
+	return c.Minimum.Min(cc)
+}
 
-	return
+func (c *RangeConstraint) Max(cc *matter.ConstraintContext) (to matter.ConstraintExtreme) {
+	return c.Maximum.Max(cc)
+
 }

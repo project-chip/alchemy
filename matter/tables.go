@@ -29,6 +29,7 @@ const (
 	TableColumnClass
 	TableColumnDirection
 	TableColumnDescription
+	TableColumnRevision
 	TableColumnResponse
 	TableColumnSummary
 	TableColumnCluster
@@ -61,6 +62,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnClass:        "Class",
 	TableColumnDirection:    "Direction",
 	TableColumnDescription:  "Description",
+	TableColumnRevision:     "Revision",
 	TableColumnResponse:     "Response",
 	TableColumnSummary:      "Summary",
 	TableColumnCluster:      "Cluster",

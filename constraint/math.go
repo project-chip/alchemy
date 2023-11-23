@@ -46,15 +46,16 @@ func operate[T Number](operand string, left, right T) (val T) {
 	return
 }
 
-func (c *MathExpressionLimit) MinMax(cc *matter.ConstraintContext) (matter.ConstraintExtreme, matter.ConstraintExtreme) {
-	leftMin, leftMax := c.Left.MinMax(cc)
-	rightMin, rightMax := c.Right.MinMax(cc)
+func (c *MathExpressionLimit) Min(cc *matter.ConstraintContext) matter.ConstraintExtreme {
+	leftMin := c.Left.Min(cc)
+	rightMin := c.Right.Min(cc)
+	return c.operate(leftMin, rightMin)
+}
 
-	var minExtreme matter.ConstraintExtreme
-	var maxExtreme matter.ConstraintExtreme
-	minExtreme = c.operate(leftMin, rightMin)
-	maxExtreme = c.operate(leftMax, rightMax)
-	return minExtreme, maxExtreme
+func (c *MathExpressionLimit) Max(cc *matter.ConstraintContext) matter.ConstraintExtreme {
+	leftMax := c.Left.Max(cc)
+	rightMax := c.Right.Max(cc)
+	return c.operate(leftMax, rightMax)
 }
 
 func (c *MathExpressionLimit) operate(left matter.ConstraintExtreme, right matter.ConstraintExtreme) (extreme matter.ConstraintExtreme) {

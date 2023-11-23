@@ -2,7 +2,9 @@ package amend
 
 import (
 	"encoding/xml"
+	"strings"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -12,7 +14,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 	var skip bool
 	var matchingStruct *matter.Struct
 	for s, handled := range structs {
-		if s.Name == name {
+		if s.Name == name || strings.TrimSuffix(s.Name, "Struct") == name {
 			matchingStruct = s
 			skip = handled
 			structs[s] = true
@@ -64,7 +66,7 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 	}
 
 	for _, v := range s.Fields {
-		if v.Conformance == "Zigbee" {
+		if conformance.IsZigbee(v.Conformance) {
 			continue
 		}
 
@@ -79,7 +81,7 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 		} else {
 			xfs.Attr = removeAttribute(xfs.Attr, "isNullable")
 		}
-		if v.Conformance != "M" {
+		if !conformance.IsMandatory(v.Conformance) {
 			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
 		} else {
 			xfs.Attr = removeAttribute(xfs.Attr, "optional")

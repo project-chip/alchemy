@@ -14,6 +14,10 @@ func (c *DescribedConstraint) Equal(o matter.Constraint) bool {
 	return ok
 }
 
-func (c *DescribedConstraint) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
+func (c *DescribedConstraint) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+	return
+}
+
+func (c *DescribedConstraint) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
 }

@@ -122,7 +122,7 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	}
 	if f.Type.BaseType == matter.BaseDataTypeString && f.Constraint != nil {
 		// Special case; needs to be long_char_string if over 255
-		_, max := f.Constraint.MinMax(&matter.ConstraintContext{Fields: fs})
+		max := f.Constraint.Max(&matter.ConstraintContext{Fields: fs})
 		switch max.Type {
 		case matter.ConstraintExtremeTypeInt64:
 			if max.Int64 > 255 {
@@ -142,7 +142,9 @@ func GetMinMax(fs matter.FieldSet, f *matter.Field) (from matter.ConstraintExtre
 		return
 	}
 	if f.Constraint != nil {
-		from, to = f.Constraint.MinMax(&matter.ConstraintContext{Fields: fs})
+		cxt := &matter.ConstraintContext{Fields: fs}
+		from = f.Constraint.Min(cxt)
+		to = f.Constraint.Max(cxt)
 	}
 	if !from.Defined() && f.Quality.Has(matter.QualityNullable) {
 		from = f.Type.Min(true)

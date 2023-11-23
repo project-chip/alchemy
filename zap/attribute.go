@@ -3,6 +3,7 @@ package zap
 import (
 	"encoding/xml"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -49,7 +50,7 @@ func (xa *XMLAttribute) ToModel() (ma *matter.Field, err error) {
 		ma.Access.FabricSensitive = true
 	}
 	if !xa.Optional {
-		ma.Conformance = "M"
+		ma.Conformance = &conformance.MandatoryConformance{}
 	}
 	return
 }

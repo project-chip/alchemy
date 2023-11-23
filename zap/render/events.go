@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -15,11 +16,10 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 		ex.CreateAttr("name", e.Name)
 		ex.CreateAttr("priority", strings.ToLower(e.Priority))
 		ex.CreateAttr("side", "server")
-		ex.CreateAttr("apiMaturity", "provisional")
 		if e.FabricSensitive {
 			ex.CreateAttr("isFabricSensitive", "true")
 		}
-		if e.Conformance != "M" {
+		if !conformance.IsMandatory(e.Conformance) {
 			ex.CreateAttr("optional", "true")
 		}
 
@@ -30,7 +30,7 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 
 		}
 		for _, f := range e.Fields {
-			if f.Conformance == "Zigbee" {
+			if conformance.IsZigbee(f.Conformance) {
 				continue
 			}
 			if !f.ID.Valid() {
@@ -44,10 +44,9 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 			if f.Quality.Has(matter.QualityNullable) {
 				fx.CreateAttr("isNullable", "true")
 			}
-			if f.Conformance != "M" {
+			if !conformance.IsMandatory(f.Conformance) {
 				fx.CreateAttr("optional", "true")
 			}
-			fx.CreateAttr("apiMaturity", "provisional")
 		}
 		if e.Access.Read != matter.PrivilegeUnknown {
 			ax := ex.CreateElement("access")

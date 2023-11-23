@@ -3,7 +3,9 @@ package amend
 import (
 	"encoding/xml"
 	"fmt"
+	"strings"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
@@ -14,7 +16,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 
 	var matchingEnum *matter.Enum
 	for en := range enums {
-		if en.Name == name {
+		if en.Name == name || strings.TrimSuffix(en.Name, "Enum") == name {
 			matchingEnum = en
 			delete(enums, en)
 			break
@@ -49,10 +51,6 @@ func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum,
 	xfb.Attr = setAttributeValue(xfb.Attr, "name", en.Name)
 	xfb.Attr = setAttributeValue(xfb.Attr, "type", enumType)
 
-	if provisional {
-		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
-	}
-
 	err = e.EncodeToken(xfb)
 	if err != nil {
 		return
@@ -63,7 +61,7 @@ func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum,
 	}
 
 	for _, v := range en.Values {
-		if v.Conformance == "Zigbee" {
+		if conformance.IsZigbee(v.Conformance) {
 			continue
 		}
 

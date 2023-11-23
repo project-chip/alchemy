@@ -6,6 +6,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/iancoleman/strcase"
@@ -69,7 +70,7 @@ func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []
 		fb.CreateElement("cluster").CreateAttr("code", cluster.ID.HexString())
 	}
 	for _, f := range features {
-		if f.Conformance == "Zigbee" {
+		if conformance.IsZigbee(f.Conformance) {
 			continue
 		}
 		bit, err := parse.HexOrDec(f.Bit)

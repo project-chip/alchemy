@@ -145,7 +145,7 @@ func readTag(d *xml.Decoder, e xml.StartElement) (c *matter.Feature, err error) 
 		case "name":
 			c.Name = a.Value
 		case "description":
-			c.Description = a.Value
+			c.Summary = a.Value
 		default:
 			return nil, fmt.Errorf("unexpected tag attribute: %s", a.Name.Local)
 		}

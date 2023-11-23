@@ -10,15 +10,25 @@ type LogicalExpression struct {
 	Operand string
 	Left    ConformanceExpression
 	Right   ConformanceExpression
+	Not     bool
 }
 
 func (le *LogicalExpression) String() string {
 	switch le.Operand {
 	case "|":
+		if le.Not {
+			return fmt.Sprintf("!%s and !%s", le.Left.String(), le.Right.String())
+		}
 		return fmt.Sprintf("(%s or %s)", le.Left.String(), le.Right.String())
 	case "&":
+		if le.Not {
+			return fmt.Sprintf("(%s or %s)", le.Left.String(), le.Right.String())
+		}
 		return fmt.Sprintf("(%s and %s)", le.Left.String(), le.Right.String())
 	case "^":
+		if le.Not {
+			return fmt.Sprintf("!(%s xor %s)", le.Left.String(), le.Right.String())
+		}
 		return fmt.Sprintf("(%s xor %s)", le.Left.String(), le.Right.String())
 	default:
 		return "unknown operator"
@@ -34,14 +44,19 @@ func (le *LogicalExpression) Eval(context matter.ConformanceContext) (bool, erro
 	if err != nil {
 		return false, err
 	}
+	var result bool
 	switch le.Operand {
 	case "|":
-		return l || r, nil
+		result = l || r
 	case "&":
-		return l && r, nil
+		result = l && r
 	case "^":
-		return (l || r) && !(l && r), nil
+		result = (l || r) && !(l && r)
 	default:
 		return false, fmt.Errorf("unknown operand: %s", le.Operand)
 	}
+	if le.Not {
+		return !result, nil
+	}
+	return result, nil
 }

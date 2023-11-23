@@ -36,8 +36,7 @@ func Render(cxt context.Context, doc *ascii.Doc, models []any) (*Result, error) 
 	x.CreateComment(fmt.Sprintf(license, time.Now().Year()))
 	c := x.CreateElement("configurator")
 	dom := c.CreateElement("domain")
-	domainName := matter.DomainNames[doc.Domain]
-	dom.CreateAttr("name", domainName)
+	dom.CreateAttr("name", "CHIP")
 	switch docType {
 	case matter.DocTypeAppCluster:
 

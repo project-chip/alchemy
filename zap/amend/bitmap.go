@@ -3,7 +3,9 @@ package amend
 import (
 	"encoding/xml"
 	"fmt"
+	"strings"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
@@ -14,7 +16,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 
 	var matchingBitmap *matter.Bitmap
 	for bm := range bitmaps {
-		if bm.Name == name {
+		if bm.Name == name || strings.TrimSuffix(bm.Name, "Bitmap") == name {
 			matchingBitmap = bm
 			delete(bitmaps, bm)
 			break
@@ -37,9 +39,6 @@ func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matte
 	} else {
 		xfb.Attr = setAttributeValue(xfb.Attr, "type", "bitmap8")
 	}
-	if provisional {
-		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
-	}
 
 	err = e.EncodeToken(xfb)
 	if err != nil {
@@ -52,7 +51,7 @@ func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matte
 	}
 
 	for _, b := range bitmap.Bits {
-		if b.Conformance == "Zigbee" {
+		if conformance.IsZigbee(b.Conformance) {
 			continue
 		}
 

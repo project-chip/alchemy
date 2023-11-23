@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"strings"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -44,13 +45,10 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 	} else {
 		xfb.Attr = removeAttribute(xfb.Attr, "isFabricSensitive")
 	}
-	if ev.Conformance != "M" {
+	if !conformance.IsMandatory(ev.Conformance) {
 		xfb.Attr = setAttributeValue(xfb.Attr, "optional", "true")
 	} else {
 		xfb.Attr = removeAttribute(xfb.Attr, "optional")
-	}
-	if provisional {
-		xfb.Attr = setAttributeValue(xfb.Attr, "apiMaturity", "provisional")
 	}
 
 	err = e.EncodeToken(xfb)
@@ -68,13 +66,13 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 	e.EncodeToken(xml.EndElement{Name: xml.Name{Local: "description"}})
 
 	for _, f := range ev.Fields {
-		if f.Conformance == "Zigbee" {
+		if conformance.IsZigbee(f.Conformance) {
 			continue
 		}
 		if !f.ID.Valid() {
 			continue
 		}
-		mandatory := (f.Conformance == "M")
+		mandatory := conformance.IsMandatory(f.Conformance)
 
 		elName := xml.Name{Local: "field"}
 		xfs := xml.StartElement{Name: elName}

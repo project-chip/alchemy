@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"strconv"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
@@ -84,13 +85,13 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 
 	el.Attr = r.renderConstraint(cluster.Attributes, a, el.Attr)
 
-	if a.Quality.Has(matter.QualityFixed) || (a.Access.Read == matter.PrivilegeUnknown || a.Access.Read == matter.PrivilegeView) && a.Access.Write == matter.PrivilegeUnknown || r.errata.SuppressAttributePermissions {
+	if a.Quality.Has(matter.QualityFixed) || ((a.Access.Read == matter.PrivilegeUnknown || a.Access.Read == matter.PrivilegeView) && (a.Access.Write == matter.PrivilegeUnknown || a.Access.Write == matter.PrivilegeOperate)) || r.errata.SuppressAttributePermissions {
 		if a.Access.Write != matter.PrivilegeUnknown {
 			el.Attr = setAttributeValue(el.Attr, "writable", "true")
 		} else {
 			el.Attr = setAttributeValue(el.Attr, "writable", "false")
 		}
-		if a.Conformance != "M" {
+		if !conformance.IsMandatory(a.Conformance) {
 			el.Attr = setAttributeValue(el.Attr, "optional", "true")
 		} else {
 			el.Attr = setAttributeValue(el.Attr, "optional", "false")
@@ -109,7 +110,7 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 		} else {
 			el.Attr = setAttributeValue(el.Attr, "writable", "false")
 		}
-		if a.Conformance != "M" {
+		if !conformance.IsMandatory(a.Conformance) {
 			el.Attr = setAttributeValue(el.Attr, "optional", "true")
 		} else {
 			el.Attr = setAttributeValue(el.Attr, "optional", "false")
@@ -135,13 +136,13 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 			return
 		}
 
-		if a.Access.Read != matter.PrivilegeUnknown {
+		if a.Access.Read != matter.PrivilegeUnknown && a.Access.Read != matter.PrivilegeView {
 			err = r.renderAccess(e, "read", a.Access.Read)
 			if err != nil {
 				return
 			}
 		}
-		if a.Access.Write != matter.PrivilegeUnknown {
+		if a.Access.Write != matter.PrivilegeUnknown && a.Access.Write != matter.PrivilegeOperate {
 			err = r.renderAccess(e, "write", a.Access.Write)
 			if err != nil {
 				return
@@ -194,7 +195,7 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 	}
 	var field *matter.Field
 	for a := range attributes {
-		if a.ID.Equals(attributeID) && a.Conformance != "Zigbee" {
+		if a.ID.Equals(attributeID) && !conformance.IsZigbee(a.Conformance) {
 			field = a
 			delete(attributes, a)
 			break
@@ -205,7 +206,7 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 		return nil
 	}
 
-	if field.Conformance == "D" {
+	if conformance.IsDeprecated(field.Conformance) {
 		return nil
 	}
 

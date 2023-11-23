@@ -1,11 +1,10 @@
 package render
 
 import (
-	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
@@ -17,24 +16,23 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		cx.CreateComment("Attributes")
 	}
 	for _, a := range cluster.Attributes {
-		if a.Conformance == "Zigbee" || a.Conformance == "D" {
+		if conformance.IsZigbee(a.Conformance) || conformance.IsDeprecated(a.Conformance) {
 			continue
 		}
-		mandatory := (a.Conformance == "M")
 
 		if !a.ID.Valid() {
 			continue
 		}
 
-		if !mandatory && len(a.Conformance) > 0 && a.Conformance != "O" {
+		/*if !mandatory && len(a.Conformance) > 0 && a.Conformance != "O" {
 			cx.CreateComment(fmt.Sprintf("Conformance feature %s - for now optional", a.Conformance))
-		}
+		}*/
 		attr := cx.CreateElement("attribute")
 		attr.CreateAttr("code", a.ID.HexString())
 		attr.CreateAttr("side", "server")
-		writeAttributeDataType(attr, cluster.Attributes, a)
 		define := GetDefine(a.Name, clusterPrefix, errata)
 		attr.CreateAttr("define", define)
+		writeAttributeDataType(attr, cluster.Attributes, a)
 		if a.Quality.Has(matter.QualityNullable) {
 			attr.CreateAttr("isNullable", "true")
 		}
@@ -63,7 +61,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		}
 		renderConstraint(cluster.Attributes, a, attr)
 		renderAttributeAccess(a, errata, attr)
-		if a.Conformance != "M" {
+		if !conformance.IsMandatory(a.Conformance) {
 			attr.CreateAttr("optional", "true")
 		} else {
 			attr.CreateAttr("optional", "false")
@@ -136,9 +134,9 @@ func renderPrivilege(a matter.Privilege) string {
 
 func GetDefine(name string, prefix string, errata *Errata) string {
 	define := strcase.ToScreamingDelimited(name, '_', "", true)
-	if !strings.HasPrefix(define, prefix) {
+	/*if !strings.HasPrefix(define, prefix) {
 		define = prefix + define
-	}
+	}*/
 	if errata.DefineOverrides != nil {
 		if override, ok := errata.DefineOverrides[define]; ok {
 			return override

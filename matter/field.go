@@ -7,11 +7,11 @@ type Field struct {
 	Name string    `json:"name,omitempty"`
 	Type *DataType `json:"type,omitempty"`
 
-	Constraint  Constraint `json:"constraint,omitempty"`
-	Quality     Quality    `json:"quality,omitempty"`
-	Access      Access     `json:"access,omitempty"`
-	Default     string     `json:"default,omitempty"`
-	Conformance string     `json:"conformance,omitempty"`
+	Constraint  Constraint  `json:"constraint,omitempty"`
+	Quality     Quality     `json:"quality,omitempty"`
+	Access      Access      `json:"access,omitempty"`
+	Default     string      `json:"default,omitempty"`
+	Conformance Conformance `json:"conformance,omitempty"`
 }
 
 func (fs FieldSet) GetField(name string) *Field {

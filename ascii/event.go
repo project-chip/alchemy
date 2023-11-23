@@ -13,7 +13,7 @@ import (
 func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
-	var columnMap map[matter.TableColumn]int
+	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading events: %w", err)
@@ -39,10 +39,7 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 		if err != nil {
 			return
 		}
-		e.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
-		if err != nil {
-			return
-		}
+		e.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		var a string
 		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
@@ -66,7 +63,7 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 			}
 			var rows []*types.TableRow
 			var headerRowIndex int
-			var columnMap map[matter.TableColumn]int
+			var columnMap ColumnIndex
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
 			if headerRowIndex > 0 {
 				firstRow := rows[0]

@@ -19,7 +19,7 @@ type DataTypeEntry struct {
 	typeCell            *types.TableCell
 	definitionTable     *types.Table
 	indexColumn         matter.TableColumn
-	definitionColumnMap map[matter.TableColumn]int
+	definitionColumnMap ascii.ColumnIndex
 	existing            bool
 }
 
@@ -45,7 +45,7 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 	}
 }
 
-func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap map[matter.TableColumn]int) error {
+func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap ascii.ColumnIndex) error {
 	sectionDataMap, err := getDataTypes(columnMap, rows, section)
 	if err != nil {
 		return err
@@ -58,7 +58,7 @@ func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*ty
 	return nil
 }
 
-func getDataTypes(columnMap map[matter.TableColumn]int, rows []*types.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
+func getDataTypes(columnMap ascii.ColumnIndex, rows []*types.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
 	sectionDataMap := make(map[string]*DataTypeEntry)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {

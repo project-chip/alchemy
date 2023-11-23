@@ -96,7 +96,7 @@ func readTable(cxt context.Context, section *ascii.Section) (rs []*dbRow, err er
 	return
 }
 
-func readTableRow(valueRow *asciitypes.TableRow, columnMap map[matter.TableColumn]int, extraColumns []ascii.ExtraColumn, row *dbRow) error {
+func readTableRow(valueRow *asciitypes.TableRow, columnMap ascii.ColumnIndex, extraColumns []ascii.ExtraColumn, row *dbRow) error {
 	if row.values == nil {
 		row.values = make(map[matter.TableColumn]interface{})
 	}

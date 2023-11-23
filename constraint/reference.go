@@ -1,6 +1,8 @@
 package constraint
 
-import "github.com/hasty/alchemy/matter"
+import (
+	"github.com/hasty/alchemy/matter"
+)
 
 type ReferenceLimit struct {
 	Value string
@@ -17,7 +19,7 @@ func (c *ReferenceLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *ReferenceLimit) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
+func (c *ReferenceLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
 	r := cc.Fields.GetField(c.Value)
 	if cc.VisitedReferences == nil {
 		cc.VisitedReferences = make(map[string]struct{})
@@ -29,5 +31,20 @@ func (c *ReferenceLimit) MinMax(cc *matter.ConstraintContext) (min matter.Constr
 	if r == nil || r.Constraint == nil {
 		return
 	}
-	return r.Constraint.MinMax(cc)
+	return r.Constraint.Min(cc)
+}
+
+func (c *ReferenceLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	r := cc.Fields.GetField(c.Value)
+	if cc.VisitedReferences == nil {
+		cc.VisitedReferences = make(map[string]struct{})
+	}
+	if _, ok := cc.VisitedReferences[c.Value]; ok {
+		return
+	}
+	cc.VisitedReferences[c.Value] = struct{}{}
+	if r == nil || r.Constraint == nil {
+		return
+	}
+	return r.Constraint.Max(cc)
 }

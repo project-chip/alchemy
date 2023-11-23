@@ -7,21 +7,24 @@ import (
 )
 
 type MaxConstraint struct {
-	Max matter.ConstraintLimit
+	Maximum matter.ConstraintLimit
 }
 
 func (c *MaxConstraint) AsciiDocString(dataType *matter.DataType) string {
-	return fmt.Sprintf("max %s", c.Max.AsciiDocString(dataType))
+	return fmt.Sprintf("max %s", c.Maximum.AsciiDocString(dataType))
 }
 
 func (c *MaxConstraint) Equal(o matter.Constraint) bool {
 	if oc, ok := o.(*MaxConstraint); ok {
-		return oc.Max.Equal(c.Max)
+		return oc.Maximum.Equal(c.Maximum)
 	}
 	return false
 }
 
-func (c *MaxConstraint) MinMax(cc *matter.ConstraintContext) (min matter.ConstraintExtreme, max matter.ConstraintExtreme) {
-	_, max = c.Max.MinMax(cc)
+func (c *MaxConstraint) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
 	return
+}
+
+func (c *MaxConstraint) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return c.Maximum.Max(cc)
 }

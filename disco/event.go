@@ -57,7 +57,7 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 	return nil
 }
 
-func (b *Ball) organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.Section, eventsTable *types.Table, columnMap map[matter.TableColumn]int) error {
+func (b *Ball) organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.Section, eventsTable *types.Table, columnMap ascii.ColumnIndex) error {
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
@@ -88,7 +88,7 @@ func (b *Ball) organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.S
 			return fmt.Errorf("failed mapping table columns for event table in section %s: %w", ss.Name, err)
 
 		}
-		err = fixConstraintCells(rows, columnMap)
+		err = fixConstraintCells(doc, rows, columnMap)
 		if err != nil {
 			return err
 		}

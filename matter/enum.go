@@ -8,8 +8,8 @@ type Enum struct {
 }
 
 type EnumValue struct {
-	Value       string `json:"value,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Summary     string `json:"summary,omitempty"`
-	Conformance string `json:"conformance,omitempty"`
+	Value       string      `json:"value,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Summary     string      `json:"summary,omitempty"`
+	Conformance Conformance `json:"conformance,omitempty"`
 }
