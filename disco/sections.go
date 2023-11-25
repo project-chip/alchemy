@@ -17,12 +17,9 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 		validSectionTypes[st] = struct{}{}
 	}
 	sections := divyUpSection(sec, validSectionTypes)
-	for i, s := range sections {
-		fmt.Printf("after divy section type %s: %v\n", i, s)
-	}
+
 	newOrder := make([]interface{}, 0, len(sec.Elements))
 	for _, st := range sectionOrder {
-		fmt.Printf("section order: %v\n", st)
 		if els, ok := sections[st]; ok {
 
 			newOrder = append(newOrder, els...)
@@ -32,9 +29,7 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	if len(sections) > 0 {
 		return fmt.Errorf("non-empty section list after reordering")
 	}
-	for i, s := range newOrder {
-		fmt.Printf("after reorder section type %d: %v\n", i, s)
-	}
+
 	return sec.SetElements(newOrder)
 }
 
@@ -44,7 +39,6 @@ func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]stru
 	for _, e := range sec.Elements {
 		switch el := e.(type) {
 		case *ascii.Section:
-			fmt.Printf("divy section %s - %d\n", el.Name, el.SecType)
 			if el.SecType != matter.SectionUnknown {
 				_, ok := validSectionTypes[el.SecType]
 				if ok {
