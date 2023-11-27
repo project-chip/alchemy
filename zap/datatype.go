@@ -73,6 +73,13 @@ var matterToZapMap = map[string]string{
 	"endpoint-no":    "endpoint_no",
 	"EUI64":          "eui64",
 
+	"unsignedtemperature":   "int8u",
+	"signedtemperature":     "int8s",
+	"temperaturedifference": "int16s",
+
+	// Hacky workaround for Thermostat
+	"ref_occupancybitmap": "bitmap8",
+
 	/* Same on both sides:
 	percent
 	percent100ths
