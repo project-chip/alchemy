@@ -8,9 +8,15 @@ import (
     "github.com/hasty/alchemy/matter"
 )
 
+func debug(format string, a ...any) (n int, err error) {
+	return
+	return fmt.Fprintf(os.Stdout, format, a...)
 }
 
-Input <- conf:Conformance+  {
+
+}
+
+Input <- conf:Conformance+ EOF {
     cs := conf.([]interface{})
 
     var set ConformanceSet
@@ -28,6 +34,9 @@ Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
         o.Choice = choice.(*Choice)
     }
     return o, nil   
+} / eq:Equality _ Comma? _ {
+    exp := eq.(ConformanceExpression)
+    return &MandatoryConformance{Expression:exp}, nil
 } / 'M'  _ Comma? _ {
     return &MandatoryConformance{}, nil
 } / 'O' choice:Choice?  _ Comma? _ {
@@ -44,9 +53,7 @@ Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
     return &DisallowedConformance{}, nil
 } / "desc"  _ Comma? _ { 
      return &DescribedConformance{}, nil
-} / eq:Equality _ Comma? _ {
-    exp := eq.(ConformanceExpression)
-    return &MandatoryConformance{Expression:exp}, nil
+
 }
 
 Equality <- _ left:Logical right:EqualsOp* _ {
@@ -151,6 +158,7 @@ IdentifierOp <- not:'!'? identifier:Identifier {
 
 
 Identifier <- ([A-Z]+[a-z]+)+ {
+    debug("matched identifier %s", string(c.text))
     return string(c.text), nil
 }
 
