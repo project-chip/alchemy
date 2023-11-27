@@ -38,7 +38,7 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 	xfb.Attr = setAttributeValue(xfb.Attr, "code", ev.ID.HexString())
 	xfb.Attr = setAttributeValue(xfb.Attr, "name", ev.Name)
 	xfb.Attr = setAttributeValue(xfb.Attr, "priority", strings.ToLower(ev.Priority))
-	xfb.Attr = setAttributeValue(xfb.Attr, "side", "server")
+	xfb.Attr = removeAttribute(xfb.Attr, "side")
 
 	if ev.FabricSensitive {
 		xfb.Attr = setAttributeValue(xfb.Attr, "isFabricSensitive", "true")
