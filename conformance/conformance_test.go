@@ -42,7 +42,7 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 			return
 		}
 		if result != test.Expected {
-			t.Errorf("failed checking conformance %s with %v: expected %v, got %v", conformance.String(), test.Context, test.Expected, result)
+			t.Errorf("failed checking conformance %s (parsed %s) with %v: expected %v, got %v", cts.Conformance, conformance.String(), test.Context, test.Expected, result)
 		}
 	}
 }
@@ -103,6 +103,33 @@ var otherwiseTests = []conformanceTestSuite{
 			{Context: matter.ConformanceContext{"Zigbee": true}, Expected: matter.ConformanceStateMandatory},
 			{Context: matter.ConformanceContext{"Zigbee": false}, Expected: matter.ConformanceStateDisallowed},
 			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateDisallowed},
+		},
+	},
+	{
+		Conformance: "[Zigbee]",
+		Tests: []conformanceTest{
+			{Context: matter.ConformanceContext{"AA": true}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{"Zigbee": true}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{"Zigbee": false}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateDisallowed},
+		},
+	},
+	{
+		Conformance: "MSCH",
+		Tests: []conformanceTest{
+			{Context: matter.ConformanceContext{"AA": true}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{"MSCH": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"MSCH": false}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateDisallowed},
+		},
+	},
+	{
+		Conformance: "M",
+		Tests: []conformanceTest{
+			{Context: matter.ConformanceContext{"AA": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"MSCH": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"MSCH": false}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateMandatory},
 		},
 	},
 }
