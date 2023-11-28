@@ -28,7 +28,7 @@ func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Fiel
 		return
 	}
 	dts := zap.FieldToZapDataType(fs, f)
-	if f.Type.IsArray {
+	if f.Type.IsArray() {
 		x.CreateAttr("type", "ARRAY")
 		x.CreateAttr("entryType", dts)
 	} else {
@@ -41,7 +41,7 @@ func writeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Field) {
 		return
 	}
 	dts := zap.FieldToZapDataType(fs, f)
-	if f.Type.IsArray {
+	if f.Type.IsArray() {
 		x.CreateAttr("array", "true")
 	}
 	x.CreateAttr("type", dts)

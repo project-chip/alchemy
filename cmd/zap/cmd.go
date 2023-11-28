@@ -14,7 +14,11 @@ var Command = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		specRoot, _ := cmd.Flags().GetString("specRoot")
 		zclRoot, _ := cmd.Flags().GetString("zclRoot")
-		return Migrate(context.Background(), specRoot, zclRoot, files.Flags(cmd), args, common.AsciiDocAttributes(cmd))
+		options := migrateOptions{
+			filesOptions:  files.Flags(cmd),
+			asciiSettings: common.AsciiDocAttributes(cmd),
+		}
+		return Migrate(context.Background(), specRoot, zclRoot, args, options)
 	},
 }
 

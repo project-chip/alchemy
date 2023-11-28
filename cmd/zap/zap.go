@@ -19,10 +19,15 @@ import (
 
 var selfClosingTags = regexp.MustCompile("></[^>]+>")
 
-func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions files.Options, paths []string, asciiSettings []configuration.Setting) error {
+type migrateOptions struct {
+	filesOptions  files.Options
+	asciiSettings []configuration.Setting
+}
+
+func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []string, options migrateOptions) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
-	docs, err := files.LoadSpec(cxt, specRoot, filesOptions, asciiSettings)
+	docs, err := files.LoadSpec(cxt, specRoot, options.filesOptions, options.asciiSettings)
 	if err != nil {
 		return err
 	}
@@ -49,7 +54,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 		doc.Domain = zap.StringToDomain(top.Name)
 		slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
 		return nil
-	}, filesOptions)
+	}, options.filesOptions)
 
 	if len(paths) > 0 {
 		filteredDocs := make([]*ascii.Doc, 0, len(paths))
@@ -67,7 +72,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 		appClusters = filteredDocs
 	}
 
-	outputs, provisionalZclFiles, err := renderAppClusterTemplates(cxt, appClusters, zclRoot, filesOptions)
+	outputs, provisionalZclFiles, err := renderAppClusterTemplates(cxt, appClusters, zclRoot, options.filesOptions)
 	if err != nil {
 		return err
 	}
@@ -83,20 +88,18 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, filesOptions 
 			slog.Info("model", "type", m)
 		}
 		return nil
-	}, filesOptions)
+	}, options.filesOptions)
 
-	if !filesOptions.DryRun {
+	if !options.filesOptions.DryRun {
 
 		for path, result := range outputs {
 			if len(result.Models) == 0 {
 				continue
 			}
 
-			if !filesOptions.DryRun {
-				err = os.WriteFile(path, []byte(result.ZCL), os.ModeAppend|0644)
-				if err != nil {
-					return err
-				}
+			err = os.WriteFile(path, []byte(result.ZCL), os.ModeAppend|0644)
+			if err != nil {
+				return err
 			}
 		}
 

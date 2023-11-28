@@ -13,7 +13,7 @@ import (
 
 func writeAttributeDataType(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.Attr {
 	dts := zap.FieldToZapDataType(fs, f)
-	if f.Type.IsArray {
+	if f.Type.IsArray() {
 		attr = setAttributeValue(attr, "type", "ARRAY")
 		attr = setAttributeValue(attr, "entryType", dts)
 	} else {
@@ -28,7 +28,7 @@ func writeDataType(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.A
 		return attr
 	}
 	dts := zap.FieldToZapDataType(fs, f)
-	if f.Type.IsArray {
+	if f.Type.IsArray() {
 		attr = setAttributeValue(attr, "array", "true")
 		attr = setAttributeValue(attr, "type", dts)
 	} else {

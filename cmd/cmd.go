@@ -43,4 +43,5 @@ func init() {
 	rootCmd.AddCommand(conformanceCommand)
 	rootCmd.AddCommand(dump.Command)
 	rootCmd.AddCommand(dm.Command)
+	rootCmd.AddCommand(versionCommand)
 }

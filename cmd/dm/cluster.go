@@ -277,7 +277,7 @@ func renderAppCluster(cxt context.Context, clusters []*matter.Cluster) (output s
 
 func renderDataType(f *matter.Field, i *etree.Element) {
 	if f.Type != nil {
-		if !f.Type.IsArray {
+		if !f.Type.IsArray() {
 			i.CreateAttr("type", f.Type.Name)
 		} else {
 			i.CreateAttr("type", "list")
