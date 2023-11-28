@@ -23,7 +23,7 @@ Disco ball is more aggressive than format, and attempts to rewrite the document 
 - Reorders columns in tables to match disco ball order
 - Renames headers in columns to match disco ball header names
 - Re-formats access columns into disco ball order and spacing
-- Re-formats constraint columns to be more readable (e.g. "60" -> "max 60", )
+- Re-formats constraint columns to be more readable (e.g. an uint with the constraint "0 to 60" -> "max 60", )
 - Fixes command directions to client (<=/=>) server format
 - Appends suffixes to sections when needed (e.g. "XyzBitmap" -> "XyzBitmap Type" or "MyField" -> "MyField Field")
 - Uppercases all hexadecimal numbers
