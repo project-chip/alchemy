@@ -58,12 +58,12 @@ func (b *Ball) Run(cxt context.Context) error {
 		return err
 	}
 
-	err = b.normalizeAnchors(doc)
+	err = b.discoBallTopLevelSection(doc, topLevelSection, docType)
+
 	if err != nil {
 		return err
 	}
-
-	return b.discoBallTopLevelSection(doc, topLevelSection, docType)
+	return b.normalizeAnchors(doc)
 }
 
 func (b *Ball) discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.DocType) error {
