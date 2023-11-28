@@ -75,8 +75,8 @@ func compareField(specField *matter.Field, zapField *matter.Field) (diffs []any)
 		if specField.Type.Name != zapField.Type.Name {
 			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyType, Spec: specField.Type.Name, ZAP: zapField.Type.Name})
 		}
-		if specField.Type.IsArray != zapField.Type.IsArray {
-			diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyIsArray, Spec: specField.Type.IsArray, ZAP: zapField.Type.IsArray})
+		if specField.Type.IsArray() != zapField.Type.IsArray() {
+			diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyIsArray, Spec: specField.Type.IsArray(), ZAP: zapField.Type.IsArray()})
 		}
 
 	}

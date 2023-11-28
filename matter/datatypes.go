@@ -1,6 +1,7 @@
 package matter
 
 import (
+	"encoding/json"
 	"math"
 	"strings"
 )
@@ -128,13 +129,22 @@ func StripDataTypeSuffixes(dataType string) string {
 }
 
 type DataType struct {
-	BaseType BaseDataType `json:"baseType,omitempty"`
-	Name     string       `json:"name,omitempty"`
-	IsArray  bool         `json:"isArray,omitempty"`
+	BaseType BaseDataType
+	Name     string
+
+	isArray bool
+}
+
+func (w *DataType) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"baseType": w.BaseType,
+		"name":     w.Name,
+		"isArray":  w.isArray,
+	})
 }
 
 func NewDataType(name string, isArray bool) *DataType {
-	dt := &DataType{Name: name, IsArray: isArray}
+	dt := &DataType{Name: name, isArray: isArray}
 	switch strings.ToLower(name) {
 	case "bool", "boolean":
 		dt.BaseType = BaseDataTypeBoolean
@@ -262,6 +272,10 @@ func (dt *DataType) IsString() bool {
 	return dt != nil && dt.Name == "string" || dt.Name == "octstr"
 }
 
+func (dt *DataType) IsArray() bool {
+	return dt != nil && dt.isArray
+}
+
 func (dt *DataType) Size() int {
 
 	switch dt.BaseType {
@@ -347,7 +361,7 @@ var fromRanges = map[BaseDataType]ConstraintExtreme{
 	BaseDataTypeInt48:       {Type: ConstraintExtremeTypeInt64, Int64: minInt48, Format: ConstraintExtremeFormatAuto},
 	BaseDataTypeInt56:       {Type: ConstraintExtremeTypeInt64, Int64: minInt56, Format: ConstraintExtremeFormatAuto},
 	BaseDataTypeInt64:       {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt64, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeTemperature: {Type: ConstraintExtremeTypeInt64, Int64: -27315, Format: ConstraintExtremeFormatHex},
+	BaseDataTypeTemperature: {Type: ConstraintExtremeTypeInt64, Int64: -27315, Format: ConstraintExtremeFormatInt},
 	BaseDataTypeAmperage:    {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
 	BaseDataTypeVoltage:     {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
 	BaseDataTypePower:       {Type: ConstraintExtremeTypeInt64, Int64: minInt62},

@@ -309,7 +309,7 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 	return val
 }
 
-var typeSuffixes = []string{" Attribute", " Type"}
+var typeSuffixes = []string{" Attribute", " Type", " Field", " Command", " Attribute", " Event"}
 
 func StripTypeSuffixes(dataType string) string {
 	for _, suffix := range typeSuffixes {

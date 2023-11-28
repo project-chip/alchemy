@@ -145,7 +145,7 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 }
 
 func GetMinMax(fs matter.FieldSet, f *matter.Field) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
-	if f.Type == nil || f.Type.IsArray {
+	if f.Type == nil || f.Type.IsArray() {
 		return
 	}
 	if f.Constraint != nil {
