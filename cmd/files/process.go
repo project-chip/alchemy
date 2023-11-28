@@ -95,10 +95,13 @@ func Save(cxt context.Context, filepaths []string, saver FileSaver, options Opti
 	}, false)
 }
 
+const fileNameSize = 30
+
 func ProgressFileName(file string) string {
 	file = filepath.Base(file)
-	if utf8.RuneCountInString(file) > 20 {
-		file = string([]rune(file)[:20]) + "..."
+	length := utf8.RuneCountInString(file)
+	if length > fileNameSize {
+		file = string([]rune(file)[length-fileNameSize:])
 	}
-	return fmt.Sprintf("%-20s", file)
+	return fmt.Sprintf("%-*s", fileNameSize, file)
 }

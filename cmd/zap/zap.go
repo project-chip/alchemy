@@ -78,14 +78,14 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 	}
 
 	files.ProcessDocs(cxt, deviceTypes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
-		slog.Info("Device type doc", "name", doc.Path)
+		slog.Debug("Device type doc", "name", doc.Path)
 
 		models, err := doc.ToModel()
 		if err != nil {
 			return err
 		}
 		for _, m := range models {
-			slog.Info("model", "type", m)
+			slog.Debug("model", "type", m)
 		}
 		return nil
 	}, options.filesOptions)
