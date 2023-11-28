@@ -168,7 +168,7 @@ func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []
 			}
 			if !ok {
 				var label string
-				id, label = normalizeAnchorID(s.Name, nil)
+				id, label = normalizeAnchorID(s.Name, nil, nil)
 				setAnchorID(s.Base, id, label)
 			}
 			icr, _ := types.NewInternalCrossReference(id, nil)

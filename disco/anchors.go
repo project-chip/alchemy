@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z][a-z]+(?:[A-Z][a-z]*)*(_[A-Z][a-z]*(?:[A-Z][a-z]*)*)*$`)
+var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z][a-z]+(?:[A-Z][a-z]*)*([A-Z][a-z]*(?:[A-Z][a-z]*)*)*$`)
 var acronymPattern = regexp.MustCompile(`[A-Z]{3,}`)
 
 func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
@@ -45,14 +45,13 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 }
 
 func normalizeAnchor(info *ascii.Anchor) {
-	match := properAnchorPattern.FindStringSubmatch(info.ID)
-	if len(match) > 0 {
+	if properAnchorPattern.Match([]byte(info.ID)) {
 		if len(info.Label) == 0 {
 			info.Label = strings.TrimSpace(matter.StripReferenceSuffixes(ascii.ReferenceName(info.Element)))
 		}
 		return
 	}
-	id, label := normalizeAnchorID(info.Name, info.Element)
+	id, label := normalizeAnchorID(info.Name, info.Element, info.Parent)
 	info.ID = id
 	info.Label = label
 }
@@ -60,7 +59,8 @@ func normalizeAnchor(info *ascii.Anchor) {
 var pascalCasePattern = regexp.MustCompile(`^[A-Z][a-z]+([A-Z][a-z]+)+$`)
 var anchorInvalidCharacters = strings.NewReplacer(".", "", "(", "", ")", "")
 
-func normalizeAnchorID(name string, element interface{}) (id string, label string) {
+func normalizeAnchorID(name string, element any, parent any) (id string, label string) {
+	var parentName string
 	switch element.(type) {
 	case *types.Table:
 		label = strings.TrimSpace(name)
@@ -68,15 +68,25 @@ func normalizeAnchorID(name string, element interface{}) (id string, label strin
 		label = strings.TrimSpace(matter.StripReferenceSuffixes(name))
 	}
 
+	switch p := parent.(type) {
+	case *ascii.Section:
+		switch p.SecType {
+		case matter.SectionDataTypeStruct, matter.SectionCommand, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap, matter.SectionEvent:
+			parentName = ascii.ReferenceName(p.Base)
+			parentName = ascii.StripTypeSuffixes(parentName)
+			parentName, _ = normalizeAnchorID(parentName, p.Base, p.Parent)
+			parentName = strings.TrimPrefix(parentName, "ref_")
+		}
+	}
+
 	var ref strings.Builder
 
+	ref.WriteString(parentName)
+
 	parts := strings.Split(label, " ")
-	for i, p := range parts {
+	for _, p := range parts {
 		p = anchorInvalidCharacters.Replace(p)
 		if pascalCasePattern.MatchString(p) {
-			if i > 0 {
-				ref.WriteString("_")
-			}
 			ref.WriteString(p)
 		} else {
 			ref.WriteString(titleCaser.String(p))
@@ -117,8 +127,10 @@ func disambiguateAnchorSet(infos []*ascii.Anchor) error {
 				return fmt.Errorf("duplicate anchor: %s with invalid parent", refIds[i])
 			}
 			parentSections[i] = parentSection
-			refParentId, _ := normalizeAnchorID(ascii.ReferenceName(parentSection.Base), parentSection.Base)
-			refIds[i] = refParentId + "_" + strings.TrimPrefix(refIds[i], "ref_")
+			parentName := ascii.ReferenceName(parentSection.Base)
+			parentName = ascii.StripTypeSuffixes(parentName)
+			refParentId, _ := normalizeAnchorID(parentName, parentSection.Base, parentSection.Parent)
+			refIds[i] = refParentId + strings.TrimPrefix(refIds[i], "ref_")
 		}
 		ids := make(map[string]struct{})
 		var duplicateIds bool
