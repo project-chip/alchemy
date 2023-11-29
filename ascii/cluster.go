@@ -70,11 +70,54 @@ func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 				return nil, err
 			}
 		}
+		for _, a := range c.Attributes {
+			assignCustomModel(c, a.Type)
+		}
+		for _, s := range c.Structs {
+			for _, f := range s.Fields {
+				assignCustomModel(c, f.Type)
+			}
+		}
+		for _, e := range c.Events {
+			for _, f := range e.Fields {
+				assignCustomModel(c, f.Type)
+			}
+		}
+		for _, cmd := range c.Commands {
+			for _, f := range cmd.Fields {
+				assignCustomModel(c, f.Type)
+			}
+		}
 	}
 	for _, c := range clusters {
 		models = append(models, c)
 	}
 	return models, nil
+}
+
+func assignCustomModel(c *matter.Cluster, dt *matter.DataType) {
+	if dt == nil || dt.BaseType != matter.BaseDataTypeCustom {
+		return
+	}
+	name := dt.Name
+	for _, bm := range c.Bitmaps {
+		if name == bm.Name {
+			dt.Model = bm
+			return
+		}
+	}
+	for _, e := range c.Enums {
+		if name == e.Name {
+			dt.Model = e
+			return
+		}
+	}
+	for _, s := range c.Structs {
+		if name == s.Name {
+			dt.Model = s
+			return
+		}
+	}
 }
 
 func readRevisionHistory(c *matter.Cluster, s *Section) error {

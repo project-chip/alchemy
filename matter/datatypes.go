@@ -54,6 +54,10 @@ const (
 	BaseDataTypePower
 	BaseDataTypeEnergy
 
+	BaseDataTypeTemperatureDifference
+	BaseDataTypeUnsignedTemperature
+	BaseDataTypeSignedTemperature
+
 	BaseDataTypeEnum8
 	BaseDataTypeEnum16
 	BaseDataTypePriority
@@ -131,6 +135,7 @@ func StripDataTypeSuffixes(dataType string) string {
 type DataType struct {
 	BaseType BaseDataType
 	Name     string
+	Model    any
 
 	isArray bool
 }
@@ -181,6 +186,11 @@ func NewDataType(name string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeInt56
 	case "int64":
 		dt.BaseType = BaseDataTypeInt64
+
+	case "single":
+		dt.BaseType = BaseDataTypeSingle
+	case "double":
+		dt.BaseType = BaseDataTypeDouble
 
 	case "enum8":
 		dt.BaseType = BaseDataTypeEnum8
@@ -264,6 +274,14 @@ func NewDataType(name string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeEndpointNumber
 	case "eui64":
 		dt.BaseType = BaseDataTypeIeeeAddress
+	case "temperaturedifference":
+		dt.BaseType = BaseDataTypeTemperatureDifference
+	case "unsignedtemperature":
+		dt.BaseType = BaseDataTypeUnsignedTemperature
+	case "signedtemperature":
+		dt.BaseType = BaseDataTypeSignedTemperature
+	default:
+		dt.BaseType = BaseDataTypeCustom
 	}
 	return dt
 }
@@ -301,8 +319,10 @@ func (dt *DataType) Size() int {
 		return 8
 	case BaseDataTypeEpochMicroseconds, BaseDataTypePosixMilliseconds, BaseDataTypeSystimeMicroseconds, BaseDataTypeSystimeMilliseconds:
 		return 8
-	case BaseDataTypeTemperature:
+	case BaseDataTypeTemperature, BaseDataTypeTemperatureDifference:
 		return 2
+	case BaseDataTypeSignedTemperature, BaseDataTypeUnsignedTemperature:
+		return 1
 	case BaseDataTypeAmperage, BaseDataTypeVoltage, BaseDataTypePower, BaseDataTypeEnergy:
 		return 8
 	case BaseDataTypeDeviceTypeID:
@@ -353,19 +373,22 @@ var minInt56 int64 = ^maxInt56
 var minInt62 int64 = ^maxInt62
 
 var fromRanges = map[BaseDataType]ConstraintExtreme{
-	BaseDataTypeInt8:        {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt8, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt16:       {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt16, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt24:       {Type: ConstraintExtremeTypeInt64, Int64: minInt24, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt32:       {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt32, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt40:       {Type: ConstraintExtremeTypeInt64, Int64: minInt40, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt48:       {Type: ConstraintExtremeTypeInt64, Int64: minInt48, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt56:       {Type: ConstraintExtremeTypeInt64, Int64: minInt56, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt64:       {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt64, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeTemperature: {Type: ConstraintExtremeTypeInt64, Int64: -27315, Format: ConstraintExtremeFormatInt},
-	BaseDataTypeAmperage:    {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
-	BaseDataTypeVoltage:     {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
-	BaseDataTypePower:       {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
-	BaseDataTypeEnergy:      {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
+	BaseDataTypeInt8:                  {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt8, Format: ConstraintExtremeFormatAuto},
+	BaseDataTypeInt16:                 {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt16, Format: ConstraintExtremeFormatAuto},
+	BaseDataTypeInt24:                 {Type: ConstraintExtremeTypeInt64, Int64: minInt24, Format: ConstraintExtremeFormatAuto},
+	BaseDataTypeInt32:                 {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt32, Format: ConstraintExtremeFormatAuto},
+	BaseDataTypeInt40:                 {Type: ConstraintExtremeTypeInt64, Int64: minInt40, Format: ConstraintExtremeFormatAuto},
+	BaseDataTypeInt48:                 {Type: ConstraintExtremeTypeInt64, Int64: minInt48, Format: ConstraintExtremeFormatAuto},
+	BaseDataTypeInt56:                 {Type: ConstraintExtremeTypeInt64, Int64: minInt56, Format: ConstraintExtremeFormatAuto},
+	BaseDataTypeInt64:                 {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt64, Format: ConstraintExtremeFormatAuto},
+	BaseDataTypeTemperature:           {Type: ConstraintExtremeTypeInt64, Int64: -27315, Format: ConstraintExtremeFormatInt},
+	BaseDataTypeAmperage:              {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
+	BaseDataTypeVoltage:               {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
+	BaseDataTypePower:                 {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
+	BaseDataTypeEnergy:                {Type: ConstraintExtremeTypeInt64, Int64: minInt62},
+	BaseDataTypeTemperatureDifference: {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt16},
+	BaseDataTypeSignedTemperature:     {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt8},
+	BaseDataTypeUnsignedTemperature:   {Type: ConstraintExtremeTypeUInt64, UInt64: 0},
 }
 
 var fromRangesNullable = map[BaseDataType]ConstraintExtreme{
@@ -382,6 +405,10 @@ var fromRangesNullable = map[BaseDataType]ConstraintExtreme{
 	BaseDataTypeVoltage:  {Type: ConstraintExtremeTypeInt64, Int64: minInt62 + 1},
 	BaseDataTypePower:    {Type: ConstraintExtremeTypeInt64, Int64: minInt62 + 1},
 	BaseDataTypeEnergy:   {Type: ConstraintExtremeTypeInt64, Int64: minInt62 + 1},
+
+	BaseDataTypeTemperatureDifference: {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt16 + 1},
+	BaseDataTypeSignedTemperature:     {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt8 + 1},
+	BaseDataTypeUnsignedTemperature:   {Type: ConstraintExtremeTypeUInt64, UInt64: 0},
 }
 
 var toRanges = map[BaseDataType]ConstraintExtreme{
@@ -412,11 +439,16 @@ var toRanges = map[BaseDataType]ConstraintExtreme{
 	BaseDataTypeEpochMicroseconds: {Type: ConstraintExtremeTypeUInt64, UInt64: math.MaxUint64, Format: ConstraintExtremeFormatHex},
 	BaseDataTypeEpochSeconds:      {Type: ConstraintExtremeTypeUInt64, UInt64: math.MaxUint32, Format: ConstraintExtremeFormatHex},
 	BaseDataTypePosixMilliseconds: {Type: ConstraintExtremeTypeUInt64, UInt64: math.MaxUint64, Format: ConstraintExtremeFormatHex},
-	BaseDataTypeTemperature:       {Type: ConstraintExtremeTypeInt64, Int64: math.MaxInt16, Format: ConstraintExtremeFormatHex},
-	BaseDataTypeAmperage:          {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeVoltage:           {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypePower:             {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeEnergy:            {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
+
+	BaseDataTypeAmperage: {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeVoltage:  {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypePower:    {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeEnergy:   {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
+
+	BaseDataTypeTemperature:           {Type: ConstraintExtremeTypeInt64, Int64: math.MaxInt16, Format: ConstraintExtremeFormatHex},
+	BaseDataTypeTemperatureDifference: {Type: ConstraintExtremeTypeInt64, Int64: math.MaxInt16},
+	BaseDataTypeSignedTemperature:     {Type: ConstraintExtremeTypeInt64, Int64: math.MinInt8},
+	BaseDataTypeUnsignedTemperature:   {Type: ConstraintExtremeTypeUInt64, UInt64: math.MaxUint8},
 }
 
 var toRangesNullable = map[BaseDataType]ConstraintExtreme{
@@ -434,14 +466,6 @@ var toRangesNullable = map[BaseDataType]ConstraintExtreme{
 	BaseDataTypeUInt48:            {Type: ConstraintExtremeTypeUInt64, UInt64: maxUint48 - 1, Format: ConstraintExtremeFormatAuto},
 	BaseDataTypeUInt56:            {Type: ConstraintExtremeTypeUInt64, UInt64: maxUint56 - 1, Format: ConstraintExtremeFormatAuto},
 	BaseDataTypeUInt64:            {Type: ConstraintExtremeTypeUInt64, UInt64: math.MaxUint64 - 1, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt8:              {Type: ConstraintExtremeTypeInt64, Int64: math.MaxInt8, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt16:             {Type: ConstraintExtremeTypeInt64, Int64: math.MaxInt16, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt24:             {Type: ConstraintExtremeTypeInt64, Int64: maxInt24, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt32:             {Type: ConstraintExtremeTypeInt64, Int64: math.MaxInt32, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt40:             {Type: ConstraintExtremeTypeInt64, Int64: maxInt40, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt48:             {Type: ConstraintExtremeTypeInt64, Int64: maxInt48, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt56:             {Type: ConstraintExtremeTypeInt64, Int64: maxInt56, Format: ConstraintExtremeFormatAuto},
-	BaseDataTypeInt64:             {Type: ConstraintExtremeTypeInt64, Int64: math.MaxInt64},
 	BaseDataTypeEpochMicroseconds: {Type: ConstraintExtremeTypeUInt64, UInt64: math.MaxUint64 - 1, Format: ConstraintExtremeFormatHex},
 	BaseDataTypeEpochSeconds:      {Type: ConstraintExtremeTypeUInt64, UInt64: math.MaxUint32 - 1, Format: ConstraintExtremeFormatHex},
 	BaseDataTypePosixMilliseconds: {Type: ConstraintExtremeTypeUInt64, UInt64: math.MaxUint64 - 1, Format: ConstraintExtremeFormatHex},
@@ -449,6 +473,8 @@ var toRangesNullable = map[BaseDataType]ConstraintExtreme{
 	BaseDataTypeVoltage:           {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
 	BaseDataTypePower:             {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
 	BaseDataTypeEnergy:            {Type: ConstraintExtremeTypeInt64, Int64: maxInt62},
+
+	BaseDataTypeUnsignedTemperature: {Type: ConstraintExtremeTypeUInt64, UInt64: math.MaxUint8 - 1},
 }
 
 func (dt *DataType) Min(nullable bool) (from ConstraintExtreme) {

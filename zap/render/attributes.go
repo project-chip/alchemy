@@ -72,7 +72,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 
 func renderConstraint(fs matter.FieldSet, f *matter.Field, attr *etree.Element) {
 
-	from, to := zap.GetMinMax(fs, f)
+	from, to := zap.GetMinMax(&matter.ConstraintContext{Fields: fs, Field: f})
 
 	if f.Type != nil && f.Type.IsString() {
 		if to.Defined() {
