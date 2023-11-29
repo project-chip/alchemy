@@ -25,62 +25,49 @@ var DefaultErrata = &Errata{
 }
 
 var Erratas = map[string]*Errata{
-	"ApplicationBasic.adoc": {
-		topOrder:            DefaultErrata.topOrder,
-		clusterOrder:        DefaultErrata.clusterOrder,
-		dataTypeOrder:       DefaultErrata.dataTypeOrder,
-		ClusterDefinePrefix: "APPLICATION_",
-		DefineOverrides:     map[string]string{"APPLICATION_APPLICATION": "APPLICATION_APP"},
+	"AirQuality.adoc": {
+		topOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
+		dataTypeOrder:               []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		SuppressClusterDefinePrefix: true,
 	},
-	"FanControl.adoc": {
-		topOrder:                     []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:                 DefaultErrata.clusterOrder,
-		dataTypeOrder:                []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
-		SuppressAttributePermissions: true,
-		SuppressClusterDefinePrefix:  true,
+	"ApplicationBasic.adoc": {
+		ClusterDefinePrefix: "APPLICATION_",
+
+		DefineOverrides: map[string]string{"APPLICATION_APPLICATION": "APPLICATION_APP"},
+	},
+	"ApplicationLauncher.adoc": {
+		ClusterDefinePrefix: "APPLICATION_LAUNCHER_",
+		DefineOverrides: map[string]string{
+			"APPLICATION_LAUNCHER_CATALOG_LIST": "APPLICATION_LAUNCHER_LIST",
+		},
+		topOrder:      []matter.Section{matter.SectionCluster, matter.SectionDataTypes, matter.SectionFeatures},
+		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+	},
+	"AudioOutput.adoc": {
+		dataTypeOrder:       []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		ClusterDefinePrefix: "AUDIO_OUTPUT_",
+		DefineOverrides: map[string]string{
+			"AUDIO_OUTPUT_OUTPUT_LIST": "AUDIO_OUTPUT_LIST",
+		},
+	},
+	"BallastConfiguration.adoc": {
+		SuppressClusterDefinePrefix: true,
+	},
+	"BooleanState.adoc": {
+		SuppressClusterDefinePrefix: true,
+	},
+	"Channel.adoc": {
+		ClusterDefinePrefix: "CHANNEL_",
+	},
+	"ColorControl.adoc": {
+		ClusterDefinePrefix: "COLOR_CONTROL_",
 	},
 	"ConcentrationMeasurement.adoc": {
 		topOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               DefaultErrata.dataTypeOrder,
 		SuppressClusterDefinePrefix: true,
 	},
-	"FlowMeasurement.adoc": {
-		topOrder:            DefaultErrata.topOrder,
-		clusterOrder:        DefaultErrata.clusterOrder,
-		dataTypeOrder:       DefaultErrata.dataTypeOrder,
-		ClusterDefinePrefix: "FLOW_",
-	},
-	"IlluminanceMeasurement.adoc": {
-		topOrder:            DefaultErrata.topOrder,
-		clusterOrder:        DefaultErrata.clusterOrder,
-		dataTypeOrder:       DefaultErrata.dataTypeOrder,
-		ClusterDefinePrefix: "ILLUM_",
-	},
-	"KeypadInput.adoc": {
-		topOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:        DefaultErrata.clusterOrder,
-		dataTypeOrder:       DefaultErrata.dataTypeOrder,
-		ClusterDefinePrefix: "ILLUM_",
-	},
-	"LevelControl.adoc": {
-		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               DefaultErrata.dataTypeOrder,
-		DefineOverrides:             map[string]string{"REMAINING_TIME": "LEVEL_CONTROL_REMAINING_TIME"},
-		SuppressClusterDefinePrefix: true,
-	},
-	"MediaInput.adoc": {
-		topOrder:        DefaultErrata.topOrder,
-		clusterOrder:    DefaultErrata.clusterOrder,
-		dataTypeOrder:   DefaultErrata.dataTypeOrder,
-		DefineOverrides: map[string]string{"MEDIA_INPUT_INPUT_LIST": "MEDIA_INPUT_LIST"},
-	},
-	"MicrowaveOvenControl.adoc": {
-		topOrder:                    DefaultErrata.topOrder,
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               DefaultErrata.dataTypeOrder,
-		SuppressClusterDefinePrefix: true,
+	"ContentLauncher.adoc": {
+		ClusterDefinePrefix: "CONTENT_LAUNCHER_",
 	},
 	"DemandResponseLoadControl.adoc": {
 		topOrder:             []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
@@ -88,74 +75,132 @@ var Erratas = map[string]*Errata{
 		dataTypeOrder:        DefaultErrata.dataTypeOrder,
 		WriteRoleAsPrivilege: true,
 	},
-	"Thermostat.adoc": {
-		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               DefaultErrata.dataTypeOrder,
-		SuppressClusterDefinePrefix: true,
-		WriteRoleAsPrivilege:        true,
-	},
-	"AudioOutput.adoc": {
-		topOrder:      DefaultErrata.topOrder,
-		clusterOrder:  DefaultErrata.clusterOrder,
-		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
-	},
-	"ApplicationLauncher.adoc": {
-		topOrder:      []matter.Section{matter.SectionCluster, matter.SectionDataTypes, matter.SectionFeatures},
-		clusterOrder:  DefaultErrata.clusterOrder,
-		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
-	},
-	"AirQuality.adoc": {
-		topOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
-		SuppressClusterDefinePrefix: true,
-	},
-	"Groups.adoc": {
-		topOrder:      []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:  DefaultErrata.clusterOrder,
-		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
-	},
-	"BooleanState.adoc": {
-		topOrder:                    DefaultErrata.topOrder,
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               DefaultErrata.dataTypeOrder,
-		SuppressClusterDefinePrefix: true,
-	},
-	"BallastConfiguration.adoc": {
-		topOrder:                    DefaultErrata.topOrder,
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               DefaultErrata.dataTypeOrder,
-		SuppressClusterDefinePrefix: true,
-	},
-	"WaterControls.adoc": {
-		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               DefaultErrata.dataTypeOrder,
-		SuppressClusterDefinePrefix: true,
-	},
 	"DiagnosticsThread.adoc": {
 		topOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               DefaultErrata.dataTypeOrder,
 		SuppressClusterDefinePrefix: true,
 	},
-	"ThermostatUserInterfaceConfiguration.adoc": {
-		topOrder:                    DefaultErrata.topOrder,
-		clusterOrder:                DefaultErrata.clusterOrder,
-		dataTypeOrder:               DefaultErrata.dataTypeOrder,
-		SuppressClusterDefinePrefix: true,
+	"DoorLock.adoc": {
+		DefineOverrides: map[string]string{
+			"NUMBER_OF_TOTAL_USERS_SUPPORTED":                 "NUM_TOTAL_USERS_SUPPORTED",
+			"NUMBER_OF_PIN_USERS_SUPPORTED":                   "NUM_PIN_USERS_SUPPORTED",
+			"NUMBER_OF_RFID_USERS_SUPPORTED":                  "NUM_RFID_USERS_SUPPORTED",
+			"NUMBER_OF_WEEK_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_WEEKDAY_SCHEDULES_SUPPORTED_PER_USER",
+			"NUMBER_OF_YEAR_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_YEARDAY_SCHEDULES_SUPPORTED_PER_USER",
+			"NUMBER_OF_HOLIDAY_SCHEDULES_SUPPORTED":           "NUM_HOLIDAY_SCHEDULES_SUPPORTED",
+			"MAX_PIN_CODE_LENGTH":                             "MAX_PIN_LENGTH",
+			"MIN_PIN_CODE_LENGTH":                             "MIN_PIN_LENGTH",
+			"NUMBER_OF_CREDENTIALS_SUPPORTED_PER_USER":        "NUM_CREDENTIALS_SUPPORTED_PER_USER",
+			"REQUIRE_PI_NFOR_REMOTE_OPERATION":                "REQUIRE_PIN_FOR_REMOTE_OPERATION",
+		},
 	},
 	"EVSE.adoc": {
 		topOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
-		clusterOrder:                DefaultErrata.clusterOrder,
 		dataTypeOrder:               []matter.Section{matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap, matter.SectionDataTypeStruct},
 		SuppressClusterDefinePrefix: true,
 	},
+	"FanControl.adoc": {
+		topOrder:                     []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		dataTypeOrder:                []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		SuppressAttributePermissions: true,
+		SuppressClusterDefinePrefix:  true,
+	},
+	"FlowMeasurement.adoc": {
+		ClusterDefinePrefix: "FLOW_",
+	},
+	"Groups.adoc": {
+		topOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		dataTypeOrder:       []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		ClusterDefinePrefix: "GROUP_",
+	},
+	"IlluminanceMeasurement.adoc": {
+		ClusterDefinePrefix: "ILLUM_",
+	},
+	"KeypadInput.adoc": {
+		topOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		ClusterDefinePrefix: "ILLUM_",
+	},
+	"LevelControl.adoc": {
+		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		DefineOverrides:             map[string]string{"REMAINING_TIME": "LEVEL_CONTROL_REMAINING_TIME"},
+		SuppressClusterDefinePrefix: true,
+	},
+	"MediaInput.adoc": {
+		ClusterDefinePrefix: "MEDIA_INPUT_",
+		DefineOverrides:     map[string]string{"MEDIA_INPUT_INPUT_LIST": "MEDIA_INPUT_LIST"},
+	},
+	"MediaPlayback.adoc": {
+		ClusterDefinePrefix: "MEDIA_PLAYBACK_",
+		DefineOverrides: map[string]string{
+			"MEDIA_PLAYBACK_CURRENT_STATE":    "MEDIA_PLAYBACK_STATE",
+			"MEDIA_PLAYBACK_SAMPLED_POSITION": "MEDIA_PLAYBACK_PLAYBACK_POSITION",
+			"MEDIA_PLAYBACK_SEEK_RANGE_END":   "MEDIA_PLAYBACK_PLAYBACK_SEEK_RANGE_END",
+			"MEDIA_PLAYBACK_SEEK_RANGE_START": "MEDIA_PLAYBACK_PLAYBACK_SEEK_RANGE_START",
+		},
+	},
+	"MicrowaveOvenControl.adoc": {
+		SuppressClusterDefinePrefix: true,
+	},
+	"ModeSelect.adoc": {
+		DefineOverrides: map[string]string{"DESCRIPTION": "MODE_DESCRIPTION"},
+	},
+	"PressureMeasurement.adoc": {
+		ClusterDefinePrefix: "PRESSURE_",
+	},
 	"ResourceMonitoring.adoc": {
-		topOrder:        DefaultErrata.topOrder,
-		clusterOrder:    DefaultErrata.clusterOrder,
-		dataTypeOrder:   DefaultErrata.dataTypeOrder,
 		SeparateStructs: map[string]struct{}{"ReplacementProductStruct": {}},
+	},
+	"SmokeCOAlarm.adoc": {
+		DefineOverrides: map[string]string{
+			"HARDWARE_FAULT_ALERT":    "HARDWARE_FAULTALERT",
+			"END_OF_SERVICE_ALERT":    "END_OF_SERVICEALERT",
+			"SMOKE_SENSITIVITY_LEVEL": "SENSITIVITY_LEVEL",
+		},
+	},
+	"TargetNavigator.adoc": {
+		ClusterDefinePrefix: "TARGET_NAVIGATOR_",
+		DefineOverrides: map[string]string{
+			"TARGET_NAVIGATOR_TARGET_LIST": "TARGET_NAVIGATOR_LIST",
+		},
+	},
+	"TemperatureControl.adoc": {
+		DefineOverrides: map[string]string{
+			"TEMPERATURE_SETPOINT":         "TEMP_SETPOINT",
+			"MIN_TEMPERATURE":              "MIN_TEMP",
+			"MAX_TEMPERATURE":              "MAX_TEMP",
+			"SELECTED_TEMPERATURE_LEVEL":   "SELECTED_TEMP_LEVEL",
+			"SUPPORTED_TEMPERATURE_LEVELS": "SUPPORTED_TEMP_LEVELS",
+		},
+	},
+	"TemperatureMeasurement.adoc": {
+		ClusterDefinePrefix: "TEMP_",
+	},
+	"Thermostat.adoc": {
+		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		SuppressClusterDefinePrefix: true,
+		WriteRoleAsPrivilege:        true,
+		DefineOverrides: map[string]string{
+			"OCCUPANCY": "THERMOSTAT_OCCUPANCY",
+		},
+	},
+	"ThermostatUserInterfaceConfiguration.adoc": {
+		SuppressClusterDefinePrefix: true,
+	},
+	"WakeOnLAN.adoc": {
+		DefineOverrides: map[string]string{
+			"MAC_ADDRESS": "WAKE_ON_LAN_MAC_ADDRESS",
+		},
+	},
+	"WaterControls.adoc": {
+		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		SuppressClusterDefinePrefix: true,
+	},
+	"WindowCovering.adoc": {
+		ClusterDefinePrefix: "WC_",
+		DefineOverrides: map[string]string{
+			"WC_TARGET_POSITION_LIFT_PERCENT_100_THS":  "WC_TARGET_POSITION_LIFT_PERCENT100THS",
+			"WC_TARGET_POSITION_TILT_PERCENT_100_THS":  "WC_TARGET_POSITION_TILT_PERCENT100THS",
+			"WC_CURRENT_POSITION_LIFT_PERCENT_100_THS": "WC_CURRENT_POSITION_LIFT_PERCENT100THS",
+			"WC_CURRENT_POSITION_TILT_PERCENT_100_THS": "WC_CURRENT_POSITION_TILT_PERCENT100THS",
+		},
 	},
 }
