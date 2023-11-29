@@ -53,6 +53,8 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 	var hasCommentCharDataPending bool
 	var lastIgnoredCharData xml.CharData
 
+	needFeatures := len(cluster.Features) > 0
+
 	for {
 		var tok xml.Token
 		tok, err = ts.Token()
@@ -69,10 +71,11 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 			case "bitmap":
 				name := getAttributeValue(t.Attr, "name")
 				if name == "Feature" {
-					err = r.writeFeatures(ts, e, t, cluster, clusterIDs)
+					err = r.amendFeatures(ts, e, t, cluster, clusterIDs)
 					if err != nil {
 						return
 					}
+					needFeatures = false
 					break
 				}
 				if lastSection != matter.SectionDataTypeBitmap {
@@ -138,6 +141,9 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 				err = r.flushStructs(e, clusterIDs)
 				if err != nil {
 					return
+				}
+				if needFeatures {
+					r.writeFeatures(ts, e, xml.StartElement{Name: xml.Name{Local: "bitmap"}}, cluster, clusterIDs)
 				}
 				return e.EncodeToken(tok)
 			default:

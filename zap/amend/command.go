@@ -214,7 +214,7 @@ func (*renderer) setCommandElementAttributes(c *matter.Command, e xmlEncoder, xf
 		serverSource = true
 	}
 	xfb.Attr = setAttributeValue(xfb.Attr, "code", c.ID.ShortHexString())
-	xfb.Attr = setAttributeValue(xfb.Attr, "name", c.Name)
+	xfb.Attr = setAttributeValue(xfb.Attr, "name", zap.CleanName(c.Name))
 	if c.Access.FabricScoped {
 		xfb.Attr = setAttributeValue(xfb.Attr, "isFabricScoped", "true")
 	} else {
