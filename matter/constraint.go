@@ -19,7 +19,15 @@ type ConstraintLimit interface {
 	Max(c *ConstraintContext) (max ConstraintExtreme)
 }
 
+type ConstraintHost interface {
+	Bitmaps() []*Bitmap
+	Enums() []*Enum
+	Structs() []*Struct
+}
+
 type ConstraintContext struct {
+	Host              ConstraintHost
+	Field             *Field
 	Fields            FieldSet
 	VisitedReferences map[string]struct{}
 }

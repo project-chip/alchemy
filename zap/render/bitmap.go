@@ -6,7 +6,6 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 )
 
@@ -24,13 +23,13 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 				continue
 			}
 
-			bit, err := parse.HexOrDec(bv.Bit)
+			mask, err := bv.Mask()
 			if err != nil {
 				continue
 			}
 			evx := en.CreateElement("field")
 			evx.CreateAttr("name", bv.Name)
-			evx.CreateAttr("mask", fmt.Sprintf("%#02x", 1<<(bit)))
+			evx.CreateAttr("mask", fmt.Sprintf("%#02X", mask))
 
 		}
 
