@@ -21,7 +21,12 @@ func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{},
 		}
 	}
 
-	for _, top := range errata.topOrder {
+	topOrder := errata.topOrder
+	if topOrder == nil {
+		topOrder = DefaultErrata.topOrder
+	}
+
+	for _, top := range topOrder {
 		switch top {
 		case matter.SectionCluster:
 			for _, c := range clusters {
