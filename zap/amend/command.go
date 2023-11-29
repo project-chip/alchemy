@@ -249,12 +249,14 @@ func (r *renderer) renderAccess(e xmlEncoder, op string, p matter.Privilege) (er
 
 func (r *renderer) setAccessAttributes(ax []xml.Attr, op string, p matter.Privilege) []xml.Attr {
 	ax = setAttributeValue(ax, "op", op)
-	var px xml.Attr
-	if r.errata.WriteRoleAsPrivilege {
-		px, _ = p.MarshalXMLAttr(xml.Name{Local: "privilege"})
+	var name string
+	pr := getAttributeValue(ax, "privilege")
+	if len(pr) > 0 || r.errata.WriteRoleAsPrivilege {
+		name = "privilege"
 	} else {
-		px, _ = p.MarshalXMLAttr(xml.Name{Local: "role"})
+		name = "role"
 	}
+	px, _ := p.MarshalXMLAttr(xml.Name{Local: name})
 	ax = setAttributeValue(ax, px.Name.Local, px.Value)
 	return ax
 }
