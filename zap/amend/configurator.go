@@ -3,6 +3,8 @@ package amend
 import (
 	"encoding/xml"
 	"io"
+	"slices"
+	"strings"
 
 	"github.com/hasty/alchemy/matter"
 )
@@ -195,10 +197,17 @@ func (r *renderer) flushUnusedConfiguratorValues(e xmlEncoder, lastSection matte
 }
 
 func (r *renderer) flushBitmaps(e xmlEncoder, clusterIDs []string) (err error) {
+	bms := make([]*matter.Bitmap, 0, len(r.bitmaps))
 	for bm, handled := range r.bitmaps {
 		if handled {
 			continue
 		}
+		bms = append(bms, bm)
+	}
+	slices.SortFunc(bms, func(a, b *matter.Bitmap) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+	for _, bm := range bms {
 		err = r.writeBitmap(e, xml.StartElement{Name: xml.Name{Local: "bitmap"}}, bm, clusterIDs, true)
 		r.bitmaps[bm] = true
 		if err != nil {
@@ -209,7 +218,17 @@ func (r *renderer) flushBitmaps(e xmlEncoder, clusterIDs []string) (err error) {
 }
 
 func (r *renderer) flushEnums(e xmlEncoder, clusterIDs []string) (err error) {
-	for en := range r.enums {
+	ens := make([]*matter.Enum, 0, len(r.enums))
+	for en, handled := range r.enums {
+		if handled {
+			continue
+		}
+		ens = append(ens, en)
+	}
+	slices.SortFunc(ens, func(a, b *matter.Enum) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+	for _, en := range ens {
 		err = r.writeEnum(e, xml.StartElement{Name: xml.Name{Local: "enum"}}, en, clusterIDs, true)
 		delete(r.enums, en)
 		if err != nil {
@@ -220,10 +239,17 @@ func (r *renderer) flushEnums(e xmlEncoder, clusterIDs []string) (err error) {
 }
 
 func (r *renderer) flushStructs(e xmlEncoder, clusterIDs []string) (err error) {
+	structs := make([]*matter.Struct, 0, len(r.structs))
 	for s, handled := range r.structs {
 		if handled {
 			continue
 		}
+		structs = append(structs, s)
+	}
+	slices.SortFunc(structs, func(a, b *matter.Struct) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+	for _, s := range structs {
 		err = r.writeStruct(e, xml.StartElement{Name: xml.Name{Local: "struct"}}, s, clusterIDs, true)
 		r.structs[s] = true
 		if err != nil {
