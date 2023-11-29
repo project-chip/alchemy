@@ -1,13 +1,11 @@
 package render
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 	"github.com/iancoleman/strcase"
 )
@@ -41,23 +39,9 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 			attr.CreateAttr("reportable", "true")
 		}
 		if a.Default != "" {
-			switch a.Default {
-			case "null":
-				/*switch a.Type.Name {
-				case "uint8":
-					attr.CreateAttr("default", "0xFF")
-				case "uint16":
-					attr.CreateAttr("default", "0xFFFF")
-				case "uint32":
-					attr.CreateAttr("default", "0xFFFFFFFF")
-				case "uint64":
-					attr.CreateAttr("default", "0xFFFFFFFFFFFFFFFF")
-				}*/
-			default:
-				def, err := parse.HexOrDec(a.Default)
-				if err == nil {
-					attr.CreateAttr("default", strconv.Itoa(int(def)))
-				}
+			defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: a, Fields: cluster.Attributes})
+			if defaultValue.Defined() {
+				attr.CreateAttr("default", defaultValue.ZapString(a.Type))
 			}
 		}
 		renderConstraint(cluster.Attributes, a, attr)

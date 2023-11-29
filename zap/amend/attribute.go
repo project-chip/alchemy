@@ -3,11 +3,9 @@ package amend
 import (
 	"encoding/xml"
 	"io"
-	"strconv"
 
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 	"github.com/hasty/alchemy/zap/render"
 )
@@ -117,27 +115,11 @@ func (r *renderer) setAttributeAttributes(el []xml.Attr, a *matter.Field, cluste
 		el = removeAttribute(el, "reportable")
 	}
 	if a.Default != "" {
-		switch a.Default {
-		case "null":
-			switch a.Type.Name {
-			case "uint8":
-				el = setAttributeValue(el, "default", "0xFF")
-			case "uint16":
-				el = setAttributeValue(el, "default", "0xFFFF")
-			case "uint32":
-				el = setAttributeValue(el, "default", "0xFFFFFFFF")
-			case "uint64":
-				el = setAttributeValue(el, "default", "0xFFFFFFFFFFFFFFFF")
-			default:
-				el = removeAttribute(el, "default")
-			}
-		default:
-			def, e := parse.HexOrDec(a.Default)
-			if e == nil {
-				el = setAttributeValue(el, "default", strconv.Itoa(int(def)))
-			} else {
-				el = removeAttribute(el, "default")
-			}
+		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: a, Fields: cluster.Attributes})
+		if defaultValue.Defined() {
+			el = setAttributeValue(el, "default", defaultValue.ZapString(a.Type))
+		} else {
+			el = removeAttribute(el, "default")
 		}
 	} else {
 		el = removeAttribute(el, "default")

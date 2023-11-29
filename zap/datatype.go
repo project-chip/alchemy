@@ -215,3 +215,12 @@ func minMaxFromConstraint(cc *matter.ConstraintContext) (from matter.ConstraintE
 	}
 	return
 }
+
+func GetDefaultValue(cc *matter.ConstraintContext) (defaultValue matter.ConstraintExtreme) {
+	c := constraint.ParseConstraint(cc.Field.Default)
+	switch c := c.(type) {
+	case *constraint.ExactConstraint:
+		defaultValue = c.Min(cc)
+	}
+	return
+}

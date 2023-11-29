@@ -4,6 +4,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/zap"
 )
 
 func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Element) {
@@ -31,6 +32,11 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 			if !conformance.IsMandatory(f.Conformance) {
 				fx.CreateAttr("optional", "true")
 			}
+			defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: f, Fields: s.Fields})
+			if defaultValue.Defined() {
+				fx.CreateAttr("default", defaultValue.ZapString(f.Type))
+			}
+
 		}
 
 	}
