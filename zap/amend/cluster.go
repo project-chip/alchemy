@@ -9,7 +9,7 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement, clusters map[*matter.Cluster]struct{}) (err error) {
+func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement) (err error) {
 	var clusterTokens []xml.Token
 	clusterTokens, err = Extract(d, el)
 	if err != nil {
@@ -41,14 +41,16 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 	}
 
 	var cluster *matter.Cluster
-	for c := range clusters {
+	var skip bool
+	for c, handled := range r.clusters {
 		if c.ID.Equals(clusterID) {
 			cluster = c
-			delete(clusters, c)
+			skip = handled
+			r.clusters[c] = true
 		}
 	}
 
-	if cluster == nil {
+	if cluster == nil || skip {
 		// We don't have this cluster in the spec; leave it here for now
 
 		err = writeTokens(e, clusterTokens)
@@ -59,19 +61,18 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 	var clusterPrefix string
 
 	define = strcase.ToScreamingDelimited(cluster.Name+" Cluster", '_', "", true)
-	if !r.errata.SuppressClusterDefinePrefix {
+	/*if !r.errata.SuppressClusterDefinePrefix {
 		clusterPrefix = strcase.ToScreamingDelimited(cluster.Name, '_', "", true) + "_"
-		if len(r.errata.ClusterDefinePrefix) > 0 {
-			clusterPrefix = r.errata.ClusterDefinePrefix
-		}
+	}*/
+	if len(r.errata.ClusterDefinePrefix) > 0 {
+		clusterPrefix = r.errata.ClusterDefinePrefix
 	}
 
 	clusterValues := map[string]string{
-		"name":        cluster.Name,
-		"description": cluster.Description,
-		"define":      define,
-		"domain":      matter.DomainNames[r.doc.Domain],
-		"code":        cluster.ID.HexString(),
+		"name":   cluster.Name,
+		"define": define,
+		"domain": matter.DomainNames[r.doc.Domain],
+		"code":   cluster.ID.HexString(),
 	}
 	clusterValuesWritten := make(map[string]bool)
 
@@ -116,6 +117,8 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 		switch t := tok.(type) {
 		case xml.StartElement:
 			switch t.Name.Local {
+			case "description":
+				err = writeThrough(ts, e, t)
 			case "attribute":
 				if lastSection != matter.SectionAttribute {
 					err = r.flushUnusedClusterElements(cluster, e, lastSection, clusterValues, attributes, events, commands, clusterPrefix)
@@ -198,6 +201,9 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement,
 		case xml.Comment:
 			if lastIgnoredCharData != nil {
 				err = e.EncodeToken(lastIgnoredCharData)
+				if err != nil {
+					return
+				}
 				lastIgnoredCharData = nil
 			}
 			err = e.EncodeToken(t)

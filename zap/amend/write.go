@@ -9,12 +9,18 @@ import (
 	"slices"
 
 	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/zap/render"
 )
 
 type renderer struct {
 	doc    *ascii.Doc
 	models []any
+
+	bitmaps  map[*matter.Bitmap]bool
+	enums    map[*matter.Enum]bool
+	clusters map[*matter.Cluster]bool
+	structs  map[*matter.Struct]bool
 
 	errata *render.Errata
 }
@@ -128,7 +134,7 @@ func Render(doc *ascii.Doc, r io.Reader, w io.Writer, models []any) (err error) 
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "configurator":
-				err = rend.writeConfigurator(d, e)
+				err = rend.writeConfigurator(d, e, t)
 			default:
 				err = e.EncodeToken(tok)
 			}

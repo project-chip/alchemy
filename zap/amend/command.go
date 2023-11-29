@@ -2,6 +2,7 @@ package amend
 
 import (
 	"encoding/xml"
+	"io"
 
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
@@ -28,13 +29,91 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 		}
 	}
 
-	Ignore(ts, "command")
-
 	if matchingCommand == nil {
+		Ignore(ts, "command")
 		return nil
 	}
 
-	return r.writeCommand(e, el, matchingCommand)
+	el = r.setCommandElementAttributes(matchingCommand, e, el)
+	err = e.EncodeToken(el)
+	if err != nil {
+		return
+	}
+
+	var argIndex int
+
+	for {
+		var tok xml.Token
+		tok, err = ts.Token()
+		if tok == nil || err == io.EOF {
+			err = io.EOF
+			return
+		} else if err != nil {
+			return
+		}
+
+		switch t := tok.(type) {
+		case xml.StartElement:
+			switch t.Name.Local {
+			case "access":
+				r.setAccessAttributes(t.Attr, "invoke", matchingCommand.Access.Invoke)
+				writeThrough(ts, e, t)
+			case "description":
+				writeThrough(ts, e, t)
+			case "arg":
+				for {
+					if argIndex >= len(matchingCommand.Fields) {
+						Ignore(ts, "arg")
+						break
+					} else {
+						f := matchingCommand.Fields[argIndex]
+						argIndex++
+						if conformance.IsZigbee(f.Conformance) {
+							continue
+						}
+						t.Attr = r.setFieldAttributes(f, t.Attr, matchingCommand.Fields)
+						writeThrough(ts, e, t)
+						break
+					}
+				}
+
+			default:
+
+			}
+		case xml.EndElement:
+			switch t.Name.Local {
+			case "command":
+				for argIndex < len(matchingCommand.Fields) {
+					f := matchingCommand.Fields[argIndex]
+					argIndex++
+					elName := xml.Name{Local: "arg"}
+					xfs := xml.StartElement{Name: elName}
+					xfs.Attr = r.setFieldAttributes(f, xfs.Attr, matchingCommand.Fields)
+					err = e.EncodeToken(xfs)
+					if err != nil {
+						return
+					}
+					xfe := xml.EndElement{Name: elName}
+					err = e.EncodeToken(xfe)
+					if err != nil {
+						return
+					}
+				}
+				err = e.EncodeToken(t)
+				return
+			default:
+				err = e.EncodeToken(tok)
+
+			}
+		case xml.CharData:
+		default:
+			err = e.EncodeToken(t)
+		}
+		if err != nil {
+			return
+		}
+	}
+
 }
 
 func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Command) (err error) {
@@ -67,20 +146,7 @@ func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Com
 
 		elName := xml.Name{Local: "arg"}
 		xfs := xml.StartElement{Name: elName}
-		mandatory := conformance.IsMandatory(f.Conformance)
-		xfs.Attr = setAttributeValue(xfs.Attr, "name", f.Name)
-		xfs.Attr = writeDataType(c.Fields, f, xfs.Attr)
-		if !mandatory {
-			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
-		} else {
-			xfs.Attr = removeAttribute(xfs.Attr, "optional")
-		}
-		if f.Quality.Has(matter.QualityNullable) {
-			xfs.Attr = setAttributeValue(xfs.Attr, "isNullable", "true")
-		} else {
-			xfs.Attr = removeAttribute(xfs.Attr, "isNullable")
-		}
-		xfs.Attr = r.renderConstraint(c.Fields, f, xfs.Attr)
+		xfs.Attr = r.setFieldAttributes(f, xfs.Attr, c.Fields)
 		err = e.EncodeToken(xfs)
 		if err != nil {
 			return
@@ -94,6 +160,24 @@ func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Com
 	}
 
 	return e.EncodeToken(xml.EndElement{Name: xfb.Name})
+}
+
+func (r *renderer) setFieldAttributes(f *matter.Field, xfs []xml.Attr, fs matter.FieldSet) []xml.Attr {
+	mandatory := conformance.IsMandatory(f.Conformance)
+	xfs = setAttributeValue(xfs, "name", f.Name)
+	xfs = writeDataType(fs, f, xfs)
+	if !mandatory {
+		xfs = setAttributeValue(xfs, "optional", "true")
+	} else {
+		xfs = removeAttribute(xfs, "optional")
+	}
+	if f.Quality.Has(matter.QualityNullable) {
+		xfs = setAttributeValue(xfs, "isNullable", "true")
+	} else {
+		xfs = removeAttribute(xfs, "isNullable")
+	}
+	xfs = r.renderConstraint(fs, f, xfs)
+	return xfs
 }
 
 func (*renderer) setCommandElementAttributes(c *matter.Command, e xmlEncoder, xfb xml.StartElement) xml.StartElement {
@@ -140,14 +224,7 @@ func (*renderer) setCommandElementAttributes(c *matter.Command, e xmlEncoder, xf
 
 func (r *renderer) renderAccess(e xmlEncoder, op string, p matter.Privilege) (err error) {
 	ax := xml.StartElement{Name: xml.Name{Local: "access"}}
-	ax.Attr = setAttributeValue(ax.Attr, "op", op)
-	var px xml.Attr
-	if r.errata.WriteRoleAsPrivilege {
-		px, _ = p.MarshalXMLAttr(xml.Name{Local: "privilege"})
-	} else {
-		px, _ = p.MarshalXMLAttr(xml.Name{Local: "role"})
-	}
-	ax.Attr = append(ax.Attr, px)
+	ax.Attr = r.setAccessAttributes(ax.Attr, op, p)
 	err = e.EncodeToken(ax)
 	if err != nil {
 		return
@@ -157,4 +234,16 @@ func (r *renderer) renderAccess(e xmlEncoder, op string, p matter.Privilege) (er
 		return
 	}
 	return
+}
+
+func (r *renderer) setAccessAttributes(ax []xml.Attr, op string, p matter.Privilege) []xml.Attr {
+	ax = setAttributeValue(ax, "op", op)
+	var px xml.Attr
+	if r.errata.WriteRoleAsPrivilege {
+		px, _ = p.MarshalXMLAttr(xml.Name{Local: "privilege"})
+	} else {
+		px, _ = p.MarshalXMLAttr(xml.Name{Local: "role"})
+	}
+	ax = setAttributeValue(ax, px.Name.Local, px.Value)
+	return ax
 }
