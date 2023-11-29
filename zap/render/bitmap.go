@@ -28,7 +28,8 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 				continue
 			}
 			evx := en.CreateElement("field")
-			evx.CreateAttr("name", bv.Name)
+			name := zap.CleanName(bv.Name)
+			evx.CreateAttr("name", name)
 			evx.CreateAttr("mask", fmt.Sprintf("%#02X", mask))
 
 		}

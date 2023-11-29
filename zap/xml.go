@@ -3,9 +3,11 @@ package zap
 import (
 	"encoding/xml"
 	"fmt"
+	"strings"
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
+	"github.com/iancoleman/strcase"
 )
 
 type XMLTag struct {
@@ -212,4 +214,11 @@ func convertNumber(n string) string {
 	} else {
 		return n
 	}
+}
+
+func CleanName(name string) string {
+	if !strings.Contains(name, " ") {
+		return name
+	}
+	return strcase.ToCamel(name)
 }

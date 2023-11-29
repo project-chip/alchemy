@@ -192,7 +192,8 @@ func (*renderer) setBitmapFieldAttributes(xfs []xml.Attr, b *matter.BitmapValue)
 		return nil, err
 	}
 
-	xfs = setAttributeValue(xfs, "name", b.Name)
+	name := zap.CleanName(b.Name)
+	xfs = setAttributeValue(xfs, "name", name)
 	xfs = setAttributeValue(xfs, "mask", fmt.Sprintf("0x%02X", mask))
 	return xfs, nil
 }
