@@ -6,6 +6,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/zap"
 )
 
 func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
@@ -13,7 +14,7 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 
 		ex := cx.CreateElement("event")
 		ex.CreateAttr("code", e.ID.HexString())
-		ex.CreateAttr("name", e.Name)
+		ex.CreateAttr("name", zap.CleanName(e.Name))
 		ex.CreateAttr("priority", strings.ToLower(e.Priority))
 		if e.FabricSensitive {
 			ex.CreateAttr("isFabricSensitive", "true")
@@ -37,7 +38,7 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 			}
 			fx := ex.CreateElement("field")
 			fx.CreateAttr("id", f.ID.IntString())
-			fx.CreateAttr("name", f.Name)
+			fx.CreateAttr("name", zap.CleanName(f.Name))
 			writeDataType(fx, e.Fields, f)
 			renderConstraint(e.Fields, f, fx)
 			if f.Quality.Has(matter.QualityNullable) {

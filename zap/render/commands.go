@@ -32,7 +32,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		serverSource = true
 	}
 	cx.CreateAttr("code", c.ID.HexString())
-	cx.CreateAttr("name", c.Name)
+	cx.CreateAttr("name", zap.CleanName(c.Name))
 	if c.Access.FabricScoped {
 		cx.CreateAttr("isFabricScoped", "true")
 	}
@@ -62,7 +62,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		}
 		fx := cx.CreateElement("arg")
 		mandatory := conformance.IsMandatory(f.Conformance)
-		fx.CreateAttr("name", f.Name)
+		fx.CreateAttr("name", zap.CleanName(f.Name))
 		writeDataType(fx, c.Fields, f)
 		renderConstraint(c.Fields, f, fx)
 		if !mandatory {

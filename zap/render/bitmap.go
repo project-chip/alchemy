@@ -12,7 +12,7 @@ import (
 func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Element) {
 	for _, bm := range bitmaps {
 		en := cx.CreateElement("bitmap")
-		en.CreateAttr("name", bm.Name)
+		en.CreateAttr("name", zap.CleanName(bm.Name))
 		en.CreateAttr("type", zap.ConvertDataTypeNameToZap(bm.Type))
 
 		for _, cid := range clusterIDs {
@@ -29,7 +29,7 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 			}
 			evx := en.CreateElement("field")
 			name := zap.CleanName(bv.Name)
-			evx.CreateAttr("name", name)
+			evx.CreateAttr("name", zap.CleanName(name))
 			evx.CreateAttr("mask", fmt.Sprintf("%#02X", mask))
 
 		}

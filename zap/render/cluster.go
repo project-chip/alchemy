@@ -9,6 +9,7 @@ import (
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/zap"
 	"github.com/iancoleman/strcase"
 )
 
@@ -83,7 +84,7 @@ func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []
 			continue
 		}
 		fx := fb.CreateElement("field")
-		fx.CreateAttr("name", f.Name)
+		fx.CreateAttr("name", zap.CleanName(f.Name))
 		bit = (1 << bit)
 		fx.CreateAttr("mask", fmt.Sprintf("%#x", bit))
 	}

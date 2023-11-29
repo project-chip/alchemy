@@ -28,7 +28,7 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 		}
 
 		en := cx.CreateElement("enum")
-		en.CreateAttr("name", v.Name)
+		en.CreateAttr("name", zap.CleanName(v.Name))
 		if v.Type != "" {
 			en.CreateAttr("type", zap.ConvertDataTypeNameToZap(v.Type))
 		} else {

@@ -10,7 +10,7 @@ import (
 func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Element) {
 	for _, s := range structs {
 		en := cx.CreateElement("struct")
-		en.CreateAttr("name", s.Name)
+		en.CreateAttr("name", zap.CleanName(s.Name))
 		if s.FabricScoped {
 			en.CreateAttr("isFabricScoped", "true")
 		}
@@ -23,7 +23,7 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 			}
 			fx := en.CreateElement("item")
 			fx.CreateAttr("fieldId", f.ID.IntString())
-			fx.CreateAttr("name", f.Name)
+			fx.CreateAttr("name", zap.CleanName(f.Name))
 			writeDataType(fx, s.Fields, f)
 			renderConstraint(s.Fields, f, fx)
 			if f.Quality.Has(matter.QualityNullable) {
