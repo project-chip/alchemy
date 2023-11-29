@@ -2,6 +2,7 @@ package amend
 
 import (
 	"encoding/xml"
+	"io"
 	"strings"
 
 	"github.com/hasty/alchemy/conformance"
@@ -21,13 +22,91 @@ func (r *renderer) amendEvent(ts *tokenSet, e xmlEncoder, el xml.StartElement, e
 		}
 	}
 
-	Ignore(ts, "event")
-
 	if matchingEvent == nil {
+		Ignore(ts, "event")
 		return nil
 	}
 
-	return r.writeEvent(e, el, matchingEvent, false)
+	el.Attr = r.setEventAttributes(el.Attr, matchingEvent)
+	err = e.EncodeToken(el)
+	if err != nil {
+		return
+	}
+
+	var fieldIndex int
+
+	for {
+		var tok xml.Token
+		tok, err = ts.Token()
+		if tok == nil || err == io.EOF {
+			err = io.EOF
+			return
+		} else if err != nil {
+			return
+		}
+
+		switch t := tok.(type) {
+		case xml.StartElement:
+			switch t.Name.Local {
+			case "description":
+				writeThrough(ts, e, t)
+			case "field":
+				for {
+					if fieldIndex >= len(matchingEvent.Fields) {
+						Ignore(ts, "field")
+						break
+					} else {
+						f := matchingEvent.Fields[fieldIndex]
+						fieldIndex++
+						if conformance.IsZigbee(f.Conformance) {
+							continue
+						}
+						t.Attr = setAttributeValue(t.Attr, "id", f.ID.IntString())
+						t.Attr = r.setFieldAttributes(f, t.Attr, matchingEvent.Fields)
+						writeThrough(ts, e, t)
+						break
+					}
+				}
+
+			default:
+
+			}
+		case xml.EndElement:
+			switch t.Name.Local {
+			case "event":
+				for fieldIndex < len(matchingEvent.Fields) {
+					f := matchingEvent.Fields[fieldIndex]
+					fieldIndex++
+					elName := xml.Name{Local: "field"}
+					xfs := xml.StartElement{Name: elName}
+					xfs.Attr = setAttributeValue(xfs.Attr, "id", f.ID.IntString())
+					xfs.Attr = r.setFieldAttributes(f, xfs.Attr, matchingEvent.Fields)
+					err = e.EncodeToken(xfs)
+					if err != nil {
+						return
+					}
+					xfe := xml.EndElement{Name: elName}
+					err = e.EncodeToken(xfe)
+					if err != nil {
+						return
+					}
+				}
+				err = e.EncodeToken(t)
+				return
+			default:
+				err = e.EncodeToken(tok)
+
+			}
+		case xml.CharData:
+		default:
+			err = e.EncodeToken(t)
+		}
+		if err != nil {
+			return
+		}
+	}
+
+	//return r.writeEvent(e, el, matchingEvent, false)
 }
 
 func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Event, provisional bool) (err error) {
@@ -35,21 +114,7 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 	xfb := el.Copy()
 	xfb.Name = xml.Name{Local: "event"}
 
-	xfb.Attr = setAttributeValue(xfb.Attr, "code", ev.ID.HexString())
-	xfb.Attr = setAttributeValue(xfb.Attr, "name", ev.Name)
-	xfb.Attr = setAttributeValue(xfb.Attr, "priority", strings.ToLower(ev.Priority))
-	xfb.Attr = removeAttribute(xfb.Attr, "side")
-
-	if ev.FabricSensitive {
-		xfb.Attr = setAttributeValue(xfb.Attr, "isFabricSensitive", "true")
-	} else {
-		xfb.Attr = removeAttribute(xfb.Attr, "isFabricSensitive")
-	}
-	if !conformance.IsMandatory(ev.Conformance) {
-		xfb.Attr = setAttributeValue(xfb.Attr, "optional", "true")
-	} else {
-		xfb.Attr = removeAttribute(xfb.Attr, "optional")
-	}
+	xfb.Attr = r.setEventAttributes(xfb.Attr, ev)
 
 	err = e.EncodeToken(xfb)
 	if err != nil {
@@ -72,25 +137,11 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 		if !f.ID.Valid() {
 			continue
 		}
-		mandatory := conformance.IsMandatory(f.Conformance)
 
 		elName := xml.Name{Local: "field"}
 		xfs := xml.StartElement{Name: elName}
 		xfs.Attr = setAttributeValue(xfs.Attr, "id", f.ID.IntString())
-		xfs.Attr = setAttributeValue(xfs.Attr, "name", f.Name)
-		xfs.Attr = writeDataType(ev.Fields, f, xfs.Attr)
-		xfs.Attr = r.renderConstraint(ev.Fields, f, xfs.Attr)
-
-		if f.Quality.Has(matter.QualityNullable) {
-			xfs.Attr = setAttributeValue(xfs.Attr, "isNullable", "true")
-		} else {
-			xfs.Attr = removeAttribute(xfs.Attr, "isNullable")
-		}
-		if !mandatory {
-			xfs.Attr = setAttributeValue(xfs.Attr, "optional", "true")
-		} else {
-			xfs.Attr = removeAttribute(xfs.Attr, "optional")
-		}
+		xfs.Attr = r.setFieldAttributes(f, xfs.Attr, ev.Fields)
 
 		err = e.EncodeToken(xfs)
 		if err != nil {
@@ -139,4 +190,23 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 
 	}
 	return e.EncodeToken(xml.EndElement{Name: xfb.Name})
+}
+
+func (*renderer) setEventAttributes(xfb []xml.Attr, ev *matter.Event) []xml.Attr {
+	xfb = setAttributeValue(xfb, "code", ev.ID.HexString())
+	xfb = setAttributeValue(xfb, "name", ev.Name)
+	xfb = setAttributeValue(xfb, "priority", strings.ToLower(ev.Priority))
+	xfb = removeAttribute(xfb, "side")
+
+	if ev.FabricSensitive {
+		xfb = setAttributeValue(xfb, "isFabricSensitive", "true")
+	} else {
+		xfb = removeAttribute(xfb, "isFabricSensitive")
+	}
+	if !conformance.IsMandatory(ev.Conformance) {
+		xfb = setAttributeValue(xfb, "optional", "true")
+	} else {
+		xfb = removeAttribute(xfb, "optional")
+	}
+	return xfb
 }
