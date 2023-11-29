@@ -6,6 +6,7 @@ import (
 
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/zap"
 )
 
 func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement, commands map[*matter.Command]struct{}) (err error) {
@@ -175,6 +176,16 @@ func (r *renderer) setFieldAttributes(f *matter.Field, xfs []xml.Attr, fs matter
 		xfs = setAttributeValue(xfs, "isNullable", "true")
 	} else {
 		xfs = removeAttribute(xfs, "isNullable")
+	}
+	if f.Default != "" {
+		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: f, Fields: fs})
+		if defaultValue.Defined() {
+			xfs = setAttributeValue(xfs, "default", defaultValue.ZapString(f.Type))
+		} else {
+			xfs = removeAttribute(xfs, "default")
+		}
+	} else {
+		xfs = removeAttribute(xfs, "default")
 	}
 	xfs = r.renderConstraint(fs, f, xfs)
 	return xfs

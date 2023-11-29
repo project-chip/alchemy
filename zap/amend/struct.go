@@ -8,6 +8,7 @@ import (
 
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/zap"
 )
 
 func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
@@ -185,6 +186,16 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 			xfs.Attr = setAttributeValue(xfs.Attr, "isFabricSensitive", "true")
 		} else {
 			xfs.Attr = removeAttribute(xfs.Attr, "isFabricSensitive")
+		}
+		if v.Default != "" {
+			defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: v, Fields: s.Fields})
+			if defaultValue.Defined() {
+				xfs.Attr = setAttributeValue(xfs.Attr, "default", defaultValue.ZapString(v.Type))
+			} else {
+				xfs.Attr = removeAttribute(xfs.Attr, "default")
+			}
+		} else {
+			xfs.Attr = removeAttribute(xfs.Attr, "default")
 		}
 		err = e.EncodeToken(xfs)
 		if err != nil {

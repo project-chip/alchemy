@@ -287,7 +287,7 @@ func NewDataType(name string, isArray bool) *DataType {
 }
 
 func (dt *DataType) IsString() bool {
-	return dt != nil && dt.Name == "string" || dt.Name == "octstr"
+	return dt != nil && (dt.Name == "string" || dt.Name == "octstr")
 }
 
 func (dt *DataType) IsArray() bool {

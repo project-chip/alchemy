@@ -4,6 +4,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/zap"
 )
 
 func renderCommands(cluster *matter.Cluster, cx *etree.Element, errata *Errata) {
@@ -70,6 +71,11 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
 		if f.Quality.Has(matter.QualityNullable) {
 			fx.CreateAttr("isNullable", "true")
 		}
+		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: f, Fields: c.Fields})
+		if defaultValue.Defined() {
+			fx.CreateAttr("default", defaultValue.ZapString(f.Type))
+		}
+
 	}
 	cx.CreateElement("description").SetText(c.Description)
 }
