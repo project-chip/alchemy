@@ -22,7 +22,7 @@ func patchTestsYaml(zclRoot string, files []string) error {
 	filesMap := make(map[string]struct{})
 	for _, file := range files {
 		path := fmt.Sprintf("src/app/zap-templates/zcl/data-model/chip/%s", strings.TrimPrefix(file, "connectedhomeip/"))
-		fmt.Printf("adding file %s\n", path)
+		//fmt.Printf("adding file %s\n", path)
 		filesMap[path] = struct{}{}
 	}
 

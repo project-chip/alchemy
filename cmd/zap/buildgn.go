@@ -51,7 +51,7 @@ func patchBuildGN(zclRoot string, docs []*ascii.Doc) error {
 		combined = append(combined, fileMatch[0])
 	}
 	for p := range filesMap {
-		fmt.Printf("adding %s...\n", p)
+		//fmt.Printf("adding %s...\n", p)
 		combined = append(combined, fmt.Sprintf("%s\"%s\",\n", indent, p))
 	}
 	slices.Sort(combined)

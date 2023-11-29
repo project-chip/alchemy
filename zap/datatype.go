@@ -1,9 +1,12 @@
 package zap
 
 import (
+	"log/slog"
 	"strings"
 
+	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 )
 
 var matterToZapMap = map[string]string{
@@ -129,7 +132,7 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	}
 	if f.Type.BaseType == matter.BaseDataTypeString && f.Constraint != nil {
 		// Special case; needs to be long_char_string if over 255
-		max := f.Constraint.Max(&matter.ConstraintContext{Fields: fs})
+		max := f.Constraint.Max(&matter.ConstraintContext{Field: f, Fields: fs})
 		switch max.Type {
 		case matter.ConstraintExtremeTypeInt64:
 			if max.Int64 > 255 {
@@ -144,20 +147,71 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	return ConvertDataTypeNameToZap(f.Type.Name)
 }
 
-func GetMinMax(fs matter.FieldSet, f *matter.Field) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
-	if f.Type == nil || f.Type.IsArray() {
+func GetMinMax(cc *matter.ConstraintContext) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
+	if cc.Field.Type == nil {
 		return
 	}
-	if f.Constraint != nil {
-		cxt := &matter.ConstraintContext{Fields: fs}
-		from = f.Constraint.Min(cxt)
-		to = f.Constraint.Max(cxt)
+	from, to = minMaxFromConstraint(cc)
+
+	if from.Defined() || to.Defined() {
+		return
 	}
-	if !from.Defined() && f.Quality.Has(matter.QualityNullable) {
-		from = f.Type.Min(true)
+
+	from, to = minMaxFromModel(cc)
+	return
+}
+
+func minMaxFromModel(cc *matter.ConstraintContext) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
+	if cc.Field.Type.Model != nil {
+		switch m := cc.Field.Type.Model.(type) {
+		case *matter.Enum:
+			if len(m.Values) > 0 {
+				var f, t uint64
+				for _, v := range m.Values {
+					val, err := parse.HexOrDec(v.Value)
+					if err == nil {
+						f = min(f, val)
+						t = max(t, val)
+					}
+				}
+				from = matter.NewUintConstraintExtreme(f, matter.ConstraintExtremeFormatHex)
+				to = matter.NewUintConstraintExtreme(t, matter.ConstraintExtremeFormatHex)
+				return
+			}
+		case *matter.Bitmap:
+			if len(m.Bits) > 0 {
+				var t uint64
+				for _, b := range m.Bits {
+					mask, err := b.Mask()
+					if err != nil {
+						return
+					}
+					t |= mask
+				}
+				from = matter.NewUintConstraintExtreme(0, matter.ConstraintExtremeFormatHex)
+				to = matter.NewUintConstraintExtreme(t, matter.ConstraintExtremeFormatHex)
+				return
+			}
+		}
 	}
-	if !to.Defined() && f.Quality.Has(matter.QualityNullable) {
-		to = f.Type.Max(true)
+	return
+}
+
+func minMaxFromConstraint(cc *matter.ConstraintContext) (from matter.ConstraintExtreme, to matter.ConstraintExtreme) {
+	if cc.Field.Constraint != nil {
+		if cc.Field.Type.IsArray() {
+			switch cc.Field.Constraint.(type) {
+			case *constraint.DescribedConstraint, *constraint.AllConstraint:
+				return
+			case *constraint.ListConstraint, *constraint.MaxConstraint, *constraint.MinConstraint, *constraint.RangeConstraint, *constraint.ExactConstraint:
+			default:
+				slog.Warn("Array field has constraint not compatible with arrays", "field", cc.Field.Name)
+				return
+			}
+		}
+		from = cc.Field.Constraint.Min(cc)
+		to = cc.Field.Constraint.Max(cc)
+		return
 	}
 	return
 }

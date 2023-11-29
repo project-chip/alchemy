@@ -172,6 +172,7 @@ func (d *Doc) ToModel() (models []interface{}, err error) {
 			return
 		}
 		models = append(models, m...)
+
 	}
 	d.models = models
 	return
