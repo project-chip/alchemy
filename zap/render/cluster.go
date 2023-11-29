@@ -45,7 +45,12 @@ func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster,
 	server.SetText("true")
 	cx.CreateElement("description").SetText(cluster.Description)
 
-	for _, s := range errata.clusterOrder {
+	clusterOrder := errata.clusterOrder
+	if clusterOrder == nil {
+		clusterOrder = DefaultErrata.clusterOrder
+	}
+
+	for _, s := range clusterOrder {
 		switch s {
 		case matter.SectionAttributes:
 			renderAttributes(cluster, cx, clusterPrefix, errata)

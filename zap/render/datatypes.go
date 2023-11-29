@@ -11,7 +11,11 @@ func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *et
 	for _, cluster := range clusters {
 		clusterIDs = append(clusterIDs, cluster.ID.HexString())
 	}
-	for _, s := range errata.dataTypeOrder {
+	dataTypeOrder := errata.dataTypeOrder
+	if dataTypeOrder == nil {
+		dataTypeOrder = DefaultErrata.dataTypeOrder
+	}
+	for _, s := range dataTypeOrder {
 		switch s {
 		case matter.SectionDataTypeBitmap:
 			renderBitmaps(cluster.Bitmaps, clusterIDs, cx)

@@ -2,6 +2,7 @@ package render
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/conformance"
@@ -42,7 +43,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		if a.Default != "" {
 			switch a.Default {
 			case "null":
-				switch a.Type.Name {
+				/*switch a.Type.Name {
 				case "uint8":
 					attr.CreateAttr("default", "0xFF")
 				case "uint16":
@@ -51,7 +52,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 					attr.CreateAttr("default", "0xFFFFFFFF")
 				case "uint64":
 					attr.CreateAttr("default", "0xFFFFFFFFFFFFFFFF")
-				}
+				}*/
 			default:
 				def, err := parse.HexOrDec(a.Default)
 				if err == nil {
@@ -134,9 +135,9 @@ func renderPrivilege(a matter.Privilege) string {
 
 func GetDefine(name string, prefix string, errata *Errata) string {
 	define := strcase.ToScreamingDelimited(name, '_', "", true)
-	/*if !strings.HasPrefix(define, prefix) {
+	if !strings.HasPrefix(define, prefix) {
 		define = prefix + define
-	}*/
+	}
 	if errata.DefineOverrides != nil {
 		if override, ok := errata.DefineOverrides[define]; ok {
 			return override
