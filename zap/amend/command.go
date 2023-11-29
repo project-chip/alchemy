@@ -41,6 +41,8 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 		return
 	}
 
+	needsAccess := matchingCommand.Access.Invoke != matter.PrivilegeUnknown && matchingCommand.Access.Invoke != matter.PrivilegeOperate
+
 	var argIndex int
 
 	for {
@@ -59,9 +61,17 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 			case "access":
 				r.setAccessAttributes(t.Attr, "invoke", matchingCommand.Access.Invoke)
 				writeThrough(ts, e, t)
+				needsAccess = false
 			case "description":
 				writeThrough(ts, e, t)
 			case "arg":
+				if needsAccess {
+					err = r.renderAccess(e, "invoke", matchingCommand.Access.Invoke)
+					if err != nil {
+						return
+					}
+					needsAccess = false
+				}
 				for {
 					if argIndex >= len(matchingCommand.Fields) {
 						Ignore(ts, "arg")
