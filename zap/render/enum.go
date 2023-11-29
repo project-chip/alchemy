@@ -43,7 +43,8 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 				continue
 			}
 			evx := en.CreateElement("item")
-			evx.CreateAttr("name", ev.Name)
+			name := zap.CleanName(ev.Name)
+			evx.CreateAttr("name", name)
 			val := ev.Value
 			valNum, err := parse.HexOrDec(val)
 			if err == nil {

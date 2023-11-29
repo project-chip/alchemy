@@ -184,7 +184,8 @@ func (*renderer) setEnumValueAttributes(v *matter.EnumValue, xfs []xml.Attr, val
 		val = fmt.Sprintf(valFormat, valNum)
 	}
 
-	xfs = setAttributeValue(xfs, "name", v.Name)
+	name := zap.CleanName(v.Name)
+	xfs = setAttributeValue(xfs, "name", name)
 	xfs = setAttributeValue(xfs, "value", val)
 	return xfs
 }
