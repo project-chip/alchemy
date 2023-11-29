@@ -2,6 +2,7 @@ package amend
 
 import (
 	"encoding/xml"
+	"io"
 	"strconv"
 
 	"github.com/hasty/alchemy/conformance"
@@ -41,61 +42,10 @@ func writeDataType(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.A
 func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.StartElement, a *matter.Field, clusterPrefix string) (err error) {
 
 	el.Name = xml.Name{Local: "attribute"}
-	el.Attr = setAttributeValue(el.Attr, "code", a.ID.HexString())
-	el.Attr = setAttributeValue(el.Attr, "side", "server")
-	el.Attr = writeAttributeDataType(cluster.Attributes, a, el.Attr)
-	define := render.GetDefine(a.Name, clusterPrefix, r.errata)
-	el.Attr = setAttributeValue(el.Attr, "define", define)
-	if a.Quality.Has(matter.QualityNullable) {
-		el.Attr = setAttributeValue(el.Attr, "isNullable", "true")
-	} else {
-		el.Attr = removeAttribute(el.Attr, "isNullable")
-	}
-	if a.Quality.Has(matter.QualityReportable) {
-		el.Attr = setAttributeValue(el.Attr, "reportable", "true")
-	} else {
-		el.Attr = removeAttribute(el.Attr, "reportable")
-	}
-	if a.Default != "" {
-		switch a.Default {
-		case "null":
-			switch a.Type.Name {
-			case "uint8":
-				el.Attr = setAttributeValue(el.Attr, "default", "0xFF")
-			case "uint16":
-				el.Attr = setAttributeValue(el.Attr, "default", "0xFFFF")
-			case "uint32":
-				el.Attr = setAttributeValue(el.Attr, "default", "0xFFFFFFFF")
-			case "uint64":
-				el.Attr = setAttributeValue(el.Attr, "default", "0xFFFFFFFFFFFFFFFF")
-			default:
-				el.Attr = removeAttribute(el.Attr, "default")
-			}
-		default:
-			def, e := parse.HexOrDec(a.Default)
-			if e == nil {
-				el.Attr = setAttributeValue(el.Attr, "default", strconv.Itoa(int(def)))
-			} else {
-				el.Attr = removeAttribute(el.Attr, "default")
-			}
-		}
-	} else {
-		el.Attr = removeAttribute(el.Attr, "default")
-	}
-
-	el.Attr = r.renderConstraint(cluster.Attributes, a, el.Attr)
+	el.Attr = r.setAttributeAttributes(el.Attr, a, cluster, clusterPrefix)
 
 	if a.Quality.Has(matter.QualityFixed) || ((a.Access.Read == matter.PrivilegeUnknown || a.Access.Read == matter.PrivilegeView) && (a.Access.Write == matter.PrivilegeUnknown || a.Access.Write == matter.PrivilegeOperate)) || r.errata.SuppressAttributePermissions {
-		if a.Access.Write != matter.PrivilegeUnknown {
-			el.Attr = setAttributeValue(el.Attr, "writable", "true")
-		} else {
-			el.Attr = setAttributeValue(el.Attr, "writable", "false")
-		}
-		if !conformance.IsMandatory(a.Conformance) {
-			el.Attr = setAttributeValue(el.Attr, "optional", "true")
-		} else {
-			el.Attr = setAttributeValue(el.Attr, "optional", "false")
-		}
+
 		err = e.EncodeToken(el)
 		if err != nil {
 			return
@@ -105,16 +55,7 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 			return
 		}
 	} else {
-		if a.Access.Write != matter.PrivilegeUnknown {
-			el.Attr = setAttributeValue(el.Attr, "writable", "true")
-		} else {
-			el.Attr = setAttributeValue(el.Attr, "writable", "false")
-		}
-		if !conformance.IsMandatory(a.Conformance) {
-			el.Attr = setAttributeValue(el.Attr, "optional", "true")
-		} else {
-			el.Attr = setAttributeValue(el.Attr, "optional", "false")
-		}
+
 		err = e.EncodeToken(el)
 		if err != nil {
 			return
@@ -158,10 +99,90 @@ func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.
 	return
 }
 
-func (*renderer) renderConstraint(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.Attr {
-	from, to := zap.GetMinMax(fs, f)
+func (r *renderer) setAttributeAttributes(el []xml.Attr, a *matter.Field, cluster *matter.Cluster, clusterPrefix string) []xml.Attr {
+	// We heard you like attributes in your attributes, so...
+	el = setAttributeValue(el, "code", a.ID.HexString())
+	el = setAttributeValue(el, "side", "server")
+	el = writeAttributeDataType(cluster.Attributes, a, el)
+	define := render.GetDefine(a.Name, clusterPrefix, r.errata)
+	el = setAttributeValue(el, "define", define)
+	if a.Quality.Has(matter.QualityNullable) {
+		el = setAttributeValue(el, "isNullable", "true")
+	} else {
+		el = removeAttribute(el, "isNullable")
+	}
+	if a.Quality.Has(matter.QualityReportable) {
+		el = setAttributeValue(el, "reportable", "true")
+	} else {
+		el = removeAttribute(el, "reportable")
+	}
+	if a.Default != "" {
+		switch a.Default {
+		case "null":
+			switch a.Type.Name {
+			case "uint8":
+				el = setAttributeValue(el, "default", "0xFF")
+			case "uint16":
+				el = setAttributeValue(el, "default", "0xFFFF")
+			case "uint32":
+				el = setAttributeValue(el, "default", "0xFFFFFFFF")
+			case "uint64":
+				el = setAttributeValue(el, "default", "0xFFFFFFFFFFFFFFFF")
+			default:
+				el = removeAttribute(el, "default")
+			}
+		default:
+			def, e := parse.HexOrDec(a.Default)
+			if e == nil {
+				el = setAttributeValue(el, "default", strconv.Itoa(int(def)))
+			} else {
+				el = removeAttribute(el, "default")
+			}
+		}
+	} else {
+		el = removeAttribute(el, "default")
+	}
 
-	if f.Type != nil && f.Type.IsString() {
+	el = r.renderConstraint(cluster.Attributes, a, el)
+	if a.Quality.Has(matter.QualityFixed) || ((a.Access.Read == matter.PrivilegeUnknown || a.Access.Read == matter.PrivilegeView) && (a.Access.Write == matter.PrivilegeUnknown || a.Access.Write == matter.PrivilegeOperate)) || r.errata.SuppressAttributePermissions {
+		if a.Access.Write != matter.PrivilegeUnknown {
+			el = setAttributeValue(el, "writable", "true")
+		} else {
+			el = setAttributeValue(el, "writable", "false")
+		}
+		if !conformance.IsMandatory(a.Conformance) {
+			el = setAttributeValue(el, "optional", "true")
+		} else {
+			el = setAttributeValue(el, "optional", "false")
+		}
+	} else {
+		if a.Access.Write != matter.PrivilegeUnknown {
+			el = setAttributeValue(el, "writable", "true")
+		} else {
+			el = setAttributeValue(el, "writable", "false")
+		}
+		if !conformance.IsMandatory(a.Conformance) {
+			el = setAttributeValue(el, "optional", "true")
+		} else {
+			el = setAttributeValue(el, "optional", "false")
+		}
+	}
+	return el
+}
+
+func (r *renderer) renderConstraint(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.Attr {
+	from, to := zap.GetMinMax(&matter.ConstraintContext{Field: f, Fields: fs})
+
+	if !from.Defined() {
+		attr = removeAttribute(attr, "min")
+		attr = removeAttribute(attr, "minLength")
+	}
+	if !to.Defined() {
+		attr = removeAttribute(attr, "max")
+		attr = removeAttribute(attr, "length")
+	}
+
+	if f.Type != nil && (f.Type.IsString() || f.Type.IsArray()) {
 		if to.Defined() {
 			attr = setAttributeValue(attr, "length", to.ZapString(f.Type))
 		}
@@ -171,22 +192,20 @@ func (*renderer) renderConstraint(fs matter.FieldSet, f *matter.Field, attr []xm
 		attr = removeAttribute(attr, "min")
 		attr = removeAttribute(attr, "max")
 	} else {
-		attr = removeAttribute(attr, "length")
-		attr = removeAttribute(attr, "minLength")
 		if from.Defined() {
 			attr = setAttributeValue(attr, "min", from.ZapString(f.Type))
 		}
 		if to.Defined() {
 			attr = setAttributeValue(attr, "max", to.ZapString(f.Type))
 		}
+		attr = removeAttribute(attr, "minLength")
+		attr = removeAttribute(attr, "length")
 	}
 	return attr
 }
 
 func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
 	code := getAttributeValue(el.Attr, "code")
-
-	Ignore(ts, "attribute")
 
 	attributeID := matter.ParseID(code)
 	if !attributeID.Valid() {
@@ -202,13 +221,116 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 		}
 	}
 
-	if field == nil {
+	if field == nil || conformance.IsDeprecated(field.Conformance) {
+		Ignore(ts, "attribute")
 		return nil
 	}
 
-	if conformance.IsDeprecated(field.Conformance) {
-		return nil
+	el.Attr = r.setAttributeAttributes(el.Attr, field, cluster, clusterPrefix)
+	err = e.EncodeToken(el)
+	if err != nil {
+		return
 	}
 
-	return r.writeAttribute(cluster, e, el, field, clusterPrefix)
+	needsReadAccess := field.Access.Read != matter.PrivilegeUnknown && field.Access.Read != matter.PrivilegeView
+	needsWriteAccess := field.Access.Write != matter.PrivilegeUnknown && field.Access.Write != matter.PrivilegeOperate
+	needsAccess := needsReadAccess || needsWriteAccess
+	wroteDescription := false
+
+	for {
+		var tok xml.Token
+		tok, err = ts.Token()
+		if tok == nil || err == io.EOF {
+			err = io.EOF
+			return
+		} else if err != nil {
+			return
+		}
+
+		switch t := tok.(type) {
+		case xml.StartElement:
+			switch t.Name.Local {
+			case "description":
+				if needsAccess {
+					writeThrough(ts, e, t)
+				} else {
+					Ignore(ts, "description")
+				}
+				wroteDescription = true
+			case "access":
+				if needsAccess && !wroteDescription {
+					elName := xml.Name{Local: "description"}
+					xfs := xml.StartElement{Name: elName}
+					err = e.EncodeToken(xfs)
+					if err != nil {
+						return
+					}
+					err = e.EncodeToken(xml.CharData(field.Name))
+					if err != nil {
+						return
+					}
+					xfe := xml.EndElement{Name: elName}
+					err = e.EncodeToken(xfe)
+					if err != nil {
+						return
+					}
+				}
+				op := getAttributeValue(t.Attr, "op")
+				switch op {
+				case "read":
+					if needsReadAccess {
+						t.Attr = r.setAccessAttributes(t.Attr, op, field.Access.Read)
+						needsReadAccess = false
+						err = e.EncodeToken(t)
+					} else {
+						Ignore(ts, "access")
+					}
+				case "write":
+					if needsWriteAccess {
+						t.Attr = r.setAccessAttributes(t.Attr, op, field.Access.Write)
+						needsWriteAccess = false
+						err = e.EncodeToken(t)
+					} else {
+						Ignore(ts, "access")
+					}
+				}
+			default:
+				Ignore(ts, t.Name.Local)
+			}
+		case xml.EndElement:
+			switch t.Name.Local {
+			case "attribute":
+				if needsAccess {
+					if needsReadAccess {
+						err = r.renderAccess(e, "read", field.Access.Read)
+						if err != nil {
+							return
+						}
+					}
+					if needsWriteAccess {
+						err = r.renderAccess(e, "write", field.Access.Write)
+						if err != nil {
+							return
+						}
+					}
+				} else if !wroteDescription {
+					err = e.EncodeToken(xml.CharData(field.Name))
+					if err != nil {
+						return
+					}
+				}
+				err = e.EncodeToken(tok)
+				return
+			default:
+				err = e.EncodeToken(tok)
+
+			}
+		case xml.CharData:
+		default:
+			err = e.EncodeToken(t)
+		}
+		if err != nil {
+			return
+		}
+	}
 }
