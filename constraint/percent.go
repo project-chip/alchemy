@@ -45,3 +45,7 @@ func (c *PercentLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintE
 		Int64:  v}
 
 }
+
+func (c *PercentLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return c.Min(cc)
+}

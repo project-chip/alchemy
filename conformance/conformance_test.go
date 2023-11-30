@@ -28,6 +28,7 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 		return
 	}
 	if cs, ok := conformance.(ConformanceSet); ok {
+		t.Logf("\tconformance set: %d", len(cs))
 		for _, c := range cs {
 			t.Logf("\ttesting %s: %T %v", cts.Conformance, c, c)
 			if mc, ok := c.(*MandatoryConformance); ok {
@@ -129,6 +130,15 @@ var otherwiseTests = []conformanceTestSuite{
 			{Context: matter.ConformanceContext{"AA": true}, Expected: matter.ConformanceStateMandatory},
 			{Context: matter.ConformanceContext{"MSCH": true}, Expected: matter.ConformanceStateMandatory},
 			{Context: matter.ConformanceContext{"MSCH": false}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateMandatory},
+		},
+	},
+	{
+		Conformance: "(VIS | AUD) & SPRS",
+		Tests: []conformanceTest{
+			{Context: matter.ConformanceContext{"VIS": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"AUD": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"VIS": true, "AUD": true}, Expected: matter.ConformanceStateMandatory},
 			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateMandatory},
 		},
 	},

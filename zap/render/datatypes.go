@@ -6,14 +6,14 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *etree.Element, errata *Errata) {
+func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *etree.Element, errata *zap.Errata) {
 	var clusterIDs []string
 	for _, cluster := range clusters {
 		clusterIDs = append(clusterIDs, cluster.ID.HexString())
 	}
-	dataTypeOrder := errata.dataTypeOrder
+	dataTypeOrder := errata.DataTypeOrder
 	if dataTypeOrder == nil {
-		dataTypeOrder = DefaultErrata.dataTypeOrder
+		dataTypeOrder = zap.DefaultErrata.DataTypeOrder
 	}
 	for _, s := range dataTypeOrder {
 		switch s {

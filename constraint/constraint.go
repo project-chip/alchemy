@@ -36,3 +36,7 @@ func (c *ManufacturerLimit) Min(cc *matter.ConstraintContext) (min matter.Constr
 func (c *ManufacturerLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
 }
+
+func (c *ManufacturerLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return
+}

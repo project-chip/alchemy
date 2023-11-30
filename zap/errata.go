@@ -1,13 +1,13 @@
-package render
+package zap
 
 import "github.com/hasty/alchemy/matter"
 
 var defaultOrder = []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents}
 
 type Errata struct {
-	topOrder      []matter.Section
-	clusterOrder  []matter.Section
-	dataTypeOrder []matter.Section
+	TopOrder      []matter.Section
+	ClusterOrder  []matter.Section
+	DataTypeOrder []matter.Section
 
 	SuppressAttributePermissions bool
 	ClusterDefinePrefix          string
@@ -19,15 +19,15 @@ type Errata struct {
 }
 
 var DefaultErrata = &Errata{
-	topOrder:      []matter.Section{matter.SectionFeatures, matter.SectionCluster, matter.SectionDataTypes},
-	clusterOrder:  []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents},
-	dataTypeOrder: []matter.Section{matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct},
+	TopOrder:      []matter.Section{matter.SectionFeatures, matter.SectionCluster, matter.SectionDataTypes},
+	ClusterOrder:  []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents},
+	DataTypeOrder: []matter.Section{matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct},
 }
 
 var Erratas = map[string]*Errata{
 	"AirQuality.adoc": {
-		topOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
-		dataTypeOrder:               []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		TopOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
+		DataTypeOrder:               []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 		SuppressClusterDefinePrefix: true,
 	},
 	"ApplicationBasic.adoc": {
@@ -40,11 +40,11 @@ var Erratas = map[string]*Errata{
 		DefineOverrides: map[string]string{
 			"APPLICATION_LAUNCHER_CATALOG_LIST": "APPLICATION_LAUNCHER_LIST",
 		},
-		topOrder:      []matter.Section{matter.SectionCluster, matter.SectionDataTypes, matter.SectionFeatures},
-		dataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		TopOrder:      []matter.Section{matter.SectionCluster, matter.SectionDataTypes, matter.SectionFeatures},
+		DataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 	},
 	"AudioOutput.adoc": {
-		dataTypeOrder:       []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		DataTypeOrder:       []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 		ClusterDefinePrefix: "AUDIO_OUTPUT_",
 		DefineOverrides: map[string]string{
 			"AUDIO_OUTPUT_OUTPUT_LIST": "AUDIO_OUTPUT_LIST",
@@ -63,20 +63,20 @@ var Erratas = map[string]*Errata{
 		ClusterDefinePrefix: "COLOR_CONTROL_",
 	},
 	"ConcentrationMeasurement.adoc": {
-		topOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
+		TopOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
 		SuppressClusterDefinePrefix: true,
 	},
 	"ContentLauncher.adoc": {
 		ClusterDefinePrefix: "CONTENT_LAUNCHER_",
 	},
 	"DemandResponseLoadControl.adoc": {
-		topOrder:             []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		clusterOrder:         DefaultErrata.clusterOrder,
-		dataTypeOrder:        DefaultErrata.dataTypeOrder,
+		TopOrder:             []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		ClusterOrder:         DefaultErrata.ClusterOrder,
+		DataTypeOrder:        DefaultErrata.DataTypeOrder,
 		WriteRoleAsPrivilege: true,
 	},
 	"DiagnosticsThread.adoc": {
-		topOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
+		TopOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
 		SuppressClusterDefinePrefix: true,
 	},
 	"DoorLock.adoc": {
@@ -94,13 +94,13 @@ var Erratas = map[string]*Errata{
 		},
 	},
 	"EVSE.adoc": {
-		topOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
-		dataTypeOrder:               []matter.Section{matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap, matter.SectionDataTypeStruct},
+		TopOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
+		DataTypeOrder:               []matter.Section{matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap, matter.SectionDataTypeStruct},
 		SuppressClusterDefinePrefix: true,
 	},
 	"FanControl.adoc": {
-		topOrder:                     []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		dataTypeOrder:                []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		TopOrder:                     []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		DataTypeOrder:                []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 		SuppressAttributePermissions: true,
 		SuppressClusterDefinePrefix:  true,
 	},
@@ -108,19 +108,19 @@ var Erratas = map[string]*Errata{
 		ClusterDefinePrefix: "FLOW_",
 	},
 	"Groups.adoc": {
-		topOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		dataTypeOrder:       []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
+		TopOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		DataTypeOrder:       []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 		ClusterDefinePrefix: "GROUP_",
 	},
 	"IlluminanceMeasurement.adoc": {
 		ClusterDefinePrefix: "ILLUM_",
 	},
 	"KeypadInput.adoc": {
-		topOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		TopOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
 		ClusterDefinePrefix: "ILLUM_",
 	},
 	"LevelControl.adoc": {
-		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		TopOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
 		DefineOverrides:             map[string]string{"REMAINING_TIME": "LEVEL_CONTROL_REMAINING_TIME"},
 		SuppressClusterDefinePrefix: true,
 	},
@@ -175,7 +175,7 @@ var Erratas = map[string]*Errata{
 		ClusterDefinePrefix: "TEMP_",
 	},
 	"Thermostat.adoc": {
-		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		TopOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
 		SuppressClusterDefinePrefix: true,
 		WriteRoleAsPrivilege:        true,
 		DefineOverrides: map[string]string{
@@ -191,7 +191,7 @@ var Erratas = map[string]*Errata{
 		},
 	},
 	"WaterControls.adoc": {
-		topOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
+		TopOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
 		SuppressClusterDefinePrefix: true,
 	},
 	"WindowCovering.adoc": {

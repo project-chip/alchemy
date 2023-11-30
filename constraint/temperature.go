@@ -36,16 +36,9 @@ func (c *TemperatureLimit) Min(cc *matter.ConstraintContext) (min matter.Constra
 }
 
 func (c *TemperatureLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
-	var i int64
-	switch cc.Field.Type.BaseType {
-	case matter.BaseDataTypeTemperature, matter.BaseDataTypeTemperatureDifference:
-		i = c.Value.Mul(decimal.NewFromInt(100)).IntPart()
-	case matter.BaseDataTypeUnsignedTemperature, matter.BaseDataTypeSignedTemperature:
-		i = c.Value.Mul(decimal.NewFromInt(10)).IntPart()
-	}
-	return matter.ConstraintExtreme{
-		Type:   matter.ConstraintExtremeTypeInt64,
-		Format: matter.ConstraintExtremeFormatHex,
-		Int64:  i,
-	}
+	return c.Min(cc)
+}
+
+func (c *TemperatureLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return c.Min(cc)
 }

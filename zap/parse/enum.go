@@ -16,7 +16,7 @@ func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs [
 		case "name":
 			en.Name = a.Value
 		case "type":
-			en.Type = zap.ConvertZapToDataTypeName(a.Value)
+			en.Type = matter.NewDataType(zap.ConvertZapToDataTypeName(a.Value), false)
 		default:
 			return nil, nil, fmt.Errorf("unexpected enum attribute: %s", a.Name.Local)
 		}

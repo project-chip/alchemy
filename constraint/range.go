@@ -28,5 +28,8 @@ func (c *RangeConstraint) Min(cc *matter.ConstraintContext) (from matter.Constra
 
 func (c *RangeConstraint) Max(cc *matter.ConstraintContext) (to matter.ConstraintExtreme) {
 	return c.Maximum.Max(cc)
+}
 
+func (c *RangeConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return
 }

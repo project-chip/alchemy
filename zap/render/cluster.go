@@ -13,7 +13,7 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster, w *etree.Element, errata *Errata) error {
+func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster, w *etree.Element, errata *zap.Errata) error {
 
 	cx := w.CreateElement("cluster")
 	cx.CreateAttr("apiMaturity", "provisional")
@@ -46,9 +46,9 @@ func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster,
 	server.SetText("true")
 	cx.CreateElement("description").SetText(cluster.Description)
 
-	clusterOrder := errata.clusterOrder
+	clusterOrder := errata.ClusterOrder
 	if clusterOrder == nil {
-		clusterOrder = DefaultErrata.clusterOrder
+		clusterOrder = zap.DefaultErrata.ClusterOrder
 	}
 
 	for _, s := range clusterOrder {
@@ -65,7 +65,7 @@ func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster,
 	return nil
 }
 
-func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []*matter.Cluster, w *etree.Element, errata *Errata) {
+func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []*matter.Cluster, w *etree.Element, errata *zap.Errata) {
 	if len(features) == 0 {
 		return
 	}

@@ -13,7 +13,7 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 	for _, bm := range bitmaps {
 		en := cx.CreateElement("bitmap")
 		en.CreateAttr("name", zap.CleanName(bm.Name))
-		en.CreateAttr("type", zap.ConvertDataTypeNameToZap(bm.Type))
+		en.CreateAttr("type", zap.ConvertDataTypeNameToZap(bm.Type.Name))
 
 		for _, cid := range clusterIDs {
 			en.CreateElement("cluster").CreateAttr("code", cid)

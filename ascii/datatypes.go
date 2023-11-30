@@ -133,7 +133,7 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 			}
 			break
 		default:
-			slog.Debug("unknown value element", "type", fmt.Sprintf("%T", el))
+			slog.Warn("unknown data type value element", "type", fmt.Sprintf("%T", el))
 		}
 	} else {
 		for _, el := range p.Elements {
@@ -168,7 +168,7 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 				}
 				break
 			default:
-				slog.Debug("unknown value element", "type", v)
+				slog.Warn("unknown data type value element", "type", v)
 			}
 		}
 	}
@@ -244,8 +244,10 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 					name = strings.TrimPrefix(v.ID.(string), "_")
 				}
 				sb.WriteString(name)
+			case *types.QuotedText:
+				// This is usually an asterisk, and should be ignored
 			default:
-				slog.Debug("unknown value element", "type", fmt.Sprintf("%T", el))
+				slog.Warn("unknown constraint value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
 			}
 		}
 		val = constraint.ParseConstraint(StripTypeSuffixes(sb.String()))
@@ -256,7 +258,7 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) matter.Conformance {
 	i, ok := columnMap[column]
 	if !ok {
-		return &conformance.MandatoryConformance{}
+		return nil
 	}
 	cell := row.Cells[i]
 	if len(cell.Elements) == 0 {
@@ -264,7 +266,7 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 	}
 	p, ok := cell.Elements[0].(*types.Paragraph)
 	if !ok {
-		slog.Debug("unexpected non-paragraph in constraints cell", "type", fmt.Sprintf("%T", cell.Elements[0]))
+		slog.Debug("unexpected non-paragraph in constraints cell", "doc", d.Path, "type", fmt.Sprintf("%T", cell.Elements[0]))
 		return nil
 	}
 	if len(p.Elements) == 0 {
@@ -300,10 +302,15 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 					name = strings.TrimPrefix(v.ID.(string), "_")
 				}
 				sb.WriteString(name)
+			case *types.SpecialCharacter:
+				sb.WriteString(v.Name)
+			case *types.QuotedText:
+				// This is usually an asterisk, and should be ignored
 			default:
-				slog.Debug("unknown value element", "type", fmt.Sprintf("%T", el))
+				slog.Warn("unknown conformance value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
 			}
 		}
+
 		val = conformance.ParseConformance(StripTypeSuffixes(sb.String()))
 	}
 	return val

@@ -29,3 +29,7 @@ func (c *ListConstraint) Min(cc *matter.ConstraintContext) (min matter.Constrain
 func (c *ListConstraint) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return c.Constraint.Max(cc)
 }
+
+func (c *ListConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return
+}

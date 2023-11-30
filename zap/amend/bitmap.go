@@ -200,8 +200,8 @@ func (*renderer) setBitmapFieldAttributes(xfs []xml.Attr, b *matter.BitmapValue)
 
 func (*renderer) setBitmapAttributes(xfb []xml.Attr, bitmap *matter.Bitmap) []xml.Attr {
 	xfb = setAttributeValue(xfb, "name", bitmap.Name)
-	if bitmap.Type != "" {
-		xfb = setAttributeValue(xfb, "type", zap.ConvertDataTypeNameToZap(bitmap.Type))
+	if bitmap.Type != nil {
+		xfb = setAttributeValue(xfb, "type", zap.ConvertDataTypeNameToZap(bitmap.Type.Name))
 	} else {
 		xfb = setAttributeValue(xfb, "type", "bitmap8")
 	}

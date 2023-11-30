@@ -20,14 +20,7 @@ func (c *ReferenceLimit) Equal(o matter.ConstraintLimit) bool {
 }
 
 func (c *ReferenceLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
-	r := cc.Fields.GetField(c.Value)
-	if cc.VisitedReferences == nil {
-		cc.VisitedReferences = make(map[string]struct{})
-	}
-	if _, ok := cc.VisitedReferences[c.Value]; ok {
-		return
-	}
-	cc.VisitedReferences[c.Value] = struct{}{}
+	r := c.getReference(cc)
 	if r == nil || r.Constraint == nil {
 		return
 	}
@@ -35,16 +28,29 @@ func (c *ReferenceLimit) Min(cc *matter.ConstraintContext) (min matter.Constrain
 }
 
 func (c *ReferenceLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
-	r := cc.Fields.GetField(c.Value)
-	if cc.VisitedReferences == nil {
-		cc.VisitedReferences = make(map[string]struct{})
-	}
-	if _, ok := cc.VisitedReferences[c.Value]; ok {
-		return
-	}
-	cc.VisitedReferences[c.Value] = struct{}{}
+	r := c.getReference(cc)
 	if r == nil || r.Constraint == nil {
 		return
 	}
 	return r.Constraint.Max(cc)
+}
+
+func (c *ReferenceLimit) getReference(cc *matter.ConstraintContext) *matter.Field {
+	r := cc.Fields.GetField(c.Value)
+	if cc.VisitedReferences == nil {
+		cc.VisitedReferences = make(map[string]struct{})
+	} else if _, ok := cc.VisitedReferences[c.Value]; ok {
+		return nil
+	}
+	cc.VisitedReferences[c.Value] = struct{}{}
+	return r
+}
+
+func (c *ReferenceLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	r := c.getReference(cc)
+	if r == nil || r.Default == "" {
+		return
+	}
+	cons := ParseConstraint(r.Default)
+	return cons.Default(cc)
 }
