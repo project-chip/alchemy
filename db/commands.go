@@ -13,12 +13,22 @@ import (
 func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, cluster *matter.Cluster) error {
 	for _, c := range cluster.Commands {
 		row := newDBRow()
-		row.values[matter.TableColumnID] = c.ID
+		row.values[matter.TableColumnID] = c.ID.IntString()
 		row.values[matter.TableColumnName] = c.Name
-		row.values[matter.TableColumnDirection] = c.Direction
+		switch c.Direction {
+		case matter.InterfaceClient:
+			row.values[matter.TableColumnDirection] = "client"
+		case matter.InterfaceServer:
+			row.values[matter.TableColumnDirection] = "server"
+		default:
+			row.values[matter.TableColumnDirection] = "unknown"
+
+		}
 		row.values[matter.TableColumnResponse] = c.Response
 		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(c.Access)
-		row.values[matter.TableColumnConformance] = c.Conformance
+		if c.Conformance != nil {
+			row.values[matter.TableColumnConformance] = c.Conformance.String()
+		}
 		ci := &sectionInfo{id: h.nextId(commandTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
 		parent.children[commandTable] = append(parent.children[commandTable], ci)
 		for _, ef := range c.Fields {

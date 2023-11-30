@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/dolthub/go-mysql-server/memory"
@@ -119,7 +120,7 @@ func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTa
 		}
 		err := t.Insert(cxt, row)
 		if err != nil {
-			return err
+			return fmt.Errorf("error inserting table row: %w", err)
 		}
 
 	}
