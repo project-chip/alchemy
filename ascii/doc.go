@@ -195,6 +195,7 @@ func Read(contents string, path string, settings ...configuration.Setting) (doc 
 	copy(baseConfig[1:], settings)
 
 	config := configuration.NewConfiguration(baseConfig...)
+	config.IgnoreIncludes = true
 
 	// By default, there are two attributes in the renderer; if there are more, we need to pre-process
 	if len(config.Attributes) > 2 {
