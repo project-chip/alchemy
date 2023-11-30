@@ -9,6 +9,7 @@ import (
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/zap"
 )
 
 func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
@@ -185,7 +186,7 @@ func (*renderer) setFeatureAttributes(xfs []xml.Attr, f *matter.Feature) ([]xml.
 		return nil, err
 	}
 	bit = (1 << bit)
-	xfs = setAttributeValue(xfs, "name", f.Name)
+	xfs = setAttributeValue(xfs, "name", zap.CleanName(f.Name))
 	xfs = setAttributeValue(xfs, "mask", fmt.Sprintf("%#x", bit))
 	return xfs, nil
 }
