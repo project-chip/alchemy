@@ -59,9 +59,13 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "access":
-				r.setAccessAttributes(t.Attr, "invoke", matchingCommand.Access.Invoke)
-				writeThrough(ts, e, t)
-				needsAccess = false
+				if !needsAccess {
+					Ignore(ts, "access")
+				} else {
+					r.setAccessAttributes(t.Attr, "invoke", matchingCommand.Access.Invoke)
+					writeThrough(ts, e, t)
+					needsAccess = false
+				}
 			case "description":
 				writeThrough(ts, e, t)
 			case "arg":
