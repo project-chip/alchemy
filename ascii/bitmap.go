@@ -19,10 +19,22 @@ func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
 		return nil, fmt.Errorf("failed reading bitmap: %w", err)
 	}
 	name := strings.TrimSuffix(s.Name, " Type")
+
 	e = &matter.Bitmap{
 		Name: name,
-		Type: s.GetDataType(),
 	}
+
+	dts := s.GetDataType()
+	if dts == "" {
+		dts = "map8"
+	}
+
+	dt := matter.NewDataType(dts, false)
+	if !dt.IsMap() {
+		return nil, fmt.Errorf("unknown bitmap data type: %s", dts)
+	}
+
+	e.Type = dt
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]

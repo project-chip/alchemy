@@ -3,7 +3,7 @@ package matter
 type Enum struct {
 	Name        string       `json:"name,omitempty"`
 	Description string       `json:"description,omitempty"`
-	Type        string       `json:"type,omitempty"`
+	Type        *DataType    `json:"type,omitempty"`
 	Values      []*EnumValue `json:"values,omitempty"`
 }
 

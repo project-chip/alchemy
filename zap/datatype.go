@@ -144,6 +144,9 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 			}
 		}
 	}
+	if f.Type.IsArray() {
+		return ConvertDataTypeNameToZap(f.Type.EntryType.Name)
+	}
 	return ConvertDataTypeNameToZap(f.Type.Name)
 }
 
@@ -218,9 +221,17 @@ func minMaxFromConstraint(cc *matter.ConstraintContext) (from matter.ConstraintE
 
 func GetDefaultValue(cc *matter.ConstraintContext) (defaultValue matter.ConstraintExtreme) {
 	c := constraint.ParseConstraint(cc.Field.Default)
-	switch c := c.(type) {
-	case *constraint.ExactConstraint:
-		defaultValue = c.Min(cc)
+	defaultValue = c.Default(cc)
+	switch defaultValue.Type {
+	case matter.ConstraintExtremeTypeEmpty:
+		if !cc.Field.Type.IsString() {
+			defaultValue = matter.ConstraintExtreme{}
+		}
+	case matter.ConstraintExtremeTypeNull:
+		if cc.Field.Type.NullValue() == 0 {
+			defaultValue = matter.ConstraintExtreme{}
+		}
 	}
+
 	return
 }

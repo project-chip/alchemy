@@ -63,7 +63,7 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string)
 	var t string
 	if f.Type != nil {
 		if f.Type.IsArray() {
-			t = fmt.Sprintf("list[%s]", f.Type.Name)
+			t = fmt.Sprintf("list[%s]", f.Type.EntryType.Name)
 		} else {
 			t = f.Type.Name
 		}

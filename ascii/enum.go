@@ -19,8 +19,18 @@ func (s *Section) toEnum(d *Doc) (e *matter.Enum, err error) {
 	name := strings.TrimSuffix(s.Name, " Type")
 	e = &matter.Enum{
 		Name: name,
-		Type: s.GetDataType(),
 	}
+	dts := s.GetDataType()
+	if dts == "" {
+		dts = "enum8"
+	}
+
+	dt := matter.NewDataType(dts, false)
+	if !dt.IsEnum() {
+		return nil, fmt.Errorf("unknown enum data type: %s", dts)
+	}
+
+	e.Type = dt
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]

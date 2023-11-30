@@ -9,9 +9,10 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/zap"
 )
 
-func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{}, w *etree.Element, errata *Errata) (err error) {
+func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{}, w *etree.Element, errata *zap.Errata) (err error) {
 
 	var clusters []*matter.Cluster
 	for _, m := range models {
@@ -21,9 +22,9 @@ func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{},
 		}
 	}
 
-	topOrder := errata.topOrder
+	topOrder := errata.TopOrder
 	if topOrder == nil {
-		topOrder = DefaultErrata.topOrder
+		topOrder = zap.DefaultErrata.TopOrder
 	}
 
 	for _, top := range topOrder {

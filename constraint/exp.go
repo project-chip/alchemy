@@ -56,3 +56,7 @@ func (c *ExpLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtre
 func (c *ExpLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return c.minmax(cc)
 }
+
+func (c *ExpLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return c.minmax(cc)
+}

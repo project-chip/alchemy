@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderCommands(cluster *matter.Cluster, cx *etree.Element, errata *Errata) {
+func renderCommands(cluster *matter.Cluster, cx *etree.Element, errata *zap.Errata) {
 	for _, c := range cluster.Commands {
 		if c.Direction == matter.InterfaceServer {
 			renderCommand(c, cx, errata)
@@ -20,7 +20,7 @@ func renderCommands(cluster *matter.Cluster, cx *etree.Element, errata *Errata) 
 	}
 }
 
-func renderCommand(c *matter.Command, e *etree.Element, errata *Errata) {
+func renderCommand(c *matter.Command, e *etree.Element, errata *zap.Errata) {
 	mandatory := conformance.IsMandatory(c.Conformance)
 
 	cx := e.CreateElement("command")

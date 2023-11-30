@@ -10,7 +10,7 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix string, errata *Errata) {
+func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix string, errata *zap.Errata) {
 	if len(cluster.Attributes) > 0 {
 		cx.CreateComment("Attributes")
 	}
@@ -76,7 +76,7 @@ func renderConstraint(fs matter.FieldSet, f *matter.Field, attr *etree.Element) 
 	}
 }
 
-func renderAttributeAccess(a *matter.Field, errata *Errata, attr *etree.Element) {
+func renderAttributeAccess(a *matter.Field, errata *zap.Errata, attr *etree.Element) {
 	if a.Quality.Has(matter.QualityFixed) || (a.Access.Read == matter.PrivilegeUnknown || a.Access.Read == matter.PrivilegeView) && a.Access.Write == matter.PrivilegeUnknown || errata.SuppressAttributePermissions {
 		if a.Access.Write != matter.PrivilegeUnknown {
 			attr.CreateAttr("writable", "true")
@@ -117,7 +117,7 @@ func renderPrivilege(a matter.Privilege) string {
 	}
 }
 
-func GetDefine(name string, prefix string, errata *Errata) string {
+func GetDefine(name string, prefix string, errata *zap.Errata) string {
 	define := strcase.ToScreamingDelimited(name, '_', "", true)
 	if !strings.HasPrefix(define, prefix) {
 		define = prefix + define

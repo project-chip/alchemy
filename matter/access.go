@@ -24,6 +24,14 @@ var PrivilegeNames = map[Privilege]string{
 	PrivilegeAdminister: "Administer",
 }
 
+var PrivilegeNamesShort = map[Privilege]string{
+	PrivilegeUnknown:    "Unknown",
+	PrivilegeView:       "View",
+	PrivilegeOperate:    "Operate",
+	PrivilegeManage:     "Manage",
+	PrivilegeAdminister: "Admin",
+}
+
 var privilegeNameMap map[string]Privilege
 
 func init() {

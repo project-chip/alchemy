@@ -97,3 +97,7 @@ func (c *MathExpressionLimit) operate(left matter.ConstraintExtreme, right matte
 	}
 	return
 }
+
+func (c *MathExpressionLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return c.Min(cc)
+}

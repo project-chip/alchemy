@@ -13,15 +13,9 @@ import (
 func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 
 	for _, v := range enums {
-		enumType := v.Type
-		if enumType != "" {
-			enumType = zap.ConvertDataTypeNameToZap(v.Type)
-		} else {
-			enumType = "enum8"
-		}
 		var valFormat string
-		switch enumType {
-		case "enum16":
+		switch v.Type.BaseType {
+		case matter.BaseDataTypeEnum16:
 			valFormat = "0x%04X"
 		default:
 			valFormat = "0x%02X"
@@ -29,8 +23,8 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 
 		en := cx.CreateElement("enum")
 		en.CreateAttr("name", zap.CleanName(v.Name))
-		if v.Type != "" {
-			en.CreateAttr("type", zap.ConvertDataTypeNameToZap(v.Type))
+		if v.Type != nil {
+			en.CreateAttr("type", zap.ConvertDataTypeNameToZap(v.Type.Name))
 		} else {
 			en.CreateAttr("type", "enum8")
 		}

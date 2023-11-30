@@ -23,3 +23,7 @@ func (c *AllConstraint) Min(cc *matter.ConstraintContext) (min matter.Constraint
 func (c *AllConstraint) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
 }
+
+func (c *AllConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return
+}

@@ -10,6 +10,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/zap"
 )
 
 type Result struct {
@@ -28,9 +29,9 @@ func Render(cxt context.Context, doc *ascii.Doc, models []any) (*Result, error) 
 
 	x.CreateProcInst("xml", `version="1.0"`)
 
-	errata, ok := Erratas[filepath.Base(doc.Path)]
+	errata, ok := zap.Erratas[filepath.Base(doc.Path)]
 	if !ok {
-		errata = DefaultErrata
+		errata = zap.DefaultErrata
 	}
 
 	x.CreateComment(fmt.Sprintf(license, time.Now().Year()))

@@ -10,7 +10,7 @@ import (
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/zap/render"
+	"github.com/hasty/alchemy/zap"
 )
 
 type renderer struct {
@@ -22,7 +22,7 @@ type renderer struct {
 	clusters map[*matter.Cluster]bool
 	structs  map[*matter.Struct]bool
 
-	errata *render.Errata
+	errata *zap.Errata
 }
 
 type xmlDecoder interface {
@@ -110,9 +110,9 @@ func Render(doc *ascii.Doc, r io.Reader, w io.Writer, models []any) (err error) 
 	e := xml.NewEncoder(w)
 	e.Indent("", "  ")
 
-	errata, ok := render.Erratas[filepath.Base(doc.Path)]
+	errata, ok := zap.Erratas[filepath.Base(doc.Path)]
 	if !ok {
-		errata = render.DefaultErrata
+		errata = zap.DefaultErrata
 	}
 
 	rend := &renderer{

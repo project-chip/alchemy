@@ -43,9 +43,9 @@ func (c *HexLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtre
 }
 
 func (c *HexLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
-	return matter.ConstraintExtreme{
-		Type:   matter.ConstraintExtremeTypeUInt64,
-		Format: matter.ConstraintExtremeFormatHex,
-		UInt64: c.Value,
-	}
+	return c.Min(cc)
+}
+
+func (c *HexLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return c.Min(cc)
 }

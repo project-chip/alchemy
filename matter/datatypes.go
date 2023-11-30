@@ -1,7 +1,6 @@
 package matter
 
 import (
-	"encoding/json"
 	"math"
 	"strings"
 )
@@ -137,19 +136,14 @@ type DataType struct {
 	Name     string
 	Model    any
 
-	isArray bool
-}
-
-func (w *DataType) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"baseType": w.BaseType,
-		"name":     w.Name,
-		"isArray":  w.isArray,
-	})
+	EntryType *DataType
 }
 
 func NewDataType(name string, isArray bool) *DataType {
-	dt := &DataType{Name: name, isArray: isArray}
+	if isArray {
+		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewDataType(name, false)}
+	}
+	dt := &DataType{Name: name}
 	switch strings.ToLower(name) {
 	case "bool", "boolean":
 		dt.BaseType = BaseDataTypeBoolean
@@ -287,11 +281,33 @@ func NewDataType(name string, isArray bool) *DataType {
 }
 
 func (dt *DataType) IsString() bool {
-	return dt != nil && (dt.Name == "string" || dt.Name == "octstr")
+	return dt != nil && (dt.BaseType == BaseDataTypeString || dt.BaseType == BaseDataTypeOctStr)
 }
 
 func (dt *DataType) IsArray() bool {
-	return dt != nil && dt.isArray
+	return dt != nil && dt.BaseType == BaseDataTypeList
+}
+
+func (dt *DataType) IsMap() bool {
+	if dt == nil {
+		return false
+	}
+	switch dt.BaseType {
+	case BaseDataTypeMap8, BaseDataTypeMap16, BaseDataTypeMap32, BaseDataTypeMap64:
+		return true
+	}
+	return false
+}
+
+func (dt *DataType) IsEnum() bool {
+	if dt == nil {
+		return false
+	}
+	switch dt.BaseType {
+	case BaseDataTypeEnum8, BaseDataTypeEnum16:
+		return true
+	}
+	return false
 }
 
 func (dt *DataType) Size() int {
@@ -351,6 +367,54 @@ func (dt *DataType) Size() int {
 		return 1
 	case BaseDataTypeTag:
 		return 1
+	}
+	return 0
+}
+
+func (dt *DataType) NullValue() uint64 {
+
+	switch dt.BaseType {
+	case BaseDataTypeInt8, BaseDataTypeSignedTemperature, BaseDataTypeFabricIndex:
+		return 0x80
+	case BaseDataTypeInt16, BaseDataTypeTemperature, BaseDataTypeTemperatureDifference:
+		return 0x8000
+	case BaseDataTypeInt24:
+		return 0x800000
+	case BaseDataTypeInt32:
+		return 0x80000000
+	case BaseDataTypeInt40:
+		return 0x8000000000
+	case BaseDataTypeInt48:
+		return 0x800000000000
+	case BaseDataTypeInt56:
+		return 0x80000000000000
+	case BaseDataTypeInt64, BaseDataTypeAmperage, BaseDataTypeVoltage, BaseDataTypePower, BaseDataTypeEnergy:
+		return 0x8000000000000000
+	case BaseDataTypeUInt8, BaseDataTypeBoolean, BaseDataTypeMap8, BaseDataTypeEnum8, BaseDataTypePercent, BaseDataTypePriority, BaseDataTypeStatus, BaseDataTypeUnsignedTemperature, BaseDataTypeActionID, BaseDataTypeNamespace, BaseDataTypeTag:
+		return math.MaxUint8
+	case BaseDataTypeUInt16, BaseDataTypeMap16, BaseDataTypeEnum16, BaseDataTypePercentHundredths, BaseDataTypeGroupID, BaseDataTypeEndpointID, BaseDataTypeEndpointNumber, BaseDataTypeVendorID, BaseDataTypeEntryIndex:
+		return math.MaxUint16
+	case BaseDataTypeUInt24:
+		return maxUint24
+	case BaseDataTypeUInt32, BaseDataTypeMap32, BaseDataTypeSingle, BaseDataTypeEpochSeconds, BaseDataTypeElapsedSeconds, BaseDataTypeDeviceTypeID, BaseDataTypeClusterID, BaseDataTypeAttributeID, BaseDataTypeFieldID, BaseDataTypeEventID, BaseDataTypeCommandID, BaseDataTypeTransactionID, BaseDataTypeDataVersion:
+		return math.MaxUint32
+	case BaseDataTypeUInt40:
+		return maxUint40
+	case BaseDataTypeUInt48:
+		return maxUint48
+	case BaseDataTypeUInt56:
+		return maxUint56
+	case BaseDataTypeUInt64, BaseDataTypeMap64, BaseDataTypeDouble, BaseDataTypeEpochMicroseconds, BaseDataTypePosixMilliseconds, BaseDataTypeSystimeMicroseconds, BaseDataTypeSystimeMilliseconds, BaseDataTypeFabricID, BaseDataTypeNodeID, BaseDataTypeIeeeAddress, BaseDataTypeEventNumber:
+		return math.MaxUint64
+	case BaseDataTypeCustom:
+		if dt.Model != nil {
+			switch m := dt.Model.(type) {
+			case *Bitmap:
+				return m.Type.NullValue()
+			case *Enum:
+				return m.Type.NullValue()
+			}
+		}
 	}
 	return 0
 }

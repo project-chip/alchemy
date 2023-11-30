@@ -28,7 +28,7 @@ type XMLBitmap struct {
 func (b *XMLBitmap) ToModel() (mb *matter.Bitmap, err error) {
 	mb = &matter.Bitmap{
 		Name: b.Name,
-		Type: b.Type,
+		Type: matter.NewDataType(ConvertZapToDataTypeName(b.Type), false),
 	}
 	for _, bi := range b.Items {
 		var mask uint64
@@ -41,14 +41,14 @@ func (b *XMLBitmap) ToModel() (mb *matter.Bitmap, err error) {
 		endBit := -1
 
 		var maxBit int
-		switch mb.Type {
-		case "map8":
+		switch mb.Type.BaseType {
+		case matter.BaseDataTypeMap8:
 			maxBit = 8
-		case "map16":
+		case matter.BaseDataTypeMap16:
 			maxBit = 16
-		case "map32":
+		case matter.BaseDataTypeMap32:
 			maxBit = 32
-		case "map64":
+		case matter.BaseDataTypeMap64:
 			maxBit = 64
 		}
 		for offset := 0; offset < maxBit; offset++ {

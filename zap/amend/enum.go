@@ -191,21 +191,16 @@ func (*renderer) setEnumValueAttributes(v *matter.EnumValue, xfs []xml.Attr, val
 }
 
 func (*renderer) setEnumAttributes(xfb []xml.Attr, en *matter.Enum) ([]xml.Attr, string) {
-	enumType := en.Type
-	if enumType != "" {
-		enumType = zap.ConvertDataTypeNameToZap(en.Type)
-	} else {
-		enumType = "enum8"
-	}
+
 	var valFormat string
-	switch enumType {
-	case "enum16":
+	switch en.Type.BaseType {
+	case matter.BaseDataTypeEnum16:
 		valFormat = "0x%04X"
 	default:
 		valFormat = "0x%02X"
 	}
 
 	xfb = setAttributeValue(xfb, "name", en.Name)
-	xfb = setAttributeValue(xfb, "type", enumType)
+	xfb = setAttributeValue(xfb, "type", zap.ConvertDataTypeNameToZap(en.Type.Name))
 	return xfb, valFormat
 }

@@ -10,7 +10,7 @@ import (
 type Bitmap struct {
 	Name        string         `json:"name,omitempty"`
 	Description string         `json:"description,omitempty"`
-	Type        string         `json:"type,omitempty"`
+	Type        *DataType      `json:"type,omitempty"`
 	Bits        []*BitmapValue `json:"bits,omitempty"`
 }
 

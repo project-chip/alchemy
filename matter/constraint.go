@@ -10,6 +10,7 @@ type Constraint interface {
 	Equal(o Constraint) bool
 	Min(c *ConstraintContext) (min ConstraintExtreme)
 	Max(c *ConstraintContext) (max ConstraintExtreme)
+	Default(c *ConstraintContext) (max ConstraintExtreme)
 }
 
 type ConstraintLimit interface {
@@ -17,6 +18,7 @@ type ConstraintLimit interface {
 	Equal(o ConstraintLimit) bool
 	Min(c *ConstraintContext) (min ConstraintExtreme)
 	Max(c *ConstraintContext) (max ConstraintExtreme)
+	Default(c *ConstraintContext) (max ConstraintExtreme)
 }
 
 type ConstraintContext struct {
@@ -31,6 +33,8 @@ const (
 	ConstraintExtremeTypeUndefined ConstraintExtremeType = iota
 	ConstraintExtremeTypeInt64
 	ConstraintExtremeTypeUInt64
+	ConstraintExtremeTypeNull
+	ConstraintExtremeTypeEmpty
 )
 
 type ConstraintExtremeFormat uint8
@@ -104,33 +108,42 @@ func (ce *ConstraintExtreme) ZapString(dataType *DataType) string {
 			return strconv.FormatInt(ce.Int64, 10)
 		}
 	case ConstraintExtremeTypeUInt64:
-		val := ce.UInt64
-		switch ce.Format {
-		case ConstraintExtremeFormatHex:
-			if dataType != nil {
-				switch dataType.Size() {
-				case 1:
-					return fmt.Sprintf("0x%02X", uint8(val))
-				case 2:
-					return fmt.Sprintf("0x%04X", uint16(val))
-				case 4:
-					return fmt.Sprintf("0x%08X", uint32(val))
-				case 8:
-					return fmt.Sprintf("0x%16X", uint64(val))
-
-				}
-			}
-			return fmt.Sprintf("0x%X", val)
-		case ConstraintExtremeFormatAuto:
-			if val > 0xFF {
-				return fmt.Sprintf("0x%X", uint64(val))
-			}
-			return strconv.FormatUint(val, 10)
-		default:
-			return strconv.FormatUint(val, 10)
+		return ce.formatUint64(dataType, ce.UInt64)
+	case ConstraintExtremeTypeNull:
+		val := dataType.NullValue()
+		if val > 0 {
+			return ce.formatUint64(dataType, val)
 		}
-	default:
+	case ConstraintExtremeTypeEmpty:
 		return ""
+	}
+	return ""
+}
+
+func (ce *ConstraintExtreme) formatUint64(dataType *DataType, val uint64) string {
+	switch ce.Format {
+	case ConstraintExtremeFormatHex:
+		if dataType != nil {
+			switch dataType.Size() {
+			case 1:
+				return fmt.Sprintf("0x%02X", uint8(val))
+			case 2:
+				return fmt.Sprintf("0x%04X", uint16(val))
+			case 4:
+				return fmt.Sprintf("0x%08X", uint32(val))
+			case 8:
+				return fmt.Sprintf("0x%16X", uint64(val))
+
+			}
+		}
+		return fmt.Sprintf("0x%X", val)
+	case ConstraintExtremeFormatAuto:
+		if val > 0xFF {
+			return fmt.Sprintf("0x%X", uint64(val))
+		}
+		return strconv.FormatUint(val, 10)
+	default:
+		return strconv.FormatUint(val, 10)
 	}
 }
 
@@ -144,6 +157,6 @@ func (ce ConstraintExtreme) Equals(o ConstraintExtreme) bool {
 	case ConstraintExtremeTypeUInt64:
 		return ce.UInt64 != o.UInt64
 	default:
-		return false
+		return true
 	}
 }

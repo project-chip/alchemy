@@ -335,6 +335,11 @@ var constraintTests = []constraintTest{
 		constraint: "percent",
 		generic:    true,
 	},
+	{
+		constraint: "null",
+		min:        matter.ConstraintExtreme{},
+		max:        matter.ConstraintExtreme{},
+	},
 }
 
 func TestSuite(t *testing.T) {
@@ -350,11 +355,11 @@ func TestSuite(t *testing.T) {
 			t.Errorf("failed to parse constraint %s", ct.constraint)
 			continue
 		}
-		min := c.Min(&matter.ConstraintContext{Fields: ct.fields})
+		min := c.Min(&matter.ConstraintContext{Fields: ct.fields, Field: &matter.Field{Type: ct.dataType}})
 		if min != ct.min {
 			t.Errorf("incorrect min value for \"%s\": expected %d, got %d", ct.constraint, ct.min, min)
 		}
-		max := c.Max(&matter.ConstraintContext{Fields: ct.fields})
+		max := c.Max(&matter.ConstraintContext{Fields: ct.fields, Field: &matter.Field{Type: ct.dataType}})
 		if max != ct.max {
 			t.Errorf("incorrect max value for \"%s\": expected %d, got %d", ct.constraint, ct.max, max)
 		}

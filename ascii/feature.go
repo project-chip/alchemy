@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -43,6 +44,9 @@ func (s *Section) toFeatures(d *Doc) (features []*matter.Feature, err error) {
 			return
 		}
 		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+		if f.Conformance == nil {
+			f.Conformance = &conformance.OptionalConformance{}
+		}
 		features = append(features, f)
 	}
 	return

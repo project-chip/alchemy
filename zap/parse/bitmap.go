@@ -19,7 +19,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 		case "name":
 			bitmap.Name = a.Value
 		case "type":
-			bitmap.Type = zap.ConvertZapToDataTypeName(a.Value)
+			bitmap.Type = matter.NewDataType(zap.ConvertZapToDataTypeName(a.Value), false)
 		case "apiMaturity":
 		default:
 			return nil, nil, fmt.Errorf("unexpected bitmap attribute: %s", a.Name.Local)
@@ -88,17 +88,17 @@ func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) 
 			endBit := -1
 
 			var maxBit int
-			switch bitmap.Type {
-			case "map8":
+			switch bitmap.Type.BaseType {
+			case matter.BaseDataTypeMap8:
 				maxBit = 8
-			case "map16":
+			case matter.BaseDataTypeMap16:
 				maxBit = 16
-			case "map32":
+			case matter.BaseDataTypeMap32:
 				maxBit = 32
-			case "map64":
+			case matter.BaseDataTypeMap64:
 				maxBit = 64
 			default:
-				err = fmt.Errorf("unknown bitmap type: %s", bitmap.Type)
+				err = fmt.Errorf("unknown bitmap type: %v", bitmap.Type)
 				return
 			}
 			for offset := 0; offset < maxBit; offset++ {

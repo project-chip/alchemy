@@ -61,6 +61,10 @@ func (cs ConstraintSet) Max(c *matter.ConstraintContext) (max matter.ConstraintE
 	return to
 }
 
+func (c ConstraintSet) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return
+}
+
 func minExtreme(f1 matter.ConstraintExtreme, f2 matter.ConstraintExtreme) matter.ConstraintExtreme {
 	switch f1.Type {
 	case matter.ConstraintExtremeTypeUndefined:

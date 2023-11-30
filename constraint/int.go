@@ -30,9 +30,9 @@ func (c *IntLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtre
 }
 
 func (c *IntLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
-	return matter.ConstraintExtreme{
-		Type:   matter.ConstraintExtremeTypeInt64,
-		Format: matter.ConstraintExtremeFormatInt,
-		Int64:  c.Value,
-	}
+	return c.Min(cc)
+}
+
+func (c *IntLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+	return c.Min(cc)
 }
