@@ -60,58 +60,5 @@ func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions f
 		appClusters = filteredDocs
 	}
 
-	err = renderAppClusters(cxt, zclRoot, appClusters, filesOptions)
-	if err != nil {
-		return err
-	}
-
-	/*if !filesOptions.DryRun {
-
-		for path, result := range outputs {
-			if len(result.Models) == 0 {
-				continue
-			}
-
-			if !filesOptions.DryRun {
-				err = os.WriteFile(path, []byte(result.ZCL), os.ModeAppend|0644)
-				if err != nil {
-					return err
-				}
-			}
-		}
-
-		slog.Info("Patching ZAP JSON...")
-		err = patchZapJson(zclRoot, provisionalZclFiles)
-
-		if err != nil {
-			return err
-		}
-
-		slog.Info("Patching workflow tests YAML...")
-		err = patchTestsYaml(zclRoot, provisionalZclFiles)
-		if err != nil {
-			return err
-		}
-
-		slog.Info("Patching scripts/matter.lint...")
-		err = patchLint(zclRoot, provisionalZclFiles)
-		if err != nil {
-			return err
-		}
-
-		slog.Info("Patching src/controller/data_model/BUILD.gn...")
-		err = patchBuildGN(zclRoot, appClusters)
-		if err != nil {
-			return err
-		}
-
-		slog.Info("Patching src/app/zap_cluster_list.json...")
-		err = patchClusterList(zclRoot, appClusters)
-		if err != nil {
-			return err
-		}
-
-	}*/
-
-	return nil
+	return renderAppClusters(cxt, zclRoot, appClusters, filesOptions)
 }

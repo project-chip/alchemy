@@ -28,6 +28,8 @@ func renderConformanceString(c matter.Conformance, parent *etree.Element) error 
 		}
 	case *conformance.GenericConformance:
 		return nil
+	default:
+		return renderConformance(c, parent)
 
 	}
 
