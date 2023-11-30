@@ -73,6 +73,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 					if err != nil {
 						return
 					}
+					remainingClusterIDs = nil
 				}
 				for {
 					if bitIndex >= len(matchingBitmap.Bits) {

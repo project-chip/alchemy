@@ -56,6 +56,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 					if err != nil {
 						return
 					}
+					remainingClusterIDs = nil
 				}
 				for {
 					if featureIndex >= len(cluster.Features) {
