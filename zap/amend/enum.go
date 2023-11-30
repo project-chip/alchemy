@@ -75,6 +75,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 					if err != nil {
 						return
 					}
+					remainingClusterIDs = nil
 				}
 				for {
 					if valueIndex >= len(matchingEnum.Values) {

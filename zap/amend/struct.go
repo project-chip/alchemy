@@ -84,6 +84,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 					if err != nil {
 						return
 					}
+					remainingClusterIDs = nil
 				}
 				for {
 					if fieldIndex >= len(matchingStruct.Fields) {
