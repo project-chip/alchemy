@@ -187,6 +187,11 @@ func (r *renderer) setFieldAttributes(f *matter.Field, xfs []xml.Attr, fs matter
 	} else {
 		xfs = removeAttribute(xfs, "isNullable")
 	}
+	if f.Access.FabricSensitive {
+		xfs = setAttributeValue(xfs, "isFabricSensitive", "true")
+	} else {
+		xfs = removeAttribute(xfs, "isFabricSensitive")
+	}
 	if f.Default != "" {
 		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: f, Fields: fs})
 		if defaultValue.Defined() {

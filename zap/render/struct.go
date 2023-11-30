@@ -36,7 +36,9 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 			if defaultValue.Defined() {
 				fx.CreateAttr("default", defaultValue.ZapString(f.Type))
 			}
-
+			if f.Access.FabricSensitive {
+				fx.CreateAttr("isFabricSensitive", "true")
+			}
 		}
 
 	}
