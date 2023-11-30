@@ -35,6 +35,12 @@ func (s *Section) toFeatures(d *Doc) (features []*matter.Feature, err error) {
 		if err != nil {
 			return
 		}
+		if len(f.Name) == 0 {
+			f.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+			if err != nil {
+				return
+			}
+		}
 		f.Code, err = readRowValue(row, columnMap, matter.TableColumnCode)
 		if err != nil {
 			return
