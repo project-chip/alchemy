@@ -13,11 +13,13 @@ import (
 func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluster *matter.Cluster) error {
 	for _, e := range cluster.Events {
 		row := newDBRow()
-		row.values[matter.TableColumnID] = e.ID
+		row.values[matter.TableColumnID] = e.ID.HexString()
 		row.values[matter.TableColumnName] = e.Name
 		row.values[matter.TableColumnPriority] = e.Priority
 		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(e.Access)
-		row.values[matter.TableColumnConformance] = e.Conformance
+		if e.Conformance != nil {
+			row.values[matter.TableColumnConformance] = e.Conformance.String()
+		}
 		ei := &sectionInfo{id: h.nextId(eventTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
 		parent.children[eventTable] = append(parent.children[eventTable], ei)
 		for _, ef := range e.Fields {

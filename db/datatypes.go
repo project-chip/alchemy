@@ -22,7 +22,9 @@ func (h *Host) indexDataTypeModels(cxt context.Context, parent *sectionInfo, clu
 			bmr.values[matter.TableColumnBit] = bmv.Bit
 			bmr.values[matter.TableColumnName] = bmv.Name
 			bmr.values[matter.TableColumnSummary] = bmv.Summary
-			bmr.values[matter.TableColumnConformance] = bmv.Conformance
+			if bmv.Conformance != nil {
+				bmr.values[matter.TableColumnConformance] = bmv.Conformance.String()
+			}
 			bv := &sectionInfo{id: h.nextId(bitmapValue), parent: bi, values: bmr}
 			bi.children[bitmapValue] = append(bi.children[bitmapValue], bv)
 		}
@@ -31,7 +33,7 @@ func (h *Host) indexDataTypeModels(cxt context.Context, parent *sectionInfo, clu
 		row := newDBRow()
 		row.values[matter.TableColumnName] = en.Name
 		row.values[matter.TableColumnClass] = "enum"
-		row.values[matter.TableColumnType] = en.Type
+		row.values[matter.TableColumnType] = en.Type.Name
 		ei := &sectionInfo{id: h.nextId(dataTypeTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
 		parent.children[dataTypeTable] = append(parent.children[dataTypeTable], ei)
 		for _, env := range en.Values {
@@ -39,7 +41,9 @@ func (h *Host) indexDataTypeModels(cxt context.Context, parent *sectionInfo, clu
 			bmr.values[matter.TableColumnValue] = env.Value
 			bmr.values[matter.TableColumnName] = env.Name
 			bmr.values[matter.TableColumnSummary] = env.Summary
-			bmr.values[matter.TableColumnConformance] = env.Conformance
+			if env.Conformance != nil {
+				bmr.values[matter.TableColumnConformance] = env.Conformance.String()
+			}
 			bv := &sectionInfo{id: h.nextId(enumValue), parent: ei, values: bmr}
 			ei.children[enumValue] = append(ei.children[enumValue], bv)
 		}
@@ -70,7 +74,7 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string)
 	} else {
 		t = "unknown"
 	}
-	sr.values[matter.TableColumnID] = f.ID
+	sr.values[matter.TableColumnID] = f.ID.IntString()
 	sr.values[matter.TableColumnName] = f.Name
 	sr.values[matter.TableColumnType] = t
 	if f.Constraint != nil {
@@ -81,7 +85,9 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string)
 	sr.values[matter.TableColumnQuality] = f.Quality.String()
 	sr.values[matter.TableColumnDefault] = f.Default
 	sr.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(f.Access)
-	sr.values[matter.TableColumnConformance] = f.Conformance
+	if f.Conformance != nil {
+		sr.values[matter.TableColumnConformance] = f.Conformance.String()
+	}
 	sv := &sectionInfo{id: h.nextId(tableName), parent: parent, values: sr}
 	parent.children[tableName] = append(parent.children[tableName], sv)
 }

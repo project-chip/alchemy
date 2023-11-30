@@ -10,7 +10,7 @@ import (
 
 func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, cluster *matter.Cluster) error {
 	clusterRow := newDBRow()
-	clusterRow.values[matter.TableColumnID] = cluster.ID
+	clusterRow.values[matter.TableColumnID] = cluster.ID.IntString()
 	clusterRow.values[matter.TableColumnName] = cluster.Name
 	clusterRow.values[matter.TableColumnHierarchy] = cluster.Hierarchy
 	clusterRow.values[matter.TableColumnRole] = cluster.Role

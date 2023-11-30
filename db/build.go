@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/dolthub/go-mysql-server/sql"
@@ -23,6 +24,7 @@ func (h *Host) Build(sc *sql.Context, raw bool) error {
 }
 
 func (h *Host) createTables(sc *sql.Context, bs *sectionInfo) error {
+	slog.InfoContext(sc, "Creating tables...")
 	for _, tableName := range h.tableNames {
 		ts, ok := tableSchema[tableName]
 		if !ok {
@@ -32,7 +34,7 @@ func (h *Host) createTables(sc *sql.Context, bs *sectionInfo) error {
 		sis := findSectionInfos(bs, tableName)
 		err := h.createTable(sc, tableName, ts.parent, sis, ts.columns)
 		if err != nil {
-			return err
+			return fmt.Errorf("error creating table %s: %w", tableName, err)
 		}
 	}
 	return nil
