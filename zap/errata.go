@@ -74,6 +74,10 @@ var Erratas = map[string]*Errata{
 		ClusterOrder:         DefaultErrata.ClusterOrder,
 		DataTypeOrder:        DefaultErrata.DataTypeOrder,
 		WriteRoleAsPrivilege: true,
+		DefineOverrides: map[string]string{
+			"EVENTS":        "LOAD_CONTROL_EVENTS",
+			"ACTIVE_EVENTS": "LOAD_CONTROL_ACTIVE_EVENTS",
+		},
 	},
 	"DiagnosticsThread.adoc": {
 		TopOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
