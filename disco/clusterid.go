@@ -24,20 +24,20 @@ func (b *Ball) organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, at
 
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return fmt.Errorf("failed mapping table columns for cluster ID table in section %s: %w", section.Name, err)
+		return fmt.Errorf("failed mapping table columns for cluster ID table in section %s in %s: %w", section.Name, doc.Path, err)
 	}
 
 	if columnMap == nil {
-		return fmt.Errorf("can't rearrange cluster id table without header row")
+		return fmt.Errorf("can't rearrange cluster id table without header row in %s", doc.Path)
 	}
 
 	if len(columnMap) < 2 {
-		return fmt.Errorf("can't rearrange cluster id table with so few matches")
+		return fmt.Errorf("can't rearrange cluster id table with so few matches in %s", doc.Path)
 	}
 
 	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("error renaming table header cells in cluster ID table in %s: %w", doc.Path, err)
 	}
 
 	b.reorderColumns(doc, section, rows, matter.ClusterIDTableColumnOrder[:], columnMap, extraColumns)

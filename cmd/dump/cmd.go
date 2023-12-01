@@ -23,16 +23,19 @@ var Command = &cobra.Command{
 
 		files, err := files.Paths(args)
 		if err != nil {
-			return err
+			return fmt.Errorf("error building paths: %w", err)
 		}
 		for i, f := range files {
 			if len(files) > 0 {
 				fmt.Fprintf(os.Stderr, "Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
 			}
 			doc, err := ascii.OpenFile(f, asciiSettings...)
+			if err != nil {
+				return fmt.Errorf("error opening doc %s: %w", f, err)
+			}
 			docType, err := doc.DocType()
 			if err != nil {
-				return err
+				return fmt.Errorf("error parsing doc type %s: %w", f, err)
 			}
 			if asciiOut {
 				for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
@@ -42,7 +45,7 @@ var Command = &cobra.Command{
 			} else if jsonOut {
 				models, err := doc.ToModel()
 				if err != nil {
-					return err
+					return fmt.Errorf("error parsing model %s: %w", f, err)
 				}
 				encoder := json.NewEncoder(os.Stdout)
 				//encoder.SetIndent("", "\t")

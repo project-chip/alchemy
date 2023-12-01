@@ -25,30 +25,30 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 
 	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
 	if err != nil {
-		return fmt.Errorf("failed mapping table columns for events table in section %s: %w", events.Name, err)
+		return fmt.Errorf("failed mapping table columns for events table in section %s in %s: %w", events.Name, doc.Path, err)
 	}
 
 	if columnMap == nil {
-		return fmt.Errorf("can't rearrange events table without header row")
+		return fmt.Errorf("can't rearrange events table without header row in section %s in %s", events.Name, doc.Path)
 	}
 
 	if len(columnMap) < 2 {
-		return fmt.Errorf("can't rearrange events table with so few matches")
+		return fmt.Errorf("can't rearrange events table with so few matches in section %s in %s", events.Name, doc.Path)
 	}
 
 	err = b.fixAccessCells(doc, rows, columnMap)
 	if err != nil {
-		return err
+		return fmt.Errorf("error fixing access cells in section %s in %s: %w", events.Name, doc.Path, err)
 	}
 
 	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", events.Name, doc.Path, err)
 	}
 
 	err = b.organizeEvents(cxt, doc, events, eventsTable, columnMap)
 	if err != nil {
-		return err
+		return fmt.Errorf("error organizing events in section %s in %s: %w", events.Name, doc.Path, err)
 	}
 
 	b.addMissingColumns(doc, events, eventsTable, rows, matter.EventsTableColumnOrder[:], nil, headerRowIndex, columnMap)
@@ -85,21 +85,21 @@ func (b *Ball) organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.S
 
 		hri, cm, ec, err := ascii.MapTableColumns(rows)
 		if err != nil {
-			return fmt.Errorf("failed mapping table columns for event table in section %s: %w", ss.Name, err)
+			return fmt.Errorf("error mapping table columns for event table in section %s in %s: %w", ss.Name, doc.Path, err)
 
 		}
 		err = fixConstraintCells(doc, rows, columnMap)
 		if err != nil {
-			return err
+			return fmt.Errorf("error fixing constraint cells for event table in section %s in %s: %w", ss.Name, doc.Path, err)
 		}
 		err = getPotentialDataTypes(cxt, ss, rows, columnMap)
 		if err != nil {
-			return err
+			return fmt.Errorf("error fetching potential data types for event table in section %s in %s: %w", ss.Name, doc.Path, err)
 		}
 
 		err = b.renameTableHeaderCells(rows, hri, cm, nil)
 		if err != nil {
-			return err
+			return fmt.Errorf("error renaming table header cells in event table in section %s in %s: %w", ss.Name, doc.Path, err)
 		}
 
 		b.addMissingColumns(doc, ss, t, rows, matter.EventTableColumnOrder[:], nil, hri, cm)

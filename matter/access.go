@@ -48,7 +48,7 @@ func (p Privilege) MarshalJSON() ([]byte, error) {
 func (p *Privilege) UnmarshalJSON(data []byte) error {
 	var privilege string
 	if err := json.Unmarshal(data, &privilege); err != nil {
-		return err
+		return fmt.Errorf("error parsing privilege %s: %w", string(data), err)
 	}
 	var ok bool
 	*p, ok = privilegeNameMap[privilege]

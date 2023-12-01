@@ -43,7 +43,7 @@ func (b *Ball) organizeStructTable(doc *ascii.Doc, section *ascii.Section, field
 
 	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", section.Name, doc.Path, err)
 	}
 
 	b.addMissingColumns(doc, section, fieldsTable, rows, matter.StructTableColumnOrder[:], nil, headerRowIndex, columnMap)

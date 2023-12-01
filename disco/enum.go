@@ -42,8 +42,7 @@ func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, enumTab
 
 	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
-		slog.Info("failed renaming", section.Name, err)
-		return err
+		return fmt.Errorf("error renaming table header cells in enum table in section %s in %s: %w", section.Name, doc.Path, err)
 	}
 
 	b.addMissingColumns(doc, section, enumTable, rows, matter.EnumTableColumnOrder[:], nil, headerRowIndex, columnMap)

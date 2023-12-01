@@ -2,6 +2,7 @@ package zap
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
@@ -50,11 +51,16 @@ func patchBuildGN(zclRoot string, docs []*ascii.Doc) error {
 		delete(filesMap, fileMatch[2])
 		combined = append(combined, fileMatch[0])
 	}
+	if len(filesMap) == 0 {
+		return nil
+	}
+	slog.Info("Patching src/controller/data_model/BUILD.gn...")
 	for p := range filesMap {
 		//fmt.Printf("adding %s...\n", p)
 		combined = append(combined, fmt.Sprintf("%s\"%s\",\n", indent, p))
 	}
 	slices.Sort(combined)
+	slices.Compact(combined)
 
 	var replaced bool
 	gn = gnFileListPattern.ReplaceAllStringFunc(gn, func(s string) string {

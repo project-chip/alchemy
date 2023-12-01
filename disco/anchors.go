@@ -18,7 +18,7 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 
 	anchors, err := doc.Anchors()
 	if err != nil {
-		return err
+		return fmt.Errorf("error fetching anchors in %s: %w", doc.Path, err)
 	}
 
 	newAnchors := make(map[string][]*ascii.Anchor)
@@ -28,11 +28,11 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 		newAnchors[info.ID] = append(newAnchors[info.ID], info)
 	}
 
-	for _, infos := range newAnchors {
+	for a, infos := range newAnchors {
 		if len(infos) > 1 { // We ended up with some duplicate anchors
 			err := disambiguateAnchorSet(infos)
 			if err != nil {
-				return err
+				return fmt.Errorf("error disambiguating anchors %s in %s: %w", a, doc.Path, err)
 			}
 		}
 		for _, info := range infos {

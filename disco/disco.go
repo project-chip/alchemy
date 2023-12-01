@@ -29,7 +29,7 @@ func (b *Ball) Run(cxt context.Context) error {
 	doc := b.doc
 	docType, err := doc.DocType()
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting doc type in %s: %w", doc.Path, err)
 	}
 
 	precleanStrings(doc.Elements)
@@ -41,7 +41,7 @@ func (b *Ball) Run(cxt context.Context) error {
 
 	topLevelSection := parse.FindFirst[*ascii.Section](doc.Elements)
 	if topLevelSection == nil {
-		return fmt.Errorf("missing top level section")
+		return fmt.Errorf("missing top level section in %s", doc.Path)
 	}
 
 	getExistingDataTypes(dc, topLevelSection)
@@ -49,19 +49,19 @@ func (b *Ball) Run(cxt context.Context) error {
 	for _, s := range parse.FindAll[*ascii.Section](topLevelSection.Elements) {
 		err := b.organizeSubSection(dc, doc, docType, topLevelSection, s)
 		if err != nil {
-			return err
+			return fmt.Errorf("error organizing subsection %s in %s: %w", s.Name, doc.Path, err)
 		}
 	}
 
 	err = b.promoteDataTypes(dc, topLevelSection)
 	if err != nil {
-		return err
+		return fmt.Errorf("error promoting data types in %s: %w", doc.Path, err)
 	}
 
 	err = b.discoBallTopLevelSection(doc, topLevelSection, docType)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("error disco balling top level section in %s: %w", doc.Path, err)
 	}
 	return b.normalizeAnchors(doc)
 }
@@ -75,14 +75,14 @@ func (b *Ball) discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docT
 		} else {
 			err := reorderSection(top, sectionOrder)
 			if err != nil {
-				return err
+				return fmt.Errorf("error reordering sections in %s: %w", doc.Path, err)
 			}
 		}
 		dataTypesSection := ascii.FindSectionByType(top, matter.SectionDataTypes)
 		if dataTypesSection != nil {
 			err := reorderSection(dataTypesSection, matter.DataTypeSectionOrder)
 			if err != nil {
-				return err
+				return fmt.Errorf("error reordering data types section in %s: %w", doc.Path, err)
 			}
 		}
 	}
@@ -114,5 +114,8 @@ func (b *Ball) organizeSubSection(cxt *discoContext, doc *ascii.Doc, docType mat
 	case matter.SectionEvents:
 		err = b.organizeEventsSection(cxt, doc, section)
 	}
-	return err
+	if err != nil {
+		return fmt.Errorf("error organizing subsections of section %s in %s: %w", section.Name, doc.Path, err)
+	}
+	return nil
 }

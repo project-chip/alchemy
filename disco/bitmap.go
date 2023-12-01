@@ -51,7 +51,7 @@ func (b *Ball) organizeBitmapTable(doc *ascii.Doc, section *ascii.Section, bitsT
 
 	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", section.Name, doc.Path, err)
 	}
 
 	b.addMissingColumns(doc, section, bitsTable, rows, matter.BitmapTableColumnOrder[:], nil, headerRowIndex, columnMap)
