@@ -40,22 +40,22 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 
 	err = b.fixAccessCells(doc, rows, columnMap)
 	if err != nil {
-		return err
+		return fmt.Errorf("error fixing access cells in commands table in %s: %w", doc.Path, err)
 	}
 
 	err = b.fixCommandDirection(doc, rows, columnMap)
 	if err != nil {
-		return err
+		return fmt.Errorf("error fixing command direction in commands table in %s: %w", doc.Path, err)
 	}
 
 	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("error table header cells in commands table in %s: %w", doc.Path, err)
 	}
 
 	err = b.organizeCommands(cxt, doc, commands, commandsTable, columnMap)
 	if err != nil {
-		return err
+		return fmt.Errorf("error organizing commands in %s: %w", doc.Path, err)
 	}
 
 	b.reorderColumns(doc, commands, rows, matter.CommandsTableColumnOrder[:], columnMap, extraColumns)
@@ -94,11 +94,11 @@ func (b *Ball) organizeCommands(cxt *discoContext, doc *ascii.Doc, commands *asc
 		}
 		err = fixConstraintCells(doc, rows, columnMap)
 		if err != nil {
-			return err
+			return fmt.Errorf("error fixing command constraint cells in %s command in %s: %w", name, doc.Path, err)
 		}
 		err = getPotentialDataTypes(cxt, ss, rows, columnMap)
 		if err != nil {
-			return err
+			return fmt.Errorf("error getting potential data types in %s command in %s: %w", name, doc.Path, err)
 		}
 		b.appendSubsectionTypes(ss, columnMap, rows)
 	}

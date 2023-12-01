@@ -103,26 +103,27 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 			}
 		}
 
-		slog.Info("Patching ZAP JSON...")
-		err = patchZapJson(zclRoot, provisionalZclFiles)
+		if len(provisionalZclFiles) > 0 {
+			slog.Info("Patching ZAP JSON...")
+			err = patchZapJson(zclRoot, provisionalZclFiles)
 
-		if err != nil {
-			return err
+			if err != nil {
+				return err
+			}
+
+			slog.Info("Patching workflow tests YAML...")
+			err = patchTestsYaml(zclRoot, provisionalZclFiles)
+			if err != nil {
+				return err
+			}
+
+			slog.Info("Patching scripts/matter.lint...")
+			err = patchLint(zclRoot, provisionalZclFiles)
+			if err != nil {
+				return err
+			}
 		}
 
-		slog.Info("Patching workflow tests YAML...")
-		err = patchTestsYaml(zclRoot, provisionalZclFiles)
-		if err != nil {
-			return err
-		}
-
-		slog.Info("Patching scripts/matter.lint...")
-		err = patchLint(zclRoot, provisionalZclFiles)
-		if err != nil {
-			return err
-		}
-
-		slog.Info("Patching src/controller/data_model/BUILD.gn...")
 		err = patchBuildGN(zclRoot, appClusters)
 		if err != nil {
 			return err

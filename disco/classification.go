@@ -38,14 +38,14 @@ func (b *Ball) organizeClassificationTable(doc *ascii.Doc, section *ascii.Sectio
 
 	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, matter.ClassificationTableColumnNames)
 	if err != nil {
-		return err
+		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", section.Name, doc.Path, err)
 	}
 
 	var order []matter.TableColumn
 
 	docType, err := doc.DocType()
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting doc type in section %s in %s: %w", section.Name, doc.Path, err)
 	}
 	switch docType {
 	case matter.DocTypeAppCluster:

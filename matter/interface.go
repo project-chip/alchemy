@@ -33,7 +33,7 @@ func (s Interface) MarshalJSON() ([]byte, error) {
 func (s *Interface) UnmarshalJSON(data []byte) (err error) {
 	var ss string
 	if err := json.Unmarshal(data, &ss); err != nil {
-		return err
+		return fmt.Errorf("error parsing interface JSON value %s: %w", string(data), err)
 	}
 	var ok bool
 	if *s, ok = interfaceValues[ss]; !ok {

@@ -45,20 +45,20 @@ var Command = &cobra.Command{
 			fmt.Fprintf(os.Stderr, "Loading %s (%d of %d)...\n", file, index, total)
 			doc, err := ascii.OpenFile(file, asciiSettings...)
 			if err != nil {
-				return err
+				return fmt.Errorf("error opening file %s: %w", file, err)
 			}
 			err = h.Load(doc)
 			if err != nil {
-				return err
+				return fmt.Errorf("error loading file %s: %w", file, err)
 			}
 			return nil
 		}, filesOptions)
 		if err != nil {
-			return err
+			return fmt.Errorf("error processing files: %w", err)
 		}
 		err = h.Build(sc, raw)
 		if err != nil {
-			return err
+			return fmt.Errorf("error building DB: %w", err)
 		}
 		return h.Run(address, port)
 	},

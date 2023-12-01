@@ -112,6 +112,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 					xfe := xml.EndElement{Name: elName}
 					err = e.EncodeToken(xfe)
 					if err != nil {
+						err = fmt.Errorf("failed closing % element on cluster %s: %w", elName, cluster.Name, err)
 						return
 					}
 				}
@@ -140,7 +141,7 @@ func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 
 	err = e.EncodeToken(el)
 	if err != nil {
-		return err
+		return fmt.Errorf("error opening feature element on cluster %s: %w", cluster.Name, err)
 	}
 
 	for _, clusterID := range clusterIDs {
@@ -148,12 +149,12 @@ func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 		xcs := xml.StartElement{Name: elName, Attr: []xml.Attr{{Name: xml.Name{Local: "code"}, Value: clusterID}}}
 		err = e.EncodeToken(xcs)
 		if err != nil {
-			return
+			return fmt.Errorf("error opening feature cluster code element on cluster %s: %w", cluster.Name, err)
 		}
 		xce := xml.EndElement{Name: elName}
 		err = e.EncodeToken(xce)
 		if err != nil {
-			return
+			return fmt.Errorf("error closing feature cluster element on cluster %s: %w", cluster.Name, err)
 		}
 	}
 	for _, f := range cluster.Features {
@@ -164,25 +165,30 @@ func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 		xfs := xml.StartElement{Name: elName}
 		xfs.Attr, err = r.setFeatureAttributes(xfs.Attr, f)
 		if err != nil {
-			return
+			return fmt.Errorf("error setting feature field element attributes on cluster %s: %w", cluster.Name, err)
 		}
 		err = e.EncodeToken(xfs)
 		if err != nil {
-			return
+			return fmt.Errorf("error opening feature field element on cluster %s: %w", cluster.Name, err)
 		}
 		xfe := xml.EndElement{Name: elName}
 		err = e.EncodeToken(xfe)
 		if err != nil {
-			return
+			return fmt.Errorf("error closing feature field element on cluster %s: %w", cluster.Name, err)
 		}
 	}
 	xfe := xml.EndElement{Name: xml.Name{Local: "bitmap"}}
-	return e.EncodeToken(xfe)
+	err = e.EncodeToken(xfe)
+	if err != nil {
+		return fmt.Errorf("error closing feature element on cluster %s: %w", cluster.Name, err)
+	}
+	return
 }
 
 func (*renderer) setFeatureAttributes(xfs []xml.Attr, f *matter.Feature) ([]xml.Attr, error) {
 	bit, err := parse.HexOrDec(f.Bit)
 	if err != nil {
+		err = fmt.Errorf("error parsing feature bit %s: %w", f.Bit, err)
 		return nil, err
 	}
 	bit = (1 << bit)

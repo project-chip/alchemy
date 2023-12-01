@@ -130,11 +130,11 @@ func readRevisionHistory(c *matter.Cluster, s *Section) error {
 		rev := &matter.Revision{}
 		rev.Number, err = readRowValue(row, columnMap, matter.TableColumnRevision)
 		if err != nil {
-			return err
+			return fmt.Errorf("error reading revision column on cluster %s: %w", c.Name, err)
 		}
 		rev.Description, err = readRowValue(row, columnMap, matter.TableColumnDescription)
 		if err != nil {
-			return err
+			return fmt.Errorf("error reading revision description column on cluster %s: %w", c.Name, err)
 		}
 		c.Revisions = append(c.Revisions, rev)
 	}
@@ -173,20 +173,20 @@ func readClusterClassification(c *matter.Cluster, s *Section) error {
 	row := rows[headerRowIndex+1]
 	c.Hierarchy, err = readRowValue(row, columnMap, matter.TableColumnHierarchy)
 	if err != nil {
-		return err
+		return fmt.Errorf("error reading hierarchy column on cluster %s: %w", c.Name, err)
 	}
 	c.Role, err = readRowValue(row, columnMap, matter.TableColumnRole)
 	if err != nil {
-		return err
+		return fmt.Errorf("error reading role column on cluster %s: %w", c.Name, err)
 	}
 	c.Scope, err = readRowValue(row, columnMap, matter.TableColumnScope)
 	if err != nil {
-		return err
+		return fmt.Errorf("error reading scope column on cluster %s: %w", c.Name, err)
 	}
 
 	c.PICS, err = readRowValue(row, columnMap, matter.TableColumnPICS)
 	if err != nil {
-		return err
+		return fmt.Errorf("error reading PICS column on cluster %s: %w", c.Name, err)
 	}
 	for _, ec := range extraColumns {
 		switch ec.Name {
@@ -206,7 +206,7 @@ func readClusterClassification(c *matter.Cluster, s *Section) error {
 			}
 		}
 		if err != nil {
-			return err
+			return fmt.Errorf("error reading extra columns on cluster %s: %w", c.Name, err)
 		}
 	}
 	return nil
