@@ -136,10 +136,32 @@ var otherwiseTests = []conformanceTestSuite{
 	{
 		Conformance: "(VIS | AUD) & SPRS",
 		Tests: []conformanceTest{
-			{Context: matter.ConformanceContext{"VIS": true}, Expected: matter.ConformanceStateMandatory},
-			{Context: matter.ConformanceContext{"AUD": true}, Expected: matter.ConformanceStateMandatory},
-			{Context: matter.ConformanceContext{"VIS": true, "AUD": true}, Expected: matter.ConformanceStateMandatory},
-			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"VIS": true}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{"AUD": true}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{"VIS": true, "AUD": true}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{"VIS": true, "AUD": true, "SPRS": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"VIS": true, "SPRS": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"AUD": true, "SPRS": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"SPRS": true}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateDisallowed},
+		},
+	},
+	{
+		Conformance: "UltrasonicUnoccupiedToOccupiedDelay, O",
+		Tests: []conformanceTest{
+			{Context: matter.ConformanceContext{"AA": true}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{"UltrasonicUnoccupiedToOccupiedDelay": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"UltrasonicUnoccupiedToOccupiedDelay": false}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateOptional},
+		},
+	},
+	{
+		Conformance: "PIRUnoccupiedToOccupiedThreshold, O",
+		Tests: []conformanceTest{
+			{Context: matter.ConformanceContext{"AA": true}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{"PIRUnoccupiedToOccupiedThreshold": true}, Expected: matter.ConformanceStateMandatory},
+			{Context: matter.ConformanceContext{"UltrasonicUnoccupiedToOccupiedDelay": false}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{"Matter": true}, Expected: matter.ConformanceStateOptional},
 		},
 	},
 }
