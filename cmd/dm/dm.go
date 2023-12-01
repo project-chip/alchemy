@@ -2,6 +2,7 @@ package dm
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"path/filepath"
 
@@ -18,7 +19,7 @@ func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions f
 	slog.InfoContext(cxt, "Loading spec...")
 	docs, err := files.LoadSpec(cxt, specRoot, filesOptions, asciiSettings)
 	if err != nil {
-		return err
+		return fmt.Errorf("error loading spec from %s: %w", specRoot, err)
 	}
 
 	slog.InfoContext(cxt, "Building spec tree...")
@@ -27,7 +28,7 @@ func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions f
 	slog.InfoContext(cxt, "Splitting spec...")
 	docsByType, err := files.SplitSpec(docs)
 	if err != nil {
-		return err
+		return fmt.Errorf("error splitting spec: %w", err)
 	}
 	appClusters := docsByType[matter.DocTypeAppCluster]
 	appClusterIndexes := docsByType[matter.DocTypeAppClusterIndex]

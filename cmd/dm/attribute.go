@@ -2,6 +2,7 @@ package dm
 
 import (
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -11,6 +12,9 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 	}
 	attributes := c.CreateElement("attributes")
 	for _, a := range cluster.Attributes {
+		if conformance.IsZigbee(a.Conformance) {
+			continue
+		}
 		ax := attributes.CreateElement("attribute")
 		ax.CreateAttr("id", a.ID.HexString())
 		ax.CreateAttr("name", a.Name)
@@ -20,7 +24,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 		}
 		renderAccess(ax, a)
 		renderQuality(ax, a)
-		err = renderConformanceString(a.Conformance, ax)
+		err = renderConformanceString(cluster, a.Conformance, ax)
 		if err != nil {
 			return
 		}
@@ -29,7 +33,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 		if err != nil {
 			return
 		}
-
+		renderDefault(cluster.Attributes, a, ax)
 	}
 	return
 }

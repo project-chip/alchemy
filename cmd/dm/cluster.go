@@ -32,7 +32,7 @@ func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii
 
 		models, err := doc.ToModel()
 		if err != nil {
-			return err
+			return fmt.Errorf("error converting %s to models: %w", doc.Path, err)
 		}
 		var clusters []*matter.Cluster
 		for _, m := range models {
@@ -62,7 +62,7 @@ func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii
 			newPath := filepath.Join(zclRoot, fmt.Sprintf("/data_model/clusters/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
 			err = os.WriteFile(newPath, []byte(result), os.ModeAppend|0644)
 			if err != nil {
-				return err
+				return fmt.Errorf("error writing %s: %w", newPath, err)
 			}
 		}
 	}
@@ -94,7 +94,13 @@ func renderAppCluster(cxt context.Context, clusters []*matter.Cluster) (output s
 		}
 		c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
 		class := c.CreateElement("classification")
-		class.CreateAttr("hierarchy", strings.ToLower(cluster.Hierarchy))
+		switch cluster.Hierarchy {
+		case "Mode Base":
+			class.CreateAttr("hierarchy", "derived")
+			class.CreateAttr("baseCluster", cluster.Hierarchy)
+		case "Base":
+			class.CreateAttr("hierarchy", strings.ToLower(cluster.Hierarchy))
+		}
 		class.CreateAttr("role", strings.ToLower(cluster.Role))
 		class.CreateAttr("picsCode", cluster.PICS)
 		class.CreateAttr("scope", cluster.Scope)

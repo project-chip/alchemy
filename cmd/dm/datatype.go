@@ -38,3 +38,15 @@ func renderDataType(f *matter.Field, i *etree.Element) {
 		}
 	}
 }
+
+func renderDefault(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
+	if f.Default == "" {
+		return
+	}
+	cons := constraint.ParseConstraint(f.Default)
+	def := cons.Default(&matter.ConstraintContext{Fields: fs, Field: f})
+	if !def.Defined() {
+		return
+	}
+	e.CreateAttr("default", def.DataModelString(f.Type))
+}

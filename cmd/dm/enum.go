@@ -10,17 +10,43 @@ func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
 		en := dt.CreateElement("enum")
 		en.CreateAttr("name", e.Name)
 		for _, v := range e.Values {
-			val := matter.ParseID(v.Value)
+			var val, from, to *matter.ID
+			var valFormat, fromFormat, toFormat matter.ConstraintExtremeFormat
+			val, valFormat = matter.ParseFormattedID(v.Value)
 			if !val.Valid() {
-				continue
+				from, fromFormat, to, toFormat = matter.ParseFormattedIDRange(v.Value)
+				if !from.Valid() {
+					continue
+				}
 			}
+
 			i := en.CreateElement("item")
-			i.CreateAttr("value", val.IntString())
+			if val.Valid() {
+				switch valFormat {
+				case matter.ConstraintExtremeFormatAuto, matter.ConstraintExtremeFormatInt:
+					i.CreateAttr("value", val.IntString())
+				case matter.ConstraintExtremeFormatHex:
+					i.CreateAttr("value", val.HexString())
+				}
+			} else {
+				switch fromFormat {
+				case matter.ConstraintExtremeFormatAuto, matter.ConstraintExtremeFormatInt:
+					i.CreateAttr("from", from.IntString())
+				case matter.ConstraintExtremeFormatHex:
+					i.CreateAttr("from", from.HexString())
+				}
+				switch toFormat {
+				case matter.ConstraintExtremeFormatAuto, matter.ConstraintExtremeFormatInt:
+					i.CreateAttr("to", to.IntString())
+				case matter.ConstraintExtremeFormatHex:
+					i.CreateAttr("to", to.HexString())
+				}
+			}
 			i.CreateAttr("name", v.Name)
 			if len(v.Summary) > 0 {
 				i.CreateAttr("summary", v.Summary)
 			}
-			err = renderConformanceString(v.Conformance, i)
+			err = renderConformanceString(cluster, v.Conformance, i)
 			if err != nil {
 				return
 			}

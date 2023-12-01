@@ -18,7 +18,7 @@ func renderBitmaps(cluster *matter.Cluster, dt *etree.Element) (err error) {
 			i.CreateAttr("name", v.Name)
 			i.CreateAttr("bit", val.IntString())
 			i.CreateAttr("summary", v.Summary)
-			err = renderConformanceString(v.Conformance, i)
+			err = renderConformanceString(cluster, v.Conformance, i)
 			if err != nil {
 				return
 			}
