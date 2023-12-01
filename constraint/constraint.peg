@@ -84,7 +84,7 @@ Any <- any:("any" / "all") {
 	return &AllConstraint{Value:string(any.([]uint8))}, nil
 }
 
-Limit <- limit:(MSLimit / NullLimit / EmptyLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / ReferenceLimit  ) {
+Limit <- limit:(MSLimit / NullLimit / EmptyLimit / EmptyStringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / ReferenceLimit  ) {
 	debug("found limit %s\n", string(c.text))
 	return limit.(matter.ConstraintLimit), nil
 }
@@ -99,6 +99,14 @@ NullLimit <- "null" {
 
 EmptyLimit <- "empty" {
 	return &EmptyLimit{}, nil
+}
+
+EmptyStringLimit <- "\"\"" {
+	return &EmptyLimit{}, nil
+}
+
+BooleanLimit <- limit:("true" / "True" / "False" / "false") {
+	return &BooleanLimit{}, nil
 }
 
 Term <- '(' _ exp:Expression _ ')' {
