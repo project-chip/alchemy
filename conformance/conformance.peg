@@ -13,7 +13,6 @@ func debug(format string, a ...any) (n int, err error) {
 	return fmt.Fprintf(os.Stdout, format, a...)
 }
 
-
 }
 
 Input <- conf:Conformance+ EOF {
@@ -122,12 +121,27 @@ FeatureTerm <- not:'!'? '(' _  eq:Equality _ ')' {
         }
     }
     return eq, nil
-} / feature:FeatureOp {
-    return feature, nil 
 } / identifier:IdentifierOp {
     return identifier, nil 
+} / feature:FeatureOp {
+    return feature, nil 
 }
 
+
+IdentifierOp <- not:'!'? identifier:Identifier {
+    id := identifier.(string)
+    ic := &IdentifierExpression{ID:id}
+    if not != nil {
+        ic.Not = true
+    }
+    return ic, nil
+}
+
+
+Identifier <- PascalCase {
+    debug("matched identifier %s\n", string(c.text))
+    return string(c.text), nil
+}
 
 FeatureOp <- not:'!'? feature:Feature {
     id := feature.(string)
@@ -147,20 +161,6 @@ Feature <- [A-Z][A-Z0-9_]+ {
     return string(c.text), nil
 }
 
-IdentifierOp <- not:'!'? identifier:Identifier {
-    id := identifier.(string)
-    ic := &IdentifierExpression{ID:id}
-    if not != nil {
-        ic.Not = true
-    }
-    return ic, nil
-}
-
-
-Identifier <- ([A-Z]+[a-z]+)+ {
-    debug("matched identifier %s", string(c.text))
-    return string(c.text), nil
-}
 
 ChoiceRange <- lower:Integer '-' upper:Integer {
     minVal := lower.(int)
@@ -228,6 +228,28 @@ Choice <- '.' set:Set limit:ChoiceLimit? {
 Integer <- ([0-9]+) {
         return strconv.Atoi(string(c.text))
     }
+
+PascalCase <- Capitalized+ Capitalized* {
+        debug("matched pascal %s\n", string(c.text))
+
+	return string(c.text), nil
+}
+
+Capitalized <- Uppercase+ Lowercase+ {
+        debug("matched capitalized %s\n", string(c.text))
+
+	return string(c.text), nil
+}
+
+Uppercase <- [A-Z] {
+    debug("matched uppercase %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Lowercase <- [a-z] {
+    debug("matched lowercase %s\n", string(c.text))
+	return string(c.text), nil
+}
 
 _ "whitespace" ← [ \t\r\n]*
 
