@@ -2,6 +2,7 @@ package matter
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -16,12 +17,17 @@ func NewID(id uint64) *ID {
 }
 
 func ParseID(s string) *ID {
+	id, _ := ParseFormattedID(s)
+	return id
+}
+
+func ParseFormattedID(s string) (*ID, ConstraintExtremeFormat) {
 	id, err := strconv.ParseUint(s, 10, 64)
 	if err == nil {
 		return &ID{
 			text:  s,
 			value: int64(id),
-		}
+		}, ConstraintExtremeFormatInt
 	}
 
 	id, err = strconv.ParseUint(strings.TrimPrefix(s, "0x"), 16, 64)
@@ -29,12 +35,12 @@ func ParseID(s string) *ID {
 		return &ID{
 			text:  s,
 			value: int64(id),
-		}
+		}, ConstraintExtremeFormatHex
 	}
 	return &ID{
 		text:  s,
 		value: -1,
-	}
+	}, ConstraintExtremeFormatAuto
 }
 
 func (id *ID) Equals(oid *ID) bool {
@@ -81,3 +87,20 @@ func (id *ID) ShortHexString() string {
 }
 
 var InvalidID = &ID{value: -1}
+
+var idRangePattern = regexp.MustCompile(`^(?P<From>0[xX][0-9A-Fa-f]+|[0-9A-Fa-f]+|[0-9]+)\s*(?:\.\.|to)\s*(?P<To>0[xX][0-9A-Fa-f]+|[0-9A-Fa-f]+|[0-9]+)$`)
+
+func ParseIDRange(s string) (from *ID, to *ID) {
+	from, _, to, _ = ParseFormattedIDRange(s)
+	return
+}
+
+func ParseFormattedIDRange(s string) (from *ID, fromFormat ConstraintExtremeFormat, to *ID, toFormat ConstraintExtremeFormat) {
+	match := idRangePattern.FindStringSubmatch(s)
+	if len(match) < 3 {
+		return InvalidID, ConstraintExtremeFormatAuto, InvalidID, ConstraintExtremeFormatAuto
+	}
+	from, fromFormat = ParseFormattedID(match[1])
+	to, toFormat = ParseFormattedID(match[2])
+	return
+}

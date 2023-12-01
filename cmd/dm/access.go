@@ -8,6 +8,9 @@ import (
 )
 
 func renderAccess(ax *etree.Element, a *matter.Field) {
+	if a.Access.Read == matter.PrivilegeUnknown && a.Access.Write == matter.PrivilegeUnknown {
+		return
+	}
 	acx := ax.CreateElement("access")
 	if a.Access.Read != matter.PrivilegeUnknown {
 		if a.Access.Read == matter.PrivilegeView {

@@ -22,7 +22,7 @@ func renderFeatures(cluster *matter.Cluster, c *etree.Element) (err error) {
 		if len(f.Summary) > 0 {
 			feature.CreateAttr("summary", f.Summary)
 		}
-		err = renderConformanceString(f.Conformance, feature)
+		err = renderConformanceString(cluster, f.Conformance, feature)
 		if err != nil {
 			return
 		}

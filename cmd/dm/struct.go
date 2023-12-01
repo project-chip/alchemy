@@ -16,16 +16,14 @@ func renderStructs(cluster *matter.Cluster, dt *etree.Element) (err error) {
 			i := en.CreateElement("field")
 			i.CreateAttr("id", f.ID.IntString())
 			i.CreateAttr("name", f.Name)
-			if f.Type != nil {
-				i.CreateAttr("type", f.Type.Name)
-			}
+			renderDataType(f, i)
 			if f.Access.Read != matter.PrivilegeUnknown {
 				i.CreateAttr("read", "true")
 			}
 			if f.Access.Write != matter.PrivilegeUnknown {
 				i.CreateAttr("write", "true")
 			}
-			err = renderConformanceString(f.Conformance, i)
+			err = renderConformanceString(cluster, f.Conformance, i)
 			if err != nil {
 				return
 			}
@@ -33,6 +31,7 @@ func renderStructs(cluster *matter.Cluster, dt *etree.Element) (err error) {
 			if err != nil {
 				return
 			}
+			renderDefault(s.Fields, f, i)
 		}
 	}
 	return

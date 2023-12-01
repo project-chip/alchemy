@@ -13,7 +13,10 @@ func renderConstraint(con matter.Constraint, dataType *matter.DataType, parent *
 		return nil
 	}
 	_, err := renderConstraintElement("constraint", con, dataType, parent)
-	return err
+	if err != nil {
+		return fmt.Errorf("error rendering constraint element %s: %w", con.AsciiDocString(dataType), err)
+	}
+	return nil
 }
 
 func renderConstraintElement(name string, con matter.Constraint, dataType *matter.DataType, parent *etree.Element) (cx *etree.Element, err error) {

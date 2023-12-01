@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -13,6 +14,9 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 	}
 	events := c.CreateElement("events")
 	for _, e := range cluster.Events {
+		if conformance.IsZigbee(e.Conformance) {
+			continue
+		}
 		cx := events.CreateElement("event")
 		cx.CreateAttr("id", e.ID.ShortHexString())
 		cx.CreateAttr("name", e.Name)
@@ -28,7 +32,7 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 				a.CreateAttr("timed", "true")
 			}
 		}
-		err = renderConformanceString(e.Conformance, cx)
+		err = renderConformanceString(cluster, e.Conformance, cx)
 		if err != nil {
 			return
 		}
@@ -44,7 +48,7 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 			if len(f.Default) > 0 {
 				i.CreateAttr("default", f.Default)
 			}
-			err = renderConformanceString(f.Conformance, i)
+			err = renderConformanceString(cluster, f.Conformance, i)
 			if err != nil {
 				return
 			}
@@ -53,7 +57,7 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 			if err != nil {
 				return
 			}
-
+			renderDefault(e.Fields, f, i)
 		}
 	}
 

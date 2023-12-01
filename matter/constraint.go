@@ -120,6 +120,58 @@ func (ce *ConstraintExtreme) ZapString(dataType *DataType) string {
 	return ""
 }
 
+func (ce *ConstraintExtreme) DataModelString(dataType *DataType) string {
+	switch ce.Type {
+	case ConstraintExtremeTypeInt64:
+		val := ce.Int64
+		switch ce.Format {
+		case ConstraintExtremeFormatHex:
+			if dataType != nil {
+				switch dataType.Size() {
+				case 1:
+					return fmt.Sprintf("0x%02X", uint8(val))
+				case 2:
+					return fmt.Sprintf("0x%04X", uint16(val))
+				case 4:
+					return fmt.Sprintf("0x%08X", uint32(val))
+				case 8:
+					return fmt.Sprintf("0x%16X", uint64(val))
+
+				}
+			}
+			return fmt.Sprintf("0x%X", uint64(val))
+		case ConstraintExtremeFormatAuto:
+			if val > 255 || val < 256 {
+				return fmt.Sprintf("0x%X", uint64(val))
+			}
+			return strconv.FormatInt(val, 10)
+		default:
+			if dataType != nil {
+				switch dataType.BaseType {
+				case BaseDataTypePercentHundredths:
+					return strconv.FormatInt(ce.Int64*100, 10)
+				case BaseDataTypeBoolean:
+					return strconv.FormatBool(ce.Int64 == 1)
+				}
+			}
+			return strconv.FormatInt(ce.Int64, 10)
+		}
+	case ConstraintExtremeTypeUInt64:
+		if dataType != nil {
+			switch dataType.BaseType {
+			case BaseDataTypeBoolean:
+				return strconv.FormatBool(ce.Int64 == 1)
+			}
+		}
+		return ce.formatUint64(dataType, ce.UInt64)
+	case ConstraintExtremeTypeNull:
+		return "null"
+	case ConstraintExtremeTypeEmpty:
+		return "empty"
+	}
+	return ""
+}
+
 func (ce *ConstraintExtreme) formatUint64(dataType *DataType, val uint64) string {
 	switch ce.Format {
 	case ConstraintExtremeFormatHex:

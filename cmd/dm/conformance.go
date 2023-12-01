@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func renderConformanceString(c matter.Conformance, parent *etree.Element) error {
+func renderConformanceString(cluster *matter.Cluster, c matter.Conformance, parent *etree.Element) error {
 	if c == nil {
 		return nil
 	}
@@ -18,29 +18,29 @@ func renderConformanceString(c matter.Conformance, parent *etree.Element) error 
 		if len(cs) > 1 {
 			oc := parent.CreateElement("otherwiseConform")
 			for _, c := range cs {
-				err := renderConformance(c, oc)
+				err := renderConformance(cluster, c, oc)
 				if err != nil {
-					return err
+					return fmt.Errorf("error rendering conformance %s: %w", c.String(), err)
 				}
 			}
 		} else if len(cs) == 1 {
-			return renderConformance(cs[0], parent)
+			return renderConformance(cluster, cs[0], parent)
 		}
 	case *conformance.GenericConformance:
 		return nil
 	default:
-		return renderConformance(c, parent)
+		return renderConformance(cluster, c, parent)
 
 	}
 
 	return nil
 }
 
-func renderConformance(con matter.Conformance, parent *etree.Element) error {
+func renderConformance(cluster *matter.Cluster, con matter.Conformance, parent *etree.Element) error {
 	switch con := con.(type) {
 	case *conformance.MandatoryConformance:
 		mc := parent.CreateElement("mandatoryConform")
-		renderConformanceExpression(con.Expression, mc)
+		renderConformanceExpression(cluster, con.Expression, mc)
 	case *conformance.ProvisionalConformance:
 		parent.CreateElement("provisionalConform")
 	case *conformance.OptionalConformance:
@@ -62,7 +62,7 @@ func renderConformance(con matter.Conformance, parent *etree.Element) error {
 				}
 			}
 		}
-		return renderConformanceExpression(con.Expression, oc)
+		return renderConformanceExpression(cluster, con.Expression, oc)
 	case *conformance.DisallowedConformance:
 		parent.CreateElement("disallowConform")
 	case *conformance.DeprecatedConformance:
@@ -71,7 +71,7 @@ func renderConformance(con matter.Conformance, parent *etree.Element) error {
 
 	case conformance.ConformanceSet:
 		for _, con := range con {
-			err := renderConformance(con, parent)
+			err := renderConformance(cluster, con, parent)
 			if err != nil {
 				return err
 			}
@@ -82,7 +82,7 @@ func renderConformance(con matter.Conformance, parent *etree.Element) error {
 	return nil
 }
 
-func renderConformanceExpression(exp conformance.ConformanceExpression, parent *etree.Element) error {
+func renderConformanceExpression(cluster *matter.Cluster, exp conformance.ConformanceExpression, parent *etree.Element) error {
 	if exp == nil {
 		return nil
 	}
@@ -92,6 +92,13 @@ func renderConformanceExpression(exp conformance.ConformanceExpression, parent *
 			parent = parent.CreateElement("notTerm")
 		}
 		parent.CreateElement("feature").CreateAttr("name", e.ID)
+	case *conformance.IdentifierExpression:
+		for _, a := range cluster.Attributes {
+			if a.Name == e.ID {
+				parent.CreateElement("attribute").CreateAttr("name", e.ID)
+				return nil
+			}
+		}
 	case *conformance.LogicalExpression:
 		if e.Not {
 			parent = parent.CreateElement("notTerm")
@@ -107,18 +114,17 @@ func renderConformanceExpression(exp conformance.ConformanceExpression, parent *
 		default:
 			return fmt.Errorf("unknown operand: %s", e.Operand)
 		}
-		err := renderConformanceExpression(e.Left, el)
+		err := renderConformanceExpression(cluster, e.Left, el)
 		if err != nil {
-			return err
+			return fmt.Errorf("error rendering conformance expression %s: %w", e.Left.String(), err)
 		}
-		err = renderConformanceExpression(e.Right, el)
+		err = renderConformanceExpression(cluster, e.Right, el)
 		if err != nil {
-			return err
+			return fmt.Errorf("error rendering conformance expression %s: %w", e.Right.String(), err)
 		}
 
 	case *conformance.EqualityExpression:
 		return nil
-		return fmt.Errorf("unknown conformance expression type: %s", e.String())
 	default:
 		return fmt.Errorf("unknown conformance expression type: %T", exp)
 	}

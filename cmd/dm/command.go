@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -13,6 +14,9 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 	}
 	commands := c.CreateElement("commands")
 	for _, cmd := range cluster.Commands {
+		if conformance.IsZigbee(cmd.Conformance) {
+			continue
+		}
 		cx := commands.CreateElement("command")
 		cx.CreateAttr("id", cmd.ID.ShortHexString())
 		cx.CreateAttr("name", cmd.Name)
@@ -32,7 +36,7 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 		} else if cmd.Response != "" {
 			cx.CreateAttr("response", cmd.Response)
 		}
-		err = renderConformanceString(cmd.Conformance, cx)
+		err = renderConformanceString(cluster, cmd.Conformance, cx)
 		if err != nil {
 			return
 		}
@@ -48,7 +52,7 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 			if len(f.Default) > 0 {
 				i.CreateAttr("default", f.Default)
 			}
-			err = renderConformanceString(f.Conformance, i)
+			err = renderConformanceString(cluster, f.Conformance, i)
 			if err != nil {
 				return
 			}
