@@ -45,6 +45,7 @@ func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster) (err error) {
 }
 
 func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap ColumnIndex) (fields []*matter.Field, err error) {
+	ids := make(map[uint64]struct{})
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		f := &matter.Field{}
@@ -83,6 +84,15 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 		f.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
+		}
+		if f.ID.Valid() {
+			id := f.ID.Value()
+			_, ok := ids[id]
+			if ok {
+				err = fmt.Errorf("duplicate field id: %d", id)
+				return
+			}
+			ids[id] = struct{}{}
 		}
 
 		fields = append(fields, f)
