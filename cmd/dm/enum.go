@@ -10,8 +10,8 @@ func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
 		en := dt.CreateElement("enum")
 		en.CreateAttr("name", e.Name)
 		for _, v := range e.Values {
-			var val, from, to *matter.ID
-			var valFormat, fromFormat, toFormat matter.ConstraintExtremeFormat
+			var val, from, to *matter.Number
+			var valFormat, fromFormat, toFormat matter.NumberFormat
 			val, valFormat = matter.ParseFormattedID(v.Value)
 			if !val.Valid() {
 				from, fromFormat, to, toFormat = matter.ParseFormattedIDRange(v.Value)
@@ -23,22 +23,22 @@ func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
 			i := en.CreateElement("item")
 			if val.Valid() {
 				switch valFormat {
-				case matter.ConstraintExtremeFormatAuto, matter.ConstraintExtremeFormatInt:
+				case matter.NumberFormatAuto, matter.NumberFormatInt:
 					i.CreateAttr("value", val.IntString())
-				case matter.ConstraintExtremeFormatHex:
+				case matter.NumberFormatHex:
 					i.CreateAttr("value", val.HexString())
 				}
 			} else {
 				switch fromFormat {
-				case matter.ConstraintExtremeFormatAuto, matter.ConstraintExtremeFormatInt:
+				case matter.NumberFormatAuto, matter.NumberFormatInt:
 					i.CreateAttr("from", from.IntString())
-				case matter.ConstraintExtremeFormatHex:
+				case matter.NumberFormatHex:
 					i.CreateAttr("from", from.HexString())
 				}
 				switch toFormat {
-				case matter.ConstraintExtremeFormatAuto, matter.ConstraintExtremeFormatInt:
+				case matter.NumberFormatAuto, matter.NumberFormatInt:
 					i.CreateAttr("to", to.IntString())
-				case matter.ConstraintExtremeFormatHex:
+				case matter.NumberFormatHex:
 					i.CreateAttr("to", to.HexString())
 				}
 			}

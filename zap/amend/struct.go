@@ -93,9 +93,10 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 					} else {
 						f := matchingStruct.Fields[fieldIndex]
 						fieldIndex++
-						if conformance.IsZigbee(f.Conformance) {
+						if conformance.IsZigbee(matchingStruct.Fields, f.Conformance) {
 							continue
 						}
+
 						t.Attr = setAttributeValue(t.Attr, "fieldId", f.ID.IntString())
 						t.Attr = r.setFieldAttributes(f, t.Attr, matchingStruct.Fields)
 						writeThrough(d, e, t)
@@ -163,7 +164,7 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 	}
 
 	for _, v := range s.Fields {
-		if conformance.IsZigbee(v.Conformance) {
+		if conformance.IsZigbee(s.Fields, v.Conformance) {
 			continue
 		}
 

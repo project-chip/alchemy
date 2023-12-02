@@ -9,13 +9,16 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement, commands map[*matter.Command]struct{}) (err error) {
+func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, commands map[*matter.Command]struct{}) (err error) {
 	code := getAttributeValue(el.Attr, "code")
 	source := getAttributeValue(el.Attr, "source")
 	commandID := matter.ParseID(code)
 
 	var matchingCommand *matter.Command
 	for c := range commands {
+		if conformance.IsZigbee(cluster.Commands, c.Conformance) {
+			continue
+		}
 		if c.ID.Equals(commandID) {
 			if c.Direction == matter.InterfaceServer && source == "client" {
 				matchingCommand = c
@@ -83,9 +86,10 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 					} else {
 						f := matchingCommand.Fields[argIndex]
 						argIndex++
-						if conformance.IsZigbee(f.Conformance) {
+						if conformance.IsZigbee(matchingCommand.Fields, f.Conformance) {
 							continue
 						}
+
 						t.Attr = r.setFieldAttributes(f, t.Attr, matchingCommand.Fields)
 						writeThrough(ts, e, t)
 						break
@@ -131,7 +135,7 @@ func (r *renderer) amendCommand(ts *tokenSet, e xmlEncoder, el xml.StartElement,
 
 }
 
-func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Command) (err error) {
+func (r *renderer) writeCommand(cluster *matter.Cluster, e xmlEncoder, el xml.StartElement, c *matter.Command) (err error) {
 
 	xfb := el.Copy()
 
@@ -155,7 +159,7 @@ func (r *renderer) writeCommand(e xmlEncoder, el xml.StartElement, c *matter.Com
 	}
 
 	for _, f := range c.Fields {
-		if conformance.IsZigbee(f.Conformance) {
+		if conformance.IsZigbee(c.Fields, f.Conformance) {
 			continue
 		}
 

@@ -56,7 +56,7 @@ func readRowValue(row *types.TableRow, columnMap ColumnIndex, column matter.Tabl
 	return val, nil
 }
 
-func readRowID(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*matter.ID, error) {
+func readRowID(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*matter.Number, error) {
 	id, err := readRowValue(row, columnMap, column)
 	if err != nil {
 		return matter.InvalidID, err

@@ -9,12 +9,15 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func (r *renderer) amendEvent(ts *tokenSet, e xmlEncoder, el xml.StartElement, events map[*matter.Event]struct{}) (err error) {
+func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, events map[*matter.Event]struct{}) (err error) {
 	code := getAttributeValue(el.Attr, "code")
 	eventID := matter.ParseID(code)
 
 	var matchingEvent *matter.Event
 	for e := range events {
+		if conformance.IsZigbee(cluster.Events, e.Conformance) {
+			continue
+		}
 		if e.ID.Equals(eventID) {
 			matchingEvent = e
 			delete(events, e)
@@ -58,9 +61,10 @@ func (r *renderer) amendEvent(ts *tokenSet, e xmlEncoder, el xml.StartElement, e
 					} else {
 						f := matchingEvent.Fields[fieldIndex]
 						fieldIndex++
-						if conformance.IsZigbee(f.Conformance) {
+						if conformance.IsZigbee(matchingEvent.Fields, f.Conformance) {
 							continue
 						}
+
 						t.Attr = setAttributeValue(t.Attr, "id", f.ID.IntString())
 						t.Attr = r.setFieldAttributes(f, t.Attr, matchingEvent.Fields)
 						writeThrough(ts, e, t)
@@ -131,7 +135,7 @@ func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Even
 	e.EncodeToken(xml.EndElement{Name: xml.Name{Local: "description"}})
 
 	for _, f := range ev.Fields {
-		if conformance.IsZigbee(f.Conformance) {
+		if conformance.IsZigbee(ev.Fields, f.Conformance) {
 			continue
 		}
 		if !f.ID.Valid() {

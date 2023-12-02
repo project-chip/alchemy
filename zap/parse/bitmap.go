@@ -12,7 +12,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clusterIDs []*matter.ID, err error) {
+func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clusterIDs []*matter.Number, err error) {
 	bitmap = &matter.Bitmap{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -38,7 +38,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "cluster":
-				var cid *matter.ID
+				var cid *matter.Number
 				cid, err = readClusterCode(d, t)
 				if err == nil {
 					clusterIDs = append(clusterIDs, cid)
@@ -46,7 +46,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 			case "description":
 				bitmap.Description, err = readSimpleElement(d, t.Name.Local)
 			case "field":
-				var bit *matter.BitmapValue
+				var bit *matter.Bit
 				bit, err = readBitmapField(bitmap, d, t)
 				if err == nil {
 					bitmap.Bits = append(bitmap.Bits, bit)
@@ -72,8 +72,8 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 	}
 }
 
-func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) (bv *matter.BitmapValue, err error) {
-	bv = &matter.BitmapValue{}
+func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) (bv *matter.Bit, err error) {
+	bv = &matter.Bit{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "name":

@@ -196,14 +196,19 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 	}
 	var field *matter.Field
 	for a := range attributes {
-		if a.ID.Equals(attributeID) && !conformance.IsZigbee(a.Conformance) {
-			field = a
-			delete(attributes, a)
-			break
+		if !a.ID.Equals(attributeID) {
+			continue
 		}
+		if conformance.IsZigbee(cluster.Attributes, a.Conformance) {
+			continue
+		}
+
+		field = a
+		delete(attributes, a)
+		break
 	}
 
-	if field == nil || conformance.IsDeprecated(field.Conformance) {
+	if field == nil {
 		Ignore(ts, "attribute")
 		return nil
 	}

@@ -19,9 +19,10 @@ var conformanceCommand = &cobra.Command{
 		c := conformance.ParseConformance(args[0])
 		fmt.Fprintf(os.Stdout, "description: %s\n", c.String())
 		if len(args) > 1 {
-			cxt := make(matter.ConformanceContext)
+			var cxt matter.ConformanceContext
+			cxt.Values = make(map[string]any)
 			for _, arg := range args[1:] {
-				cxt[arg] = true
+				cxt.Values[arg] = true
 			}
 			crm, err := c.Eval(cxt)
 			if err != nil {

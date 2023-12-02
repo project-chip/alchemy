@@ -1,9 +1,9 @@
 package matter
 
 type DeviceType struct {
-	ID          *ID    `json:"id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
+	ID          *Number `json:"id,omitempty"`
+	Name        string  `json:"name,omitempty"`
+	Description string  `json:"description,omitempty"`
 
 	Superset string `json:"superset,omitempty"`
 	Class    string `json:"class,omitempty"`
@@ -18,7 +18,7 @@ func (c *DeviceType) ModelType() Entity {
 }
 
 type ClusterRequirement struct {
-	ID          *ID       `json:"id,omitempty"`
+	ID          *Number   `json:"id,omitempty"`
 	Cluster     string    `json:"cluster,omitempty"`
 	Quality     Quality   `json:"quality,omitempty"`
 	Conformance string    `json:"conformance,omitempty"`
@@ -26,10 +26,10 @@ type ClusterRequirement struct {
 }
 
 type ElementRequirement struct {
-	ID      *ID    `json:"id,omitempty"`
-	Cluster string `json:"cluster,omitempty"`
-	Element Entity `json:"element,omitempty"`
-	Name    string `json:"name,omitempty"`
+	ID      *Number `json:"id,omitempty"`
+	Cluster string  `json:"cluster,omitempty"`
+	Element Entity  `json:"element,omitempty"`
+	Name    string  `json:"name,omitempty"`
 
 	Constraint  Constraint `json:"constraint,omitempty"`
 	Access      Access     `json:"access,omitempty"`

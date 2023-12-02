@@ -57,7 +57,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *zap.Errata) {
 		ax.CreateAttr("privilege", renderPrivilege(c.Access.Invoke))
 	}
 	for _, f := range c.Fields {
-		if conformance.IsZigbee(f.Conformance) {
+		if conformance.IsZigbee(c.Fields, f.Conformance) {
 			continue
 		}
 		fx := cx.CreateElement("arg")

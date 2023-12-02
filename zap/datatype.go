@@ -81,7 +81,7 @@ var matterToZapMap = map[string]string{
 	"temperaturedifference": "int16s",
 
 	// Hacky workaround for Thermostat
-	"ref_occupancybitmap": "bitmap8",
+	"ref_occupancybitmap": "OccupancyBitmap",
 
 	/* Same on both sides:
 	percent
@@ -161,6 +161,18 @@ func GetMinMax(cc *matter.ConstraintContext) (from matter.ConstraintExtreme, to 
 	}
 
 	from, to = minMaxFromModel(cc)
+
+	if from.Defined() || to.Defined() {
+		return
+	}
+
+	if cc.Field.Access.Write != matter.PrivilegeUnknown {
+		// Writable fields get default min/max
+		isNullable := cc.Field.Quality.Has(matter.QualityNullable)
+		from = cc.Field.Type.Min(isNullable)
+		to = cc.Field.Type.Max(isNullable)
+
+	}
 	return
 }
 
@@ -177,8 +189,8 @@ func minMaxFromModel(cc *matter.ConstraintContext) (from matter.ConstraintExtrem
 						t = max(t, val)
 					}
 				}
-				from = matter.NewUintConstraintExtreme(f, matter.ConstraintExtremeFormatHex)
-				to = matter.NewUintConstraintExtreme(t, matter.ConstraintExtremeFormatHex)
+				from = matter.NewUintConstraintExtreme(f, matter.NumberFormatHex)
+				to = matter.NewUintConstraintExtreme(t, matter.NumberFormatHex)
 				return
 			}
 		case *matter.Bitmap:
@@ -191,8 +203,8 @@ func minMaxFromModel(cc *matter.ConstraintContext) (from matter.ConstraintExtrem
 					}
 					t |= mask
 				}
-				from = matter.NewUintConstraintExtreme(0, matter.ConstraintExtremeFormatHex)
-				to = matter.NewUintConstraintExtreme(t, matter.ConstraintExtremeFormatHex)
+				from = matter.NewUintConstraintExtreme(0, matter.NumberFormatHex)
+				to = matter.NewUintConstraintExtreme(t, matter.NumberFormatHex)
 				return
 			}
 		}

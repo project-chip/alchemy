@@ -82,9 +82,11 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 					} else {
 						b := matchingBitmap.Bits[bitIndex]
 						bitIndex++
-						if conformance.IsZigbee(b.Conformance) {
+
+						if conformance.IsZigbee(matchingBitmap.Bits, b.Conformance) {
 							continue
 						}
+
 						t.Attr, err = r.setBitmapFieldAttributes(t.Attr, b)
 						if err != nil {
 							err = fmt.Errorf("failed setting bitmap attributes on bitmap %s: %w", b.Name, err)
@@ -110,7 +112,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 				for bitIndex < len(matchingBitmap.Bits) {
 					b := matchingBitmap.Bits[bitIndex]
 					bitIndex++
-					if conformance.IsZigbee(b.Conformance) {
+					if conformance.IsZigbee(matchingBitmap.Bits, b.Conformance) {
 						continue
 					}
 
@@ -161,7 +163,8 @@ func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matte
 	}
 
 	for _, b := range bitmap.Bits {
-		if conformance.IsZigbee(b.Conformance) {
+
+		if conformance.IsZigbee(bitmap.Bits, b.Conformance) {
 			continue
 		}
 
@@ -187,7 +190,7 @@ func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matte
 	return
 }
 
-func (*renderer) setBitmapFieldAttributes(xfs []xml.Attr, b *matter.BitmapValue) ([]xml.Attr, error) {
+func (*renderer) setBitmapFieldAttributes(xfs []xml.Attr, b *matter.Bit) ([]xml.Attr, error) {
 	mask, err := b.Mask()
 	if err != nil {
 		return nil, err

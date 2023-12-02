@@ -2,6 +2,7 @@ package render
 
 import (
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/zap"
 )
@@ -15,14 +16,52 @@ func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *et
 	if dataTypeOrder == nil {
 		dataTypeOrder = zap.DefaultErrata.DataTypeOrder
 	}
+	bitmaps := make(map[*matter.Bitmap]struct{})
+	enums := make(map[*matter.Enum]struct{})
+	structs := make(map[*matter.Struct]struct{})
+
+	addTypes(cluster.Attributes, bitmaps, enums, structs)
+	for _, cmd := range cluster.Commands {
+		addTypes(cmd.Fields, bitmaps, enums, structs)
+	}
+	for _, e := range cluster.Events {
+		addTypes(e.Fields, bitmaps, enums, structs)
+	}
+
 	for _, s := range dataTypeOrder {
 		switch s {
 		case matter.SectionDataTypeBitmap:
-			renderBitmaps(cluster.Bitmaps, clusterIDs, cx)
+			renderBitmaps(bitmaps, clusterIDs, cx)
 		case matter.SectionDataTypeEnum:
-			renderEnums(cluster.Enums, clusterIDs, cx)
+			renderEnums(enums, clusterIDs, cx)
 		case matter.SectionDataTypeStruct:
-			renderStructs(cluster.Structs, clusterIDs, cx)
+			renderStructs(structs, clusterIDs, cx)
+		}
+	}
+}
+func addTypes(fs matter.FieldSet, bitmaps map[*matter.Bitmap]struct{}, enums map[*matter.Enum]struct{}, structs map[*matter.Struct]struct{}) {
+	for _, f := range fs {
+		if f.Type == nil {
+			continue
+		}
+		if conformance.IsZigbee(fs, f.Conformance) {
+			continue
+		}
+		var model any
+		if f.Type.IsArray() {
+			if f.Type.EntryType != nil {
+				model = f.Type.EntryType.Model
+			}
+		} else {
+			model = f.Type.Model
+		}
+		switch model := model.(type) {
+		case *matter.Bitmap:
+			bitmaps[model] = struct{}{}
+		case *matter.Enum:
+			enums[model] = struct{}{}
+		case *matter.Struct:
+			structs[model] = struct{}{}
 		}
 	}
 }

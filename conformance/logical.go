@@ -8,8 +8,8 @@ import (
 
 type LogicalExpression struct {
 	Operand string
-	Left    ConformanceExpression
-	Right   ConformanceExpression
+	Left    matter.ConformanceExpression
+	Right   matter.ConformanceExpression
 	Not     bool
 }
 

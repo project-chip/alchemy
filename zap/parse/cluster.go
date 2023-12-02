@@ -91,7 +91,7 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 	}
 }
 
-func readClusterCode(d *xml.Decoder, e xml.StartElement) (id *matter.ID, err error) {
+func readClusterCode(d *xml.Decoder, e xml.StartElement) (id *matter.Number, err error) {
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "code":

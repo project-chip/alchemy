@@ -59,7 +59,7 @@ func (c *ReferenceLimit) getEnumValue(cc *matter.ConstraintContext) (def matter.
 		if v.Name == c.Value {
 			val, err := parse.HexOrDec(v.Value)
 			if err == nil {
-				def = matter.NewUintConstraintExtreme(val, matter.ConstraintExtremeFormatInt)
+				def = matter.NewUintConstraintExtreme(val, matter.NumberFormatInt)
 				return
 			}
 		}
@@ -79,7 +79,7 @@ func (c *ReferenceLimit) getBitmapValue(cc *matter.ConstraintContext) (def matte
 		if v.Name == c.Value {
 			val, err := v.Mask()
 			if err == nil {
-				def = matter.NewUintConstraintExtreme(val, matter.ConstraintExtremeFormatInt)
+				def = matter.NewUintConstraintExtreme(val, matter.NumberFormatInt)
 				return
 			}
 		}

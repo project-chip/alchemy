@@ -7,7 +7,7 @@ import (
 )
 
 type MandatoryConformance struct {
-	Expression ConformanceExpression
+	Expression matter.ConformanceExpression
 }
 
 func (cc *MandatoryConformance) String() string {

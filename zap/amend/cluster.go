@@ -15,7 +15,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 	if err != nil {
 		return
 	}
-	var clusterID *matter.ID
+	var clusterID *matter.Number
 	for i, tok := range clusterTokens {
 		switch t := tok.(type) {
 		case xml.StartElement:
@@ -81,14 +81,10 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 	commands := make(map[*matter.Command]struct{})
 
 	for _, a := range cluster.Attributes {
-		if conformance.IsZigbee(a.Conformance) {
-			continue
-		}
 		attributes[a] = struct{}{}
 	}
 
 	for _, e := range cluster.Events {
-
 		events[e] = struct{}{}
 	}
 
@@ -136,7 +132,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 					}
 				}
 				lastSection = matter.SectionCommand
-				err = r.amendCommand(ts, e, t, commands)
+				err = r.amendCommand(cluster, ts, e, t, commands)
 			case "event":
 				if lastSection != matter.SectionEvent {
 					err = r.flushUnusedClusterElements(cluster, e, lastSection, clusterValues, attributes, events, commands, clusterPrefix)
@@ -145,7 +141,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 					}
 				}
 				lastSection = matter.SectionEvent
-				err = r.amendEvent(ts, e, t, events)
+				err = r.amendEvent(cluster, ts, e, t, events)
 			case "client", "server":
 				e.EncodeToken(t)
 				hasCommentCharDataPending = true
@@ -182,11 +178,11 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 				if err != nil {
 					return
 				}
-				err = r.flushCommands(e, commands, clusterPrefix)
+				err = r.flushCommands(cluster, e, commands, clusterPrefix)
 				if err != nil {
 					return
 				}
-				err = r.flushEvents(e, events, clusterPrefix)
+				err = r.flushEvents(cluster, e, events, clusterPrefix)
 				if err != nil {
 					return
 				}
@@ -235,9 +231,9 @@ func (r *renderer) flushUnusedClusterElements(cluster *matter.Cluster, e xmlEnco
 	case matter.SectionAttribute:
 		err = r.flushAttributes(cluster, e, attributes, clusterPrefix)
 	case matter.SectionCommand:
-		err = r.flushCommands(e, commands, clusterPrefix)
+		err = r.flushCommands(cluster, e, commands, clusterPrefix)
 	case matter.SectionEvent:
-		err = r.flushEvents(e, events, clusterPrefix)
+		err = r.flushEvents(cluster, e, events, clusterPrefix)
 	}
 	return
 }
@@ -263,8 +259,7 @@ func (*renderer) flushClusterValues(e xmlEncoder, clusterValues map[string]strin
 
 func (r *renderer) flushAttributes(cluster *matter.Cluster, e xmlEncoder, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
 	for a := range attributes {
-		if conformance.IsDeprecated(a.Conformance) {
-			delete(attributes, a)
+		if conformance.IsZigbee(cluster.Attributes, a.Conformance) {
 			continue
 		}
 		err = r.writeAttribute(cluster, e, xml.StartElement{Name: xml.Name{Local: "attribute"}}, a, clusterPrefix)
@@ -276,9 +271,12 @@ func (r *renderer) flushAttributes(cluster *matter.Cluster, e xmlEncoder, attrib
 	return
 }
 
-func (r *renderer) flushCommands(e xmlEncoder, commands map[*matter.Command]struct{}, clusterPrefix string) (err error) {
+func (r *renderer) flushCommands(cluster *matter.Cluster, e xmlEncoder, commands map[*matter.Command]struct{}, clusterPrefix string) (err error) {
 	for c := range commands {
-		err = r.writeCommand(e, xml.StartElement{Name: xml.Name{Local: "command"}}, c)
+		if conformance.IsZigbee(cluster.Commands, c.Conformance) {
+			continue
+		}
+		err = r.writeCommand(cluster, e, xml.StartElement{Name: xml.Name{Local: "command"}}, c)
 		delete(commands, c)
 		if err != nil {
 			return
@@ -287,8 +285,12 @@ func (r *renderer) flushCommands(e xmlEncoder, commands map[*matter.Command]stru
 	return
 }
 
-func (r *renderer) flushEvents(e xmlEncoder, events map[*matter.Event]struct{}, clusterPrefix string) (err error) {
+func (r *renderer) flushEvents(cluster *matter.Cluster, e xmlEncoder, events map[*matter.Event]struct{}, clusterPrefix string) (err error) {
 	for ev := range events {
+		if conformance.IsZigbee(cluster.Events, ev.Conformance) {
+			continue
+		}
+
 		err = r.writeEvent(e, xml.StartElement{Name: xml.Name{Local: "event"}}, ev, true)
 		delete(events, ev)
 		if err != nil {

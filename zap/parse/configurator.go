@@ -37,7 +37,7 @@ func readConfigurator(d *xml.Decoder) (models []any, err error) {
 				_, err = readSimpleElement(d, t.Name.Local)
 			case "enum":
 				var en *matter.Enum
-				var clusterIDs []*matter.ID
+				var clusterIDs []*matter.Number
 				en, clusterIDs, err = readEnum(d, t)
 				if err == nil {
 					for _, cid := range clusterIDs {
@@ -46,7 +46,7 @@ func readConfigurator(d *xml.Decoder) (models []any, err error) {
 				}
 			case "struct":
 				var s *matter.Struct
-				var clusterIDs []*matter.ID
+				var clusterIDs []*matter.Number
 				s, clusterIDs, err = readStruct(d, t)
 				if err == nil {
 					for _, cid := range clusterIDs {
@@ -55,7 +55,7 @@ func readConfigurator(d *xml.Decoder) (models []any, err error) {
 				}
 			case "bitmap":
 				var bitmap *matter.Bitmap
-				var clusterIDs []*matter.ID
+				var clusterIDs []*matter.Number
 				bitmap, clusterIDs, err = readBitmap(d, t)
 				if err == nil {
 					for _, cid := range clusterIDs {

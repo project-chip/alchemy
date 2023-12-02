@@ -7,7 +7,7 @@ import (
 )
 
 type OptionalConformance struct {
-	Expression ConformanceExpression
+	Expression matter.ConformanceExpression
 	Choice     *Choice
 }
 

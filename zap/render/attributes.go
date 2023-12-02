@@ -15,7 +15,7 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		cx.CreateComment("Attributes")
 	}
 	for _, a := range cluster.Attributes {
-		if conformance.IsZigbee(a.Conformance) || conformance.IsDeprecated(a.Conformance) {
+		if conformance.IsZigbee(cluster.Attributes, a.Conformance) {
 			continue
 		}
 
