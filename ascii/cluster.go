@@ -96,7 +96,12 @@ func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 }
 
 func assignCustomModel(c *matter.Cluster, dt *matter.DataType) {
-	if dt == nil || dt.BaseType != matter.BaseDataTypeCustom {
+	if dt == nil {
+		return
+	} else if dt.IsArray() {
+		assignCustomModel(c, dt.EntryType)
+		return
+	} else if dt.BaseType != matter.BaseDataTypeCustom {
 		return
 	}
 	name := dt.Name
