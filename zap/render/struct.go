@@ -7,8 +7,8 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Element) {
-	for _, s := range structs {
+func renderStructs(structs map[*matter.Struct]struct{}, clusterIDs []string, cx *etree.Element) {
+	for s := range structs {
 		en := cx.CreateElement("struct")
 		en.CreateAttr("name", zap.CleanName(s.Name))
 		if s.FabricScoped {
@@ -18,7 +18,7 @@ func renderStructs(structs []*matter.Struct, clusterIDs []string, cx *etree.Elem
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
 		for _, f := range s.Fields {
-			if conformance.IsZigbee(f.Conformance) {
+			if conformance.IsZigbee(s.Fields, f.Conformance) {
 				continue
 			}
 			fx := en.CreateElement("item")

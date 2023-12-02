@@ -14,9 +14,10 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 	}
 	events := c.CreateElement("events")
 	for _, e := range cluster.Events {
-		if conformance.IsZigbee(e.Conformance) {
+		if conformance.IsZigbee(e.Fields, e.Conformance) {
 			continue
 		}
+
 		cx := events.CreateElement("event")
 		cx.CreateAttr("id", e.ID.ShortHexString())
 		cx.CreateAttr("name", e.Name)

@@ -10,9 +10,9 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
+func renderEnums(enums map[*matter.Enum]struct{}, clusterIDs []string, cx *etree.Element) {
 
-	for _, v := range enums {
+	for v := range enums {
 		var valFormat string
 		switch v.Type.BaseType {
 		case matter.BaseDataTypeEnum16:
@@ -33,7 +33,7 @@ func renderEnums(enums []*matter.Enum, clusterIDs []string, cx *etree.Element) {
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
 		for _, ev := range v.Values {
-			if conformance.IsZigbee(ev.Conformance) {
+			if conformance.IsZigbee(v.Values, ev.Conformance) {
 				continue
 			}
 			evx := en.CreateElement("item")

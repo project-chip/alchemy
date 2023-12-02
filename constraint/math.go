@@ -92,7 +92,7 @@ func (c *MathExpressionLimit) operate(left matter.ConstraintExtreme, right matte
 		if left.Format == right.Format {
 			extreme.Format = left.Format
 		} else {
-			extreme.Format = matter.ConstraintExtremeFormatAuto
+			extreme.Format = matter.NumberFormatAuto
 		}
 	}
 	return

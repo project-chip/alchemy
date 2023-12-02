@@ -14,9 +14,10 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 	}
 	commands := c.CreateElement("commands")
 	for _, cmd := range cluster.Commands {
-		if conformance.IsZigbee(cmd.Conformance) {
+		if conformance.IsZigbee(cmd.Fields, cmd.Conformance) {
 			continue
 		}
+
 		cx := commands.CreateElement("command")
 		cx.CreateAttr("id", cmd.ID.ShortHexString())
 		cx.CreateAttr("name", cmd.Name)

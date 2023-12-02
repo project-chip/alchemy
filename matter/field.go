@@ -1,9 +1,7 @@
 package matter
 
-type FieldSet []*Field
-
 type Field struct {
-	ID   *ID       `json:"id,omitempty"`
+	ID   *Number   `json:"id,omitempty"`
 	Name string    `json:"name,omitempty"`
 	Type *DataType `json:"type,omitempty"`
 
@@ -14,7 +12,22 @@ type Field struct {
 	Conformance Conformance `json:"conformance,omitempty"`
 }
 
+func (f *Field) GetConformance() Conformance {
+	return f.Conformance
+}
+
+type FieldSet []*Field
+
 func (fs FieldSet) GetField(name string) *Field {
+	for _, f := range fs {
+		if f.Name == name {
+			return f
+		}
+	}
+	return nil
+}
+
+func (fs FieldSet) ConformanceReference(name string) HasConformance {
 	for _, f := range fs {
 		if f.Name == name {
 			return f

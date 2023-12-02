@@ -7,16 +7,16 @@ import (
 )
 
 type FieldDiffs struct {
-	ID    *matter.ID `json:"id"`
-	Diffs []any      `json:"diffs"`
+	ID    *matter.Number `json:"id"`
+	Diffs []any          `json:"diffs"`
 }
 
 type MissingDiff struct {
-	Type     DiffType     `json:"type"`
-	Source   Source       `json:"source,omitempty"`
-	Property DiffProperty `json:"property,omitempty"`
-	ID       *matter.ID   `json:"id,omitempty"`
-	Code     string       `json:"code,omitempty"`
+	Type     DiffType       `json:"type"`
+	Source   Source         `json:"source,omitempty"`
+	Property DiffProperty   `json:"property,omitempty"`
+	ID       *matter.Number `json:"id,omitempty"`
+	Code     string         `json:"code,omitempty"`
 }
 
 type StringDiff struct {

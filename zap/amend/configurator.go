@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -23,14 +24,12 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 		case *matter.Cluster:
 			if cluster == nil {
 				cluster = v
-				for _, bm := range v.Bitmaps {
-					r.bitmaps[bm] = false
+				r.addTypes(v.Attributes)
+				for _, cmd := range v.Commands {
+					r.addTypes(cmd.Fields)
 				}
-				for _, en := range v.Enums {
-					r.enums[en] = false
-				}
-				for _, s := range v.Structs {
-					r.structs[s] = false
+				for _, e := range v.Events {
+					r.addTypes(e.Fields)
 				}
 			}
 			clusterIDs = append(clusterIDs, v.ID.HexString())
@@ -174,6 +173,33 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 		}
 		if err != nil {
 			return
+		}
+	}
+}
+
+func (r *renderer) addTypes(fs matter.FieldSet) {
+	for _, f := range fs {
+		if f.Type == nil {
+			continue
+		}
+		if conformance.IsZigbee(fs, f.Conformance) {
+			continue
+		}
+		var model any
+		if f.Type.IsArray() {
+			if f.Type.EntryType != nil {
+				model = f.Type.EntryType.Model
+			}
+		} else {
+			model = f.Type.Model
+		}
+		switch model := model.(type) {
+		case *matter.Bitmap:
+			r.bitmaps[model] = false
+		case *matter.Enum:
+			r.enums[model] = false
+		case *matter.Struct:
+			r.structs[model] = false
 		}
 	}
 }

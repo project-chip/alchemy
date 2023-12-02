@@ -17,7 +17,7 @@ func (c *NullLimit) Equal(o matter.ConstraintLimit) bool {
 }
 
 func (c *NullLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
-	return matter.ConstraintExtreme{Type: matter.ConstraintExtremeTypeNull, Format: matter.ConstraintExtremeFormatHex}
+	return matter.ConstraintExtreme{Type: matter.ConstraintExtremeTypeNull, Format: matter.NumberFormatHex}
 }
 
 func (c *NullLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {

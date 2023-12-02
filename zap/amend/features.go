@@ -66,7 +66,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 					} else {
 						f := cluster.Features[featureIndex]
 						featureIndex++
-						if conformance.IsZigbee(f.Conformance) {
+						if conformance.IsZigbee(cluster.Features, f.Conformance) {
 							continue
 						}
 						t.Attr, err = r.setFeatureAttributes(t.Attr, f)
@@ -94,7 +94,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 				for featureIndex < len(cluster.Features) {
 					f := cluster.Features[featureIndex]
 					featureIndex++
-					if conformance.IsZigbee(f.Conformance) {
+					if conformance.IsZigbee(cluster.Features, f.Conformance) {
 						continue
 					}
 
@@ -158,9 +158,10 @@ func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 		}
 	}
 	for _, f := range cluster.Features {
-		if conformance.IsZigbee(f.Conformance) {
+		if conformance.IsZigbee(cluster.Features, f.Conformance) {
 			continue
 		}
+
 		elName := xml.Name{Local: "field"}
 		xfs := xml.StartElement{Name: elName}
 		xfs.Attr, err = r.setFeatureAttributes(xfs.Attr, f)

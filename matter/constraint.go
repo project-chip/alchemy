@@ -37,27 +37,27 @@ const (
 	ConstraintExtremeTypeEmpty
 )
 
-type ConstraintExtremeFormat uint8
+type NumberFormat uint8
 
 const (
-	ConstraintExtremeFormatUndefined ConstraintExtremeFormat = iota
-	ConstraintExtremeFormatInt
-	ConstraintExtremeFormatHex
-	ConstraintExtremeFormatAuto
+	NumberFormatUndefined NumberFormat = iota
+	NumberFormatInt
+	NumberFormatHex
+	NumberFormatAuto
 )
 
 type ConstraintExtreme struct {
 	Type   ConstraintExtremeType
-	Format ConstraintExtremeFormat
+	Format NumberFormat
 	Int64  int64
 	UInt64 uint64
 }
 
-func NewIntConstraintExtreme(i int64, f ConstraintExtremeFormat) ConstraintExtreme {
+func NewIntConstraintExtreme(i int64, f NumberFormat) ConstraintExtreme {
 	return ConstraintExtreme{Type: ConstraintExtremeTypeInt64, Format: f, Int64: i}
 }
 
-func NewUintConstraintExtreme(u uint64, f ConstraintExtremeFormat) ConstraintExtreme {
+func NewUintConstraintExtreme(u uint64, f NumberFormat) ConstraintExtreme {
 	return ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, Format: f, UInt64: u}
 }
 
@@ -81,7 +81,7 @@ func (ce *ConstraintExtreme) ZapString(dataType *DataType) string {
 	case ConstraintExtremeTypeInt64:
 		val := ce.Int64
 		switch ce.Format {
-		case ConstraintExtremeFormatHex:
+		case NumberFormatHex:
 			if dataType != nil {
 				switch dataType.Size() {
 				case 1:
@@ -96,7 +96,7 @@ func (ce *ConstraintExtreme) ZapString(dataType *DataType) string {
 				}
 			}
 			return fmt.Sprintf("0x%X", uint64(val))
-		case ConstraintExtremeFormatAuto:
+		case NumberFormatAuto:
 			if val > 255 || val < 256 {
 				return fmt.Sprintf("0x%X", uint64(val))
 			}
@@ -125,7 +125,7 @@ func (ce *ConstraintExtreme) DataModelString(dataType *DataType) string {
 	case ConstraintExtremeTypeInt64:
 		val := ce.Int64
 		switch ce.Format {
-		case ConstraintExtremeFormatHex:
+		case NumberFormatHex:
 			if dataType != nil {
 				switch dataType.Size() {
 				case 1:
@@ -140,7 +140,7 @@ func (ce *ConstraintExtreme) DataModelString(dataType *DataType) string {
 				}
 			}
 			return fmt.Sprintf("0x%X", uint64(val))
-		case ConstraintExtremeFormatAuto:
+		case NumberFormatAuto:
 			if val > 255 || val < 256 {
 				return fmt.Sprintf("0x%X", uint64(val))
 			}
@@ -174,7 +174,7 @@ func (ce *ConstraintExtreme) DataModelString(dataType *DataType) string {
 
 func (ce *ConstraintExtreme) formatUint64(dataType *DataType, val uint64) string {
 	switch ce.Format {
-	case ConstraintExtremeFormatHex:
+	case NumberFormatHex:
 		if dataType != nil {
 			switch dataType.Size() {
 			case 1:
@@ -189,7 +189,7 @@ func (ce *ConstraintExtreme) formatUint64(dataType *DataType, val uint64) string
 			}
 		}
 		return fmt.Sprintf("0x%X", val)
-	case ConstraintExtremeFormatAuto:
+	case NumberFormatAuto:
 		if val > 0xFF {
 			return fmt.Sprintf("0x%X", uint64(val))
 		}

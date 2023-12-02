@@ -11,20 +11,44 @@ type IdentifierExpression struct {
 	Not bool
 }
 
-func (fe *IdentifierExpression) String() string {
-	if fe.Not {
-		return fmt.Sprintf("not %s", fe.ID)
+func (ie *IdentifierExpression) String() string {
+	if ie.Not {
+		return fmt.Sprintf("not %s", ie.ID)
 	}
-	return fe.ID
+	return ie.ID
 }
 
-func (fe *IdentifierExpression) Eval(context matter.ConformanceContext) (bool, error) {
-	v, ok := context[fe.ID]
-	if !ok {
-		return fe.Not, nil
+func (ie *IdentifierExpression) Eval(context matter.ConformanceContext) (bool, error) {
+	return evalIdentifier(context, ie.ID, ie.Not)
+}
+
+func evalIdentifier(context matter.ConformanceContext, id string, not bool) (bool, error) {
+	if context.Values != nil {
+		v, ok := context.Values[id]
+		if ok {
+			if b, ok := v.(bool); ok {
+				return b != not, nil
+			}
+		}
 	}
-	if b, ok := v.(bool); ok {
-		return b != fe.Not, nil
+	if context.Store != nil {
+		if context.VisitedReferences == nil {
+			context.VisitedReferences = make(map[string]struct{})
+		} else if _, ok := context.VisitedReferences[id]; ok {
+			return false, nil
+		}
+		ref := context.Store.ConformanceReference(id)
+		context.VisitedReferences[id] = struct{}{}
+		if ref != nil {
+			conf := ref.GetConformance()
+			if conf != nil {
+				cs, err := conf.Eval(context)
+				if err != nil {
+					return false, err
+				}
+				return (cs == matter.ConformanceStateMandatory || cs == matter.ConformanceStateOptional || cs == matter.ConformanceStateProvisional || cs == matter.ConformanceStateDeprecated) != not, nil
+			}
+		}
 	}
-	return false, fmt.Errorf("unexpected value when interpreting identifier %s: %v", fe.ID, v)
+	return not, nil
 }

@@ -28,7 +28,7 @@ func (c *BooleanLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintE
 	}
 	return matter.ConstraintExtreme{
 		Type:   matter.ConstraintExtremeTypeUInt64,
-		Format: matter.ConstraintExtremeFormatInt,
+		Format: matter.NumberFormatInt,
 		UInt64: val,
 	}
 }

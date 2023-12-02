@@ -67,7 +67,7 @@ func (b *XMLBitmap) ToModel() (mb *matter.Bitmap, err error) {
 		}
 
 		if startBit >= 0 {
-			bv := &matter.BitmapValue{
+			bv := &matter.Bit{
 				Name: bi.Name,
 			}
 			if startBit != endBit {

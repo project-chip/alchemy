@@ -38,7 +38,7 @@ func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		bv := &matter.BitmapValue{}
+		bv := &matter.Bit{}
 		bv.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return

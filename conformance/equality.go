@@ -8,8 +8,8 @@ import (
 
 type EqualityExpression struct {
 	Not   bool
-	Left  ConformanceExpression
-	Right ConformanceExpression
+	Left  matter.ConformanceExpression
+	Right matter.ConformanceExpression
 }
 
 func (o *EqualityExpression) String() string {

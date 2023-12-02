@@ -37,7 +37,7 @@ func (c *HexLimit) Equal(o matter.ConstraintLimit) bool {
 func (c *HexLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
 	return matter.ConstraintExtreme{
 		Type:   matter.ConstraintExtremeTypeUInt64,
-		Format: matter.ConstraintExtremeFormatHex,
+		Format: matter.NumberFormatHex,
 		UInt64: c.Value,
 	}
 }

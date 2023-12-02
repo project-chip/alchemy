@@ -9,8 +9,8 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Element) {
-	for _, bm := range bitmaps {
+func renderBitmaps(bitmaps map[*matter.Bitmap]struct{}, clusterIDs []string, cx *etree.Element) {
+	for bm := range bitmaps {
 		en := cx.CreateElement("bitmap")
 		en.CreateAttr("name", zap.CleanName(bm.Name))
 		en.CreateAttr("type", zap.ConvertDataTypeNameToZap(bm.Type.Name))
@@ -19,7 +19,7 @@ func renderBitmaps(bitmaps []*matter.Bitmap, clusterIDs []string, cx *etree.Elem
 			en.CreateElement("cluster").CreateAttr("code", cid)
 		}
 		for _, bv := range bm.Bits {
-			if conformance.IsZigbee(bv.Conformance) {
+			if conformance.IsZigbee(bm.Bits, bv.Conformance) {
 				continue
 			}
 

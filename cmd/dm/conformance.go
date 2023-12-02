@@ -82,7 +82,7 @@ func renderConformance(cluster *matter.Cluster, con matter.Conformance, parent *
 	return nil
 }
 
-func renderConformanceExpression(cluster *matter.Cluster, exp conformance.ConformanceExpression, parent *etree.Element) error {
+func renderConformanceExpression(cluster *matter.Cluster, exp matter.ConformanceExpression, parent *etree.Element) error {
 	if exp == nil {
 		return nil
 	}

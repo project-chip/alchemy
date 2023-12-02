@@ -43,7 +43,7 @@ func (c *ExpLimit) minmax(cc *matter.ConstraintContext) (minmax matter.Constrain
 	}
 	minmax = matter.ConstraintExtreme{
 		Type:   matter.ConstraintExtremeTypeInt64,
-		Format: matter.ConstraintExtremeFormatHex,
+		Format: matter.NumberFormatHex,
 		Int64:  i,
 	}
 	return

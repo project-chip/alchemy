@@ -29,7 +29,7 @@ func (c *PercentLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintE
 	v := val.IntPart()
 	return matter.ConstraintExtreme{
 		Type:   matter.ConstraintExtremeTypeInt64,
-		Format: matter.ConstraintExtremeFormatInt,
+		Format: matter.NumberFormatInt,
 		Int64:  v}
 }
 
@@ -41,7 +41,7 @@ func (c *PercentLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintE
 	v := val.IntPart()
 	return matter.ConstraintExtreme{
 		Type:   matter.ConstraintExtremeTypeInt64,
-		Format: matter.ConstraintExtremeFormatInt,
+		Format: matter.NumberFormatInt,
 		Int64:  v}
 
 }

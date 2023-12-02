@@ -8,13 +8,17 @@ import (
 )
 
 type Bitmap struct {
-	Name        string         `json:"name,omitempty"`
-	Description string         `json:"description,omitempty"`
-	Type        *DataType      `json:"type,omitempty"`
-	Bits        []*BitmapValue `json:"bits,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Type        *DataType `json:"type,omitempty"`
+	Bits        BitSet    `json:"bits,omitempty"`
 }
 
-type BitmapValue struct {
+func (c *Bitmap) ModelType() Entity {
+	return EntityBitmap
+}
+
+type Bit struct {
 	Bit         string      `json:"bit,omitempty"`
 	Name        string      `json:"name,omitempty"`
 	Summary     string      `json:"summary,omitempty"`
@@ -23,7 +27,7 @@ type BitmapValue struct {
 
 var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)\.{2,}(?P<To>[0-9]+)$`)
 
-func (bv *BitmapValue) Mask() (uint64, error) {
+func (bv *Bit) Mask() (uint64, error) {
 	val, err := parse.HexOrDec(bv.Bit)
 	if err == nil {
 		return 1 << (val), nil
@@ -50,6 +54,17 @@ func (bv *BitmapValue) Mask() (uint64, error) {
 	return 0, fmt.Errorf("invalid bit mask range: %s", bv.Bit)
 }
 
-func (c *Bitmap) ModelType() Entity {
-	return EntityBitmap
+func (bv *Bit) GetConformance() Conformance {
+	return bv.Conformance
+}
+
+type BitSet []*Bit
+
+func (bs BitSet) ConformanceReference(name string) HasConformance {
+	for _, b := range bs {
+		if b.Name == name {
+			return b
+		}
+	}
+	return nil
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterIDs []*matter.ID, err error) {
+func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterIDs []*matter.Number, err error) {
 	s = &matter.Struct{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -32,7 +32,7 @@ func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterID
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "cluster":
-				var cid *matter.ID
+				var cid *matter.Number
 				cid, err = readClusterCode(d, t)
 				if err == nil {
 					clusterIDs = append(clusterIDs, cid)

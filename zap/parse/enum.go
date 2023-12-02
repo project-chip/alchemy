@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs []*matter.ID, err error) {
+func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs []*matter.Number, err error) {
 	en = &matter.Enum{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -45,7 +45,7 @@ func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs [
 					en.Values = append(en.Values, ev)
 				}
 			case "cluster":
-				var cid *matter.ID
+				var cid *matter.Number
 				cid, err = readClusterCode(d, t)
 				if err == nil {
 					clusterIDs = append(clusterIDs, cid)

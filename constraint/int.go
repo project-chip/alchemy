@@ -24,7 +24,7 @@ func (c *IntLimit) Equal(o matter.ConstraintLimit) bool {
 func (c *IntLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
 	return matter.ConstraintExtreme{
 		Type:   matter.ConstraintExtremeTypeInt64,
-		Format: matter.ConstraintExtremeFormatInt,
+		Format: matter.NumberFormatInt,
 		Int64:  c.Value,
 	}
 }

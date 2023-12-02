@@ -84,7 +84,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 					} else {
 						v := matchingEnum.Values[valueIndex]
 						valueIndex++
-						if conformance.IsZigbee(v.Conformance) {
+						if conformance.IsZigbee(matchingEnum.Values, v.Conformance) {
 							continue
 						}
 						t.Attr = r.setEnumValueAttributes(v, t.Attr, valFormat)
@@ -108,7 +108,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 				for valueIndex < len(matchingEnum.Values) {
 					v := matchingEnum.Values[valueIndex]
 					valueIndex++
-					if conformance.IsZigbee(v.Conformance) {
+					if conformance.IsZigbee(matchingEnum.Values, v.Conformance) {
 						continue
 					}
 					elName := xml.Name{Local: "item"}
@@ -156,7 +156,7 @@ func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum,
 	}
 
 	for _, v := range en.Values {
-		if conformance.IsZigbee(v.Conformance) {
+		if conformance.IsZigbee(en.Values, v.Conformance) {
 			continue
 		}
 

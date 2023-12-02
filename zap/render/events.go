@@ -30,7 +30,7 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 
 		}
 		for _, f := range e.Fields {
-			if conformance.IsZigbee(f.Conformance) {
+			if conformance.IsZigbee(e.Fields, f.Conformance) {
 				continue
 			}
 			if !f.ID.Valid() {

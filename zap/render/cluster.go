@@ -65,7 +65,7 @@ func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster,
 	return nil
 }
 
-func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []*matter.Cluster, w *etree.Element, errata *zap.Errata) {
+func renderFeatures(cxt context.Context, features matter.FeatureSet, clusters []*matter.Cluster, w *etree.Element, errata *zap.Errata) {
 	if len(features) == 0 {
 		return
 	}
@@ -76,7 +76,7 @@ func renderFeatures(cxt context.Context, features []*matter.Feature, clusters []
 		fb.CreateElement("cluster").CreateAttr("code", cluster.ID.HexString())
 	}
 	for _, f := range features {
-		if conformance.IsZigbee(f.Conformance) {
+		if conformance.IsZigbee(features, f.Conformance) {
 			continue
 		}
 		bit, err := parse.HexOrDec(f.Bit)

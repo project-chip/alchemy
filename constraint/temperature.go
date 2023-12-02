@@ -30,7 +30,7 @@ func (c *TemperatureLimit) Min(cc *matter.ConstraintContext) (min matter.Constra
 	}
 	return matter.ConstraintExtreme{
 		Type:   matter.ConstraintExtremeTypeInt64,
-		Format: matter.ConstraintExtremeFormatHex,
+		Format: matter.NumberFormatInt,
 		Int64:  i,
 	}
 }

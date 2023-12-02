@@ -12,7 +12,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 	}
 	attributes := c.CreateElement("attributes")
 	for _, a := range cluster.Attributes {
-		if conformance.IsZigbee(a.Conformance) {
+		if conformance.IsZigbee(cluster.Attributes, a.Conformance) {
 			continue
 		}
 		ax := attributes.CreateElement("attribute")
