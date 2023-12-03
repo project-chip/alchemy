@@ -22,6 +22,7 @@ var selfClosingTags = regexp.MustCompile("></[^>]+>")
 type migrateOptions struct {
 	filesOptions  files.Options
 	asciiSettings []configuration.Setting
+	overwrite     bool
 }
 
 func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []string, options migrateOptions) error {
@@ -72,7 +73,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 		appClusters = filteredDocs
 	}
 
-	outputs, provisionalZclFiles, err := renderAppClusterTemplates(cxt, appClusters, zclRoot, options.filesOptions)
+	outputs, provisionalZclFiles, err := renderAppClusterTemplates(cxt, appClusters, zclRoot, options.filesOptions, options.overwrite)
 	if err != nil {
 		return err
 	}

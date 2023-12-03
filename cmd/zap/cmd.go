@@ -18,6 +18,7 @@ var Command = &cobra.Command{
 			filesOptions:  files.Flags(cmd),
 			asciiSettings: common.AsciiDocAttributes(cmd),
 		}
+		options.overwrite, _ = cmd.Flags().GetBool("overwrite")
 		return Migrate(context.Background(), specRoot, zclRoot, args, options)
 	},
 }
@@ -25,6 +26,7 @@ var Command = &cobra.Command{
 func init() {
 	Command.Flags().String("specRoot", "", "the root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().String("zclRoot", "", "the root of your clone of project-chip/connectedhomeip")
+	Command.Flags().Bool("overwrite", false, "overwrite existing ZAP templates")
 	Command.MarkFlagRequired("specRoot")
 	Command.MarkFlagRequired("zclRoot")
 }
