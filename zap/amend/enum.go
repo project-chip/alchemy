@@ -125,6 +125,10 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 					}
 				}
 				err = e.EncodeToken(t)
+				if err != nil {
+					return
+				}
+				err = newLine(e)
 				return
 			default:
 				err = e.EncodeToken(tok)
@@ -175,7 +179,11 @@ func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum,
 		}
 
 	}
-	return e.EncodeToken(xml.EndElement{Name: xfb.Name})
+	err = e.EncodeToken(xml.EndElement{Name: xfb.Name})
+	if err != nil {
+		return
+	}
+	return newLine(e)
 }
 
 func (*renderer) setEnumValueAttributes(v *matter.EnumValue, xfs []xml.Attr, valFormat string) []xml.Attr {

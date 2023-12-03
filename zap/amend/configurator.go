@@ -50,10 +50,10 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 	ts := &tokenSet{tokens: configuratorTokens}
 
 	var hasCommentCharDataPending bool
-	var lastIgnoredCharData xml.CharData
 
 	needFeatures := len(cluster.Features) > 0
 
+	var lastSection = matter.SectionUnknown
 	for {
 		var tok xml.Token
 		tok, err = ts.Token()
@@ -63,7 +63,6 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 		} else if err != nil {
 			return
 		}
-		var lastSection = matter.SectionUnknown
 		switch t := tok.(type) {
 		case xml.StartElement:
 			switch t.Name.Local {
@@ -149,12 +148,9 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 				err = e.EncodeToken(tok)
 			}
 		case xml.Comment:
-			if lastIgnoredCharData != nil {
-				err = e.EncodeToken(lastIgnoredCharData)
-				if err != nil {
-					return
-				}
-				lastIgnoredCharData = nil
+			err = newLine(e)
+			if err != nil {
+				return
 			}
 			err = e.EncodeToken(t)
 			hasCommentCharDataPending = true
@@ -162,14 +158,9 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 			if hasCommentCharDataPending {
 				err = e.EncodeToken(t)
 				hasCommentCharDataPending = false
-				lastIgnoredCharData = nil
-			} else {
-				lastIgnoredCharData = t
 			}
-
 		default:
 			err = e.EncodeToken(tok)
-			lastIgnoredCharData = nil
 		}
 		if err != nil {
 			return
@@ -218,6 +209,7 @@ func (r *renderer) flushUnusedConfiguratorValues(e xmlEncoder, lastSection matte
 			}
 			delete(configuratorValues, k)
 		}
+		err = newLine(e)
 	case matter.SectionDataTypeBitmap:
 		err = r.flushBitmaps(e, clusterIDs)
 	case matter.SectionDataTypeEnum:
