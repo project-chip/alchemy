@@ -35,7 +35,7 @@ func getDocDomain(doc *ascii.Doc) matter.Domain {
 	return matter.DomainUnknown
 }
 
-func renderAppClusterTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot string, filesOptions files.Options) (outputs map[string]*render.Result, provisionalZclFiles []string, err error) {
+func renderAppClusterTemplates(cxt context.Context, appClusters []*ascii.Doc, zclRoot string, filesOptions files.Options, overwrite bool) (outputs map[string]*render.Result, provisionalZclFiles []string, err error) {
 	var lock sync.Mutex
 	outputs = make(map[string]*render.Result)
 	slog.InfoContext(cxt, "Rendering ZAP templates...")
@@ -54,7 +54,7 @@ func renderAppClusterTemplates(cxt context.Context, appClusters []*ascii.Doc, zc
 
 		doc.Domain = getDocDomain(doc)
 		existing, err := os.ReadFile(newPath)
-		if errors.Is(err, os.ErrNotExist) {
+		if errors.Is(err, os.ErrNotExist) || overwrite {
 			if filesOptions.Serial {
 				slog.InfoContext(cxt, "Rendering new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
 			}
