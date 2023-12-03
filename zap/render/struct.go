@@ -1,6 +1,9 @@
 package render
 
 import (
+	"slices"
+	"strings"
+
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
@@ -8,7 +11,17 @@ import (
 )
 
 func renderStructs(structs map[*matter.Struct]struct{}, clusterIDs []string, cx *etree.Element) {
+
+	ss := make([]*matter.Struct, 0, len(structs))
 	for s := range structs {
+		ss = append(ss, s)
+	}
+
+	slices.SortFunc(ss, func(a, b *matter.Struct) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	for _, s := range ss {
 		en := cx.CreateElement("struct")
 		en.CreateAttr("name", zap.CleanName(s.Name))
 		if s.FabricScoped {

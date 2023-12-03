@@ -114,6 +114,7 @@ func (r *renderer) setAttributeAttributes(el []xml.Attr, a *matter.Field, cluste
 	} else {
 		el = removeAttribute(el, "reportable")
 	}
+	el = r.renderConstraint(cluster.Attributes, a, el)
 	if a.Default != "" {
 		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: a, Fields: cluster.Attributes})
 		if defaultValue.Defined() {
@@ -125,7 +126,6 @@ func (r *renderer) setAttributeAttributes(el []xml.Attr, a *matter.Field, cluste
 		el = removeAttribute(el, "default")
 	}
 
-	el = r.renderConstraint(cluster.Attributes, a, el)
 	if a.Quality.Has(matter.QualityFixed) || ((a.Access.Read == matter.PrivilegeUnknown || a.Access.Read == matter.PrivilegeView) && (a.Access.Write == matter.PrivilegeUnknown || a.Access.Write == matter.PrivilegeOperate)) || r.errata.SuppressAttributePermissions {
 		if a.Access.Write != matter.PrivilegeUnknown {
 			el = setAttributeValue(el, "writable", "true")
