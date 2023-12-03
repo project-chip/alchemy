@@ -243,6 +243,13 @@ func GetDefaultValue(cc *matter.ConstraintContext) (defaultValue matter.Constrai
 		if cc.Field.Type.NullValue() == 0 {
 			defaultValue = matter.ConstraintExtreme{}
 		}
+	case matter.ConstraintExtremeTypeInt64, matter.ConstraintExtremeTypeUInt64:
+		if cc.Field.Type != nil {
+			switch cc.Field.Type.Model.(type) {
+			case *matter.Bitmap, *matter.Enum:
+				defaultValue.Format = matter.NumberFormatHex
+			}
+		}
 	}
 
 	return

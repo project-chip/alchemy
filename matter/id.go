@@ -53,6 +53,15 @@ func (id *Number) Equals(oid *Number) bool {
 	return false
 }
 
+func (id *Number) Compare(oid *Number) int {
+	if id.value < oid.value {
+		return -1
+	} else if id.value > oid.value {
+		return 1
+	}
+	return 0
+}
+
 func (id *Number) Is(oid uint64) bool {
 	if id.value >= 0 {
 		return int64(oid) == id.value

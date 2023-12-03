@@ -2,6 +2,8 @@ package render
 
 import (
 	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/conformance"
@@ -10,7 +12,16 @@ import (
 )
 
 func renderBitmaps(bitmaps map[*matter.Bitmap]struct{}, clusterIDs []string, cx *etree.Element) {
+	bms := make([]*matter.Bitmap, 0, len(bitmaps))
 	for bm := range bitmaps {
+		bms = append(bms, bm)
+	}
+
+	slices.SortFunc(bms, func(a, b *matter.Bitmap) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	for _, bm := range bms {
 		en := cx.CreateElement("bitmap")
 		en.CreateAttr("name", zap.CleanName(bm.Name))
 		en.CreateAttr("type", zap.ConvertDataTypeNameToZap(bm.Type.Name))

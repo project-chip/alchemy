@@ -79,7 +79,7 @@ func (c *ReferenceLimit) getBitmapValue(cc *matter.ConstraintContext) (def matte
 		if v.Name == c.Value {
 			val, err := v.Mask()
 			if err == nil {
-				def = matter.NewUintConstraintExtreme(val, matter.NumberFormatInt)
+				def = matter.NewUintConstraintExtreme(val, matter.NumberFormatHex)
 				return
 			}
 		}

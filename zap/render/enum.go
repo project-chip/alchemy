@@ -2,6 +2,8 @@ package render
 
 import (
 	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/conformance"
@@ -12,7 +14,16 @@ import (
 
 func renderEnums(enums map[*matter.Enum]struct{}, clusterIDs []string, cx *etree.Element) {
 
-	for v := range enums {
+	ens := make([]*matter.Enum, 0, len(enums))
+	for en := range enums {
+		ens = append(ens, en)
+	}
+
+	slices.SortFunc(ens, func(a, b *matter.Enum) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	for _, v := range ens {
 		var valFormat string
 		switch v.Type.BaseType {
 		case matter.BaseDataTypeEnum16:

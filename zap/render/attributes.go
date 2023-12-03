@@ -23,9 +23,6 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 			continue
 		}
 
-		/*if !mandatory && len(a.Conformance) > 0 && a.Conformance != "O" {
-			cx.CreateComment(fmt.Sprintf("Conformance feature %s - for now optional", a.Conformance))
-		}*/
 		attr := cx.CreateElement("attribute")
 		attr.CreateAttr("code", a.ID.HexString())
 		attr.CreateAttr("side", "server")
@@ -38,13 +35,13 @@ func renderAttributes(cluster *matter.Cluster, cx *etree.Element, clusterPrefix 
 		if a.Quality.Has(matter.QualityReportable) {
 			attr.CreateAttr("reportable", "true")
 		}
+		renderConstraint(cluster.Attributes, a, attr)
 		if a.Default != "" {
 			defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: a, Fields: cluster.Attributes})
 			if defaultValue.Defined() {
 				attr.CreateAttr("default", defaultValue.ZapString(a.Type))
 			}
 		}
-		renderConstraint(cluster.Attributes, a, attr)
 		renderAttributeAccess(a, errata, attr)
 		if !conformance.IsMandatory(a.Conformance) {
 			attr.CreateAttr("optional", "true")
@@ -85,15 +82,17 @@ func renderAttributeAccess(a *matter.Field, errata *zap.Errata, attr *etree.Elem
 		}
 		attr.SetText(a.Name)
 	} else {
-		if a.Access.Read != matter.PrivilegeUnknown {
+		if a.Access.Read != matter.PrivilegeUnknown && a.Access.Read != matter.PrivilegeView {
 			ax := attr.CreateElement("access")
 			ax.CreateAttr("op", "read")
 			ax.CreateAttr("privilege", renderPrivilege(a.Access.Read))
 		}
 		if a.Access.Write != matter.PrivilegeUnknown {
-			ax := attr.CreateElement("access")
-			ax.CreateAttr("op", "write")
-			ax.CreateAttr("privilege", renderPrivilege(a.Access.Write))
+			if a.Access.Write != matter.PrivilegeOperate {
+				ax := attr.CreateElement("access")
+				ax.CreateAttr("op", "write")
+				ax.CreateAttr("privilege", renderPrivilege(a.Access.Write))
+			}
 			attr.CreateAttr("writable", "true")
 		} else {
 			attr.CreateAttr("writable", "false")
