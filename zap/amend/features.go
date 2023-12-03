@@ -117,6 +117,10 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 					}
 				}
 				err = e.EncodeToken(t)
+				if err != nil {
+					return
+				}
+				err = newLine(e)
 				return
 			default:
 				err = e.EncodeToken(tok)
@@ -183,7 +187,7 @@ func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 	if err != nil {
 		return fmt.Errorf("error closing feature element on cluster %s: %w", cluster.Name, err)
 	}
-	return
+	return newLine(e)
 }
 
 func (*renderer) setFeatureAttributes(xfs []xml.Attr, f *matter.Feature) ([]xml.Attr, error) {

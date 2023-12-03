@@ -134,6 +134,10 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 					}
 				}
 				err = e.EncodeToken(t)
+				if err != nil {
+					return
+				}
+				err = newLine(e)
 				return
 			default:
 				err = e.EncodeToken(tok)
@@ -187,6 +191,10 @@ func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matte
 
 	}
 	err = e.EncodeToken(xml.EndElement{Name: xfb.Name})
+	if err != nil {
+		return
+	}
+	err = newLine(e)
 	return
 }
 

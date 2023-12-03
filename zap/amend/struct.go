@@ -134,6 +134,10 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 					}
 				}
 				err = e.EncodeToken(t)
+				if err != nil {
+					return
+				}
+				err = newLine(e)
 				return
 			default:
 				err = e.EncodeToken(tok)
@@ -210,7 +214,11 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 		}
 
 	}
-	return e.EncodeToken(xml.EndElement{Name: xfb.Name})
+	err = e.EncodeToken(xml.EndElement{Name: xfb.Name})
+	if err != nil {
+		return
+	}
+	return newLine(e)
 }
 
 func (*renderer) setStructAttributes(xfb []xml.Attr, s *matter.Struct, provisional bool) []xml.Attr {

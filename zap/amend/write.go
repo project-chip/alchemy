@@ -1,6 +1,7 @@
 package amend
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -23,6 +24,10 @@ type renderer struct {
 	structs  map[*matter.Struct]bool
 
 	errata *zap.Errata
+}
+
+func newLine(e xmlEncoder) error {
+	return e.EncodeToken(xml.CharData{'\n'})
 }
 
 type xmlDecoder interface {
@@ -105,9 +110,20 @@ func (le *loggingEncoder) Close() error {
 	return le.e.Flush()
 }
 
+type newLineEncoder struct {
+	inner io.Writer
+}
+
+func (w newLineEncoder) Write(data []byte) (n int, err error) {
+	n = len(data)
+	data = bytes.Replace(data, []byte("&#xA;"), []byte("\n"), -1)
+	_, err = w.inner.Write(data)
+	return
+}
+
 func Render(doc *ascii.Doc, r io.Reader, w io.Writer, models []any) (err error) {
 	d := xml.NewDecoder(r)
-	e := xml.NewEncoder(w)
+	e := xml.NewEncoder(&newLineEncoder{inner: w})
 	e.Indent("", "  ")
 
 	errata, ok := zap.Erratas[filepath.Base(doc.Path)]
