@@ -89,7 +89,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 			id := f.ID.Value()
 			_, ok := ids[id]
 			if ok {
-				err = fmt.Errorf("duplicate field id: %d", id)
+				slog.Warn("duplicate field ID", "id", id)
 				return
 			}
 			ids[id] = struct{}{}
