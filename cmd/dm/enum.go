@@ -1,12 +1,20 @@
 package dm
 
 import (
+	"slices"
+	"strings"
+
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
 )
 
 func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
-	for _, e := range cluster.Enums {
+	enums := make([]*matter.Enum, len(cluster.Enums))
+	copy(enums, cluster.Enums)
+	slices.SortFunc(enums, func(a, b *matter.Enum) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+	for _, e := range enums {
 		en := dt.CreateElement("enum")
 		en.CreateAttr("name", e.Name)
 		for _, v := range e.Values {
