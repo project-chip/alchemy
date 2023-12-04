@@ -10,7 +10,7 @@ import (
 
 func debug(format string, a ...any) (n int, err error) {
 	return
-	return fmt.Fprintf(os.Stdout, format, a...)
+	//return fmt.Fprintf(os.Stdout, format, a...)
 }
 
 }
@@ -55,7 +55,8 @@ Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
 
 }
 
-Equality <- _ left:Logical right:EqualsOp* _ {
+Equality <- _ left:Or right:EqualsOp* _ {
+    //debug("matched equality %s\n", string(c.text))
     if right == nil {
         return left, nil
     }
@@ -73,7 +74,8 @@ Equality <- _ left:Logical right:EqualsOp* _ {
     return ee, nil
 }
 
-EqualsOp <- _ equals:("=="/"!=") _ f:Logical {
+EqualsOp <- _ equals:("=="/"!=") _ f:Or {
+    //debug("matched Equals Op %s\n", string(c.text))
     fc := f.(matter.ConformanceExpression)
     return &EqualityExpression{
         Not: (string(equals.([]uint8)) == "!="),
@@ -81,37 +83,65 @@ EqualsOp <- _ equals:("=="/"!=") _ f:Logical {
     }, nil
 }
 
-Logical <- _ left:FeatureTerm _ right:LogicalOp* _ {
+Or <- _ left:Xor _ right:OrOp* _ {
+    //debug("matched OR %s\n", string(c.text))
     if right == nil {
         return left, nil
     }
-    logicalOps := right.([]interface{})
-    if len(logicalOps) == 0 {
+    orOps := right.([]any)
+    if len(orOps) == 0 {
         return left, nil
     }
     leftCE := left.(matter.ConformanceExpression)
-    var le *LogicalExpression
-    for _, logicalOp := range logicalOps {
-        le = logicalOp.(*LogicalExpression) 
-        le.Left = leftCE
-        leftCE = le
-    }
-    return le, nil
-} 
-
-LogicalOp <- _ logical:LogicalOperators _ f:FeatureTerm {
-    fc := f.(matter.ConformanceExpression)
-    return &LogicalExpression{
-        Operand: string(logical.([]uint8)),
-        Right:fc,
-    }, nil
+    return NewLogicalExpression("|", leftCE, orOps)
 }
 
-LogicalOperators <- ("|" / "&" / "^") {
-    return c.text, nil
+OrOp <- _ "|" _ f:Xor {
+    //debug("matched OR op %s\n", string(c.text))
+    fc := f.(matter.ConformanceExpression)
+    return fc, nil
+}
+
+Xor <- _ left:And _ right:XorOp* _ {
+    //debug("matched XOR %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    xorOps := right.([]any)
+    if len(xorOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(matter.ConformanceExpression)
+    return NewLogicalExpression("^", leftCE, xorOps)
+}
+
+XorOp <- _ "^" _ f:And {
+   // debug("matched XOR op %s\n", string(c.text))
+    fc := f.(matter.ConformanceExpression)
+    return fc, nil
+}
+
+And <- _ left:FeatureTerm _ right:AndOp* _ {
+   // debug("matched AND %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    addOps := right.([]any)
+    if len(addOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(matter.ConformanceExpression)
+    return NewLogicalExpression("&", leftCE, addOps)
+}
+
+AndOp <- _ "&" _ f:FeatureTerm {
+    //debug("matched AND op %s\n", string(c.text))
+    fc := f.(matter.ConformanceExpression)
+    return fc, nil
 }
 
 FeatureTerm <- not:'!'? '(' _  eq:Equality _ ')' {
+    //debug("matched feature term %s\n", string(c.text))
     if not != nil {
         switch eq := eq.(type) {
             case *EqualityExpression:
@@ -129,6 +159,7 @@ FeatureTerm <- not:'!'? '(' _  eq:Equality _ ')' {
 
 
 IdentifierOp <- not:'!'? identifier:Identifier {
+    //debug("matched identifier op %s\n", string(c.text))
     id := identifier.(string)
     ic := &IdentifierExpression{ID:id}
     if not != nil {
@@ -139,7 +170,7 @@ IdentifierOp <- not:'!'? identifier:Identifier {
 
 
 Identifier <- PascalCase {
-    debug("matched identifier %s\n", string(c.text))
+    //debug("matched identifier %s\n", string(c.text))
     return string(c.text), nil
 }
 
