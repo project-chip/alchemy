@@ -7,6 +7,10 @@ type AllConstraint struct {
 	Value string
 }
 
+func NewAllConstraint(value string) *AllConstraint {
+	return &AllConstraint{Value: value}
+}
+
 func (c *AllConstraint) AsciiDocString(dataType *matter.DataType) string {
 	return c.Value
 }

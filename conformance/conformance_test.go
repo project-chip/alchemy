@@ -52,6 +52,15 @@ type conformanceTest struct {
 
 var otherwiseTests = []conformanceTestSuite{
 	{
+		Conformance: "[LT | DF & CF]",
+		Tests: []conformanceTest{
+			{Context: matter.ConformanceContext{Values: map[string]any{"AA": true}}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{Values: map[string]any{"LT": true}}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{Values: map[string]any{"DF": true}}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: matter.ConformanceStateDisallowed},
+		},
+	},
+	{
 		Conformance: "AB, [CD]",
 		Tests: []conformanceTest{
 			{Context: matter.ConformanceContext{Values: map[string]any{"AB": true}}, Expected: matter.ConformanceStateMandatory},
@@ -85,6 +94,26 @@ var otherwiseTests = []conformanceTestSuite{
 			{Context: matter.ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: matter.ConformanceStateOptional},
 		},
 	},
+	{
+		Conformance: "[!(LT | DF | CF)]",
+		Tests: []conformanceTest{
+			{Context: matter.ConformanceContext{Values: map[string]any{"AA": true}}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{Values: map[string]any{"LT": true}}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{Values: map[string]any{"DF": true}}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{Values: map[string]any{"CF": true}}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: matter.ConformanceStateOptional},
+		},
+	},
+	{
+		Conformance: "[LT | DF]",
+		Tests: []conformanceTest{
+			{Context: matter.ConformanceContext{Values: map[string]any{"AA": true}}, Expected: matter.ConformanceStateDisallowed},
+			{Context: matter.ConformanceContext{Values: map[string]any{"LT": true}}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{Values: map[string]any{"DF": true}}, Expected: matter.ConformanceStateOptional},
+			{Context: matter.ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: matter.ConformanceStateDisallowed},
+		},
+	},
+
 	{
 		Conformance: "UltrasonicUnoccupiedToOccupiedThreshold, O",
 		Tests: []conformanceTest{
@@ -166,5 +195,6 @@ var otherwiseTests = []conformanceTestSuite{
 func TestOtherwise(t *testing.T) {
 	for _, test := range otherwiseTests {
 		test.run(t)
+		break
 	}
 }

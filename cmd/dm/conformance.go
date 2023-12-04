@@ -118,9 +118,12 @@ func renderConformanceExpression(cluster *matter.Cluster, exp matter.Conformance
 		if err != nil {
 			return fmt.Errorf("error rendering conformance expression %s: %w", e.Left.String(), err)
 		}
-		err = renderConformanceExpression(cluster, e.Right, el)
-		if err != nil {
-			return fmt.Errorf("error rendering conformance expression %s: %w", e.Right.String(), err)
+		for _, r := range e.Right {
+			err = renderConformanceExpression(cluster, r, el)
+			if err != nil {
+				return fmt.Errorf("error rendering conformance expression %s: %w", r.String(), err)
+			}
+
 		}
 
 	case *conformance.EqualityExpression:

@@ -2,6 +2,7 @@ package conformance
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/hasty/alchemy/matter"
 )
@@ -9,51 +10,101 @@ import (
 type LogicalExpression struct {
 	Operand string
 	Left    matter.ConformanceExpression
-	Right   matter.ConformanceExpression
+	Right   []matter.ConformanceExpression
 	Not     bool
 }
 
+func NewLogicalExpression(operand string, left matter.ConformanceExpression, right []any) (*LogicalExpression, error) {
+	le := &LogicalExpression{Operand: operand, Left: left}
+	for _, r := range right {
+		rce, ok := r.(matter.ConformanceExpression)
+		if !ok {
+			return nil, fmt.Errorf("unexpected type in logical expression: %T", r)
+		}
+		le.Right = append(le.Right, rce)
+	}
+	return le, nil
+}
+
 func (le *LogicalExpression) String() string {
+
 	switch le.Operand {
 	case "|":
+		var s strings.Builder
+		s.WriteRune('(')
 		if le.Not {
-			return fmt.Sprintf("!%s and !%s", le.Left.String(), le.Right.String())
+			s.WriteRune('!')
+			s.WriteString(le.Left.String())
+			for _, r := range le.Right {
+				s.WriteString(" and !")
+				s.WriteString(r.String())
+			}
+
+		} else {
+			s.WriteString(le.Left.String())
+			for _, r := range le.Right {
+				s.WriteString(" or ")
+				s.WriteString(r.String())
+			}
 		}
-		return fmt.Sprintf("(%s or %s)", le.Left.String(), le.Right.String())
+		s.WriteRune(')')
+		return s.String()
 	case "&":
-		if le.Not {
-			return fmt.Sprintf("(%s or %s)", le.Left.String(), le.Right.String())
+		var s strings.Builder
+		s.WriteRune('(')
+		s.WriteString(le.Left.String())
+		for _, r := range le.Right {
+			if le.Not {
+
+				s.WriteString(" or ")
+			} else {
+				s.WriteString(" and ")
+
+			}
+			s.WriteString(r.String())
 		}
-		return fmt.Sprintf("(%s and %s)", le.Left.String(), le.Right.String())
+		s.WriteRune(')')
+		return s.String()
 	case "^":
+		var s strings.Builder
 		if le.Not {
-			return fmt.Sprintf("!(%s xor %s)", le.Left.String(), le.Right.String())
+
+			s.WriteString("!")
 		}
-		return fmt.Sprintf("(%s xor %s)", le.Left.String(), le.Right.String())
+		s.WriteRune('(')
+		s.WriteString(le.Left.String())
+		for _, r := range le.Right {
+			s.WriteString(" xor ")
+			s.WriteString(r.String())
+		}
+		s.WriteRune(')')
+		return s.String()
 	default:
 		return "unknown operator"
 	}
 }
 
 func (le *LogicalExpression) Eval(context matter.ConformanceContext) (bool, error) {
-	l, err := le.Left.Eval(context)
+	result, err := le.Left.Eval(context)
 	if err != nil {
 		return false, err
 	}
-	r, err := le.Right.Eval(context)
-	if err != nil {
-		return false, err
-	}
-	var result bool
-	switch le.Operand {
-	case "|":
-		result = l || r
-	case "&":
-		result = l && r
-	case "^":
-		result = (l || r) && !(l && r)
-	default:
-		return false, fmt.Errorf("unknown operand: %s", le.Operand)
+	for _, right := range le.Right {
+		r, err := right.Eval(context)
+		if err != nil {
+			return false, err
+		}
+		switch le.Operand {
+		case "|":
+			result = result || r
+		case "&":
+			result = result && r
+		case "^":
+			result = (result || r) && !(result && r)
+		default:
+			return false, fmt.Errorf("unknown operand: %s", le.Operand)
+		}
+
 	}
 	if le.Not {
 		return !result, nil
