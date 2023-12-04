@@ -73,33 +73,32 @@ func ParseAccess(vc string) (a matter.Access) {
 		hasWrite = true
 	}
 	ps, ok := access[accessCategoryMatchPrivileges]
-	if !ok {
-		return
-	}
-	for _, r := range ps {
-		if hasRead {
-			readAccess = string(r)
-			hasRead = false
-		} else if hasWrite {
-			writeAccess = string(r)
-			break
-		} else {
-			invokeAccess = string(r)
+	if ok {
+		for _, r := range ps {
+			if hasRead {
+				readAccess = string(r)
+				hasRead = false
+			} else if hasWrite {
+				writeAccess = string(r)
+				break
+			} else {
+				invokeAccess = string(r)
+			}
 		}
-	}
-	if hadRead {
-		a.Read = stringToPrivilege(readAccess)
-		if a.Read == matter.PrivilegeUnknown {
-			a.Read = matter.PrivilegeView
+		if hadRead {
+			a.Read = stringToPrivilege(readAccess)
+			if a.Read == matter.PrivilegeUnknown {
+				a.Read = matter.PrivilegeView
+			}
 		}
-	}
-	if hasWrite {
-		a.Write = stringToPrivilege(writeAccess)
-		if a.Write == matter.PrivilegeUnknown {
-			a.Write = matter.PrivilegeOperate
+		if hasWrite {
+			a.Write = stringToPrivilege(writeAccess)
+			if a.Write == matter.PrivilegeUnknown {
+				a.Write = matter.PrivilegeOperate
+			}
 		}
+		a.Invoke = stringToPrivilege(invokeAccess)
 	}
-	a.Invoke = stringToPrivilege(invokeAccess)
 	a.OptionalWrite = optionalWrite
 
 	if access[accessCategoryMatchFabric] == "F" {
