@@ -1,6 +1,7 @@
 package dm
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/beevik/etree"
@@ -12,53 +13,46 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 	if len(cluster.Events) == 0 {
 		return
 	}
-	events := c.CreateElement("events")
+	evs := make([]*matter.Event, 0, len(cluster.Events))
 	for _, e := range cluster.Events {
-		if conformance.IsZigbee(e.Fields, e.Conformance) {
+		if conformance.IsZigbee(cluster.Commands, e.Conformance) {
 			continue
 		}
+		evs = append(evs, e)
+	}
+
+	slices.SortFunc(evs, func(a, b *matter.Event) int {
+		return a.ID.Compare(b.ID)
+	})
+	events := c.CreateElement("events")
+	for _, e := range evs {
 
 		cx := events.CreateElement("event")
 		cx.CreateAttr("id", e.ID.ShortHexString())
 		cx.CreateAttr("name", e.Name)
 		cx.CreateAttr("priority", strings.ToLower(e.Priority))
 
-		if e.Access.Read != matter.PrivilegeUnknown {
+		if e.Access.Invoke != matter.PrivilegeUnknown || e.Access.FabricSensitive || e.Access.FabricScoped || e.Access.Timed {
 			a := cx.CreateElement("access")
-			a.CreateAttr("readPrivilege", strings.ToLower(matter.PrivilegeNamesShort[e.Access.Invoke]))
 			if e.Access.FabricScoped {
 				a.CreateAttr("fabricScoped", "true")
+			}
+			if e.Access.FabricSensitive {
+				a.CreateAttr("fabricSensitive", "true")
 			}
 			if e.Access.Timed {
 				a.CreateAttr("timed", "true")
 			}
+			a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[e.Access.Invoke]))
 		}
 		err = renderConformanceString(cluster, e.Conformance, cx)
 		if err != nil {
 			return
 		}
 
-		for _, f := range e.Fields {
-			if !f.ID.Valid() {
-				continue
-			}
-			i := cx.CreateElement("field")
-			i.CreateAttr("id", f.ID.IntString())
-			i.CreateAttr("name", f.Name)
-			renderDataType(f, i)
-			if len(f.Default) > 0 {
-				i.CreateAttr("default", f.Default)
-			}
-			err = renderConformanceString(cluster, f.Conformance, i)
-			if err != nil {
-				return
-			}
-
-			err = renderConstraint(f.Constraint, f.Type, i)
-			if err != nil {
-				return
-			}
-			renderDefault(e.Fields, f, i)
+		err = renderFields(cluster, e.Fields, cx)
+		if err != nil {
+			return
 		}
 	}
 

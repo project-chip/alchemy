@@ -1,12 +1,20 @@
 package dm
 
 import (
+	"slices"
+	"strings"
+
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
 )
 
 func renderBitmaps(cluster *matter.Cluster, dt *etree.Element) (err error) {
-	for _, bm := range cluster.Bitmaps {
+	bitmaps := make([]*matter.Bitmap, len(cluster.Bitmaps))
+	copy(bitmaps, cluster.Bitmaps)
+	slices.SortFunc(bitmaps, func(a, b *matter.Bitmap) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+	for _, bm := range bitmaps {
 		en := dt.CreateElement("bitmap")
 		en.CreateAttr("name", bm.Name)
 		for _, v := range bm.Bits {
