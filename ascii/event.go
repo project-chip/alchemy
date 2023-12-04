@@ -46,6 +46,10 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 			return
 		}
 		e.Access = ParseAccess(a)
+		if e.Access.Invoke == matter.PrivilegeUnknown {
+			// Sometimes the invoke access is omitted; we assume it's operate
+			e.Access.Invoke = matter.PrivilegeOperate
+		}
 		events = append(events, e)
 
 		eventMap[e.Name] = e
