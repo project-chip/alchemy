@@ -46,6 +46,29 @@ func ParseFormattedID(s string) (*Number, NumberFormat) {
 	}, NumberFormatAuto
 }
 
+func (t Number) MarshalJSON() ([]byte, error) {
+	var val strings.Builder
+	val.WriteRune('"')
+	switch t.format {
+	case NumberFormatHex:
+		val.WriteString(t.HexString())
+	default:
+		val.WriteString(t.IntString())
+	}
+	val.WriteRune('"')
+	return []byte(val.String()), nil
+}
+
+func (t *Number) UnmarshalJSON(data []byte) error {
+	s := string(data)
+	if s == "null" || s == `""` {
+		return nil
+	}
+	n, _ := ParseFormattedID(s)
+	*t = *n
+	return nil
+}
+
 func (id *Number) Equals(oid *Number) bool {
 	if id.value >= 0 && oid.value >= 0 {
 		return id.value == oid.value
