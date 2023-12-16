@@ -8,6 +8,10 @@ type ExactConstraint struct {
 	Value matter.ConstraintLimit
 }
 
+func (c *ExactConstraint) Type() matter.ConstraintType {
+	return matter.ConstraintTypeExact
+}
+
 func (c *ExactConstraint) AsciiDocString(dataType *matter.DataType) string {
 	return c.Value.AsciiDocString(dataType)
 }

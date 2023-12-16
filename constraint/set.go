@@ -9,6 +9,10 @@ import (
 
 type ConstraintSet []matter.Constraint
 
+func (c ConstraintSet) Type() matter.ConstraintType {
+	return matter.ConstraintTypeSet
+}
+
 func (cs ConstraintSet) AsciiDocString(dataType *matter.DataType) string {
 	var b strings.Builder
 	for _, con := range cs {

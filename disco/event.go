@@ -23,7 +23,7 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 
 	rows := ascii.TableRows(eventsTable)
 
-	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(b.doc, rows)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for events table in section %s in %s: %w", events.Name, doc.Path, err)
 	}
@@ -83,7 +83,7 @@ func (b *Ball) organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.S
 		}
 		rows := ascii.TableRows(t)
 
-		hri, cm, ec, err := ascii.MapTableColumns(rows)
+		hri, cm, ec, err := ascii.MapTableColumns(b.doc, rows)
 		if err != nil {
 			return fmt.Errorf("error mapping table columns for event table in section %s in %s: %w", ss.Name, doc.Path, err)
 
@@ -92,7 +92,7 @@ func (b *Ball) organizeEvents(cxt *discoContext, doc *ascii.Doc, events *ascii.S
 		if err != nil {
 			return fmt.Errorf("error fixing constraint cells for event table in section %s in %s: %w", ss.Name, doc.Path, err)
 		}
-		err = getPotentialDataTypes(cxt, ss, rows, columnMap)
+		err = b.getPotentialDataTypes(cxt, ss, rows, columnMap)
 		if err != nil {
 			return fmt.Errorf("error fetching potential data types for event table in section %s in %s: %w", ss.Name, doc.Path, err)
 		}

@@ -10,10 +10,24 @@ type Field struct {
 	Access      Access      `json:"access,omitempty"`
 	Default     string      `json:"default,omitempty"`
 	Conformance Conformance `json:"conformance,omitempty"`
+
+	entity Entity
+}
+
+func NewField() *Field {
+	return &Field{entity: EntityField}
+}
+
+func NewAttribute() *Field {
+	return &Field{entity: EntityAttribute}
 }
 
 func (f *Field) GetConformance() Conformance {
 	return f.Conformance
+}
+
+func (f *Field) Entity() Entity {
+	return f.entity
 }
 
 type FieldSet []*Field

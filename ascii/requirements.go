@@ -13,10 +13,12 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
 		if err == NoTableFound {
 			err = nil
+		} else {
+			err = fmt.Errorf("error reading cluster requirements table: %w", err)
 		}
 		return
 	}
@@ -27,9 +29,15 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 		if err != nil {
 			return
 		}
-		cr.Cluster, err = readRowValue(row, columnMap, matter.TableColumnCluster)
+		cr.ClusterName, err = readRowValue(row, columnMap, matter.TableColumnCluster)
 		if err != nil {
 			return
+		}
+		if cr.ClusterName == "" {
+			cr.ClusterName, err = readRowValue(row, columnMap, matter.TableColumnName)
+			if err != nil {
+				return
+			}
 		}
 		var q string
 		q, err = readRowValue(row, columnMap, matter.TableColumnQuality)
@@ -51,10 +59,7 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 			return
 		}
 		cr.Quality = matter.ParseQuality(q)
-		cr.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
-		if err != nil {
-			return
-		}
+		cr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		clusterRequirements = append(clusterRequirements, cr)
 	}
 	return
@@ -64,10 +69,12 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
 		if err == NoTableFound {
 			err = nil
+		} else {
+			err = fmt.Errorf("error reading element requirements table: %w", err)
 		}
 		return
 	}
@@ -78,7 +85,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.Cluster, err = readRowValue(row, columnMap, matter.TableColumnCluster)
+		cr.ClusterName, err = readRowValue(row, columnMap, matter.TableColumnCluster)
 		if err != nil {
 			return
 		}
@@ -94,15 +101,30 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 			cr.Element = matter.EntityAttribute
 		case "command":
 			cr.Element = matter.EntityCommand
+		case "command field":
+			cr.Element = matter.EntityCommandField
+		case "event":
+			cr.Element = matter.EntityEvent
 		default:
-			err = fmt.Errorf("unknown element type: %s", e)
+			if e != "" {
+				err = fmt.Errorf("unknown element type: \"%s\"", e)
+			}
+		}
+		if err != nil {
+			return
 		}
 		cr.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
+		var q string
+		q, err = readRowValue(row, columnMap, matter.TableColumnQuality)
+		if err != nil {
+			return
+		}
+		cr.Quality = matter.ParseQuality(q)
 		var c string
-		c, err = readRowValue(row, columnMap, matter.TableColumnConformance)
+		c, err = readRowValue(row, columnMap, matter.TableColumnConstraint)
 		if err != nil {
 			return
 		}
@@ -112,12 +134,56 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.Access = ParseAccess(a)
-		cr.Conformance, err = readRowValue(row, columnMap, matter.TableColumnConformance)
+		cr.Access = ParseAccess(a, false)
+		cr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+		elementRequirements = append(elementRequirements, cr)
+	}
+	return
+}
+
+func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err error) {
+	var rows []*types.TableRow
+	var headerRowIndex int
+	var columnMap ColumnIndex
+	var extraColumns []ExtraColumn
+	rows, headerRowIndex, columnMap, extraColumns, err = parseFirstTable(d, s)
+	if err != nil {
+		if err == NoTableFound {
+			err = nil
+		} else {
+			err = fmt.Errorf("error reading conditions table: %w", err)
+		}
+		return
+	}
+	featureIndex, ok := columnMap[matter.TableColumnFeature]
+	if !ok {
+		featureIndex, ok := columnMap[matter.TableColumnCondition]
+		if !ok {
+			featureIndex = -1
+			for _, col := range extraColumns {
+				if strings.HasSuffix(col.Name, "Tag") {
+					featureIndex = col.Offset
+					break
+				}
+			}
+			if featureIndex == -1 {
+				err = fmt.Errorf("failed to find tag column in section %s", s.Name)
+				return
+			}
+		}
+	}
+	for i := headerRowIndex + 1; i < len(rows); i++ {
+		row := rows[i]
+		c := &matter.Condition{}
+		c.Feature, err = readRowCell(row, featureIndex)
 		if err != nil {
 			return
 		}
-		elementRequirements = append(elementRequirements, cr)
+		c.Description, err = readRowValue(row, columnMap, matter.TableColumnDescription)
+		if err != nil {
+			return
+		}
+		conditions = append(conditions, c)
 	}
 	return
 }

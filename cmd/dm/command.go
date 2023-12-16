@@ -41,6 +41,11 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 		cx := commands.CreateElement("command")
 		cx.CreateAttr("id", cmd.ID.ShortHexString())
 		cx.CreateAttr("name", cmd.Name)
+		if cmd.Direction == matter.InterfaceClient {
+			cx.CreateAttr("direction", "responseFromServer")
+		} else if cmd.Response != "" {
+			cx.CreateAttr("response", cmd.Response)
+		}
 		if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.FabricScoped {
 			a := cx.CreateElement("access")
 			a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
@@ -52,11 +57,6 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 			}
 		}
 
-		if cmd.Direction == matter.InterfaceClient {
-			cx.CreateAttr("direction", "responseFromServer")
-		} else if cmd.Response != "" {
-			cx.CreateAttr("response", cmd.Response)
-		}
 		err = renderConformanceString(cluster, cmd.Conformance, cx)
 		if err != nil {
 			return
@@ -82,6 +82,9 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 			if err != nil {
 				return
 			}
+
+		}
+		if len(cmd.Description) > 0 {
 
 		}
 	}

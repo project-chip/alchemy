@@ -6,7 +6,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func compareModels(specModels map[string][]any, zapModels map[string][]any) (diffs []any, err error) {
+func compareModels(specModels map[string][]matter.Model, zapModels map[string][]matter.Model) (diffs []any, err error) {
 	for path, sm := range specModels {
 		zm, ok := zapModels[path]
 		if !ok {

@@ -103,19 +103,64 @@ func ReferenceName(element interface{}) string {
 	switch el := element.(type) {
 	case *types.Section:
 		name := types.Reduce(el.Title)
-		if s, ok := name.(string); ok {
-			return s
-		}
-	case types.WithAttributes:
-		attr := el.GetAttributes()
-		if attr != nil {
-			if title, ok := attr.GetAsString("title"); ok {
-				return title
+		switch name := name.(type) {
+		case string:
+			return name
+		case []any:
+			var val strings.Builder
+			for _, el := range name {
+				switch el := el.(type) {
+				case *types.StringElement:
+					val.WriteString(el.Content)
+				case *types.Symbol:
+					val.WriteString(el.Name)
+				case types.WithAttributes:
+					val.WriteString(referenceNameFromAttributes(el))
+				default:
+					slog.Warn("unknown section title element", "element", el)
+				}
 			}
+			return val.String()
 		}
+		/*		if s, ok := name.(string); ok {
+					if len(s) == 0 {
+						slog.Warn("empty section title")
+					}
+					return s
+				}
+				slog.Warn("section title not string", "type", fmt.Sprintf("%T", name))
+				if els, ok := name.([]any); ok {
+					for _, el := range els {
+						slog.Warn("section title element", "type", fmt.Sprintf("%T", el))
+						switch el := el.(type) {
+						case *types.InlineLink:
+							slog.Warn("section inline link element", "path", el.Location.Path)
+
+						}
+
+					}
+				}*/
+	case types.WithAttributes:
+		return referenceNameFromAttributes(el)
 	default:
 		//slog.
-		slog.Debug("Unknown type to get reference name", "type", element)
+		slog.Warn("Unknown type to get reference name", "type", element)
 	}
+	return ""
+}
+
+func referenceNameFromAttributes(el types.WithAttributes) string {
+	attr := el.GetAttributes()
+	if attr == nil {
+		slog.Warn("anchor element has no attributes")
+		return ""
+	}
+	if title, ok := attr.GetAsString("title"); ok {
+		if len(title) == 0 {
+			slog.Warn("empty section title attribute")
+		}
+		return title
+	}
+	slog.Debug("anchor element has no title attribute", "element", el)
 	return ""
 }

@@ -12,7 +12,7 @@ import (
 )
 
 func readField(d *xml.Decoder, e xml.StartElement, name string) (field *matter.Field, err error) {
-	field = &matter.Field{}
+	field = matter.NewField()
 	err = readFieldAttributes(e, field, name)
 	if err != nil {
 		return
@@ -92,7 +92,7 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 		} else {
 			field.Type = matter.NewDataType(fieldType, true)
 		}
-	} else if fieldType == "ARRAY" {
+	} else if fieldType == "ARRAY" || fieldType == "array" {
 		field.Type = matter.NewDataType(entryType, true)
 	} else {
 		field.Type = matter.NewDataType(fieldType, false)

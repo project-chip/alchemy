@@ -29,11 +29,11 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 	return nil
 }
 
-func (h *Host) indexEvents(cxt context.Context, ci *sectionInfo, es *ascii.Section) error {
+func (h *Host) indexEvents(cxt context.Context, doc *ascii.Doc, ci *sectionInfo, es *ascii.Section) error {
 	if ci.children == nil {
 		ci.children = make(map[string][]*sectionInfo)
 	}
-	err := h.readTableSection(cxt, ci, es, eventTable)
+	err := h.readTableSection(cxt, doc, ci, es, eventTable)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (h *Host) indexEvents(cxt context.Context, ci *sectionInfo, es *ascii.Secti
 			if p.children == nil {
 				p.children = make(map[string][]*sectionInfo)
 			}
-			err = h.readTableSection(cxt, p, s, eventFieldTable)
+			err = h.readTableSection(cxt, doc, p, s, eventFieldTable)
 			if err != nil {
 				return err
 			}

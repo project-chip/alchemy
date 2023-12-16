@@ -49,6 +49,7 @@ type ConformanceExpression interface {
 }
 
 type HasConformance interface {
+	Model
 	GetConformance() Conformance
 }
 

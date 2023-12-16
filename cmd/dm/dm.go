@@ -22,16 +22,20 @@ func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions f
 		return fmt.Errorf("error loading spec from %s: %w", specRoot, err)
 	}
 
-	slog.InfoContext(cxt, "Building spec tree...")
-	ascii.BuildTree(docs)
+	slog.InfoContext(cxt, "Building spec...")
+	_, err = ascii.BuildSpec(docs)
+	if err != nil {
+		return fmt.Errorf("error building spec from %s: %w", specRoot, err)
+	}
 
 	slog.InfoContext(cxt, "Splitting spec...")
 	docsByType, err := files.SplitSpec(docs)
 	if err != nil {
 		return fmt.Errorf("error splitting spec: %w", err)
 	}
-	appClusters := docsByType[matter.DocTypeAppCluster]
+	appClusters := docsByType[matter.DocTypeCluster]
 	appClusterIndexes := docsByType[matter.DocTypeAppClusterIndex]
+	deviceTypes := docsByType[matter.DocTypeDeviceType]
 
 	slog.InfoContext(cxt, "Assigning index domains...")
 
@@ -61,5 +65,9 @@ func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions f
 		appClusters = filteredDocs
 	}
 
-	return renderAppClusters(cxt, zclRoot, appClusters, filesOptions)
+	err = renderAppClusters(cxt, zclRoot, appClusters, filesOptions)
+	if err != nil {
+		return err
+	}
+	return renderDeviceTypes(cxt, zclRoot, deviceTypes, filesOptions)
 }

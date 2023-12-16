@@ -87,7 +87,7 @@ func (s *Section) GetAsciiSection() *types.Section {
 
 func AssignSectionTypes(docType matter.DocType, top *Section) {
 	switch docType {
-	case matter.DocTypeAppCluster:
+	case matter.DocTypeCluster:
 		top.SecType = matter.SectionCluster
 	case matter.DocTypeDeviceType:
 		top.SecType = matter.SectionDeviceType
@@ -193,6 +193,7 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		if strings.HasSuffix(name, "struct") {
 			return matter.SectionDataTypeStruct
 		}
+		return deriveSectionType(section)
 	case matter.SectionCommand, matter.SectionDataTypeStruct:
 		if strings.HasSuffix(name, " field") {
 			return matter.SectionField
@@ -206,24 +207,42 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return matter.SectionEvent
 		}
 	default:
-		slog.Debug("unknown section type", "name", name)
-		// Ugh, some heuristics now
-		name = strings.TrimSpace(section.Name)
-		if strings.HasSuffix(name, "Bitmap Type") || strings.HasSuffix(name, "Bitmap") {
-			return matter.SectionDataTypeBitmap
-		}
-		if strings.HasSuffix(name, "Enum Type") || strings.HasSuffix(name, "Enum") {
-			return matter.SectionDataTypeEnum
-		}
-		if strings.HasSuffix(name, "Struct Type") || strings.HasSuffix(name, "Struct") {
-			return matter.SectionDataTypeStruct
-		}
+		return deriveSectionType(section)
 	}
 	return matter.SectionUnknown
 }
 
-func (s *Section) ToModels(d *Doc) ([]interface{}, error) {
-	var models []interface{}
+func deriveSectionType(section *Section) matter.Section {
+	// Ugh, some heuristics now
+	name := strings.TrimSpace(section.Name)
+	if strings.HasSuffix(name, "Bitmap Type") || strings.HasSuffix(name, "Bitmap") {
+		return matter.SectionDataTypeBitmap
+	}
+	if strings.HasSuffix(name, "Enum Type") || strings.HasSuffix(name, "Enum") {
+		return matter.SectionDataTypeEnum
+	}
+	if strings.HasSuffix(name, "Struct Type") || strings.HasSuffix(name, "Struct") {
+		return matter.SectionDataTypeStruct
+	}
+	if strings.HasSuffix(name, " Conditions") {
+		return matter.SectionConditions
+	}
+	dataType := section.GetDataType()
+	if dataType != nil {
+		if dataType.IsEnum() {
+			return matter.SectionDataTypeEnum
+		} else if dataType.IsMap() {
+			return matter.SectionDataTypeBitmap
+		} else if dataType.BaseType == matter.BaseDataTypeCustom {
+			return matter.SectionDataTypeStruct
+		}
+	}
+	slog.Debug("unknown section type", "name", name)
+	return matter.SectionUnknown
+}
+
+func (s *Section) ToModels(d *Doc) ([]matter.Model, error) {
+	var models []matter.Model
 	switch s.SecType {
 	case matter.SectionCluster:
 		clusters, err := s.toClusters(d)
@@ -238,49 +257,95 @@ func (s *Section) ToModels(d *Doc) ([]interface{}, error) {
 		}
 		models = append(models, deviceTypes...)
 	default:
-		parse.Traverse(d, s.Elements, func(section *Section, parent parse.HasElements, index int) bool {
-			var err error
-			switch section.SecType {
-			case matter.SectionDataTypeBitmap:
-				var bm *matter.Bitmap
-				bm, err = section.toBitmap(d)
-				if err == nil {
-					models = append(models, bm)
-				}
-			case matter.SectionDataTypeEnum:
-				var e *matter.Enum
-				e, err = section.toEnum(d)
-				if err == nil {
-					models = append(models, e)
-				}
-			case matter.SectionDataTypeStruct:
-				var s *matter.Struct
-				s, err = section.toStruct(d)
-				if err == nil {
-					models = append(models, s)
-				}
-			}
-			if err != nil {
-				slog.Error("error creating model", "error", err)
-				return true
-			}
-			return false
-		})
-		//slog.Info("unknown section type", "secType", s.SecType)
+		var err error
+		var looseModels []matter.Model
+		looseModels, err = findLooseModels(d, s)
+		if err != nil {
+			return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
+		}
+		if len(looseModels) > 0 {
+			models = append(models, looseModels...)
+		}
 	}
 	return models, nil
 }
 
 var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
 
-func (s *Section) GetDataType() string {
-	var dataType string
-	se := parse.FindFirst[*types.StringElement](s.Elements)
-	if se != nil {
-		match := dataTypeDefinitionPattern.FindStringSubmatch(se.Content)
-		if match != nil {
-			dataType = match[1]
+//var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:(?:<<enum-def\s*,\s*)|(?:<<ref_DataTypeBitmap,))?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
+
+func (s *Section) GetDataType() *matter.DataType {
+	var para *types.Paragraph
+	var ok bool
+	for _, e := range s.Base.Elements {
+		para, ok = e.(*types.Paragraph)
+		if ok {
+			break
 		}
 	}
-	return dataType
+	if !ok {
+		return nil
+	}
+	var dts string
+	for _, el := range para.Elements {
+		switch el := el.(type) {
+		case *types.StringElement:
+			match := dataTypeDefinitionPattern.FindStringSubmatch(el.Content)
+			if match != nil {
+				dts = match[1]
+				break
+			}
+			if strings.HasPrefix(el.Content, "This struct") {
+				dts = strings.TrimSuffix(s.Name, " Type")
+			}
+		case *types.InternalCrossReference:
+			id, ok := el.ID.(string)
+			if !ok {
+				continue
+			}
+			switch id {
+			case "ref_DataTypeBitmap", "ref_DataTypeEnum":
+				label, ok := el.Label.(string)
+				if !ok {
+					continue
+				}
+				label = strings.TrimSpace(label)
+				dts = label
+			}
+		}
+		if len(dts) > 0 {
+			break
+		}
+	}
+	if len(dts) > 0 {
+		return matter.NewDataType(dts, false)
+	}
+	return nil
+}
+
+func findLooseModels(doc *Doc, section *Section) (models []matter.Model, err error) {
+	parse.Traverse(doc, section.Elements, func(section *Section, parent parse.HasElements, index int) bool {
+		switch section.SecType {
+		case matter.SectionDataTypeBitmap:
+			var bm *matter.Bitmap
+			bm, err = section.toBitmap(doc)
+			if err == nil {
+				models = append(models, bm)
+			}
+		case matter.SectionDataTypeEnum:
+			var e *matter.Enum
+			e, err = section.toEnum(doc)
+			if err == nil {
+				models = append(models, e)
+			}
+		case matter.SectionDataTypeStruct:
+			var s *matter.Struct
+			s, err = section.toStruct(doc)
+			if err == nil {
+				models = append(models, s)
+			}
+		}
+		return err != nil
+	})
+	return
 }

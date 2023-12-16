@@ -14,7 +14,7 @@ func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading bitmap: %w", err)
 	}
@@ -24,14 +24,13 @@ func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
 		Name: name,
 	}
 
-	dts := s.GetDataType()
-	if dts == "" {
-		dts = "map8"
+	dt := s.GetDataType()
+	if dt == nil {
+		dt = matter.NewDataType("map8", false)
 	}
 
-	dt := matter.NewDataType(dts, false)
 	if !dt.IsMap() {
-		return nil, fmt.Errorf("unknown bitmap data type: %s", dts)
+		return nil, fmt.Errorf("unknown bitmap data type: %s", dt.Name)
 	}
 
 	e.Type = dt
@@ -43,7 +42,7 @@ func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
 		if err != nil {
 			return
 		}
-		bv.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary)
+		bv.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}

@@ -5,46 +5,44 @@ import "github.com/hasty/alchemy/matter"
 var defaultOrder = []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents}
 
 type Errata struct {
-	TopOrder      []matter.Section
-	ClusterOrder  []matter.Section
-	DataTypeOrder []matter.Section
-
 	SuppressAttributePermissions bool
 	ClusterDefinePrefix          string
 	SuppressClusterDefinePrefix  bool
 	DefineOverrides              map[string]string
 
-	WriteRoleAsPrivilege bool
+	WritePrivilegeAsRole bool
 	SeparateStructs      map[string]struct{}
+
+	TemplatePath string
+
+	ClusterSplit map[string]string
+
+	Domain matter.Domain
 }
 
-var DefaultErrata = &Errata{
-	TopOrder:      []matter.Section{matter.SectionFeatures, matter.SectionCluster, matter.SectionDataTypes},
-	ClusterOrder:  []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents},
-	DataTypeOrder: []matter.Section{matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct},
-}
+var DefaultErrata = &Errata{}
 
 var Erratas = map[string]*Errata{
+	"ACL-Cluster.adoc": {
+		TemplatePath: "access-control-cluster",
+	},
+	"AdminCommissioningCluster.adoc": {
+		TemplatePath: "administrator-commissioning-cluster",
+	},
 	"AirQuality.adoc": {
-		TopOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
-		DataTypeOrder:               []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 		SuppressClusterDefinePrefix: true,
 	},
 	"ApplicationBasic.adoc": {
 		ClusterDefinePrefix: "APPLICATION_",
-
-		DefineOverrides: map[string]string{"APPLICATION_APPLICATION": "APPLICATION_APP"},
+		DefineOverrides:     map[string]string{"APPLICATION_APPLICATION": "APPLICATION_APP"},
 	},
 	"ApplicationLauncher.adoc": {
 		ClusterDefinePrefix: "APPLICATION_LAUNCHER_",
 		DefineOverrides: map[string]string{
 			"APPLICATION_LAUNCHER_CATALOG_LIST": "APPLICATION_LAUNCHER_LIST",
 		},
-		TopOrder:      []matter.Section{matter.SectionCluster, matter.SectionDataTypes, matter.SectionFeatures},
-		DataTypeOrder: []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 	},
 	"AudioOutput.adoc": {
-		DataTypeOrder:       []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 		ClusterDefinePrefix: "AUDIO_OUTPUT_",
 		DefineOverrides: map[string]string{
 			"AUDIO_OUTPUT_OUTPUT_LIST": "AUDIO_OUTPUT_LIST",
@@ -53,9 +51,19 @@ var Erratas = map[string]*Errata{
 	"BallastConfiguration.adoc": {
 		SuppressClusterDefinePrefix: true,
 	},
+	"BasicInformationCluster.adoc": {
+		Domain: matter.DomainCHIP,
+	},
 	"BooleanState.adoc": {
 		SuppressClusterDefinePrefix: true,
 	},
+	"bridge-clusters.adoc": {
+		ClusterSplit: map[string]string{
+			"0x0025": "actions-cluster",
+			"0x0039": "bridged-device-basic-information",
+		},
+	},
+
 	"Channel.adoc": {
 		ClusterDefinePrefix: "CHANNEL_",
 	},
@@ -63,25 +71,37 @@ var Erratas = map[string]*Errata{
 		ClusterDefinePrefix: "COLOR_CONTROL_",
 	},
 	"ConcentrationMeasurement.adoc": {
-		TopOrder:                    []matter.Section{matter.SectionCluster, matter.SectionFeatures, matter.SectionDataTypes},
 		SuppressClusterDefinePrefix: true,
 	},
 	"ContentLauncher.adoc": {
+		TemplatePath:        "content-launch-cluster",
 		ClusterDefinePrefix: "CONTENT_LAUNCHER_",
 	},
 	"DemandResponseLoadControl.adoc": {
-		TopOrder:             []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		ClusterOrder:         DefaultErrata.ClusterOrder,
-		DataTypeOrder:        DefaultErrata.DataTypeOrder,
-		WriteRoleAsPrivilege: true,
+		TemplatePath: "drlc-cluster",
 		DefineOverrides: map[string]string{
 			"EVENTS":        "LOAD_CONTROL_EVENTS",
 			"ACTIVE_EVENTS": "LOAD_CONTROL_ACTIVE_EVENTS",
 		},
 	},
+	"DiagnosticsGeneral.adoc": {
+		TemplatePath: "general-diagnostics-cluster",
+	},
+	"DiagnosticsEthernet.adoc": {
+		TemplatePath: "ethernet-network-diagnostics-cluster",
+	},
+	"DiagnosticLogsCluster.adoc": {
+		Domain: matter.DomainCHIP,
+	},
+	"DiagnosticsSoftware.adoc": {
+		TemplatePath: "software-diagnostics-cluster",
+	},
 	"DiagnosticsThread.adoc": {
-		TopOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
+		TemplatePath:                "thread-network-diagnostics-cluster",
 		SuppressClusterDefinePrefix: true,
+	},
+	"DiagnosticsWiFi.adoc": {
+		TemplatePath: "wifi-network-diagnostics-cluster",
 	},
 	"DoorLock.adoc": {
 		DefineOverrides: map[string]string{
@@ -98,35 +118,44 @@ var Erratas = map[string]*Errata{
 		},
 	},
 	"EVSE.adoc": {
-		TopOrder:                    []matter.Section{matter.SectionDataTypes, matter.SectionCluster, matter.SectionFeatures},
-		DataTypeOrder:               []matter.Section{matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap, matter.SectionDataTypeStruct},
+		TemplatePath:                "energy-evse-cluster",
 		SuppressClusterDefinePrefix: true,
 	},
 	"FanControl.adoc": {
-		TopOrder:                     []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		DataTypeOrder:                []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 		SuppressAttributePermissions: true,
 		SuppressClusterDefinePrefix:  true,
 	},
 	"FlowMeasurement.adoc": {
 		ClusterDefinePrefix: "FLOW_",
 	},
+	"Group-Key-Management-Cluster.adoc": {
+		TemplatePath: "group-key-mgmt-cluster",
+	},
 	"Groups.adoc": {
-		TopOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
-		DataTypeOrder:       []matter.Section{matter.SectionDataTypeStruct, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap},
 		ClusterDefinePrefix: "GROUP_",
 	},
 	"IlluminanceMeasurement.adoc": {
 		ClusterDefinePrefix: "ILLUM_",
 	},
 	"KeypadInput.adoc": {
-		TopOrder:            []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
 		ClusterDefinePrefix: "ILLUM_",
 	},
+	"Label-Cluster.adoc": {
+		TemplatePath: "user-label-cluster",
+	},
+	"LaundryWasherControls.adoc": {
+		TemplatePath: "washer-controls-cluster",
+	},
 	"LevelControl.adoc": {
-		TopOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
 		DefineOverrides:             map[string]string{"REMAINING_TIME": "LEVEL_CONTROL_REMAINING_TIME"},
 		SuppressClusterDefinePrefix: true,
+	},
+	"LocalizationTimeFormat.adoc": {
+		TemplatePath: "time-format-localization-cluster",
+	},
+	"LocalizationUnit.adoc": {
+		Domain:       matter.DomainCHIP,
+		TemplatePath: "unit-localization-cluster",
 	},
 	"MediaInput.adoc": {
 		ClusterDefinePrefix: "MEDIA_INPUT_",
@@ -147,11 +176,53 @@ var Erratas = map[string]*Errata{
 	"ModeSelect.adoc": {
 		DefineOverrides: map[string]string{"DESCRIPTION": "MODE_DESCRIPTION"},
 	},
+	"Mode_Dishwasher.adoc": {
+		TemplatePath: "dishwasher-mode-cluster",
+	},
+	"Mode_LaundryWasher.adoc": {
+		TemplatePath: "laundry-washer-mode-cluster",
+	},
+	"Mode_Oven.adoc": {
+		TemplatePath: "oven-mode-cluster",
+	},
+	"Mode_Refrigerator.adoc": {
+		TemplatePath: "refrigerator-and-temperature-controlled-cabinet-mode-cluster",
+	},
+	"Mode_RVCClean.adoc": {
+		TemplatePath: "rvc-clean-mode-cluster",
+	},
+	"Mode_RVCRun.adoc": {
+		TemplatePath: "rvc-run-mode-cluster",
+	},
+	"OnOff.adoc": {
+		TemplatePath: "onoff-cluster",
+	},
+	"OperationalCredentialCluster.adoc": {
+		TemplatePath: "operational-credentials-cluster",
+	},
+	"OperationalState_RVC": {
+		TemplatePath: "operational-state-rvc-cluster",
+	},
+	"PowerSourceConfigurationCluster.adoc": {
+		Domain: matter.DomainCHIP,
+	},
+	"PowerSourceCluster.adoc": {
+		Domain: matter.DomainCHIP,
+	},
 	"PressureMeasurement.adoc": {
 		ClusterDefinePrefix: "PRESSURE_",
 	},
+	"PumpConfigurationControl.adoc": {
+		TemplatePath: "pump-configuration-and-control-cluster",
+	},
+	"RefrigeratorAlarm.adoc": {
+		TemplatePath: "refrigerator-alarm",
+	},
 	"ResourceMonitoring.adoc": {
 		SeparateStructs: map[string]struct{}{"ReplacementProductStruct": {}},
+	},
+	"Scenes.adoc": {
+		TemplatePath: "scene",
 	},
 	"SmokeCOAlarm.adoc": {
 		DefineOverrides: map[string]string{
@@ -159,6 +230,9 @@ var Erratas = map[string]*Errata{
 			"END_OF_SERVICE_ALERT":    "END_OF_SERVICEALERT",
 			"SMOKE_SENSITIVITY_LEVEL": "SENSITIVITY_LEVEL",
 		},
+	},
+	"Switch.adoc": {
+		Domain: matter.DomainCHIP, // wth?
 	},
 	"TargetNavigator.adoc": {
 		ClusterDefinePrefix: "TARGET_NAVIGATOR_",
@@ -179,9 +253,7 @@ var Erratas = map[string]*Errata{
 		ClusterDefinePrefix: "TEMP_",
 	},
 	"Thermostat.adoc": {
-		TopOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
 		SuppressClusterDefinePrefix: true,
-		WriteRoleAsPrivilege:        true,
 		DefineOverrides: map[string]string{
 			"OCCUPANCY": "THERMOSTAT_OCCUPANCY",
 		},
@@ -189,16 +261,28 @@ var Erratas = map[string]*Errata{
 	"ThermostatUserInterfaceConfiguration.adoc": {
 		SuppressClusterDefinePrefix: true,
 	},
+	"TimeSync.adoc": {
+		TemplatePath: "time-synchronization-cluster",
+	},
+	"ValidProxies-Cluster.adoc": {
+		TemplatePath: "proxy-valid-cluster",
+	},
+	"ValveConfigurationControl.adoc": {
+		TemplatePath: "valve-configuration-and-control-cluster",
+	},
 	"WakeOnLAN.adoc": {
 		DefineOverrides: map[string]string{
 			"MAC_ADDRESS": "WAKE_ON_LAN_MAC_ADDRESS",
 		},
 	},
+	"WaterContentMeasurement.adoc": {
+		TemplatePath: "relative-humidity-measurement-cluster",
+	},
 	"WaterControls.adoc": {
-		TopOrder:                    []matter.Section{matter.SectionFeatures, matter.SectionDataTypes, matter.SectionCluster},
 		SuppressClusterDefinePrefix: true,
 	},
 	"WindowCovering.adoc": {
+		TemplatePath:        "window-covering",
 		ClusterDefinePrefix: "WC_",
 		DefineOverrides: map[string]string{
 			"WC_TARGET_POSITION_LIFT_PERCENT_100_THS":  "WC_TARGET_POSITION_LIFT_PERCENT100THS",

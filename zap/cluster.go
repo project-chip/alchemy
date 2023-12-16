@@ -2,7 +2,10 @@ package zap
 
 import (
 	"encoding/xml"
+	"path/filepath"
+	"strings"
 
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/iancoleman/strcase"
 )
@@ -46,34 +49,24 @@ func (c *XMLCluster) ToModel() (mc *matter.Cluster, err error) {
 	return
 }
 
-func ZAPName(name string) string {
-	switch name {
-	case "OnOff":
-		name = "onoff"
-	case "Mode_Laundry":
-		name = "laundry washer mode"
-	case "LaundryWasherControls":
-		name = "Washer Controls"
-	case "DemandResponseLoadControl":
-		name = "drlc"
-	case "Scenes":
-		return "scene"
-	case "WindowCovering":
-		return "window-covering"
-	case "RefrigeratorAlarm":
-		return "refrigerator-alarm"
-	case "OperationalState_RVC":
-		name = "Operational State RVC"
-	case "PumpConfigurationControl":
-		name = "PumpConfigurationAndControl"
-	case "ContentLauncher":
-		name = "Content Launch"
-	case "Mode_RVCClean":
-		name = "RVC Clean Mode"
-	case "Mode_RVCRun":
-		name = "RVC Run Mode"
-	case "Mode_Dishwasher":
-		name = "Dishwasher Mode"
+func ZAPName(doc *ascii.Doc, errata *Errata, models []matter.Model) string {
+
+	if errata.TemplatePath != "" {
+		return errata.TemplatePath
 	}
-	return strcase.ToKebab(name + " Cluster")
+
+	path := filepath.Base(doc.Path)
+	name := strings.TrimSuffix(path, filepath.Ext(path))
+
+	var suffix string
+	for _, m := range models {
+		switch m.(type) {
+		case *matter.Cluster:
+			suffix = "Cluster"
+		}
+	}
+	if !strings.HasSuffix(name, suffix) {
+		name += " " + suffix
+	}
+	return strcase.ToKebab(name)
 }

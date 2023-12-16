@@ -25,7 +25,7 @@ func (b *Ball) organizeEnumSection(doc *ascii.Doc, section *ascii.Section) error
 func (b *Ball) organizeEnumTable(doc *ascii.Doc, section *ascii.Section, enumTable *types.Table) error {
 	rows := ascii.TableRows(enumTable)
 
-	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(b.doc, rows)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for enum table in section %s: %w", section.Name, err)
 	}

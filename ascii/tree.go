@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func BuildTree(docs []*Doc) {
+func buildTree(docs []*Doc) {
 
 	tree := make(map[*Doc][]string)
 	docPaths := make(map[string]*Doc)

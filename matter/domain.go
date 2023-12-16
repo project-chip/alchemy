@@ -31,3 +31,12 @@ var DomainNames = map[Domain]string{
 	DomainHomeAutomation:        "Home Automation",
 	DomainEnergyManagement:      "Energy Management",
 }
+
+func DomainFromDocType(docType DocType) Domain {
+	switch docType {
+	case DocTypeServiceDeviceManagement:
+		return DomainGeneral
+	default:
+		return DomainUnknown
+	}
+}

@@ -8,7 +8,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func ZAP(r io.Reader) (models []any, err error) {
+func ZAP(r io.Reader) (models []matter.Model, err error) {
 	d := xml.NewDecoder(r)
 	for {
 		var tok xml.Token
@@ -25,7 +25,7 @@ func ZAP(r io.Reader) (models []any, err error) {
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "configurator":
-				var cm []any
+				var cm []matter.Model
 				cm, err = readConfigurator(d)
 				if err == nil {
 					models = append(models, cm...)

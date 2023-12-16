@@ -23,7 +23,7 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top 
 func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
 	rows := ascii.TableRows(attributesTable)
 
-	_, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
+	_, columnMap, extraColumns, err := ascii.MapTableColumns(doc, rows)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for attributes table in section %s: %w", top.Name, err)
 	}
@@ -53,7 +53,7 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 		}
 	}
 
-	err = getPotentialDataTypes(cxt, attributes, rows, columnMap)
+	err = b.getPotentialDataTypes(cxt, attributes, rows, columnMap)
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap 
 		if e != nil {
 			continue
 		}
-		err = setCellString(cell, ascii.AccessToAsciiString(ascii.ParseAccess(vc)))
+		err = setCellString(cell, ascii.AccessToAsciiString(ascii.ParseAccess(vc, false)))
 		if err != nil {
 			return
 		}

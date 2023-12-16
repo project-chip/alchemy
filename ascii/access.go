@@ -36,7 +36,7 @@ func init() {
 	}
 }
 
-func ParseAccess(vc string) (a matter.Access) {
+func ParseAccess(vc string, forInvoke bool) (a matter.Access) {
 	matches := accessPattern.FindStringSubmatch(vc)
 	if matches == nil {
 		return matter.Access{}
@@ -57,7 +57,7 @@ func ParseAccess(vc string) (a matter.Access) {
 	rw := access[accessCategoryMatchReadWrite]
 	var hasRead, hadRead, hasWrite, optionalWrite bool
 	switch rw {
-	case "RW":
+	case "RW", "WR":
 		hasRead = true
 		hadRead = true
 		hasWrite = true
@@ -97,7 +97,11 @@ func ParseAccess(vc string) (a matter.Access) {
 				a.Write = matter.PrivilegeOperate
 			}
 		}
-		a.Invoke = stringToPrivilege(invokeAccess)
+		if forInvoke {
+			a.Invoke = stringToPrivilege(invokeAccess)
+		} else {
+			a.Read = stringToPrivilege(invokeAccess)
+		}
 	}
 	a.OptionalWrite = optionalWrite
 

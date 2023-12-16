@@ -8,6 +8,10 @@ type Feature struct {
 	Conformance Conformance `json:"conformance,omitempty"`
 }
 
+func (f *Feature) Entity() Entity {
+	return EntityFeature
+}
+
 func (f *Feature) GetConformance() Conformance {
 	return f.Conformance
 }
@@ -15,6 +19,9 @@ func (f *Feature) GetConformance() Conformance {
 type FeatureSet []*Feature
 
 func (fs FeatureSet) ConformanceReference(id string) HasConformance {
+	if len(fs) == 0 {
+		return nil
+	}
 	for _, f := range fs {
 		if f.Code == id {
 			return f

@@ -35,6 +35,7 @@ const (
 	TableColumnCluster
 	TableColumnElement
 	TableColumnClientServer
+	TableColumnCondition
 )
 
 var TableColumnNames = map[TableColumn]string{
@@ -68,6 +69,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnCluster:      "Cluster",
 	TableColumnElement:      "Element",
 	TableColumnClientServer: "Client/Server",
+	TableColumnCondition:    "Condition",
 }
 
 var AllowedTableAttributes = types.Attributes{

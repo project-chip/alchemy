@@ -2,7 +2,10 @@ package amend
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
+	"log/slog"
+	"slices"
 
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
@@ -24,6 +27,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 				var cid string
 				cid, err = getSimpleElement(clusterTokens[i+1:], "code")
 				if err != nil {
+					err = fmt.Errorf("error amending cluster code: %w", err)
 					return
 				}
 				if len(cid) > 0 {
@@ -314,5 +318,18 @@ func (*renderer) renderClusterCodes(e xmlEncoder, clusterIDs []string) (err erro
 			return
 		}
 	}
+	return
+}
+
+func (r *renderer) getClusterCodes(model matter.Model) (clusterIDs []string) {
+	refs, ok := r.spec.ClusterRefs[model]
+	if !ok {
+		slog.Warn("unknown cluster ref", "val", model)
+		return
+	}
+	for ref := range refs {
+		clusterIDs = append(clusterIDs, ref.ID.HexString())
+	}
+	slices.Sort(clusterIDs)
 	return
 }

@@ -33,7 +33,7 @@ type Doc struct {
 	anchors         map[string]*Anchor
 	crossReferences map[string][]*types.InternalCrossReference
 
-	models []any
+	models []matter.Model
 }
 
 func NewDoc(d *types.Document) (*Doc, error) {
@@ -90,7 +90,7 @@ func GetDocType(docPath string) (matter.DocType, error) {
 			if firstLetterIsLower(file) {
 				return matter.DocTypeAppClusterIndex, nil
 			}
-			return matter.DocTypeAppCluster, nil
+			return matter.DocTypeCluster, nil
 		case "common_protocol":
 			return matter.DocTypeCommonProtocol, nil
 		case "data_model":
@@ -113,6 +113,9 @@ func GetDocType(docPath string) (matter.DocType, error) {
 		case "secure_channel":
 			return matter.DocTypeSecureChannel, nil
 		case "service_device_management":
+			if strings.HasSuffix(file, "Cluster.adoc") {
+				return matter.DocTypeCluster, nil
+			}
 			return matter.DocTypeServiceDeviceManagement, nil
 		case "softAp":
 			return matter.DocTypeSoftAP, nil
@@ -154,7 +157,7 @@ func (d *Doc) addParent(parent *Doc) {
 	d.Unlock()
 }
 
-func (d *Doc) ToModel() (models []interface{}, err error) {
+func (d *Doc) ToModel() (models []matter.Model, err error) {
 	if len(d.models) > 0 {
 		return d.models, nil
 	}
@@ -166,7 +169,7 @@ func (d *Doc) ToModel() (models []interface{}, err error) {
 	for _, top := range parse.Skim[*Section](d.Elements) {
 		AssignSectionTypes(dt, top)
 
-		var m []interface{}
+		var m []matter.Model
 		m, err = top.ToModels(d)
 		if err != nil {
 			return
@@ -217,6 +220,9 @@ func Read(contents string, path string, settings ...configuration.Setting) (doc 
 		return nil, err
 	}
 	doc.Path = path
+
+	PatchUnrecognizedReferences(doc)
+
 	return doc, nil
 }
 

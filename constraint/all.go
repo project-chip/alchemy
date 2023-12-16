@@ -3,12 +3,15 @@ package constraint
 import "github.com/hasty/alchemy/matter"
 
 type AllConstraint struct {
-	Field *matter.Field
 	Value string
 }
 
 func NewAllConstraint(value string) *AllConstraint {
 	return &AllConstraint{Value: value}
+}
+
+func (c *AllConstraint) Type() matter.ConstraintType {
+	return matter.ConstraintTypeAll
 }
 
 func (c *AllConstraint) AsciiDocString(dataType *matter.DataType) string {

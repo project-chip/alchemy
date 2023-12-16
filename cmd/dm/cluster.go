@@ -28,11 +28,12 @@ func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii
 	var lock sync.Mutex
 	outputs := make(map[string]string)
 	err := files.ProcessDocs(cxt, appClusters, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
-		slog.Info("App cluster doc", "name", doc.Path)
+		slog.InfoContext(cxt, "App cluster doc", "name", doc.Path)
 
 		models, err := doc.ToModel()
 		if err != nil {
-			return fmt.Errorf("error converting %s to models: %w", doc.Path, err)
+			slog.ErrorContext(cxt, "error converting doc to models", "doc", doc.Path, "error", err)
+			return nil
 		}
 		var clusters []*matter.Cluster
 		for _, m := range models {
@@ -41,6 +42,10 @@ func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii
 			case *matter.Cluster:
 				clusters = append(clusters, m)
 			}
+		}
+		if len(clusters) == 0 {
+			slog.WarnContext(cxt, "no clusters found in app_clusters doc", "doc", doc.Path)
+			return nil
 		}
 		s, err := renderAppCluster(cxt, clusters)
 		if err != nil {
@@ -60,6 +65,10 @@ func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii
 		for path, result := range outputs {
 			path := filepath.Base(path)
 			newPath := filepath.Join(zclRoot, fmt.Sprintf("/data_model/clusters/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
+			result, err = patchLicense(result, newPath)
+			if err != nil {
+				return fmt.Errorf("error patching license for %s: %w", newPath, err)
+			}
 			err = os.WriteFile(newPath, []byte(result), os.ModeAppend|0644)
 			if err != nil {
 				return fmt.Errorf("error writing %s: %w", newPath, err)
@@ -73,9 +82,17 @@ func renderAppCluster(cxt context.Context, clusters []*matter.Cluster) (output s
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
-	x.CreateComment(license)
+	x.CreateComment(getLicense())
+
+	var root *etree.Element
+	root = &x.Element
+
+	if len(clusters) > 1 {
+		root = x.CreateElement("clusters")
+	}
+
 	for _, cluster := range clusters {
-		c := x.CreateElement("cluster")
+		c := root.CreateElement("cluster")
 		c.CreateAttr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 		c.CreateAttr("xsi:schemaLocation", "types types.xsd cluster cluster.xsd")
 		c.CreateAttr("id", cluster.ID.HexString())

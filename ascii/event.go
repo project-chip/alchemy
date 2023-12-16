@@ -14,7 +14,7 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading events: %w", err)
 	}
@@ -45,10 +45,10 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 		if err != nil {
 			return
 		}
-		e.Access = ParseAccess(a)
-		if e.Access.Invoke == matter.PrivilegeUnknown {
-			// Sometimes the invoke access is omitted; we assume it's operate
-			e.Access.Invoke = matter.PrivilegeOperate
+		e.Access = ParseAccess(a, false)
+		if e.Access.Read == matter.PrivilegeUnknown {
+			// Sometimes the invoke access is omitted; we assume it's view
+			e.Access.Read = matter.PrivilegeView
 		}
 		events = append(events, e)
 
@@ -68,7 +68,7 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 			var rows []*types.TableRow
 			var headerRowIndex int
 			var columnMap ColumnIndex
-			rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 			if headerRowIndex > 0 {
 				firstRow := rows[0]
 				if len(firstRow.Cells) > 0 {

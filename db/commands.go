@@ -38,11 +38,11 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 	return nil
 }
 
-func (h *Host) indexCommands(cxt context.Context, ci *sectionInfo, es *ascii.Section) error {
+func (h *Host) indexCommands(cxt context.Context, doc *ascii.Doc, ci *sectionInfo, es *ascii.Section) error {
 	if ci.children == nil {
 		ci.children = make(map[string][]*sectionInfo)
 	}
-	err := h.readTableSection(cxt, ci, es, commandTable)
+	err := h.readTableSection(cxt, doc, ci, es, commandTable)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (h *Host) indexCommands(cxt context.Context, ci *sectionInfo, es *ascii.Sec
 			if p.children == nil {
 				p.children = make(map[string][]*sectionInfo)
 			}
-			err = h.readTableSection(cxt, p, s, commandFieldTable)
+			err = h.readTableSection(cxt, doc, p, s, commandFieldTable)
 			if err != nil {
 				return err
 			}

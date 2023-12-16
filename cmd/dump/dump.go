@@ -31,5 +31,5 @@ func snippet(str string) string {
 	if 42 < len(v) {
 		str = string(v[:20]) + "…" + string(v[len(v)-20:])
 	}
-	return strings.ReplaceAll(str, "\n", "")
+	return strings.ReplaceAll(str, "\n", "\\n")
 }

@@ -10,6 +10,10 @@ type MaxConstraint struct {
 	Maximum matter.ConstraintLimit
 }
 
+func (c *MaxConstraint) Type() matter.ConstraintType {
+	return matter.ConstraintTypeMax
+}
+
 func (c *MaxConstraint) AsciiDocString(dataType *matter.DataType) string {
 	return fmt.Sprintf("max %s", c.Maximum.AsciiDocString(dataType))
 }

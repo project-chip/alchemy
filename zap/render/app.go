@@ -6,13 +6,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/zap"
 )
 
-func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{}, w *etree.Element, errata *zap.Errata) (err error) {
+/*
+func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []matter.Model, w *etree.Element, errata *zap.Errata) (err error) {
 
 	var clusters []*matter.Cluster
 	for _, m := range models {
@@ -21,6 +20,9 @@ func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{},
 			clusters = append(clusters, v)
 		}
 	}
+
+
+	//SectionFeatures, matter.SectionCluster, matter.SectionDataTypes
 
 	topOrder := errata.TopOrder
 	if topOrder == nil {
@@ -49,7 +51,7 @@ func renderAppCluster(cxt context.Context, doc *ascii.Doc, models []interface{},
 	}
 
 	return nil
-}
+}*/
 
 func getDomain(cxt context.Context, doc *ascii.Doc) (string, error) {
 	path := filepath.Dir(doc.Path)

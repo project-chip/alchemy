@@ -25,7 +25,7 @@ func (b *Ball) organizeBitmapSection(doc *ascii.Doc, section *ascii.Section) err
 func (b *Ball) organizeBitmapTable(doc *ascii.Doc, section *ascii.Section, bitsTable *types.Table) error {
 	rows := ascii.TableRows(bitsTable)
 
-	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(doc, rows)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for bitmap table in section %s: %w", section.Name, err)
 	}

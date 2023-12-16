@@ -11,6 +11,10 @@ type ListConstraint struct {
 	EntryConstraint matter.Constraint
 }
 
+func (c *ListConstraint) Type() matter.ConstraintType {
+	return matter.ConstraintTypeList
+}
+
 func (c *ListConstraint) AsciiDocString(dataType *matter.DataType) string {
 	return fmt.Sprintf("%s[%s]", c.Constraint.AsciiDocString(dataType), c.EntryConstraint.AsciiDocString(dataType))
 }

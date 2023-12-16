@@ -14,8 +14,24 @@ type Bitmap struct {
 	Bits        BitSet    `json:"bits,omitempty"`
 }
 
-func (c *Bitmap) ModelType() Entity {
+func (c *Bitmap) Entity() Entity {
 	return EntityBitmap
+}
+
+func (c *Bitmap) Size() int {
+	if c.Type == nil {
+		return 8
+	}
+	switch c.Type.BaseType {
+	case BaseDataTypeMap64:
+		return 64
+	case BaseDataTypeMap32:
+		return 32
+	case BaseDataTypeMap16:
+		return 16
+	default:
+		return 8
+	}
 }
 
 type Bit struct {
@@ -23,6 +39,10 @@ type Bit struct {
 	Name        string      `json:"name,omitempty"`
 	Summary     string      `json:"summary,omitempty"`
 	Conformance Conformance `json:"conformance,omitempty"`
+}
+
+func (c *Bit) Entity() Entity {
+	return EntityBitmapValue
 }
 
 var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)\.{2,}(?P<To>[0-9]+)$`)

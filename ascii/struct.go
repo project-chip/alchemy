@@ -12,7 +12,7 @@ func (s *Section) toStruct(d *Doc) (ms *matter.Struct, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading struct: %w", err)
 	}

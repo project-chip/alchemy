@@ -1,4 +1,4 @@
-package zap
+package generate
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/hasty/alchemy/ascii"
@@ -14,36 +13,42 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
-	"github.com/iancoleman/strcase"
 )
 
 var selfClosingTags = regexp.MustCompile("></[^>]+>")
 
-type migrateOptions struct {
-	filesOptions  files.Options
-	asciiSettings []configuration.Setting
-	overwrite     bool
+type Options struct {
+	Files     files.Options
+	Ascii     []configuration.Setting
+	Overwrite bool
 }
 
-func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []string, options migrateOptions) error {
+func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []string, options Options) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
-	docs, err := files.LoadSpec(cxt, specRoot, options.filesOptions, options.asciiSettings)
+	docs, err := files.LoadSpec(cxt, specRoot, options.Files, options.Ascii)
 	if err != nil {
 		return err
 	}
 
 	slog.InfoContext(cxt, "Building spec tree...")
-	ascii.BuildTree(docs)
+	spec, err := ascii.BuildSpec(docs)
+	if err != nil {
+		return err
+	}
 
 	slog.InfoContext(cxt, "Splitting spec...")
 	docsByType, err := files.SplitSpec(docs)
 	if err != nil {
 		return err
 	}
-	appClusters := docsByType[matter.DocTypeAppCluster]
 	appClusterIndexes := docsByType[matter.DocTypeAppClusterIndex]
 	deviceTypes := docsByType[matter.DocTypeDeviceType]
+
+	docsByPath := make(map[string]*ascii.Doc)
+	for _, doc := range docs {
+		docsByPath[doc.Path] = doc
+	}
 
 	slog.InfoContext(cxt, "Assigning index domains...")
 
@@ -55,7 +60,25 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 		doc.Domain = zap.StringToDomain(top.Name)
 		slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
 		return nil
-	}, options.filesOptions)
+	}, options.Files)
+
+	slog.InfoContext(cxt, "Extracting clusters...")
+	var clusters []*ascii.Doc
+	for _, d := range docs {
+
+		models, err := d.ToModel()
+		if err != nil {
+			slog.Warn("error parsing doc", "path", d.Path, "error", err)
+			continue
+		}
+
+		for _, m := range models {
+			switch m.(type) {
+			case *matter.Cluster:
+				clusters = append(clusters, d)
+			}
+		}
+	}
 
 	if len(paths) > 0 {
 		filteredDocs := make([]*ascii.Doc, 0, len(paths))
@@ -63,17 +86,17 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 		for _, p := range paths {
 			pathMap[filepath.Base(p)] = struct{}{}
 		}
-		for _, ac := range appClusters {
+		for _, ac := range clusters {
 			p := filepath.Base(ac.Path)
 			if _, ok := pathMap[p]; ok {
 				filteredDocs = append(filteredDocs, ac)
 				delete(pathMap, p)
 			}
 		}
-		appClusters = filteredDocs
+		clusters = filteredDocs
 	}
 
-	outputs, provisionalZclFiles, err := renderAppClusterTemplates(cxt, appClusters, zclRoot, options.filesOptions, options.overwrite)
+	outputs, provisionalZclFiles, err := renderClusterTemplates(cxt, spec, docsByPath, clusters, zclRoot, options.Files, options.Overwrite)
 	if err != nil {
 		return err
 	}
@@ -89,9 +112,9 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 			slog.Debug("model", "type", m)
 		}
 		return nil
-	}, options.filesOptions)
+	}, options.Files)
 
-	if !options.filesOptions.DryRun {
+	if !options.Files.DryRun {
 
 		for path, result := range outputs {
 			if len(result.Models) == 0 {
@@ -125,13 +148,13 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 			}
 		}
 
-		err = patchBuildGN(zclRoot, appClusters)
+		err = patchBuildGN(zclRoot, clusters)
 		if err != nil {
 			return err
 		}
 
 		slog.Info("Patching src/app/zap_cluster_list.json...")
-		err = patchClusterList(zclRoot, appClusters)
+		err = patchClusterList(zclRoot, clusters)
 		if err != nil {
 			return err
 		}
@@ -141,10 +164,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 	return nil
 }
 
-func getZapPath(zclRoot string, path string) string {
-	newFile := filepath.Base(path)
-	newFile = zap.ZAPName(strings.TrimSuffix(newFile, filepath.Ext(path)))
-	newFile = strcase.ToKebab(newFile)
-	newPath := filepath.Join(zclRoot, "src/app/zap-templates/zcl/data-model/chip", newFile+".xml")
+func getZapPath(zclRoot string, name string) string {
+	newPath := filepath.Join(zclRoot, "src/app/zap-templates/zcl/data-model/chip", name+".xml")
 	return newPath
 }

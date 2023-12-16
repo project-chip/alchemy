@@ -20,7 +20,7 @@ type sectionInfo struct {
 
 var missingTable = fmt.Errorf("no table found")
 
-func appendSectionToRow(cxt context.Context, section *ascii.Section, row *dbRow) error {
+func appendSectionToRow(cxt context.Context, doc *ascii.Doc, section *ascii.Section, row *dbRow) error {
 	t := ascii.FindFirstTable(section)
 	if t == nil {
 		return fmt.Errorf("no table found")
@@ -29,7 +29,7 @@ func appendSectionToRow(cxt context.Context, section *ascii.Section, row *dbRow)
 	if len(rows) < 2 {
 		return fmt.Errorf("not enough rows in table")
 	}
-	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(doc, rows)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for section %s: %w", section.Name, err)
 	}
@@ -47,8 +47,8 @@ func appendSectionToRow(cxt context.Context, section *ascii.Section, row *dbRow)
 	return nil
 }
 
-func (h *Host) readTableSection(cxt context.Context, parent *sectionInfo, section *ascii.Section, name string) error {
-	rows, err := readTable(cxt, section)
+func (h *Host) readTableSection(cxt context.Context, doc *ascii.Doc, parent *sectionInfo, section *ascii.Section, name string) error {
+	rows, err := readTable(cxt, doc, section)
 	if err == missingTable {
 		return nil
 	}
@@ -65,7 +65,7 @@ func (h *Host) readTableSection(cxt context.Context, parent *sectionInfo, sectio
 	return nil
 }
 
-func readTable(cxt context.Context, section *ascii.Section) (rs []*dbRow, err error) {
+func readTable(cxt context.Context, doc *ascii.Doc, section *ascii.Section) (rs []*dbRow, err error) {
 	t := ascii.FindFirstTable(section)
 	if t == nil {
 		return nil, missingTable
@@ -74,7 +74,7 @@ func readTable(cxt context.Context, section *ascii.Section) (rs []*dbRow, err er
 	if len(rows) < 2 {
 		return nil, fmt.Errorf("not enough rows in table")
 	}
-	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(doc, rows)
 	if err != nil {
 		return nil, err
 	}

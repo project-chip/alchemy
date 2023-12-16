@@ -2,6 +2,7 @@ package ascii
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -9,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
+func (s *Section) toClusters(d *Doc) (models []matter.Model, err error) {
 	var clusters []*matter.Cluster
 	var description string
 	p := parse.FindFirst[*types.Paragraph](s.Elements)
@@ -24,7 +25,7 @@ func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 		switch s.SecType {
 		case matter.SectionClusterID:
 
-			clusters, err = readClusterIDs(s)
+			clusters, err = readClusterIDs(d, s)
 		case matter.SectionRevisionHistory:
 		}
 		if err != nil {
@@ -38,16 +39,6 @@ func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 		elements := parse.Skim[*Section](s.Elements)
 		for _, s := range elements {
 			switch s.SecType {
-			case matter.SectionDataTypes:
-				err = s.toDataTypes(d, c)
-			default:
-			}
-			if err != nil {
-				return nil, err
-			}
-		}
-		for _, s := range elements {
-			switch s.SecType {
 			case matter.SectionAttributes:
 				var attr []*matter.Field
 				attr, err = s.toAttributes(d)
@@ -55,7 +46,7 @@ func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 					c.Attributes = append(c.Attributes, attr...)
 				}
 			case matter.SectionClassification:
-				err = readClusterClassification(c, s)
+				err = readClusterClassification(d, c, s)
 			case matter.SectionFeatures:
 				c.Features, err = s.toFeatures(d)
 			case matter.SectionEvents:
@@ -63,11 +54,30 @@ func (s *Section) toClusters(d *Doc) (models []interface{}, err error) {
 			case matter.SectionCommands:
 				c.Commands, err = s.toCommands(d)
 			case matter.SectionRevisionHistory:
-				readRevisionHistory(c, s)
+				c.Revisions, err = readRevisionHistory(d, s)
+			case matter.SectionDataTypes:
+				err = s.toDataTypes(d, c)
 			default:
+				var looseModels []matter.Model
+				looseModels, err = findLooseModels(d, s)
+				if err != nil {
+					return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
+				}
+				if len(looseModels) > 0 {
+					for _, m := range looseModels {
+						switch m := m.(type) {
+						case *matter.Bitmap:
+							c.Bitmaps = append(c.Bitmaps, m)
+						case *matter.Enum:
+							c.Enums = append(c.Enums, m)
+						default:
+							slog.Warn("unexpected loose model", "path", d.Path, "model", m)
+						}
+					}
+				}
 			}
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
 			}
 		}
 		for _, a := range c.Attributes {
@@ -125,30 +135,36 @@ func assignCustomModel(c *matter.Cluster, dt *matter.DataType) {
 	}
 }
 
-func readRevisionHistory(c *matter.Cluster, s *Section) error {
-	rows, headerRowIndex, columnMap, _, err := parseFirstTable(s)
+func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, err error) {
+	var rows []*types.TableRow
+	var headerRowIndex int
+	var columnMap ColumnIndex
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(doc, s)
 	if err != nil {
-		return fmt.Errorf("failed reading revision history: %w", err)
+		err = fmt.Errorf("failed reading revision history: %w", err)
+		return
 	}
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		rev := &matter.Revision{}
 		rev.Number, err = readRowValue(row, columnMap, matter.TableColumnRevision)
 		if err != nil {
-			return fmt.Errorf("error reading revision column on cluster %s: %w", c.Name, err)
+			err = fmt.Errorf("error reading revision column: %w", err)
+			return
 		}
 		rev.Description, err = readRowValue(row, columnMap, matter.TableColumnDescription)
 		if err != nil {
-			return fmt.Errorf("error reading revision description column on cluster %s: %w", c.Name, err)
+			err = fmt.Errorf("error reading revision description: %w", err)
+			return
 		}
-		c.Revisions = append(c.Revisions, rev)
+		revisions = append(revisions, rev)
 	}
 
-	return nil
+	return
 }
 
-func readClusterIDs(s *Section) ([]*matter.Cluster, error) {
-	rows, headerRowIndex, columnMap, _, err := parseFirstTable(s)
+func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
+	rows, headerRowIndex, columnMap, _, err := parseFirstTable(doc, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading cluster ID: %w", err)
 	}
@@ -170,8 +186,8 @@ func readClusterIDs(s *Section) ([]*matter.Cluster, error) {
 	return clusters, nil
 }
 
-func readClusterClassification(c *matter.Cluster, s *Section) error {
-	rows, headerRowIndex, columnMap, extraColumns, err := parseFirstTable(s)
+func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
+	rows, headerRowIndex, columnMap, extraColumns, err := parseFirstTable(doc, s)
 	if err != nil {
 		return fmt.Errorf("failed reading classification: %w", err)
 	}

@@ -119,7 +119,7 @@ func RenderElements(cxt *output.Context, prefix string, elements []interface{}) 
 			err = renderOrderedListElement(cxt, el)
 		case nil:
 		default:
-			err = fmt.Errorf("unknown element type: %T", el)
+			err = fmt.Errorf("unknown render element type: %T", el)
 		}
 		if err != nil {
 			return

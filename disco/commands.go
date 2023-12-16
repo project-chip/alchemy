@@ -25,7 +25,7 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 
 	rows := ascii.TableRows(commandsTable)
 
-	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(doc, rows)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for commands table in section %s: %w", commands.Name, err)
 	}
@@ -88,7 +88,7 @@ func (b *Ball) organizeCommands(cxt *discoContext, doc *ascii.Doc, commands *asc
 		}
 		rows := ascii.TableRows(t)
 
-		_, columnMap, _, err := ascii.MapTableColumns(rows)
+		_, columnMap, _, err := ascii.MapTableColumns(doc, rows)
 		if err != nil {
 			return fmt.Errorf("failed mapping table columns for fields table in section %s: %w", ss.Name, err)
 		}
@@ -96,7 +96,7 @@ func (b *Ball) organizeCommands(cxt *discoContext, doc *ascii.Doc, commands *asc
 		if err != nil {
 			return fmt.Errorf("error fixing command constraint cells in %s command in %s: %w", name, doc.Path, err)
 		}
-		err = getPotentialDataTypes(cxt, ss, rows, columnMap)
+		err = b.getPotentialDataTypes(cxt, ss, rows, columnMap)
 		if err != nil {
 			return fmt.Errorf("error getting potential data types in %s command in %s: %w", name, doc.Path, err)
 		}

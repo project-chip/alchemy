@@ -30,20 +30,16 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 		cx := events.CreateElement("event")
 		cx.CreateAttr("id", e.ID.ShortHexString())
 		cx.CreateAttr("name", e.Name)
-		cx.CreateAttr("priority", strings.ToLower(e.Priority))
+		if len(e.Priority) > 0 {
+			cx.CreateAttr("priority", strings.ToLower(e.Priority))
+		}
 
-		if e.Access.Invoke != matter.PrivilegeUnknown || e.Access.FabricSensitive || e.Access.FabricScoped || e.Access.Timed {
+		if e.Access.Invoke != matter.PrivilegeUnknown || e.Access.FabricSensitive {
 			a := cx.CreateElement("access")
-			if e.Access.FabricScoped {
-				a.CreateAttr("fabricScoped", "true")
-			}
 			if e.Access.FabricSensitive {
 				a.CreateAttr("fabricSensitive", "true")
 			}
-			if e.Access.Timed {
-				a.CreateAttr("timed", "true")
-			}
-			a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[e.Access.Invoke]))
+			a.CreateAttr("readPrivilege", strings.ToLower(matter.PrivilegeNamesShort[e.Access.Invoke]))
 		}
 		err = renderConformanceString(cluster, e.Conformance, cx)
 		if err != nil {

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"slices"
 
 	"github.com/hasty/alchemy/ascii"
@@ -15,8 +14,9 @@ import (
 )
 
 type renderer struct {
+	spec   *matter.Spec
 	doc    *ascii.Doc
-	models []any
+	models []matter.Model
 
 	bitmaps  map[*matter.Bitmap]bool
 	enums    map[*matter.Enum]bool
@@ -121,17 +121,13 @@ func (w newLineEncoder) Write(data []byte) (n int, err error) {
 	return
 }
 
-func Render(doc *ascii.Doc, r io.Reader, w io.Writer, models []any) (err error) {
+func Render(spec *matter.Spec, doc *ascii.Doc, r io.Reader, w io.Writer, models []matter.Model, errata *zap.Errata) (err error) {
 	d := xml.NewDecoder(r)
 	e := xml.NewEncoder(&newLineEncoder{inner: w})
 	e.Indent("", "  ")
 
-	errata, ok := zap.Erratas[filepath.Base(doc.Path)]
-	if !ok {
-		errata = zap.DefaultErrata
-	}
-
 	rend := &renderer{
+		spec:   spec,
 		doc:    doc,
 		models: models,
 		errata: errata,

@@ -36,7 +36,7 @@ const (
 )
 
 var TopLevelSectionOrders = map[DocType][]Section{
-	DocTypeAppCluster: {
+	DocTypeCluster: {
 		SectionPrefix,
 		SectionRevisionHistory,
 		SectionClassification,

@@ -1,7 +1,49 @@
 package dm
 
+import (
+	"fmt"
+	"os"
+	"regexp"
+	"strconv"
+	"time"
+
+	"github.com/hasty/alchemy/cmd/files"
+)
+
+var copyrightPattern = regexp.MustCompile(`Copyright\s+\(C\)\s+Connectivity\s+Standards\s+Alliance\s+\((?P<Year>[0-9]+)\)`)
+
+func patchLicense(xml string, path string) (string, error) {
+	exists, _ := files.Exists(path)
+	if !exists {
+		return xml, nil
+	}
+	existing, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	matches := copyrightPattern.FindSubmatch(existing)
+	if len(matches) < 2 {
+		return xml, nil
+	}
+	ys := string(matches[1])
+	year, err := strconv.ParseUint(ys, 10, 32)
+	if err != nil {
+		return "", fmt.Errorf("failed parsing year from license %s", ys)
+	}
+	currentYear := time.Now().Year()
+	if year == uint64(currentYear) {
+		return xml, nil
+	}
+	xml = copyrightPattern.ReplaceAllString(xml, fmt.Sprintf("Copyright (C) Connectivity Standards Alliance (%d)", year))
+	return xml, nil
+}
+
+func getLicense() string {
+	return fmt.Sprintf(license, time.Now().Year())
+}
+
 var license = `
-Copyright (C) Connectivity Standards Alliance (2021). All rights reserved.
+Copyright (C) Connectivity Standards Alliance (%d). All rights reserved.
 The information within this document is the property of the Connectivity
 Standards Alliance and its use and disclosure are restricted, except as
 expressly set forth herein.

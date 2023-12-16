@@ -3,6 +3,7 @@ package amend
 import (
 	"encoding/xml"
 	"io"
+	"log/slog"
 
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
@@ -13,7 +14,7 @@ import (
 func writeAttributeDataType(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.Attr {
 	dts := zap.FieldToZapDataType(fs, f)
 	if f.Type.IsArray() {
-		attr = setAttributeValue(attr, "type", "ARRAY")
+		attr = setAttributeValue(attr, "type", "array")
 		attr = setAttributeValue(attr, "entryType", dts)
 	} else {
 		attr = setAttributeValue(attr, "type", dts)
@@ -164,7 +165,7 @@ func (r *renderer) renderConstraint(fs matter.FieldSet, f *matter.Field, attr []
 		attr = removeAttribute(attr, "length")
 	}
 
-	if f.Type != nil && (f.Type.IsString() || f.Type.IsArray()) {
+	if f.Type != nil && (f.Type.HasLength() || f.Type.IsArray()) {
 		if to.Defined() {
 			attr = setAttributeValue(attr, "length", to.ZapString(f.Type))
 		}
@@ -199,7 +200,7 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 		if !a.ID.Equals(attributeID) {
 			continue
 		}
-		if conformance.IsZigbee(cluster.Attributes, a.Conformance) {
+		if conformance.IsZigbee(cluster, a.Conformance) {
 			continue
 		}
 
@@ -239,27 +240,30 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 			switch t.Name.Local {
 			case "description":
 				if needsAccess {
-					writeThrough(ts, e, t)
+					err = writeThrough(ts, e, t)
+					wroteDescription = true
 				} else {
-					Ignore(ts, "description")
+					err = Ignore(ts, "description")
 				}
-				wroteDescription = true
 			case "access":
 				if needsAccess && !wroteDescription {
-					elName := xml.Name{Local: "description"}
-					xfs := xml.StartElement{Name: elName}
-					err = e.EncodeToken(xfs)
-					if err != nil {
-						return
-					}
-					err = e.EncodeToken(xml.CharData(field.Name))
-					if err != nil {
-						return
-					}
-					xfe := xml.EndElement{Name: elName}
-					err = e.EncodeToken(xfe)
-					if err != nil {
-						return
+					if !wroteDescription {
+						elName := xml.Name{Local: "description"}
+						xfs := xml.StartElement{Name: elName}
+						err = e.EncodeToken(xfs)
+						if err != nil {
+							return
+						}
+						err = e.EncodeToken(xml.CharData(field.Name))
+						if err != nil {
+							return
+						}
+						xfe := xml.EndElement{Name: elName}
+						err = e.EncodeToken(xfe)
+						if err != nil {
+							return
+						}
+
 					}
 				}
 				op := getAttributeValue(t.Attr, "op")
@@ -270,7 +274,7 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 						needsReadAccess = false
 						err = e.EncodeToken(t)
 					} else {
-						Ignore(ts, "access")
+						err = Ignore(ts, "access")
 					}
 				case "write":
 					if needsWriteAccess {
@@ -278,11 +282,12 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 						needsWriteAccess = false
 						err = e.EncodeToken(t)
 					} else {
-						Ignore(ts, "access")
+						err = Ignore(ts, "access")
 					}
 				}
 			default:
-				Ignore(ts, t.Name.Local)
+				slog.Warn("unexpected element in attribute", "name", t.Name.Local)
+				err = Ignore(ts, t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

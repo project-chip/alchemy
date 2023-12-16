@@ -32,12 +32,12 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		dataType := ss.GetDataType()
-		dataTypeCategory := getDataTypeCategory(dataType)
+		dataTypeCategory := getDataTypeCategory(dataType.Name)
 		cxt.potentialDataTypes[nameKey] = append(cxt.potentialDataTypes[nameKey], &DataTypeEntry{
 			name:             name,
 			ref:              name,
 			section:          ss,
-			dataType:         dataType,
+			dataType:         dataType.Name,
 			dataTypeCategory: dataTypeCategory,
 			existing:         true,
 			indexColumn:      getIndexColumnType(dataTypeCategory),
@@ -45,8 +45,8 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 	}
 }
 
-func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap ascii.ColumnIndex) error {
-	sectionDataMap, err := getDataTypes(columnMap, rows, section)
+func (b *Ball) getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap ascii.ColumnIndex) error {
+	sectionDataMap, err := b.getDataTypes(columnMap, rows, section)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*ty
 	return nil
 }
 
-func getDataTypes(columnMap ascii.ColumnIndex, rows []*types.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
+func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*types.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
 	sectionDataMap := make(map[string]*DataTypeEntry)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
@@ -109,7 +109,7 @@ func getDataTypes(columnMap ascii.ColumnIndex, rows []*types.TableRow, section *
 			if table == nil {
 				continue
 			}
-			_, columnMap, _, err := ascii.MapTableColumns(ascii.TableRows(table))
+			_, columnMap, _, err := ascii.MapTableColumns(b.doc, ascii.TableRows(table))
 			if err != nil {
 				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", s.Name, err)
 			}
@@ -155,7 +155,7 @@ func (b *Ball) promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
 			}
 			suffix := matter.DataTypeSuffixes[dtc]
 			idColumn := matter.DataTypeIdentityColumn[dtc]
-			err := promoteDataType(top, suffix, f, idColumn)
+			err := b.promoteDataType(top, suffix, f, idColumn)
 			if err != nil {
 				return err
 			}
@@ -184,7 +184,7 @@ func getDataTypeCategory(dataType string) matter.DataTypeCategory {
 	return matter.DataTypeCategoryUnknown
 }
 
-func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn) error {
+func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn) error {
 	if dataTypeFields == nil {
 		return nil
 	}
@@ -201,7 +201,7 @@ func promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[strin
 		if table == nil {
 			continue
 		}
-		_, columnMap, _, err := ascii.MapTableColumns(ascii.TableRows(table))
+		_, columnMap, _, err := ascii.MapTableColumns(b.doc, ascii.TableRows(table))
 		if err != nil {
 			return fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", dt.section.Name, err)
 		}

@@ -33,7 +33,6 @@ func (b *Ball) Run(cxt context.Context) error {
 	}
 
 	precleanStrings(doc.Elements)
-	ascii.PatchUnrecognizedReferences(doc)
 
 	for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
 		ascii.AssignSectionTypes(docType, top)
@@ -96,7 +95,7 @@ func (b *Ball) organizeSubSection(cxt *discoContext, doc *ascii.Doc, docType mat
 	switch section.SecType {
 	case matter.SectionAttributes:
 		switch docType {
-		case matter.DocTypeAppCluster:
+		case matter.DocTypeCluster:
 			err = b.organizeAttributesSection(cxt, doc, top, section)
 		}
 	case matter.SectionCommands:

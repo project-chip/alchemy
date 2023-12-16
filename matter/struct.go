@@ -6,3 +6,7 @@ type Struct struct {
 	Fields       FieldSet `json:"fields,omitempty"`
 	FabricScoped bool     `json:"fabricScoped,omitempty"`
 }
+
+func (*Struct) Entity() Entity {
+	return EntityStruct
+}

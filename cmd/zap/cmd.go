@@ -5,6 +5,7 @@ import (
 
 	"github.com/hasty/alchemy/cmd/common"
 	"github.com/hasty/alchemy/cmd/files"
+	"github.com/hasty/alchemy/zap/generate"
 	"github.com/spf13/cobra"
 )
 
@@ -14,12 +15,12 @@ var Command = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		specRoot, _ := cmd.Flags().GetString("specRoot")
 		zclRoot, _ := cmd.Flags().GetString("zclRoot")
-		options := migrateOptions{
-			filesOptions:  files.Flags(cmd),
-			asciiSettings: common.AsciiDocAttributes(cmd),
+		options := generate.Options{
+			Files: files.Flags(cmd),
+			Ascii: common.AsciiDocAttributes(cmd),
 		}
-		options.overwrite, _ = cmd.Flags().GetBool("overwrite")
-		return Migrate(context.Background(), specRoot, zclRoot, args, options)
+		options.Overwrite, _ = cmd.Flags().GetBool("overwrite")
+		return generate.Migrate(context.Background(), specRoot, zclRoot, args, options)
 	},
 }
 
