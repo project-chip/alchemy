@@ -5,11 +5,11 @@ import (
 	"strconv"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 )
 
-func renderConformanceString(cluster matter.ConformanceValueStore, c matter.Conformance, parent *etree.Element) error {
+func renderConformanceString(cluster conformance.ConformanceValueStore, c conformance.Conformance, parent *etree.Element) error {
 	if c == nil {
 		return nil
 	}
@@ -36,7 +36,7 @@ func renderConformanceString(cluster matter.ConformanceValueStore, c matter.Conf
 	return nil
 }
 
-func renderConformance(cluster matter.ConformanceValueStore, con matter.Conformance, parent *etree.Element) error {
+func renderConformance(cluster conformance.ConformanceValueStore, con conformance.Conformance, parent *etree.Element) error {
 	switch con := con.(type) {
 	case *conformance.MandatoryConformance:
 		mc := parent.CreateElement("mandatoryConform")
@@ -82,7 +82,7 @@ func renderConformance(cluster matter.ConformanceValueStore, con matter.Conforma
 	return nil
 }
 
-func renderConformanceExpression(cluster matter.ConformanceValueStore, exp matter.ConformanceExpression, parent *etree.Element) error {
+func renderConformanceExpression(cluster conformance.ConformanceValueStore, exp conformance.ConformanceExpression, parent *etree.Element) error {
 	if exp == nil {
 		return nil
 	}
@@ -101,11 +101,14 @@ func renderConformanceExpression(cluster matter.ConformanceValueStore, exp matte
 			if id == nil {
 				parent.CreateElement("condition").CreateAttr("name", e.ID)
 			} else {
-				switch id.Entity() {
-				case matter.EntityAttribute, matter.EntityCondition:
-					parent.CreateElement("attribute").CreateAttr("name", e.ID)
-				default:
-					parent.CreateElement("condition").CreateAttr("name", e.ID)
+				model, ok := id.(matter.Model)
+				if ok {
+					switch model.Entity() {
+					case matter.EntityAttribute, matter.EntityCondition:
+						parent.CreateElement("attribute").CreateAttr("name", e.ID)
+					default:
+						parent.CreateElement("condition").CreateAttr("name", e.ID)
+					}
 				}
 			}
 		}

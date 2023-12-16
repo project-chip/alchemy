@@ -2,11 +2,9 @@ package conformance
 
 import (
 	"strings"
-
-	"github.com/hasty/alchemy/matter"
 )
 
-func ParseConformance(conformance string, options ...interface{}) matter.Conformance {
+func ParseConformance(conformance string, options ...interface{}) Conformance {
 	c, err := tryParseConformance(conformance, options...)
 	if err != nil {
 		return &GenericConformance{raw: conformance}
@@ -14,17 +12,17 @@ func ParseConformance(conformance string, options ...interface{}) matter.Conform
 	return c
 }
 
-func tryParseConformance(conformance string, options ...interface{}) (matter.Conformance, error) {
+func tryParseConformance(conformance string, options ...interface{}) (Conformance, error) {
 	conformance = strings.ReplaceAll(conformance, "\\|", "|")
 
 	c, err := ParseReader("", strings.NewReader(conformance))
 	if err != nil {
 		return nil, err
 	}
-	return c.(matter.Conformance), err
+	return c.(Conformance), err
 }
 
-func IsMandatory(conformance matter.Conformance) bool {
+func IsMandatory(conformance Conformance) bool {
 	if conformance == nil {
 		return false
 	}
@@ -42,7 +40,7 @@ func IsMandatory(conformance matter.Conformance) bool {
 	return false
 }
 
-func IsDeprecated(conformance matter.Conformance) bool {
+func IsDeprecated(conformance Conformance) bool {
 	if conformance == nil {
 		return false
 	}
@@ -58,13 +56,13 @@ func IsDeprecated(conformance matter.Conformance) bool {
 	return false
 }
 
-func IsZigbee(store matter.ConformanceValueStore, conformance matter.Conformance) bool {
+func IsZigbee(store ConformanceValueStore, conformance Conformance) bool {
 	if conformance == nil {
 		return false
 	}
 	var err error
-	var withZigbee, withoutZigbee matter.ConformanceState
-	cxt := matter.ConformanceContext{Store: store, Values: map[string]any{"Zigbee": true}}
+	var withZigbee, withoutZigbee ConformanceState
+	cxt := ConformanceContext{Store: store, Values: map[string]any{"Zigbee": true}}
 	withZigbee, err = conformance.Eval(cxt)
 	if err != nil {
 		return false
@@ -75,7 +73,7 @@ func IsZigbee(store matter.ConformanceValueStore, conformance matter.Conformance
 		return false
 	}
 	// If the absence of Zigbee makes this no longer allowed, then we call it a Zigbee only feature
-	if withoutZigbee == matter.ConformanceStateDisallowed && withZigbee != matter.ConformanceStateDisallowed {
+	if withoutZigbee == ConformanceStateDisallowed && withZigbee != ConformanceStateDisallowed {
 		return true
 	}
 	return false

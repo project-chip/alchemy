@@ -3,21 +3,19 @@ package conformance
 import (
 	"fmt"
 	"strings"
-
-	"github.com/hasty/alchemy/matter"
 )
 
 type LogicalExpression struct {
 	Operand string
-	Left    matter.ConformanceExpression
-	Right   []matter.ConformanceExpression
+	Left    ConformanceExpression
+	Right   []ConformanceExpression
 	Not     bool
 }
 
-func NewLogicalExpression(operand string, left matter.ConformanceExpression, right []any) (*LogicalExpression, error) {
+func NewLogicalExpression(operand string, left ConformanceExpression, right []any) (*LogicalExpression, error) {
 	le := &LogicalExpression{Operand: operand, Left: left}
 	for _, r := range right {
-		rce, ok := r.(matter.ConformanceExpression)
+		rce, ok := r.(ConformanceExpression)
 		if !ok {
 			return nil, fmt.Errorf("unexpected type in logical expression: %T", r)
 		}
@@ -84,7 +82,7 @@ func (le *LogicalExpression) String() string {
 	}
 }
 
-func (le *LogicalExpression) Eval(context matter.ConformanceContext) (bool, error) {
+func (le *LogicalExpression) Eval(context ConformanceContext) (bool, error) {
 	result, err := le.Left.Eval(context)
 	if err != nil {
 		return false, err

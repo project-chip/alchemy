@@ -2,14 +2,12 @@ package conformance
 
 import (
 	"fmt"
-
-	"github.com/hasty/alchemy/matter"
 )
 
 type EqualityExpression struct {
 	Not   bool
-	Left  matter.ConformanceExpression
-	Right matter.ConformanceExpression
+	Left  ConformanceExpression
+	Right ConformanceExpression
 }
 
 func (o *EqualityExpression) String() string {
@@ -20,7 +18,7 @@ func (o *EqualityExpression) String() string {
 	return fmt.Sprintf("(%s == %s)", o.Left, o.Right)
 }
 
-func (ee *EqualityExpression) Eval(context matter.ConformanceContext) (bool, error) {
+func (ee *EqualityExpression) Eval(context ConformanceContext) (bool, error) {
 	l, err := ee.Left.Eval(context)
 	if err != nil {
 		return false, err

@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 )
 
 func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartElement) (err error) {

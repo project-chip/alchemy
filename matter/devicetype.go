@@ -1,5 +1,7 @@
 package matter
 
+import "github.com/hasty/alchemy/matter/conformance"
+
 type DeviceType struct {
 	ID          *Number     `json:"id,omitempty"`
 	Name        string      `json:"name,omitempty"`
@@ -20,7 +22,7 @@ func (c *DeviceType) Entity() Entity {
 	return EntityDeviceType
 }
 
-func (dt *DeviceType) ConformanceReference(name string) HasConformance {
+func (dt *DeviceType) ConformanceReference(name string) conformance.HasConformance {
 	for _, c := range dt.Conditions {
 		if c.Feature == name {
 			return c
@@ -30,11 +32,11 @@ func (dt *DeviceType) ConformanceReference(name string) HasConformance {
 }
 
 type ClusterRequirement struct {
-	ID          *Number     `json:"id,omitempty"`
-	ClusterName string      `json:"clusterName,omitempty"`
-	Quality     Quality     `json:"quality,omitempty"`
-	Conformance Conformance `json:"conformance,omitempty"`
-	Interface   Interface   `json:"interface,omitempty"`
+	ID          *Number                 `json:"id,omitempty"`
+	ClusterName string                  `json:"clusterName,omitempty"`
+	Quality     Quality                 `json:"quality,omitempty"`
+	Conformance conformance.Conformance `json:"conformance,omitempty"`
+	Interface   Interface               `json:"interface,omitempty"`
 
 	Cluster *Cluster `json:"cluster,omitempty"`
 }
@@ -45,10 +47,10 @@ type ElementRequirement struct {
 	Element     Entity  `json:"element,omitempty"`
 	Name        string  `json:"name,omitempty"`
 
-	Constraint  Constraint  `json:"constraint,omitempty"`
-	Quality     Quality     `json:"quality,omitempty"`
-	Access      Access      `json:"access,omitempty"`
-	Conformance Conformance `json:"conformance,omitempty"`
+	Constraint  Constraint              `json:"constraint,omitempty"`
+	Quality     Quality                 `json:"quality,omitempty"`
+	Access      Access                  `json:"access,omitempty"`
+	Conformance conformance.Conformance `json:"conformance,omitempty"`
 
 	Cluster *Cluster `json:"cluster,omitempty"`
 }
@@ -62,6 +64,6 @@ func (c *Condition) Entity() Entity {
 	return EntityCondition
 }
 
-func (c *Condition) GetConformance() Conformance {
+func (c *Condition) GetConformance() conformance.Conformance {
 	return nil
 }

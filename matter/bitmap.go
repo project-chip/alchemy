@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -35,10 +36,10 @@ func (c *Bitmap) Size() int {
 }
 
 type Bit struct {
-	Bit         string      `json:"bit,omitempty"`
-	Name        string      `json:"name,omitempty"`
-	Summary     string      `json:"summary,omitempty"`
-	Conformance Conformance `json:"conformance,omitempty"`
+	Bit         string                  `json:"bit,omitempty"`
+	Name        string                  `json:"name,omitempty"`
+	Summary     string                  `json:"summary,omitempty"`
+	Conformance conformance.Conformance `json:"conformance,omitempty"`
 }
 
 func (c *Bit) Entity() Entity {
@@ -74,13 +75,13 @@ func (bv *Bit) Mask() (uint64, error) {
 	return 0, fmt.Errorf("invalid bit mask range: %s", bv.Bit)
 }
 
-func (bv *Bit) GetConformance() Conformance {
+func (bv *Bit) GetConformance() conformance.Conformance {
 	return bv.Conformance
 }
 
 type BitSet []*Bit
 
-func (bs BitSet) ConformanceReference(name string) HasConformance {
+func (bs BitSet) ConformanceReference(name string) conformance.HasConformance {
 	for _, b := range bs {
 		if b.Name == name {
 			return b

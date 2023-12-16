@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hasty/alchemy/conformance"
-	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +18,7 @@ var conformanceCommand = &cobra.Command{
 		c := conformance.ParseConformance(args[0])
 		fmt.Fprintf(os.Stdout, "description: %s\n", c.String())
 		if len(args) > 1 {
-			var cxt matter.ConformanceContext
+			var cxt conformance.ConformanceContext
 			cxt.Values = make(map[string]any)
 			for _, arg := range args[1:] {
 				cxt.Values[arg] = true

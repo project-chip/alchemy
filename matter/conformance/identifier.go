@@ -2,8 +2,6 @@ package conformance
 
 import (
 	"fmt"
-
-	"github.com/hasty/alchemy/matter"
 )
 
 type IdentifierExpression struct {
@@ -18,11 +16,11 @@ func (ie *IdentifierExpression) String() string {
 	return ie.ID
 }
 
-func (ie *IdentifierExpression) Eval(context matter.ConformanceContext) (bool, error) {
+func (ie *IdentifierExpression) Eval(context ConformanceContext) (bool, error) {
 	return evalIdentifier(context, ie.ID, ie.Not)
 }
 
-func evalIdentifier(context matter.ConformanceContext, id string, not bool) (bool, error) {
+func evalIdentifier(context ConformanceContext, id string, not bool) (bool, error) {
 	if context.Values != nil {
 		v, ok := context.Values[id]
 		if ok {
@@ -46,7 +44,7 @@ func evalIdentifier(context matter.ConformanceContext, id string, not bool) (boo
 				if err != nil {
 					return false, err
 				}
-				return (cs == matter.ConformanceStateMandatory || cs == matter.ConformanceStateOptional || cs == matter.ConformanceStateProvisional || cs == matter.ConformanceStateDeprecated) != not, nil
+				return (cs == ConformanceStateMandatory || cs == ConformanceStateOptional || cs == ConformanceStateProvisional || cs == ConformanceStateDeprecated) != not, nil
 			}
 		}
 	}

@@ -2,12 +2,10 @@ package conformance
 
 import (
 	"strings"
-
-	"github.com/hasty/alchemy/matter"
 )
 
 type OptionalConformance struct {
-	Expression matter.ConformanceExpression
+	Expression ConformanceExpression
 	Choice     *Choice
 }
 
@@ -26,16 +24,16 @@ func (cc *OptionalConformance) String() string {
 	return s.String()
 }
 
-func (oc *OptionalConformance) Eval(context matter.ConformanceContext) (matter.ConformanceState, error) {
+func (oc *OptionalConformance) Eval(context ConformanceContext) (ConformanceState, error) {
 	if oc.Expression == nil {
-		return matter.ConformanceStateOptional, nil
+		return ConformanceStateOptional, nil
 	}
 	t, err := oc.Expression.Eval(context)
 	if err != nil {
-		return matter.ConformanceStateUnknown, err
+		return ConformanceStateUnknown, err
 	}
 	if t {
-		return matter.ConformanceStateOptional, nil
+		return ConformanceStateOptional, nil
 	}
-	return matter.ConformanceStateUnknown, nil
+	return ConformanceStateUnknown, nil
 }

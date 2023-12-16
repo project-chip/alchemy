@@ -1,15 +1,17 @@
 package matter
 
+import "github.com/hasty/alchemy/matter/conformance"
+
 type Field struct {
 	ID   *Number   `json:"id,omitempty"`
 	Name string    `json:"name,omitempty"`
 	Type *DataType `json:"type,omitempty"`
 
-	Constraint  Constraint  `json:"constraint,omitempty"`
-	Quality     Quality     `json:"quality,omitempty"`
-	Access      Access      `json:"access,omitempty"`
-	Default     string      `json:"default,omitempty"`
-	Conformance Conformance `json:"conformance,omitempty"`
+	Constraint  Constraint              `json:"constraint,omitempty"`
+	Quality     Quality                 `json:"quality,omitempty"`
+	Access      Access                  `json:"access,omitempty"`
+	Default     string                  `json:"default,omitempty"`
+	Conformance conformance.Conformance `json:"conformance,omitempty"`
 
 	entity Entity
 }
@@ -22,7 +24,7 @@ func NewAttribute() *Field {
 	return &Field{entity: EntityAttribute}
 }
 
-func (f *Field) GetConformance() Conformance {
+func (f *Field) GetConformance() conformance.Conformance {
 	return f.Conformance
 }
 
@@ -41,7 +43,7 @@ func (fs FieldSet) GetField(name string) *Field {
 	return nil
 }
 
-func (fs FieldSet) ConformanceReference(name string) HasConformance {
+func (fs FieldSet) ConformanceReference(name string) conformance.HasConformance {
 	for _, f := range fs {
 		if f.Name == name {
 			return f
