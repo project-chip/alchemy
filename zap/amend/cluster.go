@@ -31,7 +31,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 					return
 				}
 				if len(cid) > 0 {
-					clusterID = matter.ParseID(cid)
+					clusterID = matter.ParseNumber(cid)
 					break
 				}
 			}

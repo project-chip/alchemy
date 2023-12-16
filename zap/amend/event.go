@@ -12,7 +12,7 @@ import (
 
 func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, events map[*matter.Event]struct{}) (err error) {
 	code := getAttributeValue(el.Attr, "code")
-	eventID := matter.ParseID(code)
+	eventID := matter.ParseNumber(code)
 
 	var matchingEvent *matter.Event
 	for e := range events {

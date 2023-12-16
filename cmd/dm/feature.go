@@ -11,7 +11,7 @@ func renderFeatures(cluster *matter.Cluster, c *etree.Element) (err error) {
 	}
 	features := c.CreateElement("features")
 	for _, f := range cluster.Features {
-		bit := matter.ParseID(f.Bit)
+		bit := matter.ParseNumber(f.Bit)
 		if !bit.Valid() {
 			continue
 		}

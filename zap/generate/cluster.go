@@ -113,6 +113,10 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 					for _, m := range models {
 						switch m := m.(type) {
 						case *matter.Cluster:
+							switch m.Hierarchy {
+							case "Base":
+
+							}
 							if m.Hierarchy == "Base" && m.Name != "Mode Base" && m.Name != "Scenes" && m.ID.Valid() {
 								clusters = append(clusters, m)
 							}
@@ -170,7 +174,7 @@ func buildDestinations(zclRoot string, doc *ascii.Doc, models []matter.Model, er
 		return
 	}
 	for clusterID, path := range errata.ClusterSplit {
-		cid := matter.ParseID(clusterID)
+		cid := matter.ParseNumber(clusterID)
 		if !cid.Valid() {
 			slog.Warn("invalid cluster split ID", "id", clusterID)
 			continue

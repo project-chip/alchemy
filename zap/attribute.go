@@ -38,7 +38,7 @@ type XMLAttribute struct {
 func (xa *XMLAttribute) ToModel() (ma *matter.Field, err error) {
 	ma = matter.NewAttribute()
 
-	ma.ID = matter.ParseID(xa.Code)
+	ma.ID = matter.ParseNumber(xa.Code)
 	ma.Name = xa.Name
 	ma.Type = matter.NewDataType(ConvertZapToDataTypeName(xa.Type), xa.IsArray)
 	ma.Default = xa.Default

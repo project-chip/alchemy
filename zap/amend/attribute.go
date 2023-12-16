@@ -190,7 +190,7 @@ func (r *renderer) renderConstraint(fs matter.FieldSet, f *matter.Field, attr []
 func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
 	code := getAttributeValue(el.Attr, "code")
 
-	attributeID := matter.ParseID(code)
+	attributeID := matter.ParseNumber(code)
 	if !attributeID.Valid() {
 		//err = fmt.Errorf("invalid attribute code: %s", code)
 		return nil

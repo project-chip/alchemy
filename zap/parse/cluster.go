@@ -43,7 +43,7 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 				var cid string
 				cid, err = readSimpleElement(d, t.Name.Local)
 				if err == nil {
-					cluster.ID = matter.ParseID(cid)
+					cluster.ID = matter.ParseNumber(cid)
 				}
 			case "define":
 				_, err = readSimpleElement(d, t.Name.Local)
@@ -95,7 +95,7 @@ func readClusterCode(d *xml.Decoder, e xml.StartElement) (id *matter.Number, err
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "code":
-			id = matter.ParseID(a.Value)
+			id = matter.ParseNumber(a.Value)
 		default:
 			return nil, fmt.Errorf("unexpected cluster code attribute: %s", a.Name.Local)
 		}

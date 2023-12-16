@@ -13,16 +13,16 @@ type Number struct {
 	format NumberFormat
 }
 
-func NewID(id uint64) *Number {
+func NewNumber(id uint64) *Number {
 	return &Number{value: int64(id), format: NumberFormatAuto}
 }
 
-func ParseID(s string) *Number {
-	id, _ := ParseFormattedID(s)
+func ParseNumber(s string) *Number {
+	id, _ := ParseFormattedNumber(s)
 	return id
 }
 
-func ParseFormattedID(s string) (*Number, NumberFormat) {
+func ParseFormattedNumber(s string) (*Number, NumberFormat) {
 	id, err := strconv.ParseUint(s, 10, 64)
 	if err == nil {
 		return &Number{
@@ -64,7 +64,7 @@ func (t *Number) UnmarshalJSON(data []byte) error {
 	if s == "null" || s == `""` {
 		return nil
 	}
-	n, _ := ParseFormattedID(s)
+	n, _ := ParseFormattedNumber(s)
 	*t = *n
 	return nil
 }
@@ -135,7 +135,7 @@ func ParseFormattedIDRange(s string) (from *Number, fromFormat NumberFormat, to 
 	if len(match) < 3 {
 		return InvalidID, NumberFormatAuto, InvalidID, NumberFormatAuto
 	}
-	from, fromFormat = ParseFormattedID(match[1])
-	to, toFormat = ParseFormattedID(match[2])
+	from, fromFormat = ParseFormattedNumber(match[1])
+	to, toFormat = ParseFormattedNumber(match[2])
 	return
 }

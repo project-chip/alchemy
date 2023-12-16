@@ -51,7 +51,7 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "id", "fieldId", "code": // Pick a lane, jeez
-			field.ID = matter.ParseID(a.Value)
+			field.ID = matter.ParseNumber(a.Value)
 		case "name":
 			field.Name = a.Value
 		case "isFabricSensitive":

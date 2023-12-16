@@ -85,7 +85,7 @@ func renderDeviceType(cxt context.Context, deviceTypes []*matter.DeviceType) (ou
 		revs := c.CreateElement("revisionHistory")
 		var latestRev uint64 = 0
 		for _, r := range deviceType.Revisions {
-			id := matter.ParseID(r.Number)
+			id := matter.ParseNumber(r.Number)
 			if id.Valid() {
 				rev := revs.CreateElement("revision")
 				rev.CreateAttr("revision", id.IntString())

@@ -44,7 +44,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 				err = writeThrough(d, e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
-				id := matter.ParseID(code)
+				id := matter.ParseNumber(code)
 				if id.Valid() {
 					ids := id.HexString()
 					remainingClusterIDs = slices.DeleteFunc(remainingClusterIDs, func(s string) bool {

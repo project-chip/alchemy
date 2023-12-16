@@ -16,7 +16,7 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 		case "source":
 
 		case "code":
-			c.ID = matter.ParseID(a.Value)
+			c.ID = matter.ParseNumber(a.Value)
 		case "name":
 			c.Name = a.Value
 		case "isFabricScoped":
