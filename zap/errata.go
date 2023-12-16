@@ -182,6 +182,9 @@ var Erratas = map[string]*Errata{
 	"Mode_LaundryWasher.adoc": {
 		TemplatePath: "laundry-washer-mode-cluster",
 	},
+	"Mode_MicrowaveOven.adoc": {
+		TemplatePath: "microwave-oven-mode-cluster",
+	},
 	"Mode_Oven.adoc": {
 		TemplatePath: "oven-mode-cluster",
 	},
