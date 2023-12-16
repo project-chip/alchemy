@@ -6,15 +6,20 @@ const (
 	EntityUnknown Entity = iota
 	EntityCluster
 	EntityBitmap
+	EntityBitmapValue
 	EntityEnum
+	EntityEnumValue
 	EntityStruct
 	EntityAttribute
 	EntityCommand
+	EntityCommandField
 	EntityEvent
 	EntityFeature
 	EntityDeviceType
+	EntityCondition
+	EntityField
 )
 
 type Model interface {
-	ModelType() Entity
+	Entity() Entity
 }

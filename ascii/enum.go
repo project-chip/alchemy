@@ -12,7 +12,7 @@ func (s *Section) toEnum(d *Doc) (e *matter.Enum, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading enum: %w", err)
 	}
@@ -20,14 +20,13 @@ func (s *Section) toEnum(d *Doc) (e *matter.Enum, err error) {
 	e = &matter.Enum{
 		Name: name,
 	}
-	dts := s.GetDataType()
-	if dts == "" {
-		dts = "enum8"
+	dt := s.GetDataType()
+	if dt == nil {
+		dt = matter.NewDataType("enum8", false)
 	}
 
-	dt := matter.NewDataType(dts, false)
 	if !dt.IsEnum() {
-		return nil, fmt.Errorf("unknown enum data type: %s", dts)
+		return nil, fmt.Errorf("unknown enum data type: %s", dt.Name)
 	}
 
 	e.Type = dt
@@ -39,15 +38,9 @@ func (s *Section) toEnum(d *Doc) (e *matter.Enum, err error) {
 		if err != nil {
 			return
 		}
-		ev.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary)
+		ev.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
-		}
-		if ev.Summary == "" {
-			ev.Summary, err = readRowValue(row, columnMap, matter.TableColumnDescription)
-			if err != nil {
-				return
-			}
 		}
 		ev.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		ev.Value, err = readRowValue(row, columnMap, matter.TableColumnValue)

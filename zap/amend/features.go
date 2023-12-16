@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log/slog"
 	"slices"
 
 	"github.com/hasty/alchemy/conformance"
@@ -40,7 +41,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				writeThrough(d, e, t)
+				err = writeThrough(d, e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
 				id := matter.ParseID(code)
@@ -50,7 +51,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 						return ids == s
 					})
 				}
-				writeThrough(d, e, t)
+				err = writeThrough(d, e, t)
 			case "field":
 				if len(remainingClusterIDs) > 0 {
 					err = r.renderClusterCodes(e, remainingClusterIDs)
@@ -61,7 +62,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 				}
 				for {
 					if featureIndex >= len(cluster.Features) {
-						Ignore(d, "field")
+						err = Ignore(d, "field")
 						break
 					} else {
 						f := cluster.Features[featureIndex]
@@ -74,13 +75,17 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 							err = fmt.Errorf("failed setting feature attributes on feature %s: %w", f.Name, err)
 							return
 						}
-						writeThrough(d, e, t)
+						err = writeThrough(d, e, t)
+						if err != nil {
+							return
+						}
 						break
 					}
 				}
 
 			default:
-
+				slog.Warn("unexpected element in features", "name", t.Name.Local)
+				err = Ignore(d, t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {
@@ -198,6 +203,6 @@ func (*renderer) setFeatureAttributes(xfs []xml.Attr, f *matter.Feature) ([]xml.
 	}
 	bit = (1 << bit)
 	xfs = setAttributeValue(xfs, "name", zap.CleanName(f.Name))
-	xfs = setAttributeValue(xfs, "mask", fmt.Sprintf("%#x", bit))
+	xfs = setAttributeValue(xfs, "mask", fmt.Sprintf("0x%02X", bit))
 	return xfs, nil
 }

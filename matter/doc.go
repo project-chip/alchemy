@@ -4,7 +4,7 @@ type DocType uint8
 
 const (
 	DocTypeUnknown DocType = iota
-	DocTypeAppCluster
+	DocTypeCluster
 	DocTypeAppClusterIndex
 	DocTypeAppClusters
 	DocTypeDeviceType
@@ -25,12 +25,12 @@ const (
 
 var DocTypeNames = map[DocType]string{
 	DocTypeUnknown:                 "Unknown",
-	DocTypeAppCluster:              "AppCluster",
 	DocTypeAppClusterIndex:         "AppClusterIndex",
 	DocTypeAppClusters:             "AppClusters",
 	DocTypeDeviceType:              "DeviceType",
 	DocTypeDeviceTypes:             "DeviceTypes",
 	DocTypeDeviceTypeIndex:         "DeviceTypeIndex",
+	DocTypeCluster:                 "Cluster",
 	DocTypeCommonProtocol:          "CommonProtocol",
 	DocTypeDataModel:               "DataModel",
 	DocTypeDeviceAttestation:       "DeviceAttestation",

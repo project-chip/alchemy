@@ -12,7 +12,7 @@ func (s *Section) toFeatures(d *Doc) (features []*matter.Feature, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading features: %w", err)
 
@@ -45,7 +45,7 @@ func (s *Section) toFeatures(d *Doc) (features []*matter.Feature, err error) {
 		if err != nil {
 			return
 		}
-		f.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary)
+		f.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}

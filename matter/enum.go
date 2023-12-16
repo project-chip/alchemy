@@ -7,11 +7,19 @@ type Enum struct {
 	Values      EnumSet   `json:"values,omitempty"`
 }
 
+func (*Enum) Entity() Entity {
+	return EntityEnum
+}
+
 type EnumValue struct {
 	Value       string      `json:"value,omitempty"`
 	Name        string      `json:"name,omitempty"`
 	Summary     string      `json:"summary,omitempty"`
 	Conformance Conformance `json:"conformance,omitempty"`
+}
+
+func (ev *EnumValue) Entity() Entity {
+	return EntityEnumValue
 }
 
 func (ev *EnumValue) GetConformance() Conformance {

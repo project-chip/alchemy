@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -12,7 +13,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
+func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
 	name := getAttributeValue(el.Attr, "name")
 
 	var matchingBitmap *matter.Bitmap
@@ -31,14 +32,14 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 		return nil
 	}
 
-	el.Attr = r.setBitmapAttributes(el.Attr, matchingBitmap)
+	var valFormat string
+	el.Attr, valFormat = r.setBitmapAttributes(el.Attr, matchingBitmap)
 	err = e.EncodeToken(el)
 	if err != nil {
 		return
 	}
 
-	remainingClusterIDs := make([]string, len(clusterIDs))
-	copy(remainingClusterIDs, clusterIDs)
+	remainingClusterIDs := r.getClusterCodes(matchingBitmap)
 
 	var bitIndex int
 
@@ -56,7 +57,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				writeThrough(d, e, t)
+				err = writeThrough(d, e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
 				id := matter.ParseID(code)
@@ -66,7 +67,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 						return ids == s
 					})
 				}
-				writeThrough(d, e, t)
+				err = writeThrough(d, e, t)
 			case "field":
 				if len(remainingClusterIDs) > 0 {
 					err = r.renderClusterCodes(e, remainingClusterIDs)
@@ -87,17 +88,21 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 							continue
 						}
 
-						t.Attr, err = r.setBitmapFieldAttributes(t.Attr, b)
+						t.Attr, err = r.setBitmapFieldAttributes(t.Attr, b, valFormat)
 						if err != nil {
 							err = fmt.Errorf("failed setting bitmap attributes on bitmap %s: %w", b.Name, err)
 							return
 						}
-						writeThrough(d, e, t)
+						err = writeThrough(d, e, t)
+						if err != nil {
+							return
+						}
 						break
 					}
 				}
 
 			default:
+				slog.Warn("unexpected element in bitmap", "name", t.Name.Local)
 
 			}
 		case xml.EndElement:
@@ -118,7 +123,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 
 					elName := xml.Name{Local: "field"}
 					xfs := xml.StartElement{Name: elName}
-					xfs.Attr, err = r.setBitmapFieldAttributes(xfs.Attr, b)
+					xfs.Attr, err = r.setBitmapFieldAttributes(xfs.Attr, b, valFormat)
 					if err != nil {
 						err = fmt.Errorf("failed setting bitmap attributes on bitmap %s: %w", b.Name, err)
 						return
@@ -153,15 +158,16 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 	}
 }
 
-func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matter.Bitmap, clusterIDs []string, provisional bool) (err error) {
-	xfb.Attr = r.setBitmapAttributes(xfb.Attr, bitmap)
+func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matter.Bitmap, provisional bool) (err error) {
+	var valFormat string
+	xfb.Attr, valFormat = r.setBitmapAttributes(xfb.Attr, bitmap)
 
 	err = e.EncodeToken(xfb)
 	if err != nil {
 		return
 	}
 
-	err = r.renderClusterCodes(e, clusterIDs)
+	err = r.renderClusterCodes(e, r.getClusterCodes(bitmap))
 	if err != nil {
 		return
 	}
@@ -174,7 +180,7 @@ func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matte
 
 		elName := xml.Name{Local: "field"}
 		xfs := xml.StartElement{Name: elName}
-		xfs.Attr, err = r.setBitmapFieldAttributes(xfs.Attr, b)
+		xfs.Attr, err = r.setBitmapFieldAttributes(xfs.Attr, b, valFormat)
 		if err != nil {
 			err = fmt.Errorf("failed setting bitmap attributes on bitmap %s: %w", b.Name, err)
 			return
@@ -198,7 +204,7 @@ func (r *renderer) writeBitmap(e xmlEncoder, xfb xml.StartElement, bitmap *matte
 	return
 }
 
-func (*renderer) setBitmapFieldAttributes(xfs []xml.Attr, b *matter.Bit) ([]xml.Attr, error) {
+func (*renderer) setBitmapFieldAttributes(xfs []xml.Attr, b *matter.Bit, valFormat string) ([]xml.Attr, error) {
 	mask, err := b.Mask()
 	if err != nil {
 		return nil, err
@@ -206,16 +212,28 @@ func (*renderer) setBitmapFieldAttributes(xfs []xml.Attr, b *matter.Bit) ([]xml.
 
 	name := zap.CleanName(b.Name)
 	xfs = setAttributeValue(xfs, "name", name)
-	xfs = setAttributeValue(xfs, "mask", fmt.Sprintf("0x%02X", mask))
+	xfs = setAttributeValue(xfs, "mask", fmt.Sprintf(valFormat, mask))
 	return xfs, nil
 }
 
-func (*renderer) setBitmapAttributes(xfb []xml.Attr, bitmap *matter.Bitmap) []xml.Attr {
+func (*renderer) setBitmapAttributes(xfb []xml.Attr, bitmap *matter.Bitmap) ([]xml.Attr, string) {
+	var valFormat string
+	switch bitmap.Type.BaseType {
+	case matter.BaseDataTypeMap64:
+		valFormat = "0x%016X"
+	case matter.BaseDataTypeMap32:
+		valFormat = "0x%08X"
+	case matter.BaseDataTypeMap16:
+		valFormat = "0x%04X"
+	default:
+		valFormat = "0x%02X"
+	}
+
 	xfb = setAttributeValue(xfb, "name", bitmap.Name)
 	if bitmap.Type != nil {
 		xfb = setAttributeValue(xfb, "type", zap.ConvertDataTypeNameToZap(bitmap.Type.Name))
 	} else {
 		xfb = setAttributeValue(xfb, "type", "bitmap8")
 	}
-	return xfb
+	return xfb, valFormat
 }

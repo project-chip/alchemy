@@ -21,7 +21,7 @@ func (b *Ball) organizeClassificationSection(doc *ascii.Doc, section *ascii.Sect
 func (b *Ball) organizeClassificationTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {
 	rows := ascii.TableRows(attributesTable)
 
-	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(rows)
+	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(doc, rows)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for classification table in section %s: %w", section.Name, err)
 	}
@@ -48,7 +48,7 @@ func (b *Ball) organizeClassificationTable(doc *ascii.Doc, section *ascii.Sectio
 		return fmt.Errorf("error getting doc type in section %s in %s: %w", section.Name, doc.Path, err)
 	}
 	switch docType {
-	case matter.DocTypeAppCluster:
+	case matter.DocTypeCluster:
 		order = matter.AppClusterClassificationTableColumnOrder[:]
 	case matter.DocTypeDeviceType:
 		order = matter.DeviceTypeClassificationTableColumnOrder[:]

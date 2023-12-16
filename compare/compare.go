@@ -7,7 +7,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -47,8 +46,8 @@ func Compare(cxt context.Context, specRoot string, zclRoot string, settings []co
 	return nil
 }
 
-func loadSpecModels(appClusterPaths []string, settings []configuration.Setting, domains map[string]matter.Domain, zclRoot string) (map[string][]any, error) {
-	specModels := make(map[string][]any)
+func loadSpecModels(appClusterPaths []string, settings []configuration.Setting, domains map[string]matter.Domain, zclRoot string) (map[string][]matter.Model, error) {
+	specModels := make(map[string][]matter.Model)
 	for i, file := range appClusterPaths {
 		doc, err := ascii.OpenFile(file, append(ascii.GithubSettings(), settings...)...)
 		if err != nil {
@@ -65,10 +64,15 @@ func loadSpecModels(appClusterPaths []string, settings []configuration.Setting, 
 			return nil, err
 		}
 
+		errata, ok := zap.Erratas[filepath.Base(file)]
+		if !ok {
+			errata = zap.DefaultErrata
+		}
+
 		fmt.Fprintf(os.Stderr, "ZCL'd %s (%d of %d)...\n", file, i+1, len(appClusterPaths))
 
 		newFile := filepath.Base(file)
-		newFile = zap.ZAPName(strings.TrimSuffix(newFile, filepath.Ext(file)))
+		newFile = zap.ZAPName(doc, errata, models)
 		newFile = strcase.ToKebab(newFile)
 
 		newPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip", newFile+".xml")
@@ -88,7 +92,7 @@ func getAppDomains(specRoot string, settings []configuration.Setting) ([]string,
 				return e
 			}
 			switch docType {
-			case matter.DocTypeAppCluster:
+			case matter.DocTypeCluster:
 				appClusterPaths = append(appClusterPaths, path)
 			case matter.DocTypeAppClusterIndex:
 				appClusterIndexPaths = append(appClusterIndexPaths, path)
@@ -130,13 +134,13 @@ func getAppDomains(specRoot string, settings []configuration.Setting) ([]string,
 	return appClusterPaths, domains, nil
 }
 
-func loadZAPModels(zclRoot string) (map[string][]any, error) {
+func loadZAPModels(zclRoot string) (map[string][]matter.Model, error) {
 	zapPath := filepath.Join(zclRoot, "app/zap-templates/zcl/data-model/chip/*.xml")
 	xmlFiles, err := filepath.Glob(zapPath)
 	if err != nil {
 		return nil, err
 	}
-	zapModels := make(map[string][]any)
+	zapModels := make(map[string][]matter.Model)
 	for _, f := range xmlFiles {
 		fmt.Printf("ZAP file: %s\n", f)
 
@@ -145,7 +149,7 @@ func loadZAPModels(zclRoot string) (map[string][]any, error) {
 			return nil, err
 		}
 		defer file.Close()
-		var models []any
+		var models []matter.Model
 		models, err = zparse.ZAP(file)
 		if err != nil {
 			return nil, err

@@ -74,14 +74,13 @@ var matterToZapMap = map[string]string{
 	"vendor-id":      "vendor_id",
 	"endpoint-id":    "endpoint_id",
 	"endpoint-no":    "endpoint_no",
-	"EUI64":          "eui64",
+	"eui64":          "eui64",
 
 	"unsignedtemperature":   "int8u",
 	"signedtemperature":     "int8s",
 	"temperaturedifference": "int16s",
 
-	// Hacky workaround for Thermostat
-	"ref_occupancybitmap": "OccupancyBitmap",
+	"subjectid": "int64u",
 
 	/* Same on both sides:
 	percent
@@ -220,7 +219,7 @@ func minMaxFromConstraint(cc *matter.ConstraintContext) (from matter.ConstraintE
 				return
 			case *constraint.ListConstraint, *constraint.MaxConstraint, *constraint.MinConstraint, *constraint.RangeConstraint, *constraint.ExactConstraint:
 			default:
-				slog.Warn("Array field has constraint not compatible with arrays", "field", cc.Field.Name)
+				slog.Warn("Array field has constraint not compatible with arrays", "field", cc.Field.Name, "constraint", cc.Field.Constraint)
 				return
 			}
 		}
@@ -236,7 +235,7 @@ func GetDefaultValue(cc *matter.ConstraintContext) (defaultValue matter.Constrai
 	defaultValue = c.Default(cc)
 	switch defaultValue.Type {
 	case matter.ConstraintExtremeTypeEmpty:
-		if !cc.Field.Type.IsString() {
+		if !cc.Field.Type.HasLength() {
 			defaultValue = matter.ConstraintExtreme{}
 		}
 	case matter.ConstraintExtremeTypeNull:

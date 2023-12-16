@@ -31,11 +31,10 @@ type XMLStruct struct {
 func (s *XMLStruct) ToModel() (ms *matter.Struct, err error) {
 	ms = &matter.Struct{Name: s.Name}
 	for _, sf := range s.Fields {
-		f := &matter.Field{
-			ID:   matter.NewID(uint64(sf.FieldID)),
-			Name: sf.Name,
-			Type: matter.NewDataType(ConvertZapToDataTypeName(sf.Type), sf.IsArray),
-		}
+		f := matter.NewField()
+		f.ID = matter.NewID(uint64(sf.FieldID))
+		f.Name = sf.Name
+		f.Type = matter.NewDataType(ConvertZapToDataTypeName(sf.Type), sf.IsArray)
 		var q matter.Quality
 		if sf.IsNullable {
 			q |= matter.QualityNullable

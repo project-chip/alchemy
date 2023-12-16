@@ -10,6 +10,10 @@ type MinConstraint struct {
 	Minimum matter.ConstraintLimit `json:"min"`
 }
 
+func (c *MinConstraint) Type() matter.ConstraintType {
+	return matter.ConstraintTypeMin
+}
+
 func (c *MinConstraint) AsciiDocString(dataType *matter.DataType) string {
 	return fmt.Sprintf("min %s", c.Minimum.AsciiDocString(dataType))
 }

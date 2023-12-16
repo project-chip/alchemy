@@ -3,9 +3,10 @@ package render
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"slices"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
@@ -13,14 +14,14 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster, w *etree.Element, errata *zap.Errata) error {
+func (r *renderer) renderCluster(cxt context.Context, cluster *matter.Cluster, w *etree.Element) error {
 
 	cx := w.CreateElement("cluster")
 	cx.CreateAttr("apiMaturity", "provisional")
 
 	cx.CreateElement("name").SetText(cluster.Name)
 	dom := cx.CreateElement("domain")
-	domainName := matter.DomainNames[doc.Domain]
+	domainName := matter.DomainNames[r.doc.Domain]
 	dom.SetText(domainName)
 	cx.CreateElement("code").SetText(cluster.ID.HexString())
 
@@ -28,10 +29,10 @@ func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster,
 	var clusterPrefix string
 
 	define = strcase.ToScreamingDelimited(cluster.Name+" Cluster", '_', "", true)
-	if !errata.SuppressClusterDefinePrefix {
+	if !r.errata.SuppressClusterDefinePrefix {
 		clusterPrefix = strcase.ToScreamingDelimited(cluster.Name, '_', "", true) + "_"
-		if len(errata.ClusterDefinePrefix) > 0 {
-			clusterPrefix = errata.ClusterDefinePrefix
+		if len(r.errata.ClusterDefinePrefix) > 0 {
+			clusterPrefix = r.errata.ClusterDefinePrefix
 		}
 	}
 
@@ -46,26 +47,14 @@ func renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster,
 	server.SetText("true")
 	cx.CreateElement("description").SetText(cluster.Description)
 
-	clusterOrder := errata.ClusterOrder
-	if clusterOrder == nil {
-		clusterOrder = zap.DefaultErrata.ClusterOrder
-	}
-
-	for _, s := range clusterOrder {
-		switch s {
-		case matter.SectionAttributes:
-			renderAttributes(cluster, cx, clusterPrefix, errata)
-		case matter.SectionCommands:
-			renderCommands(cluster, cx, errata)
-		case matter.SectionEvents:
-			renderEvents(cluster, cx)
-		}
-	}
+	renderAttributes(cluster, cx, clusterPrefix, r.errata)
+	renderCommands(cluster, cx, r.errata)
+	renderEvents(cluster, cx)
 
 	return nil
 }
 
-func renderFeatures(cxt context.Context, features matter.FeatureSet, clusters []*matter.Cluster, w *etree.Element, errata *zap.Errata) {
+func (r *renderer) renderFeatures(cxt context.Context, features matter.FeatureSet, clusters []*matter.Cluster, w *etree.Element) {
 	if len(features) == 0 {
 		return
 	}
@@ -88,4 +77,21 @@ func renderFeatures(cxt context.Context, features matter.FeatureSet, clusters []
 		bit = (1 << bit)
 		fx.CreateAttr("mask", fmt.Sprintf("%#x", bit))
 	}
+}
+
+func (r *renderer) renderClusterCodes(parent *etree.Element, model matter.Model) {
+	refs, ok := r.spec.ClusterRefs[model]
+	if !ok {
+		slog.Warn("unknown cluster ref", "val", model)
+		return
+	}
+	var clusterIDs []string
+	for ref := range refs {
+		clusterIDs = append(clusterIDs, ref.ID.HexString())
+	}
+	slices.Sort(clusterIDs)
+	for _, cid := range clusterIDs {
+		parent.CreateElement("cluster").CreateAttr("code", cid)
+	}
+
 }

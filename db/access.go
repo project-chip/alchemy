@@ -4,6 +4,7 @@ import (
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
 	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
 )
 
 func getAccessSchemaColumns(tableName string) []*mms.Column {
@@ -21,7 +22,14 @@ func getAccessSchemaColumnValues(tableName string, access interface{}) []interfa
 	var readAccess, writeAccess, invokeAccess, fabricScoped, fabricSensitive, timed int8
 	s, ok := access.(string)
 	if ok {
-		a := ascii.ParseAccess(s)
+		var a matter.Access
+		switch tableName {
+		case commandTable:
+			a = ascii.ParseAccess(s, true)
+		default:
+			a = ascii.ParseAccess(s, false)
+
+		}
 		readAccess = int8(a.Read)
 		writeAccess = int8(a.Write)
 		invokeAccess = int8(a.Invoke)

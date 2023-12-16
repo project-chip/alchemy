@@ -75,6 +75,7 @@ const (
 	BaseDataTypeEventID
 	BaseDataTypeCommandID
 	BaseDataTypeActionID
+	BaseDataTypeSubjectID
 	BaseDataTypeTransactionID
 	BaseDataTypeNodeID
 	BaseDataTypeIeeeAddress
@@ -92,6 +93,8 @@ const (
 	BaseDataTypeSemanticTag
 	BaseDataTypeNamespace
 	BaseDataTypeTag
+
+	BaseDataTypeMessageID
 )
 
 type DataTypeCategory uint8
@@ -134,7 +137,7 @@ func StripDataTypeSuffixes(dataType string) string {
 type DataType struct {
 	BaseType BaseDataType
 	Name     string
-	Model    any
+	Model    Model
 
 	EntryType *DataType
 }
@@ -143,7 +146,10 @@ func NewDataType(name string, isArray bool) *DataType {
 	if isArray {
 		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewDataType(name, false)}
 	}
+	name = strings.TrimPrefix(name, "ref_")
+	name = strings.TrimPrefix(name, "DataType")
 	dt := &DataType{Name: name}
+
 	switch strings.ToLower(name) {
 	case "bool", "boolean":
 		dt.BaseType = BaseDataTypeBoolean
@@ -222,11 +228,11 @@ func NewDataType(name string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeElapsedSeconds
 	case "epoch-s", "utc": // utc is deprecated
 		dt.BaseType = BaseDataTypeEpochSeconds
-	case "epoch-us":
+	case "epoch-us", "epochus":
 		dt.BaseType = BaseDataTypeEpochMicroseconds
 	case "systime_ms", "systime-ms":
 		dt.BaseType = BaseDataTypeSystimeMilliseconds
-	case "systime_us", "systime-us":
+	case "systime_us", "systime-us", "systemtimeus":
 		dt.BaseType = BaseDataTypeSystimeMicroseconds
 	case "posix-ms":
 		dt.BaseType = BaseDataTypePosixMilliseconds
@@ -242,46 +248,62 @@ func NewDataType(name string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeDataVersion
 	case "devtype-id":
 		dt.BaseType = BaseDataTypeDeviceTypeID
-	case "entry-idx":
+	case "entry-idx", "entryidx":
 		dt.BaseType = BaseDataTypeEntryIndex
-	case "event-id":
+	case "event-id", "eventid":
 		dt.BaseType = BaseDataTypeEventID
-	case "event-no":
+	case "event-no", "eventnumber":
 		dt.BaseType = BaseDataTypeEventNumber
-	case "fabric-id":
+	case "fabric-id", "fabricid":
 		dt.BaseType = BaseDataTypeFabricID
-	case "fabric-idx":
+	case "fabric-idx", "fabricidx":
 		dt.BaseType = BaseDataTypeFabricIndex
-	case "field-id":
+	case "field-id", "fieldid":
 		dt.BaseType = BaseDataTypeFieldID
-	case "group-id":
+	case "group-id", "groupid":
 		dt.BaseType = BaseDataTypeGroupID
-	case "node-id":
+	case "node-id", "nodeid":
 		dt.BaseType = BaseDataTypeNodeID
+	case "subject-id", "subjectid":
+		dt.BaseType = BaseDataTypeSubjectID
 	case "transaction-id":
 		dt.BaseType = BaseDataTypeTransactionID
-	case "vendor-id":
+	case "vendor-id", "vendorid":
 		dt.BaseType = BaseDataTypeVendorID
 	case "endpoint-id":
 		dt.BaseType = BaseDataTypeEndpointID
-	case "endpoint-no":
+	case "endpoint-no", "endpointnumber":
 		dt.BaseType = BaseDataTypeEndpointNumber
 	case "eui64":
 		dt.BaseType = BaseDataTypeIeeeAddress
-	case "temperaturedifference":
+	case "temperaturedifference", "tempdiff":
 		dt.BaseType = BaseDataTypeTemperatureDifference
 	case "unsignedtemperature":
 		dt.BaseType = BaseDataTypeUnsignedTemperature
 	case "signedtemperature":
 		dt.BaseType = BaseDataTypeSignedTemperature
+	case "hwadr":
+		dt.BaseType = BaseDataTypeHardwareAddress
+	case "ipv4adr":
+		dt.BaseType = BaseDataTypeIPv4Address
+	case "ipv6adr":
+		dt.BaseType = BaseDataTypeIPv6Address
+	case "semtag":
+		dt.BaseType = BaseDataTypeSemanticTag
+	case "status":
+		dt.BaseType = BaseDataTypeStatus
+	case "priority":
+		dt.BaseType = BaseDataTypePriority
+	case "messageid":
+		dt.BaseType = BaseDataTypeMessageID
 	default:
 		dt.BaseType = BaseDataTypeCustom
 	}
 	return dt
 }
 
-func (dt *DataType) IsString() bool {
-	return dt != nil && (dt.BaseType == BaseDataTypeString || dt.BaseType == BaseDataTypeOctStr)
+func (dt *DataType) HasLength() bool {
+	return dt != nil && (dt.BaseType == BaseDataTypeString || dt.BaseType == BaseDataTypeOctStr || dt.BaseType == BaseDataTypeMessageID)
 }
 
 func (dt *DataType) IsArray() bool {
@@ -355,11 +377,11 @@ func (dt *DataType) Size() int {
 		return 2
 	case BaseDataTypeDataVersion:
 		return 4
-	case BaseDataTypeEventNumber:
+	case BaseDataTypeEventNumber, BaseDataTypeSubjectID:
 		return 8
 	case BaseDataTypeIPv4Address:
 		return 4
-	case BaseDataTypeIPv6Address:
+	case BaseDataTypeIPv6Address, BaseDataTypeMessageID:
 		return 16
 	case BaseDataTypeSemanticTag:
 		return 4
@@ -425,7 +447,7 @@ func (dt *DataType) NullValue() uint64 {
 		return maxUint48
 	case BaseDataTypeUInt56:
 		return maxUint56
-	case BaseDataTypeUInt64, BaseDataTypeMap64, BaseDataTypeDouble, BaseDataTypeEpochMicroseconds, BaseDataTypePosixMilliseconds, BaseDataTypeSystimeMicroseconds, BaseDataTypeSystimeMilliseconds, BaseDataTypeFabricID, BaseDataTypeNodeID, BaseDataTypeIeeeAddress, BaseDataTypeEventNumber:
+	case BaseDataTypeUInt64, BaseDataTypeMap64, BaseDataTypeDouble, BaseDataTypeEpochMicroseconds, BaseDataTypePosixMilliseconds, BaseDataTypeSystimeMicroseconds, BaseDataTypeSystimeMilliseconds, BaseDataTypeFabricID, BaseDataTypeNodeID, BaseDataTypeIeeeAddress, BaseDataTypeEventNumber, BaseDataTypeSubjectID:
 		return math.MaxUint64
 	case BaseDataTypeCustom:
 		if dt.Model != nil {

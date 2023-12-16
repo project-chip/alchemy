@@ -20,6 +20,35 @@ type Cluster struct {
 	Commands   CommandSet `json:"commands,omitempty"`
 }
 
-func (c *Cluster) ModelType() Entity {
+func (c *Cluster) Entity() Entity {
 	return EntityCluster
+}
+
+func (c *Cluster) ConformanceReference(name string) HasConformance {
+	if c == nil {
+		return nil
+	}
+	var cr HasConformance
+	if c.Features != nil {
+		cr = c.Features.ConformanceReference(name)
+		if cr != nil {
+			return cr
+		}
+
+	}
+	cr = c.Attributes.ConformanceReference(name)
+	if cr != nil {
+		return cr
+	}
+	for _, cmd := range c.Commands {
+		if cmd.Name == name {
+			return cmd
+		}
+	}
+	for _, e := range c.Events {
+		if e.Name == name {
+			return e
+		}
+	}
+	return nil
 }

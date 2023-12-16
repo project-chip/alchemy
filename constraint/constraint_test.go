@@ -355,11 +355,15 @@ func TestSuite(t *testing.T) {
 			t.Errorf("failed to parse constraint %s", ct.constraint)
 			continue
 		}
-		min := c.Min(&matter.ConstraintContext{Fields: ct.fields, Field: &matter.Field{Type: ct.dataType}})
+		minField := matter.NewField()
+		minField.Type = ct.dataType
+		min := c.Min(&matter.ConstraintContext{Fields: ct.fields, Field: minField})
 		if min != ct.min {
 			t.Errorf("incorrect min value for \"%s\": expected %d, got %d", ct.constraint, ct.min, min)
 		}
-		max := c.Max(&matter.ConstraintContext{Fields: ct.fields, Field: &matter.Field{Type: ct.dataType}})
+		maxField := matter.NewField()
+		maxField.Type = ct.dataType
+		max := c.Max(&matter.ConstraintContext{Fields: ct.fields, Field: maxField})
 		if max != ct.max {
 			t.Errorf("incorrect max value for \"%s\": expected %d, got %d", ct.constraint, ct.max, max)
 		}

@@ -1,7 +1,9 @@
 package ascii
 
 import (
+	"fmt"
 	"log/slog"
+	"regexp"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -9,14 +11,18 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
+var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
+
 func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
 		if err == NoTableFound {
 			err = nil
+		} else {
+			err = fmt.Errorf("error reading commands table: %w", err)
 		}
 		return
 	}
@@ -28,10 +34,11 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 		if err != nil {
 			return
 		}
-		cmd.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		cmd.Name, err = readRowName(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
+		cmd.Name = strings.TrimSuffix(cmd.Name, " Command")
 		var dir string
 		dir, err = readRowValue(row, columnMap, matter.TableColumnDirection)
 		if err != nil {
@@ -52,7 +59,7 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 		if err != nil {
 			return
 		}
-		cmd.Access = ParseAccess(a)
+		cmd.Access = ParseAccess(a, true)
 		if cmd.Access.Invoke == matter.PrivilegeUnknown && cmd.Direction == matter.InterfaceClient {
 			// Response commands sometimes leave out the privilege, so we're assuming it's operate
 			cmd.Access.Invoke = matter.PrivilegeOperate
@@ -68,8 +75,13 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 			name := strings.TrimSuffix(strings.ToLower(s.Name), " command")
 			c, ok := commandMap[name]
 			if !ok {
-				slog.Debug("unknown command", "command", name)
-				continue
+				// Command sometimes have an parenthetical abbreviation after their name
+				name = parentheticalExpressionPattern.ReplaceAllString(name, "")
+				c, ok = commandMap[name]
+				if !ok {
+					slog.Warn("unknown command", "path", d.Path, "command", s.Name)
+					continue
+				}
 			}
 			p := parse.FindFirst[*types.Paragraph](s.Elements)
 			if p != nil {
@@ -82,15 +94,20 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 			var rows []*types.TableRow
 			var headerRowIndex int
 			var columnMap ColumnIndex
-			rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 			if err != nil {
 				if err == NoTableFound {
 					err = nil
-					continue
+				} else {
+					slog.Warn("No valid command parameter table found", "command", name, "path", d.Path)
+					err = nil
 				}
-				return
+				continue
 			}
 			c.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
+			if err != nil {
+				return
+			}
 		}
 	}
 	return

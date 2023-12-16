@@ -22,7 +22,12 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	logrus.SetLevel(logrus.ErrorLevel)
+	verbose, _ := rootCmd.Flags().GetBool("verbose")
+	if verbose {
+		logrus.SetLevel(logrus.DebugLevel)
+	} else {
+		logrus.SetLevel(logrus.ErrorLevel)
+	}
 
 	err := rootCmd.Execute()
 	if err != nil {
@@ -33,6 +38,7 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().BoolP("dryrun", "d", false, "whether or not to actually output files")
 	rootCmd.PersistentFlags().Bool("serial", false, "process files one-by-one")
+	rootCmd.PersistentFlags().Bool("verbose", false, "display verbose information")
 	rootCmd.PersistentFlags().StringSliceP("attribute", "a", []string{}, "attribute for pre-processing asciidoc; this flag can be provided more than once")
 
 	rootCmd.AddCommand(format.Command)

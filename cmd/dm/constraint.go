@@ -37,7 +37,7 @@ func renderConstraintElement(name string, con matter.Constraint, dataType *matte
 		cx = parent.CreateElement(name)
 		if dataType.IsArray() {
 			cx.CreateAttr("type", "countBetween")
-		} else if dataType.IsString() {
+		} else if dataType.HasLength() {
 			cx.CreateAttr("type", "lengthBetween")
 		} else {
 			cx.CreateAttr("type", "between")
@@ -48,7 +48,7 @@ func renderConstraintElement(name string, con matter.Constraint, dataType *matte
 		cx = parent.CreateElement(name)
 		if dataType.IsArray() {
 			cx.CreateAttr("type", "minCount")
-		} else if dataType.IsString() {
+		} else if dataType.HasLength() {
 			cx.CreateAttr("type", "minLength")
 		} else {
 			cx.CreateAttr("type", "min")
@@ -58,7 +58,7 @@ func renderConstraintElement(name string, con matter.Constraint, dataType *matte
 		cx = parent.CreateElement(name)
 		if dataType.IsArray() {
 			cx.CreateAttr("type", "maxCount")
-		} else if dataType.IsString() {
+		} else if dataType.HasLength() {
 			cx.CreateAttr("type", "maxLength")
 		} else {
 			cx.CreateAttr("type", "max")

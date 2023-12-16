@@ -9,7 +9,7 @@ func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(s)
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
 		if err == NoTableFound {
 			err = nil
@@ -18,7 +18,7 @@ func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 	}
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		attr := &matter.Field{}
+		attr := matter.NewAttribute()
 		attr.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
@@ -43,15 +43,12 @@ func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 			return
 		}
 		attr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
-		if err != nil {
-			return
-		}
 		var a string
 		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}
-		attr.Access = ParseAccess(a)
+		attr.Access = ParseAccess(a, false)
 		attributes = append(attributes, attr)
 	}
 	return

@@ -9,7 +9,7 @@ import (
 )
 
 func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err error) {
-	attr = &matter.Field{}
+	attr = matter.NewAttribute()
 	err = readFieldAttributes(e, attr, "attribute")
 	for {
 		var tok xml.Token

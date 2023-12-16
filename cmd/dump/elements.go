@@ -157,7 +157,7 @@ func dumpElements(doc *ascii.Doc, elements []interface{}, indent int) {
 		case *types.PredefinedAttribute:
 			fmt.Printf("{predef %s}", el.Name)
 		default:
-			fmt.Printf("unknown element type: %T\n", el)
+			fmt.Printf("unknown render element type: %T\n", el)
 		}
 	}
 }

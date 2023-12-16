@@ -3,6 +3,7 @@ package amend
 import (
 	"encoding/xml"
 	"io"
+	"log/slog"
 
 	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
@@ -66,11 +67,11 @@ func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEnco
 					Ignore(ts, "access")
 				} else {
 					r.setAccessAttributes(t.Attr, "invoke", matchingCommand.Access.Invoke)
-					writeThrough(ts, e, t)
+					err = writeThrough(ts, e, t)
 					needsAccess = false
 				}
 			case "description":
-				writeThrough(ts, e, t)
+				err = writeThrough(ts, e, t)
 			case "arg":
 				if needsAccess {
 					err = r.renderAccess(e, "invoke", matchingCommand.Access.Invoke)
@@ -91,13 +92,17 @@ func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEnco
 						}
 
 						t.Attr = r.setFieldAttributes(f, t.Attr, matchingCommand.Fields)
-						writeThrough(ts, e, t)
+						err = writeThrough(ts, e, t)
+						if err != nil {
+							return
+						}
 						break
 					}
 				}
 
 			default:
-
+				slog.Warn("unexpected element in command", "name", t.Name.Local)
+				err = Ignore(ts, t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {
@@ -273,11 +278,12 @@ func (r *renderer) renderAccess(e xmlEncoder, op string, p matter.Privilege) (er
 func (r *renderer) setAccessAttributes(ax []xml.Attr, op string, p matter.Privilege) []xml.Attr {
 	ax = setAttributeValue(ax, "op", op)
 	var name string
-	pr := getAttributeValue(ax, "privilege")
-	if len(pr) > 0 || r.errata.WriteRoleAsPrivilege {
-		name = "privilege"
-	} else {
+	if r.errata.WritePrivilegeAsRole {
 		name = "role"
+		ax = removeAttribute(ax, "privilege")
+	} else {
+		name = "privilege"
+		ax = removeAttribute(ax, "role")
 	}
 	px, _ := p.MarshalXMLAttr(xml.Name{Local: name})
 	ax = setAttributeValue(ax, px.Name.Local, px.Value)

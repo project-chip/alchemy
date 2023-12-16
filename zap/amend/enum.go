@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -13,7 +14,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
+func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
 	name := getAttributeValue(el.Attr, "name")
 
 	var matchingEnum *matter.Enum
@@ -39,8 +40,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 		return
 	}
 
-	remainingClusterIDs := make([]string, len(clusterIDs))
-	copy(remainingClusterIDs, clusterIDs)
+	remainingClusterIDs := r.getClusterCodes(matchingEnum)
 
 	var valueIndex int
 
@@ -58,7 +58,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				writeThrough(d, e, t)
+				err = writeThrough(d, e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
 				id := matter.ParseID(code)
@@ -68,7 +68,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 						return ids == s
 					})
 				}
-				writeThrough(d, e, t)
+				err = writeThrough(d, e, t)
 			case "item":
 				if len(remainingClusterIDs) > 0 {
 					err = r.renderClusterCodes(e, remainingClusterIDs)
@@ -88,13 +88,17 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 							continue
 						}
 						t.Attr = r.setEnumValueAttributes(v, t.Attr, valFormat)
-						writeThrough(d, e, t)
+						err = writeThrough(d, e, t)
+						if err != nil {
+							return
+						}
 						break
 					}
 				}
 
 			default:
-
+				slog.Warn("unexpected element in enum", "name", t.Name.Local)
+				err = Ignore(d, t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {
@@ -144,7 +148,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 	}
 }
 
-func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum, clusterIDs []string, provisional bool) (err error) {
+func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum, provisional bool) (err error) {
 	xfb := el.Copy()
 
 	var valFormat string
@@ -154,7 +158,7 @@ func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum,
 	if err != nil {
 		return
 	}
-	err = r.renderClusterCodes(e, clusterIDs)
+	err = r.renderClusterCodes(e, r.getClusterCodes(en))
 	if err != nil {
 		return
 	}

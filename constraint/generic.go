@@ -6,6 +6,10 @@ type GenericConstraint struct {
 	Value string
 }
 
+func (c *GenericConstraint) Type() matter.ConstraintType {
+	return matter.ConstraintTypeGeneric
+}
+
 func (c *GenericConstraint) AsciiDocString(dataType *matter.DataType) string {
 	return c.Value
 }

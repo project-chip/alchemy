@@ -5,6 +5,10 @@ import "github.com/hasty/alchemy/matter"
 type DescribedConstraint struct {
 }
 
+func (c *DescribedConstraint) Type() matter.ConstraintType {
+	return matter.ConstraintTypeDescribed
+}
+
 func (c *DescribedConstraint) AsciiDocString(dataType *matter.DataType) string {
 	return "desc"
 }

@@ -15,7 +15,7 @@ type Command struct {
 	Fields FieldSet `json:"fields,omitempty"`
 }
 
-func (c *Command) ModelType() Entity {
+func (c *Command) Entity() Entity {
 	return EntityCommand
 }
 

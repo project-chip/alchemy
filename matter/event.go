@@ -16,6 +16,10 @@ func (e *Event) GetConformance() Conformance {
 	return e.Conformance
 }
 
+func (e *Event) Entity() Entity {
+	return EntityEvent
+}
+
 type EventSet []*Event
 
 func (es EventSet) ConformanceReference(name string) HasConformance {

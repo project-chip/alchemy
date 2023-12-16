@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func renderConformanceString(cluster *matter.Cluster, c matter.Conformance, parent *etree.Element) error {
+func renderConformanceString(cluster matter.ConformanceValueStore, c matter.Conformance, parent *etree.Element) error {
 	if c == nil {
 		return nil
 	}
@@ -36,7 +36,7 @@ func renderConformanceString(cluster *matter.Cluster, c matter.Conformance, pare
 	return nil
 }
 
-func renderConformance(cluster *matter.Cluster, con matter.Conformance, parent *etree.Element) error {
+func renderConformance(cluster matter.ConformanceValueStore, con matter.Conformance, parent *etree.Element) error {
 	switch con := con.(type) {
 	case *conformance.MandatoryConformance:
 		mc := parent.CreateElement("mandatoryConform")
@@ -82,7 +82,7 @@ func renderConformance(cluster *matter.Cluster, con matter.Conformance, parent *
 	return nil
 }
 
-func renderConformanceExpression(cluster *matter.Cluster, exp matter.ConformanceExpression, parent *etree.Element) error {
+func renderConformanceExpression(cluster matter.ConformanceValueStore, exp matter.ConformanceExpression, parent *etree.Element) error {
 	if exp == nil {
 		return nil
 	}
@@ -93,10 +93,20 @@ func renderConformanceExpression(cluster *matter.Cluster, exp matter.Conformance
 		}
 		parent.CreateElement("feature").CreateAttr("name", e.ID)
 	case *conformance.IdentifierExpression:
-		for _, a := range cluster.Attributes {
-			if a.Name == e.ID {
-				parent.CreateElement("attribute").CreateAttr("name", e.ID)
-				return nil
+		if cluster == nil {
+			parent.CreateElement("condition").CreateAttr("name", e.ID)
+
+		} else {
+			id := cluster.ConformanceReference(e.ID)
+			if id == nil {
+				parent.CreateElement("condition").CreateAttr("name", e.ID)
+			} else {
+				switch id.Entity() {
+				case matter.EntityAttribute, matter.EntityCondition:
+					parent.CreateElement("attribute").CreateAttr("name", e.ID)
+				default:
+					parent.CreateElement("condition").CreateAttr("name", e.ID)
+				}
 			}
 		}
 	case *conformance.LogicalExpression:

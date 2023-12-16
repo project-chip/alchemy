@@ -1,13 +1,6 @@
-package zap
+package generate
 
-import (
-	"log/slog"
-	"strings"
-
-	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/matter"
-)
-
+/*
 func patchMissingTypes(doc *ascii.Doc, models []interface{}, missingStructs *concurrentMap) {
 	for {
 		missingCount := restoreMissingTypes(doc, models, missingStructs)
@@ -181,3 +174,4 @@ func findMissingTypes(d *ascii.Doc, missingStructs *concurrentMap) (foundCount i
 	}
 	return
 }
+*/

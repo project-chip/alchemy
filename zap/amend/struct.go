@@ -3,6 +3,7 @@ package amend
 import (
 	"encoding/xml"
 	"io"
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
+func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
 	name := getAttributeValue(el.Attr, "name")
 
 	var skip bool
@@ -26,13 +27,15 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 	}
 
 	if matchingStruct == nil || skip {
-		Ignore(d, "struct")
+		err = Ignore(d, "struct")
 		return
 	}
 
+	remainingClusterIDs := r.getClusterCodes(matchingStruct)
+
 	if r.errata.SeparateStructs != nil {
 		if _, ok := r.errata.SeparateStructs[name]; ok {
-			for _, clusterID := range clusterIDs {
+			for _, clusterID := range remainingClusterIDs {
 				err = r.writeStruct(e, el, matchingStruct, []string{clusterID}, false)
 				if err != nil {
 					return
@@ -47,9 +50,6 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 	if err != nil {
 		return
 	}
-
-	remainingClusterIDs := make([]string, len(clusterIDs))
-	copy(remainingClusterIDs, clusterIDs)
 
 	var fieldIndex int
 
@@ -67,7 +67,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				writeThrough(d, e, t)
+				err = writeThrough(d, e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
 				id := matter.ParseID(code)
@@ -77,7 +77,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 						return ids == s
 					})
 				}
-				writeThrough(d, e, t)
+				err = writeThrough(d, e, t)
 			case "item":
 				if len(remainingClusterIDs) > 0 {
 					err = r.renderClusterCodes(e, remainingClusterIDs)
@@ -99,13 +99,17 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 
 						t.Attr = setAttributeValue(t.Attr, "fieldId", f.ID.IntString())
 						t.Attr = r.setFieldAttributes(f, t.Attr, matchingStruct.Fields)
-						writeThrough(d, e, t)
+						err = writeThrough(d, e, t)
+						if err != nil {
+							return
+						}
 						break
 					}
 				}
 
 			default:
-
+				slog.Warn("unexpected element in struct", "name", t.Name.Local)
+				err = Ignore(d, t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

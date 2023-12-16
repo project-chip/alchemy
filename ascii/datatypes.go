@@ -48,7 +48,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 	ids := make(map[uint64]struct{})
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		f := &matter.Field{}
+		f := matter.NewField()
 		f.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
@@ -80,7 +80,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 		if err != nil {
 			return
 		}
-		f.Access = ParseAccess(a)
+		f.Access = ParseAccess(a, false)
 		f.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
@@ -89,7 +89,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 			id := f.ID.Value()
 			_, ok := ids[id]
 			if ok {
-				slog.Warn("duplicate field ID", "id", id)
+				slog.Warn("duplicate field ID", "doc", d.Path, "name", f.Name, "id", id)
 				return
 			}
 			ids[id] = struct{}{}
@@ -100,7 +100,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 	return
 }
 
-var listDataTypeDefinitionPattern = regexp.MustCompile(`list\[([^\]]+)\]`)
+var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeList)\[([^\]]+)\]`)
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
 func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) *matter.DataType {
@@ -119,71 +119,47 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 	if len(p.Elements) == 0 {
 		return nil
 	}
-	var name string
 	var isArray bool
-	if len(p.Elements) == 1 {
-		el := p.Elements[0]
+
+	var sb strings.Builder
+	for _, el := range p.Elements {
 		switch v := el.(type) {
 		case *types.StringElement:
-			content := v.Content
-			content = asteriskPattern.ReplaceAllString(content, "")
-			match := listDataTypeDefinitionPattern.FindStringSubmatch(content)
-			if match != nil {
-				name = match[1]
-				isArray = true
-			} else {
-				name = v.Content
-			}
+			sb.WriteString(v.Content)
 		case *types.InternalCrossReference:
+			var name string
 			anchor, _ := d.getAnchor(v.ID.(string))
 			if anchor != nil {
 				name = ReferenceName(anchor.Element)
+				if len(name) == 0 {
+					name = anchor.Label
+				}
 			} else {
-				name = v.ID.(string)
+				name = strings.TrimPrefix(v.ID.(string), "_")
 			}
+			sb.WriteString(name)
 			break
+		case *types.SpecialCharacter:
 		default:
-			slog.Warn("unknown data type value element", "type", fmt.Sprintf("%T", el))
-		}
-	} else {
-		for _, el := range p.Elements {
-			switch v := el.(type) {
-			case *types.StringElement:
-				content := v.Content
-				content = asteriskPattern.ReplaceAllString(content, "")
-
-				if content == "list[" {
-					slog.Debug("isArray", "content", content)
-					isArray = true
-				} else if name == "" {
-					slog.Debug("inner list", "content", content)
-					anchor, _ := d.getAnchor(content)
-					if anchor != nil {
-						name = ReferenceName(anchor.Element)
-					} else {
-						slog.Debug("inner list", "no anchor", content)
-						name = strings.TrimPrefix(content, "_")
-					}
-				}
-			case *types.InternalCrossReference:
-				anchor, _ := d.getAnchor(v.ID.(string))
-				slog.Debug("inner list", "icdr", v.ID.(string))
-				if anchor != nil {
-					slog.Debug("inner list", "anchor", anchor.Element)
-					name = ReferenceName(anchor.Element)
-				} else {
-					slog.Debug("inner list", "no anchor", v.ID.(string))
-					name = strings.TrimPrefix(v.ID.(string), "_")
-					name = strings.TrimPrefix(name, "ref_") // Trim, and hope someone else has it defined
-				}
-				break
-			default:
-				slog.Warn("unknown data type value element", "type", v)
-			}
+			slog.Warn("unknown data type value element", "type", v)
 		}
 	}
+	var name string
+	var content = asteriskPattern.ReplaceAllString(sb.String(), "")
+	match := listDataTypeDefinitionPattern.FindStringSubmatch(content)
+	if match != nil {
+		name = match[1]
+		isArray = true
+	} else {
+		name = content
+	}
+	commaIndex := strings.IndexRune(name, ',')
+	if commaIndex >= 0 {
+		name = name[:commaIndex]
+	}
 	name = strings.TrimSuffix(name, " Type")
-	return matter.NewDataType(name, isArray)
+	dt := matter.NewDataType(name, isArray)
+	return dt
 }
 
 func (d *Doc) getAnchor(id string) (*Anchor, error) {
@@ -225,43 +201,29 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 		return nil
 	}
 	var val matter.Constraint
-	if len(p.Elements) == 1 {
-		switch e := p.Elements[0].(type) {
+
+	var sb strings.Builder
+	for _, el := range p.Elements {
+		switch v := el.(type) {
 		case *types.StringElement:
-			val = constraint.ParseConstraint(e.Content)
+			sb.WriteString(v.Content)
 		case *types.InternalCrossReference:
-			anchor, _ := d.getAnchor(e.ID.(string))
+			anchor, _ := d.getAnchor(v.ID.(string))
 			var name string
 			if anchor != nil {
 				name = ReferenceName(anchor.Element)
 			} else {
-				name = strings.TrimPrefix(e.ID.(string), "_")
+				name = strings.TrimPrefix(v.ID.(string), "_")
 			}
-			val = constraint.ParseConstraint(StripTypeSuffixes(name))
+			sb.WriteString(name)
+		case *types.QuotedText:
+			// This is usually an asterisk, and should be ignored
+		default:
+			slog.Warn("unknown constraint value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
 		}
-	} else {
-		var sb strings.Builder
-		for _, el := range p.Elements {
-			switch v := el.(type) {
-			case *types.StringElement:
-				sb.WriteString(v.Content)
-			case *types.InternalCrossReference:
-				anchor, _ := d.getAnchor(v.ID.(string))
-				var name string
-				if anchor != nil {
-					name = ReferenceName(anchor.Element)
-				} else {
-					name = strings.TrimPrefix(v.ID.(string), "_")
-				}
-				sb.WriteString(name)
-			case *types.QuotedText:
-				// This is usually an asterisk, and should be ignored
-			default:
-				slog.Warn("unknown constraint value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
-			}
-		}
-		val = constraint.ParseConstraint(StripTypeSuffixes(sb.String()))
 	}
+	val = constraint.ParseConstraint(StripTypeSuffixes(sb.String()))
+
 	return val
 }
 
@@ -282,48 +244,54 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 	if len(p.Elements) == 0 {
 		return nil
 	}
-	var val matter.Conformance
-	if len(p.Elements) == 1 {
-		switch e := p.Elements[0].(type) {
+
+	var sb strings.Builder
+	for _, el := range p.Elements {
+		switch v := el.(type) {
 		case *types.StringElement:
-			val = conformance.ParseConformance(e.Content)
+			sb.WriteString(v.Content)
 		case *types.InternalCrossReference:
-			anchor, _ := d.getAnchor(e.ID.(string))
+			anchor, _ := d.getAnchor(v.ID.(string))
 			var name string
 			if anchor != nil {
 				name = ReferenceName(anchor.Element)
 			} else {
-				name = strings.TrimPrefix(e.ID.(string), "_")
+				name = strings.TrimPrefix(v.ID.(string), "_")
 			}
-			val = conformance.ParseConformance(StripTypeSuffixes(name))
-		}
-	} else {
-		var sb strings.Builder
-		for _, el := range p.Elements {
-			switch v := el.(type) {
-			case *types.StringElement:
-				sb.WriteString(v.Content)
-			case *types.InternalCrossReference:
-				anchor, _ := d.getAnchor(v.ID.(string))
-				var name string
-				if anchor != nil {
-					name = ReferenceName(anchor.Element)
+			sb.WriteString(name)
+		case *types.SpecialCharacter:
+			sb.WriteString(v.Name)
+		case *types.QuotedText:
+			// This is usually an asterisk, and should be ignored
+		case *types.InlineLink:
+			if v.Location != nil {
+				if len(v.Location.Scheme) > 0 {
+					sb.WriteString(v.Location.Scheme)
 				} else {
-					name = strings.TrimPrefix(v.ID.(string), "_")
+					sb.WriteString("link:")
 				}
-				sb.WriteString(name)
-			case *types.SpecialCharacter:
-				sb.WriteString(v.Name)
-			case *types.QuotedText:
-				// This is usually an asterisk, and should be ignored
-			default:
-				slog.Warn("unknown conformance value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
+				if path, ok := v.Location.Path.(string); ok {
+					sb.WriteString(path)
+				}
 			}
+		case *types.PredefinedAttribute:
+			switch v.Name {
+			case "nbsp":
+				sb.WriteRune(' ')
+			default:
+				slog.Warn("unknown predefined attribute", "doc", d.Path, "name", v.Name)
+			}
+		default:
+			slog.Warn("unknown conformance value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
 		}
-
-		val = conformance.ParseConformance(StripTypeSuffixes(sb.String()))
 	}
-	return val
+
+	s := sb.String()
+	firstNewLineIndex := strings.IndexAny(s, "\r\n")
+	if firstNewLineIndex >= 0 {
+		s = s[0:firstNewLineIndex]
+	}
+	return conformance.ParseConformance(StripTypeSuffixes(s))
 }
 
 var typeSuffixes = []string{" Attribute", " Type", " Field", " Command", " Attribute", " Event"}

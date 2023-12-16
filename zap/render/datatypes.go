@@ -7,15 +7,8 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *etree.Element, errata *zap.Errata) {
-	var clusterIDs []string
-	for _, cluster := range clusters {
-		clusterIDs = append(clusterIDs, cluster.ID.HexString())
-	}
-	dataTypeOrder := errata.DataTypeOrder
-	if dataTypeOrder == nil {
-		dataTypeOrder = zap.DefaultErrata.DataTypeOrder
-	}
+func (r *renderer) renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *etree.Element, errata *zap.Errata) {
+
 	bitmaps := make(map[*matter.Bitmap]struct{})
 	enums := make(map[*matter.Enum]struct{})
 	structs := make(map[*matter.Struct]struct{})
@@ -27,17 +20,9 @@ func renderDataTypes(cluster *matter.Cluster, clusters []*matter.Cluster, cx *et
 	for _, e := range cluster.Events {
 		addTypes(e.Fields, bitmaps, enums, structs)
 	}
-
-	for _, s := range dataTypeOrder {
-		switch s {
-		case matter.SectionDataTypeBitmap:
-			renderBitmaps(bitmaps, clusterIDs, cx)
-		case matter.SectionDataTypeEnum:
-			renderEnums(enums, clusterIDs, cx)
-		case matter.SectionDataTypeStruct:
-			renderStructs(structs, clusterIDs, cx)
-		}
-	}
+	r.renderBitmaps(bitmaps, cx)
+	r.renderEnums(enums, cx)
+	r.renderStructs(structs, cx)
 }
 func addTypes(fs matter.FieldSet, bitmaps map[*matter.Bitmap]struct{}, enums map[*matter.Enum]struct{}, structs map[*matter.Struct]struct{}) {
 	for _, f := range fs {
@@ -72,7 +57,7 @@ func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Fiel
 	}
 	dts := zap.FieldToZapDataType(fs, f)
 	if f.Type.IsArray() {
-		x.CreateAttr("type", "ARRAY")
+		x.CreateAttr("type", "array")
 		x.CreateAttr("entryType", dts)
 	} else {
 		x.CreateAttr("type", dts)

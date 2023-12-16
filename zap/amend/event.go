@@ -3,6 +3,7 @@ package amend
 import (
 	"encoding/xml"
 	"io"
+	"log/slog"
 	"strings"
 
 	"github.com/hasty/alchemy/conformance"
@@ -37,6 +38,7 @@ func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncode
 	}
 
 	var fieldIndex int
+	needsAccess := matchingEvent.Access.Read != matter.PrivilegeUnknown && matchingEvent.Access.Read != matter.PrivilegeView
 
 	for {
 		var tok xml.Token
@@ -52,7 +54,7 @@ func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncode
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				writeThrough(ts, e, t)
+				err = writeThrough(ts, e, t)
 			case "field":
 				for {
 					if fieldIndex >= len(matchingEvent.Fields) {
@@ -67,13 +69,26 @@ func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncode
 
 						t.Attr = setAttributeValue(t.Attr, "id", f.ID.IntString())
 						t.Attr = r.setFieldAttributes(f, t.Attr, matchingEvent.Fields)
-						writeThrough(ts, e, t)
+						err = writeThrough(ts, e, t)
+						if err != nil {
+							return
+						}
 						break
 					}
 				}
-
+			case "access":
+				{
+					if !needsAccess {
+						Ignore(ts, "access")
+					} else {
+						r.setAccessAttributes(t.Attr, "read", matchingEvent.Access.Read)
+						err = writeThrough(ts, e, t)
+						needsAccess = false
+					}
+				}
 			default:
-
+				slog.Warn("unexpected element in event", "name", t.Name.Local)
+				err = Ignore(ts, t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {
@@ -91,6 +106,12 @@ func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncode
 					}
 					xfe := xml.EndElement{Name: elName}
 					err = e.EncodeToken(xfe)
+					if err != nil {
+						return
+					}
+				}
+				if needsAccess {
+					err = r.renderAccess(e, "read", matchingEvent.Access.Read)
 					if err != nil {
 						return
 					}

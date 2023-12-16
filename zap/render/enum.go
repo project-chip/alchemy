@@ -12,7 +12,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderEnums(enums map[*matter.Enum]struct{}, clusterIDs []string, cx *etree.Element) {
+func (r *renderer) renderEnums(enums map[*matter.Enum]struct{}, cx *etree.Element) {
 
 	ens := make([]*matter.Enum, 0, len(enums))
 	for en := range enums {
@@ -40,9 +40,8 @@ func renderEnums(enums map[*matter.Enum]struct{}, clusterIDs []string, cx *etree
 			en.CreateAttr("type", "enum8")
 		}
 
-		for _, cid := range clusterIDs {
-			en.CreateElement("cluster").CreateAttr("code", cid)
-		}
+		r.renderClusterCodes(en, v)
+
 		for _, ev := range v.Values {
 			if conformance.IsZigbee(v.Values, ev.Conformance) {
 				continue

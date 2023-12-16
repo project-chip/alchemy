@@ -22,7 +22,7 @@ func (h *Host) indexDoc(ctx context.Context, doc *ascii.Doc, raw bool) (*section
 				var err error
 				switch s.SecType {
 				case matter.SectionClusterID:
-					err = h.indexCluster(ctx, ds, top)
+					err = h.indexCluster(ctx, doc, ds, top)
 				}
 				if err != nil {
 					return nil, err

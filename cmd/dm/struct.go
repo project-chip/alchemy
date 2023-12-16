@@ -40,15 +40,8 @@ func renderField(cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, p
 	i.CreateAttr("id", f.ID.IntString())
 	i.CreateAttr("name", f.Name)
 	renderDataType(f, i)
-	if f.Access.Read != matter.PrivilegeUnknown {
-		i.CreateAttr("read", "true")
-	}
-	if f.Access.Write != matter.PrivilegeUnknown {
-		i.CreateAttr("write", "true")
-	}
-	if f.Quality.Has(matter.QualityNullable) {
-		i.CreateElement("quality").CreateAttr("nullable", "true")
-	}
+	renderAttributeAccess(i, f.Access)
+	renderQuality(i, f.Quality, matter.QualityNullable)
 	err = renderConformanceString(cluster, f.Conformance, i)
 	if err != nil {
 		return

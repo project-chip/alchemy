@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toDeviceTypes(d *Doc) (models []interface{}, err error) {
+func (s *Section) toDeviceTypes(d *Doc) (models []matter.Model, err error) {
 	var deviceTypes []*matter.DeviceType
 	var description string
 	p := parse.FindFirst[*types.Paragraph](s.Elements)
@@ -23,7 +23,7 @@ func (s *Section) toDeviceTypes(d *Doc) (models []interface{}, err error) {
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		switch s.SecType {
 		case matter.SectionClassification:
-			deviceTypes, err = readDeviceTypeIDs(s)
+			deviceTypes, err = readDeviceTypeIDs(d, s)
 		}
 		if err != nil {
 			return nil, err
@@ -44,10 +44,14 @@ func (s *Section) toDeviceTypes(d *Doc) (models []interface{}, err error) {
 				}
 			case matter.SectionElementRequirements:
 				c.ElementRequirements, err = s.toElementRequirements(d)
+			case matter.SectionConditions:
+				c.Conditions, err = s.toConditions(d)
+			case matter.SectionRevisionHistory:
+				c.Revisions, err = readRevisionHistory(d, s)
 			default:
 			}
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
 			}
 		}
 	}
@@ -57,8 +61,8 @@ func (s *Section) toDeviceTypes(d *Doc) (models []interface{}, err error) {
 	return models, nil
 }
 
-func readDeviceTypeIDs(s *Section) ([]*matter.DeviceType, error) {
-	rows, headerRowIndex, columnMap, _, err := parseFirstTable(s)
+func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
+	rows, headerRowIndex, columnMap, _, err := parseFirstTable(doc, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading device type ID: %w", err)
 	}
@@ -70,7 +74,7 @@ func readDeviceTypeIDs(s *Section) ([]*matter.DeviceType, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		c.Name, err = readRowValue(row, columnMap, matter.TableColumnDeviceName)
 		if err != nil {
 			return nil, err
 		}

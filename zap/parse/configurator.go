@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func readConfigurator(d *xml.Decoder) (models []any, err error) {
+func readConfigurator(d *xml.Decoder) (models []matter.Model, err error) {
 	enums := make(map[uint64][]*matter.Enum)
 	bitmaps := make(map[uint64][]*matter.Bitmap)
 	structs := make(map[uint64][]*matter.Struct)
