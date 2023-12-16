@@ -68,7 +68,7 @@ func readRowID(row *types.TableRow, columnMap ColumnIndex, column matter.TableCo
 	if err != nil {
 		return matter.InvalidID, err
 	}
-	return matter.ParseID(id), nil
+	return matter.ParseNumber(id), nil
 }
 
 func readRowName(doc *Doc, row *types.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {

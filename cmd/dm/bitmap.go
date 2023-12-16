@@ -20,7 +20,7 @@ func renderBitmaps(cluster *matter.Cluster, dt *etree.Element) (err error) {
 		en.CreateAttr("name", bm.Name)
 		size := bm.Size() / 4
 		for _, v := range bm.Bits {
-			val := matter.ParseID(v.Bit)
+			val := matter.ParseNumber(v.Bit)
 			var mask uint64
 			if !val.Valid() {
 				var e error

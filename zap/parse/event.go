@@ -15,7 +15,7 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 		switch a.Name.Local {
 		case "side":
 		case "code":
-			event.ID = matter.ParseID(a.Value)
+			event.ID = matter.ParseNumber(a.Value)
 		case "priority":
 			event.Priority = a.Value
 		case "name":

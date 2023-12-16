@@ -44,7 +44,7 @@ type XMLClusterExtension struct {
 func (c *XMLCluster) ToModel() (mc *matter.Cluster, err error) {
 	mc = &matter.Cluster{
 		Name: c.Name,
-		ID:   matter.ParseID(c.Code),
+		ID:   matter.ParseNumber(c.Code),
 	}
 	return
 }

@@ -61,7 +61,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 				err = writeThrough(d, e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
-				id := matter.ParseID(code)
+				id := matter.ParseNumber(code)
 				if id.Valid() {
 					ids := id.HexString()
 					remainingClusterIDs = slices.DeleteFunc(remainingClusterIDs, func(s string) bool {

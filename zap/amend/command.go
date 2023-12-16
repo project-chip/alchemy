@@ -13,7 +13,7 @@ import (
 func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, commands map[*matter.Command]struct{}) (err error) {
 	code := getAttributeValue(el.Attr, "code")
 	source := getAttributeValue(el.Attr, "source")
-	commandID := matter.ParseID(code)
+	commandID := matter.ParseNumber(code)
 
 	var matchingCommand *matter.Command
 	for c := range commands {
