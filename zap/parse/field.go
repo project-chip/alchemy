@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/zap"
 )
 

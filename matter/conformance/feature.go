@@ -2,8 +2,6 @@ package conformance
 
 import (
 	"fmt"
-
-	"github.com/hasty/alchemy/matter"
 )
 
 type FeatureExpression struct {
@@ -18,6 +16,6 @@ func (fe *FeatureExpression) String() string {
 	return fe.ID
 }
 
-func (fe *FeatureExpression) Eval(context matter.ConformanceContext) (bool, error) {
+func (fe *FeatureExpression) Eval(context ConformanceContext) (bool, error) {
 	return evalIdentifier(context, fe.ID, fe.Not)
 }

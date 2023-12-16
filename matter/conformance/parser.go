@@ -15,7 +15,6 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/hasty/alchemy/matter"
 )
 
 func debug(format string, a ...any) (n int, err error) {
@@ -1550,7 +1549,7 @@ func (c *current) onInput1(conf any) (any, error) {
 
 	var set ConformanceSet
 	for _, i := range cs {
-		con := i.(matter.Conformance)
+		con := i.(Conformance)
 		set = append(set, con)
 	}
 	return set, nil
@@ -1723,7 +1722,7 @@ func (p *parser) callonConformance10() (any, error) {
 }
 
 func (c *current) onConformance2(i, choice any) (any, error) {
-	exp := i.(matter.ConformanceExpression)
+	exp := i.(ConformanceExpression)
 	o := &OptionalConformance{Expression: exp}
 	if choice != nil {
 		o.Choice = choice.(*Choice)
@@ -1738,7 +1737,7 @@ func (p *parser) callonConformance2() (any, error) {
 }
 
 func (c *current) onConformance60(eq any) (any, error) {
-	exp := eq.(matter.ConformanceExpression)
+	exp := eq.(ConformanceExpression)
 	return &MandatoryConformance{Expression: exp}, nil
 }
 
@@ -1983,7 +1982,7 @@ func (c *current) onEquality1(left, right any) (any, error) {
 	if len(equalityOps) == 0 {
 		return left, nil
 	}
-	leftCE := left.(matter.ConformanceExpression)
+	leftCE := left.(ConformanceExpression)
 	var ee *EqualityExpression
 	for _, equalityOp := range equalityOps {
 		ee = equalityOp.(*EqualityExpression)
@@ -2001,7 +2000,7 @@ func (p *parser) callonEquality1() (any, error) {
 
 func (c *current) onEqualsOp1(equals, f any) (any, error) {
 	//debug("matched Equals Op %s\n", string(c.text))
-	fc := f.(matter.ConformanceExpression)
+	fc := f.(ConformanceExpression)
 	return &EqualityExpression{
 		Not:   (string(equals.([]uint8)) == "!="),
 		Right: fc,
@@ -2023,7 +2022,7 @@ func (c *current) onOr1(left, right any) (any, error) {
 	if len(orOps) == 0 {
 		return left, nil
 	}
-	leftCE := left.(matter.ConformanceExpression)
+	leftCE := left.(ConformanceExpression)
 	return NewLogicalExpression("|", leftCE, orOps)
 }
 
@@ -2035,7 +2034,7 @@ func (p *parser) callonOr1() (any, error) {
 
 func (c *current) onOrOp1(f any) (any, error) {
 	//debug("matched OR op %s\n", string(c.text))
-	fc := f.(matter.ConformanceExpression)
+	fc := f.(ConformanceExpression)
 	return fc, nil
 }
 
@@ -2054,7 +2053,7 @@ func (c *current) onXor1(left, right any) (any, error) {
 	if len(xorOps) == 0 {
 		return left, nil
 	}
-	leftCE := left.(matter.ConformanceExpression)
+	leftCE := left.(ConformanceExpression)
 	return NewLogicalExpression("^", leftCE, xorOps)
 }
 
@@ -2066,7 +2065,7 @@ func (p *parser) callonXor1() (any, error) {
 
 func (c *current) onXorOp1(f any) (any, error) {
 	// debug("matched XOR op %s\n", string(c.text))
-	fc := f.(matter.ConformanceExpression)
+	fc := f.(ConformanceExpression)
 	return fc, nil
 }
 
@@ -2085,7 +2084,7 @@ func (c *current) onAnd1(left, right any) (any, error) {
 	if len(addOps) == 0 {
 		return left, nil
 	}
-	leftCE := left.(matter.ConformanceExpression)
+	leftCE := left.(ConformanceExpression)
 	return NewLogicalExpression("&", leftCE, addOps)
 }
 
@@ -2097,7 +2096,7 @@ func (p *parser) callonAnd1() (any, error) {
 
 func (c *current) onAndOp1(f any) (any, error) {
 	//debug("matched AND op %s\n", string(c.text))
-	fc := f.(matter.ConformanceExpression)
+	fc := f.(ConformanceExpression)
 	return fc, nil
 }
 

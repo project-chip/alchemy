@@ -2,11 +2,9 @@ package conformance
 
 import (
 	"strings"
-
-	"github.com/hasty/alchemy/matter"
 )
 
-type ConformanceSet []matter.Conformance
+type ConformanceSet []Conformance
 
 func (cs ConformanceSet) String() string {
 	var s strings.Builder
@@ -30,16 +28,16 @@ func (cs ConformanceSet) String() string {
 	return s.String()
 }
 
-func (cs ConformanceSet) Eval(context matter.ConformanceContext) (matter.ConformanceState, error) {
+func (cs ConformanceSet) Eval(context ConformanceContext) (ConformanceState, error) {
 	for _, c := range cs {
 		cs, err := c.Eval(context)
 		if err != nil {
-			return matter.ConformanceStateUnknown, err
+			return ConformanceStateUnknown, err
 		}
-		if cs == matter.ConformanceStateUnknown {
+		if cs == ConformanceStateUnknown {
 			continue
 		}
 		return cs, nil
 	}
-	return matter.ConformanceStateDisallowed, nil
+	return ConformanceStateDisallowed, nil
 }

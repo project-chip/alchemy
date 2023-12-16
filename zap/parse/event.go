@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 )
 
 func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err error) {

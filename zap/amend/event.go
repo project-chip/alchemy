@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 )
 
 func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, events map[*matter.Event]struct{}) (err error) {

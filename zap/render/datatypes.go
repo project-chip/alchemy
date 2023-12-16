@@ -2,8 +2,8 @@ package render
 
 import (
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/zap"
 )
 

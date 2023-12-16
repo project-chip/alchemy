@@ -1,5 +1,7 @@
 package matter
 
+import "github.com/hasty/alchemy/matter/conformance"
+
 type Cluster struct {
 	ID          *Number     `json:"id,omitempty"`
 	Name        string      `json:"name,omitempty"`
@@ -24,11 +26,11 @@ func (c *Cluster) Entity() Entity {
 	return EntityCluster
 }
 
-func (c *Cluster) ConformanceReference(name string) HasConformance {
+func (c *Cluster) ConformanceReference(name string) conformance.HasConformance {
 	if c == nil {
 		return nil
 	}
-	var cr HasConformance
+	var cr conformance.HasConformance
 	if c.Features != nil {
 		cr = c.Features.ConformanceReference(name)
 		if cr != nil {

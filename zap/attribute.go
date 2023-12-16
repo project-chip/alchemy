@@ -3,8 +3,8 @@ package zap
 import (
 	"encoding/xml"
 
-	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 )
 
 type XMLAttribute struct {

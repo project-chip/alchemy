@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/conformance"
 	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -227,7 +227,7 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 	return val
 }
 
-func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) matter.Conformance {
+func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) conformance.Conformance {
 	i, ok := columnMap[column]
 	if !ok {
 		return nil

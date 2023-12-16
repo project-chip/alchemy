@@ -1,4 +1,4 @@
-package matter
+package conformance
 
 import "fmt"
 
@@ -49,7 +49,6 @@ type ConformanceExpression interface {
 }
 
 type HasConformance interface {
-	Model
 	GetConformance() Conformance
 }
 
