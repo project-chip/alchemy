@@ -415,7 +415,9 @@ func (dt *DataType) Size() int {
 }
 
 func (dt *DataType) NullValue() uint64 {
-
+	if dt == nil {
+		return 0
+	}
 	switch dt.BaseType {
 	case BaseDataTypeInt8, BaseDataTypeSignedTemperature, BaseDataTypeFabricIndex:
 		return 0x80
