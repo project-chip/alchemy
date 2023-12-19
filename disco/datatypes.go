@@ -2,6 +2,7 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -32,6 +33,10 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		dataType := ss.GetDataType()
+		if dataType == nil {
+			slog.Debug("failed to find data type", "section", top.Name)
+			continue
+		}
 		dataTypeCategory := getDataTypeCategory(dataType.Name)
 		cxt.potentialDataTypes[nameKey] = append(cxt.potentialDataTypes[nameKey], &DataTypeEntry{
 			name:             name,

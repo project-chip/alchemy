@@ -36,7 +36,7 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 		return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(columnMap))
 	}
 
-	err = b.fixAccessCells(doc, rows, columnMap)
+	err = b.fixAccessCells(doc, rows, columnMap, false)
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 	return nil
 }
 
-func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex) (err error) {
+func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex, forCommand bool) (err error) {
 	if !b.options.formatAccess {
 		return nil
 	}
@@ -80,7 +80,7 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap 
 		if e != nil {
 			continue
 		}
-		err = setCellString(cell, ascii.AccessToAsciiString(ascii.ParseAccess(vc, false)))
+		err = setCellString(cell, ascii.AccessToAsciiString(ascii.ParseAccess(vc, forCommand), forCommand))
 		if err != nil {
 			return
 		}
