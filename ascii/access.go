@@ -99,7 +99,7 @@ func ParseAccess(vc string, forInvoke bool) (a matter.Access) {
 		}
 		if forInvoke {
 			a.Invoke = stringToPrivilege(invokeAccess)
-		} else {
+		} else if a.Read == matter.PrivilegeUnknown { // Sometimes the read access is just naked, with no preceding "R"
 			a.Read = stringToPrivilege(invokeAccess)
 		}
 	}
@@ -116,25 +116,27 @@ func ParseAccess(vc string, forInvoke bool) (a matter.Access) {
 	return
 }
 
-func AccessToAsciiString(a matter.Access) string {
+func AccessToAsciiString(a matter.Access, forInvoke bool) string {
 	var out strings.Builder
-	if a.Read != matter.PrivilegeUnknown || a.Write != matter.PrivilegeUnknown {
-		if a.Read != matter.PrivilegeUnknown {
-			out.WriteRune('R')
-		}
-		if a.Write != matter.PrivilegeUnknown {
-			if a.OptionalWrite {
-				out.WriteString("[W]")
-			} else {
-				out.WriteRune('W')
+	if !forInvoke {
+		if a.Read != matter.PrivilegeUnknown || a.Write != matter.PrivilegeUnknown {
+			if a.Read != matter.PrivilegeUnknown {
+				out.WriteRune('R')
 			}
-		}
-		out.WriteRune(' ')
-		if a.Read != matter.PrivilegeUnknown {
-			out.WriteString(privilegeToString(a.Read))
-		}
-		if a.Write != matter.PrivilegeUnknown {
-			out.WriteString(privilegeToString(a.Write))
+			if a.Write != matter.PrivilegeUnknown {
+				if a.OptionalWrite {
+					out.WriteString("[W]")
+				} else {
+					out.WriteRune('W')
+				}
+			}
+			out.WriteRune(' ')
+			if a.Read != matter.PrivilegeUnknown {
+				out.WriteString(privilegeToString(a.Read))
+			}
+			if a.Write != matter.PrivilegeUnknown {
+				out.WriteString(privilegeToString(a.Write))
+			}
 		}
 	} else if a.Invoke != matter.PrivilegeUnknown {
 		out.WriteString(privilegeToString(a.Invoke))

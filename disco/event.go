@@ -36,7 +36,7 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 		return fmt.Errorf("can't rearrange events table with so few matches in section %s in %s", events.Name, doc.Path)
 	}
 
-	err = b.fixAccessCells(doc, rows, columnMap)
+	err = b.fixAccessCells(doc, rows, columnMap, false)
 	if err != nil {
 		return fmt.Errorf("error fixing access cells in section %s in %s: %w", events.Name, doc.Path, err)
 	}

@@ -1,6 +1,7 @@
 package ascii
 
 import (
+	"fmt"
 	"log/slog"
 	"slices"
 	"strings"
@@ -114,10 +115,19 @@ func ReferenceName(element interface{}) string {
 					val.WriteString(el.Content)
 				case *types.Symbol:
 					val.WriteString(el.Name)
+				case *types.SpecialCharacter:
+					var char string
+					switch el.Name {
+					case "&":
+						char = el.Name
+					default:
+						slog.Warn("unrecognized special character", "char", el.Name)
+					}
+					val.WriteString(char)
 				case types.WithAttributes:
 					val.WriteString(referenceNameFromAttributes(el))
 				default:
-					slog.Warn("unknown section title element", "element", el)
+					slog.Warn("unknown section title element", "element", el, "type", fmt.Sprintf("%T", el))
 				}
 			}
 			return val.String()
