@@ -134,10 +134,10 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "-2.5°C to 2.5°C",
 		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
-		min:        matter.NewIntConstraintExtreme(-250, matter.NumberFormatHex),
-		max:        matter.NewIntConstraintExtreme(250, matter.NumberFormatHex),
-		zapMin:     "0xFF06",
-		zapMax:     "0x00FA",
+		min:        matter.NewIntConstraintExtreme(-250, matter.NumberFormatInt),
+		max:        matter.NewIntConstraintExtreme(250, matter.NumberFormatInt),
+		zapMin:     "-250",
+		zapMax:     "250",
 	},
 	{
 		constraint: "0 to 0x001F",
@@ -196,10 +196,10 @@ var constraintTests = []constraintTest{
 		constraint: "0°C to 2.5°C",
 		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
 		asciiDoc:   "0°C to 2.5°C",
-		min:        matter.NewIntConstraintExtreme(0, matter.NumberFormatHex),
-		max:        matter.NewIntConstraintExtreme(250, matter.NumberFormatHex),
-		zapMin:     "0x0000",
-		zapMax:     "0x00FA",
+		min:        matter.NewIntConstraintExtreme(0, matter.NumberFormatInt),
+		max:        matter.NewIntConstraintExtreme(250, matter.NumberFormatInt),
+		zapMin:     "0",
+		zapMax:     "250",
 	},
 	{
 		constraint: "1 to 100",
@@ -260,8 +260,8 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "OccupiedSetbackMin to 25.4°C",
 		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
-		max:        matter.NewIntConstraintExtreme(2540, matter.NumberFormatHex),
-		zapMax:     "0x09EC",
+		max:        matter.NewIntConstraintExtreme(2540, matter.NumberFormatInt),
+		zapMax:     "2540",
 	},
 	{
 		constraint: "TODO",
@@ -337,8 +337,8 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "null",
-		min:        matter.ConstraintExtreme{},
-		max:        matter.ConstraintExtreme{},
+		min:        matter.ConstraintExtreme{Type: matter.ConstraintExtremeTypeNull, Format: matter.NumberFormatInt},
+		max:        matter.ConstraintExtreme{Type: matter.ConstraintExtremeTypeNull, Format: matter.NumberFormatInt},
 	},
 }
 
