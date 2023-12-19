@@ -4,12 +4,16 @@ import (
 	"strings"
 )
 
-type OptionalConformance struct {
-	Expression ConformanceExpression
-	Choice     *Choice
+type Optional struct {
+	Expression Expression `json:"expression,omitempty"`
+	Choice     *Choice    `json:"choice,omitempty"`
 }
 
-func (cc *OptionalConformance) String() string {
+func (c *Optional) Type() Type {
+	return TypeOptional
+}
+
+func (cc *Optional) String() string {
 	var s strings.Builder
 	s.WriteString("optional")
 	if cc.Expression != nil {
@@ -24,16 +28,30 @@ func (cc *OptionalConformance) String() string {
 	return s.String()
 }
 
-func (oc *OptionalConformance) Eval(context ConformanceContext) (ConformanceState, error) {
+func (oc *Optional) Eval(context Context) (State, error) {
 	if oc.Expression == nil {
-		return ConformanceStateOptional, nil
+		return StateOptional, nil
 	}
 	t, err := oc.Expression.Eval(context)
 	if err != nil {
-		return ConformanceStateUnknown, err
+		return StateUnknown, err
 	}
 	if t {
-		return ConformanceStateOptional, nil
+		return StateOptional, nil
 	}
-	return ConformanceStateUnknown, nil
+	return StateUnknown, nil
+}
+
+func (oc *Optional) Equal(c Conformance) bool {
+	ooc, ok := c.(*Optional)
+	if !ok {
+		return false
+	}
+	if !oc.Choice.Equal(ooc.Choice) {
+		return false
+	}
+	if !oc.Expression.Equal(ooc.Expression) {
+		return false
+	}
+	return true
 }

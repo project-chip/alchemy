@@ -25,11 +25,9 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 		t.Errorf("failed parsing conformance %s: %v", cts.Conformance, err)
 		return
 	}
-	if cs, ok := conformance.(ConformanceSet); ok {
-		t.Logf("\tconformance set: %d", len(cs))
-		for _, c := range cs {
-			t.Logf("\ttesting %s: %T %v", cts.Conformance, c, c)
-		}
+	t.Logf("\tconformance set: %d", len(conformance))
+	for _, c := range conformance {
+		t.Logf("\ttesting %s: %T %v", cts.Conformance, c, c)
 	}
 	for _, test := range cts.Tests {
 		result, err := conformance.Eval(test.Context)
@@ -44,148 +42,148 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 }
 
 type conformanceTest struct {
-	Context  ConformanceContext
-	Expected ConformanceState
+	Context  Context
+	Expected State
 }
 
 var otherwiseTests = []conformanceTestSuite{
 	{
 		Conformance: "[LT | DF & CF]",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"LT": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"DF": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateDisallowed},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"LT": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"DF": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
 	{
 		Conformance: "AB, [CD]",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AB": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"CD": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateDisallowed},
+			{Context: Context{Values: map[string]any{"AB": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"CD": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
 	{
 		Conformance: "!AB, O",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AB": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"CD": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateMandatory},
+			{Context: Context{Values: map[string]any{"AB": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"CD": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateMandatory},
 		},
 	},
 	{
 		Conformance: "[AA], [BB], [CC]",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"BB": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"CC": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateDisallowed},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"BB": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"CC": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
 	{
 		Conformance: "[!(LT | DF)]",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"LT": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"DF": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateOptional},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"LT": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"DF": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateOptional},
 		},
 	},
 	{
 		Conformance: "[!(LT | DF | CF)]",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"LT": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"DF": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"CF": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateOptional},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"LT": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"DF": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"CF": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateOptional},
 		},
 	},
 	{
 		Conformance: "[LT | DF]",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"LT": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"DF": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateDisallowed},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"LT": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"DF": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
 
 	{
 		Conformance: "UltrasonicUnoccupiedToOccupiedThreshold, O",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedThreshold": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedThreshold": false}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateOptional},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedThreshold": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedThreshold": false}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateOptional},
 		},
 	},
 	{
 		Conformance: "Zigbee",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"Zigbee": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"Zigbee": false}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateDisallowed},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Zigbee": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Zigbee": false}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
 	{
 		Conformance: "[Zigbee]",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"Zigbee": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"Zigbee": false}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateDisallowed},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Zigbee": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Zigbee": false}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
 	{
 		Conformance: "MSCH",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"MSCH": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"MSCH": false}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateDisallowed},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"MSCH": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"MSCH": false}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
 	{
 		Conformance: "M",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"MSCH": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"MSCH": false}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateMandatory},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"MSCH": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"MSCH": false}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateMandatory},
 		},
 	},
 	{
 		Conformance: "(VIS | AUD) & SPRS",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"VIS": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"AUD": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"VIS": true, "AUD": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"VIS": true, "AUD": true, "SPRS": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"VIS": true, "SPRS": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"AUD": true, "SPRS": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"SPRS": true}}, Expected: ConformanceStateDisallowed},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateDisallowed},
+			{Context: Context{Values: map[string]any{"VIS": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"AUD": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"VIS": true, "AUD": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"VIS": true, "AUD": true, "SPRS": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"VIS": true, "SPRS": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"AUD": true, "SPRS": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"SPRS": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
 	{
 		Conformance: "UltrasonicUnoccupiedToOccupiedDelay, O",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": false}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateOptional},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": false}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateOptional},
 		},
 	},
 	{
 		Conformance: "PIRUnoccupiedToOccupiedThreshold, O",
 		Tests: []conformanceTest{
-			{Context: ConformanceContext{Values: map[string]any{"AA": true}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"PIRUnoccupiedToOccupiedThreshold": true}}, Expected: ConformanceStateMandatory},
-			{Context: ConformanceContext{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": false}}, Expected: ConformanceStateOptional},
-			{Context: ConformanceContext{Values: map[string]any{"Matter": true}}, Expected: ConformanceStateOptional},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"PIRUnoccupiedToOccupiedThreshold": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": false}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateOptional},
 		},
 	},
 }

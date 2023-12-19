@@ -1,12 +1,13 @@
 package conformance
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
 type IdentifierExpression struct {
-	ID  string
-	Not bool
+	ID  string `json:"id"`
+	Not bool   `json:"not,omitempty"`
 }
 
 func (ie *IdentifierExpression) String() string {
@@ -16,11 +17,11 @@ func (ie *IdentifierExpression) String() string {
 	return ie.ID
 }
 
-func (ie *IdentifierExpression) Eval(context ConformanceContext) (bool, error) {
+func (ie *IdentifierExpression) Eval(context Context) (bool, error) {
 	return evalIdentifier(context, ie.ID, ie.Not)
 }
 
-func evalIdentifier(context ConformanceContext, id string, not bool) (bool, error) {
+func evalIdentifier(context Context, id string, not bool) (bool, error) {
 	if context.Values != nil {
 		v, ok := context.Values[id]
 		if ok {
@@ -35,7 +36,7 @@ func evalIdentifier(context ConformanceContext, id string, not bool) (bool, erro
 		} else if _, ok := context.VisitedReferences[id]; ok {
 			return false, nil
 		}
-		ref := context.Store.ConformanceReference(id)
+		ref := context.Store.Reference(id)
 		context.VisitedReferences[id] = struct{}{}
 		if ref != nil {
 			conf := ref.GetConformance()
@@ -44,9 +45,39 @@ func evalIdentifier(context ConformanceContext, id string, not bool) (bool, erro
 				if err != nil {
 					return false, err
 				}
-				return (cs == ConformanceStateMandatory || cs == ConformanceStateOptional || cs == ConformanceStateProvisional || cs == ConformanceStateDeprecated) != not, nil
+				return (cs == StateMandatory || cs == StateOptional || cs == StateProvisional || cs == StateDeprecated) != not, nil
 			}
 		}
 	}
 	return not, nil
+}
+
+func (ie *IdentifierExpression) Equal(e Expression) bool {
+	if ie == nil {
+		return e == nil
+	} else if e == nil {
+		return false
+	}
+	oie, ok := e.(*IdentifierExpression)
+	if !ok {
+		return false
+	}
+	if ie.Not != oie.Not {
+		return false
+	}
+	if ie.ID != oie.ID {
+		return false
+	}
+	return true
+}
+
+func (fe *IdentifierExpression) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type": "identifier",
+		"id":   fe.ID,
+	}
+	if fe.Not {
+		js["not"] = true
+	}
+	return json.Marshal(js)
 }

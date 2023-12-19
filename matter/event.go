@@ -3,18 +3,18 @@ package matter
 import "github.com/hasty/alchemy/matter/conformance"
 
 type Event struct {
-	ID              *Number                 `json:"id,omitempty"`
-	Name            string                  `json:"name,omitempty"`
-	Description     string                  `json:"description,omitempty"`
-	Priority        string                  `json:"priority,omitempty"`
-	FabricSensitive bool                    `json:"fabricSensitive,omitempty"`
-	Conformance     conformance.Conformance `json:"conformance,omitempty"`
-	Access          Access                  `json:"access,omitempty"`
+	ID              *Number         `json:"id,omitempty"`
+	Name            string          `json:"name,omitempty"`
+	Description     string          `json:"description,omitempty"`
+	Priority        string          `json:"priority,omitempty"`
+	FabricSensitive bool            `json:"fabricSensitive,omitempty"`
+	Conformance     conformance.Set `json:"conformance,omitempty"`
+	Access          Access          `json:"access,omitempty"`
 
 	Fields FieldSet `json:"fields,omitempty"`
 }
 
-func (e *Event) GetConformance() conformance.Conformance {
+func (e *Event) GetConformance() conformance.Set {
 	return e.Conformance
 }
 
@@ -24,7 +24,7 @@ func (e *Event) Entity() Entity {
 
 type EventSet []*Event
 
-func (es EventSet) ConformanceReference(name string) conformance.HasConformance {
+func (es EventSet) Reference(name string) conformance.HasConformance {
 	for _, e := range es {
 		if e.Name == name {
 			return e

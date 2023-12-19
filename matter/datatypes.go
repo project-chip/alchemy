@@ -135,11 +135,11 @@ func StripDataTypeSuffixes(dataType string) string {
 }
 
 type DataType struct {
-	BaseType BaseDataType
-	Name     string
-	Model    Model
+	BaseType BaseDataType `json:"baseType"`
+	Name     string       `json:"name"`
+	Model    Model        `json:"-"`
 
-	EntryType *DataType
+	EntryType *DataType `json:"entryType,omitempty"`
 }
 
 func NewDataType(name string, isArray bool) *DataType {

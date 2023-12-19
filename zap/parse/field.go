@@ -76,7 +76,7 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 			length = a.Value
 		case "optional":
 			if a.Value != "true" {
-				field.Conformance = &conformance.MandatoryConformance{}
+				field.Conformance = conformance.Set{&conformance.Mandatory{}}
 			}
 		case "writable": // Ugh
 

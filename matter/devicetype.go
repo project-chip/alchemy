@@ -22,7 +22,7 @@ func (c *DeviceType) Entity() Entity {
 	return EntityDeviceType
 }
 
-func (dt *DeviceType) ConformanceReference(name string) conformance.HasConformance {
+func (dt *DeviceType) Reference(name string) conformance.HasConformance {
 	for _, c := range dt.Conditions {
 		if c.Feature == name {
 			return c
@@ -32,11 +32,11 @@ func (dt *DeviceType) ConformanceReference(name string) conformance.HasConforman
 }
 
 type ClusterRequirement struct {
-	ID          *Number                 `json:"id,omitempty"`
-	ClusterName string                  `json:"clusterName,omitempty"`
-	Quality     Quality                 `json:"quality,omitempty"`
-	Conformance conformance.Conformance `json:"conformance,omitempty"`
-	Interface   Interface               `json:"interface,omitempty"`
+	ID          *Number         `json:"id,omitempty"`
+	ClusterName string          `json:"clusterName,omitempty"`
+	Quality     Quality         `json:"quality,omitempty"`
+	Conformance conformance.Set `json:"conformance,omitempty"`
+	Interface   Interface       `json:"interface,omitempty"`
 
 	Cluster *Cluster `json:"cluster,omitempty"`
 }
@@ -47,10 +47,10 @@ type ElementRequirement struct {
 	Element     Entity  `json:"element,omitempty"`
 	Name        string  `json:"name,omitempty"`
 
-	Constraint  Constraint              `json:"constraint,omitempty"`
-	Quality     Quality                 `json:"quality,omitempty"`
-	Access      Access                  `json:"access,omitempty"`
-	Conformance conformance.Conformance `json:"conformance,omitempty"`
+	Constraint  Constraint      `json:"constraint,omitempty"`
+	Quality     Quality         `json:"quality,omitempty"`
+	Access      Access          `json:"access,omitempty"`
+	Conformance conformance.Set `json:"conformance,omitempty"`
 
 	Cluster *Cluster `json:"cluster,omitempty"`
 }
@@ -64,6 +64,6 @@ func (c *Condition) Entity() Entity {
 	return EntityCondition
 }
 
-func (c *Condition) GetConformance() conformance.Conformance {
+func (c *Condition) GetConformance() conformance.Set {
 	return nil
 }

@@ -51,7 +51,7 @@ func (xa *XMLAttribute) ToModel() (ma *matter.Field, err error) {
 		ma.Access.FabricSensitive = true
 	}
 	if !xa.Optional {
-		ma.Conformance = &conformance.MandatoryConformance{}
+		ma.Conformance = conformance.Set{&conformance.Mandatory{}}
 	}
 	return
 }

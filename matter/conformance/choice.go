@@ -1,12 +1,13 @@
 package conformance
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
 type Choice struct {
-	Set   string
-	Limit ChoiceLimit
+	Set   string      `json:"set,omitempty"`
+	Limit ChoiceLimit `json:"limit,omitempty"`
 }
 
 func (c *Choice) String() string {
@@ -16,39 +17,152 @@ func (c *Choice) String() string {
 	return fmt.Sprintf("set: %s", c.Set)
 }
 
+func (c *Choice) Equal(oc *Choice) bool {
+	if c == nil {
+		return oc == nil
+	} else if oc == nil {
+		return false
+	}
+	if c.Set != oc.Set {
+		return false
+	}
+	if !c.Limit.Equal(oc.Limit) {
+		return false
+	}
+	return true
+}
+
 type ChoiceLimit interface {
 	String(set string) string
+	Equal(cl ChoiceLimit) bool
 }
 
 type ChoiceExactLimit struct {
-	Limit int
+	Limit int `json:"limit"`
 }
 
 func (c *ChoiceExactLimit) String(set string) string {
 	return fmt.Sprintf("with exactly %d of set %s", c.Limit, set)
 }
 
+func (c *ChoiceExactLimit) Equal(cl ChoiceLimit) bool {
+	if c == nil {
+		return cl == nil
+	} else if cl == nil {
+		return false
+	}
+	ocl, ok := cl.(*ChoiceExactLimit)
+	if !ok {
+		return false
+	}
+	if c.Limit != ocl.Limit {
+		return false
+	}
+	return true
+}
+
+func (c *ChoiceExactLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type":  "exact",
+		"limit": c.Limit,
+	}
+	return json.Marshal(js)
+}
+
 type ChoiceMinLimit struct {
-	Min int
+	Min int `json:"min"`
 }
 
 func (c *ChoiceMinLimit) String(set string) string {
 	return fmt.Sprintf("with at least %d of set %s", c.Min, set)
 }
 
+func (c *ChoiceMinLimit) Equal(cl ChoiceLimit) bool {
+	if c == nil {
+		return cl == nil
+	} else if cl == nil {
+		return false
+	}
+	ocl, ok := cl.(*ChoiceMinLimit)
+	if !ok {
+		return false
+	}
+	if c.Min != ocl.Min {
+		return false
+	}
+	return true
+}
+
+func (c *ChoiceMinLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type": "min",
+		"min":  c.Min,
+	}
+	return json.Marshal(js)
+}
+
 type ChoiceMaxLimit struct {
-	Max int
+	Max int `json:"max"`
 }
 
 func (c *ChoiceMaxLimit) String(set string) string {
 	return fmt.Sprintf("with at most %d of set %s", c.Max, set)
 }
 
+func (c *ChoiceMaxLimit) Equal(cl ChoiceLimit) bool {
+	if c == nil {
+		return cl == nil
+	} else if cl == nil {
+		return false
+	}
+	ocl, ok := cl.(*ChoiceMaxLimit)
+	if !ok {
+		return false
+	}
+	if c.Max != ocl.Max {
+		return false
+	}
+	return true
+}
+
+func (c *ChoiceMaxLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type": "max",
+		"max":  c.Max,
+	}
+	return json.Marshal(js)
+}
+
 type ChoiceRangeLimit struct {
-	Min int
-	Max int
+	Min int `json:"min"`
+	Max int `json:"max"`
 }
 
 func (c *ChoiceRangeLimit) String(set string) string {
 	return fmt.Sprintf("with between %d and %d of set %s", c.Min, c.Max, set)
+}
+
+func (c *ChoiceRangeLimit) Equal(cl ChoiceLimit) bool {
+	if c == nil {
+		return cl == nil
+	} else if cl == nil {
+		return false
+	}
+	ocl, ok := cl.(*ChoiceRangeLimit)
+	if !ok {
+		return false
+	}
+	if c.Min != ocl.Min || c.Max != ocl.Max {
+		return false
+	}
+	return true
+}
+
+func (c *ChoiceRangeLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type": "range",
+		"min":  c.Min,
+		"max":  c.Max,
+	}
+	return json.Marshal(js)
 }

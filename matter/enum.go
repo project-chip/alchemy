@@ -14,23 +14,23 @@ func (*Enum) Entity() Entity {
 }
 
 type EnumValue struct {
-	Value       string                  `json:"value,omitempty"`
-	Name        string                  `json:"name,omitempty"`
-	Summary     string                  `json:"summary,omitempty"`
-	Conformance conformance.Conformance `json:"conformance,omitempty"`
+	Value       string          `json:"value,omitempty"`
+	Name        string          `json:"name,omitempty"`
+	Summary     string          `json:"summary,omitempty"`
+	Conformance conformance.Set `json:"conformance,omitempty"`
 }
 
 func (ev *EnumValue) Entity() Entity {
 	return EntityEnumValue
 }
 
-func (ev *EnumValue) GetConformance() conformance.Conformance {
+func (ev *EnumValue) GetConformance() conformance.Set {
 	return ev.Conformance
 }
 
 type EnumSet []*EnumValue
 
-func (es EnumSet) ConformanceReference(name string) conformance.HasConformance {
+func (es EnumSet) Reference(name string) conformance.HasConformance {
 	for _, e := range es {
 		if e.Name == name {
 			return e

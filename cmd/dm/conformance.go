@@ -9,12 +9,12 @@ import (
 	"github.com/hasty/alchemy/matter/conformance"
 )
 
-func renderConformanceString(cluster conformance.ConformanceValueStore, c conformance.Conformance, parent *etree.Element) error {
+func renderConformanceString(cluster conformance.ValueStore, c conformance.Conformance, parent *etree.Element) error {
 	if c == nil {
 		return nil
 	}
 	switch cs := c.(type) {
-	case conformance.ConformanceSet:
+	case conformance.Set:
 		if len(cs) > 1 {
 			oc := parent.CreateElement("otherwiseConform")
 			for _, c := range cs {
@@ -26,7 +26,7 @@ func renderConformanceString(cluster conformance.ConformanceValueStore, c confor
 		} else if len(cs) == 1 {
 			return renderConformance(cluster, cs[0], parent)
 		}
-	case *conformance.GenericConformance:
+	case *conformance.Generic:
 		return nil
 	default:
 		return renderConformance(cluster, c, parent)
@@ -36,14 +36,14 @@ func renderConformanceString(cluster conformance.ConformanceValueStore, c confor
 	return nil
 }
 
-func renderConformance(cluster conformance.ConformanceValueStore, con conformance.Conformance, parent *etree.Element) error {
+func renderConformance(cluster conformance.ValueStore, con conformance.Conformance, parent *etree.Element) error {
 	switch con := con.(type) {
-	case *conformance.MandatoryConformance:
+	case *conformance.Mandatory:
 		mc := parent.CreateElement("mandatoryConform")
 		renderConformanceExpression(cluster, con.Expression, mc)
-	case *conformance.ProvisionalConformance:
+	case *conformance.Provisional:
 		parent.CreateElement("provisionalConform")
-	case *conformance.OptionalConformance:
+	case *conformance.Optional:
 		oc := parent.CreateElement("optionalConform")
 		if con.Choice != nil {
 			oc.CreateAttr("choice", con.Choice.Set)
@@ -63,13 +63,13 @@ func renderConformance(cluster conformance.ConformanceValueStore, con conformanc
 			}
 		}
 		return renderConformanceExpression(cluster, con.Expression, oc)
-	case *conformance.DisallowedConformance:
+	case *conformance.Disallowed:
 		parent.CreateElement("disallowConform")
-	case *conformance.DeprecatedConformance:
+	case *conformance.Deprecated:
 		parent.CreateElement("deprecateConform")
-	case *conformance.DescribedConformance:
+	case *conformance.Described:
 
-	case conformance.ConformanceSet:
+	case conformance.Set:
 		for _, con := range con {
 			err := renderConformance(cluster, con, parent)
 			if err != nil {
@@ -82,7 +82,7 @@ func renderConformance(cluster conformance.ConformanceValueStore, con conformanc
 	return nil
 }
 
-func renderConformanceExpression(cluster conformance.ConformanceValueStore, exp conformance.ConformanceExpression, parent *etree.Element) error {
+func renderConformanceExpression(cluster conformance.ValueStore, exp conformance.Expression, parent *etree.Element) error {
 	if exp == nil {
 		return nil
 	}
@@ -97,7 +97,7 @@ func renderConformanceExpression(cluster conformance.ConformanceValueStore, exp 
 			parent.CreateElement("condition").CreateAttr("name", e.ID)
 
 		} else {
-			id := cluster.ConformanceReference(e.ID)
+			id := cluster.Reference(e.ID)
 			if id == nil {
 				parent.CreateElement("condition").CreateAttr("name", e.ID)
 			} else {

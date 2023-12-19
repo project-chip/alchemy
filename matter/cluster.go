@@ -26,19 +26,19 @@ func (c *Cluster) Entity() Entity {
 	return EntityCluster
 }
 
-func (c *Cluster) ConformanceReference(name string) conformance.HasConformance {
+func (c *Cluster) Reference(name string) conformance.HasConformance {
 	if c == nil {
 		return nil
 	}
 	var cr conformance.HasConformance
 	if c.Features != nil {
-		cr = c.Features.ConformanceReference(name)
+		cr = c.Features.Reference(name)
 		if cr != nil {
 			return cr
 		}
 
 	}
-	cr = c.Attributes.ConformanceReference(name)
+	cr = c.Attributes.Reference(name)
 	if cr != nil {
 		return cr
 	}

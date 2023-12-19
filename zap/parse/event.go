@@ -24,7 +24,7 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 			event.FabricSensitive = (a.Value == "true")
 		case "optional":
 			if a.Value == "true" {
-				event.Conformance = &conformance.MandatoryConformance{}
+				event.Conformance = conformance.Set{&conformance.Mandatory{}}
 			}
 		default:
 			return nil, fmt.Errorf("unexpected event attribute: %s", a.Name.Local)

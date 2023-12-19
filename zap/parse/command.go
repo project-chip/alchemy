@@ -23,7 +23,7 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 			c.IsFabricScoped = a.Value == "true"
 		case "optional":
 			if a.Value == "false" {
-				c.Conformance = &conformance.MandatoryConformance{}
+				c.Conformance = conformance.Set{&conformance.Mandatory{}}
 			}
 		case "response":
 			c.Response = a.Value

@@ -99,7 +99,7 @@ func compareField(specField *matter.Field, zapField *matter.Field) (diffs []any)
 	if specField.Default != zapField.Default {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specField.Default, ZAP: zapField.Default})
 	}
-	if specField.Conformance != zapField.Conformance {
+	if !specField.Conformance.Equal(zapField.Conformance) {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: specField.Conformance.String(), ZAP: zapField.Conformance.String()})
 	}
 	return
