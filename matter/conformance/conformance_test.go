@@ -14,14 +14,19 @@ func TestOptional(t *testing.T) {
 }
 
 type conformanceTestSuite struct {
-	Conformance string
-	Tests       []conformanceTest
+	Conformance        string
+	InvalidConformance bool
+
+	Tests []conformanceTest
 }
 
 func (cts *conformanceTestSuite) run(t *testing.T) {
 	conformance, err := tryParseConformance(cts.Conformance)
 	t.Logf("testing %s: %T", cts.Conformance, conformance)
 	if err != nil {
+		if cts.InvalidConformance {
+			return
+		}
 		t.Errorf("failed parsing conformance %s: %v", cts.Conformance, err)
 		return
 	}
@@ -52,7 +57,9 @@ var otherwiseTests = []conformanceTestSuite{
 		Tests: []conformanceTest{
 			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
 			{Context: Context{Values: map[string]any{"LT": true}}, Expected: StateOptional},
-			{Context: Context{Values: map[string]any{"DF": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"DF": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"CF": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"DF": true, "CF": true}}, Expected: StateOptional},
 			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
@@ -186,11 +193,27 @@ var otherwiseTests = []conformanceTestSuite{
 			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateOptional},
 		},
 	},
+	{
+		Conformance:        "[AA] & BB",
+		InvalidConformance: true,
+	},
+	{
+		Conformance:        "AA | [BB]",
+		InvalidConformance: true,
+	},
+	{
+		Conformance: "AA, [BB]",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"BB": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"CC": false}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
+		},
+	},
 }
 
 func TestOtherwise(t *testing.T) {
 	for _, test := range otherwiseTests {
 		test.run(t)
-		break
 	}
 }
