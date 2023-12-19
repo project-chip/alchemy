@@ -4,30 +4,45 @@ import (
 	"strings"
 )
 
-type MandatoryConformance struct {
-	Expression ConformanceExpression
+type Mandatory struct {
+	Expression Expression `json:"expression,omitempty"`
 }
 
-func (cc *MandatoryConformance) String() string {
+func (c *Mandatory) Type() Type {
+	return TypeMandatory
+}
+
+func (m *Mandatory) String() string {
 	var s strings.Builder
 	s.WriteString("mandatory")
-	if cc.Expression != nil {
+	if m.Expression != nil {
 		s.WriteString(" if ")
-		s.WriteString(cc.Expression.String())
+		s.WriteString(m.Expression.String())
 	}
 	return s.String()
 }
 
-func (oc *MandatoryConformance) Eval(context ConformanceContext) (ConformanceState, error) {
-	if oc.Expression == nil {
-		return ConformanceStateMandatory, nil
+func (m *Mandatory) Eval(context Context) (State, error) {
+	if m.Expression == nil {
+		return StateMandatory, nil
 	}
-	t, err := oc.Expression.Eval(context)
+	t, err := m.Expression.Eval(context)
 	if err != nil {
-		return ConformanceStateUnknown, err
+		return StateUnknown, err
 	}
 	if t {
-		return ConformanceStateMandatory, nil
+		return StateMandatory, nil
 	}
-	return ConformanceStateUnknown, nil
+	return StateUnknown, nil
+}
+
+func (m *Mandatory) Equal(c Conformance) bool {
+	om, ok := c.(*Mandatory)
+	if !ok {
+		return false
+	}
+	if !m.Expression.Equal(om.Expression) {
+		return false
+	}
+	return true
 }

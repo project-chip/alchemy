@@ -125,7 +125,7 @@ func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) 
 			}
 		case "optional":
 			if a.Value != "true" {
-				bv.Conformance = &conformance.MandatoryConformance{}
+				bv.Conformance = conformance.Set{&conformance.Mandatory{}}
 			}
 		default:
 			return nil, fmt.Errorf("unexpected bitmap field attribute: %s", a.Name.Local)

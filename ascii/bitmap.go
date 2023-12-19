@@ -48,7 +48,7 @@ func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
 		}
 		bv.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		if bv.Conformance == nil {
-			bv.Conformance = &conformance.MandatoryConformance{}
+			bv.Conformance = conformance.Set{&conformance.Mandatory{}}
 		}
 		bv.Bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
 		if err != nil {

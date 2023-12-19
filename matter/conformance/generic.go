@@ -1,17 +1,32 @@
 package conformance
 
-type GenericConformance struct {
+type Generic struct {
 	raw string
 }
 
-func (dc *GenericConformance) RawText() string {
+func (c *Generic) Type() Type {
+	return TypeGeneric
+}
+
+func (dc *Generic) RawText() string {
 	return dc.raw
 }
 
-func (dc *GenericConformance) String() string {
+func (dc *Generic) String() string {
 	return dc.raw
 }
 
-func (id *GenericConformance) Eval(context ConformanceContext) (ConformanceState, error) {
-	return ConformanceStateUnknown, nil
+func (id *Generic) Eval(context Context) (State, error) {
+	return StateUnknown, nil
+}
+
+func (g *Generic) Equal(c Conformance) bool {
+	og, ok := c.(*Generic)
+	if !ok {
+		return false
+	}
+	if g.raw != og.raw {
+		return false
+	}
+	return true
 }

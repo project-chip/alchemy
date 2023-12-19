@@ -1,17 +1,26 @@
 package conformance
 
-type DeprecatedConformance struct {
+type Deprecated struct {
 	raw string
 }
 
-func (dc *DeprecatedConformance) RawText() string {
+func (c *Deprecated) Type() Type {
+	return TypeDeprecated
+}
+
+func (dc *Deprecated) RawText() string {
 	return dc.raw
 }
 
-func (dc *DeprecatedConformance) String() string {
+func (dc *Deprecated) String() string {
 	return "deprecated"
 }
 
-func (dc *DeprecatedConformance) Eval(context ConformanceContext) (ConformanceState, error) {
-	return ConformanceStateDeprecated, nil
+func (dc *Deprecated) Eval(context Context) (State, error) {
+	return StateDeprecated, nil
+}
+
+func (oc *Deprecated) Equal(c Conformance) bool {
+	_, ok := c.(*Deprecated)
+	return ok
 }

@@ -7,11 +7,11 @@ type Field struct {
 	Name string    `json:"name,omitempty"`
 	Type *DataType `json:"type,omitempty"`
 
-	Constraint  Constraint              `json:"constraint,omitempty"`
-	Quality     Quality                 `json:"quality,omitempty"`
-	Access      Access                  `json:"access,omitempty"`
-	Default     string                  `json:"default,omitempty"`
-	Conformance conformance.Conformance `json:"conformance,omitempty"`
+	Constraint  Constraint      `json:"constraint,omitempty"`
+	Quality     Quality         `json:"quality,omitempty"`
+	Access      Access          `json:"access,omitempty"`
+	Default     string          `json:"default,omitempty"`
+	Conformance conformance.Set `json:"conformance,omitempty"`
 
 	entity Entity
 }
@@ -24,7 +24,7 @@ func NewAttribute() *Field {
 	return &Field{entity: EntityAttribute}
 }
 
-func (f *Field) GetConformance() conformance.Conformance {
+func (f *Field) GetConformance() conformance.Set {
 	return f.Conformance
 }
 
@@ -43,7 +43,7 @@ func (fs FieldSet) GetField(name string) *Field {
 	return nil
 }
 
-func (fs FieldSet) ConformanceReference(name string) conformance.HasConformance {
+func (fs FieldSet) Reference(name string) conformance.HasConformance {
 	for _, f := range fs {
 		if f.Name == name {
 			return f

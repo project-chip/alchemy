@@ -51,7 +51,7 @@ func (s *Section) toFeatures(d *Doc) (features []*matter.Feature, err error) {
 		}
 		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		if f.Conformance == nil {
-			f.Conformance = &conformance.OptionalConformance{}
+			f.Conformance = conformance.Set{&conformance.Optional{}}
 		}
 		features = append(features, f)
 	}

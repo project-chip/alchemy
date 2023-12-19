@@ -1,21 +1,22 @@
 package conformance
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
 
 type LogicalExpression struct {
 	Operand string
-	Left    ConformanceExpression
-	Right   []ConformanceExpression
+	Left    Expression
+	Right   []Expression
 	Not     bool
 }
 
-func NewLogicalExpression(operand string, left ConformanceExpression, right []any) (*LogicalExpression, error) {
+func NewLogicalExpression(operand string, left Expression, right []any) (*LogicalExpression, error) {
 	le := &LogicalExpression{Operand: operand, Left: left}
 	for _, r := range right {
-		rce, ok := r.(ConformanceExpression)
+		rce, ok := r.(Expression)
 		if !ok {
 			return nil, fmt.Errorf("unexpected type in logical expression: %T", r)
 		}
@@ -82,7 +83,7 @@ func (le *LogicalExpression) String() string {
 	}
 }
 
-func (le *LogicalExpression) Eval(context ConformanceContext) (bool, error) {
+func (le *LogicalExpression) Eval(context Context) (bool, error) {
 	result, err := le.Left.Eval(context)
 	if err != nil {
 		return false, err
@@ -108,4 +109,45 @@ func (le *LogicalExpression) Eval(context ConformanceContext) (bool, error) {
 		return !result, nil
 	}
 	return result, nil
+}
+
+func (le *LogicalExpression) Equal(e Expression) bool {
+	if le == nil {
+		return e == nil
+	} else if e == nil {
+		return false
+	}
+	ole, ok := e.(*LogicalExpression)
+	if !ok {
+		return false
+	}
+	if le.Not != ole.Not {
+		return false
+	}
+	if !le.Left.Equal(ole.Left) {
+		return false
+	}
+	if len(le.Right) != len(ole.Right) {
+		return false
+	}
+	for i, re := range le.Right {
+		ore := ole.Right[i]
+		if !re.Equal(ore) {
+			return false
+		}
+	}
+	return true
+}
+
+func (fe *LogicalExpression) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type":    "logical",
+		"operand": fe.Operand,
+		"left":    fe.Left,
+		"right":   fe.Right,
+	}
+	if fe.Not {
+		js["not"] = true
+	}
+	return json.Marshal(js)
 }

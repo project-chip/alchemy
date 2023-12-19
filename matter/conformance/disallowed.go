@@ -1,17 +1,26 @@
 package conformance
 
-type DisallowedConformance struct {
+type Disallowed struct {
 	raw string
 }
 
-func (dc *DisallowedConformance) RawText() string {
+func (c *Disallowed) Type() Type {
+	return TypeDisallowed
+}
+
+func (dc *Disallowed) RawText() string {
 	return dc.raw
 }
 
-func (dc *DisallowedConformance) String() string {
+func (dc *Disallowed) String() string {
 	return "disallowed"
 }
 
-func (id *DisallowedConformance) Eval(context ConformanceContext) (ConformanceState, error) {
-	return ConformanceStateDisallowed, nil
+func (id *Disallowed) Eval(context Context) (State, error) {
+	return StateDisallowed, nil
+}
+
+func (oc *Disallowed) Equal(c Conformance) bool {
+	_, ok := c.(*Disallowed)
+	return ok
 }

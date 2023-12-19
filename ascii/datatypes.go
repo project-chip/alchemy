@@ -227,7 +227,7 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 	return val
 }
 
-func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) conformance.Conformance {
+func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) conformance.Set {
 	i, ok := columnMap[column]
 	if !ok {
 		return nil

@@ -18,7 +18,7 @@ func debug(format string, a ...any) (n int, err error) {
 Input <- conf:Conformance+ EOF {
     cs := conf.([]interface{})
 
-    var set ConformanceSet
+    var set Set
     for _, i := range cs {
         con := i.(Conformance)
         set = append(set, con)
@@ -27,31 +27,31 @@ Input <- conf:Conformance+ EOF {
 }
 
 Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
-    exp := i.(ConformanceExpression)
-    o := &OptionalConformance{Expression:exp}
+    exp := i.(Expression)
+    o := &Optional{Expression:exp}
     if choice != nil {
         o.Choice = choice.(*Choice)
     }
     return o, nil   
 } / eq:Equality _ Comma? _ {
-    exp := eq.(ConformanceExpression)
-    return &MandatoryConformance{Expression:exp}, nil
+    exp := eq.(Expression)
+    return &Mandatory{Expression:exp}, nil
 } / 'M'  _ Comma? _ {
-    return &MandatoryConformance{}, nil
+    return &Mandatory{}, nil
 } / 'O' choice:Choice?  _ Comma? _ {
-    o := &OptionalConformance{}
+    o := &Optional{}
     if choice != nil {
         o.Choice = choice.(*Choice)
     }
     return o, nil
 } / 'P'  _ Comma? _ {
-    return &ProvisionalConformance{}, nil
+    return &Provisional{}, nil
 } / 'D'  _ Comma? _ {
-    return &DeprecatedConformance{}, nil
+    return &Deprecated{}, nil
 } / 'X'  _ Comma? _ {
-    return &DisallowedConformance{}, nil
+    return &Disallowed{}, nil
 } / "desc"  _ Comma? _ { 
-     return &DescribedConformance{}, nil
+     return &Described{}, nil
 
 }
 
@@ -64,7 +64,7 @@ Equality <- _ left:Or right:EqualsOp* _ {
     if len(equalityOps) == 0 {
         return left, nil
     }
-    leftCE := left.(ConformanceExpression)
+    leftCE := left.(Expression)
     var ee *EqualityExpression
     for _, equalityOp := range equalityOps {
         ee = equalityOp.(*EqualityExpression) 
@@ -76,7 +76,7 @@ Equality <- _ left:Or right:EqualsOp* _ {
 
 EqualsOp <- _ equals:("=="/"!=") _ f:Or {
     //debug("matched Equals Op %s\n", string(c.text))
-    fc := f.(ConformanceExpression)
+    fc := f.(Expression)
     return &EqualityExpression{
         Not: (string(equals.([]uint8)) == "!="),
         Right:fc,
@@ -92,13 +92,13 @@ Or <- _ left:Xor _ right:OrOp* _ {
     if len(orOps) == 0 {
         return left, nil
     }
-    leftCE := left.(ConformanceExpression)
+    leftCE := left.(Expression)
     return NewLogicalExpression("|", leftCE, orOps)
 }
 
 OrOp <- _ "|" _ f:Xor {
     //debug("matched OR op %s\n", string(c.text))
-    fc := f.(ConformanceExpression)
+    fc := f.(Expression)
     return fc, nil
 }
 
@@ -111,13 +111,13 @@ Xor <- _ left:And _ right:XorOp* _ {
     if len(xorOps) == 0 {
         return left, nil
     }
-    leftCE := left.(ConformanceExpression)
+    leftCE := left.(Expression)
     return NewLogicalExpression("^", leftCE, xorOps)
 }
 
 XorOp <- _ "^" _ f:And {
    // debug("matched XOR op %s\n", string(c.text))
-    fc := f.(ConformanceExpression)
+    fc := f.(Expression)
     return fc, nil
 }
 
@@ -130,13 +130,13 @@ And <- _ left:FeatureTerm _ right:AndOp* _ {
     if len(addOps) == 0 {
         return left, nil
     }
-    leftCE := left.(ConformanceExpression)
+    leftCE := left.(Expression)
     return NewLogicalExpression("&", leftCE, addOps)
 }
 
 AndOp <- _ "&" _ f:FeatureTerm {
     //debug("matched AND op %s\n", string(c.text))
-    fc := f.(ConformanceExpression)
+    fc := f.(Expression)
     return fc, nil
 }
 
