@@ -14,7 +14,8 @@ func (h *Host) Build(sc *sql.Context, raw bool) error {
 		slog.InfoContext(sc, "Indexing", "path", d.Path)
 		si, err := h.indexDoc(sc, d, raw)
 		if err != nil {
-			return err
+			slog.WarnContext(sc, "Error building", "path", d.Path, "error", err)
+			continue
 		}
 		sis = append(sis, si)
 

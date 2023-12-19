@@ -25,14 +25,14 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 
 		}
 		row.values[matter.TableColumnResponse] = c.Response
-		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(c.Access)
+		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(c.Access, true)
 		if c.Conformance != nil {
 			row.values[matter.TableColumnConformance] = c.Conformance.String()
 		}
 		ci := &sectionInfo{id: h.nextId(commandTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
 		parent.children[commandTable] = append(parent.children[commandTable], ci)
 		for _, ef := range c.Fields {
-			h.readField(ef, ci, commandFieldTable)
+			h.readField(ef, ci, commandFieldTable, true)
 		}
 	}
 	return nil

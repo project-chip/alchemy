@@ -38,6 +38,8 @@ func (h *Host) indexDoc(ctx context.Context, doc *ascii.Doc, raw bool) (*section
 			switch v := m.(type) {
 			case *matter.Cluster:
 				err = h.indexClusterModel(ctx, ds, v)
+			case *matter.DeviceType:
+				err = h.indexDeviceTypeModel(ctx, ds, v)
 			}
 			if err != nil {
 				return nil, err
