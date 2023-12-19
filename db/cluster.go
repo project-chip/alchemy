@@ -26,11 +26,11 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 		featureRow.values[matter.TableColumnFeature] = f.Name
 		featureRow.values[matter.TableColumnSummary] = f.Summary
 		fci := &sectionInfo{id: h.nextId(featureTable), parent: parent, values: featureRow}
-		parent.children[featureTable] = append(parent.children[featureTable], fci)
+		ci.children[featureTable] = append(ci.children[featureTable], fci)
 	}
 
 	for _, a := range cluster.Attributes {
-		h.readField(a, ci, attributeTable)
+		h.readField(a, ci, attributeTable, false)
 	}
 
 	err := h.indexDataTypeModels(cxt, ci, cluster)

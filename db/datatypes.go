@@ -55,13 +55,13 @@ func (h *Host) indexDataTypeModels(cxt context.Context, parent *sectionInfo, clu
 		ei := &sectionInfo{id: h.nextId(dataTypeTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
 		parent.children[dataTypeTable] = append(parent.children[dataTypeTable], ei)
 		for _, env := range s.Fields {
-			h.readField(env, ei, structField)
+			h.readField(env, ei, structField, false)
 		}
 	}
 	return nil
 }
 
-func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string) {
+func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string, isCommand bool) {
 	sr := newDBRow()
 
 	var t string
@@ -84,7 +84,7 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string)
 	}
 	sr.values[matter.TableColumnQuality] = f.Quality.String()
 	sr.values[matter.TableColumnDefault] = f.Default
-	sr.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(f.Access)
+	sr.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(f.Access, isCommand)
 	if f.Conformance != nil {
 		sr.values[matter.TableColumnConformance] = f.Conformance.String()
 	}

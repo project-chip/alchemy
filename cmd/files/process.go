@@ -85,6 +85,9 @@ func Save(cxt context.Context, filepaths []string, saver FileSaver, options Opti
 		if err != nil {
 			return err
 		}
+		if outPath == "" {
+			return nil
+		}
 		if !options.DryRun {
 			err = os.WriteFile(outPath, []byte(result), os.ModeAppend|0644)
 			if err != nil {

@@ -3,6 +3,7 @@ package disco
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/hasty/alchemy/ascii"
@@ -48,10 +49,16 @@ var Command = &cobra.Command{
 			}
 			err = b.Run(cxt)
 			if err != nil {
+				slog.Warn("Error disco balling document", "path", file, "error", err)
+				outPath = ""
+				err = nil
 				return
 			}
 			result, err = render.Render(cxt, doc)
 			if err != nil {
+				slog.Warn("Error rendering document", "path", file, "error", err)
+				outPath = ""
+				err = nil
 				return
 			}
 			if fileOptions.Serial {

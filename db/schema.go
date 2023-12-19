@@ -3,18 +3,23 @@ package db
 import "github.com/hasty/alchemy/matter"
 
 var (
-	documentTable     = "document"
-	clusterTable      = "cluster"
-	featureTable      = "feature"
-	dataTypeTable     = "data_type"
-	structField       = "struct_field"
-	bitmapValue       = "bitmap_value"
-	enumValue         = "enum_value"
-	attributeTable    = "attribute"
-	eventTable        = "event"
-	eventFieldTable   = "event_field"
-	commandTable      = "command"
-	commandFieldTable = "command_field"
+	documentTable                     = "document"
+	clusterTable                      = "cluster"
+	clusterRevisionTable              = "cluster_revision"
+	featureTable                      = "feature"
+	dataTypeTable                     = "data_type"
+	structField                       = "struct_field"
+	bitmapValue                       = "bitmap_value"
+	enumValue                         = "enum_value"
+	attributeTable                    = "attribute"
+	eventTable                        = "event"
+	eventFieldTable                   = "event_field"
+	commandTable                      = "command"
+	commandFieldTable                 = "command_field"
+	deviceTypeTable                   = "device_type"
+	deviceTypeRevisionTable           = "device_type_revision"
+	deviceTypeConditionTable          = "device_type_condition"
+	deviceTypeClusterRequirementTable = "device_type_cluster_requirement"
 )
 
 type tableSchemaDef struct {
@@ -37,6 +42,12 @@ var tableSchema = map[string]tableSchemaDef{
 			matter.TableColumnRole,
 			matter.TableColumnScope,
 			matter.TableColumnPICS,
+		}},
+	clusterRevisionTable: {
+		parent: clusterTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnID,
+			matter.TableColumnDescription,
 		}},
 	featureTable: {
 		parent: clusterTable,
@@ -142,6 +153,38 @@ var tableSchema = map[string]tableSchemaDef{
 			matter.TableColumnQuality,
 			matter.TableColumnDefault,
 			matter.TableColumnConformance,
+		},
+	},
+	deviceTypeTable: {
+		parent: documentTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnID,
+			matter.TableColumnName,
+			matter.TableColumnSuperset,
+			matter.TableColumnClass,
+			matter.TableColumnScope,
+		},
+	},
+	deviceTypeRevisionTable: {
+		parent: deviceTypeTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnID,
+			matter.TableColumnDescription,
+		}},
+	deviceTypeConditionTable: {
+		parent: deviceTypeTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnFeature,
+			matter.TableColumnDescription,
+		}},
+	deviceTypeClusterRequirementTable: {
+		parent: deviceTypeTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnID,
+			matter.TableColumnName,
+			matter.TableColumnQuality,
+			matter.TableColumnConformance,
+			matter.TableColumnDirection,
 		},
 	},
 }
