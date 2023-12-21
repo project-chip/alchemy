@@ -191,6 +191,17 @@ func (r *renderer) addType(dt *matter.DataType) {
 		r.addType(dt.EntryType)
 		return
 	}
+
+	model := dt.Model
+	if model == nil {
+		return
+	}
+	path := r.spec.DocRefs[model]
+	if path != r.doc.Path {
+		// This model came from a different document, and will thus end up in its xml file, so should not be repeated here
+		return
+	}
+
 	switch model := dt.Model.(type) {
 	case *matter.Bitmap:
 		r.bitmaps[model] = false

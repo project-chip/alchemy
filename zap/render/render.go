@@ -42,14 +42,6 @@ func (r *renderer) render(cxt context.Context, models []matter.Model) (*Result, 
 	x.CreateProcInst("xml", `version="1.0"`)
 	x.CreateComment(fmt.Sprintf(license, time.Now().Year()))
 	err := r.renderModels(cxt, &x.Element, models)
-	/*c := x.CreateElement("configurator")
-	dom := c.CreateElement("domain")
-	dom.CreateAttr("name", "CHIP")
-	switch docType {
-	case matter.DocTypeAppCluster:
-
-		err = renderAppCluster(cxt, r.doc, models, c, errata)
-	}*/
 	if err != nil {
 		return nil, err
 	}
