@@ -34,19 +34,19 @@ func (c *HexLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *HexLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
-	return matter.ConstraintExtreme{
-		Type:   matter.ConstraintExtremeTypeUInt64,
+func (c *HexLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
+	return matter.DataTypeExtreme{
+		Type:   matter.DataTypeExtremeTypeUInt64,
 		Format: matter.NumberFormatHex,
 		UInt64: c.Value,
 	}
 }
 
-func (c *HexLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *HexLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *HexLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *HexLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Min(cc)
 }
 

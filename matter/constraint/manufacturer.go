@@ -17,15 +17,15 @@ func (c *ManufacturerLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *ManufacturerLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+func (c *ManufacturerLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
 	return
 }
 
-func (c *ManufacturerLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ManufacturerLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return
 }
 
-func (c *ManufacturerLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ManufacturerLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return
 }
 

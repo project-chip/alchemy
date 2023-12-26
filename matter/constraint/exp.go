@@ -23,7 +23,7 @@ func (c *ExpLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *ExpLimit) minmax(cc *matter.ConstraintContext) (minmax matter.ConstraintExtreme) {
+func (c *ExpLimit) minmax(cc *matter.ConstraintContext) (minmax matter.DataTypeExtreme) {
 
 	negative := c.Value < 0
 	base := c.Value
@@ -41,23 +41,23 @@ func (c *ExpLimit) minmax(cc *matter.ConstraintContext) (minmax matter.Constrain
 	if negative {
 		i *= -1
 	}
-	minmax = matter.ConstraintExtreme{
-		Type:   matter.ConstraintExtremeTypeInt64,
+	minmax = matter.DataTypeExtreme{
+		Type:   matter.DataTypeExtremeTypeInt64,
 		Format: matter.NumberFormatHex,
 		Int64:  i,
 	}
 	return
 }
 
-func (c *ExpLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+func (c *ExpLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
 	return c.minmax(cc)
 }
 
-func (c *ExpLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ExpLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.minmax(cc)
 }
 
-func (c *ExpLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ExpLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.minmax(cc)
 }
 

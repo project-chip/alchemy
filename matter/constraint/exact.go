@@ -23,15 +23,15 @@ func (c *ExactConstraint) Equal(o matter.Constraint) bool {
 	return false
 }
 
-func (c *ExactConstraint) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+func (c *ExactConstraint) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
 	return c.Value.Min(cc)
 }
 
-func (c *ExactConstraint) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ExactConstraint) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Value.Max(cc)
 }
 
-func (c *ExactConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ExactConstraint) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Value.Default(cc)
 }
 

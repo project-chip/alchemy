@@ -26,15 +26,15 @@ func (c *ListConstraint) Equal(o matter.Constraint) bool {
 	return false
 }
 
-func (c *ListConstraint) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+func (c *ListConstraint) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
 	return c.Constraint.Min(cc)
 }
 
-func (c *ListConstraint) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ListConstraint) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Constraint.Max(cc)
 }
 
-func (c *ListConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ListConstraint) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return
 }
 

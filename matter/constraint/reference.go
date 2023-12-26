@@ -20,7 +20,7 @@ func (c *ReferenceLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *ReferenceLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+func (c *ReferenceLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
 	r := c.getReference(cc)
 	if r == nil || r.Constraint == nil {
 		return
@@ -28,7 +28,7 @@ func (c *ReferenceLimit) Min(cc *matter.ConstraintContext) (min matter.Constrain
 	return r.Constraint.Min(cc)
 }
 
-func (c *ReferenceLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ReferenceLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	r := c.getReference(cc)
 	if r == nil || r.Constraint == nil {
 		return
@@ -47,7 +47,7 @@ func (c *ReferenceLimit) getReference(cc *matter.ConstraintContext) *matter.Fiel
 	return r
 }
 
-func (c *ReferenceLimit) getEnumValue(cc *matter.ConstraintContext) (def matter.ConstraintExtreme) {
+func (c *ReferenceLimit) getEnumValue(cc *matter.ConstraintContext) (def matter.DataTypeExtreme) {
 	if cc.Field.Type == nil || cc.Field.Type.Model == nil {
 		return
 	}
@@ -59,7 +59,7 @@ func (c *ReferenceLimit) getEnumValue(cc *matter.ConstraintContext) (def matter.
 		if v.Name == c.Value {
 			val, err := parse.HexOrDec(v.Value)
 			if err == nil {
-				def = matter.NewUintConstraintExtreme(val, matter.NumberFormatInt)
+				def = matter.NewUintDataTypeExtreme(val, matter.NumberFormatInt)
 				return
 			}
 		}
@@ -67,7 +67,7 @@ func (c *ReferenceLimit) getEnumValue(cc *matter.ConstraintContext) (def matter.
 	return
 }
 
-func (c *ReferenceLimit) getBitmapValue(cc *matter.ConstraintContext) (def matter.ConstraintExtreme) {
+func (c *ReferenceLimit) getBitmapValue(cc *matter.ConstraintContext) (def matter.DataTypeExtreme) {
 	if cc.Field.Type == nil || cc.Field.Type.Model == nil {
 		return
 	}
@@ -79,7 +79,7 @@ func (c *ReferenceLimit) getBitmapValue(cc *matter.ConstraintContext) (def matte
 		if v.Name == c.Value {
 			val, err := v.Mask()
 			if err == nil {
-				def = matter.NewUintConstraintExtreme(val, matter.NumberFormatHex)
+				def = matter.NewUintDataTypeExtreme(val, matter.NumberFormatHex)
 				return
 			}
 		}
@@ -87,7 +87,7 @@ func (c *ReferenceLimit) getBitmapValue(cc *matter.ConstraintContext) (def matte
 	return
 }
 
-func (c *ReferenceLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *ReferenceLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	r := c.getReference(cc)
 	if r != nil && r.Default != "" {
 		cons := ParseConstraint(r.Default)

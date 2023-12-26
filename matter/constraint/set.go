@@ -40,8 +40,8 @@ func (cs ConstraintSet) Equal(o matter.Constraint) bool {
 	return true
 }
 
-func (cs ConstraintSet) Min(c *matter.ConstraintContext) (min matter.ConstraintExtreme) {
-	var from matter.ConstraintExtreme
+func (cs ConstraintSet) Min(c *matter.ConstraintContext) (min matter.DataTypeExtreme) {
+	var from matter.DataTypeExtreme
 
 	from = cs[0].Min(c)
 	for i := 1; i < len(cs); i++ {
@@ -53,8 +53,8 @@ func (cs ConstraintSet) Min(c *matter.ConstraintContext) (min matter.ConstraintE
 	return from
 }
 
-func (cs ConstraintSet) Max(c *matter.ConstraintContext) (max matter.ConstraintExtreme) {
-	var to matter.ConstraintExtreme
+func (cs ConstraintSet) Max(c *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+	var to matter.DataTypeExtreme
 
 	to = cs[0].Min(c)
 	for i := 1; i < len(cs); i++ {
@@ -65,7 +65,7 @@ func (cs ConstraintSet) Max(c *matter.ConstraintContext) (max matter.ConstraintE
 	return to
 }
 
-func (c ConstraintSet) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c ConstraintSet) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return
 }
 
@@ -77,20 +77,20 @@ func (cs ConstraintSet) Clone() matter.Constraint {
 	return nc
 }
 
-func minExtreme(f1 matter.ConstraintExtreme, f2 matter.ConstraintExtreme) matter.ConstraintExtreme {
+func minExtreme(f1 matter.DataTypeExtreme, f2 matter.DataTypeExtreme) matter.DataTypeExtreme {
 	switch f1.Type {
-	case matter.ConstraintExtremeTypeUndefined:
+	case matter.DataTypeExtremeTypeUndefined:
 		return f1
-	case matter.ConstraintExtremeTypeInt64:
+	case matter.DataTypeExtremeTypeInt64:
 		switch f2.Type {
-		case matter.ConstraintExtremeTypeUndefined:
+		case matter.DataTypeExtremeTypeUndefined:
 			return f2
-		case matter.ConstraintExtremeTypeInt64:
+		case matter.DataTypeExtremeTypeInt64:
 			if f1.Int64 < f2.Int64 {
 				return f1
 			}
 			return f2
-		case matter.ConstraintExtremeTypeUInt64:
+		case matter.DataTypeExtremeTypeUInt64:
 			if f2.UInt64 > math.MaxInt64 {
 				return f1
 			}
@@ -99,15 +99,15 @@ func minExtreme(f1 matter.ConstraintExtreme, f2 matter.ConstraintExtreme) matter
 			}
 			return f2
 		}
-	case matter.ConstraintExtremeTypeUInt64:
+	case matter.DataTypeExtremeTypeUInt64:
 		switch f2.Type {
-		case matter.ConstraintExtremeTypeUndefined:
+		case matter.DataTypeExtremeTypeUndefined:
 			return f2
-		case matter.ConstraintExtremeTypeUInt64:
+		case matter.DataTypeExtremeTypeUInt64:
 			if f1.UInt64 < f2.UInt64 {
 				return f1
 			}
-		case matter.ConstraintExtremeTypeInt64:
+		case matter.DataTypeExtremeTypeInt64:
 			if f1.UInt64 > math.MaxInt64 {
 				return f2
 			}
@@ -117,23 +117,23 @@ func minExtreme(f1 matter.ConstraintExtreme, f2 matter.ConstraintExtreme) matter
 			return f2
 		}
 	}
-	return matter.ConstraintExtreme{}
+	return matter.DataTypeExtreme{}
 }
 
-func maxExtreme(f1 matter.ConstraintExtreme, f2 matter.ConstraintExtreme) matter.ConstraintExtreme {
+func maxExtreme(f1 matter.DataTypeExtreme, f2 matter.DataTypeExtreme) matter.DataTypeExtreme {
 	switch f1.Type {
-	case matter.ConstraintExtremeTypeUndefined:
+	case matter.DataTypeExtremeTypeUndefined:
 		return f1
-	case matter.ConstraintExtremeTypeInt64:
+	case matter.DataTypeExtremeTypeInt64:
 		switch f2.Type {
-		case matter.ConstraintExtremeTypeUndefined:
+		case matter.DataTypeExtremeTypeUndefined:
 			return f2
-		case matter.ConstraintExtremeTypeInt64:
+		case matter.DataTypeExtremeTypeInt64:
 			if f1.Int64 > f2.Int64 {
 				return f1
 			}
 			return f2
-		case matter.ConstraintExtremeTypeUInt64:
+		case matter.DataTypeExtremeTypeUInt64:
 			if f2.UInt64 > math.MaxInt64 {
 				return f2
 			}
@@ -142,15 +142,15 @@ func maxExtreme(f1 matter.ConstraintExtreme, f2 matter.ConstraintExtreme) matter
 			}
 			return f1
 		}
-	case matter.ConstraintExtremeTypeUInt64:
+	case matter.DataTypeExtremeTypeUInt64:
 		switch f2.Type {
-		case matter.ConstraintExtremeTypeUndefined:
+		case matter.DataTypeExtremeTypeUndefined:
 			return f2
-		case matter.ConstraintExtremeTypeUInt64:
+		case matter.DataTypeExtremeTypeUInt64:
 			if f1.UInt64 < f2.UInt64 {
 				return f2
 			}
-		case matter.ConstraintExtremeTypeInt64:
+		case matter.DataTypeExtremeTypeInt64:
 			if f1.UInt64 > math.MaxInt64 {
 				return f1
 			}
@@ -160,5 +160,5 @@ func maxExtreme(f1 matter.ConstraintExtreme, f2 matter.ConstraintExtreme) matter
 			return f1
 		}
 	}
-	return matter.ConstraintExtreme{}
+	return matter.DataTypeExtreme{}
 }

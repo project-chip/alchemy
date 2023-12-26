@@ -69,18 +69,18 @@ type Constraint interface {
 	Type() ConstraintType
 	AsciiDocString(dataType *DataType) string
 	Equal(o Constraint) bool
-	Min(c *ConstraintContext) (min ConstraintExtreme)
-	Max(c *ConstraintContext) (max ConstraintExtreme)
-	Default(c *ConstraintContext) (max ConstraintExtreme)
+	Min(c *ConstraintContext) (min DataTypeExtreme)
+	Max(c *ConstraintContext) (max DataTypeExtreme)
+	Default(c *ConstraintContext) (max DataTypeExtreme)
 	Clone() Constraint
 }
 
 type ConstraintLimit interface {
 	AsciiDocString(dataType *DataType) string
 	Equal(o ConstraintLimit) bool
-	Min(c *ConstraintContext) (min ConstraintExtreme)
-	Max(c *ConstraintContext) (max ConstraintExtreme)
-	Default(c *ConstraintContext) (max ConstraintExtreme)
+	Min(c *ConstraintContext) (min DataTypeExtreme)
+	Max(c *ConstraintContext) (max DataTypeExtreme)
+	Default(c *ConstraintContext) (max DataTypeExtreme)
 	Clone() ConstraintLimit
 }
 
@@ -90,14 +90,14 @@ type ConstraintContext struct {
 	VisitedReferences map[string]struct{}
 }
 
-type ConstraintExtremeType uint8
+type DataTypeExtremeType uint8
 
 const (
-	ConstraintExtremeTypeUndefined ConstraintExtremeType = iota
-	ConstraintExtremeTypeInt64
-	ConstraintExtremeTypeUInt64
-	ConstraintExtremeTypeNull
-	ConstraintExtremeTypeEmpty
+	DataTypeExtremeTypeUndefined DataTypeExtremeType = iota
+	DataTypeExtremeTypeInt64
+	DataTypeExtremeTypeUInt64
+	DataTypeExtremeTypeNull
+	DataTypeExtremeTypeEmpty
 )
 
 type NumberFormat uint8
@@ -109,39 +109,39 @@ const (
 	NumberFormatAuto
 )
 
-type ConstraintExtreme struct {
-	Type   ConstraintExtremeType
+type DataTypeExtreme struct {
+	Type   DataTypeExtremeType
 	Format NumberFormat
 	Int64  int64
 	UInt64 uint64
 }
 
-func NewIntConstraintExtreme(i int64, f NumberFormat) ConstraintExtreme {
-	return ConstraintExtreme{Type: ConstraintExtremeTypeInt64, Format: f, Int64: i}
+func NewIntDataTypeExtreme(i int64, f NumberFormat) DataTypeExtreme {
+	return DataTypeExtreme{Type: DataTypeExtremeTypeInt64, Format: f, Int64: i}
 }
 
-func NewUintConstraintExtreme(u uint64, f NumberFormat) ConstraintExtreme {
-	return ConstraintExtreme{Type: ConstraintExtremeTypeUInt64, Format: f, UInt64: u}
+func NewUintDataTypeExtreme(u uint64, f NumberFormat) DataTypeExtreme {
+	return DataTypeExtreme{Type: DataTypeExtremeTypeUInt64, Format: f, UInt64: u}
 }
 
-func (ce *ConstraintExtreme) Defined() bool {
-	return ce.Type != ConstraintExtremeTypeUndefined
+func (ce *DataTypeExtreme) Defined() bool {
+	return ce.Type != DataTypeExtremeTypeUndefined
 }
 
-func (ce *ConstraintExtreme) Value() any {
+func (ce *DataTypeExtreme) Value() any {
 	switch ce.Type {
-	case ConstraintExtremeTypeInt64:
+	case DataTypeExtremeTypeInt64:
 		return ce.Int64
-	case ConstraintExtremeTypeUInt64:
+	case DataTypeExtremeTypeUInt64:
 		return ce.UInt64
 	default:
 		return nil
 	}
 }
 
-func (ce *ConstraintExtreme) ZapString(dataType *DataType) string {
+func (ce *DataTypeExtreme) ZapString(dataType *DataType) string {
 	switch ce.Type {
-	case ConstraintExtremeTypeInt64:
+	case DataTypeExtremeTypeInt64:
 		val := ce.Int64
 		switch ce.Format {
 		case NumberFormatHex:
@@ -170,22 +170,22 @@ func (ce *ConstraintExtreme) ZapString(dataType *DataType) string {
 			}
 			return strconv.FormatInt(ce.Int64, 10)
 		}
-	case ConstraintExtremeTypeUInt64:
+	case DataTypeExtremeTypeUInt64:
 		return ce.formatUint64(dataType, ce.UInt64)
-	case ConstraintExtremeTypeNull:
+	case DataTypeExtremeTypeNull:
 		val := dataType.NullValue()
 		if val > 0 {
 			return ce.formatUint64(dataType, val)
 		}
-	case ConstraintExtremeTypeEmpty:
+	case DataTypeExtremeTypeEmpty:
 		return ""
 	}
 	return ""
 }
 
-func (ce *ConstraintExtreme) DataModelString(dataType *DataType) string {
+func (ce *DataTypeExtreme) DataModelString(dataType *DataType) string {
 	switch ce.Type {
-	case ConstraintExtremeTypeInt64:
+	case DataTypeExtremeTypeInt64:
 		val := ce.Int64
 		switch ce.Format {
 		case NumberFormatHex:
@@ -219,7 +219,7 @@ func (ce *ConstraintExtreme) DataModelString(dataType *DataType) string {
 			}
 			return strconv.FormatInt(ce.Int64, 10)
 		}
-	case ConstraintExtremeTypeUInt64:
+	case DataTypeExtremeTypeUInt64:
 		if dataType != nil {
 			switch dataType.BaseType {
 			case BaseDataTypeBoolean:
@@ -227,15 +227,15 @@ func (ce *ConstraintExtreme) DataModelString(dataType *DataType) string {
 			}
 		}
 		return ce.formatUint64(dataType, ce.UInt64)
-	case ConstraintExtremeTypeNull:
+	case DataTypeExtremeTypeNull:
 		return "null"
-	case ConstraintExtremeTypeEmpty:
+	case DataTypeExtremeTypeEmpty:
 		return "empty"
 	}
 	return ""
 }
 
-func (ce *ConstraintExtreme) formatUint64(dataType *DataType, val uint64) string {
+func (ce *DataTypeExtreme) formatUint64(dataType *DataType, val uint64) string {
 	switch ce.Format {
 	case NumberFormatHex:
 		if dataType != nil {
@@ -262,14 +262,14 @@ func (ce *ConstraintExtreme) formatUint64(dataType *DataType, val uint64) string
 	}
 }
 
-func (ce ConstraintExtreme) Equals(o ConstraintExtreme) bool {
+func (ce DataTypeExtreme) Equals(o DataTypeExtreme) bool {
 	if ce.Type != o.Type {
 		return false
 	}
 	switch ce.Type {
-	case ConstraintExtremeTypeInt64:
+	case DataTypeExtremeTypeInt64:
 		return ce.Int64 != o.Int64
-	case ConstraintExtremeTypeUInt64:
+	case DataTypeExtremeTypeUInt64:
 		return ce.UInt64 != o.UInt64
 	default:
 		return true

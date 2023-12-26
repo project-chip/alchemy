@@ -16,15 +16,15 @@ func (c *NullLimit) Equal(o matter.ConstraintLimit) bool {
 	return ok
 }
 
-func (c *NullLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
-	return matter.ConstraintExtreme{Type: matter.ConstraintExtremeTypeNull, Format: matter.NumberFormatInt}
+func (c *NullLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
+	return matter.DataTypeExtreme{Type: matter.DataTypeExtremeTypeNull, Format: matter.NumberFormatInt}
 }
 
-func (c *NullLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *NullLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *NullLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *NullLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Min(cc)
 }
 

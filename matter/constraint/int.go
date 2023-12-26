@@ -21,19 +21,19 @@ func (c *IntLimit) Equal(o matter.ConstraintLimit) bool {
 	return false
 }
 
-func (c *IntLimit) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
-	return matter.ConstraintExtreme{
-		Type:   matter.ConstraintExtremeTypeInt64,
+func (c *IntLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
+	return matter.DataTypeExtreme{
+		Type:   matter.DataTypeExtremeTypeInt64,
 		Format: matter.NumberFormatInt,
 		Int64:  c.Value,
 	}
 }
 
-func (c *IntLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *IntLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *IntLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *IntLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
