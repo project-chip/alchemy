@@ -26,15 +26,15 @@ func (c *RangeConstraint) Equal(o matter.Constraint) bool {
 	return false
 }
 
-func (c *RangeConstraint) Min(cc *matter.ConstraintContext) (from matter.ConstraintExtreme) {
+func (c *RangeConstraint) Min(cc *matter.ConstraintContext) (from matter.DataTypeExtreme) {
 	return c.Minimum.Min(cc)
 }
 
-func (c *RangeConstraint) Max(cc *matter.ConstraintContext) (to matter.ConstraintExtreme) {
+func (c *RangeConstraint) Max(cc *matter.ConstraintContext) (to matter.DataTypeExtreme) {
 	return c.Maximum.Max(cc)
 }
 
-func (c *RangeConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *RangeConstraint) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return
 }
 

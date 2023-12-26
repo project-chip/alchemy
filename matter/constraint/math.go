@@ -46,49 +46,49 @@ func operate[T Number](operand string, left, right T) (val T) {
 	return
 }
 
-func (c *MathExpressionLimit) Min(cc *matter.ConstraintContext) matter.ConstraintExtreme {
+func (c *MathExpressionLimit) Min(cc *matter.ConstraintContext) matter.DataTypeExtreme {
 	leftMin := c.Left.Min(cc)
 	rightMin := c.Right.Min(cc)
 	return c.operate(leftMin, rightMin)
 }
 
-func (c *MathExpressionLimit) Max(cc *matter.ConstraintContext) matter.ConstraintExtreme {
+func (c *MathExpressionLimit) Max(cc *matter.ConstraintContext) matter.DataTypeExtreme {
 	leftMax := c.Left.Max(cc)
 	rightMax := c.Right.Max(cc)
 	return c.operate(leftMax, rightMax)
 }
 
-func (c *MathExpressionLimit) operate(left matter.ConstraintExtreme, right matter.ConstraintExtreme) (extreme matter.ConstraintExtreme) {
+func (c *MathExpressionLimit) operate(left matter.DataTypeExtreme, right matter.DataTypeExtreme) (extreme matter.DataTypeExtreme) {
 	switch left.Type {
-	case matter.ConstraintExtremeTypeInt64:
+	case matter.DataTypeExtremeTypeInt64:
 		switch right.Type {
-		case matter.ConstraintExtremeTypeInt64:
+		case matter.DataTypeExtremeTypeInt64:
 			extreme.Int64 = operate(c.Operand, left.Int64, right.Int64)
-			extreme.Type = matter.ConstraintExtremeTypeInt64
-		case matter.ConstraintExtremeTypeUInt64:
+			extreme.Type = matter.DataTypeExtremeTypeInt64
+		case matter.DataTypeExtremeTypeUInt64:
 			if right.UInt64 > math.MaxInt64 {
 				break
 			}
 			extreme.Int64 = operate(c.Operand, left.Int64, int64(right.UInt64))
-			extreme.Type = matter.ConstraintExtremeTypeInt64
+			extreme.Type = matter.DataTypeExtremeTypeInt64
 		default:
 		}
-	case matter.ConstraintExtremeTypeUInt64:
+	case matter.DataTypeExtremeTypeUInt64:
 		switch right.Type {
-		case matter.ConstraintExtremeTypeInt64:
+		case matter.DataTypeExtremeTypeInt64:
 			if right.Int64 < 0 {
 				break
 			}
 			extreme.UInt64 = operate(c.Operand, left.UInt64, uint64(right.Int64))
-			extreme.Type = matter.ConstraintExtremeTypeUInt64
-		case matter.ConstraintExtremeTypeUInt64:
+			extreme.Type = matter.DataTypeExtremeTypeUInt64
+		case matter.DataTypeExtremeTypeUInt64:
 			extreme.UInt64 = operate(c.Operand, left.UInt64, right.UInt64)
-			extreme.Type = matter.ConstraintExtremeTypeUInt64
+			extreme.Type = matter.DataTypeExtremeTypeUInt64
 		default:
 		}
 	default:
 	}
-	if extreme.Type != matter.ConstraintExtremeTypeUndefined {
+	if extreme.Type != matter.DataTypeExtremeTypeUndefined {
 		if left.Format == right.Format {
 			extreme.Format = left.Format
 		} else {
@@ -98,7 +98,7 @@ func (c *MathExpressionLimit) operate(left matter.ConstraintExtreme, right matte
 	return
 }
 
-func (c *MathExpressionLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *MathExpressionLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return c.Min(cc)
 }
 

@@ -21,15 +21,15 @@ func (c *GenericConstraint) Equal(o matter.Constraint) bool {
 	return false
 }
 
-func (c *GenericConstraint) Min(cc *matter.ConstraintContext) (min matter.ConstraintExtreme) {
+func (c *GenericConstraint) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
 	return
 }
 
-func (c *GenericConstraint) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *GenericConstraint) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return
 }
 
-func (c *GenericConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
+func (c *GenericConstraint) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
 	return
 }
 
