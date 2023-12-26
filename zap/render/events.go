@@ -16,7 +16,7 @@ func renderEvents(cluster *matter.Cluster, cx *etree.Element) {
 		ex.CreateAttr("code", e.ID.HexString())
 		ex.CreateAttr("name", zap.CleanName(e.Name))
 		ex.CreateAttr("priority", strings.ToLower(e.Priority))
-		if e.FabricSensitive {
+		if e.FabricSensitivity == matter.FabricSensitivitySensitive {
 			ex.CreateAttr("isFabricSensitive", "true")
 		}
 		if !conformance.IsMandatory(e.Conformance) {

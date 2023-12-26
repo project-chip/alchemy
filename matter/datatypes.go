@@ -143,6 +143,9 @@ type DataType struct {
 }
 
 func NewDataType(name string, isArray bool) *DataType {
+	if len(name) == 0 {
+		return nil
+	}
 	if isArray {
 		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewDataType(name, false)}
 	}
@@ -300,6 +303,15 @@ func NewDataType(name string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeCustom
 	}
 	return dt
+}
+
+func (dt *DataType) Clone() *DataType {
+	ndt := &DataType{Name: dt.Name, BaseType: dt.BaseType, Model: dt.Model}
+	if dt.EntryType != nil {
+		ndt.EntryType = dt.EntryType.Clone()
+	}
+	ndt.Model = dt.Model
+	return ndt
 }
 
 func (dt *DataType) HasLength() bool {

@@ -28,15 +28,14 @@ func getAccessSchemaColumnValues(tableName string, access interface{}) []interfa
 			a = ascii.ParseAccess(s, true)
 		default:
 			a = ascii.ParseAccess(s, false)
-
 		}
 		readAccess = int8(a.Read)
 		writeAccess = int8(a.Write)
 		invokeAccess = int8(a.Invoke)
-		if a.FabricScoped {
+		if a.IsFabricScoped() {
 			fabricScoped = 1
 		}
-		if a.FabricSensitive {
+		if a.IsFabricSensitive() {
 			fabricSensitive = 1
 		}
 

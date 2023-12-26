@@ -20,7 +20,11 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 		case "name":
 			c.Name = a.Value
 		case "isFabricScoped":
-			c.IsFabricScoped = a.Value == "true"
+			if a.Value == "true" {
+				c.FabricScoping = matter.FabricScopingScoped
+			} else {
+				c.FabricScoping = matter.FabricScopingUnscoped
+			}
 		case "optional":
 			if a.Value == "false" {
 				c.Conformance = conformance.Set{&conformance.Mandatory{}}
@@ -28,7 +32,11 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 		case "response":
 			c.Response = a.Value
 		case "mustUseTimedInvoke":
-			c.Access.Timed = a.Value == "true"
+			if a.Value == "true" {
+				c.Access.Timing = matter.TimingTimed
+			} else {
+				c.Access.Timing = matter.TimingUntimed
+			}
 		case "cli":
 		case "disableDefaultResponse":
 			c.Response = "N"

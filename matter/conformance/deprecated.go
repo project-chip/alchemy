@@ -24,3 +24,7 @@ func (oc *Deprecated) Equal(c Conformance) bool {
 	_, ok := c.(*Deprecated)
 	return ok
 }
+
+func (c *Deprecated) Clone() Conformance {
+	return &Deprecated{raw: c.raw}
+}

@@ -14,14 +14,16 @@ import (
 )
 
 type renderer struct {
-	spec   *matter.Spec
-	doc    *ascii.Doc
-	models []matter.Model
+	spec *matter.Spec
+	doc  *ascii.Doc
 
-	bitmaps  map[*matter.Bitmap]bool
-	enums    map[*matter.Enum]bool
-	clusters map[*matter.Cluster]bool
-	structs  map[*matter.Struct]bool
+	configurator *zap.Configurator
+	//models []matter.Model
+
+	//bitmaps  map[*matter.Bitmap]bool
+	//enums    map[*matter.Enum]bool
+	//clusters map[*matter.Cluster]bool
+	//structs  map[*matter.Struct]bool
 
 	errata *zap.Errata
 }
@@ -121,16 +123,18 @@ func (w newLineEncoder) Write(data []byte) (n int, err error) {
 	return
 }
 
-func Render(spec *matter.Spec, doc *ascii.Doc, r io.Reader, w io.Writer, models []matter.Model, errata *zap.Errata) (err error) {
+func Render(spec *matter.Spec, doc *ascii.Doc, r io.Reader, w io.Writer, configurator *zap.Configurator, errata *zap.Errata) (err error) {
 	d := xml.NewDecoder(r)
 	e := xml.NewEncoder(&newLineEncoder{inner: w})
 	e.Indent("", "  ")
 
+	//e := &loggingEncoder{w: w, e: en}
+
 	rend := &renderer{
-		spec:   spec,
-		doc:    doc,
-		models: models,
-		errata: errata,
+		spec:         spec,
+		doc:          doc,
+		configurator: configurator,
+		errata:       errata,
 	}
 
 	for {
@@ -146,7 +150,7 @@ func Render(spec *matter.Spec, doc *ascii.Doc, r io.Reader, w io.Writer, models 
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "configurator":
-				err = rend.writeConfigurator(d, e, t)
+				err = rend.writeConfigurator(d, e, t, configurator)
 			default:
 				err = e.EncodeToken(tok)
 			}

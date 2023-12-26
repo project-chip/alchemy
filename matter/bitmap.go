@@ -3,6 +3,8 @@ package matter
 import (
 	"fmt"
 	"regexp"
+	"slices"
+	"strings"
 
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/parse"
@@ -35,8 +37,69 @@ func (c *Bitmap) Size() int {
 	}
 }
 
+func (bm *Bitmap) Clone() *Bitmap {
+	nbm := &Bitmap{Name: bm.Name, Description: bm.Description}
+	if bm.Type != nil {
+		nbm.Type = bm.Type.Clone()
+	}
+	for _, b := range bm.Bits {
+		nbm.Bits = append(nbm.Bits, b.Clone())
+	}
+	return nbm
+}
+
+func (bm Bitmap) Reference(id string) conformance.HasConformance {
+	if len(bm.Bits) == 0 {
+		return nil
+	}
+	for _, b := range bm.Bits {
+		if b.Code == id {
+			return b
+		}
+	}
+	return nil
+}
+
+func (bm *Bitmap) Inherit(parent *Bitmap) error {
+	mergedBits := make(BitSet, 0, len(parent.Bits))
+	for _, b := range parent.Bits {
+		mergedBits = append(mergedBits, b.Clone())
+	}
+	for _, b := range bm.Bits {
+		var matching *Bit
+		for _, mb := range mergedBits {
+			if b.Bit == mb.Bit {
+				matching = b
+				break
+			}
+		}
+		if matching == nil {
+			mergedBits = append(mergedBits, b.Clone())
+			continue
+		}
+		if len(b.Summary) > 0 {
+			matching.Summary = b.Summary
+		}
+		if len(b.Conformance) > 0 {
+			matching.Conformance = b.Conformance.CloneSet()
+		}
+	}
+	if bm.Type == nil {
+		bm.Type = parent.Type
+	}
+	if len(bm.Description) == 0 {
+		bm.Description = parent.Description
+	}
+	slices.SortFunc(mergedBits, func(a, b *Bit) int {
+		return strings.Compare(a.Bit, b.Bit)
+	})
+	bm.Bits = mergedBits
+	return nil
+}
+
 type Bit struct {
 	Bit         string          `json:"bit,omitempty"`
+	Code        string          `json:"code,omitempty"`
 	Name        string          `json:"name,omitempty"`
 	Summary     string          `json:"summary,omitempty"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
@@ -46,7 +109,15 @@ func (c *Bit) Entity() Entity {
 	return EntityBitmapValue
 }
 
-var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)\.{2,}(?P<To>[0-9]+)$`)
+func (c *Bit) Clone() *Bit {
+	nb := &Bit{Bit: c.Bit, Code: c.Code, Name: c.Name, Summary: c.Summary}
+	if len(c.Conformance) > 0 {
+		nb.Conformance = c.Conformance.CloneSet()
+	}
+	return nb
+}
+
+var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)(?:\.{2,}|\s*\-\s*)(?P<To>[0-9]+)$`)
 
 func (bv *Bit) Mask() (uint64, error) {
 	val, err := parse.HexOrDec(bv.Bit)
@@ -72,7 +143,7 @@ func (bv *Bit) Mask() (uint64, error) {
 		}
 		return val, err
 	}
-	return 0, fmt.Errorf("invalid bit mask range: %s", bv.Bit)
+	return 0, fmt.Errorf("invalid bit mask range: \"%s\"", bv.Bit)
 }
 
 func (bv *Bit) GetConformance() conformance.Set {

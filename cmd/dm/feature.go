@@ -6,11 +6,11 @@ import (
 )
 
 func renderFeatures(cluster *matter.Cluster, c *etree.Element) (err error) {
-	if len(cluster.Features) == 0 {
+	if len(cluster.Features.Bits) == 0 {
 		return
 	}
 	features := c.CreateElement("features")
-	for _, f := range cluster.Features {
+	for _, f := range cluster.Features.Bits {
 		bit := matter.ParseNumber(f.Bit)
 		if !bit.Valid() {
 			continue

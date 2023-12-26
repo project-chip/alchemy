@@ -138,14 +138,14 @@ func Extract(d *xml.Decoder, el xml.StartElement) (tokens []xml.Token, err error
 	}
 }
 
-func readTag(d *xml.Decoder, e xml.StartElement) (c *matter.Feature, err error) {
-	c = &matter.Feature{}
+func readTag(d *xml.Decoder, e xml.StartElement) (c *matter.Bitmap, err error) {
+	c = &matter.Bitmap{Name: "Feature", Type: matter.NewDataType("map32", false)}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "name":
 			c.Name = a.Value
 		case "description":
-			c.Summary = a.Value
+			c.Description = a.Value
 		default:
 			return nil, fmt.Errorf("unexpected tag attribute: %s", a.Name.Local)
 		}

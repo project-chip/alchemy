@@ -69,6 +69,14 @@ func (c ConstraintSet) Default(cc *matter.ConstraintContext) (max matter.Constra
 	return
 }
 
+func (cs ConstraintSet) Clone() matter.Constraint {
+	nc := make(ConstraintSet, 0, len(cs))
+	for _, c := range cs {
+		nc = append(nc, c.Clone())
+	}
+	return nc
+}
+
 func minExtreme(f1 matter.ConstraintExtreme, f2 matter.ConstraintExtreme) matter.ConstraintExtreme {
 	switch f1.Type {
 	case matter.ConstraintExtremeTypeUndefined:

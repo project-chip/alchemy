@@ -36,6 +36,7 @@ const (
 	TableColumnElement
 	TableColumnClientServer
 	TableColumnCondition
+	TableColumnModeTagValue
 )
 
 var TableColumnNames = map[TableColumn]string{
@@ -70,6 +71,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnElement:      "Element",
 	TableColumnClientServer: "Client/Server",
 	TableColumnCondition:    "Condition",
+	TableColumnModeTagValue: "Mode Tag Value",
 }
 
 var AllowedTableAttributes = types.Attributes{

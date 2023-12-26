@@ -17,11 +17,11 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 
 	var skip bool
 	var matchingStruct *matter.Struct
-	for s, handled := range r.structs {
+	for s, handled := range r.configurator.Structs {
 		if s.Name == name || strings.TrimSuffix(s.Name, "Struct") == name {
 			matchingStruct = s
 			skip = handled
-			r.structs[s] = true
+			r.configurator.Structs[s] = true
 			break
 		}
 	}
@@ -192,7 +192,7 @@ func (r *renderer) writeStruct(e xmlEncoder, el xml.StartElement, s *matter.Stru
 		} else {
 			xfs.Attr = removeAttribute(xfs.Attr, "optional")
 		}
-		if v.Access.FabricSensitive {
+		if v.Access.IsFabricSensitive() {
 			xfs.Attr = setAttributeValue(xfs.Attr, "isFabricSensitive", "true")
 		} else {
 			xfs.Attr = removeAttribute(xfs.Attr, "isFabricSensitive")
@@ -230,7 +230,7 @@ func (*renderer) setStructAttributes(xfb []xml.Attr, s *matter.Struct, provision
 	if provisional {
 		xfb = setAttributeValue(xfb, "apiMaturity", "provisional")
 	}
-	if s.FabricScoped {
+	if s.FabricScoping == matter.FabricScopingScoped {
 		xfb = setAttributeValue(xfb, "isFabricScoped", "true")
 	} else {
 		xfb = removeAttribute(xfb, "isFabricScoped")

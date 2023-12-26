@@ -30,3 +30,7 @@ func (g *Generic) Equal(c Conformance) bool {
 	}
 	return true
 }
+
+func (c *Generic) Clone() Conformance {
+	return &Generic{raw: c.raw}
+}

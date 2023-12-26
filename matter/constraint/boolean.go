@@ -40,3 +40,7 @@ func (c *BooleanLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintE
 func (c *BooleanLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return c.Min(cc)
 }
+
+func (c *BooleanLimit) Clone() matter.ConstraintLimit {
+	return &BooleanLimit{Value: c.Value}
+}

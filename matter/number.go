@@ -85,6 +85,10 @@ func (id *Number) Compare(oid *Number) int {
 	return 0
 }
 
+func (id *Number) Clone() *Number {
+	return &Number{text: id.text, value: id.value, format: id.format}
+}
+
 func (id *Number) Is(oid uint64) bool {
 	if id.value >= 0 {
 		return int64(oid) == id.value

@@ -29,3 +29,7 @@ func (c *DescribedConstraint) Max(cc *matter.ConstraintContext) (max matter.Cons
 func (c *DescribedConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
 }
+
+func (c *DescribedConstraint) Clone() matter.Constraint {
+	return &DescribedConstraint{}
+}

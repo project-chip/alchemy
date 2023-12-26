@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) renderStructs(structs map[*matter.Struct]struct{}, cx *etree.Element) {
+func (r *renderer) renderStructs(structs map[*matter.Struct]bool, cx *etree.Element) {
 
 	ss := make([]*matter.Struct, 0, len(structs))
 	for s := range structs {
@@ -24,7 +24,7 @@ func (r *renderer) renderStructs(structs map[*matter.Struct]struct{}, cx *etree.
 	for _, s := range ss {
 		en := cx.CreateElement("struct")
 		en.CreateAttr("name", zap.CleanName(s.Name))
-		if s.FabricScoped {
+		if s.FabricScoping == matter.FabricScopingScoped {
 			en.CreateAttr("isFabricScoped", "true")
 		}
 		r.renderClusterCodes(en, s)
@@ -47,7 +47,7 @@ func (r *renderer) renderStructs(structs map[*matter.Struct]struct{}, cx *etree.
 			if defaultValue.Defined() {
 				fx.CreateAttr("default", defaultValue.ZapString(f.Type))
 			}
-			if f.Access.FabricSensitive {
+			if f.Access.IsFabricSensitive() {
 				fx.CreateAttr("isFabricSensitive", "true")
 			}
 		}

@@ -1,18 +1,6 @@
 package constraint
 
-import (
-	"strings"
-
-	"github.com/hasty/alchemy/matter"
-)
-
-func ParseConstraint(constraint string) matter.Constraint {
-	c, err := ParseReader("", strings.NewReader(constraint))
-	if err != nil {
-		return &GenericConstraint{Value: constraint}
-	}
-	return c.(matter.Constraint)
-}
+import "github.com/hasty/alchemy/matter"
 
 type ManufacturerLimit struct {
 	Value string
@@ -39,4 +27,8 @@ func (c *ManufacturerLimit) Max(cc *matter.ConstraintContext) (max matter.Constr
 
 func (c *ManufacturerLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
+}
+
+func (c *ManufacturerLimit) Clone() matter.ConstraintLimit {
+	return &ManufacturerLimit{Value: c.Value}
 }

@@ -55,8 +55,11 @@ func (s *Section) toClusters(d *Doc) (models []matter.Model, err error) {
 				c.Commands, err = s.toCommands(d)
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
+			case matter.SectionDerivedClusterNamespace:
+				err = parseDerivedCluster(d, s, c)
 			case matter.SectionDataTypes:
 				err = s.toDataTypes(d, c)
+			case matter.SectionClusterID:
 			default:
 				var looseModels []matter.Model
 				looseModels, err = findLooseModels(d, s)
@@ -228,6 +231,22 @@ func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 		}
 		if err != nil {
 			return fmt.Errorf("error reading extra columns on cluster %s: %w", c.Name, err)
+		}
+	}
+	return nil
+}
+
+func parseDerivedCluster(d *Doc, s *Section, c *matter.Cluster) error {
+	elements := parse.Skim[*Section](s.Elements)
+	for _, s := range elements {
+		switch s.SecType {
+		case matter.SectionModeTags:
+			en, err := s.toModeTags(d)
+			if err != nil {
+				return err
+			}
+			c.Enums = append(c.Enums, en)
+
 		}
 	}
 	return nil

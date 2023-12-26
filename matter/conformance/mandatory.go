@@ -46,3 +46,11 @@ func (m *Mandatory) Equal(c Conformance) bool {
 	}
 	return true
 }
+
+func (c *Mandatory) Clone() Conformance {
+	nm := &Mandatory{}
+	if c.Expression != nil {
+		nm.Expression = c.Expression.Clone()
+	}
+	return nm
+}

@@ -32,9 +32,14 @@ func (c *Choice) Equal(oc *Choice) bool {
 	return true
 }
 
+func (c *Choice) Clone() *Choice {
+	return &Choice{Set: c.Set, Limit: c.Limit.Clone()}
+}
+
 type ChoiceLimit interface {
 	String(set string) string
 	Equal(cl ChoiceLimit) bool
+	Clone() ChoiceLimit
 }
 
 type ChoiceExactLimit struct {
@@ -69,6 +74,10 @@ func (c *ChoiceExactLimit) MarshalJSON() ([]byte, error) {
 	return json.Marshal(js)
 }
 
+func (c *ChoiceExactLimit) Clone() ChoiceLimit {
+	return &ChoiceExactLimit{Limit: c.Limit}
+}
+
 type ChoiceMinLimit struct {
 	Min int `json:"min"`
 }
@@ -99,6 +108,10 @@ func (c *ChoiceMinLimit) MarshalJSON() ([]byte, error) {
 		"min":  c.Min,
 	}
 	return json.Marshal(js)
+}
+
+func (c *ChoiceMinLimit) Clone() ChoiceLimit {
+	return &ChoiceMinLimit{Min: c.Min}
 }
 
 type ChoiceMaxLimit struct {
@@ -133,6 +146,10 @@ func (c *ChoiceMaxLimit) MarshalJSON() ([]byte, error) {
 	return json.Marshal(js)
 }
 
+func (c *ChoiceMaxLimit) Clone() ChoiceLimit {
+	return &ChoiceMaxLimit{Max: c.Max}
+}
+
 type ChoiceRangeLimit struct {
 	Min int `json:"min"`
 	Max int `json:"max"`
@@ -165,4 +182,8 @@ func (c *ChoiceRangeLimit) MarshalJSON() ([]byte, error) {
 		"max":  c.Max,
 	}
 	return json.Marshal(js)
+}
+
+func (c *ChoiceRangeLimit) Clone() ChoiceLimit {
+	return &ChoiceRangeLimit{Min: c.Min, Max: c.Max}
 }

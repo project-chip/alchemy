@@ -106,12 +106,19 @@ func ParseAccess(vc string, forInvoke bool) (a matter.Access) {
 	a.OptionalWrite = optionalWrite
 
 	if access[accessCategoryMatchFabric] == "F" {
-		a.FabricScoped = true
+		a.FabricScoping = matter.FabricScopingScoped
+		a.FabricSensitivity = matter.FabricSensitivityInsensitive
 	} else if access[accessCategoryMatchFabric] == "S" {
-		a.FabricSensitive = true
+		a.FabricScoping = matter.FabricScopingUnscoped
+		a.FabricSensitivity = matter.FabricSensitivitySensitive
+	} else {
+		a.FabricScoping = matter.FabricScopingUnscoped
+		a.FabricSensitivity = matter.FabricSensitivityInsensitive
 	}
 	if access[accessCategoryMatchTimed] == "T" {
-		a.Timed = true
+		a.Timing = matter.TimingTimed
+	} else {
+		a.Timing = matter.TimingUntimed
 	}
 	return
 }
@@ -141,18 +148,18 @@ func AccessToAsciiString(a matter.Access, forInvoke bool) string {
 	} else if a.Invoke != matter.PrivilegeUnknown {
 		out.WriteString(privilegeToString(a.Invoke))
 	}
-	if a.FabricScoped || a.FabricSensitive {
+	if a.IsFabricScoped() || a.IsFabricSensitive() {
 		if out.Len() > 0 {
 			out.WriteRune(' ')
 		}
-		if a.FabricScoped {
+		if a.IsFabricScoped() {
 			out.WriteRune('F')
 		}
-		if a.FabricSensitive {
+		if a.IsFabricSensitive() {
 			out.WriteRune('S')
 		}
 	}
-	if a.Timed {
+	if a.IsTimed() {
 		if out.Len() > 0 {
 			out.WriteRune(' ')
 		}

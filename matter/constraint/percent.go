@@ -49,3 +49,7 @@ func (c *PercentLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintE
 func (c *PercentLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return c.Min(cc)
 }
+
+func (c *PercentLimit) Clone() matter.ConstraintLimit {
+	return &PercentLimit{Value: c.Value.Copy(), Hundredths: c.Hundredths}
+}

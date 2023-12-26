@@ -1,6 +1,11 @@
 package matter
 
-import "github.com/hasty/alchemy/matter/conformance"
+import (
+	"slices"
+	"strings"
+
+	"github.com/hasty/alchemy/matter/conformance"
+)
 
 type Enum struct {
 	Name        string    `json:"name,omitempty"`
@@ -13,6 +18,55 @@ func (*Enum) Entity() Entity {
 	return EntityEnum
 }
 
+func (e *Enum) Clone() *Enum {
+	ne := &Enum{Name: e.Name, Description: e.Description}
+	if e.Type != nil {
+		ne.Type = e.Type.Clone()
+	}
+	ne.Values = make(EnumSet, 0, len(e.Values))
+	for _, ev := range e.Values {
+		ne.Values = append(ne.Values, ev.Clone())
+	}
+	return ne
+}
+
+func (en *Enum) Inherit(parent *Enum) error {
+	mergedValues := make(EnumSet, 0, len(parent.Values))
+	for _, ev := range parent.Values {
+		mergedValues = append(mergedValues, ev.Clone())
+	}
+	for _, ev := range en.Values {
+		var matching *EnumValue
+		for _, mev := range mergedValues {
+			if ev.Name == mev.Name {
+				matching = mev
+				break
+			}
+		}
+		if matching == nil {
+			mergedValues = append(mergedValues, ev.Clone())
+			continue
+		}
+		if len(ev.Summary) > 0 {
+			matching.Summary = ev.Summary
+		}
+		if len(ev.Conformance) > 0 {
+			matching.Conformance = ev.Conformance.CloneSet()
+		}
+	}
+	if en.Type == nil {
+		en.Type = parent.Type
+	}
+	if len(en.Description) == 0 {
+		en.Description = parent.Description
+	}
+	slices.SortFunc(mergedValues, func(a, b *EnumValue) int {
+		return strings.Compare(a.Value, b.Value)
+	})
+	en.Values = mergedValues
+	return nil
+}
+
 type EnumValue struct {
 	Value       string          `json:"value,omitempty"`
 	Name        string          `json:"name,omitempty"`
@@ -22,6 +76,14 @@ type EnumValue struct {
 
 func (ev *EnumValue) Entity() Entity {
 	return EntityEnumValue
+}
+
+func (ev *EnumValue) Clone() *EnumValue {
+	nev := &EnumValue{Name: ev.Name, Value: ev.Value, Summary: ev.Summary}
+	if len(ev.Conformance) > 0 {
+		nev.Conformance = ev.Conformance.CloneSet()
+	}
+	return nev
 }
 
 func (ev *EnumValue) GetConformance() conformance.Set {

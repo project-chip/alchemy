@@ -42,3 +42,7 @@ func (c *TemperatureLimit) Max(cc *matter.ConstraintContext) (max matter.Constra
 func (c *TemperatureLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return c.Min(cc)
 }
+
+func (c *TemperatureLimit) Clone() matter.ConstraintLimit {
+	return &TemperatureLimit{Value: c.Value.Copy()}
+}

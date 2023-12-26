@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/constraint"
 	"github.com/hasty/alchemy/parse"
 )
 

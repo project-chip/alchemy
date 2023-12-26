@@ -34,3 +34,7 @@ func (c *ExactConstraint) Max(cc *matter.ConstraintContext) (max matter.Constrai
 func (c *ExactConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return c.Value.Default(cc)
 }
+
+func (c *ExactConstraint) Clone() matter.Constraint {
+	return &ExactConstraint{Value: c.Value.Clone()}
+}

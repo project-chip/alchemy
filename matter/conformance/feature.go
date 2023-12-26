@@ -50,3 +50,7 @@ func (fe *FeatureExpression) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(js)
 }
+
+func (fe *FeatureExpression) Clone() Expression {
+	return &FeatureExpression{Not: fe.Not, ID: fe.ID}
+}

@@ -55,3 +55,14 @@ func (oc *Optional) Equal(c Conformance) bool {
 	}
 	return true
 }
+
+func (c *Optional) Clone() Conformance {
+	nm := &Optional{}
+	if c.Expression != nil {
+		nm.Expression = c.Expression.Clone()
+	}
+	if c.Choice != nil {
+		nm.Choice = c.Choice.Clone()
+	}
+	return nm
+}

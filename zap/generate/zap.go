@@ -117,11 +117,11 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 	if !options.Files.DryRun {
 
 		for path, result := range outputs {
-			if len(result.Models) == 0 {
+			if len(result.zcl) == 0 {
 				continue
 			}
 
-			err = os.WriteFile(path, []byte(result.ZCL), os.ModeAppend|0644)
+			err = os.WriteFile(path, []byte(result.zcl), os.ModeAppend|0644)
 			if err != nil {
 				return err
 			}

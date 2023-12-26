@@ -10,6 +10,7 @@ type Expression interface {
 
 	Eval(context Context) (bool, error)
 	Equal(e Expression) bool
+	Clone() Expression
 }
 
 type HasExpression interface {

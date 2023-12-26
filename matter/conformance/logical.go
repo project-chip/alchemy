@@ -151,3 +151,11 @@ func (fe *LogicalExpression) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(js)
 }
+
+func (le *LogicalExpression) Clone() Expression {
+	nle := &LogicalExpression{Not: le.Not, Operand: le.Operand, Left: le.Left.Clone()}
+	for _, re := range le.Right {
+		nle.Right = append(nle.Right, re.Clone())
+	}
+	return nle
+}

@@ -19,3 +19,7 @@ func (oc *Provisional) Equal(c Conformance) bool {
 	_, ok := c.(*Provisional)
 	return ok
 }
+
+func (c *Provisional) Clone() Conformance {
+	return &Provisional{}
+}

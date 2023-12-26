@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/constraint"
 	"github.com/hasty/alchemy/zap"
 )
 
@@ -55,7 +55,11 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 		case "name":
 			field.Name = a.Value
 		case "isFabricSensitive":
-			field.Access.FabricSensitive = a.Value == "true"
+			if a.Value == "true" {
+				field.Access.FabricSensitivity = matter.FabricSensitivitySensitive
+			} else {
+				field.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
+			}
 		case "isNullable":
 			field.Quality |= matter.QualityNullable
 		case "type":

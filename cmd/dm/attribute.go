@@ -47,7 +47,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 }
 
 func renderAttributeAccess(ax *etree.Element, a matter.Access) {
-	if a.Read == matter.PrivilegeUnknown && a.Write == matter.PrivilegeUnknown && !a.Timed {
+	if a.Read == matter.PrivilegeUnknown && a.Write == matter.PrivilegeUnknown && !a.IsTimed() {
 		return
 	}
 	acx := ax.CreateElement("access")
@@ -67,7 +67,7 @@ func renderAttributeAccess(ax *etree.Element, a matter.Access) {
 	if a.Write != matter.PrivilegeUnknown {
 		acx.CreateAttr("writePrivilege", strings.ToLower(matter.PrivilegeNamesShort[a.Write]))
 	}
-	if a.Timed {
+	if a.IsTimed() {
 		acx.CreateAttr("timed", "true")
 	}
 }
