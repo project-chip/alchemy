@@ -39,6 +39,10 @@ func renderCommands(cluster *matter.Cluster, cx *etree.Element, errata *zap.Erra
 func renderCommand(c *matter.Command, e *etree.Element, errata *zap.Errata) {
 	mandatory := conformance.IsMandatory(c.Conformance)
 
+	if !c.ID.Valid() {
+		return
+	}
+
 	cx := e.CreateElement("command")
 	var serverSource bool
 	if c.Direction == matter.InterfaceServer {
@@ -49,7 +53,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *zap.Errata) {
 	}
 	cx.CreateAttr("code", c.ID.ShortHexString())
 	cx.CreateAttr("name", zap.CleanName(c.Name))
-	if c.Access.FabricScoped {
+	if c.Access.IsFabricScoped() {
 		cx.CreateAttr("isFabricScoped", "true")
 	}
 	if len(c.Response) > 0 && c.Response != "Y" && c.Response != "N" {
@@ -58,7 +62,7 @@ func renderCommand(c *matter.Command, e *etree.Element, errata *zap.Errata) {
 	if c.Response == "N" && !serverSource {
 		cx.CreateAttr("disableDefaultResponse", "true")
 	}
-	if c.Access.Timed {
+	if c.Access.IsTimed() {
 		cx.CreateAttr("mustUseTimedInvoke", "true")
 	}
 	if !mandatory {

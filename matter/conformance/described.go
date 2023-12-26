@@ -16,6 +16,10 @@ func (d *Described) Eval(context Context) (State, error) {
 }
 
 func (d *Described) Equal(c Conformance) bool {
-	_, ok := c.(*Mandatory)
+	_, ok := c.(*Described)
 	return ok
+}
+
+func (c *Described) Clone() Conformance {
+	return &Described{}
 }

@@ -37,3 +37,7 @@ func (c *ListConstraint) Max(cc *matter.ConstraintContext) (max matter.Constrain
 func (c *ListConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
 }
+
+func (c *ListConstraint) Clone() matter.Constraint {
+	return &ListConstraint{Constraint: c.Constraint.Clone(), EntryConstraint: c.EntryConstraint.Clone()}
+}

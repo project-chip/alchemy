@@ -163,11 +163,18 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return matter.SectionElementRequirements
 		case "endpoint composition":
 			return matter.SectionEndpointComposition
+		case "derived cluster namespace":
+			return matter.SectionDerivedClusterNamespace
 		default:
 			if strings.HasSuffix(name, " attribute set") {
 				return matter.SectionAttributes
 			}
 			return matter.SectionUnknown
+		}
+	case matter.SectionDerivedClusterNamespace:
+		switch name {
+		case "mode tags":
+			return matter.SectionModeTags
 		}
 	case matter.SectionAttributes:
 		if strings.HasSuffix(name, " attribute") {

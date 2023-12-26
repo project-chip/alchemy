@@ -40,6 +40,10 @@ func writeDataType(fs matter.FieldSet, f *matter.Field, attr []xml.Attr) []xml.A
 
 func (r *renderer) writeAttribute(cluster *matter.Cluster, e xmlEncoder, el xml.StartElement, a *matter.Field, clusterPrefix string) (err error) {
 
+	if !a.ID.Valid() {
+		return
+	}
+
 	el.Name = xml.Name{Local: "attribute"}
 	el.Attr = r.setAttributeAttributes(el.Attr, a, cluster, clusterPrefix)
 

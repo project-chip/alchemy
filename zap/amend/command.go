@@ -142,6 +142,9 @@ func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEnco
 
 func (r *renderer) writeCommand(cluster *matter.Cluster, e xmlEncoder, el xml.StartElement, c *matter.Command) (err error) {
 
+	if !c.ID.Valid() {
+		return nil
+	}
 	xfb := el.Copy()
 
 	xfb = r.setCommandElementAttributes(c, e, xfb)
@@ -200,7 +203,7 @@ func (r *renderer) setFieldAttributes(f *matter.Field, xfs []xml.Attr, fs matter
 	} else {
 		xfs = removeAttribute(xfs, "isNullable")
 	}
-	if f.Access.FabricSensitive {
+	if f.Access.IsFabricSensitive() {
 		xfs = setAttributeValue(xfs, "isFabricSensitive", "true")
 	} else {
 		xfs = removeAttribute(xfs, "isFabricSensitive")
@@ -233,7 +236,7 @@ func (*renderer) setCommandElementAttributes(c *matter.Command, e xmlEncoder, xf
 	}
 	xfb.Attr = setAttributeValue(xfb.Attr, "code", c.ID.ShortHexString())
 	xfb.Attr = setAttributeValue(xfb.Attr, "name", zap.CleanName(c.Name))
-	if c.Access.FabricScoped {
+	if c.Access.IsFabricScoped() {
 		xfb.Attr = setAttributeValue(xfb.Attr, "isFabricScoped", "true")
 	} else {
 		xfb.Attr = removeAttribute(xfb.Attr, "isFabricScoped")
@@ -253,7 +256,7 @@ func (*renderer) setCommandElementAttributes(c *matter.Command, e xmlEncoder, xf
 	} else {
 		xfb.Attr = removeAttribute(xfb.Attr, "disableDefaultResponse")
 	}
-	if c.Access.Timed {
+	if c.Access.IsTimed() {
 		xfb.Attr = setAttributeValue(xfb.Attr, "mustUseTimedInvoke", "true")
 	} else {
 		xfb.Attr = removeAttribute(xfb.Attr, "mustUseTimedInvoke")

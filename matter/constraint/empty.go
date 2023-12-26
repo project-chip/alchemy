@@ -27,3 +27,7 @@ func (c *EmptyLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExt
 func (c *EmptyLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return c.Min(cc)
 }
+
+func (c *EmptyLimit) Clone() matter.ConstraintLimit {
+	return &EmptyLimit{}
+}

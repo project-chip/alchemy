@@ -8,7 +8,7 @@ import (
 	"github.com/hasty/alchemy/matter/conformance"
 )
 
-func (s *Section) toFeatures(d *Doc) (features []*matter.Feature, err error) {
+func (s *Section) toFeatures(d *Doc) (features *matter.Bitmap, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -17,9 +17,13 @@ func (s *Section) toFeatures(d *Doc) (features []*matter.Feature, err error) {
 		return nil, fmt.Errorf("failed reading features: %w", err)
 
 	}
+	features = &matter.Bitmap{
+		Name: "Feature",
+		Type: matter.NewDataType("map32", false),
+	}
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		f := &matter.Feature{}
+		f := &matter.Bit{}
 		f.Bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
 		if err != nil {
 			return
@@ -53,7 +57,7 @@ func (s *Section) toFeatures(d *Doc) (features []*matter.Feature, err error) {
 		if f.Conformance == nil {
 			f.Conformance = conformance.Set{&conformance.Optional{}}
 		}
-		features = append(features, f)
+		features.Bits = append(features.Bits, f)
 	}
 	return
 }

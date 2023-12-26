@@ -18,11 +18,11 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 
 	var matchingBitmap *matter.Bitmap
 	var skip bool
-	for bm, handled := range r.bitmaps {
+	for bm, handled := range r.configurator.Bitmaps {
 		if bm.Name == name || strings.TrimSuffix(bm.Name, "Bitmap") == name {
 			matchingBitmap = bm
 			skip = handled
-			r.bitmaps[bm] = true
+			r.configurator.Bitmaps[bm] = true
 			break
 		}
 	}

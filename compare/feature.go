@@ -11,7 +11,7 @@ type FeatureDiffs struct {
 	Diffs []any  `json:"diffs,omitempty"`
 }
 
-func compareFeature(specFeature *matter.Feature, zapFeature *matter.Feature) (diffs []any) {
+func compareFeature(specFeature *matter.Bit, zapFeature *matter.Bit) (diffs []any) {
 	if specFeature.Bit != zapFeature.Bit {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyAccess, Spec: specFeature.Bit, ZAP: zapFeature.Bit})
 	}
@@ -25,14 +25,14 @@ func compareFeature(specFeature *matter.Feature, zapFeature *matter.Feature) (di
 	return
 }
 
-func compareFeatures(specFeatures []*matter.Feature, zapFeatures []*matter.Feature) (diffs []any) {
-	specFeatureMap := make(map[string]*matter.Feature)
-	for _, f := range specFeatures {
+func compareFeatures(specFeatures *matter.Bitmap, zapFeatures *matter.Bitmap) (diffs []any) {
+	specFeatureMap := make(map[string]*matter.Bit)
+	for _, f := range specFeatures.Bits {
 		specFeatureMap[strings.ToLower(f.Code)] = f
 	}
 
-	zapFeatureMap := make(map[string]*matter.Feature)
-	for _, f := range zapFeatures {
+	zapFeatureMap := make(map[string]*matter.Bit)
+	for _, f := range zapFeatures.Bits {
 		zapFeatureMap[strings.ToLower(f.Code)] = f
 	}
 

@@ -15,6 +15,10 @@ import (
 
 func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
 
+	if cluster.Features == nil {
+		err = Ignore(d, el.Name.Local)
+		return
+	}
 	el.Attr = setAttributeValue(el.Attr, "type", "bitmap32")
 
 	err = e.EncodeToken(el)
@@ -61,11 +65,11 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 					remainingClusterIDs = nil
 				}
 				for {
-					if featureIndex >= len(cluster.Features) {
-						err = Ignore(d, "field")
+					if featureIndex >= len(cluster.Features.Bits) {
+						err = Ignore(d, t.Name.Local)
 						break
 					} else {
-						f := cluster.Features[featureIndex]
+						f := cluster.Features.Bits[featureIndex]
 						featureIndex++
 						if conformance.IsZigbee(cluster.Features, f.Conformance) {
 							continue
@@ -96,8 +100,8 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 						return
 					}
 				}
-				for featureIndex < len(cluster.Features) {
-					f := cluster.Features[featureIndex]
+				for featureIndex < len(cluster.Features.Bits) {
+					f := cluster.Features.Bits[featureIndex]
 					featureIndex++
 					if conformance.IsZigbee(cluster.Features, f.Conformance) {
 						continue
@@ -117,7 +121,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 					xfe := xml.EndElement{Name: elName}
 					err = e.EncodeToken(xfe)
 					if err != nil {
-						err = fmt.Errorf("failed closing % element on cluster %s: %w", elName, cluster.Name, err)
+						err = fmt.Errorf("failed closing %s element on cluster %s: %w", elName, cluster.Name, err)
 						return
 					}
 				}
@@ -166,8 +170,14 @@ func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 			return fmt.Errorf("error closing feature cluster element on cluster %s: %w", cluster.Name, err)
 		}
 	}
-	for _, f := range cluster.Features {
+	for _, f := range cluster.Features.Bits {
 		if conformance.IsZigbee(cluster.Features, f.Conformance) {
+			continue
+		}
+
+		_, parseErr := parse.HexOrDec(f.Bit)
+		if parseErr != nil {
+			slog.Debug("skipping feature with non-parsable bit", "bit", f.Bit)
 			continue
 		}
 
@@ -195,14 +205,13 @@ func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 	return newLine(e)
 }
 
-func (*renderer) setFeatureAttributes(xfs []xml.Attr, f *matter.Feature) ([]xml.Attr, error) {
-	bit, err := parse.HexOrDec(f.Bit)
+func (*renderer) setFeatureAttributes(xfs []xml.Attr, f *matter.Bit) ([]xml.Attr, error) {
+	mask, err := f.Mask()
 	if err != nil {
 		err = fmt.Errorf("error parsing feature bit %s: %w", f.Bit, err)
 		return nil, err
 	}
-	bit = (1 << bit)
 	xfs = setAttributeValue(xfs, "name", zap.CleanName(f.Name))
-	xfs = setAttributeValue(xfs, "mask", fmt.Sprintf("0x%02X", bit))
+	xfs = setAttributeValue(xfs, "mask", fmt.Sprintf("0x%02X", mask))
 	return xfs, nil
 }

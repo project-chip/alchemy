@@ -136,6 +136,10 @@ func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncode
 
 func (r *renderer) writeEvent(e xmlEncoder, el xml.StartElement, ev *matter.Event, provisional bool) (err error) {
 
+	if !ev.ID.Valid() {
+		return
+	}
+
 	xfb := el.Copy()
 	xfb.Name = xml.Name{Local: "event"}
 
@@ -223,7 +227,7 @@ func (*renderer) setEventAttributes(xfb []xml.Attr, ev *matter.Event) []xml.Attr
 	xfb = setAttributeValue(xfb, "priority", strings.ToLower(ev.Priority))
 	xfb = removeAttribute(xfb, "side")
 
-	if ev.FabricSensitive {
+	if ev.FabricSensitivity == matter.FabricSensitivitySensitive {
 		xfb = setAttributeValue(xfb, "isFabricSensitive", "true")
 	} else {
 		xfb = removeAttribute(xfb, "isFabricSensitive")

@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/constraint"
 )
 
 func renderConstraint(con matter.Constraint, dataType *matter.DataType, parent *etree.Element) error {

@@ -56,14 +56,18 @@ func (ee *EqualityExpression) Equal(e Expression) bool {
 	return true
 }
 
-func (fe *EqualityExpression) MarshalJSON() ([]byte, error) {
+func (ee *EqualityExpression) MarshalJSON() ([]byte, error) {
 	js := map[string]any{
 		"type":  "equality",
-		"left":  fe.Left,
-		"right": fe.Right,
+		"left":  ee.Left,
+		"right": ee.Right,
 	}
-	if fe.Not {
+	if ee.Not {
 		js["not"] = true
 	}
 	return json.Marshal(js)
+}
+
+func (ee *EqualityExpression) Clone() Expression {
+	return &EqualityExpression{Not: ee.Not, Left: ee.Left.Clone(), Right: ee.Right.Clone()}
 }

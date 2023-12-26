@@ -101,3 +101,7 @@ func (c *MathExpressionLimit) operate(left matter.ConstraintExtreme, right matte
 func (c *MathExpressionLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return c.Min(cc)
 }
+
+func (c *MathExpressionLimit) Clone() matter.ConstraintLimit {
+	return &MathExpressionLimit{Operand: c.Operand, Left: c.Left.Clone(), Right: c.Right.Clone()}
+}

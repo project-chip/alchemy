@@ -21,7 +21,11 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 		case "name":
 			event.Name = a.Value
 		case "isFabricSensitive":
-			event.FabricSensitive = (a.Value == "true")
+			if a.Value == "true" {
+				event.FabricSensitivity = matter.FabricSensitivitySensitive
+			} else {
+				event.FabricSensitivity = matter.FabricSensitivityInsensitive
+			}
 		case "optional":
 			if a.Value == "true" {
 				event.Conformance = conformance.Set{&conformance.Mandatory{}}

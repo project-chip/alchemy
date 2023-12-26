@@ -12,42 +12,31 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-type Result struct {
-	ZCL    string
-	Doc    *ascii.Doc
-	Models []matter.Model
-}
-
 type renderer struct {
-	spec   *matter.Spec
-	doc    *ascii.Doc
-	errata *zap.Errata
+	spec         *matter.Spec
+	configurator *zap.Configurator
+	errata       *zap.Errata
 }
 
-func Render(cxt context.Context, spec *matter.Spec, doc *ascii.Doc, models []matter.Model, errata *zap.Errata) (*Result, error) {
+func Render(cxt context.Context, spec *matter.Spec, doc *ascii.Doc, configurator *zap.Configurator, errata *zap.Errata) (string, error) {
 
 	r := &renderer{
-		spec:   spec,
-		doc:    doc,
-		errata: errata,
+		spec:         spec,
+		configurator: configurator,
+		errata:       errata,
 	}
-	return r.render(cxt, models)
-
-}
-
-func (r *renderer) render(cxt context.Context, models []matter.Model) (*Result, error) {
 
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
 	x.CreateComment(fmt.Sprintf(license, time.Now().Year()))
-	err := r.renderModels(cxt, &x.Element, models)
+	err := r.renderModels(cxt, doc, &x.Element)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	x.Indent(2)
 
 	var b bytes.Buffer
 	x.WriteTo(&b)
-	return &Result{ZCL: b.String(), Doc: r.doc, Models: models}, nil
+	return b.String(), nil
 }

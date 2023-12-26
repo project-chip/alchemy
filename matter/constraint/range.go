@@ -37,3 +37,7 @@ func (c *RangeConstraint) Max(cc *matter.ConstraintContext) (to matter.Constrain
 func (c *RangeConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
 }
+
+func (c *RangeConstraint) Clone() matter.Constraint {
+	return &RangeConstraint{Minimum: c.Minimum.Clone(), Maximum: c.Maximum.Clone()}
+}

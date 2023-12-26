@@ -7,6 +7,7 @@ import (
 	"slices"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/parse"
@@ -14,14 +15,14 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func (r *renderer) renderCluster(cxt context.Context, cluster *matter.Cluster, w *etree.Element) error {
+func (r *renderer) renderCluster(cxt context.Context, doc *ascii.Doc, cluster *matter.Cluster, w *etree.Element) error {
 
 	cx := w.CreateElement("cluster")
 	cx.CreateAttr("apiMaturity", "provisional")
 
 	cx.CreateElement("name").SetText(cluster.Name)
 	dom := cx.CreateElement("domain")
-	domainName := matter.DomainNames[r.doc.Domain]
+	domainName := matter.DomainNames[doc.Domain]
 	dom.SetText(domainName)
 	cx.CreateElement("code").SetText(cluster.ID.HexString())
 
@@ -54,8 +55,8 @@ func (r *renderer) renderCluster(cxt context.Context, cluster *matter.Cluster, w
 	return nil
 }
 
-func (r *renderer) renderFeatures(cxt context.Context, features matter.FeatureSet, clusters []*matter.Cluster, w *etree.Element) {
-	if len(features) == 0 {
+func (r *renderer) renderFeatures(cxt context.Context, features *matter.Bitmap, clusters []*matter.Cluster, w *etree.Element) {
+	if features == nil || len(features.Bits) == 0 {
 		return
 	}
 	fb := w.CreateElement("bitmap")
@@ -64,7 +65,7 @@ func (r *renderer) renderFeatures(cxt context.Context, features matter.FeatureSe
 	for _, cluster := range clusters {
 		fb.CreateElement("cluster").CreateAttr("code", cluster.ID.HexString())
 	}
-	for _, f := range features {
+	for _, f := range features.Bits {
 		if conformance.IsZigbee(features, f.Conformance) {
 			continue
 		}

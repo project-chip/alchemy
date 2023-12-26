@@ -32,3 +32,7 @@ func (c *GenericConstraint) Max(cc *matter.ConstraintContext) (max matter.Constr
 func (c *GenericConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
 }
+
+func (c *GenericConstraint) Clone() matter.Constraint {
+	return &GenericConstraint{Value: c.Value}
+}

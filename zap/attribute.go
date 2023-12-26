@@ -48,7 +48,9 @@ func (xa *XMLAttribute) ToModel() (ma *matter.Field, err error) {
 	}
 	ma.Access = ToAccessModel(xa.Access)
 	if xa.IsFabricSensitive {
-		ma.Access.FabricSensitive = true
+		ma.Access.FabricSensitivity = matter.FabricSensitivitySensitive
+	} else {
+		ma.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
 	}
 	if !xa.Optional {
 		ma.Conformance = conformance.Set{&conformance.Mandatory{}}

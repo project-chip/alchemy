@@ -19,7 +19,7 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 
 	ci := &sectionInfo{id: h.nextId(clusterTable), parent: parent, values: clusterRow, children: make(map[string][]*sectionInfo)}
 
-	for _, f := range cluster.Features {
+	for _, f := range cluster.Features.Bits {
 		featureRow := newDBRow()
 		featureRow.values[matter.TableColumnBit] = f.Bit
 		featureRow.values[matter.TableColumnCode] = f.Code

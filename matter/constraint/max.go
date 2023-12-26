@@ -36,3 +36,7 @@ func (c *MaxConstraint) Max(cc *matter.ConstraintContext) (max matter.Constraint
 func (c *MaxConstraint) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return
 }
+
+func (c *MaxConstraint) Clone() matter.Constraint {
+	return &MaxConstraint{Maximum: c.Maximum.Clone()}
+}

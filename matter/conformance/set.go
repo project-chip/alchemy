@@ -64,6 +64,18 @@ func (cs Set) Equal(c Conformance) bool {
 	return true
 }
 
+func (cs Set) Clone() Conformance {
+	return cs.CloneSet()
+}
+
+func (cs Set) CloneSet() Set {
+	ncs := make(Set, 0, len(cs))
+	for _, c := range cs {
+		ncs = append(ncs, c.Clone())
+	}
+	return ncs
+}
+
 func (cs Set) MarshalJSON() ([]byte, error) {
 	var js []*jsonConformance
 	for _, c := range cs {

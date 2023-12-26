@@ -17,13 +17,15 @@ import (
 func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
 	name := getAttributeValue(el.Attr, "name")
 
+	slog.Info("checking enums", "name", name, "en", len(r.configurator.Enums), "c", len(cluster.Enums))
 	var matchingEnum *matter.Enum
 	var skip bool
-	for en, handled := range r.enums {
+	for en, handled := range r.configurator.Enums {
+		slog.Info("checking enum", "name", name, "en", en.Name)
 		if en.Name == name || strings.TrimSuffix(en.Name, "Enum") == name {
 			matchingEnum = en
 			skip = handled
-			r.enums[en] = true
+			r.configurator.Enums[en] = true
 			break
 		}
 	}

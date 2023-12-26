@@ -72,6 +72,7 @@ type Constraint interface {
 	Min(c *ConstraintContext) (min ConstraintExtreme)
 	Max(c *ConstraintContext) (max ConstraintExtreme)
 	Default(c *ConstraintContext) (max ConstraintExtreme)
+	Clone() Constraint
 }
 
 type ConstraintLimit interface {
@@ -80,6 +81,7 @@ type ConstraintLimit interface {
 	Min(c *ConstraintContext) (min ConstraintExtreme)
 	Max(c *ConstraintContext) (max ConstraintExtreme)
 	Default(c *ConstraintContext) (max ConstraintExtreme)
+	Clone() ConstraintLimit
 }
 
 type ConstraintContext struct {

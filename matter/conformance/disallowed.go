@@ -24,3 +24,7 @@ func (oc *Disallowed) Equal(c Conformance) bool {
 	_, ok := c.(*Disallowed)
 	return ok
 }
+
+func (c *Disallowed) Clone() Conformance {
+	return &Disallowed{raw: c.raw}
+}

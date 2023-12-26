@@ -112,11 +112,11 @@ func renderAppCluster(cxt context.Context, clusters []*matter.Cluster) (output s
 		c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
 		class := c.CreateElement("classification")
 		switch cluster.Hierarchy {
-		case "Mode Base":
-			class.CreateAttr("hierarchy", "derived")
-			class.CreateAttr("baseCluster", cluster.Hierarchy)
 		case "Base":
 			class.CreateAttr("hierarchy", strings.ToLower(cluster.Hierarchy))
+		default:
+			class.CreateAttr("hierarchy", "derived")
+			class.CreateAttr("baseCluster", cluster.Hierarchy)
 		}
 		class.CreateAttr("role", strings.ToLower(cluster.Role))
 		class.CreateAttr("picsCode", cluster.PICS)

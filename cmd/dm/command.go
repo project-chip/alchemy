@@ -46,13 +46,13 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 		} else if cmd.Response != "" {
 			cx.CreateAttr("response", cmd.Response)
 		}
-		if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.FabricScoped {
+		if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() {
 			a := cx.CreateElement("access")
 			a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
-			if cmd.Access.FabricScoped {
+			if cmd.Access.IsFabricScoped() {
 				a.CreateAttr("fabricScoped", "true")
 			}
-			if cmd.Access.Timed {
+			if cmd.Access.IsTimed() {
 				a.CreateAttr("timed", "true")
 			}
 		}

@@ -49,3 +49,7 @@ func (c *HexLimit) Max(cc *matter.ConstraintContext) (max matter.ConstraintExtre
 func (c *HexLimit) Default(cc *matter.ConstraintContext) (max matter.ConstraintExtreme) {
 	return c.Min(cc)
 }
+
+func (c *HexLimit) Clone() matter.ConstraintLimit {
+	return &HexLimit{Value: c.Value}
+}

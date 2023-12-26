@@ -28,7 +28,7 @@ func (s *Section) toStruct(d *Doc) (ms *matter.Struct, err error) {
 			if rowErr == nil {
 				cv = strings.ToLower(cv)
 				if strings.Contains(cv, "fabric scoped") || strings.Contains(cv, "fabric-scoped") {
-					ms.FabricScoped = true
+					ms.FabricScoping = matter.FabricScopingScoped
 				}
 			}
 		}

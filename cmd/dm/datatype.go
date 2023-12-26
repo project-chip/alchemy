@@ -2,8 +2,8 @@ package dm
 
 import (
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/constraint"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/constraint"
 )
 
 func dataModelName(s string) string {

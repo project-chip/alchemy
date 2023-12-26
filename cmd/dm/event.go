@@ -34,9 +34,9 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 			cx.CreateAttr("priority", strings.ToLower(e.Priority))
 		}
 
-		if e.Access.Invoke != matter.PrivilegeUnknown || e.Access.FabricSensitive {
+		if e.Access.Invoke != matter.PrivilegeUnknown || e.Access.IsFabricSensitive() {
 			a := cx.CreateElement("access")
-			if e.Access.FabricSensitive {
+			if e.Access.IsFabricSensitive() {
 				a.CreateAttr("fabricSensitive", "true")
 			}
 			a.CreateAttr("readPrivilege", strings.ToLower(matter.PrivilegeNamesShort[e.Access.Invoke]))

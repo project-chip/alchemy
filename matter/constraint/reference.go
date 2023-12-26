@@ -104,3 +104,7 @@ func (c *ReferenceLimit) Default(cc *matter.ConstraintContext) (max matter.Const
 	}
 	return
 }
+
+func (c *ReferenceLimit) Clone() matter.ConstraintLimit {
+	return &ReferenceLimit{Value: c.Value}
+}

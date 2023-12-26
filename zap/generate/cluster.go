@@ -23,6 +23,10 @@ type concurrentMap[T any] struct {
 	sync.Mutex
 }
 
+type renderResult struct {
+	zcl string
+}
+
 func getDocDomain(doc *ascii.Doc) matter.Domain {
 	if doc.Domain != matter.DomainUnknown {
 		return doc.Domain
@@ -36,9 +40,9 @@ func getDocDomain(doc *ascii.Doc) matter.Domain {
 	return matter.DomainUnknown
 }
 
-func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[string]*ascii.Doc, targetDocs []*ascii.Doc, zclRoot string, filesOptions files.Options, overwrite bool) (outputs map[string]*render.Result, provisionalZclFiles []string, err error) {
+func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[string]*ascii.Doc, targetDocs []*ascii.Doc, zclRoot string, filesOptions files.Options, overwrite bool) (outputs map[string]*renderResult, provisionalZclFiles []string, err error) {
 	var lock sync.Mutex
-	outputs = make(map[string]*render.Result)
+	outputs = make(map[string]*renderResult)
 	slog.InfoContext(cxt, "Rendering ZAP templates...")
 
 	dependencies := &concurrentMap[bool]{Map: make(map[string]bool)}
@@ -83,19 +87,37 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 					}
 				}
 
+				var clusters []matter.Model
+				for _, m := range models {
+					switch m := m.(type) {
+					case *matter.Cluster:
+						clusters = append(clusters, m)
+					}
+				}
+				if len(clusters) == 0 {
+					slog.DebugContext(cxt, "Skipped spec file with no clusters", "from", path, "to", newPath, "index", index, "count", total)
+					return err
+				}
+
+				configurator, err := zap.NewConfigurator(spec, doc, clusters)
+				if err != nil {
+					return err
+				}
+
+				var result string
+
 				existing, err := os.ReadFile(newPath)
 				if errors.Is(err, os.ErrNotExist) || overwrite {
 					if filesOptions.Serial {
 						slog.InfoContext(cxt, "Rendering new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
 					}
-					var result *render.Result
-					result, err = render.Render(cxt, spec, doc, models, errata)
+					result, err = render.Render(cxt, spec, doc, configurator, errata)
 					if err != nil {
 						err = fmt.Errorf("failed rendering %s: %w", path, err)
 						return err
 					}
 					lock.Lock()
-					outputs[newPath] = result
+					outputs[newPath] = &renderResult{zcl: result}
 					provisionalZclFiles = append(provisionalZclFiles, filepath.Base(newPath))
 					lock.Unlock()
 					if filesOptions.Serial {
@@ -109,30 +131,13 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 					}
 					var buf bytes.Buffer
 
-					var clusters []matter.Model
-					for _, m := range models {
-						switch m := m.(type) {
-						case *matter.Cluster:
-							switch m.Hierarchy {
-							case "Base":
-
-							}
-							if m.Hierarchy == "Base" && m.Name != "Mode Base" && m.Name != "Scenes" && m.ID.Valid() {
-								clusters = append(clusters, m)
-							}
-						}
-					}
-					if len(clusters) == 0 {
-						slog.DebugContext(cxt, "Skipped spec file with no clusters", "from", path, "to", newPath, "index", index, "count", total)
-						return err
-					}
-					err = amend.Render(spec, doc, bytes.NewReader(existing), &buf, clusters, errata)
+					err = amend.Render(spec, doc, bytes.NewReader(existing), &buf, configurator, errata)
 					if err != nil {
 						return fmt.Errorf("failed rendering %s: %w", path, err)
 					}
-					out := selfClosingTags.ReplaceAllString(buf.String(), "/>") // Lame limitation of Go's XML encoder
+					result = selfClosingTags.ReplaceAllString(buf.String(), "/>") // Lame limitation of Go's XML encoder
 					lock.Lock()
-					outputs[newPath] = &render.Result{ZCL: out, Doc: doc, Models: models}
+					outputs[newPath] = &renderResult{zcl: result}
 					lock.Unlock()
 					if filesOptions.Serial {
 						slog.InfoContext(cxt, "Rendered existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)

@@ -71,13 +71,17 @@ func (ie *IdentifierExpression) Equal(e Expression) bool {
 	return true
 }
 
-func (fe *IdentifierExpression) MarshalJSON() ([]byte, error) {
+func (ie *IdentifierExpression) MarshalJSON() ([]byte, error) {
 	js := map[string]any{
 		"type": "identifier",
-		"id":   fe.ID,
+		"id":   ie.ID,
 	}
-	if fe.Not {
+	if ie.Not {
 		js["not"] = true
 	}
 	return json.Marshal(js)
+}
+
+func (ie *IdentifierExpression) Clone() Expression {
+	return &IdentifierExpression{Not: ie.Not, ID: ie.ID}
 }

@@ -46,11 +46,11 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 
 	var cluster *matter.Cluster
 	var skip bool
-	for c, handled := range r.clusters {
+	for c, handled := range r.configurator.Clusters {
 		if c.ID.Equals(clusterID) {
 			cluster = c
 			skip = handled
-			r.clusters[c] = true
+			r.configurator.Clusters[c] = true
 		}
 	}
 
