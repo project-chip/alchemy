@@ -6,9 +6,10 @@ import (
 	"io"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func ZAP(r io.Reader) (models []matter.Model, err error) {
+func ZAP(r io.Reader) (entities []types.Entity, err error) {
 	d := xml.NewDecoder(r)
 	for {
 		var tok xml.Token
@@ -25,15 +26,15 @@ func ZAP(r io.Reader) (models []matter.Model, err error) {
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "configurator":
-				var cm []matter.Model
+				var cm []types.Entity
 				cm, err = readConfigurator(d)
 				if err == nil {
-					models = append(models, cm...)
+					entities = append(entities, cm...)
 				}
 			default:
 				err = fmt.Errorf("unexpected top level element: %s", t.Name.Local)
 			}
-
+		case xml.Comment:
 		default:
 			err = fmt.Errorf("unexpected top level type: %T", t)
 		}
@@ -139,7 +140,7 @@ func Extract(d *xml.Decoder, el xml.StartElement) (tokens []xml.Token, err error
 }
 
 func readTag(d *xml.Decoder, e xml.StartElement) (c *matter.Bitmap, err error) {
-	c = &matter.Bitmap{Name: "Feature", Type: matter.NewDataType("map32", false)}
+	c = &matter.Bitmap{Name: "Feature", Type: types.NewDataType("map32", false)}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "name":

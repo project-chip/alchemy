@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/output"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -12,7 +11,7 @@ type Section interface {
 	GetAsciiSection() *types.Section
 }
 
-func RenderElements(cxt *output.Context, prefix string, elements []interface{}) (err error) {
+func RenderElements(cxt *Context, prefix string, elements []interface{}) (err error) {
 	var previous interface{}
 	for _, e := range elements {
 		if he, ok := e.(Section); ok {

@@ -16,6 +16,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/cmd/files"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
 )
 
@@ -25,14 +26,14 @@ func renderDeviceTypes(cxt context.Context, zclRoot string, deviceTypes []*ascii
 	err := files.ProcessDocs(cxt, deviceTypes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 		slog.Info("Device Type doc", "name", doc.Path)
 
-		models, err := doc.ToModel()
+		entities, err := doc.Entities()
 		if err != nil {
-			slog.ErrorContext(cxt, "error converting doc to models", "doc", doc.Path, "error", err)
+			slog.ErrorContext(cxt, "error converting doc to entities", "doc", doc.Path, "error", err)
 			return nil
 		}
 		var deviceTypes []*matter.DeviceType
-		for _, m := range models {
-			slog.Debug("model", "type", m)
+		for _, m := range entities {
+			slog.Debug("entity", "type", m)
 			switch m := m.(type) {
 			case *matter.DeviceType:
 				deviceTypes = append(deviceTypes, m)
@@ -40,7 +41,7 @@ func renderDeviceTypes(cxt context.Context, zclRoot string, deviceTypes []*ascii
 		}
 		s, err := renderDeviceType(cxt, deviceTypes)
 		if err != nil {
-			slog.ErrorContext(cxt, "error rendering models", "doc", doc.Path, "error", err)
+			slog.ErrorContext(cxt, "error rendering entities", "doc", doc.Path, "error", err)
 			return nil
 		}
 		lock.Lock()
@@ -148,33 +149,33 @@ func renderDeviceType(cxt context.Context, deviceTypes []*matter.DeviceType) (ou
 }
 
 func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
-	erMap := make(map[matter.Entity][]*matter.ElementRequirement)
+	erMap := make(map[types.EntityType][]*matter.ElementRequirement)
 	for _, er := range deviceType.ElementRequirements {
 		if er.ID.Equals(cr.ID) {
 			erMap[er.Element] = append(erMap[er.Element], er)
 		}
 	}
-	for _, entity := range []matter.Entity{matter.EntityFeature, matter.EntityAttribute, matter.EntityCommand, matter.EntityEvent} {
+	for _, entity := range []types.EntityType{types.EntityTypeFeature, types.EntityTypeAttribute, types.EntityTypeCommand, types.EntityTypeEvent} {
 		ers, ok := erMap[entity]
 		if !ok || len(ers) == 0 {
 			continue
 		}
 		var erx *etree.Element
 		switch entity {
-		case matter.EntityAttribute:
+		case types.EntityTypeAttribute:
 			erx = clx.CreateElement("attributes")
-		case matter.EntityFeature:
+		case types.EntityTypeFeature:
 			erx = clx.CreateElement("features")
-		case matter.EntityEvent:
+		case types.EntityTypeEvent:
 			erx = clx.CreateElement("events")
-		case matter.EntityCommand:
+		case types.EntityTypeCommand:
 			erx = clx.CreateElement("commands")
 		}
 		for _, er := range ers {
 			switch entity {
-			case matter.EntityAttribute:
+			case types.EntityTypeAttribute:
 				err = renderAttributeRequirement(deviceType, er, erx)
-			case matter.EntityCommand:
+			case types.EntityTypeCommand:
 				ex := erx.CreateElement("command")
 				var code string
 				if er.Cluster != nil {
@@ -194,7 +195,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 				if err != nil {
 					return
 				}
-			case matter.EntityFeature:
+			case types.EntityTypeFeature:
 				ex := erx.CreateElement("feature")
 				var code string
 
@@ -226,7 +227,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 func renderAttributeRequirement(deviceType *matter.DeviceType, er *matter.ElementRequirement, parent *etree.Element) (err error) {
 	var code string
 	var attribute *matter.Field
-	var dataType *matter.DataType
+	var dataType *types.DataType
 	if er.Cluster != nil {
 		for _, a := range er.Cluster.Attributes {
 			if a.ID.Equals(er.ID) {

@@ -13,6 +13,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/cmd/files"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 	"github.com/hasty/alchemy/zap/amend"
 	"github.com/hasty/alchemy/zap/render"
@@ -58,7 +59,7 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 				errata = zap.DefaultErrata
 			}
 
-			models, err := doc.ToModel()
+			models, err := doc.Entities()
 			if err != nil {
 				return err
 			}
@@ -87,7 +88,7 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 					}
 				}
 
-				var clusters []matter.Model
+				var clusters []types.Entity
 				for _, m := range models {
 					switch m := m.(type) {
 					case *matter.Cluster:
@@ -170,10 +171,10 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 	return
 }
 
-func buildDestinations(zclRoot string, doc *ascii.Doc, models []matter.Model, errata *zap.Errata) (destinations map[string][]matter.Model) {
-	destinations = make(map[string][]matter.Model)
+func buildDestinations(zclRoot string, doc *ascii.Doc, models []types.Entity, errata *zap.Errata) (destinations map[string][]types.Entity) {
+	destinations = make(map[string][]types.Entity)
 	if len(errata.ClusterSplit) == 0 {
-		newFile := zap.ZAPName(doc, errata, models)
+		newFile := zap.ZAPName(doc.Path, errata, models)
 		newPath := getZapPath(zclRoot, newFile)
 		destinations[newPath] = models
 		return
@@ -184,7 +185,7 @@ func buildDestinations(zclRoot string, doc *ascii.Doc, models []matter.Model, er
 			slog.Warn("invalid cluster split ID", "id", clusterID)
 			continue
 		}
-		var clusters []matter.Model
+		var clusters []types.Entity
 		for _, m := range models {
 			switch m := m.(type) {
 			case *matter.Cluster:

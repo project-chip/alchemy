@@ -3,14 +3,14 @@ package constraint
 import (
 	"fmt"
 
-	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type HexLimit struct {
 	Value uint64
 }
 
-func (c *HexLimit) AsciiDocString(dataType *matter.DataType) string {
+func (c *HexLimit) AsciiDocString(dataType *types.DataType) string {
 	val := c.Value
 	if dataType != nil {
 		switch dataType.Size() {
@@ -27,29 +27,29 @@ func (c *HexLimit) AsciiDocString(dataType *matter.DataType) string {
 	return fmt.Sprintf("0x%X", uint64(val))
 }
 
-func (c *HexLimit) Equal(o matter.ConstraintLimit) bool {
+func (c *HexLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*HexLimit); ok {
 		return oc.Value == c.Value
 	}
 	return false
 }
 
-func (c *HexLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
-	return matter.DataTypeExtreme{
-		Type:   matter.DataTypeExtremeTypeUInt64,
-		Format: matter.NumberFormatHex,
+func (c *HexLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	return types.DataTypeExtreme{
+		Type:   types.DataTypeExtremeTypeUInt64,
+		Format: types.NumberFormatHex,
 		UInt64: c.Value,
 	}
 }
 
-func (c *HexLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *HexLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *HexLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *HexLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *HexLimit) Clone() matter.ConstraintLimit {
+func (c *HexLimit) Clone() ConstraintLimit {
 	return &HexLimit{Value: c.Value}
 }

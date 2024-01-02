@@ -3,41 +3,41 @@ package constraint
 import (
 	"fmt"
 
-	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type RangeConstraint struct {
-	Minimum matter.ConstraintLimit `json:"min"`
-	Maximum matter.ConstraintLimit `json:"max"`
+	Minimum ConstraintLimit `json:"min"`
+	Maximum ConstraintLimit `json:"max"`
 }
 
-func (c *RangeConstraint) Type() matter.ConstraintType {
-	return matter.ConstraintTypeRange
+func (c *RangeConstraint) Type() ConstraintType {
+	return ConstraintTypeRange
 }
 
-func (c *RangeConstraint) AsciiDocString(dataType *matter.DataType) string {
+func (c *RangeConstraint) AsciiDocString(dataType *types.DataType) string {
 	return fmt.Sprintf("%s to %s", c.Minimum.AsciiDocString(dataType), c.Maximum.AsciiDocString(dataType))
 }
 
-func (c *RangeConstraint) Equal(o matter.Constraint) bool {
+func (c *RangeConstraint) Equal(o Constraint) bool {
 	if oc, ok := o.(*RangeConstraint); ok {
 		return oc.Minimum.Equal(c.Minimum) && oc.Maximum.Equal(c.Maximum)
 	}
 	return false
 }
 
-func (c *RangeConstraint) Min(cc *matter.ConstraintContext) (from matter.DataTypeExtreme) {
+func (c *RangeConstraint) Min(cc Context) (from types.DataTypeExtreme) {
 	return c.Minimum.Min(cc)
 }
 
-func (c *RangeConstraint) Max(cc *matter.ConstraintContext) (to matter.DataTypeExtreme) {
+func (c *RangeConstraint) Max(cc Context) (to types.DataTypeExtreme) {
 	return c.Maximum.Max(cc)
 }
 
-func (c *RangeConstraint) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *RangeConstraint) Default(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (c *RangeConstraint) Clone() matter.Constraint {
+func (c *RangeConstraint) Clone() Constraint {
 	return &RangeConstraint{Minimum: c.Minimum.Clone(), Maximum: c.Maximum.Clone()}
 }

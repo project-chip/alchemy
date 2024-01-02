@@ -66,13 +66,13 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 	var clusters []*ascii.Doc
 	for _, d := range docs {
 
-		models, err := d.ToModel()
+		entities, err := d.Entities()
 		if err != nil {
 			slog.Warn("error parsing doc", "path", d.Path, "error", err)
 			continue
 		}
 
-		for _, m := range models {
+		for _, m := range entities {
 			switch m.(type) {
 			case *matter.Cluster:
 				clusters = append(clusters, d)
@@ -104,12 +104,12 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 	files.ProcessDocs(cxt, deviceTypes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 		slog.Debug("Device type doc", "name", doc.Path)
 
-		models, err := doc.ToModel()
+		entities, err := doc.Entities()
 		if err != nil {
 			return err
 		}
-		for _, m := range models {
-			slog.Debug("model", "type", m)
+		for _, m := range entities {
+			slog.Debug("entity", "type", m)
 		}
 		return nil
 	}, options.Files)

@@ -6,6 +6,7 @@ import (
 	"io"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
 
@@ -16,7 +17,8 @@ func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs [
 		case "name":
 			en.Name = a.Value
 		case "type":
-			en.Type = matter.NewDataType(zap.ConvertZapToDataTypeName(a.Value), false)
+			en.Type = types.NewDataType(zap.ConvertZapToDataTypeName(a.Value), false)
+		case "apiMaturity":
 		default:
 			return nil, nil, fmt.Errorf("unexpected enum attribute: %s", a.Name.Local)
 		}
@@ -60,7 +62,7 @@ func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs [
 			default:
 				err = fmt.Errorf("unexpected enum end element: %s", t.Name.Local)
 			}
-		case xml.CharData:
+		case xml.CharData, xml.Comment:
 		default:
 			err = fmt.Errorf("unexpected enum level type: %T", t)
 		}
@@ -78,7 +80,8 @@ func readEnumItem(d *xml.Decoder, e xml.StartElement) (ev *matter.EnumValue, err
 		case "name":
 			ev.Name = a.Value
 		case "value":
-			ev.Value = a.Value
+			ev.Value = matter.ParseNumber(a.Value)
+		case "apiMaturity":
 		default:
 			return nil, fmt.Errorf("unexpected enum item attribute: %s", a.Name.Local)
 		}
@@ -100,7 +103,7 @@ func readEnumItem(d *xml.Decoder, e xml.StartElement) (ev *matter.EnumValue, err
 			default:
 				err = fmt.Errorf("unexpected enum item end element: %s", t.Name.Local)
 			}
-		case xml.CharData:
+		case xml.CharData, xml.Comment:
 		default:
 			err = fmt.Errorf("unexpected enum item level type: %T", t)
 		}

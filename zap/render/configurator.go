@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func (r *renderer) renderModels(cxt context.Context, doc *ascii.Doc, root *etree.Element) (err error) {
+func (r *renderer) renderConfigurator(cxt context.Context, doc *ascii.Doc, root *etree.Element) (err error) {
 	c := root.CreateElement("configurator")
 	dom := c.CreateElement("domain")
 	dom.CreateAttr("name", "CHIP")

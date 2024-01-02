@@ -4,13 +4,14 @@ import (
 	"testing"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type constraintTest struct {
 	constraint string
-	dataType   *matter.DataType
-	min        matter.DataTypeExtreme
-	max        matter.DataTypeExtreme
+	dataType   *types.DataType
+	min        types.DataTypeExtreme
+	max        types.DataTypeExtreme
 	asciiDoc   string
 	zapMin     string
 	zapMax     string
@@ -30,30 +31,30 @@ var constraintTests = []constraintTest{
 
 	{
 		constraint: "-2^62^ to 2^62^",
-		min:        matter.NewIntDataTypeExtreme(-4611686018427387904, matter.NumberFormatHex),
-		max:        matter.NewIntDataTypeExtreme(4611686018427387904, matter.NumberFormatHex),
+		min:        types.NewIntDataTypeExtreme(-4611686018427387904, types.NumberFormatHex),
+		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatHex),
 		zapMin:     "0xC000000000000000",
 		zapMax:     "0x4000000000000000",
 	},
 	{
 		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
 		fields: matter.FieldSet{
-			{Name: "MinMeasuredValue", Constraint: ParseConstraint("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: ParseConstraint("MinMeasuredValue+1 to 65534")},
+			{Name: "MinMeasuredValue", Constraint: Parse("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: Parse("MinMeasuredValue+1 to 65534")},
 		},
-		min:    matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
-		max:    matter.NewIntDataTypeExtreme(65534, matter.NumberFormatInt),
+		min:    types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:    types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
 		zapMin: "0",
 		zapMax: "65534",
 	},
 	{
 		constraint: "1 to MaxMeasuredValue-1",
 		fields: matter.FieldSet{
-			{Name: "MinMeasuredValue", Constraint: ParseConstraint("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: ParseConstraint("MinMeasuredValue+1 to 65534")},
+			{Name: "MinMeasuredValue", Constraint: Parse("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: Parse("MinMeasuredValue+1 to 65534")},
 		},
-		min:      matter.NewIntDataTypeExtreme(1, matter.NumberFormatInt),
-		max:      matter.NewIntDataTypeExtreme(65533, matter.NumberFormatInt),
+		min:      types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
+		max:      types.NewIntDataTypeExtreme(65533, types.NumberFormatInt),
 		asciiDoc: "1 to (MaxMeasuredValue - 1)",
 		zapMin:   "1",
 		zapMax:   "65533",
@@ -61,11 +62,11 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "MinMeasuredValue+1 to 65534",
 		fields: matter.FieldSet{
-			{Name: "MinMeasuredValue", Constraint: ParseConstraint("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: ParseConstraint("MinMeasuredValue+1 to 65534")},
+			{Name: "MinMeasuredValue", Constraint: Parse("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: Parse("MinMeasuredValue+1 to 65534")},
 		},
-		min:      matter.NewIntDataTypeExtreme(2, matter.NumberFormatInt),
-		max:      matter.NewIntDataTypeExtreme(65534, matter.NumberFormatInt),
+		min:      types.NewIntDataTypeExtreme(2, types.NumberFormatInt),
+		max:      types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
 		asciiDoc: "(MinMeasuredValue + 1) to 65534",
 		zapMin:   "2",
 		zapMax:   "65534",
@@ -73,8 +74,8 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "-2^62 to 2^62",
 		asciiDoc:   "-2^62^ to 2^62^",
-		min:        matter.NewIntDataTypeExtreme(-4611686018427387904, matter.NumberFormatHex),
-		max:        matter.NewIntDataTypeExtreme(4611686018427387904, matter.NumberFormatHex),
+		min:        types.NewIntDataTypeExtreme(-4611686018427387904, types.NumberFormatHex),
+		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatHex),
 		zapMin:     "0xC000000000000000",
 		zapMax:     "0x4000000000000000",
 	},
@@ -82,13 +83,13 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "max 2^62 - 1",
 		asciiDoc:   "max (2^62^ - 1)",
-		max:        matter.NewIntDataTypeExtreme(4611686018427387903, matter.NumberFormatAuto),
+		max:        types.NewIntDataTypeExtreme(4611686018427387903, types.NumberFormatAuto),
 		zapMax:     "0x3FFFFFFFFFFFFFFF",
 	},
 	{
 		constraint: "0 to 80000",
-		min:        matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(80000, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(80000, types.NumberFormatInt),
 		zapMin:     "0",
 		zapMax:     "80000",
 	},
@@ -101,15 +102,15 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "0x00 to 0x3C",
 		asciiDoc:   "0x0 to 0x3C",
-		min:        matter.NewUintDataTypeExtreme(0, matter.NumberFormatHex),
-		max:        matter.NewUintDataTypeExtreme(60, matter.NumberFormatHex),
+		min:        types.NewUintDataTypeExtreme(0, types.NumberFormatHex),
+		max:        types.NewUintDataTypeExtreme(60, types.NumberFormatHex),
 		zapMin:     "0x0",
 		zapMax:     "0x3C",
 	},
 	{
 		constraint: "-32767 to MaxScaledValue-1",
 		asciiDoc:   "-32767 to (MaxScaledValue - 1)",
-		min:        matter.NewIntDataTypeExtreme(-32767, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(-32767, types.NumberFormatInt),
 		zapMin:     "-32767",
 	},
 	{
@@ -119,124 +120,124 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "-10000 to +10000",
 		asciiDoc:   "-10000 to 10000",
-		min:        matter.NewIntDataTypeExtreme(-10000, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(10000, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(-10000, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(10000, types.NumberFormatInt),
 		zapMin:     "-10000",
 		zapMax:     "10000",
 	},
 	{
 		constraint: "-127 to 127",
-		min:        matter.NewIntDataTypeExtreme(-127, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(127, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(-127, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(127, types.NumberFormatInt),
 		zapMin:     "-127",
 		zapMax:     "127",
 	},
 	{
 		constraint: "-2.5°C to 2.5°C",
-		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
-		min:        matter.NewIntDataTypeExtreme(-250, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(250, matter.NumberFormatInt),
+		dataType:   &types.DataType{BaseType: types.BaseDataTypeTemperature},
+		min:        types.NewIntDataTypeExtreme(-250, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(250, types.NumberFormatInt),
 		zapMin:     "-250",
 		zapMax:     "250",
 	},
 	{
 		constraint: "0 to 0x001F",
-		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeMap16},
+		dataType:   &types.DataType{BaseType: types.BaseDataTypeMap16},
 		asciiDoc:   "0 to 0x001F",
-		min:        matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
-		max:        matter.NewUintDataTypeExtreme(31, matter.NumberFormatHex),
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:        types.NewUintDataTypeExtreme(31, types.NumberFormatHex),
 		zapMin:     "0",
 		zapMax:     "0x001F",
 	},
 	{
 		constraint: "0 to 0xFEFF",
-		min:        matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
-		max:        matter.NewUintDataTypeExtreme(65279, matter.NumberFormatHex),
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:        types.NewUintDataTypeExtreme(65279, types.NumberFormatHex),
 		zapMin:     "0",
 		zapMax:     "0xFEFF",
 	},
 	{
 		constraint: "0 to 1000000",
-		min:        matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(1000000, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(1000000, types.NumberFormatInt),
 		zapMin:     "0",
 		zapMax:     "1000000",
 	},
 	{
 		constraint: "0 to MaxFrequency",
-		min:        matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
 		zapMin:     "0",
 	},
 	{
 		constraint: "0% to 100%",
-		min:        matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(100, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(100, types.NumberFormatInt),
 		zapMin:     "0",
 		zapMax:     "100",
 	},
 	{
 		constraint: "0% to 100%",
-		dataType:   &matter.DataType{BaseType: matter.BaseDataTypePercentHundredths},
-		min:        matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(100, matter.NumberFormatInt),
+		dataType:   &types.DataType{BaseType: types.BaseDataTypePercentHundredths},
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(100, types.NumberFormatInt),
 		zapMin:     "0",
 		zapMax:     "10000",
 	},
 
 	{
 		constraint: "0x954D to 0x7FFF",
-		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
+		dataType:   &types.DataType{BaseType: types.BaseDataTypeTemperature},
 		asciiDoc:   "0x954D to 0x7FFF",
-		min:        matter.NewUintDataTypeExtreme(38221, matter.NumberFormatHex),
-		max:        matter.NewUintDataTypeExtreme(32767, matter.NumberFormatHex),
+		min:        types.NewUintDataTypeExtreme(38221, types.NumberFormatHex),
+		max:        types.NewUintDataTypeExtreme(32767, types.NumberFormatHex),
 		zapMin:     "0x954D",
 		zapMax:     "0x7FFF",
 	},
 	{
 		constraint: "0°C to 2.5°C",
-		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
+		dataType:   &types.DataType{BaseType: types.BaseDataTypeTemperature},
 		asciiDoc:   "0°C to 2.5°C",
-		min:        matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(250, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(250, types.NumberFormatInt),
 		zapMin:     "0",
 		zapMax:     "250",
 	},
 	{
 		constraint: "1 to 100",
-		min:        matter.NewIntDataTypeExtreme(1, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(100, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(100, types.NumberFormatInt),
 		zapMin:     "1",
 		zapMax:     "100",
 	},
 	{
 		constraint: "1 to MaxLevel",
-		min:        matter.NewIntDataTypeExtreme(1, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
 		zapMin:     "1",
 	},
 	{
 		constraint: "1 to MaxMeasuredValue-1",
 		asciiDoc:   "1 to (MaxMeasuredValue - 1)",
-		min:        matter.NewIntDataTypeExtreme(1, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
 		zapMin:     "1",
 	},
 	{
 		constraint: "100 to MS",
-		min:        matter.NewIntDataTypeExtreme(100, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(100, types.NumberFormatInt),
 		zapMin:     "100",
 	},
 	{
 		constraint: "16",
 		asciiDoc:   "16",
-		min:        matter.NewIntDataTypeExtreme(16, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(16, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(16, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(16, types.NumberFormatInt),
 		zapMin:     "16",
 		zapMax:     "16",
 	},
 	{
 		constraint: "16[2]",
 		asciiDoc:   "16[2]",
-		min:        matter.NewIntDataTypeExtreme(16, matter.NumberFormatInt),
-		max:        matter.NewIntDataTypeExtreme(16, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(16, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(16, types.NumberFormatInt),
 		zapMin:     "16",
 		zapMax:     "16",
 	},
@@ -246,12 +247,12 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "MinMeasuredValue+1 to 10000",
 		asciiDoc:   "(MinMeasuredValue + 1) to 10000",
-		max:        matter.NewIntDataTypeExtreme(10000, matter.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(10000, types.NumberFormatInt),
 		zapMax:     "10000",
 	},
 	{
 		constraint: "MinPower to 100",
-		max:        matter.NewIntDataTypeExtreme(100, matter.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(100, types.NumberFormatInt),
 		zapMax:     "100",
 	},
 	{
@@ -259,8 +260,8 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "OccupiedSetbackMin to 25.4°C",
-		dataType:   &matter.DataType{BaseType: matter.BaseDataTypeTemperature},
-		max:        matter.NewIntDataTypeExtreme(2540, matter.NumberFormatInt),
+		dataType:   &types.DataType{BaseType: types.BaseDataTypeTemperature},
+		max:        types.NewIntDataTypeExtreme(2540, types.NumberFormatInt),
 		zapMax:     "2540",
 	},
 	{
@@ -283,29 +284,29 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "max 0xFFFE",
-		max:        matter.NewUintDataTypeExtreme(65534, matter.NumberFormatHex),
+		max:        types.NewUintDataTypeExtreme(65534, types.NumberFormatHex),
 		zapMax:     "0xFFFE",
 	},
 	{
 		constraint: "max 10",
-		max:        matter.NewIntDataTypeExtreme(10, matter.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(10, types.NumberFormatInt),
 		zapMax:     "10",
 	},
 	{
 		constraint: "max 10 [max 50]",
 		asciiDoc:   "max 10[max 50]",
-		max:        matter.NewIntDataTypeExtreme(10, matter.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(10, types.NumberFormatInt),
 		zapMax:     "10",
 	},
 	{
 		constraint: "max 32 chars",
 		asciiDoc:   "max 32",
-		max:        matter.NewIntDataTypeExtreme(32, matter.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(32, types.NumberFormatInt),
 		zapMax:     "32",
 	},
 	{
 		constraint: "max 604800",
-		max:        matter.NewIntDataTypeExtreme(604800, matter.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(604800, types.NumberFormatInt),
 		zapMax:     "604800",
 	},
 	{
@@ -314,18 +315,18 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "min -27315",
-		min:        matter.NewIntDataTypeExtreme(-27315, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(-27315, types.NumberFormatInt),
 		zapMin:     "-27315",
 	},
 	{
 		constraint: "Min -27315",
 		asciiDoc:   "min -27315",
-		min:        matter.NewIntDataTypeExtreme(-27315, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(-27315, types.NumberFormatInt),
 		zapMin:     "-27315",
 	},
 	{
 		constraint: "min 0",
-		min:        matter.NewIntDataTypeExtreme(0, matter.NumberFormatInt),
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
 		zapMin:     "0",
 	},
 	{
@@ -337,14 +338,14 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "null",
-		min:        matter.DataTypeExtreme{Type: matter.DataTypeExtremeTypeNull, Format: matter.NumberFormatInt},
-		max:        matter.DataTypeExtreme{Type: matter.DataTypeExtremeTypeNull, Format: matter.NumberFormatInt},
+		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeNull, Format: types.NumberFormatInt},
+		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeNull, Format: types.NumberFormatInt},
 	},
 }
 
 func TestSuite(t *testing.T) {
 	for _, ct := range constraintTests {
-		c := ParseConstraint(ct.constraint)
+		c := Parse(ct.constraint)
 		_, isGeneric := c.(*GenericConstraint)
 		if ct.generic {
 			if !isGeneric {

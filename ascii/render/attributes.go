@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/output"
 )
 
 type AttributeFilter uint32
@@ -37,11 +36,11 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 	return ((at & include) == at) && ((at & exclude) != at)
 }
 
-func renderAttributes(cxt *output.Context, el interface{}, attributes types.Attributes, inline bool) error {
+func renderAttributes(cxt *Context, el interface{}, attributes types.Attributes, inline bool) error {
 	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
 }
 
-func renderSelectAttributes(cxt *output.Context, el interface{}, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
+func renderSelectAttributes(cxt *Context, el interface{}, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -62,7 +61,7 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 			case string:
 				title = v
 			case []interface{}:
-				renderContext := output.NewContext(cxt, cxt.Doc)
+				renderContext := NewContext(cxt, cxt.Doc)
 				RenderElements(renderContext, "", v)
 				title = renderContext.String()
 			default:
@@ -234,7 +233,7 @@ func renderSelectAttributes(cxt *output.Context, el interface{}, attributes type
 	return
 }
 
-func renderAttributeAnchor(cxt *output.Context, id string, include AttributeFilter, exclude AttributeFilter, inline bool) {
+func renderAttributeAnchor(cxt *Context, id string, include AttributeFilter, exclude AttributeFilter, inline bool) {
 	if len(id) > 0 && id[0] != '_' && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
 		if !inline {
 			cxt.WriteNewline()
@@ -248,7 +247,7 @@ func renderAttributeAnchor(cxt *output.Context, id string, include AttributeFilt
 	}
 }
 
-func renderAttributeTitle(cxt *output.Context, title string, include AttributeFilter, exclude AttributeFilter) {
+func renderAttributeTitle(cxt *Context, title string, include AttributeFilter, exclude AttributeFilter) {
 	if len(title) > 0 && shouldRenderAttributeType(AttributeFilterTitle, include, exclude) {
 		cxt.WriteNewline()
 		cxt.WriteRune('.')
@@ -257,7 +256,7 @@ func renderAttributeTitle(cxt *output.Context, title string, include AttributeFi
 	}
 }
 
-func quoteAttributeValue(cxt *output.Context, val string) {
+func quoteAttributeValue(cxt *Context, val string) {
 	if _, err := strconv.Atoi(strings.TrimSuffix(val, "%")); err == nil {
 		cxt.WriteString(val)
 	} else {
@@ -267,7 +266,7 @@ func quoteAttributeValue(cxt *output.Context, val string) {
 	}
 }
 
-func getKeyValue(cxt *output.Context, key string, val interface{}, include AttributeFilter, exclude AttributeFilter) (keyVal string, skipKey bool, err error) {
+func getKeyValue(cxt *Context, key string, val interface{}, include AttributeFilter, exclude AttributeFilter) (keyVal string, skipKey bool, err error) {
 	var attributeType AttributeFilter
 	switch key {
 	case types.AttrCols:
@@ -363,7 +362,7 @@ func getKeyValue(cxt *output.Context, key string, val interface{}, include Attri
 	return
 }
 
-func renderDiagramAttributes(cxt *output.Context, style string, id string, title string, keys []string, inline bool, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter) (err error) {
+func renderDiagramAttributes(cxt *Context, style string, id string, title string, keys []string, inline bool, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter) (err error) {
 
 	renderAttributeTitle(cxt, title, include, exclude)
 	renderAttributeAnchor(cxt, id, include, exclude, inline)
@@ -396,7 +395,7 @@ func renderDiagramAttributes(cxt *output.Context, style string, id string, title
 	return
 }
 
-func renderAttributeDeclaration(cxt *output.Context, ad *types.AttributeDeclaration) (err error) {
+func renderAttributeDeclaration(cxt *Context, ad *types.AttributeDeclaration) (err error) {
 	switch ad.Name {
 	case "authors":
 		if authors, ok := ad.Value.(types.DocumentAuthors); ok {
@@ -434,20 +433,20 @@ func renderAttributeDeclaration(cxt *output.Context, ad *types.AttributeDeclarat
 	return
 }
 
-func renderAttributeReset(cxt *output.Context, ar *types.AttributeReset) {
+func renderAttributeReset(cxt *Context, ar *types.AttributeReset) {
 	cxt.WriteRune(':')
 	cxt.WriteString(ar.Name)
 	cxt.WriteString("!:\n")
 }
 
-func getAttributeStringValue(cxt *output.Context, val interface{}) (string, error) {
+func getAttributeStringValue(cxt *Context, val interface{}) (string, error) {
 	switch s := val.(type) {
 	case string:
 		return s, nil
 	case *types.StringElement:
 		return s.Content, nil
 	case []interface{}:
-		renderContext := output.NewContext(cxt, cxt.Doc)
+		renderContext := NewContext(cxt, cxt.Doc)
 		err := RenderElements(renderContext, "", s)
 		if err != nil {
 			return "", err

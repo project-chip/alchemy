@@ -4,41 +4,43 @@ import (
 	"log/slog"
 
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/constraint"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Field struct {
-	ID   *Number   `json:"id,omitempty"`
-	Name string    `json:"name,omitempty"`
-	Type *DataType `json:"type,omitempty"`
+	ID   *Number         `json:"id,omitempty"`
+	Name string          `json:"name,omitempty"`
+	Type *types.DataType `json:"type,omitempty"`
 
-	Constraint  Constraint      `json:"constraint,omitempty"`
-	Quality     Quality         `json:"quality,omitempty"`
-	Access      Access          `json:"access,omitempty"`
-	Default     string          `json:"default,omitempty"`
-	Conformance conformance.Set `json:"conformance,omitempty"`
+	Constraint  constraint.Constraint `json:"constraint,omitempty"`
+	Quality     Quality               `json:"quality,omitempty"`
+	Access      Access                `json:"access,omitempty"`
+	Default     string                `json:"default,omitempty"`
+	Conformance conformance.Set       `json:"conformance,omitempty"`
 
-	entity Entity
+	entity types.EntityType
 }
 
 func NewField() *Field {
-	return &Field{entity: EntityField}
+	return &Field{entity: types.EntityTypeField}
 }
 
 func NewAttribute() *Field {
-	return &Field{entity: EntityAttribute}
+	return &Field{entity: types.EntityTypeAttribute}
 }
 
 func (f *Field) GetConformance() conformance.Set {
 	return f.Conformance
 }
 
-func (f *Field) Entity() Entity {
+func (f *Field) EntityType() types.EntityType {
 	return f.entity
 }
 
 func (f *Field) Inherit(parent *Field) {
 	slog.Debug("inheriting field", "parent", parent.Name, "parentType", parent.Type, "childType", f.Type)
-	if (f.Type == nil || f.Type.BaseType == BaseDataTypeUnknown) && parent.Type != nil {
+	if (f.Type == nil || f.Type.BaseType == types.BaseDataTypeUnknown) && parent.Type != nil {
 		f.Type = parent.Type.Clone()
 	}
 	if f.Constraint == nil && parent.Constraint != nil {
@@ -53,7 +55,7 @@ func (f *Field) Inherit(parent *Field) {
 	if len(f.Default) == 0 {
 		f.Default = parent.Default
 	}
-	if f.entity == EntityUnknown && parent.entity != EntityUnknown {
+	if f.entity == types.EntityTypeUnknown && parent.entity != types.EntityTypeUnknown {
 		f.entity = parent.entity
 	}
 	f.Access.Inherit(parent.Access)

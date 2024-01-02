@@ -5,9 +5,10 @@ import (
 	"log/slog"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func findDependencies(spec *matter.Spec, models []matter.Model, dependencies *concurrentMap[bool]) {
+func findDependencies(spec *matter.Spec, models []types.Entity, dependencies *concurrentMap[bool]) {
 	for _, m := range models {
 		switch m := m.(type) {
 		case *matter.Cluster:
@@ -37,7 +38,7 @@ func findFieldSetDependencies(spec *matter.Spec, fs matter.FieldSet, dependencie
 	}
 }
 
-func findDataTypeDependencies(spec *matter.Spec, dt *matter.DataType, dependencies *concurrentMap[bool]) {
+func findDataTypeDependencies(spec *matter.Spec, dt *types.DataType, dependencies *concurrentMap[bool]) {
 	if dt == nil {
 		return
 	}
@@ -45,10 +46,10 @@ func findDataTypeDependencies(spec *matter.Spec, dt *matter.DataType, dependenci
 		findDataTypeDependencies(spec, dt.EntryType, dependencies)
 		return
 	}
-	if dt.Model != nil {
-		path, ok := spec.DocRefs[dt.Model]
+	if dt.Entity != nil {
+		path, ok := spec.DocRefs[dt.Entity]
 		if !ok {
-			slog.Warn("missing document for data type", "name", dt.Name, "model", dt.Model, "pointer", fmt.Sprintf("%p", dt.Model))
+			slog.Warn("missing document for data type", "name", dt.Name, "model", dt.Entity, "pointer", fmt.Sprintf("%p", dt.Entity))
 			return
 		}
 		dependencies.Lock()

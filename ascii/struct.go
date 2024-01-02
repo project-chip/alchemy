@@ -9,14 +9,14 @@ import (
 )
 
 func (s *Section) toStruct(d *Doc) (ms *matter.Struct, err error) {
+	name := strings.TrimSuffix(s.Name, " Type")
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
-		return nil, fmt.Errorf("failed reading struct: %w", err)
+		return nil, fmt.Errorf("failed reading struct %s: %w", name, err)
 	}
-	name := strings.TrimSuffix(s.Name, " Type")
 	ms = &matter.Struct{
 		Name: name,
 	}

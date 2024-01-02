@@ -47,10 +47,24 @@ func (oc *Optional) Equal(c Conformance) bool {
 	if !ok {
 		return false
 	}
-	if !oc.Choice.Equal(ooc.Choice) {
+	if oc.Choice != nil {
+		if ooc.Choice == nil {
+			return false
+		}
+		if !oc.Choice.Equal(ooc.Choice) {
+			return false
+		}
+	} else if ooc.Choice != nil {
 		return false
 	}
-	if !oc.Expression.Equal(ooc.Expression) {
+	if oc.Expression != nil {
+		if ooc.Expression == nil {
+			return false
+		}
+		if !oc.Expression.Equal(ooc.Expression) {
+			return false
+		}
+	} else if ooc.Expression != nil {
 		return false
 	}
 	return true

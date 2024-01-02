@@ -1,38 +1,40 @@
 package constraint
 
-import "github.com/hasty/alchemy/matter"
+import (
+	"github.com/hasty/alchemy/matter/types"
+)
 
 type GenericConstraint struct {
 	Value string
 }
 
-func (c *GenericConstraint) Type() matter.ConstraintType {
-	return matter.ConstraintTypeGeneric
+func (c *GenericConstraint) Type() ConstraintType {
+	return ConstraintTypeGeneric
 }
 
-func (c *GenericConstraint) AsciiDocString(dataType *matter.DataType) string {
+func (c *GenericConstraint) AsciiDocString(dataType *types.DataType) string {
 	return c.Value
 }
 
-func (c *GenericConstraint) Equal(o matter.Constraint) bool {
+func (c *GenericConstraint) Equal(o Constraint) bool {
 	if oc, ok := o.(*GenericConstraint); ok {
 		return oc.Value == c.Value
 	}
 	return false
 }
 
-func (c *GenericConstraint) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
+func (c *GenericConstraint) Min(cc Context) (min types.DataTypeExtreme) {
 	return
 }
 
-func (c *GenericConstraint) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *GenericConstraint) Max(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (c *GenericConstraint) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *GenericConstraint) Default(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (c *GenericConstraint) Clone() matter.Constraint {
+func (c *GenericConstraint) Clone() Constraint {
 	return &GenericConstraint{Value: c.Value}
 }

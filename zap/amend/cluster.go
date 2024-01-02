@@ -9,6 +9,7 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
 )
 
@@ -321,7 +322,7 @@ func (*renderer) renderClusterCodes(e xmlEncoder, clusterIDs []string) (err erro
 	return
 }
 
-func (r *renderer) getClusterCodes(model matter.Model) (clusterIDs []string) {
+func (r *renderer) getClusterCodes(model types.Entity) (clusterIDs []string) {
 	refs, ok := r.spec.ClusterRefs[model]
 	if !ok {
 		slog.Warn("unknown cluster ref", "val", model)

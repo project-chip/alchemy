@@ -6,7 +6,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/output"
 )
 
 type table struct {
@@ -29,7 +28,7 @@ type tableCell struct {
 	margin int // width of the formatter of the next cell
 }
 
-func renderTable(cxt *output.Context, t *types.Table) (err error) {
+func renderTable(cxt *Context, t *types.Table) (err error) {
 
 	tbl := &table{header: &tableRow{}, footer: &tableRow{}}
 
@@ -53,7 +52,7 @@ func renderTable(cxt *output.Context, t *types.Table) (err error) {
 	return
 }
 
-func renderRow(cxt *output.Context, cells []*tableCell, colOffsets []int) {
+func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) {
 	if len(cells) == 0 {
 		return
 	}
@@ -204,10 +203,10 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 	return
 }
 
-func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) (err error) {
+func renderTableSubElements(cxt *Context, t *types.Table, tbl *table) (err error) {
 	if t.Header != nil {
 		for _, c := range t.Header.Cells {
-			renderContext := output.NewContext(cxt, cxt.Doc)
+			renderContext := NewContext(cxt, cxt.Doc)
 			err = RenderElements(renderContext, "", c.Elements)
 			if err != nil {
 				return
@@ -219,7 +218,7 @@ func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) (er
 	for _, row := range t.Rows {
 		tr := &tableRow{}
 		for _, c := range row.Cells {
-			renderContext := output.NewContext(cxt, cxt.Doc)
+			renderContext := NewContext(cxt, cxt.Doc)
 			err = RenderElements(renderContext, "", c.Elements)
 			if err != nil {
 				return
@@ -230,7 +229,7 @@ func renderTableSubElements(cxt *output.Context, t *types.Table, tbl *table) (er
 	}
 	if t.Footer != nil {
 		for _, c := range t.Footer.Cells {
-			renderContext := output.NewContext(cxt, cxt.Doc)
+			renderContext := NewContext(cxt, cxt.Doc)
 			err = RenderElements(renderContext, "", c.Elements)
 			if err != nil {
 				return
@@ -249,7 +248,7 @@ func getCellWidth(c *tableCell) int {
 	return utf8.RuneCountInString(strings.TrimSpace(lines[len(lines)-1]))
 }
 
-func writeCellValue(out *output.Context, c *tableCell, width int, indent int) (count int) {
+func writeCellValue(out *Context, c *tableCell, width int, indent int) (count int) {
 	lines := strings.Split(c.value, "\n")
 	if len(lines) == 1 {
 		v := fmt.Sprintf("%-*s", width, c.value)

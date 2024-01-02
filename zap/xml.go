@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 	"github.com/iancoleman/strcase"
 )
@@ -154,12 +155,12 @@ type XMLConfigurator struct {
 	DefaultAccess     []XMLDefaultAccess    `xml:"defaultAccess"`
 }
 
-func (config *XMLConfigurator) ToModels() (models []interface{}, err error) {
+func (config *XMLConfigurator) Entities() (entities []types.Entity, err error) {
 
 	var bitmaps []*matter.Bitmap
 	for _, b := range config.Bitmaps {
 		var mb *matter.Bitmap
-		mb, err = b.ToModel()
+		mb, err = b.Bitmap()
 		if err != nil {
 			return
 		}
@@ -168,7 +169,7 @@ func (config *XMLConfigurator) ToModels() (models []interface{}, err error) {
 	var enums []*matter.Enum
 	for _, e := range config.Enums {
 		var me *matter.Enum
-		me, err = e.ToModel()
+		me, err = e.Enum()
 		if err != nil {
 			return
 		}
@@ -177,7 +178,7 @@ func (config *XMLConfigurator) ToModels() (models []interface{}, err error) {
 	var structs []*matter.Struct
 	for _, s := range config.Structs {
 		var ms *matter.Struct
-		ms, err = s.ToModel()
+		ms, err = s.Struct()
 		if err != nil {
 			return
 		}
@@ -186,7 +187,7 @@ func (config *XMLConfigurator) ToModels() (models []interface{}, err error) {
 	var clusters []*matter.Cluster
 	for _, c := range config.Clusters {
 		var mc *matter.Cluster
-		mc, err = c.ToModel()
+		mc, err = c.Cluster()
 		if err != nil {
 			return
 		}
@@ -202,7 +203,7 @@ func (config *XMLConfigurator) ToModels() (models []interface{}, err error) {
 		clusters = append(clusters, mc)
 	}
 	for _, c := range clusters {
-		models = append(models, c)
+		entities = append(entities, c)
 	}
 	return
 }

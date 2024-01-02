@@ -6,6 +6,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func (s *Section) toFeatures(d *Doc) (features *matter.Bitmap, err error) {
@@ -19,7 +20,7 @@ func (s *Section) toFeatures(d *Doc) (features *matter.Bitmap, err error) {
 	}
 	features = &matter.Bitmap{
 		Name: "Feature",
-		Type: matter.NewDataType("map32", false),
+		Type: mattertypes.NewDataType("map32", false),
 	}
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]

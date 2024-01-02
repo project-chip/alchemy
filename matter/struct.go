@@ -1,5 +1,7 @@
 package matter
 
+import "github.com/hasty/alchemy/matter/types"
+
 type Struct struct {
 	Name          string        `json:"name,omitempty"`
 	Description   string        `json:"description,omitempty"`
@@ -7,8 +9,8 @@ type Struct struct {
 	FabricScoping FabricScoping `json:"fabricScoped,omitempty"`
 }
 
-func (*Struct) Entity() Entity {
-	return EntityStruct
+func (*Struct) EntityType() types.EntityType {
+	return types.EntityTypeStruct
 }
 
 func (s *Struct) Clone() *Struct {

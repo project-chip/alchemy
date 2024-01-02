@@ -4,16 +4,16 @@ import (
 	"math"
 	"strings"
 
-	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-type ConstraintSet []matter.Constraint
+type ConstraintSet []Constraint
 
-func (c ConstraintSet) Type() matter.ConstraintType {
-	return matter.ConstraintTypeSet
+func (c ConstraintSet) Type() ConstraintType {
+	return ConstraintTypeSet
 }
 
-func (cs ConstraintSet) AsciiDocString(dataType *matter.DataType) string {
+func (cs ConstraintSet) AsciiDocString(dataType *types.DataType) string {
 	var b strings.Builder
 	for _, con := range cs {
 		if b.Len() > 0 {
@@ -24,7 +24,7 @@ func (cs ConstraintSet) AsciiDocString(dataType *matter.DataType) string {
 	return b.String()
 }
 
-func (cs ConstraintSet) Equal(o matter.Constraint) bool {
+func (cs ConstraintSet) Equal(o Constraint) bool {
 	ocs, ok := o.(ConstraintSet)
 	if !ok {
 		return false
@@ -40,8 +40,8 @@ func (cs ConstraintSet) Equal(o matter.Constraint) bool {
 	return true
 }
 
-func (cs ConstraintSet) Min(c *matter.ConstraintContext) (min matter.DataTypeExtreme) {
-	var from matter.DataTypeExtreme
+func (cs ConstraintSet) Min(c Context) (min types.DataTypeExtreme) {
+	var from types.DataTypeExtreme
 
 	from = cs[0].Min(c)
 	for i := 1; i < len(cs); i++ {
@@ -53,8 +53,8 @@ func (cs ConstraintSet) Min(c *matter.ConstraintContext) (min matter.DataTypeExt
 	return from
 }
 
-func (cs ConstraintSet) Max(c *matter.ConstraintContext) (max matter.DataTypeExtreme) {
-	var to matter.DataTypeExtreme
+func (cs ConstraintSet) Max(c Context) (max types.DataTypeExtreme) {
+	var to types.DataTypeExtreme
 
 	to = cs[0].Min(c)
 	for i := 1; i < len(cs); i++ {
@@ -65,11 +65,11 @@ func (cs ConstraintSet) Max(c *matter.ConstraintContext) (max matter.DataTypeExt
 	return to
 }
 
-func (c ConstraintSet) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c ConstraintSet) Default(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (cs ConstraintSet) Clone() matter.Constraint {
+func (cs ConstraintSet) Clone() Constraint {
 	nc := make(ConstraintSet, 0, len(cs))
 	for _, c := range cs {
 		nc = append(nc, c.Clone())
@@ -77,20 +77,20 @@ func (cs ConstraintSet) Clone() matter.Constraint {
 	return nc
 }
 
-func minExtreme(f1 matter.DataTypeExtreme, f2 matter.DataTypeExtreme) matter.DataTypeExtreme {
+func minExtreme(f1 types.DataTypeExtreme, f2 types.DataTypeExtreme) types.DataTypeExtreme {
 	switch f1.Type {
-	case matter.DataTypeExtremeTypeUndefined:
+	case types.DataTypeExtremeTypeUndefined:
 		return f1
-	case matter.DataTypeExtremeTypeInt64:
+	case types.DataTypeExtremeTypeInt64:
 		switch f2.Type {
-		case matter.DataTypeExtremeTypeUndefined:
+		case types.DataTypeExtremeTypeUndefined:
 			return f2
-		case matter.DataTypeExtremeTypeInt64:
+		case types.DataTypeExtremeTypeInt64:
 			if f1.Int64 < f2.Int64 {
 				return f1
 			}
 			return f2
-		case matter.DataTypeExtremeTypeUInt64:
+		case types.DataTypeExtremeTypeUInt64:
 			if f2.UInt64 > math.MaxInt64 {
 				return f1
 			}
@@ -99,15 +99,15 @@ func minExtreme(f1 matter.DataTypeExtreme, f2 matter.DataTypeExtreme) matter.Dat
 			}
 			return f2
 		}
-	case matter.DataTypeExtremeTypeUInt64:
+	case types.DataTypeExtremeTypeUInt64:
 		switch f2.Type {
-		case matter.DataTypeExtremeTypeUndefined:
+		case types.DataTypeExtremeTypeUndefined:
 			return f2
-		case matter.DataTypeExtremeTypeUInt64:
+		case types.DataTypeExtremeTypeUInt64:
 			if f1.UInt64 < f2.UInt64 {
 				return f1
 			}
-		case matter.DataTypeExtremeTypeInt64:
+		case types.DataTypeExtremeTypeInt64:
 			if f1.UInt64 > math.MaxInt64 {
 				return f2
 			}
@@ -117,23 +117,23 @@ func minExtreme(f1 matter.DataTypeExtreme, f2 matter.DataTypeExtreme) matter.Dat
 			return f2
 		}
 	}
-	return matter.DataTypeExtreme{}
+	return types.DataTypeExtreme{}
 }
 
-func maxExtreme(f1 matter.DataTypeExtreme, f2 matter.DataTypeExtreme) matter.DataTypeExtreme {
+func maxExtreme(f1 types.DataTypeExtreme, f2 types.DataTypeExtreme) types.DataTypeExtreme {
 	switch f1.Type {
-	case matter.DataTypeExtremeTypeUndefined:
+	case types.DataTypeExtremeTypeUndefined:
 		return f1
-	case matter.DataTypeExtremeTypeInt64:
+	case types.DataTypeExtremeTypeInt64:
 		switch f2.Type {
-		case matter.DataTypeExtremeTypeUndefined:
+		case types.DataTypeExtremeTypeUndefined:
 			return f2
-		case matter.DataTypeExtremeTypeInt64:
+		case types.DataTypeExtremeTypeInt64:
 			if f1.Int64 > f2.Int64 {
 				return f1
 			}
 			return f2
-		case matter.DataTypeExtremeTypeUInt64:
+		case types.DataTypeExtremeTypeUInt64:
 			if f2.UInt64 > math.MaxInt64 {
 				return f2
 			}
@@ -142,15 +142,15 @@ func maxExtreme(f1 matter.DataTypeExtreme, f2 matter.DataTypeExtreme) matter.Dat
 			}
 			return f1
 		}
-	case matter.DataTypeExtremeTypeUInt64:
+	case types.DataTypeExtremeTypeUInt64:
 		switch f2.Type {
-		case matter.DataTypeExtremeTypeUndefined:
+		case types.DataTypeExtremeTypeUndefined:
 			return f2
-		case matter.DataTypeExtremeTypeUInt64:
+		case types.DataTypeExtremeTypeUInt64:
 			if f1.UInt64 < f2.UInt64 {
 				return f2
 			}
-		case matter.DataTypeExtremeTypeInt64:
+		case types.DataTypeExtremeTypeInt64:
 			if f1.UInt64 > math.MaxInt64 {
 				return f1
 			}
@@ -160,5 +160,5 @@ func maxExtreme(f1 matter.DataTypeExtreme, f2 matter.DataTypeExtreme) matter.Dat
 			return f1
 		}
 	}
-	return matter.DataTypeExtreme{}
+	return types.DataTypeExtreme{}
 }

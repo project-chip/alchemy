@@ -69,7 +69,7 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 			var headerRowIndex int
 			var columnMap ColumnIndex
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
-			e.FabricSensitivity = matter.FabricSensitivityInsensitive
+			e.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
 			if headerRowIndex > 0 {
 				firstRow := rows[0]
 				if len(firstRow.Cells) > 0 {
@@ -77,7 +77,7 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 					if rowErr == nil {
 						cv = strings.ToLower(cv)
 						if strings.Contains(cv, "fabric sensitive") || strings.Contains(cv, "fabric-sensitive") {
-							e.FabricSensitivity = matter.FabricSensitivitySensitive
+							e.Access.FabricSensitivity = matter.FabricSensitivitySensitive
 						}
 					}
 				}

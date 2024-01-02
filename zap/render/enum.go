@@ -8,7 +8,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
 
@@ -26,7 +26,7 @@ func (r *renderer) renderEnums(enums map[*matter.Enum]bool, cx *etree.Element) {
 	for _, v := range ens {
 		var valFormat string
 		switch v.Type.BaseType {
-		case matter.BaseDataTypeEnum16:
+		case types.BaseDataTypeEnum16:
 			valFormat = "0x%04X"
 		default:
 			valFormat = "0x%02X"
@@ -49,12 +49,10 @@ func (r *renderer) renderEnums(enums map[*matter.Enum]bool, cx *etree.Element) {
 			evx := en.CreateElement("item")
 			name := zap.CleanName(ev.Name)
 			evx.CreateAttr("name", name)
-			val := ev.Value
-			valNum, err := parse.HexOrDec(val)
-			if err == nil {
-				val = fmt.Sprintf(valFormat, valNum)
+			if ev.Value.Valid() {
+				val := fmt.Sprintf(valFormat, ev.Value.Value())
+				evx.CreateAttr("value", val)
 			}
-			evx.CreateAttr("value", val)
 		}
 
 	}

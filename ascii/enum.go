@@ -6,6 +6,7 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func (s *Section) toEnum(d *Doc) (e *matter.Enum, err error) {
@@ -22,7 +23,7 @@ func (s *Section) toEnum(d *Doc) (e *matter.Enum, err error) {
 	}
 	dt := s.GetDataType()
 	if dt == nil {
-		dt = matter.NewDataType("enum8", false)
+		dt = mattertypes.NewDataType("enum8", false)
 	}
 
 	if !dt.IsEnum() {
@@ -43,7 +44,7 @@ func (s *Section) toEnum(d *Doc) (e *matter.Enum, err error) {
 			return
 		}
 		ev.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
-		ev.Value, err = readRowValue(row, columnMap, matter.TableColumnValue)
+		ev.Value, err = readRowID(row, columnMap, matter.TableColumnValue)
 		if err != nil {
 			return
 		}
@@ -62,10 +63,10 @@ func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
 	}
 	e = &matter.Enum{
 		Name: "ModeTag",
-		Type: matter.NewDataType("enum16", false),
+		Type: mattertypes.NewDataType("enum16", false),
 	}
 
-	e.Type = matter.NewDataType("enum16", false)
+	e.Type = mattertypes.NewDataType("enum16", false)
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
@@ -74,7 +75,7 @@ func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
 		if err != nil {
 			return
 		}
-		ev.Value, err = readRowValue(row, columnMap, matter.TableColumnModeTagValue)
+		ev.Value, err = readRowID(row, columnMap, matter.TableColumnModeTagValue)
 		if err != nil {
 			return
 		}

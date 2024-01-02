@@ -6,6 +6,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
@@ -19,10 +20,13 @@ func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
 		en.CreateAttr("name", e.Name)
 		for _, v := range e.Values {
 			var val, from, to *matter.Number
-			var valFormat, fromFormat, toFormat matter.NumberFormat
-			val, valFormat = matter.ParseFormattedNumber(v.Value)
-			if !val.Valid() {
-				from, fromFormat, to, toFormat = matter.ParseFormattedIDRange(v.Value)
+			var valFormat, fromFormat, toFormat types.NumberFormat
+			//val, valFormat = matter.ParseFormattedNumber(v.Value)
+			if v.Value.Valid() {
+				val = v.Value
+				valFormat = v.Value.Format()
+			} else {
+				from, fromFormat, to, toFormat = matter.ParseFormattedIDRange(v.Value.Text())
 				if !from.Valid() {
 					continue
 				}
@@ -31,22 +35,22 @@ func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
 			i := en.CreateElement("item")
 			if val.Valid() {
 				switch valFormat {
-				case matter.NumberFormatAuto, matter.NumberFormatInt:
+				case types.NumberFormatAuto, types.NumberFormatInt:
 					i.CreateAttr("value", val.IntString())
-				case matter.NumberFormatHex:
+				case types.NumberFormatHex:
 					i.CreateAttr("value", val.HexString())
 				}
 			} else {
 				switch fromFormat {
-				case matter.NumberFormatAuto, matter.NumberFormatInt:
+				case types.NumberFormatAuto, types.NumberFormatInt:
 					i.CreateAttr("from", from.IntString())
-				case matter.NumberFormatHex:
+				case types.NumberFormatHex:
 					i.CreateAttr("from", from.HexString())
 				}
 				switch toFormat {
-				case matter.NumberFormatAuto, matter.NumberFormatInt:
+				case types.NumberFormatAuto, types.NumberFormatInt:
 					i.CreateAttr("to", to.IntString())
-				case matter.NumberFormatHex:
+				case types.NumberFormatHex:
 					i.CreateAttr("to", to.HexString())
 				}
 			}

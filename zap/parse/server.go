@@ -32,7 +32,7 @@ func readServer(d *xml.Decoder, e xml.StartElement) (err error) {
 			default:
 				return fmt.Errorf("unexpected server end element: %s", t.Name.Local)
 			}
-		case xml.CharData:
+		case xml.CharData, xml.Comment:
 		default:
 			return fmt.Errorf("unexpected server level type: %T", t)
 		}

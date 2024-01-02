@@ -30,11 +30,11 @@ func (h *Host) indexDoc(ctx context.Context, doc *ascii.Doc, raw bool) (*section
 			}
 		}
 	} else {
-		models, err := doc.ToModel()
+		entities, err := doc.Entities()
 		if err != nil {
 			return nil, err
 		}
-		for _, m := range models {
+		for _, m := range entities {
 			switch v := m.(type) {
 			case *matter.Cluster:
 				err = h.indexClusterModel(ctx, ds, v)

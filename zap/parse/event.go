@@ -4,13 +4,15 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log/slog"
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 )
 
 func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err error) {
-	event = &matter.Event{}
+	event = &matter.Event{Access: matter.DefaultAccess(false)}
+	var optional, isFabricSensitive string
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "side":
@@ -21,19 +23,25 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 		case "name":
 			event.Name = a.Value
 		case "isFabricSensitive":
-			if a.Value == "true" {
-				event.FabricSensitivity = matter.FabricSensitivitySensitive
-			} else {
-				event.FabricSensitivity = matter.FabricSensitivityInsensitive
-			}
+			isFabricSensitive = a.Value
 		case "optional":
-			if a.Value == "true" {
-				event.Conformance = conformance.Set{&conformance.Mandatory{}}
-			}
+			optional = a.Value
+		case "apiMaturity":
 		default:
 			return nil, fmt.Errorf("unexpected event attribute: %s", a.Name.Local)
 		}
 	}
+	if optional == "false" {
+		event.Conformance = conformance.Set{&conformance.Mandatory{}}
+	} else {
+		event.Conformance = conformance.Set{&conformance.Optional{}}
+	}
+	if isFabricSensitive == "true" {
+		event.Access.FabricSensitivity = matter.FabricSensitivitySensitive
+	} else {
+		event.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
+	}
+
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
@@ -54,7 +62,9 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 			case "field":
 				var field *matter.Field
 				field, err = readField(d, t, "field")
-				if err == nil {
+				if err != nil {
+					slog.Warn("error reading event field", slog.Any("error", err))
+				} else {
 					event.Fields = append(event.Fields, field)
 				}
 			default:
@@ -67,7 +77,7 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 			default:
 				err = fmt.Errorf("unexpected event end element: %s", t.Name.Local)
 			}
-		case xml.CharData:
+		case xml.CharData, xml.Comment:
 		default:
 			err = fmt.Errorf("unexpected event level type: %T", t)
 		}

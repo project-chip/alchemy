@@ -6,10 +6,11 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toDeviceTypes(d *Doc) (models []matter.Model, err error) {
+func (s *Section) toDeviceTypes(d *Doc) (models []mattertypes.Entity, err error) {
 	var deviceTypes []*matter.DeviceType
 	var description string
 	p := parse.FindFirst[*types.Paragraph](s.Elements)

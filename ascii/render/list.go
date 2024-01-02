@@ -4,10 +4,9 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/output"
 )
 
-func renderList(cxt *output.Context, l *types.List) (err error) {
+func renderList(cxt *Context, l *types.List) (err error) {
 	renderAttributes(cxt, l, l.Attributes, false)
 	switch l.Kind {
 	case types.OrderedListKind:
@@ -22,7 +21,7 @@ func renderList(cxt *output.Context, l *types.List) (err error) {
 	return
 }
 
-func renderOrderedList(cxt *output.Context, l *types.List) (err error) {
+func renderOrderedList(cxt *Context, l *types.List) (err error) {
 	for _, e := range l.Elements {
 		switch el := e.(type) {
 		case *types.OrderedListElement:
@@ -37,7 +36,7 @@ func renderOrderedList(cxt *output.Context, l *types.List) (err error) {
 	return
 }
 
-func renderOrderedListElement(cxt *output.Context, el *types.OrderedListElement) (err error) {
+func renderOrderedListElement(cxt *Context, el *types.OrderedListElement) (err error) {
 	cxt.WriteNewline()
 	var bullet string
 	switch el.Style {
@@ -57,7 +56,7 @@ func renderOrderedListElement(cxt *output.Context, el *types.OrderedListElement)
 	return
 }
 
-func renderUnorderedList(cxt *output.Context, l *types.List) (err error) {
+func renderUnorderedList(cxt *Context, l *types.List) (err error) {
 	cxt.WriteNewline()
 	for _, e := range l.Elements {
 		switch el := e.(type) {
@@ -73,7 +72,7 @@ func renderUnorderedList(cxt *output.Context, l *types.List) (err error) {
 	return
 }
 
-func renderUnorderedListElement(cxt *output.Context, el *types.UnorderedListElement) (err error) {
+func renderUnorderedListElement(cxt *Context, el *types.UnorderedListElement) (err error) {
 	cxt.WriteNewline()
 	var bullet string
 	switch el.BulletStyle {
@@ -95,7 +94,7 @@ func renderUnorderedListElement(cxt *output.Context, el *types.UnorderedListElem
 	return
 }
 
-func renderLabeledList(cxt *output.Context, l *types.List) (err error) {
+func renderLabeledList(cxt *Context, l *types.List) (err error) {
 	for _, e := range l.Elements {
 		switch el := e.(type) {
 		case *types.LabeledListElement:
@@ -113,7 +112,7 @@ func renderLabeledList(cxt *output.Context, l *types.List) (err error) {
 	return
 }
 
-func renderLabeledListElement(cxt *output.Context, el *types.LabeledListElement) error {
+func renderLabeledListElement(cxt *Context, el *types.LabeledListElement) error {
 	cxt.WriteNewline()
 	err := renderAttributes(cxt, el, el.Attributes, false)
 	if err != nil {
@@ -132,7 +131,7 @@ func renderLabeledListElement(cxt *output.Context, el *types.LabeledListElement)
 	return nil
 }
 
-func renderListElements(cxt *output.Context, les *types.ListElements) (err error) {
+func renderListElements(cxt *Context, les *types.ListElements) (err error) {
 	for _, le := range les.Elements {
 		switch el := le.(type) {
 		case *types.OrderedListElement:

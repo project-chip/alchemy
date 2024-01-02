@@ -8,6 +8,7 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 )
@@ -19,7 +20,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 		case "name":
 			bitmap.Name = a.Value
 		case "type":
-			bitmap.Type = matter.NewDataType(zap.ConvertZapToDataTypeName(a.Value), false)
+			bitmap.Type = types.NewDataType(zap.ConvertZapToDataTypeName(a.Value), false)
 		case "apiMaturity":
 		default:
 			return nil, nil, fmt.Errorf("unexpected bitmap attribute: %s", a.Name.Local)
@@ -61,7 +62,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 			default:
 				err = fmt.Errorf("unexpected bitmap end element: %s", t.Name.Local)
 			}
-		//case xml.CharData:
+		case xml.CharData, xml.Comment:
 		default:
 			err = fmt.Errorf("unexpected bitmap level type: %T", t)
 		}
@@ -89,20 +90,20 @@ func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) 
 
 			var maxBit int
 			switch bitmap.Type.BaseType {
-			case matter.BaseDataTypeMap8:
+			case types.BaseDataTypeMap8:
 				maxBit = 8
-			case matter.BaseDataTypeMap16:
+			case types.BaseDataTypeMap16:
 				maxBit = 16
-			case matter.BaseDataTypeMap32:
+			case types.BaseDataTypeMap32:
 				maxBit = 32
-			case matter.BaseDataTypeMap64:
+			case types.BaseDataTypeMap64:
 				maxBit = 64
 			default:
 				err = fmt.Errorf("unknown bitmap type: %v", bitmap.Type)
 				return
 			}
 			for offset := 0; offset < maxBit; offset++ {
-				if mask&(1<<offset) == 1 {
+				if mask&(1<<offset) == (1 << offset) {
 					if startBit == -1 {
 						startBit = offset
 					} else {
@@ -115,9 +116,8 @@ func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) 
 					break
 				}
 			}
-
 			if startBit >= 0 {
-				if startBit != endBit {
+				if startBit != endBit && endBit != -1 {
 					bv.Bit = fmt.Sprintf("%d..%d", startBit, endBit)
 				} else {
 					bv.Bit = strconv.Itoa(startBit)
@@ -148,7 +148,7 @@ func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) 
 			default:
 				err = fmt.Errorf("unexpected field end element: %s", t.Name.Local)
 			}
-		case xml.CharData:
+		case xml.CharData, xml.Comment:
 		default:
 			err = fmt.Errorf("unexpected field level type: %T", t)
 		}

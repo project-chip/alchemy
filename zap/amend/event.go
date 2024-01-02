@@ -227,7 +227,7 @@ func (*renderer) setEventAttributes(xfb []xml.Attr, ev *matter.Event) []xml.Attr
 	xfb = setAttributeValue(xfb, "priority", strings.ToLower(ev.Priority))
 	xfb = removeAttribute(xfb, "side")
 
-	if ev.FabricSensitivity == matter.FabricSensitivitySensitive {
+	if ev.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 		xfb = setAttributeValue(xfb, "isFabricSensitive", "true")
 	} else {
 		xfb = removeAttribute(xfb, "isFabricSensitive")

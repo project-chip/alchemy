@@ -6,6 +6,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Configurator struct {
@@ -20,7 +21,7 @@ type Configurator struct {
 	ClusterIDs []string
 }
 
-func NewConfigurator(spec *matter.Spec, doc *ascii.Doc, models []matter.Model) (*Configurator, error) {
+func NewConfigurator(spec *matter.Spec, doc *ascii.Doc, models []types.Entity) (*Configurator, error) {
 	c := &Configurator{
 		spec:     spec,
 		doc:      doc,
@@ -62,7 +63,7 @@ func (c *Configurator) addTypes(fs matter.FieldSet) {
 	}
 }
 
-func (c *Configurator) addType(dt *matter.DataType) {
+func (c *Configurator) addType(dt *types.DataType) {
 	if dt == nil {
 		return
 	}
@@ -72,7 +73,7 @@ func (c *Configurator) addType(dt *matter.DataType) {
 		return
 	}
 
-	model := dt.Model
+	model := dt.Entity
 	if model == nil {
 		slog.Warn("skipping data type with no model", "name", dt.Name)
 		return
@@ -84,7 +85,7 @@ func (c *Configurator) addType(dt *matter.DataType) {
 		return
 	}
 
-	switch model := dt.Model.(type) {
+	switch model := dt.Entity.(type) {
 	case *matter.Bitmap:
 		c.Bitmaps[model] = false
 	case *matter.Enum:
