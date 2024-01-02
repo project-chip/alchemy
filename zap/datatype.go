@@ -6,7 +6,7 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
-	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 var matterToZapMap = map[string]string{
@@ -129,15 +129,15 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	if f.Type == nil {
 		return ""
 	}
-	if f.Type.BaseType == matter.BaseDataTypeString && f.Constraint != nil {
+	if f.Type.BaseType == types.BaseDataTypeString && f.Constraint != nil {
 		// Special case; needs to be long_char_string if over 255
 		max := f.Constraint.Max(&matter.ConstraintContext{Field: f, Fields: fs})
 		switch max.Type {
-		case matter.DataTypeExtremeTypeInt64:
+		case types.DataTypeExtremeTypeInt64:
 			if max.Int64 > 255 {
 				return "long_char_string"
 			}
-		case matter.DataTypeExtremeTypeUInt64:
+		case types.DataTypeExtremeTypeUInt64:
 			if max.UInt64 > 255 {
 				return "long_char_string"
 			}
@@ -149,7 +149,7 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	return ConvertDataTypeNameToZap(f.Type.Name)
 }
 
-func GetMinMax(cc *matter.ConstraintContext) (from matter.DataTypeExtreme, to matter.DataTypeExtreme) {
+func GetMinMax(cc *matter.ConstraintContext) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
 	if cc.Field.Type == nil {
 		return
 	}
@@ -175,21 +175,21 @@ func GetMinMax(cc *matter.ConstraintContext) (from matter.DataTypeExtreme, to ma
 	return
 }
 
-func minMaxFromModel(cc *matter.ConstraintContext) (from matter.DataTypeExtreme, to matter.DataTypeExtreme) {
-	if cc.Field.Type.Model != nil {
-		switch m := cc.Field.Type.Model.(type) {
+func minMaxFromModel(cc *matter.ConstraintContext) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
+	if cc.Field.Type.Entity != nil {
+		switch m := cc.Field.Type.Entity.(type) {
 		case *matter.Enum:
 			if len(m.Values) > 0 {
 				var f, t uint64
 				for _, v := range m.Values {
-					val, err := parse.HexOrDec(v.Value)
-					if err == nil {
+					if v.Value.Valid() {
+						val := v.Value.Value()
 						f = min(f, val)
 						t = max(t, val)
 					}
 				}
-				from = matter.NewUintDataTypeExtreme(f, matter.NumberFormatHex)
-				to = matter.NewUintDataTypeExtreme(t, matter.NumberFormatHex)
+				from = types.NewUintDataTypeExtreme(f, types.NumberFormatHex)
+				to = types.NewUintDataTypeExtreme(t, types.NumberFormatHex)
 				return
 			}
 		case *matter.Bitmap:
@@ -202,8 +202,8 @@ func minMaxFromModel(cc *matter.ConstraintContext) (from matter.DataTypeExtreme,
 					}
 					t |= mask
 				}
-				from = matter.NewUintDataTypeExtreme(0, matter.NumberFormatHex)
-				to = matter.NewUintDataTypeExtreme(t, matter.NumberFormatHex)
+				from = types.NewUintDataTypeExtreme(0, types.NumberFormatHex)
+				to = types.NewUintDataTypeExtreme(t, types.NumberFormatHex)
 				return
 			}
 		}
@@ -211,7 +211,7 @@ func minMaxFromModel(cc *matter.ConstraintContext) (from matter.DataTypeExtreme,
 	return
 }
 
-func minMaxFromConstraint(cc *matter.ConstraintContext) (from matter.DataTypeExtreme, to matter.DataTypeExtreme) {
+func minMaxFromConstraint(cc *matter.ConstraintContext) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
 	if cc.Field.Constraint != nil {
 		if cc.Field.Type.IsArray() {
 			switch cc.Field.Constraint.(type) {
@@ -230,23 +230,23 @@ func minMaxFromConstraint(cc *matter.ConstraintContext) (from matter.DataTypeExt
 	return
 }
 
-func GetDefaultValue(cc *matter.ConstraintContext) (defaultValue matter.DataTypeExtreme) {
-	c := constraint.ParseConstraint(cc.Field.Default)
+func GetDefaultValue(cc *matter.ConstraintContext) (defaultValue types.DataTypeExtreme) {
+	c := constraint.ParseString(cc.Field.Default)
 	defaultValue = c.Default(cc)
 	switch defaultValue.Type {
-	case matter.DataTypeExtremeTypeEmpty:
+	case types.DataTypeExtremeTypeEmpty:
 		if !cc.Field.Type.HasLength() {
-			defaultValue = matter.DataTypeExtreme{}
+			defaultValue = types.DataTypeExtreme{}
 		}
-	case matter.DataTypeExtremeTypeNull:
+	case types.DataTypeExtremeTypeNull:
 		if cc.Field.Type.NullValue() == 0 {
-			defaultValue = matter.DataTypeExtreme{}
+			defaultValue = types.DataTypeExtreme{}
 		}
-	case matter.DataTypeExtremeTypeInt64, matter.DataTypeExtremeTypeUInt64:
+	case types.DataTypeExtremeTypeInt64, types.DataTypeExtremeTypeUInt64:
 		if cc.Field.Type != nil {
-			switch cc.Field.Type.Model.(type) {
+			switch cc.Field.Type.Entity.(type) {
 			case *matter.Bitmap, *matter.Enum:
-				defaultValue.Format = matter.NumberFormatHex
+				defaultValue.Format = types.NumberFormatHex
 			}
 		}
 	}

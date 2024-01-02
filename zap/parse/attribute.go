@@ -4,13 +4,18 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/hasty/alchemy/matter"
 )
 
 func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err error) {
 	attr = matter.NewAttribute()
+	attr.Access = matter.DefaultAccess(false)
 	err = readFieldAttributes(e, attr, "attribute")
+	if err != nil {
+		return
+	}
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
@@ -24,10 +29,9 @@ func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err 
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "access":
-				a := matter.Access{}
-				err = readAccess(d, t, &a)
+				err = readAccess(d, t, &attr.Access)
 			case "description":
-				_, err = readSimpleElement(d, t.Name.Local)
+				attr.Name, err = readSimpleElement(d, t.Name.Local)
 			default:
 				err = fmt.Errorf("unexpected attribute level element: %s", t.Name.Local)
 			}
@@ -39,7 +43,10 @@ func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err 
 				err = fmt.Errorf("unexpected attribute end element: %s", t.Name.Local)
 			}
 		case xml.CharData:
-			attr.Name = string(t)
+			if len(attr.Name) == 0 {
+				attr.Name = strings.TrimSpace(string(t))
+			}
+		case xml.Comment:
 		default:
 			err = fmt.Errorf("unexpected attribute level type: %T", t)
 		}

@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
 )
 
@@ -41,7 +41,7 @@ type XMLClusterExtension struct {
 	Commands   []XMLCommand   `xml:"command"`
 }
 
-func (c *XMLCluster) ToModel() (mc *matter.Cluster, err error) {
+func (c *XMLCluster) Cluster() (mc *matter.Cluster, err error) {
 	mc = &matter.Cluster{
 		Name: c.Name,
 		ID:   matter.ParseNumber(c.Code),
@@ -49,13 +49,13 @@ func (c *XMLCluster) ToModel() (mc *matter.Cluster, err error) {
 	return
 }
 
-func ZAPName(doc *ascii.Doc, errata *Errata, models []matter.Model) string {
+func ZAPName(path string, errata *Errata, models []types.Entity) string {
 
 	if errata.TemplatePath != "" {
 		return errata.TemplatePath
 	}
 
-	path := filepath.Base(doc.Path)
+	path = filepath.Base(path)
 	name := strings.TrimSuffix(path, filepath.Ext(path))
 
 	var suffix string

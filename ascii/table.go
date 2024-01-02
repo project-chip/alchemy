@@ -8,7 +8,6 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii/render"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/output"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -146,7 +145,7 @@ func GetTableCellValue(cell *types.TableCell) (string, error) {
 	if len(p.Elements) == 0 {
 		return "", nil
 	}
-	out := output.NewContext(context.Background(), nil)
+	out := render.NewContext(context.Background(), nil)
 	err := render.RenderElements(out, "", p.Elements)
 	if err != nil {
 		return "", err
@@ -302,6 +301,8 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnElement
 	case "condition":
 		return matter.TableColumnCondition
+	case "mode tag value":
+		return matter.TableColumnModeTagValue
 	}
 	return matter.TableColumnUnknown
 }

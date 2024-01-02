@@ -2,37 +2,43 @@ package compare
 
 import (
 	"fmt"
+	"log/slog"
+	"path/filepath"
+	"slices"
+	"strings"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareModels(specModels map[string][]matter.Model, zapModels map[string][]matter.Model) (diffs []any, err error) {
+func compareModels(specModels map[string][]types.Entity, zapModels map[string][]types.Entity) (diffs []any, err error) {
 	for path, sm := range specModels {
+		if filepath.Base(path) != "thread-network-diagnostics-cluster.xml" {
+			//continue
+		}
 		zm, ok := zapModels[path]
 		if !ok {
-			fmt.Printf("path %s missing from ZAP models\n", path)
+			slog.Warn("missing from ZAP models", slog.String("path", path))
 			continue
 		}
-		fmt.Printf("path %s found in ZAP models\n", path)
+		slog.Debug("found in ZAP models", slog.String("path", path))
 
 		specClusters := make(map[uint64]*matter.Cluster)
 		for _, m := range sm {
 			switch v := m.(type) {
 			case *matter.Cluster:
-				fmt.Printf("adding spec cluster: %s\n", v.ID.IntString())
 				specClusters[v.ID.Value()] = v
 			default:
-				fmt.Printf("unexpected spec model: %T\n", m)
+				slog.Warn("unexpected spec model", slog.String("path", path), slog.String("type", fmt.Sprintf("%T", m)))
 			}
 		}
 		zapClusters := make(map[uint64]*matter.Cluster)
 		for _, m := range zm {
 			switch v := m.(type) {
 			case *matter.Cluster:
-				fmt.Printf("adding ZAP cluster: %s\n", v.ID.IntString())
 				zapClusters[v.ID.Value()] = v
 			default:
-				fmt.Printf("unexpected ZAP model: %T\n", m)
+				slog.Warn("unexpected ZAP model", slog.String("path", path), slog.String("type", fmt.Sprintf("%T", m)))
 			}
 
 		}
@@ -42,27 +48,41 @@ func compareModels(specModels map[string][]matter.Model, zapModels map[string][]
 				var clusterDiffs *ClusterDifferences
 				clusterDiffs, err = compareClusters(sc, zc)
 				if err != nil {
-					fmt.Printf("unable to compare clusters (%d): %v\n", cid, err)
+					slog.Warn("unable to compare clusters", slog.String("path", path), slog.Uint64("clusterId", cid), slog.Any("error", err))
 					err = nil
 				} else if clusterDiffs != nil {
 					diffs = append(diffs, clusterDiffs)
 				}
 				delete(zapClusters, cid)
 			} else {
-				fmt.Printf("ZAP cluster %d missing from %s; ", cid, path)
-				for zid := range zapClusters {
-					fmt.Printf("have %d,", zid)
-				}
-				fmt.Println()
+				slog.Debug("missing from spec models", slog.Uint64("clusterId", cid), slog.String("path", path))
 			}
 		}
 		for cid := range zapClusters {
-			fmt.Printf("Spec cluster %d missing from %s\n", cid, path)
+			slog.Debug("missing from spec clusters", slog.Uint64("clusterId", cid), slog.String("path", path))
 		}
 	}
 
+	var missingZapModels []string
 	for path := range zapModels {
-		fmt.Printf("path %s missing from Spec models\n", path)
+		missingZapModels = append(missingZapModels, path)
 	}
+	slices.Sort(missingZapModels)
+	for _, path := range missingZapModels {
+		slog.Warn("missing from spec models", slog.String("path", path))
+	}
+	slices.SortFunc(diffs, func(a, b any) int {
+		acd, ok := a.(*ClusterDifferences)
+		if ok {
+			bcd, ok := b.(*ClusterDifferences)
+			if ok {
+				return strings.Compare(acd.Name, bcd.Name)
+			}
+		}
+		if a == b {
+			return 0
+		}
+		return 1
+	})
 	return
 }

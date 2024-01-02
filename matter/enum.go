@@ -2,20 +2,28 @@ package matter
 
 import (
 	"slices"
-	"strings"
 
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Enum struct {
-	Name        string    `json:"name,omitempty"`
-	Description string    `json:"description,omitempty"`
-	Type        *DataType `json:"type,omitempty"`
-	Values      EnumSet   `json:"values,omitempty"`
+	Name        string          `json:"name,omitempty"`
+	Description string          `json:"description,omitempty"`
+	Type        *types.DataType `json:"type,omitempty"`
+	Values      EnumSet         `json:"values,omitempty"`
 }
 
-func (*Enum) Entity() Entity {
-	return EntityEnum
+func (*Enum) EntityType() types.EntityType {
+	return types.EntityTypeEnum
+}
+
+func (e *Enum) BaseDataType() types.BaseDataType {
+	return e.Type.BaseType
+}
+
+func (e *Enum) NullValue() uint64 {
+	return e.Type.NullValue()
 }
 
 func (e *Enum) Clone() *Enum {
@@ -61,25 +69,25 @@ func (en *Enum) Inherit(parent *Enum) error {
 		en.Description = parent.Description
 	}
 	slices.SortFunc(mergedValues, func(a, b *EnumValue) int {
-		return strings.Compare(a.Value, b.Value)
+		return a.Value.Compare(b.Value)
 	})
 	en.Values = mergedValues
 	return nil
 }
 
 type EnumValue struct {
-	Value       string          `json:"value,omitempty"`
+	Value       *Number         `json:"value,omitempty"`
 	Name        string          `json:"name,omitempty"`
 	Summary     string          `json:"summary,omitempty"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
 }
 
-func (ev *EnumValue) Entity() Entity {
-	return EntityEnumValue
+func (ev *EnumValue) EntityType() types.EntityType {
+	return types.EntityTypeEnumValue
 }
 
 func (ev *EnumValue) Clone() *EnumValue {
-	nev := &EnumValue{Name: ev.Name, Value: ev.Value, Summary: ev.Summary}
+	nev := &EnumValue{Name: ev.Name, Value: ev.Value.Clone(), Summary: ev.Summary}
 	if len(ev.Conformance) > 0 {
 		nev.Conformance = ev.Conformance.CloneSet()
 	}

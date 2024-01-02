@@ -7,7 +7,6 @@ import (
     "strconv"
 	"strings"
 
-	 "github.com/hasty/alchemy/matter"
 	 "github.com/shopspring/decimal"
 )
 
@@ -23,7 +22,7 @@ Input <- conf:Cons+ EOF {
 
     var set ConstraintSet
     for _, i := range cs {
-        con := i.(matter.Constraint)
+        con := i.(Constraint)
         set = append(set, con)
     }
 	if len(set) == 1 {
@@ -35,8 +34,8 @@ Input <- conf:Cons+ EOF {
 Cons <- cons:Constraint entry:EntryConstraint? (_ Comma _)? {
 	if entry != nil {
 		return &ListConstraint {
-			Constraint:cons.(matter.Constraint),
-			EntryConstraint:entry.(matter.Constraint),
+			Constraint:cons.(Constraint),
+			EntryConstraint:entry.(Constraint),
 		}, nil
 	}
 	return cons, nil
@@ -44,14 +43,14 @@ Cons <- cons:Constraint entry:EntryConstraint? (_ Comma _)? {
 
 EntryConstraint <- _ "[" _ cons:Constraint _ "]" {
 	debug("found entry %s\n", string(c.text))
-	return cons.(matter.Constraint), nil
+	return cons.(Constraint), nil
 }
 
 Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
 	switch cons := cons.(type) {
-		case matter.Constraint:
+		case Constraint:
 			return cons, nil
-		case matter.ConstraintLimit:
+		case ConstraintLimit:
 			return &ExactConstraint{Value:cons}, nil
 		default:
 			return nil, fmt.Errorf("unexpected constraint type: %T", cons)
@@ -61,19 +60,19 @@ Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
 Range <- from:Limit " to " to:Limit {
 	debug("found range %s\n", string(c.text))
 	return &RangeConstraint  {
-		Minimum:from.(matter.ConstraintLimit),
-		Maximum:to.(matter.ConstraintLimit),
+		Minimum:from.(ConstraintLimit),
+		Maximum:to.(ConstraintLimit),
 	}, nil
 }
 
 Min <- [Mm] "in " _ limit:Limit {
 	debug("found min limit %s\n", string(c.text))
-	return &MinConstraint{Minimum:limit.(matter.ConstraintLimit)}, nil
+	return &MinConstraint{Minimum:limit.(ConstraintLimit)}, nil
 }
 
 Max <- [Mm] "ax " _ limit:Limit (_ "chars")? {
 	debug("found max limit %s\n", string(c.text))
-	return &MaxConstraint{Maximum:limit.(matter.ConstraintLimit)}, nil
+	return &MaxConstraint{Maximum:limit.(ConstraintLimit)}, nil
 }
 
 Described <- "desc" {
@@ -86,7 +85,7 @@ Any <- any:("any" / "all") {
 
 Limit <- limit:(MSLimit / NullLimit / EmptyLimit / EmptyStringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / ReferenceLimit  ) {
 	debug("found limit %s\n", string(c.text))
-	return limit.(matter.ConstraintLimit), nil
+	return limit.(ConstraintLimit), nil
 }
 
 MSLimit <- "MS" {
@@ -106,7 +105,11 @@ EmptyStringLimit <- "\"\"" {
 }
 
 BooleanLimit <- limit:("true" / "True" / "False" / "false") {
-	return &BooleanLimit{}, nil
+    b, err := strconv.ParseBool(string(limit.([]uint8)))
+    if err != nil {
+        return nil, err
+    }
+	return &BooleanLimit{Value:b}, nil
 }
 
 Term <- '(' _ exp:Expression _ ')' {
@@ -125,14 +128,14 @@ Expression <- left:(IntLimit / ReferenceLimit / HexLimit) _ operand:('+'/'-'/'*'
 	}
 	return &MathExpressionLimit{
 		Operand:string(val),
-		Left:left.(matter.ConstraintLimit),
-		Right:right.(matter.ConstraintLimit),
+		Left:left.(ConstraintLimit),
+		Right:right.(ConstraintLimit),
 	}, nil
 }
 
 IntConstraint <- i:IntLimit {
 	debug("found int limit %s\n", string(c.text))
-	return &MaxConstraint{Max:i.(matter.ConstraintLimit)}, nil
+	return &MaxConstraint{Max:i.(ConstraintLimit)}, nil
 }
 
 ReferenceLimit <- PascalCase {

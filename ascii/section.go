@@ -8,6 +8,7 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -240,7 +241,7 @@ func deriveSectionType(section *Section) matter.Section {
 			return matter.SectionDataTypeEnum
 		} else if dataType.IsMap() {
 			return matter.SectionDataTypeBitmap
-		} else if dataType.BaseType == matter.BaseDataTypeCustom {
+		} else if dataType.BaseType == mattertypes.BaseDataTypeCustom {
 			return matter.SectionDataTypeStruct
 		}
 	}
@@ -248,8 +249,8 @@ func deriveSectionType(section *Section) matter.Section {
 	return matter.SectionUnknown
 }
 
-func (s *Section) ToModels(d *Doc) ([]matter.Model, error) {
-	var models []matter.Model
+func (s *Section) ToModels(d *Doc) ([]mattertypes.Entity, error) {
+	var models []mattertypes.Entity
 	switch s.SecType {
 	case matter.SectionCluster:
 		clusters, err := s.toClusters(d)
@@ -265,7 +266,7 @@ func (s *Section) ToModels(d *Doc) ([]matter.Model, error) {
 		models = append(models, deviceTypes...)
 	default:
 		var err error
-		var looseModels []matter.Model
+		var looseModels []mattertypes.Entity
 		looseModels, err = findLooseModels(d, s)
 		if err != nil {
 			return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
@@ -281,7 +282,7 @@ var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<e
 
 //var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:(?:<<enum-def\s*,\s*)|(?:<<ref_DataTypeBitmap,))?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
 
-func (s *Section) GetDataType() *matter.DataType {
+func (s *Section) GetDataType() *mattertypes.DataType {
 	var para *types.Paragraph
 	var ok bool
 	for _, e := range s.Base.Elements {
@@ -325,12 +326,12 @@ func (s *Section) GetDataType() *matter.DataType {
 		}
 	}
 	if len(dts) > 0 {
-		return matter.NewDataType(dts, false)
+		return mattertypes.NewDataType(dts, false)
 	}
 	return nil
 }
 
-func findLooseModels(doc *Doc, section *Section) (models []matter.Model, err error) {
+func findLooseModels(doc *Doc, section *Section) (models []mattertypes.Entity, err error) {
 	parse.Traverse(doc, section.Elements, func(section *Section, parent parse.HasElements, index int) bool {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:

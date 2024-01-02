@@ -3,40 +3,40 @@ package constraint
 import (
 	"fmt"
 
-	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type MinConstraint struct {
-	Minimum matter.ConstraintLimit `json:"min"`
+	Minimum ConstraintLimit `json:"min"`
 }
 
-func (c *MinConstraint) Type() matter.ConstraintType {
-	return matter.ConstraintTypeMin
+func (c *MinConstraint) Type() ConstraintType {
+	return ConstraintTypeMin
 }
 
-func (c *MinConstraint) AsciiDocString(dataType *matter.DataType) string {
+func (c *MinConstraint) AsciiDocString(dataType *types.DataType) string {
 	return fmt.Sprintf("min %s", c.Minimum.AsciiDocString(dataType))
 }
 
-func (c *MinConstraint) Equal(o matter.Constraint) bool {
+func (c *MinConstraint) Equal(o Constraint) bool {
 	if oc, ok := o.(*MinConstraint); ok {
 		return oc.Minimum.Equal(c.Minimum)
 	}
 	return false
 }
 
-func (c *MinConstraint) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
+func (c *MinConstraint) Min(cc Context) (min types.DataTypeExtreme) {
 	return c.Minimum.Min(cc)
 }
 
-func (c *MinConstraint) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *MinConstraint) Max(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (c *MinConstraint) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *MinConstraint) Default(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (c *MinConstraint) Clone() matter.Constraint {
+func (c *MinConstraint) Clone() Constraint {
 	return &MinConstraint{Minimum: c.Minimum.Clone()}
 }

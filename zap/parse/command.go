@@ -4,31 +4,32 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log/slog"
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 )
 
 func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err error) {
-	c = &matter.Command{}
+	c = &matter.Command{Access: matter.DefaultAccess(true)}
+	var optional, isFabricScoped, disableDefaultResponse string
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "source":
-
+			switch a.Value {
+			case "client":
+				c.Direction = matter.InterfaceServer
+			case "server":
+				c.Direction = matter.InterfaceClient
+			}
 		case "code":
 			c.ID = matter.ParseNumber(a.Value)
 		case "name":
 			c.Name = a.Value
 		case "isFabricScoped":
-			if a.Value == "true" {
-				c.FabricScoping = matter.FabricScopingScoped
-			} else {
-				c.FabricScoping = matter.FabricScopingUnscoped
-			}
+			isFabricScoped = a.Value
 		case "optional":
-			if a.Value == "false" {
-				c.Conformance = conformance.Set{&conformance.Mandatory{}}
-			}
+			optional = a.Value
 		case "response":
 			c.Response = a.Value
 		case "mustUseTimedInvoke":
@@ -39,7 +40,7 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 			}
 		case "cli":
 		case "disableDefaultResponse":
-			c.Response = "N"
+			disableDefaultResponse = a.Value
 		case "apiMaturity":
 		case "cliFunctionName":
 		case "noDefaultImplementation":
@@ -48,6 +49,23 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 			return nil, fmt.Errorf("unexpected command attribute: %s", a.Name.Local)
 		}
 	}
+	if optional == "true" {
+		c.Conformance = conformance.Set{&conformance.Optional{}}
+	} else {
+		c.Conformance = conformance.Set{&conformance.Mandatory{}}
+	}
+
+	if isFabricScoped == "true" {
+		c.Access.FabricScoping = matter.FabricScopingScoped
+	} else {
+		c.Access.FabricScoping = matter.FabricScopingUnscoped
+	}
+	if disableDefaultResponse == "true" || c.Direction == matter.InterfaceClient {
+		c.Response = "N"
+	} else if c.Response == "" {
+		c.Response = "Y"
+	}
+
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
@@ -68,6 +86,8 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 				var f *matter.Field
 				f, err = readField(d, t, "arg")
 				if err != nil {
+					slog.Warn("error reading command field", slog.Any("error", err))
+				} else {
 					c.Fields = append(c.Fields, f)
 				}
 			default:
@@ -80,7 +100,7 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 			default:
 				err = fmt.Errorf("unexpected command end element: %s", t.Name.Local)
 			}
-		case xml.CharData:
+		case xml.CharData, xml.Comment:
 		default:
 			err = fmt.Errorf("unexpected command level type: %T", t)
 		}

@@ -5,10 +5,9 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/output"
 )
 
-func renderInternalCrossReference(cxt *output.Context, cf *types.InternalCrossReference) (err error) {
+func renderInternalCrossReference(cxt *Context, cf *types.InternalCrossReference) (err error) {
 	switch el := cf.OriginalID.(type) {
 	case string:
 		if strings.HasPrefix(el, "_") {

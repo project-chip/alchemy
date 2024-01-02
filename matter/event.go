@@ -1,15 +1,17 @@
 package matter
 
-import "github.com/hasty/alchemy/matter/conformance"
+import (
+	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
+)
 
 type Event struct {
-	ID                *Number           `json:"id,omitempty"`
-	Name              string            `json:"name,omitempty"`
-	Description       string            `json:"description,omitempty"`
-	Priority          string            `json:"priority,omitempty"`
-	FabricSensitivity FabricSensitivity `json:"fabricSensitive,omitempty"`
-	Conformance       conformance.Set   `json:"conformance,omitempty"`
-	Access            Access            `json:"access,omitempty"`
+	ID          *Number         `json:"id,omitempty"`
+	Name        string          `json:"name,omitempty"`
+	Description string          `json:"description,omitempty"`
+	Priority    string          `json:"priority,omitempty"`
+	Conformance conformance.Set `json:"conformance,omitempty"`
+	Access      Access          `json:"access,omitempty"`
 
 	Fields FieldSet `json:"fields,omitempty"`
 }
@@ -18,12 +20,12 @@ func (e *Event) GetConformance() conformance.Set {
 	return e.Conformance
 }
 
-func (e *Event) Entity() Entity {
-	return EntityEvent
+func (e *Event) EntityType() types.EntityType {
+	return types.EntityTypeEvent
 }
 
 func (e *Event) Clone() *Event {
-	ne := &Event{ID: e.ID.Clone(), Name: e.Name, Description: e.Description, Priority: e.Priority, FabricSensitivity: e.FabricSensitivity, Access: e.Access}
+	ne := &Event{ID: e.ID.Clone(), Name: e.Name, Description: e.Description, Priority: e.Priority, Access: e.Access}
 	if len(e.Conformance) > 0 {
 		ne.Conformance = e.Conformance.CloneSet()
 	}
@@ -41,8 +43,8 @@ func (e *Event) Inherit(parent *Event) {
 	if len(e.Priority) == 0 {
 		e.Priority = parent.Priority
 	}
-	if e.FabricSensitivity == FabricSensitivityUnknown {
-		e.FabricSensitivity = parent.FabricSensitivity
+	if e.Access.FabricSensitivity == FabricSensitivityUnknown {
+		e.Access.FabricSensitivity = parent.Access.FabricSensitivity
 	}
 	if len(e.Conformance) == 0 {
 		e.Conformance = parent.Conformance.CloneSet()

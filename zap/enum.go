@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type XMLEnumItem struct {
@@ -20,12 +21,12 @@ type XMLEnum struct {
 	Items   []XMLEnumItem  `xml:"item"`
 }
 
-func (e *XMLEnum) ToModel() (me *matter.Enum, err error) {
-	me = &matter.Enum{Name: e.Name, Type: matter.NewDataType(ConvertZapToDataTypeName(e.Type), false)}
+func (e *XMLEnum) Enum() (me *matter.Enum, err error) {
+	me = &matter.Enum{Name: e.Name, Type: types.NewDataType(ConvertZapToDataTypeName(e.Type), false)}
 	for _, ei := range e.Items {
 		me.Values = append(me.Values, &matter.EnumValue{
 			Name:  ei.Name,
-			Value: convertNumber(ei.Value),
+			Value: matter.ParseNumber(ei.Value),
 		})
 	}
 	return

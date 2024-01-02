@@ -7,10 +7,11 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toClusters(d *Doc) (models []matter.Model, err error) {
+func (s *Section) toClusters(d *Doc) (models []mattertypes.Entity, err error) {
 	var clusters []*matter.Cluster
 	var description string
 	p := parse.FindFirst[*types.Paragraph](s.Elements)
@@ -61,7 +62,7 @@ func (s *Section) toClusters(d *Doc) (models []matter.Model, err error) {
 				err = s.toDataTypes(d, c)
 			case matter.SectionClusterID:
 			default:
-				var looseModels []matter.Model
+				var looseModels []mattertypes.Entity
 				looseModels, err = findLooseModels(d, s)
 				if err != nil {
 					return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
@@ -108,31 +109,31 @@ func (s *Section) toClusters(d *Doc) (models []matter.Model, err error) {
 	return models, nil
 }
 
-func assignCustomModel(c *matter.Cluster, dt *matter.DataType) {
+func assignCustomModel(c *matter.Cluster, dt *mattertypes.DataType) {
 	if dt == nil {
 		return
 	} else if dt.IsArray() {
 		assignCustomModel(c, dt.EntryType)
 		return
-	} else if dt.BaseType != matter.BaseDataTypeCustom {
+	} else if dt.BaseType != mattertypes.BaseDataTypeCustom {
 		return
 	}
 	name := dt.Name
 	for _, bm := range c.Bitmaps {
 		if name == bm.Name {
-			dt.Model = bm
+			dt.Entity = bm
 			return
 		}
 	}
 	for _, e := range c.Enums {
 		if name == e.Name {
-			dt.Model = e
+			dt.Entity = e
 			return
 		}
 	}
 	for _, s := range c.Structs {
 		if name == s.Name {
-			dt.Model = s
+			dt.Entity = s
 			return
 		}
 	}

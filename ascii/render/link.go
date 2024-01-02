@@ -4,10 +4,9 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/output"
 )
 
-func renderInlineLink(cxt *output.Context, il *types.InlineLink) (err error) {
+func renderInlineLink(cxt *Context, il *types.InlineLink) (err error) {
 	if il.Location != nil {
 		if len(il.Location.Scheme) > 0 {
 			cxt.WriteString(il.Location.Scheme)
@@ -24,7 +23,7 @@ func renderInlineLink(cxt *output.Context, il *types.InlineLink) (err error) {
 	return renderAttributes(cxt, il, il.Attributes, true)
 }
 
-func renderImageBlock(cxt *output.Context, ib *types.ImageBlock) (err error) {
+func renderImageBlock(cxt *Context, ib *types.ImageBlock) (err error) {
 	cxt.WriteNewline()
 	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
@@ -46,7 +45,7 @@ func renderImageBlock(cxt *output.Context, ib *types.ImageBlock) (err error) {
 	return
 }
 
-func renderInlineImage(cxt *output.Context, ib *types.InlineImage) (err error) {
+func renderInlineImage(cxt *Context, ib *types.InlineImage) (err error) {
 	cxt.WriteNewline()
 	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, true)
 	if err != nil {

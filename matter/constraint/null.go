@@ -1,33 +1,33 @@
 package constraint
 
 import (
-	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type NullLimit struct {
 }
 
-func (c *NullLimit) AsciiDocString(dataType *matter.DataType) string {
+func (c *NullLimit) AsciiDocString(dataType *types.DataType) string {
 	return "null"
 }
 
-func (c *NullLimit) Equal(o matter.ConstraintLimit) bool {
+func (c *NullLimit) Equal(o ConstraintLimit) bool {
 	_, ok := o.(*NullLimit)
 	return ok
 }
 
-func (c *NullLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
-	return matter.DataTypeExtreme{Type: matter.DataTypeExtremeTypeNull, Format: matter.NumberFormatInt}
+func (c *NullLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	return types.DataTypeExtreme{Type: types.DataTypeExtremeTypeNull, Format: types.NumberFormatInt}
 }
 
-func (c *NullLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *NullLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *NullLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *NullLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *NullLimit) Clone() matter.ConstraintLimit {
+func (c *NullLimit) Clone() ConstraintLimit {
 	return &NullLimit{}
 }

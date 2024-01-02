@@ -1,6 +1,10 @@
 package matter
 
-import "github.com/hasty/alchemy/matter/conformance"
+import (
+	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/constraint"
+	"github.com/hasty/alchemy/matter/types"
+)
 
 type DeviceType struct {
 	ID          *Number     `json:"id,omitempty"`
@@ -18,8 +22,8 @@ type DeviceType struct {
 	ElementRequirements []*ElementRequirement `json:"elementRequirements,omitempty"`
 }
 
-func (c *DeviceType) Entity() Entity {
-	return EntityDeviceType
+func (c *DeviceType) EntityType() types.EntityType {
+	return types.EntityTypeDeviceType
 }
 
 func (dt *DeviceType) Reference(name string) conformance.HasConformance {
@@ -42,15 +46,15 @@ type ClusterRequirement struct {
 }
 
 type ElementRequirement struct {
-	ID          *Number `json:"id,omitempty"`
-	ClusterName string  `json:"clusterName,omitempty"`
-	Element     Entity  `json:"element,omitempty"`
-	Name        string  `json:"name,omitempty"`
+	ID          *Number          `json:"id,omitempty"`
+	ClusterName string           `json:"clusterName,omitempty"`
+	Element     types.EntityType `json:"element,omitempty"`
+	Name        string           `json:"name,omitempty"`
 
-	Constraint  Constraint      `json:"constraint,omitempty"`
-	Quality     Quality         `json:"quality,omitempty"`
-	Access      Access          `json:"access,omitempty"`
-	Conformance conformance.Set `json:"conformance,omitempty"`
+	Constraint  constraint.Constraint `json:"constraint,omitempty"`
+	Quality     Quality               `json:"quality,omitempty"`
+	Access      Access                `json:"access,omitempty"`
+	Conformance conformance.Set       `json:"conformance,omitempty"`
 
 	Cluster *Cluster `json:"cluster,omitempty"`
 }
@@ -60,8 +64,8 @@ type Condition struct {
 	Description string
 }
 
-func (c *Condition) Entity() Entity {
-	return EntityCondition
+func (c *Condition) EntityType() types.EntityType {
+	return types.EntityTypeCondition
 }
 
 func (c *Condition) GetConformance() conformance.Set {

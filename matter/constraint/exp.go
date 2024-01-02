@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type ExpLimit struct {
@@ -12,18 +12,18 @@ type ExpLimit struct {
 	Exp   int64
 }
 
-func (c *ExpLimit) AsciiDocString(dataType *matter.DataType) string {
+func (c *ExpLimit) AsciiDocString(dataType *types.DataType) string {
 	return strconv.FormatInt(c.Value, 10) + "^" + strconv.FormatInt(c.Exp, 10) + "^"
 }
 
-func (c *ExpLimit) Equal(o matter.ConstraintLimit) bool {
+func (c *ExpLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*ExpLimit); ok {
 		return oc.Value == c.Value && oc.Exp == c.Exp
 	}
 	return false
 }
 
-func (c *ExpLimit) minmax(cc *matter.ConstraintContext) (minmax matter.DataTypeExtreme) {
+func (c *ExpLimit) minmax(cc Context) (minmax types.DataTypeExtreme) {
 
 	negative := c.Value < 0
 	base := c.Value
@@ -41,26 +41,26 @@ func (c *ExpLimit) minmax(cc *matter.ConstraintContext) (minmax matter.DataTypeE
 	if negative {
 		i *= -1
 	}
-	minmax = matter.DataTypeExtreme{
-		Type:   matter.DataTypeExtremeTypeInt64,
-		Format: matter.NumberFormatHex,
+	minmax = types.DataTypeExtreme{
+		Type:   types.DataTypeExtremeTypeInt64,
+		Format: types.NumberFormatHex,
 		Int64:  i,
 	}
 	return
 }
 
-func (c *ExpLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
+func (c *ExpLimit) Min(cc Context) (min types.DataTypeExtreme) {
 	return c.minmax(cc)
 }
 
-func (c *ExpLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *ExpLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.minmax(cc)
 }
 
-func (c *ExpLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *ExpLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.minmax(cc)
 }
 
-func (c *ExpLimit) Clone() matter.ConstraintLimit {
+func (c *ExpLimit) Clone() ConstraintLimit {
 	return &ExpLimit{Value: c.Value, Exp: c.Exp}
 }

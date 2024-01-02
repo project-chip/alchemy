@@ -26,6 +26,14 @@ var (
 	}
 )
 
+func (s Interface) String() string {
+	str, ok := interfaceNames[s]
+	if ok {
+		return str
+	}
+	return interfaceNames[InterfaceUnknown]
+}
+
 func (s Interface) MarshalJSON() ([]byte, error) {
 	return json.Marshal(interfaceNames[s])
 }

@@ -1,24 +1,26 @@
 package matter
 
-import "github.com/hasty/alchemy/matter/conformance"
+import (
+	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
+)
 
 type CommandDirection uint8
 
 type Command struct {
-	ID            *Number         `json:"id,omitempty"`
-	Name          string          `json:"name,omitempty"`
-	Description   string          `json:"description,omitempty"`
-	Direction     Interface       `json:"direction,omitempty"`
-	Response      string          `json:"response,omitempty"`
-	Conformance   conformance.Set `json:"conformance,omitempty"`
-	Access        Access          `json:"access,omitempty"`
-	FabricScoping FabricScoping   `json:"fabricScoped,omitempty"`
+	ID          *Number         `json:"id,omitempty"`
+	Name        string          `json:"name,omitempty"`
+	Description string          `json:"description,omitempty"`
+	Direction   Interface       `json:"direction,omitempty"`
+	Response    string          `json:"response,omitempty"`
+	Conformance conformance.Set `json:"conformance,omitempty"`
+	Access      Access          `json:"access,omitempty"`
 
 	Fields FieldSet `json:"fields,omitempty"`
 }
 
-func (c *Command) Entity() Entity {
-	return EntityCommand
+func (c *Command) EntityType() types.EntityType {
+	return types.EntityTypeCommand
 }
 
 func (c *Command) GetConformance() conformance.Set {
@@ -26,7 +28,7 @@ func (c *Command) GetConformance() conformance.Set {
 }
 
 func (c *Command) Clone() *Command {
-	nc := &Command{ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Access: c.Access, FabricScoping: c.FabricScoping}
+	nc := &Command{ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Access: c.Access}
 	if len(c.Conformance) > 0 {
 		nc.Conformance = c.Conformance.CloneSet()
 	}
@@ -43,9 +45,6 @@ func (c *Command) Inherit(parent *Command) {
 	}
 	if c.Direction == InterfaceUnknown {
 		c.Direction = parent.Direction
-	}
-	if c.FabricScoping == FabricScopingUnknown {
-		c.FabricScoping = parent.FabricScoping
 	}
 	if len(c.Response) == 0 {
 		c.Response = parent.Response

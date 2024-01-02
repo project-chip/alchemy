@@ -7,18 +7,27 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
 type Bitmap struct {
-	Name        string    `json:"name,omitempty"`
-	Description string    `json:"description,omitempty"`
-	Type        *DataType `json:"type,omitempty"`
-	Bits        BitSet    `json:"bits,omitempty"`
+	Name        string          `json:"name,omitempty"`
+	Description string          `json:"description,omitempty"`
+	Type        *types.DataType `json:"type,omitempty"`
+	Bits        BitSet          `json:"bits,omitempty"`
 }
 
-func (c *Bitmap) Entity() Entity {
-	return EntityBitmap
+func (c *Bitmap) EntityType() types.EntityType {
+	return types.EntityTypeBitmap
+}
+
+func (c *Bitmap) BaseDataType() types.BaseDataType {
+	return c.Type.BaseType
+}
+
+func (c *Bitmap) NullValue() uint64 {
+	return c.Type.NullValue()
 }
 
 func (c *Bitmap) Size() int {
@@ -26,11 +35,11 @@ func (c *Bitmap) Size() int {
 		return 8
 	}
 	switch c.Type.BaseType {
-	case BaseDataTypeMap64:
+	case types.BaseDataTypeMap64:
 		return 64
-	case BaseDataTypeMap32:
+	case types.BaseDataTypeMap32:
 		return 32
-	case BaseDataTypeMap16:
+	case types.BaseDataTypeMap16:
 		return 16
 	default:
 		return 8
@@ -105,8 +114,8 @@ type Bit struct {
 	Conformance conformance.Set `json:"conformance,omitempty"`
 }
 
-func (c *Bit) Entity() Entity {
-	return EntityBitmapValue
+func (c *Bit) EntityType() types.EntityType {
+	return types.EntityTypeBitmapValue
 }
 
 func (c *Bit) Clone() *Bit {

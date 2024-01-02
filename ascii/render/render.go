@@ -4,12 +4,10 @@ import (
 	"context"
 	"regexp"
 	"strings"
-
-	"github.com/hasty/alchemy/output"
 )
 
-func Render(cxt context.Context, doc output.InputDocument) (string, error) {
-	renderContext := output.NewContext(cxt, doc)
+func Render(cxt context.Context, doc InputDocument) (string, error) {
+	renderContext := NewContext(cxt, doc)
 	err := RenderElements(renderContext, "", doc.GetElements())
 	if err != nil {
 		return "", err

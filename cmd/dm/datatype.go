@@ -52,7 +52,7 @@ func renderDefault(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
 	if f.Default == "" {
 		return
 	}
-	cons := constraint.ParseConstraint(f.Default)
+	cons := constraint.ParseString(f.Default)
 	ec, ok := cons.(*constraint.ExactConstraint)
 	if ok {
 		_, ok = ec.Value.(*constraint.ManufacturerLimit)

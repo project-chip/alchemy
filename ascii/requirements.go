@@ -7,6 +7,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.ClusterRequirement, err error) {
@@ -96,15 +97,15 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		}
 		switch strings.ToLower(e) {
 		case "feature":
-			cr.Element = matter.EntityFeature
+			cr.Element = mattertypes.EntityTypeFeature
 		case "attribute":
-			cr.Element = matter.EntityAttribute
+			cr.Element = mattertypes.EntityTypeAttribute
 		case "command":
-			cr.Element = matter.EntityCommand
+			cr.Element = mattertypes.EntityTypeCommand
 		case "command field":
-			cr.Element = matter.EntityCommandField
+			cr.Element = mattertypes.EntityTypeCommandField
 		case "event":
-			cr.Element = matter.EntityEvent
+			cr.Element = mattertypes.EntityTypeEvent
 		default:
 			if e != "" {
 				err = fmt.Errorf("unknown element type: \"%s\"", e)
@@ -128,7 +129,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.Constraint = constraint.ParseConstraint(c)
+		cr.Constraint = constraint.ParseString(c)
 		var a string
 		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
 		if err != nil {

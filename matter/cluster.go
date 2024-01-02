@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Cluster struct {
@@ -27,8 +28,8 @@ type Cluster struct {
 	Commands   CommandSet `json:"commands,omitempty"`
 }
 
-func (c *Cluster) Entity() Entity {
-	return EntityCluster
+func (c *Cluster) EntityType() types.EntityType {
+	return types.EntityTypeCluster
 }
 
 func (c *Cluster) Inherit(parent *Cluster) (err error) {

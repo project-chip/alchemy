@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func renderConformanceString(cluster conformance.ValueStore, c conformance.Conformance, parent *etree.Element) error {
@@ -101,10 +101,10 @@ func renderConformanceExpression(cluster conformance.ValueStore, exp conformance
 			if id == nil {
 				parent.CreateElement("condition").CreateAttr("name", e.ID)
 			} else {
-				model, ok := id.(matter.Model)
+				entity, ok := id.(types.Entity)
 				if ok {
-					switch model.Entity() {
-					case matter.EntityAttribute, matter.EntityCondition:
+					switch entity.EntityType() {
+					case types.EntityTypeAttribute, types.EntityTypeCondition:
 						parent.CreateElement("attribute").CreateAttr("name", e.ID)
 					default:
 						parent.CreateElement("condition").CreateAttr("name", e.ID)

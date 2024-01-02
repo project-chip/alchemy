@@ -14,6 +14,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/parser"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -33,7 +34,7 @@ type Doc struct {
 	anchors         map[string]*Anchor
 	crossReferences map[string][]*types.InternalCrossReference
 
-	models []matter.Model
+	entities []mattertypes.Entity
 }
 
 func NewDoc(d *types.Document) (*Doc, error) {
@@ -157,9 +158,9 @@ func (d *Doc) addParent(parent *Doc) {
 	d.Unlock()
 }
 
-func (d *Doc) ToModel() (models []matter.Model, err error) {
-	if len(d.models) > 0 {
-		return d.models, nil
+func (d *Doc) Entities() (models []mattertypes.Entity, err error) {
+	if len(d.entities) > 0 {
+		return d.entities, nil
 	}
 	dt, err := d.DocType()
 	if err != nil {
@@ -169,7 +170,7 @@ func (d *Doc) ToModel() (models []matter.Model, err error) {
 	for _, top := range parse.Skim[*Section](d.Elements) {
 		AssignSectionTypes(dt, top)
 
-		var m []matter.Model
+		var m []mattertypes.Entity
 		m, err = top.ToModels(d)
 		if err != nil {
 			return
@@ -177,7 +178,7 @@ func (d *Doc) ToModel() (models []matter.Model, err error) {
 		models = append(models, m...)
 
 	}
-	d.models = models
+	d.entities = models
 	return
 }
 
@@ -209,7 +210,7 @@ func Read(contents string, path string, settings ...configuration.Setting) (doc 
 	}
 
 	var d *types.Document
-	d, err = parse.ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
+	d, err = ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
 
 	if err != nil {
 		return nil, fmt.Errorf("failed parse: %w", err)

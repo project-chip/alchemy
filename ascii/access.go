@@ -92,7 +92,11 @@ func ParseAccess(vc string, forInvoke bool) (a matter.Access) {
 			}
 		}
 		if hasWrite {
-			a.Write = stringToPrivilege(writeAccess)
+			if len(writeAccess) > 0 {
+				a.Write = stringToPrivilege(writeAccess)
+			} else if a.Read != matter.PrivilegeUnknown { // Sometimes both read and write are given in the same character
+				a.Write = a.Read
+			}
 			if a.Write == matter.PrivilegeUnknown {
 				a.Write = matter.PrivilegeOperate
 			}

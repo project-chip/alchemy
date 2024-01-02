@@ -10,6 +10,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/constraint"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -103,7 +104,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeList)\[([^\]]+)\]`)
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
-func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) *matter.DataType {
+func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) *mattertypes.DataType {
 	i, ok := columnMap[column]
 	if !ok {
 		return nil
@@ -158,7 +159,7 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 		name = name[:commaIndex]
 	}
 	name = strings.TrimSuffix(name, " Type")
-	dt := matter.NewDataType(name, isArray)
+	dt := mattertypes.NewDataType(name, isArray)
 	return dt
 }
 
@@ -183,7 +184,7 @@ func (d *Doc) getAnchor(id string) (*Anchor, error) {
 	return nil, nil
 }
 
-func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *matter.DataType) matter.Constraint {
+func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *mattertypes.DataType) constraint.Constraint {
 	i, ok := columnMap[column]
 	if !ok {
 		return nil
@@ -200,7 +201,7 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 	if len(p.Elements) == 0 {
 		return nil
 	}
-	var val matter.Constraint
+	var val constraint.Constraint
 
 	var sb strings.Builder
 	for _, el := range p.Elements {
@@ -222,7 +223,7 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 			slog.Warn("unknown constraint value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
 		}
 	}
-	val = constraint.ParseConstraint(StripTypeSuffixes(sb.String()))
+	val = constraint.ParseString(StripTypeSuffixes(sb.String()))
 
 	return val
 }

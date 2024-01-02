@@ -41,7 +41,14 @@ func (m *Mandatory) Equal(c Conformance) bool {
 	if !ok {
 		return false
 	}
-	if !m.Expression.Equal(om.Expression) {
+	if m.Expression != nil {
+		if om.Expression == nil {
+			return false
+		}
+		if !m.Expression.Equal(om.Expression) {
+			return false
+		}
+	} else if om.Expression != nil {
 		return false
 	}
 	return true

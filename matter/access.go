@@ -42,6 +42,17 @@ const (
 	FabricScopingUnscoped
 )
 
+func (fs FabricScoping) String() string {
+	switch fs {
+	case FabricScopingScoped:
+		return "scoped"
+	case FabricScopingUnscoped:
+		return "unscoped"
+	default:
+		return "unknown"
+	}
+}
+
 type FabricSensitivity uint8
 
 const (
@@ -49,6 +60,17 @@ const (
 	FabricSensitivitySensitive
 	FabricSensitivityInsensitive
 )
+
+func (fs FabricSensitivity) String() string {
+	switch fs {
+	case FabricSensitivitySensitive:
+		return "sensitive"
+	case FabricSensitivityInsensitive:
+		return "insensitive"
+	default:
+		return "unknown"
+	}
+}
 
 type Timing uint8
 
@@ -179,4 +201,14 @@ func (a Access) Inherit(parent Access) {
 	if a.Timing == TimingUnknown && parent.Timing != TimingUnknown {
 		a.Timing = parent.Timing
 	}
+}
+
+func DefaultAccess(forInvoke bool) Access {
+	a := Access{FabricSensitivity: FabricSensitivityInsensitive, FabricScoping: FabricScopingUnscoped, Timing: TimingUntimed}
+	if forInvoke {
+		a.Invoke = PrivilegeOperate
+	} else {
+		a.Read = PrivilegeView
+	}
+	return a
 }

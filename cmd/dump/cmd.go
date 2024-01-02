@@ -43,7 +43,7 @@ var Command = &cobra.Command{
 				}
 				dumpElements(doc, doc.Elements, 0)
 			} else if jsonOut {
-				models, err := doc.ToModel()
+				models, err := doc.Entities()
 				if err != nil {
 					return fmt.Errorf("error parsing model %s: %w", f, err)
 				}

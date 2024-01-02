@@ -7,13 +7,15 @@ import (
 	"log/slog"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func readConfigurator(d *xml.Decoder) (models []matter.Model, err error) {
+func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 	enums := make(map[uint64][]*matter.Enum)
 	bitmaps := make(map[uint64][]*matter.Bitmap)
 	structs := make(map[uint64][]*matter.Struct)
 	clusters := make(map[uint64]*matter.Cluster)
+	var features *matter.Bitmap
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
@@ -31,7 +33,7 @@ func readConfigurator(d *xml.Decoder) (models []matter.Model, err error) {
 				cluster, err = readCluster(d, t)
 				if err == nil {
 					clusters[cluster.ID.Value()] = cluster
-					models = append(models, cluster)
+					entities = append(entities, cluster)
 				}
 			case "domain":
 				_, err = readSimpleElement(d, t.Name.Local)
@@ -58,8 +60,12 @@ func readConfigurator(d *xml.Decoder) (models []matter.Model, err error) {
 				var clusterIDs []*matter.Number
 				bitmap, clusterIDs, err = readBitmap(d, t)
 				if err == nil {
-					for _, cid := range clusterIDs {
-						bitmaps[cid.Value()] = append(bitmaps[cid.Value()], bitmap)
+					if bitmap.Name == "Feature" {
+						features = bitmap
+					} else {
+						for _, cid := range clusterIDs {
+							bitmaps[cid.Value()] = append(bitmaps[cid.Value()], bitmap)
+						}
 					}
 				}
 			case "accessControl", "atomic", "clusterExtension", "global", "deviceType":
@@ -91,12 +97,15 @@ func readConfigurator(d *xml.Decoder) (models []matter.Model, err error) {
 						slog.Debug("orphan structs", "clusterId", cid)
 					}
 				}
-
+				for _, c := range clusters {
+					c.Features = features
+				}
 				return
 			default:
 				err = fmt.Errorf("unexpected configurator end element: %s", t.Name.Local)
 			}
 		case xml.CharData:
+		case xml.Comment:
 		default:
 			err = fmt.Errorf("unexpected configurator level type: %T", t)
 		}

@@ -1,94 +1,68 @@
 package compare
 
 import (
-	"fmt"
+	"log/slog"
+	"strings"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/zap"
 )
 
 type FieldDiffs struct {
 	ID    *matter.Number `json:"id"`
+	Name  string         `json:"name"`
 	Diffs []any          `json:"diffs"`
 }
 
-type MissingDiff struct {
-	Type     DiffType       `json:"type"`
-	Source   Source         `json:"source,omitempty"`
-	Property DiffProperty   `json:"property,omitempty"`
-	ID       *matter.Number `json:"id,omitempty"`
-	Code     string         `json:"code,omitempty"`
+func compareFieldTypes(specFieldName string, specFieldType *types.DataType, zapFieldName string, zapFieldType *types.DataType) (diffs []any) {
+	if specFieldType == nil && zapFieldType != nil {
+		diffs = append(diffs, newMissingDiff(zapFieldName, DiffPropertyType, SourceSpec))
+		return
+	}
+	if specFieldType != nil && zapFieldType == nil {
+		diffs = append(diffs, newMissingDiff(specFieldName, DiffPropertyType, SourceZAP))
+		return
+	}
+	if specFieldType.IsArray() != zapFieldType.IsArray() {
+		diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyIsArray, Spec: specFieldType.IsArray(), ZAP: zapFieldType.IsArray()})
+		return
+	}
+	if specFieldType.IsArray() {
+		diffs = append(diffs, compareFieldTypes(specFieldName, specFieldType.EntryType, zapFieldName, zapFieldType.EntryType)...)
+		return
+	}
+	if specFieldType.BaseType != specFieldType.BaseType {
+		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyType, Spec: specFieldType.Name, ZAP: zapFieldType.Name})
+		return
+	}
+	if specFieldType.BaseType == types.BaseDataTypeCustom {
+		specFieldTypeName := specFieldType.Name
+		zapFieldTypeName := zapFieldType.Name
+		if !strings.HasPrefix(specFieldTypeName, zapFieldTypeName) {
+			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyType, Spec: specFieldTypeName, ZAP: zapFieldTypeName})
+		}
+	}
+	return
 }
 
-type StringDiff struct {
-	Type     DiffType     `json:"type"`
-	Property DiffProperty `json:"property"`
-	Spec     string       `json:"spec"`
-	ZAP      string       `json:"zap"`
-}
-
-type BoolDiff struct {
-	Type     DiffType     `json:"type"`
-	Property DiffProperty `json:"property"`
-	Spec     bool         `json:"spec"`
-	ZAP      bool         `json:"zap"`
-}
-
-type Missing struct {
-	Type     DiffType     `json:"type"`
-	Property DiffProperty `json:"property"`
-	Spec     string       `json:"spec"`
-	ZAP      string       `json:"zap"`
-}
-
-type ConstraintDiff struct {
-	Type     DiffType          `json:"type"`
-	Property DiffProperty      `json:"property"`
-	Spec     matter.Constraint `json:"spec"`
-	ZAP      matter.Constraint `json:"zap"`
-}
-
-type QualityDiff struct {
-	Type     DiffType       `json:"type"`
-	Property DiffProperty   `json:"property"`
-	Spec     matter.Quality `json:"spec"`
-	ZAP      matter.Quality `json:"zap"`
-}
-
-type AccessDiff struct {
-	Type     DiffType      `json:"type"`
-	Property DiffProperty  `json:"property"`
-	Spec     matter.Access `json:"spec"`
-	ZAP      matter.Access `json:"zap"`
-}
-
-func compareField(specField *matter.Field, zapField *matter.Field) (diffs []any) {
-	if specField.Name != zapField.Name {
+func compareField(specFields matter.FieldSet, specField *matter.Field, zapField *matter.Field) (diffs []any) {
+	if !namesEqual(specField.Name, zapField.Name) {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyName, Spec: specField.Name, ZAP: zapField.Name})
 	}
-	if specField.Type == nil && zapField.Type != nil {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Property: DiffPropertyType, Source: SourceSpec})
+	diffs = append(diffs, compareFieldTypes(specField.Name, specField.Type, zapField.Name, zapField.Type)...)
 
-	} else if specField.Type != nil && zapField.Type == nil {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Property: DiffPropertyType, Source: SourceZAP})
-
-	} else if specField.Type != nil && zapField.Type != nil {
-		if specField.Type.Name != zapField.Type.Name {
-			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyType, Spec: specField.Type.Name, ZAP: zapField.Type.Name})
-		}
-		if specField.Type.IsArray() != zapField.Type.IsArray() {
-			diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyIsArray, Spec: specField.Type.IsArray(), ZAP: zapField.Type.IsArray()})
-		}
-	}
-	if specField.Constraint == nil && zapField.Constraint != nil {
+	/*if specField.Constraint == nil && zapField.Constraint != nil {
 		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Property: DiffPropertyConstraint, Source: SourceSpec})
 	} else if specField.Constraint != nil && zapField.Constraint == nil {
 		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Property: DiffPropertyConstraint, Source: SourceZAP})
 	} else if specField.Constraint != nil && zapField.Constraint != nil && !specField.Constraint.Equal(zapField.Constraint) {
 		diffs = append(diffs, &ConstraintDiff{Type: DiffTypeMismatch, Property: DiffPropertyConstraint, Spec: specField.Constraint, ZAP: zapField.Constraint})
-	}
+	}*/
 	if specField.Quality != zapField.Quality {
 		if (specField.Quality.Has(matter.QualityNullable) && !zapField.Quality.Has(matter.QualityNullable)) || (!specField.Quality.Has(matter.QualityNullable) && zapField.Quality.Has(matter.QualityNullable)) {
-			diffs = append(diffs, &QualityDiff{Type: DiffTypeMismatch, Property: DiffPropertyQuality, Spec: specField.Quality, ZAP: zapField.Quality})
+			diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyNullable, Spec: specField.Quality.Has(matter.QualityNullable), ZAP: zapField.Quality.Has(matter.QualityNullable)})
 		}
 	}
 	if !specField.Access.Equal(zapField.Access) {
@@ -96,20 +70,38 @@ func compareField(specField *matter.Field, zapField *matter.Field) (diffs []any)
 			diffs = append(diffs, &AccessDiff{Type: DiffTypeMismatch, Property: DiffPropertyAccess, Spec: specField.Access, ZAP: zapField.Access})
 		}
 	}
-	if specField.Default != zapField.Default {
-		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specField.Default, ZAP: zapField.Default})
+	defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: specField, Fields: specFields})
+	if defaultValue.Defined() {
+		specDefault := defaultValue.ZapString(specField.Type)
+		if specDefault != zapField.Default && !(specField.Default == "null" && len(zapField.Default) == 0) { // ZAP frequently omits default null
+			specDefaultVal := matter.ParseNumber(specDefault)
+			zapDefault := matter.ParseNumber(zapField.Default)
+			if !specDefaultVal.Equals(zapDefault) {
+				diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specDefault, ZAP: zapField.Default})
+			}
+		}
+	} else if len(zapField.Default) > 0 {
+		if len(specField.Default) > 0 {
+			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specField.Default, ZAP: zapField.Default})
+		} else {
+			diffs = append(diffs, newMissingDiff(specField.Name, DiffPropertyDefault, types.EntityTypeField, SourceSpec))
+		}
 	}
-	if !specField.Conformance.Equal(zapField.Conformance) {
-		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: specField.Conformance.String(), ZAP: zapField.Conformance.String()})
-	}
+	diffs = append(diffs, compareConformance(specField.Conformance, zapField.Conformance)...)
 	return
 }
 
-func compareFields(specFields []*matter.Field, zapFields []*matter.Field) (diffs []any, err error) {
+func compareFields(specFields matter.FieldSet, zapFields matter.FieldSet) (diffs []any, err error) {
 	specFieldMap := make(map[uint64]*matter.Field)
+	specFieldNameMap := make(map[string]*matter.Field)
 	for _, f := range specFields {
+		if conformance.IsZigbee(specFields, f.Conformance) {
+			continue
+		}
+		specFieldNameMap[strings.ToLower(f.Name)] = f
 		if !f.ID.Valid() {
-			err = fmt.Errorf("unable to parse spec field ID: %s; %w", f.ID.IntString(), err)
+			slog.Warn("unable to parse spec field ID", slog.String("id", f.ID.Text()), slog.String("name", f.Name))
+			continue
 		}
 		specFieldMap[f.ID.Value()] = f
 	}
@@ -117,28 +109,47 @@ func compareFields(specFields []*matter.Field, zapFields []*matter.Field) (diffs
 	zapFieldMap := make(map[uint64]*matter.Field)
 	for _, f := range zapFields {
 		if !f.ID.Valid() {
-			err = fmt.Errorf("unable to parse ZAP field ID: %s; %w", f.ID.IntString(), err)
+			continue
 		}
 		zapFieldMap[f.ID.Value()] = f
 	}
 
-	for code, zapField := range zapFieldMap {
-		specField, ok := specFieldMap[code]
+	for _, zapField := range zapFields {
+		var specField *matter.Field
+		var ok bool
+		if zapField.ID.Valid() {
+			specField, ok = specFieldMap[zapField.ID.Value()]
+			if ok {
+				delete(zapFieldMap, zapField.ID.Value())
+				delete(specFieldMap, zapField.ID.Value())
+				delete(specFieldNameMap, strings.ToLower(specField.Name))
+			}
+		}
+		if !ok {
+			specField, ok = specFieldNameMap[strings.ToLower(zapField.Name)]
+			if ok {
+				delete(specFieldMap, specField.ID.Value())
+				delete(specFieldNameMap, strings.ToLower(zapField.Name))
+			}
+		}
 		if !ok {
 			continue
 		}
-		delete(zapFieldMap, code)
-		delete(specFieldMap, code)
-		fieldDiffs := compareField(specField, zapField)
+		fieldDiffs := compareField(specFields, specField, zapField)
 		if len(fieldDiffs) > 0 {
-			diffs = append(diffs, &FieldDiffs{ID: zapField.ID, Diffs: fieldDiffs})
+			diffs = append(diffs, &FieldDiffs{ID: specField.ID, Name: specField.Name, Diffs: fieldDiffs})
 		}
 	}
+
 	for _, f := range specFieldMap {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, ID: f.ID, Source: SourceZAP})
+		diffs = append(diffs, newMissingDiff(f.Name, f.ID, SourceZAP))
+		delete(specFieldNameMap, strings.ToLower(f.Name))
 	}
 	for _, f := range zapFieldMap {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, ID: f.ID, Source: SourceSpec})
+		diffs = append(diffs, newMissingDiff(f.Name, f.ID, SourceSpec))
+	}
+	for _, f := range specFieldNameMap {
+		diffs = append(diffs, newMissingDiff(f.Name, f.ID, SourceZAP))
 	}
 	return
 }

@@ -2,38 +2,44 @@ package ascii
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
 )
 
 func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
-	var rows []*types.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
-	if err != nil {
-		return nil, fmt.Errorf("failed reading bitmap: %w", err)
-	}
 	name := strings.TrimSuffix(s.Name, " Type")
-
-	e = &matter.Bitmap{
-		Name: name,
-	}
 
 	dt := s.GetDataType()
 	if dt == nil {
-		dt = matter.NewDataType("map8", false)
+		dt = mattertypes.NewDataType("map8", false)
 	}
 
 	if !dt.IsMap() {
 		return nil, fmt.Errorf("unknown bitmap data type: %s", dt.Name)
 	}
 
-	e.Type = dt
+	e = &matter.Bitmap{
+		Name: name,
+		Type: dt,
+	}
+	var rows []*types.TableRow
+	var headerRowIndex int
+	var columnMap ColumnIndex
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+
+	if err != nil {
+		if err == NoTableFound {
+			slog.Warn("no table found for bitmap", slog.String("name", e.Name))
+			return e, nil
+		}
+		return nil, fmt.Errorf("failed reading bitmap %s: %w", name, err)
+	}
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]

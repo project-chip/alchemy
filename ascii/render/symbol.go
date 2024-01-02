@@ -4,10 +4,9 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/output"
 )
 
-func renderQuotedText(cxt *output.Context, qt *types.QuotedText) (err error) {
+func renderQuotedText(cxt *Context, qt *types.QuotedText) (err error) {
 	renderAttributes(cxt, qt, qt.Attributes, true)
 	var wrapper string
 	switch qt.Kind {
@@ -41,7 +40,7 @@ func renderQuotedText(cxt *output.Context, qt *types.QuotedText) (err error) {
 	return
 }
 
-func renderSpecialCharacter(cxt *output.Context, s *types.SpecialCharacter) error {
+func renderSpecialCharacter(cxt *Context, s *types.SpecialCharacter) error {
 	switch s.Name {
 	case "<":
 		cxt.WriteRune('<')
@@ -55,7 +54,7 @@ func renderSpecialCharacter(cxt *output.Context, s *types.SpecialCharacter) erro
 	return nil
 }
 
-func renderSymbol(cxt *output.Context, s *types.Symbol) error {
+func renderSymbol(cxt *Context, s *types.Symbol) error {
 	switch s.Name {
 	case "'":
 		cxt.WriteRune('\'')

@@ -10,7 +10,7 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
 
@@ -193,15 +193,11 @@ func (r *renderer) writeEnum(e xmlEncoder, el xml.StartElement, en *matter.Enum,
 }
 
 func (*renderer) setEnumValueAttributes(v *matter.EnumValue, xfs []xml.Attr, valFormat string) []xml.Attr {
-	val := v.Value
-	valNum, er := parse.HexOrDec(val)
-	if er == nil {
-		val = fmt.Sprintf(valFormat, valNum)
-	}
-
 	name := zap.CleanName(v.Name)
 	xfs = setAttributeValue(xfs, "name", name)
-	xfs = setAttributeValue(xfs, "value", val)
+	if v.Value.Valid() {
+		xfs = setAttributeValue(xfs, "value", fmt.Sprintf(valFormat, v.Value.Value()))
+	}
 	return xfs
 }
 
@@ -209,7 +205,7 @@ func (*renderer) setEnumAttributes(xfb []xml.Attr, en *matter.Enum) ([]xml.Attr,
 
 	var valFormat string
 	switch en.Type.BaseType {
-	case matter.BaseDataTypeEnum16:
+	case types.BaseDataTypeEnum16:
 		valFormat = "0x%04X"
 	default:
 		valFormat = "0x%02X"

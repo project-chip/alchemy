@@ -15,13 +15,14 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/cmd/files"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Result struct {
-	XML    string
-	Path   string
-	Doc    *ascii.Doc
-	Models []interface{}
+	XML      string
+	Path     string
+	Doc      *ascii.Doc
+	Entities []types.Entity
 }
 
 func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii.Doc, filesOptions files.Options) error {
@@ -30,13 +31,13 @@ func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii
 	err := files.ProcessDocs(cxt, appClusters, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 		slog.InfoContext(cxt, "App cluster doc", "name", doc.Path)
 
-		models, err := doc.ToModel()
+		entities, err := doc.Entities()
 		if err != nil {
-			slog.ErrorContext(cxt, "error converting doc to models", "doc", doc.Path, "error", err)
+			slog.ErrorContext(cxt, "error converting doc to entities", "doc", doc.Path, "error", err)
 			return nil
 		}
 		var clusters []*matter.Cluster
-		for _, m := range models {
+		for _, m := range entities {
 			slog.Debug("model", "type", m)
 			switch m := m.(type) {
 			case *matter.Cluster:

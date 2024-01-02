@@ -1,6 +1,9 @@
 package compare
 
-import "github.com/hasty/alchemy/matter"
+import (
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
+)
 
 type ClusterDifferences struct {
 	ID   *matter.Number
@@ -21,21 +24,17 @@ func compareClusters(specCluster *matter.Cluster, zapCluster *matter.Cluster) (*
 
 	var err error
 	cd := &ClusterDifferences{ID: specCluster.ID, Name: specCluster.Name}
-	if specCluster.Name != zapCluster.Name {
+	if !namesEqual(specCluster.Name, zapCluster.Name) {
 		cd.Diffs = append(cd.Diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyName, Spec: specCluster.Name, ZAP: zapCluster.Name})
 	}
-	/*if c.Hierarchy != oc.Hierarchy {
-		cd.Diffs = append(cd.Diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyHierarchy, Spec: c.Hierarchy, ZAP: oc.Hierarchy})
-	}
-	if c.Role != oc.Role {
-		cd.Diffs = append(cd.Diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyRole, Spec: c.Role, ZAP: oc.Role})
-	}
-	if c.PICS != oc.PICS {
-		cd.Diffs = append(cd.Diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyPICS, Spec: c.PICS, ZAP: oc.PICS})
-	}*/
 
-	cd.Features = compareFeatures(specCluster.Features, zapCluster.Features)
+	cd.Features = compareBitmapsByMask(specCluster.Features, zapCluster.Features, types.EntityTypeFeature)
 	cd.Attributes, err = compareFields(specCluster.Attributes, zapCluster.Attributes)
+	cd.Bitmaps = compareBitmaps(specCluster.Bitmaps, zapCluster.Bitmaps)
+	cd.Enums = compareEnums(specCluster.Enums, zapCluster.Enums)
+	cd.Structs = compareStructs(specCluster.Structs, zapCluster.Structs)
+	cd.Commands = compareCommands(specCluster.Commands, zapCluster.Commands)
+	cd.Events = compareEvents(specCluster.Events, zapCluster.Events)
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +45,21 @@ func compareClusters(specCluster *matter.Cluster, zapCluster *matter.Cluster) (*
 		return cd, nil
 	}
 	if len(cd.Features) > 0 {
+		return cd, nil
+	}
+	if len(cd.Bitmaps) > 0 {
+		return cd, nil
+	}
+	if len(cd.Enums) > 0 {
+		return cd, nil
+	}
+	if len(cd.Commands) > 0 {
+		return cd, nil
+	}
+	if len(cd.Structs) > 0 {
+		return cd, nil
+	}
+	if len(cd.Events) > 0 {
 		return cd, nil
 	}
 	return nil, nil

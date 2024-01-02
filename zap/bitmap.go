@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -25,10 +26,10 @@ type XMLBitmap struct {
 	Items   []XMLBitmapItem `xml:"field"`
 }
 
-func (b *XMLBitmap) ToModel() (mb *matter.Bitmap, err error) {
+func (b *XMLBitmap) Bitmap() (mb *matter.Bitmap, err error) {
 	mb = &matter.Bitmap{
 		Name: b.Name,
-		Type: matter.NewDataType(ConvertZapToDataTypeName(b.Type), false),
+		Type: types.NewDataType(ConvertZapToDataTypeName(b.Type), false),
 	}
 	for _, bi := range b.Items {
 		var mask uint64
@@ -42,13 +43,13 @@ func (b *XMLBitmap) ToModel() (mb *matter.Bitmap, err error) {
 
 		var maxBit int
 		switch mb.Type.BaseType {
-		case matter.BaseDataTypeMap8:
+		case types.BaseDataTypeMap8:
 			maxBit = 8
-		case matter.BaseDataTypeMap16:
+		case types.BaseDataTypeMap16:
 			maxBit = 16
-		case matter.BaseDataTypeMap32:
+		case types.BaseDataTypeMap32:
 			maxBit = 32
-		case matter.BaseDataTypeMap64:
+		case types.BaseDataTypeMap64:
 			maxBit = 64
 		}
 		for offset := 0; offset < maxBit; offset++ {

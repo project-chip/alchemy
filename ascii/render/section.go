@@ -4,10 +4,9 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/output"
 )
 
-func renderSection(cxt *output.Context, s *types.Section) (err error) {
+func renderSection(cxt *Context, s *types.Section) (err error) {
 	cxt.WriteNewline()
 	err = renderAttributes(cxt, s, s.Attributes, false)
 	if err != nil {
@@ -17,7 +16,7 @@ func renderSection(cxt *output.Context, s *types.Section) (err error) {
 	return
 }
 
-func renderSectionTitle(cxt *output.Context, title []interface{}, level int) (err error) {
+func renderSectionTitle(cxt *Context, title []interface{}, level int) (err error) {
 	cxt.WriteString(strings.Repeat("=", level))
 	cxt.WriteRune(' ')
 	err = RenderElements(cxt, "", title)

@@ -1,35 +1,37 @@
 package constraint
 
-import "github.com/hasty/alchemy/matter"
+import (
+	"github.com/hasty/alchemy/matter/types"
+)
 
 type DescribedConstraint struct {
 }
 
-func (c *DescribedConstraint) Type() matter.ConstraintType {
-	return matter.ConstraintTypeDescribed
+func (c *DescribedConstraint) Type() ConstraintType {
+	return ConstraintTypeDescribed
 }
 
-func (c *DescribedConstraint) AsciiDocString(dataType *matter.DataType) string {
+func (c *DescribedConstraint) AsciiDocString(dataType *types.DataType) string {
 	return "desc"
 }
 
-func (c *DescribedConstraint) Equal(o matter.Constraint) bool {
+func (c *DescribedConstraint) Equal(o Constraint) bool {
 	_, ok := o.(*DescribedConstraint)
 	return ok
 }
 
-func (c *DescribedConstraint) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
+func (c *DescribedConstraint) Min(cc Context) (min types.DataTypeExtreme) {
 	return
 }
 
-func (c *DescribedConstraint) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *DescribedConstraint) Max(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (c *DescribedConstraint) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
+func (c *DescribedConstraint) Default(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (c *DescribedConstraint) Clone() matter.Constraint {
+func (c *DescribedConstraint) Clone() Constraint {
 	return &DescribedConstraint{}
 }

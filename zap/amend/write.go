@@ -18,7 +18,7 @@ type renderer struct {
 	doc  *ascii.Doc
 
 	configurator *zap.Configurator
-	//models []matter.Model
+	//models []matter.Entity
 
 	//bitmaps  map[*matter.Bitmap]bool
 	//enums    map[*matter.Enum]bool

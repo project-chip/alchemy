@@ -65,7 +65,7 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 				if err == nil {
 					cluster.Commands = append(cluster.Commands, command)
 				}
-			case "globalAttribute":
+			case "globalAttribute", "global":
 				err = Ignore(d, t.Name.Local)
 			case "tag":
 				_, err = readTag(d, t)

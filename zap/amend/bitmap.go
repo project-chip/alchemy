@@ -10,6 +10,7 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
 
@@ -219,11 +220,11 @@ func (*renderer) setBitmapFieldAttributes(xfs []xml.Attr, b *matter.Bit, valForm
 func (*renderer) setBitmapAttributes(xfb []xml.Attr, bitmap *matter.Bitmap) ([]xml.Attr, string) {
 	var valFormat string
 	switch bitmap.Type.BaseType {
-	case matter.BaseDataTypeMap64:
+	case types.BaseDataTypeMap64:
 		valFormat = "0x%016X"
-	case matter.BaseDataTypeMap32:
+	case types.BaseDataTypeMap32:
 		valFormat = "0x%08X"
-	case matter.BaseDataTypeMap16:
+	case types.BaseDataTypeMap16:
 		valFormat = "0x%04X"
 	default:
 		valFormat = "0x%02X"

@@ -4,10 +4,9 @@ import (
 	"fmt"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/output"
 )
 
-func renderDelimitedBlock(cxt *output.Context, db *types.DelimitedBlock) (err error) {
+func renderDelimitedBlock(cxt *Context, db *types.DelimitedBlock) (err error) {
 	switch db.Kind {
 	case "comment":
 		err = renderComment(cxt, db)
@@ -31,7 +30,7 @@ func renderDelimitedBlock(cxt *output.Context, db *types.DelimitedBlock) (err er
 	return
 }
 
-func renderComment(cxt *output.Context, comment *types.DelimitedBlock) (err error) {
+func renderComment(cxt *Context, comment *types.DelimitedBlock) (err error) {
 	for _, e := range comment.Elements {
 		switch el := e.(type) {
 		case *types.StringElement:
@@ -53,7 +52,7 @@ func renderComment(cxt *output.Context, comment *types.DelimitedBlock) (err erro
 	return
 }
 
-func renderBlock(cxt *output.Context, block *types.DelimitedBlock, delimiter string) (err error) {
+func renderBlock(cxt *Context, block *types.DelimitedBlock, delimiter string) (err error) {
 	err = renderAttributes(cxt, block, block.Attributes, false)
 	if err != nil {
 		return

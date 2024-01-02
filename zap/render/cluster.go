@@ -10,6 +10,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 	"github.com/iancoleman/strcase"
@@ -80,10 +81,10 @@ func (r *renderer) renderFeatures(cxt context.Context, features *matter.Bitmap, 
 	}
 }
 
-func (r *renderer) renderClusterCodes(parent *etree.Element, model matter.Model) {
-	refs, ok := r.spec.ClusterRefs[model]
+func (r *renderer) renderClusterCodes(parent *etree.Element, entity types.Entity) {
+	refs, ok := r.spec.ClusterRefs[entity]
 	if !ok {
-		slog.Warn("unknown cluster ref", "val", model)
+		slog.Warn("unknown cluster ref", "val", entity)
 		return
 	}
 	var clusterIDs []string

@@ -5,6 +5,7 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type XMLAttribute struct {
@@ -40,7 +41,7 @@ func (xa *XMLAttribute) ToModel() (ma *matter.Field, err error) {
 
 	ma.ID = matter.ParseNumber(xa.Code)
 	ma.Name = xa.Name
-	ma.Type = matter.NewDataType(ConvertZapToDataTypeName(xa.Type), xa.IsArray)
+	ma.Type = types.NewDataType(ConvertZapToDataTypeName(xa.Type), xa.IsArray)
 	ma.Default = xa.Default
 
 	if xa.IsNullable {

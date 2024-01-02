@@ -30,7 +30,7 @@ func Render(cxt context.Context, spec *matter.Spec, doc *ascii.Doc, configurator
 
 	x.CreateProcInst("xml", `version="1.0"`)
 	x.CreateComment(fmt.Sprintf(license, time.Now().Year()))
-	err := r.renderModels(cxt, doc, &x.Element)
+	err := r.renderConfigurator(cxt, doc, &x.Element)
 	if err != nil {
 		return "", err
 	}

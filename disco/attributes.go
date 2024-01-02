@@ -105,7 +105,7 @@ func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.
 
 		dataType := doc.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		if dataType != nil {
-			c := constraint.ParseConstraint(vc)
+			c := constraint.ParseString(vc)
 			fixed := c.AsciiDocString(dataType)
 			if fixed != vc {
 				setCellString(cell, fixed)

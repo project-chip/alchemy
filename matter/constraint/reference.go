@@ -1,110 +1,44 @@
 package constraint
 
 import (
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type ReferenceLimit struct {
 	Value string
 }
 
-func (c *ReferenceLimit) AsciiDocString(dataType *matter.DataType) string {
+func (c *ReferenceLimit) AsciiDocString(dataType *types.DataType) string {
 	return c.Value
 }
 
-func (c *ReferenceLimit) Equal(o matter.ConstraintLimit) bool {
+func (c *ReferenceLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*ReferenceLimit); ok {
 		return oc.Value == c.Value
 	}
 	return false
 }
 
-func (c *ReferenceLimit) Min(cc *matter.ConstraintContext) (min matter.DataTypeExtreme) {
-	r := c.getReference(cc)
-	if r == nil || r.Constraint == nil {
+func (c *ReferenceLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	rc := cc.ReferenceConstraint(c.Value)
+	if rc == nil {
 		return
 	}
-	return r.Constraint.Min(cc)
+	return rc.Min(cc)
 }
 
-func (c *ReferenceLimit) Max(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
-	r := c.getReference(cc)
-	if r == nil || r.Constraint == nil {
+func (c *ReferenceLimit) Max(cc Context) (max types.DataTypeExtreme) {
+	rc := cc.ReferenceConstraint(c.Value)
+	if rc == nil {
 		return
 	}
-	return r.Constraint.Max(cc)
+	return rc.Max(cc)
 }
 
-func (c *ReferenceLimit) getReference(cc *matter.ConstraintContext) *matter.Field {
-	r := cc.Fields.GetField(c.Value)
-	if cc.VisitedReferences == nil {
-		cc.VisitedReferences = make(map[string]struct{})
-	} else if _, ok := cc.VisitedReferences[c.Value]; ok {
-		return nil
-	}
-	cc.VisitedReferences[c.Value] = struct{}{}
-	return r
+func (c *ReferenceLimit) Default(cc Context) (def types.DataTypeExtreme) {
+	return cc.Default(c.Value)
 }
 
-func (c *ReferenceLimit) getEnumValue(cc *matter.ConstraintContext) (def matter.DataTypeExtreme) {
-	if cc.Field.Type == nil || cc.Field.Type.Model == nil {
-		return
-	}
-	en, ok := cc.Field.Type.Model.(*matter.Enum)
-	if !ok {
-		return
-	}
-	for _, v := range en.Values {
-		if v.Name == c.Value {
-			val, err := parse.HexOrDec(v.Value)
-			if err == nil {
-				def = matter.NewUintDataTypeExtreme(val, matter.NumberFormatInt)
-				return
-			}
-		}
-	}
-	return
-}
-
-func (c *ReferenceLimit) getBitmapValue(cc *matter.ConstraintContext) (def matter.DataTypeExtreme) {
-	if cc.Field.Type == nil || cc.Field.Type.Model == nil {
-		return
-	}
-	en, ok := cc.Field.Type.Model.(*matter.Bitmap)
-	if !ok {
-		return
-	}
-	for _, v := range en.Bits {
-		if v.Name == c.Value {
-			val, err := v.Mask()
-			if err == nil {
-				def = matter.NewUintDataTypeExtreme(val, matter.NumberFormatHex)
-				return
-			}
-		}
-	}
-	return
-}
-
-func (c *ReferenceLimit) Default(cc *matter.ConstraintContext) (max matter.DataTypeExtreme) {
-	r := c.getReference(cc)
-	if r != nil && r.Default != "" {
-		cons := ParseConstraint(r.Default)
-		return cons.Default(cc)
-	}
-	// Couldn't find it as a reference; let's check other possibilities
-	max = c.getEnumValue(cc)
-	if max.Defined() {
-		return
-	}
-	max = c.getBitmapValue(cc)
-	if max.Defined() {
-		return
-	}
-	return
-}
-
-func (c *ReferenceLimit) Clone() matter.ConstraintLimit {
+func (c *ReferenceLimit) Clone() ConstraintLimit {
 	return &ReferenceLimit{Value: c.Value}
 }

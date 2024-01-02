@@ -3,6 +3,10 @@ package compare
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/constraint"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 type Source uint8
@@ -55,41 +59,59 @@ const (
 	DiffPropertyConstraint
 	DiffPropertyDefault
 	DiffPropertyConformance
-	DiffPropertyQuality
+	DiffPropertyNullable
 	DiffPropertyAccess
 	DiffPropertyBit
+	DiffPropertyValue
+	DiffPropertyFabricScoping
+	DiffPropertyFabricSensitivity
+	DiffPropertyCommandResponse
+	DiffPropertyCommandDirection
+	DiffPropertyPriority
 )
 
 var (
 	diffPropertyNames = map[DiffProperty]string{
-		DiffPropertyUnknown:     "unknown",
-		DiffPropertyName:        "name",
-		DiffPropertyHierarchy:   "hierarchy",
-		DiffPropertyPICS:        "pics",
-		DiffPropertyRole:        "role",
-		DiffPropertyType:        "type",
-		DiffPropertyIsArray:     "isArray",
-		DiffPropertyConstraint:  "constraint",
-		DiffPropertyDefault:     "default",
-		DiffPropertyConformance: "conformance",
-		DiffPropertyQuality:     "quality",
-		DiffPropertyAccess:      "access",
-		DiffPropertyBit:         "bit",
+		DiffPropertyUnknown:           "unknown",
+		DiffPropertyName:              "name",
+		DiffPropertyHierarchy:         "hierarchy",
+		DiffPropertyPICS:              "pics",
+		DiffPropertyRole:              "role",
+		DiffPropertyType:              "type",
+		DiffPropertyIsArray:           "isArray",
+		DiffPropertyConstraint:        "constraint",
+		DiffPropertyDefault:           "default",
+		DiffPropertyConformance:       "conformance",
+		DiffPropertyNullable:          "nullable",
+		DiffPropertyAccess:            "access",
+		DiffPropertyBit:               "bit",
+		DiffPropertyValue:             "value",
+		DiffPropertyFabricScoping:     "fabricScoping",
+		DiffPropertyFabricSensitivity: "fabricSensitivity",
+		DiffPropertyCommandResponse:   "commandResponse",
+		DiffPropertyCommandDirection:  "commandDirection",
+		DiffPropertyPriority:          "priority",
 	}
 	diffPropertyValues = map[string]DiffProperty{
-		"unknown":     DiffPropertyUnknown,
-		"name":        DiffPropertyName,
-		"hierarchy":   DiffPropertyHierarchy,
-		"pics":        DiffPropertyPICS,
-		"role":        DiffPropertyRole,
-		"type":        DiffPropertyType,
-		"isArray":     DiffPropertyIsArray,
-		"constraint":  DiffPropertyConstraint,
-		"default":     DiffPropertyDefault,
-		"conformance": DiffPropertyConformance,
-		"quality":     DiffPropertyQuality,
-		"access":      DiffPropertyAccess,
-		"bit":         DiffPropertyBit,
+		"unknown":           DiffPropertyUnknown,
+		"name":              DiffPropertyName,
+		"hierarchy":         DiffPropertyHierarchy,
+		"pics":              DiffPropertyPICS,
+		"role":              DiffPropertyRole,
+		"type":              DiffPropertyType,
+		"isArray":           DiffPropertyIsArray,
+		"constraint":        DiffPropertyConstraint,
+		"default":           DiffPropertyDefault,
+		"conformance":       DiffPropertyConformance,
+		"nullable":          DiffPropertyNullable,
+		"access":            DiffPropertyAccess,
+		"bit":               DiffPropertyBit,
+		"value":             DiffPropertyValue,
+		"fabricScoping":     DiffPropertyFabricScoping,
+		"fabricSensitivity": DiffPropertyFabricSensitivity,
+		"commandResponse":   DiffPropertyCommandResponse,
+		"commandDirection":  DiffPropertyCommandDirection,
+		"priority":          DiffPropertyPriority,
 	}
 )
 
@@ -144,4 +166,90 @@ func (s *DiffType) UnmarshalJSON(data []byte) (err error) {
 		return fmt.Errorf("unknown diff type: %s", ss)
 	}
 	return nil
+}
+
+type IdentifiedDiff struct {
+	Type   DiffType               `json:"type,omitempty"`
+	Entity mattertypes.EntityType `json:"entity,omitempty"`
+	ID     *matter.Number         `json:"id,omitempty"`
+	Name   string                 `json:"name,omitempty"`
+	Diffs  []any                  `json:"diffs,omitempty"`
+}
+
+type MaskDiff struct {
+	Type   DiffType               `json:"type,omitempty"`
+	Entity mattertypes.EntityType `json:"entity,omitempty"`
+	Mask   uint64                 `json:"mask"`
+	Diffs  []any                  `json:"diffs,omitempty"`
+}
+
+type MissingDiff struct {
+	Type     DiffType               `json:"type"`
+	Entity   mattertypes.EntityType `json:"entity,omitempty"`
+	Source   Source                 `json:"source,omitempty"`
+	Property DiffProperty           `json:"property,omitempty"`
+	ID       *matter.Number         `json:"id,omitempty"`
+	Name     string                 `json:"name,omitempty"`
+	Code     string                 `json:"code,omitempty"`
+}
+
+func newMissingDiff(name string, props ...any) *MissingDiff {
+	diff := &MissingDiff{Type: DiffTypeMissing, Name: name}
+	for _, prop := range props {
+		switch prop := prop.(type) {
+		case string:
+			diff.Code = prop
+		case mattertypes.EntityType:
+			diff.Entity = prop
+		case Source:
+			diff.Source = prop
+		case *matter.Number:
+			diff.ID = prop
+		case DiffProperty:
+			diff.Property = prop
+		}
+	}
+	return diff
+}
+
+type StringDiff struct {
+	Type     DiffType     `json:"type"`
+	Property DiffProperty `json:"property"`
+	Spec     string       `json:"spec"`
+	ZAP      string       `json:"zap"`
+}
+
+type BoolDiff struct {
+	Type     DiffType     `json:"type"`
+	Property DiffProperty `json:"property"`
+	Spec     bool         `json:"spec"`
+	ZAP      bool         `json:"zap"`
+}
+
+type Missing struct {
+	Type     DiffType     `json:"type"`
+	Property DiffProperty `json:"property"`
+	Spec     string       `json:"spec"`
+	ZAP      string       `json:"zap"`
+}
+
+type ConstraintDiff struct {
+	Type     DiffType              `json:"type"`
+	Property DiffProperty          `json:"property"`
+	Spec     constraint.Constraint `json:"spec"`
+	ZAP      constraint.Constraint `json:"zap"`
+}
+
+type QualityDiff struct {
+	Type     DiffType       `json:"type"`
+	Property DiffProperty   `json:"property"`
+	Spec     matter.Quality `json:"spec"`
+	ZAP      matter.Quality `json:"zap"`
+}
+
+type AccessDiff struct {
+	Type     DiffType      `json:"type"`
+	Property DiffProperty  `json:"property"`
+	Spec     matter.Access `json:"spec"`
+	ZAP      matter.Access `json:"zap"`
 }

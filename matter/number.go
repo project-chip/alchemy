@@ -5,16 +5,18 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Number struct {
 	text   string
 	value  int64
-	format NumberFormat
+	format types.NumberFormat
 }
 
 func NewNumber(id uint64) *Number {
-	return &Number{value: int64(id), format: NumberFormatAuto}
+	return &Number{value: int64(id), format: types.NumberFormatAuto}
 }
 
 func ParseNumber(s string) *Number {
@@ -22,14 +24,14 @@ func ParseNumber(s string) *Number {
 	return id
 }
 
-func ParseFormattedNumber(s string) (*Number, NumberFormat) {
+func ParseFormattedNumber(s string) (*Number, types.NumberFormat) {
 	id, err := strconv.ParseUint(s, 10, 64)
 	if err == nil {
 		return &Number{
 			text:   s,
 			value:  int64(id),
-			format: NumberFormatInt,
-		}, NumberFormatInt
+			format: types.NumberFormatInt,
+		}, types.NumberFormatInt
 	}
 
 	id, err = strconv.ParseUint(strings.TrimPrefix(s, "0x"), 16, 64)
@@ -37,20 +39,20 @@ func ParseFormattedNumber(s string) (*Number, NumberFormat) {
 		return &Number{
 			text:   s,
 			value:  int64(id),
-			format: NumberFormatHex,
-		}, NumberFormatHex
+			format: types.NumberFormatHex,
+		}, types.NumberFormatHex
 	}
 	return &Number{
 		text:  s,
 		value: -1,
-	}, NumberFormatAuto
+	}, types.NumberFormatAuto
 }
 
 func (t Number) MarshalJSON() ([]byte, error) {
 	var val strings.Builder
 	val.WriteRune('"')
 	switch t.format {
-	case NumberFormatHex:
+	case types.NumberFormatHex:
 		val.WriteString(t.HexString())
 	default:
 		val.WriteString(t.IntString())
@@ -97,16 +99,30 @@ func (id *Number) Is(oid uint64) bool {
 }
 
 func (id *Number) Valid() bool {
-	return id.value >= 0
+	return id != nil && id.value >= 0
 }
 
 func (id *Number) Value() uint64 {
 	return uint64(id.value)
 }
 
+func (id *Number) Text() string {
+	if id != nil {
+		return id.text
+	}
+	return ""
+}
+
+func (id *Number) Format() types.NumberFormat {
+	if id != nil {
+		return id.format
+	}
+	return types.NumberFormatUndefined
+}
+
 func (id *Number) IntString() string {
 	if !id.Valid() {
-		return id.text
+		return id.Text()
 	}
 	return strconv.FormatInt(id.value, 10)
 }
@@ -134,10 +150,10 @@ func ParseIDRange(s string) (from *Number, to *Number) {
 	return
 }
 
-func ParseFormattedIDRange(s string) (from *Number, fromFormat NumberFormat, to *Number, toFormat NumberFormat) {
+func ParseFormattedIDRange(s string) (from *Number, fromFormat types.NumberFormat, to *Number, toFormat types.NumberFormat) {
 	match := idRangePattern.FindStringSubmatch(s)
 	if len(match) < 3 {
-		return InvalidID, NumberFormatAuto, InvalidID, NumberFormatAuto
+		return InvalidID, types.NumberFormatAuto, InvalidID, types.NumberFormatAuto
 	}
 	from, fromFormat = ParseFormattedNumber(match[1])
 	to, toFormat = ParseFormattedNumber(match[2])

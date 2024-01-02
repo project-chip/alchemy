@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func renderConstraint(con matter.Constraint, dataType *matter.DataType, parent *etree.Element) error {
+func renderConstraint(con constraint.Constraint, dataType *types.DataType, parent *etree.Element) error {
 	if con == nil {
 		return nil
 	}
@@ -19,7 +19,7 @@ func renderConstraint(con matter.Constraint, dataType *matter.DataType, parent *
 	return nil
 }
 
-func renderConstraintElement(name string, con matter.Constraint, dataType *matter.DataType, parent *etree.Element) (cx *etree.Element, err error) {
+func renderConstraintElement(name string, con constraint.Constraint, dataType *types.DataType, parent *etree.Element) (cx *etree.Element, err error) {
 	if con == nil {
 		return
 	}

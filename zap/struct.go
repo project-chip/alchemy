@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type XMLStructField struct {
@@ -28,13 +29,13 @@ type XMLStruct struct {
 	Fields         []XMLStructField `xml:"field"`
 }
 
-func (s *XMLStruct) ToModel() (ms *matter.Struct, err error) {
+func (s *XMLStruct) Struct() (ms *matter.Struct, err error) {
 	ms = &matter.Struct{Name: s.Name}
 	for _, sf := range s.Fields {
 		f := matter.NewField()
 		f.ID = matter.NewNumber(uint64(sf.FieldID))
 		f.Name = sf.Name
-		f.Type = matter.NewDataType(ConvertZapToDataTypeName(sf.Type), sf.IsArray)
+		f.Type = types.NewDataType(ConvertZapToDataTypeName(sf.Type), sf.IsArray)
 		var q matter.Quality
 		if sf.IsNullable {
 			q |= matter.QualityNullable

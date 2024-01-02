@@ -119,7 +119,7 @@ func restoreMissingTypes(doc *ascii.Doc, models []any, missingStructs *concurren
 
 func findMissingTypes(d *ascii.Doc, missingStructs *concurrentMap) (foundCount int) {
 	for _, p := range d.Parents() {
-		models, err := p.ToModel()
+		models, err := p.Entities()
 		if err != nil {
 			slog.Error("error getting models", "err", err)
 			continue
