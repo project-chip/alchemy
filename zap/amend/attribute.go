@@ -135,23 +135,23 @@ func (r *renderer) setAttributeAttributes(el []xml.Attr, a *matter.Field, cluste
 		if a.Access.Write != matter.PrivilegeUnknown {
 			el = setAttributeValue(el, "writable", "true")
 		} else {
-			el = setAttributeValue(el, "writable", "false")
+			el = removeAttribute(el, "writable")
 		}
 		if !conformance.IsMandatory(a.Conformance) {
 			el = setAttributeValue(el, "optional", "true")
 		} else {
-			el = setAttributeValue(el, "optional", "false")
+			el = removeAttribute(el, "optional")
 		}
 	} else {
 		if a.Access.Write != matter.PrivilegeUnknown {
 			el = setAttributeValue(el, "writable", "true")
 		} else {
-			el = setAttributeValue(el, "writable", "false")
+			el = removeAttribute(el, "writable")
 		}
 		if !conformance.IsMandatory(a.Conformance) {
 			el = setAttributeValue(el, "optional", "true")
 		} else {
-			el = setAttributeValue(el, "optional", "false")
+			el = removeAttribute(el, "optional")
 		}
 	}
 	return el
