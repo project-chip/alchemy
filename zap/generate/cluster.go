@@ -14,6 +14,7 @@ import (
 	"github.com/hasty/alchemy/cmd/files"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 	"github.com/hasty/alchemy/zap/amend"
 	"github.com/hasty/alchemy/zap/render"
@@ -117,6 +118,11 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 						err = fmt.Errorf("failed rendering %s: %w", path, err)
 						return err
 					}
+					result, err = parse.FormatXML(result)
+					if err != nil {
+						err = fmt.Errorf("failed formatting %s: %w", path, err)
+						return err
+					}
 					lock.Lock()
 					outputs[newPath] = &renderResult{zcl: result}
 					provisionalZclFiles = append(provisionalZclFiles, filepath.Base(newPath))
@@ -137,6 +143,11 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 						return fmt.Errorf("failed rendering %s: %w", path, err)
 					}
 					result = selfClosingTags.ReplaceAllString(buf.String(), "/>") // Lame limitation of Go's XML encoder
+					result, err = parse.FormatXML(result)
+					if err != nil {
+						return fmt.Errorf("failed formatting %s: %w", path, err)
+					}
+
 					lock.Lock()
 					outputs[newPath] = &renderResult{zcl: result}
 					lock.Unlock()
