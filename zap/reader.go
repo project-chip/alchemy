@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func Read(path string) (models []interface{}, err error) {
+func Read(path string) (entities []interface{}, err error) {
 	var file []byte
 	file, err = os.ReadFile(path)
 	if err != nil {

@@ -38,7 +38,7 @@ func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii
 		}
 		var clusters []*matter.Cluster
 		for _, m := range entities {
-			slog.Debug("model", "type", m)
+			slog.Debug("entity", "type", m)
 			switch m := m.(type) {
 			case *matter.Cluster:
 				clusters = append(clusters, m)

@@ -69,5 +69,5 @@ func init() {
 	Command.Flags().String("zclRoot", "", "the src root of your clone of project-chip/connectedhomeip")
 	Command.Flags().String("address", "localhost", "the address to host the database server on")
 	Command.Flags().Int("port", 3306, "the port to run the database server on")
-	Command.Flags().Bool("raw", false, "parse the sections directly, bypassing model building")
+	Command.Flags().Bool("raw", false, "parse the sections directly, bypassing entity building")
 }

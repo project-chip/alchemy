@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toClusters(d *Doc) (models []mattertypes.Entity, err error) {
+func (s *Section) toClusters(d *Doc) (entities []mattertypes.Entity, err error) {
 	var clusters []*matter.Cluster
 	var description string
 	p := parse.FindFirst[*types.Paragraph](s.Elements)
@@ -62,20 +62,20 @@ func (s *Section) toClusters(d *Doc) (models []mattertypes.Entity, err error) {
 				err = s.toDataTypes(d, c)
 			case matter.SectionClusterID:
 			default:
-				var looseModels []mattertypes.Entity
-				looseModels, err = findLooseModels(d, s)
+				var looseEntities []mattertypes.Entity
+				looseEntities, err = findLooseEntities(d, s)
 				if err != nil {
 					return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
 				}
-				if len(looseModels) > 0 {
-					for _, m := range looseModels {
+				if len(looseEntities) > 0 {
+					for _, m := range looseEntities {
 						switch m := m.(type) {
 						case *matter.Bitmap:
 							c.Bitmaps = append(c.Bitmaps, m)
 						case *matter.Enum:
 							c.Enums = append(c.Enums, m)
 						default:
-							slog.Warn("unexpected loose model", "path", d.Path, "model", m)
+							slog.Warn("unexpected loose entity", "path", d.Path, "entity", m)
 						}
 					}
 				}
@@ -104,9 +104,9 @@ func (s *Section) toClusters(d *Doc) (models []mattertypes.Entity, err error) {
 		}
 	}
 	for _, c := range clusters {
-		models = append(models, c)
+		entities = append(entities, c)
 	}
-	return models, nil
+	return entities, nil
 }
 
 func assignCustomModel(c *matter.Cluster, dt *mattertypes.DataType) {

@@ -18,12 +18,6 @@ type renderer struct {
 	doc  *ascii.Doc
 
 	configurator *zap.Configurator
-	//models []matter.Entity
-
-	//bitmaps  map[*matter.Bitmap]bool
-	//enums    map[*matter.Enum]bool
-	//clusters map[*matter.Cluster]bool
-	//structs  map[*matter.Struct]bool
 
 	errata *zap.Errata
 }

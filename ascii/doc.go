@@ -158,7 +158,7 @@ func (d *Doc) addParent(parent *Doc) {
 	d.Unlock()
 }
 
-func (d *Doc) Entities() (models []mattertypes.Entity, err error) {
+func (d *Doc) Entities() (entities []mattertypes.Entity, err error) {
 	if len(d.entities) > 0 {
 		return d.entities, nil
 	}
@@ -171,14 +171,14 @@ func (d *Doc) Entities() (models []mattertypes.Entity, err error) {
 		AssignSectionTypes(dt, top)
 
 		var m []mattertypes.Entity
-		m, err = top.ToModels(d)
+		m, err = top.ToEntities(d)
 		if err != nil {
 			return
 		}
-		models = append(models, m...)
+		entities = append(entities, m...)
 
 	}
-	d.entities = models
+	d.entities = entities
 	return
 }
 
