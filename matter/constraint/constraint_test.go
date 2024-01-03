@@ -3,9 +3,50 @@ package constraint
 import (
 	"testing"
 
-	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 )
+
+type field struct {
+	Name       string
+	Constraint Constraint
+	Type       *types.DataType
+}
+
+type fieldSet []*field
+
+type constraintTestContext struct {
+	field  *field
+	fields fieldSet
+}
+
+func (cc *constraintTestContext) DataType() *types.DataType {
+	if cc.field != nil {
+		return cc.field.Type
+	}
+	return nil
+}
+
+func (cc *constraintTestContext) getReference(ref string) *field {
+	for _, f := range cc.fields {
+		if f.Name == ref {
+			return f
+		}
+	}
+	return nil
+}
+
+func (cc *constraintTestContext) ReferenceConstraint(ref string) Constraint {
+	f := cc.getReference(ref)
+	if f == nil {
+		return nil
+	}
+	return f.Constraint
+}
+
+func (cc *constraintTestContext) Default(name string) (def types.DataTypeExtreme) {
+
+	return
+}
 
 type constraintTest struct {
 	constraint string
@@ -15,7 +56,7 @@ type constraintTest struct {
 	asciiDoc   string
 	zapMin     string
 	zapMax     string
-	fields     matter.FieldSet
+	fields     fieldSet
 	generic    bool
 }
 
@@ -38,9 +79,9 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
-		fields: matter.FieldSet{
-			{Name: "MinMeasuredValue", Constraint: Parse("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: Parse("MinMeasuredValue+1 to 65534")},
+		fields: fieldSet{
+			{Name: "MinMeasuredValue", Constraint: ParseString("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: ParseString("MinMeasuredValue+1 to 65534")},
 		},
 		min:    types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
 		max:    types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
@@ -49,9 +90,9 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "1 to MaxMeasuredValue-1",
-		fields: matter.FieldSet{
-			{Name: "MinMeasuredValue", Constraint: Parse("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: Parse("MinMeasuredValue+1 to 65534")},
+		fields: fieldSet{
+			{Name: "MinMeasuredValue", Constraint: ParseString("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: ParseString("MinMeasuredValue+1 to 65534")},
 		},
 		min:      types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
 		max:      types.NewIntDataTypeExtreme(65533, types.NumberFormatInt),
@@ -61,9 +102,9 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "MinMeasuredValue+1 to 65534",
-		fields: matter.FieldSet{
-			{Name: "MinMeasuredValue", Constraint: Parse("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: Parse("MinMeasuredValue+1 to 65534")},
+		fields: fieldSet{
+			{Name: "MinMeasuredValue", Constraint: ParseString("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: ParseString("MinMeasuredValue+1 to 65534")},
 		},
 		min:      types.NewIntDataTypeExtreme(2, types.NumberFormatInt),
 		max:      types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
@@ -345,7 +386,7 @@ var constraintTests = []constraintTest{
 
 func TestSuite(t *testing.T) {
 	for _, ct := range constraintTests {
-		c := Parse(ct.constraint)
+		c := ParseString(ct.constraint)
 		_, isGeneric := c.(*GenericConstraint)
 		if ct.generic {
 			if !isGeneric {
@@ -356,15 +397,15 @@ func TestSuite(t *testing.T) {
 			t.Errorf("failed to parse constraint %s", ct.constraint)
 			continue
 		}
-		minField := matter.NewField()
+		minField := &field{}
 		minField.Type = ct.dataType
-		min := c.Min(&matter.ConstraintContext{Fields: ct.fields, Field: minField})
+		min := c.Min(&constraintTestContext{fields: ct.fields, field: minField})
 		if min != ct.min {
 			t.Errorf("incorrect min value for \"%s\": expected %d, got %d", ct.constraint, ct.min, min)
 		}
-		maxField := matter.NewField()
+		maxField := &field{}
 		maxField.Type = ct.dataType
-		max := c.Max(&matter.ConstraintContext{Fields: ct.fields, Field: maxField})
+		max := c.Max(&constraintTestContext{fields: ct.fields, field: maxField})
 		if max != ct.max {
 			t.Errorf("incorrect max value for \"%s\": expected %d, got %d", ct.constraint, ct.max, max)
 		}
