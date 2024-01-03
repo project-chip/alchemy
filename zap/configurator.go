@@ -21,7 +21,7 @@ type Configurator struct {
 	ClusterIDs []string
 }
 
-func NewConfigurator(spec *matter.Spec, doc *ascii.Doc, models []types.Entity) (*Configurator, error) {
+func NewConfigurator(spec *matter.Spec, doc *ascii.Doc, entities []types.Entity) (*Configurator, error) {
 	c := &Configurator{
 		spec:     spec,
 		doc:      doc,
@@ -30,7 +30,7 @@ func NewConfigurator(spec *matter.Spec, doc *ascii.Doc, models []types.Entity) (
 		Clusters: make(map[*matter.Cluster]bool),
 		Structs:  make(map[*matter.Struct]bool),
 	}
-	for _, m := range models {
+	for _, m := range entities {
 		switch v := m.(type) {
 		case *matter.Cluster:
 
@@ -73,14 +73,14 @@ func (c *Configurator) addType(dt *types.DataType) {
 		return
 	}
 
-	model := dt.Entity
-	if model == nil {
-		slog.Warn("skipping data type with no model", "name", dt.Name)
+	entity := dt.Entity
+	if entity == nil {
+		slog.Warn("skipping data type with no entity", "name", dt.Name)
 		return
 	}
-	path := c.spec.DocRefs[model]
+	path := c.spec.DocRefs[entity]
 	if path != c.doc.Path {
-		// This model came from a different document, and will thus end up in its xml file, so should not be repeated here
+		// This entity came from a different document, and will thus end up in its xml file, so should not be repeated here
 		slog.Warn("skipping data type from another document", "name", dt.Name)
 		return
 	}

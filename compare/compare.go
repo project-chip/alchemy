@@ -38,17 +38,17 @@ func Compare(cxt context.Context, specRoot string, zclRoot string, settings []co
 		return err
 	}
 
-	zapModels, err := loadZAPModels(zclRoot)
+	zapEntities, err := loadZAPEntities(zclRoot)
 
 	if err != nil {
 		return err
 	}
 
-	specModels, err := loadSpecClusterPaths(spec, zclRoot)
+	specEntities, err := loadSpecClusterPaths(spec, zclRoot)
 	if err != nil {
 		return err
 	}
-	diffs, err := compareModels(specModels, zapModels)
+	diffs, err := compareEntities(specEntities, zapEntities)
 	if err != nil {
 		return err
 	}
@@ -170,13 +170,13 @@ func getAppDomains(specRoot string, settings []configuration.Setting) ([]string,
 	return appClusterPaths, domains, nil
 }
 
-func loadZAPModels(zclRoot string) (map[string][]mattertypes.Entity, error) {
+func loadZAPEntities(zclRoot string) (map[string][]mattertypes.Entity, error) {
 	zapPath := filepath.Join(zclRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")
 	xmlFiles, err := filepath.Glob(zapPath)
 	if err != nil {
 		return nil, err
 	}
-	zapModels := make(map[string][]mattertypes.Entity)
+	zapEntities := make(map[string][]mattertypes.Entity)
 	for _, f := range xmlFiles {
 		slog.Debug("ZAP file", slog.String("path", f))
 
@@ -185,15 +185,15 @@ func loadZAPModels(zclRoot string) (map[string][]mattertypes.Entity, error) {
 			return nil, err
 		}
 		defer file.Close()
-		var models []mattertypes.Entity
-		models, err = zparse.ZAP(file)
+		var entities []mattertypes.Entity
+		entities, err = zparse.ZAP(file)
 		if err != nil {
 			return nil, err
 		}
 
-		zapModels[f] = models
+		zapEntities[f] = entities
 	}
-	return zapModels, nil
+	return zapEntities, nil
 }
 
 func compareConformance(spec conformance.Set, zap conformance.Set) (diffs []any) {

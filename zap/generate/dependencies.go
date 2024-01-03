@@ -8,8 +8,8 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func findDependencies(spec *matter.Spec, models []types.Entity, dependencies *concurrentMap[bool]) {
-	for _, m := range models {
+func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies *concurrentMap[bool]) {
+	for _, m := range entities {
 		switch m := m.(type) {
 		case *matter.Cluster:
 			findClusterDependencies(spec, m, dependencies)
@@ -49,7 +49,7 @@ func findDataTypeDependencies(spec *matter.Spec, dt *types.DataType, dependencie
 	if dt.Entity != nil {
 		path, ok := spec.DocRefs[dt.Entity]
 		if !ok {
-			slog.Warn("missing document for data type", "name", dt.Name, "model", dt.Entity, "pointer", fmt.Sprintf("%p", dt.Entity))
+			slog.Warn("missing document for data type", "name", dt.Name, "entity", dt.Entity, "pointer", fmt.Sprintf("%p", dt.Entity))
 			return
 		}
 		dependencies.Lock()

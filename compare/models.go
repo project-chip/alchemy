@@ -11,17 +11,17 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareModels(specModels map[string][]types.Entity, zapModels map[string][]types.Entity) (diffs []any, err error) {
-	for path, sm := range specModels {
+func compareEntities(specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []any, err error) {
+	for path, sm := range specEntities {
 		if filepath.Base(path) != "thread-network-diagnostics-cluster.xml" {
 			//continue
 		}
-		zm, ok := zapModels[path]
+		zm, ok := zapEntities[path]
 		if !ok {
-			slog.Warn("missing from ZAP models", slog.String("path", path))
+			slog.Warn("missing from ZAP entities", slog.String("path", path))
 			continue
 		}
-		slog.Debug("found in ZAP models", slog.String("path", path))
+		slog.Debug("found in ZAP entities", slog.String("path", path))
 
 		specClusters := make(map[uint64]*matter.Cluster)
 		for _, m := range sm {
@@ -29,7 +29,7 @@ func compareModels(specModels map[string][]types.Entity, zapModels map[string][]
 			case *matter.Cluster:
 				specClusters[v.ID.Value()] = v
 			default:
-				slog.Warn("unexpected spec model", slog.String("path", path), slog.String("type", fmt.Sprintf("%T", m)))
+				slog.Warn("unexpected spec entity", slog.String("path", path), slog.String("type", fmt.Sprintf("%T", m)))
 			}
 		}
 		zapClusters := make(map[uint64]*matter.Cluster)
@@ -38,11 +38,11 @@ func compareModels(specModels map[string][]types.Entity, zapModels map[string][]
 			case *matter.Cluster:
 				zapClusters[v.ID.Value()] = v
 			default:
-				slog.Warn("unexpected ZAP model", slog.String("path", path), slog.String("type", fmt.Sprintf("%T", m)))
+				slog.Warn("unexpected ZAP entity", slog.String("path", path), slog.String("type", fmt.Sprintf("%T", m)))
 			}
 
 		}
-		delete(zapModels, path)
+		delete(zapEntities, path)
 		for cid, sc := range specClusters {
 			if zc, ok := zapClusters[cid]; ok {
 				var clusterDiffs *ClusterDifferences
@@ -55,7 +55,7 @@ func compareModels(specModels map[string][]types.Entity, zapModels map[string][]
 				}
 				delete(zapClusters, cid)
 			} else {
-				slog.Debug("missing from spec models", slog.Uint64("clusterId", cid), slog.String("path", path))
+				slog.Debug("missing from spec entities", slog.Uint64("clusterId", cid), slog.String("path", path))
 			}
 		}
 		for cid := range zapClusters {
@@ -63,13 +63,13 @@ func compareModels(specModels map[string][]types.Entity, zapModels map[string][]
 		}
 	}
 
-	var missingZapModels []string
-	for path := range zapModels {
-		missingZapModels = append(missingZapModels, path)
+	var missingZapEntities []string
+	for path := range zapEntities {
+		missingZapEntities = append(missingZapEntities, path)
 	}
-	slices.Sort(missingZapModels)
-	for _, path := range missingZapModels {
-		slog.Warn("missing from spec models", slog.String("path", path))
+	slices.Sort(missingZapEntities)
+	for _, path := range missingZapEntities {
+		slog.Warn("missing from spec entities", slog.String("path", path))
 	}
 	slices.SortFunc(diffs, func(a, b any) int {
 		acd, ok := a.(*ClusterDifferences)

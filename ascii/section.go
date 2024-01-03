@@ -249,7 +249,7 @@ func deriveSectionType(section *Section) matter.Section {
 	return matter.SectionUnknown
 }
 
-func (s *Section) ToModels(d *Doc) ([]mattertypes.Entity, error) {
+func (s *Section) ToEntities(d *Doc) ([]mattertypes.Entity, error) {
 	var models []mattertypes.Entity
 	switch s.SecType {
 	case matter.SectionCluster:
@@ -267,7 +267,7 @@ func (s *Section) ToModels(d *Doc) ([]mattertypes.Entity, error) {
 	default:
 		var err error
 		var looseModels []mattertypes.Entity
-		looseModels, err = findLooseModels(d, s)
+		looseModels, err = findLooseEntities(d, s)
 		if err != nil {
 			return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
 		}
@@ -331,7 +331,7 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 	return nil
 }
 
-func findLooseModels(doc *Doc, section *Section) (models []mattertypes.Entity, err error) {
+func findLooseEntities(doc *Doc, section *Section) (models []mattertypes.Entity, err error) {
 	parse.Traverse(doc, section.Elements, func(section *Section, parent parse.HasElements, index int) bool {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:

@@ -43,13 +43,13 @@ var Command = &cobra.Command{
 				}
 				dumpElements(doc, doc.Elements, 0)
 			} else if jsonOut {
-				models, err := doc.Entities()
+				entities, err := doc.Entities()
 				if err != nil {
-					return fmt.Errorf("error parsing model %s: %w", f, err)
+					return fmt.Errorf("error parsing entities %s: %w", f, err)
 				}
 				encoder := json.NewEncoder(os.Stdout)
 				//encoder.SetIndent("", "\t")
-				return encoder.Encode(models)
+				return encoder.Encode(entities)
 			} else {
 				dumpElements(doc, doc.Base.Elements, 0)
 			}
