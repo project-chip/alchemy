@@ -8,9 +8,10 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/parse"
 )
 
-func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, events map[*matter.Event]struct{}) (err error) {
+func (r *renderer) amendEvent(cluster *matter.Cluster, ts *parse.XmlTokenSet, e xmlEncoder, el xml.StartElement, events map[*matter.Event]struct{}) (err error) {
 	code := getAttributeValue(el.Attr, "code")
 	eventID := matter.ParseNumber(code)
 
@@ -27,7 +28,7 @@ func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncode
 	}
 
 	if matchingEvent == nil {
-		Ignore(ts, "event")
+		ts.Ignore("event")
 		return nil
 	}
 
@@ -54,11 +55,11 @@ func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncode
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				err = writeThrough(ts, e, t)
+				err = ts.WriteElement(e, t)
 			case "field":
 				for {
 					if fieldIndex >= len(matchingEvent.Fields) {
-						Ignore(ts, "field")
+						ts.Ignore("field")
 						break
 					} else {
 						f := matchingEvent.Fields[fieldIndex]
@@ -69,7 +70,7 @@ func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncode
 
 						t.Attr = setAttributeValue(t.Attr, "id", f.ID.IntString())
 						t.Attr = r.setFieldAttributes(f, t.Attr, matchingEvent.Fields)
-						err = writeThrough(ts, e, t)
+						err = ts.WriteElement(e, t)
 						if err != nil {
 							return
 						}
@@ -79,16 +80,16 @@ func (r *renderer) amendEvent(cluster *matter.Cluster, ts *tokenSet, e xmlEncode
 			case "access":
 				{
 					if !needsAccess {
-						Ignore(ts, "access")
+						ts.Ignore("access")
 					} else {
 						r.setAccessAttributes(t.Attr, "read", matchingEvent.Access.Read)
-						err = writeThrough(ts, e, t)
+						err = ts.WriteElement(e, t)
 						needsAccess = false
 					}
 				}
 			default:
 				slog.Warn("unexpected element in event", "name", t.Name.Local)
-				err = Ignore(ts, t.Name.Local)
+				err = ts.Ignore(t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

@@ -9,29 +9,30 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
+func (r *renderer) amendStruct(ts *parse.XmlTokenSet, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
 	name := getAttributeValue(el.Attr, "name")
 
 	var skip bool
 	var matchingStruct *matter.Struct
+	var remainingClusterIDs []string
 	for s, handled := range r.configurator.Structs {
 		if s.Name == name || strings.TrimSuffix(s.Name, "Struct") == name {
 			matchingStruct = s
-			skip = handled
-			r.configurator.Structs[s] = true
+			skip = len(handled) == 0
+			remainingClusterIDs = handled
+			r.configurator.Structs[s] = nil
 			break
 		}
 	}
 
 	if matchingStruct == nil || skip {
-		err = Ignore(d, "struct")
+		err = ts.Ignore("struct")
 		return
 	}
-
-	remainingClusterIDs := r.getClusterCodes(matchingStruct)
 
 	if r.errata.SeparateStructs != nil {
 		if _, ok := r.errata.SeparateStructs[name]; ok {
@@ -55,7 +56,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 
 	for {
 		var tok xml.Token
-		tok, err = d.Token()
+		tok, err = ts.Token()
 		if tok == nil || err == io.EOF {
 			err = io.EOF
 			return
@@ -67,7 +68,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				err = writeThrough(d, e, t)
+				err = ts.WriteElement(e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
 				id := matter.ParseNumber(code)
@@ -77,7 +78,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 						return ids == s
 					})
 				}
-				err = writeThrough(d, e, t)
+				err = ts.WriteElement(e, t)
 			case "item":
 				if len(remainingClusterIDs) > 0 {
 					err = r.renderClusterCodes(e, remainingClusterIDs)
@@ -88,7 +89,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 				}
 				for {
 					if fieldIndex >= len(matchingStruct.Fields) {
-						Ignore(d, "item")
+						ts.Ignore("item")
 						break
 					} else {
 						f := matchingStruct.Fields[fieldIndex]
@@ -99,7 +100,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 
 						t.Attr = setAttributeValue(t.Attr, "fieldId", f.ID.IntString())
 						t.Attr = r.setFieldAttributes(f, t.Attr, matchingStruct.Fields)
-						err = writeThrough(d, e, t)
+						err = ts.WriteElement(e, t)
 						if err != nil {
 							return
 						}
@@ -109,7 +110,7 @@ func (r *renderer) amendStruct(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 
 			default:
 				slog.Warn("unexpected element in struct", "name", t.Name.Local)
-				err = Ignore(d, t.Name.Local)
+				err = ts.Ignore(t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

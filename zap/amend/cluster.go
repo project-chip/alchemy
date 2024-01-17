@@ -10,23 +10,32 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/parse"
 	"github.com/iancoleman/strcase"
 )
 
-func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement) (err error) {
-	var clusterTokens []xml.Token
-	clusterTokens, err = Extract(d, el)
+func (r *renderer) amendCluster(d parse.XmlDecoder, e xmlEncoder, el xml.StartElement) (err error) {
+	var clusterTokens *parse.XmlTokenSet
+	clusterTokens, err = parse.XmlExtract(d, el)
 	if err != nil {
 		return
 	}
 	var clusterID *matter.Number
-	for i, tok := range clusterTokens {
+	for {
+		var tok xml.Token
+		tok, err = clusterTokens.Token()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return
+		}
 		switch t := tok.(type) {
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "code":
 				var cid string
-				cid, err = getSimpleElement(clusterTokens[i+1:], "code")
+				cid, err = clusterTokens.ReadElement(t.Name.Local)
 				if err != nil {
 					err = fmt.Errorf("error amending cluster code: %w", err)
 					return
@@ -41,7 +50,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 
 	if clusterID == nil {
 		// Can't find cluster ID, so dump
-		err = writeTokens(e, clusterTokens)
+		err = clusterTokens.Write(e)
 		return
 	}
 
@@ -57,8 +66,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 
 	if cluster == nil || skip {
 		// We don't have this cluster in the spec; leave it here for now
-
-		err = writeTokens(e, clusterTokens)
+		err = clusterTokens.Write(e)
 		return
 	}
 
@@ -103,11 +111,11 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 	var hasCommentCharDataPending bool
 	var lastIgnoredCharData xml.CharData
 
-	ts := &tokenSet{tokens: clusterTokens}
+	clusterTokens.Reset()
 
 	for {
 		var tok xml.Token
-		tok, err = ts.Token()
+		tok, err = clusterTokens.Token()
 		if tok == nil || err == io.EOF {
 			err = io.EOF
 			return
@@ -119,7 +127,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				err = writeThrough(ts, e, t)
+				err = clusterTokens.WriteElement(e, t)
 			case "attribute":
 				if lastSection != matter.SectionAttribute {
 					err = r.flushUnusedClusterElements(cluster, e, lastSection, clusterValues, attributes, events, commands, clusterPrefix)
@@ -128,7 +136,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 					}
 				}
 				lastSection = matter.SectionAttribute
-				err = r.amendAttribute(cluster, ts, e, t, attributes, clusterPrefix)
+				err = r.amendAttribute(cluster, clusterTokens, e, t, attributes, clusterPrefix)
 			case "command":
 				if lastSection != matter.SectionCommand {
 					err = r.flushUnusedClusterElements(cluster, e, lastSection, clusterValues, attributes, events, commands, clusterPrefix)
@@ -137,7 +145,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 					}
 				}
 				lastSection = matter.SectionCommand
-				err = r.amendCommand(cluster, ts, e, t, commands)
+				err = r.amendCommand(cluster, clusterTokens, e, t, commands)
 			case "event":
 				if lastSection != matter.SectionEvent {
 					err = r.flushUnusedClusterElements(cluster, e, lastSection, clusterValues, attributes, events, commands, clusterPrefix)
@@ -146,7 +154,7 @@ func (r *renderer) amendCluster(d xmlDecoder, e xmlEncoder, el xml.StartElement)
 					}
 				}
 				lastSection = matter.SectionEvent
-				err = r.amendEvent(cluster, ts, e, t, events)
+				err = r.amendEvent(cluster, clusterTokens, e, t, events)
 			case "client", "server":
 				e.EncodeToken(t)
 				hasCommentCharDataPending = true
@@ -322,10 +330,10 @@ func (*renderer) renderClusterCodes(e xmlEncoder, clusterIDs []string) (err erro
 	return
 }
 
-func (r *renderer) getClusterCodes(model types.Entity) (clusterIDs []string) {
-	refs, ok := r.spec.ClusterRefs[model]
+func (r *renderer) getClusterCodes(entity types.Entity) (clusterIDs []string) {
+	refs, ok := r.spec.ClusterRefs[entity]
 	if !ok {
-		slog.Warn("unknown cluster ref", "val", model)
+		slog.Warn("unknown cluster ref", "val", entity)
 		return
 	}
 	for ref := range refs {

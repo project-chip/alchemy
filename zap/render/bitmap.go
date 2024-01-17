@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) renderBitmaps(bitmaps map[*matter.Bitmap]bool, cx *etree.Element) {
+func (r *renderer) renderBitmaps(bitmaps map[*matter.Bitmap][]string, cx *etree.Element) {
 	bms := make([]*matter.Bitmap, 0, len(bitmaps))
 	for bm := range bitmaps {
 		bms = append(bms, bm)

@@ -1,211 +1,175 @@
 package generate
 
 import (
-	"bytes"
-	"context"
-	"errors"
-	"fmt"
 	"log/slog"
-	"os"
-	"path/filepath"
-	"sync"
+	"strconv"
 
-	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/cmd/files"
+	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
-	"github.com/hasty/alchemy/zap/amend"
-	"github.com/hasty/alchemy/zap/render"
+	"github.com/iancoleman/strcase"
 )
 
-type concurrentMap[T any] struct {
-	Map map[string]T
-	sync.Mutex
-}
+func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
 
-type renderResult struct {
-	zcl string
-}
-
-func getDocDomain(doc *ascii.Doc) matter.Domain {
-	if doc.Domain != matter.DomainUnknown {
-		return doc.Domain
-	}
-	for _, p := range doc.Parents() {
-		d := getDocDomain(p)
-		if d != matter.DomainUnknown {
-			return d
+	for _, cle := range ce.SelectElements("cluster") {
+		code, ok := readSimpleElement(cle, "code")
+		if !ok {
+			slog.Warn("missing code element in cluster", slog.String("path", configurator.Doc.Path))
+			continue
 		}
-	}
-	return matter.DomainUnknown
-}
+		clusterId := matter.ParseNumber(code)
+		if !clusterId.Valid() {
+			slog.Warn("invalid code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterId.Text()))
+			continue
+		}
 
-func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[string]*ascii.Doc, targetDocs []*ascii.Doc, zclRoot string, filesOptions files.Options, overwrite bool) (outputs map[string]*renderResult, provisionalZclFiles []string, err error) {
-	var lock sync.Mutex
-	outputs = make(map[string]*renderResult)
-	slog.InfoContext(cxt, "Rendering ZAP templates...")
-
-	dependencies := &concurrentMap[bool]{Map: make(map[string]bool)}
-
-	for len(targetDocs) > 0 {
-
-		err = files.ProcessDocs(cxt, targetDocs, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
-
-			path := doc.Path
-
-			errata, ok := zap.Erratas[filepath.Base(path)]
-			if !ok {
-				errata = zap.DefaultErrata
+		var cluster *matter.Cluster
+		var skip bool
+		for c, handled := range configurator.Clusters {
+			if c.ID.Equals(clusterId) {
+				cluster = c
+				skip = handled
+				configurator.Clusters[c] = true
 			}
+		}
 
-			models, err := doc.Entities()
-			if err != nil {
-				return err
-			}
+		if skip {
+			continue
+		}
 
-			destinations := buildDestinations(zclRoot, doc, models, errata)
-
-			dependencies.Lock()
-			dependencies.Map[path] = true
-			dependencies.Unlock()
-
-			for newPath, models := range destinations {
-
-				if len(models) == 0 {
-					continue
-				}
-
-				findDependencies(spec, models, dependencies)
-
-				doc.Domain = getDocDomain(doc)
-
-				if doc.Domain == matter.DomainUnknown {
-					if errata.Domain != matter.DomainUnknown {
-						doc.Domain = errata.Domain
-					} else {
-						doc.Domain = matter.DomainGeneral
-					}
-				}
-
-				var clusters []types.Entity
-				for _, m := range models {
-					switch m := m.(type) {
-					case *matter.Cluster:
-						clusters = append(clusters, m)
-					}
-				}
-				if len(clusters) == 0 {
-					slog.DebugContext(cxt, "Skipped spec file with no clusters", "from", path, "to", newPath, "index", index, "count", total)
-					return err
-				}
-
-				configurator, err := zap.NewConfigurator(spec, doc, clusters)
-				if err != nil {
-					return err
-				}
-
-				var result string
-
-				existing, err := os.ReadFile(newPath)
-				if errors.Is(err, os.ErrNotExist) || overwrite {
-					if filesOptions.Serial {
-						slog.InfoContext(cxt, "Rendering new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
-					}
-					result, err = render.Render(cxt, spec, doc, configurator, errata)
-					if err != nil {
-						err = fmt.Errorf("failed rendering %s: %w", path, err)
-						return err
-					}
-					result, err = parse.FormatXML(result)
-					if err != nil {
-						err = fmt.Errorf("failed formatting %s: %w", path, err)
-						return err
-					}
-					lock.Lock()
-					outputs[newPath] = &renderResult{zcl: result}
-					provisionalZclFiles = append(provisionalZclFiles, filepath.Base(newPath))
-					lock.Unlock()
-					if filesOptions.Serial {
-						slog.InfoContext(cxt, "Rendered new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
-					}
-				} else if err != nil {
-					return err
-				} else {
-					if filesOptions.Serial {
-						slog.InfoContext(cxt, "Rendering existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
-					}
-					var buf bytes.Buffer
-
-					err = amend.Render(spec, doc, bytes.NewReader(existing), &buf, configurator, errata)
-					if err != nil {
-						return fmt.Errorf("failed rendering %s: %w", path, err)
-					}
-					result = selfClosingTags.ReplaceAllString(buf.String(), "/>") // Lame limitation of Go's XML encoder
-					result, err = parse.FormatXML(result)
-					if err != nil {
-						return fmt.Errorf("failed formatting %s: %w", path, err)
-					}
-
-					lock.Lock()
-					outputs[newPath] = &renderResult{zcl: result}
-					lock.Unlock()
-					if filesOptions.Serial {
-						slog.InfoContext(cxt, "Rendered existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
-					}
-				}
-			}
-			return nil
-		}, filesOptions)
+		if cluster == nil {
+			// We don't have this cluster in the spec; leave it here for now
+			slog.Warn("unknown code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterId.Text()))
+			continue
+		}
+		err = populateCluster(configurator, cle, cluster, errata)
 		if err != nil {
 			return
 		}
+	}
 
-		targetDocs = nil
-
-		if len(dependencies.Map) > 0 {
-			for dep, handled := range dependencies.Map {
-				if handled {
-					continue
-				}
-				targetDoc, ok := docs[dep]
-				if ok {
-					slog.Info("Adding dependent doc to render list", "path", dep)
-					targetDocs = append(targetDocs, targetDoc)
-				} else {
-					slog.Warn("unknown dependency path", "path", dep)
-				}
-			}
+	for cluster, handled := range configurator.Clusters {
+		if handled {
+			continue
+		}
+		cle := etree.NewElement("cluster")
+		cle.CreateAttr("code", cluster.ID.HexString())
+		appendElement(ce, cle, "struct", "enum", "bitmap", "domain")
+		err = populateCluster(configurator, cle, cluster, errata)
+		if err != nil {
+			return
 		}
 	}
 	return
 }
 
-func buildDestinations(zclRoot string, doc *ascii.Doc, models []types.Entity, errata *zap.Errata) (destinations map[string][]types.Entity) {
-	destinations = make(map[string][]types.Entity)
-	if len(errata.ClusterSplit) == 0 {
-		newFile := zap.ZAPName(doc.Path, errata, models)
-		newPath := getZapPath(zclRoot, newFile)
-		destinations[newPath] = models
+func populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+
+	var define string
+	var clusterPrefix string
+
+	define = strcase.ToScreamingDelimited(cluster.Name+" Cluster", '_', "", true)
+	if len(errata.ClusterDefinePrefix) > 0 {
+		clusterPrefix = errata.ClusterDefinePrefix
+	}
+
+	attributes := make(map[*matter.Field]struct{})
+	events := make(map[*matter.Event]struct{})
+	commands := make(map[*matter.Command]struct{})
+
+	for _, a := range cluster.Attributes {
+		attributes[a] = struct{}{}
+	}
+
+	for _, e := range cluster.Events {
+		events[e] = struct{}{}
+	}
+
+	for _, c := range cluster.Commands {
+		commands[c] = struct{}{}
+	}
+
+	setOrCreateSimpleElement(cle, "domain", matter.DomainNames[configurator.Doc.Domain])
+	setOrCreateSimpleElement(cle, "name", cluster.Name, "domain")
+	setOrCreateSimpleElement(cle, "code", cluster.ID.HexString(), "name", "domain")
+	setOrCreateSimpleElement(cle, "define", define, "code", "name", "domain")
+
+	if cle.SelectElement("description") == nil {
+		setOrCreateSimpleElement(cle, "description", cluster.Description, "define", "code", "name", "domain")
+	}
+
+	if client := cle.SelectElement("client"); client == nil {
+		client = setOrCreateSimpleElement(cle, "client", "true", "description", "define", "code", "name", "domain")
+		client.CreateAttr("init", "false")
+		client.CreateAttr("tick", "false")
+		client.SetText("true")
+	}
+	if server := cle.SelectElement("server"); server == nil {
+		server = setOrCreateSimpleElement(cle, "server", "true", "client", "description", "define", "code", "name", "domain")
+		server.CreateAttr("init", "false")
+		server.CreateAttr("tick", "false")
+		server.SetText("true")
+	}
+	err = generateClusterGlobalAttributes(configurator, cle, cluster, errata)
+	if err != nil {
 		return
 	}
-	for clusterID, path := range errata.ClusterSplit {
-		cid := matter.ParseNumber(clusterID)
-		if !cid.Valid() {
-			slog.Warn("invalid cluster split ID", "id", clusterID)
-			continue
-		}
-		var clusters []types.Entity
-		for _, m := range models {
-			switch m := m.(type) {
-			case *matter.Cluster:
-				if m.ID.Equals(cid) {
-					clusters = append(clusters, m)
-				}
-			}
-		}
-		destinations[getZapPath(zclRoot, path)] = clusters
+	err = generateAttributes(configurator, cle, cluster, attributes, clusterPrefix, errata)
+	if err != nil {
+		return
+	}
+	err = generateCommands(configurator, cle, cluster, commands, errata)
+	if err != nil {
+		return
+	}
+	err = generateEvents(configurator, cle, cluster, events, errata)
+	if err != nil {
+		return
 	}
 	return
+}
+
+func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+	globalAttributes := cle.SelectElements("globalAttribute")
+	var setClusterRevision bool
+	for _, globalAttribute := range globalAttributes {
+		code := globalAttribute.SelectAttr("code")
+		if code == nil {
+			slog.Warn("globalAttribute element with no code attribute", slog.String("path", configurator.Doc.Path))
+			continue
+		}
+		id := matter.ParseNumber(code.Value)
+		if !id.Valid() {
+			slog.Warn("globalAttribute element with invalid code attribute", slog.String("path", configurator.Doc.Path), slog.String("code", code.Value))
+			continue
+		}
+		setClusterGlobalAttribute(globalAttribute, cluster, id)
+		if id.Value() == 0xFFFD {
+			setClusterRevision = true
+		}
+	}
+	if !setClusterRevision {
+		globalAttribute := etree.NewElement("globalAttribute")
+		id := matter.NewNumber(0xFFFD)
+		globalAttribute.CreateAttr("code", id.HexString())
+		setClusterGlobalAttribute(globalAttribute, cluster, id)
+		appendElement(cle, globalAttribute, "server", "client", "description", "define")
+	}
+	return
+}
+
+func setClusterGlobalAttribute(globalAttribute *etree.Element, cluster *matter.Cluster, id *matter.Number) {
+	switch id.Value() {
+	case 0xFFFD:
+		var lastRevision uint64
+		for _, rev := range cluster.Revisions {
+			revNumber := matter.ParseNumber(rev.Number)
+			if revNumber.Valid() && revNumber.Value() > lastRevision {
+				lastRevision = revNumber.Value()
+			}
+		}
+		globalAttribute.CreateAttr("side", "either")
+		globalAttribute.CreateAttr("value", strconv.FormatUint(lastRevision, 10))
+	}
 }

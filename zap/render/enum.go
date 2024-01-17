@@ -12,7 +12,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) renderEnums(enums map[*matter.Enum]bool, cx *etree.Element) {
+func (r *renderer) renderEnums(enums map[*matter.Enum][]string, cx *etree.Element) {
 
 	ens := make([]*matter.Enum, 0, len(enums))
 	for en := range enums {

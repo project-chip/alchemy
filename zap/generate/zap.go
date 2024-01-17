@@ -26,13 +26,7 @@ type Options struct {
 func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []string, options Options) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
-	docs, err := files.LoadSpec(cxt, specRoot, options.Files, options.Ascii)
-	if err != nil {
-		return err
-	}
-
-	slog.InfoContext(cxt, "Building spec tree...")
-	spec, err := ascii.BuildSpec(docs)
+	spec, docs, err := files.LoadSpec(cxt, specRoot, options.Files, options.Ascii)
 	if err != nil {
 		return err
 	}
@@ -43,7 +37,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 		return err
 	}
 	appClusterIndexes := docsByType[matter.DocTypeAppClusterIndex]
-	deviceTypes := docsByType[matter.DocTypeDeviceType]
+	//deviceTypes := docsByType[matter.DocTypeDeviceType]
 
 	docsByPath := make(map[string]*ascii.Doc)
 	for _, doc := range docs {
@@ -76,6 +70,7 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 			switch m.(type) {
 			case *matter.Cluster:
 				clusters = append(clusters, d)
+
 			}
 		}
 	}
@@ -101,18 +96,10 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 		return err
 	}
 
-	files.ProcessDocs(cxt, deviceTypes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
-		slog.Debug("Device type doc", "name", doc.Path)
-
-		entities, err := doc.Entities()
-		if err != nil {
-			return err
-		}
-		for _, m := range entities {
-			slog.Debug("entity", "type", m)
-		}
-		return nil
-	}, options.Files)
+	err = renderDeviceTypes(cxt, spec, docs, zclRoot, options.Files)
+	if err != nil {
+		return err
+	}
 
 	if !options.Files.DryRun {
 

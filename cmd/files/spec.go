@@ -19,7 +19,7 @@ import (
 // We just cut that out for now
 var doorLockPattern = regexp.MustCompile(`\n+\s*(Schedule ID|User ID)&#8224;\s+`)
 
-func LoadSpec(cxt context.Context, specRoot string, filesOptions Options, asciiSettings []configuration.Setting) (docs []*ascii.Doc, err error) {
+func LoadSpec(cxt context.Context, specRoot string, filesOptions Options, asciiSettings []configuration.Setting) (spec *matter.Spec, docs []*ascii.Doc, err error) {
 	var lock sync.Mutex
 	asciiSettings = append(ascii.GithubSettings(), asciiSettings...)
 
@@ -50,10 +50,18 @@ func LoadSpec(cxt context.Context, specRoot string, filesOptions Options, asciiS
 		docs = append(docs, doc)
 		lock.Unlock()
 		if filesOptions.Serial {
-			slog.DebugContext(cxt, "Parsed spec adoc", "file", file)
+			slog.InfoContext(cxt, "Parsed spec adoc", "file", path)
 		}
 		return nil
 	}, filesOptions)
+
+	if err != nil {
+		return
+	}
+
+	slog.InfoContext(cxt, "Building spec...")
+	spec, err = ascii.BuildSpec(docs)
+
 	return
 }
 

@@ -13,10 +13,10 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
+func (r *renderer) amendFeatures(ts *parse.XmlTokenSet, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
 
 	if cluster.Features == nil {
-		err = Ignore(d, el.Name.Local)
+		err = ts.Ignore(el.Name.Local)
 		return
 	}
 	el.Attr = setAttributeValue(el.Attr, "type", "bitmap32")
@@ -33,7 +33,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 
 	for {
 		var tok xml.Token
-		tok, err = d.Token()
+		tok, err = ts.Token()
 		if tok == nil || err == io.EOF {
 			err = io.EOF
 			return
@@ -45,7 +45,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				err = writeThrough(d, e, t)
+				err = ts.WriteElement(e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
 				id := matter.ParseNumber(code)
@@ -55,7 +55,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 						return ids == s
 					})
 				}
-				err = writeThrough(d, e, t)
+				err = ts.WriteElement(e, t)
 			case "field":
 				if len(remainingClusterIDs) > 0 {
 					err = r.renderClusterCodes(e, remainingClusterIDs)
@@ -66,7 +66,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 				}
 				for {
 					if featureIndex >= len(cluster.Features.Bits) {
-						err = Ignore(d, t.Name.Local)
+						err = ts.Ignore(t.Name.Local)
 						break
 					} else {
 						f := cluster.Features.Bits[featureIndex]
@@ -79,7 +79,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 							err = fmt.Errorf("failed setting feature attributes on feature %s: %w", f.Name, err)
 							return
 						}
-						err = writeThrough(d, e, t)
+						err = ts.WriteElement(e, t)
 						if err != nil {
 							return
 						}
@@ -89,7 +89,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 
 			default:
 				slog.Warn("unexpected element in features", "name", t.Name.Local)
-				err = Ignore(d, t.Name.Local)
+				err = ts.Ignore(t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {
@@ -145,7 +145,7 @@ func (r *renderer) amendFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement
 	}
 }
 
-func (r *renderer) writeFeatures(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
+func (r *renderer) writeFeatures(d *parse.XmlTokenSet, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster, clusterIDs []string) (err error) {
 
 	el = el.Copy()
 
