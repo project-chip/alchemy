@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) renderStructs(structs map[*matter.Struct]bool, cx *etree.Element) {
+func (r *renderer) renderStructs(structs map[*matter.Struct][]string, cx *etree.Element) {
 
 	ss := make([]*matter.Struct, 0, len(structs))
 	for s := range structs {

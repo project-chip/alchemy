@@ -11,25 +11,28 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
+func (r *renderer) amendBitmap(ts *parse.XmlTokenSet, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
 	name := getAttributeValue(el.Attr, "name")
 
 	var matchingBitmap *matter.Bitmap
 	var skip bool
-	for bm, handled := range r.configurator.Bitmaps {
+	var remainingClusterIDs []string
+	for bm, clusterIds := range r.configurator.Bitmaps {
 		if bm.Name == name || strings.TrimSuffix(bm.Name, "Bitmap") == name {
 			matchingBitmap = bm
-			skip = handled
-			r.configurator.Bitmaps[bm] = true
+			remainingClusterIDs = clusterIds
+			skip = len(clusterIds) == 0
+			r.configurator.Bitmaps[bm] = nil
 			break
 		}
 	}
 
 	if matchingBitmap == nil || skip {
-		Ignore(d, "bitmap")
+		ts.Ignore("bitmap")
 		return nil
 	}
 
@@ -40,13 +43,11 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 		return
 	}
 
-	remainingClusterIDs := r.getClusterCodes(matchingBitmap)
-
 	var bitIndex int
 
 	for {
 		var tok xml.Token
-		tok, err = d.Token()
+		tok, err = ts.Token()
 		if tok == nil || err == io.EOF {
 			err = io.EOF
 			return
@@ -58,7 +59,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				err = writeThrough(d, e, t)
+				err = ts.WriteElement(e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
 				id := matter.ParseNumber(code)
@@ -68,7 +69,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 						return ids == s
 					})
 				}
-				err = writeThrough(d, e, t)
+				err = ts.WriteElement(e, t)
 			case "field":
 				if len(remainingClusterIDs) > 0 {
 					err = r.renderClusterCodes(e, remainingClusterIDs)
@@ -79,7 +80,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 				}
 				for {
 					if bitIndex >= len(matchingBitmap.Bits) {
-						Ignore(d, "field")
+						ts.Ignore("field")
 						break
 					} else {
 						b := matchingBitmap.Bits[bitIndex]
@@ -94,7 +95,7 @@ func (r *renderer) amendBitmap(d xmlDecoder, e xmlEncoder, el xml.StartElement, 
 							err = fmt.Errorf("failed setting bitmap attributes on bitmap %s: %w", b.Name, err)
 							return
 						}
-						err = writeThrough(d, e, t)
+						err = ts.WriteElement(e, t)
 						if err != nil {
 							return
 						}

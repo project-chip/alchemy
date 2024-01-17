@@ -49,7 +49,7 @@ func (c *XMLCluster) Cluster() (mc *matter.Cluster, err error) {
 	return
 }
 
-func ZAPName(path string, errata *Errata, models []types.Entity) string {
+func ZAPClusterName(path string, errata *Errata, entities []types.Entity) string {
 
 	if errata.TemplatePath != "" {
 		return errata.TemplatePath
@@ -59,7 +59,7 @@ func ZAPName(path string, errata *Errata, models []types.Entity) string {
 	name := strings.TrimSuffix(path, filepath.Ext(path))
 
 	var suffix string
-	for _, m := range models {
+	for _, m := range entities {
 		switch m.(type) {
 		case *matter.Cluster:
 			suffix = "Cluster"

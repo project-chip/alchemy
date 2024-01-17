@@ -3,15 +3,15 @@ package amend
 import (
 	"encoding/xml"
 	"io"
-	"log/slog"
 	"slices"
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartElement, configurator *zap.Configurator) (err error) {
+func (r *renderer) writeConfigurator(dp parse.XmlDecoder, e xmlEncoder, el xml.StartElement, configurator *zap.Configurator) (err error) {
 
 	var exampleCluster *matter.Cluster
 	for c := range configurator.Clusters {
@@ -25,13 +25,11 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 		//"domain": matter.DomainNames[r.doc.Domain],
 	}
 
-	var configuratorTokens []xml.Token
-	configuratorTokens, err = Extract(dp, el)
+	var configuratorTokens *parse.XmlTokenSet
+	configuratorTokens, err = parse.XmlExtract(dp, el)
 	if err != nil {
 		return
 	}
-
-	ts := &tokenSet{tokens: configuratorTokens}
 
 	var hasCommentCharDataPending bool
 
@@ -40,7 +38,7 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 	var lastSection = matter.SectionUnknown
 	for {
 		var tok xml.Token
-		tok, err = ts.Token()
+		tok, err = configuratorTokens.Token()
 		if tok == nil || err == io.EOF {
 			err = io.EOF
 			return
@@ -49,12 +47,11 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
-			slog.Info("element", "name", t.Name.Local)
 			switch t.Name.Local {
 			case "bitmap":
 				name := getAttributeValue(t.Attr, "name")
 				if name == "Feature" {
-					err = r.amendFeatures(ts, e, t, exampleCluster, configurator.ClusterIDs)
+					err = r.amendFeatures(configuratorTokens, e, t, exampleCluster, configurator.ClusterIDs)
 					if err != nil {
 						return
 					}
@@ -68,7 +65,7 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 					}
 				}
 				lastSection = matter.SectionDataTypeBitmap
-				err = r.amendBitmap(ts, e, t, exampleCluster)
+				err = r.amendBitmap(configuratorTokens, e, t, exampleCluster)
 			case "enum":
 				if lastSection != matter.SectionDataTypeEnum {
 					err = r.flushUnusedConfiguratorValues(e, configurator, lastSection, configuratorAttributes)
@@ -77,7 +74,7 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 					}
 				}
 				lastSection = matter.SectionDataTypeEnum
-				err = r.amendEnum(ts, e, t, exampleCluster)
+				err = r.amendEnum(configuratorTokens, e, t, exampleCluster)
 
 			case "struct":
 				if lastSection != matter.SectionDataTypeStruct {
@@ -88,7 +85,7 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 				}
 
 				lastSection = matter.SectionDataTypeStruct
-				err = r.amendStruct(ts, e, t, exampleCluster)
+				err = r.amendStruct(configuratorTokens, e, t, exampleCluster)
 
 			case "cluster":
 				if lastSection != matter.SectionCluster {
@@ -98,11 +95,11 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 					}
 				}
 				lastSection = matter.SectionCluster
-				err = r.amendCluster(ts, e, t)
+				err = r.amendCluster(configuratorTokens, e, t)
 			case "clusterExtension":
-				err = writeThrough(ts, e, t)
+				err = configuratorTokens.WriteElement(e, t)
 			case "tag":
-				err = writeThrough(ts, e, t)
+				err = configuratorTokens.WriteElement(e, t)
 			default:
 				if v, ok := configuratorAttributes[t.Name.Local]; ok {
 					t.Attr = setAttributeValue(t.Attr, "name", v)
@@ -128,7 +125,7 @@ func (r *renderer) writeConfigurator(dp xmlDecoder, e xmlEncoder, el xml.StartEl
 					return
 				}
 				if needFeatures {
-					r.writeFeatures(ts, e, xml.StartElement{Name: xml.Name{Local: "bitmap"}}, exampleCluster, configurator.ClusterIDs)
+					r.writeFeatures(configuratorTokens, e, xml.StartElement{Name: xml.Name{Local: "bitmap"}}, exampleCluster, configurator.ClusterIDs)
 				}
 				return e.EncodeToken(tok)
 			default:
@@ -187,7 +184,7 @@ func (r *renderer) flushUnusedConfiguratorValues(e xmlEncoder, configurator *zap
 func (r *renderer) flushBitmaps(e xmlEncoder) (err error) {
 	bms := make([]*matter.Bitmap, 0, len(r.configurator.Bitmaps))
 	for bm, handled := range r.configurator.Bitmaps {
-		if handled {
+		if len(handled) == 0 {
 			continue
 		}
 		bms = append(bms, bm)
@@ -197,7 +194,7 @@ func (r *renderer) flushBitmaps(e xmlEncoder) (err error) {
 	})
 	for _, bm := range bms {
 		err = r.writeBitmap(e, xml.StartElement{Name: xml.Name{Local: "bitmap"}}, bm, true)
-		r.configurator.Bitmaps[bm] = true
+		r.configurator.Bitmaps[bm] = nil
 		if err != nil {
 			return
 		}
@@ -208,7 +205,7 @@ func (r *renderer) flushBitmaps(e xmlEncoder) (err error) {
 func (r *renderer) flushEnums(e xmlEncoder) (err error) {
 	ens := make([]*matter.Enum, 0, len(r.configurator.Enums))
 	for en, handled := range r.configurator.Enums {
-		if handled {
+		if len(handled) == 0 {
 			continue
 		}
 		ens = append(ens, en)
@@ -229,7 +226,7 @@ func (r *renderer) flushEnums(e xmlEncoder) (err error) {
 func (r *renderer) flushStructs(e xmlEncoder) (err error) {
 	structs := make([]*matter.Struct, 0, len(r.configurator.Structs))
 	for s, handled := range r.configurator.Structs {
-		if handled {
+		if len(handled) == 0 {
 			continue
 		}
 		structs = append(structs, s)
@@ -239,7 +236,7 @@ func (r *renderer) flushStructs(e xmlEncoder) (err error) {
 	})
 	for _, s := range structs {
 		err = r.writeStruct(e, xml.StartElement{Name: xml.Name{Local: "struct"}}, s, r.getClusterCodes(s), true)
-		r.configurator.Structs[s] = true
+		r.configurator.Structs[s] = nil
 		if err != nil {
 			return
 		}

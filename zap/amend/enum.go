@@ -11,27 +11,28 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
+func (r *renderer) amendEnum(ts *parse.XmlTokenSet, e xmlEncoder, el xml.StartElement, cluster *matter.Cluster) (err error) {
 	name := getAttributeValue(el.Attr, "name")
 
-	slog.Info("checking enums", "name", name, "en", len(r.configurator.Enums), "c", len(cluster.Enums))
 	var matchingEnum *matter.Enum
+	var remainingClusterIDs []string
 	var skip bool
 	for en, handled := range r.configurator.Enums {
-		slog.Info("checking enum", "name", name, "en", en.Name)
 		if en.Name == name || strings.TrimSuffix(en.Name, "Enum") == name {
 			matchingEnum = en
-			skip = handled
-			r.configurator.Enums[en] = true
+			skip = len(handled) == 0
+			remainingClusterIDs = handled
+			r.configurator.Enums[en] = nil
 			break
 		}
 	}
 
 	if matchingEnum == nil || skip {
-		Ignore(d, "enum")
+		ts.Ignore("enum")
 		return nil
 	}
 
@@ -42,13 +43,11 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 		return
 	}
 
-	remainingClusterIDs := r.getClusterCodes(matchingEnum)
-
 	var valueIndex int
 
 	for {
 		var tok xml.Token
-		tok, err = d.Token()
+		tok, err = ts.Token()
 		if tok == nil || err == io.EOF {
 			err = io.EOF
 			return
@@ -60,7 +59,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 		case xml.StartElement:
 			switch t.Name.Local {
 			case "description":
-				err = writeThrough(d, e, t)
+				err = ts.WriteElement(e, t)
 			case "cluster":
 				code := getAttributeValue(t.Attr, "code")
 				id := matter.ParseNumber(code)
@@ -70,7 +69,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 						return ids == s
 					})
 				}
-				err = writeThrough(d, e, t)
+				err = ts.WriteElement(e, t)
 			case "item":
 				if len(remainingClusterIDs) > 0 {
 					err = r.renderClusterCodes(e, remainingClusterIDs)
@@ -81,7 +80,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 				}
 				for {
 					if valueIndex >= len(matchingEnum.Values) {
-						Ignore(d, "item")
+						ts.Ignore("item")
 						break
 					} else {
 						v := matchingEnum.Values[valueIndex]
@@ -90,7 +89,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 							continue
 						}
 						t.Attr = r.setEnumValueAttributes(v, t.Attr, valFormat)
-						err = writeThrough(d, e, t)
+						err = ts.WriteElement(e, t)
 						if err != nil {
 							return
 						}
@@ -100,7 +99,7 @@ func (r *renderer) amendEnum(d xmlDecoder, e xmlEncoder, el xml.StartElement, cl
 
 			default:
 				slog.Warn("unexpected element in enum", "name", t.Name.Local)
-				err = Ignore(d, t.Name.Local)
+				err = ts.Ignore(t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

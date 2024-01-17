@@ -17,15 +17,9 @@ import (
 func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions files.Options, paths []string, asciiSettings []configuration.Setting) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
-	docs, err := files.LoadSpec(cxt, specRoot, filesOptions, asciiSettings)
+	_, docs, err := files.LoadSpec(cxt, specRoot, filesOptions, asciiSettings)
 	if err != nil {
 		return fmt.Errorf("error loading spec from %s: %w", specRoot, err)
-	}
-
-	slog.InfoContext(cxt, "Building spec...")
-	_, err = ascii.BuildSpec(docs)
-	if err != nil {
-		return fmt.Errorf("error building spec from %s: %w", specRoot, err)
 	}
 
 	slog.InfoContext(cxt, "Splitting spec...")

@@ -7,6 +7,7 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 	"github.com/hasty/alchemy/zap/render"
 )
@@ -191,7 +192,7 @@ func (r *renderer) renderConstraint(fs matter.FieldSet, f *matter.Field, attr []
 	return attr
 }
 
-func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
+func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *parse.XmlTokenSet, e xmlEncoder, el xml.StartElement, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
 	code := getAttributeValue(el.Attr, "code")
 
 	attributeID := matter.ParseNumber(code)
@@ -214,7 +215,7 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 	}
 
 	if field == nil {
-		Ignore(ts, "attribute")
+		ts.Ignore("attribute")
 		return nil
 	}
 
@@ -244,30 +245,18 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 			switch t.Name.Local {
 			case "description":
 				if needsAccess {
-					err = writeThrough(ts, e, t)
+					err = ts.WriteElement(e, t)
 					wroteDescription = true
 				} else {
-					err = Ignore(ts, "description")
+					err = ts.Ignore("description")
 				}
 			case "access":
 				if needsAccess && !wroteDescription {
 					if !wroteDescription {
-						elName := xml.Name{Local: "description"}
-						xfs := xml.StartElement{Name: elName}
-						err = e.EncodeToken(xfs)
+						err = parse.XmlWriteSimpleElement(e, "description", field.Name)
 						if err != nil {
 							return
 						}
-						err = e.EncodeToken(xml.CharData(field.Name))
-						if err != nil {
-							return
-						}
-						xfe := xml.EndElement{Name: elName}
-						err = e.EncodeToken(xfe)
-						if err != nil {
-							return
-						}
-
 					}
 				}
 				op := getAttributeValue(t.Attr, "op")
@@ -278,7 +267,7 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 						needsReadAccess = false
 						err = e.EncodeToken(t)
 					} else {
-						err = Ignore(ts, "access")
+						err = ts.Ignore("access")
 					}
 				case "write":
 					if needsWriteAccess {
@@ -286,12 +275,12 @@ func (r *renderer) amendAttribute(cluster *matter.Cluster, ts *tokenSet, e xmlEn
 						needsWriteAccess = false
 						err = e.EncodeToken(t)
 					} else {
-						err = Ignore(ts, "access")
+						err = ts.Ignore("access")
 					}
 				}
 			default:
 				slog.Warn("unexpected element in attribute", "name", t.Name.Local)
-				err = Ignore(ts, t.Name.Local)
+				err = ts.Ignore(t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

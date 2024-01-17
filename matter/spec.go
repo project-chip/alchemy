@@ -8,6 +8,7 @@ type Spec struct {
 	ClustersByID   map[uint64]*Cluster
 	ClustersByName map[string]*Cluster
 	DeviceTypes    map[uint64]*DeviceType
+	BaseDeviceType *DeviceType
 
 	ClusterRefs ClusterRefs
 	DocRefs     map[types.Entity]string

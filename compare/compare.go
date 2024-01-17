@@ -27,13 +27,7 @@ import (
 func Compare(cxt context.Context, specRoot string, zclRoot string, settings []configuration.Setting) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
-	docs, err := files.LoadSpec(cxt, specRoot, files.Options{}, settings)
-	if err != nil {
-		return err
-	}
-
-	slog.InfoContext(cxt, "Building spec tree...")
-	spec, err := ascii.BuildSpec(docs)
+	spec, _, err := files.LoadSpec(cxt, specRoot, files.Options{}, settings)
 	if err != nil {
 		return err
 	}
@@ -59,7 +53,7 @@ func Compare(cxt context.Context, specRoot string, zclRoot string, settings []co
 }
 
 func loadSpecClusterPaths(spec *matter.Spec, zclRoot string) (map[string][]mattertypes.Entity, error) {
-	specModels := make(map[string][]mattertypes.Entity)
+	specEntities := make(map[string][]mattertypes.Entity)
 	specPaths := make(map[string][]mattertypes.Entity)
 	for e, path := range spec.DocRefs {
 		switch e.(type) {
@@ -74,16 +68,16 @@ func loadSpecClusterPaths(spec *matter.Spec, zclRoot string) (map[string][]matte
 			errata = zap.DefaultErrata
 		}
 
-		newFile = zap.ZAPName(path, errata, entities)
+		newFile = zap.ZAPClusterName(path, errata, entities)
 		newFile = strcase.ToKebab(newFile)
 		newPath := filepath.Join(zclRoot, "src/app/zap-templates/zcl/data-model/chip", newFile+".xml")
-		specModels[newPath] = entities
+		specEntities[newPath] = entities
 	}
-	return specModels, nil
+	return specEntities, nil
 }
 
-func loadSpecModels(appClusterPaths []string, settings []configuration.Setting, domains map[string]matter.Domain, zclRoot string) (map[string][]mattertypes.Entity, error) {
-	specModels := make(map[string][]mattertypes.Entity)
+func loadSpecEntities(appClusterPaths []string, settings []configuration.Setting, domains map[string]matter.Domain, zclRoot string) (map[string][]mattertypes.Entity, error) {
+	specEntities := make(map[string][]mattertypes.Entity)
 	for i, file := range appClusterPaths {
 		doc, err := ascii.OpenFile(file, append(ascii.GithubSettings(), settings...)...)
 		if err != nil {
@@ -95,7 +89,7 @@ func loadSpecModels(appClusterPaths []string, settings []configuration.Setting, 
 			doc.Domain = matter.DomainCHIP
 		}
 
-		models, err := doc.Entities()
+		entities, err := doc.Entities()
 		if err != nil {
 			return nil, err
 		}
@@ -108,14 +102,14 @@ func loadSpecModels(appClusterPaths []string, settings []configuration.Setting, 
 		fmt.Fprintf(os.Stderr, "ZCL'd %s (%d of %d)...\n", file, i+1, len(appClusterPaths))
 
 		newFile := filepath.Base(file)
-		newFile = zap.ZAPName(doc.Path, errata, models)
+		newFile = zap.ZAPClusterName(doc.Path, errata, entities)
 		newFile = strcase.ToKebab(newFile)
 
 		newPath := filepath.Join(zclRoot, "src/app/zap-templates/zcl/data-model/chip", newFile+".xml")
 
-		specModels[newPath] = models
+		specEntities[newPath] = entities
 	}
-	return specModels, nil
+	return specEntities, nil
 }
 
 func getAppDomains(specRoot string, settings []configuration.Setting) ([]string, map[string]matter.Domain, error) {

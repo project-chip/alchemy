@@ -7,10 +7,11 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 )
 
-func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEncoder, el xml.StartElement, commands map[*matter.Command]struct{}) (err error) {
+func (r *renderer) amendCommand(cluster *matter.Cluster, ts *parse.XmlTokenSet, e xmlEncoder, el xml.StartElement, commands map[*matter.Command]struct{}) (err error) {
 	code := getAttributeValue(el.Attr, "code")
 	source := getAttributeValue(el.Attr, "source")
 	commandID := matter.ParseNumber(code)
@@ -35,7 +36,7 @@ func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEnco
 	}
 
 	if matchingCommand == nil {
-		Ignore(ts, "command")
+		ts.Ignore("command")
 		return nil
 	}
 
@@ -64,14 +65,14 @@ func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEnco
 			switch t.Name.Local {
 			case "access":
 				if !needsAccess {
-					Ignore(ts, "access")
+					ts.Ignore("access")
 				} else {
 					r.setAccessAttributes(t.Attr, "invoke", matchingCommand.Access.Invoke)
-					err = writeThrough(ts, e, t)
+					err = ts.WriteElement(e, t)
 					needsAccess = false
 				}
 			case "description":
-				err = writeThrough(ts, e, t)
+				err = ts.WriteElement(e, t)
 			case "arg":
 				if needsAccess {
 					err = r.renderAccess(e, "invoke", matchingCommand.Access.Invoke)
@@ -82,7 +83,7 @@ func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEnco
 				}
 				for {
 					if argIndex >= len(matchingCommand.Fields) {
-						Ignore(ts, "arg")
+						ts.Ignore("arg")
 						break
 					} else {
 						f := matchingCommand.Fields[argIndex]
@@ -92,7 +93,7 @@ func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEnco
 						}
 
 						t.Attr = r.setFieldAttributes(f, t.Attr, matchingCommand.Fields)
-						err = writeThrough(ts, e, t)
+						err = ts.WriteElement(e, t)
 						if err != nil {
 							return
 						}
@@ -102,7 +103,7 @@ func (r *renderer) amendCommand(cluster *matter.Cluster, ts *tokenSet, e xmlEnco
 
 			default:
 				slog.Warn("unexpected element in command", "name", t.Name.Local)
-				err = Ignore(ts, t.Name.Local)
+				err = ts.Ignore(t.Name.Local)
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

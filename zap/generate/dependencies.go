@@ -8,7 +8,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies *concurrentMap[bool]) {
+func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies *concurrentMap[string, bool]) {
 	for _, m := range entities {
 		switch m := m.(type) {
 		case *matter.Cluster:
@@ -19,7 +19,7 @@ func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies *
 	}
 }
 
-func findClusterDependencies(spec *matter.Spec, c *matter.Cluster, dependencies *concurrentMap[bool]) {
+func findClusterDependencies(spec *matter.Spec, c *matter.Cluster, dependencies *concurrentMap[string, bool]) {
 	findFieldSetDependencies(spec, c.Attributes, dependencies)
 	for _, s := range c.Structs {
 		findFieldSetDependencies(spec, s.Fields, dependencies)
@@ -32,13 +32,13 @@ func findClusterDependencies(spec *matter.Spec, c *matter.Cluster, dependencies 
 	}
 }
 
-func findFieldSetDependencies(spec *matter.Spec, fs matter.FieldSet, dependencies *concurrentMap[bool]) {
+func findFieldSetDependencies(spec *matter.Spec, fs matter.FieldSet, dependencies *concurrentMap[string, bool]) {
 	for _, f := range fs {
 		findDataTypeDependencies(spec, f.Type, dependencies)
 	}
 }
 
-func findDataTypeDependencies(spec *matter.Spec, dt *types.DataType, dependencies *concurrentMap[bool]) {
+func findDataTypeDependencies(spec *matter.Spec, dt *types.DataType, dependencies *concurrentMap[string, bool]) {
 	if dt == nil {
 		return
 	}

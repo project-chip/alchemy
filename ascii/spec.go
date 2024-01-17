@@ -3,20 +3,21 @@ package ascii
 import (
 	"fmt"
 	"log/slog"
+	"path/filepath"
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 )
 
-type modelIndex map[string]map[types.Entity]*matter.Cluster
+type entityIndex map[string]map[types.Entity]*matter.Cluster
 
-func (mi modelIndex) addModel(name string, model types.Entity, cluster *matter.Cluster) {
+func (mi entityIndex) addEntity(name string, entity types.Entity, cluster *matter.Cluster) {
 	m, ok := mi[name]
 	if !ok {
 		m = make(map[types.Entity]*matter.Cluster)
 		mi[name] = m
 	}
-	m[model] = cluster
+	m[entity] = cluster
 }
 
 func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
@@ -35,19 +36,32 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 		Enums:   make(map[string]*matter.Enum),
 		Structs: make(map[string]*matter.Struct),
 	}
-	modelIndex := make(modelIndex)
+	entityIndex := make(entityIndex)
 
 	for _, d := range docs {
 		slog.Debug("building spec", "path", d.Path)
-		var models []types.Entity
-		models, err = d.Entities()
+		var entities []types.Entity
+		entities, err = d.Entities()
 		if err != nil {
 			slog.Warn("error building entities", "doc", d.Path, "error", err)
 			continue
 		}
-		for _, m := range models {
+		fileName := filepath.Base(d.Path)
+		switch fileName {
+		case "BaseDeviceType.adoc":
+			spec.BaseDeviceType, err = d.toBaseDeviceType()
+			if err != nil {
+				return
+			}
+			continue
+		}
+		for _, m := range entities {
 			switch m := m.(type) {
 			case *matter.Cluster:
+				if filepath.Base(d.Path) == "BaseDeviceType.adoc" {
+					slog.Info("BaseDeviceType cluster", slog.Any("cluster", m.Name))
+				}
+
 				if m.ID.Valid() {
 					spec.ClustersByID[m.ID.Value()] = m
 				}
@@ -60,7 +74,7 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 						spec.Bitmaps[en.Name] = en
 					}
 					spec.DocRefs[en] = d.Path
-					modelIndex.addModel(en.Name, en, m)
+					entityIndex.addEntity(en.Name, en, m)
 				}
 				for _, en := range m.Enums {
 					_, ok := spec.Enums[en.Name]
@@ -70,7 +84,7 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 						spec.Enums[en.Name] = en
 					}
 					spec.DocRefs[en] = d.Path
-					modelIndex.addModel(en.Name, en, m)
+					entityIndex.addEntity(en.Name, en, m)
 				}
 				for _, en := range m.Structs {
 					_, ok := spec.Structs[en.Name]
@@ -80,7 +94,7 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 						spec.Structs[en.Name] = en
 					}
 					spec.DocRefs[en] = d.Path
-					modelIndex.addModel(en.Name, en, m)
+					entityIndex.addEntity(en.Name, en, m)
 				}
 			case *matter.DeviceType:
 				spec.DeviceTypes[m.ID.Value()] = m
@@ -92,7 +106,7 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 
 					spec.Bitmaps[m.Name] = m
 				}
-				modelIndex.addModel(m.Name, m, nil)
+				entityIndex.addEntity(m.Name, m, nil)
 			case *matter.Enum:
 				_, ok := spec.Enums[m.Name]
 				if ok {
@@ -100,7 +114,7 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 				} else {
 					spec.Enums[m.Name] = m
 				}
-				modelIndex.addModel(m.Name, m, nil)
+				entityIndex.addEntity(m.Name, m, nil)
 			case *matter.Struct:
 				_, ok := spec.Structs[m.Name]
 				if ok {
@@ -108,16 +122,16 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 				} else {
 					spec.Structs[m.Name] = m
 				}
-				modelIndex.addModel(m.Name, m, nil)
+				entityIndex.addEntity(m.Name, m, nil)
 			default:
-				slog.Warn("unknown model type", "type", fmt.Sprintf("%T", m))
+				slog.Warn("unknown entity type", "type", fmt.Sprintf("%T", m))
 			}
 			spec.DocRefs[m] = d.Path
 		}
 	}
 
 	resolveHierarchy(spec)
-	resolveDataTypeReferences(spec, modelIndex)
+	resolveDataTypeReferences(spec, entityIndex)
 
 	for _, c := range spec.ClustersByID {
 		for _, en := range c.Enums {
@@ -143,7 +157,7 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 	return
 }
 
-func resolveDataTypeReferences(spec *matter.Spec, mi modelIndex) {
+func resolveDataTypeReferences(spec *matter.Spec, mi entityIndex) {
 	for _, s := range spec.Structs {
 		for _, f := range s.Fields {
 			resolveDataType(spec, mi, nil, f, f.Type)
@@ -174,7 +188,7 @@ func resolveDataTypeReferences(spec *matter.Spec, mi modelIndex) {
 	}
 }
 
-func resolveDataType(spec *matter.Spec, mi modelIndex, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
+func resolveDataType(spec *matter.Spec, mi entityIndex, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
 	if dataType == nil {
 		slog.Warn("missing type on field", "name", field.Name)
 		return
@@ -184,16 +198,16 @@ func resolveDataType(spec *matter.Spec, mi modelIndex, cluster *matter.Cluster, 
 		resolveDataType(spec, mi, cluster, field, dataType.EntryType)
 	case types.BaseDataTypeCustom:
 		if dataType.Entity == nil {
-			models := mi[dataType.Name]
-			if len(models) == 0 {
+			entities := mi[dataType.Name]
+			if len(entities) == 0 {
 				slog.Warn("unknown custom data type", "cluster", clusterName(cluster), "field", field.Name, "type", dataType.Name)
-			} else if len(models) == 1 {
-				for m := range models {
+			} else if len(entities) == 1 {
+				for m := range entities {
 					dataType.Entity = m
 					break
 				}
 			} else {
-				for m, c := range models {
+				for m, c := range entities {
 					if c == cluster { // If there are multiple entities with the same name, prefer the one on the current cluster
 						dataType.Entity = m
 						break
@@ -202,7 +216,7 @@ func resolveDataType(spec *matter.Spec, mi modelIndex, cluster *matter.Cluster, 
 				if dataType.Entity == nil {
 					// OK, if the data type is defined on the direct parent of this cluster, take that one
 					if cluster.Hierarchy != "Base" {
-						for m, c := range models {
+						for m, c := range entities {
 							if c != nil && c.Name == cluster.Hierarchy {
 								dataType.Entity = m
 								break
@@ -212,7 +226,7 @@ func resolveDataType(spec *matter.Spec, mi modelIndex, cluster *matter.Cluster, 
 					if dataType.Entity == nil {
 						// Can't disambiguate out this data model
 						slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name, "type", dataType.Name)
-						for m, c := range models {
+						for m, c := range entities {
 							var clusterName string
 							if c != nil {
 								clusterName = c.Name

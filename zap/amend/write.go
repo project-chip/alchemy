@@ -10,6 +10,7 @@ import (
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 )
 
@@ -26,12 +27,8 @@ func newLine(e xmlEncoder) error {
 	return e.EncodeToken(xml.CharData{'\n'})
 }
 
-type xmlDecoder interface {
-	Token() (xml.Token, error)
-}
-
 type loggingDecoder struct {
-	d xmlDecoder
+	d parse.XmlDecoder
 }
 
 func (le *loggingDecoder) Token() (xml.Token, error) {
@@ -188,146 +185,4 @@ func removeAttribute(attrs []xml.Attr, name string) []xml.Attr {
 		}
 	}
 	return attrs
-}
-
-func getSimpleElement(tokens []xml.Token, name string) (val string, err error) {
-	for _, tok := range tokens {
-		if tok == nil || err == io.EOF {
-			err = fmt.Errorf("EOF before end of %s", name)
-		}
-		if err != nil {
-			return
-		}
-		switch t := tok.(type) {
-		case xml.EndElement:
-			switch t.Name.Local {
-			case name:
-				return
-			default:
-				err = fmt.Errorf("unexpected %s end element: %s", name, t.Name.Local)
-			}
-		case xml.CharData:
-			val = string(t)
-		default:
-			panic(fmt.Errorf("unexpected %s level type: %T", name, t))
-		}
-		if err != nil {
-			return
-		}
-	}
-	return "", nil
-}
-
-func writeThrough(d xmlDecoder, e xmlEncoder, el xml.StartElement) (err error) {
-	name := el.Name.Local
-	err = e.EncodeToken(el)
-	if err != nil {
-		return
-	}
-	var skipNextCharData bool
-	for {
-		var tok xml.Token
-		tok, err = d.Token()
-		if tok == nil || err == io.EOF {
-			return fmt.Errorf("EOF before end of %s", name)
-		} else if err != nil {
-			return
-		}
-		switch t := tok.(type) {
-		case xml.EndElement:
-			err = e.EncodeToken(tok)
-			switch t.Name.Local {
-			case name:
-				return nil
-			default:
-				skipNextCharData = true
-			}
-		case xml.CharData:
-			if skipNextCharData {
-				skipNextCharData = false
-				continue
-			}
-			err = e.EncodeToken(tok)
-		default:
-			err = e.EncodeToken(tok)
-		}
-		if err != nil {
-			return
-		}
-	}
-}
-
-func writeTokens(e xmlEncoder, tokens []xml.Token) (err error) {
-	for _, tok := range tokens {
-		err = e.EncodeToken(tok)
-		if err != nil {
-			return
-		}
-	}
-	return nil
-}
-
-func Ignore(d xmlDecoder, name string) (err error) {
-	for {
-		var tok xml.Token
-		tok, err = d.Token()
-		if tok == nil || err == io.EOF {
-			panic(fmt.Errorf("EOF before end of %s", name))
-		} else if err != nil {
-			return
-		}
-		switch t := tok.(type) {
-		case xml.EndElement:
-			switch t.Name.Local {
-			case name:
-				return nil
-			default:
-			}
-		default:
-		}
-		if err != nil {
-			return
-		}
-	}
-}
-
-func Extract(d xmlDecoder, el xml.StartElement) (tokens []xml.Token, err error) {
-	tokens = append(tokens, xml.CopyToken(el))
-	for {
-		var tok xml.Token
-		tok, err = d.Token()
-		if tok == nil || err == io.EOF {
-			err = fmt.Errorf("EOF before end of %s", el.Name.Local)
-		}
-		if err != nil {
-			return
-		}
-		tokens = append(tokens, xml.CopyToken(tok))
-		switch t := tok.(type) {
-		case xml.EndElement:
-			switch t.Name.Local {
-			case el.Name.Local:
-				return
-			default:
-			}
-		default:
-		}
-		if err != nil {
-			return
-		}
-	}
-}
-
-type tokenSet struct {
-	tokens []xml.Token
-	index  int
-}
-
-func (ts *tokenSet) Token() (xml.Token, error) {
-	if ts.index >= len(ts.tokens) {
-		return nil, io.EOF
-	}
-	t := ts.tokens[ts.index]
-	ts.index++
-	return t, nil
 }
