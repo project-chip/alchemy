@@ -40,6 +40,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 
 		if matchingEvent == nil {
 			slog.Warn("unknown event ID", slog.String("path", configurator.Doc.Path), slog.String("eventId", eventId.Text()))
+			ce.RemoveChild(eve)
 			continue
 		}
 		populateEvent(eve, matchingEvent, cluster, errata)

@@ -40,6 +40,7 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 
 		if matchingStruct == nil {
 			slog.Warn("unknown struct name", slog.String("path", configurator.Doc.Path), slog.String("structName", name))
+			configuratorElement.RemoveChild(se)
 			continue
 		}
 		if errata.SeparateStructs != nil {

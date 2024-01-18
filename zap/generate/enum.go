@@ -43,6 +43,7 @@ func generateEnums(configurator *zap.Configurator, ce *etree.Element, cluster *m
 
 		if matchingEnum == nil {
 			slog.Warn("unknown enum name", slog.String("path", configurator.Doc.Path), slog.String("enumName", name))
+			ce.RemoveChild(eve)
 			continue
 		}
 		populateEnum(configurator, eve, matchingEnum, clusterIds, errata)

@@ -47,6 +47,7 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, cluster 
 
 		if matchingBitmap == nil {
 			slog.Warn("unknown bitmap name", slog.String("path", configurator.Doc.Path), slog.String("bitmapName", name))
+			ce.RemoveChild(eve)
 			continue
 		}
 		populateBitmap(configurator, eve, matchingBitmap, clusterIds, errata)
