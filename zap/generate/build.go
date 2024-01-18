@@ -90,19 +90,12 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 					}
 				}
 
-				var clusters []types.Entity
-				for _, m := range entities {
-					switch m := m.(type) {
-					case *matter.Cluster:
-						clusters = append(clusters, m)
-					}
-				}
-				if len(clusters) == 0 {
-					slog.DebugContext(cxt, "Skipped spec file with no clusters", "from", path, "to", newPath, "index", index, "count", total)
+				if len(entities) == 0 {
+					slog.WarnContext(cxt, "Skipped spec file with no entities", "from", path, "to", newPath, "index", index, "count", total)
 					return err
 				}
 
-				configurator, err := zap.NewConfigurator(spec, doc, clusters)
+				configurator, err := zap.NewConfigurator(spec, doc, entities)
 				if err != nil {
 					return err
 				}

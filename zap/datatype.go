@@ -159,7 +159,7 @@ func GetMinMax(cc *matter.ConstraintContext) (from types.DataTypeExtreme, to typ
 		return
 	}
 
-	from, to = minMaxFromModel(cc)
+	from, to = minMaxFromEntity(cc)
 
 	if from.Defined() || to.Defined() {
 		return
@@ -175,7 +175,7 @@ func GetMinMax(cc *matter.ConstraintContext) (from types.DataTypeExtreme, to typ
 	return
 }
 
-func minMaxFromModel(cc *matter.ConstraintContext) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
+func minMaxFromEntity(cc *matter.ConstraintContext) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
 	if cc.Field.Type.Entity != nil {
 		switch m := cc.Field.Type.Entity.(type) {
 		case *matter.Enum:
