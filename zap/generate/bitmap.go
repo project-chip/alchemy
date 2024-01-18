@@ -67,15 +67,20 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, cluster 
 func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matter.Bitmap, clusterIds []string, errata *zap.Errata) (err error) {
 
 	var valFormat string
-	switch bm.Type.BaseType {
-	case types.BaseDataTypeMap64:
-		valFormat = "0x%016X"
-	case types.BaseDataTypeMap32:
-		valFormat = "0x%08X"
-	case types.BaseDataTypeMap16:
-		valFormat = "0x%04X"
-	default:
+	if bm.Name == "Feature" {
 		valFormat = "0x%02X"
+	} else {
+		switch bm.Type.BaseType {
+		case types.BaseDataTypeMap64:
+			valFormat = "0x%016X"
+		case types.BaseDataTypeMap32:
+			valFormat = "0x%08X"
+		case types.BaseDataTypeMap16:
+			valFormat = "0x%04X"
+		default:
+			valFormat = "0x%02X"
+		}
+
 	}
 
 	ee.CreateAttr("name", bm.Name)
