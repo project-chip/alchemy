@@ -96,10 +96,10 @@ func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []strin
 		return err
 	}
 
-	err = renderDeviceTypes(cxt, spec, docs, zclRoot, options.Files)
+	/*err = renderDeviceTypes(cxt, spec, docs, zclRoot, options.Files)
 	if err != nil {
 		return err
-	}
+	}*/
 
 	if !options.Files.DryRun {
 
