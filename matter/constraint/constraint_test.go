@@ -122,6 +122,13 @@ var constraintTests = []constraintTest{
 	},
 
 	{
+		constraint: "-2^62^ to 2^62^",
+		min:        types.NewIntDataTypeExtreme(-4611686018427387904, types.NumberFormatHex),
+		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatHex),
+		zapMin:     "0xC000000000000000",
+		zapMax:     "0x4000000000000000",
+	},
+	{
 		constraint: "max 2^62 - 1",
 		asciiDoc:   "max (2^62^ - 1)",
 		max:        types.NewIntDataTypeExtreme(4611686018427387903, types.NumberFormatAuto),
@@ -379,8 +386,8 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "null",
-		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeNull, Format: types.NumberFormatInt},
-		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeNull, Format: types.NumberFormatInt},
+		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeNull, Format: types.NumberFormatAuto},
+		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeNull, Format: types.NumberFormatAuto},
 	},
 }
 

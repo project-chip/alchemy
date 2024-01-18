@@ -204,7 +204,14 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 	var val constraint.Constraint
 
 	var sb strings.Builder
-	for _, el := range p.Elements {
+	d.buildConstraintValue(p.Elements, &sb)
+	val = constraint.ParseString(StripTypeSuffixes(sb.String()))
+
+	return val
+}
+
+func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
+	for _, el := range elements {
 		switch v := el.(type) {
 		case *types.StringElement:
 			sb.WriteString(v.Content)
@@ -218,14 +225,21 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 			}
 			sb.WriteString(name)
 		case *types.QuotedText:
-			// This is usually an asterisk, and should be ignored
+			switch v.Kind {
+			case types.SingleQuoteSuperscript:
+				sb.WriteString(string(v.Kind))
+				d.buildConstraintValue(v.Elements, sb)
+				sb.WriteString(string(v.Kind))
+			case types.SingleQuoteBold:
+				// This is usually an asterisk, and should be ignored
+			default:
+				slog.Warn("unexpected constraint quoted text", "doc", d.Path, "type", fmt.Sprintf("%T", v.Kind))
+			}
+
 		default:
 			slog.Warn("unknown constraint value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
 		}
 	}
-	val = constraint.ParseString(StripTypeSuffixes(sb.String()))
-
-	return val
 }
 
 func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) conformance.Set {
