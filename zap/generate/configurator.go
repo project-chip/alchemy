@@ -42,9 +42,11 @@ func renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata
 		de.CreateAttr("name", matter.DomainNames[configurator.Doc.Domain])
 	}
 
-	err = generateFeatures(configurator, ce, exampleCluster.Features, errata)
-	if err != nil {
-		return
+	if exampleCluster != nil {
+		err = generateFeatures(configurator, ce, exampleCluster.Features, errata)
+		if err != nil {
+			return
+		}
 	}
 
 	err = generateBitmaps(configurator, ce, exampleCluster, errata)
