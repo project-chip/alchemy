@@ -17,7 +17,7 @@ func (c *NullLimit) Equal(o ConstraintLimit) bool {
 }
 
 func (c *NullLimit) Min(cc Context) (min types.DataTypeExtreme) {
-	return types.DataTypeExtreme{Type: types.DataTypeExtremeTypeNull, Format: types.NumberFormatInt}
+	return types.DataTypeExtreme{Type: types.DataTypeExtremeTypeNull, Format: types.NumberFormatAuto}
 }
 
 func (c *NullLimit) Max(cc Context) (max types.DataTypeExtreme) {
