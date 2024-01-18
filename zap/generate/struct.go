@@ -140,7 +140,6 @@ func setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Fiel
 	e.CreateAttr("fieldId", v.ID.IntString())
 	e.CreateAttr("name", v.Name)
 	writeDataType(e, s.Fields, v)
-	renderConstraint(e, s.Fields, v)
 	if v.Quality.Has(matter.QualityNullable) {
 		e.CreateAttr("isNullable", "true")
 	} else {
@@ -166,4 +165,5 @@ func setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Fiel
 	} else {
 		e.RemoveAttr("default")
 	}
+	renderConstraint(e, s.Fields, v)
 }
