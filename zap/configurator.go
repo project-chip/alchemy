@@ -47,6 +47,8 @@ func NewConfigurator(spec *matter.Spec, doc *ascii.Doc, entities []types.Entity)
 				c.ClusterIDs = append(c.ClusterIDs, v.ID.HexString())
 			}
 			c.Clusters[v] = false
+		case *matter.Bitmap, *matter.Enum, *matter.Struct:
+			c.addEntityType(v)
 		}
 	}
 	return c, nil
@@ -85,8 +87,12 @@ func (c *Configurator) addType(dt *types.DataType) {
 		slog.Warn("skipping data type from another document", "name", dt.Name)
 		return
 	}
+	c.addEntityType(entity)
+}
 
-	switch entity := dt.Entity.(type) {
+func (c *Configurator) addEntityType(entity types.Entity) {
+
+	switch entity := entity.(type) {
 	case *matter.Bitmap:
 		c.Bitmaps[entity] = c.getClusterCodes(entity)
 	case *matter.Enum:
