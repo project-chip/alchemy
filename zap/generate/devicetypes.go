@@ -34,7 +34,6 @@ func renderDeviceTypes(cxt context.Context, spec *matter.Spec, docs []*ascii.Doc
 		for _, m := range entities {
 			switch m := m.(type) {
 			case *matter.DeviceType:
-				slog.Info("device type entity", "type", m)
 				deviceTypes.Lock()
 				deviceTypes.Map[m.ID.Value()] = m
 				deviceTypes.Unlock()
@@ -169,7 +168,6 @@ func setIncludeAttributes(include *etree.Element, spec *matter.Spec, deviceType 
 		slog.Warn("unknown doc path on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name))
 
 	}
-	slog.Info("cluster", "name", cluster.Name, "path", path)
 	errata, ok := zap.Erratas[filepath.Base(path)]
 	if !ok {
 		errata = zap.DefaultErrata
