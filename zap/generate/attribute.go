@@ -39,6 +39,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 		}
 		if attribute == nil {
 			slog.Warn("unknown code attribute value in cluster", slog.String("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("id", attributeId.Text()))
+			cle.RemoveChild(ae)
 			continue
 		}
 		delete(attributes, attribute)
