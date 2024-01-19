@@ -2,8 +2,6 @@ package zap
 
 import "github.com/hasty/alchemy/matter"
 
-var defaultOrder = []matter.Section{matter.SectionAttributes, matter.SectionCommands, matter.SectionEvents}
-
 type Errata struct {
 	SuppressAttributePermissions bool
 	ClusterDefinePrefix          string
@@ -156,6 +154,9 @@ var Erratas = map[string]*Errata{
 	"LocalizationUnit.adoc": {
 		Domain:       matter.DomainCHIP,
 		TemplatePath: "unit-localization-cluster",
+	},
+	"meas_and_sense.adoc": {
+		TemplatePath: "measurement-and-sensing",
 	},
 	"MediaInput.adoc": {
 		ClusterDefinePrefix: "MEDIA_INPUT_",
