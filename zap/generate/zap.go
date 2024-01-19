@@ -23,7 +23,7 @@ type Options struct {
 	Overwrite bool
 }
 
-func Migrate(cxt context.Context, specRoot string, zclRoot string, paths []string, options Options) error {
+func Generate(cxt context.Context, specRoot string, zclRoot string, paths []string, options Options) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
 	spec, docs, err := files.LoadSpec(cxt, specRoot, options.Files, options.Ascii)

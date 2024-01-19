@@ -20,7 +20,7 @@ var Command = &cobra.Command{
 			Ascii: common.AsciiDocAttributes(cmd),
 		}
 		options.Overwrite, _ = cmd.Flags().GetBool("overwrite")
-		return generate.Migrate(context.Background(), specRoot, zclRoot, args, options)
+		return generate.Generate(context.Background(), specRoot, zclRoot, args, options)
 	},
 }
 

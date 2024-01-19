@@ -112,7 +112,6 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 				return false
 			})
 			if baseClusterRequirements != nil || elementRequirements != nil {
-				baseClusterRequirements.toClusterRequirements(d)
 				baseDeviceType = &matter.DeviceType{}
 				if baseClusterRequirements != nil {
 					baseDeviceType.ClusterRequirements, err = baseClusterRequirements.toClusterRequirements(d)
