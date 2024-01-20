@@ -34,17 +34,26 @@ func (c *ExpLimit) minmax(cc Context) (minmax types.DataTypeExtreme) {
 	e := big.NewInt(c.Exp)
 	var t big.Int
 	t.Exp(v, e, nil)
-	if !t.IsInt64() {
+	if t.IsInt64() {
+		i := t.Int64()
+		if negative {
+			i *= -1
+		}
+		minmax = types.DataTypeExtreme{
+			Type:   types.DataTypeExtremeTypeInt64,
+			Format: types.NumberFormatInt,
+			Int64:  i,
+		}
 		return
 	}
-	i := t.Int64()
-	if negative {
-		i *= -1
-	}
-	minmax = types.DataTypeExtreme{
-		Type:   types.DataTypeExtremeTypeInt64,
-		Format: types.NumberFormatHex,
-		Int64:  i,
+	if t.IsUint64() {
+		u := t.Uint64()
+		minmax = types.DataTypeExtreme{
+			Type:   types.DataTypeExtremeTypeInt64,
+			Format: types.NumberFormatHex,
+			UInt64: u,
+		}
+		return
 	}
 	return
 }
