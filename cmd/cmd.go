@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/hasty/alchemy/cmd/compare"
-	"github.com/hasty/alchemy/cmd/database"
 	"github.com/hasty/alchemy/cmd/disco"
 	"github.com/hasty/alchemy/cmd/dm"
 	"github.com/hasty/alchemy/cmd/dump"
@@ -44,7 +43,6 @@ func init() {
 	rootCmd.AddCommand(format.Command)
 	rootCmd.AddCommand(disco.Command)
 	rootCmd.AddCommand(zap.Command)
-	rootCmd.AddCommand(database.Command)
 	rootCmd.AddCommand(compare.Command)
 	rootCmd.AddCommand(conformanceCommand)
 	rootCmd.AddCommand(dump.Command)
