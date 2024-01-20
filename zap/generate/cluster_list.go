@@ -6,7 +6,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"github.com/hasty/alchemy/ascii"
@@ -26,30 +25,52 @@ func patchClusterList(zclRoot string, docs []*ascii.Doc) error {
 	if err != nil {
 		return err
 	}
-	val, ok := o.Get("ClientDirectories")
-	if !ok {
-		return fmt.Errorf("no ClientDirectories field in zap_cluster_list.json")
-	}
-	is, ok := val.(orderedmap.OrderedMap)
-	if !ok {
-		return fmt.Errorf("ClientDirectories not a map in zap_cluster_list.json; %T", val)
-	}
+
+	var names []string
 	for _, doc := range docs {
 		path := doc.Path
 		name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)) + " Cluster"
 		name = strcase.ToScreamingSnake(name)
-		if _, ok := is.Get(name); !ok {
-			is.Set(name, []string{})
-		}
+		names = append(names, name)
 	}
-	is.SortKeys(func(keys []string) {
-		slices.Sort(keys)
-	})
-	o.Set("ClientDirectories", is)
+
+	err = insertClusterName(o, "ClientDirectories", names)
+	if err != nil {
+		return err
+	}
+
+	err = insertClusterName(o, "ServerDirectories", names)
+	if err != nil {
+		return err
+	}
 
 	clusterListBytes, err = json.MarshalIndent(o, "", "    ")
 	if err != nil {
 		return err
 	}
 	return os.WriteFile(clusterListPath, []byte(clusterListBytes), os.ModeAppend|0644)
+}
+
+func insertClusterName(o *orderedmap.OrderedMap, key string, names []string) error {
+	val, ok := o.Get(key)
+	if !ok {
+		return fmt.Errorf("no %s field in zap_cluster_list.json", key)
+	}
+	is, ok := val.(orderedmap.OrderedMap)
+	if !ok {
+		return fmt.Errorf("%s not a map in zap_cluster_list.json; %T", key, val)
+	}
+	var insertedNames []string
+	for _, name := range names {
+		if _, ok := is.Get(name); !ok {
+			is.Set(name, []string{})
+			insertedNames = append(insertedNames, name)
+		}
+	}
+	is.SortKeys(func(keys []string) {
+		reorderLinesSemiAlphabetically(keys, insertedNames, 0)
+	})
+
+	o.Set(key, is)
+	return nil
 }

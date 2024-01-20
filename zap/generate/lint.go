@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var deviceType = regexp.MustCompile(`(?m)^load "../src/app/zap-templates/zcl/data-model/chip/[^.]+\.xml";\n`)
+var templatePathPattern = regexp.MustCompile(`(?m)^load "../src/app/zap-templates/zcl/data-model/chip/[^.]+\.xml";\n`)
 
 func patchLint(zclRoot string, files []string) error {
 
@@ -24,16 +24,15 @@ func patchLint(zclRoot string, files []string) error {
 		newPathMap[`load "../src/app/zap-templates/zcl/data-model/chip/`+filepath.Base(f)+"\";\n"] = struct{}{}
 	}
 
-	matches := deviceType.FindAllStringSubmatch(lint, -1)
+	matches := templatePathPattern.FindAllStringSubmatch(lint, -1)
 	paths := make([]string, 0, len(files)+len(matches))
 	for _, m := range matches {
 		path := m[0]
 		delete(newPathMap, path)
 		paths = append(paths, path)
 	}
-	for path := range newPathMap {
-		paths = append(paths, path)
-	}
+
+	paths = mergeLines(paths, newPathMap, 0)
 
 	var sb strings.Builder
 	for _, p := range paths {
@@ -41,7 +40,7 @@ func patchLint(zclRoot string, files []string) error {
 	}
 
 	var replaced bool
-	s := deviceType.ReplaceAllStringFunc(lint, func(s string) string {
+	s := templatePathPattern.ReplaceAllStringFunc(lint, func(s string) string {
 		if replaced {
 			return ""
 		}

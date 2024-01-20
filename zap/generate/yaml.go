@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -19,29 +20,46 @@ func patchTestsYaml(zclRoot string, files []string) error {
 
 	yaml := string(yamlBytes)
 
+	matches := yamlFileLinkPattern.FindAllStringSubmatch(yaml, -1)
+	if len(matches) == 0 {
+		return fmt.Errorf("could not find existing paths in tests.yaml")
+	}
+	var indent = matches[0][1]
+
 	filesMap := make(map[string]struct{})
 	for _, file := range files {
-		path := fmt.Sprintf("src/app/zap-templates/zcl/data-model/chip/%s", strings.TrimPrefix(file, "connectedhomeip/"))
-		//fmt.Printf("adding file %s\n", path)
+		path := fmt.Sprintf("%ssrc/app/zap-templates/zcl/data-model/chip/%s \\\n", indent, strings.TrimPrefix(file, "connectedhomeip/"))
 		filesMap[path] = struct{}{}
 	}
 
-	matches := yamlFileLinkPattern.FindAllStringSubmatch(yaml, -1)
-	var indent string
 	var sb strings.Builder
+	lines := make([]string, 0, len(matches))
 	for _, m := range matches {
-		if len(indent) == 0 && len(m[1]) > 0 {
-			indent = m[1]
-		}
-		if _, ok := filesMap[m[2]]; ok {
-			delete(filesMap, m[2])
-		}
-		sb.WriteString(m[0])
+		line := m[0]
+		delete(filesMap, line)
+		lines = append(lines, line)
 	}
+
 	for file := range filesMap {
-		sb.WriteString(indent)
-		sb.WriteString(file)
-		sb.WriteString(" \\\n")
+		var inserted bool
+		for i, line := range lines {
+			if i < 1 {
+				// We skip the first line, "global-attributes.xml"
+				continue
+			}
+			if strings.Compare(file, line) < 0 {
+				lines = slices.Insert(lines, i, file)
+				inserted = true
+				break
+			}
+		}
+		if !inserted {
+			lines = append(lines, file)
+		}
+	}
+
+	for _, line := range lines {
+		sb.WriteString(line)
 	}
 
 	var replaced bool
