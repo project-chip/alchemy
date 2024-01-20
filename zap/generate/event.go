@@ -136,7 +136,7 @@ func setFieldAttributes(e *etree.Element, f *matter.Field, fs matter.FieldSet) {
 	}
 	if f.Default != "" {
 		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: f, Fields: fs})
-		if defaultValue.Defined() {
+		if defaultValue.Defined() && !defaultValue.IsNull() {
 			e.CreateAttr("default", defaultValue.ZapString(f.Type))
 		} else {
 			e.RemoveAttr("default")

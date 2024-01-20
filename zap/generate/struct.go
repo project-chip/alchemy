@@ -157,7 +157,7 @@ func setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Fiel
 	}
 	if v.Default != "" {
 		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: v, Fields: s.Fields})
-		if defaultValue.Defined() {
+		if defaultValue.Defined() && !defaultValue.IsNull() {
 			e.CreateAttr("default", defaultValue.ZapString(v.Type))
 		} else {
 			e.RemoveAttr("default")
