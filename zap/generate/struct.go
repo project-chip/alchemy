@@ -103,6 +103,7 @@ func populateStruct(configurator *zap.Configurator, ee *etree.Element, s *matter
 	}
 
 	_, remainingClusterIDs = amendExistingClusterCodes(ee, s, clusterIDs)
+	flushClusterCodes(ee, remainingClusterIDs)
 
 	fieldIndex := 0
 	fieldElements := ee.SelectElements("item")
