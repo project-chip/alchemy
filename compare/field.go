@@ -33,7 +33,7 @@ func compareFieldTypes(specFieldName string, specFieldType *types.DataType, zapF
 		diffs = append(diffs, compareFieldTypes(specFieldName, specFieldType.EntryType, zapFieldName, zapFieldType.EntryType)...)
 		return
 	}
-	if specFieldType.BaseType != specFieldType.BaseType {
+	if specFieldType.BaseType != zapFieldType.BaseType {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyType, Spec: specFieldType.Name, ZAP: zapFieldType.Name})
 		return
 	}

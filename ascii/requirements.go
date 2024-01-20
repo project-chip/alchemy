@@ -158,7 +158,7 @@ func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err erro
 	}
 	featureIndex, ok := columnMap[matter.TableColumnFeature]
 	if !ok {
-		featureIndex, ok := columnMap[matter.TableColumnCondition]
+		featureIndex, ok = columnMap[matter.TableColumnCondition]
 		if !ok {
 			featureIndex = -1
 			for _, col := range extraColumns {

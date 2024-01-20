@@ -65,7 +65,7 @@ func PatchUnrecognizedReferences(doc *Doc) {
 				}
 				icr, _ := types.NewInternalCrossReference(id, label)
 				n := slices.Replace(els, i, i+5, interface{}(icr))
-				e.SetElements(n)
+				_ = e.SetElements(n)
 
 				break
 			}

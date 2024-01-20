@@ -37,7 +37,10 @@ func renderTable(cxt *Context, t *types.Table) (err error) {
 		return
 	}
 
-	renderAttributes(cxt, t, t.Attributes, false)
+	err = renderAttributes(cxt, t, t.Attributes, false)
+	if err != nil {
+		return
+	}
 
 	colOffsets := calculateColumnOffsets(tbl)
 

@@ -139,7 +139,6 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 				name = strings.TrimPrefix(v.ID.(string), "_")
 			}
 			sb.WriteString(name)
-			break
 		case *types.SpecialCharacter:
 		default:
 			slog.Warn("unknown data type value element", "type", v)

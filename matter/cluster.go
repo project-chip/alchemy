@@ -38,7 +38,10 @@ func (c *Cluster) Inherit(parent *Cluster) (err error) {
 		if c.Features == nil || len(c.Features.Bits) == 0 {
 			c.Features = parent.Features.Clone()
 		} else {
-			c.Features.Inherit(parent.Features)
+			err = c.Features.Inherit(parent.Features)
+			if err != nil {
+				return
+			}
 		}
 	}
 

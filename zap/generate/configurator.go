@@ -71,8 +71,8 @@ func renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata
 
 	x.Indent(2)
 	var b bytes.Buffer
-	x.WriteTo(&b)
-	return b.String(), nil
+	_, err = x.WriteTo(&b)
+	return b.String(), err
 
 }
 
@@ -106,12 +106,6 @@ func generateFeatures(configurator *zap.Configurator, configuratorElement *etree
 		appendElement(configuratorElement, fe, "domain")
 	}
 	return
-}
-
-func generateClusterCodes(spec *matter.Spec, entity types.Entity, parent *etree.Element) {
-	clusterIDs := clusterIdsForEntity(spec, entity)
-	_, remainingClusterIDs := amendExistingClusterCodes(parent, entity, clusterIDs)
-	flushClusterCodes(parent, remainingClusterIDs)
 }
 
 func amendExistingClusterCodes(parent *etree.Element, entity types.Entity, clusterIDs []string) (amendedCodes []string, remainingCodes []string) {

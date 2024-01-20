@@ -33,7 +33,7 @@ func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions f
 
 	slog.InfoContext(cxt, "Assigning index domains...")
 
-	files.ProcessDocs(cxt, appClusterIndexes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
+	err = files.ProcessDocs(cxt, appClusterIndexes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 		top := parse.FindFirst[*ascii.Section](doc.Elements)
 		if top == nil {
 			return nil
@@ -42,6 +42,9 @@ func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions f
 		slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
 		return nil
 	}, filesOptions)
+	if err != nil {
+		return fmt.Errorf("error assigning domains from %s: %w", specRoot, err)
+	}
 
 	if len(paths) > 0 {
 		filteredDocs := make([]*ascii.Doc, 0, len(paths))

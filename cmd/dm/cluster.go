@@ -148,7 +148,7 @@ func renderAppCluster(cxt context.Context, clusters []*matter.Cluster) (output s
 	x.Indent(2)
 
 	var b bytes.Buffer
-	x.WriteTo(&b)
+	_, err = x.WriteTo(&b)
 	output = b.String()
 	return
 }

@@ -20,9 +20,8 @@ func getQualitySchemaColumns(tableName string) []*mms.Column {
 func getQualitySchemaColumnValues(access interface{}) []interface{} {
 	var nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton int8
 	if s, ok := access.(string); ok {
-		rs := []rune(s)
 		var val int8 = 1
-		for _, r := range rs {
+		for _, r := range s {
 			switch r {
 			case 'X':
 				nullable = val

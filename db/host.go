@@ -12,7 +12,6 @@ import (
 	"github.com/dolthub/go-mysql-server/server"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
-	"github.com/iancoleman/strcase"
 )
 
 type Host struct {
@@ -33,10 +32,6 @@ var (
 	dbName = "MatterSpec"
 )
 
-type dbRowSet struct {
-	rows []*dbRow
-}
-
 type dbRow struct {
 	values map[matter.TableColumn]interface{}
 	extras map[string]interface{}
@@ -44,11 +39,6 @@ type dbRow struct {
 
 func newDBRow() *dbRow {
 	return &dbRow{values: make(map[matter.TableColumn]interface{})}
-}
-
-type extraInfo struct {
-	name  string
-	value string
 }
 
 func New() *Host {
@@ -103,10 +93,6 @@ func (h *Host) nextId(s string) int32 {
 func parseHex(s string) (int64, error) {
 	s = strings.TrimPrefix(s, "0x")
 	return strconv.ParseInt(s, 16, 64)
-}
-
-func toDBName(s string) string {
-	return strcase.ToSnake(s)
 }
 
 func parseNumber(s string) (int64, error) {

@@ -184,7 +184,7 @@ func (a Access) Equal(oa Access) bool {
 	return true
 }
 
-func (a Access) Inherit(parent Access) {
+func (a *Access) Inherit(parent Access) {
 	if a.Read == PrivilegeUnknown && parent.Read != PrivilegeUnknown {
 		a.Read = parent.Read
 	}

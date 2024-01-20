@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"regexp"
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/hasty/alchemy/ascii"
@@ -14,8 +13,6 @@ import (
 	"github.com/hasty/alchemy/parse"
 	"github.com/hasty/alchemy/zap"
 )
-
-var selfClosingTags = regexp.MustCompile("></[^>]+>")
 
 type Options struct {
 	Files     files.Options
@@ -46,7 +43,7 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 
 	slog.InfoContext(cxt, "Assigning index domains...")
 
-	files.ProcessDocs(cxt, appClusterIndexes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
+	err = files.ProcessDocs(cxt, appClusterIndexes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
 		top := parse.FindFirst[*ascii.Section](doc.Elements)
 		if top == nil {
 			return nil
@@ -55,6 +52,9 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 		slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
 		return nil
 	}, options.Files)
+	if err != nil {
+		return err
+	}
 
 	slog.InfoContext(cxt, "Extracting clusters...")
 	var clusters []*ascii.Doc
@@ -96,10 +96,10 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 		return err
 	}
 
-	/*err = renderDeviceTypes(cxt, spec, docs, zclRoot, options.Files)
+	err = renderDeviceTypes(cxt, spec, docs, zclRoot, options.Files)
 	if err != nil {
 		return err
-	}*/
+	}
 
 	if !options.Files.DryRun {
 

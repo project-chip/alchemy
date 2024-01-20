@@ -62,7 +62,7 @@ func renderSelectAttributes(cxt *Context, el interface{}, attributes types.Attri
 				title = v
 			case []interface{}:
 				renderContext := NewContext(cxt, cxt.Doc)
-				RenderElements(renderContext, "", v)
+				err = RenderElements(renderContext, "", v)
 				title = renderContext.String()
 			default:
 				err = fmt.Errorf("unknown title type: %T", v)
@@ -87,6 +87,9 @@ func renderSelectAttributes(cxt *Context, el interface{}, attributes types.Attri
 
 		default:
 			keys = append(keys, key)
+		}
+		if err != nil {
+			return
 		}
 	}
 
@@ -143,7 +146,7 @@ func renderSelectAttributes(cxt *Context, el interface{}, attributes types.Attri
 			cxt.WriteString(style)
 			for _, key := range keys {
 				var keyVal string
-				var skipKey = false
+				var skipKey bool
 				keyVal, skipKey, err = getKeyValue(cxt, key, attributes[key], include, exclude)
 				if err != nil {
 					return
@@ -199,7 +202,7 @@ func renderSelectAttributes(cxt *Context, el interface{}, attributes types.Attri
 		count := 0
 		for _, key := range keys {
 			var keyVal string
-			var skipKey = false
+			var skipKey bool
 			keyVal, skipKey, err = getKeyValue(cxt, key, attributes[key], include, exclude)
 			if err != nil {
 				return
@@ -371,7 +374,7 @@ func renderDiagramAttributes(cxt *Context, style string, id string, title string
 	slices.Sort(keys)
 	for _, key := range keys {
 		var keyVal string
-		var skipKey = false
+		var skipKey bool
 		keyVal, skipKey, err = getKeyValue(cxt, key, attributes[key], include, exclude)
 		if err != nil {
 			return

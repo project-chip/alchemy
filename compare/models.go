@@ -3,7 +3,6 @@ package compare
 import (
 	"fmt"
 	"log/slog"
-	"path/filepath"
 	"slices"
 	"strings"
 
@@ -13,9 +12,6 @@ import (
 
 func compareEntities(specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []any, err error) {
 	for path, sm := range specEntities {
-		if filepath.Base(path) != "thread-network-diagnostics-cluster.xml" {
-			//continue
-		}
 		zm, ok := zapEntities[path]
 		if !ok {
 			slog.Warn("missing from ZAP entities", slog.String("path", path))
