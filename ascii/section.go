@@ -78,8 +78,7 @@ func (s *Section) GetElements() []interface{} {
 
 func (s *Section) SetElements(elements []interface{}) error {
 	s.Elements = elements
-	s.Base.SetElements(elements)
-	return nil
+	return s.Base.SetElements(elements)
 }
 
 func (s *Section) GetAsciiSection() *types.Section {
@@ -250,32 +249,32 @@ func deriveSectionType(section *Section) matter.Section {
 }
 
 func (s *Section) ToEntities(d *Doc) ([]mattertypes.Entity, error) {
-	var models []mattertypes.Entity
+	var entities []mattertypes.Entity
 	switch s.SecType {
 	case matter.SectionCluster:
 		clusters, err := s.toClusters(d)
 		if err != nil {
 			return nil, err
 		}
-		models = append(models, clusters...)
+		entities = append(entities, clusters...)
 	case matter.SectionDeviceType:
 		deviceTypes, err := s.toDeviceTypes(d)
 		if err != nil {
 			return nil, err
 		}
-		models = append(models, deviceTypes...)
+		entities = append(entities, deviceTypes...)
 	default:
 		var err error
-		var looseModels []mattertypes.Entity
-		looseModels, err = findLooseEntities(d, s)
+		var looseEntities []mattertypes.Entity
+		looseEntities, err = findLooseEntities(d, s)
 		if err != nil {
 			return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
 		}
-		if len(looseModels) > 0 {
-			models = append(models, looseModels...)
+		if len(looseEntities) > 0 {
+			entities = append(entities, looseEntities...)
 		}
 	}
-	return models, nil
+	return entities, nil
 }
 
 var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
@@ -331,26 +330,26 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 	return nil
 }
 
-func findLooseEntities(doc *Doc, section *Section) (models []mattertypes.Entity, err error) {
+func findLooseEntities(doc *Doc, section *Section) (entities []mattertypes.Entity, err error) {
 	parse.Traverse(doc, section.Elements, func(section *Section, parent parse.HasElements, index int) bool {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
 			bm, err = section.toBitmap(doc)
 			if err == nil {
-				models = append(models, bm)
+				entities = append(entities, bm)
 			}
 		case matter.SectionDataTypeEnum:
 			var e *matter.Enum
 			e, err = section.toEnum(doc)
 			if err == nil {
-				models = append(models, e)
+				entities = append(entities, e)
 			}
 		case matter.SectionDataTypeStruct:
 			var s *matter.Struct
 			s, err = section.toStruct(doc)
 			if err == nil {
-				models = append(models, s)
+				entities = append(entities, s)
 			}
 		}
 		return err != nil

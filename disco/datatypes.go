@@ -12,16 +12,15 @@ import (
 )
 
 type DataTypeEntry struct {
-	name                string
-	ref                 string
-	dataType            string
-	dataTypeCategory    matter.DataTypeCategory
-	section             *ascii.Section
-	typeCell            *types.TableCell
-	definitionTable     *types.Table
-	indexColumn         matter.TableColumn
-	definitionColumnMap ascii.ColumnIndex
-	existing            bool
+	name             string
+	ref              string
+	dataType         string
+	dataTypeCategory matter.DataTypeCategory
+	section          *ascii.Section
+	typeCell         *types.TableCell
+	definitionTable  *types.Table
+	indexColumn      matter.TableColumn
+	existing         bool
 }
 
 func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
@@ -139,7 +138,10 @@ func (b *Ball) promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
 	fields := make(map[matter.DataTypeCategory]map[string]*DataTypeEntry)
 	for _, infos := range cxt.potentialDataTypes {
 		if len(infos) > 1 {
-			disambiguateDataTypes(cxt, infos)
+			err := disambiguateDataTypes(cxt, infos)
+			if err != nil {
+				return err
+			}
 		}
 		for _, info := range infos {
 			fieldMap, ok := fields[info.dataTypeCategory]
@@ -243,11 +245,23 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 
 		se, _ := types.NewStringElement(fmt.Sprintf("This data type is derived from %s", dt.dataType))
 		p, _ := types.NewParagraph(nil, se)
-		dataTypeSection.AddElement(p)
+		err = dataTypeSection.AddElement(p)
+		if err != nil {
+			return err
+		}
 		bl, _ := types.NewBlankLine()
-		dataTypeSection.AddElement(bl)
-		dataTypeSection.AddElement(table)
-		dataTypeSection.AddElement(bl)
+		err = dataTypeSection.AddElement(bl)
+		if err != nil {
+			return err
+		}
+		err = dataTypeSection.AddElement(table)
+		if err != nil {
+			return err
+		}
+		err = dataTypeSection.AddElement(bl)
+		if err != nil {
+			return err
+		}
 		newAttr := make(types.Attributes)
 		var newId string
 		if id, ok := table.Attributes.GetAsString(types.AttrID); ok {
@@ -267,7 +281,10 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return err
 		}
 
-		dataTypesSection.AppendSection(s)
+		err = dataTypesSection.AppendSection(s)
+		if err != nil {
+			return err
+		}
 
 		table.Attributes.Unset(types.AttrID)
 		table.Attributes.Unset(types.AttrTitle)
@@ -292,7 +309,10 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 	}
 	ts, _ := types.NewSection(top.Base.Level+1, []interface{}{title})
 	bl, _ := types.NewBlankLine()
-	ts.AddElement(bl)
+	err = ts.AddElement(bl)
+	if err != nil {
+		return nil, err
+	}
 	dataTypesSection, err = ascii.NewSection(top, ts)
 	if err != nil {
 		return nil, err

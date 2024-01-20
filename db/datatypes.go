@@ -92,7 +92,7 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string,
 	parent.children[tableName] = append(parent.children[tableName], sv)
 }
 
-func (h *Host) indexDataTypes(cxt context.Context, doc *ascii.Doc, ds *sectionInfo, dts *ascii.Section) error {
+func (h *Host) indexDataTypes(cxt context.Context, doc *ascii.Doc, ds *sectionInfo, dts *ascii.Section) (err error) {
 	if ds.children == nil {
 		ds.children = make(map[string][]*sectionInfo)
 	}
@@ -124,11 +124,14 @@ func (h *Host) indexDataTypes(cxt context.Context, doc *ascii.Doc, ds *sectionIn
 			ds.children[dataTypeTable] = append(ds.children[dataTypeTable], ci)
 			switch s.SecType {
 			case matter.SectionDataTypeBitmap:
-				h.readTableSection(cxt, doc, ci, s, bitmapValue)
+				err = h.readTableSection(cxt, doc, ci, s, bitmapValue)
 			case matter.SectionDataTypeEnum:
-				h.readTableSection(cxt, doc, ci, s, enumValue)
+				err = h.readTableSection(cxt, doc, ci, s, enumValue)
 			case matter.SectionDataTypeStruct:
-				h.readTableSection(cxt, doc, ci, s, structField)
+				err = h.readTableSection(cxt, doc, ci, s, structField)
+			}
+			if err != nil {
+				return
 			}
 		}
 	}

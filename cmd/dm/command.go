@@ -84,9 +84,6 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 			}
 
 		}
-		if len(cmd.Description) > 0 {
-
-		}
 	}
 
 	return

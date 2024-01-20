@@ -48,8 +48,7 @@ func Compare(cxt context.Context, specRoot string, zclRoot string, settings []co
 	}
 	jm := json.NewEncoder(os.Stdout)
 	jm.SetIndent("", "\t")
-	jm.Encode(diffs)
-	return nil
+	return jm.Encode(diffs)
 }
 
 func loadSpecClusterPaths(spec *matter.Spec, zclRoot string) (map[string][]mattertypes.Entity, error) {
@@ -101,8 +100,7 @@ func loadSpecEntities(appClusterPaths []string, settings []configuration.Setting
 
 		fmt.Fprintf(os.Stderr, "ZCL'd %s (%d of %d)...\n", file, i+1, len(appClusterPaths))
 
-		newFile := filepath.Base(file)
-		newFile = zap.ZAPClusterName(doc.Path, errata, entities)
+		newFile := zap.ZAPClusterName(doc.Path, errata, entities)
 		newFile = strcase.ToKebab(newFile)
 
 		newPath := filepath.Join(zclRoot, "src/app/zap-templates/zcl/data-model/chip", newFile+".xml")
@@ -115,7 +113,7 @@ func loadSpecEntities(appClusterPaths []string, settings []configuration.Setting
 func getAppDomains(specRoot string, settings []configuration.Setting) ([]string, map[string]matter.Domain, error) {
 	var appClusterPaths []string
 	var appClusterIndexPaths []string
-	filepath.WalkDir(specRoot, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(specRoot, func(path string, d fs.DirEntry, err error) error {
 		if filepath.Ext(path) == ".adoc" {
 			docType, e := ascii.GetDocType(path)
 			if e != nil {
@@ -130,6 +128,9 @@ func getAppDomains(specRoot string, settings []configuration.Setting) ([]string,
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, nil, err
+	}
 
 	domains := make(map[string]matter.Domain)
 
@@ -229,8 +230,5 @@ func namesEqual(specName string, zapName string) bool {
 	}
 	specName = strcase.ToCamel(specName)
 	zapName = strcase.ToCamel(zapName)
-	if strings.EqualFold(specName, zapName) {
-		return true
-	}
-	return false
+	return strings.EqualFold(specName, zapName)
 }

@@ -28,10 +28,6 @@ type Number interface {
 	int64 | uint64
 }
 
-func add[T Number](a, b T) T {
-	return a + b
-}
-
 func operate[T Number](operand string, left, right T) (val T) {
 	switch operand {
 	case "+":

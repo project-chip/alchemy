@@ -7,7 +7,10 @@ import (
 )
 
 func renderList(cxt *Context, l *types.List) (err error) {
-	renderAttributes(cxt, l, l.Attributes, false)
+	err = renderAttributes(cxt, l, l.Attributes, false)
+	if err != nil {
+		return
+	}
 	switch l.Kind {
 	case types.OrderedListKind:
 		err = renderOrderedList(cxt, l)
@@ -51,7 +54,10 @@ func renderOrderedListElement(cxt *Context, el *types.OrderedListElement) (err e
 	case types.UpperRoman:
 		bullet = "....."
 	}
-	renderAttributes(cxt, el, el.Attributes, false)
+	err = renderAttributes(cxt, el, el.Attributes, false)
+	if err != nil {
+		return
+	}
 	err = RenderElements(cxt, bullet+" ", el.Elements)
 	return
 }
@@ -89,7 +95,10 @@ func renderUnorderedListElement(cxt *Context, el *types.UnorderedListElement) (e
 	case types.FiveAsterisks:
 		bullet = "*****"
 	}
-	renderAttributes(cxt, el, el.Attributes, false)
+	err = renderAttributes(cxt, el, el.Attributes, false)
+	if err != nil {
+		return
+	}
 	err = RenderElements(cxt, bullet+" ", el.Elements)
 	return
 }

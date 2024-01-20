@@ -51,7 +51,7 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 						cell.Format = "h"
 					}
 					name, _ := matter.GetColumnName(column, overrides)
-					setCellString(cell, name)
+					_ = setCellString(cell, name)
 				} else {
 					last := row.Cells[len(row.Cells)-1]
 					cell.Blank = last.Blank
@@ -90,7 +90,10 @@ func setCellString(cell *types.TableCell, v string) (err error) {
 		if err != nil {
 			return
 		}
-		cell.SetElements([]interface{}{p})
+		err = cell.SetElements([]interface{}{p})
+		if err != nil {
+			return
+		}
 	} else {
 		var ok bool
 		p, ok = cell.Elements[0].(*types.Paragraph)
@@ -99,7 +102,7 @@ func setCellString(cell *types.TableCell, v string) (err error) {
 		}
 	}
 	se, _ := types.NewStringElement(v)
-	p.SetElements([]interface{}{se})
+	err = p.SetElements([]interface{}{se})
 	return
 }
 
@@ -111,7 +114,10 @@ func setCellValue(cell *types.TableCell, val []interface{}) (err error) {
 		if err != nil {
 			return
 		}
-		cell.SetElements([]interface{}{p})
+		err = cell.SetElements([]interface{}{p})
+		if err != nil {
+			return
+		}
 	} else {
 		var ok bool
 		p, ok = cell.Elements[0].(*types.Paragraph)
@@ -119,7 +125,7 @@ func setCellValue(cell *types.TableCell, val []interface{}) (err error) {
 			return fmt.Errorf("table cell does not have paragraph child")
 		}
 	}
-	p.SetElements(val)
+	err = p.SetElements(val)
 	return
 }
 

@@ -14,8 +14,7 @@ func (b *Ball) organizeClassificationSection(doc *ascii.Doc, section *ascii.Sect
 	if attributesTable == nil {
 		return fmt.Errorf("no classification table found")
 	}
-	b.organizeClassificationTable(doc, section, attributesTable)
-	return nil
+	return b.organizeClassificationTable(doc, section, attributesTable)
 }
 
 func (b *Ball) organizeClassificationTable(doc *ascii.Doc, section *ascii.Section, attributesTable *types.Table) error {

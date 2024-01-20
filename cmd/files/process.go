@@ -37,9 +37,11 @@ func process(cxt context.Context, filepaths []string, options Options, processor
 			g.Go(func() error {
 				done := atomic.AddInt32(&complete, 1)
 				err := processor(errCxt, file, int(done), len(files))
+				if err != nil {
+					return err
+				}
 				bar.Describe(ProgressFileName(file))
-				bar.Add(1)
-				return err
+				return bar.Add(1)
 			})
 		}(f, i)
 

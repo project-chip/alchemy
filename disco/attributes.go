@@ -108,7 +108,10 @@ func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.
 			c := constraint.ParseString(vc)
 			fixed := c.AsciiDocString(dataType)
 			if fixed != vc {
-				setCellString(cell, fixed)
+				err = setCellString(cell, fixed)
+				if err != nil {
+					return
+				}
 			}
 		}
 
@@ -172,7 +175,10 @@ func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []
 				setAnchorID(s.Base, id, label)
 			}
 			icr, _ := types.NewInternalCrossReference(id, nil)
-			p.SetElements([]interface{}{icr})
+			err := p.SetElements([]interface{}{icr})
+			if err != nil {
+				return err
+			}
 		}
 	}
 

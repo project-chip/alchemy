@@ -91,7 +91,6 @@ func Filter(parent HasElements, callback func(i interface{}) (remove bool, short
 		if remove {
 			elements = slices.Replace(elements, i, i+1, empty...)
 			removed = true
-			remove = false
 		} else {
 			i++
 		}
@@ -100,7 +99,7 @@ func Filter(parent HasElements, callback func(i interface{}) (remove bool, short
 		}
 	}
 	if removed {
-		parent.SetElements(elements)
+		_ = parent.SetElements(elements)
 	}
 	return
 }

@@ -143,7 +143,7 @@ func renderDeviceType(cxt context.Context, deviceTypes []*matter.DeviceType) (ou
 	x.Indent(2)
 
 	var b bytes.Buffer
-	x.WriteTo(&b)
+	_, err = x.WriteTo(&b)
 	output = b.String()
 	return
 }
@@ -247,6 +247,9 @@ func renderAttributeRequirement(deviceType *matter.DeviceType, er *matter.Elemen
 	renderAttributeAccess(ex, er.Access)
 	renderQuality(ex, er.Quality, matter.QualityAll^matter.QualitySingleton)
 	err = renderConformanceString(deviceType, er.Conformance, ex)
+	if err != nil {
+		return
+	}
 	err = renderConstraint(er.Constraint, dataType, ex)
 	return
 }
