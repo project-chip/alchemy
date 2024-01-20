@@ -17,6 +17,7 @@ jobs:
         # build and publish in parallel: linux/amd64
         goos: [darwin, windows, linux]
         goarch: [amd64, arm64]
+        tags: [plain, db]
         exclude:
           - goarch: arm64
             goos: windows
@@ -30,4 +31,6 @@ jobs:
           project_path: "."
           binary_name: "alchemy"
           ldflags: "-s -w"
+          build_flags: -tags ${{ matrix.tags }}
           extra_files: LICENSE README.md
+          asset_name: "alchemy-${{ env.RELEASE_TAG }}-${{ matrix.goos }}-${{ matrix.goarch }}-${{ matrix.tags }}"
