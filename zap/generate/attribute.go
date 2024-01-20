@@ -78,7 +78,7 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 	renderConstraint(ae, cluster.Attributes, attribute)
 	if attribute.Default != "" {
 		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: attribute, Fields: cluster.Attributes})
-		if defaultValue.Defined() {
+		if defaultValue.Defined() && !defaultValue.IsNull() {
 			ae.CreateAttr("default", defaultValue.ZapString(attribute.Type))
 		} else {
 			ae.RemoveAttr("default")

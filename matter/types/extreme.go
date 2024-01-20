@@ -34,6 +34,10 @@ func (ce *DataTypeExtreme) Defined() bool {
 	return ce.Type != DataTypeExtremeTypeUndefined
 }
 
+func (ce *DataTypeExtreme) IsNull() bool {
+	return ce.Type == DataTypeExtremeTypeNull
+}
+
 func (ce *DataTypeExtreme) Value() any {
 	switch ce.Type {
 	case DataTypeExtremeTypeInt64:
@@ -78,12 +82,7 @@ func (ce *DataTypeExtreme) ZapString(dataType *DataType) string {
 		}
 	case DataTypeExtremeTypeUInt64:
 		return ce.formatUint64(dataType, ce.UInt64)
-	case DataTypeExtremeTypeNull:
-		val := dataType.NullValue()
-		if val > 0 {
-			return ce.formatUint64(dataType, val)
-		}
-	case DataTypeExtremeTypeEmpty:
+	case DataTypeExtremeTypeNull, DataTypeExtremeTypeEmpty:
 		return ""
 	}
 	return ""
