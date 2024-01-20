@@ -6,7 +6,6 @@ import (
 	"os"
 	"path"
 	"slices"
-	"sort"
 
 	"github.com/iancoleman/orderedmap"
 )
@@ -40,26 +39,19 @@ func patchZapJsonFile(zclRoot string, files []string, file string) error {
 		return fmt.Errorf("xmlField not a string array in zcl.json; %T", val)
 	}
 	xmls := make([]string, 0, len(is)+len(files))
+	fileMap := make(map[string]struct{})
+	for _, file := range files {
+		fileMap[file] = struct{}{}
+	}
 	for _, i := range is {
 		if s, ok := i.(string); ok {
 			xmls = append(xmls, s)
+			delete(fileMap, s)
 		}
 	}
-	xmls = append(xmls, files...)
-	sort.Slice(xmls, func(i, j int) bool {
-		a := xmls[i]
-		b := xmls[j]
-		if a == "access-control-definitions.xml" {
-			return true
-		}
-		if b == "access-control-definitions.xml" {
-			return false
-		}
-		if a < b {
-			return true
-		}
-		return false
-	})
+
+	xmls = mergeLines(xmls, fileMap, 2)
+
 	slices.Compact(xmls)
 	o.Set("xmlFile", xmls)
 

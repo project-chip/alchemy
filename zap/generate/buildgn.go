@@ -7,7 +7,6 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
-	"slices"
 	"strings"
 
 	"github.com/hasty/alchemy/ascii"
@@ -25,42 +24,35 @@ func patchBuildGN(zclRoot string, docs []*ascii.Doc) error {
 
 	gn := string(buildGNBytes)
 
-	filesMap := make(map[string]struct{})
-	for _, doc := range docs {
-		path := filepath.Base(doc.Path)
-		path = strings.TrimSuffix(path, filepath.Ext(path))
-		filesMap[fmt.Sprintf("jni/%sClient-InvokeSubscribeImpl.cpp", path)] = struct{}{}
-		filesMap[fmt.Sprintf("jni/%sClient-ReadImpl.cpp", path)] = struct{}{}
-	}
-
 	matches := gnFileListPattern.FindStringSubmatch(gn)
 	if matches == nil {
 		return fmt.Errorf("failed to find file list in BUILD.gn")
 	}
 
 	files := gnFileLinkPattern.FindAllStringSubmatch(matches[2], -1)
-	if files == nil {
+	if len(files) == 0 {
 		return fmt.Errorf("failed to parse file list in BUILD.gn")
 	}
-	var combined []string
-	var indent string
+	var lines []string
+	var indent = files[0][1]
+
+	filesMap := make(map[string]struct{})
+	for _, doc := range docs {
+		path := filepath.Base(doc.Path)
+		path = strings.TrimSuffix(path, filepath.Ext(path))
+		filesMap[fmt.Sprintf("%s\"jni/%sClient-InvokeSubscribeImpl.cpp\",\n", indent, path)] = struct{}{}
+		filesMap[fmt.Sprintf("%s\"jni/%sClient-ReadImpl.cpp\",\n", indent, path)] = struct{}{}
+	}
+
 	for _, fileMatch := range files {
-		if indent == "" {
-			indent = fileMatch[1]
-		}
-		delete(filesMap, fileMatch[2])
-		combined = append(combined, fileMatch[0])
+		line := fileMatch[0]
+		delete(filesMap, line)
+		lines = append(lines, line)
 	}
-	if len(filesMap) == 0 {
-		return nil
-	}
+
+	lines = mergeLines(lines, filesMap, 1)
+
 	slog.Info("Patching src/controller/data_model/BUILD.gn...")
-	for p := range filesMap {
-		//fmt.Printf("adding %s...\n", p)
-		combined = append(combined, fmt.Sprintf("%s\"%s\",\n", indent, p))
-	}
-	slices.Sort(combined)
-	slices.Compact(combined)
 
 	var replaced bool
 	gn = gnFileListPattern.ReplaceAllStringFunc(gn, func(s string) string {
@@ -68,7 +60,7 @@ func patchBuildGN(zclRoot string, docs []*ascii.Doc) error {
 			return ""
 		}
 		replaced = true
-		return fmt.Sprintf("%s%s%s", matches[1], strings.Join(combined, ""), matches[3])
+		return fmt.Sprintf("%s%s%s", matches[1], strings.Join(lines, ""), matches[3])
 	})
 	return os.WriteFile(buildGNPath, []byte(gn), os.ModeAppend|0644)
 }
