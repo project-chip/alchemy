@@ -57,7 +57,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, errata *zap.Errata) {
 	needsAccess := e.Access.Read != matter.PrivilegeUnknown && e.Access.Read != matter.PrivilegeView
 
-	ee.CreateAttr("code", e.ID.HexString())
+	ee.CreateAttr("code", e.ID.ShortHexString())
 	ee.CreateAttr("name", e.Name)
 	ee.CreateAttr("priority", strings.ToLower(e.Priority))
 	ee.RemoveAttr("side")
