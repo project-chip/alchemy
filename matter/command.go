@@ -58,7 +58,7 @@ func (c *Command) Inherit(parent *Command) {
 
 type CommandSet []*Command
 
-func (cs CommandSet) Reference(name string) conformance.HasConformance {
+func (cs CommandSet) Reference(name string) types.Entity {
 	for _, cmd := range cs {
 		if cmd.Name == name {
 			return cmd

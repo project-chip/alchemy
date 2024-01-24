@@ -86,13 +86,8 @@ func (fs FieldSet) GetField(name string) *Field {
 	return nil
 }
 
-func (fs FieldSet) Reference(name string) conformance.HasConformance {
-	for _, f := range fs {
-		if f.Name == name {
-			return f
-		}
-	}
-	return nil
+func (fs FieldSet) Reference(name string) types.Entity {
+	return fs.GetField(name)
 }
 
 func (fs FieldSet) Inherit(parent FieldSet) (nfs FieldSet) {

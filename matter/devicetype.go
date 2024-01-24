@@ -26,7 +26,7 @@ func (c *DeviceType) EntityType() types.EntityType {
 	return types.EntityTypeDeviceType
 }
 
-func (dt *DeviceType) Reference(name string) conformance.HasConformance {
+func (dt *DeviceType) Reference(name string) types.Entity {
 	for _, c := range dt.Conditions {
 		if c.Feature == name {
 			return c

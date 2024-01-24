@@ -3,6 +3,7 @@ package conformance
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 type Choice struct {
@@ -15,6 +16,13 @@ func (c *Choice) String() string {
 		return c.Limit.String(c.Set)
 	}
 	return fmt.Sprintf("set: %s", c.Set)
+}
+
+func (c *Choice) AsciiDocString() string {
+	if c.Limit != nil {
+		return fmt.Sprintf("%s%s", c.Set, c.Limit.AsciiDocString())
+	}
+	return c.Set
 }
 
 func (c *Choice) Equal(oc *Choice) bool {
@@ -38,6 +46,8 @@ func (c *Choice) Clone() *Choice {
 
 type ChoiceLimit interface {
 	String(set string) string
+	AsciiDocString() string
+
 	Equal(cl ChoiceLimit) bool
 	Clone() ChoiceLimit
 }
@@ -48,6 +58,13 @@ type ChoiceExactLimit struct {
 
 func (c *ChoiceExactLimit) String(set string) string {
 	return fmt.Sprintf("with exactly %d of set %s", c.Limit, set)
+}
+
+func (c *ChoiceExactLimit) AsciiDocString() string {
+	if c.Limit <= 1 {
+		return ""
+	}
+	return strconv.Itoa(c.Limit)
 }
 
 func (c *ChoiceExactLimit) Equal(cl ChoiceLimit) bool {
@@ -86,6 +103,13 @@ func (c *ChoiceMinLimit) String(set string) string {
 	return fmt.Sprintf("with at least %d of set %s", c.Min, set)
 }
 
+func (c *ChoiceMinLimit) AsciiDocString() string {
+	if c.Min > 1 {
+		return fmt.Sprintf("%d+", c.Min)
+	}
+	return "+"
+}
+
 func (c *ChoiceMinLimit) Equal(cl ChoiceLimit) bool {
 	if c == nil {
 		return cl == nil
@@ -120,6 +144,13 @@ type ChoiceMaxLimit struct {
 
 func (c *ChoiceMaxLimit) String(set string) string {
 	return fmt.Sprintf("with at most %d of set %s", c.Max, set)
+}
+
+func (c *ChoiceMaxLimit) AsciiDocString() string {
+	if c.Max > 1 {
+		return fmt.Sprintf("%d-", c.Max)
+	}
+	return "-"
 }
 
 func (c *ChoiceMaxLimit) Equal(cl ChoiceLimit) bool {
@@ -157,6 +188,10 @@ type ChoiceRangeLimit struct {
 
 func (c *ChoiceRangeLimit) String(set string) string {
 	return fmt.Sprintf("with between %d and %d of set %s", c.Min, c.Max, set)
+}
+
+func (c *ChoiceRangeLimit) AsciiDocString() string {
+	return fmt.Sprintf("%d-%d", c.Min, c.Max)
 }
 
 func (c *ChoiceRangeLimit) Equal(cl ChoiceLimit) bool {

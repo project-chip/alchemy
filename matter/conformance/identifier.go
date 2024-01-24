@@ -38,7 +38,7 @@ func evalIdentifier(context Context, id string, not bool) (bool, error) {
 		}
 		ref := context.Store.Reference(id)
 		context.VisitedReferences[id] = struct{}{}
-		if ref != nil {
+		if ref, ok := ref.(HasConformance); ok {
 			conf := ref.GetConformance()
 			if conf != nil {
 				cs, err := conf.Eval(context)
