@@ -14,6 +14,14 @@ func readSimpleElement(parent *etree.Element, name string) (value string, ok boo
 	return e.Text(), true
 }
 
+func setNonexistentAttr(el *etree.Element, name string, value string) *etree.Attr {
+	a := el.SelectAttr(name)
+	if a == nil {
+		a = el.CreateAttr(name, value)
+	}
+	return a
+}
+
 func setOrCreateSimpleElement(parent *etree.Element, name string, value string, afterElements ...string) *etree.Element {
 	el := parent.SelectElement(name)
 	if el == nil {
