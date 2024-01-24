@@ -22,10 +22,6 @@ type concurrentMap[K comparable, T any] struct {
 	sync.Mutex
 }
 
-type renderResult struct {
-	zcl string
-}
-
 func newConcurrentMap[K comparable, T any]() *concurrentMap[K, T] {
 	return &concurrentMap[K, T]{Map: make(map[K]T)}
 }
@@ -43,9 +39,9 @@ func getDocDomain(doc *ascii.Doc) matter.Domain {
 	return matter.DomainUnknown
 }
 
-func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[string]*ascii.Doc, targetDocs []*ascii.Doc, zclRoot string, filesOptions files.Options, overwrite bool) (outputs map[string]*renderResult, provisionalZclFiles []string, err error) {
+func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[string]*ascii.Doc, targetDocs []*ascii.Doc, zclRoot string, filesOptions files.Options, overwrite bool) (outputs map[string]string, provisionalZclFiles []string, err error) {
 	var lock sync.Mutex
-	outputs = make(map[string]*renderResult)
+	outputs = make(map[string]string)
 	slog.InfoContext(cxt, "Rendering ZAP templates...")
 
 	dependencies := newConcurrentMap[string, bool]()
@@ -112,24 +108,6 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 					}
 					provisional = true
 					doc = newZapTemplate()
-
-					/*result, err = render.Render(cxt, spec, doc, configurator, errata)
-					if err != nil {
-						err = fmt.Errorf("failed rendering %s: %w", path, err)
-						return err
-					}
-					result, err = parse.FormatXML(result)
-					if err != nil {
-						err = fmt.Errorf("failed formatting %s: %w", path, err)
-						return err
-					}
-					lock.Lock()
-					outputs[newPath] = &renderResult{zcl: result}
-					provisionalZclFiles = append(provisionalZclFiles, filepath.Base(newPath))
-					lock.Unlock()
-					if filesOptions.Serial {
-						slog.InfoContext(cxt, "Rendered new ZAP template", "from", path, "to", newPath, "index", index, "count", total)
-					}*/
 				} else if err != nil {
 					return err
 				} else {
@@ -141,31 +119,14 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 					if err != nil {
 						return fmt.Errorf("failed reading ZAP template %s: %w", path, err)
 					}
-					/*var buf bytes.Buffer
 
-					err = amend.Render(spec, doc, bytes.NewReader(existing), &buf, configurator, errata)
-					if err != nil {
-						return fmt.Errorf("failed rendering %s: %w", path, err)
-					}
-					result = selfClosingTags.ReplaceAllString(buf.String(), "/>") // Lame limitation of Go's XML encoder
-					result, err = parse.FormatXML(result)
-					if err != nil {
-						return fmt.Errorf("failed formatting %s: %w", path, err)
-					}
-
-					lock.Lock()
-					outputs[newPath] = &renderResult{zcl: result}
-					lock.Unlock()
-					if filesOptions.Serial {
-						slog.InfoContext(cxt, "Rendered existing ZAP template", "from", path, "to", newPath, "index", index, "count", total)
-					}*/
 				}
 				result, err = renderZapTemplate(configurator, doc, errata)
 				if err != nil {
 					return fmt.Errorf("failed rendering %s: %w", path, err)
 				}
 				lock.Lock()
-				outputs[newPath] = &renderResult{zcl: result}
+				outputs[newPath] = result
 				if provisional {
 					provisionalZclFiles = append(provisionalZclFiles, filepath.Base(newPath))
 
