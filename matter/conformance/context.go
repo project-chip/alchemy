@@ -3,7 +3,7 @@ package conformance
 import "github.com/hasty/alchemy/matter/types"
 
 type ValueStore interface {
-	Reference(id string) types.Entity
+	Reference(id string) (types.Entity, bool)
 }
 
 type Context struct {

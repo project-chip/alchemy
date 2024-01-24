@@ -150,7 +150,10 @@ func renderAttributesTest(cluster *matter.Cluster, b *strings.Builder) {
 func typeString(cluster *matter.Cluster, dt *types.DataType) string {
 	switch dt.BaseType {
 	case types.BaseDataTypeCustom:
-		entity := cluster.Reference(dt.Name)
+		entity, ok := cluster.Reference(dt.Name)
+		if !ok {
+			return dt.Name
+		}
 		switch entity := entity.(type) {
 		case *matter.Enum:
 			return entity.Type.Name
@@ -178,8 +181,8 @@ func limitString(cluster *matter.Cluster, limit constraint.ConstraintLimit) stri
 	case *constraint.TemperatureLimit:
 		return fmt.Sprintf("%s°C", limit.Value.String())
 	case *constraint.ReferenceLimit:
-		ref := cluster.Reference(limit.Value)
-		if ref == nil {
+		ref, ok := cluster.Reference(limit.Value)
+		if !ok {
 			return fmt.Sprintf("ERR: unknown reference %s", limit.Value)
 		}
 		switch ref := ref.(type) {

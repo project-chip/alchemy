@@ -58,11 +58,11 @@ func (c *Command) Inherit(parent *Command) {
 
 type CommandSet []*Command
 
-func (cs CommandSet) Reference(name string) types.Entity {
+func (cs CommandSet) Reference(name string) (types.Entity, bool) {
 	for _, cmd := range cs {
 		if cmd.Name == name {
-			return cmd
+			return cmd, true
 		}
 	}
-	return nil
+	return nil, false
 }

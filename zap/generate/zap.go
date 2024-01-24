@@ -57,7 +57,8 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 	}
 
 	slog.InfoContext(cxt, "Extracting clusters...")
-	var clusters []*ascii.Doc
+	var clusterDocs []*ascii.Doc
+	var deviceTypeDocs []*ascii.Doc
 	for _, d := range docs {
 
 		entities, err := d.Entities()
@@ -69,34 +70,21 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 		for _, m := range entities {
 			switch m.(type) {
 			case *matter.Cluster:
-				clusters = append(clusters, d)
-
+				clusterDocs = append(clusterDocs, d)
+			case *matter.DeviceType:
+				deviceTypeDocs = append(deviceTypeDocs, d)
 			}
 		}
 	}
 
-	if len(paths) > 0 {
-		filteredDocs := make([]*ascii.Doc, 0, len(paths))
-		pathMap := make(map[string]struct{})
-		for _, p := range paths {
-			pathMap[filepath.Base(p)] = struct{}{}
-		}
-		for _, ac := range clusters {
-			p := filepath.Base(ac.Path)
-			if _, ok := pathMap[p]; ok {
-				filteredDocs = append(filteredDocs, ac)
-				delete(pathMap, p)
-			}
-		}
-		clusters = filteredDocs
-	}
+	clusterDocs = filterDocs(clusterDocs, paths)
 
-	outputs, provisionalZclFiles, err := renderClusterTemplates(cxt, spec, docsByPath, clusters, zclRoot, options.Files, options.Overwrite)
+	outputs, provisionalZclFiles, err := renderClusterTemplates(cxt, spec, docsByPath, clusterDocs, zclRoot, options.Files, options.Overwrite)
 	if err != nil {
 		return err
 	}
 
-	err = renderDeviceTypes(cxt, spec, docs, zclRoot, options.Files)
+	err = renderDeviceTypes(cxt, spec, filterDocs(deviceTypeDocs, paths), zclRoot, options.Files)
 	if err != nil {
 		return err
 	}
@@ -135,13 +123,13 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 			}
 		}
 
-		err = patchBuildGN(zclRoot, clusters)
+		err = patchBuildGN(zclRoot, clusterDocs)
 		if err != nil {
 			return err
 		}
 
 		slog.Info("Patching src/app/zap_cluster_list.json...")
-		err = patchClusterList(zclRoot, clusters)
+		err = patchClusterList(zclRoot, clusterDocs)
 		if err != nil {
 			return err
 		}
@@ -149,6 +137,25 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 	}
 
 	return nil
+}
+
+func filterDocs(docs []*ascii.Doc, paths []string) []*ascii.Doc {
+	if len(docs) == 0 {
+		return docs
+	}
+	filteredDocs := make([]*ascii.Doc, 0, len(paths))
+	pathMap := make(map[string]struct{})
+	for _, p := range paths {
+		pathMap[filepath.Base(p)] = struct{}{}
+	}
+	for _, ac := range docs {
+		p := filepath.Base(ac.Path)
+		if _, ok := pathMap[p]; ok {
+			filteredDocs = append(filteredDocs, ac)
+			delete(pathMap, p)
+		}
+	}
+	return filteredDocs
 }
 
 func getZapPath(zclRoot string, name string) string {

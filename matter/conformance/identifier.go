@@ -36,8 +36,11 @@ func evalIdentifier(context Context, id string, not bool) (bool, error) {
 		} else if _, ok := context.VisitedReferences[id]; ok {
 			return false, nil
 		}
-		ref := context.Store.Reference(id)
+		ref, ok := context.Store.Reference(id)
 		context.VisitedReferences[id] = struct{}{}
+		if !ok {
+			return false, nil
+		}
 		if ref, ok := ref.(HasConformance); ok {
 			conf := ref.GetConformance()
 			if conf != nil {

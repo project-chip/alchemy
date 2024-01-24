@@ -57,16 +57,16 @@ func (bm *Bitmap) Clone() *Bitmap {
 	return nbm
 }
 
-func (bm Bitmap) Reference(id string) types.Entity {
+func (bm Bitmap) Reference(id string) (types.Entity, bool) {
 	if len(bm.Bits) == 0 {
-		return nil
+		return nil, false
 	}
 	for _, b := range bm.Bits {
 		if b.Code == id {
-			return b
+			return b, true
 		}
 	}
-	return nil
+	return nil, false
 }
 
 func (bm *Bitmap) Inherit(parent *Bitmap) error {
@@ -104,6 +104,17 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 	})
 	bm.Bits = mergedBits
 	return nil
+}
+
+type BitmapSet []*Bitmap
+
+func (bs BitmapSet) Reference(name string) (types.Entity, bool) {
+	for _, e := range bs {
+		if e.Name == name {
+			return e, true
+		}
+	}
+	return nil, false
 }
 
 type Bit struct {
@@ -171,11 +182,11 @@ func (bv *Bit) GetConformance() conformance.Set {
 
 type BitSet []*Bit
 
-func (bs BitSet) Reference(name string) types.Entity {
+func (bs BitSet) Reference(name string) (types.Entity, bool) {
 	for _, b := range bs {
 		if b.Name == name {
-			return b
+			return b, true
 		}
 	}
-	return nil
+	return nil, false
 }

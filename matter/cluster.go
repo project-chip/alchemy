@@ -19,9 +19,9 @@ type Cluster struct {
 	PICS      string `json:"pics,omitempty"`
 
 	Features   *Bitmap    `json:"features,omitempty"`
-	Bitmaps    []*Bitmap  `json:"bitmaps,omitempty"`
-	Enums      []*Enum    `json:"enums,omitempty"`
-	Structs    []*Struct  `json:"structs,omitempty"`
+	Bitmaps    BitmapSet  `json:"bitmaps,omitempty"`
+	Enums      EnumSet    `json:"enums,omitempty"`
+	Structs    StructSet  `json:"structs,omitempty"`
 	Attributes FieldSet   `json:"attributes,omitempty"`
 	Events     EventSet   `json:"events,omitempty"`
 	Commands   CommandSet `json:"commands,omitempty"`
@@ -134,46 +134,25 @@ func (c *Cluster) Inherit(parent *Cluster) (err error) {
 	return nil
 }
 
-func (c *Cluster) Reference(name string) types.Entity {
+func (c *Cluster) Reference(name string) (types.Entity, bool) {
 	if c == nil {
-		return nil
+		return nil, false
 	}
 	var cr types.Entity
+	var ok bool
 	if c.Features != nil {
-		cr = c.Features.Reference(name)
-		if cr, ok := cr.(*Bit); ok && cr != nil {
-			return cr
+		cr, ok = c.Features.Reference(name)
+		if ok {
+			return cr, ok
 		}
 
 	}
-	cr = c.Attributes.Reference(name)
-	if cr, ok := cr.(*Field); ok && cr != nil {
-		return cr
-	}
-	for _, cmd := range c.Commands {
-		if cmd.Name == name {
-			return cmd
+	stores := []ReferenceStore{c.Attributes, c.Commands, c.Events, c.Enums, c.Bitmaps, c.Structs}
+	for _, s := range stores {
+		cr, ok = s.Reference(name)
+		if ok {
+			return cr, true
 		}
 	}
-	for _, e := range c.Events {
-		if e.Name == name {
-			return e
-		}
-	}
-	for _, e := range c.Enums {
-		if e.Name == name {
-			return e
-		}
-	}
-	for _, e := range c.Bitmaps {
-		if e.Name == name {
-			return e
-		}
-	}
-	for _, e := range c.Structs {
-		if e.Name == name {
-			return e
-		}
-	}
-	return nil
+	return nil, false
 }

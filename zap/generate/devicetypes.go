@@ -78,7 +78,6 @@ func renderDeviceTypes(cxt context.Context, spec *matter.Spec, docs []*ascii.Doc
 		}
 		deviceType, ok := deviceTypes.Map[deviceTypeId.Value()]
 		if !ok {
-			slog.Warn("unknown deviceId", "deviceId", deviceTypeId.HexString())
 			continue
 		}
 		applyDeviceTypeToElement(spec, deviceType, deviceTypeElement)
@@ -104,6 +103,13 @@ func renderDeviceTypes(cxt context.Context, spec *matter.Spec, docs []*ascii.Doc
 	return
 }
 
+type clusterRequirements struct {
+	name                    string
+	clusterRequirements     []*matter.ClusterRequirement
+	baseClusterRequirements []*matter.ClusterRequirement
+	elementRequirements     []*matter.ElementRequirement
+}
+
 func applyDeviceTypeToElement(spec *matter.Spec, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
 	setOrCreateSimpleElement(dte, "name", zap.ZAPDeviceTypeName(deviceType))
 	setOrCreateSimpleElement(dte, "domain", "CHIP")
@@ -122,49 +128,72 @@ func applyDeviceTypeToElement(spec *matter.Spec, deviceType *matter.DeviceType, 
 	if clustersElement == nil {
 		clustersElement = dte.CreateElement("clusters")
 	}
-	clusterRequirementsByName := make(map[string][]*matter.ClusterRequirement)
+	clusterRequirementsByName := make(map[string]*clusterRequirements)
 	for _, cr := range deviceType.ClusterRequirements {
 		name := strings.ToLower(cr.ClusterName)
-		clusterRequirementsByName[name] = append(clusterRequirementsByName[name], cr)
+		crr, ok := clusterRequirementsByName[name]
+		if !ok {
+			crr = &clusterRequirements{name: cr.ClusterName}
+			clusterRequirementsByName[name] = crr
+		}
+		crr.clusterRequirements = append(crr.clusterRequirements, cr)
 	}
 	for _, cr := range spec.BaseDeviceType.ClusterRequirements {
 		name := strings.ToLower(cr.ClusterName)
-		clusterRequirementsByName[name] = append(clusterRequirementsByName[name], cr)
+		crr, ok := clusterRequirementsByName[name]
+		if !ok {
+			crr = &clusterRequirements{name: cr.ClusterName}
+			clusterRequirementsByName[name] = crr
+		}
+		crr.baseClusterRequirements = append(crr.baseClusterRequirements, cr)
+		slog.Info("adding base device type cluster requirement", slog.String("cluster", cr.ClusterName))
 	}
-	elementRequirementsByCluster := make(map[string][]*matter.ElementRequirement)
-	for _, er := range deviceType.ElementRequirements {
-		name := strings.ToLower(er.ClusterName)
-		elementRequirementsByCluster[name] = append(elementRequirementsByCluster[name], er)
-	}
-	for _, er := range spec.BaseDeviceType.ElementRequirements {
-		name := strings.ToLower(er.ClusterName)
-		elementRequirementsByCluster[name] = append(elementRequirementsByCluster[name], er)
+	for _, ers := range [][]*matter.ElementRequirement{deviceType.ElementRequirements, spec.BaseDeviceType.ElementRequirements} {
+		for _, er := range ers {
+			name := strings.ToLower(er.ClusterName)
+			crr, ok := clusterRequirementsByName[name]
+			if !ok {
+				slog.Warn("elementr requirement with missing cluster requirement", slog.String("deviceType", deviceType.Name), slog.String("cluster", er.ClusterName))
+				continue
+			}
+			crr.elementRequirements = append(crr.elementRequirements, er)
+		}
+
 	}
 	for _, include := range clustersElement.SelectElements("include") {
 		ca := include.SelectAttr("cluster")
 		if ca == nil {
 			slog.Warn("missing cluster attribute on include", slog.String("deviceTypeId", deviceType.ID.HexString()))
+			clustersElement.RemoveChild(include)
 			continue
 		}
 		crs, ok := clusterRequirementsByName[strings.ToLower(ca.Value)]
 		if !ok {
 			slog.Warn("unknown cluster attribute on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", ca.Value))
+			clustersElement.RemoveChild(include)
 			continue
 		}
-		cluster, ok := spec.ClustersByName[ca.Value]
-		if !ok {
-			slog.Warn("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", ca.Value))
-			continue
+		setIncludeAttributes(include, spec, deviceType, crs)
+		delete(clusterRequirementsByName, strings.ToLower(ca.Value))
+	}
+	for _, crs := range [][]*matter.ClusterRequirement{spec.BaseDeviceType.ClusterRequirements, deviceType.ClusterRequirements} {
+		for _, cr := range crs {
+			crr, ok := clusterRequirementsByName[strings.ToLower(cr.ClusterName)]
+			if ok {
+				setIncludeAttributes(clustersElement, spec, deviceType, crr)
+			}
 		}
-		elementRequirements := elementRequirementsByCluster[strings.ToLower(ca.Value)]
-
-		setIncludeAttributes(include, spec, deviceType, cluster, crs, elementRequirements)
-		delete(clusterRequirementsByName, strings.ToLower(cluster.Name))
 	}
 	return
 }
 
-func setIncludeAttributes(include *etree.Element, spec *matter.Spec, deviceType *matter.DeviceType, cluster *matter.Cluster, crs []*matter.ClusterRequirement, elementRequirements []*matter.ElementRequirement) {
+func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, deviceType *matter.DeviceType, cr *clusterRequirements) {
+	cluster, ok := spec.ClustersByName[cr.name]
+	if !ok {
+		slog.Warn("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
+		return
+	}
+
 	path, ok := spec.DocRefs[cluster]
 	if !ok {
 		slog.Warn("unknown doc path on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name))
@@ -179,21 +208,38 @@ func setIncludeAttributes(include *etree.Element, spec *matter.Spec, deviceType 
 	}
 
 	var server, client, clientLocked, serverLocked bool
-	for _, cr := range crs {
-		conf, err := cr.Conformance.Eval(cxt)
-		if err != nil {
-			slog.Warn("Error evaluating conformance of cluster requirement", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
-			continue
-		}
-		switch cr.Interface {
-		case matter.InterfaceServer:
-			server = true
-			serverLocked = conf == conformance.StateMandatory || conf == conformance.StateProvisional
-		case matter.InterfaceClient:
-			client = true
-			clientLocked = conf == conformance.StateMandatory || conf == conformance.StateProvisional
+	for i, crs := range [][]*matter.ClusterRequirement{cr.baseClusterRequirements, cr.clusterRequirements} {
+		for _, cr := range crs {
+			conf, err := cr.Conformance.Eval(cxt)
+			if err != nil {
+				slog.Warn("Error evaluating conformance of cluster requirement", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
+				continue
+			}
+
+			switch conf {
+			case conformance.StateOptional, conformance.StateProvisional:
+				if i == 0 { // Base cluster requirements only get written when mandatory, apparently?
+					return
+				}
+			case conformance.StateMandatory:
+			default:
+				return
+			}
+
+			switch cr.Interface {
+			case matter.InterfaceServer:
+				server = true
+				serverLocked = conf == conformance.StateMandatory || conf == conformance.StateProvisional
+			case matter.InterfaceClient:
+				client = true
+				clientLocked = conf == conformance.StateMandatory || conf == conformance.StateProvisional
+			}
 		}
 	}
+
+	include := clustersElement.CreateElement("include")
+	include.CreateAttr("cluster", cr.name)
+
 	setNonexistentAttr(include, "client", strconv.FormatBool(client))
 	setNonexistentAttr(include, "server", strconv.FormatBool(server))
 	setNonexistentAttr(include, "clientLocked", strconv.FormatBool(clientLocked))
@@ -203,7 +249,7 @@ func setIncludeAttributes(include *etree.Element, spec *matter.Spec, deviceType 
 	requiredAttributeDefines := make(map[string]struct{})
 	requiredCommands := make(map[string]struct{})
 
-	for _, er := range elementRequirements {
+	for _, er := range cr.elementRequirements {
 		conf, err := er.Conformance.Eval(cxt)
 		if err != nil {
 			slog.Warn("Error evaluating conformance of element requirement", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))

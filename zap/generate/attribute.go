@@ -108,10 +108,12 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 			if needsRead {
 				ax.CreateAttr("op", "read")
 				ax.CreateAttr("privilege", renderPrivilege(attribute.Access.Read))
+				ax.RemoveAttr("role")
 				needsRead = false
 			} else if needsWrite {
 				ax.CreateAttr("op", "write")
 				ax.CreateAttr("privilege", renderPrivilege(attribute.Access.Write))
+				ax.RemoveAttr("role")
 				needsWrite = false
 			} else {
 				ae.RemoveChild(ax)
