@@ -193,10 +193,10 @@ func setIncludeAttributes(include *etree.Element, spec *matter.Spec, deviceType 
 			clientLocked = conf == conformance.StateMandatory || conf == conformance.StateProvisional
 		}
 	}
-	include.CreateAttr("client", strconv.FormatBool(client))
-	include.CreateAttr("server", strconv.FormatBool(server))
-	include.CreateAttr("clientLocked", strconv.FormatBool(clientLocked))
-	include.CreateAttr("serverLocked", strconv.FormatBool(serverLocked))
+	setNonexistentAttr(include, "client", strconv.FormatBool(client))
+	setNonexistentAttr(include, "server", strconv.FormatBool(server))
+	setNonexistentAttr(include, "clientLocked", strconv.FormatBool(clientLocked))
+	setNonexistentAttr(include, "serverLocked", strconv.FormatBool(serverLocked))
 
 	requiredAttributes := make(map[string]struct{})
 	requiredAttributeDefines := make(map[string]struct{})
