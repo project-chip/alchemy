@@ -8,6 +8,7 @@ import (
 	"github.com/hasty/alchemy/cmd/dm"
 	"github.com/hasty/alchemy/cmd/dump"
 	"github.com/hasty/alchemy/cmd/format"
+	"github.com/hasty/alchemy/cmd/testplan"
 	"github.com/hasty/alchemy/cmd/zap"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -47,5 +48,6 @@ func init() {
 	rootCmd.AddCommand(conformanceCommand)
 	rootCmd.AddCommand(dump.Command)
 	rootCmd.AddCommand(dm.Command)
+	rootCmd.AddCommand(testplan.Command)
 	rootCmd.AddCommand(versionCommand)
 }

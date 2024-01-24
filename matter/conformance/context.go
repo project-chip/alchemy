@@ -1,7 +1,9 @@
 package conformance
 
+import "github.com/hasty/alchemy/matter/types"
+
 type ValueStore interface {
-	Reference(id string) HasConformance
+	Reference(id string) types.Entity
 }
 
 type Context struct {

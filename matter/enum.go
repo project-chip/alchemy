@@ -100,7 +100,7 @@ func (ev *EnumValue) GetConformance() conformance.Set {
 
 type EnumSet []*EnumValue
 
-func (es EnumSet) Reference(name string) conformance.HasConformance {
+func (es EnumSet) Reference(name string) types.Entity {
 	for _, e := range es {
 		if e.Name == name {
 			return e

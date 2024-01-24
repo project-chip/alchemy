@@ -57,7 +57,7 @@ func (bm *Bitmap) Clone() *Bitmap {
 	return nbm
 }
 
-func (bm Bitmap) Reference(id string) conformance.HasConformance {
+func (bm Bitmap) Reference(id string) types.Entity {
 	if len(bm.Bits) == 0 {
 		return nil
 	}
@@ -128,31 +128,41 @@ func (c *Bit) Clone() *Bit {
 
 var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)(?:\.{2,}|\s*\-\s*)(?P<To>[0-9]+)$`)
 
-func (bv *Bit) Mask() (uint64, error) {
-	val, err := parse.HexOrDec(bv.Bit)
+func (bv *Bit) Bits() (from uint64, to uint64, err error) {
+	from, err = parse.HexOrDec(bv.Bit)
 	if err == nil {
-		return 1 << (val), nil
+		to = from
+		return
 	}
 	matches := bitRangePattern.FindStringSubmatch(bv.Bit)
-	if len(matches) > 2 {
-		from, err := parse.HexOrDec(matches[1])
-		if err != nil {
-			return 0, err
-		}
-		to, err := parse.HexOrDec(matches[2])
-		if err != nil {
-			return 0, err
-		}
-		if from > to {
-			return 0, fmt.Errorf("incorrect order of bit mask range: %d..%d", from, to)
-		}
-		var val uint64
-		for i := from; i <= to; i++ {
-			val |= (1 << i)
-		}
-		return val, err
+	if len(matches) < 3 {
+		err = fmt.Errorf("invalid bit mask range: \"%s\"", bv.Bit)
+		return
 	}
-	return 0, fmt.Errorf("invalid bit mask range: \"%s\"", bv.Bit)
+	from, err = parse.HexOrDec(matches[1])
+	if err != nil {
+		return
+	}
+	to, err = parse.HexOrDec(matches[2])
+	if err != nil {
+		return
+	}
+	return
+}
+
+func (bv *Bit) Mask() (uint64, error) {
+	from, to, err := bv.Bits()
+	if err != nil {
+		return 0, err
+	}
+	if from == to {
+		return 1 << (from), nil
+	}
+	var val uint64
+	for i := from; i <= to; i++ {
+		val |= (1 << i)
+	}
+	return val, nil
 }
 
 func (bv *Bit) GetConformance() conformance.Set {
@@ -161,7 +171,7 @@ func (bv *Bit) GetConformance() conformance.Set {
 
 type BitSet []*Bit
 
-func (bs BitSet) Reference(name string) conformance.HasConformance {
+func (bs BitSet) Reference(name string) types.Entity {
 	for _, b := range bs {
 		if b.Name == name {
 			return b
