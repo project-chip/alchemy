@@ -93,6 +93,7 @@ func renderDeviceTypes(cxt context.Context, spec *matter.Spec, docs []*ascii.Doc
 	if !filesOptions.DryRun {
 		var out string
 		xml.Indent(4)
+		xml.WriteSettings.CanonicalEndTags = true
 		out, err = xml.WriteToString()
 		if err != nil {
 			return
