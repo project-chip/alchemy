@@ -26,13 +26,13 @@ func (c *DeviceType) EntityType() types.EntityType {
 	return types.EntityTypeDeviceType
 }
 
-func (dt *DeviceType) Reference(name string) types.Entity {
+func (dt *DeviceType) Reference(name string) (types.Entity, bool) {
 	for _, c := range dt.Conditions {
 		if c.Feature == name {
-			return c
+			return c, true
 		}
 	}
-	return nil
+	return nil, false
 }
 
 type ClusterRequirement struct {

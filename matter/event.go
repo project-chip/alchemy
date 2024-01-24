@@ -55,11 +55,11 @@ func (e *Event) Inherit(parent *Event) {
 
 type EventSet []*Event
 
-func (es EventSet) Reference(name string) conformance.HasConformance {
+func (es EventSet) Reference(name string) (types.Entity, bool) {
 	for _, e := range es {
 		if e.Name == name {
-			return e
+			return e, true
 		}
 	}
-	return nil
+	return nil, false
 }

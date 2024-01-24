@@ -213,6 +213,11 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		if strings.HasSuffix(name, " event") {
 			return matter.SectionEvent
 		}
+	case matter.SectionClusterRequirements:
+		switch name {
+		case "element requirements":
+			return matter.SectionElementRequirements
+		}
 	default:
 		return deriveSectionType(section)
 	}

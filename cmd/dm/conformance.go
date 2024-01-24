@@ -97,18 +97,15 @@ func renderConformanceExpression(cluster conformance.ValueStore, exp conformance
 			parent.CreateElement("condition").CreateAttr("name", e.ID)
 
 		} else {
-			id := cluster.Reference(e.ID)
-			if id == nil {
+			entity, ok := cluster.Reference(e.ID)
+			if !ok {
 				parent.CreateElement("condition").CreateAttr("name", e.ID)
 			} else {
-				entity, ok := id.(types.Entity)
-				if ok {
-					switch entity.EntityType() {
-					case types.EntityTypeAttribute, types.EntityTypeCondition:
-						parent.CreateElement("attribute").CreateAttr("name", e.ID)
-					default:
-						parent.CreateElement("condition").CreateAttr("name", e.ID)
-					}
+				switch entity.EntityType() {
+				case types.EntityTypeAttribute, types.EntityTypeCondition:
+					parent.CreateElement("attribute").CreateAttr("name", e.ID)
+				default:
+					parent.CreateElement("condition").CreateAttr("name", e.ID)
 				}
 			}
 		}

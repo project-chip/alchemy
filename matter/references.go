@@ -1,6 +1,14 @@
 package matter
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/hasty/alchemy/matter/types"
+)
+
+type ReferenceStore interface {
+	Reference(name string) (types.Entity, bool)
+}
 
 var DisallowedReferenceSuffixes = []string{"Command", "Feature", "Attribute", "Field", "Event"}
 

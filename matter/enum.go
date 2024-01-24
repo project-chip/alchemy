@@ -11,7 +11,7 @@ type Enum struct {
 	Name        string          `json:"name,omitempty"`
 	Description string          `json:"description,omitempty"`
 	Type        *types.DataType `json:"type,omitempty"`
-	Values      EnumSet         `json:"values,omitempty"`
+	Values      EnumValueSet    `json:"values,omitempty"`
 }
 
 func (*Enum) EntityType() types.EntityType {
@@ -31,7 +31,7 @@ func (e *Enum) Clone() *Enum {
 	if e.Type != nil {
 		ne.Type = e.Type.Clone()
 	}
-	ne.Values = make(EnumSet, 0, len(e.Values))
+	ne.Values = make(EnumValueSet, 0, len(e.Values))
 	for _, ev := range e.Values {
 		ne.Values = append(ne.Values, ev.Clone())
 	}
@@ -39,7 +39,7 @@ func (e *Enum) Clone() *Enum {
 }
 
 func (en *Enum) Inherit(parent *Enum) error {
-	mergedValues := make(EnumSet, 0, len(parent.Values))
+	mergedValues := make(EnumValueSet, 0, len(parent.Values))
 	for _, ev := range parent.Values {
 		mergedValues = append(mergedValues, ev.Clone())
 	}
@@ -75,6 +75,17 @@ func (en *Enum) Inherit(parent *Enum) error {
 	return nil
 }
 
+type EnumSet []*Enum
+
+func (es EnumSet) Reference(name string) (types.Entity, bool) {
+	for _, e := range es {
+		if e.Name == name {
+			return e, true
+		}
+	}
+	return nil, false
+}
+
 type EnumValue struct {
 	Value       *Number         `json:"value,omitempty"`
 	Name        string          `json:"name,omitempty"`
@@ -98,13 +109,13 @@ func (ev *EnumValue) GetConformance() conformance.Set {
 	return ev.Conformance
 }
 
-type EnumSet []*EnumValue
+type EnumValueSet []*EnumValue
 
-func (es EnumSet) Reference(name string) types.Entity {
+func (es EnumValueSet) Reference(name string) (types.Entity, bool) {
 	for _, e := range es {
 		if e.Name == name {
-			return e
+			return e, true
 		}
 	}
-	return nil
+	return nil, false
 }
