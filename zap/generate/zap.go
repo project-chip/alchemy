@@ -104,11 +104,11 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 	if !options.Files.DryRun {
 
 		for path, result := range outputs {
-			if len(result.zcl) == 0 {
+			if len(result) == 0 {
 				continue
 			}
 
-			err = os.WriteFile(path, []byte(result.zcl), os.ModeAppend|0644)
+			err = os.WriteFile(path, []byte(result), os.ModeAppend|0644)
 			if err != nil {
 				return err
 			}
