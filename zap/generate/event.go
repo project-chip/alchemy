@@ -60,7 +60,7 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 	ee.CreateAttr("code", e.ID.ShortHexString())
 	ee.CreateAttr("name", e.Name)
 	ee.CreateAttr("priority", strings.ToLower(e.Priority))
-	ee.RemoveAttr("side")
+	ee.CreateAttr("side", "server")
 
 	if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 		ee.CreateAttr("isFabricSensitive", "true")
