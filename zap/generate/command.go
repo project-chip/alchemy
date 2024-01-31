@@ -114,4 +114,45 @@ func populateCommand(ce *etree.Element, c *matter.Command, cluster *matter.Clust
 		ce.RemoveAttr("mustUseTimedInvoke")
 	}
 
+	argIndex := 0
+	argElements := ce.SelectElements("arg")
+	for _, fe := range argElements {
+		for {
+			if argIndex >= len(c.Fields) {
+				ce.RemoveChild(fe)
+				break
+			}
+			f := c.Fields[argIndex]
+			argIndex++
+			if conformance.IsZigbee(c.Fields, f.Conformance) {
+				continue
+			}
+			fe.CreateAttr("id", f.ID.IntString())
+			setFieldAttributes(fe, f, c.Fields)
+			break
+		}
+	}
+	for argIndex < len(c.Fields) {
+		f := c.Fields[argIndex]
+		argIndex++
+		fe := etree.NewElement("arg")
+		fe.CreateAttr("id", f.ID.IntString())
+		setFieldAttributes(fe, f, c.Fields)
+		appendElement(ce, fe)
+	}
+	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate
+	if needsAccess {
+		for _, el := range ce.SelectElements("access") {
+			if needsAccess {
+				setAccessAttributes(el, "invoke", c.Access.Invoke, errata)
+				needsAccess = false
+			} else {
+				ce.RemoveChild(el)
+			}
+		}
+	} else {
+		for _, el := range ce.SelectElements("access") {
+			ce.RemoveChild(el)
+		}
+	}
 }
