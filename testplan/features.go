@@ -92,6 +92,8 @@ func renderExpression(b *strings.Builder, cluster *matter.Cluster, exp conforman
 			renderExpression(b, cluster, e, featureFormat)
 		}
 		b.WriteRune(')')
+	default:
+		b.WriteString(fmt.Sprintf("ERROR: unknown expression type: %T", exp))
 	}
 }
 
