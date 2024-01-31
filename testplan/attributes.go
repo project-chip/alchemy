@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
@@ -15,7 +17,7 @@ func renderAttributes(cluster *matter.Cluster, b *strings.Builder) {
 	if len(cluster.Attributes) == 0 {
 		return
 	}
-	b.WriteString("==== Attributes\n\n")
+	b.WriteString("==== Attributes\n\n\n")
 	names := make([]string, 0, len(cluster.Attributes))
 	var longest int
 	for _, a := range cluster.Attributes {
@@ -32,7 +34,7 @@ func renderAttributes(cluster *matter.Cluster, b *strings.Builder) {
 		b.WriteString(cluster.Attributes[i].Name)
 		b.WriteRune('\n')
 	}
-	b.WriteRune('\n')
+	b.WriteString("\n\n")
 	for i, name := range names {
 		b.WriteString(fmt.Sprintf(":PICS_S%-*s : {PICS_S}.A%04x({%s})\n", longest, name, i, name))
 	}
@@ -44,7 +46,7 @@ func renderAttributes(cluster *matter.Cluster, b *strings.Builder) {
 		renderConformance(b, cluster, cluster.Features, a.Conformance, "{PICS_SF_%s}")
 		b.WriteString(" |\n")
 	}
-	b.WriteString("|===\n")
+	b.WriteString("|===\n\n")
 
 }
 
@@ -55,7 +57,7 @@ var attributesTestHeader = `
 Functional conformance
 
 ===== Purpose
-This test case verifies the primary functionality of the {clustername} cluster server.
+This test case verifies the non-global attributes of the {clustername} cluster server.
 
 ===== PICS
 
@@ -79,7 +81,7 @@ func renderAttributesTest(cluster *matter.Cluster, b *strings.Builder) {
 	b.WriteString(attributesTestHeader)
 
 	b.WriteString("===== Test Procedure\n")
-	b.WriteString("[cols=\",,,,\"]\n")
+	b.WriteString("[cols=\"5%,5%,10%,40%,40%\"]\n")
 	b.WriteString("|===\n")
 	b.WriteString("| **#** | *Ref* | *PICS* | *Test Step* | *Expected Outcome* \n")
 	b.WriteString("| 1 | | | {comDutTH}. |\n")
@@ -114,7 +116,8 @@ func renderAttributesTest(cluster *matter.Cluster, b *strings.Builder) {
 					reply += "either null or "
 				}
 				tn := typeString(cluster, dt)
-				switch tn[0] {
+				firstLetter, _ := utf8.DecodeRuneInString(tn)
+				switch unicode.ToLower(firstLetter) {
 				case 'a', 'e', 'i', 'o', 'u': // Not perfect, but not importing a dictionary for this
 					reply += "an "
 				default:
@@ -133,7 +136,7 @@ func renderAttributesTest(cluster *matter.Cluster, b *strings.Builder) {
 
 		}
 
-		b.WriteString(fmt.Sprintf("| %d  | {REF_SA_%s} | {PICS_SA_%s} | {THread} _{A_%s}_ attribute. |", i+2, name, name, name))
+		b.WriteString(fmt.Sprintf("| %d  | {REF_%s_SA_%s} | {PICS_SA_%s} | {THread} _{A_%s}_ attribute. |", i+2, cluster.PICS, name, name, name))
 		if len(reply) > 0 {
 			b.WriteString(reply)
 		}
@@ -142,7 +145,7 @@ func renderAttributesTest(cluster *matter.Cluster, b *strings.Builder) {
 		}
 		b.WriteString("\n")
 	}
-	b.WriteString("|===\n")
+	b.WriteString("|===\n\n")
 	b.WriteString("===== Notes/Testing Considerations\n\n\n")
 	b.WriteString("// ################# TEST CASE TEMPLATE: END #################\n")
 }

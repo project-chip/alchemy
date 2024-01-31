@@ -35,4 +35,5 @@ var testCases = `== Test Case List
 | TC-{picsCode}-2.2 | Primary Functionality with Server as DUT
 |===
 
+
 `

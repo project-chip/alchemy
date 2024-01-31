@@ -48,7 +48,7 @@ include::../common/cluster_common.adoc[]
 include::../common/spec_ref_common.adoc[]
 
 == PICS Definition
-This section covers the %s Cluster Test Plan related PICS items that are referenced in the following test cases.  Support for an item is considered as "true" for conditional statements within the test case steps.
+This section covers the {clustername} Cluster Test Plan related PICS items that are referenced in the following test cases.  Support for an item is considered as "true" for conditional statements within the test case steps.
 
 === Role
 
@@ -64,7 +64,7 @@ func renderHeader(cluster *matter.Cluster, b *strings.Builder) (err error) {
 	now := time.Now()
 	longDate := now.Format("02-Jan-2006")
 	shortDate := now.Format("2006-01-02")
-	header := fmt.Sprintf(header, cluster.Name, longDate, cluster.PICS, cluster.Name, shortDate, cluster.Name)
+	header := fmt.Sprintf(header, cluster.Name, longDate, cluster.PICS, cluster.Name, shortDate)
 	_, err = b.WriteString(header)
 
 	return
