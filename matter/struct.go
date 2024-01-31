@@ -34,7 +34,7 @@ func (s *Struct) Inherit(parent *Struct) {
 
 type StructSet []*Struct
 
-func (ss StructSet) Reference(name string) (types.Entity, bool) {
+func (ss StructSet) Identifier(name string) (types.Entity, bool) {
 	for _, e := range ss {
 		if e.Name == name {
 			return e, true

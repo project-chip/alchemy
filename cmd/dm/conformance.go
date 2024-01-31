@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func renderConformanceString(cluster conformance.ValueStore, c conformance.Conformance, parent *etree.Element) error {
+func renderConformanceString(cluster conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
 	if c == nil {
 		return nil
 	}
@@ -36,7 +36,7 @@ func renderConformanceString(cluster conformance.ValueStore, c conformance.Confo
 	return nil
 }
 
-func renderConformance(cluster conformance.ValueStore, con conformance.Conformance, parent *etree.Element) error {
+func renderConformance(cluster conformance.IdentifierStore, con conformance.Conformance, parent *etree.Element) error {
 	switch con := con.(type) {
 	case *conformance.Mandatory:
 		mc := parent.CreateElement("mandatoryConform")
@@ -82,7 +82,7 @@ func renderConformance(cluster conformance.ValueStore, con conformance.Conforman
 	return nil
 }
 
-func renderConformanceExpression(cluster conformance.ValueStore, exp conformance.Expression, parent *etree.Element) error {
+func renderConformanceExpression(cluster conformance.IdentifierStore, exp conformance.Expression, parent *etree.Element) error {
 	if exp == nil {
 		return nil
 	}
@@ -97,7 +97,7 @@ func renderConformanceExpression(cluster conformance.ValueStore, exp conformance
 			parent.CreateElement("condition").CreateAttr("name", e.ID)
 
 		} else {
-			entity, ok := cluster.Reference(e.ID)
+			entity, ok := cluster.Identifier(e.ID)
 			if !ok {
 				parent.CreateElement("condition").CreateAttr("name", e.ID)
 			} else {

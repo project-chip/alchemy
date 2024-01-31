@@ -2,12 +2,17 @@ package conformance
 
 import "github.com/hasty/alchemy/matter/types"
 
-type ValueStore interface {
-	Reference(id string) (types.Entity, bool)
+type IdentifierStore interface {
+	Identifier(id string) (types.Entity, bool)
+}
+
+type ReferenceStore interface {
+	Reference(ref string) (types.Entity, bool)
 }
 
 type Context struct {
 	Values            map[string]any
-	Store             ValueStore
+	Identifiers       IdentifierStore
+	References        ReferenceStore
 	VisitedReferences map[string]struct{}
 }

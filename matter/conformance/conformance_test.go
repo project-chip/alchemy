@@ -2,6 +2,8 @@ package conformance
 
 import (
 	"testing"
+
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func TestOptional(t *testing.T) {
@@ -49,6 +51,10 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 type conformanceTest struct {
 	Context  Context
 	Expected State
+}
+
+type referenceStore struct {
+	references map[string]types.Entity
 }
 
 var otherwiseTests = []conformanceTestSuite{
@@ -206,6 +212,15 @@ var otherwiseTests = []conformanceTestSuite{
 		Tests: []conformanceTest{
 			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateMandatory},
 			{Context: Context{Values: map[string]any{"BB": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"CC": false}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
+		},
+	},
+	{
+		Conformance: "<<ref_Ranges>>",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"BB": true}}, Expected: StateDisallowed},
 			{Context: Context{Values: map[string]any{"CC": false}}, Expected: StateDisallowed},
 			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},

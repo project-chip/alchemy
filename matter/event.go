@@ -55,7 +55,7 @@ func (e *Event) Inherit(parent *Event) {
 
 type EventSet []*Event
 
-func (es EventSet) Reference(name string) (types.Entity, bool) {
+func (es EventSet) Identifier(name string) (types.Entity, bool) {
 	for _, e := range es {
 		if e.Name == name {
 			return e, true
