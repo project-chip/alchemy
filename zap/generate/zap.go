@@ -123,11 +123,6 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 			}
 		}
 
-		err = patchBuildGN(zclRoot, clusterDocs)
-		if err != nil {
-			return err
-		}
-
 		slog.Info("Patching src/app/zap_cluster_list.json...")
 		err = patchClusterList(zclRoot, clusterDocs)
 		if err != nil {
