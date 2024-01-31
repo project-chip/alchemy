@@ -86,7 +86,7 @@ func (fs FieldSet) GetField(name string) *Field {
 	return nil
 }
 
-func (fs FieldSet) Reference(name string) (types.Entity, bool) {
+func (fs FieldSet) Identifier(name string) (types.Entity, bool) {
 	f := fs.GetField(name)
 	if f != nil {
 		return f, true

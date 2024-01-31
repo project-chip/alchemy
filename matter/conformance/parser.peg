@@ -151,6 +151,8 @@ FeatureTerm <- not:'!'? '(' _  eq:Equality _ ')' {
         }
     }
     return eq, nil
+} / reference:ReferenceOp {
+    return reference, nil 
 } / identifier:IdentifierOp {
     return identifier, nil 
 } / feature:FeatureOp {
@@ -171,6 +173,24 @@ IdentifierOp <- not:'!'? identifier:Identifier {
 
 Identifier <- PascalCase {
     //debug("matched identifier %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+ReferenceOp <- not:'!'? reference:Reference {
+    //debug("matched reference op ref %s\n", reference)
+    ic := &ReferenceExpression{Reference:reference.(string)}
+    if not != nil {
+        ic.Not = true
+    }
+    return ic, nil
+}
+
+Reference <- "<<" reference:ReferenceId ">>" {
+    //debug("matched reference %s\n", reference.(string))
+    return reference.(string), nil
+}
+
+ReferenceId <- "ref_" PascalCase {
     return string(c.text), nil
 }
 

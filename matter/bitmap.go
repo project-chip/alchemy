@@ -57,7 +57,7 @@ func (bm *Bitmap) Clone() *Bitmap {
 	return nbm
 }
 
-func (bm Bitmap) Reference(id string) (types.Entity, bool) {
+func (bm Bitmap) Identifier(id string) (types.Entity, bool) {
 	if len(bm.Bits) == 0 {
 		return nil, false
 	}
@@ -108,7 +108,7 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 
 type BitmapSet []*Bitmap
 
-func (bs BitmapSet) Reference(name string) (types.Entity, bool) {
+func (bs BitmapSet) Identifier(name string) (types.Entity, bool) {
 	for _, e := range bs {
 		if e.Name == name {
 			return e, true
@@ -182,7 +182,7 @@ func (bv *Bit) GetConformance() conformance.Set {
 
 type BitSet []*Bit
 
-func (bs BitSet) Reference(name string) (types.Entity, bool) {
+func (bs BitSet) Identifier(name string) (types.Entity, bool) {
 	for _, b := range bs {
 		if b.Name == name {
 			return b, true

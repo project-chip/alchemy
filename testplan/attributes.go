@@ -30,7 +30,7 @@ func renderAttributes(cluster *matter.Cluster, b *strings.Builder) {
 	for i, name := range names {
 		b.WriteString(":")
 		b.WriteString(fmt.Sprintf("%-*s", longest, name))
-		b.WriteString(": ")
+		b.WriteString(" : ")
 		b.WriteString(cluster.Attributes[i].Name)
 		b.WriteRune('\n')
 	}
@@ -153,7 +153,7 @@ func renderAttributesTest(cluster *matter.Cluster, b *strings.Builder) {
 func typeString(cluster *matter.Cluster, dt *types.DataType) string {
 	switch dt.BaseType {
 	case types.BaseDataTypeCustom:
-		entity, ok := cluster.Reference(dt.Name)
+		entity, ok := cluster.Identifier(dt.Name)
 		if !ok {
 			return dt.Name
 		}
@@ -184,7 +184,7 @@ func limitString(cluster *matter.Cluster, limit constraint.ConstraintLimit) stri
 	case *constraint.TemperatureLimit:
 		return fmt.Sprintf("%s°C", limit.Value.String())
 	case *constraint.ReferenceLimit:
-		ref, ok := cluster.Reference(limit.Value)
+		ref, ok := cluster.Identifier(limit.Value)
 		if !ok {
 			return fmt.Sprintf("ERR: unknown reference %s", limit.Value)
 		}

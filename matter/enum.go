@@ -77,7 +77,7 @@ func (en *Enum) Inherit(parent *Enum) error {
 
 type EnumSet []*Enum
 
-func (es EnumSet) Reference(name string) (types.Entity, bool) {
+func (es EnumSet) Identifier(name string) (types.Entity, bool) {
 	for _, e := range es {
 		if e.Name == name {
 			return e, true
@@ -111,7 +111,7 @@ func (ev *EnumValue) GetConformance() conformance.Set {
 
 type EnumValueSet []*EnumValue
 
-func (es EnumValueSet) Reference(name string) (types.Entity, bool) {
+func (es EnumValueSet) Identifier(name string) (types.Entity, bool) {
 	for _, e := range es {
 		if e.Name == name {
 			return e, true

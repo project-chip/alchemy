@@ -56,13 +56,13 @@ func IsDeprecated(conformance Conformance) bool {
 	return false
 }
 
-func IsZigbee(store ValueStore, conformance Conformance) bool {
+func IsZigbee(store IdentifierStore, conformance Conformance) bool {
 	if conformance == nil {
 		return false
 	}
 	var err error
 	var withZigbee, withoutZigbee State
-	cxt := Context{Store: store, Values: map[string]any{"Zigbee": true}}
+	cxt := Context{Identifiers: store, Values: map[string]any{"Zigbee": true}}
 	withZigbee, err = conformance.Eval(cxt)
 	if err != nil {
 		return false

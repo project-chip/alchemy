@@ -3,6 +3,7 @@ package matter
 import (
 	"log/slog"
 
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -134,22 +135,22 @@ func (c *Cluster) Inherit(parent *Cluster) (err error) {
 	return nil
 }
 
-func (c *Cluster) Reference(name string) (types.Entity, bool) {
+func (c *Cluster) Identifier(name string) (types.Entity, bool) {
 	if c == nil {
 		return nil, false
 	}
 	var cr types.Entity
 	var ok bool
 	if c.Features != nil {
-		cr, ok = c.Features.Reference(name)
+		cr, ok = c.Features.Identifier(name)
 		if ok {
 			return cr, ok
 		}
 
 	}
-	stores := []ReferenceStore{c.Attributes, c.Commands, c.Events, c.Enums, c.Bitmaps, c.Structs}
+	stores := []conformance.IdentifierStore{c.Attributes, c.Commands, c.Events, c.Enums, c.Bitmaps, c.Structs}
 	for _, s := range stores {
-		cr, ok = s.Reference(name)
+		cr, ok = s.Identifier(name)
 		if ok {
 			return cr, true
 		}

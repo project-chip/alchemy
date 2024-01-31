@@ -30,7 +30,7 @@ func renderFeatures(cluster *matter.Cluster, b *strings.Builder) {
 			renderConformance(b, cluster, cluster.Features, bit.Conformance, "{F_%s}")
 			b.WriteString(" | \n")
 		}
-		b.WriteString("|===\n\n")
+		b.WriteString("|===\n\n\n")
 	}
 }
 
@@ -79,6 +79,8 @@ func renderExpression(b *strings.Builder, cluster *matter.Cluster, exp conforman
 		b.WriteString(renderIdentifier(cluster.Features, exp.ID, featureFormat))
 	case *conformance.IdentifierExpression:
 		b.WriteString("identifier")
+	case *conformance.ReferenceExpression:
+		b.WriteString(exp.Reference)
 	case *conformance.LogicalExpression:
 		if exp.Not {
 			b.WriteRune('!')

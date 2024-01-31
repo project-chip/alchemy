@@ -30,13 +30,13 @@ func evalIdentifier(context Context, id string, not bool) (bool, error) {
 			}
 		}
 	}
-	if context.Store != nil {
+	if context.Identifiers != nil {
 		if context.VisitedReferences == nil {
 			context.VisitedReferences = make(map[string]struct{})
 		} else if _, ok := context.VisitedReferences[id]; ok {
 			return false, nil
 		}
-		ref, ok := context.Store.Reference(id)
+		ref, ok := context.Identifiers.Identifier(id)
 		context.VisitedReferences[id] = struct{}{}
 		if !ok {
 			return false, nil

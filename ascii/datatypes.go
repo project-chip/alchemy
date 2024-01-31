@@ -265,14 +265,20 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 		case *types.StringElement:
 			sb.WriteString(v.Content)
 		case *types.InternalCrossReference:
-			anchor, _ := d.getAnchor(v.ID.(string))
-			var name string
-			if anchor != nil {
-				name = ReferenceName(anchor.Element)
+			id := v.ID.(string)
+			if strings.HasPrefix(id, "ref_") {
+				// This is a proper reference; allow the conformance parser to recognize it
+				sb.WriteString(fmt.Sprintf("<<%s>>", id))
 			} else {
-				name = strings.TrimPrefix(v.ID.(string), "_")
+				anchor, _ := d.getAnchor(v.ID.(string))
+				var name string
+				if anchor != nil {
+					name = ReferenceName(anchor.Element)
+				} else {
+					name = strings.TrimPrefix(v.ID.(string), "_")
+				}
+				sb.WriteString(name)
 			}
-			sb.WriteString(name)
 		case *types.SpecialCharacter:
 			sb.WriteString(v.Name)
 		case *types.QuotedText:
