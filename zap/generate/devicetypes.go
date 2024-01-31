@@ -208,6 +208,8 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 	}
 
 	var server, client, clientLocked, serverLocked bool
+	clientLocked = true
+	serverLocked = true
 	for i, crs := range [][]*matter.ClusterRequirement{cr.baseClusterRequirements, cr.clusterRequirements} {
 		for _, cr := range crs {
 			conf, err := cr.Conformance.Eval(cxt)
