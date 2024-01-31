@@ -132,24 +132,6 @@ func ReferenceName(element interface{}) string {
 			}
 			return val.String()
 		}
-		/*		if s, ok := name.(string); ok {
-					if len(s) == 0 {
-						slog.Warn("empty section title")
-					}
-					return s
-				}
-				slog.Warn("section title not string", "type", fmt.Sprintf("%T", name))
-				if els, ok := name.([]any); ok {
-					for _, el := range els {
-						slog.Warn("section title element", "type", fmt.Sprintf("%T", el))
-						switch el := el.(type) {
-						case *types.InlineLink:
-							slog.Warn("section inline link element", "path", el.Location.Path)
-
-						}
-
-					}
-				}*/
 	case types.WithAttributes:
 		return referenceNameFromAttributes(el)
 	default:
