@@ -343,6 +343,9 @@ func getKeyValue(cxt *Context, key string, val interface{}, include AttributeFil
 						val.WriteRune('~')
 					} else if tc.Weight > 1 || tc.WeightSpecified {
 						val.WriteString(strconv.Itoa(tc.Weight))
+					} else if tc.PercentageSpecified {
+						val.WriteString(strconv.Itoa(tc.Percentage))
+						val.WriteRune('%')
 					}
 					if len(tc.Style) > 0 {
 						val.WriteString(string(tc.Style))
