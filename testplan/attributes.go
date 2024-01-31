@@ -195,30 +195,3 @@ func limitString(cluster *matter.Cluster, limit constraint.ConstraintLimit) stri
 		return "unknown limit"
 	}
 }
-
-/*
-**#** |*Ref*                                     |*Expected Outcome*
-|1     |                                          |
-|2     | {REF_PWR_SA_POWER_MODE}                  | {DUTreply} a enum8 value. {valrange} 0 and 1.
-|3     | {REF_PWR_SA_NUMBER_OF_MEASUREMENT_TYPES} | {DUTreply} a uint8 value. {valrange} 1 and 255.
-|4     | {REF_PWR_SA_ACCURACY}                    | - {DUTreply} a list of MeasurementAccuracyStruct entries
-                                                    - Verify that the list has one or more entries
-|5     | {REF_PWR_SA_RANGES}                      | {DUTreply} a list of MeasurementRangeStruct entries
-                                                    - Verify that the list has less than {A_NUMBER_OF_MEASUREMENT_TYPES} entries
-|6     | {REF_PWR_SA_VOLTAGE}                     | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|7     | {REF_PWR_SA_ACTIVE_CURRENT}              | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|8     | {REF_PWR_SA_REACTIVE_CURRENT}            | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|9     | {REF_PWR_SA_APPARENT_CURRENT}            | {DUTreply} either null or an int64 value. {valrange} 0 to 2^62^.
-|10    | {REF_PWR_SA_ACTIVE_POWER}                | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|11    | {REF_PWR_SA_REACTIVE_POWER}              | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|12    | {REF_PWR_SA_APPARENT_POWER}              | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|13    | {REF_PWR_SA_RMS_VOLTAGE}                 | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|14    | {REF_PWR_SA_RMS_CURRENT}                 | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|15    | {REF_PWR_SA_RMS_POWER}                   | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|16    | {REF_PWR_SA_FREQUENCY}                   | {DUTreply} either null or an int64 value. {valrange} 0 to 1000000.
-|17    | {REF_PWR_SA_HARMONIC_CURRENTS}           | {DUTreply} a list of HarmonicMeasurementStruct entries
-|18    | {REF_PWR_SA_HARMONIC_PHASES}             | {DUTreply} a list of HarmonicMeasurementStruct entries
-|19    | {REF_PWR_SA_POWER_FACTOR}                | {DUTreply} either null or an int64 value. {valrange} -10000 to 10000.
-|20    | {REF_PWR_SA_NEUTRAL_CURRENT}             | {DUTreply} either null or an int64 value. {valrange} -2^62^ to 2^62^.
-|===
-*/

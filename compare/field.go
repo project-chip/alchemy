@@ -53,13 +53,6 @@ func compareField(specFields matter.FieldSet, specField *matter.Field, zapField 
 	}
 	diffs = append(diffs, compareFieldTypes(specField.Name, specField.Type, zapField.Name, zapField.Type)...)
 
-	/*if specField.Constraint == nil && zapField.Constraint != nil {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Property: DiffPropertyConstraint, Source: SourceSpec})
-	} else if specField.Constraint != nil && zapField.Constraint == nil {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Property: DiffPropertyConstraint, Source: SourceZAP})
-	} else if specField.Constraint != nil && zapField.Constraint != nil && !specField.Constraint.Equal(zapField.Constraint) {
-		diffs = append(diffs, &ConstraintDiff{Type: DiffTypeMismatch, Property: DiffPropertyConstraint, Spec: specField.Constraint, ZAP: zapField.Constraint})
-	}*/
 	if specField.Quality != zapField.Quality {
 		if (specField.Quality.Has(matter.QualityNullable) && !zapField.Quality.Has(matter.QualityNullable)) || (!specField.Quality.Has(matter.QualityNullable) && zapField.Quality.Has(matter.QualityNullable)) {
 			diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyNullable, Spec: specField.Quality.Has(matter.QualityNullable), ZAP: zapField.Quality.Has(matter.QualityNullable)})
