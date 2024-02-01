@@ -25,7 +25,7 @@ type Result struct {
 	Entities []types.Entity
 }
 
-func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii.Doc, filesOptions files.Options) error {
+func renderAppClusters(cxt context.Context, sdkRoot string, appClusters []*ascii.Doc, filesOptions files.Options) error {
 	var lock sync.Mutex
 	outputs := make(map[string]string)
 	err := files.ProcessDocs(cxt, appClusters, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
@@ -65,7 +65,7 @@ func renderAppClusters(cxt context.Context, zclRoot string, appClusters []*ascii
 	if !filesOptions.DryRun {
 		for path, result := range outputs {
 			path := filepath.Base(path)
-			newPath := filepath.Join(zclRoot, fmt.Sprintf("/data_model/clusters/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
+			newPath := filepath.Join(sdkRoot, fmt.Sprintf("/data_model/clusters/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
 			result, err = patchLicense(result, newPath)
 			if err != nil {
 				return fmt.Errorf("error patching license for %s: %w", newPath, err)

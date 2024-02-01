@@ -20,7 +20,7 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func renderDeviceTypes(cxt context.Context, zclRoot string, deviceTypes []*ascii.Doc, filesOptions files.Options) error {
+func renderDeviceTypes(cxt context.Context, sdkRoot string, deviceTypes []*ascii.Doc, filesOptions files.Options) error {
 	var lock sync.Mutex
 	outputs := make(map[string]string)
 	err := files.ProcessDocs(cxt, deviceTypes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
@@ -57,7 +57,7 @@ func renderDeviceTypes(cxt context.Context, zclRoot string, deviceTypes []*ascii
 	if !filesOptions.DryRun {
 		for path, result := range outputs {
 			path := filepath.Base(path)
-			newPath := filepath.Join(zclRoot, fmt.Sprintf("/data_model/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
+			newPath := filepath.Join(sdkRoot, fmt.Sprintf("/data_model/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
 			result, err = patchLicense(result, newPath)
 			if err != nil {
 				return fmt.Errorf("error patching license for %s: %w", newPath, err)

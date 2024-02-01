@@ -39,7 +39,7 @@ func getDocDomain(doc *ascii.Doc) matter.Domain {
 	return matter.DomainUnknown
 }
 
-func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[string]*ascii.Doc, targetDocs []*ascii.Doc, zclRoot string, filesOptions files.Options, overwrite bool) (outputs map[string]string, provisionalZclFiles []string, err error) {
+func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[string]*ascii.Doc, targetDocs []*ascii.Doc, sdkRoot string, filesOptions files.Options, overwrite bool) (outputs map[string]string, provisionalZclFiles []string, err error) {
 	var lock sync.Mutex
 	outputs = make(map[string]string)
 	slog.InfoContext(cxt, "Rendering ZAP templates...")
@@ -62,7 +62,7 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 				return err
 			}
 
-			destinations := buildDestinations(zclRoot, doc, entities, errata)
+			destinations := buildDestinations(sdkRoot, doc, entities, errata)
 
 			dependencies.Lock()
 			dependencies.Map[path] = true
@@ -159,11 +159,11 @@ func renderClusterTemplates(cxt context.Context, spec *matter.Spec, docs map[str
 	return
 }
 
-func buildDestinations(zclRoot string, doc *ascii.Doc, entities []types.Entity, errata *zap.Errata) (destinations map[string][]types.Entity) {
+func buildDestinations(sdkRoot string, doc *ascii.Doc, entities []types.Entity, errata *zap.Errata) (destinations map[string][]types.Entity) {
 	destinations = make(map[string][]types.Entity)
 	if len(errata.ClusterSplit) == 0 {
 		newFile := zap.ZAPClusterName(doc.Path, errata, entities)
-		newPath := getZapPath(zclRoot, newFile)
+		newPath := getZapPath(sdkRoot, newFile)
 		destinations[newPath] = entities
 		return
 	}
@@ -182,7 +182,7 @@ func buildDestinations(zclRoot string, doc *ascii.Doc, entities []types.Entity, 
 				}
 			}
 		}
-		destinations[getZapPath(zclRoot, path)] = clusters
+		destinations[getZapPath(sdkRoot, path)] = clusters
 	}
 	return
 }

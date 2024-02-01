@@ -22,9 +22,9 @@ var Command = &cobra.Command{
 		if specRoot != "" {
 			paths = append(paths, specRoot)
 		} else {
-			zclRoot, _ := cmd.Flags().GetString("zclRoot")
-			if zclRoot != "" {
-				paths = append(paths, zclRoot)
+			sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
+			if sdkRoot != "" {
+				paths = append(paths, sdkRoot)
 			} else {
 				paths = args
 			}
@@ -66,7 +66,7 @@ var Command = &cobra.Command{
 
 func init() {
 	Command.Flags().String("specRoot", "", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("zclRoot", "", "the src root of your clone of project-chip/connectedhomeip")
+	Command.Flags().String("sdkRoot", "", "the src root of your clone of project-chip/connectedhomeip")
 	Command.Flags().String("address", "localhost", "the address to host the database server on")
 	Command.Flags().Int("port", 3306, "the port to run the database server on")
 	Command.Flags().Bool("raw", false, "parse the sections directly, bypassing entity building")

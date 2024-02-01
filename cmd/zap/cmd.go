@@ -14,20 +14,20 @@ var Command = &cobra.Command{
 	Short: "transmute the Matter spec into ZAP templates",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		specRoot, _ := cmd.Flags().GetString("specRoot")
-		zclRoot, _ := cmd.Flags().GetString("zclRoot")
+		sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
 		options := generate.Options{
 			Files: files.Flags(cmd),
 			Ascii: common.AsciiDocAttributes(cmd),
 		}
 		options.Overwrite, _ = cmd.Flags().GetBool("overwrite")
-		return generate.Generate(context.Background(), specRoot, zclRoot, args, options)
+		return generate.Generate(context.Background(), specRoot, sdkRoot, args, options)
 	},
 }
 
 func init() {
 	Command.Flags().String("specRoot", "", "the root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("zclRoot", "", "the root of your clone of project-chip/connectedhomeip")
+	Command.Flags().String("sdkRoot", "", "the root of your clone of project-chip/connectedhomeip")
 	Command.Flags().Bool("overwrite", false, "overwrite existing ZAP templates")
 	_ = Command.MarkFlagRequired("specRoot")
-	_ = Command.MarkFlagRequired("zclRoot")
+	_ = Command.MarkFlagRequired("sdkRoot")
 }

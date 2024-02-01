@@ -14,7 +14,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions files.Options, paths []string, asciiSettings []configuration.Setting) error {
+func Render(cxt context.Context, specRoot string, sdkRoot string, filesOptions files.Options, paths []string, asciiSettings []configuration.Setting) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
 	_, docs, err := files.LoadSpec(cxt, specRoot, filesOptions, asciiSettings)
@@ -62,9 +62,9 @@ func Render(cxt context.Context, specRoot string, zclRoot string, filesOptions f
 		appClusters = filteredDocs
 	}
 
-	err = renderAppClusters(cxt, zclRoot, appClusters, filesOptions)
+	err = renderAppClusters(cxt, sdkRoot, appClusters, filesOptions)
 	if err != nil {
 		return err
 	}
-	return renderDeviceTypes(cxt, zclRoot, deviceTypes, filesOptions)
+	return renderDeviceTypes(cxt, sdkRoot, deviceTypes, filesOptions)
 }

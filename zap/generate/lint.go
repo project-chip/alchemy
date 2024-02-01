@@ -9,9 +9,9 @@ import (
 
 var templatePathPattern = regexp.MustCompile(`(?m)^load "../src/app/zap-templates/zcl/data-model/chip/[^.]+\.xml";\n`)
 
-func patchLint(zclRoot string, files []string) error {
+func patchLint(sdkRoot string, files []string) error {
 
-	lintPath := filepath.Join(zclRoot, "/scripts/rules.matterlint")
+	lintPath := filepath.Join(sdkRoot, "/scripts/rules.matterlint")
 	lintBytes, err := os.ReadFile(lintPath)
 	if err != nil {
 		return err

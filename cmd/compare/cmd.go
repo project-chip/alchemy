@@ -13,14 +13,14 @@ var Command = &cobra.Command{
 	Short: "compare the spec to zap-templates and output a JSON diff",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		specRoot, _ := cmd.Flags().GetString("specRoot")
-		zclRoot, _ := cmd.Flags().GetString("zclRoot")
-		return compare.Compare(context.Background(), specRoot, zclRoot, common.AsciiDocAttributes(cmd))
+		sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
+		return compare.Compare(context.Background(), specRoot, sdkRoot, common.AsciiDocAttributes(cmd))
 	},
 }
 
 func init() {
 	Command.Flags().String("specRoot", "", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("zclRoot", "", "the src root of your clone of project-chip/connectedhomeip")
+	Command.Flags().String("sdkRoot", "", "the src root of your clone of project-chip/connectedhomeip")
 	_ = Command.MarkFlagRequired("specRoot")
-	_ = Command.MarkFlagRequired("zclRoot")
+	_ = Command.MarkFlagRequired("sdkRoot")
 }
