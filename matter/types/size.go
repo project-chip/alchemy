@@ -58,8 +58,8 @@ func (dt *DataType) Size() int {
 	case BaseDataTypeTag:
 		return 1
 	case BaseDataTypeCustom:
-		if model, ok := dt.Entity.(HasBaseDataType); ok {
-			switch model.BaseDataType() {
+		if entity, ok := dt.Entity.(HasBaseDataType); ok {
+			switch entity.BaseDataType() {
 			case BaseDataTypeMap8:
 				return 1
 			case BaseDataTypeMap16:

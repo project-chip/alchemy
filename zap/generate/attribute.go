@@ -2,6 +2,7 @@ package generate
 
 import (
 	"log/slog"
+	"regexp"
 	"strings"
 
 	"github.com/beevik/etree"
@@ -167,7 +168,7 @@ func renderPrivilege(a matter.Privilege) string {
 }
 
 func getDefine(name string, prefix string, errata *zap.Errata) string {
-	define := strcase.ToScreamingDelimited(name, '_', "", true)
+	define := strcase.ToScreamingDelimited(cleanAcronyms(name), '_', "", true)
 	if !strings.HasPrefix(define, prefix) {
 		define = prefix + define
 	}
@@ -177,4 +178,13 @@ func getDefine(name string, prefix string, errata *zap.Errata) string {
 		}
 	}
 	return define
+}
+
+var acronymPattern = regexp.MustCompile(`[A-Z]{2,}`)
+
+func cleanAcronyms(s string) string {
+	s2 := acronymPattern.ReplaceAllStringFunc(s, func(match string) string {
+		return string(match[0]) + strings.ToLower(string(match[1:]))
+	})
+	return s2
 }

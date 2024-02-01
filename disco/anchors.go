@@ -94,7 +94,7 @@ func normalizeAnchorID(name string, element any, parent any) (id string, label s
 	}
 	id = ref.String()
 	id = "ref_" + acronymPattern.ReplaceAllStringFunc(id, func(match string) string {
-		return string(match[0]) + strings.ToLower(string(match[1:len(match)-1])) + string(match[len(match)-1:])
+		return string(match[0]) + strings.ToLower(string(match[1:]))
 	})
 	return
 }

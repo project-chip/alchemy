@@ -7,7 +7,6 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/zap"
-	"github.com/iancoleman/strcase"
 )
 
 func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
@@ -69,7 +68,7 @@ func populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster
 	var define string
 	var clusterPrefix string
 
-	define = strcase.ToScreamingDelimited(cluster.Name+" Cluster", '_', "", true)
+	define = getDefine(cluster.Name+" Cluster", "", errata)
 	if len(errata.ClusterDefinePrefix) > 0 {
 		clusterPrefix = errata.ClusterDefinePrefix
 	}
