@@ -130,7 +130,7 @@ func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matte
 	return
 }
 
-func setBitmapFieldAttributes(e *etree.Element, b *matter.Bit, valFormat string) error {
+func setBitmapFieldAttributes(e *etree.Element, b *matter.BitmapBit, valFormat string) error {
 
 	mask, err := b.Mask()
 	if err != nil {

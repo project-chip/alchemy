@@ -24,7 +24,7 @@ func (s *Section) toFeatures(d *Doc) (features *matter.Bitmap, err error) {
 	}
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		f := &matter.Bit{}
+		f := &matter.BitmapBit{}
 		f.Bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
 		if err != nil {
 			return

@@ -47,7 +47,7 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 			case "description":
 				bitmap.Description, err = readSimpleElement(d, t.Name.Local)
 			case "field":
-				var bit *matter.Bit
+				var bit *matter.BitmapBit
 				bit, err = readBitmapField(bitmap, d, t)
 				if err == nil {
 					bitmap.Bits = append(bitmap.Bits, bit)
@@ -73,8 +73,8 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 	}
 }
 
-func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) (bv *matter.Bit, err error) {
-	bv = &matter.Bit{}
+func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) (bv *matter.BitmapBit, err error) {
+	bv = &matter.BitmapBit{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "name":
