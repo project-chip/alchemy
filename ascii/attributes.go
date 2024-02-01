@@ -1,11 +1,16 @@
 package ascii
 
 import (
+	"log/slog"
+	"strings"
+
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
+func (s *Section) toAttributes(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (attributes matter.FieldSet, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -16,6 +21,7 @@ func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 		}
 		return
 	}
+	attributeMap := make(map[string]*matter.Field)
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		attr := matter.NewAttribute()
@@ -50,6 +56,21 @@ func (s *Section) toAttributes(d *Doc) (attributes []*matter.Field, err error) {
 		}
 		attr.Access = ParseAccess(a, false)
 		attributes = append(attributes, attr)
+		attributeMap[attr.Name] = attr
+	}
+	for _, s := range parse.Skim[*Section](s.Elements) {
+		switch s.SecType {
+		case matter.SectionAttribute:
+
+			name := strings.TrimSuffix(s.Name, " Attribute")
+			a, ok := attributeMap[name]
+			if !ok {
+				slog.Debug("unknown attribute", "attribute", name)
+				continue
+			}
+
+			entityMap[s.Base] = append(entityMap[s.Base], a)
+		}
 	}
 	return
 }

@@ -14,27 +14,27 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster) (err error) {
+func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster, entityMap map[types.WithAttributes][]mattertypes.Entity) (err error) {
 
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap:
 			var mb *matter.Bitmap
-			mb, err = s.toBitmap(d)
+			mb, err = s.toBitmap(d, entityMap)
 			if err != nil {
 				return
 			}
 			cluster.Bitmaps = append(cluster.Bitmaps, mb)
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
-			me, err = s.toEnum(d)
+			me, err = s.toEnum(d, entityMap)
 			if err != nil {
 				return
 			}
 			cluster.Enums = append(cluster.Enums, me)
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
-			me, err = s.toStruct(d)
+			me, err = s.toStruct(d, entityMap)
 			if err != nil {
 				return
 			}

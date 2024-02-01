@@ -12,6 +12,7 @@ const (
 	SectionCluster
 	SectionClusterID
 	SectionFeatures
+	SectionFeature
 	SectionDependencies
 	SectionDataTypes
 	SectionDataTypeBitmap
@@ -75,6 +76,7 @@ var sectionTypeStrings = map[Section]string{
 	SectionCluster:                 "Cluster",
 	SectionClusterID:               "ClusterID",
 	SectionFeatures:                "Features",
+	SectionFeature:                 "Feature",
 	SectionDependencies:            "Dependencies",
 	SectionDataTypes:               "DataTypes",
 	SectionDataTypeBitmap:          "Bitmap",

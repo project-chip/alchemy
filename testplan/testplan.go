@@ -47,7 +47,7 @@ func renderTestPlans(cxt context.Context, spec *matter.Spec, docs map[string]*as
 				}
 
 				var result string
-				result, err = renderClusterTestPlan(cluster)
+				result, err = renderClusterTestPlan(doc, cluster)
 				if err != nil {
 					return fmt.Errorf("failed rendering %s: %w", path, err)
 				}

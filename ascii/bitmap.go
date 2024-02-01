@@ -12,7 +12,7 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
+func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (bm *matter.Bitmap, err error) {
 	name := strings.TrimSuffix(s.Name, " Type")
 
 	dt := s.GetDataType()
@@ -73,5 +73,6 @@ func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
 		bv := matter.NewBitmapBit(bit, name, summary, conf)
 		bm.Bits = append(bm.Bits, bv)
 	}
+	entityMap[s.Base] = append(entityMap[s.Base], bm)
 	return
 }

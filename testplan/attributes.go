@@ -7,13 +7,14 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
 )
 
-func renderAttributes(cluster *matter.Cluster, b *strings.Builder) {
+func renderAttributes(doc *ascii.Doc, cluster *matter.Cluster, b *strings.Builder) {
 	if len(cluster.Attributes) == 0 {
 		return
 	}
@@ -21,7 +22,7 @@ func renderAttributes(cluster *matter.Cluster, b *strings.Builder) {
 	names := make([]string, 0, len(cluster.Attributes))
 	var longest int
 	for _, a := range cluster.Attributes {
-		name := fmt.Sprintf("A_%s", strcase.ToScreamingSnake(a.Name))
+		name := entityIdentifier(a)
 		if len(name) > longest {
 			longest = len(name)
 		}
@@ -43,7 +44,10 @@ func renderAttributes(cluster *matter.Cluster, b *strings.Builder) {
 	for i, a := range cluster.Attributes {
 		name := names[i]
 		b.WriteString(fmt.Sprintf("| {PICS_S%s} | {devimp} the _{%s}_ attribute?| ", name, name))
-		renderConformance(b, cluster, cluster.Features, a.Conformance, "{PICS_SF_%s}")
+		if len(a.Conformance) > 0 {
+			b.WriteString("{PICS_S}: ")
+			renderPicsConformance(b, doc, cluster, a.Conformance)
+		}
 		b.WriteString(" |\n")
 	}
 	b.WriteString("|===\n\n")
@@ -87,7 +91,7 @@ func renderAttributesTest(cluster *matter.Cluster, b *strings.Builder) {
 	b.WriteString("| 1 | | | {comDutTH}. |\n")
 
 	for i, a := range cluster.Attributes {
-		name := strcase.ToScreamingSnake(a.Name)
+		name := entityIdentifier(a)
 
 		var reply string
 		var valrange string
@@ -136,7 +140,7 @@ func renderAttributesTest(cluster *matter.Cluster, b *strings.Builder) {
 
 		}
 
-		b.WriteString(fmt.Sprintf("| %d  | {REF_%s_SA_%s} | {PICS_SA_%s} | {THread} _{A_%s}_ attribute. |", i+2, cluster.PICS, name, name, name))
+		b.WriteString(fmt.Sprintf("| %d  | {REF_%s_S%s} | {PICS_S%s} | {THread} _{%s}_ attribute. |", i+2, cluster.PICS, name, name, name))
 		if len(reply) > 0 {
 			b.WriteString(reply)
 		}

@@ -9,7 +9,7 @@ import (
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toEnum(d *Doc) (e *matter.Enum, err error) {
+func (s *Section) toEnum(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (e *matter.Enum, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -50,6 +50,7 @@ func (s *Section) toEnum(d *Doc) (e *matter.Enum, err error) {
 		}
 		e.Values = append(e.Values, ev)
 	}
+	entityMap[s.Base] = append(entityMap[s.Base], e)
 	return
 }
 
