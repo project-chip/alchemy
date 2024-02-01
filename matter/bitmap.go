@@ -75,7 +75,7 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 		mergedBits = append(mergedBits, b.Clone())
 	}
 	for _, b := range bm.Bits {
-		var matching *Bit
+		var matching *BitmapBit
 		for _, mb := range mergedBits {
 			if b.Bit == mb.Bit {
 				matching = b
@@ -99,7 +99,7 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 	if len(bm.Description) == 0 {
 		bm.Description = parent.Description
 	}
-	slices.SortFunc(mergedBits, func(a, b *Bit) int {
+	slices.SortFunc(mergedBits, func(a, b *BitmapBit) int {
 		return strings.Compare(a.Bit, b.Bit)
 	})
 	bm.Bits = mergedBits
@@ -117,7 +117,7 @@ func (bs BitmapSet) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
-type Bit struct {
+type BitmapBit struct {
 	Bit         string          `json:"bit,omitempty"`
 	Code        string          `json:"code,omitempty"`
 	Name        string          `json:"name,omitempty"`
@@ -125,12 +125,12 @@ type Bit struct {
 	Conformance conformance.Set `json:"conformance,omitempty"`
 }
 
-func (c *Bit) EntityType() types.EntityType {
+func (c *BitmapBit) EntityType() types.EntityType {
 	return types.EntityTypeBitmapValue
 }
 
-func (c *Bit) Clone() *Bit {
-	nb := &Bit{Bit: c.Bit, Code: c.Code, Name: c.Name, Summary: c.Summary}
+func (c *BitmapBit) Clone() *BitmapBit {
+	nb := &BitmapBit{Bit: c.Bit, Code: c.Code, Name: c.Name, Summary: c.Summary}
 	if len(c.Conformance) > 0 {
 		nb.Conformance = c.Conformance.CloneSet()
 	}
@@ -139,7 +139,7 @@ func (c *Bit) Clone() *Bit {
 
 var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)(?:\.{2,}|\s*\-\s*)(?P<To>[0-9]+)$`)
 
-func (bv *Bit) Bits() (from uint64, to uint64, err error) {
+func (bv *BitmapBit) Bits() (from uint64, to uint64, err error) {
 	from, err = parse.HexOrDec(bv.Bit)
 	if err == nil {
 		to = from
@@ -161,7 +161,7 @@ func (bv *Bit) Bits() (from uint64, to uint64, err error) {
 	return
 }
 
-func (bv *Bit) Mask() (uint64, error) {
+func (bv *BitmapBit) Mask() (uint64, error) {
 	from, to, err := bv.Bits()
 	if err != nil {
 		return 0, err
@@ -176,11 +176,11 @@ func (bv *Bit) Mask() (uint64, error) {
 	return val, nil
 }
 
-func (bv *Bit) GetConformance() conformance.Set {
+func (bv *BitmapBit) GetConformance() conformance.Set {
 	return bv.Conformance
 }
 
-type BitSet []*Bit
+type BitSet []*BitmapBit
 
 func (bs BitSet) Identifier(name string) (types.Entity, bool) {
 	for _, b := range bs {

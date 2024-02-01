@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareBits(specBit *matter.Bit, zapBit *matter.Bit) (diffs []any) {
+func compareBits(specBit *matter.BitmapBit, zapBit *matter.BitmapBit) (diffs []any) {
 	specMask, err := specBit.Mask()
 	if err != nil {
 
@@ -37,12 +37,12 @@ func compareBitmapsByCode(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap) (
 		diffs = append(diffs, newMissingDiff(specBitmap.Name, types.EntityTypeBitmap, SourceZAP))
 		return
 	}
-	specBitmapMap := make(map[string]*matter.Bit)
+	specBitmapMap := make(map[string]*matter.BitmapBit)
 	for _, f := range specBitmap.Bits {
 		specBitmapMap[strings.ToLower(f.Code)] = f
 	}
 
-	zapBitmapMap := make(map[string]*matter.Bit)
+	zapBitmapMap := make(map[string]*matter.BitmapBit)
 	for _, f := range zapBitmap.Bits {
 		zapBitmapMap[strings.ToLower(f.Code)] = f
 	}
@@ -80,7 +80,7 @@ func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, e
 		diffs = append(diffs, newMissingDiff(specBitmap.Name, entityType, SourceZAP))
 		return
 	}
-	specBitmapMap := make(map[uint64]*matter.Bit)
+	specBitmapMap := make(map[uint64]*matter.BitmapBit)
 	for _, f := range specBitmap.Bits {
 		mask, err := f.Mask()
 		if err == nil {
@@ -88,7 +88,7 @@ func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, e
 		}
 	}
 
-	zapBitmapMap := make(map[uint64]*matter.Bit)
+	zapBitmapMap := make(map[uint64]*matter.BitmapBit)
 	for _, f := range zapBitmap.Bits {
 		mask, err := f.Mask()
 		if err == nil {
