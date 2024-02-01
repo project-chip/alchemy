@@ -11,8 +11,8 @@ import (
 
 var yamlFileLinkPattern = regexp.MustCompile(`(?m)^(?P<Indent>\s+)(?P<File>src/app/zap-templates/zcl/data-model/(?:[^/\.]+/)*(?:[^.]+\.)xml)\s\\\n`)
 
-func patchTestsYaml(zclRoot string, files []string) error {
-	testsYamlPath := path.Join(zclRoot, ".github/workflows/tests.yaml")
+func patchTestsYaml(sdkRoot string, files []string) error {
+	testsYamlPath := path.Join(sdkRoot, ".github/workflows/tests.yaml")
 	yamlBytes, err := os.ReadFile(testsYamlPath)
 	if err != nil {
 		return err

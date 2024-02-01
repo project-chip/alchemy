@@ -10,16 +10,16 @@ import (
 	"github.com/iancoleman/orderedmap"
 )
 
-func patchZapJson(zclRoot string, files []string) error {
-	err := patchZapJsonFile(zclRoot, files, "src/app/zap-templates/zcl/zcl.json")
+func patchZapJson(sdkRoot string, files []string) error {
+	err := patchZapJsonFile(sdkRoot, files, "src/app/zap-templates/zcl/zcl.json")
 	if err != nil {
 		return err
 	}
-	return patchZapJsonFile(zclRoot, files, "src/app/zap-templates/zcl/zcl-with-test-extensions.json")
+	return patchZapJsonFile(sdkRoot, files, "src/app/zap-templates/zcl/zcl-with-test-extensions.json")
 }
 
-func patchZapJsonFile(zclRoot string, files []string, file string) error {
-	zclJSONPath := path.Join(zclRoot, file)
+func patchZapJsonFile(sdkRoot string, files []string, file string) error {
+	zclJSONPath := path.Join(sdkRoot, file)
 	zclJSONBytes, err := os.ReadFile(zclJSONPath)
 	if err != nil {
 		return err

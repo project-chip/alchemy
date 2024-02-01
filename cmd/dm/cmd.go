@@ -13,14 +13,14 @@ var Command = &cobra.Command{
 	Short: "transmute the Matter spec into data model XML",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		specRoot, _ := cmd.Flags().GetString("specRoot")
-		zclRoot, _ := cmd.Flags().GetString("zclRoot")
-		return Render(context.Background(), specRoot, zclRoot, files.Flags(cmd), args, common.AsciiDocAttributes(cmd))
+		sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
+		return Render(context.Background(), specRoot, sdkRoot, files.Flags(cmd), args, common.AsciiDocAttributes(cmd))
 	},
 }
 
 func init() {
 	Command.Flags().String("specRoot", "", "the root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("zclRoot", "", "the root of your clone of project-chip/connectedhomeip")
+	Command.Flags().String("sdkRoot", "", "the root of your clone of project-chip/connectedhomeip")
 	_ = Command.MarkFlagRequired("specRoot")
-	_ = Command.MarkFlagRequired("zclRoot")
+	_ = Command.MarkFlagRequired("sdkRoot")
 }

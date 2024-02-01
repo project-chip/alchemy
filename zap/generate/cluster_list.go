@@ -13,8 +13,8 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func patchClusterList(zclRoot string, docs []*ascii.Doc) error {
-	clusterListPath := path.Join(zclRoot, "/src/app/zap_cluster_list.json")
+func patchClusterList(sdkRoot string, docs []*ascii.Doc) error {
+	clusterListPath := path.Join(sdkRoot, "/src/app/zap_cluster_list.json")
 	clusterListBytes, err := os.ReadFile(clusterListPath)
 	if err != nil {
 		return err

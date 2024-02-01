@@ -20,7 +20,7 @@ type Options struct {
 	Overwrite bool
 }
 
-func Generate(cxt context.Context, specRoot string, zclRoot string, paths []string, options Options) error {
+func Generate(cxt context.Context, specRoot string, sdkRoot string, paths []string, options Options) error {
 
 	slog.InfoContext(cxt, "Loading spec...")
 	spec, docs, err := files.LoadSpec(cxt, specRoot, options.Files, options.Ascii)
@@ -79,12 +79,12 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 
 	clusterDocs = filterDocs(clusterDocs, paths)
 
-	outputs, provisionalZclFiles, err := renderClusterTemplates(cxt, spec, docsByPath, clusterDocs, zclRoot, options.Files, options.Overwrite)
+	outputs, provisionalZclFiles, err := renderClusterTemplates(cxt, spec, docsByPath, clusterDocs, sdkRoot, options.Files, options.Overwrite)
 	if err != nil {
 		return err
 	}
 
-	err = renderDeviceTypes(cxt, spec, filterDocs(deviceTypeDocs, paths), zclRoot, options.Files)
+	err = renderDeviceTypes(cxt, spec, filterDocs(deviceTypeDocs, paths), sdkRoot, options.Files)
 	if err != nil {
 		return err
 	}
@@ -104,27 +104,27 @@ func Generate(cxt context.Context, specRoot string, zclRoot string, paths []stri
 
 		if len(provisionalZclFiles) > 0 {
 			slog.Info("Patching ZAP JSON...")
-			err = patchZapJson(zclRoot, provisionalZclFiles)
+			err = patchZapJson(sdkRoot, provisionalZclFiles)
 
 			if err != nil {
 				return err
 			}
 
 			slog.Info("Patching workflow tests YAML...")
-			err = patchTestsYaml(zclRoot, provisionalZclFiles)
+			err = patchTestsYaml(sdkRoot, provisionalZclFiles)
 			if err != nil {
 				return err
 			}
 
 			slog.Info("Patching scripts/matter.lint...")
-			err = patchLint(zclRoot, provisionalZclFiles)
+			err = patchLint(sdkRoot, provisionalZclFiles)
 			if err != nil {
 				return err
 			}
 		}
 
 		slog.Info("Patching src/app/zap_cluster_list.json...")
-		err = patchClusterList(zclRoot, clusterDocs)
+		err = patchClusterList(sdkRoot, clusterDocs)
 		if err != nil {
 			return err
 		}
@@ -153,7 +153,7 @@ func filterDocs(docs []*ascii.Doc, paths []string) []*ascii.Doc {
 	return filteredDocs
 }
 
-func getZapPath(zclRoot string, name string) string {
-	newPath := filepath.Join(zclRoot, "src/app/zap-templates/zcl/data-model/chip", name+".xml")
+func getZapPath(sdkRoot string, name string) string {
+	newPath := filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip", name+".xml")
 	return newPath
 }

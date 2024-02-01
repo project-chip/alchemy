@@ -18,7 +18,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderDeviceTypes(cxt context.Context, spec *matter.Spec, docs []*ascii.Doc, zclRoot string, filesOptions files.Options) (err error) {
+func renderDeviceTypes(cxt context.Context, spec *matter.Spec, docs []*ascii.Doc, sdkRoot string, filesOptions files.Options) (err error) {
 
 	deviceTypes := newConcurrentMap[uint64, *matter.DeviceType]()
 
@@ -43,7 +43,7 @@ func renderDeviceTypes(cxt context.Context, spec *matter.Spec, docs []*ascii.Doc
 		return
 	}
 
-	deviceTypesXmlPath := filepath.Join(zclRoot, "/src/app/zap-templates/zcl/data-model/chip/matter-devices.xml")
+	deviceTypesXmlPath := filepath.Join(sdkRoot, "/src/app/zap-templates/zcl/data-model/chip/matter-devices.xml")
 
 	var deviceTypesXml []byte
 	deviceTypesXml, err = os.ReadFile(deviceTypesXmlPath)

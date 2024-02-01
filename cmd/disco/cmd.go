@@ -24,9 +24,9 @@ var Command = &cobra.Command{
 		if specRoot != "" {
 			paths = append(paths, specRoot)
 		} else {
-			zclRoot, _ := cmd.Flags().GetString("zclRoot")
-			if zclRoot != "" {
-				paths = append(paths, zclRoot)
+			sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
+			if sdkRoot != "" {
+				paths = append(paths, sdkRoot)
 			} else {
 				paths = args
 			}
