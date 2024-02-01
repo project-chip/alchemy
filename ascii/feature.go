@@ -2,14 +2,17 @@ package ascii
 
 import (
 	"fmt"
+	"log/slog"
+	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toFeatures(d *Doc) (features *matter.Features, err error) {
+func (s *Section) toFeatures(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (features *matter.Features, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -24,6 +27,7 @@ func (s *Section) toFeatures(d *Doc) (features *matter.Features, err error) {
 			Type: mattertypes.NewDataType("map32", false),
 		},
 	}
+	featureMap := make(map[string]*matter.Feature)
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		var bit, code, name, summary string
@@ -61,7 +65,24 @@ func (s *Section) toFeatures(d *Doc) (features *matter.Features, err error) {
 		if conf == nil {
 			conf = conformance.Set{&conformance.Optional{}}
 		}
-		features.Bits = append(features.Bits, matter.NewFeature(bit, code, name, summary, conf))
+		f := matter.NewFeature(bit, name, code, summary, conf)
+		features.Bits = append(features.Bits, f)
+		featureMap[name] = f
+	}
+
+	for _, s := range parse.Skim[*Section](s.Elements) {
+		switch s.SecType {
+		case matter.SectionFeature:
+
+			name := strings.TrimSuffix(s.Name, " Attribute")
+			a, ok := featureMap[name]
+			if !ok {
+				slog.Debug("unknown feature", "feature", name)
+				continue
+			}
+
+			entityMap[s.Base] = append(entityMap[s.Base], a)
+		}
 	}
 	return
 }

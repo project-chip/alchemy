@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/iancoleman/strcase"
 )
 
 var globalHeader = `
@@ -35,7 +35,7 @@ include::../common/required_devices.adoc[]
 
 `
 
-func renderGlobalAttributesTestCase(cluster *matter.Cluster, b *strings.Builder) (err error) {
+func renderGlobalAttributesTestCase(doc *ascii.Doc, cluster *matter.Cluster, b *strings.Builder) (err error) {
 	b.WriteString(globalHeader)
 
 	b.WriteString("===== Test Procedure\n")
@@ -63,8 +63,8 @@ func renderGlobalAttributesTestCase(cluster *matter.Cluster, b *strings.Builder)
 		}
 		b.WriteString("+\n{remainingBitsZero}\n")
 	}
-	writeAttributeListAttribute(b, cluster)
-	writeEventListAttribute(b, cluster)
+	writeAttributeListAttribute(b, doc, cluster)
+	writeEventListAttribute(b, doc, cluster)
 	b.WriteString(`
 | 6     | {REF_ACCEPTEDCOMMANDLIST}  |       | {THread} _AcceptedCommandList_ attribute.  | {DUTreply} the _AcceptedCommandList_ attribute and have the list of Accepted Command:
 {noEntryStdRgn} +
@@ -81,7 +81,7 @@ func renderGlobalAttributesTestCase(cluster *matter.Cluster, b *strings.Builder)
 	return
 }
 
-func writeAttributeListAttribute(b *strings.Builder, cluster *matter.Cluster) {
+func writeAttributeListAttribute(b *strings.Builder, doc *ascii.Doc, cluster *matter.Cluster) {
 	b.WriteString("| 4 | {REF_ATTRIBUTELIST} |  | {THread} _AttributeList_ attribute.  | {DUTreply} the _AttributeList_ attribute and have the list of supported attributes\n")
 	if len(cluster.Attributes) == 0 {
 		b.WriteString("{noEntryStdRgn} +\n")
@@ -129,27 +129,34 @@ func writeAttributeListAttribute(b *strings.Builder, cluster *matter.Cluster) {
 	}
 	for _, a := range optional {
 		b.WriteString("+ \n{optionalEntries} +\n ")
-		b.WriteString(fmt.Sprintf("- %s: {shallIncludeIff} {PICS_SA_%s}\n", a.ID.HexString(), strcase.ToScreamingSnake(a.Name)))
+		b.WriteString(fmt.Sprintf("- %s: {shallIncludeIff} {PICS_S%s}\n", a.ID.HexString(), entityIdentifier(a)))
 	}
 	if len(feature) > 0 {
 		b.WriteString(" + \n{featureEntries} +\n")
 		for _, a := range feature {
 			b.WriteString(fmt.Sprintf("- %s: {shallIncludeIf} ", a.ID.HexString()))
+			var conf conformance.Set
 			exp := expressions[a]
 			if optionality[a] {
-				b.WriteString("(")
-				renderExpression(b, cluster, exp, "{PICS_SF_%s}")
-				b.WriteString(fmt.Sprintf(" & {PICS_SA_%s})", strcase.ToScreamingSnake(a.Name)))
+				conf = append(conf, &conformance.Mandatory{
+					Expression: &conformance.LogicalExpression{
+						Operand: "&", Left: exp,
+						Right: []conformance.Expression{&conformance.IdentifierExpression{
+							ID: a.Name,
+						}},
+					},
+				})
 			} else {
-				renderExpression(b, cluster, exp, "{PICS_SF_%s}")
+				conf = append(conf, &conformance.Mandatory{Expression: exp})
 			}
+			renderPicsConformance(b, doc, cluster, conf)
 			b.WriteString(" and {shallNotInclude}.\n")
 		}
 	}
 
 }
 
-func writeEventListAttribute(b *strings.Builder, cluster *matter.Cluster) {
+func writeEventListAttribute(b *strings.Builder, doc *ascii.Doc, cluster *matter.Cluster) {
 	b.WriteString("| 5^*^ | {REF_EVENTLIST} | | {THread} _EventList_ attribute. | {DUTreply} the _EventList_ attribute and have the list of supported events:\n")
 	if len(cluster.Events) == 0 {
 		b.WriteString("{noEntryStdRgn} +\n")
@@ -200,20 +207,18 @@ func writeEventListAttribute(b *strings.Builder, cluster *matter.Cluster) {
 	}
 	for _, event := range optional {
 		b.WriteString("{optionalEntries} +\n")
-		b.WriteString(fmt.Sprintf("- %s: {shallIncludeIff} {PICS_SA_%s} +\n", event.ID.HexString(), strcase.ToScreamingSnake(event.Name)))
+		b.WriteString(fmt.Sprintf("- %s: {shallIncludeIff} {PICS_S_%s} +\n", event.ID.HexString(), entityIdentifier(event)))
 	}
 	if len(feature) > 0 {
 		b.WriteString("{featureEntries} +\n")
 		for _, event := range feature {
 			b.WriteString(fmt.Sprintf("- %s: {shallIncludeIf} ", event.ID.HexString()))
-			exp := expressions[event]
+			var conf conformance.Set
+			conf = append(conf, event.Conformance...)
 			if optionality[event] {
-				b.WriteString("(")
-				renderExpression(b, cluster, exp, "{PICS_SF_%s}")
-				b.WriteString(fmt.Sprintf(" & {PICS_SE_%s})", strcase.ToScreamingSnake(event.Name)))
-			} else {
-				renderExpression(b, cluster, exp, "{PICS_SF_%s}")
+				conf = append(conf, &conformance.Mandatory{Expression: &conformance.IdentifierExpression{ID: event.Name}})
 			}
+			renderPicsConformance(b, doc, cluster, conf)
 			b.WriteString(" and {shallNotInclude}. +\n")
 		}
 	}

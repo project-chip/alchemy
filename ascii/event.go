@@ -7,10 +7,11 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
+func (s *Section) toEvents(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (events matter.EventSet, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -91,6 +92,7 @@ func (s *Section) toEvents(d *Doc) (events []*matter.Event, err error) {
 				return
 			}
 			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
+			entityMap[s.Base] = append(entityMap[s.Base], e)
 		}
 	}
 	return

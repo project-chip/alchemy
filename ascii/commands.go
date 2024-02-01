@@ -8,12 +8,13 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
 var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
-func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
+func (s *Section) toCommands(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (commands matter.CommandSet, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -108,6 +109,7 @@ func (s *Section) toCommands(d *Doc) (commands []*matter.Command, err error) {
 			if err != nil {
 				return
 			}
+			entityMap[s.Base] = append(entityMap[s.Base], c)
 		}
 	}
 	return

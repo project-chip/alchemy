@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
-	"github.com/iancoleman/strcase"
 )
 
-func renderEvents(cluster *matter.Cluster, b *strings.Builder) {
+func renderEvents(doc *ascii.Doc, cluster *matter.Cluster, b *strings.Builder) {
 	if len(cluster.Events) == 0 {
 		return
 	}
@@ -16,7 +16,7 @@ func renderEvents(cluster *matter.Cluster, b *strings.Builder) {
 	names := make([]string, 0, len(cluster.Events))
 	var longest int
 	for _, event := range cluster.Events {
-		name := fmt.Sprintf("E_%s", strcase.ToScreamingSnake(event.Name))
+		name := entityIdentifier(event)
 		if len(name) > longest {
 			longest = len(name)
 		}
@@ -38,7 +38,10 @@ func renderEvents(cluster *matter.Cluster, b *strings.Builder) {
 	for i, event := range cluster.Events {
 		name := names[i]
 		b.WriteString(fmt.Sprintf("| {PICS_S%s} | {devimp} sending the _{%s}_ event?| ", name, name))
-		renderConformance(b, cluster, cluster.Features, event.Conformance, "{PICS_SF_%s}")
+		if len(event.Conformance) > 0 {
+			b.WriteString("{PICS_S}: ")
+			renderPicsConformance(b, doc, cluster, event.Conformance)
+		}
 		b.WriteString(" |\n")
 	}
 	b.WriteString("|===\n\n")

@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toClusters(d *Doc) (entities []mattertypes.Entity, err error) {
+func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
 	var clusters []*matter.Cluster
 	var description string
 	p := parse.FindFirst[*types.Paragraph](s.Elements)
@@ -42,40 +42,40 @@ func (s *Section) toClusters(d *Doc) (entities []mattertypes.Entity, err error) 
 			switch s.SecType {
 			case matter.SectionAttributes:
 				var attr []*matter.Field
-				attr, err = s.toAttributes(d)
+				attr, err = s.toAttributes(d, entityMap)
 				if err == nil {
 					c.Attributes = append(c.Attributes, attr...)
 				}
 			case matter.SectionClassification:
 				err = readClusterClassification(d, c, s)
 			case matter.SectionFeatures:
-				c.Features, err = s.toFeatures(d)
+				c.Features, err = s.toFeatures(d, entityMap)
 			case matter.SectionEvents:
-				c.Events, err = s.toEvents(d)
+				c.Events, err = s.toEvents(d, entityMap)
 			case matter.SectionCommands:
-				c.Commands, err = s.toCommands(d)
+				c.Commands, err = s.toCommands(d, entityMap)
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:
 				err = parseDerivedCluster(d, s, c)
 			case matter.SectionDataTypes:
-				err = s.toDataTypes(d, c)
+				err = s.toDataTypes(d, c, entityMap)
 			case matter.SectionClusterID:
 			default:
 				var looseEntities []mattertypes.Entity
-				looseEntities, err = findLooseEntities(d, s)
+				looseEntities, err = findLooseEntities(d, s, entityMap)
 				if err != nil {
 					return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
 				}
 				if len(looseEntities) > 0 {
-					for _, m := range looseEntities {
-						switch m := m.(type) {
+					for _, le := range looseEntities {
+						switch le := le.(type) {
 						case *matter.Bitmap:
-							c.Bitmaps = append(c.Bitmaps, m)
+							c.Bitmaps = append(c.Bitmaps, le)
 						case *matter.Enum:
-							c.Enums = append(c.Enums, m)
+							c.Enums = append(c.Enums, le)
 						default:
-							slog.Warn("unexpected loose entity", "path", d.Path, "entity", m)
+							slog.Warn("unexpected loose entity", "path", d.Path, "entity", le)
 						}
 					}
 				}
@@ -85,35 +85,36 @@ func (s *Section) toClusters(d *Doc) (entities []mattertypes.Entity, err error) 
 			}
 		}
 		for _, a := range c.Attributes {
-			assignCustomModel(c, a.Type)
+			assignCustomDataType(c, a.Type)
 		}
 		for _, s := range c.Structs {
 			for _, f := range s.Fields {
-				assignCustomModel(c, f.Type)
+				assignCustomDataType(c, f.Type)
 			}
 		}
 		for _, e := range c.Events {
 			for _, f := range e.Fields {
-				assignCustomModel(c, f.Type)
+				assignCustomDataType(c, f.Type)
 			}
 		}
 		for _, cmd := range c.Commands {
 			for _, f := range cmd.Fields {
-				assignCustomModel(c, f.Type)
+				assignCustomDataType(c, f.Type)
 			}
 		}
 	}
 	for _, c := range clusters {
 		entities = append(entities, c)
 	}
+	entityMap[s.Base] = append(entityMap[s.Base], entities...)
 	return entities, nil
 }
 
-func assignCustomModel(c *matter.Cluster, dt *mattertypes.DataType) {
+func assignCustomDataType(c *matter.Cluster, dt *mattertypes.DataType) {
 	if dt == nil {
 		return
 	} else if dt.IsArray() {
-		assignCustomModel(c, dt.EntryType)
+		assignCustomDataType(c, dt.EntryType)
 		return
 	} else if dt.BaseType != mattertypes.BaseDataTypeCustom {
 		return

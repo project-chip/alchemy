@@ -6,9 +6,10 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toStruct(d *Doc) (ms *matter.Struct, err error) {
+func (s *Section) toStruct(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (ms *matter.Struct, err error) {
 	name := strings.TrimSuffix(s.Name, " Type")
 	var rows []*types.TableRow
 	var headerRowIndex int
@@ -34,5 +35,6 @@ func (s *Section) toStruct(d *Doc) (ms *matter.Struct, err error) {
 		}
 	}
 	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
+	entityMap[s.Base] = append(entityMap[s.Base], ms)
 	return
 }

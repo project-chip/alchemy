@@ -35,6 +35,8 @@ type Doc struct {
 	crossReferences map[string][]*types.InternalCrossReference
 
 	entities []mattertypes.Entity
+
+	entitiesBySection map[types.WithAttributes][]mattertypes.Entity
 }
 
 func NewDoc(d *types.Document) (*Doc, error) {
@@ -167,11 +169,12 @@ func (d *Doc) Entities() (entities []mattertypes.Entity, err error) {
 		return nil, err
 	}
 
+	var entitiesBySection = make(map[types.WithAttributes][]mattertypes.Entity)
 	for _, top := range parse.Skim[*Section](d.Elements) {
 		AssignSectionTypes(dt, top)
 
 		var m []mattertypes.Entity
-		m, err = top.ToEntities(d)
+		m, err = top.toEntities(d, entitiesBySection)
 		if err != nil {
 			return nil, fmt.Errorf("failed converting doc to entities: %w", err)
 		}
@@ -179,7 +182,71 @@ func (d *Doc) Entities() (entities []mattertypes.Entity, err error) {
 
 	}
 	d.entities = entities
+	d.entitiesBySection = entitiesBySection
 	return
+}
+
+func (d *Doc) Reference(ref string) (mattertypes.Entity, bool) {
+
+	a, err := d.getAnchor(ref)
+
+	if err != nil {
+		slog.Warn("failed getting anchor", slog.String("path", d.Path), slog.String("reference", ref), slog.Any("error", err))
+		return nil, false
+	}
+	if a == nil {
+		slog.Warn("unknown reference", slog.String("path", d.Path), slog.String("reference", ref))
+		return nil, false
+	}
+	entities, ok := d.entitiesBySection[a.Element]
+	if !ok {
+		slog.Warn("unknown reference entity", slog.String("path", d.Path), slog.String("reference", ref), slog.Any("count", len(d.entitiesBySection)))
+		for sec, e := range d.entitiesBySection {
+			slog.Warn("reference", slog.String("path", d.Path), slog.String("reference", ref), slog.Any("sec", sec), slog.Any("entity", e))
+
+		}
+	}
+	if len(entities) == 0 {
+		slog.Warn("unknown reference entity", slog.String("path", d.Path), slog.String("reference", ref))
+		return nil, false
+	}
+	if len(entities) > 1 {
+		slog.Warn("ambiguous reference", slog.String("path", d.Path), slog.String("reference", ref))
+		for _, e := range entities {
+			slog.Warn("reference", slog.String("path", d.Path), slog.String("reference", ref), slog.Any("entity", e))
+
+		}
+		return nil, false
+	}
+	return entities[0], true
+	/*entities, err := d.Entities()
+	if err != nil {
+		slog.Warn("failed generating entities", slog.String("path", d.Path), slog.String("reference", ref), slog.Any("error", err))
+	}
+	var matches []mattertypes.Entity
+	for _, e := range entities {
+		if identifierStore, ok := e.(conformance.IdentifierStore); ok {
+			slog.Info("querying anchor", slog.String("name", a.Name))
+
+			entity, ok := identifierStore.Identifier(a.Name)
+			if ok {
+				matches = append(matches, entity)
+			}
+		}
+	}
+	if len(matches) == 0 {
+		slog.Warn("unknown reference entity", slog.String("path", d.Path), slog.String("reference", ref))
+		return nil, false
+	}
+	if len(matches) > 1 {
+		slog.Warn("ambiguous reference", slog.String("path", d.Path), slog.String("reference", ref))
+		for _, e := range entities {
+			slog.Warn("reference", slog.String("path", d.Path), slog.String("reference", ref), slog.Any("entity", e))
+
+		}
+		return nil, false
+	}
+	return matches[0], true*/
 }
 
 func OpenFile(path string, settings ...configuration.Setting) (*Doc, error) {

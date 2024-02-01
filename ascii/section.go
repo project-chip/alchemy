@@ -180,6 +180,10 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		if strings.HasSuffix(name, " attribute") {
 			return matter.SectionAttribute
 		}
+	case matter.SectionFeatures:
+		if strings.HasSuffix(name, " feature") {
+			return matter.SectionFeature
+		}
 	case matter.SectionDataTypes:
 		if strings.HasSuffix(name, "bitmap type") || strings.HasSuffix(name, "bitmap") {
 			return matter.SectionDataTypeBitmap
@@ -253,11 +257,11 @@ func deriveSectionType(section *Section) matter.Section {
 	return matter.SectionUnknown
 }
 
-func (s *Section) ToEntities(d *Doc) ([]mattertypes.Entity, error) {
+func (s *Section) toEntities(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) ([]mattertypes.Entity, error) {
 	var entities []mattertypes.Entity
 	switch s.SecType {
 	case matter.SectionCluster:
-		clusters, err := s.toClusters(d)
+		clusters, err := s.toClusters(d, entityMap)
 		if err != nil {
 			return nil, err
 		}
@@ -271,7 +275,7 @@ func (s *Section) ToEntities(d *Doc) ([]mattertypes.Entity, error) {
 	default:
 		var err error
 		var looseEntities []mattertypes.Entity
-		looseEntities, err = findLooseEntities(d, s)
+		looseEntities, err = findLooseEntities(d, s, entityMap)
 		if err != nil {
 			return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
 		}
@@ -335,24 +339,24 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 	return nil
 }
 
-func findLooseEntities(doc *Doc, section *Section) (entities []mattertypes.Entity, err error) {
+func findLooseEntities(doc *Doc, section *Section, entityMap map[types.WithAttributes][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
 	parse.Traverse(doc, section.Elements, func(section *Section, parent parse.HasElements, index int) bool {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
-			bm, err = section.toBitmap(doc)
+			bm, err = section.toBitmap(doc, entityMap)
 			if err == nil {
 				entities = append(entities, bm)
 			}
 		case matter.SectionDataTypeEnum:
 			var e *matter.Enum
-			e, err = section.toEnum(doc)
+			e, err = section.toEnum(doc, entityMap)
 			if err == nil {
 				entities = append(entities, e)
 			}
 		case matter.SectionDataTypeStruct:
 			var s *matter.Struct
-			s, err = section.toStruct(doc)
+			s, err = section.toStruct(doc, entityMap)
 			if err == nil {
 				entities = append(entities, s)
 			}
