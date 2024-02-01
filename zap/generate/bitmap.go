@@ -103,7 +103,7 @@ func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matte
 			}
 			bit := bm.Bits[bitIndex]
 			bitIndex++
-			if conformance.IsZigbee(bm.Bits, bit.Conformance) {
+			if conformance.IsZigbee(bm.Bits, bit.Conformance()) {
 				continue
 			}
 			err = setBitmapFieldAttributes(be, bit, valFormat)
@@ -116,7 +116,7 @@ func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matte
 	for bitIndex < len(bm.Bits) {
 		bit := bm.Bits[bitIndex]
 		bitIndex++
-		if conformance.IsZigbee(bm.Bits, bit.Conformance) {
+		if conformance.IsZigbee(bm.Bits, bit.Conformance()) {
 			continue
 		}
 		fe := etree.NewElement("field")
@@ -130,14 +130,14 @@ func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matte
 	return
 }
 
-func setBitmapFieldAttributes(e *etree.Element, b *matter.BitmapBit, valFormat string) error {
+func setBitmapFieldAttributes(e *etree.Element, b matter.Bit, valFormat string) error {
 
 	mask, err := b.Mask()
 	if err != nil {
 		return err
 	}
 
-	name := zap.CleanName(b.Name)
+	name := zap.CleanName(b.Name())
 	e.CreateAttr("name", name)
 	e.CreateAttr("mask", fmt.Sprintf(valFormat, mask))
 	return nil

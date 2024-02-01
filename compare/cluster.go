@@ -28,7 +28,7 @@ func compareClusters(specCluster *matter.Cluster, zapCluster *matter.Cluster) (*
 		cd.Diffs = append(cd.Diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyName, Spec: specCluster.Name, ZAP: zapCluster.Name})
 	}
 
-	cd.Features = compareBitmapsByMask(specCluster.Features, zapCluster.Features, types.EntityTypeFeature)
+	cd.Features = compareBitmapsByMask(&specCluster.Features.Bitmap, &zapCluster.Features.Bitmap, types.EntityTypeFeature)
 	cd.Attributes, err = compareFields(specCluster.Attributes, zapCluster.Attributes)
 	cd.Bitmaps = compareBitmaps(specCluster.Bitmaps, zapCluster.Bitmaps)
 	cd.Enums = compareEnums(specCluster.Enums, zapCluster.Enums)

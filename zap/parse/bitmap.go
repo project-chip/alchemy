@@ -74,11 +74,12 @@ func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clus
 }
 
 func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) (bv *matter.BitmapBit, err error) {
-	bv = &matter.BitmapBit{}
+	var name, bit string
+	var conf conformance.Set
 	for _, a := range e.Attr {
 		switch a.Name.Local {
 		case "name":
-			bv.Name = a.Value
+			name = a.Value
 		case "mask":
 			var mask uint64
 			mask, err = parse.HexOrDec(a.Value)
@@ -118,19 +119,20 @@ func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) 
 			}
 			if startBit >= 0 {
 				if startBit != endBit && endBit != -1 {
-					bv.Bit = fmt.Sprintf("%d..%d", startBit, endBit)
+					bit = fmt.Sprintf("%d..%d", startBit, endBit)
 				} else {
-					bv.Bit = strconv.Itoa(startBit)
+					bit = strconv.Itoa(startBit)
 				}
 			}
 		case "optional":
 			if a.Value != "true" {
-				bv.Conformance = conformance.Set{&conformance.Mandatory{}}
+				conf = conformance.Set{&conformance.Mandatory{}}
 			}
 		default:
 			return nil, fmt.Errorf("unexpected bitmap field attribute: %s", a.Name.Local)
 		}
 	}
+	bv = matter.NewBitmapBit(bit, name, "", conf)
 	for {
 		var tok xml.Token
 		tok, err = d.Token()

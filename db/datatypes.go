@@ -19,11 +19,11 @@ func (h *Host) indexDataTypeModels(cxt context.Context, parent *sectionInfo, clu
 		parent.children[dataTypeTable] = append(parent.children[dataTypeTable], bi)
 		for _, bmv := range bm.Bits {
 			bmr := newDBRow()
-			bmr.values[matter.TableColumnBit] = bmv.Bit
-			bmr.values[matter.TableColumnName] = bmv.Name
-			bmr.values[matter.TableColumnSummary] = bmv.Summary
+			bmr.values[matter.TableColumnBit] = bmv.Bit()
+			bmr.values[matter.TableColumnName] = bmv.Name()
+			bmr.values[matter.TableColumnSummary] = bmv.Summary()
 			if bmv.Conformance != nil {
-				bmr.values[matter.TableColumnConformance] = bmv.Conformance.String()
+				bmr.values[matter.TableColumnConformance] = bmv.Conformance().String()
 			}
 			bv := &sectionInfo{id: h.nextId(bitmapValue), parent: bi, values: bmr}
 			bi.children[bitmapValue] = append(bi.children[bitmapValue], bv)

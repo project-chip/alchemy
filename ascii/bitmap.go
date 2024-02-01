@@ -24,7 +24,7 @@ func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
 		return nil, fmt.Errorf("unknown bitmap data type: %s", dt.Name)
 	}
 
-	e = &matter.Bitmap{
+	bm = &matter.Bitmap{
 		Name: name,
 		Type: dt,
 	}
@@ -35,41 +35,43 @@ func (s *Section) toBitmap(d *Doc) (e *matter.Bitmap, err error) {
 
 	if err != nil {
 		if err == NoTableFound {
-			slog.Warn("no table found for bitmap", slog.String("name", e.Name))
-			return e, nil
+			slog.Warn("no table found for bitmap", slog.String("name", bm.Name))
+			return bm, nil
 		}
 		return nil, fmt.Errorf("failed reading bitmap %s: %w", name, err)
 	}
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		bv := &matter.BitmapBit{}
-		bv.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		var bit, name, summary string
+		var conf conformance.Set
+		name, err = readRowValue(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		bv.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = readRowValue(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
-		bv.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
-		if bv.Conformance == nil {
-			bv.Conformance = conformance.Set{&conformance.Mandatory{}}
+		conf = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+		if conf == nil {
+			conf = conformance.Set{&conformance.Mandatory{}}
 		}
-		bv.Bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
+		bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
 		if err != nil {
 			return
 		}
-		if len(bv.Bit) == 0 {
-			bv.Bit, err = readRowValue(row, columnMap, matter.TableColumnValue)
+		if len(bit) == 0 {
+			bit, err = readRowValue(row, columnMap, matter.TableColumnValue)
 			if err != nil {
 				return
 			}
 		}
-		if len(bv.Name) == 0 && len(bv.Summary) > 0 {
-			bv.Name = strcase.ToCamel(bv.Summary)
+		if len(name) == 0 && len(summary) > 0 {
+			name = strcase.ToCamel(summary)
 		}
-		e.Bits = append(e.Bits, bv)
+		bv := matter.NewBitmapBit(bit, name, summary, conf)
+		bm.Bits = append(bm.Bits, bv)
 	}
 	return
 }

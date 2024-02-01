@@ -66,3 +66,11 @@ func (cs CommandSet) Identifier(name string) (types.Entity, bool) {
 	}
 	return nil, false
 }
+
+func (cs CommandSet) ToEntities() []types.Entity {
+	es := make([]types.Entity, 0, len(cs))
+	for _, c := range cs {
+		es = append(es, c)
+	}
+	return es
+}

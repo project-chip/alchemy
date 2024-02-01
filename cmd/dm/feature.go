@@ -10,19 +10,20 @@ func renderFeatures(cluster *matter.Cluster, c *etree.Element) (err error) {
 		return
 	}
 	features := c.CreateElement("features")
-	for _, f := range cluster.Features.Bits {
-		bit := matter.ParseNumber(f.Bit)
+	for _, b := range cluster.Features.Bits {
+		f := b.(*matter.Feature)
+		bit := matter.ParseNumber(f.Bit())
 		if !bit.Valid() {
 			continue
 		}
 		feature := features.CreateElement("feature")
 		feature.CreateAttr("bit", bit.IntString())
 		feature.CreateAttr("code", f.Code)
-		feature.CreateAttr("name", f.Name)
-		if len(f.Summary) > 0 {
-			feature.CreateAttr("summary", f.Summary)
+		feature.CreateAttr("name", f.Name())
+		if len(f.Summary()) > 0 {
+			feature.CreateAttr("summary", f.Summary())
 		}
-		err = renderConformanceString(cluster, f.Conformance, feature)
+		err = renderConformanceString(cluster, f.Conformance(), feature)
 		if err != nil {
 			return
 		}
