@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareBits(specBit *matter.BitmapBit, zapBit *matter.BitmapBit) (diffs []any) {
+func compareBits(specBit matter.Bit, zapBit matter.Bit) (diffs []any) {
 	specMask, err := specBit.Mask()
 	if err != nil {
 
@@ -16,34 +16,36 @@ func compareBits(specBit *matter.BitmapBit, zapBit *matter.BitmapBit) (diffs []a
 		if err != nil {
 
 		} else if specMask != zapMask {
-			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyBit, Spec: specBit.Bit, ZAP: zapBit.Bit})
+			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyBit, Spec: specBit.Bit(), ZAP: zapBit.Bit()})
 		}
 	}
-	if !namesEqual(specBit.Name, zapBit.Name) {
-		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyName, Spec: specBit.Name, ZAP: zapBit.Name})
+	if !namesEqual(specBit.Name(), zapBit.Name()) {
+		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyName, Spec: specBit.Name(), ZAP: zapBit.Name()})
 	}
 	return
 }
 
-func compareBitmapsByCode(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap) (diffs []any) {
-	if specBitmap == nil {
-		if zapBitmap == nil {
+func compareFeatures(specFeatures *matter.Features, zapFeatures *matter.Features) (diffs []any) {
+	if specFeatures == nil {
+		if zapFeatures == nil {
 			return
 		} else {
-			diffs = append(diffs, newMissingDiff(zapBitmap.Name, types.EntityTypeBitmap, SourceSpec))
+			diffs = append(diffs, newMissingDiff(zapFeatures.Name, types.EntityTypeBitmap, SourceSpec))
 			return
 		}
-	} else if zapBitmap == nil {
-		diffs = append(diffs, newMissingDiff(specBitmap.Name, types.EntityTypeBitmap, SourceZAP))
+	} else if zapFeatures == nil {
+		diffs = append(diffs, newMissingDiff(specFeatures.Name, types.EntityTypeBitmap, SourceZAP))
 		return
 	}
-	specBitmapMap := make(map[string]*matter.BitmapBit)
-	for _, f := range specBitmap.Bits {
+	specBitmapMap := make(map[string]*matter.Feature)
+	for _, b := range specFeatures.Bits {
+		f := b.(*matter.Feature)
 		specBitmapMap[strings.ToLower(f.Code)] = f
 	}
 
-	zapBitmapMap := make(map[string]*matter.BitmapBit)
-	for _, f := range zapBitmap.Bits {
+	zapBitmapMap := make(map[string]*matter.Feature)
+	for _, b := range zapFeatures.Bits {
+		f := b.(*matter.Feature)
 		zapBitmapMap[strings.ToLower(f.Code)] = f
 	}
 
@@ -54,9 +56,9 @@ func compareBitmapsByCode(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap) (
 		}
 		delete(zapBitmapMap, code)
 		delete(specBitmapMap, code)
-		bitDiffs := compareBits(specBit, zapBit)
+		bitDiffs := compareBits(&specBit.BitmapBit, &zapBit.BitmapBit)
 		if len(bitDiffs) > 0 {
-			diffs = append(diffs, &IdentifiedDiff{Type: DiffTypeMismatch, Entity: types.EntityTypeFeature, Name: specBit.Name, Diffs: bitDiffs})
+			diffs = append(diffs, &IdentifiedDiff{Type: DiffTypeMismatch, Entity: types.EntityTypeFeature, Name: specBit.Name(), Diffs: bitDiffs})
 		}
 	}
 	for _, f := range specBitmapMap {
@@ -80,7 +82,7 @@ func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, e
 		diffs = append(diffs, newMissingDiff(specBitmap.Name, entityType, SourceZAP))
 		return
 	}
-	specBitmapMap := make(map[uint64]*matter.BitmapBit)
+	specBitmapMap := make(map[uint64]matter.Bit)
 	for _, f := range specBitmap.Bits {
 		mask, err := f.Mask()
 		if err == nil {
@@ -88,7 +90,7 @@ func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, e
 		}
 	}
 
-	zapBitmapMap := make(map[uint64]*matter.BitmapBit)
+	zapBitmapMap := make(map[uint64]matter.Bit)
 	for _, f := range zapBitmap.Bits {
 		mask, err := f.Mask()
 		if err == nil {
@@ -109,10 +111,10 @@ func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, e
 		}
 	}
 	for _, f := range specBitmapMap {
-		diffs = append(diffs, newMissingDiff(f.Name, DiffTypeMissing, entityType, f.Code, SourceZAP))
+		diffs = append(diffs, newMissingDiff(f.Name(), DiffTypeMissing, entityType, SourceZAP))
 	}
 	for _, f := range zapBitmapMap {
-		diffs = append(diffs, newMissingDiff(f.Name, DiffTypeMissing, entityType, f.Code, SourceSpec))
+		diffs = append(diffs, newMissingDiff(f.Name(), DiffTypeMissing, entityType, SourceSpec))
 	}
 	return
 }

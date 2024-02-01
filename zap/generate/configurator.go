@@ -76,7 +76,7 @@ func renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata
 
 }
 
-func generateFeatures(configurator *zap.Configurator, configuratorElement *etree.Element, features *matter.Bitmap, errata *zap.Errata) (err error) {
+func generateFeatures(configurator *zap.Configurator, configuratorElement *etree.Element, features *matter.Features, errata *zap.Errata) (err error) {
 	needFeatures := features != nil && len(features.Bits) > 0
 
 	bitmaps := configuratorElement.SelectElements("bitmap")
@@ -91,7 +91,7 @@ func generateFeatures(configurator *zap.Configurator, configuratorElement *etree
 		}
 		if needFeatures {
 
-			err = populateBitmap(configurator, bm, features, clusterIds, errata)
+			err = populateBitmap(configurator, bm, &features.Bitmap, clusterIds, errata)
 			needFeatures = false
 		} else {
 			configuratorElement.RemoveChild(bm)
@@ -99,7 +99,7 @@ func generateFeatures(configurator *zap.Configurator, configuratorElement *etree
 	}
 	if needFeatures {
 		fe := etree.NewElement("bitmap")
-		err = populateBitmap(configurator, fe, features, clusterIds, errata)
+		err = populateBitmap(configurator, fe, &features.Bitmap, clusterIds, errata)
 		if err != nil {
 			return
 		}

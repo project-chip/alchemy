@@ -12,29 +12,32 @@ func renderFeatures(cluster *matter.Cluster, b *strings.Builder) {
 	if cluster.Features != nil && len(cluster.Features.Bits) > 0 {
 		b.WriteString("==== Features\n\n// FeatureMap defined macros\n")
 		for _, bit := range cluster.Features.Bits {
-			b.WriteString(fmt.Sprintf(":F_%s: %s\n", bit.Code, bit.Code))
+			f := bit.(*matter.Feature)
+			b.WriteString(fmt.Sprintf(":F_%s: %s\n", f.Code, f.Code))
 		}
 		b.WriteRune('\n')
 		for i, bit := range cluster.Features.Bits {
-			b.WriteString(fmt.Sprintf(":PICS_SF_%s: {PICS_S}.F%02d({F_%s})\n", bit.Code, i, bit.Code))
+			f := bit.(*matter.Feature)
+			b.WriteString(fmt.Sprintf(":PICS_SF_%s: {PICS_S}.F%02d({F_%s})\n", f.Code, i, f.Code))
 		}
 		b.WriteRune('\n')
 		b.WriteString("|===\n")
 		b.WriteString("| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*\n")
 		for _, bit := range cluster.Features.Bits {
+			f := bit.(*matter.Feature)
 			b.WriteString("| {PICS_SF_")
-			b.WriteString(bit.Code)
+			b.WriteString(f.Code)
 			b.WriteString("} | {devsup} ")
-			b.WriteString(bit.Summary)
+			b.WriteString(f.Summary())
 			b.WriteString(" | ")
-			renderConformance(b, cluster, cluster.Features, bit.Conformance, "{F_%s}")
+			renderConformance(b, cluster, cluster.Features, f.Conformance(), "{F_%s}")
 			b.WriteString(" | \n")
 		}
 		b.WriteString("|===\n\n\n")
 	}
 }
 
-func renderConformance(b *strings.Builder, cluster *matter.Cluster, features *matter.Bitmap, cs conformance.Set, featureFormat string) {
+func renderConformance(b *strings.Builder, cluster *matter.Cluster, features *matter.Features, cs conformance.Set, featureFormat string) {
 	if len(cs) == 0 {
 		return
 	}
@@ -99,11 +102,12 @@ func renderExpression(b *strings.Builder, cluster *matter.Cluster, exp conforman
 	}
 }
 
-func renderIdentifier(features *matter.Bitmap, id string, featureFormat string) string {
+func renderIdentifier(features *matter.Features, id string, featureFormat string) string {
 	if features == nil {
 		return ""
 	}
-	for _, f := range features.Bits {
+	for _, b := range features.Bits {
+		f := b.(*matter.Feature)
 		if strings.EqualFold(f.Code, id) {
 			return fmt.Sprintf(featureFormat, f.Code)
 		}

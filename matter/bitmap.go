@@ -1,6 +1,7 @@
 package matter
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"slices"
@@ -62,7 +63,7 @@ func (bm Bitmap) Identifier(id string) (types.Entity, bool) {
 		return nil, false
 	}
 	for _, b := range bm.Bits {
-		if b.Code == id {
+		if b.Name() == id {
 			return b, true
 		}
 	}
@@ -75,9 +76,9 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 		mergedBits = append(mergedBits, b.Clone())
 	}
 	for _, b := range bm.Bits {
-		var matching *BitmapBit
+		var matching Bit
 		for _, mb := range mergedBits {
-			if b.Bit == mb.Bit {
+			if b.Bit() == mb.Bit() {
 				matching = b
 				break
 			}
@@ -86,11 +87,9 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 			mergedBits = append(mergedBits, b.Clone())
 			continue
 		}
-		if len(b.Summary) > 0 {
-			matching.Summary = b.Summary
-		}
-		if len(b.Conformance) > 0 {
-			matching.Conformance = b.Conformance.CloneSet()
+		err := b.Inherit(matching)
+		if err != nil {
+			return err
 		}
 	}
 	if bm.Type == nil {
@@ -99,8 +98,8 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 	if len(bm.Description) == 0 {
 		bm.Description = parent.Description
 	}
-	slices.SortFunc(mergedBits, func(a, b *BitmapBit) int {
-		return strings.Compare(a.Bit, b.Bit)
+	slices.SortFunc(mergedBits, func(a, b Bit) int {
+		return strings.Compare(a.Bit(), b.Bit())
 	})
 	bm.Bits = mergedBits
 	return nil
@@ -117,37 +116,95 @@ func (bs BitmapSet) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
+type Bit interface {
+	types.Entity
+
+	Bit() string
+	Name() string
+	Summary() string
+	Conformance() conformance.Set
+
+	Inherit(parent Bit) error
+	Clone() Bit
+
+	Bits() (from uint64, to uint64, err error)
+	Mask() (uint64, error)
+}
+
 type BitmapBit struct {
-	Bit         string          `json:"bit,omitempty"`
-	Code        string          `json:"code,omitempty"`
-	Name        string          `json:"name,omitempty"`
-	Summary     string          `json:"summary,omitempty"`
-	Conformance conformance.Set `json:"conformance,omitempty"`
+	bit         string
+	name        string
+	summary     string
+	conformance conformance.Set
+}
+
+func NewBitmapBit(bit string, name string, summary string, conformance conformance.Set) *BitmapBit {
+	return &BitmapBit{bit: bit, name: name, summary: summary, conformance: conformance}
 }
 
 func (c *BitmapBit) EntityType() types.EntityType {
 	return types.EntityTypeBitmapValue
 }
 
-func (c *BitmapBit) Clone() *BitmapBit {
-	nb := &BitmapBit{Bit: c.Bit, Code: c.Code, Name: c.Name, Summary: c.Summary}
-	if len(c.Conformance) > 0 {
-		nb.Conformance = c.Conformance.CloneSet()
+func (bmb *BitmapBit) Bit() string {
+	return bmb.bit
+}
+
+func (bmb *BitmapBit) Name() string {
+	return bmb.name
+}
+
+func (bmb *BitmapBit) Summary() string {
+	return bmb.summary
+}
+
+func (bmb *BitmapBit) Conformance() conformance.Set {
+	return bmb.conformance
+}
+
+func (c *BitmapBit) Clone() Bit {
+	nb := &BitmapBit{bit: c.bit, name: c.name, summary: c.summary}
+	if len(c.conformance) > 0 {
+		nb.conformance = c.conformance.CloneSet()
 	}
 	return nb
+}
+
+func (bb *BitmapBit) Inherit(parent Bit) error {
+	if len(parent.Summary()) > 0 {
+		bb.summary = parent.Summary()
+	}
+	if len(parent.Conformance()) > 0 {
+		bb.conformance = parent.Conformance().CloneSet()
+	}
+	return nil
+}
+
+func (c *BitmapBit) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&struct {
+		Bit         string          `json:"bit,omitempty"`
+		Name        string          `json:"name,omitempty"`
+		Summary     string          `json:"summary,omitempty"`
+		Conformance conformance.Set `json:"conformance,omitempty"`
+	}{
+		Bit:         c.bit,
+		Name:        c.name,
+		Summary:     c.summary,
+		Conformance: c.conformance,
+	})
 }
 
 var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)(?:\.{2,}|\s*\-\s*)(?P<To>[0-9]+)$`)
 
 func (bv *BitmapBit) Bits() (from uint64, to uint64, err error) {
-	from, err = parse.HexOrDec(bv.Bit)
+	from, err = parse.HexOrDec(bv.bit)
 	if err == nil {
 		to = from
 		return
 	}
-	matches := bitRangePattern.FindStringSubmatch(bv.Bit)
+	matches := bitRangePattern.FindStringSubmatch(bv.bit)
 	if len(matches) < 3 {
-		err = fmt.Errorf("invalid bit mask range: \"%s\"", bv.Bit)
+		err = fmt.Errorf("invalid bit mask range: \"%s\"", bv.bit)
 		return
 	}
 	from, err = parse.HexOrDec(matches[1])
@@ -177,14 +234,14 @@ func (bv *BitmapBit) Mask() (uint64, error) {
 }
 
 func (bv *BitmapBit) GetConformance() conformance.Set {
-	return bv.Conformance
+	return bv.conformance
 }
 
-type BitSet []*BitmapBit
+type BitSet []Bit
 
 func (bs BitSet) Identifier(name string) (types.Entity, bool) {
 	for _, b := range bs {
-		if b.Name == name {
+		if b.Name() == name {
 			return b, true
 		}
 	}

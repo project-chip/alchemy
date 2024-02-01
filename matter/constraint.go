@@ -83,7 +83,7 @@ func (cc *ConstraintContext) getBitmapValue(name string) (def types.DataTypeExtr
 		return
 	}
 	for _, v := range en.Bits {
-		if v.Name == name {
+		if v.Name() == name {
 			val, err := v.Mask()
 			if err == nil {
 				def = types.NewUintDataTypeExtreme(val, types.NumberFormatHex)

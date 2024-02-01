@@ -19,7 +19,7 @@ type Cluster struct {
 	Scope     string `json:"scope,omitempty"`
 	PICS      string `json:"pics,omitempty"`
 
-	Features   *Bitmap    `json:"features,omitempty"`
+	Features   *Features  `json:"features,omitempty"`
 	Bitmaps    BitmapSet  `json:"bitmaps,omitempty"`
 	Enums      EnumSet    `json:"enums,omitempty"`
 	Structs    StructSet  `json:"structs,omitempty"`
@@ -38,7 +38,7 @@ func (c *Cluster) Inherit(parent *Cluster) (err error) {
 		if c.Features == nil || len(c.Features.Bits) == 0 {
 			c.Features = parent.Features.Clone()
 		} else {
-			err = c.Features.Inherit(parent.Features)
+			err = c.Features.Inherit(&parent.Features.Bitmap)
 			if err != nil {
 				return
 			}

@@ -15,7 +15,7 @@ func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 	bitmaps := make(map[uint64][]*matter.Bitmap)
 	structs := make(map[uint64][]*matter.Struct)
 	clusters := make(map[uint64]*matter.Cluster)
-	var features *matter.Bitmap
+	var features *matter.Features
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
@@ -61,7 +61,7 @@ func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 				bitmap, clusterIDs, err = readBitmap(d, t)
 				if err == nil {
 					if bitmap.Name == "Feature" {
-						features = bitmap
+						features = &matter.Features{Bitmap: *bitmap}
 					} else {
 						for _, cid := range clusterIDs {
 							bitmaps[cid.Value()] = append(bitmaps[cid.Value()], bitmap)

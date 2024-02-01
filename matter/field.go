@@ -113,3 +113,11 @@ func (fs FieldSet) Inherit(parent FieldSet) (nfs FieldSet) {
 	}
 	return
 }
+
+func (fs FieldSet) ToEntities() []types.Entity {
+	es := make([]types.Entity, 0, len(fs))
+	for _, f := range fs {
+		es = append(es, f)
+	}
+	return es
+}

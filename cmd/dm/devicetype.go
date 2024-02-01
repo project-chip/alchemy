@@ -205,8 +205,9 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 				}
 
 				if er.Cluster != nil {
-					for _, f := range er.Cluster.Features.Bits {
-						if f.Name == featureCode {
+					for _, b := range er.Cluster.Features.Bits {
+						f := b.(*matter.Feature)
+						if f.Code == featureCode {
 							code = f.Code
 							break
 						}

@@ -48,8 +48,9 @@ func renderGlobalAttributesTestCase(cluster *matter.Cluster, b *strings.Builder)
 		b.WriteString(fmt.Sprintf("| 2 | {REF_CLUSTERREVISION} | | {THread} _ClusterRevision_ attribute. | {DUTreply} the _ClusterRevision_ attribute and has the value %s.\n", revision.Number))
 	}
 	if cluster.Features != nil && len(cluster.Features.Bits) > 0 {
-		b.WriteString(fmt.Sprintf("| 3 | {REF_FEATUREMAP} | | {THread} _FeatureMap_ attribute. | {DUTreply} the _FeatureMap_ attribute and have the following bits set: \n"))
+		b.WriteString("| 3 | {REF_FEATUREMAP} | | {THread} _FeatureMap_ attribute. | {DUTreply} the _FeatureMap_ attribute and have the following bits set: \n")
 		for _, bit := range cluster.Features.Bits {
+			f := bit.(*matter.Feature)
 			var from, to uint64
 
 			from, to, err = bit.Bits()
@@ -57,7 +58,7 @@ func renderGlobalAttributesTestCase(cluster *matter.Cluster, b *strings.Builder)
 				return
 			}
 			for i := from; i <= to; i++ {
-				b.WriteString(fmt.Sprintf("- bit %d: {shallBeOneIff} {PICS_SF_%s}\n", i, bit.Code))
+				b.WriteString(fmt.Sprintf("- bit %d: {shallBeOneIff} {PICS_SF_%s}\n", i, f.Code))
 			}
 		}
 		b.WriteString("+\n{remainingBitsZero}\n")
