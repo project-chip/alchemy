@@ -46,7 +46,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[types.WithAttributes][]matterty
 		if err != nil {
 			return
 		}
-		e.Access = ParseAccess(a, false)
+		e.Access = ParseAccess(a, mattertypes.EntityTypeEvent)
 		if e.Access.Read == matter.PrivilegeUnknown {
 			// Sometimes the invoke access is omitted; we assume it's view
 			e.Access.Read = matter.PrivilegeView
@@ -91,7 +91,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[types.WithAttributes][]matterty
 				err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
 				return
 			}
-			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
+			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeEvent)
 			entityMap[s.Base] = append(entityMap[s.Base], e)
 		}
 	}

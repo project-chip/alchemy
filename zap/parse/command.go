@@ -8,10 +8,11 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err error) {
-	c = &matter.Command{Access: matter.DefaultAccess(true)}
+	c = &matter.Command{Access: matter.DefaultAccess(types.EntityTypeCommand)}
 	var optional, isFabricScoped, disableDefaultResponse string
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -84,7 +85,7 @@ func readCommand(d *xml.Decoder, e xml.StartElement) (c *matter.Command, err err
 				_, err = readSimpleElement(d, t.Name.Local)
 			case "arg":
 				var f *matter.Field
-				f, err = readField(d, t, "arg")
+				f, err = readField(d, t, types.EntityTypeCommand, "arg")
 				if err != nil {
 					slog.Warn("error reading command field", slog.Any("error", err))
 				} else {

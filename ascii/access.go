@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 type accessCategoryMatch uint8
@@ -36,7 +38,7 @@ func init() {
 	}
 }
 
-func ParseAccess(vc string, forInvoke bool) (a matter.Access) {
+func ParseAccess(vc string, entityType types.EntityType) (a matter.Access) {
 	matches := accessPattern.FindStringSubmatch(vc)
 	if matches == nil {
 		return matter.Access{}
@@ -73,6 +75,7 @@ func ParseAccess(vc string, forInvoke bool) (a matter.Access) {
 		hasWrite = true
 	}
 	ps, ok := access[accessCategoryMatchPrivileges]
+	var read, write, invoke matter.Privilege
 	if ok {
 		for _, r := range ps {
 			if hasRead {
@@ -86,25 +89,33 @@ func ParseAccess(vc string, forInvoke bool) (a matter.Access) {
 			}
 		}
 		if hadRead {
-			a.Read = stringToPrivilege(readAccess)
-			if a.Read == matter.PrivilegeUnknown {
-				a.Read = matter.PrivilegeView
+			read = stringToPrivilege(readAccess)
+			if read == matter.PrivilegeUnknown {
+				read = matter.PrivilegeView
 			}
 		}
 		if hasWrite {
 			if len(writeAccess) > 0 {
-				a.Write = stringToPrivilege(writeAccess)
-			} else if a.Read != matter.PrivilegeUnknown { // Sometimes both read and write are given in the same character
-				a.Write = a.Read
+				write = stringToPrivilege(writeAccess)
+			} else if read != matter.PrivilegeUnknown { // Sometimes both read and write are given in the same character
+				write = read
 			}
-			if a.Write == matter.PrivilegeUnknown {
-				a.Write = matter.PrivilegeOperate
+			if write == matter.PrivilegeUnknown {
+				write = matter.PrivilegeOperate
 			}
 		}
-		if forInvoke {
-			a.Invoke = stringToPrivilege(invokeAccess)
-		} else if a.Read == matter.PrivilegeUnknown { // Sometimes the read access is just naked, with no preceding "R"
-			a.Read = stringToPrivilege(invokeAccess)
+		invoke = stringToPrivilege(invokeAccess)
+	}
+	switch entityType {
+	case types.EntityTypeCommand:
+		a.Invoke = invoke
+	case types.EntityTypeStruct: // Structs no longer get R/W access
+	default:
+		a.Read = read
+		a.Write = write
+		if read == matter.PrivilegeUnknown && invoke != matter.PrivilegeUnknown {
+			// Sometimes read access is just naked, with no preceding "R"
+			a.Read = invoke
 		}
 	}
 	a.OptionalWrite = optionalWrite
@@ -127,9 +138,13 @@ func ParseAccess(vc string, forInvoke bool) (a matter.Access) {
 	return
 }
 
-func AccessToAsciiString(a matter.Access, forInvoke bool) string {
+func AccessToAsciiString(a matter.Access, entityType mattertypes.EntityType) string {
 	var out strings.Builder
-	if !forInvoke {
+	switch entityType {
+	case mattertypes.EntityTypeCommand:
+		out.WriteString(privilegeToString(a.Invoke))
+	case mattertypes.EntityTypeStruct:
+	default:
 		if a.Read != matter.PrivilegeUnknown || a.Write != matter.PrivilegeUnknown {
 			if a.Read != matter.PrivilegeUnknown {
 				out.WriteRune('R')
@@ -149,8 +164,6 @@ func AccessToAsciiString(a matter.Access, forInvoke bool) string {
 				out.WriteString(privilegeToString(a.Write))
 			}
 		}
-	} else if a.Invoke != matter.PrivilegeUnknown {
-		out.WriteString(privilegeToString(a.Invoke))
 	}
 	if a.IsFabricScoped() || a.IsFabricSensitive() {
 		if out.Len() > 0 {

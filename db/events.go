@@ -7,6 +7,7 @@ import (
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -16,14 +17,14 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 		row.values[matter.TableColumnID] = e.ID.HexString()
 		row.values[matter.TableColumnName] = e.Name
 		row.values[matter.TableColumnPriority] = e.Priority
-		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(e.Access, false)
+		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(e.Access, types.EntityTypeEvent)
 		if e.Conformance != nil {
 			row.values[matter.TableColumnConformance] = e.Conformance.String()
 		}
 		ei := &sectionInfo{id: h.nextId(eventTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
 		parent.children[eventTable] = append(parent.children[eventTable], ei)
 		for _, ef := range e.Fields {
-			h.readField(ef, ei, eventFieldTable, false)
+			h.readField(ef, ei, eventFieldTable, types.EntityTypeEvent)
 		}
 	}
 	return nil

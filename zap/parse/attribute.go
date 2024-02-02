@@ -7,11 +7,12 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err error) {
 	attr = matter.NewAttribute()
-	attr.Access = matter.DefaultAccess(false)
+	attr.Access = matter.DefaultAccess(types.EntityTypeAttribute)
 	err = readFieldAttributes(e, attr, "attribute")
 	if err != nil {
 		return

@@ -7,6 +7,7 @@ import (
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -61,7 +62,7 @@ func (h *Host) indexDataTypeModels(cxt context.Context, parent *sectionInfo, clu
 	return nil
 }
 
-func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string, isCommand bool) {
+func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string, entityType types.EntityType) {
 	sr := newDBRow()
 
 	var t string
@@ -84,7 +85,7 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string,
 	}
 	sr.values[matter.TableColumnQuality] = f.Quality.String()
 	sr.values[matter.TableColumnDefault] = f.Default
-	sr.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(f.Access, isCommand)
+	sr.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(f.Access, entityType)
 	if f.Conformance != nil {
 		sr.values[matter.TableColumnConformance] = f.Conformance.String()
 	}

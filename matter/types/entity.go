@@ -22,6 +22,7 @@ const (
 	EntityTypeDeviceType
 	EntityTypeCondition
 	EntityTypeField
+	EntityTypeElementRequirement
 )
 
 type Entity interface {
@@ -30,21 +31,22 @@ type Entity interface {
 
 var (
 	entityTypeNames = map[EntityType]string{
-		EntityTypeUnknown:      "unknown",
-		EntityTypeCluster:      "cluster",
-		EntityTypeBitmap:       "bitmap",
-		EntityTypeBitmapValue:  "bit",
-		EntityTypeEnum:         "enum",
-		EntityTypeEnumValue:    "enumValue",
-		EntityTypeStruct:       "struct",
-		EntityTypeAttribute:    "attribute",
-		EntityTypeCommand:      "command",
-		EntityTypeCommandField: "field",
-		EntityTypeEvent:        "event",
-		EntityTypeFeature:      "feature",
-		EntityTypeDeviceType:   "deviceType",
-		EntityTypeCondition:    "condition",
-		EntityTypeField:        "field",
+		EntityTypeUnknown:            "unknown",
+		EntityTypeCluster:            "cluster",
+		EntityTypeBitmap:             "bitmap",
+		EntityTypeBitmapValue:        "bit",
+		EntityTypeEnum:               "enum",
+		EntityTypeEnumValue:          "enumValue",
+		EntityTypeStruct:             "struct",
+		EntityTypeAttribute:          "attribute",
+		EntityTypeCommand:            "command",
+		EntityTypeCommandField:       "field",
+		EntityTypeEvent:              "event",
+		EntityTypeFeature:            "feature",
+		EntityTypeDeviceType:         "deviceType",
+		EntityTypeCondition:          "condition",
+		EntityTypeField:              "field",
+		EntityTypeElementRequirement: "elementRequirement",
 	}
 )
 

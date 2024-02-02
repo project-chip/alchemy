@@ -7,6 +7,7 @@ import (
 	"log/slog"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterIDs []*matter.Number, err error) {
@@ -50,7 +51,7 @@ func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterID
 				s.Description, err = readSimpleElement(d, t.Name.Local)
 			case "item":
 				var f *matter.Field
-				f, err = readField(d, t, "item")
+				f, err = readField(d, t, types.EntityTypeStruct, "item")
 				if err != nil {
 					slog.Warn("error reading struct field", slog.Any("error", err))
 				} else {

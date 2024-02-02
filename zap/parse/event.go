@@ -8,10 +8,11 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err error) {
-	event = &matter.Event{Access: matter.DefaultAccess(false)}
+	event = &matter.Event{Access: matter.DefaultAccess(types.EntityTypeEvent)}
 	var optional, isFabricSensitive string
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -61,7 +62,7 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 				event.Description, err = readSimpleElement(d, t.Name.Local)
 			case "field":
 				var field *matter.Field
-				field, err = readField(d, t, "field")
+				field, err = readField(d, t, types.EntityTypeEvent, "field")
 				if err != nil {
 					slog.Warn("error reading event field", slog.Any("error", err))
 				} else {

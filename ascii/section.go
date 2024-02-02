@@ -128,15 +128,28 @@ func FindSectionByType(top *Section, sectionType matter.Section) *Section {
 
 func getSectionType(parent *Section, section *Section) matter.Section {
 	name := strings.ToLower(strings.TrimSpace(section.Name))
+	// Names that are unambiguous, so parent section doesn't matter
+	switch name {
+	case "introduction":
+		return matter.SectionIntroduction
+	case "revision history":
+		return matter.SectionRevisionHistory
+	case "classification":
+		return matter.SectionClassification
+	case "cluster requirements":
+		return matter.SectionClusterRequirements
+	case "cluster restrictions":
+		return matter.SectionClusterRestrictions
+	case "element requirements":
+		return matter.SectionElementRequirements
+	case "endpoint composition":
+		return matter.SectionEndpointComposition
+	case "derived cluster namespace":
+		return matter.SectionDerivedClusterNamespace
+	}
 	switch parent.SecType {
 	case matter.SectionTop, matter.SectionCluster, matter.SectionDeviceType:
 		switch name {
-		case "introduction":
-			return matter.SectionIntroduction
-		case "revision history":
-			return matter.SectionRevisionHistory
-		case "classification":
-			return matter.SectionClassification
 		case "cluster identifiers", "cluster id", "cluster ids":
 			return matter.SectionClusterID
 		case "features":
@@ -155,16 +168,6 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return matter.SectionEvents
 		case "conditions":
 			return matter.SectionConditions
-		case "cluster requirements":
-			return matter.SectionClusterRequirements
-		case "cluster restrictions":
-			return matter.SectionClusterRestrictions
-		case "element requirements":
-			return matter.SectionElementRequirements
-		case "endpoint composition":
-			return matter.SectionEndpointComposition
-		case "derived cluster namespace":
-			return matter.SectionDerivedClusterNamespace
 		default:
 			if strings.HasSuffix(name, " attribute set") {
 				return matter.SectionAttributes
@@ -229,6 +232,7 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 }
 
 func deriveSectionType(section *Section) matter.Section {
+
 	// Ugh, some heuristics now
 	name := strings.TrimSpace(section.Name)
 	if strings.HasSuffix(name, "Bitmap Type") || strings.HasSuffix(name, "Bitmap") {

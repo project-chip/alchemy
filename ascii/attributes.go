@@ -54,7 +54,7 @@ func (s *Section) toAttributes(d *Doc, entityMap map[types.WithAttributes][]matt
 		if err != nil {
 			return
 		}
-		attr.Access = ParseAccess(a, false)
+		attr.Access = ParseAccess(a, mattertypes.EntityTypeAttribute)
 		attributes = append(attributes, attr)
 		attributeMap[attr.Name] = attr
 	}

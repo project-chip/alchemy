@@ -8,6 +8,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -36,7 +37,7 @@ func (b *Ball) organizeEventsTable(cxt *discoContext, doc *ascii.Doc, events *as
 		return fmt.Errorf("can't rearrange events table with so few matches in section %s in %s", events.Name, doc.Path)
 	}
 
-	err = b.fixAccessCells(doc, rows, columnMap, false)
+	err = b.fixAccessCells(doc, rows, columnMap, mattertypes.EntityTypeEvent)
 	if err != nil {
 		return fmt.Errorf("error fixing access cells in section %s in %s: %w", events.Name, doc.Path, err)
 	}

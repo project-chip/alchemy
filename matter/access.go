@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Privilege uint8
@@ -203,11 +205,13 @@ func (a *Access) Inherit(parent Access) {
 	}
 }
 
-func DefaultAccess(forInvoke bool) Access {
+func DefaultAccess(entityType types.EntityType) Access {
 	a := Access{FabricSensitivity: FabricSensitivityInsensitive, FabricScoping: FabricScopingUnscoped, Timing: TimingUntimed}
-	if forInvoke {
+	switch entityType {
+	case types.EntityTypeCommand:
 		a.Invoke = PrivilegeOperate
-	} else {
+	case types.EntityTypeStruct: // Structs don't get R/W access
+	default:
 		a.Read = PrivilegeView
 	}
 	return a
