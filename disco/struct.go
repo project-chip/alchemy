@@ -8,6 +8,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func (b *Ball) organizeStructSection(doc *ascii.Doc, section *ascii.Section) error {
@@ -39,6 +40,11 @@ func (b *Ball) organizeStructTable(doc *ascii.Doc, section *ascii.Section, field
 	if len(columnMap) < 2 {
 		slog.Debug("can't rearrange struct table with so few matches")
 		return nil
+	}
+
+	err = b.fixAccessCells(doc, rows, columnMap, mattertypes.EntityTypeStruct)
+	if err != nil {
+		return fmt.Errorf("error fixing access cells in struct table in %s: %w", doc.Path, err)
 	}
 
 	err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)

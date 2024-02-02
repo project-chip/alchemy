@@ -8,6 +8,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -38,7 +39,7 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 		return fmt.Errorf("can't rearrange commands table with so few matches")
 	}
 
-	err = b.fixAccessCells(doc, rows, columnMap, true)
+	err = b.fixAccessCells(doc, rows, columnMap, mattertypes.EntityTypeCommand)
 	if err != nil {
 		return fmt.Errorf("error fixing access cells in commands table in %s: %w", doc.Path, err)
 	}

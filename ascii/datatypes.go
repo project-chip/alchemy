@@ -45,7 +45,7 @@ func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster, entityMap map[typ
 	return
 }
 
-func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap ColumnIndex) (fields []*matter.Field, err error) {
+func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap ColumnIndex, entityType mattertypes.EntityType) (fields []*matter.Field, err error) {
 	ids := make(map[uint64]struct{})
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
@@ -81,7 +81,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 		if err != nil {
 			return
 		}
-		f.Access = ParseAccess(a, false)
+		f.Access = ParseAccess(a, entityType)
 		f.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return

@@ -34,7 +34,7 @@ func (s *Section) toStruct(d *Doc, entityMap map[types.WithAttributes][]matterty
 			}
 		}
 	}
-	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
+	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeStruct)
 	entityMap[s.Base] = append(entityMap[s.Base], ms)
 	return
 }

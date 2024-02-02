@@ -7,6 +7,7 @@ import (
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -25,7 +26,7 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 
 		}
 		row.values[matter.TableColumnResponse] = c.Response
-		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(c.Access, true)
+		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(c.Access, mattertypes.EntityTypeCommand)
 		if c.Conformance != nil {
 			row.values[matter.TableColumnConformance] = c.Conformance.String()
 		}

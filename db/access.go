@@ -5,6 +5,7 @@ import (
 	"github.com/dolthub/go-mysql-server/sql/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func getAccessSchemaColumns(tableName string) []*mms.Column {
@@ -25,9 +26,11 @@ func getAccessSchemaColumnValues(tableName string, access interface{}) []interfa
 		var a matter.Access
 		switch tableName {
 		case commandTable:
-			a = ascii.ParseAccess(s, true)
+			a = ascii.ParseAccess(s, mattertypes.EntityTypeCommand)
+		case structField:
+			a = ascii.ParseAccess(s, mattertypes.EntityTypeStruct)
 		default:
-			a = ascii.ParseAccess(s, false)
+			a = ascii.ParseAccess(s, mattertypes.EntityTypeUnknown)
 		}
 		readAccess = int8(a.Read)
 		writeAccess = int8(a.Write)

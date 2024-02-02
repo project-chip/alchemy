@@ -60,7 +60,7 @@ func (s *Section) toCommands(d *Doc, entityMap map[types.WithAttributes][]matter
 		if err != nil {
 			return
 		}
-		cmd.Access = ParseAccess(a, true)
+		cmd.Access = ParseAccess(a, mattertypes.EntityTypeCommand)
 		if cmd.Access.Invoke == matter.PrivilegeUnknown && cmd.Direction == matter.InterfaceClient {
 			// Response commands sometimes leave out the privilege, so we're assuming it's operate
 			cmd.Access.Invoke = matter.PrivilegeOperate
@@ -105,7 +105,7 @@ func (s *Section) toCommands(d *Doc, entityMap map[types.WithAttributes][]matter
 				}
 				continue
 			}
-			c.Fields, err = d.readFields(headerRowIndex, rows, columnMap)
+			c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeCommand)
 			if err != nil {
 				return
 			}
