@@ -130,5 +130,8 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 			return
 		}
 	}
+	if baseDeviceType == nil {
+		return nil, fmt.Errorf("failed to find base device type")
+	}
 	return
 }
