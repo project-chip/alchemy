@@ -149,11 +149,11 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	return ConvertDataTypeNameToZap(f.Type.Name)
 }
 
-func GetMinMax(cc *matter.ConstraintContext) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
+func GetMinMax(cc *matter.ConstraintContext, c constraint.Constraint) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
 	if cc.Field.Type == nil {
 		return
 	}
-	from, to = minMaxFromConstraint(cc)
+	from, to = minMaxFromConstraint(cc, c)
 
 	if from.Defined() || to.Defined() {
 		return
@@ -211,22 +211,22 @@ func minMaxFromEntity(cc *matter.ConstraintContext) (from types.DataTypeExtreme,
 	return
 }
 
-func minMaxFromConstraint(cc *matter.ConstraintContext) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
-	if cc.Field.Constraint != nil {
-		if cc.Field.Type.IsArray() {
-			switch cc.Field.Constraint.(type) {
-			case *constraint.DescribedConstraint, *constraint.AllConstraint:
-				return
-			case *constraint.ListConstraint, *constraint.MaxConstraint, *constraint.MinConstraint, *constraint.RangeConstraint, *constraint.ExactConstraint:
-			default:
-				slog.Warn("Array field has constraint not compatible with arrays", "field", cc.Field.Name, "constraint", cc.Field.Constraint)
-				return
-			}
-		}
-		from = cc.Field.Constraint.Min(cc)
-		to = cc.Field.Constraint.Max(cc)
+func minMaxFromConstraint(cc *matter.ConstraintContext, c constraint.Constraint) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
+	if c == nil {
 		return
 	}
+	if cc.Field.Type.IsArray() {
+		switch cc.Field.Constraint.(type) {
+		case *constraint.DescribedConstraint, *constraint.AllConstraint:
+			return
+		case *constraint.ListConstraint, *constraint.MaxConstraint, *constraint.MinConstraint, *constraint.RangeConstraint, *constraint.ExactConstraint:
+		default:
+			slog.Warn("Array field has constraint not compatible with arrays", "field", cc.Field.Name, "constraint", cc.Field.Constraint)
+			return
+		}
+	}
+	from = c.Min(cc)
+	to = c.Max(cc)
 	return
 }
 
