@@ -144,7 +144,7 @@ func ReferenceName(element interface{}) string {
 func referenceNameFromAttributes(el types.WithAttributes) string {
 	attr := el.GetAttributes()
 	if attr == nil {
-		slog.Warn("anchor element has no attributes")
+		slog.Debug("anchor element has no attributes")
 		return ""
 	}
 	if title, ok := attr.GetAsString("title"); ok {
