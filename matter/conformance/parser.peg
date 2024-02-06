@@ -200,7 +200,7 @@ FeatureOp <- not:'!'? feature:Feature {
         case "O", "M", "P":
             return nil, fmt.Errorf("invalid optional conformance value: %s", id)
     }
-    ic := &FeatureExpression{ID:id}
+    ic := &FeatureExpression{Feature:id}
     if not != nil {
         ic.Not = true
     }

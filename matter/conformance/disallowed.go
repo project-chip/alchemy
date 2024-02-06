@@ -12,7 +12,11 @@ func (dc *Disallowed) RawText() string {
 	return dc.raw
 }
 
-func (dc *Disallowed) String() string {
+func (dc *Disallowed) AsciiDocString() string {
+	return "X"
+}
+
+func (dc *Disallowed) Description() string {
 	return "disallowed"
 }
 

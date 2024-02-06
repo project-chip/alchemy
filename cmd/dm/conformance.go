@@ -20,7 +20,7 @@ func renderConformanceString(cluster conformance.IdentifierStore, c conformance.
 			for _, c := range cs {
 				err := renderConformance(cluster, c, oc)
 				if err != nil {
-					return fmt.Errorf("error rendering conformance %s: %w", c.String(), err)
+					return fmt.Errorf("error rendering conformance %s: %w", c.AsciiDocString(), err)
 				}
 			}
 		} else if len(cs) == 1 {
@@ -91,7 +91,7 @@ func renderConformanceExpression(cluster conformance.IdentifierStore, exp confor
 		if e.Not {
 			parent = parent.CreateElement("notTerm")
 		}
-		parent.CreateElement("feature").CreateAttr("name", e.ID)
+		parent.CreateElement("feature").CreateAttr("name", e.Feature)
 	case *conformance.IdentifierExpression:
 		if cluster == nil {
 			parent.CreateElement("condition").CreateAttr("name", e.ID)
@@ -126,12 +126,12 @@ func renderConformanceExpression(cluster conformance.IdentifierStore, exp confor
 		}
 		err := renderConformanceExpression(cluster, e.Left, el)
 		if err != nil {
-			return fmt.Errorf("error rendering conformance expression %s: %w", e.Left.String(), err)
+			return fmt.Errorf("error rendering conformance expression %s: %w", e.Left.AsciiDocString(), err)
 		}
 		for _, r := range e.Right {
 			err = renderConformanceExpression(cluster, r, el)
 			if err != nil {
-				return fmt.Errorf("error rendering conformance expression %s: %w", r.String(), err)
+				return fmt.Errorf("error rendering conformance expression %s: %w", r.AsciiDocString(), err)
 			}
 
 		}

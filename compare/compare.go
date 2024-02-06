@@ -204,7 +204,7 @@ func compareConformance(spec conformance.Set, zap conformance.Set) (diffs []any)
 	specMandatory := conformance.IsMandatory(spec)
 	zapMandatory := conformance.IsMandatory(zap)
 	if specMandatory != zapMandatory {
-		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: spec.String(), ZAP: zap.String()})
+		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: spec.AsciiDocString(), ZAP: zap.AsciiDocString()})
 	}
 
 	return

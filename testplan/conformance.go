@@ -67,7 +67,7 @@ func renderExpression(b *strings.Builder, doc *ascii.Doc, cluster *matter.Cluste
 		renderExpression(b, doc, cluster, exp.Right, formatter)
 		b.WriteRune(')')
 	case *conformance.FeatureExpression:
-		b.WriteString(renderIdentifier(cluster.Features, exp.ID, formatter))
+		b.WriteString(renderIdentifier(cluster.Features, exp.Feature, formatter))
 	case *conformance.IdentifierExpression:
 		b.WriteString(renderIdentifier(cluster, exp.ID, formatter))
 	case *conformance.ReferenceExpression:

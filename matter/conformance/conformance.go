@@ -1,11 +1,8 @@
 package conformance
 
-import (
-	"fmt"
-)
-
 type Conformance interface {
-	fmt.Stringer
+	AsciiDocString() string
+	Description() string
 
 	Type() Type
 	Eval(context Context) (State, error)

@@ -6,7 +6,8 @@ import (
 )
 
 type Expression interface {
-	fmt.Stringer
+	AsciiDocString() string
+	Description() string
 
 	Eval(context Context) (bool, error)
 	Equal(e Expression) bool
