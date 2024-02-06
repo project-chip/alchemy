@@ -64,7 +64,7 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 	ae.CreateAttr("code", attribute.ID.HexString())
 	ae.CreateAttr("side", "server")
 	define := getDefine(attribute.Name, clusterPrefix, errata)
-	ae.CreateAttr("define", define)
+	setNonexistentAttr(ae, "define", define)
 	writeAttributeDataType(ae, cluster.Attributes, attribute)
 	if attribute.Quality.Has(matter.QualityNullable) {
 		ae.CreateAttr("isNullable", "true")
