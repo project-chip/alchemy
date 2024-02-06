@@ -58,10 +58,6 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 		for _, m := range entities {
 			switch m := m.(type) {
 			case *matter.Cluster:
-				if filepath.Base(d.Path) == "BaseDeviceType.adoc" {
-					slog.Info("BaseDeviceType cluster", slog.Any("cluster", m.Name))
-				}
-
 				if m.ID.Valid() {
 					spec.ClustersByID[m.ID.Value()] = m
 				}

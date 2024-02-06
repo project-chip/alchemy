@@ -219,34 +219,6 @@ func (d *Doc) Reference(ref string) (mattertypes.Entity, bool) {
 		return nil, false
 	}
 	return entities[0], true
-	/*entities, err := d.Entities()
-	if err != nil {
-		slog.Warn("failed generating entities", slog.String("path", d.Path), slog.String("reference", ref), slog.Any("error", err))
-	}
-	var matches []mattertypes.Entity
-	for _, e := range entities {
-		if identifierStore, ok := e.(conformance.IdentifierStore); ok {
-			slog.Info("querying anchor", slog.String("name", a.Name))
-
-			entity, ok := identifierStore.Identifier(a.Name)
-			if ok {
-				matches = append(matches, entity)
-			}
-		}
-	}
-	if len(matches) == 0 {
-		slog.Warn("unknown reference entity", slog.String("path", d.Path), slog.String("reference", ref))
-		return nil, false
-	}
-	if len(matches) > 1 {
-		slog.Warn("ambiguous reference", slog.String("path", d.Path), slog.String("reference", ref))
-		for _, e := range entities {
-			slog.Warn("reference", slog.String("path", d.Path), slog.String("reference", ref), slog.Any("entity", e))
-
-		}
-		return nil, false
-	}
-	return matches[0], true*/
 }
 
 func OpenFile(path string, settings ...configuration.Setting) (*Doc, error) {

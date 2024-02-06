@@ -14,9 +14,10 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:   "disco",
-	Short: "disco ball Matter spec documents",
-	Long:  ``,
+	Use:     "disco",
+	Short:   "disco ball Matter spec documents",
+	Long:    ``,
+	Aliases: []string{"discoball", "disco-ball"},
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 		var paths []string
@@ -49,8 +50,12 @@ var Command = &cobra.Command{
 			}
 			err = b.Run(cxt)
 			if err != nil {
-				slog.Warn("Error disco balling document", "path", file, "error", err)
 				outPath = ""
+				if err == disco.EmptyDocError {
+					err = nil
+					return
+				}
+				slog.Warn("Error disco balling document", "path", file, "error", err)
 				err = nil
 				return
 			}
