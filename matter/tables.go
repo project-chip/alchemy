@@ -1,6 +1,10 @@
 package matter
 
-import "github.com/bytesparadise/libasciidoc/pkg/types"
+import (
+	"fmt"
+
+	"github.com/bytesparadise/libasciidoc/pkg/types"
+)
 
 type TableColumn uint8
 
@@ -72,6 +76,14 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnClientServer: "Client/Server",
 	TableColumnCondition:    "Condition",
 	TableColumnModeTagValue: "Mode Tag Value",
+}
+
+func (tc TableColumn) String() string {
+	name, ok := TableColumnNames[tc]
+	if ok {
+		return name
+	}
+	return fmt.Sprintf("unknown table column name: %d", tc)
 }
 
 var AllowedTableAttributes = types.Attributes{

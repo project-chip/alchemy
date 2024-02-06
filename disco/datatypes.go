@@ -9,6 +9,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
+	"github.com/iancoleman/strcase"
 )
 
 type DataTypeEntry struct {
@@ -23,17 +24,17 @@ type DataTypeEntry struct {
 	existing         bool
 }
 
-func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
-	dataTypesSection := ascii.FindSectionByType(top, matter.SectionDataTypes)
-	if dataTypesSection == nil {
+func getExistingDataTypes(cxt *discoContext, dp *docParse) {
+	if dp.dataTypes == nil {
 		return
 	}
-	for _, ss := range parse.FindAll[*ascii.Section](dataTypesSection.Elements) {
+
+	for _, ss := range parse.FindAll[*ascii.Section](dp.dataTypes.section.Elements) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		dataType := ss.GetDataType()
 		if dataType == nil {
-			slog.Debug("failed to find data type", "section", top.Name)
+			slog.Debug("failed to find data type", "sectionName", ss.Name)
 			continue
 		}
 		dataTypeCategory := getDataTypeCategory(dataType.Name)
@@ -49,14 +50,40 @@ func getExistingDataTypes(cxt *discoContext, top *ascii.Section) {
 	}
 }
 
-func (b *Ball) getPotentialDataTypes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap ascii.ColumnIndex) error {
-	sectionDataMap, err := b.getDataTypes(columnMap, rows, section)
+func (b *Ball) getPotentialDataTypes(dc *discoContext, dp *docParse) (err error) {
+	var subSections []*subSection
+	subSections = append(subSections, dp.attributes...)
+	subSections = append(subSections, dp.structs...)
+	subSections = append(subSections, dp.commands...)
+	subSections = append(subSections, dp.events...)
+
+	for _, ss := range subSections {
+		err = b.getPotentialDataTypesForSection(dc, dp, ss)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, ss *subSection) error {
+	if ss.table.element == nil {
+		slog.Debug("no data type table found", "sectionName", ss.section.Name)
+		return nil
+	}
+	sectionDataMap, err := b.getDataTypes(ss.table.columnMap, ss.table.rows, ss.section)
 	if err != nil {
 		return err
 	}
 	for name, dataType := range sectionDataMap {
 		if dataType.section != nil {
 			cxt.potentialDataTypes[name] = append(cxt.potentialDataTypes[name], dataType)
+		}
+	}
+	for _, child := range ss.children {
+		err = b.getPotentialDataTypesForSection(cxt, dp, child)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -130,17 +157,17 @@ func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*types.TableRow,
 	return sectionDataMap, nil
 }
 
-func (b *Ball) promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
+func (b *Ball) promoteDataTypes(cxt *discoContext, top *ascii.Section) (promoted bool, err error) {
 	if !b.options.promoteDataTypes {
-		return nil
+		return
 	}
 
 	fields := make(map[matter.DataTypeCategory]map[string]*DataTypeEntry)
 	for _, infos := range cxt.potentialDataTypes {
 		if len(infos) > 1 {
-			err := disambiguateDataTypes(cxt, infos)
+			err = disambiguateDataTypes(cxt, infos)
 			if err != nil {
-				return err
+				return
 			}
 		}
 		for _, info := range infos {
@@ -150,7 +177,6 @@ func (b *Ball) promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
 				fields[info.dataTypeCategory] = fieldMap
 			}
 			fieldMap[info.name] = info
-
 		}
 	}
 
@@ -162,13 +188,15 @@ func (b *Ball) promoteDataTypes(cxt *discoContext, top *ascii.Section) error {
 			}
 			suffix := matter.DataTypeSuffixes[dtc]
 			idColumn := matter.DataTypeIdentityColumn[dtc]
-			err := b.promoteDataType(top, suffix, f, idColumn)
+			var didPromotion bool
+			didPromotion, err = b.promoteDataType(top, suffix, f, idColumn)
 			if err != nil {
-				return err
+				return
 			}
+			promoted = didPromotion || promoted
 		}
 	}
-	return nil
+	return
 }
 
 func getIndexColumnType(dataTypeCategory matter.DataTypeCategory) matter.TableColumn {
@@ -191,9 +219,9 @@ func getDataTypeCategory(dataType string) matter.DataTypeCategory {
 	return matter.DataTypeCategoryUnknown
 }
 
-func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn) error {
+func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn) (promoted bool, err error) {
 	if dataTypeFields == nil {
-		return nil
+		return
 	}
 	var dataTypesSection *ascii.Section
 	for _, dt := range dataTypeFields {
@@ -208,23 +236,70 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		if table == nil {
 			continue
 		}
-		_, columnMap, _, err := ascii.MapTableColumns(b.doc, ascii.TableRows(table))
+		rows := ascii.TableRows(table)
+		var headerRowIndex int
+		var columnMap ascii.ColumnIndex
+		var extraColumns []ascii.ExtraColumn
+		headerRowIndex, columnMap, extraColumns, err = ascii.MapTableColumns(b.doc, rows)
 		if err != nil {
-			return fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", dt.section.Name, err)
+			err = fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", dt.section.Name, err)
+			return
 		}
 		if valueIndex, ok := columnMap[firstColumnType]; !ok || valueIndex > 0 {
 			continue
 		}
 
-		title, err := types.NewStringElement(dt.name + suffix)
+		summaryIndex, hasSummaryColumn := columnMap[matter.TableColumnSummary]
+		if !hasSummaryColumn {
+			descriptionIndex, hasDescriptionColumn := columnMap[matter.TableColumnDescription]
+			if hasDescriptionColumn {
+				// Use the description column as the summary
+				delete(columnMap, matter.TableColumnDescription)
+				columnMap[matter.TableColumnSummary] = descriptionIndex
+				summaryIndex = descriptionIndex
+				err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+				if err != nil {
+					return
+				}
+			} else if len(extraColumns) > 0 {
+				// Hrm, no summary or description on this promoted data type table
+				// Take the first extra column and rename it
+				summaryIndex = extraColumns[0].Offset
+				columnMap[matter.TableColumnSummary] = summaryIndex
+				err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+				if err != nil {
+					return
+				}
+			} else {
+				summaryIndex, err = b.appendColumn(rows, columnMap, headerRowIndex, matter.TableColumnSummary, nil)
+				if err != nil {
+					return
+				}
+			}
+		}
+		_, hasNameColumn := columnMap[matter.TableColumnName]
+		if !hasNameColumn {
+			var nameIndex int
+			nameIndex, err = b.appendColumn(rows, columnMap, headerRowIndex, matter.TableColumnName, nil)
+			if err != nil {
+				return
+			}
+			err = copyCells(rows, headerRowIndex, summaryIndex, nameIndex, strcase.ToCamel)
+			if err != nil {
+				return
+			}
+		}
+
+		var title *types.StringElement
+		title, err = types.NewStringElement(dt.name + suffix + " Type")
 		if err != nil {
-			return err
+			return
 		}
 
 		if dataTypesSection == nil {
 			dataTypesSection, err = ensureDataTypesSection(top)
 			if err != nil {
-				return err
+				return
 			}
 		}
 
@@ -238,7 +313,8 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		})
 
 		if !removedTable {
-			return fmt.Errorf("unable to relocate enum value table")
+			err = fmt.Errorf("unable to relocate enum value table")
+			return
 		}
 
 		dataTypeSection, _ := types.NewSection(dataTypesSection.Base.Level+1, []interface{}{title})
@@ -247,20 +323,20 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		p, _ := types.NewParagraph(nil, se)
 		err = dataTypeSection.AddElement(p)
 		if err != nil {
-			return err
+			return
 		}
 		bl, _ := types.NewBlankLine()
 		err = dataTypeSection.AddElement(bl)
 		if err != nil {
-			return err
+			return
 		}
 		err = dataTypeSection.AddElement(table)
 		if err != nil {
-			return err
+			return
 		}
 		err = dataTypeSection.AddElement(bl)
 		if err != nil {
-			return err
+			return
 		}
 		newAttr := make(types.Attributes)
 		var newId string
@@ -275,15 +351,22 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 
 		dataTypeSection.AddAttributes(newAttr)
 
-		s, err := ascii.NewSection(dataTypesSection, dataTypeSection)
+		var s *ascii.Section
+		s, err = ascii.NewSection(dataTypesSection, dataTypeSection)
 
 		if err != nil {
-			return err
+			return
+		}
+		switch dt.dataTypeCategory {
+		case matter.DataTypeCategoryBitmap:
+			s.SecType = matter.SectionDataTypeBitmap
+		case matter.DataTypeCategoryEnum:
+			s.SecType = matter.SectionDataTypeEnum
 		}
 
 		err = dataTypesSection.AppendSection(s)
 		if err != nil {
-			return err
+			return
 		}
 
 		table.Attributes.Unset(types.AttrID)
@@ -292,10 +375,11 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		icr, _ := types.NewInternalCrossReference(newId, "")
 		err = setCellValue(dt.typeCell, []interface{}{icr})
 		if err != nil {
-			return err
+			return
 		}
+		promoted = true
 	}
-	return nil
+	return
 }
 
 func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
@@ -339,12 +423,12 @@ func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
 		for i := range infos {
 			parentSection := findRefSection(parents[i])
 			if parentSection == nil {
-				return fmt.Errorf("duplicate reference: %s with invalid parent", dataTypeNames[i])
+				return fmt.Errorf("duplicate reference: %s in %T with invalid parent", dataTypeNames[i], parents[i])
 			}
 			parentSections[i] = parentSection
 			refParentId := strings.TrimSpace(matter.StripReferenceSuffixes(ascii.ReferenceName(parentSection.Base)))
-			dataTypeNames[i] = refParentId + " " + dataTypeNames[i]
-			dataTypeRefs[i] = refParentId + "_" + dataTypeNames[i]
+			dataTypeNames[i] = refParentId + dataTypeNames[i]
+			dataTypeRefs[i] = refParentId + dataTypeNames[i]
 		}
 		ids := make(map[string]struct{})
 		var duplicateIds bool
