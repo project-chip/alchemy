@@ -70,6 +70,24 @@ func Skim[T any](elements []interface{}) []T {
 	return list
 }
 
+func SkimFunc[T any](elements []interface{}, callback func(t T) bool) bool {
+	for _, e := range elements {
+		var shortCircuit bool
+		if el, ok := e.(T); ok {
+			shortCircuit = callback(el)
+		} else if ae, ok := e.(HasBase); ok {
+			be := ae.GetBase()
+			if el, ok := be.(T); ok {
+				shortCircuit = callback(el)
+			}
+		}
+		if shortCircuit {
+			return true
+		}
+	}
+	return false
+}
+
 func Filter(parent HasElements, callback func(i interface{}) (remove bool, shortCircuit bool)) (shortCircuit bool) {
 	i := 0
 	elements := parent.GetElements()
