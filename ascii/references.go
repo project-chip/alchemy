@@ -120,8 +120,10 @@ func ReferenceName(element interface{}) string {
 					switch el.Name {
 					case "&":
 						char = el.Name
+					case ">":
+						char = el.Name
 					default:
-						slog.Warn("unrecognized special character", "char", el.Name)
+						slog.Warn("unrecognized special character", "char", el.Name, "context", val.String())
 					}
 					val.WriteString(char)
 				case types.WithAttributes:

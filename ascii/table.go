@@ -187,6 +187,10 @@ func (d *Doc) readCellContent(elements []any, content *strings.Builder) (err err
 				name = s.ID.(string)
 			}
 			content.WriteString(name)
+		case *types.SpecialCharacter:
+			content.WriteString(s.Name)
+		case *types.Symbol:
+			content.WriteString(s.Name)
 		default:
 			return fmt.Errorf("unknown element in table header cell: %T", s)
 		}
