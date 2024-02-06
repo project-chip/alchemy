@@ -40,21 +40,36 @@ func (b *Ball) Run(cxt context.Context) error {
 
 	topLevelSection := parse.FindFirst[*ascii.Section](doc.Elements)
 	if topLevelSection == nil {
-		return fmt.Errorf("missing top level section in %s", doc.Path)
+		return EmptyDocError
 	}
 
-	getExistingDataTypes(dc, topLevelSection)
+	dp, err := b.parseDoc(doc, docType, topLevelSection)
+	if err != nil {
+		return fmt.Errorf("error pre-parsing for disco ball in %s: %w", doc.Path, err)
+	}
 
-	for _, s := range parse.FindAll[*ascii.Section](topLevelSection.Elements) {
-		err := b.organizeSubSection(dc, doc, docType, topLevelSection, s)
+	getExistingDataTypes(dc, dp)
+
+	err = b.getPotentialDataTypes(dc, dp)
+	if err != nil {
+		return fmt.Errorf("error getting potential data types in %s: %w", doc.Path, err)
+	}
+
+	var promotedDataTypes bool
+	promotedDataTypes, err = b.promoteDataTypes(dc, topLevelSection)
+	if err != nil {
+		return fmt.Errorf("error promoting data types in %s: %w", doc.Path, err)
+	}
+	if promotedDataTypes {
+		dp, err = b.parseDoc(doc, docType, topLevelSection)
 		if err != nil {
-			return fmt.Errorf("error organizing subsection %s in %s: %w", s.Name, doc.Path, err)
+			return fmt.Errorf("error re-parsing for disco ball in %s: %w", doc.Path, err)
 		}
 	}
 
-	err = b.promoteDataTypes(dc, topLevelSection)
+	err = b.organizeSubSections(dc, dp)
 	if err != nil {
-		return fmt.Errorf("error promoting data types in %s: %w", doc.Path, err)
+		return fmt.Errorf("error organizing subsections in %s: %w", doc.Path, err)
 	}
 
 	err = b.discoBallTopLevelSection(doc, topLevelSection, docType)
@@ -87,34 +102,5 @@ func (b *Ball) discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docT
 	}
 	b.ensureTableOptions(top.Elements)
 	b.postCleanUpStrings(top.Elements)
-	return nil
-}
-
-func (b *Ball) organizeSubSection(cxt *discoContext, doc *ascii.Doc, docType matter.DocType, top *ascii.Section, section *ascii.Section) error {
-	var err error
-	switch section.SecType {
-	case matter.SectionAttributes:
-		switch docType {
-		case matter.DocTypeCluster:
-			err = b.organizeAttributesSection(cxt, doc, top, section)
-		}
-	case matter.SectionCommands:
-		err = b.organizeCommandsSection(cxt, doc, section)
-	case matter.SectionClassification:
-		err = b.organizeClassificationSection(doc, section)
-	case matter.SectionClusterID:
-		err = b.organizeClusterIDSection(doc, section)
-	case matter.SectionDataTypeBitmap:
-		err = b.organizeBitmapSection(doc, section)
-	case matter.SectionDataTypeEnum:
-		err = b.organizeEnumSection(doc, section)
-	case matter.SectionDataTypeStruct:
-		err = b.organizeStructSection(doc, section)
-	case matter.SectionEvents:
-		err = b.organizeEventsSection(cxt, doc, section)
-	}
-	if err != nil {
-		return fmt.Errorf("error organizing subsections of section %s in %s: %w", section.Name, doc.Path, err)
-	}
 	return nil
 }

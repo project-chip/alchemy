@@ -2,19 +2,69 @@ package disco
 
 import (
 	"fmt"
-	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/parse"
 )
 
-func (b *Ball) organizeCommandsSection(cxt *discoContext, doc *ascii.Doc, commands *ascii.Section) error {
+func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err error) {
+	for _, commands := range dp.commands {
+		if commands.table.element == nil {
+			err = fmt.Errorf("no commands table found")
+			return
+		}
+		if commands.table.columnMap == nil {
+			return fmt.Errorf("can't rearrange commands table without header row")
+		}
+
+		if len(commands.table.columnMap) < 2 {
+			return fmt.Errorf("can't rearrange commands table with so few matches")
+		}
+		err = b.fixAccessCells(dp.doc, commands.table.rows, commands.table.columnMap, mattertypes.EntityTypeCommand)
+		if err != nil {
+			return fmt.Errorf("error fixing access cells in commands table in %s: %w", dp.doc.Path, err)
+		}
+
+		err = fixConformanceCells(dp.doc, commands.table.rows, commands.table.columnMap)
+		if err != nil {
+			return fmt.Errorf("error fixing conformance cells in commands table in %s: %w", dp.doc.Path, err)
+		}
+
+		err = b.fixCommandDirection(dp.doc, commands.table.rows, commands.table.columnMap)
+		if err != nil {
+			return fmt.Errorf("error fixing command direction in commands table in %s: %w", dp.doc.Path, err)
+		}
+
+		err = b.renameTableHeaderCells(commands.table.rows, commands.table.headerRow, commands.table.columnMap, nil)
+		if err != nil {
+			return fmt.Errorf("error table header cells in commands table in %s: %w", dp.doc.Path, err)
+		}
+
+		for _, command := range commands.children {
+			if command.table.element == nil {
+				continue
+			}
+			err = fixConstraintCells(dp.doc, command.table.rows, command.table.columnMap)
+			if err != nil {
+				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
+			}
+			err = fixConformanceCells(dp.doc, command.table.rows, command.table.columnMap)
+			if err != nil {
+				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
+			}
+			b.appendSubsectionTypes(command.section, command.table.columnMap, command.table.rows)
+		}
+	}
+	return
+}
+
+/*func (b *Ball) organizeCommandsSection(cxt *discoContext, doc *ascii.Doc, commands *ascii.Section) error {
 	t := ascii.FindFirstTable(commands)
 	if t == nil {
+
 		return fmt.Errorf("no commands table found")
 	}
 	return b.organizeCommandsTable(cxt, doc, commands, t)
@@ -44,6 +94,11 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 		return fmt.Errorf("error fixing access cells in commands table in %s: %w", doc.Path, err)
 	}
 
+	err = fixConformanceCells(doc, rows, columnMap)
+	if err != nil {
+		return fmt.Errorf("error fixing conformance cells in commands table in %s: %w", doc.Path, err)
+	}
+
 	err = b.fixCommandDirection(doc, rows, columnMap)
 	if err != nil {
 		return fmt.Errorf("error fixing command direction in commands table in %s: %w", doc.Path, err)
@@ -61,9 +116,9 @@ func (b *Ball) organizeCommandsTable(cxt *discoContext, doc *ascii.Doc, commands
 
 	b.reorderColumns(doc, commands, rows, matter.CommandsTableColumnOrder[:], columnMap, extraColumns)
 	return nil
-}
+}*/
 
-func (b *Ball) organizeCommands(cxt *discoContext, doc *ascii.Doc, commands *ascii.Section, commandsTable *types.Table, columnMap ascii.ColumnIndex) error {
+/*func (b *Ball) organizeCommands(cxt *discoContext, doc *ascii.Doc, commands *ascii.Section, commandsTable *types.Table, columnMap ascii.ColumnIndex) error {
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
@@ -97,15 +152,15 @@ func (b *Ball) organizeCommands(cxt *discoContext, doc *ascii.Doc, commands *asc
 		if err != nil {
 			return fmt.Errorf("error fixing command constraint cells in %s command in %s: %w", name, doc.Path, err)
 		}
-		err = b.getPotentialDataTypes(cxt, ss, rows, columnMap)
+		err = fixConformanceCells(doc, rows, columnMap)
 		if err != nil {
-			return fmt.Errorf("error getting potential data types in %s command in %s: %w", name, doc.Path, err)
+			return fmt.Errorf("error fixing command conformance cells in %s command in %s: %w", name, doc.Path, err)
 		}
 		b.appendSubsectionTypes(ss, columnMap, rows)
 	}
 
 	return nil
-}
+}*/
 
 func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex) (err error) {
 	if len(rows) < 2 {

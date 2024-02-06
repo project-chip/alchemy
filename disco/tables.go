@@ -37,30 +37,51 @@ func (b *Ball) ensureTableOptions(elements []interface{}) {
 
 }
 
-func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex) {
+func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
 	delete(table.Attributes, "cols")
 	for _, column := range order {
 		if _, ok := columnMap[column]; !ok {
-			for i, row := range rows {
-				cell := &types.TableCell{}
-				if i == headerRowIndex {
-					if headerRowIndex > 0 {
-						cell.Format = "h"
-					}
-					name, _ := matter.GetColumnName(column, overrides)
-					_ = setCellString(cell, name)
-				} else {
-					last := row.Cells[len(row.Cells)-1]
-					cell.Blank = last.Blank
-				}
-				row.Cells = append(row.Cells, cell)
-				columnMap[column] = len(row.Cells) - 1
+			_, err = b.appendColumn(rows, columnMap, headerRowIndex, column, overrides)
+			if err != nil {
+				return
 			}
 		}
 	}
+	return
+}
+
+func (*Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string) (appendedIndex int, err error) {
+	if len(rows) == 0 {
+		appendedIndex = -1
+		return
+	}
+	appendedIndex = len(rows[0].Cells)
+	for i, row := range rows {
+		cell := &types.TableCell{}
+		if i == headerRowIndex {
+			if headerRowIndex > 0 {
+				cell.Format = "h"
+			}
+			name, ok := matter.GetColumnName(column, overrides)
+			if !ok {
+				err = fmt.Errorf("unknown column name: %s", column.String())
+				return
+			}
+			err = setCellString(cell, name)
+			if err != nil {
+				return
+			}
+		} else {
+			last := row.Cells[len(row.Cells)-1]
+			cell.Blank = last.Blank
+		}
+		row.Cells = append(row.Cells, cell)
+	}
+	columnMap[column] = appendedIndex
+	return
 }
 
 func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap ascii.ColumnIndex, extraColumns []ascii.ExtraColumn) {
@@ -126,6 +147,27 @@ func setCellValue(cell *types.TableCell, val []interface{}) (err error) {
 		}
 	}
 	err = p.SetElements(val)
+	return
+}
+
+func copyCells(rows []*types.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {
+	for i, row := range rows {
+		if i == headerRowIndex {
+			continue
+		}
+		var value string
+		value, err = ascii.GetTableCellValue(row.Cells[fromIndex])
+		if err != nil {
+			return
+		}
+		if transformer != nil {
+			value = transformer(value)
+		}
+		err = setCellString(row.Cells[toIndex], value)
+		if err != nil {
+			return
+		}
+	}
 	return
 }
 

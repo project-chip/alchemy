@@ -3,11 +3,36 @@ package disco
 import (
 	"fmt"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
 
+func (b *Ball) organizeClusterIDSection(cxt *discoContext, dp *docParse) (err error) {
+	for _, clusterIDs := range dp.clusterIDs {
+		clusterIDsTable := clusterIDs.table
+		if clusterIDsTable.element == nil {
+			return fmt.Errorf("no cluster ID section found")
+		}
+		setSectionTitle(clusterIDs.section, matter.ClusterIDSectionName)
+
+		if clusterIDsTable.columnMap == nil {
+			return fmt.Errorf("can't rearrange cluster id table without header row in %s", dp.doc.Path)
+		}
+
+		if len(clusterIDsTable.columnMap) < 2 {
+			return fmt.Errorf("can't rearrange cluster id table with so few matches in %s", dp.doc.Path)
+		}
+
+		err = b.renameTableHeaderCells(clusterIDsTable.rows, clusterIDsTable.headerRow, clusterIDsTable.columnMap, nil)
+		if err != nil {
+			return fmt.Errorf("error renaming table header cells in cluster ID table in %s: %w", dp.doc.Path, err)
+		}
+
+		b.reorderColumns(dp.doc, clusterIDs.section, clusterIDsTable.rows, matter.ClusterIDTableColumnOrder[:], clusterIDsTable.columnMap, clusterIDsTable.extraColumns)
+	}
+	return
+}
+
+/*
 func (b *Ball) organizeClusterIDSection(doc *ascii.Doc, section *ascii.Section) error {
 	t := ascii.FindFirstTable(section)
 	if t == nil {
@@ -43,3 +68,4 @@ func (b *Ball) organizeClusterIDTable(doc *ascii.Doc, section *ascii.Section, at
 	b.reorderColumns(doc, section, rows, matter.ClusterIDTableColumnOrder[:], columnMap, extraColumns)
 	return nil
 }
+*/

@@ -49,11 +49,15 @@ func normalizeAnchor(info *ascii.Anchor) {
 		if len(info.Label) == 0 {
 			info.Label = strings.TrimSpace(matter.StripReferenceSuffixes(ascii.ReferenceName(info.Element)))
 		}
-		return
+
+	} else {
+		id, label := normalizeAnchorID(info.Name, info.Element, info.Parent)
+		info.ID = id
+		info.Label = label
 	}
-	id, label := normalizeAnchorID(info.Name, info.Element, info.Parent)
-	info.ID = id
-	info.Label = label
+	if info.Label == info.Name {
+		info.Label = ""
+	}
 }
 
 var pascalCasePattern = regexp.MustCompile(`^[A-Z][a-z]+([A-Z][a-z]+)+$`)

@@ -2,17 +2,58 @@ package disco
 
 import (
 	"fmt"
-	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/constraint"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
+func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err error) {
+
+	for _, attributes := range dp.attributes {
+		attributesTable := attributes.table
+		if attributesTable.element == nil {
+			return
+		}
+
+		if attributesTable.columnMap == nil {
+			return fmt.Errorf("can't rearrange attributes table without header row")
+		}
+
+		if len(attributesTable.columnMap) < 3 {
+			return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(attributesTable.columnMap))
+		}
+
+		err = b.fixAccessCells(dp.doc, attributesTable.rows, attributesTable.columnMap, mattertypes.EntityTypeAttribute)
+		if err != nil {
+			return err
+		}
+
+		err = fixConstraintCells(dp.doc, attributesTable.rows, attributesTable.columnMap)
+		if err != nil {
+			return err
+		}
+
+		err = fixConformanceCells(dp.doc, attributesTable.rows, attributesTable.columnMap)
+		if err != nil {
+			return err
+		}
+
+		if b.options.linkAttributes {
+			err = b.linkAttributes(cxt, attributes.section, attributesTable.rows, attributesTable.columnMap)
+			if err != nil {
+				return err
+			}
+		}
+
+		b.reorderColumns(dp.doc, attributes.section, attributesTable.rows, matter.AttributesTableColumnOrder[:], attributesTable.columnMap, attributesTable.extraColumns)
+	}
+	return nil
+}
+
+/*func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
 	attributesTable := ascii.FindFirstTable(attributes)
 	if attributesTable == nil {
 		slog.Debug("no attributes table found", "sectionName", top.Name)
@@ -47,6 +88,11 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 		return err
 	}
 
+	err = fixConformanceCells(doc, rows, columnMap)
+	if err != nil {
+		return err
+	}
+
 	if b.options.linkAttributes {
 		err = b.linkAttributes(cxt, attributes, rows, columnMap)
 		if err != nil {
@@ -54,76 +100,10 @@ func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *a
 		}
 	}
 
-	err = b.getPotentialDataTypes(cxt, attributes, rows, columnMap)
-	if err != nil {
-		return err
-	}
-
 	b.reorderColumns(doc, attributes, rows, matter.AttributesTableColumnOrder[:], columnMap, extraColumns)
 
 	return nil
-}
-
-func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex, entityType mattertypes.EntityType) (err error) {
-	if !b.options.formatAccess {
-		return nil
-	}
-	if len(rows) < 2 {
-		return
-	}
-	accessIndex, ok := columnMap[matter.TableColumnAccess]
-	if !ok {
-		return
-	}
-	for _, row := range rows[1:] {
-		cell := row.Cells[accessIndex]
-		vc, e := ascii.GetTableCellValue(cell)
-		if e != nil {
-			continue
-		}
-		access := ascii.ParseAccess(vc, entityType)
-		replacementAccess := ascii.AccessToAsciiString(access, entityType)
-		if vc != replacementAccess {
-			err = setCellString(cell, replacementAccess)
-			if err != nil {
-				return
-			}
-
-		}
-	}
-	return
-}
-
-func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex) (err error) {
-	if len(rows) < 2 {
-		return
-	}
-	constraintIndex, ok := columnMap[matter.TableColumnConstraint]
-	if !ok {
-		return
-	}
-	for _, row := range rows[1:] {
-		cell := row.Cells[constraintIndex]
-		vc, e := ascii.GetTableCellValue(cell)
-		if e != nil {
-			continue
-		}
-
-		dataType := doc.ReadRowDataType(row, columnMap, matter.TableColumnType)
-		if dataType != nil {
-			c := constraint.ParseString(vc)
-			fixed := c.AsciiDocString(dataType)
-			if fixed != vc {
-				err = setCellString(cell, fixed)
-				if err != nil {
-					return
-				}
-			}
-		}
-
-	}
-	return
-}
+}*/
 
 func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap ascii.ColumnIndex) error {
 	attributeCells := make(map[string]*types.Paragraph)
