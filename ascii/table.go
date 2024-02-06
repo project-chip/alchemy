@@ -114,11 +114,10 @@ func readRowCellName(doc *Doc, row *types.TableRow, offset int) (string, error) 
 
 func FindFirstTable(section *Section) *types.Table {
 	var table *types.Table
-	parse.Search(section.Elements, func(t *types.Table) bool {
+	parse.SkimFunc(section.Elements, func(t *types.Table) bool {
 		table = t
 		return true
 	})
-
 	return table
 }
 
