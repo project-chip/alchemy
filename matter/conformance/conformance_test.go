@@ -12,7 +12,8 @@ func TestOptional(t *testing.T) {
 
 		t.Errorf("failed parsing: %v", err)
 	}
-	t.Logf("conformance: %s", conformance.String())
+	t.Logf("conformance: %s", conformance.AsciiDocString())
+	t.Logf("description: %s", conformance.Description())
 }
 
 type conformanceTestSuite struct {
@@ -43,7 +44,7 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 			return
 		}
 		if result != test.Expected {
-			t.Errorf("failed checking conformance %s (parsed %s) with %v: expected %v, got %v", cts.Conformance, conformance.String(), test.Context, test.Expected, result)
+			t.Errorf("failed checking conformance %s (parsed %s) with %v: expected %v, got %v", cts.Conformance, conformance.AsciiDocString(), test.Context, test.Expected, result)
 		}
 	}
 }

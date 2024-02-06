@@ -10,11 +10,18 @@ type IdentifierExpression struct {
 	Not bool   `json:"not,omitempty"`
 }
 
-func (ie *IdentifierExpression) String() string {
+func (ie *IdentifierExpression) AsciiDocString() string {
 	if ie.Not {
-		return fmt.Sprintf("not %s", ie.ID)
+		return fmt.Sprintf("!%s", ie.ID)
 	}
 	return ie.ID
+}
+
+func (ie *IdentifierExpression) Description() string {
+	if ie.Not {
+		return fmt.Sprintf("%s is not indicated", ie.ID)
+	}
+	return fmt.Sprintf("%s is indicated", ie.ID)
 }
 
 func (ie *IdentifierExpression) Eval(context Context) (bool, error) {

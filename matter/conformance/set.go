@@ -11,21 +11,45 @@ func (c Set) Type() Type {
 	return TypeSet
 }
 
-func (cs Set) String() string {
+func (cs Set) AsciiDocString() string {
 	var s strings.Builder
 	for _, c := range cs {
 		if s.Len() > 0 {
-			s.WriteString(", otherwise ")
+			s.WriteString(", ")
 		}
-		s.WriteString(c.String())
+		s.WriteString(c.AsciiDocString())
 		switch c := c.(type) {
-		case *Optional, *Provisional, *Disallowed, *Deprecated:
+		case *Provisional, *Disallowed, *Deprecated:
 			return s.String()
+		case *Optional:
+			if c.Expression == nil {
+				return s.String()
+			}
 		case *Mandatory:
 			if c.Expression == nil {
 				return s.String()
 			}
 		}
+	}
+	return trimUnnecessaryParens(s.String())
+}
+
+func trimUnnecessaryParens(as string) string {
+	if len(as) > 2 {
+		if as[0] == '(' && as[len(as)-1] == ')' {
+			as = as[1 : len(as)-1]
+		}
+	}
+	return as
+}
+
+func (cs Set) Description() string {
+	var s strings.Builder
+	for _, c := range cs {
+		if s.Len() > 0 {
+			s.WriteString(", otherwise ")
+		}
+		s.WriteString(c.Description())
 	}
 	if len(cs) > 1 {
 		s.WriteString(", otherwise disallowed")

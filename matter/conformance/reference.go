@@ -10,7 +10,14 @@ type ReferenceExpression struct {
 	Not       bool   `json:"not,omitempty"`
 }
 
-func (ie *ReferenceExpression) String() string {
+func (ie *ReferenceExpression) AsciiDocString() string {
+	if ie.Not {
+		return fmt.Sprintf("!%s", ie.Reference)
+	}
+	return ie.Reference
+}
+
+func (ie *ReferenceExpression) Description() string {
 	if ie.Not {
 		return fmt.Sprintf("not %s", ie.Reference)
 	}

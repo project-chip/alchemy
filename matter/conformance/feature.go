@@ -6,19 +6,26 @@ import (
 )
 
 type FeatureExpression struct {
-	ID  string `json:"id"`
-	Not bool   `json:"not"`
+	Feature string `json:"id"`
+	Not     bool   `json:"not"`
 }
 
-func (fe *FeatureExpression) String() string {
+func (fe *FeatureExpression) AsciiDocString() string {
 	if fe.Not {
-		return fmt.Sprintf("not %s", fe.ID)
+		return fmt.Sprintf("!%s", fe.Feature)
 	}
-	return fe.ID
+	return fe.Feature
+}
+
+func (fe *FeatureExpression) Description() string {
+	if fe.Not {
+		return fmt.Sprintf("feature %s is not enabled", fe.Feature)
+	}
+	return fmt.Sprintf("feature %s is enabled", fe.Feature)
 }
 
 func (fe *FeatureExpression) Eval(context Context) (bool, error) {
-	return evalIdentifier(context, fe.ID, fe.Not)
+	return evalIdentifier(context, fe.Feature, fe.Not)
 }
 
 func (fe *FeatureExpression) Equal(e Expression) bool {
@@ -34,7 +41,7 @@ func (fe *FeatureExpression) Equal(e Expression) bool {
 	if fe.Not != ofe.Not {
 		return false
 	}
-	if fe.ID != ofe.ID {
+	if fe.Feature != ofe.Feature {
 		return false
 	}
 	return true
@@ -43,7 +50,7 @@ func (fe *FeatureExpression) Equal(e Expression) bool {
 func (fe *FeatureExpression) MarshalJSON() ([]byte, error) {
 	js := map[string]any{
 		"type": "feature",
-		"id":   fe.ID,
+		"id":   fe.Feature,
 	}
 	if fe.Not {
 		js["not"] = true
@@ -52,5 +59,5 @@ func (fe *FeatureExpression) MarshalJSON() ([]byte, error) {
 }
 
 func (fe *FeatureExpression) Clone() Expression {
-	return &FeatureExpression{Not: fe.Not, ID: fe.ID}
+	return &FeatureExpression{Not: fe.Not, Feature: fe.Feature}
 }

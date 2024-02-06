@@ -12,7 +12,11 @@ func (dc *Deprecated) RawText() string {
 	return dc.raw
 }
 
-func (dc *Deprecated) String() string {
+func (dc *Deprecated) AsciiDocString() string {
+	return "D"
+}
+
+func (dc *Deprecated) Description() string {
 	return "deprecated"
 }
 

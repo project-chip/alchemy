@@ -11,9 +11,9 @@ type Choice struct {
 	Limit ChoiceLimit `json:"limit,omitempty"`
 }
 
-func (c *Choice) String() string {
+func (c *Choice) Description() string {
 	if c.Limit != nil {
-		return c.Limit.String(c.Set)
+		return c.Limit.Description(c.Set)
 	}
 	return fmt.Sprintf("set: %s", c.Set)
 }
@@ -45,7 +45,7 @@ func (c *Choice) Clone() *Choice {
 }
 
 type ChoiceLimit interface {
-	String(set string) string
+	Description(set string) string
 	AsciiDocString() string
 
 	Equal(cl ChoiceLimit) bool
@@ -56,7 +56,7 @@ type ChoiceExactLimit struct {
 	Limit int `json:"limit"`
 }
 
-func (c *ChoiceExactLimit) String(set string) string {
+func (c *ChoiceExactLimit) Description(set string) string {
 	return fmt.Sprintf("with exactly %d of set %s", c.Limit, set)
 }
 
@@ -99,7 +99,7 @@ type ChoiceMinLimit struct {
 	Min int `json:"min"`
 }
 
-func (c *ChoiceMinLimit) String(set string) string {
+func (c *ChoiceMinLimit) Description(set string) string {
 	return fmt.Sprintf("with at least %d of set %s", c.Min, set)
 }
 
@@ -142,7 +142,7 @@ type ChoiceMaxLimit struct {
 	Max int `json:"max"`
 }
 
-func (c *ChoiceMaxLimit) String(set string) string {
+func (c *ChoiceMaxLimit) Description(set string) string {
 	return fmt.Sprintf("with at most %d of set %s", c.Max, set)
 }
 
@@ -186,7 +186,7 @@ type ChoiceRangeLimit struct {
 	Max int `json:"max"`
 }
 
-func (c *ChoiceRangeLimit) String(set string) string {
+func (c *ChoiceRangeLimit) Description(set string) string {
 	return fmt.Sprintf("with between %d and %d of set %s", c.Min, c.Max, set)
 }
 

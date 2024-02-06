@@ -7,8 +7,12 @@ func (c *Described) Type() Type {
 	return TypeDescribed
 }
 
-func (d *Described) String() string {
+func (d *Described) AsciiDocString() string {
 	return "desc"
+}
+
+func (d *Described) Description() string {
+	return "described"
 }
 
 func (d *Described) Eval(context Context) (State, error) {

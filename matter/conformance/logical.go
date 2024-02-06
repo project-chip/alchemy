@@ -25,7 +25,7 @@ func NewLogicalExpression(operand string, left Expression, right []any) (*Logica
 	return le, nil
 }
 
-func (le *LogicalExpression) String() string {
+func (le *LogicalExpression) AsciiDocString() string {
 
 	switch le.Operand {
 	case "|":
@@ -33,17 +33,17 @@ func (le *LogicalExpression) String() string {
 		s.WriteRune('(')
 		if le.Not {
 			s.WriteRune('!')
-			s.WriteString(le.Left.String())
+			s.WriteString(le.Left.AsciiDocString())
 			for _, r := range le.Right {
-				s.WriteString(" and !")
-				s.WriteString(r.String())
+				s.WriteString(" & !")
+				s.WriteString(r.AsciiDocString())
 			}
 
 		} else {
-			s.WriteString(le.Left.String())
+			s.WriteString(le.Left.AsciiDocString())
 			for _, r := range le.Right {
-				s.WriteString(" or ")
-				s.WriteString(r.String())
+				s.WriteString(" \\| ")
+				s.WriteString(r.AsciiDocString())
 			}
 		}
 		s.WriteRune(')')
@@ -51,16 +51,16 @@ func (le *LogicalExpression) String() string {
 	case "&":
 		var s strings.Builder
 		s.WriteRune('(')
-		s.WriteString(le.Left.String())
+		s.WriteString(le.Left.AsciiDocString())
 		for _, r := range le.Right {
 			if le.Not {
 
-				s.WriteString(" or ")
+				s.WriteString(" \\| ")
 			} else {
-				s.WriteString(" and ")
+				s.WriteString(" & ")
 
 			}
-			s.WriteString(r.String())
+			s.WriteString(r.AsciiDocString())
 		}
 		s.WriteRune(')')
 		return s.String()
@@ -71,10 +71,68 @@ func (le *LogicalExpression) String() string {
 			s.WriteString("!")
 		}
 		s.WriteRune('(')
-		s.WriteString(le.Left.String())
+		s.WriteString(le.Left.AsciiDocString())
+		for _, r := range le.Right {
+			s.WriteString(" ^ ")
+			s.WriteString(r.AsciiDocString())
+		}
+		s.WriteRune(')')
+		return s.String()
+	default:
+		return "unknown operator"
+	}
+}
+
+func (le *LogicalExpression) Description() string {
+
+	switch le.Operand {
+	case "|":
+		var s strings.Builder
+		s.WriteRune('(')
+		if le.Not {
+			s.WriteString("not ")
+			s.WriteString(le.Left.Description())
+			for _, r := range le.Right {
+				s.WriteString(" and not")
+				s.WriteString(r.Description())
+			}
+
+		} else {
+			s.WriteString(le.Left.Description())
+			for _, r := range le.Right {
+				s.WriteString(" or ")
+				s.WriteString(r.Description())
+			}
+		}
+		s.WriteRune(')')
+		return s.String()
+	case "&":
+		var s strings.Builder
+		s.WriteRune('(')
+		s.WriteString(le.Left.Description())
+		for _, r := range le.Right {
+			if le.Not {
+
+				s.WriteString(" or ")
+			} else {
+				s.WriteString(" and ")
+
+			}
+			s.WriteString(r.Description())
+		}
+		s.WriteRune(')')
+		return s.String()
+	case "^":
+		var s strings.Builder
+		if le.Not {
+
+			s.WriteString("!")
+		}
+		s.WriteRune('(')
+		s.WriteString(le.Left.Description())
 		for _, r := range le.Right {
 			s.WriteString(" xor ")
-			s.WriteString(r.String())
+			s.WriteString(r.Description())
 		}
 		s.WriteRune(')')
 		return s.String()

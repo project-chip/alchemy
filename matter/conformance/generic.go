@@ -12,7 +12,11 @@ func (dc *Generic) RawText() string {
 	return dc.raw
 }
 
-func (dc *Generic) String() string {
+func (dc *Generic) AsciiDocString() string {
+	return dc.raw
+}
+
+func (dc *Generic) Description() string {
 	return dc.raw
 }
 

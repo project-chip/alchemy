@@ -12,12 +12,19 @@ func (c *Mandatory) Type() Type {
 	return TypeMandatory
 }
 
-func (m *Mandatory) String() string {
+func (m *Mandatory) AsciiDocString() string {
+	if m.Expression != nil {
+		return m.Expression.AsciiDocString()
+	}
+	return "M"
+}
+
+func (m *Mandatory) Description() string {
 	var s strings.Builder
 	s.WriteString("mandatory")
 	if m.Expression != nil {
 		s.WriteString(" if ")
-		s.WriteString(m.Expression.String())
+		s.WriteString(m.Expression.Description())
 	}
 	return s.String()
 }

@@ -7,7 +7,11 @@ func (c *Provisional) Type() Type {
 	return TypeProvisional
 }
 
-func (dc *Provisional) String() string {
+func (dc *Provisional) AsciiDocString() string {
+	return "P"
+}
+
+func (dc *Provisional) Description() string {
 	return "provisional"
 }
 

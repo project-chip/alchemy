@@ -11,12 +11,20 @@ type EqualityExpression struct {
 	Right Expression
 }
 
-func (o *EqualityExpression) String() string {
+func (o *EqualityExpression) AsciiDocString() string {
 	if o.Not {
-		return fmt.Sprintf("(%s != %s)", o.Left, o.Right)
+		return fmt.Sprintf("(%s != %s)", o.Left.AsciiDocString(), o.Right.AsciiDocString())
 	}
 
-	return fmt.Sprintf("(%s == %s)", o.Left, o.Right)
+	return fmt.Sprintf("(%s == %s)", o.Left.AsciiDocString(), o.Right.AsciiDocString())
+}
+
+func (o *EqualityExpression) Description() string {
+	if o.Not {
+		return fmt.Sprintf("(%s != %s)", o.Left.Description(), o.Right.Description())
+	}
+
+	return fmt.Sprintf("(%s == %s)", o.Left.Description(), o.Right.Description())
 }
 
 func (ee *EqualityExpression) Eval(context Context) (bool, error) {

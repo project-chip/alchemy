@@ -13,16 +13,32 @@ func (c *Optional) Type() Type {
 	return TypeOptional
 }
 
-func (cc *Optional) String() string {
+func (cc *Optional) AsciiDocString() string {
+	var s strings.Builder
+	if cc.Expression != nil {
+		s.WriteString("[")
+		s.WriteString(trimUnnecessaryParens(cc.Expression.AsciiDocString()))
+		s.WriteString("]")
+	} else {
+		s.WriteString("O")
+	}
+	if cc.Choice != nil {
+		s.WriteString(".")
+		s.WriteString(cc.Choice.AsciiDocString())
+	}
+	return s.String()
+}
+
+func (cc *Optional) Description() string {
 	var s strings.Builder
 	s.WriteString("optional")
 	if cc.Expression != nil {
 		s.WriteString(" if ")
-		s.WriteString(cc.Expression.String())
+		s.WriteString(cc.Expression.Description())
 	}
 	if cc.Choice != nil {
 		s.WriteString(" (")
-		s.WriteString(cc.Choice.String())
+		s.WriteString(cc.Choice.Description())
 		s.WriteString(")")
 	}
 	return s.String()
