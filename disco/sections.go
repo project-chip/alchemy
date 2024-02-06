@@ -30,67 +30,8 @@ func (b *Ball) organizeSubSections(dc *discoContext, dp *docParse) (err error) {
 			return
 		}
 	}
-	/*for _, section := range parse.FindAll[*ascii.Section](topLevelSection.Elements) {
-		var err error
-		switch section.SecType {
-		case matter.SectionAttributes:
-			switch docType {
-			case matter.DocTypeCluster:
-				err = b.organizeAttributesSection(dc, doc, topLevelSection, section)
-			}
-		case matter.SectionCommands:
-			err = b.organizeCommandsSection(dc, doc, section)
-		case matter.SectionClassification:
-			err = b.organizeClassificationSection(doc, section)
-		case matter.SectionClusterID:
-			err = b.organizeClusterIDSection(doc, section)
-		case matter.SectionDataTypeBitmap:
-			err = b.organizeBitmapSection(doc, section)
-		case matter.SectionDataTypeEnum:
-			err = b.organizeEnumSection(doc, section)
-		case matter.SectionDataTypeStruct:
-			err = b.organizeStructSection(doc, section)
-		case matter.SectionEvents:
-			err = b.organizeEventsSection(dc, doc, section)
-		}
-		if err != nil {
-			return fmt.Errorf("error organizing subsections of section %s in %s: %w", section.Name, doc.Path, err)
-		}
-	}*/
 	return
 }
-
-/*
-func (b *Ball) organizeSubSectionsOld(dc *discoContext, doc *ascii.Doc, docType matter.DocType, topLevelSection *ascii.Section) error {
-	for _, section := range parse.FindAll[*ascii.Section](topLevelSection.Elements) {
-		var err error
-		switch section.SecType {
-		case matter.SectionAttributes:
-			switch docType {
-			case matter.DocTypeCluster:
-				//err = b.organizeAttributesSection(dc, doc, topLevelSection, section)
-			}
-		case matter.SectionCommands:
-			err = b.organizeCommandsSection(dc, doc, section)
-		case matter.SectionClassification:
-			err = b.organizeClassificationSection(doc, section)
-		case matter.SectionClusterID:
-			err = b.organizeClusterIDSection(doc, section)
-		case matter.SectionDataTypeBitmap:
-			err = b.organizeBitmapSection(doc, section)
-		case matter.SectionDataTypeEnum:
-			err = b.organizeEnumSection(doc, section)
-		case matter.SectionDataTypeStruct:
-			err = b.organizeStructSection(doc, section)
-		case matter.SectionEvents:
-			err = b.organizeEventsSection(dc, doc, section)
-		}
-		if err != nil {
-			return fmt.Errorf("error organizing subsections of section %s in %s: %w", section.Name, doc.Path, err)
-		}
-	}
-	return nil
-}*/
 
 func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)

@@ -53,58 +53,6 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 	return nil
 }
 
-/*func (b *Ball) organizeAttributesSection(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section) error {
-	attributesTable := ascii.FindFirstTable(attributes)
-	if attributesTable == nil {
-		slog.Debug("no attributes table found", "sectionName", top.Name)
-		return nil
-	}
-	return b.organizeAttributesTable(cxt, doc, top, attributes, attributesTable)
-}
-
-func (b *Ball) organizeAttributesTable(cxt *discoContext, doc *ascii.Doc, top *ascii.Section, attributes *ascii.Section, attributesTable *types.Table) error {
-	rows := ascii.TableRows(attributesTable)
-
-	_, columnMap, extraColumns, err := ascii.MapTableColumns(doc, rows)
-	if err != nil {
-		return fmt.Errorf("failed mapping table columns for attributes table in section %s: %w", top.Name, err)
-	}
-
-	if columnMap == nil {
-		return fmt.Errorf("can't rearrange attributes table without header row")
-	}
-
-	if len(columnMap) < 3 {
-		return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(columnMap))
-	}
-
-	err = b.fixAccessCells(doc, rows, columnMap, mattertypes.EntityTypeAttribute)
-	if err != nil {
-		return err
-	}
-
-	err = fixConstraintCells(doc, rows, columnMap)
-	if err != nil {
-		return err
-	}
-
-	err = fixConformanceCells(doc, rows, columnMap)
-	if err != nil {
-		return err
-	}
-
-	if b.options.linkAttributes {
-		err = b.linkAttributes(cxt, attributes, rows, columnMap)
-		if err != nil {
-			return err
-		}
-	}
-
-	b.reorderColumns(doc, attributes, rows, matter.AttributesTableColumnOrder[:], columnMap, extraColumns)
-
-	return nil
-}*/
-
 func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap ascii.ColumnIndex) error {
 	attributeCells := make(map[string]*types.Paragraph)
 	nameIndex, ok := columnMap[matter.TableColumnName]

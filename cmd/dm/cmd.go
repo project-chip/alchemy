@@ -9,8 +9,9 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:   "dm",
-	Short: "transmute the Matter spec into data model XML",
+	Use:     "dm",
+	Short:   "transmute the Matter spec into data model XML",
+	Aliases: []string{"datamodel", "data-model"},
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		specRoot, _ := cmd.Flags().GetString("specRoot")
 		sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
