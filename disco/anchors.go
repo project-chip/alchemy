@@ -36,7 +36,7 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 			}
 		}
 		for _, info := range infos {
-			setAnchor(info)
+			setAnchorID(info.Element, info.ID, info.Label)
 		}
 	}
 
@@ -47,15 +47,14 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 func normalizeAnchor(info *ascii.Anchor) {
 	if properAnchorPattern.Match([]byte(info.ID)) {
 		if len(info.Label) == 0 {
-			info.Label = strings.TrimSpace(matter.StripReferenceSuffixes(ascii.ReferenceName(info.Element)))
+			info.Label = normalizeAnchorLabel(info.Name(), info.Element)
 		}
-
 	} else {
-		id, label := normalizeAnchorID(info.Name, info.Element, info.Parent)
+		id, label := normalizeAnchorID(info.Name(), info.Element, info.Parent)
 		info.ID = id
 		info.Label = label
 	}
-	if info.Label == info.Name {
+	if info.Label == info.Name() {
 		info.Label = ""
 	}
 }
@@ -65,12 +64,8 @@ var anchorInvalidCharacters = strings.NewReplacer(".", "", "(", "", ")", "")
 
 func normalizeAnchorID(name string, element any, parent any) (id string, label string) {
 	var parentName string
-	switch element.(type) {
-	case *types.Table:
-		label = strings.TrimSpace(name)
-	default:
-		label = strings.TrimSpace(matter.StripReferenceSuffixes(name))
-	}
+
+	label = normalizeAnchorLabel(name, element)
 
 	switch p := parent.(type) {
 	case *ascii.Section:
@@ -84,27 +79,19 @@ func normalizeAnchorID(name string, element any, parent any) (id string, label s
 	}
 
 	var ref strings.Builder
-
 	ref.WriteString(parentName)
-
-	parts := strings.Split(label, " ")
-	for _, p := range parts {
-		p = anchorInvalidCharacters.Replace(p)
-		if pascalCasePattern.MatchString(p) {
-			ref.WriteString(p)
-		} else {
-			ref.WriteString(titleCaser.String(p))
-		}
-	}
-	id = ref.String()
-	id = "ref_" + acronymPattern.ReplaceAllStringFunc(id, func(match string) string {
-		return string(match[0]) + strings.ToLower(string(match[1:]))
-	})
+	ref.WriteString(matter.Case(anchorInvalidCharacters.Replace(label)))
 	return
 }
 
-func setAnchor(info *ascii.Anchor) {
-	setAnchorID(info.Element, info.ID, info.Label)
+func normalizeAnchorLabel(name string, element any) (label string) {
+	switch element.(type) {
+	case *types.Table:
+		label = strings.TrimSpace(name)
+	default:
+		label = strings.TrimSpace(matter.StripReferenceSuffixes(name))
+	}
+	return
 }
 
 func setAnchorID(element types.WithAttributes, id string, label string) {
