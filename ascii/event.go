@@ -71,7 +71,6 @@ func (s *Section) toEvents(d *Doc, entityMap map[types.WithAttributes][]matterty
 			var headerRowIndex int
 			var columnMap ColumnIndex
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
-			e.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
 			if headerRowIndex > 0 {
 				firstRow := rows[0]
 				if len(firstRow.Cells) > 0 {
