@@ -36,57 +36,15 @@ var PrivilegeNamesShort = map[Privilege]string{
 
 var privilegeNameMap map[string]Privilege
 
-type FabricScoping uint8
-
-const (
-	FabricScopingUnknown FabricScoping = iota
-	FabricScopingScoped
-	FabricScopingUnscoped
-)
-
-func (fs FabricScoping) String() string {
-	switch fs {
-	case FabricScopingScoped:
-		return "scoped"
-	case FabricScopingUnscoped:
-		return "unscoped"
-	default:
-		return "unknown"
-	}
-}
-
-type FabricSensitivity uint8
-
-const (
-	FabricSensitivityUnknown FabricSensitivity = iota
-	FabricSensitivitySensitive
-	FabricSensitivityInsensitive
-)
-
-func (fs FabricSensitivity) String() string {
-	switch fs {
-	case FabricSensitivitySensitive:
-		return "sensitive"
-	case FabricSensitivityInsensitive:
-		return "insensitive"
-	default:
-		return "unknown"
-	}
-}
-
-type Timing uint8
-
-const (
-	TimingUnknown Timing = iota
-	TimingTimed
-	TimingUntimed
-)
-
 func init() {
 	privilegeNameMap = make(map[string]Privilege, len(PrivilegeNames))
 	for p, n := range PrivilegeNames {
 		privilegeNameMap[n] = p
 	}
+}
+
+func (p Privilege) String() string {
+	return PrivilegeNames[p]
 }
 
 func (p Privilege) MarshalJSON() ([]byte, error) {
@@ -133,6 +91,129 @@ func (p *Privilege) UnmarshalXMLAttr(attr xml.Attr) error {
 		*p = PrivilegeOperate
 	default:
 		return fmt.Errorf("unknown privilege value: %s", attr.Value)
+	}
+	return nil
+}
+
+type FabricScoping uint8
+
+const (
+	FabricScopingUnknown FabricScoping = iota
+	FabricScopingScoped
+	FabricScopingUnscoped
+)
+
+func (fs FabricScoping) String() string {
+	switch fs {
+	case FabricScopingScoped:
+		return "scoped"
+	case FabricScopingUnscoped:
+		return "unscoped"
+	default:
+		return "unknown"
+	}
+}
+
+func (fs FabricScoping) MarshalJSON() ([]byte, error) {
+	return json.Marshal(fs.String())
+}
+
+func (fs *FabricScoping) UnmarshalJSON(data []byte) error {
+	var scoping string
+	if err := json.Unmarshal(data, &scoping); err != nil {
+		return fmt.Errorf("error parsing fabric scoping %s: %w", string(data), err)
+	}
+	switch scoping {
+	case "scoped":
+		*fs = FabricScopingScoped
+	case "unscoped":
+		*fs = FabricScopingUnscoped
+	case "unknown":
+		*fs = FabricScopingUnknown
+	default:
+		return fmt.Errorf("unknown fabric scoping: %s", scoping)
+	}
+	return nil
+}
+
+type FabricSensitivity uint8
+
+const (
+	FabricSensitivityUnknown FabricSensitivity = iota
+	FabricSensitivitySensitive
+	FabricSensitivityInsensitive
+)
+
+func (fs FabricSensitivity) String() string {
+	switch fs {
+	case FabricSensitivitySensitive:
+		return "sensitive"
+	case FabricSensitivityInsensitive:
+		return "insensitive"
+	default:
+		return "unknown"
+	}
+}
+
+func (fs FabricSensitivity) MarshalJSON() ([]byte, error) {
+	return json.Marshal(fs.String())
+}
+
+func (fs *FabricSensitivity) UnmarshalJSON(data []byte) error {
+	var sensitivity string
+	if err := json.Unmarshal(data, &sensitivity); err != nil {
+		return fmt.Errorf("error parsing fabric sensitivity %s: %w", string(data), err)
+	}
+	switch sensitivity {
+	case "sensitive":
+		*fs = FabricSensitivitySensitive
+	case "insensitive":
+		*fs = FabricSensitivityInsensitive
+	case "unknown":
+		*fs = FabricSensitivityUnknown
+	default:
+		return fmt.Errorf("unknown fabric sensitivity: %s", sensitivity)
+	}
+	return nil
+}
+
+type Timing uint8
+
+const (
+	TimingUnknown Timing = iota
+	TimingTimed
+	TimingUntimed
+)
+
+func (t Timing) String() string {
+	switch t {
+	case TimingTimed:
+		return "timed"
+	case TimingUntimed:
+		return "untimed"
+	default:
+		return "unknown"
+	}
+}
+
+func (fs Timing) MarshalJSON() ([]byte, error) {
+	return json.Marshal(fs.String())
+}
+
+func (t *Timing) UnmarshalJSON(data []byte) error {
+	var timing string
+	if err := json.Unmarshal(data, &timing); err != nil {
+		return fmt.Errorf("error parsing timing %s: %w", string(data), err)
+	}
+	switch timing {
+	case "timed":
+		*t = TimingTimed
+	case "untimed":
+		*t = TimingUntimed
+	case "unknown":
+		*t = TimingUnknown
+	default:
+		return fmt.Errorf("unknown timing: %s", timing)
 	}
 	return nil
 }
