@@ -29,6 +29,7 @@ func renderImageBlock(cxt *Context, ib *types.ImageBlock) (err error) {
 	if err != nil {
 		return
 	}
+	cxt.WriteNewline()
 	cxt.WriteString("image::")
 	cxt.WriteString(ib.Location.Scheme)
 	var path string
@@ -51,6 +52,7 @@ func renderInlineImage(cxt *Context, ib *types.InlineImage) (err error) {
 	if err != nil {
 		return
 	}
+	cxt.WriteNewline()
 	cxt.WriteString("image:")
 	cxt.WriteString(ib.Location.Scheme)
 	var path string
