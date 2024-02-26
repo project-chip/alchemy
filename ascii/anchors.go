@@ -13,7 +13,14 @@ type Anchor struct {
 	Label   string
 	Element types.WithAttributes
 	Parent  parse.HasElements
-	Name    string
+}
+
+func (a *Anchor) Name() string {
+	name := ReferenceName(a.Element)
+	if len(name) > 0 {
+		return name
+	}
+	return a.Label
 }
 
 func (doc *Doc) Anchors() (map[string]*Anchor, error) {
@@ -54,12 +61,6 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 			Label:   label,
 			Element: wa,
 			Parent:  parent,
-		}
-		name := ReferenceName(wa)
-		if name != "" {
-			info.Name = name
-		} else if len(label) > 0 {
-			info.Name = label
 		}
 		if _, ok := anchors[id]; ok {
 			slog.Debug("duplicate anchor; can't fix", "id", id)
