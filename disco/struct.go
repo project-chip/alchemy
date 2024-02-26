@@ -24,7 +24,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 	if strings.HasSuffix(strings.ToLower(name), "struct") {
 		setSectionTitle(ss.section, name+" Type")
 	}
-	fieldsTable := ss.table
+	fieldsTable := &ss.table
 	if fieldsTable.element == nil {
 		slog.Debug("no struct table found")
 		return nil
@@ -39,7 +39,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return nil
 	}
 
-	err = b.fixAccessCells(dp.doc, fieldsTable.rows, fieldsTable.columnMap, mattertypes.EntityTypeStruct)
+	err = b.fixAccessCells(dp.doc, fieldsTable, mattertypes.EntityTypeStruct)
 	if err != nil {
 		return fmt.Errorf("error fixing access cells in struct table in %s: %w", dp.doc.Path, err)
 	}
