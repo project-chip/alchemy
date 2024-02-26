@@ -1,17 +1,23 @@
 package dm
 
 import (
+	"fmt"
+
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
 )
 
 func renderFeatures(cluster *matter.Cluster, c *etree.Element) (err error) {
-	if len(cluster.Features.Bits) == 0 {
+	if cluster.Features == nil || len(cluster.Features.Bits) == 0 {
 		return
 	}
 	features := c.CreateElement("features")
 	for _, b := range cluster.Features.Bits {
-		f := b.(*matter.Feature)
+		f, ok := b.(*matter.Feature)
+		if !ok {
+			err = fmt.Errorf("feature bits contains non-feature bit %s on cluster %s ", b.Name(), cluster.Name)
+			return
+		}
 		bit := matter.ParseNumber(f.Bit())
 		if !bit.Valid() {
 			continue
