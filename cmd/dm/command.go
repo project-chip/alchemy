@@ -37,14 +37,17 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 
 	commands := c.CreateElement("commands")
 	for _, cmd := range cmds {
-
 		cx := commands.CreateElement("command")
 		cx.CreateAttr("id", cmd.ID.ShortHexString())
 		cx.CreateAttr("name", cmd.Name)
-		if cmd.Direction == matter.InterfaceClient {
+		switch cmd.Direction {
+		case matter.InterfaceClient:
 			cx.CreateAttr("direction", "responseFromServer")
-		} else if cmd.Response != "" {
-			cx.CreateAttr("response", cmd.Response)
+		case matter.InterfaceServer:
+			cx.CreateAttr("direction", "commandToServer")
+			if cmd.Response != "" {
+				cx.CreateAttr("response", cmd.Response)
+			}
 		}
 		if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() {
 			a := cx.CreateElement("access")
