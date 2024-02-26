@@ -15,6 +15,7 @@ func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...par
 	newContext := func() *parser.ParseContext {
 		c := parser.NewParseContext(config, opts...)
 		//c.IgnoreColumnDefs(true)
+		c.SuppressAttributeSubstitution(true)
 		return c
 	}
 
