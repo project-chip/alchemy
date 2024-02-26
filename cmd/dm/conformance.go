@@ -68,7 +68,7 @@ func renderConformance(cluster conformance.IdentifierStore, con conformance.Conf
 	case *conformance.Deprecated:
 		parent.CreateElement("deprecateConform")
 	case *conformance.Described:
-
+	case *conformance.Generic:
 	case conformance.Set:
 		for _, con := range con {
 			err := renderConformance(cluster, con, parent)
