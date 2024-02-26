@@ -41,6 +41,11 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 
 		b.reorderColumns(dp.doc, events.section, eventsTable.rows, matter.EventsTableColumnOrder[:], eventsTable.columnMap, eventsTable.extraColumns)
 
+		err = b.linkIndexTables(cxt, events)
+		if err != nil {
+			return err
+		}
+
 		for _, event := range events.children {
 			eventTable := event.table
 			if eventTable.element == nil {
@@ -66,6 +71,11 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			b.reorderColumns(dp.doc, event.section, eventTable.rows, matter.EventTableColumnOrder[:], eventTable.columnMap, eventTable.extraColumns)
 
 			b.appendSubsectionTypes(event.section, eventTable.columnMap, eventTable.rows)
+
+			err = b.linkIndexTables(cxt, event)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return

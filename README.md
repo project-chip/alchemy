@@ -82,7 +82,7 @@ Disco-ball is more aggressive than format, and attempts to rewrite the document 
 
 | Flag                       | Default  | Description   |	
 | :------------------------- |:--------:| :-------------|
-| --linkAttributes           | false    | Link attributes table to individual attribute sections |
+| --linkIndexTables          | false    | Link table cells to child sections |
 | --addMissingColumns        | true     | Add standard columns missing from tables
 | --reorderColumns           | true     | Rearrange table columns into disco-ball order
 | --renameTableHeaders       | true     | Rename table headers to disco-ball standard names

@@ -77,7 +77,7 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().Bool("linkAttributes", false, "link attributes table to individual attribute sections")
+	Command.Flags().Bool("linkIndexTables", false, "link index tables to child sections")
 	Command.Flags().Bool("addMissingColumns", true, "add standard columns missing from tables")
 	Command.Flags().Bool("reorderColumns", true, "rearrange table columns into disco-ball order")
 	Command.Flags().Bool("renameTableHeaders", true, "rename table headers to disco-ball standard names")
@@ -96,7 +96,7 @@ type discoOption func(bool) disco.Option
 
 func getDiscoOptions(cmd *cobra.Command) []disco.Option {
 	var optionFuncs = map[string]discoOption{
-		"linkAttributes":           disco.LinkAttributes,
+		"linkIndexTables":          disco.LinkIndexTables,
 		"addMissingColumns":        disco.AddMissingColumns,
 		"reorderColumns":           disco.ReorderColumns,
 		"renameTableHeaders":       disco.RenameTableHeaders,

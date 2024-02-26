@@ -41,11 +41,9 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return err
 		}
 
-		if b.options.linkAttributes {
-			err = b.linkAttributes(cxt, attributes.section, attributesTable.rows, attributesTable.columnMap)
-			if err != nil {
-				return err
-			}
+		err = b.linkIndexTables(cxt, attributes)
+		if err != nil {
+			return err
 		}
 
 		b.reorderColumns(dp.doc, attributes.section, attributesTable.rows, matter.AttributesTableColumnOrder[:], attributesTable.columnMap, attributesTable.extraColumns)
@@ -53,14 +51,20 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 	return nil
 }
 
-func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []*types.TableRow, columnMap ascii.ColumnIndex) error {
+func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
+	if !b.options.linkIndexTables {
+		return nil
+	}
+	if section.table.element == nil {
+		return nil
+	}
 	attributeCells := make(map[string]*types.Paragraph)
-	nameIndex, ok := columnMap[matter.TableColumnName]
+	nameIndex, ok := section.table.columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
 	}
 
-	for _, row := range rows {
+	for _, row := range section.table.rows {
 		cell := row.Cells[nameIndex]
 		cv, err := ascii.RenderTableCell(cell)
 		if err != nil {
@@ -89,31 +93,34 @@ func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []
 			attributeCells[nameKey] = p
 		}
 	}
-	for _, el := range section.Elements {
-		if s, ok := el.(*ascii.Section); ok {
-			attributeName := matter.StripReferenceSuffixes(s.Name)
-			name := strings.TrimSpace(attributeName)
+	for _, ss := range section.children {
+		s := ss.section
+		attributeName := matter.StripReferenceSuffixes(s.Name)
+		name := strings.TrimSpace(attributeName)
 
-			p, ok := attributeCells[strings.ToLower(name)]
-			if !ok {
-				continue
-			}
-			var id string
-			ide, ok := s.Base.Attributes[types.AttrID]
-			if ok {
-				id, ok = ide.(string)
-			}
-			if !ok {
-				var label string
-				id, label = normalizeAnchorID(s.Name, nil, nil)
-				setAnchorID(s.Base, id, label)
-			}
-			icr, _ := types.NewInternalCrossReference(id, nil)
-			err := p.SetElements([]interface{}{icr})
-			if err != nil {
-				return err
+		p, ok := attributeCells[strings.ToLower(name)]
+		if !ok {
+			continue
+		}
+		var id string
+		ide, ok := s.Base.Attributes[types.AttrID]
+		if ok {
+			id, ok = ide.(string)
+			if ok && strings.HasPrefix(id, "_") {
+				ok = false
 			}
 		}
+		if !ok {
+			var label string
+			id, label = normalizeAnchorID(s.Name, nil, nil)
+			setAnchorID(s.Base, id, label)
+		}
+		icr, _ := types.NewInternalCrossReference(id, nil)
+		err := p.SetElements([]any{icr})
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil

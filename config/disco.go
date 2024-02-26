@@ -1,7 +1,7 @@
 package config
 
 type DiscoSettings struct {
-	LinkAttributes           bool
+	LinkIndexTables          bool
 	AddMissingColumns        bool
 	ReorderColumns           bool
 	RenameTableHeaders       bool
