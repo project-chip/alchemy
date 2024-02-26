@@ -53,7 +53,7 @@ func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster
 		if matchingCommand == nil {
 			slog.Warn("unknown command ID", slog.String("path", configurator.Doc.Path), slog.String("commandId", commandID.Text()))
 			ce.RemoveChild(cmde)
-			return nil
+			continue
 		}
 		populateCommand(cmde, matchingCommand, cluster, errata)
 	}
