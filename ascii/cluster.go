@@ -152,12 +152,12 @@ func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, er
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		rev := &matter.Revision{}
-		rev.Number, err = readRowValue(row, columnMap, matter.TableColumnRevision)
+		rev.Number, err = readRowAsciiDocString(row, columnMap, matter.TableColumnRevision)
 		if err != nil {
 			err = fmt.Errorf("error reading revision column: %w", err)
 			return
 		}
-		rev.Description, err = readRowValue(row, columnMap, matter.TableColumnDescription)
+		rev.Description, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDescription)
 		if err != nil {
 			err = fmt.Errorf("error reading revision description: %w", err)
 			return
@@ -181,7 +181,7 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		c.Name, err = readRowAsciiDocString(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return nil, err
 		}
@@ -197,20 +197,20 @@ func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 		return fmt.Errorf("failed reading classification: %w", err)
 	}
 	row := rows[headerRowIndex+1]
-	c.Hierarchy, err = readRowValue(row, columnMap, matter.TableColumnHierarchy)
+	c.Hierarchy, err = readRowAsciiDocString(row, columnMap, matter.TableColumnHierarchy)
 	if err != nil {
 		return fmt.Errorf("error reading hierarchy column on cluster %s: %w", c.Name, err)
 	}
-	c.Role, err = readRowValue(row, columnMap, matter.TableColumnRole)
+	c.Role, err = readRowAsciiDocString(row, columnMap, matter.TableColumnRole)
 	if err != nil {
 		return fmt.Errorf("error reading role column on cluster %s: %w", c.Name, err)
 	}
-	c.Scope, err = readRowValue(row, columnMap, matter.TableColumnScope)
+	c.Scope, err = readRowAsciiDocString(row, columnMap, matter.TableColumnScope)
 	if err != nil {
 		return fmt.Errorf("error reading scope column on cluster %s: %w", c.Name, err)
 	}
 
-	c.PICS, err = readRowValue(row, columnMap, matter.TableColumnPICS)
+	c.PICS, err = readRowAsciiDocString(row, columnMap, matter.TableColumnPICS)
 	if err != nil {
 		return fmt.Errorf("error reading PICS column on cluster %s: %w", c.Name, err)
 	}
@@ -218,12 +218,12 @@ func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 		switch ec.Name {
 		case "Context":
 			if len(c.Scope) == 0 {
-				c.Scope, err = GetTableCellValue(row.Cells[ec.Offset])
+				c.Scope, err = RenderTableCell(row.Cells[ec.Offset])
 			}
 		case "Primary Transaction":
 			if len(c.Scope) == 0 {
 				var pt string
-				pt, err = GetTableCellValue(row.Cells[ec.Offset])
+				pt, err = RenderTableCell(row.Cells[ec.Offset])
 				if err == nil {
 					if strings.HasPrefix(pt, "Type 1") {
 						c.Scope = "Endpoint"

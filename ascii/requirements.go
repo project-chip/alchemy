@@ -30,23 +30,23 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 		if err != nil {
 			return
 		}
-		cr.ClusterName, err = readRowValue(row, columnMap, matter.TableColumnCluster)
+		cr.ClusterName, err = readRowAsciiDocString(row, columnMap, matter.TableColumnCluster)
 		if err != nil {
 			return
 		}
 		if cr.ClusterName == "" {
-			cr.ClusterName, err = readRowValue(row, columnMap, matter.TableColumnName)
+			cr.ClusterName, err = readRowAsciiDocString(row, columnMap, matter.TableColumnName)
 			if err != nil {
 				return
 			}
 		}
 		var q string
-		q, err = readRowValue(row, columnMap, matter.TableColumnQuality)
+		q, err = readRowAsciiDocString(row, columnMap, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
 		var cs string
-		cs, err = readRowValue(row, columnMap, matter.TableColumnClientServer)
+		cs, err = readRowAsciiDocString(row, columnMap, matter.TableColumnClientServer)
 		if err != nil {
 			return
 		}
@@ -86,12 +86,12 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.ClusterName, err = readRowValue(row, columnMap, matter.TableColumnCluster)
+		cr.ClusterName, err = readRowAsciiDocString(row, columnMap, matter.TableColumnCluster)
 		if err != nil {
 			return
 		}
 		var e string
-		e, err = readRowValue(row, columnMap, matter.TableColumnElement)
+		e, err = readRowAsciiDocString(row, columnMap, matter.TableColumnElement)
 		if err != nil {
 			return
 		}
@@ -114,24 +114,24 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		cr.Name, err = readRowAsciiDocString(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
 		var q string
-		q, err = readRowValue(row, columnMap, matter.TableColumnQuality)
+		q, err = readRowAsciiDocString(row, columnMap, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
 		cr.Quality = matter.ParseQuality(q)
 		var c string
-		c, err = readRowValue(row, columnMap, matter.TableColumnConstraint)
+		c, err = readRowAsciiDocString(row, columnMap, matter.TableColumnConstraint)
 		if err != nil {
 			return
 		}
 		cr.Constraint = constraint.ParseString(c)
 		var a string
-		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
+		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}
@@ -176,11 +176,11 @@ func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err erro
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		c := &matter.Condition{}
-		c.Feature, err = readRowCell(row, featureIndex)
+		c.Feature, err = readRowCellAsciiDocString(row, featureIndex)
 		if err != nil {
 			return
 		}
-		c.Description, err = readRowValue(row, columnMap, matter.TableColumnDescription)
+		c.Description, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}

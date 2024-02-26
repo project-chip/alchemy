@@ -32,32 +32,28 @@ func (s *Section) toFeatures(d *Doc, entityMap map[types.WithAttributes][]matter
 		row := rows[i]
 		var bit, code, name, summary string
 		var conf conformance.Set
-		bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
+		bit, err = readRowAsciiDocString(row, columnMap, matter.TableColumnBit)
 		if err != nil {
 			return
 		}
 		if len(bit) == 0 {
-			bit, err = readRowValue(row, columnMap, matter.TableColumnID)
+			bit, err = readRowAsciiDocString(row, columnMap, matter.TableColumnID)
 			if err != nil {
 				return
 			}
 		}
 
-		name, err = readRowValue(row, columnMap, matter.TableColumnFeature)
+		name, err = readRowValue(d, row, columnMap, matter.TableColumnFeature, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		if len(name) == 0 {
-			name, err = readRowValue(row, columnMap, matter.TableColumnName)
-			if err != nil {
-				return
-			}
-		}
-		code, err = readRowValue(row, columnMap, matter.TableColumnCode)
+		name = StripTypeSuffixes(name)
+
+		code, err = readRowAsciiDocString(row, columnMap, matter.TableColumnCode)
 		if err != nil {
 			return
 		}
-		summary, err = readRowValue(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = readRowAsciiDocString(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}

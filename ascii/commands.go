@@ -35,18 +35,18 @@ func (s *Section) toCommands(d *Doc, entityMap map[types.WithAttributes][]matter
 		if err != nil {
 			return
 		}
-		cmd.Name, err = readRowName(d, row, columnMap, matter.TableColumnName)
+		cmd.Name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
 		cmd.Name = strings.TrimSuffix(cmd.Name, " Command")
 		var dir string
-		dir, err = readRowValue(row, columnMap, matter.TableColumnDirection)
+		dir, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDirection)
 		if err != nil {
 			return
 		}
 		cmd.Direction = parseCommandDirection(dir)
-		cmd.Response, err = readRowValue(row, columnMap, matter.TableColumnResponse)
+		cmd.Response, err = readRowAsciiDocString(row, columnMap, matter.TableColumnResponse)
 		if err != nil {
 			return
 		}
@@ -56,7 +56,7 @@ func (s *Section) toCommands(d *Doc, entityMap map[types.WithAttributes][]matter
 		}
 
 		var a string
-		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
+		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}

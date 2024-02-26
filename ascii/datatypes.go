@@ -50,17 +50,18 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		f := matter.NewField()
-		f.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		f.Name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
+		f.Name = StripTypeSuffixes(f.Name)
 		f.Type = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		f.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, f.Type)
 		if err != nil {
 			return
 		}
 		var q string
-		q, err = readRowValue(row, columnMap, matter.TableColumnQuality)
+		q, err = readRowAsciiDocString(row, columnMap, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
@@ -68,7 +69,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 		if err != nil {
 			return
 		}
-		f.Default, err = readRowValue(row, columnMap, matter.TableColumnDefault)
+		f.Default, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDefault)
 		if err != nil {
 			return
 		}
@@ -77,7 +78,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 			return
 		}
 		var a string
-		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
+		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}

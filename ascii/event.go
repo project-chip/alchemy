@@ -24,25 +24,26 @@ func (s *Section) toEvents(d *Doc, entityMap map[types.WithAttributes][]matterty
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		e := &matter.Event{}
-		e.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		e.Name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
+		e.Name = StripTypeSuffixes(e.Name)
 		e.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return
 		}
-		e.Description, err = readRowValue(row, columnMap, matter.TableColumnDescription)
+		e.Description, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
-		e.Priority, err = readRowValue(row, columnMap, matter.TableColumnPriority)
+		e.Priority, err = readRowAsciiDocString(row, columnMap, matter.TableColumnPriority)
 		if err != nil {
 			return
 		}
 		e.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		var a string
-		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
+		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}
@@ -74,7 +75,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[types.WithAttributes][]matterty
 			if headerRowIndex > 0 {
 				firstRow := rows[0]
 				if len(firstRow.Cells) > 0 {
-					cv, rowErr := GetTableCellValue(rows[0].Cells[0])
+					cv, rowErr := RenderTableCell(rows[0].Cells[0])
 					if rowErr == nil {
 						cv = strings.ToLower(cv)
 						if strings.Contains(cv, "fabric sensitive") || strings.Contains(cv, "fabric-sensitive") {

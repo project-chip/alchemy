@@ -9,7 +9,6 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
-	"github.com/iancoleman/strcase"
 )
 
 func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (bm *matter.Bitmap, err error) {
@@ -45,11 +44,12 @@ func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]matterty
 		row := rows[i]
 		var bit, name, summary string
 		var conf conformance.Set
-		name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		summary, err = readRowValue(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		name = StripTypeSuffixes(name)
+		summary, err = readRowAsciiDocString(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
@@ -57,18 +57,18 @@ func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]matterty
 		if conf == nil {
 			conf = conformance.Set{&conformance.Mandatory{}}
 		}
-		bit, err = readRowValue(row, columnMap, matter.TableColumnBit)
+		bit, err = readRowAsciiDocString(row, columnMap, matter.TableColumnBit)
 		if err != nil {
 			return
 		}
 		if len(bit) == 0 {
-			bit, err = readRowValue(row, columnMap, matter.TableColumnValue)
+			bit, err = readRowAsciiDocString(row, columnMap, matter.TableColumnValue)
 			if err != nil {
 				return
 			}
 		}
 		if len(name) == 0 && len(summary) > 0 {
-			name = strcase.ToCamel(summary)
+			name = matter.Case(summary)
 		}
 		bv := matter.NewBitmapBit(bit, name, summary, conf)
 		bm.Bits = append(bm.Bits, bv)

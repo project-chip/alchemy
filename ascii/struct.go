@@ -25,7 +25,7 @@ func (s *Section) toStruct(d *Doc, entityMap map[types.WithAttributes][]matterty
 	if headerRowIndex > 0 {
 		firstRow := rows[0]
 		if len(firstRow.Cells) > 0 {
-			cv, rowErr := GetTableCellValue(rows[0].Cells[0])
+			cv, rowErr := RenderTableCell(rows[0].Cells[0])
 			if rowErr == nil {
 				cv = strings.ToLower(cv)
 				if strings.Contains(cv, "fabric scoped") || strings.Contains(cv, "fabric-scoped") {
