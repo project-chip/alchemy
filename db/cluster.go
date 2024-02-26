@@ -5,6 +5,7 @@ import (
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
@@ -19,18 +20,20 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 
 	ci := &sectionInfo{id: h.nextId(clusterTable), parent: parent, values: clusterRow, children: make(map[string][]*sectionInfo)}
 
-	for _, f := range cluster.Features.Bits {
-		featureRow := newDBRow()
-		featureRow.values[matter.TableColumnBit] = f.Bit()
-		featureRow.values[matter.TableColumnCode] = f.Code()
-		featureRow.values[matter.TableColumnFeature] = f.Name()
-		featureRow.values[matter.TableColumnSummary] = f.Summary()
-		fci := &sectionInfo{id: h.nextId(featureTable), parent: parent, values: featureRow}
-		ci.children[featureTable] = append(ci.children[featureTable], fci)
+	if cluster.Features != nil {
+		for _, f := range cluster.Features.Bits {
+			featureRow := newDBRow()
+			featureRow.values[matter.TableColumnBit] = f.Bit()
+			featureRow.values[matter.TableColumnName] = f.Name()
+			featureRow.values[matter.TableColumnFeature] = f.Name()
+			featureRow.values[matter.TableColumnSummary] = f.Summary()
+			fci := &sectionInfo{id: h.nextId(featureTable), parent: parent, values: featureRow}
+			ci.children[featureTable] = append(ci.children[featureTable], fci)
+		}
 	}
 
 	for _, a := range cluster.Attributes {
-		h.readField(a, ci, attributeTable, false)
+		h.readField(a, ci, attributeTable, types.EntityTypeAttribute)
 	}
 
 	err := h.indexDataTypeModels(cxt, ci, cluster)

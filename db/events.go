@@ -19,7 +19,7 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 		row.values[matter.TableColumnPriority] = e.Priority
 		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(e.Access, types.EntityTypeEvent)
 		if e.Conformance != nil {
-			row.values[matter.TableColumnConformance] = e.Conformance.String()
+			row.values[matter.TableColumnConformance] = e.Conformance.AsciiDocString()
 		}
 		ei := &sectionInfo{id: h.nextId(eventTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
 		parent.children[eventTable] = append(parent.children[eventTable], ei)

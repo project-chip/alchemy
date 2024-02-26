@@ -101,7 +101,7 @@ func readTableRow(valueRow *asciitypes.TableRow, columnMap ascii.ColumnIndex, ex
 		row.values = make(map[matter.TableColumn]interface{})
 	}
 	for col, index := range columnMap {
-		val, err := ascii.GetTableCellValue(valueRow.Cells[index])
+		val, err := ascii.RenderTableCell(valueRow.Cells[index])
 		if err != nil {
 			return err
 		}
@@ -113,7 +113,7 @@ func readTableRow(valueRow *asciitypes.TableRow, columnMap ascii.ColumnIndex, ex
 
 		}
 		for _, e := range extraColumns {
-			val, err := ascii.GetTableCellValue(valueRow.Cells[e.Offset])
+			val, err := ascii.RenderTableCell(valueRow.Cells[e.Offset])
 			if err != nil {
 				return err
 			}

@@ -7,9 +7,11 @@ var (
 	clusterTable                      = "cluster"
 	clusterRevisionTable              = "cluster_revision"
 	featureTable                      = "feature"
-	dataTypeTable                     = "data_type"
+	structTable                       = "struct"
 	structField                       = "struct_field"
+	bitmapTable                       = "bitmap"
 	bitmapValue                       = "bitmap_value"
+	enumTable                         = "enum"
 	enumValue                         = "enum_value"
 	attributeTable                    = "attribute"
 	eventTable                        = "event"
@@ -58,25 +60,33 @@ var tableSchema = map[string]tableSchemaDef{
 			matter.TableColumnSummary,
 		},
 	},
-	dataTypeTable: {
+	bitmapTable: {
 		parent: clusterTable,
 		columns: []matter.TableColumn{
 			matter.TableColumnName,
-			matter.TableColumnClass,
 			matter.TableColumnType,
 		},
 	},
 	bitmapValue: {
-		parent: dataTypeTable,
+		parent: bitmapTable,
 		columns: []matter.TableColumn{
 			matter.TableColumnBit,
 			matter.TableColumnName,
+			matter.TableColumnDescription,
 			matter.TableColumnSummary,
 			matter.TableColumnConformance,
 		},
 	},
+	enumTable: {
+		parent: clusterTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnName,
+			matter.TableColumnDescription,
+			matter.TableColumnType,
+		},
+	},
 	enumValue: {
-		parent: dataTypeTable,
+		parent: enumTable,
 		columns: []matter.TableColumn{
 			matter.TableColumnValue,
 			matter.TableColumnName,
@@ -84,8 +94,16 @@ var tableSchema = map[string]tableSchemaDef{
 			matter.TableColumnConformance,
 		},
 	},
+	structTable: {
+		parent: clusterTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnName,
+			matter.TableColumnDescription,
+			matter.TableColumnScope,
+		},
+	},
 	structField: {
-		parent: dataTypeTable,
+		parent: structTable,
 		columns: []matter.TableColumn{
 			matter.TableColumnID,
 			matter.TableColumnName,

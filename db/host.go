@@ -10,7 +10,6 @@ import (
 	sqle "github.com/dolthub/go-mysql-server"
 	"github.com/dolthub/go-mysql-server/memory"
 	"github.com/dolthub/go-mysql-server/server"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -18,7 +17,6 @@ type Host struct {
 	db *memory.Database
 
 	lock sync.RWMutex
-	docs []*ascii.Doc
 
 	tableNames []string
 	tables     map[string]*memory.Table
@@ -51,13 +49,6 @@ func New() *Host {
 
 	h.db.EnablePrimaryKeyIndexes()
 	return h
-}
-
-func (h *Host) Load(doc *ascii.Doc) error {
-	h.lock.Lock()
-	h.docs = append(h.docs, doc)
-	h.lock.Unlock()
-	return nil
 }
 
 func (h *Host) Run(address string, port int) error {
