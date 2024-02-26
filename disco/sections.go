@@ -102,7 +102,7 @@ func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.Col
 
 		subSectionNames := make(map[string]struct{}, len(rows))
 		for _, row := range rows {
-			name, err := ascii.GetTableCellValue(row.Cells[nameIndex])
+			name, err := ascii.RenderTableCell(row.Cells[nameIndex])
 			if err != nil {
 				slog.Debug("could not get cell value for subsection", "err", err)
 				continue

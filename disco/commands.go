@@ -72,7 +72,7 @@ func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, colum
 	for _, row := range rows[1:] {
 		cell := row.Cells[accessIndex]
 
-		vc, e := ascii.GetTableCellValue(cell)
+		vc, e := ascii.RenderTableCell(cell)
 		if e != nil {
 			continue
 		}

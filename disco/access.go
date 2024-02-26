@@ -20,7 +20,7 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, rows []*types.TableRow, columnMap 
 	}
 	for _, row := range rows[1:] {
 		cell := row.Cells[accessIndex]
-		vc, e := ascii.GetTableCellValue(cell)
+		vc, e := ascii.RenderTableCell(cell)
 		if e != nil {
 			continue
 		}

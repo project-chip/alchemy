@@ -228,7 +228,7 @@ func namesEqual(specName string, zapName string) bool {
 	if strings.EqualFold(specName, zapName) {
 		return true
 	}
-	specName = strcase.ToCamel(specName)
-	zapName = strcase.ToCamel(zapName)
+	specName = matter.Case(specName)
+	zapName = matter.Case(zapName)
 	return strings.EqualFold(specName, zapName)
 }

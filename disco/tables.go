@@ -156,7 +156,7 @@ func copyCells(rows []*types.TableRow, headerRowIndex int, fromIndex int, toInde
 			continue
 		}
 		var value string
-		value, err = ascii.GetTableCellValue(row.Cells[fromIndex])
+		value, err = ascii.RenderTableCell(row.Cells[fromIndex])
 		if err != nil {
 			return
 		}

@@ -9,7 +9,6 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/parse"
-	"github.com/iancoleman/strcase"
 )
 
 type DataTypeEntry struct {
@@ -100,11 +99,11 @@ func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*types.TableRow,
 		return nil, nil
 	}
 	for _, row := range rows {
-		cv, err := ascii.GetTableCellValue(row.Cells[nameIndex])
+		cv, err := ascii.RenderTableCell(row.Cells[nameIndex])
 		if err != nil {
 			continue
 		}
-		dtv, err := ascii.GetTableCellValue(row.Cells[typeIndex])
+		dtv, err := ascii.RenderTableCell(row.Cells[typeIndex])
 		if err != nil {
 			continue
 		}
@@ -284,7 +283,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			if err != nil {
 				return
 			}
-			err = copyCells(rows, headerRowIndex, summaryIndex, nameIndex, strcase.ToCamel)
+			err = copyCells(rows, headerRowIndex, summaryIndex, nameIndex, matter.Case)
 			if err != nil {
 				return
 			}

@@ -179,7 +179,7 @@ func findSubsections(doc *ascii.Doc, parent *subSection, childPatterns ...subSec
 	}
 	subSectionNames := make(map[string]int, len(parent.table.rows))
 	for i, row := range parent.table.rows {
-		subSectionName, err := ascii.GetTableCellValue(row.Cells[index])
+		subSectionName, err := ascii.RenderTableCell(row.Cells[index])
 		if err != nil {
 			slog.Debug("could not get cell value for entity index", "err", err)
 			continue
