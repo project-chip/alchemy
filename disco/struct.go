@@ -57,5 +57,10 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 	b.reorderColumns(dp.doc, ss.section, fieldsTable.rows, matter.StructTableColumnOrder[:], fieldsTable.columnMap, fieldsTable.extraColumns)
 
 	b.appendSubsectionTypes(ss.section, fieldsTable.columnMap, fieldsTable.rows)
+
+	err = b.linkIndexTables(cxt, ss)
+	if err != nil {
+		return err
+	}
 	return
 }

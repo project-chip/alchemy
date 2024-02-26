@@ -3,7 +3,7 @@ package disco
 type Option func(b *Ball)
 
 type options struct {
-	linkAttributes           bool
+	linkIndexTables          bool
 	addMissingColumns        bool
 	reorderColumns           bool
 	renameTableHeaders       bool
@@ -19,7 +19,7 @@ type options struct {
 }
 
 var defaultOptions = options{
-	linkAttributes:           false,
+	linkIndexTables:          false,
 	addMissingColumns:        true,
 	reorderColumns:           true,
 	renameTableHeaders:       true,
@@ -34,9 +34,9 @@ var defaultOptions = options{
 	removeExtraSpaces:        true,
 }
 
-func LinkAttributes(link bool) Option {
+func LinkIndexTables(link bool) Option {
 	return func(b *Ball) {
-		b.options.linkAttributes = link
+		b.options.linkIndexTables = link
 	}
 }
 

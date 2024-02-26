@@ -43,6 +43,11 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 			return fmt.Errorf("error table header cells in commands table in %s: %w", dp.doc.Path, err)
 		}
 
+		err = b.linkIndexTables(cxt, commands)
+		if err != nil {
+			return err
+		}
+
 		for _, command := range commands.children {
 			if command.table.element == nil {
 				continue
@@ -56,6 +61,10 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
 			}
 			b.appendSubsectionTypes(command.section, command.table.columnMap, command.table.rows)
+			err = b.linkIndexTables(cxt, command)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return
