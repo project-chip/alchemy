@@ -5,6 +5,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex) (err error) {
@@ -25,6 +26,7 @@ func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.
 		dataType := doc.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		if dataType != nil {
 			c := constraint.ParseString(vc)
+			c = simplifyConstraints(c, dataType)
 			fixed := c.AsciiDocString(dataType)
 			if fixed != vc {
 				err = setCellString(cell, fixed)
@@ -36,4 +38,17 @@ func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.
 
 	}
 	return
+}
+
+func simplifyConstraints(cons constraint.Constraint, dataType *mattertypes.DataType) constraint.Constraint {
+	switch c := cons.(type) {
+	case *constraint.RangeConstraint:
+		switch from := c.Minimum.(type) {
+		case *constraint.IntLimit:
+			if from.Value == 0 && dataType.BaseType.IsUnsigned() {
+				return &constraint.MaxConstraint{Maximum: c.Maximum}
+			}
+		}
+	}
+	return cons
 }
