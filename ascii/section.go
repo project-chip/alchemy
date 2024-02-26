@@ -13,6 +13,7 @@ import (
 )
 
 type Section struct {
+	Doc  *Doc
 	Name string
 
 	Parent any
@@ -23,39 +24,22 @@ type Section struct {
 	Elements []interface{}
 }
 
-func NewSection(parent any, s *types.Section) (*Section, error) {
-	ss := &Section{Parent: parent, Base: s}
+func NewSection(doc *Doc, parent any, s *types.Section) (*Section, error) {
+	ss := &Section{Doc: doc, Parent: parent, Base: s}
 
-	switch name := types.Reduce(s.Title).(type) {
-	case string:
-		ss.Name = name
-	case []interface{}:
-		var complexName strings.Builder
-		for _, e := range name {
-			switch v := e.(type) {
-			case *types.StringElement:
-				complexName.WriteString(v.Content)
-			case string:
-				complexName.WriteString(v)
-			case *types.Symbol:
-				complexName.WriteString(v.Name)
-			case *types.SpecialCharacter:
-				complexName.WriteString(v.Name)
-			case *types.InlineLink:
-			case *types.QuotedText:
-
-			default:
-				return nil, fmt.Errorf("unknown section title component type: %T", e)
-			}
-		}
-		ss.Name = complexName.String()
-	default:
-		return nil, fmt.Errorf("unknown section title type: %T", name)
+	var name strings.Builder
+	err := buildSectionTitle(doc, &name, s.Title)
+	if err != nil {
+		return nil, err
 	}
+	ss.Name = name.String()
 	for _, e := range s.Elements {
 		switch el := e.(type) {
+		case *types.AttributeDeclaration:
+			doc.attributes[el.Name] = el.Value
+			ss.Elements = append(ss.Elements, NewElement(ss, e))
 		case *types.Section:
-			s, err := NewSection(ss, el)
+			s, err := NewSection(doc, ss, el)
 			if err != nil {
 				return nil, err
 			}
@@ -65,6 +49,38 @@ func NewSection(parent any, s *types.Section) (*Section, error) {
 		}
 	}
 	return ss, nil
+}
+
+func buildSectionTitle(doc *Doc, title *strings.Builder, elements ...any) (err error) {
+	for _, e := range elements {
+		switch e := e.(type) {
+		case []any:
+			err = buildSectionTitle(doc, title, e...)
+		case string:
+			title.WriteString(e)
+		case *types.StringElement:
+			title.WriteString(e.Content)
+		case *types.Symbol:
+			title.WriteString(e.Name)
+		case *types.SpecialCharacter:
+			title.WriteString(e.Name)
+		case *types.AttributeReference:
+			attr, ok := doc.attributes[e.Name]
+			if !ok {
+				return fmt.Errorf("unknown section title attribute: %s", e.Name)
+			}
+			err = buildSectionTitle(doc, title, attr)
+		case *types.InlineLink:
+		case *types.QuotedText:
+
+		default:
+			err = fmt.Errorf("unknown section title component type: %T", e)
+		}
+		if err != nil {
+			return
+		}
+	}
+	return
 }
 
 func (s *Section) AppendSection(ns *Section) error {
