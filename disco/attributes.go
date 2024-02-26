@@ -62,7 +62,7 @@ func (b *Ball) linkAttributes(cxt *discoContext, section *ascii.Section, rows []
 
 	for _, row := range rows {
 		cell := row.Cells[nameIndex]
-		cv, err := ascii.GetTableCellValue(cell)
+		cv, err := ascii.RenderTableCell(cell)
 		if err != nil {
 			continue
 		}
