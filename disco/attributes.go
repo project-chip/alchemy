@@ -13,7 +13,7 @@ import (
 func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err error) {
 
 	for _, attributes := range dp.attributes {
-		attributesTable := attributes.table
+		attributesTable := &attributes.table
 		if attributesTable.element == nil {
 			return
 		}
@@ -26,7 +26,7 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(attributesTable.columnMap))
 		}
 
-		err = b.fixAccessCells(dp.doc, attributesTable.rows, attributesTable.columnMap, mattertypes.EntityTypeAttribute)
+		err = b.fixAccessCells(dp.doc, attributesTable, mattertypes.EntityTypeAttribute)
 		if err != nil {
 			return err
 		}
