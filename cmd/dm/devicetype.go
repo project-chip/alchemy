@@ -17,7 +17,6 @@ import (
 	"github.com/hasty/alchemy/cmd/files"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
-	"github.com/iancoleman/strcase"
 )
 
 func renderDeviceTypes(cxt context.Context, sdkRoot string, deviceTypes []*ascii.Doc, filesOptions files.Options) error {
@@ -201,7 +200,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 
 				featureCode := er.Name
 				if strings.ContainsRune(featureCode, ' ') {
-					featureCode = strcase.ToCamel(featureCode)
+					featureCode = matter.Case(featureCode)
 				}
 
 				if er.Cluster != nil {
