@@ -41,6 +41,10 @@ func (f *Feature) Entity() types.EntityType {
 	return types.EntityTypeFeature
 }
 
+func (f *Feature) Clone() Bit {
+	return NewFeature(f.bit, f.name, f.Code, f.summary, f.conformance)
+}
+
 func (c *Feature) MarshalJSON() ([]byte, error) {
 	type Alias Feature
 	return json.Marshal(
