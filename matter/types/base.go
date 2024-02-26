@@ -95,3 +95,24 @@ const (
 type HasBaseDataType interface {
 	BaseDataType() BaseDataType
 }
+
+func (bdt BaseDataType) IsUnsigned() bool {
+	switch bdt {
+	case BaseDataTypeBoolean, BaseDataTypeMap8,
+		BaseDataTypeMap16, BaseDataTypeMap32, BaseDataTypeMap64,
+		BaseDataTypeUInt8, BaseDataTypeUInt16, BaseDataTypeUInt24,
+		BaseDataTypeUInt32, BaseDataTypeUInt40, BaseDataTypeUInt48,
+		BaseDataTypeUInt56, BaseDataTypeUInt64, BaseDataTypePercent,
+		BaseDataTypePercentHundredths, BaseDataTypeEpochMicroseconds,
+		BaseDataTypeEpochSeconds, BaseDataTypePosixMilliseconds,
+		BaseDataTypeSystimeMicroseconds, BaseDataTypeSystimeMilliseconds,
+		BaseDataTypeElapsedSeconds, BaseDataTypeGroupID, BaseDataTypeEndpointNumber,
+		BaseDataTypeVendorID, BaseDataTypeDeviceTypeID, BaseDataTypeFabricID,
+		BaseDataTypeFabricIndex, BaseDataTypeClusterID, BaseDataTypeAttributeID,
+		BaseDataTypeFieldID, BaseDataTypeEventID, BaseDataTypeCommandID, BaseDataTypeActionID,
+		BaseDataTypeTransactionID, BaseDataTypeNodeID, BaseDataTypeEntryIndex,
+		BaseDataTypeDataVersion, BaseDataTypeEventNumber:
+		return true
+	}
+	return false
+}
