@@ -33,6 +33,7 @@ type Doc struct {
 
 	anchors         map[string]*Anchor
 	crossReferences map[string][]*types.InternalCrossReference
+	attributes      map[string]any
 
 	entities []mattertypes.Entity
 
@@ -41,12 +42,16 @@ type Doc struct {
 
 func NewDoc(d *types.Document) (*Doc, error) {
 	doc := &Doc{
-		Base: d,
+		Base:       d,
+		attributes: make(map[string]any),
 	}
 	for _, e := range d.Elements {
 		switch el := e.(type) {
+		case *types.AttributeDeclaration:
+			doc.attributes[el.Name] = el.Value
+			doc.Elements = append(doc.Elements, NewElement(doc, e))
 		case *types.Section:
-			s, err := NewSection(doc, el)
+			s, err := NewSection(doc, doc, el)
 			if err != nil {
 				return nil, err
 			}
@@ -249,6 +254,7 @@ func Read(contents string, path string, settings ...configuration.Setting) (doc 
 	}
 
 	var d *types.Document
+
 	d, err = ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
 
 	if err != nil {

@@ -351,7 +351,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		dataTypeSection.AddAttributes(newAttr)
 
 		var s *ascii.Section
-		s, err = ascii.NewSection(dataTypesSection, dataTypeSection)
+		s, err = ascii.NewSection(top.Doc, dataTypesSection, dataTypeSection)
 
 		if err != nil {
 			return
@@ -396,7 +396,7 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 	if err != nil {
 		return nil, err
 	}
-	dataTypesSection, err = ascii.NewSection(top, ts)
+	dataTypesSection, err = ascii.NewSection(top.Doc, top, ts)
 	if err != nil {
 		return nil, err
 	}
