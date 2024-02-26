@@ -41,20 +41,20 @@ func parseFirstTable(doc *Doc, section *Section) (rows []*types.TableRow, header
 	return
 }
 
-func readRowValue(row *types.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
+func readRowAsciiDocString(row *types.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := columnMap[column]
 		if !ok {
 			continue
 		}
-		return readRowCell(row, offset)
+		return readRowCellAsciiDocString(row, offset)
 	}
 	return "", nil
 }
 
-func readRowCell(row *types.TableRow, offset int) (string, error) {
+func readRowCellAsciiDocString(row *types.TableRow, offset int) (string, error) {
 	cell := row.Cells[offset]
-	val, err := GetTableCellValue(cell)
+	val, err := RenderTableCell(cell)
 	if err != nil {
 		return "", err
 	}
@@ -63,25 +63,25 @@ func readRowCell(row *types.TableRow, offset int) (string, error) {
 }
 
 func readRowID(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*matter.Number, error) {
-	id, err := readRowValue(row, columnMap, column)
+	id, err := readRowAsciiDocString(row, columnMap, column)
 	if err != nil {
 		return matter.InvalidID, err
 	}
 	return matter.ParseNumber(id), nil
 }
 
-func readRowName(doc *Doc, row *types.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
+func readRowValue(doc *Doc, row *types.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := columnMap[column]
 		if !ok {
 			continue
 		}
-		return readRowCellName(doc, row, offset)
+		return readRowCellValue(doc, row, offset)
 	}
 	return "", nil
 }
 
-func readRowCellName(doc *Doc, row *types.TableRow, offset int) (string, error) {
+func readRowCellValue(doc *Doc, row *types.TableRow, offset int) (string, error) {
 	cell := row.Cells[offset]
 	if len(cell.Elements) == 0 {
 		return "", nil
@@ -105,8 +105,10 @@ func readRowCellName(doc *Doc, row *types.TableRow, offset int) (string, error) 
 				val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
 			}
 			return val, nil
+		case *types.QuotedText:
+			continue
 		default:
-			return "", fmt.Errorf("unexpected type in name cell: %T", el)
+			return "", fmt.Errorf("unexpected type in cell: %T", el)
 		}
 	}
 	return "", nil
@@ -133,7 +135,7 @@ func TableRows(t *types.Table) (rows []*types.TableRow) {
 	return
 }
 
-func GetTableCellValue(cell *types.TableCell) (string, error) {
+func RenderTableCell(cell *types.TableCell) (string, error) {
 	if len(cell.Elements) == 0 {
 		return "", fmt.Errorf("missing table cell elements")
 	}
@@ -152,7 +154,7 @@ func GetTableCellValue(cell *types.TableCell) (string, error) {
 	return out.String(), nil
 }
 
-func (d *Doc) GetTableHeaderCellValue(cell *types.TableCell) (string, error) {
+func (d *Doc) GetHeaderCellString(cell *types.TableCell) (string, error) {
 	if len(cell.Elements) == 0 {
 		return "", fmt.Errorf("missing table header cell elements")
 	}
@@ -216,7 +218,7 @@ func MapTableColumns(doc *Doc, rows []*types.TableRow) (headerRow int, columnMap
 			var spares []ExtraColumn
 			for j, cell := range row.Cells {
 				var val string
-				val, err = doc.GetTableHeaderCellValue(cell)
+				val, err = doc.GetHeaderCellString(cell)
 				if err != nil {
 					return
 				}

@@ -29,28 +29,29 @@ func (s *Section) toAttributes(d *Doc, entityMap map[types.WithAttributes][]matt
 		if err != nil {
 			return
 		}
-		attr.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		attr.Name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
+		attr.Name = StripTypeSuffixes(attr.Name)
 		attr.Type = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		attr.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, attr.Type)
 		if err != nil {
 			return
 		}
 		var q string
-		q, err = readRowValue(row, columnMap, matter.TableColumnQuality)
+		q, err = readRowAsciiDocString(row, columnMap, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
 		attr.Quality = matter.ParseQuality(q)
-		attr.Default, err = readRowValue(row, columnMap, matter.TableColumnDefault)
+		attr.Default, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDefault)
 		if err != nil {
 			return
 		}
 		attr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		var a string
-		a, err = readRowValue(row, columnMap, matter.TableColumnAccess)
+		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}

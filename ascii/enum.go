@@ -35,11 +35,12 @@ func (s *Section) toEnum(d *Doc, entityMap map[types.WithAttributes][]mattertype
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		ev := &matter.EnumValue{}
-		ev.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		ev.Name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		ev.Summary, err = readRowValue(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		ev.Name = StripTypeSuffixes(ev.Name)
+		ev.Summary, err = readRowAsciiDocString(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
@@ -72,7 +73,7 @@ func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		ev := &matter.EnumValue{}
-		ev.Name, err = readRowValue(row, columnMap, matter.TableColumnName)
+		ev.Name, err = readRowAsciiDocString(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
