@@ -2,7 +2,7 @@ module github.com/hasty/alchemy
 
 go 1.21
 
-replace github.com/bytesparadise/libasciidoc => github.com/hasty/libasciidoc v0.1.2
+replace github.com/bytesparadise/libasciidoc => github.com/hasty/libasciidoc v0.1.3
 
 require (
 	github.com/beevik/etree v1.2.0
