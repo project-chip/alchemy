@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/dolthub/go-mysql-server/memory"
@@ -49,10 +50,13 @@ func buildTableSchema(sections []*sectionInfo, tableName string, parentName stri
 		case matter.TableColumnAccess:
 			schema = append(schema, getAccessSchemaColumns(tableName)...)
 			continue
+		case matter.TableColumnBit:
+			schema = append(schema, getBitmapSchemaColumns(tableName)...)
+			continue
 		case matter.TableColumnQuality:
 			schema = append(schema, getQualitySchemaColumns(tableName)...)
 			continue
-		case matter.TableColumnID, matter.TableColumnBit, matter.TableColumnValue:
+		case matter.TableColumnID, matter.TableColumnValue:
 			colType = types.Int64
 		case matter.TableColumnType:
 			columnName = "data_type"
@@ -86,6 +90,9 @@ func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTa
 			case matter.TableColumnQuality:
 				qualityRows := getQualitySchemaColumnValues(v)
 				row = append(row, qualityRows...)
+			case matter.TableColumnBit:
+				bitRows := getBitmapSchemaColumnValues(v)
+				row = append(row, bitRows...)
 			default:
 				if !ok {
 					row = append(row, nil)
@@ -99,9 +106,19 @@ func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTa
 							v = int64(val)
 						case string:
 							v, err = parseNumber(val)
+						case *matter.Number:
+							if val.Valid() {
+								v = int64(val.Value())
+							} else {
+								v = nil
+							}
+						default:
+							fmt.Printf("val: %v %T\n", v, v)
+
 						}
 					}
 					if err != nil {
+						slog.Warn("error encoding row", slog.Any("value", v), slog.Any("error", err))
 						v = nil
 					}
 					row = append(row, v)

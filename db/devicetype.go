@@ -39,7 +39,7 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 		row.values[matter.TableColumnName] = c.ClusterName
 		row.values[matter.TableColumnQuality] = c.Quality.String()
 		if c.Conformance != nil {
-			row.values[matter.TableColumnConformance] = c.Conformance.String()
+			row.values[matter.TableColumnConformance] = c.Conformance.AsciiDocString()
 		}
 		switch c.Interface {
 		case matter.InterfaceClient:
