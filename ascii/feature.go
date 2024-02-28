@@ -53,7 +53,7 @@ func (s *Section) toFeatures(d *Doc, entityMap map[types.WithAttributes][]matter
 		if err != nil {
 			return
 		}
-		summary, err = readRowAsciiDocString(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = readRowValue(d, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}

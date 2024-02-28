@@ -91,10 +91,11 @@ func readRowCellValue(doc *Doc, row *types.TableRow, offset int) (string, error)
 	if !ok {
 		return "", fmt.Errorf("name cell missing paragraph")
 	}
+	var value strings.Builder
 	for _, el := range para.Elements {
 		switch el := el.(type) {
 		case *types.StringElement:
-			return el.Content, nil
+			value.WriteString(el.Content)
 		case *types.InternalCrossReference:
 			var val string
 			anchor, _ := doc.getAnchor(el.ID.(string))
@@ -104,14 +105,27 @@ func readRowCellValue(doc *Doc, row *types.TableRow, offset int) (string, error)
 				val = strings.TrimPrefix(el.ID.(string), "_")
 				val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
 			}
-			return val, nil
+			value.WriteString(val)
+		case *types.InlineLink:
+			if el.Location != nil {
+				l, ok := el.Location.Path.(string)
+				if ok {
+					value.WriteString(l)
+				}
+			}
 		case *types.QuotedText:
 			continue
+		case *types.Symbol:
+			value.WriteString(el.Name)
+		case *types.SpecialCharacter:
+			value.WriteString(el.Name)
+		case *types.InlinePassthrough:
+			value.WriteString(string(el.Kind))
 		default:
 			return "", fmt.Errorf("unexpected type in cell: %T", el)
 		}
 	}
-	return "", nil
+	return strings.TrimSpace(value.String()), nil
 }
 
 func FindFirstTable(section *Section) *types.Table {
