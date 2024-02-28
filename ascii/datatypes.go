@@ -307,7 +307,10 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 		}
 	}
 
-	s := sb.String()
+	s := strings.TrimSpace(sb.String())
+	if len(s) == 0 {
+		return conformance.Set{&conformance.Mandatory{}}
+	}
 	firstNewLineIndex := strings.IndexAny(s, "\r\n")
 	if firstNewLineIndex >= 0 {
 		s = s[0:firstNewLineIndex]
