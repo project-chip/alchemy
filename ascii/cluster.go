@@ -25,7 +25,6 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		switch s.SecType {
 		case matter.SectionClusterID:
-
 			clusters, err = readClusterIDs(d, s)
 		case matter.SectionRevisionHistory:
 		}
@@ -181,7 +180,7 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Name, err = readRowAsciiDocString(row, columnMap, matter.TableColumnName)
+		c.Name, err = readRowValue(doc, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return nil, err
 		}

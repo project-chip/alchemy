@@ -137,7 +137,6 @@ func ReferenceName(element interface{}) string {
 	case types.WithAttributes:
 		return referenceNameFromAttributes(el)
 	default:
-		//slog.
 		slog.Warn("Unknown type to get reference name", "type", element)
 	}
 	return ""

@@ -40,7 +40,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[types.WithAttributes][]mattertype
 			return
 		}
 		ev.Name = StripTypeSuffixes(ev.Name)
-		ev.Summary, err = readRowAsciiDocString(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		ev.Summary, err = readRowValue(d, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
