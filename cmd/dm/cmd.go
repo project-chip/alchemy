@@ -5,6 +5,7 @@ import (
 
 	"github.com/hasty/alchemy/cmd/common"
 	"github.com/hasty/alchemy/cmd/files"
+	"github.com/hasty/alchemy/dm"
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +16,7 @@ var Command = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		specRoot, _ := cmd.Flags().GetString("specRoot")
 		sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
-		return Render(context.Background(), specRoot, sdkRoot, files.Flags(cmd), args, common.AsciiDocAttributes(cmd))
+		return dm.Render(context.Background(), specRoot, sdkRoot, files.Flags(cmd), args, common.AsciiDocAttributes(cmd))
 	},
 }
 

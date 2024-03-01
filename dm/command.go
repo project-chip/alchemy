@@ -51,7 +51,9 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 		}
 		if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() {
 			a := cx.CreateElement("access")
-			a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
+			if cmd.Access.Invoke != matter.PrivilegeUnknown {
+				a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
+			}
 			if cmd.Access.IsFabricScoped() {
 				a.CreateAttr("fabricScoped", "true")
 			}
@@ -66,16 +68,16 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 		}
 
 		for _, f := range cmd.Fields {
-			if !f.ID.Valid() {
-				continue
-			}
 			i := cx.CreateElement("field")
-			i.CreateAttr("id", f.ID.IntString())
+			if f.ID.Valid() {
+				i.CreateAttr("id", f.ID.IntString())
+			}
 			i.CreateAttr("name", f.Name)
 			renderDataType(f, i)
 			if len(f.Default) > 0 {
 				i.CreateAttr("default", f.Default)
 			}
+			renderQuality(i, f.Quality, matter.QualityNullable)
 			err = renderConformanceString(cluster, f.Conformance, i)
 			if err != nil {
 				return

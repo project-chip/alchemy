@@ -1,6 +1,7 @@
 package dm
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 
@@ -18,7 +19,7 @@ func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
 	for _, e := range enums {
 		en := dt.CreateElement("enum")
 		en.CreateAttr("name", e.Name)
-		for _, v := range e.Values {
+		for index, v := range e.Values {
 			var val, from, to *matter.Number
 			var valFormat, fromFormat, toFormat types.NumberFormat
 			//val, valFormat = matter.ParseFormattedNumber(v.Value)
@@ -38,23 +39,27 @@ func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
 				case types.NumberFormatAuto, types.NumberFormatInt:
 					i.CreateAttr("value", val.IntString())
 				case types.NumberFormatHex:
-					i.CreateAttr("value", val.HexString())
+					i.CreateAttr("value", val.ShortHexString())
 				}
 			} else {
 				switch fromFormat {
 				case types.NumberFormatAuto, types.NumberFormatInt:
 					i.CreateAttr("from", from.IntString())
 				case types.NumberFormatHex:
-					i.CreateAttr("from", from.HexString())
+					i.CreateAttr("from", from.ShortHexString())
 				}
 				switch toFormat {
 				case types.NumberFormatAuto, types.NumberFormatInt:
 					i.CreateAttr("to", to.IntString())
 				case types.NumberFormatHex:
-					i.CreateAttr("to", to.HexString())
+					i.CreateAttr("to", to.ShortHexString())
 				}
 			}
-			i.CreateAttr("name", v.Name)
+			name := v.Name
+			if len(name) == 0 {
+				name = fmt.Sprintf("Item%d", index)
+			}
+			i.CreateAttr("name", name)
 			if len(v.Summary) > 0 {
 				i.CreateAttr("summary", v.Summary)
 			}

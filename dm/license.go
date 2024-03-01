@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hasty/alchemy/cmd/files"
+	"github.com/hasty/alchemy/internal/files"
 )
 
 var copyrightPattern = regexp.MustCompile(`Copyright\s+\(C\)\s+Connectivity\s+Standards\s+Alliance\s+\((?P<Year>[0-9]+)\)`)
@@ -97,4 +97,6 @@ This notice and disclaimer must be included on all copies of this document.
 Connectivity Standards Alliance
 508 Second Street, Suite 206
 Davis, CA 95616, USA
+
+:xrefstyle: basic
 `

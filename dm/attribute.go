@@ -47,7 +47,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 }
 
 func renderAttributeAccess(ax *etree.Element, a matter.Access) {
-	if a.Read == matter.PrivilegeUnknown && a.Write == matter.PrivilegeUnknown && !a.IsTimed() {
+	if a.Read == matter.PrivilegeUnknown && a.Write == matter.PrivilegeUnknown && !a.IsTimed() && a.FabricSensitivity != matter.FabricSensitivitySensitive && a.FabricScoping != matter.FabricScopingScoped {
 		return
 	}
 	acx := ax.CreateElement("access")
@@ -55,10 +55,10 @@ func renderAttributeAccess(ax *etree.Element, a matter.Access) {
 		acx.CreateAttr("read", "true")
 	}
 	if a.Write != matter.PrivilegeUnknown {
-		if a.Write == matter.PrivilegeOperate {
-			acx.CreateAttr("write", "true")
-		} else {
+		if a.OptionalWrite {
 			acx.CreateAttr("write", "optional")
+		} else {
+			acx.CreateAttr("write", "true")
 		}
 	}
 	if a.Read != matter.PrivilegeUnknown {
@@ -69,6 +69,12 @@ func renderAttributeAccess(ax *etree.Element, a matter.Access) {
 	}
 	if a.IsTimed() {
 		acx.CreateAttr("timed", "true")
+	}
+	if a.FabricScoping == matter.FabricScopingScoped {
+		acx.CreateAttr("fabricScoped", "true")
+	}
+	if a.FabricSensitivity == matter.FabricSensitivitySensitive {
+		acx.CreateAttr("fabricSensitive", "true")
 	}
 }
 
@@ -84,16 +90,31 @@ func renderQuality(parent *etree.Element, q matter.Quality, mask matter.Quality)
 		return
 	}
 	qx := parent.CreateElement("quality")
-	if mask&matter.QualityChangedOmitted == matter.QualityChangedOmitted {
+	/*qx.CreateAttr("changeOmitted", strconv.FormatBool(changeOmitted))
+	qx.CreateAttr("nullable", strconv.FormatBool(nullable))
+	qx.CreateAttr("scene", strconv.FormatBool(scene))
+	if fixed {
+		qx.CreateAttr("persistence", "fixed")
+	} else if nonvolatile {
+		qx.CreateAttr("persistence", "nonVolatile")
+	} else {
+		qx.CreateAttr("persistence", "volatile")
+	}
+	qx.CreateAttr("reportable", strconv.FormatBool(reportable))
+	if singleton {
+		qx.CreateAttr("singleton", strconv.FormatBool(singleton))
+	}
+	return*/
+	if changeOmitted {
 		qx.CreateAttr("changeOmitted", strconv.FormatBool(changeOmitted))
 	}
-	if mask&matter.QualityNullable == matter.QualityNullable {
+	if nullable {
 		qx.CreateAttr("nullable", strconv.FormatBool(nullable))
 	}
-	if mask&matter.QualityScene == matter.QualityScene {
+	if scene {
 		qx.CreateAttr("scene", strconv.FormatBool(scene))
 	}
-	if mask&matter.QualityFixed == matter.QualityFixed || mask&matter.QualityNonVolatile == matter.QualityNonVolatile {
+	if fixed || nonvolatile {
 		if fixed {
 			qx.CreateAttr("persistence", "fixed")
 		} else if nonvolatile {
@@ -102,10 +123,10 @@ func renderQuality(parent *etree.Element, q matter.Quality, mask matter.Quality)
 			qx.CreateAttr("persistence", "volatile")
 		}
 	}
-	if mask&matter.QualityReportable == matter.QualityReportable {
+	if reportable {
 		qx.CreateAttr("reportable", strconv.FormatBool(reportable))
 	}
-	if mask&matter.QualitySingleton == matter.QualitySingleton {
+	if singleton {
 		qx.CreateAttr("singleton", strconv.FormatBool(singleton))
 	}
 }

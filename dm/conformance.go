@@ -39,8 +39,11 @@ func renderConformanceString(cluster conformance.IdentifierStore, c conformance.
 func renderConformance(cluster conformance.IdentifierStore, con conformance.Conformance, parent *etree.Element) error {
 	switch con := con.(type) {
 	case *conformance.Mandatory:
-		mc := parent.CreateElement("mandatoryConform")
-		renderConformanceExpression(cluster, con.Expression, mc)
+		_, isEquality := con.Expression.(*conformance.EqualityExpression)
+		if !isEquality {
+			mc := parent.CreateElement("mandatoryConform")
+			renderConformanceExpression(cluster, con.Expression, mc)
+		}
 	case *conformance.Provisional:
 		parent.CreateElement("provisionalConform")
 	case *conformance.Optional:
@@ -53,10 +56,12 @@ func renderConformance(cluster conformance.IdentifierStore, con conformance.Conf
 					oc.CreateAttr("min", strconv.Itoa(l.Limit))
 					oc.CreateAttr("max", strconv.Itoa(l.Limit))
 				case *conformance.ChoiceMinLimit:
+					oc.CreateAttr("more", "true") // Existing data model does this for some reason
 					oc.CreateAttr("min", strconv.Itoa(l.Min))
 				case *conformance.ChoiceMaxLimit:
 					oc.CreateAttr("max", strconv.Itoa(l.Max))
 				case *conformance.ChoiceRangeLimit:
+					oc.CreateAttr("more", "true") // Existing data model does this for some reason
 					oc.CreateAttr("min", strconv.Itoa(l.Min))
 					oc.CreateAttr("max", strconv.Itoa(l.Max))
 				}
@@ -93,9 +98,11 @@ func renderConformanceExpression(cluster conformance.IdentifierStore, exp confor
 		}
 		parent.CreateElement("feature").CreateAttr("name", e.Feature)
 	case *conformance.IdentifierExpression:
+		if e.Not {
+			parent = parent.CreateElement("notTerm")
+		}
 		if cluster == nil {
 			parent.CreateElement("condition").CreateAttr("name", e.ID)
-
 		} else {
 			entity, ok := cluster.Identifier(e.ID)
 			if !ok {
@@ -104,6 +111,10 @@ func renderConformanceExpression(cluster conformance.IdentifierStore, exp confor
 				switch entity.EntityType() {
 				case types.EntityTypeAttribute, types.EntityTypeCondition:
 					parent.CreateElement("attribute").CreateAttr("name", e.ID)
+				case types.EntityTypeCommand:
+					parent.CreateElement("command").CreateAttr("name", e.ID)
+				case types.EntityTypeField:
+					parent.CreateElement("field").CreateAttr("name", e.ID)
 				default:
 					parent.CreateElement("condition").CreateAttr("name", e.ID)
 				}
