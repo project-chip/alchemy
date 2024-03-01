@@ -223,7 +223,7 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		if strings.HasSuffix(name, "struct") {
 			return matter.SectionDataTypeStruct
 		}
-		return deriveSectionType(section)
+		return deriveSectionType(section, parent)
 	case matter.SectionCommand, matter.SectionDataTypeStruct:
 		if strings.HasSuffix(name, " field") {
 			return matter.SectionField
@@ -242,12 +242,12 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return matter.SectionElementRequirements
 		}
 	default:
-		return deriveSectionType(section)
+		return deriveSectionType(section, parent)
 	}
 	return matter.SectionUnknown
 }
 
-func deriveSectionType(section *Section) matter.Section {
+func deriveSectionType(section *Section, parent *Section) matter.Section {
 
 	// Ugh, some heuristics now
 	name := strings.TrimSpace(section.Name)
@@ -263,6 +263,12 @@ func deriveSectionType(section *Section) matter.Section {
 	if strings.HasSuffix(name, " Conditions") {
 		return matter.SectionConditions
 	}
+	if parent != nil && parent.SecType == matter.SectionDataTypes {
+		guessedType := guessDataTypeFromTable(section)
+		if guessedType != matter.SectionUnknown {
+			return guessedType
+		}
+	}
 	dataType := section.GetDataType()
 	if dataType != nil {
 		if dataType.IsEnum() {
@@ -275,6 +281,41 @@ func deriveSectionType(section *Section) matter.Section {
 	}
 	slog.Debug("unknown section type", "name", name)
 	return matter.SectionUnknown
+}
+
+func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
+	firstTable := FindFirstTable(section)
+	if firstTable == nil {
+		return
+	}
+	rows := TableRows(firstTable)
+	_, columnMap, _, err := MapTableColumns(section.Doc, rows)
+	if err != nil {
+		return
+	}
+	_, hasName := columnMap[matter.TableColumnName]
+	if !hasName {
+		return
+	}
+	_, hasID := columnMap[matter.TableColumnID]
+	_, hasType := columnMap[matter.TableColumnType]
+	if hasID && hasType {
+		sectionType = matter.SectionDataTypeStruct
+		return
+	}
+	_, hasSummary := columnMap[matter.TableColumnSummary]
+	if !hasSummary {
+		return
+	}
+	_, hasBit := columnMap[matter.TableColumnBit]
+	_, hasValue := columnMap[matter.TableColumnValue]
+	if hasBit {
+		sectionType = matter.SectionDataTypeBitmap
+	}
+	if hasValue {
+		sectionType = matter.SectionDataTypeEnum
+	}
+	return
 }
 
 func (s *Section) toEntities(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) ([]mattertypes.Entity, error) {
