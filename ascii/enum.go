@@ -6,6 +6,7 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
@@ -45,6 +46,10 @@ func (s *Section) toEnum(d *Doc, entityMap map[types.WithAttributes][]mattertype
 			return
 		}
 		ev.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+		if ev.Conformance == nil {
+			// Missing conformance should be treated as mandatory
+			ev.Conformance = conformance.Set{&conformance.Mandatory{}}
+		}
 		ev.Value, err = readRowID(row, columnMap, matter.TableColumnValue)
 		if err != nil {
 			return
