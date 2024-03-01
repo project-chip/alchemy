@@ -72,24 +72,27 @@ func (bm Bitmap) Identifier(id string) (types.Entity, bool) {
 
 func (bm *Bitmap) Inherit(parent *Bitmap) error {
 	mergedBits := make(BitSet, 0, len(parent.Bits))
+
 	for _, b := range parent.Bits {
 		mergedBits = append(mergedBits, b.Clone())
 	}
 	for _, b := range bm.Bits {
-		var matching Bit
-		for _, mb := range mergedBits {
+		var matched bool
+		for i, mb := range mergedBits {
 			if b.Bit() == mb.Bit() {
-				matching = b
+				bc := b.Clone()
+				err := bc.Inherit(mb)
+				if err != nil {
+					return err
+				}
+				mergedBits[i] = bc
+				matched = true
 				break
 			}
 		}
-		if matching == nil {
+		if !matched {
 			mergedBits = append(mergedBits, b.Clone())
 			continue
-		}
-		err := b.Inherit(matching)
-		if err != nil {
-			return err
 		}
 	}
 	if bm.Type == nil {
@@ -171,10 +174,10 @@ func (c *BitmapBit) Clone() Bit {
 }
 
 func (bb *BitmapBit) Inherit(parent Bit) error {
-	if len(parent.Summary()) > 0 {
+	if len(bb.summary) == 0 {
 		bb.summary = parent.Summary()
 	}
-	if len(parent.Conformance()) > 0 {
+	if len(bb.Conformance()) == 0 {
 		bb.conformance = parent.Conformance().CloneSet()
 	}
 	return nil

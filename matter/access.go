@@ -268,20 +268,20 @@ func (a Access) Equal(oa Access) bool {
 }
 
 func (a *Access) Inherit(parent Access) {
-	if a.Read == PrivilegeUnknown && parent.Read != PrivilegeUnknown {
+	if a.Read == PrivilegeUnknown {
 		a.Read = parent.Read
 	}
-	if a.Write == PrivilegeUnknown && parent.Write != PrivilegeUnknown {
+	if a.Write == PrivilegeUnknown {
 		a.Write = parent.Write
 		a.OptionalWrite = parent.OptionalWrite
 	}
-	if a.Invoke == PrivilegeUnknown && parent.Invoke != PrivilegeUnknown {
+	if a.Invoke == PrivilegeUnknown {
 		a.Invoke = parent.Invoke
 	}
-	if a.FabricScoping == FabricScopingUnknown && parent.FabricScoping != FabricScopingUnknown {
+	if a.FabricScoping == FabricScopingUnknown {
 		a.FabricScoping = parent.FabricScoping
 	}
-	if a.Timing == TimingUnknown && parent.Timing != TimingUnknown {
+	if a.Timing == TimingUnknown {
 		a.Timing = parent.Timing
 	}
 }
