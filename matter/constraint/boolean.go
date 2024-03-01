@@ -14,6 +14,10 @@ func (c *BooleanLimit) AsciiDocString(dataType *types.DataType) string {
 	return strconv.FormatBool(c.Value)
 }
 
+func (c *BooleanLimit) DataModelString(dataType *types.DataType) string {
+	return strconv.FormatBool(c.Value)
+}
+
 func (c *BooleanLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*BooleanLimit); ok {
 		return oc.Value == c.Value

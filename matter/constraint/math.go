@@ -17,6 +17,10 @@ func (c *MathExpressionLimit) AsciiDocString(dataType *types.DataType) string {
 	return fmt.Sprintf("(%s %s %s)", c.Left.AsciiDocString(dataType), c.Operand, c.Right.AsciiDocString(dataType))
 }
 
+func (c *MathExpressionLimit) DataModelString(dataType *types.DataType) string {
+	return c.AsciiDocString(dataType)
+}
+
 func (c *MathExpressionLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*MathExpressionLimit); ok {
 		return oc.Operand == c.Operand && oc.Left.Equal(c.Left) && oc.Right.Equal(c.Right)

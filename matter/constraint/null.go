@@ -11,6 +11,10 @@ func (c *NullLimit) AsciiDocString(dataType *types.DataType) string {
 	return "null"
 }
 
+func (c *NullLimit) DataModelString(dataType *types.DataType) string {
+	return c.AsciiDocString(dataType)
+}
+
 func (c *NullLimit) Equal(o ConstraintLimit) bool {
 	_, ok := o.(*NullLimit)
 	return ok

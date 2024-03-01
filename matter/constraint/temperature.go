@@ -13,6 +13,10 @@ func (c *TemperatureLimit) AsciiDocString(dataType *types.DataType) string {
 	return c.Value.String() + "°C"
 }
 
+func (c *TemperatureLimit) DataModelString(dataType *types.DataType) string {
+	return c.Value.String()
+}
+
 func (c *TemperatureLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*TemperatureLimit); ok {
 		return oc.Value == c.Value
