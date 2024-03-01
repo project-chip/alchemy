@@ -49,7 +49,7 @@ func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]matterty
 			return
 		}
 		name = StripTypeSuffixes(name)
-		summary, err = readRowAsciiDocString(row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = readRowValue(d, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
