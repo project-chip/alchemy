@@ -101,11 +101,11 @@ func NewDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeEpochSeconds
 	case "epoch-us", "epochus":
 		dt.BaseType = BaseDataTypeEpochMicroseconds
-	case "systime_ms", "systime-ms":
+	case "systime_ms", "systime-ms", "systemtimems":
 		dt.BaseType = BaseDataTypeSystimeMilliseconds
 	case "systime_us", "systime-us", "systemtimeus":
 		dt.BaseType = BaseDataTypeSystimeMicroseconds
-	case "posix-ms":
+	case "posix-ms", "posixms":
 		dt.BaseType = BaseDataTypePosixMilliseconds
 	case "action-id":
 		dt.BaseType = BaseDataTypeActionID
