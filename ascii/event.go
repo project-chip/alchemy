@@ -84,7 +84,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[types.WithAttributes][]matterty
 				}
 			}
 			if err != nil {
-				if err == NoTableFound {
+				if err == ErrNoTableFound {
 					err = nil
 					continue
 				}

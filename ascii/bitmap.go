@@ -33,7 +33,7 @@ func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]matterty
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 
 	if err != nil {
-		if err == NoTableFound {
+		if err == ErrNoTableFound {
 			slog.Warn("no table found for bitmap", slog.String("name", bm.Name))
 			return bm, nil
 		}

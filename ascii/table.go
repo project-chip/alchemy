@@ -13,12 +13,12 @@ import (
 
 type ColumnIndex map[matter.TableColumn]int
 
-var NoTableFound = fmt.Errorf("no table found")
+var ErrNoTableFound = fmt.Errorf("no table found")
 
 func parseFirstTable(doc *Doc, section *Section) (rows []*types.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 	t := FindFirstTable(section)
 	if t == nil {
-		err = NoTableFound
+		err = ErrNoTableFound
 		return
 	}
 	rows = TableRows(t)

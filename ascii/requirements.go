@@ -16,7 +16,7 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
-		if err == NoTableFound {
+		if err == ErrNoTableFound {
 			err = nil
 		} else {
 			err = fmt.Errorf("error reading cluster requirements table: %w", err)
@@ -72,7 +72,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
-		if err == NoTableFound {
+		if err == ErrNoTableFound {
 			err = nil
 		} else {
 			err = fmt.Errorf("error reading element requirements table: %w", err)
@@ -149,7 +149,7 @@ func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err erro
 	var extraColumns []ExtraColumn
 	rows, headerRowIndex, columnMap, extraColumns, err = parseFirstTable(d, s)
 	if err != nil {
-		if err == NoTableFound {
+		if err == ErrNoTableFound {
 			err = nil
 		} else {
 			err = fmt.Errorf("error reading conditions table: %w", err)

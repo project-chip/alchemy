@@ -16,7 +16,7 @@ func (s *Section) toAttributes(d *Doc, entityMap map[types.WithAttributes][]matt
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
-		if err == NoTableFound {
+		if err == ErrNoTableFound {
 			err = nil
 		}
 		return
