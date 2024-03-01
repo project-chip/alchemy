@@ -40,13 +40,20 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 
 	for _, d := range docs {
 		slog.Debug("building spec", "path", d.Path)
+		fileName := filepath.Base(d.Path)
+		switch fileName {
+
+		case "Data-Model.adoc":
+			// This file yields some fake entities due to the section titles, so we ignore it.
+			continue
+		}
 		var entities []types.Entity
 		entities, err = d.Entities()
 		if err != nil {
 			slog.Warn("error building entities", "doc", d.Path, "error", err)
 			continue
 		}
-		fileName := filepath.Base(d.Path)
+
 		switch fileName {
 		case "BaseDeviceType.adoc":
 			spec.BaseDeviceType, err = d.toBaseDeviceType()
@@ -55,6 +62,7 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 			}
 			continue
 		}
+
 		for _, m := range entities {
 			switch m := m.(type) {
 			case *matter.Cluster:
