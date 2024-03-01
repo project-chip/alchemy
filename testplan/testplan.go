@@ -10,8 +10,7 @@ import (
 	"sync"
 
 	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/ascii/render"
-	"github.com/hasty/alchemy/cmd/files"
+	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
@@ -48,16 +47,6 @@ func renderTestPlans(cxt context.Context, spec *matter.Spec, docs map[string]*as
 
 				var result string
 				result, err = renderClusterTestPlan(doc, cluster)
-				if err != nil {
-					return fmt.Errorf("failed rendering %s: %w", path, err)
-				}
-
-				var doc *ascii.Doc
-				doc, err = ascii.Read(result, newPath)
-				if err != nil {
-					return fmt.Errorf("failed rendering %s: %w", path, err)
-				}
-				result, err = render.Render(cxt, doc)
 				if err != nil {
 					return fmt.Errorf("failed rendering %s: %w", path, err)
 				}

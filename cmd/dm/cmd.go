@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/hasty/alchemy/cmd/common"
-	"github.com/hasty/alchemy/cmd/files"
 	"github.com/hasty/alchemy/dm"
+	"github.com/hasty/alchemy/internal/files"
 	"github.com/spf13/cobra"
 )
 
