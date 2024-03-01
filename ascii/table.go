@@ -92,7 +92,15 @@ func readRowCellValue(doc *Doc, row *types.TableRow, offset int) (string, error)
 		return "", fmt.Errorf("name cell missing paragraph")
 	}
 	var value strings.Builder
-	for _, el := range para.Elements {
+	err := readRowCellValueElements(doc, para.Elements, &value)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(value.String()), nil
+}
+
+func readRowCellValueElements(doc *Doc, elements []any, value *strings.Builder) error {
+	for _, el := range elements {
 		switch el := el.(type) {
 		case *types.StringElement:
 			value.WriteString(el.Content)
@@ -114,18 +122,22 @@ func readRowCellValue(doc *Doc, row *types.TableRow, offset int) (string, error)
 				}
 			}
 		case *types.QuotedText:
-			continue
+			err := readRowCellValueElements(doc, el.Elements, value)
+			if err != nil {
+				return err
+			}
 		case *types.Symbol:
 			value.WriteString(el.Name)
 		case *types.SpecialCharacter:
 			value.WriteString(el.Name)
 		case *types.InlinePassthrough:
 			value.WriteString(string(el.Kind))
+		case *types.LineBreak:
 		default:
-			return "", fmt.Errorf("unexpected type in cell: %T", el)
+			return fmt.Errorf("unexpected type in cell: %T", el)
 		}
 	}
-	return strings.TrimSpace(value.String()), nil
+	return nil
 }
 
 func FindFirstTable(section *Section) *types.Table {
