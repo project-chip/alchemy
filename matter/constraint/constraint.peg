@@ -83,7 +83,7 @@ Any <- any:("any" / "all") {
 	return &AllConstraint{Value:string(any.([]uint8))}, nil
 }
 
-Limit <- limit:(MSLimit / NullLimit / EmptyLimit / EmptyStringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / ReferenceLimit  ) {
+Limit <- limit:(MSLimit / NullLimit / EmptyLimit / EmptyStringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / LengthLimit / ReferenceLimit  ) {
 	debug("found limit %s\n", string(c.text))
 	return limit.(ConstraintLimit), nil
 }
@@ -120,7 +120,7 @@ Term <- '(' _ exp:Expression _ ')' {
     return exp, nil
 }
 
-Expression <- left:(IntLimit / ReferenceLimit / HexLimit) _ operand:('+'/'-'/'*'/'-') _ right:Limit {
+Expression <- left:(IntLimit / LengthLimit / ReferenceLimit / HexLimit) _ operand:('+'/'-'/'*'/'-') _ right:Limit {
 	debug("found expression %s\n", string(c.text))
 	var val []uint8
 	for _, d := range operand.([]uint8) {
@@ -136,6 +136,12 @@ Expression <- left:(IntLimit / ReferenceLimit / HexLimit) _ operand:('+'/'-'/'*'
 IntConstraint <- i:IntLimit {
 	debug("found int limit %s\n", string(c.text))
 	return &MaxConstraint{Max:i.(ConstraintLimit)}, nil
+}
+
+LengthLimit <- "len(" _ ref:PascalCase _ ')' {
+	r := ref.(string)
+	debug("found length limit %s\n", r)
+	return &LengthLimit{Value:r}, nil
 }
 
 ReferenceLimit <- PascalCase {
@@ -206,7 +212,7 @@ PascalCase <- Capitalized+ Capitalized* {
 	return string(c.text), nil
 }
 
-Capitalized <- Uppercase Lowercase+ {
+Capitalized <- Uppercase+ Lowercase+ {
 	debug("found capitalized %s\n", string(c.text))
 	return string(c.text), nil
 }

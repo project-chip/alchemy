@@ -62,6 +62,13 @@ type constraintTest struct {
 
 var constraintTests = []constraintTest{
 	{
+		constraint: "1 to NumberOfPINUsersSupported, 0xFFFE",
+		min:        types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
+		max:        types.NewUintDataTypeExtreme(65534, types.NumberFormatHex),
+		zapMin:     "1",
+		zapMax:     "0xFFFE",
+	},
+	{
 		constraint: "00000xxx",
 		generic:    true,
 	},
@@ -72,10 +79,10 @@ var constraintTests = []constraintTest{
 
 	{
 		constraint: "-2^62^ to 2^62^",
-		min:        types.NewIntDataTypeExtreme(-4611686018427387904, types.NumberFormatHex),
-		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatHex),
-		zapMin:     "0xC000000000000000",
-		zapMax:     "0x4000000000000000",
+		min:        types.NewIntDataTypeExtreme(-4611686018427387904, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatInt),
+		zapMin:     "-4611686018427387904",
+		zapMax:     "4611686018427387904",
 	},
 	{
 		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
@@ -115,24 +122,24 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "-2^62 to 2^62",
 		asciiDoc:   "-2^62^ to 2^62^",
-		min:        types.NewIntDataTypeExtreme(-4611686018427387904, types.NumberFormatHex),
-		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatHex),
-		zapMin:     "0xC000000000000000",
-		zapMax:     "0x4000000000000000",
+		min:        types.NewIntDataTypeExtreme(-4611686018427387904, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatInt),
+		zapMin:     "-4611686018427387904",
+		zapMax:     "4611686018427387904",
 	},
 
 	{
 		constraint: "-2^62^ to 2^62^",
-		min:        types.NewIntDataTypeExtreme(-4611686018427387904, types.NumberFormatHex),
-		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatHex),
-		zapMin:     "0xC000000000000000",
-		zapMax:     "0x4000000000000000",
+		min:        types.NewIntDataTypeExtreme(-4611686018427387904, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatInt),
+		zapMin:     "-4611686018427387904",
+		zapMax:     "4611686018427387904",
 	},
 	{
 		constraint: "max 2^62 - 1",
 		asciiDoc:   "max (2^62^ - 1)",
-		max:        types.NewIntDataTypeExtreme(4611686018427387903, types.NumberFormatAuto),
-		zapMax:     "0x3FFFFFFFFFFFFFFF",
+		max:        types.NewIntDataTypeExtreme(4611686018427387903, types.NumberFormatInt),
+		zapMax:     "4611686018427387903",
 	},
 	{
 		constraint: "0 to 80000",
