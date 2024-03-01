@@ -29,20 +29,24 @@ var Command = &cobra.Command{
 			if len(files) > 0 {
 				fmt.Fprintf(os.Stderr, "Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
 			}
-			doc, err := ascii.OpenFile(f, asciiSettings...)
-			if err != nil {
-				return fmt.Errorf("error opening doc %s: %w", f, err)
-			}
-			docType, err := doc.DocType()
-			if err != nil {
-				return fmt.Errorf("error parsing doc type %s: %w", f, err)
-			}
 			if asciiOut {
+				doc, err := ascii.ReadFile(f, asciiSettings...)
+				if err != nil {
+					return fmt.Errorf("error opening doc %s: %w", f, err)
+				}
+				docType, err := doc.DocType()
+				if err != nil {
+					return fmt.Errorf("error parsing doc type %s: %w", f, err)
+				}
 				for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
 					ascii.AssignSectionTypes(docType, top)
 				}
 				dumpElements(doc, doc.Elements, 0)
 			} else if jsonOut {
+				doc, err := ascii.ParseFile(f, asciiSettings...)
+				if err != nil {
+					return fmt.Errorf("error opening doc %s: %w", f, err)
+				}
 				entities, err := doc.Entities()
 				if err != nil {
 					return fmt.Errorf("error parsing entities %s: %w", f, err)
@@ -51,6 +55,10 @@ var Command = &cobra.Command{
 				//encoder.SetIndent("", "\t")
 				return encoder.Encode(entities)
 			} else {
+				doc, err := ascii.ReadFile(f, asciiSettings...)
+				if err != nil {
+					return fmt.Errorf("error opening doc %s: %w", f, err)
+				}
 				dumpElements(doc, doc.Base.Elements, 0)
 			}
 		}

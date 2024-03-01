@@ -1,12 +1,58 @@
 package ascii
 
 import (
+	"fmt"
 	"io"
+	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/parser"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/alchemy/internal/text"
 )
+
+func ParseFile(path string, settings ...configuration.Setting) (*Doc, error) {
+
+	contents, err := readFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(contents, path, settings...)
+}
+
+func Parse(contents string, path string, settings ...configuration.Setting) (doc *Doc, err error) {
+	baseConfig := make([]configuration.Setting, 0, len(settings)+1)
+	baseConfig = append(baseConfig, configuration.WithFilename(path))
+	baseConfig = append(baseConfig, settings...)
+
+	config := configuration.NewConfiguration(baseConfig...)
+	config.IgnoreIncludes = true
+
+	contents = text.RemoveComments(contents)
+
+	contents, err = parser.Preprocess(strings.NewReader(contents), config)
+	if err != nil {
+		return nil, err
+	}
+
+	var d *types.Document
+
+	d, err = ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
+
+	if err != nil {
+		return nil, fmt.Errorf("failed parse: %w", err)
+	}
+
+	doc, err = NewDoc(d)
+	if err != nil {
+		return nil, err
+	}
+	doc.Path = path
+
+	PatchUnrecognizedReferences(doc)
+
+	return doc, nil
+}
 
 func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...parser.Option) (*types.Document, error) {
 	done := make(chan interface{})
