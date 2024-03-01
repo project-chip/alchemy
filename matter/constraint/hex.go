@@ -27,6 +27,11 @@ func (c *HexLimit) AsciiDocString(dataType *types.DataType) string {
 	return fmt.Sprintf("0x%X", uint64(val))
 }
 
+func (c *HexLimit) DataModelString(dataType *types.DataType) string {
+	e := c.value()
+	return e.DataModelString(dataType)
+}
+
 func (c *HexLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*HexLimit); ok {
 		return oc.Value == c.Value
@@ -34,7 +39,7 @@ func (c *HexLimit) Equal(o ConstraintLimit) bool {
 	return false
 }
 
-func (c *HexLimit) Min(cc Context) (min types.DataTypeExtreme) {
+func (c *HexLimit) value() types.DataTypeExtreme {
 	return types.DataTypeExtreme{
 		Type:   types.DataTypeExtremeTypeUInt64,
 		Format: types.NumberFormatHex,
@@ -42,12 +47,16 @@ func (c *HexLimit) Min(cc Context) (min types.DataTypeExtreme) {
 	}
 }
 
+func (c *HexLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	return c.value()
+}
+
 func (c *HexLimit) Max(cc Context) (max types.DataTypeExtreme) {
-	return c.Min(cc)
+	return c.value()
 }
 
 func (c *HexLimit) Default(cc Context) (max types.DataTypeExtreme) {
-	return c.Min(cc)
+	return c.value()
 }
 
 func (c *HexLimit) Clone() ConstraintLimit {

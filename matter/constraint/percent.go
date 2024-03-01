@@ -14,6 +14,10 @@ func (c *PercentLimit) AsciiDocString(dataType *types.DataType) string {
 	return c.Value.String() + "%"
 }
 
+func (c *PercentLimit) DataModelString(dataType *types.DataType) string {
+	return c.Value.String()
+}
+
 func (c *PercentLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*PercentLimit); ok {
 		return oc.Value == c.Value && oc.Hundredths == c.Hundredths

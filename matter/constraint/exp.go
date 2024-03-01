@@ -16,6 +16,11 @@ func (c *ExpLimit) AsciiDocString(dataType *types.DataType) string {
 	return strconv.FormatInt(c.Value, 10) + "^" + strconv.FormatInt(c.Exp, 10) + "^"
 }
 
+func (c *ExpLimit) DataModelString(dataType *types.DataType) string {
+	e := c.minmax()
+	return e.DataModelString(dataType)
+}
+
 func (c *ExpLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*ExpLimit); ok {
 		return oc.Value == c.Value && oc.Exp == c.Exp
@@ -23,7 +28,7 @@ func (c *ExpLimit) Equal(o ConstraintLimit) bool {
 	return false
 }
 
-func (c *ExpLimit) minmax(cc Context) (minmax types.DataTypeExtreme) {
+func (c *ExpLimit) minmax() (minmax types.DataTypeExtreme) {
 
 	negative := c.Value < 0
 	base := c.Value
@@ -59,15 +64,15 @@ func (c *ExpLimit) minmax(cc Context) (minmax types.DataTypeExtreme) {
 }
 
 func (c *ExpLimit) Min(cc Context) (min types.DataTypeExtreme) {
-	return c.minmax(cc)
+	return c.minmax()
 }
 
 func (c *ExpLimit) Max(cc Context) (max types.DataTypeExtreme) {
-	return c.minmax(cc)
+	return c.minmax()
 }
 
 func (c *ExpLimit) Default(cc Context) (max types.DataTypeExtreme) {
-	return c.minmax(cc)
+	return c.minmax()
 }
 
 func (c *ExpLimit) Clone() ConstraintLimit {

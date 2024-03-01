@@ -12,6 +12,10 @@ func (c *ManufacturerLimit) AsciiDocString(dataType *types.DataType) string {
 	return c.Value
 }
 
+func (c *ManufacturerLimit) DataModelString(dataType *types.DataType) string {
+	return c.Value
+}
+
 func (c *ManufacturerLimit) Equal(o ConstraintLimit) bool {
 	if oc, ok := o.(*ManufacturerLimit); ok {
 		return oc.Value == c.Value

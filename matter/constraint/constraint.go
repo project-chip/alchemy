@@ -3,14 +3,14 @@ package constraint
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/hasty/alchemy/matter/types"
 )
 
 func ParseString(constraint string) Constraint {
-	c, err := ParseReader("", strings.NewReader(constraint))
+	c, err := Parse("", []byte(constraint))
 	if err != nil {
+		fmt.Printf("error: %v\n", err)
 		return &GenericConstraint{Value: constraint}
 	}
 	return c.(Constraint)
@@ -87,6 +87,7 @@ type Constraint interface {
 
 type ConstraintLimit interface {
 	AsciiDocString(dataType *types.DataType) string
+	DataModelString(dataType *types.DataType) string
 	Equal(o ConstraintLimit) bool
 	Min(c Context) (min types.DataTypeExtreme)
 	Max(c Context) (max types.DataTypeExtreme)
