@@ -20,7 +20,7 @@ var Command = &cobra.Command{
 		return files.Save(context.Background(), args, func(cxt context.Context, file string, index, total int) (result string, outPath string, err error) {
 			outPath = file
 			var doc *ascii.Doc
-			doc, err = ascii.OpenFile(file)
+			doc, err = ascii.ReadFile(file)
 			if err != nil {
 				return
 			}

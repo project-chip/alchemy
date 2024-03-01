@@ -78,7 +78,7 @@ func loadSpecClusterPaths(spec *matter.Spec, sdkRoot string) (map[string][]matte
 func loadSpecEntities(appClusterPaths []string, settings []configuration.Setting, domains map[string]matter.Domain, sdkRoot string) (map[string][]mattertypes.Entity, error) {
 	specEntities := make(map[string][]mattertypes.Entity)
 	for i, file := range appClusterPaths {
-		doc, err := ascii.OpenFile(file, append(ascii.GithubSettings(), settings...)...)
+		doc, err := ascii.ParseFile(file, append(ascii.GithubSettings(), settings...)...)
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +136,7 @@ func getAppDomains(specRoot string, settings []configuration.Setting) ([]string,
 
 	for i, file := range appClusterIndexPaths {
 		fmt.Fprintf(os.Stderr, "ZCLing index %s (%d of %d)...\n", file, i+1, len(appClusterIndexPaths))
-		doc, err := ascii.OpenFile(file, settings...)
+		doc, err := ascii.ParseFile(file, settings...)
 		if err != nil {
 			return nil, nil, err
 		}

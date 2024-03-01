@@ -11,7 +11,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-	"github.com/bytesparadise/libasciidoc/pkg/parser"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -224,52 +223,6 @@ func (d *Doc) Reference(ref string) (mattertypes.Entity, bool) {
 		return nil, false
 	}
 	return entities[0], true
-}
-
-func OpenFile(path string, settings ...configuration.Setting) (*Doc, error) {
-
-	file, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	contents := string(file)
-
-	return Read(contents, path, settings...)
-}
-
-func Read(contents string, path string, settings ...configuration.Setting) (doc *Doc, err error) {
-	baseConfig := make([]configuration.Setting, len(settings)+1)
-	baseConfig[0] = configuration.WithFilename(path)
-	copy(baseConfig[1:], settings)
-
-	config := configuration.NewConfiguration(baseConfig...)
-	config.IgnoreIncludes = true
-
-	// By default, there are two attributes in the renderer; if there are more, we need to pre-process
-	if len(config.Attributes) > 2 {
-		contents, err = parser.Preprocess(strings.NewReader(contents), config)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	var d *types.Document
-
-	d, err = ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
-
-	if err != nil {
-		return nil, fmt.Errorf("failed parse: %w", err)
-	}
-
-	doc, err = NewDoc(d)
-	if err != nil {
-		return nil, err
-	}
-	doc.Path = path
-
-	PatchUnrecognizedReferences(doc)
-
-	return doc, nil
 }
 
 func GithubSettings() []configuration.Setting {
