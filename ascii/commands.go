@@ -20,7 +20,7 @@ func (s *Section) toCommands(d *Doc, entityMap map[types.WithAttributes][]matter
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 	if err != nil {
-		if err == NoTableFound {
+		if err == ErrNoTableFound {
 			err = nil
 		} else {
 			err = fmt.Errorf("error reading commands table: %w", err)
@@ -93,7 +93,7 @@ func (s *Section) toCommands(d *Doc, entityMap map[types.WithAttributes][]matter
 			var columnMap ColumnIndex
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 			if err != nil {
-				if err == NoTableFound {
+				if err == ErrNoTableFound {
 					err = nil
 				} else {
 					slog.Warn("No valid command parameter table found", "command", name, "path", d.Path)
