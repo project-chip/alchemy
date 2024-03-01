@@ -7,7 +7,7 @@ import (
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/ascii/render"
-	"github.com/hasty/alchemy/cmd/files"
+	"github.com/hasty/alchemy/internal/files"
 	"github.com/spf13/cobra"
 )
 

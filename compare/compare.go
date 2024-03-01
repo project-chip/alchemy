@@ -13,7 +13,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/cmd/files"
+	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/constraint"
