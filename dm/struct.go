@@ -21,6 +21,9 @@ func renderStructs(cluster *matter.Cluster, dt *etree.Element) (err error) {
 		if err != nil {
 			return
 		}
+		if s.FabricScoping == matter.FabricScopingScoped {
+			en.CreateElement("access").CreateAttr("fabricScoped", "true")
+		}
 	}
 	return
 }
@@ -42,7 +45,7 @@ func renderField(cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, p
 	renderDataType(f, i)
 	renderAttributeAccess(i, f.Access)
 	renderQuality(i, f.Quality, matter.QualityNullable)
-	err = renderConformanceString(cluster, f.Conformance, i)
+	err = renderConformanceString(fs, f.Conformance, i)
 	if err != nil {
 		return
 	}

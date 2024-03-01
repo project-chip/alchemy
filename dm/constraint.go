@@ -32,7 +32,7 @@ func renderConstraintElement(name string, con constraint.Constraint, dataType *t
 	case *constraint.ExactConstraint:
 		cx = parent.CreateElement(name)
 		cx.CreateAttr("type", "allowed")
-		cx.CreateAttr("value", con.Value.AsciiDocString(dataType))
+		cx.CreateAttr("value", renderConstraintLimit(con.Value, dataType))
 	case *constraint.RangeConstraint:
 		cx = parent.CreateElement(name)
 		if dataType.IsArray() {
@@ -42,8 +42,8 @@ func renderConstraintElement(name string, con constraint.Constraint, dataType *t
 		} else {
 			cx.CreateAttr("type", "between")
 		}
-		cx.CreateAttr("from", con.Minimum.AsciiDocString(dataType))
-		cx.CreateAttr("to", con.Maximum.AsciiDocString(dataType))
+		cx.CreateAttr("from", renderConstraintLimit(con.Minimum, dataType))
+		cx.CreateAttr("to", renderConstraintLimit(con.Maximum, dataType))
 	case *constraint.MinConstraint:
 		cx = parent.CreateElement(name)
 		if dataType.IsArray() {
@@ -53,7 +53,7 @@ func renderConstraintElement(name string, con constraint.Constraint, dataType *t
 		} else {
 			cx.CreateAttr("type", "min")
 		}
-		cx.CreateAttr("value", con.Minimum.AsciiDocString(dataType))
+		cx.CreateAttr("value", renderConstraintLimit(con.Minimum, dataType))
 	case *constraint.MaxConstraint:
 		cx = parent.CreateElement(name)
 		if dataType.IsArray() {
@@ -63,12 +63,12 @@ func renderConstraintElement(name string, con constraint.Constraint, dataType *t
 		} else {
 			cx.CreateAttr("type", "max")
 		}
-		cx.CreateAttr("value", con.Maximum.AsciiDocString(dataType))
+		cx.CreateAttr("value", renderConstraintLimit(con.Maximum, dataType))
 	case *constraint.ListConstraint:
 		if mc, ok := con.Constraint.(*constraint.MaxConstraint); ok {
 			cx = parent.CreateElement(name)
 			cx.CreateAttr("type", "maxCount")
-			cx.CreateAttr("value", mc.Maximum.AsciiDocString(dataType))
+			cx.CreateAttr("value", renderConstraintLimit(mc.Maximum, dataType))
 		}
 	case constraint.ConstraintSet:
 		for _, cs := range con {
@@ -78,4 +78,15 @@ func renderConstraintElement(name string, con constraint.Constraint, dataType *t
 		err = fmt.Errorf("unknown constraint type: %T", con)
 	}
 	return
+}
+
+func renderConstraintLimit(limit constraint.ConstraintLimit, dataType *types.DataType) string {
+	s := limit.DataModelString(dataType)
+	switch limit.(type) {
+	case *constraint.MathExpressionLimit:
+		if len(s) > 2 && s[0] == '(' && s[len(s)-1] == ')' {
+			s = s[1 : len(s)-1]
+		}
+	}
+	return s
 }

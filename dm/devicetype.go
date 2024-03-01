@@ -14,7 +14,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/cmd/files"
+	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 )
