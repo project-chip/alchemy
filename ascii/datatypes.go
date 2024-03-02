@@ -185,29 +185,11 @@ func (d *Doc) getAnchor(id string) (*Anchor, error) {
 }
 
 func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *mattertypes.DataType) constraint.Constraint {
-	i, ok := columnMap[column]
-	if !ok {
+	val, err := readRowValue(d, row, columnMap, column)
+	if err != nil {
 		return nil
 	}
-	cell := row.Cells[i]
-	if len(cell.Elements) == 0 {
-		return nil
-	}
-	p, ok := cell.Elements[0].(*types.Paragraph)
-	if !ok {
-		slog.Debug("unexpected non-paragraph in constraints cell", "type", fmt.Sprintf("%T", cell.Elements[0]))
-		return nil
-	}
-	if len(p.Elements) == 0 {
-		return nil
-	}
-	var val constraint.Constraint
-
-	var sb strings.Builder
-	d.buildConstraintValue(p.Elements, &sb)
-	val = constraint.ParseString(StripTypeSuffixes(sb.String()))
-
-	return val
+	return constraint.ParseString(val)
 }
 
 func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
@@ -313,7 +295,8 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 	}
 	firstNewLineIndex := strings.IndexAny(s, "\r\n")
 	if firstNewLineIndex >= 0 {
-		s = s[0:firstNewLineIndex]
+		//s = s[0:firstNewLineIndex]
+		slog.Warn("newline in conformance", "conf", s)
 	}
 	return conformance.ParseConformance(StripTypeSuffixes(s))
 }
