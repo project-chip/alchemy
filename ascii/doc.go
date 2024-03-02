@@ -180,7 +180,7 @@ func (d *Doc) Entities() (entities []mattertypes.Entity, err error) {
 		var m []mattertypes.Entity
 		m, err = top.toEntities(d, entitiesBySection)
 		if err != nil {
-			return nil, fmt.Errorf("failed converting doc to entities: %w", err)
+			return nil, fmt.Errorf("failed converting doc %s to entities: %w", d.Path, err)
 		}
 		entities = append(entities, m...)
 
