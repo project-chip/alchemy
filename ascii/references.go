@@ -103,37 +103,31 @@ func getUnrecognizedReference(els []interface{}) string {
 func ReferenceName(element interface{}) string {
 	switch el := element.(type) {
 	case *types.Section:
-		name := types.Reduce(el.Title)
-		switch name := name.(type) {
-		case string:
-			return name
-		case []any:
-			var val strings.Builder
-			for _, el := range name {
-				switch el := el.(type) {
-				case *types.StringElement:
-					val.WriteString(el.Content)
-				case *types.Symbol:
-					val.WriteString(el.Name)
-				case *types.SpecialCharacter:
-					var char string
-					switch el.Name {
-					case "&":
-						char = el.Name
-					case ">":
-						char = el.Name
-					default:
-						slog.Warn("unrecognized special character", "char", el.Name, "context", val.String())
-					}
-					val.WriteString(char)
-				case types.WithAttributes:
-					val.WriteString(referenceNameFromAttributes(el))
+		var val strings.Builder
+		for _, el := range el.Title {
+			switch el := el.(type) {
+			case *types.StringElement:
+				val.WriteString(el.Content)
+			case *types.Symbol:
+				val.WriteString(el.Name)
+			case *types.SpecialCharacter:
+				var char string
+				switch el.Name {
+				case "&":
+					char = el.Name
+				case ">":
+					char = el.Name
 				default:
-					slog.Warn("unknown section title element", "element", el, "type", fmt.Sprintf("%T", el))
+					slog.Warn("unrecognized special character", "char", el.Name, "context", val.String())
 				}
+				val.WriteString(char)
+			case types.WithAttributes:
+				val.WriteString(referenceNameFromAttributes(el))
+			default:
+				slog.Warn("unknown section title element", "element", el, "type", fmt.Sprintf("%T", el))
 			}
-			return val.String()
 		}
+		return val.String()
 	case types.WithAttributes:
 		return referenceNameFromAttributes(el)
 	default:

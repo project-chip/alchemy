@@ -21,8 +21,13 @@ func (b *Ball) organizeStructSections(cxt *discoContext, dp *docParse) (err erro
 
 func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSection) (err error) {
 	name := strings.TrimSpace(ss.section.Name)
-	if strings.HasSuffix(strings.ToLower(name), "struct") {
-		setSectionTitle(ss.section, name+" Type")
+	lower := strings.ToLower(name)
+	if !strings.HasSuffix(lower, "struct type") {
+		if strings.HasSuffix(lower, "struct") {
+			setSectionTitle(ss.section, name+" Type")
+		} else {
+			setSectionTitle(ss.section, name+"Struct Type")
+		}
 	}
 	fieldsTable := &ss.table
 	if fieldsTable.element == nil {
