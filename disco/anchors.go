@@ -59,7 +59,6 @@ func normalizeAnchor(info *ascii.Anchor) {
 	}
 }
 
-var pascalCasePattern = regexp.MustCompile(`^[A-Z][a-z]+([A-Z][a-z]+)+$`)
 var anchorInvalidCharacters = strings.NewReplacer(".", "", "(", "", ")", "")
 
 func normalizeAnchorID(name string, element any, parent any) (id string, label string) {
@@ -75,12 +74,17 @@ func normalizeAnchorID(name string, element any, parent any) (id string, label s
 			parentName = ascii.StripTypeSuffixes(parentName)
 			parentName, _ = normalizeAnchorID(parentName, p.Base, p.Parent)
 			parentName = strings.TrimPrefix(parentName, "ref_")
+		case matter.SectionUnknown:
+		default:
+			slog.Warn("unexpected parent section type", slog.String("sectionType", p.SecType.String()))
 		}
 	}
 
 	var ref strings.Builder
+	ref.WriteString("ref_")
 	ref.WriteString(parentName)
 	ref.WriteString(matter.Case(anchorInvalidCharacters.Replace(label)))
+	id = ref.String()
 	return
 }
 
