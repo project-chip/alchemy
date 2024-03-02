@@ -263,10 +263,25 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 	if strings.HasSuffix(name, " Conditions") {
 		return matter.SectionConditions
 	}
-	if parent != nil && parent.SecType == matter.SectionDataTypes {
-		guessedType := guessDataTypeFromTable(section)
-		if guessedType != matter.SectionUnknown {
-			return guessedType
+	if parent != nil {
+		switch parent.SecType {
+		case matter.SectionDataTypes:
+			guessedType := guessDataTypeFromTable(section, parent)
+			if guessedType != matter.SectionUnknown {
+				return guessedType
+			}
+		case matter.SectionDataTypeBitmap:
+			if strings.HasSuffix(name, " Bit") || strings.HasSuffix(name, " Bits") {
+				return matter.SectionBit
+			}
+		case matter.SectionDataTypeEnum:
+			if strings.HasSuffix(name, " Value") {
+				return matter.SectionValue
+			}
+		case matter.SectionDataTypeStruct, matter.SectionCommand, matter.SectionEvent:
+			if strings.HasSuffix(name, " Field") {
+				return matter.SectionField
+			}
 		}
 	}
 	dataType := section.GetDataType()
@@ -279,11 +294,11 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 			return matter.SectionDataTypeStruct
 		}
 	}
-	slog.Debug("unknown section type", "name", name)
+	slog.Debug("unknown section type", "path", section.Doc.Path, "name", name)
 	return matter.SectionUnknown
 }
 
-func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
+func guessDataTypeFromTable(section *Section, parent *Section) (sectionType matter.Section) {
 	firstTable := FindFirstTable(section)
 	if firstTable == nil {
 		return
