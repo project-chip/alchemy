@@ -3,14 +3,18 @@ package constraint
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 
 	"github.com/hasty/alchemy/matter/types"
 )
 
 func ParseString(constraint string) Constraint {
+	if len(constraint) == 0 {
+		return &GenericConstraint{Value: constraint}
+	}
 	c, err := Parse("", []byte(constraint))
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
+		slog.Warn("failed parsing constraint", slog.String("constraint", constraint), slog.Any("error", err))
 		return &GenericConstraint{Value: constraint}
 	}
 	return c.(Constraint)
