@@ -144,9 +144,19 @@ LengthLimit <- "len(" _ ref:PascalCase _ ')' {
 	return &LengthLimit{Value:r}, nil
 }
 
-ReferenceLimit <- PascalCase {
+ReferenceLimit <- (PascalCase / Reference) {
 	debug("found reference limit %s\n", string(c.text))
 	return &ReferenceLimit{Value:string(c.text)}, nil
+}
+
+Reference <- "<<" "ref_"? ReferencePart+ (_ "," _ [^>]+)? ">>" {
+	debug("found reference %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+ReferencePart <- PascalCase "_"? {
+	debug("found reference part %s\n", string(c.text))
+	return string(c.text), nil
 }
 
 TempLimit <- f:( Float / Integer ) "°C" {

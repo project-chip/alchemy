@@ -62,6 +62,14 @@ type constraintTest struct {
 
 var constraintTests = []constraintTest{
 	{
+		constraint: "1 to <<ref_NumberOfScheduleTransitions>>",
+		min:        types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
+		zapMin:     "1",
+	},
+	{
+		constraint: "max <<ref_RespMaxConstant,RESP_MAX>>",
+	},
+	{
 		constraint: "1 to NumberOfPINUsersSupported, 0xFFFE",
 		min:        types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
 		max:        types.NewUintDataTypeExtreme(65534, types.NumberFormatHex),
