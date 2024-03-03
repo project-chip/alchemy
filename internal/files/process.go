@@ -9,6 +9,9 @@ import (
 	"unicode/utf8"
 
 	"github.com/hasty/alchemy/ascii"
+	"github.com/hexops/gotextdiff"
+	"github.com/hexops/gotextdiff/myers"
+	"github.com/hexops/gotextdiff/span"
 	"github.com/schollz/progressbar/v3"
 	"golang.org/x/sync/errgroup"
 )
@@ -90,7 +93,22 @@ func Save(cxt context.Context, filepaths []string, saver FileSaver, options Opti
 		if outPath == "" {
 			return nil
 		}
-		if !options.DryRun {
+		if options.Patch {
+			exists, err := Exists(outPath)
+			if err != nil {
+				return err
+			}
+			var existing string
+			if exists {
+				eb, err := os.ReadFile(outPath)
+				if err != nil {
+					return err
+				}
+				existing = string(eb)
+			}
+			edits := myers.ComputeEdits(span.URIFromPath(outPath), existing, result)
+			fmt.Print(gotextdiff.ToUnified(outPath, outPath, existing, edits))
+		} else if !options.DryRun {
 			err = os.WriteFile(outPath, []byte(result), os.ModeAppend|0644)
 			if err != nil {
 				return err
