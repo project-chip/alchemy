@@ -9,6 +9,7 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.6.0
 	github.com/bytesparadise/libasciidoc v0.8.0
 	github.com/dolthub/go-mysql-server v0.17.0
+	github.com/hexops/gotextdiff v1.0.3
 	github.com/iancoleman/orderedmap v0.3.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/schollz/progressbar/v3 v3.14.1

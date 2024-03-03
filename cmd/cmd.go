@@ -37,6 +37,7 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().BoolP("dryrun", "d", false, "whether or not to actually output files")
+	rootCmd.PersistentFlags().BoolP("patch", "p", false, "generate patch file")
 	rootCmd.PersistentFlags().Bool("serial", false, "process files one-by-one")
 	rootCmd.PersistentFlags().Bool("verbose", false, "display verbose information")
 	rootCmd.PersistentFlags().StringSliceP("attribute", "a", []string{}, "attribute for pre-processing asciidoc; this flag can be provided more than once")
