@@ -101,6 +101,9 @@ func renderDeviceType(cxt context.Context, deviceTypes []*matter.DeviceType) (ou
 		class.CreateAttr("class", strings.ToLower(deviceType.Class))
 		class.CreateAttr("scope", strings.ToLower(deviceType.Scope))
 
+		if len(deviceType.Conditions) == 0 && len(deviceType.ClusterRequirements) == 0 {
+			continue
+		}
 		conditions := c.CreateElement("conditions")
 		if len(deviceType.Conditions) > 0 {
 			for _, condition := range deviceType.Conditions {
