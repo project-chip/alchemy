@@ -189,6 +189,7 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 	if err != nil {
 		return nil
 	}
+	val = strings.ReplaceAll(val, "\n", " ")
 	return constraint.ParseString(val)
 }
 

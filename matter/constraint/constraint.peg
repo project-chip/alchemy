@@ -83,7 +83,7 @@ Any <- any:("any" / "all") {
 	return &AllConstraint{Value:string(any.([]uint8))}, nil
 }
 
-Limit <- limit:(MSLimit / NullLimit / EmptyLimit / EmptyStringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / LengthLimit / ReferenceLimit  ) {
+Limit <- limit:(MSLimit / NullLimit / EmptyLimit / StringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / LengthLimit / ReferenceLimit / UnspecifiedLimit ) {
 	debug("found limit %s\n", string(c.text))
 	return limit.(ConstraintLimit), nil
 }
@@ -92,20 +92,29 @@ MSLimit <- "MS" {
 	return &ManufacturerLimit{Value:string(c.text)}, nil
 }
 
-NullLimit <- "null" {
+NullLimit <- "null"i {
 	return &NullLimit{}, nil
 }
 
-EmptyLimit <- "empty" {
+UnspecifiedLimit <- ("-" / "–" / "N/A"i) EOF {
+	return &UnspecifiedLimit{}, nil
+}
+
+EmptyLimit <- ("empty" / "[]") {
 	return &EmptyLimit{}, nil
 }
 
-EmptyStringLimit <- "\"\"" {
-	return &EmptyLimit{}, nil
+StringLimit <- "\"" limit:[^"]* "\"" {
+	var val []uint8
+	for _, d := range limit.([]any) {
+		val = append(val, d.([]uint8)...)
+	}
+	return &StringLimit{Value:string(val)}, nil
 }
 
-BooleanLimit <- limit:("true" / "True" / "False" / "false") {
-    b, err := strconv.ParseBool(string(limit.([]uint8)))
+BooleanLimit <- ("true"i / "false"i) {
+	debug("found boolean %s\n", string(c.text))
+    b, err := strconv.ParseBool(string(c.text))
     if err != nil {
         return nil, err
     }
@@ -138,7 +147,7 @@ IntConstraint <- i:IntLimit {
 	return &MaxConstraint{Max:i.(ConstraintLimit)}, nil
 }
 
-LengthLimit <- "len(" _ ref:PascalCase _ ')' {
+LengthLimit <- "len("i _ ref:PascalCase _ ')' {
 	r := ref.(string)
 	debug("found length limit %s\n", r)
 	return &LengthLimit{Value:r}, nil
@@ -208,7 +217,7 @@ Integer <- sign:('-'/'+')? digits:Digits  {
 	return strconv.ParseInt(string(c.text), 10, 64)
 }
 
-Hex <- ("0x" / "0X") hex:[0-9A-Fa-f]+ {
+Hex <- "0x"i hex:[0-9A-Fa-f]+ {
 	var val []uint8
 	for _, d := range hex.([]interface{}) {
 		val = append(val, d.([]uint8)...)
