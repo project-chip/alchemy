@@ -62,6 +62,24 @@ type constraintTest struct {
 
 var constraintTests = []constraintTest{
 	{
+		constraint: "True",
+		asciiDoc:   "true",
+		dataType:   &types.DataType{BaseType: types.BaseDataTypeBoolean},
+		min:        types.NewUintDataTypeExtreme(1, types.NumberFormatInt),
+		max:        types.NewUintDataTypeExtreme(1, types.NumberFormatInt),
+		zapMin:     "1",
+		zapMax:     "1",
+	},
+	{
+		constraint: "False",
+		asciiDoc:   "false",
+		dataType:   &types.DataType{BaseType: types.BaseDataTypeBoolean},
+		min:        types.NewUintDataTypeExtreme(0, types.NumberFormatInt),
+		max:        types.NewUintDataTypeExtreme(0, types.NumberFormatInt),
+		zapMin:     "0",
+		zapMax:     "0",
+	},
+	{
 		constraint: "1 to <<ref_NumberOfScheduleTransitions>>",
 		min:        types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
 		zapMin:     "1",
@@ -327,6 +345,7 @@ var constraintTests = []constraintTest{
 		max:        types.NewIntDataTypeExtreme(2540, types.NumberFormatInt),
 		zapMax:     "2540",
 	},
+
 	{
 		constraint: "TODO",
 		generic:    true,

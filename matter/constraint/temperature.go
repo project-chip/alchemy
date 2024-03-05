@@ -1,6 +1,8 @@
 package constraint
 
 import (
+	"fmt"
+
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/shopspring/decimal"
 )
@@ -14,7 +16,7 @@ func (c *TemperatureLimit) AsciiDocString(dataType *types.DataType) string {
 }
 
 func (c *TemperatureLimit) DataModelString(dataType *types.DataType) string {
-	return c.Value.String()
+	return fmt.Sprintf("%d", c.limit(dataType).Int64)
 }
 
 func (c *TemperatureLimit) Equal(o ConstraintLimit) bool {
@@ -24,13 +26,9 @@ func (c *TemperatureLimit) Equal(o ConstraintLimit) bool {
 	return false
 }
 
-func (c *TemperatureLimit) Min(cc Context) (min types.DataTypeExtreme) {
+func (c *TemperatureLimit) limit(dataType *types.DataType) types.DataTypeExtreme {
 	var i int64
-	bt := cc.DataType()
-	if bt == nil {
-		return
-	}
-	switch bt.BaseType {
+	switch dataType.BaseType {
 	case types.BaseDataTypeTemperature, types.BaseDataTypeTemperatureDifference:
 		i = c.Value.Mul(decimal.NewFromInt(100)).IntPart()
 	case types.BaseDataTypeUnsignedTemperature, types.BaseDataTypeSignedTemperature:
@@ -41,6 +39,14 @@ func (c *TemperatureLimit) Min(cc Context) (min types.DataTypeExtreme) {
 		Format: types.NumberFormatInt,
 		Int64:  i,
 	}
+}
+
+func (c *TemperatureLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	dt := cc.DataType()
+	if dt == nil {
+		return
+	}
+	return c.limit(dt)
 }
 
 func (c *TemperatureLimit) Max(cc Context) (max types.DataTypeExtreme) {
