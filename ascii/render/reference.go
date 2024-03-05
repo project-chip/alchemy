@@ -20,6 +20,7 @@ func renderInternalCrossReference(cxt *Context, cf *types.InternalCrossReference
 			cxt.WriteString(label)
 		}
 		cxt.WriteString(">>")
+	case nil:
 	default:
 		err = fmt.Errorf("unknown internal cross reference ID type: %T", el)
 	}
