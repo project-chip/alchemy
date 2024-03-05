@@ -201,7 +201,7 @@ func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
 			anchor, _ := d.getAnchor(v.ID.(string))
 			var name string
 			if anchor != nil {
-				name = ReferenceName(anchor.Element)
+				name = matter.StripReferenceSuffixes(ReferenceName(anchor.Element))
 			} else {
 				name = strings.TrimPrefix(v.ID.(string), "_")
 			}

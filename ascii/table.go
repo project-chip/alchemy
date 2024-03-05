@@ -108,7 +108,7 @@ func readRowCellValueElements(doc *Doc, elements []any, value *strings.Builder) 
 			var val string
 			anchor, _ := doc.getAnchor(el.ID.(string))
 			if anchor != nil {
-				val = ReferenceName(anchor.Element)
+				val = StripTypeSuffixes(ReferenceName(anchor.Element))
 			} else {
 				val = strings.TrimPrefix(el.ID.(string), "_")
 				val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
@@ -240,31 +240,33 @@ func MapTableColumns(doc *Doc, rows []*types.TableRow) (headerRow int, columnMap
 		} else if cellCount != len(row.Cells) {
 			return -1, nil, nil, fmt.Errorf("can't map table columns with unequal cell counts between rows; row %d has %d cells, expected %d", i, len(row.Cells), cellCount)
 		}
-		if columnMap == nil {
-			var spares []ExtraColumn
-			for j, cell := range row.Cells {
-				var val string
-				val, err = doc.GetHeaderCellString(cell)
-				if err != nil {
-					return
-				}
-				attributeColumn := getTableColumn(val)
-				if attributeColumn != matter.TableColumnUnknown {
-					if columnMap == nil {
-						headerRow = i
-						columnMap = make(ColumnIndex)
-					}
-					if _, ok := columnMap[attributeColumn]; ok {
-						return -1, nil, nil, fmt.Errorf("can't map table columns with duplicate columns")
-					}
-					columnMap[attributeColumn] = j
-				} else {
-					spares = append(spares, ExtraColumn{Name: val, Offset: j})
-				}
+		if columnMap != nil { // We've already processed the columns
+			continue
+		}
+		var spares []ExtraColumn
+		for j, cell := range row.Cells {
+			var val string
+			val, err = doc.GetHeaderCellString(cell)
+			if err != nil {
+				return
 			}
-			if columnMap != nil {
-				extraColumns = spares
+			attributeColumn := getTableColumn(val)
+			if attributeColumn == matter.TableColumnUnknown {
+				spares = append(spares, ExtraColumn{Name: val, Offset: j})
+				continue
 			}
+			if columnMap == nil {
+				headerRow = i
+				columnMap = make(ColumnIndex)
+			}
+			if _, ok := columnMap[attributeColumn]; ok {
+				return -1, nil, nil, fmt.Errorf("can't map table columns with duplicate columns")
+			}
+			columnMap[attributeColumn] = j
+
+		}
+		if columnMap != nil { // Don't return extra columns if we were unable to parse any regular columns
+			extraColumns = spares
 		}
 	}
 	return headerRow, columnMap, extraColumns, nil
