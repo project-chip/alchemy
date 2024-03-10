@@ -32,8 +32,22 @@ func dataModelName(dataType *types.DataType) string {
 		return "vendor-id"
 	case types.BaseDataTypeSubjectID:
 		return "subject-id"
+	case types.BaseDataTypeNodeID:
+		return "node-id"
+	case types.BaseDataTypeGroupID:
+		return "group-id"
+	case types.BaseDataTypeFabricID:
+		return "fabric-id"
+	case types.BaseDataTypeFabricIndex:
+		return "fabric-index"
+	case types.BaseDataTypeActionID:
+		return "action-id"
 	case types.BaseDataTypeEndpointNumber:
 		return "endpoint-no"
+	case types.BaseDataTypeSignedTemperature:
+		return "int8s"
+	case types.BaseDataTypeUnsignedTemperature:
+		return "uint8"
 	case types.BaseDataTypeTemperatureDifference:
 		return "int16s"
 	default:
@@ -60,17 +74,18 @@ func renderDataTypes(cluster *matter.Cluster, c *etree.Element) (err error) {
 }
 
 func renderDataType(f *matter.Field, i *etree.Element) {
-	if f.Type != nil {
-		if !f.Type.IsArray() {
-			i.CreateAttr("type", dataModelName(f.Type))
-		} else {
-			i.CreateAttr("type", "list")
-			e := i.CreateElement("entry")
-			e.CreateAttr("type", dataModelName(f.Type.EntryType))
-			if lc, ok := f.Constraint.(*constraint.ListConstraint); ok {
-				renderConstraint(lc.EntryConstraint, f.Type.EntryType, e)
-			}
-		}
+	if f.Type == nil {
+		return
+	}
+	if !f.Type.IsArray() {
+		i.CreateAttr("type", dataModelName(f.Type))
+		return
+	}
+	i.CreateAttr("type", "list")
+	e := i.CreateElement("entry")
+	e.CreateAttr("type", dataModelName(f.Type.EntryType))
+	if lc, ok := f.Constraint.(*constraint.ListConstraint); ok {
+		renderConstraint(lc.EntryConstraint, f.Type.EntryType, e)
 	}
 }
 

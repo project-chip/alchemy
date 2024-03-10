@@ -56,7 +56,7 @@ func renderDeviceTypes(cxt context.Context, sdkRoot string, deviceTypes []*ascii
 	if !filesOptions.DryRun {
 		for path, result := range outputs {
 			path := filepath.Base(path)
-			newPath := filepath.Join(sdkRoot, fmt.Sprintf("/data_model/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
+			newPath := getDeviceTypePath(sdkRoot, path)
 			result, err = patchLicense(result, newPath)
 			if err != nil {
 				return fmt.Errorf("error patching license for %s: %w", newPath, err)
@@ -68,6 +68,11 @@ func renderDeviceTypes(cxt context.Context, sdkRoot string, deviceTypes []*ascii
 		}
 	}
 	return nil
+}
+
+func getDeviceTypePath(sdkRoot string, path string) string {
+	path = filepath.Base(path)
+	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
 }
 
 func renderDeviceType(cxt context.Context, deviceTypes []*matter.DeviceType) (output string, err error) {
@@ -101,11 +106,8 @@ func renderDeviceType(cxt context.Context, deviceTypes []*matter.DeviceType) (ou
 		class.CreateAttr("class", strings.ToLower(deviceType.Class))
 		class.CreateAttr("scope", strings.ToLower(deviceType.Scope))
 
-		if len(deviceType.Conditions) == 0 && len(deviceType.ClusterRequirements) == 0 {
-			continue
-		}
-		conditions := c.CreateElement("conditions")
 		if len(deviceType.Conditions) > 0 {
+			conditions := c.CreateElement("conditions")
 			for _, condition := range deviceType.Conditions {
 				cx := conditions.CreateElement("condition")
 				cx.CreateAttr("name", condition.Feature)
@@ -190,7 +192,6 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 				}
 				if code != "" {
 					ex.CreateAttr("code", code)
-
 				}
 				ex.CreateAttr("name", er.Name)
 				err = renderConformanceString(deviceType, er.Conformance, ex)

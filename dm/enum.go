@@ -22,7 +22,6 @@ func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
 		for index, v := range e.Values {
 			var val, from, to *matter.Number
 			var valFormat, fromFormat, toFormat types.NumberFormat
-			//val, valFormat = matter.ParseFormattedNumber(v.Value)
 			if v.Value.Valid() {
 				val = v.Value
 				valFormat = v.Value.Format()
