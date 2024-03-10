@@ -122,10 +122,24 @@ func readRowCellValueElements(doc *Doc, elements []any, value *strings.Builder) 
 				}
 			}
 		case *types.QuotedText:
-			err := readRowCellValueElements(doc, el.Elements, value)
+			if el.Kind != types.SingleQuoteSuperscript {
+				err := readRowCellValueElements(doc, el.Elements, value)
+				if err != nil {
+					return err
+				}
+				continue
+			}
+			// In the special case of superscript elements, we do a check to make sure it's not an asterisk, which should be ignored
+			var quotedText strings.Builder
+			err := readRowCellValueElements(doc, el.Elements, &quotedText)
 			if err != nil {
 				return err
 			}
+			qt := quotedText.String()
+			if qt == "*" { //
+				continue
+			}
+			value.WriteString(qt)
 		case *types.Symbol:
 			value.WriteString(el.Name)
 		case *types.SpecialCharacter:
