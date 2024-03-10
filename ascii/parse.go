@@ -1,6 +1,7 @@
 package ascii
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/parser"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/internal/text"
 )
 
@@ -67,18 +69,13 @@ func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...par
 
 	footnotes := types.NewFootnotes()
 	doc, err := parser.Aggregate(newContext(),
-		// SplitHeader(done,
-		//parser.ArrangeLists(done,
 		parser.CollectFootnotes(footnotes, done,
-			parser.ApplySubstitutions(newContext(), done, // needs to be before 'ArrangeLists'
+			parser.ApplySubstitutions(newContext(), done,
 				parser.RefineFragments(newContext(), r, done,
 					parser.ParseDocumentFragments(newContext(), r, done),
 				),
 			),
 		),
-		//),
-
-		// ),
 	)
 	if err != nil {
 		return nil, err
@@ -87,4 +84,43 @@ func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...par
 		doc.Footnotes = footnotes.Notes
 	}
 	return doc, nil
+}
+
+type Parser struct {
+	asciiSettings []configuration.Setting
+	processorType pipeline.ProcessorType
+}
+
+func NewParser(processorType pipeline.ProcessorType, asciiSettings []configuration.Setting) Parser {
+	return Parser{processorType: processorType, asciiSettings: asciiSettings}
+}
+
+func (p Parser) Name() string {
+	return "Parsing documents"
+}
+
+func (p Parser) Type() pipeline.ProcessorType {
+	return p.processorType
+}
+
+func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
+	var doc *Doc
+	doc, err = ParseFile(input.Path, p.asciiSettings...)
+	if err != nil {
+		return
+	}
+	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
+	return
+}
+
+func (p Parser) ProcessAll(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[*Doc], err error) {
+	for _, input := range inputs {
+		var doc *Doc
+		doc, err = ParseFile(input.Path, p.asciiSettings...)
+		if err != nil {
+			return
+		}
+		outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
+	}
+	return
 }
