@@ -231,7 +231,10 @@ func minMaxFromConstraint(cc *matter.ConstraintContext, c constraint.Constraint)
 }
 
 func GetDefaultValue(cc *matter.ConstraintContext) (defaultValue types.DataTypeExtreme) {
-	c := constraint.ParseString(cc.Field.Default)
+	c, err := constraint.ParseString(cc.Field.Default)
+	if err != nil {
+		c = &constraint.GenericConstraint{Value: cc.Field.Default}
+	}
 	defaultValue = c.Default(cc)
 	switch defaultValue.Type {
 	case types.DataTypeExtremeTypeEmpty:

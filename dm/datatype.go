@@ -78,7 +78,11 @@ func renderDefault(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
 	if f.Default == "" {
 		return
 	}
-	cons := constraint.ParseString(f.Default)
+	cons, err := constraint.ParseString(f.Default)
+	if err != nil {
+		cons = &constraint.GenericConstraint{Value: f.Default}
+		return
+	}
 	ec, ok := cons.(*constraint.ExactConstraint)
 	if ok {
 		switch limit := ec.Value.(type) {

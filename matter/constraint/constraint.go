@@ -3,21 +3,19 @@ package constraint
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func ParseString(constraint string) Constraint {
+func ParseString(constraint string) (Constraint, error) {
 	if len(constraint) == 0 {
-		return &GenericConstraint{Value: constraint}
+		return &GenericConstraint{Value: constraint}, nil
 	}
 	c, err := Parse("", []byte(constraint))
 	if err != nil {
-		slog.Warn("failed parsing constraint", slog.String("constraint", constraint), slog.Any("error", err))
-		return &GenericConstraint{Value: constraint}
+		return nil, err
 	}
-	return c.(Constraint)
+	return c.(Constraint), nil
 }
 
 type ConstraintType uint8

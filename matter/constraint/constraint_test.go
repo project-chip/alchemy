@@ -48,6 +48,14 @@ func (cc *constraintTestContext) Default(name string) (def types.DataTypeExtreme
 	return
 }
 
+func mustParseConstraint(s string) Constraint {
+	constraint, err := ParseString(s)
+	if err != nil {
+		panic(err)
+	}
+	return constraint
+}
+
 type constraintTest struct {
 	constraint string
 	dataType   *types.DataType
@@ -113,8 +121,8 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
 		fields: fieldSet{
-			{Name: "MinMeasuredValue", Constraint: ParseString("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: ParseString("MinMeasuredValue+1 to 65534")},
+			{Name: "MinMeasuredValue", Constraint: mustParseConstraint("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: mustParseConstraint("MinMeasuredValue+1 to 65534")},
 		},
 		min:    types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
 		max:    types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
@@ -124,8 +132,8 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "1 to MaxMeasuredValue-1",
 		fields: fieldSet{
-			{Name: "MinMeasuredValue", Constraint: ParseString("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: ParseString("MinMeasuredValue+1 to 65534")},
+			{Name: "MinMeasuredValue", Constraint: mustParseConstraint("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: mustParseConstraint("MinMeasuredValue+1 to 65534")},
 		},
 		min:      types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
 		max:      types.NewIntDataTypeExtreme(65533, types.NumberFormatInt),
@@ -136,8 +144,8 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "MinMeasuredValue+1 to 65534",
 		fields: fieldSet{
-			{Name: "MinMeasuredValue", Constraint: ParseString("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: ParseString("MinMeasuredValue+1 to 65534")},
+			{Name: "MinMeasuredValue", Constraint: mustParseConstraint("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: mustParseConstraint("MinMeasuredValue+1 to 65534")},
 		},
 		min:      types.NewIntDataTypeExtreme(2, types.NumberFormatInt),
 		max:      types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
@@ -427,7 +435,7 @@ var constraintTests = []constraintTest{
 
 func TestSuite(t *testing.T) {
 	for _, ct := range constraintTests {
-		c := ParseString(ct.constraint)
+		c := mustParseConstraint(ct.constraint)
 		_, isGeneric := c.(*GenericConstraint)
 		if ct.generic {
 			if !isGeneric {

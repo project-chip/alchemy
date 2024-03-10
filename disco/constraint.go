@@ -1,6 +1,8 @@
 package disco
 
 import (
+	"log/slog"
+
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
@@ -23,16 +25,25 @@ func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.
 			continue
 		}
 
-		dataType := doc.ReadRowDataType(row, columnMap, matter.TableColumnType)
-		if dataType != nil {
-			c := constraint.ParseString(vc)
-			c = simplifyConstraints(c, dataType)
-			fixed := c.AsciiDocString(dataType)
-			if fixed != vc {
-				err = setCellString(cell, fixed)
-				if err != nil {
-					return
-				}
+		var dataType *mattertypes.DataType
+		dataType, err = doc.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		if err != nil {
+			slog.Warn("error reading data type for constraint", slog.String("path", doc.Path))
+			continue
+		}
+		if dataType == nil {
+			continue
+		}
+		c, e := constraint.ParseString(vc)
+		if e != nil {
+			continue
+		}
+		c = simplifyConstraints(c, dataType)
+		fixed := c.AsciiDocString(dataType)
+		if fixed != vc {
+			err = setCellString(cell, fixed)
+			if err != nil {
+				return
 			}
 		}
 
