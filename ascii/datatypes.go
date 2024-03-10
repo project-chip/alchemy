@@ -312,13 +312,11 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 	if len(s) == 0 {
 		return conformance.Set{&conformance.Mandatory{}}
 	}
-	firstNewLineIndex := strings.IndexAny(s, "\r\n")
-	if firstNewLineIndex >= 0 {
-		//s = s[0:firstNewLineIndex]
-		slog.Warn("newline in conformance", "conf", s)
-	}
+	s = newLineReplacer.Replace(s)
 	return conformance.ParseConformance(StripTypeSuffixes(s))
 }
+
+var newLineReplacer = strings.NewReplacer("\r\n", "", "\r", "", "\n", "")
 
 var typeSuffixes = []string{" Attribute", " Type", " Field", " Command", " Attribute", " Event"}
 
