@@ -34,7 +34,7 @@ func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster, entityMap map[typ
 			cluster.Enums = append(cluster.Enums, me)
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
-			me, err = s.toStruct(d, entityMap)
+			me, err = s.toStruct(d, cluster, entityMap)
 			if err != nil {
 				return
 			}
@@ -45,7 +45,7 @@ func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster, entityMap map[typ
 	return
 }
 
-func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap ColumnIndex, entityType mattertypes.EntityType) (fields []*matter.Field, err error) {
+func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*types.TableRow, columnMap ColumnIndex, entityType mattertypes.EntityType) (fields []*matter.Field, err error) {
 	ids := make(map[uint64]struct{})
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
@@ -55,7 +55,22 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 			return
 		}
 		f.Name = StripTypeSuffixes(f.Name)
-		f.Type = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+		if err != nil {
+			return
+		}
+		f.Type, err = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		if err != nil {
+			if cluster != nil && cluster.Hierarchy == "Base" && !conformance.IsDeprecated(f.Conformance) {
+				var clusterName string
+				if cluster != nil {
+					clusterName = cluster.Name
+				}
+				slog.Warn("error reading field data type", slog.String("path", d.Path), slog.String("cluster", clusterName), slog.String("name", f.Name), slog.Any("error", err))
+			}
+			err = nil
+		}
+
 		f.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, f.Type)
 		if err != nil {
 			return
@@ -73,10 +88,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 		if err != nil {
 			return
 		}
-		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
-		if err != nil {
-			return
-		}
+
 		var a string
 		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
@@ -105,21 +117,21 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeList)\[([^\]]+)\]`)
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
-func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) *mattertypes.DataType {
+func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*mattertypes.DataType, error) {
 	i, ok := columnMap[column]
 	if !ok {
-		return nil
+		return nil, fmt.Errorf("missing %s column for data type", column)
 	}
 	cell := row.Cells[i]
 	if len(cell.Elements) == 0 {
-		return nil
+		return nil, fmt.Errorf("empty %s cell for data type", column)
 	}
 	p, ok := cell.Elements[0].(*types.Paragraph)
 	if !ok {
-		return nil
+		return nil, fmt.Errorf("missing paragraph in %s cell for data type", column)
 	}
 	if len(p.Elements) == 0 {
-		return nil
+		return nil, fmt.Errorf("empty paragraph in %s cell for data type", column)
 	}
 	var isArray bool
 
@@ -160,7 +172,7 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 	}
 	name = strings.TrimSuffix(name, " Type")
 	dt := mattertypes.NewDataType(name, isArray)
-	return dt
+	return dt, nil
 }
 
 func (d *Doc) getAnchor(id string) (*Anchor, error) {

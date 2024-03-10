@@ -432,7 +432,7 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[types.WithAttri
 			}
 		case matter.SectionDataTypeStruct:
 			var s *matter.Struct
-			s, err = section.toStruct(doc, entityMap)
+			s, err = section.toStruct(doc, nil, entityMap)
 			if err == nil {
 				entities = append(entities, s)
 			}

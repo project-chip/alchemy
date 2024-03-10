@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toEvents(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (events matter.EventSet, err error) {
+func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[types.WithAttributes][]mattertypes.Entity) (events matter.EventSet, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -91,7 +91,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[types.WithAttributes][]matterty
 				err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
 				return
 			}
-			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeEvent)
+			e.Fields, err = d.readFields(cluster, headerRowIndex, rows, columnMap, mattertypes.EntityTypeEvent)
 			entityMap[s.Base] = append(entityMap[s.Base], e)
 		}
 	}
