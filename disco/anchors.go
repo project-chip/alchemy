@@ -75,8 +75,9 @@ func normalizeAnchorID(name string, element any, parent any) (id string, label s
 			parentName, _ = normalizeAnchorID(parentName, p.Base, p.Parent)
 			parentName = strings.TrimPrefix(parentName, "ref_")
 		case matter.SectionUnknown:
+		case matter.SectionEvents:
 		default:
-			slog.Warn("unexpected parent section type", slog.String("sectionType", p.SecType.String()))
+			slog.Debug("unexpected parent section type", slog.String("sectionType", p.SecType.String()))
 		}
 	}
 
