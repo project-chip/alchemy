@@ -33,7 +33,7 @@ func (c *Cluster) EntityType() types.EntityType {
 }
 
 func (c *Cluster) Inherit(parent *Cluster) (err error) {
-	slog.Info("Inheriting cluster", "parent", parent.Name, "child", c.Name)
+	slog.Debug("Inheriting cluster", "parent", parent.Name, "child", c.Name)
 	if parent.Features != nil {
 		if c.Features == nil || len(c.Features.Bits) == 0 {
 			c.Features = parent.Features.Clone()
