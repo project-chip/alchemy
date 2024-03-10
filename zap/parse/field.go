@@ -144,7 +144,11 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 		}
 	}
 	if cons != "" {
-		field.Constraint = constraint.ParseString(cons)
+		var err error
+		field.Constraint, err = constraint.ParseString(cons)
+		if err != nil {
+			field.Constraint = &constraint.GenericConstraint{Value: cons}
+		}
 	}
 	return nil
 }

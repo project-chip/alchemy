@@ -2,6 +2,7 @@ package ascii
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -129,7 +130,11 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.Constraint = constraint.ParseString(c)
+		cr.Constraint, err = constraint.ParseString(c)
+		if err != nil {
+			slog.Warn("failed parsing constraint", slog.String("path", s.Doc.Path), slog.String("constraint", c))
+			cr.Constraint = &constraint.GenericConstraint{Value: c}
+		}
 		var a string
 		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {

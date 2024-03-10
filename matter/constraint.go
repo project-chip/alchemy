@@ -41,7 +41,10 @@ func (cc *ConstraintContext) ReferenceConstraint(ref string) constraint.Constrai
 func (cc *ConstraintContext) Default(name string) (def types.DataTypeExtreme) {
 	f := cc.getReference(name)
 	if f != nil && f.Default != "" {
-		cons := constraint.ParseString(f.Default)
+		cons, err := constraint.ParseString(f.Default)
+		if err != nil {
+			cons = &constraint.GenericConstraint{Value: f.Default}
+		}
 		return cons.Default(cc)
 	}
 	// Couldn't find it as a reference; let's check other possibilities

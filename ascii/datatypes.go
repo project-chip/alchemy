@@ -202,7 +202,13 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 		return nil
 	}
 	val = strings.ReplaceAll(val, "\n", " ")
-	return constraint.ParseString(val)
+	var c constraint.Constraint
+	c, err = constraint.ParseString(val)
+	if err != nil {
+		slog.Warn("failed parsing constraint cell", "path", d.Path, slog.String("constraint", val))
+		return &constraint.GenericConstraint{Value: val}
+	}
+	return c
 }
 
 func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
