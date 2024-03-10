@@ -34,7 +34,8 @@ type Doc struct {
 	crossReferences map[string][]*types.InternalCrossReference
 	attributes      map[string]any
 
-	entities []mattertypes.Entity
+	entities       []mattertypes.Entity
+	entitiesParsed bool
 
 	entitiesBySection map[types.WithAttributes][]mattertypes.Entity
 }
@@ -165,9 +166,10 @@ func (d *Doc) addParent(parent *Doc) {
 }
 
 func (d *Doc) Entities() (entities []mattertypes.Entity, err error) {
-	if len(d.entities) > 0 {
+	if d.entitiesParsed {
 		return d.entities, nil
 	}
+	d.entitiesParsed = true
 	dt, err := d.DocType()
 	if err != nil {
 		return nil, err
