@@ -62,21 +62,27 @@ func renderAppClusters(cxt context.Context, sdkRoot string, appClusters []*ascii
 		return err
 	}
 
-	if !filesOptions.DryRun {
-		for path, result := range outputs {
-			path := filepath.Base(path)
-			newPath := filepath.Join(sdkRoot, fmt.Sprintf("/data_model/clusters/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
-			result, err = patchLicense(result, newPath)
-			if err != nil {
-				return fmt.Errorf("error patching license for %s: %w", newPath, err)
-			}
-			err = os.WriteFile(newPath, []byte(result), os.ModeAppend|0644)
-			if err != nil {
-				return fmt.Errorf("error writing %s: %w", newPath, err)
-			}
+	if filesOptions.DryRun {
+		return nil
+	}
+	for path, result := range outputs {
+		path := filepath.Base(path)
+		newPath := getAppClusterPath(sdkRoot, path)
+		result, err = patchLicense(result, newPath)
+		if err != nil {
+			return fmt.Errorf("error patching license for %s: %w", newPath, err)
+		}
+		err = os.WriteFile(newPath, []byte(result), os.ModeAppend|0644)
+		if err != nil {
+			return fmt.Errorf("error writing %s: %w", newPath, err)
 		}
 	}
 	return nil
+}
+
+func getAppClusterPath(sdkRoot string, path string) string {
+	path = filepath.Base(path)
+	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/clusters/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
 }
 
 type clusterID struct {
