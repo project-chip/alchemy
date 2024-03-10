@@ -9,7 +9,7 @@ import (
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toStruct(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (ms *matter.Struct, err error) {
+func (s *Section) toStruct(d *Doc, cluster *matter.Cluster, entityMap map[types.WithAttributes][]mattertypes.Entity) (ms *matter.Struct, err error) {
 	name := strings.TrimSuffix(s.Name, " Type")
 	var rows []*types.TableRow
 	var headerRowIndex int
@@ -34,7 +34,7 @@ func (s *Section) toStruct(d *Doc, entityMap map[types.WithAttributes][]matterty
 			}
 		}
 	}
-	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeStruct)
+	ms.Fields, err = d.readFields(cluster, headerRowIndex, rows, columnMap, mattertypes.EntityTypeStruct)
 	entityMap[s.Base] = append(entityMap[s.Base], ms)
 	return
 }

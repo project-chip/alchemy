@@ -26,7 +26,6 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 		switch s.SecType {
 		case matter.SectionClusterID:
 			clusters, err = readClusterIDs(d, s)
-		case matter.SectionRevisionHistory:
 		}
 		if err != nil {
 			return nil, err
@@ -39,9 +38,19 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 		elements := parse.Skim[*Section](s.Elements)
 		for _, s := range elements {
 			switch s.SecType {
+			case matter.SectionClassification:
+				err = readClusterClassification(d, c, s)
+
+			}
+			if err != nil {
+				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
+			}
+		}
+		for _, s := range elements {
+			switch s.SecType {
 			case matter.SectionAttributes:
 				var attr []*matter.Field
-				attr, err = s.toAttributes(d, entityMap)
+				attr, err = s.toAttributes(d, c, entityMap)
 				if err == nil {
 					c.Attributes = append(c.Attributes, attr...)
 				}
@@ -50,9 +59,9 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 			case matter.SectionFeatures:
 				c.Features, err = s.toFeatures(d, entityMap)
 			case matter.SectionEvents:
-				c.Events, err = s.toEvents(d, entityMap)
+				c.Events, err = s.toEvents(d, c, entityMap)
 			case matter.SectionCommands:
-				c.Commands, err = s.toCommands(d, entityMap)
+				c.Commands, err = s.toCommands(d, c, entityMap)
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:

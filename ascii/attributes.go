@@ -6,11 +6,12 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/parse"
 )
 
-func (s *Section) toAttributes(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (attributes matter.FieldSet, err error) {
+func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[types.WithAttributes][]mattertypes.Entity) (attributes matter.FieldSet, err error) {
 	var rows []*types.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -34,7 +35,15 @@ func (s *Section) toAttributes(d *Doc, entityMap map[types.WithAttributes][]matt
 			return
 		}
 		attr.Name = StripTypeSuffixes(attr.Name)
-		attr.Type = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		attr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+		attr.Type, err = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		if err != nil {
+			if cluster.Hierarchy == "Base" && !conformance.IsDeprecated(attr.Conformance) {
+				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated
+				slog.Warn("error reading attribute data type", slog.String("path", s.Doc.Path), slog.String("name", attr.Name), slog.Any("error", err))
+			}
+			err = nil
+		}
 		attr.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, attr.Type)
 		if err != nil {
 			return
@@ -49,7 +58,6 @@ func (s *Section) toAttributes(d *Doc, entityMap map[types.WithAttributes][]matt
 		if err != nil {
 			return
 		}
-		attr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		var a string
 		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {

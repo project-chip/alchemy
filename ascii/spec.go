@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -194,7 +195,13 @@ func resolveDataTypeReferences(spec *matter.Spec, mi entityIndex) {
 
 func resolveDataType(spec *matter.Spec, mi entityIndex, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
 	if dataType == nil {
-		slog.Warn("missing type on field", "name", field.Name)
+		if !conformance.IsDeprecated(field.Conformance) {
+			var clusterName string
+			if cluster != nil {
+				clusterName = cluster.Name
+			}
+			slog.Warn("missing type on field", slog.String("name", field.Name), slog.String("cluster", clusterName))
+		}
 		return
 	}
 	switch dataType.BaseType {
