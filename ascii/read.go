@@ -1,6 +1,7 @@
 package ascii
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/parser"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/alchemy/internal/pipeline"
 )
 
 func readFile(path string) (string, error) {
@@ -57,4 +59,23 @@ func Read(contents string, path string) (doc *Doc, err error) {
 	PatchUnrecognizedReferences(doc)
 
 	return doc, nil
+}
+
+type Reader struct {
+	name          string
+	asciiSettings []configuration.Setting
+}
+
+func (r Reader) Name() string {
+	return r.name
+}
+
+func (r Reader) Process(cxt context.Context, input *pipeline.Data[*Doc], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[*Doc], err error) {
+	var doc *Doc
+	doc, err = ReadFile(input.Path)
+	if err != nil {
+		return
+	}
+	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
+	return
 }
