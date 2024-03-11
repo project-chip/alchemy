@@ -36,11 +36,14 @@ func (sp *Writer) Process(cxt context.Context, input *pipeline.Data[string], ind
 }
 
 func (sp *Writer) ProcessAll(cxt context.Context, inputs []*pipeline.Data[string]) (outputs []*pipeline.Data[struct{}], err error) {
+	pipeline.SortData[string](inputs)
 	if sp.options.DryRun {
+		for _, i := range inputs {
+			fmt.Fprintf(os.Stderr, "Skipping %s...\n", i.Path)
+		}
 		return
 	}
 	if sp.options.Patch {
-		fmt.Fprintf(os.Stderr, "patching %d files\n", len(inputs))
 		for _, i := range inputs {
 			var exists bool
 			exists, err = Exists(i.Path)
@@ -62,6 +65,7 @@ func (sp *Writer) ProcessAll(cxt context.Context, inputs []*pipeline.Data[string
 		return
 	}
 	for _, i := range inputs {
+		fmt.Fprintf(os.Stderr, "Writing %s...\n", i.Path)
 		err = os.WriteFile(i.Path, []byte(i.Content), os.ModeAppend|0644)
 		if err != nil {
 			err = fmt.Errorf("error writing %s: %w", i.Path, err)

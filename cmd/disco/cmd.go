@@ -2,14 +2,13 @@ package disco
 
 import (
 	"context"
-	"fmt"
-	"log/slog"
-	"os"
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/ascii/render"
 	"github.com/hasty/alchemy/disco"
 	"github.com/hasty/alchemy/internal/files"
+	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/puzpuzpuz/xsync/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -18,62 +17,50 @@ var Command = &cobra.Command{
 	Short:   "disco ball Matter spec documents",
 	Long:    ``,
 	Aliases: []string{"discoball", "disco-ball"},
-	RunE: func(cmd *cobra.Command, args []string) (err error) {
+	RunE:    discoBall,
+}
 
-		var paths []string
-		specRoot, _ := cmd.Flags().GetString("specRoot")
-		if specRoot != "" {
-			paths = append(paths, specRoot)
-		} else {
-			sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
-			if sdkRoot != "" {
-				paths = append(paths, sdkRoot)
-			} else {
-				paths = args
-			}
-		}
+func discoBall(cmd *cobra.Command, args []string) (err error) {
+	cxt := context.Background()
 
-		discoOptions := getDiscoOptions(cmd)
+	var inputs *xsync.MapOf[string, *pipeline.Data[struct{}]]
+	specRoot, _ := cmd.Flags().GetString("specRoot")
+	if specRoot != "" {
+		inputs, err = pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
+	} else {
+		inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(args))
+	}
+	if err != nil {
+		return err
+	}
 
-		var fileOptions = files.Flags(cmd)
+	pipelineOptions := pipeline.Flags(cmd)
+	fileOptions := files.Flags(cmd)
+	discoOptions := getDiscoOptions(cmd)
 
-		return files.Save(context.Background(), args, func(cxt context.Context, file string, index, total int) (result string, outPath string, err error) {
-			outPath = file
-			var doc *ascii.Doc
-			doc, err = ascii.ReadFile(file)
-			if err != nil {
-				return
-			}
-			b := disco.NewBall(doc)
-			for _, option := range discoOptions {
-				option(b)
-			}
-			err = b.Run(cxt)
-			if err != nil {
-				outPath = ""
-				if err == disco.EmptyDocError {
-					err = nil
-					return
-				}
-				slog.Warn("Error disco balling document", "path", file, "error", err)
-				err = nil
-				return
-			}
-			result, err = render.Render(cxt, doc)
-			if err != nil {
-				slog.Warn("Error rendering document", "path", file, "error", err)
-				outPath = ""
-				err = nil
-				return
-			}
-			if fileOptions.Serial {
-				fmt.Fprintf(os.Stderr, "Disco-balled %s (%d of %d)...\n", file, index+1, total)
-			}
-			return
-		},
-			fileOptions)
+	docReader := ascii.NewReader("Reading docs", pipelineOptions)
+	docs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docReader, inputs)
+	if err != nil {
+		return err
+	}
 
-	},
+	baller := disco.NewBaller(discoOptions, pipelineOptions)
+	var balledDocs *xsync.MapOf[string, *pipeline.Data[render.InputDocument]]
+	balledDocs, err = pipeline.Process[*ascii.Doc, render.InputDocument](cxt, pipelineOptions, baller, docs)
+	if err != nil {
+		return err
+	}
+
+	renderer := render.NewRenderer(pipelineOptions)
+	var renders *xsync.MapOf[string, *pipeline.Data[string]]
+	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, balledDocs)
+	if err != nil {
+		return err
+	}
+
+	writer := files.NewWriter("Writing disco-balled docs", fileOptions)
+	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, renders)
+	return
 }
 
 func init() {

@@ -64,18 +64,40 @@ func Read(contents string, path string) (doc *Doc, err error) {
 type Reader struct {
 	name          string
 	asciiSettings []configuration.Setting
+	options       pipeline.Options
+}
+
+func NewReader(name string, options pipeline.Options, asciiSettings ...configuration.Setting) Reader {
+	return Reader{name: name, options: options, asciiSettings: asciiSettings}
 }
 
 func (r Reader) Name() string {
 	return r.name
 }
 
-func (r Reader) Process(cxt context.Context, input *pipeline.Data[*Doc], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[*Doc], err error) {
+func (r Reader) Type() pipeline.ProcessorType {
+	return r.options.DefaultProcessorType()
+}
+
+func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
 	var doc *Doc
-	doc, err = ReadFile(input.Path)
+	doc, err = ReadFile(input.Path, r.asciiSettings...)
 	if err != nil {
 		return
 	}
 	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
+	return
+}
+
+func (r Reader) ProcessAll(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[*Doc], err error) {
+	for _, input := range inputs {
+		var doc *Doc
+		fmt.Fprintf(os.Stderr, "Reading %s...\n", input.Path)
+		doc, err = ReadFile(input.Path, r.asciiSettings...)
+		if err != nil {
+			return
+		}
+		outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
+	}
 	return
 }
