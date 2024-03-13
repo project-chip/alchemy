@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/parse"
 )
 
 func (s *Section) toFeatures(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (features *matter.Features, err error) {

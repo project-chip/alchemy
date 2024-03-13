@@ -6,8 +6,8 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/parse"
 )
 
 func (b *Ball) ensureTableOptions(elements []interface{}) {

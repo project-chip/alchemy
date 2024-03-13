@@ -7,9 +7,9 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/parse"
 )
 
 type Bitmap struct {
