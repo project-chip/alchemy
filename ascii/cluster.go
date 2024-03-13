@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/parse"
 )
 
 func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {

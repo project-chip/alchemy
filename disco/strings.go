@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/parse"
+	"github.com/hasty/alchemy/internal/parse"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

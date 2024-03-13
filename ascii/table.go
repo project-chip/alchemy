@@ -7,8 +7,8 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii/render"
+	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/parse"
 )
 
 type ColumnIndex map[matter.TableColumn]int
