@@ -10,40 +10,41 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/internal/files"
+	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderDeviceTypes(cxt context.Context, spec *matter.Spec, docs []*ascii.Doc, sdkRoot string, filesOptions files.Options) (err error) {
+type DeviceTypesPatcher struct {
+	sdkRoot string
+	spec    *matter.Spec
+}
 
-	deviceTypes := newConcurrentMap[uint64, *matter.DeviceType]()
+func NewDeviceTypesPatcher(sdkRoot string, spec *matter.Spec) *DeviceTypesPatcher {
+	return &DeviceTypesPatcher{sdkRoot: sdkRoot, spec: spec}
+}
 
-	err = files.ProcessDocs(cxt, docs, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
+func (p DeviceTypesPatcher) Name() string {
+	return "Patching device types"
+}
 
-		entities, err := doc.Entities()
-		if err != nil {
-			slog.WarnContext(cxt, "failed converting doc to device type entities", slog.String("path", doc.Path), slog.Any("error", err))
-			return nil
+func (p DeviceTypesPatcher) Type() pipeline.ProcessorType {
+	return pipeline.ProcessorTypeCollective
+}
+
+func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data[[]*matter.DeviceType]) (outputs []*pipeline.Data[[]byte], err error) {
+
+	deviceTypes := make(map[uint64]*matter.DeviceType)
+	for _, input := range inputs {
+		for _, dt := range input.Content {
+			deviceTypes[dt.ID.Value()] = dt
+
 		}
-		for _, m := range entities {
-			switch m := m.(type) {
-			case *matter.DeviceType:
-				deviceTypes.Lock()
-				deviceTypes.Map[m.ID.Value()] = m
-				deviceTypes.Unlock()
-			}
-		}
-		return nil
-	}, filesOptions)
-	if err != nil {
-		return
 	}
 
-	deviceTypesXmlPath := filepath.Join(sdkRoot, "/src/app/zap-templates/zcl/data-model/chip/matter-devices.xml")
+	deviceTypesXmlPath := filepath.Join(p.sdkRoot, "/src/app/zap-templates/zcl/data-model/chip/matter-devices.xml")
 
 	var deviceTypesXml []byte
 	deviceTypesXml, err = os.ReadFile(deviceTypesXmlPath)
@@ -76,30 +77,27 @@ func renderDeviceTypes(cxt context.Context, spec *matter.Spec, docs []*ascii.Doc
 			slog.Warn("invalid deviceId", "text", deviceTypeId.Text())
 			continue
 		}
-		deviceType, ok := deviceTypes.Map[deviceTypeId.Value()]
+		deviceType, ok := deviceTypes[deviceTypeId.Value()]
 		if !ok {
 			continue
 		}
-		applyDeviceTypeToElement(spec, deviceType, deviceTypeElement)
-		delete(deviceTypes.Map, deviceTypeId.Value())
+		applyDeviceTypeToElement(p.spec, deviceType, deviceTypeElement)
+		delete(deviceTypes, deviceTypeId.Value())
 	}
 
-	for _, dt := range deviceTypes.Map {
+	for _, dt := range deviceTypes {
 		slog.Info("missing device type", slog.String("name", dt.Name))
-		applyDeviceTypeToElement(spec, dt, configurator.CreateElement("deviceType"))
+		applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
 	}
 
-	if !filesOptions.DryRun {
-		var out string
-		xml.Indent(4)
-		xml.WriteSettings.CanonicalEndTags = true
-		out, err = xml.WriteToString()
-		if err != nil {
-			return
-		}
-		//out, _ = parse.FormatXML(out)
-		err = os.WriteFile(deviceTypesXmlPath, []byte(out), os.ModeAppend|0644)
+	var out []byte
+	xml.Indent(4)
+	xml.WriteSettings.CanonicalEndTags = true
+	out, err = xml.WriteToBytes()
+	if err != nil {
+		return
 	}
+	outputs = append(outputs, pipeline.NewData[[]byte](deviceTypesXmlPath, out))
 	return
 }
 
@@ -146,14 +144,14 @@ func applyDeviceTypeToElement(spec *matter.Spec, deviceType *matter.DeviceType, 
 			clusterRequirementsByName[name] = crr
 		}
 		crr.baseClusterRequirements = append(crr.baseClusterRequirements, cr)
-		slog.Info("adding base device type cluster requirement", slog.String("cluster", cr.ClusterName))
+		slog.Debug("adding base device type cluster requirement", slog.String("cluster", cr.ClusterName))
 	}
 	for _, ers := range [][]*matter.ElementRequirement{deviceType.ElementRequirements, spec.BaseDeviceType.ElementRequirements} {
 		for _, er := range ers {
 			name := strings.ToLower(er.ClusterName)
 			crr, ok := clusterRequirementsByName[name]
 			if !ok {
-				slog.Warn("elementr requirement with missing cluster requirement", slog.String("deviceType", deviceType.Name), slog.String("cluster", er.ClusterName))
+				slog.Warn("element requirement with missing cluster requirement", slog.String("deviceType", deviceType.Name), slog.String("cluster", er.ClusterName))
 				continue
 			}
 			crr.elementRequirements = append(crr.elementRequirements, er)
@@ -169,7 +167,7 @@ func applyDeviceTypeToElement(spec *matter.Spec, deviceType *matter.DeviceType, 
 		}
 		crs, ok := clusterRequirementsByName[strings.ToLower(ca.Value)]
 		if !ok {
-			slog.Warn("unknown cluster attribute on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", ca.Value))
+			slog.Debug("unknown cluster attribute on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", ca.Value))
 			clustersElement.RemoveChild(include)
 			continue
 		}
@@ -190,7 +188,7 @@ func applyDeviceTypeToElement(spec *matter.Spec, deviceType *matter.DeviceType, 
 func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, deviceType *matter.DeviceType, cr *clusterRequirements) {
 	cluster, ok := spec.ClustersByName[cr.name]
 	if !ok {
-		slog.Warn("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
+		slog.Debug("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
 		return
 	}
 
@@ -250,6 +248,7 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 	requiredAttributes := make(map[string]struct{})
 	requiredAttributeDefines := make(map[string]struct{})
 	requiredCommands := make(map[string]struct{})
+	requiredEvents := make(map[string]struct{})
 
 	for _, er := range cr.elementRequirements {
 		conf, err := er.Conformance.Eval(cxt)
@@ -266,6 +265,9 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 				cxt.Values[er.Name] = true
 			case types.EntityTypeCommand:
 				requiredCommands[er.Name] = struct{}{}
+				cxt.Values[er.Name] = true
+			case types.EntityTypeEvent:
+				requiredEvents[er.Name] = struct{}{}
 				cxt.Values[er.Name] = true
 			default:
 				slog.Warn("Element requirement with unrecognized element type", slog.Any("entityType", er.Element))
@@ -302,6 +304,17 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 			requiredCommands[cmd.Name] = struct{}{}
 		}
 	}
+	for _, ev := range cluster.Events {
+		conf, err := ev.Conformance.Eval(cxt)
+		if err != nil {
+			slog.Warn("Error evaluating conformance of event", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
+			continue
+
+		}
+		if conf == conformance.StateMandatory || conf == conformance.StateProvisional {
+			requiredEvents[ev.Name] = struct{}{}
+		}
+	}
 	ras := include.SelectElements("requireAttribute")
 	for _, ra := range ras {
 		rat := ra.Text()
@@ -312,6 +325,11 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 			include.RemoveChild(ra)
 		}
 	}
+	for ra := range requiredAttributeDefines {
+		rae := etree.NewElement("requireAttribute")
+		rae.SetText(ra)
+		insertElementByName(include, rae, "")
+	}
 	rcs := include.SelectElements("requireCommand")
 	for _, rc := range rcs {
 		rct := rc.Text()
@@ -321,5 +339,25 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 		} else {
 			include.RemoveChild(rc)
 		}
+	}
+	for ra := range requiredCommands {
+		rae := etree.NewElement("requireCommand")
+		rae.SetText(ra)
+		insertElementByName(include, rae, "requireAttribute")
+	}
+	res := include.SelectElements("requireEvent")
+	for _, re := range res {
+		ret := re.Text()
+		_, required := requiredEvents[ret]
+		if required {
+			delete(requiredEvents, ret)
+		} else {
+			include.RemoveChild(re)
+		}
+	}
+	for ra := range requiredEvents {
+		rae := etree.NewElement("requireEvent")
+		rae.SetText(ra)
+		insertElementByName(include, rae, "requireAttribute", "requireCommand")
 	}
 }

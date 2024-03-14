@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareEntities(specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []any, err error) {
+func CompareEntities(specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []any, err error) {
 	for path, sm := range specEntities {
 		zm, ok := zapEntities[path]
 		if !ok {

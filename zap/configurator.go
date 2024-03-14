@@ -2,7 +2,6 @@ package zap
 
 import (
 	"log/slog"
-	"slices"
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
@@ -14,10 +13,10 @@ type Configurator struct {
 	Spec *matter.Spec
 	Doc  *ascii.Doc
 
-	Bitmaps  map[*matter.Bitmap][]string
-	Enums    map[*matter.Enum][]string
+	Bitmaps  map[*matter.Bitmap][]*matter.Number
+	Enums    map[*matter.Enum][]*matter.Number
 	Clusters map[*matter.Cluster]bool
-	Structs  map[*matter.Struct][]string
+	Structs  map[*matter.Struct][]*matter.Number
 
 	ClusterIDs []string
 }
@@ -26,16 +25,25 @@ func NewConfigurator(spec *matter.Spec, doc *ascii.Doc, entities []types.Entity)
 	c := &Configurator{
 		Spec:     spec,
 		Doc:      doc,
-		Bitmaps:  make(map[*matter.Bitmap][]string),
-		Enums:    make(map[*matter.Enum][]string),
+		Bitmaps:  make(map[*matter.Bitmap][]*matter.Number),
+		Enums:    make(map[*matter.Enum][]*matter.Number),
 		Clusters: make(map[*matter.Cluster]bool),
-		Structs:  make(map[*matter.Struct][]string),
+		Structs:  make(map[*matter.Struct][]*matter.Number),
 	}
 	for _, m := range entities {
 		switch v := m.(type) {
 		case *matter.Cluster:
 
 			c.addTypes(v.Attributes)
+			for _, s := range v.Bitmaps {
+				c.addEntityType(s)
+			}
+			for _, s := range v.Enums {
+				c.addEntityType(s)
+			}
+			for _, s := range v.Structs {
+				c.addEntityType(s)
+			}
 			for _, cmd := range v.Commands {
 				c.addTypes(cmd.Fields)
 			}
@@ -84,7 +92,8 @@ func (c *Configurator) addType(dt *types.DataType) {
 	path := c.Spec.DocRefs[entity]
 	if path != c.Doc.Path {
 		// This entity came from a different document, and will thus end up in its xml file, so should not be repeated here
-		slog.Warn("skipping data type from another document", "name", dt.Name)
+
+		slog.Debug("skipping data type from another document", "name", dt.Name, "path", c.Doc.Path)
 		return
 	}
 	c.addEntityType(entity)
@@ -103,15 +112,15 @@ func (c *Configurator) addEntityType(entity types.Entity) {
 	}
 }
 
-func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []string) {
+func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []*matter.Number) {
 	refs, ok := c.Spec.ClusterRefs[entity]
 	if !ok {
 		slog.Warn("unknown cluster ref", "val", entity)
 		return
 	}
 	for ref := range refs {
-		clusterIDs = append(clusterIDs, ref.ID.HexString())
+		clusterIDs = append(clusterIDs, ref.ID)
 	}
-	slices.Sort(clusterIDs)
+	matter.SortNumbers(clusterIDs)
 	return
 }

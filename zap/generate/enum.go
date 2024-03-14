@@ -1,7 +1,6 @@
 package generate
 
 import (
-	"fmt"
 	"log/slog"
 	"slices"
 	"strings"
@@ -25,7 +24,7 @@ func generateEnums(configurator *zap.Configurator, ce *etree.Element, cluster *m
 		name := nameAttr.Value
 
 		var matchingEnum *matter.Enum
-		var clusterIds []string
+		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range configurator.Enums {
 			if bm.Name == name || strings.TrimSuffix(bm.Name, "Enum") == name {
@@ -67,13 +66,13 @@ func generateEnums(configurator *zap.Configurator, ce *etree.Element, cluster *m
 		bme := etree.NewElement("enum")
 		clusterIds := clusterIdsForEntity(configurator.Spec, en)
 		populateEnum(configurator, bme, en, clusterIds, errata)
-		insertElementByName(ce, bme, "name", "bitmap", "domain")
+		insertElementByAttribute(ce, bme, "name", "bitmap", "domain")
 	}
 
 	return
 }
 
-func populateEnum(configurator *zap.Configurator, ee *etree.Element, en *matter.Enum, clusterIds []string, errata *zap.Errata) (err error) {
+func populateEnum(configurator *zap.Configurator, ee *etree.Element, en *matter.Enum, clusterIds []*matter.Number, errata *zap.Errata) (err error) {
 
 	var valFormat string
 	switch en.Type.BaseType {
@@ -123,7 +122,5 @@ func populateEnum(configurator *zap.Configurator, ee *etree.Element, en *matter.
 func setEnumItemAttributes(e *etree.Element, v *matter.EnumValue, valFormat string) {
 	name := zap.CleanName(v.Name)
 	e.CreateAttr("name", name)
-	if v.Value.Valid() {
-		e.CreateAttr("value", fmt.Sprintf(valFormat, v.Value.Value()))
-	}
+	patchNumberAttributeFormat(e, v.Value, "value", valFormat)
 }

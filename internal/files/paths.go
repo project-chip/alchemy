@@ -38,7 +38,7 @@ func Paths(filepaths []string) ([]string, error) {
 	return filtered, nil
 }
 
-func PathsTargeter(paths []string) func(cxt context.Context) ([]string, error) {
+func PathsTargeter(paths ...string) func(cxt context.Context) ([]string, error) {
 	return func(cxt context.Context) ([]string, error) {
 		return Paths(paths)
 	}

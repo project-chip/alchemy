@@ -148,7 +148,8 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 				if len(name) == 0 {
 					name = anchor.Label
 				}
-			} else {
+			}
+			if len(name) == 0 {
 				name = strings.TrimPrefix(v.ID.(string), "_")
 			}
 			sb.WriteString(name)

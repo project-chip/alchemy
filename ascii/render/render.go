@@ -2,8 +2,6 @@ package render
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"regexp"
 	"strings"
 
@@ -28,11 +26,10 @@ func postProcess(s string) string {
 }
 
 type Renderer struct {
-	pipelineOptions pipeline.Options
 }
 
-func NewRenderer(pipelineOptions pipeline.Options) *Renderer {
-	return &Renderer{pipelineOptions: pipelineOptions}
+func NewRenderer() *Renderer {
+	return &Renderer{}
 }
 
 func (p Renderer) Name() string {
@@ -40,28 +37,10 @@ func (p Renderer) Name() string {
 }
 
 func (p Renderer) Type() pipeline.ProcessorType {
-	return p.pipelineOptions.DefaultProcessorType()
+	return pipeline.ProcessorTypeIndividual
 }
 
 func (p Renderer) Process(cxt context.Context, input *pipeline.Data[InputDocument], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[InputDocument], err error) {
-	outputs, err = p.render(cxt, input)
-	return
-}
-
-func (p Renderer) ProcessAll(cxt context.Context, inputs []*pipeline.Data[InputDocument]) (outputs []*pipeline.Data[string], err error) {
-	for _, input := range inputs {
-		var o []*pipeline.Data[string]
-		fmt.Fprintf(os.Stderr, "%s...\n", input.Path)
-		o, err = p.render(cxt, input)
-		if err != nil {
-			return
-		}
-		outputs = append(outputs, o...)
-	}
-	return
-}
-
-func (p Renderer) render(cxt context.Context, input *pipeline.Data[InputDocument]) (outputs []*pipeline.Data[string], err error) {
 	doc := input.Content
 	var out string
 	out, err = Render(cxt, doc)

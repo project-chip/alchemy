@@ -2,7 +2,6 @@ package files
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 
 	"github.com/hasty/alchemy/internal/pipeline"
@@ -21,15 +20,10 @@ func (p PathFilter[T]) Name() string {
 }
 
 func (p PathFilter[T]) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeSerial
+	return pipeline.ProcessorTypeCollective
 }
 
-func (p PathFilter[T]) Process(cxt context.Context, input *pipeline.Data[T], index int32, total int32) (outputs []*pipeline.Data[T], extras []*pipeline.Data[T], err error) {
-	err = fmt.Errorf("path filtering must be done serially")
-	return
-}
-
-func (p PathFilter[T]) ProcessAll(cxt context.Context, inputs []*pipeline.Data[T]) (outputs []*pipeline.Data[T], err error) {
+func (p PathFilter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (outputs []*pipeline.Data[T], err error) {
 	if len(p.paths) == 0 {
 		return inputs, nil
 	}

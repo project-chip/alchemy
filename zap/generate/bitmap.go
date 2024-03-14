@@ -29,7 +29,7 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, cluster 
 		}
 
 		var matchingBitmap *matter.Bitmap
-		var clusterIds []string
+		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range configurator.Bitmaps {
 			if bm.Name == name || strings.TrimSuffix(bm.Name, "Bitmap") == name {
@@ -59,12 +59,12 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, cluster 
 		}
 		bme := etree.NewElement("bitmap")
 		populateBitmap(configurator, bme, bm, clusterIds, errata)
-		insertElementByName(ce, bme, "name", "domain")
+		insertElementByAttribute(ce, bme, "name", "domain")
 	}
 	return
 }
 
-func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matter.Bitmap, clusterIds []string, errata *zap.Errata) (err error) {
+func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matter.Bitmap, clusterIds []*matter.Number, errata *zap.Errata) (err error) {
 
 	var valFormat string
 	if bm.Name == "Feature" {
@@ -139,6 +139,13 @@ func setBitmapFieldAttributes(e *etree.Element, b matter.Bit, valFormat string) 
 
 	name := zap.CleanName(b.Name())
 	e.CreateAttr("name", name)
+	ma := e.SelectAttr("mask")
+	if ma != nil {
+		ev := matter.ParseNumber(ma.Value)
+		if ev.Valid() && ev.Value() == mask {
+			return nil
+		}
+	}
 	e.CreateAttr("mask", fmt.Sprintf(valFormat, mask))
 	return nil
 

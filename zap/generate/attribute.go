@@ -50,12 +50,15 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 		if conformance.IsZigbee(cluster, a.Conformance) {
 			continue
 		}
+		if conformance.IsDeprecated(a.Conformance) {
+			continue
+		}
 		if !a.ID.Valid() {
 			continue
 		}
 		ae := etree.NewElement("attribute")
 		populateAttribute(ae, a, cluster, clusterPrefix, errata)
-		insertElementByName(cle, ae, "code", "globalAttribute", "server", "client", "domain")
+		insertElementByAttribute(cle, ae, "code", "globalAttribute", "server", "client", "domain")
 	}
 	return
 }
@@ -77,16 +80,7 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 		ae.RemoveAttr("reportable")
 	}
 	renderConstraint(ae, cluster.Attributes, attribute)
-	if attribute.Default != "" {
-		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: attribute, Fields: cluster.Attributes})
-		if defaultValue.Defined() && !defaultValue.IsNull() {
-			ae.CreateAttr("default", defaultValue.ZapString(attribute.Type))
-		} else {
-			ae.RemoveAttr("default")
-		}
-	} else {
-		ae.RemoveAttr("default")
-	}
+	setFieldDefault(ae, attribute, cluster.Attributes)
 	if attribute.Quality.Has(matter.QualityFixed) || ((attribute.Access.Read == matter.PrivilegeUnknown || attribute.Access.Read == matter.PrivilegeView) && (attribute.Access.Write == matter.PrivilegeUnknown || attribute.Access.Write == matter.PrivilegeOperate)) || errata.SuppressAttributePermissions {
 		if attribute.Access.Write != matter.PrivilegeUnknown {
 			ae.CreateAttr("writable", "true")
@@ -137,6 +131,23 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 		ae.RemoveAttr("optional")
 	}
 	return
+}
+
+func setFieldDefault(e *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
+	if field.Default != "" {
+		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: field, Fields: fieldSet})
+		var def string
+		if defaultValue.Defined() && !defaultValue.IsNull() {
+			def = defaultValue.ZapString(field.Type)
+		}
+		if def != "" {
+			e.CreateAttr("default", def)
+		} else {
+			//e.RemoveAttr("default")
+		}
+	} else {
+		//e.RemoveAttr("default")
+	}
 }
 
 func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Field) {

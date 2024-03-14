@@ -2,79 +2,54 @@ package files
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hexops/gotextdiff"
-	"github.com/hexops/gotextdiff/myers"
-	"github.com/hexops/gotextdiff/span"
 )
 
-type Writer struct {
-	name    string
-	options Options
+type Writer[T string | []byte] interface {
+	pipeline.Processor
+	SetName(name string)
 }
 
-func (sp *Writer) Name() string {
+type writer struct {
+	name string
+}
+
+func (w *writer) Name() string {
+	return w.name
+}
+
+func (w *writer) SetName(name string) {
+	w.name = name
+}
+
+func NewWriter[T string | []byte](name string, options Options) Writer[T] {
+	w := writer{name: name}
+	if options.DryRun {
+		return &DryRun[T]{writer: w}
+	}
+	if options.Patch {
+		return &Patcher[T]{writer: w}
+	}
+	return &FileWriter[T]{writer: w}
+}
+
+type FileWriter[T string | []byte] struct {
+	writer
+}
+
+func (sp *FileWriter[T]) Name() string {
 	return sp.name
 }
 
-func (sp *Writer) Type() pipeline.ProcessorType {
-	if sp.options.Serial || sp.options.Patch {
-		return pipeline.ProcessorTypeSerial
-	}
-	return pipeline.ProcessorTypeParallel
+func (sp *FileWriter[T]) Type() pipeline.ProcessorType {
+	return pipeline.ProcessorTypeIndividual
 }
 
-func (sp *Writer) Process(cxt context.Context, input *pipeline.Data[string], index int32, total int32) (outputs []*pipeline.Data[struct{}], extras []*pipeline.Data[string], err error) {
-	if sp.options.DryRun {
-		return
-	}
+func (sp *FileWriter[T]) Process(cxt context.Context, input *pipeline.Data[T], index int32, total int32) (outputs []*pipeline.Data[struct{}], extras []*pipeline.Data[T], err error) {
 	err = os.WriteFile(input.Path, []byte(input.Content), os.ModeAppend|0644)
 	return
 }
 
-func (sp *Writer) ProcessAll(cxt context.Context, inputs []*pipeline.Data[string]) (outputs []*pipeline.Data[struct{}], err error) {
-	pipeline.SortData[string](inputs)
-	if sp.options.DryRun {
-		for _, i := range inputs {
-			fmt.Fprintf(os.Stderr, "Skipping %s...\n", i.Path)
-		}
-		return
-	}
-	if sp.options.Patch {
-		for _, i := range inputs {
-			var exists bool
-			exists, err = Exists(i.Path)
-			if err != nil {
-				return
-			}
-			var existing string
-			if exists {
-				var eb []byte
-				eb, err = os.ReadFile(i.Path)
-				if err != nil {
-					return
-				}
-				existing = string(eb)
-			}
-			edits := myers.ComputeEdits(span.URIFromPath(i.Path), existing, i.Content)
-			fmt.Print(gotextdiff.ToUnified(i.Path, i.Path, existing, edits))
-		}
-		return
-	}
-	for _, i := range inputs {
-		fmt.Fprintf(os.Stderr, "Writing %s...\n", i.Path)
-		err = os.WriteFile(i.Path, []byte(i.Content), os.ModeAppend|0644)
-		if err != nil {
-			err = fmt.Errorf("error writing %s: %w", i.Path, err)
-			return
-		}
-	}
-	return
-}
-
-func NewWriter(name string, options Options) *Writer {
-	return &Writer{name: name, options: options}
-}
+var _ pipeline.IndividualProcessor[string, struct{}] = &FileWriter[string]{}

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func (b *Ball) organizeBitmapSections(cxt *discoContext, dp *docParse) (err error) {
@@ -42,7 +43,7 @@ func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSe
 		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}
 
-	b.addMissingColumns(dp.doc, bms.section, bitsTable.element, bitsTable.rows, matter.BitmapTableColumnOrder[:], nil, bitsTable.headerRow, bitsTable.columnMap)
+	b.addMissingColumns(dp.doc, bms.section, bitsTable.element, bitsTable.rows, matter.BitmapTableColumnOrder[:], nil, bitsTable.headerRow, bitsTable.columnMap, types.EntityTypeBitmapValue)
 
 	b.reorderColumns(dp.doc, bms.section, bitsTable.rows, matter.BitmapTableColumnOrder[:], bitsTable.columnMap, bitsTable.extraColumns)
 

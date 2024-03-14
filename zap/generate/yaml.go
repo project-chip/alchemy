@@ -11,18 +11,18 @@ import (
 
 var yamlFileLinkPattern = regexp.MustCompile(`(?m)^(?P<Indent>\s+)(?P<File>src/app/zap-templates/zcl/data-model/(?:[^/\.]+/)*(?:[^.]+\.)xml)\s\\\n`)
 
-func patchTestsYaml(sdkRoot string, files []string) error {
-	testsYamlPath := path.Join(sdkRoot, ".github/workflows/tests.yaml")
-	yamlBytes, err := os.ReadFile(testsYamlPath)
+func patchTestsYamlBytes(sdkRoot string, files []string) (testsYamlPath string, yamlBytes []byte, err error) {
+	testsYamlPath = path.Join(sdkRoot, ".github/workflows/tests.yaml")
+	yamlBytes, err = os.ReadFile(testsYamlPath)
 	if err != nil {
-		return err
+		return
 	}
 
 	yaml := string(yamlBytes)
 
 	matches := yamlFileLinkPattern.FindAllStringSubmatch(yaml, -1)
 	if len(matches) == 0 {
-		return fmt.Errorf("could not find existing paths in tests.yaml")
+		return
 	}
 	var indent = matches[0][1]
 
@@ -44,7 +44,7 @@ func patchTestsYaml(sdkRoot string, files []string) error {
 		var inserted bool
 		for i, line := range lines {
 			if i < 1 {
-				// We skip the first line, "global-attributes.xml"
+
 				continue
 			}
 			if strings.Compare(file, line) < 0 {
@@ -70,6 +70,6 @@ func patchTestsYaml(sdkRoot string, files []string) error {
 		replaced = true
 		return sb.String()
 	})
-
-	return os.WriteFile(testsYamlPath, []byte(yaml), os.ModeAppend|0644)
+	yamlBytes = []byte(yaml)
+	return
 }

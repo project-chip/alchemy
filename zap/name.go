@@ -42,3 +42,20 @@ func ZAPDeviceTypeName(deviceType *matter.DeviceType) string {
 	name := strcase.ToKebab(deviceType.Name)
 	return "MA-" + name
 }
+
+func getZapPath(sdkRoot string, name string) string {
+	newPath := filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip", name+".xml")
+	return newPath
+}
+
+func ZAPClusterPath(sdkRoot string, path string, entities []types.Entity) string {
+	newFile := filepath.Base(path)
+	errata, ok := Erratas[newFile]
+	if !ok {
+		errata = DefaultErrata
+	}
+
+	newFile = ZAPClusterName(path, errata, entities)
+	newFile = strcase.ToKebab(newFile)
+	return getZapPath(sdkRoot, newFile)
+}

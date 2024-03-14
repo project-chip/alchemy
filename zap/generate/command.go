@@ -71,7 +71,7 @@ func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
 		populateCommand(cme, command, cluster, errata)
-		insertElementByName(ce, cme, "code", "attribute")
+		insertElementByAttribute(ce, cme, "code", "attribute")
 	}
 	return
 }
@@ -103,7 +103,7 @@ func populateCommand(ce *etree.Element, c *matter.Command, cluster *matter.Clust
 	} else {
 		ce.RemoveAttr("response")
 	}
-	if c.Response == "N" && !serverSource {
+	if c.Response == "N" && serverSource {
 		ce.CreateAttr("disableDefaultResponse", "true")
 	} else {
 		ce.RemoveAttr("disableDefaultResponse")

@@ -1,11 +1,8 @@
 package compare
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
 	"io/fs"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,102 +10,12 @@ import (
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/constraint"
-	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
-	zparse "github.com/hasty/alchemy/zap/parse"
-	"github.com/iancoleman/strcase"
 )
-
-func Compare(cxt context.Context, specRoot string, sdkRoot string, settings []configuration.Setting) error {
-
-	slog.InfoContext(cxt, "Loading spec...")
-	spec, _, err := files.LoadSpec(cxt, specRoot, files.Options{}, settings)
-	if err != nil {
-		return err
-	}
-
-	zapEntities, err := loadZAPEntities(sdkRoot)
-
-	if err != nil {
-		return err
-	}
-
-	specEntities, err := loadSpecClusterPaths(spec, sdkRoot)
-	if err != nil {
-		return err
-	}
-	diffs, err := compareEntities(specEntities, zapEntities)
-	if err != nil {
-		return err
-	}
-	jm := json.NewEncoder(os.Stdout)
-	jm.SetIndent("", "\t")
-	return jm.Encode(diffs)
-}
-
-func loadSpecClusterPaths(spec *matter.Spec, sdkRoot string) (map[string][]mattertypes.Entity, error) {
-	specEntities := make(map[string][]mattertypes.Entity)
-	specPaths := make(map[string][]mattertypes.Entity)
-	for e, path := range spec.DocRefs {
-		switch e.(type) {
-		case *matter.Cluster:
-			specPaths[path] = append(specPaths[path], e)
-		}
-	}
-	for path, entities := range specPaths {
-		newFile := filepath.Base(path)
-		errata, ok := zap.Erratas[newFile]
-		if !ok {
-			errata = zap.DefaultErrata
-		}
-
-		newFile = zap.ZAPClusterName(path, errata, entities)
-		newFile = strcase.ToKebab(newFile)
-		newPath := filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip", newFile+".xml")
-		specEntities[newPath] = entities
-	}
-	return specEntities, nil
-}
-
-func loadSpecEntities(appClusterPaths []string, settings []configuration.Setting, domains map[string]matter.Domain, sdkRoot string) (map[string][]mattertypes.Entity, error) {
-	specEntities := make(map[string][]mattertypes.Entity)
-	for i, file := range appClusterPaths {
-		doc, err := ascii.ParseFile(file, append(ascii.GithubSettings(), settings...)...)
-		if err != nil {
-			return nil, err
-		}
-		if domain, ok := domains[file]; ok {
-			doc.Domain = domain
-		} else {
-			doc.Domain = matter.DomainCHIP
-		}
-
-		entities, err := doc.Entities()
-		if err != nil {
-			return nil, err
-		}
-
-		errata, ok := zap.Erratas[filepath.Base(file)]
-		if !ok {
-			errata = zap.DefaultErrata
-		}
-
-		fmt.Fprintf(os.Stderr, "ZCL'd %s (%d of %d)...\n", file, i+1, len(appClusterPaths))
-
-		newFile := zap.ZAPClusterName(doc.Path, errata, entities)
-		newFile = strcase.ToKebab(newFile)
-
-		newPath := filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip", newFile+".xml")
-
-		specEntities[newPath] = entities
-	}
-	return specEntities, nil
-}
 
 func getAppDomains(specRoot string, settings []configuration.Setting) ([]string, map[string]matter.Domain, error) {
 	var appClusterPaths []string
@@ -163,32 +70,6 @@ func getAppDomains(specRoot string, settings []configuration.Setting) ([]string,
 		})
 	}
 	return appClusterPaths, domains, nil
-}
-
-func loadZAPEntities(sdkRoot string) (map[string][]mattertypes.Entity, error) {
-	zapPath := filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")
-	xmlFiles, err := filepath.Glob(zapPath)
-	if err != nil {
-		return nil, err
-	}
-	zapEntities := make(map[string][]mattertypes.Entity)
-	for _, f := range xmlFiles {
-		slog.Debug("ZAP file", slog.String("path", f))
-
-		file, err := os.Open(f)
-		if err != nil {
-			return nil, err
-		}
-		defer file.Close()
-		var entities []mattertypes.Entity
-		entities, err = zparse.ZAP(file)
-		if err != nil {
-			return nil, err
-		}
-
-		zapEntities[f] = entities
-	}
-	return zapEntities, nil
 }
 
 func compareConformance(spec conformance.Set, zap conformance.Set) (diffs []any) {

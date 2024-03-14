@@ -28,13 +28,15 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 
+	asciiSettings = append(ascii.GithubSettings(), asciiSettings...)
+
 	specFiles, err := pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
 	if err != nil {
 		return err
 	}
 
-	docReader := ascii.NewParser(pipeline.ProcessorTypeParallel, asciiSettings)
-	specDocs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docReader, specFiles)
+	docParser := ascii.NewParser(asciiSettings)
+	specDocs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err
 	}
@@ -55,7 +57,7 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	writer := files.NewWriter("Writing data model", fileOptions)
+	writer := files.NewWriter[string]("Writing data model", fileOptions)
 	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, dataModelDocs)
 	return
 }

@@ -23,27 +23,10 @@ func (p Renderer) Name() string {
 }
 
 func (p Renderer) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeParallel
+	return pipeline.ProcessorTypeIndividual
 }
 
 func (p Renderer) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*ascii.Doc], err error) {
-	outputs, err = p.render(cxt, input)
-	return
-}
-
-func (p Renderer) ProcessAll(cxt context.Context, inputs []*pipeline.Data[*ascii.Doc]) (outputs []*pipeline.Data[string], err error) {
-	for _, input := range inputs {
-		var o []*pipeline.Data[string]
-		o, err = p.render(cxt, input)
-		if err != nil {
-			return
-		}
-		outputs = append(outputs, o...)
-	}
-	return
-}
-
-func (p Renderer) render(cxt context.Context, input *pipeline.Data[*ascii.Doc]) (outputs []*pipeline.Data[string], err error) {
 	doc := input.Content
 	entites, err := doc.Entities()
 	if err != nil {

@@ -74,6 +74,7 @@ var matterToZapMap = map[string]string{
 	"vendor-id":      "vendor_id",
 	"endpoint-id":    "endpoint_id",
 	"endpoint-no":    "endpoint_no",
+	"EndpointNumber": "endpoint_no",
 	"eui64":          "eui64",
 
 	"unsignedtemperature":   "int8u",
@@ -217,7 +218,7 @@ func minMaxFromConstraint(cc *matter.ConstraintContext, c constraint.Constraint)
 	}
 	if cc.Field.Type.IsArray() {
 		switch cc.Field.Constraint.(type) {
-		case *constraint.DescribedConstraint, *constraint.AllConstraint:
+		case *constraint.DescribedConstraint, *constraint.AllConstraint, *constraint.GenericConstraint:
 			return
 		case *constraint.ListConstraint, *constraint.MaxConstraint, *constraint.MinConstraint, *constraint.RangeConstraint, *constraint.ExactConstraint:
 		default:

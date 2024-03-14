@@ -13,7 +13,7 @@ func Flags(cmd *cobra.Command) (options Options) {
 
 func (o Options) DefaultProcessorType() ProcessorType {
 	if o.Serial {
-		return ProcessorTypeSerial
+		return ProcessorTypeCollective
 	}
-	return ProcessorTypeParallel
+	return ProcessorTypeIndividual
 }

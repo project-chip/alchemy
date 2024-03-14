@@ -2,119 +2,67 @@ package testplan
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/internal/files"
+	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/parse"
-	"github.com/hasty/alchemy/zap"
 	"github.com/iancoleman/strcase"
 )
 
-type Options struct {
-	Files     files.Options
-	Ascii     []configuration.Setting
-	Overwrite bool
+type Generator struct {
+	testPlanRoot string
+	overwrite    bool
 }
 
-func Generate(cxt context.Context, specRoot string, testPlanRoot string, paths []string, options Options) error {
+func (sp Generator) Name() string {
+	return "Generating test plans"
+}
 
-	slog.InfoContext(cxt, "Loading spec...")
-	spec, docs, err := files.LoadSpec(cxt, specRoot, options.Files, options.Ascii)
+func (sp Generator) Type() pipeline.ProcessorType {
+	return pipeline.ProcessorTypeIndividual
+}
+
+func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*ascii.Doc], err error) {
+	doc := input.Content
+	path := doc.Path
+
+	var entities []types.Entity
+	entities, err = doc.Entities()
 	if err != nil {
-		return err
+		return
 	}
 
-	slog.InfoContext(cxt, "Splitting spec...")
-	docsByType, err := files.SplitSpec(docs)
-	if err != nil {
-		return err
-	}
-	appClusterIndexes := docsByType[matter.DocTypeAppClusterIndex]
-	//deviceTypes := docsByType[matter.DocTypeDeviceType]
+	destinations := buildDestinations(sp.testPlanRoot, doc, entities)
 
-	docsByPath := make(map[string]*ascii.Doc)
-	for _, doc := range docs {
-		docsByPath[doc.Path] = doc
-	}
+	for newPath, cluster := range destinations {
 
-	slog.InfoContext(cxt, "Assigning index domains...")
-
-	err = files.ProcessDocs(cxt, appClusterIndexes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
-		top := parse.FindFirst[*ascii.Section](doc.Elements)
-		if top == nil {
-			return nil
-		}
-		doc.Domain = zap.StringToDomain(top.Name)
-		slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
-		return nil
-	}, options.Files)
-	if err != nil {
-		return err
-	}
-
-	slog.InfoContext(cxt, "Extracting clusters...")
-	var clusters []*ascii.Doc
-	for _, d := range docs {
-
-		entities, err := d.Entities()
-		if err != nil {
-			slog.Warn("error parsing doc", "path", d.Path, "error", err)
+		_, err = os.ReadFile(newPath)
+		if (err == nil || !errors.Is(err, os.ErrNotExist)) && !sp.overwrite {
+			slog.InfoContext(cxt, "Skipping existing test plan", slog.String("path", newPath))
 			continue
 		}
 
-		for _, m := range entities {
-			switch m.(type) {
-			case *matter.Cluster:
-				clusters = append(clusters, d)
-
-			}
-		}
-	}
-
-	if len(paths) > 0 {
-		filteredDocs := make([]*ascii.Doc, 0, len(paths))
-		pathMap := make(map[string]struct{})
-		for _, p := range paths {
-			pathMap[filepath.Base(p)] = struct{}{}
-		}
-		for _, ac := range clusters {
-			p := filepath.Base(ac.Path)
-			if _, ok := pathMap[p]; ok {
-				filteredDocs = append(filteredDocs, ac)
-				delete(pathMap, p)
-			}
-		}
-		clusters = filteredDocs
-	}
-
-	outputs, err := renderTestPlans(cxt, spec, docsByPath, clusters, testPlanRoot, options.Files, options.Overwrite)
-	if err != nil {
-		return err
-	}
-
-	if !options.Files.DryRun {
-
-		for path, result := range outputs {
-			if len(result) == 0 {
-				continue
-			}
-
-			err = os.WriteFile(path, []byte(result), os.ModeAppend|0644)
-			if err != nil {
-				return err
-			}
+		var result string
+		result, err = renderClusterTestPlan(doc, cluster)
+		if err != nil {
+			err = fmt.Errorf("failed rendering %s: %w", path, err)
+			return
 		}
 
+		outputs = append(outputs, pipeline.NewData[string](newPath, result))
 	}
+	return
+}
 
-	return nil
+func NewGenerator(testPlanRoot string, overwrite bool) *Generator {
+	return &Generator{testPlanRoot: testPlanRoot, overwrite: overwrite}
 }
 
 func getTestPlanPath(testplanRoot string, name string) string {
