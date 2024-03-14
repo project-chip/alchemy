@@ -9,15 +9,14 @@ permissions:
   packages: write
 
 jobs:
-  releases-matrix:
-    name: Release Go Binary
+  alchemy:
+    name: Release Alchmey Binary
     runs-on: ubuntu-latest
     strategy:
       matrix:
         # build and publish in parallel: linux/amd64
         goos: [darwin, windows, linux]
         goarch: [amd64, arm64]
-        tags: [plain, db]
         exclude:
           - goarch: arm64
             goos: windows
@@ -36,6 +35,35 @@ jobs:
           project_path: "."
           binary_name: "alchemy"
           ldflags: "-s -w"
+          extra_files: LICENSE README.md
+          asset_name: "alchemy-${{ steps.tag.outputs.tag }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+  alchemy-db:
+    name: Release Alchmey DB Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build and publish in parallel: linux/amd64
+        goos: [darwin, windows, linux]
+        goarch: [amd64, arm64]
+        tags: [db]
+        exclude:
+          - goarch: arm64
+            goos: windows
+    steps:
+      - name: Get tag
+        id: tag
+        uses: devops-actions/action-get-tag@v1.0.1
+        with:
+          strip_v: true
+      - uses: actions/checkout@v3
+      - uses: wangyoucao577/go-release-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          project_path: "."
+          binary_name: "alchemy-db"
+          ldflags: "-s -w"
           build_flags: -tags ${{ matrix.tags }}
           extra_files: LICENSE README.md
-          asset_name: "alchemy-${{ steps.tag.outputs.tag }}-${{ matrix.goos }}-${{ matrix.goarch }}-${{ matrix.tags }}"
+          asset_name: "alchemy-db-${{ steps.tag.outputs.tag }}-${{ matrix.goos }}-${{ matrix.goarch }}"
