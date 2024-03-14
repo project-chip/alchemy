@@ -23,7 +23,7 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 		name := nameAttr.Value
 
 		var matchingStruct *matter.Struct
-		var clusterIds []string
+		var clusterIds []*matter.Number
 		var skip bool
 		for s, handled := range configurator.Structs {
 			if s.Name == name || strings.TrimSuffix(s.Name, "Struct") == name {
@@ -76,7 +76,7 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 
 				for _, clusterID := range clusterIds {
 					bme := etree.NewElement("struct")
-					populateStruct(configurator, bme, s, cluster, errata, []string{clusterID}, false)
+					populateStruct(configurator, bme, s, cluster, errata, []*matter.Number{clusterID}, false)
 					appendElement(configuratorElement, bme, "enum", "bitmap")
 				}
 				continue
@@ -84,13 +84,13 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 		}
 		bme := etree.NewElement("struct")
 		populateStruct(configurator, bme, s, cluster, errata, clusterIds, true)
-		insertElementByName(configuratorElement, bme, "name", "enum", "bitmap", "domain")
+		insertElementByAttribute(configuratorElement, bme, "name", "enum", "bitmap", "domain")
 	}
 
 	return
 }
 
-func populateStruct(configurator *zap.Configurator, ee *etree.Element, s *matter.Struct, cluster *matter.Cluster, errata *zap.Errata, clusterIDs []string, provisional bool) (remainingClusterIDs []string) {
+func populateStruct(configurator *zap.Configurator, ee *etree.Element, s *matter.Struct, cluster *matter.Cluster, errata *zap.Errata, clusterIDs []*matter.Number, provisional bool) (remainingClusterIDs []*matter.Number) {
 
 	ee.CreateAttr("name", s.Name)
 	if provisional {
@@ -156,15 +156,6 @@ func setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Fiel
 	} else {
 		e.RemoveAttr("isFabricSensitive")
 	}
-	if v.Default != "" {
-		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: v, Fields: s.Fields})
-		if defaultValue.Defined() && !defaultValue.IsNull() {
-			e.CreateAttr("default", defaultValue.ZapString(v.Type))
-		} else {
-			e.RemoveAttr("default")
-		}
-	} else {
-		e.RemoveAttr("default")
-	}
+	setFieldDefault(e, v, s.Fields)
 	renderConstraint(e, s.Fields, v)
 }

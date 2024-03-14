@@ -49,7 +49,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 	for event := range events {
 		ee := etree.NewElement("event")
 		populateEvent(ee, event, cluster, errata)
-		insertElementByName(ce, ee, "code", "command", "attribute")
+		insertElementByAttribute(ce, ee, "code", "command", "attribute")
 	}
 	return
 }
@@ -57,7 +57,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, errata *zap.Errata) {
 	needsAccess := e.Access.Read != matter.PrivilegeUnknown && e.Access.Read != matter.PrivilegeView
 
-	ee.CreateAttr("code", e.ID.ShortHexString())
+	patchNumberAttribute(ee, e.ID, "code")
 	ee.CreateAttr("name", e.Name)
 	ee.CreateAttr("priority", strings.ToLower(e.Priority))
 	ee.CreateAttr("side", "server")
@@ -134,16 +134,7 @@ func setFieldAttributes(e *etree.Element, f *matter.Field, fs matter.FieldSet) {
 	} else {
 		e.RemoveAttr("isFabricSensitive")
 	}
-	if f.Default != "" {
-		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: f, Fields: fs})
-		if defaultValue.Defined() && !defaultValue.IsNull() {
-			e.CreateAttr("default", defaultValue.ZapString(f.Type))
-		} else {
-			e.RemoveAttr("default")
-		}
-	} else {
-		e.RemoveAttr("default")
-	}
+	setFieldDefault(e, f, fs)
 	renderConstraint(e, fs, f)
 }
 
@@ -163,8 +154,11 @@ func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field) {
 
 func setAccessAttributes(el *etree.Element, op string, p matter.Privilege, errata *zap.Errata) {
 	el.CreateAttr("op", op)
+	role := el.SelectAttr("role")
 	var name string
-	if errata.WritePrivilegeAsRole {
+	if role != nil {
+		name = "role"
+	} else if errata.WritePrivilegeAsRole {
 		name = "role"
 		el.RemoveAttr("privilege")
 	} else {
@@ -173,5 +167,4 @@ func setAccessAttributes(el *etree.Element, op string, p matter.Privilege, errat
 	}
 	px, _ := p.MarshalXMLAttr(xml.Name{Local: name})
 	el.CreateAttr(name, px.Value)
-
 }

@@ -4,71 +4,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"log/slog"
-	"os"
 	"path/filepath"
 	"slices"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 )
-
-func renderDeviceTypes(cxt context.Context, sdkRoot string, deviceTypes []*ascii.Doc, filesOptions files.Options) error {
-	var lock sync.Mutex
-	outputs := make(map[string]string)
-	err := files.ProcessDocs(cxt, deviceTypes, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
-		slog.Info("Device Type doc", "name", doc.Path)
-
-		entities, err := doc.Entities()
-		if err != nil {
-			slog.ErrorContext(cxt, "error converting doc to entities", "doc", doc.Path, "error", err)
-			return nil
-		}
-		var deviceTypes []*matter.DeviceType
-		for _, m := range entities {
-			slog.Debug("entity", "type", m)
-			switch m := m.(type) {
-			case *matter.DeviceType:
-				deviceTypes = append(deviceTypes, m)
-			}
-		}
-		s, err := renderDeviceType(cxt, deviceTypes)
-		if err != nil {
-			slog.ErrorContext(cxt, "error rendering entities", "doc", doc.Path, "error", err)
-			return nil
-		}
-		lock.Lock()
-		outputs[doc.Path] = s
-		lock.Unlock()
-		return nil
-	}, filesOptions)
-
-	if err != nil {
-		return err
-	}
-
-	if !filesOptions.DryRun {
-		for path, result := range outputs {
-			path := filepath.Base(path)
-			newPath := getDeviceTypePath(sdkRoot, path)
-			result, err = patchLicense(result, newPath)
-			if err != nil {
-				return fmt.Errorf("error patching license for %s: %w", newPath, err)
-			}
-			err = os.WriteFile(newPath, []byte(result), os.ModeAppend|0644)
-			if err != nil {
-				return fmt.Errorf("error writing %s: %w", newPath, err)
-			}
-		}
-	}
-	return nil
-}
 
 func getDeviceTypePath(sdkRoot string, path string) string {
 	path = filepath.Base(path)

@@ -91,7 +91,7 @@ func populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster
 
 	setOrCreateSimpleElement(cle, "domain", matter.DomainNames[configurator.Doc.Domain])
 	setOrCreateSimpleElement(cle, "name", cluster.Name, "domain")
-	setOrCreateSimpleElement(cle, "code", cluster.ID.HexString(), "name", "domain")
+	patchNumberElement(setOrCreateSimpleElement(cle, "code", "", "name", "domain"), cluster.ID)
 	setOrCreateSimpleElement(cle, "define", define, "code", "name", "domain")
 
 	if cle.SelectElement("description") == nil {

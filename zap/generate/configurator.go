@@ -80,9 +80,10 @@ func generateFeatures(configurator *zap.Configurator, configuratorElement *etree
 	needFeatures := features != nil && len(features.Bits) > 0
 
 	bitmaps := configuratorElement.SelectElements("bitmap")
-	var clusterIds []string
+
+	var clusterIds []*matter.Number
 	for c := range configurator.Clusters {
-		clusterIds = append(clusterIds, c.ID.HexString())
+		clusterIds = append(clusterIds, c.ID)
 	}
 	for _, bm := range bitmaps {
 		nameAttr := bm.SelectAttr("name")
@@ -108,46 +109,45 @@ func generateFeatures(configurator *zap.Configurator, configuratorElement *etree
 	return
 }
 
-func amendExistingClusterCodes(parent *etree.Element, entity types.Entity, clusterIDs []string) (amendedCodes []string, remainingCodes []string) {
+func amendExistingClusterCodes(parent *etree.Element, entity types.Entity, clusterIDs []*matter.Number) (amendedCodes []*matter.Number, remainingCodes []*matter.Number) {
 	clusterCodeElements := parent.SelectElements("cluster")
-	remainingCodes = make([]string, len(clusterIDs))
+	remainingCodes = make([]*matter.Number, len(clusterIDs))
 	copy(remainingCodes, clusterIDs)
 	for _, cce := range clusterCodeElements {
 		ca := cce.SelectAttr("code")
 		if ca == nil {
-			slog.Warn("missing cluster code", "val", entity)
+			slog.Debug("missing cluster code", "val", entity)
 			continue
 		}
 		id := matter.ParseNumber(ca.Value)
 
-		if !id.Valid() || !slices.Contains(clusterIDs, ca.Value) {
+		if !id.Valid() || !matter.ContainsNumber(clusterIDs, id) {
 			parent.RemoveChild(cce)
 			continue
 		}
-		ids := id.HexString()
-		amendedCodes = append(amendedCodes, ids)
-		remainingCodes = slices.DeleteFunc(remainingCodes, func(s string) bool { return s == ids })
+		amendedCodes = append(amendedCodes, id)
+		remainingCodes = slices.DeleteFunc(remainingCodes, func(s *matter.Number) bool { return s.Equals(id) })
 	}
 	return
 }
 
-func flushClusterCodes(parent *etree.Element, clusterIDs []string) {
+func flushClusterCodes(parent *etree.Element, clusterIDs []*matter.Number) {
 	for _, clusterID := range clusterIDs {
 		ce := etree.NewElement("cluster")
-		ce.CreateAttr("code", clusterID)
+		patchNumberAttribute(ce, clusterID, "code")
 		appendElement(parent, ce, "cluster")
 	}
 }
 
-func clusterIdsForEntity(spec *matter.Spec, entity types.Entity) (clusterIDs []string) {
+func clusterIdsForEntity(spec *matter.Spec, entity types.Entity) (clusterIDs []*matter.Number) {
 	refs, ok := spec.ClusterRefs[entity]
 	if !ok {
 		slog.Warn("unknown cluster ref", "val", entity)
 		return
 	}
 	for ref := range refs {
-		clusterIDs = append(clusterIDs, ref.ID.HexString())
+		clusterIDs = append(clusterIDs, ref.ID)
 	}
-	slices.Sort(clusterIDs)
+	matter.SortNumbers(clusterIDs)
 	return
 }

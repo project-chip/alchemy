@@ -14,6 +14,8 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 		switch a.Name.Local {
 		case "singleton":
 		case "apiMaturity":
+		case "code":
+			cluster.ID = matter.ParseNumber(a.Value)
 		default:
 			return nil, fmt.Errorf("unexpected cluster attribute: %s", a.Name.Local)
 		}

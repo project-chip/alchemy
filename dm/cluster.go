@@ -4,81 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"log/slog"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
 )
-
-type Result struct {
-	XML      string
-	Path     string
-	Doc      *ascii.Doc
-	Entities []types.Entity
-}
-
-func renderAppClusters(cxt context.Context, sdkRoot string, appClusters []*ascii.Doc, filesOptions files.Options) error {
-	var lock sync.Mutex
-	outputs := make(map[string]string)
-	err := files.ProcessDocs(cxt, appClusters, func(cxt context.Context, doc *ascii.Doc, index, total int) error {
-		slog.InfoContext(cxt, "App cluster doc", "name", doc.Path)
-
-		entities, err := doc.Entities()
-		if err != nil {
-			slog.ErrorContext(cxt, "error converting doc to entities", "doc", doc.Path, "error", err)
-			return nil
-		}
-		var clusters []*matter.Cluster
-		for _, m := range entities {
-			slog.Debug("entity", "type", m)
-			switch m := m.(type) {
-			case *matter.Cluster:
-				clusters = append(clusters, m)
-			}
-		}
-		if len(clusters) == 0 {
-			slog.WarnContext(cxt, "no clusters found in app_clusters doc", "doc", doc.Path)
-			return nil
-		}
-		s, err := renderAppCluster(cxt, clusters)
-		if err != nil {
-			return fmt.Errorf("failed rendering %s: %w", doc.Path, err)
-		}
-		lock.Lock()
-		outputs[doc.Path] = s
-		lock.Unlock()
-		return nil
-	}, filesOptions)
-
-	if err != nil {
-		return err
-	}
-
-	if filesOptions.DryRun {
-		return nil
-	}
-	for path, result := range outputs {
-		path := filepath.Base(path)
-		newPath := getAppClusterPath(sdkRoot, path)
-		result, err = patchLicense(result, newPath)
-		if err != nil {
-			return fmt.Errorf("error patching license for %s: %w", newPath, err)
-		}
-		err = os.WriteFile(newPath, []byte(result), os.ModeAppend|0644)
-		if err != nil {
-			return fmt.Errorf("error writing %s: %w", newPath, err)
-		}
-	}
-	return nil
-}
 
 func getAppClusterPath(sdkRoot string, path string) string {
 	path = filepath.Base(path)

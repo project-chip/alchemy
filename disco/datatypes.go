@@ -9,6 +9,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 type DataTypeEntry struct {
@@ -188,7 +189,7 @@ func (b *Ball) promoteDataTypes(cxt *discoContext, top *ascii.Section) (promoted
 			suffix := matter.DataTypeSuffixes[dtc]
 			idColumn := matter.DataTypeIdentityColumn[dtc]
 			var didPromotion bool
-			didPromotion, err = b.promoteDataType(top, suffix, f, idColumn)
+			didPromotion, err = b.promoteDataType(top, suffix, f, idColumn, dtc)
 			if err != nil {
 				return
 			}
@@ -218,11 +219,20 @@ func getDataTypeCategory(dataType string) matter.DataTypeCategory {
 	return matter.DataTypeCategoryUnknown
 }
 
-func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn) (promoted bool, err error) {
+func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn, dtc matter.DataTypeCategory) (promoted bool, err error) {
 	if dataTypeFields == nil {
 		return
 	}
 	var dataTypesSection *ascii.Section
+	var entityType mattertypes.EntityType
+	switch dtc {
+	case matter.DataTypeCategoryBitmap:
+		entityType = mattertypes.EntityTypeBitmapValue
+	case matter.DataTypeCategoryEnum:
+		entityType = mattertypes.EntityTypeEnumValue
+	case matter.DataTypeCategoryStruct:
+		entityType = mattertypes.EntityTypeField
+	}
 	for _, dt := range dataTypeFields {
 		if dt.existing {
 			continue
@@ -270,7 +280,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 					return
 				}
 			} else {
-				summaryIndex, err = b.appendColumn(rows, columnMap, headerRowIndex, matter.TableColumnSummary, nil)
+				summaryIndex, err = b.appendColumn(rows, columnMap, headerRowIndex, matter.TableColumnSummary, nil, entityType)
 				if err != nil {
 					return
 				}
@@ -279,7 +289,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		_, hasNameColumn := columnMap[matter.TableColumnName]
 		if !hasNameColumn {
 			var nameIndex int
-			nameIndex, err = b.appendColumn(rows, columnMap, headerRowIndex, matter.TableColumnName, nil)
+			nameIndex, err = b.appendColumn(rows, columnMap, headerRowIndex, matter.TableColumnName, nil, entityType)
 			if err != nil {
 				return
 			}

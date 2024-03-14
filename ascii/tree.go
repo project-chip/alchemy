@@ -29,7 +29,6 @@ func buildTree(docs []*Doc) {
 			if link != nil {
 				linkPath, ok := link.Location.Path.(string)
 				if ok {
-
 					linkPath = filepath.Join(filepath.Dir(path), linkPath)
 					linkPath = strings.ReplaceAll(linkPath, "energy-management.adoc", "energy_management.adoc")
 					slog.Debug("linked file\n", "from", path, "to", linkPath)

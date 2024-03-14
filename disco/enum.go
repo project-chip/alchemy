@@ -7,6 +7,7 @@ import (
 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func (b *Ball) organizeEnumSections(cxt *discoContext, dp *docParse) (err error) {
@@ -43,7 +44,7 @@ func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSecti
 		return fmt.Errorf("error renaming table header cells in enum table in section %s in %s: %w", es.section.Name, dp.doc.Path, err)
 	}
 
-	b.addMissingColumns(dp.doc, es.section, enumTable.element, enumTable.rows, matter.EnumTableColumnOrder[:], nil, enumTable.headerRow, enumTable.columnMap)
+	b.addMissingColumns(dp.doc, es.section, enumTable.element, enumTable.rows, matter.EnumTableColumnOrder[:], nil, enumTable.headerRow, enumTable.columnMap, types.EntityTypeEnumValue)
 
 	es.table.headerRow, es.table.columnMap, es.table.extraColumns, err = ascii.MapTableColumns(dp.doc, enumTable.rows)
 	enumTable = es.table

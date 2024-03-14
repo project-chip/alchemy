@@ -8,6 +8,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func (b *Ball) ensureTableOptions(elements []interface{}) {
@@ -37,14 +38,14 @@ func (b *Ball) ensureTableOptions(elements []interface{}) {
 
 }
 
-func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex) (err error) {
+func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex, entityType mattertypes.EntityType) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
 	delete(table.Attributes, "cols")
 	for _, column := range order {
 		if _, ok := columnMap[column]; !ok {
-			_, err = b.appendColumn(rows, columnMap, headerRowIndex, column, overrides)
+			_, err = b.appendColumn(rows, columnMap, headerRowIndex, column, overrides, entityType)
 			if err != nil {
 				return
 			}
@@ -53,7 +54,7 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	return
 }
 
-func (*Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string) (appendedIndex int, err error) {
+func (*Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType mattertypes.EntityType) (appendedIndex int, err error) {
 	if len(rows) == 0 {
 		appendedIndex = -1
 		return
@@ -77,6 +78,9 @@ func (*Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, h
 		} else {
 			last := row.Cells[len(row.Cells)-1]
 			cell.Blank = last.Blank
+			if !cell.Blank {
+				err = setCellString(cell, getDefaultColumnValue(entityType, column))
+			}
 		}
 		row.Cells = append(row.Cells, cell)
 	}
@@ -84,9 +88,36 @@ func (*Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, h
 	return
 }
 
+func getDefaultColumnValue(entityType mattertypes.EntityType, column matter.TableColumn) string {
+	switch column {
+	case matter.TableColumnConformance:
+		switch entityType {
+		case mattertypes.EntityTypeBitmapValue, mattertypes.EntityTypeEnumValue:
+			return "M"
+		}
+	}
+	return ""
+}
+
 func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap ascii.ColumnIndex, extraColumns []ascii.ExtraColumn) {
 	if !b.options.reorderColumns {
 		return
+	}
+	if len(rows) == 0 {
+		return
+	}
+	newColumnIndexes := make([]int, len(columnMap)+len(extraColumns))
+	for i := range newColumnIndexes {
+		newColumnIndexes[i] = -1
+	}
+	for i, column := range order {
+		if offset, ok := columnMap[column]; ok {
+			// column exists in existing order
+			newColumnIndexes[offset] = i
+		}
+	}
+	for i, extra := range extraColumns {
+		newColumnIndexes[extra.Offset] = len(order) + i
 	}
 	for _, row := range rows {
 		newCells := make([]*types.TableCell, 0, len(order)+len(extraColumns))

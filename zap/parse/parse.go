@@ -1,21 +1,37 @@
 package parse
 
 import (
+	"bytes"
+	"context"
 	"encoding/xml"
 	"fmt"
 	"io"
 
+	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func ZAP(r io.Reader) (entities []types.Entity, err error) {
-	d := xml.NewDecoder(r)
+type ZapParser struct {
+}
+
+func (sp ZapParser) Name() string {
+	return "Parsing ZAP templates"
+}
+
+func (sp ZapParser) Type() pipeline.ProcessorType {
+	return pipeline.ProcessorTypeIndividual
+}
+
+func (sp *ZapParser) Process(cxt context.Context, input *pipeline.Data[[]byte], index int32, total int32) (outputs []*pipeline.Data[[]types.Entity], extras []*pipeline.Data[[]byte], err error) {
+	d := xml.NewDecoder(bytes.NewReader(input.Content))
+	var entities []types.Entity
 	for {
 		var tok xml.Token
 		tok, err = d.Token()
 		if tok == nil || err == io.EOF {
 			err = nil
+			outputs = append(outputs, pipeline.NewData[[]types.Entity](input.Path, entities))
 			return
 		} else if err != nil {
 			return
@@ -39,6 +55,7 @@ func ZAP(r io.Reader) (entities []types.Entity, err error) {
 			err = fmt.Errorf("unexpected top level type: %T", t)
 		}
 		if err != nil {
+			err = fmt.Errorf("error parsing %s: %w", input.Path, err)
 			return
 		}
 	}

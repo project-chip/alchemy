@@ -53,3 +53,7 @@ var (
 func (s EntityType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(entityTypeNames[s])
 }
+
+type EntityStore interface {
+	Entities() ([]Entity, error)
+}

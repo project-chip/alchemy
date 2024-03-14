@@ -10,33 +10,27 @@ import (
 	"github.com/iancoleman/orderedmap"
 )
 
-func patchZapJson(sdkRoot string, files []string) error {
-	err := patchZapJsonFile(sdkRoot, files, "src/app/zap-templates/zcl/zcl.json")
+func patchZapJsonFile(sdkRoot string, file string, files []string) (zclJSONPath string, zclJSONBytes []byte, err error) {
+	zclJSONPath = path.Join(sdkRoot, file)
+	zclJSONBytes, err = os.ReadFile(zclJSONPath)
 	if err != nil {
-		return err
-	}
-	return patchZapJsonFile(sdkRoot, files, "src/app/zap-templates/zcl/zcl-with-test-extensions.json")
-}
-
-func patchZapJsonFile(sdkRoot string, files []string, file string) error {
-	zclJSONPath := path.Join(sdkRoot, file)
-	zclJSONBytes, err := os.ReadFile(zclJSONPath)
-	if err != nil {
-		return err
+		return
 	}
 
 	o := orderedmap.New()
 	err = json.Unmarshal(zclJSONBytes, &o)
 	if err != nil {
-		return err
+		return
 	}
 	val, ok := o.Get("xmlFile")
 	if !ok {
-		return fmt.Errorf("no xmlField field in zcl.json")
+		err = fmt.Errorf("missing xmlFile element in %s", zclJSONPath)
+		return
 	}
 	is, ok := val.([]interface{})
 	if !ok {
-		return fmt.Errorf("xmlField not a string array in zcl.json; %T", val)
+		err = fmt.Errorf("xmlFile element in %s is not array", zclJSONPath)
+		return
 	}
 	xmls := make([]string, 0, len(is)+len(files))
 	fileMap := make(map[string]struct{})
@@ -57,8 +51,8 @@ func patchZapJsonFile(sdkRoot string, files []string, file string) error {
 
 	zclJSONBytes, err = json.MarshalIndent(o, "", "    ")
 	if err != nil {
-		return err
+		err = fmt.Errorf("error marshaling %s: %w", zclJSONPath, err)
+		return
 	}
-
-	return os.WriteFile(zclJSONPath, []byte(zclJSONBytes), os.ModeAppend|0644)
+	return
 }

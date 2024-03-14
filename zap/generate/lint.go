@@ -9,12 +9,11 @@ import (
 
 var templatePathPattern = regexp.MustCompile(`(?m)^load "../src/app/zap-templates/zcl/data-model/chip/[^.]+\.xml";\n`)
 
-func patchLint(sdkRoot string, files []string) error {
-
-	lintPath := filepath.Join(sdkRoot, "/scripts/rules.matterlint")
-	lintBytes, err := os.ReadFile(lintPath)
+func patchLintBytes(sdkRoot string, files []string) (lintPath string, lintBytes []byte, err error) {
+	lintPath = filepath.Join(sdkRoot, "/scripts/rules.matterlint")
+	lintBytes, err = os.ReadFile(lintPath)
 	if err != nil {
-		return err
+		return
 	}
 	lint := string(lintBytes)
 
@@ -47,6 +46,6 @@ func patchLint(sdkRoot string, files []string) error {
 		replaced = true
 		return sb.String()
 	})
-
-	return os.WriteFile(lintPath, []byte(s), os.ModeAppend|0644)
+	lintBytes = []byte(s)
+	return
 }

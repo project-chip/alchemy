@@ -3,13 +3,9 @@ package pipeline
 import (
 	"context"
 	"fmt"
-	"os"
-	"path/filepath"
-	"sync/atomic"
-	"unicode/utf8"
+	"reflect"
 
 	"github.com/puzpuzpuz/xsync/v3"
-	"github.com/schollz/progressbar/v3"
 )
 
 type Targeter func(cxt context.Context) ([]string, error)
@@ -29,150 +25,65 @@ func Start[T any](cxt context.Context, targeter Targeter) (*xsync.MapOf[string, 
 	return output, nil
 }
 
-func Process[I, O any](cxt context.Context, options Options, processor Processor[I, O], input *xsync.MapOf[string, *Data[I]]) (output *xsync.MapOf[string, *Data[O]], err error) {
+func Process[I, O any](cxt context.Context, options Options, processor Processor, input *xsync.MapOf[string, *Data[I]]) (output *xsync.MapOf[string, *Data[O]], err error) {
 	switch processor.Type() {
-	case ProcessorTypeSerial:
-		return processAll[I, O](cxt, processor, input)
-	case ProcessorTypeParallel:
-		total := int32(input.Size())
-		queue := make(chan *Data[I], total)
-		input.Range(func(key string, value *Data[I]) bool {
-			select {
-			case queue <- value:
-				return true
-			default:
-				err = fmt.Errorf("queue full")
-				return false
-
+	case ProcessorTypeCollective:
+		proc, ok := processor.(CollectiveProcessor[I, O])
+		if !ok {
+			proc = processor.(CollectiveProcessor[I, O])
+			err = fmt.Errorf("processor \"%s\" claimed to be collective, but does not implement CollectiveProcessor interface", processor.Name())
+			return
+		}
+		return processCollective[I, O](cxt, proc, input)
+	case ProcessorTypeIndividual:
+		proc, ok := processor.(IndividualProcessor[I, O])
+		if !ok {
+			proc = processor.(IndividualProcessor[I, O])
+			err = fmt.Errorf("processor \"%s\" claimed to be individual, but does not implement IndividualProcessor interface", processor.Name())
+			fooType := reflect.TypeOf(processor)
+			for i := 0; i < fooType.NumMethod(); i++ {
+				method := fooType.Method(i)
+				fmt.Printf("method: %v\n", method)
 			}
-		})
-		if err != nil {
 			return
 		}
 		if options.Serial {
-			return processSerial[I, O](cxt, processor, queue, total)
+			return ProcessSerialFunc[I, O](cxt, options, input, proc.Name(), proc.Process)
 		}
-		return processParallel[I, O](cxt, processor, queue, total)
+		return ProcessParallelFunc[I, O](cxt, options, input, proc.Name(), proc.Process)
 	}
 	return
 }
 
-func processAll[I, O any](cxt context.Context, processor Processor[I, O], input *xsync.MapOf[string, *Data[I]]) (output *xsync.MapOf[string, *Data[O]], err error) {
-	fmt.Fprintf(os.Stderr, "%s...\n", processor.Name())
+func ProcessSerialFunc[I, O any](cxt context.Context, options Options, input *xsync.MapOf[string, *Data[I]], name string, f IndividualProcess[I, O]) (output *xsync.MapOf[string, *Data[O]], err error) {
 	total := int32(input.Size())
-	inputs := make([]*Data[I], 0, total)
+	queue := make(chan *Data[I], total)
+	inputs := DataMapToSlice[I](input)
+	SortData[I](inputs)
+	for _, i := range inputs {
+		select {
+		case queue <- i:
+		default:
+			err = fmt.Errorf("queue full")
+			return
+
+		}
+	}
+	return processSerial[I, O](cxt, name, f, queue, total)
+}
+
+func ProcessParallelFunc[I, O any](cxt context.Context, options Options, input *xsync.MapOf[string, *Data[I]], name string, f IndividualProcess[I, O]) (output *xsync.MapOf[string, *Data[O]], err error) {
+	total := int32(input.Size())
+	queue := make(chan *Data[I], total)
 	input.Range(func(key string, value *Data[I]) bool {
-		inputs = append(inputs, value)
-		return true
+		select {
+		case queue <- value:
+			return true
+		default:
+			err = fmt.Errorf("queue full")
+			return false
+
+		}
 	})
-	var outputs []*Data[O]
-	outputs, err = processor.ProcessAll(cxt, inputs)
-	if err != nil {
-		return
-	}
-	output = xsync.NewMapOfPresized[string, *Data[O]](len(outputs))
-	for _, o := range outputs {
-		_, loaded := output.LoadAndStore(o.Path, o)
-		if loaded {
-			err = fmt.Errorf("duplicate path in output: %s", o.Path)
-			return
-		}
-	}
-	return
-}
-
-func processSerial[I, O any](cxt context.Context, processor Processor[I, O], queue chan *Data[I], total int32) (output *xsync.MapOf[string, *Data[O]], err error) {
-	var counter int32
-	output = xsync.NewMapOfPresized[string, *Data[O]](int(total))
-	fmt.Fprintf(os.Stderr, "%s...\n", processor.Name())
-	for {
-		var input *Data[I]
-		select {
-		case input = <-queue:
-		default:
-		}
-		if input == nil {
-			return
-		}
-		var outputs []*Data[O]
-		var extras []*Data[I]
-		outputs, extras, err = processor.Process(cxt, input, counter, total)
-		if err != nil {
-			return nil, err
-		}
-		counter++
-		for _, e := range extras {
-			select {
-			case queue <- e:
-				total++
-			default:
-				err = fmt.Errorf("queue full")
-				return
-			}
-		}
-		for _, o := range outputs {
-			_, loaded := output.LoadAndStore(o.Path, o)
-			if loaded {
-				err = fmt.Errorf("duplicate path in output: %s", o.Path)
-				return
-			}
-		}
-	}
-}
-
-func processParallel[I, O any](cxt context.Context, processor Processor[I, O], queue chan *Data[I], total int32) (output *xsync.MapOf[string, *Data[O]], err error) {
-
-	output = xsync.NewMapOfPresized[string, *Data[O]](int(total))
-	fmt.Fprintf(os.Stderr, "%s...\n", processor.Name())
-	bar := progressbar.Default(int64(total))
-	var complete int32
-	wg := newWorkGroup()
-	for {
-		var input *Data[I]
-		select {
-		case input = <-queue:
-		default:
-		}
-		if input == nil {
-			break
-		}
-		wg.run(cxt, func() error {
-			done := atomic.AddInt32(&complete, 1)
-			outputs, extras, err := processor.Process(cxt, input, done, total)
-			if err != nil {
-				return err
-			}
-			bar.Describe(progressFileName(input.Path))
-			bar.Add(1)
-			for _, e := range extras {
-				select {
-				case queue <- e:
-					newTotal := atomic.AddInt32(&total, 1)
-					bar.ChangeMax(int(newTotal))
-				default:
-					return fmt.Errorf("queue full")
-				}
-			}
-			for _, o := range outputs {
-				_, loaded := output.LoadAndStore(o.Path, o)
-				if loaded {
-					return fmt.Errorf("duplicate path in output: %s", o.Path)
-				}
-			}
-			return nil
-		})
-	}
-	err = wg.Wait()
-	return
-}
-
-const fileNameSize = 30
-
-func progressFileName(file string) string {
-	file = filepath.Base(file)
-	length := utf8.RuneCountInString(file)
-	if length > fileNameSize {
-		file = string([]rune(file)[length-fileNameSize:])
-	}
-	return fmt.Sprintf("%-*s", fileNameSize, file)
+	return processParallel[I, O](cxt, name, f, queue, total)
 }

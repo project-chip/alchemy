@@ -88,11 +88,10 @@ func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...par
 
 type Parser struct {
 	asciiSettings []configuration.Setting
-	processorType pipeline.ProcessorType
 }
 
-func NewParser(processorType pipeline.ProcessorType, asciiSettings []configuration.Setting) Parser {
-	return Parser{processorType: processorType, asciiSettings: asciiSettings}
+func NewParser(asciiSettings []configuration.Setting) Parser {
+	return Parser{asciiSettings: asciiSettings}
 }
 
 func (p Parser) Name() string {
@@ -100,7 +99,7 @@ func (p Parser) Name() string {
 }
 
 func (p Parser) Type() pipeline.ProcessorType {
-	return p.processorType
+	return pipeline.ProcessorTypeIndividual
 }
 
 func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
@@ -110,17 +109,5 @@ func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 		return
 	}
 	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
-	return
-}
-
-func (p Parser) ProcessAll(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[*Doc], err error) {
-	for _, input := range inputs {
-		var doc *Doc
-		doc, err = ParseFile(input.Path, p.asciiSettings...)
-		if err != nil {
-			return
-		}
-		outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
-	}
 	return
 }

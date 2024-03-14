@@ -3,6 +3,7 @@ package matter
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -158,4 +159,27 @@ func ParseFormattedIDRange(s string) (from *Number, fromFormat types.NumberForma
 	from, fromFormat = ParseFormattedNumber(match[1])
 	to, toFormat = ParseFormattedNumber(match[2])
 	return
+}
+
+func ContainsNumber(s []*Number, n *Number) bool {
+	for _, v := range s {
+		if v.Equals(n) {
+			return true
+		}
+	}
+	return false
+}
+
+func SortNumbers(s []*Number) {
+	slices.SortFunc[[]*Number, *Number](s, func(a *Number, b *Number) int {
+		av := a.Value()
+		bv := b.Value()
+		if av < bv {
+			return -1
+		}
+		if bv > av {
+			return 1
+		}
+		return 0
+	})
 }

@@ -25,10 +25,9 @@ func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.
 			continue
 		}
 
-		var dataType *mattertypes.DataType
-		dataType, err = doc.ReadRowDataType(row, columnMap, matter.TableColumnType)
-		if err != nil {
-			slog.Warn("error reading data type for constraint", slog.String("path", doc.Path))
+		dataType, e := doc.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		if e != nil {
+			slog.Debug("error reading data type for constraint", slog.String("path", doc.Path), slog.Any("error", e))
 			continue
 		}
 		if dataType == nil {

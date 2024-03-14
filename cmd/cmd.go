@@ -1,3 +1,5 @@
+//go:build !db
+
 package cmd
 
 import (
@@ -50,5 +52,4 @@ func init() {
 	rootCmd.AddCommand(dump.Command)
 	rootCmd.AddCommand(dm.Command)
 	rootCmd.AddCommand(testplan.Command)
-	rootCmd.AddCommand(versionCommand)
 }

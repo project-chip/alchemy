@@ -39,6 +39,23 @@ func setOrCreateSimpleElement(parent *etree.Element, name string, value string, 
 	return el
 }
 
+func setOrCreateSimpleNumber(parent *etree.Element, name string, value string, afterElements ...string) *etree.Element {
+	el := parent.SelectElement(name)
+	if el == nil {
+		if len(afterElements) == 0 {
+			el = parent.CreateElement(name)
+		} else {
+			el = etree.NewElement(name)
+			appendElement(parent, el, afterElements...)
+		}
+
+	}
+	if len(value) > 0 {
+		el.SetText(value)
+	}
+	return el
+}
+
 func appendElement(parent *etree.Element, el *etree.Element, alternatives ...string) {
 	tags := append([]string{el.Tag}, alternatives...)
 
@@ -58,7 +75,7 @@ func appendElement(parent *etree.Element, el *etree.Element, alternatives ...str
 	parent.InsertChildAt(lastSimilarElementIndex, el)
 }
 
-func insertElementByName(parent *etree.Element, el *etree.Element, attribute string, alternatives ...string) {
+func insertElementByAttribute(parent *etree.Element, el *etree.Element, attribute string, alternatives ...string) {
 	name := el.SelectAttrValue(attribute, "")
 	tag := el.Tag
 	var insertIndex int = -1
@@ -67,6 +84,28 @@ func insertElementByName(parent *etree.Element, el *etree.Element, attribute str
 		if ok && el.Tag == tag {
 			elName := el.SelectAttrValue(attribute, "")
 			cmp := strings.Compare(elName, name)
+			if cmp > 0 {
+				insertIndex = i
+				break
+			}
+		}
+	}
+	if insertIndex == -1 {
+		appendElement(parent, el, alternatives...)
+		return
+	}
+	parent.InsertChildAt(insertIndex, el)
+}
+
+func insertElementByName(parent *etree.Element, el *etree.Element, alternatives ...string) {
+	text := el.Text()
+	tag := el.Tag
+	var insertIndex int = -1
+	for i, e := range parent.Child {
+		el, ok := e.(*etree.Element)
+		if ok && el.Tag == tag {
+			elText := el.Text()
+			cmp := strings.Compare(elText, text)
 			if cmp > 0 {
 				insertIndex = i
 				break

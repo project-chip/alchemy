@@ -6,9 +6,10 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
+	"github.com/puzpuzpuz/xsync/v3"
 )
 
-func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies *concurrentMap[string, bool]) {
+func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies *xsync.MapOf[string, bool]) {
 	for _, m := range entities {
 		switch m := m.(type) {
 		case *matter.Cluster:
@@ -19,7 +20,7 @@ func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies *
 	}
 }
 
-func findClusterDependencies(spec *matter.Spec, c *matter.Cluster, dependencies *concurrentMap[string, bool]) {
+func findClusterDependencies(spec *matter.Spec, c *matter.Cluster, dependencies *xsync.MapOf[string, bool]) {
 	findFieldSetDependencies(spec, c.Attributes, dependencies)
 	for _, s := range c.Structs {
 		findFieldSetDependencies(spec, s.Fields, dependencies)
@@ -32,13 +33,13 @@ func findClusterDependencies(spec *matter.Spec, c *matter.Cluster, dependencies 
 	}
 }
 
-func findFieldSetDependencies(spec *matter.Spec, fs matter.FieldSet, dependencies *concurrentMap[string, bool]) {
+func findFieldSetDependencies(spec *matter.Spec, fs matter.FieldSet, dependencies *xsync.MapOf[string, bool]) {
 	for _, f := range fs {
 		findDataTypeDependencies(spec, f.Type, dependencies)
 	}
 }
 
-func findDataTypeDependencies(spec *matter.Spec, dt *types.DataType, dependencies *concurrentMap[string, bool]) {
+func findDataTypeDependencies(spec *matter.Spec, dt *types.DataType, dependencies *xsync.MapOf[string, bool]) {
 	if dt == nil {
 		return
 	}
@@ -52,12 +53,9 @@ func findDataTypeDependencies(spec *matter.Spec, dt *types.DataType, dependencie
 			slog.Warn("missing document for data type", "name", dt.Name, "entity", dt.Entity, "pointer", fmt.Sprintf("%p", dt.Entity))
 			return
 		}
-		dependencies.Lock()
-		_, ok = dependencies.Map[path]
-		if !ok {
-			slog.Warn("dependency found", "name", dt.Name, "path", path)
-			dependencies.Map[path] = false
+		_, loaded := dependencies.LoadOrStore(path, false)
+		if !loaded {
+			slog.Debug("dependency found", "name", dt.Name, "path", path)
 		}
-		dependencies.Unlock()
 	}
 }

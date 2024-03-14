@@ -104,15 +104,32 @@ func GetColumnName(column TableColumn, overrides map[TableColumn]string) (name s
 	return
 }
 
-var AttributesTableColumnOrder = [...]TableColumn{
-	TableColumnID,
-	TableColumnName,
-	TableColumnType,
-	TableColumnConstraint,
-	TableColumnQuality,
-	TableColumnDefault,
-	TableColumnAccess,
-	TableColumnConformance,
+type TableType uint8
+
+const (
+	TableTypeUnknown TableType = iota
+	TableTypeAttributes
+)
+
+type Table struct {
+	AllowedColumns  []TableColumn
+	RequiredColumns []TableColumn
+	ColumnOrder     []TableColumn
+}
+
+var Tables = map[TableType]Table{
+	TableTypeAttributes: {
+		ColumnOrder: []TableColumn{
+			TableColumnID,
+			TableColumnName,
+			TableColumnType,
+			TableColumnConstraint,
+			TableColumnQuality,
+			TableColumnDefault,
+			TableColumnAccess,
+			TableColumnConformance,
+		},
+	},
 }
 
 var AppClusterClassificationTableColumnOrder = [...]TableColumn{
@@ -139,6 +156,12 @@ var ClassificationTableColumnNames = map[TableColumn]string{
 var ClusterIDSectionName = "Cluster ID"
 
 var ClusterIDTableColumnOrder = [...]TableColumn{
+	TableColumnID,
+	TableColumnName,
+	TableColumnConformance,
+}
+
+var ClusterIDTableRequiredColumns = [...]TableColumn{
 	TableColumnID,
 	TableColumnName,
 }

@@ -28,7 +28,7 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 	if specRoot != "" {
 		inputs, err = pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
 	} else {
-		inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(args))
+		inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(args...))
 	}
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 	discoOptions := getDiscoOptions(cmd)
 
-	docReader := ascii.NewReader("Reading docs", pipelineOptions)
+	docReader := ascii.NewReader("Reading docs")
 	docs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docReader, inputs)
 	if err != nil {
 		return err
@@ -51,14 +51,14 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	renderer := render.NewRenderer(pipelineOptions)
+	renderer := render.NewRenderer()
 	var renders *xsync.MapOf[string, *pipeline.Data[string]]
 	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, balledDocs)
 	if err != nil {
 		return err
 	}
 
-	writer := files.NewWriter("Writing disco-balled docs", fileOptions)
+	writer := files.NewWriter[string]("Writing disco-balled docs", fileOptions)
 	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, renders)
 	return
 }

@@ -29,6 +29,7 @@ require (
 	github.com/dolthub/go-icu-regex v0.0.0-20230524105445-af7e7991c97e // indirect
 	github.com/dolthub/jsonpath v0.0.2-0.20230525180605-8dc13778fd72 // indirect
 	github.com/dolthub/vitess v0.0.0-20230823204737-4a21a94e90c3 // indirect
+	github.com/fatih/color v1.16.0 // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gocraft/dbr/v2 v2.7.2 // indirect
@@ -39,6 +40,8 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lestrrat-go/strftime v1.0.4 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/mitchellh/hashstructure v1.1.0 // indirect
 	github.com/onsi/ginkgo/v2 v2.13.1 // indirect

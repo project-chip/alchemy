@@ -64,11 +64,10 @@ func Read(contents string, path string) (doc *Doc, err error) {
 type Reader struct {
 	name          string
 	asciiSettings []configuration.Setting
-	options       pipeline.Options
 }
 
-func NewReader(name string, options pipeline.Options, asciiSettings ...configuration.Setting) Reader {
-	return Reader{name: name, options: options, asciiSettings: asciiSettings}
+func NewReader(name string, asciiSettings ...configuration.Setting) Reader {
+	return Reader{name: name, asciiSettings: asciiSettings}
 }
 
 func (r Reader) Name() string {
@@ -76,7 +75,7 @@ func (r Reader) Name() string {
 }
 
 func (r Reader) Type() pipeline.ProcessorType {
-	return r.options.DefaultProcessorType()
+	return pipeline.ProcessorTypeIndividual
 }
 
 func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
@@ -86,18 +85,5 @@ func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 		return
 	}
 	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
-	return
-}
-
-func (r Reader) ProcessAll(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[*Doc], err error) {
-	for _, input := range inputs {
-		var doc *Doc
-		fmt.Fprintf(os.Stderr, "Reading %s...\n", input.Path)
-		doc, err = ReadFile(input.Path, r.asciiSettings...)
-		if err != nil {
-			return
-		}
-		outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
-	}
 	return
 }
