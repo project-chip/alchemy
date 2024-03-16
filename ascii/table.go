@@ -21,6 +21,11 @@ func parseFirstTable(doc *Doc, section *Section) (rows []*types.TableRow, header
 		err = ErrNoTableFound
 		return
 	}
+	return parseTable(doc, section, t)
+}
+
+func parseTable(doc *Doc, section *Section, t *types.Table) (rows []*types.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
+
 	rows = TableRows(t)
 	if len(rows) < 2 {
 		err = fmt.Errorf("not enough rows in table")
