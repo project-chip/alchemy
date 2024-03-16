@@ -39,6 +39,8 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 	}
 	entityIndex := make(entityIndex)
 
+	var basicInformationCluster, bridgedBasicInformationCluster *matter.Cluster
+
 	for _, d := range docs {
 		slog.Debug("building spec", "path", d.Path)
 		fileName := filepath.Base(d.Path)
@@ -71,6 +73,12 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 					spec.ClustersByID[m.ID.Value()] = m
 				}
 				spec.ClustersByName[m.Name] = m
+				switch m.Name {
+				case "Basic Information":
+					basicInformationCluster = m
+				case "Bridged Device Basic Information":
+					bridgedBasicInformationCluster = m
+				}
 				for _, en := range m.Bitmaps {
 					_, ok := spec.Bitmaps[en.Name]
 					if ok {
@@ -137,6 +145,10 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 
 	resolveHierarchy(spec)
 	resolveDataTypeReferences(spec, entityIndex)
+	err = updateBridgedBasicInformationCluster(basicInformationCluster, bridgedBasicInformationCluster)
+	if err != nil {
+		return
+	}
 
 	for _, c := range spec.ClustersByID {
 		for _, en := range c.Enums {
@@ -289,4 +301,30 @@ func resolveHierarchy(spec *matter.Spec) {
 		}
 
 	}
+}
+
+func updateBridgedBasicInformationCluster(basicInformationCluster *matter.Cluster, bridgedBasicInformationCluster *matter.Cluster) error {
+	if basicInformationCluster == nil {
+		return fmt.Errorf("missing Basic Information Cluster in spec")
+	}
+	if bridgedBasicInformationCluster == nil {
+		return fmt.Errorf("missing Basic Information Cluster in spec")
+	}
+	am := make(map[uint64]*matter.Field, len(basicInformationCluster.Attributes))
+	for _, a := range basicInformationCluster.Attributes {
+		am[a.ID.Value()] = a
+	}
+	for _, ba := range bridgedBasicInformationCluster.Attributes {
+		id := ba.ID.Value()
+		a, ok := am[id]
+		if !ok {
+			continue
+		}
+		ba.Type = a.Type.Clone()
+		ba.Constraint = a.Constraint.Clone()
+		ba.Quality = a.Quality
+		ba.Default = a.Default
+		ba.Access = a.Access
+	}
+	return nil
 }
