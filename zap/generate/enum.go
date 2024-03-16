@@ -98,7 +98,7 @@ func populateEnum(configurator *zap.Configurator, ee *etree.Element, en *matter.
 			}
 			value := en.Values[itemIndex]
 			itemIndex++
-			if conformance.IsZigbee(en.Values, value.Conformance) {
+			if conformance.IsZigbee(en.Values, value.Conformance) || conformance.IsDisallowed(value.Conformance) {
 				continue
 			}
 			setEnumItemAttributes(be, value, valFormat)
@@ -108,7 +108,7 @@ func populateEnum(configurator *zap.Configurator, ee *etree.Element, en *matter.
 	for itemIndex < len(en.Values) {
 		value := en.Values[itemIndex]
 		itemIndex++
-		if conformance.IsZigbee(en.Values, value.Conformance) {
+		if conformance.IsZigbee(en.Values, value.Conformance) || conformance.IsDisallowed(value.Conformance) {
 			continue
 		}
 		ie := etree.NewElement("item")

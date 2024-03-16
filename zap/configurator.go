@@ -67,7 +67,7 @@ func (c *Configurator) addTypes(fs matter.FieldSet) {
 		if f.Type == nil {
 			continue
 		}
-		if conformance.IsZigbee(fs, f.Conformance) {
+		if conformance.IsZigbee(fs, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
 		c.addType(f.Type)

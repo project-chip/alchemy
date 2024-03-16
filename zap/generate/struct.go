@@ -115,7 +115,7 @@ func populateStruct(configurator *zap.Configurator, ee *etree.Element, s *matter
 			}
 			f := s.Fields[fieldIndex]
 			fieldIndex++
-			if conformance.IsZigbee(s.Fields, f.Conformance) {
+			if conformance.IsZigbee(s.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
 			setStructFieldAttributes(fe, s, f)
@@ -125,7 +125,7 @@ func populateStruct(configurator *zap.Configurator, ee *etree.Element, s *matter
 	for fieldIndex < len(s.Fields) {
 		field := s.Fields[fieldIndex]
 		fieldIndex++
-		if conformance.IsZigbee(s.Fields, field.Conformance) {
+		if conformance.IsZigbee(s.Fields, field.Conformance) || conformance.IsDisallowed(field.Conformance) {
 			continue
 		}
 		fe := etree.NewElement("item")

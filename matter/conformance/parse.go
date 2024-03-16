@@ -56,6 +56,22 @@ func IsDeprecated(conformance Conformance) bool {
 	return false
 }
 
+func IsDisallowed(conformance Conformance) bool {
+	if conformance == nil {
+		return false
+	}
+	switch conformance := conformance.(type) {
+	case *Disallowed:
+		return true
+	case Set:
+		if len(conformance) > 0 {
+			_, ok := conformance[0].(*Disallowed)
+			return ok
+		}
+	}
+	return false
+}
+
 func IsZigbee(store IdentifierStore, conformance Conformance) bool {
 	if conformance == nil {
 		return false

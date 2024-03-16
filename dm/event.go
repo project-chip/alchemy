@@ -15,7 +15,7 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 	}
 	evs := make([]*matter.Event, 0, len(cluster.Events))
 	for _, e := range cluster.Events {
-		if conformance.IsZigbee(cluster.Commands, e.Conformance) {
+		if conformance.IsZigbee(cluster.Commands, e.Conformance) || conformance.IsDisallowed(e.Conformance) {
 			continue
 		}
 		evs = append(evs, e)

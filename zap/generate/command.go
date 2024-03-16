@@ -33,7 +33,7 @@ func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster
 
 		var matchingCommand *matter.Command
 		for c := range commands {
-			if conformance.IsZigbee(cluster.Commands, c.Conformance) {
+			if conformance.IsZigbee(cluster.Commands, c.Conformance) || conformance.IsDisallowed(c.Conformance) {
 				continue
 			}
 			if c.ID.Equals(commandID) {
@@ -65,7 +65,7 @@ func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster
 	slices.SortFunc(remainingCommands, func(a, b *matter.Command) int { return strings.Compare(a.Name, b.Name) })
 
 	for _, command := range remainingCommands {
-		if conformance.IsZigbee(cluster.Commands, command.Conformance) {
+		if conformance.IsZigbee(cluster.Commands, command.Conformance) || conformance.IsDisallowed(command.Conformance) {
 			continue
 		}
 		cme := etree.NewElement("command")
@@ -124,7 +124,7 @@ func populateCommand(ce *etree.Element, c *matter.Command, cluster *matter.Clust
 			}
 			f := c.Fields[argIndex]
 			argIndex++
-			if conformance.IsZigbee(c.Fields, f.Conformance) {
+			if conformance.IsZigbee(c.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
 			fe.CreateAttr("id", f.ID.IntString())

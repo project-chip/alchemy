@@ -16,7 +16,7 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 
 	cmds := make([]*matter.Command, 0, len(cluster.Commands))
 	for _, c := range cluster.Commands {
-		if conformance.IsZigbee(cluster.Commands, c.Conformance) {
+		if conformance.IsZigbee(cluster.Commands, c.Conformance) || conformance.IsDisallowed(c.Conformance) {
 			continue
 		}
 		cmds = append(cmds, c)

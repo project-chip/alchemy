@@ -31,7 +31,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 				continue
 			}
 
-			if conformance.IsZigbee(cluster, a.Conformance) {
+			if conformance.IsZigbee(cluster, a.Conformance) || conformance.IsDisallowed(a.Conformance) {
 				continue
 			}
 
@@ -51,6 +51,9 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			continue
 		}
 		if conformance.IsDeprecated(a.Conformance) {
+			continue
+		}
+		if conformance.IsDisallowed(a.Conformance) {
 			continue
 		}
 		if !a.ID.Valid() {
