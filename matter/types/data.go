@@ -166,6 +166,8 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeIPv4Address
 	case "ipv6adr":
 		dt.BaseType = BaseDataTypeIPv6Address
+	case "ipv6pre":
+		dt.BaseType = BaseDataTypeIPv6Prefix
 	case "semtag":
 		dt.BaseType = BaseDataTypeSemanticTag
 	case "status":
