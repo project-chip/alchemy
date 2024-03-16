@@ -1,6 +1,7 @@
 package constraint
 
 import (
+	"encoding/json"
 	"math/big"
 	"strconv"
 
@@ -77,4 +78,13 @@ func (c *ExpLimit) Default(cc Context) (max types.DataTypeExtreme) {
 
 func (c *ExpLimit) Clone() ConstraintLimit {
 	return &ExpLimit{Value: c.Value, Exp: c.Exp}
+}
+
+func (c *ExpLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type":  "exponent",
+		"value": c.Value,
+		"exp":   c.Exp,
+	}
+	return json.Marshal(js)
 }

@@ -1,6 +1,8 @@
 package constraint
 
 import (
+	"encoding/json"
+
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -34,4 +36,11 @@ func (c *UnspecifiedLimit) Default(cc Context) (max types.DataTypeExtreme) {
 
 func (c *UnspecifiedLimit) Clone() ConstraintLimit {
 	return &UnspecifiedLimit{}
+}
+
+func (c *UnspecifiedLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type": "unspecified",
+	}
+	return json.Marshal(js)
 }

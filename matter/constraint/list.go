@@ -1,6 +1,7 @@
 package constraint
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/hasty/alchemy/matter/types"
@@ -40,4 +41,13 @@ func (c *ListConstraint) Default(cc Context) (max types.DataTypeExtreme) {
 
 func (c *ListConstraint) Clone() Constraint {
 	return &ListConstraint{Constraint: c.Constraint.Clone(), EntryConstraint: c.EntryConstraint.Clone()}
+}
+
+func (c *ListConstraint) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type":            "list",
+		"constraint":      c.Constraint,
+		"entryConstraint": c.EntryConstraint,
+	}
+	return json.Marshal(js)
 }

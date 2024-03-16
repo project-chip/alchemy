@@ -1,6 +1,7 @@
 package constraint
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 
@@ -104,4 +105,13 @@ func (c *MathExpressionLimit) Default(cc Context) (max types.DataTypeExtreme) {
 
 func (c *MathExpressionLimit) Clone() ConstraintLimit {
 	return &MathExpressionLimit{Operand: c.Operand, Left: c.Left.Clone(), Right: c.Right.Clone()}
+}
+
+func (c *MathExpressionLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type":  "math",
+		"left":  c.Left,
+		"right": c.Right,
+	}
+	return json.Marshal(js)
 }

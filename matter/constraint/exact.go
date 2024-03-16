@@ -1,6 +1,8 @@
 package constraint
 
 import (
+	"encoding/json"
+
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -37,4 +39,12 @@ func (c *ExactConstraint) Default(cc Context) (max types.DataTypeExtreme) {
 
 func (c *ExactConstraint) Clone() Constraint {
 	return &ExactConstraint{Value: c.Value.Clone()}
+}
+
+func (c *ExactConstraint) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type":  "exact",
+		"value": c.Value,
+	}
+	return json.Marshal(js)
 }
