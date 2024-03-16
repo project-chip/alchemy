@@ -127,6 +127,9 @@ func assignCustomDataType(c *matter.Cluster, dt *mattertypes.DataType) {
 	} else if dt.BaseType != mattertypes.BaseDataTypeCustom {
 		return
 	}
+	if dt.Entity != nil {
+		return
+	}
 	name := dt.Name
 	for _, bm := range c.Bitmaps {
 		if name == bm.Name {
