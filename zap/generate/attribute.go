@@ -107,14 +107,10 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 		accessElements := ae.SelectElements("access")
 		for _, ax := range accessElements {
 			if needsRead {
-				ax.CreateAttr("op", "read")
-				ax.CreateAttr("privilege", renderPrivilege(attribute.Access.Read))
-				ax.RemoveAttr("role")
+				setAccessAttributes(ax, "read", attribute.Access.Read, errata)
 				needsRead = false
 			} else if needsWrite {
-				ax.CreateAttr("op", "write")
-				ax.CreateAttr("privilege", renderPrivilege(attribute.Access.Write))
-				ax.RemoveAttr("role")
+				setAccessAttributes(ax, "write", attribute.Access.Write, errata)
 				needsWrite = false
 			} else {
 				ae.RemoveChild(ax)
@@ -122,13 +118,11 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 		}
 		if needsRead {
 			ax := ae.CreateElement("access")
-			ax.CreateAttr("op", "read")
-			ax.CreateAttr("privilege", renderPrivilege(attribute.Access.Read))
+			setAccessAttributes(ax, "read", attribute.Access.Read, errata)
 		}
 		if needsWrite {
 			ax := ae.CreateElement("access")
-			ax.CreateAttr("op", "write")
-			ax.CreateAttr("privilege", renderPrivilege(attribute.Access.Write))
+			setAccessAttributes(ax, "write", attribute.Access.Write, errata)
 		}
 	}
 	if !conformance.IsMandatory(attribute.Conformance) {
