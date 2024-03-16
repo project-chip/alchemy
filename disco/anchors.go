@@ -12,7 +12,6 @@ import (
 )
 
 var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z][a-z]+(?:[A-Z][a-z]*)*([A-Z][a-z]*(?:[A-Z][a-z]*)*)*$`)
-var acronymPattern = regexp.MustCompile(`[A-Z]{3,}`)
 
 func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 
