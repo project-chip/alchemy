@@ -35,7 +35,7 @@ func compareCommands(specCommands matter.CommandSet, zapCommands []*matter.Comma
 	specCommandMap := make(map[uint64]*matter.Command)
 	specResponseMap := make(map[uint64]*matter.Command)
 	for _, f := range specCommands {
-		if conformance.IsZigbee(specCommands, f.Conformance) {
+		if conformance.IsZigbee(specCommands, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
 		if !f.ID.Valid() {

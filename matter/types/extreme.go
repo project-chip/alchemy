@@ -38,6 +38,10 @@ func (ce *DataTypeExtreme) IsNull() bool {
 	return ce.Type == DataTypeExtremeTypeNull
 }
 
+func (ce *DataTypeExtreme) IsNumeric() bool {
+	return ce.Type == DataTypeExtremeTypeInt64 || ce.Type == DataTypeExtremeTypeUInt64
+}
+
 func (ce *DataTypeExtreme) Value() any {
 	switch ce.Type {
 	case DataTypeExtremeTypeInt64:
