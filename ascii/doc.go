@@ -170,14 +170,13 @@ func (d *Doc) Entities() (entities []mattertypes.Entity, err error) {
 		return d.entities, nil
 	}
 	d.entitiesParsed = true
-	dt, err := d.DocType()
-	if err != nil {
-		return nil, err
-	}
 
 	var entitiesBySection = make(map[types.WithAttributes][]mattertypes.Entity)
 	for _, top := range parse.Skim[*Section](d.Elements) {
-		AssignSectionTypes(dt, top)
+		err := AssignSectionTypes(d, top)
+		if err != nil {
+			return nil, err
+		}
 
 		var m []mattertypes.Entity
 		m, err = top.toEntities(d, entitiesBySection)
@@ -185,7 +184,6 @@ func (d *Doc) Entities() (entities []mattertypes.Entity, err error) {
 			return nil, fmt.Errorf("failed converting doc %s to entities: %w", d.Path, err)
 		}
 		entities = append(entities, m...)
-
 	}
 	d.entities = entities
 	d.entitiesBySection = entitiesBySection

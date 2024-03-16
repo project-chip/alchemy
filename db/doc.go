@@ -17,7 +17,10 @@ func (h *Host) indexDoc(ctx context.Context, doc *ascii.Doc, raw bool) (*section
 	ds.values.extras = map[string]interface{}{"path": doc.Path}
 	if raw {
 		for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
-			ascii.AssignSectionTypes(dt, top)
+			err := ascii.AssignSectionTypes(doc, top)
+			if err != nil {
+				return nil, err
+			}
 			for _, s := range parse.Skim[*ascii.Section](top.Elements) {
 				var err error
 				switch s.SecType {

@@ -101,7 +101,11 @@ func (s *Section) GetAsciiSection() *types.Section {
 	return s.Base
 }
 
-func AssignSectionTypes(docType matter.DocType, top *Section) {
+func AssignSectionTypes(doc *Doc, top *Section) error {
+	docType, err := doc.DocType()
+	if err != nil {
+		return err
+	}
 	switch docType {
 	case matter.DocTypeCluster:
 		top.SecType = matter.SectionCluster
@@ -125,9 +129,16 @@ func AssignSectionTypes(docType matter.DocType, top *Section) {
 		}
 
 		section.SecType = getSectionType(ps, section)
+		switch section.SecType {
+		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct:
+			if section.Base.Level > 2 {
+				slog.Warn("Unusual depth for section type", slog.String("name", section.Name), slog.String("type", section.SecType.String()), slog.String("path", doc.Path))
+			}
+		}
 		slog.Debug("sec type", "name", section.Name, "type", section.SecType, "parent", ps.SecType)
 		return false
 	})
+	return nil
 }
 
 func FindSectionByType(top *Section, sectionType matter.Section) *Section {
