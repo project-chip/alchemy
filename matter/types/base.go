@@ -30,7 +30,6 @@ const (
 	BaseDataTypeDouble
 	BaseDataTypeOctStr
 	BaseDataTypeList
-	BaseDataTypeStruct
 
 	BaseDataTypePercent
 	BaseDataTypePercentHundredths
