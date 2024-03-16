@@ -88,7 +88,7 @@ func compareFields(specFields matter.FieldSet, zapFields matter.FieldSet) (diffs
 	specFieldMap := make(map[uint64]*matter.Field)
 	specFieldNameMap := make(map[string]*matter.Field)
 	for _, f := range specFields {
-		if conformance.IsZigbee(specFields, f.Conformance) {
+		if conformance.IsZigbee(specFields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
 		specFieldNameMap[strings.ToLower(f.Name)] = f

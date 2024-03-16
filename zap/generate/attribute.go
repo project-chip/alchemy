@@ -68,7 +68,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 }
 
 func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matter.Cluster, clusterPrefix string, errata *zap.Errata) (err error) {
-	ae.CreateAttr("code", attribute.ID.HexString())
+	patchNumberAttribute(ae, attribute.ID, "code")
 	ae.CreateAttr("side", "server")
 	define := getDefine(attribute.Name, clusterPrefix, errata)
 	xml.SetNonexistentAttr(ae, "define", define)
@@ -140,17 +140,9 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 func setFieldDefault(e *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
 	if field.Default != "" {
 		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: field, Fields: fieldSet})
-		var def string
-		if defaultValue.Defined() && !defaultValue.IsNull() {
-			def = defaultValue.ZapString(field.Type)
-		}
-		if def != "" {
-			e.CreateAttr("default", def)
-		} else {
-			//e.RemoveAttr("default")
-		}
+		patchDataExtremeAttribute(e, "default", &defaultValue, field)
 	} else {
-		//e.RemoveAttr("default")
+		e.RemoveAttr("default")
 	}
 }
 

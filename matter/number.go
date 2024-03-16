@@ -25,6 +25,19 @@ func ParseNumber(s string) *Number {
 	return id
 }
 
+func NumberFromExtreme(de *types.DataTypeExtreme) *Number {
+	n := &Number{}
+	switch de.Type {
+	case types.DataTypeExtremeTypeInt64:
+		n.value = de.Int64
+		n.format = de.Format
+	case types.DataTypeExtremeTypeUInt64:
+		n.value = int64(de.UInt64)
+		n.format = de.Format
+	}
+	return n
+}
+
 func ParseFormattedNumber(s string) (*Number, types.NumberFormat) {
 	id, err := strconv.ParseUint(s, 10, 64)
 	if err == nil {

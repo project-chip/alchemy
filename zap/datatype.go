@@ -74,7 +74,6 @@ var matterToZapMap = map[string]string{
 	"vendor-id":      "vendor_id",
 	"endpoint-id":    "endpoint_id",
 	"endpoint-no":    "endpoint_no",
-	"EndpointNumber": "endpoint_no",
 	"eui64":          "eui64",
 
 	"unsignedtemperature":   "int8u",
@@ -112,6 +111,160 @@ func init() {
 	}
 }
 
+func DataTypeToZap(dataType *types.DataType) string {
+	switch dataType.BaseType {
+	case types.BaseDataTypeBoolean:
+		return "boolean"
+	case types.BaseDataTypeMap8:
+		return "bitmap8"
+	case types.BaseDataTypeMap16:
+		return "bitmap16"
+	case types.BaseDataTypeMap32:
+		return "bitmap32"
+	case types.BaseDataTypeMap64:
+		return "bitmap64"
+	case types.BaseDataTypeUInt8:
+		return "int8u"
+	case types.BaseDataTypeUInt16:
+		return "int16u"
+	case types.BaseDataTypeUInt24:
+		return "int24u"
+	case types.BaseDataTypeUInt32:
+		return "int32u"
+	case types.BaseDataTypeUInt40:
+		return "int40u"
+	case types.BaseDataTypeUInt48:
+		return "int48u"
+	case types.BaseDataTypeUInt56:
+		return "int56u"
+	case types.BaseDataTypeUInt64:
+		return "int64u"
+	case types.BaseDataTypeInt8:
+		return "int8s"
+	case types.BaseDataTypeInt16:
+		return "int16s"
+	case types.BaseDataTypeInt24:
+		return "int24s"
+	case types.BaseDataTypeInt32:
+		return "int32s"
+	case types.BaseDataTypeInt40:
+		return "int40s"
+	case types.BaseDataTypeInt48:
+		return "int48s"
+	case types.BaseDataTypeInt56:
+		return "int56s"
+	case types.BaseDataTypeInt64:
+		return "int64s"
+	case types.BaseDataTypeSingle:
+		return "single"
+	case types.BaseDataTypeDouble:
+		return "double"
+	case types.BaseDataTypeOctStr:
+		return "octet_string"
+	case types.BaseDataTypePercent:
+		return "percent"
+	case types.BaseDataTypePercentHundredths:
+		return "percent100ths"
+	case types.BaseDataTypeTimeOfDay:
+		return "tod"
+	case types.BaseDataTypeDate:
+		return "date"
+	case types.BaseDataTypeEpochMicroseconds:
+		return "epoch_us"
+	case types.BaseDataTypeEpochSeconds:
+		return "epoch_s"
+	case types.BaseDataTypePosixMilliseconds:
+		return "posix_ms"
+	case types.BaseDataTypeSystimeMicroseconds:
+		return "systime_us"
+	case types.BaseDataTypeSystimeMilliseconds:
+		return "systime_ms"
+	case types.BaseDataTypeElapsedSeconds:
+		return "elapsed_s"
+	case types.BaseDataTypeTemperature:
+		return "temperature"
+	case types.BaseDataTypeAmperage:
+		return "amperage_ma"
+	case types.BaseDataTypeVoltage:
+		return "voltage_mv"
+	case types.BaseDataTypePower:
+		return "power_mw"
+	case types.BaseDataTypeEnergy:
+		return "energy_mwh"
+	case types.BaseDataTypeTemperatureDifference:
+		return "int16s"
+	case types.BaseDataTypeUnsignedTemperature:
+		return "int8u"
+	case types.BaseDataTypeSignedTemperature:
+		return "int8s"
+	case types.BaseDataTypeEnum8:
+		return "enum8"
+	case types.BaseDataTypeEnum16:
+		return "enum16"
+	case types.BaseDataTypeGroupID:
+		return "group_id"
+	case types.BaseDataTypeEndpointID:
+		return "endpoint_id"
+	case types.BaseDataTypeEndpointNumber:
+		return "endpoint_no"
+	case types.BaseDataTypeVendorID:
+		return "vendor_id"
+	case types.BaseDataTypeDeviceTypeID:
+		return "devtype_id"
+	case types.BaseDataTypeFabricID:
+		return "fabric_id"
+	case types.BaseDataTypeFabricIndex:
+		return "fabric_idx"
+	case types.BaseDataTypeClusterID:
+		return "cluster_id"
+	case types.BaseDataTypeAttributeID:
+		return "attrib_id"
+	case types.BaseDataTypeFieldID:
+		return "field_id"
+	case types.BaseDataTypeEventID:
+		return "event_id"
+	case types.BaseDataTypeCommandID:
+		return "command_id"
+	case types.BaseDataTypeActionID:
+		return "action_id"
+	case types.BaseDataTypeSubjectID:
+		return "int64u"
+	case types.BaseDataTypeTransactionID:
+		return "transaction_id"
+	case types.BaseDataTypeNodeID:
+		return "node_id"
+	case types.BaseDataTypeIeeeAddress:
+		return "ieee_address"
+	case types.BaseDataTypeEntryIndex:
+		return "entry_idx"
+	case types.BaseDataTypeDataVersion:
+		return "data_ver"
+	case types.BaseDataTypeEventNumber:
+		return "event_no"
+	case types.BaseDataTypeString:
+		return "char_string"
+	case types.BaseDataTypeIPAddress:
+		return "ipadr"
+	case types.BaseDataTypeIPv4Address:
+		return "ipv4addr"
+	case types.BaseDataTypeIPv6Address:
+		return "ipv6addr"
+	case types.BaseDataTypeIPv6Prefix:
+		return "ipv6pre"
+	case types.BaseDataTypeHardwareAddress:
+		return "hwadr"
+	case types.BaseDataTypeSemanticTag:
+		return "semtag"
+	case types.BaseDataTypeNamespace:
+		return "namespace"
+	case types.BaseDataTypeTag:
+		return "tag"
+	case types.BaseDataTypeMessageID:
+		return "octet_string"
+	}
+	return dataType.Name
+}
+
 func ConvertDataTypeNameToZap(s string) string {
 	if z, ok := matterToZapMap[strings.ToLower(s)]; ok {
 		return z
@@ -145,9 +298,9 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 		}
 	}
 	if f.Type.IsArray() {
-		return ConvertDataTypeNameToZap(f.Type.EntryType.Name)
+		return DataTypeToZap(f.Type.EntryType)
 	}
-	return ConvertDataTypeNameToZap(f.Type.Name)
+	return DataTypeToZap(f.Type)
 }
 
 func GetMinMax(cc *matter.ConstraintContext, c constraint.Constraint) (from types.DataTypeExtreme, to types.DataTypeExtreme) {

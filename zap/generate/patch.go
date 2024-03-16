@@ -7,6 +7,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func mergeLines(lines []string, newLineMap map[string]struct{}, skip int) []string {
@@ -88,4 +89,30 @@ func patchNumberElement(e *etree.Element, n *matter.Number) {
 		return
 	}
 	e.SetText(n.HexString())
+}
+
+func patchDataExtremeAttribute(e *etree.Element, attribute string, de *types.DataTypeExtreme, field *matter.Field) {
+	if !de.Defined() || de.IsNull() {
+		e.RemoveAttr(attribute)
+	}
+	if de.IsNumeric() {
+		n := matter.NumberFromExtreme(de)
+		ex := e.SelectAttr(attribute)
+		if ex == nil {
+			e.CreateAttr(attribute, de.ZapString(field.Type))
+			return
+		}
+		exn := matter.ParseNumber(ex.Value)
+		if exn.Valid() && exn.Equals(n) {
+			return
+		}
+		e.CreateAttr(attribute, de.ZapString(field.Type))
+	} else {
+		def := de.ZapString(field.Type)
+		if def != "" {
+			e.CreateAttr(attribute, def)
+		} else {
+			e.RemoveAttr(attribute)
+		}
+	}
 }
