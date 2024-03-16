@@ -85,7 +85,7 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 	}
 	renderConstraint(ae, cluster.Attributes, attribute)
 	setFieldDefault(ae, attribute, cluster.Attributes)
-	if attribute.Quality.Has(matter.QualityFixed) || ((attribute.Access.Read == matter.PrivilegeUnknown || attribute.Access.Read == matter.PrivilegeView) && (attribute.Access.Write == matter.PrivilegeUnknown || attribute.Access.Write == matter.PrivilegeOperate)) || errata.SuppressAttributePermissions {
+	if ((attribute.Access.Read == matter.PrivilegeUnknown || attribute.Access.Read == matter.PrivilegeView) && (attribute.Access.Write == matter.PrivilegeUnknown || attribute.Access.Write == matter.PrivilegeOperate)) || errata.SuppressAttributePermissions {
 		if attribute.Access.Write != matter.PrivilegeUnknown {
 			ae.CreateAttr("writable", "true")
 		} else {
