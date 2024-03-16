@@ -92,30 +92,34 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
 			}
 		}
-		for _, a := range c.Attributes {
-			assignCustomDataType(c, a.Type)
-		}
-		for _, s := range c.Structs {
-			for _, f := range s.Fields {
-				assignCustomDataType(c, f.Type)
-			}
-		}
-		for _, e := range c.Events {
-			for _, f := range e.Fields {
-				assignCustomDataType(c, f.Type)
-			}
-		}
-		for _, cmd := range c.Commands {
-			for _, f := range cmd.Fields {
-				assignCustomDataType(c, f.Type)
-			}
-		}
+		assignCustomDataTypes(c)
 	}
 	for _, c := range clusters {
 		entities = append(entities, c)
 	}
 	entityMap[s.Base] = append(entityMap[s.Base], entities...)
 	return entities, nil
+}
+
+func assignCustomDataTypes(c *matter.Cluster) {
+	for _, s := range c.Structs {
+		for _, f := range s.Fields {
+			assignCustomDataType(c, f.Type)
+		}
+	}
+	for _, e := range c.Events {
+		for _, f := range e.Fields {
+			assignCustomDataType(c, f.Type)
+		}
+	}
+	for _, cmd := range c.Commands {
+		for _, f := range cmd.Fields {
+			assignCustomDataType(c, f.Type)
+		}
+	}
+	for _, a := range c.Attributes {
+		assignCustomDataType(c, a.Type)
+	}
 }
 
 func assignCustomDataType(c *matter.Cluster, dt *mattertypes.DataType) {

@@ -79,6 +79,7 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 				case "Bridged Device Basic Information":
 					bridgedBasicInformationCluster = m
 				}
+
 				for _, en := range m.Bitmaps {
 					_, ok := spec.Bitmaps[en.Name]
 					if ok {
@@ -151,6 +152,9 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 	}
 
 	for _, c := range spec.ClustersByID {
+		if c.Features != nil {
+			spec.ClusterRefs.Add(c, c.Features)
+		}
 		for _, en := range c.Enums {
 			switch en.Name {
 			case "ModeTag":
@@ -230,36 +234,7 @@ func resolveDataType(spec *matter.Spec, mi entityIndex, cluster *matter.Cluster,
 					break
 				}
 			} else {
-				for m, c := range entities {
-					if c == cluster { // If there are multiple entities with the same name, prefer the one on the current cluster
-						dataType.Entity = m
-						break
-					}
-				}
-				if dataType.Entity == nil {
-					// OK, if the data type is defined on the direct parent of this cluster, take that one
-					if cluster.Hierarchy != "Base" {
-						for m, c := range entities {
-							if c != nil && c.Name == cluster.Hierarchy {
-								dataType.Entity = m
-								break
-							}
-						}
-					}
-					if dataType.Entity == nil {
-						// Can't disambiguate out this data model
-						slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name, "type", dataType.Name)
-						for m, c := range entities {
-							var clusterName string
-							if c != nil {
-								clusterName = c.Name
-							} else {
-								clusterName = "naked"
-							}
-							slog.Warn("ambiguous data type", "model", m, "cluster", clusterName)
-						}
-					}
-				}
+				dataType.Entity = diambiguateDataType(entities, cluster, field)
 			}
 		}
 		if cluster == nil || dataType.Entity == nil {
@@ -275,6 +250,36 @@ func resolveDataType(spec *matter.Spec, mi entityIndex, cluster *matter.Cluster,
 			resolveDataType(spec, mi, cluster, f, f.Type)
 		}
 	}
+}
+
+func diambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, field *matter.Field) types.Entity {
+	// If there are multiple entities with the same name, prefer the one on the current cluster
+	for m, c := range entities {
+		if c == cluster {
+			return m
+		}
+	}
+
+	// OK, if the data type is defined on the direct parent of this cluster, take that one
+	if cluster.Hierarchy != "Base" {
+		for m, c := range entities {
+			if c != nil && c.Name == cluster.Hierarchy {
+				return m
+			}
+		}
+	}
+	// Can't disambiguate out this data model
+	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name)
+	for m, c := range entities {
+		var clusterName string
+		if c != nil {
+			clusterName = c.Name
+		} else {
+			clusterName = "naked"
+		}
+		slog.Warn("ambiguous data type", "model", m, "cluster", clusterName)
+	}
+	return nil
 }
 
 func clusterName(cluster *matter.Cluster) string {
@@ -295,11 +300,14 @@ func resolveHierarchy(spec *matter.Spec) {
 			continue
 		}
 		base.Base = true
-		err := c.Inherit(base)
+		linkedEntites, err := c.Inherit(base)
 		if err != nil {
 			slog.Warn("Failed to inherit from base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy, "error", err)
 		}
-
+		for _, linkedEntity := range linkedEntites {
+			spec.ClusterRefs.Add(c, linkedEntity)
+		}
+		assignCustomDataTypes(c)
 	}
 }
 
