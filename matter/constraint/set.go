@@ -47,6 +47,9 @@ func (cs ConstraintSet) Min(c Context) (min types.DataTypeExtreme) {
 	for i := 1; i < len(cs); i++ {
 		con := cs[i]
 		f := con.Min(c)
+		if !f.Defined() {
+			continue
+		}
 		from = minExtreme(from, f)
 	}
 
@@ -60,6 +63,9 @@ func (cs ConstraintSet) Max(c Context) (max types.DataTypeExtreme) {
 	for i := 1; i < len(cs); i++ {
 		con := cs[i]
 		t := con.Max(c)
+		if !t.Defined() {
+			continue
+		}
 		to = maxExtreme(to, t)
 	}
 	return to
