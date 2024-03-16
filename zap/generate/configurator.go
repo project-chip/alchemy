@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"log/slog"
+	"regexp"
 	"slices"
 	"time"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
@@ -72,8 +74,17 @@ func renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata
 	x.Indent(2)
 	var b bytes.Buffer
 	_, err = x.WriteTo(&b)
-	return b.String(), err
+	s := b.String()
+	s = postProcessTemplate(s)
+	return s, err
+}
 
+var tagClosePattern = regexp.MustCompile(`(?m)/(?P<Tag>bitmap|cluster|command|enum|event|struct)>\n(\s+)<`)
+
+func postProcessTemplate(s string) string {
+	// etree removes extraneous whitespace between tags, so this restores it for commonly separated tags in ZAP templates
+	s = tagClosePattern.ReplaceAllString(s, "/$1>\n\n$2<")
+	return s
 }
 
 func generateFeatures(configurator *zap.Configurator, configuratorElement *etree.Element, features *matter.Features, errata *zap.Errata) (err error) {
