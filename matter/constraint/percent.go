@@ -1,6 +1,8 @@
 package constraint
 
 import (
+	"encoding/json"
+
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/shopspring/decimal"
 )
@@ -56,4 +58,13 @@ func (c *PercentLimit) Default(cc Context) (max types.DataTypeExtreme) {
 
 func (c *PercentLimit) Clone() ConstraintLimit {
 	return &PercentLimit{Value: c.Value.Copy(), Hundredths: c.Hundredths}
+}
+
+func (c *PercentLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type":      "percent",
+		"value":     c.Value,
+		"hundreths": c.Hundredths,
+	}
+	return json.Marshal(js)
 }

@@ -1,6 +1,7 @@
 package constraint
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/hasty/alchemy/matter/types"
@@ -40,4 +41,13 @@ func (c *RangeConstraint) Default(cc Context) (max types.DataTypeExtreme) {
 
 func (c *RangeConstraint) Clone() Constraint {
 	return &RangeConstraint{Minimum: c.Minimum.Clone(), Maximum: c.Maximum.Clone()}
+}
+
+func (c *RangeConstraint) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type": "range",
+		"min":  c.Minimum,
+		"max":  c.Maximum,
+	}
+	return json.Marshal(js)
 }
