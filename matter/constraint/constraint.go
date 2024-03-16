@@ -96,3 +96,21 @@ type ConstraintLimit interface {
 	Default(c Context) (max types.DataTypeExtreme)
 	Clone() ConstraintLimit
 }
+
+func AppendConstraint(c Constraint, n Constraint) Constraint {
+	if c == nil {
+		return n
+	}
+	switch c := c.(type) {
+	// If the only constraint is no constraint, just replace it with the one provided
+	case *AllConstraint:
+		return n
+	case *GenericConstraint:
+		if c.Value == "" {
+			return n
+		}
+	case ConstraintSet:
+		return append(c, n)
+	}
+	return ConstraintSet{c, n}
+}

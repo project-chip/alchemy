@@ -109,6 +109,10 @@ func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*ty
 			ids[id] = struct{}{}
 		}
 
+		if f.Type != nil && f.Type.BaseType == mattertypes.BaseDataTypeMessageID {
+			f.Constraint = constraint.AppendConstraint(f.Constraint, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}})
+		}
+
 		fields = append(fields, f)
 	}
 	return
