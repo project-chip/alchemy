@@ -13,6 +13,7 @@ type Configurator struct {
 	Spec *matter.Spec
 	Doc  *ascii.Doc
 
+	Features []*matter.Number
 	Bitmaps  map[*matter.Bitmap][]*matter.Number
 	Enums    map[*matter.Enum][]*matter.Number
 	Clusters map[*matter.Cluster]bool
@@ -35,6 +36,9 @@ func NewConfigurator(spec *matter.Spec, doc *ascii.Doc, entities []types.Entity)
 		case *matter.Cluster:
 
 			c.addTypes(v.Attributes)
+			if v.Features != nil {
+				c.addEntityType(v.Features)
+			}
 			for _, s := range v.Bitmaps {
 				c.addEntityType(s)
 			}
@@ -102,6 +106,8 @@ func (c *Configurator) addType(dt *types.DataType) {
 func (c *Configurator) addEntityType(entity types.Entity) {
 
 	switch entity := entity.(type) {
+	case *matter.Features:
+		c.Features = c.getClusterCodes(entity)
 	case *matter.Bitmap:
 		c.Bitmaps[entity] = c.getClusterCodes(entity)
 	case *matter.Enum:
@@ -115,7 +121,7 @@ func (c *Configurator) addEntityType(entity types.Entity) {
 func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []*matter.Number) {
 	refs, ok := c.Spec.ClusterRefs[entity]
 	if !ok {
-		slog.Warn("unknown cluster ref", "val", entity)
+		slog.Warn("unknown cluster ref when searching for cluster codes", "val", entity, "path", c.Doc.Path)
 		return
 	}
 	for ref := range refs {
