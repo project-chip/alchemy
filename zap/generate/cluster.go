@@ -53,6 +53,9 @@ func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *z
 		if handled {
 			continue
 		}
+		if !cluster.ID.Valid() {
+			continue
+		}
 		cle := etree.NewElement("cluster")
 		cle.CreateAttr("code", cluster.ID.HexString())
 		xml.AppendElement(ce, cle, "struct", "enum", "bitmap", "domain")
