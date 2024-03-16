@@ -1,6 +1,7 @@
 package constraint
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/hasty/alchemy/matter/types"
@@ -51,7 +52,7 @@ func (cc *constraintTestContext) Default(name string) (def types.DataTypeExtreme
 func mustParseConstraint(s string) Constraint {
 	constraint, err := ParseString(s)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("failed parsing constraint \"%s\": %w", s, err))
 	}
 	return constraint
 }
@@ -65,7 +66,7 @@ type constraintTest struct {
 	zapMin     string
 	zapMax     string
 	fields     fieldSet
-	generic    bool
+	invalid    bool
 }
 
 var constraintTests = []constraintTest{
@@ -104,11 +105,11 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "00000xxx",
-		generic:    true,
+		invalid:    true,
 	},
 	{
 		constraint: "0b0000 xxxx",
-		generic:    true,
+		invalid:    true,
 	},
 
 	{
@@ -175,6 +176,15 @@ var constraintTests = []constraintTest{
 		max:        types.NewIntDataTypeExtreme(4611686018427387903, types.NumberFormatInt),
 		zapMax:     "4611686018427387903",
 	},
+	{
+		constraint: "0 to 2^62^",
+		asciiDoc:   "0 to 2^62^",
+		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(4611686018427387904, types.NumberFormatInt),
+		zapMin:     "0",
+		zapMax:     "4611686018427387904",
+	},
+
 	{
 		constraint: "0 to 80000",
 		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
@@ -356,7 +366,7 @@ var constraintTests = []constraintTest{
 
 	{
 		constraint: "TODO",
-		generic:    true,
+		invalid:    true,
 	},
 	{
 		constraint: "all[min 1]",
@@ -424,7 +434,7 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "percent",
-		generic:    true,
+		invalid:    true,
 	},
 	{
 		constraint: "null",
@@ -435,14 +445,17 @@ var constraintTests = []constraintTest{
 
 func TestSuite(t *testing.T) {
 	for _, ct := range constraintTests {
-		c := mustParseConstraint(ct.constraint)
-		_, isGeneric := c.(*GenericConstraint)
-		if ct.generic {
-			if !isGeneric {
-				t.Errorf("expected generic constraint for %s, got %T", ct.constraint, c)
+		if ct.invalid {
+			var err error
+			_, err = ParseString(ct.constraint)
+			if err == nil {
+				t.Errorf("expected error parsing %s", ct.constraint)
 			}
 			continue
-		} else if isGeneric {
+		}
+		c := mustParseConstraint(ct.constraint)
+		_, isGeneric := c.(*GenericConstraint)
+		if isGeneric {
 			t.Errorf("failed to parse constraint %s", ct.constraint)
 			continue
 		}
