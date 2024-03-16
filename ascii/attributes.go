@@ -38,8 +38,8 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[ty
 		attr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		attr.Type, err = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		if err != nil {
-			if cluster.Hierarchy == "Base" && !conformance.IsDeprecated(attr.Conformance) {
-				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated
+			if cluster.Hierarchy == "Base" && !conformance.IsDeprecated(attr.Conformance) && !conformance.IsDisallowed(attr.Conformance) {
+				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated or disallowed
 				slog.Warn("error reading attribute data type", slog.String("path", s.Doc.Path), slog.String("name", attr.Name), slog.Any("error", err))
 			}
 			err = nil
