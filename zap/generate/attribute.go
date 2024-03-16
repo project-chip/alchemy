@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/zap"
@@ -61,7 +62,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 		}
 		ae := etree.NewElement("attribute")
 		populateAttribute(ae, a, cluster, clusterPrefix, errata)
-		insertElementByAttribute(cle, ae, "code", "globalAttribute", "server", "client", "domain")
+		xml.InsertElementByAttributeNumber(cle, ae, "code", a.ID, "globalAttribute", "server", "client", "domain")
 	}
 	return
 }
@@ -70,7 +71,7 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 	ae.CreateAttr("code", attribute.ID.HexString())
 	ae.CreateAttr("side", "server")
 	define := getDefine(attribute.Name, clusterPrefix, errata)
-	setNonexistentAttr(ae, "define", define)
+	xml.SetNonexistentAttr(ae, "define", define)
 	writeAttributeDataType(ae, cluster.Attributes, attribute)
 	if attribute.Quality.Has(matter.QualityNullable) {
 		ae.CreateAttr("isNullable", "true")
@@ -92,7 +93,7 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 		}
 		ae.SetText(attribute.Name)
 	} else {
-		setOrCreateSimpleElement(ae, "description", attribute.Name)
+		xml.SetOrCreateSimpleElement(ae, "description", attribute.Name)
 		needsRead := attribute.Access.Read != matter.PrivilegeUnknown && attribute.Access.Read != matter.PrivilegeView
 		var needsWrite bool
 		if attribute.Access.Write != matter.PrivilegeUnknown {

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/zap"
 )
@@ -12,7 +13,7 @@ import (
 func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
 
 	for _, cle := range ce.SelectElements("cluster") {
-		code, ok := readSimpleElement(cle, "code")
+		code, ok := xml.ReadSimpleElement(cle, "code")
 		if !ok {
 			slog.Warn("missing code element in cluster", slog.String("path", configurator.Doc.Path))
 			continue
@@ -54,7 +55,7 @@ func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *z
 		}
 		cle := etree.NewElement("cluster")
 		cle.CreateAttr("code", cluster.ID.HexString())
-		appendElement(ce, cle, "struct", "enum", "bitmap", "domain")
+		xml.AppendElement(ce, cle, "struct", "enum", "bitmap", "domain")
 		err = populateCluster(configurator, cle, cluster, errata)
 		if err != nil {
 			return
@@ -89,23 +90,23 @@ func populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster
 		commands[c] = struct{}{}
 	}
 
-	setOrCreateSimpleElement(cle, "domain", matter.DomainNames[configurator.Doc.Domain])
-	setOrCreateSimpleElement(cle, "name", cluster.Name, "domain")
-	patchNumberElement(setOrCreateSimpleElement(cle, "code", "", "name", "domain"), cluster.ID)
-	setOrCreateSimpleElement(cle, "define", define, "code", "name", "domain")
+	xml.SetOrCreateSimpleElement(cle, "domain", matter.DomainNames[configurator.Doc.Domain])
+	xml.SetOrCreateSimpleElement(cle, "name", cluster.Name, "domain")
+	patchNumberElement(xml.SetOrCreateSimpleElement(cle, "code", "", "name", "domain"), cluster.ID)
+	xml.CreateSimpleElementIfNotExists(cle, "define", define, "code", "name", "domain")
 
 	if cle.SelectElement("description") == nil {
-		setOrCreateSimpleElement(cle, "description", cluster.Description, "define", "code", "name", "domain")
+		xml.SetOrCreateSimpleElement(cle, "description", cluster.Description, "define", "code", "name", "domain")
 	}
 
 	if client := cle.SelectElement("client"); client == nil {
-		client = setOrCreateSimpleElement(cle, "client", "true", "description", "define", "code", "name", "domain")
+		client = xml.SetOrCreateSimpleElement(cle, "client", "true", "description", "define", "code", "name", "domain")
 		client.CreateAttr("init", "false")
 		client.CreateAttr("tick", "false")
 		client.SetText("true")
 	}
 	if server := cle.SelectElement("server"); server == nil {
-		server = setOrCreateSimpleElement(cle, "server", "true", "client", "description", "define", "code", "name", "domain")
+		server = xml.SetOrCreateSimpleElement(cle, "server", "true", "client", "description", "define", "code", "name", "domain")
 		server.CreateAttr("init", "false")
 		server.CreateAttr("tick", "false")
 		server.SetText("true")
@@ -153,7 +154,7 @@ func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.
 		id := matter.NewNumber(0xFFFD)
 		globalAttribute.CreateAttr("code", id.HexString())
 		setClusterGlobalAttribute(globalAttribute, cluster, id)
-		appendElement(cle, globalAttribute, "server", "client", "description", "define")
+		xml.AppendElement(cle, globalAttribute, "server", "client", "description", "define")
 	}
 	return
 }

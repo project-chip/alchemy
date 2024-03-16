@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
@@ -66,7 +67,7 @@ func generateEnums(configurator *zap.Configurator, ce *etree.Element, cluster *m
 		bme := etree.NewElement("enum")
 		clusterIds := clusterIdsForEntity(configurator.Spec, en)
 		populateEnum(configurator, bme, en, clusterIds, errata)
-		insertElementByAttribute(ce, bme, "name", "bitmap", "domain")
+		xml.InsertElementByAttribute(ce, bme, "name", "bitmap", "domain")
 	}
 
 	return
@@ -113,7 +114,7 @@ func populateEnum(configurator *zap.Configurator, ee *etree.Element, en *matter.
 		}
 		ie := etree.NewElement("item")
 		setEnumItemAttributes(ie, value, valFormat)
-		appendElement(ee, ie, "cluster")
+		xml.AppendElement(ee, ie, "cluster")
 	}
 
 	return

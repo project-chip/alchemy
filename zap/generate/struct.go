@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/zap"
@@ -77,14 +78,14 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 				for _, clusterID := range clusterIds {
 					bme := etree.NewElement("struct")
 					populateStruct(configurator, bme, s, cluster, errata, []*matter.Number{clusterID}, false)
-					appendElement(configuratorElement, bme, "enum", "bitmap")
+					xml.AppendElement(configuratorElement, bme, "enum", "bitmap")
 				}
 				continue
 			}
 		}
 		bme := etree.NewElement("struct")
 		populateStruct(configurator, bme, s, cluster, errata, clusterIds, true)
-		insertElementByAttribute(configuratorElement, bme, "name", "enum", "bitmap", "domain")
+		xml.InsertElementByAttribute(configuratorElement, bme, "name", "enum", "bitmap", "domain")
 	}
 
 	return
@@ -130,7 +131,7 @@ func populateStruct(configurator *zap.Configurator, ee *etree.Element, s *matter
 		}
 		fe := etree.NewElement("item")
 		setStructFieldAttributes(fe, s, field)
-		appendElement(ee, fe, "cluster")
+		xml.AppendElement(ee, fe, "cluster")
 	}
 
 	return

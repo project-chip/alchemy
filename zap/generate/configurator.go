@@ -104,7 +104,7 @@ func generateFeatures(configurator *zap.Configurator, configuratorElement *etree
 		if err != nil {
 			return
 		}
-		appendElement(configuratorElement, fe, "domain")
+		xml.AppendElement(configuratorElement, fe, "domain")
 	}
 	return
 }
@@ -135,7 +135,7 @@ func flushClusterCodes(parent *etree.Element, clusterIDs []*matter.Number) {
 	for _, clusterID := range clusterIDs {
 		ce := etree.NewElement("cluster")
 		patchNumberAttribute(ce, clusterID, "code")
-		appendElement(parent, ce, "cluster")
+		xml.AppendElement(parent, ce, "cluster")
 	}
 }
 

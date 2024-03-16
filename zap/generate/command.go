@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/zap"
@@ -71,7 +72,7 @@ func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
 		populateCommand(cme, command, cluster, errata)
-		insertElementByAttribute(ce, cme, "code", "attribute")
+		xml.InsertElementByAttribute(ce, cme, "code", "attribute")
 	}
 	return
 }
@@ -138,7 +139,7 @@ func populateCommand(ce *etree.Element, c *matter.Command, cluster *matter.Clust
 		fe := etree.NewElement("arg")
 		fe.CreateAttr("id", f.ID.IntString())
 		setFieldAttributes(fe, f, c.Fields)
-		appendElement(ce, fe)
+		xml.AppendElement(ce, fe)
 	}
 	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate
 	if needsAccess {
