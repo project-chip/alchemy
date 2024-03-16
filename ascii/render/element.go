@@ -2,6 +2,7 @@ package render
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/internal/parse"
@@ -50,7 +51,10 @@ func RenderElements(cxt *Context, prefix string, elements []interface{}) (err er
 		case *types.AttributeDeclaration:
 			err = renderAttributeDeclaration(cxt, el)
 		case *types.StringElement:
-			text, _ := el.RawText()
+			text := el.Content
+			if strings.HasPrefix(text, "endif::[]") {
+				cxt.WriteNewline()
+			}
 			cxt.WriteString(text)
 		case *types.SinglelineComment:
 			cxt.WriteNewline()
