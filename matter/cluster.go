@@ -32,11 +32,11 @@ func (c *Cluster) EntityType() types.EntityType {
 	return types.EntityTypeCluster
 }
 
-func (c *Cluster) Inherit(parent *Cluster) (err error) {
+func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err error) {
 	slog.Debug("Inheriting cluster", "parent", parent.Name, "child", c.Name)
 	if parent.Features != nil {
 		if c.Features == nil || len(c.Features.Bits) == 0 {
-			c.Features = parent.Features.Clone()
+			linkedEntities = append(linkedEntities, parent.Features)
 		} else {
 			err = c.Features.Inherit(&parent.Features.Bitmap)
 			if err != nil {
@@ -60,7 +60,7 @@ func (c *Cluster) Inherit(parent *Cluster) (err error) {
 			}
 		}
 		if matching == nil {
-			c.Bitmaps = append(c.Bitmaps, pbm.Clone())
+			linkedEntities = append(linkedEntities, pbm)
 			continue
 		}
 		err = matching.Inherit(pbm)
@@ -78,7 +78,7 @@ func (c *Cluster) Inherit(parent *Cluster) (err error) {
 			}
 		}
 		if matching == nil {
-			c.Enums = append(c.Enums, pe.Clone())
+			linkedEntities = append(linkedEntities, pe)
 			continue
 		}
 		err = matching.Inherit(pe)
@@ -96,7 +96,7 @@ func (c *Cluster) Inherit(parent *Cluster) (err error) {
 			}
 		}
 		if matching == nil {
-			c.Structs = append(c.Structs, ps.Clone())
+			linkedEntities = append(linkedEntities, ps)
 			continue
 		}
 		matching.Inherit(ps)
@@ -132,7 +132,7 @@ func (c *Cluster) Inherit(parent *Cluster) (err error) {
 		matching.Inherit(pc)
 	}
 
-	return nil
+	return
 }
 
 func (c *Cluster) Identifier(name string) (types.Entity, bool) {
