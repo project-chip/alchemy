@@ -202,13 +202,23 @@ func (d *Doc) getAnchor(id string) (*Anchor, error) {
 }
 
 func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *mattertypes.DataType) constraint.Constraint {
-	val, err := readRowValue(d, row, columnMap, column)
-	if err != nil {
-		return nil
+	var val string
+	offset, ok := columnMap[column]
+	if ok {
+		cell := row.Cells[offset]
+		if len(cell.Elements) > 0 {
+			el := cell.Elements[0]
+			para, ok := el.(*types.Paragraph)
+			if ok {
+				var sb strings.Builder
+				d.buildConstraintValue(para.Elements, &sb)
+				val = strings.TrimSpace(sb.String())
+			}
+		}
 	}
 	val = strings.ReplaceAll(val, "\n", " ")
 	var c constraint.Constraint
-	c, err = constraint.ParseString(val)
+	c, err := constraint.ParseString(val)
 	if err != nil {
 		slog.Warn("failed parsing constraint cell", "path", d.Path, slog.String("constraint", val))
 		return &constraint.GenericConstraint{Value: val}
@@ -233,8 +243,14 @@ func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
 		case *types.QuotedText:
 			switch v.Kind {
 			case types.SingleQuoteSuperscript:
+				var qt strings.Builder
+				d.buildConstraintValue(v.Elements, &qt)
+				val := qt.String()
+				if val == "*" { // We ignore asterisks here
+					continue
+				}
 				sb.WriteString(string(v.Kind))
-				d.buildConstraintValue(v.Elements, sb)
+				sb.WriteString(val)
 				sb.WriteString(string(v.Kind))
 			case types.SingleQuoteBold:
 				// This is usually an asterisk, and should be ignored
