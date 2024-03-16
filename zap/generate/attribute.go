@@ -91,8 +91,10 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 		} else {
 			ae.RemoveAttr("writable")
 		}
+		ae.Child = nil
 		ae.SetText(attribute.Name)
 	} else {
+		ae.SetText("")
 		xml.SetOrCreateSimpleElement(ae, "description", attribute.Name)
 		needsRead := attribute.Access.Read != matter.PrivilegeUnknown && attribute.Access.Read != matter.PrivilegeView
 		var needsWrite bool
