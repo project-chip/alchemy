@@ -92,10 +92,7 @@ func generateFeatures(configurator *zap.Configurator, configuratorElement *etree
 
 	bitmaps := configuratorElement.SelectElements("bitmap")
 
-	var clusterIds []*matter.Number
-	for c := range configurator.Clusters {
-		clusterIds = append(clusterIds, c.ID)
-	}
+	clusterIds := configurator.Features
 	for _, bm := range bitmaps {
 		nameAttr := bm.SelectAttr("name")
 		if nameAttr == nil || nameAttr.Value != "Feature" {
@@ -153,7 +150,7 @@ func flushClusterCodes(parent *etree.Element, clusterIDs []*matter.Number) {
 func clusterIdsForEntity(spec *matter.Spec, entity types.Entity) (clusterIDs []*matter.Number) {
 	refs, ok := spec.ClusterRefs[entity]
 	if !ok {
-		slog.Warn("unknown cluster ref", "val", entity)
+		slog.Warn("unknown cluster ref for entity", "val", entity)
 		return
 	}
 	for ref := range refs {
