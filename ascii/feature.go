@@ -24,7 +24,7 @@ func (s *Section) toFeatures(d *Doc, entityMap map[types.WithAttributes][]matter
 	features = &matter.Features{
 		Bitmap: matter.Bitmap{
 			Name: "Feature",
-			Type: mattertypes.NewDataType("map32", false),
+			Type: mattertypes.ParseDataType("map32", false),
 		},
 	}
 	featureMap := make(map[string]*matter.Feature)

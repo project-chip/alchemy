@@ -176,7 +176,7 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 		name = name[:commaIndex]
 	}
 	name = strings.TrimSuffix(name, " Type")
-	dt := mattertypes.NewDataType(name, isArray)
+	dt := mattertypes.ParseDataType(name, isArray)
 	return dt, nil
 }
 

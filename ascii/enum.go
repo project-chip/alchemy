@@ -24,7 +24,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[types.WithAttributes][]mattertype
 	}
 	dt := s.GetDataType()
 	if dt == nil {
-		dt = mattertypes.NewDataType("enum8", false)
+		dt = mattertypes.ParseDataType("enum8", false)
 	}
 
 	if !dt.IsEnum() {
@@ -70,10 +70,10 @@ func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
 	}
 	e = &matter.Enum{
 		Name: "ModeTag",
-		Type: mattertypes.NewDataType("enum16", false),
+		Type: mattertypes.ParseDataType("enum16", false),
 	}
 
-	e.Type = mattertypes.NewDataType("enum16", false)
+	e.Type = mattertypes.ParseDataType("enum16", false)
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]

@@ -16,7 +16,7 @@ func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]matterty
 
 	dt := s.GetDataType()
 	if dt == nil {
-		dt = mattertypes.NewDataType("map8", false)
+		dt = mattertypes.ParseDataType("map8", false)
 	}
 
 	if !dt.IsMap() {

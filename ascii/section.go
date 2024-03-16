@@ -410,7 +410,7 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 		}
 	}
 	if len(dts) > 0 {
-		return mattertypes.NewDataType(dts, false)
+		return mattertypes.ParseDataType(dts, false)
 	}
 	return nil
 }
