@@ -116,18 +116,18 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 		field.Access.Write = matter.PrivilegeAdminister
 	}
 
-	fieldType = zap.ConvertZapToDataTypeName(fieldType)
-	entryType = zap.ConvertZapToDataTypeName(entryType)
+	fieldBaseType := zap.ZapToBaseDataType(fieldType)
+	entryBaseType := zap.ZapToBaseDataType(entryType)
 	if isArray {
-		if len(entryType) > 0 {
-			field.Type = types.NewDataType(entryType, true)
+		if entryBaseType != types.BaseDataTypeUnknown {
+			field.Type = types.NewDataType(entryBaseType, true)
 		} else {
-			field.Type = types.NewDataType(fieldType, true)
+			field.Type = types.NewDataType(fieldBaseType, true)
 		}
-	} else if fieldType == "ARRAY" || fieldType == "array" {
-		field.Type = types.NewDataType(entryType, true)
+	} else if fieldBaseType == types.BaseDataTypeList {
+		field.Type = types.NewDataType(entryBaseType, true)
 	} else {
-		field.Type = types.NewDataType(fieldType, false)
+		field.Type = types.NewDataType(fieldBaseType, false)
 	}
 	var cons string
 	if len(max) > 0 && len(min) > 0 {

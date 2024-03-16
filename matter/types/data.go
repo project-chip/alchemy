@@ -10,12 +10,19 @@ type DataType struct {
 	EntryType *DataType `json:"entryType,omitempty"`
 }
 
-func NewDataType(typeName string, isArray bool) *DataType {
+func NewDataType(baseType BaseDataType, isArray bool) *DataType {
+	if isArray {
+		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewDataType(baseType, false)}
+	}
+	return &DataType{Name: BaseDataTypeName(baseType), BaseType: baseType}
+}
+
+func ParseDataType(typeName string, isArray bool) *DataType {
 	if len(typeName) == 0 {
 		return nil
 	}
 	if isArray {
-		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewDataType(typeName, false)}
+		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: ParseDataType(typeName, false)}
 	}
 	typeName = strings.TrimPrefix(typeName, "ref_")
 	typeName = strings.TrimPrefix(typeName, "DataType")
