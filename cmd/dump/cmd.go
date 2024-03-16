@@ -34,12 +34,12 @@ var Command = &cobra.Command{
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
-				docType, err := doc.DocType()
-				if err != nil {
-					return fmt.Errorf("error parsing doc type %s: %w", f, err)
-				}
+
 				for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
-					ascii.AssignSectionTypes(docType, top)
+					err := ascii.AssignSectionTypes(doc, top)
+					if err != nil {
+						return err
+					}
 				}
 				dumpElements(doc, doc.Elements, 0)
 			} else if jsonOut {

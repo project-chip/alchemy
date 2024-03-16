@@ -27,15 +27,19 @@ func (b *Ball) Run(cxt context.Context) error {
 
 	dc := newContext(cxt)
 	doc := b.doc
-	docType, err := doc.DocType()
-	if err != nil {
-		return fmt.Errorf("error getting doc type in %s: %w", doc.Path, err)
-	}
 
 	precleanStrings(doc.Elements)
 
 	for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
-		ascii.AssignSectionTypes(docType, top)
+		err := ascii.AssignSectionTypes(doc, top)
+		if err != nil {
+			return err
+		}
+	}
+
+	docType, err := doc.DocType()
+	if err != nil {
+		return fmt.Errorf("error assigning section types in %s: %w", doc.Path, err)
 	}
 
 	topLevelSection := parse.FindFirst[*ascii.Section](doc.Elements)
