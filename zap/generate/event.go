@@ -28,7 +28,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 
 		var matchingEvent *matter.Event
 		for e := range events {
-			if conformance.IsZigbee(cluster.Commands, e.Conformance) {
+			if conformance.IsZigbee(cluster.Commands, e.Conformance) || conformance.IsDisallowed(e.Conformance) {
 				continue
 			}
 			if e.ID.Equals(eventId) {
@@ -83,7 +83,7 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 			}
 			f := e.Fields[fieldIndex]
 			fieldIndex++
-			if conformance.IsZigbee(e.Fields, f.Conformance) {
+			if conformance.IsZigbee(e.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
 			fe.CreateAttr("id", f.ID.IntString())

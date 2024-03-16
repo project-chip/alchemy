@@ -103,7 +103,7 @@ func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matte
 			}
 			bit := bm.Bits[bitIndex]
 			bitIndex++
-			if conformance.IsZigbee(bm.Bits, bit.Conformance()) {
+			if conformance.IsZigbee(bm.Bits, bit.Conformance()) || conformance.IsDisallowed(bit.Conformance()) {
 				continue
 			}
 			err = setBitmapFieldAttributes(be, bit, valFormat)
@@ -116,7 +116,7 @@ func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matte
 	for bitIndex < len(bm.Bits) {
 		bit := bm.Bits[bitIndex]
 		bitIndex++
-		if conformance.IsZigbee(bm.Bits, bit.Conformance()) {
+		if conformance.IsZigbee(bm.Bits, bit.Conformance()) || conformance.IsDisallowed(bit.Conformance()) {
 			continue
 		}
 		fe := etree.NewElement("field")
