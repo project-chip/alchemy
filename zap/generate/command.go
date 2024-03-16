@@ -136,6 +136,9 @@ func populateCommand(ce *etree.Element, c *matter.Command, cluster *matter.Clust
 	for argIndex < len(c.Fields) {
 		f := c.Fields[argIndex]
 		argIndex++
+		if conformance.IsZigbee(c.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+			continue
+		}
 		fe := etree.NewElement("arg")
 		fe.CreateAttr("id", f.ID.IntString())
 		setFieldAttributes(fe, f, c.Fields)

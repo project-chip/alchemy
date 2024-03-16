@@ -95,6 +95,9 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 	for fieldIndex < len(e.Fields) {
 		f := e.Fields[fieldIndex]
 		fieldIndex++
+		if conformance.IsZigbee(e.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+			continue
+		}
 		fe := etree.NewElement("field")
 		fe.CreateAttr("id", f.ID.IntString())
 		setFieldAttributes(fe, f, e.Fields)
