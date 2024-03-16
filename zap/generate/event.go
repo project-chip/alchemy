@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	axml "github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/zap"
@@ -49,7 +50,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 	for event := range events {
 		ee := etree.NewElement("event")
 		populateEvent(ee, event, cluster, errata)
-		insertElementByAttribute(ce, ee, "code", "command", "attribute")
+		axml.InsertElementByAttribute(ce, ee, "code", "command", "attribute")
 	}
 	return
 }
@@ -97,7 +98,7 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 		fe := etree.NewElement("field")
 		fe.CreateAttr("id", f.ID.IntString())
 		setFieldAttributes(fe, f, e.Fields)
-		appendElement(ee, fe)
+		axml.AppendElement(ee, fe)
 	}
 	if needsAccess {
 		for _, el := range ee.SelectElements("access") {

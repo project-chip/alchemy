@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
@@ -59,7 +60,7 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, cluster 
 		}
 		bme := etree.NewElement("bitmap")
 		populateBitmap(configurator, bme, bm, clusterIds, errata)
-		insertElementByAttribute(ce, bme, "name", "domain")
+		xml.InsertElementByAttribute(ce, bme, "name", "domain")
 	}
 	return
 }
@@ -124,7 +125,7 @@ func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matte
 		if err != nil {
 			return
 		}
-		appendElement(ee, fe, "cluster")
+		xml.AppendElement(ee, fe, "cluster")
 	}
 
 	return

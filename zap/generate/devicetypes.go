@@ -11,6 +11,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
@@ -109,13 +110,13 @@ type clusterRequirements struct {
 }
 
 func applyDeviceTypeToElement(spec *matter.Spec, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
-	setOrCreateSimpleElement(dte, "name", zap.ZAPDeviceTypeName(deviceType))
-	setOrCreateSimpleElement(dte, "domain", "CHIP")
-	setOrCreateSimpleElement(dte, "typeName", fmt.Sprintf("Matter %s", deviceType.Name))
-	setOrCreateSimpleElement(dte, "profileId", "0x0103").CreateAttr("editable", "false")
-	setOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString()).CreateAttr("editable", "false")
-	setOrCreateSimpleElement(dte, "class", deviceType.Class)
-	setOrCreateSimpleElement(dte, "scope", deviceType.Scope)
+	xml.SetOrCreateSimpleElement(dte, "name", zap.ZAPDeviceTypeName(deviceType))
+	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP")
+	xml.SetOrCreateSimpleElement(dte, "typeName", fmt.Sprintf("Matter %s", deviceType.Name))
+	xml.SetOrCreateSimpleElement(dte, "profileId", "0x0103").CreateAttr("editable", "false")
+	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString()).CreateAttr("editable", "false")
+	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class)
+	xml.SetOrCreateSimpleElement(dte, "scope", deviceType.Scope)
 	clustersElement := dte.SelectElement("clusters")
 	if len(deviceType.ClusterRequirements) == 0 {
 		if clustersElement != nil {
@@ -240,10 +241,10 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 	include := clustersElement.CreateElement("include")
 	include.CreateAttr("cluster", cr.name)
 
-	setNonexistentAttr(include, "client", strconv.FormatBool(client))
-	setNonexistentAttr(include, "server", strconv.FormatBool(server))
-	setNonexistentAttr(include, "clientLocked", strconv.FormatBool(clientLocked))
-	setNonexistentAttr(include, "serverLocked", strconv.FormatBool(serverLocked))
+	xml.SetNonexistentAttr(include, "client", strconv.FormatBool(client))
+	xml.SetNonexistentAttr(include, "server", strconv.FormatBool(server))
+	xml.SetNonexistentAttr(include, "clientLocked", strconv.FormatBool(clientLocked))
+	xml.SetNonexistentAttr(include, "serverLocked", strconv.FormatBool(serverLocked))
 
 	requiredAttributes := make(map[string]struct{})
 	requiredAttributeDefines := make(map[string]struct{})
@@ -328,7 +329,7 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 	for ra := range requiredAttributeDefines {
 		rae := etree.NewElement("requireAttribute")
 		rae.SetText(ra)
-		insertElementByName(include, rae, "")
+		xml.InsertElementByName(include, rae, "")
 	}
 	rcs := include.SelectElements("requireCommand")
 	for _, rc := range rcs {
@@ -343,7 +344,7 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 	for ra := range requiredCommands {
 		rae := etree.NewElement("requireCommand")
 		rae.SetText(ra)
-		insertElementByName(include, rae, "requireAttribute")
+		xml.InsertElementByName(include, rae, "requireAttribute")
 	}
 	res := include.SelectElements("requireEvent")
 	for _, re := range res {
@@ -358,6 +359,6 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, dev
 	for ra := range requiredEvents {
 		rae := etree.NewElement("requireEvent")
 		rae.SetText(ra)
-		insertElementByName(include, rae, "requireAttribute", "requireCommand")
+		xml.InsertElementByName(include, rae, "requireAttribute", "requireCommand")
 	}
 }
