@@ -6,11 +6,12 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
+func renderEnums(doc *ascii.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
 	enums := make([]*matter.Enum, len(cluster.Enums))
 	copy(enums, cluster.Enums)
 	slices.SortFunc(enums, func(a, b *matter.Enum) int {
@@ -62,7 +63,7 @@ func renderEnums(cluster *matter.Cluster, dt *etree.Element) (err error) {
 			if len(v.Summary) > 0 {
 				i.CreateAttr("summary", v.Summary)
 			}
-			err = renderConformanceString(cluster, v.Conformance, i)
+			err = renderConformanceString(doc, cluster, v.Conformance, i)
 			if err != nil {
 				return
 			}

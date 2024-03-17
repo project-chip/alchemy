@@ -97,20 +97,20 @@ type ConstraintLimit interface {
 	Clone() ConstraintLimit
 }
 
-func AppendConstraint(c Constraint, n Constraint) Constraint {
+func AppendConstraint(c Constraint, n ...Constraint) Constraint {
 	if c == nil {
-		return n
+		return ConstraintSet(n)
 	}
 	switch c := c.(type) {
 	// If the only constraint is no constraint, just replace it with the one provided
 	case *AllConstraint:
-		return n
+		return ConstraintSet(n)
 	case *GenericConstraint:
 		if c.Value == "" {
-			return n
+			return ConstraintSet(n)
 		}
 	case ConstraintSet:
-		return append(c, n)
+		return append(c, n...)
 	}
-	return ConstraintSet{c, n}
+	return append(ConstraintSet([]Constraint{c}), n...)
 }

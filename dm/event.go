@@ -5,17 +5,18 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 )
 
-func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderEvents(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
 	if len(cluster.Events) == 0 {
 		return
 	}
 	evs := make([]*matter.Event, 0, len(cluster.Events))
 	for _, e := range cluster.Events {
-		if conformance.IsZigbee(cluster.Commands, e.Conformance) || conformance.IsDisallowed(e.Conformance) {
+		if conformance.IsZigbee(cluster.Commands, e.Conformance) {
 			continue
 		}
 		evs = append(evs, e)
@@ -41,12 +42,12 @@ func renderEvents(cluster *matter.Cluster, c *etree.Element) (err error) {
 				a.CreateAttr("fabricSensitive", "true")
 			}
 		}
-		err = renderConformanceString(cluster, e.Conformance, cx)
+		err = renderConformanceString(doc, cluster, e.Conformance, cx)
 		if err != nil {
 			return
 		}
 
-		err = renderFields(cluster, e.Fields, cx)
+		err = renderFields(doc, cluster, e.Fields, cx)
 		if err != nil {
 			return
 		}

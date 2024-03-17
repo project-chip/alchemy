@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -22,7 +23,7 @@ type clusterID struct {
 	name string
 }
 
-func renderAppCluster(cxt context.Context, clusters []*matter.Cluster) (output string, err error) {
+func renderAppCluster(cxt context.Context, doc *ascii.Doc, clusters []*matter.Cluster) (output string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
@@ -79,23 +80,23 @@ func renderAppCluster(cxt context.Context, clusters []*matter.Cluster) (output s
 	class.CreateAttr("picsCode", cluster.PICS)
 	class.CreateAttr("scope", cluster.Scope)
 
-	err = renderFeatures(cluster, c)
+	err = renderFeatures(doc, cluster, c)
 	if err != nil {
 		return
 	}
-	err = renderDataTypes(cluster, c)
+	err = renderDataTypes(doc, cluster, c)
 	if err != nil {
 		return
 	}
-	err = renderAttributes(cluster, c)
+	err = renderAttributes(doc, cluster, c)
 	if err != nil {
 		return
 	}
-	err = renderCommands(cluster, c)
+	err = renderCommands(doc, cluster, c)
 	if err != nil {
 		return
 	}
-	err = renderEvents(cluster, c)
+	err = renderEvents(doc, cluster, c)
 	if err != nil {
 		return
 	}

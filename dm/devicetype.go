@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 )
@@ -19,7 +20,7 @@ func getDeviceTypePath(sdkRoot string, path string) string {
 	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
 }
 
-func renderDeviceType(cxt context.Context, deviceTypes []*matter.DeviceType) (output string, err error) {
+func renderDeviceType(cxt context.Context, doc *ascii.Doc, deviceTypes []*matter.DeviceType) (output string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
@@ -76,11 +77,12 @@ func renderDeviceType(cxt context.Context, deviceTypes []*matter.DeviceType) (ou
 				case matter.InterfaceServer:
 					clx.CreateAttr("side", "server")
 				}
-				err = renderConformanceString(deviceType, cr.Conformance, clx)
+				renderQuality(clx, cr.Quality, matter.QualityAll)
+				err = renderConformanceString(doc, deviceType, cr.Conformance, clx)
 				if err != nil {
 					return
 				}
-				err = renderElementRequirements(deviceType, cr, clx)
+				err = renderElementRequirements(doc, deviceType, cr, clx)
 				if err != nil {
 					return
 				}
@@ -96,7 +98,7 @@ func renderDeviceType(cxt context.Context, deviceTypes []*matter.DeviceType) (ou
 	return
 }
 
-func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
+func renderElementRequirements(doc *ascii.Doc, deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
 	erMap := make(map[types.EntityType][]*matter.ElementRequirement)
 	for _, er := range deviceType.ElementRequirements {
 		if er.ID.Equals(cr.ID) {
@@ -122,23 +124,42 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 		for _, er := range ers {
 			switch entity {
 			case types.EntityTypeAttribute:
-				err = renderAttributeRequirement(deviceType, er, erx)
+				err = renderAttributeRequirement(doc, deviceType, er, erx)
 			case types.EntityTypeCommand:
 				ex := erx.CreateElement("command")
 				var code string
 				if er.Cluster != nil {
 					for _, cmd := range er.Cluster.Commands {
-						if cmd.ID.Equals(er.ID) {
+						if cmd.Name == er.Name {
 							code = cmd.ID.HexString()
 							break
 						}
 					}
 				}
 				if code != "" {
-					ex.CreateAttr("code", code)
+					ex.CreateAttr("id", code)
 				}
 				ex.CreateAttr("name", er.Name)
-				err = renderConformanceString(deviceType, er.Conformance, ex)
+				err = renderConformanceString(doc, deviceType, er.Conformance, ex)
+				if err != nil {
+					return
+				}
+			case types.EntityTypeEvent:
+				ex := erx.CreateElement("event")
+				var code string
+				if er.Cluster != nil {
+					for _, ev := range er.Cluster.Events {
+						if ev.Name == er.Name {
+							code = ev.ID.HexString()
+							break
+						}
+					}
+				}
+				if code != "" {
+					ex.CreateAttr("id", code)
+				}
+				ex.CreateAttr("name", er.Name)
+				err = renderConformanceString(doc, deviceType, er.Conformance, ex)
 				if err != nil {
 					return
 				}
@@ -151,7 +172,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 					featureCode = matter.Case(featureCode)
 				}
 
-				if er.Cluster != nil {
+				if er.Cluster != nil && er.Cluster.Features != nil {
 					for _, b := range er.Cluster.Features.Bits {
 						f := b.(*matter.Feature)
 						if f.Code == featureCode {
@@ -162,7 +183,7 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 				}
 				ex.CreateAttr("code", code)
 				ex.CreateAttr("name", er.Name)
-				err = renderConformanceString(deviceType, er.Conformance, ex)
+				err = renderConformanceString(doc, deviceType, er.Conformance, ex)
 				if err != nil {
 					return
 				}
@@ -172,13 +193,13 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 	return
 }
 
-func renderAttributeRequirement(deviceType *matter.DeviceType, er *matter.ElementRequirement, parent *etree.Element) (err error) {
+func renderAttributeRequirement(doc *ascii.Doc, deviceType *matter.DeviceType, er *matter.ElementRequirement, parent *etree.Element) (err error) {
 	var code string
 	var attribute *matter.Field
 	var dataType *types.DataType
 	if er.Cluster != nil {
 		for _, a := range er.Cluster.Attributes {
-			if a.ID.Equals(er.ID) {
+			if a.Name == er.Name {
 				attribute = a
 				dataType = a.Type
 				break
@@ -194,7 +215,7 @@ func renderAttributeRequirement(deviceType *matter.DeviceType, er *matter.Elemen
 
 	renderAttributeAccess(ex, er.Access)
 	renderQuality(ex, er.Quality, matter.QualityAll^matter.QualitySingleton)
-	err = renderConformanceString(deviceType, er.Conformance, ex)
+	err = renderConformanceString(doc, deviceType, er.Conformance, ex)
 	if err != nil {
 		return
 	}
