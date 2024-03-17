@@ -171,7 +171,7 @@ IdentifierOp <- not:'!'? identifier:Identifier {
 }
 
 
-Identifier <- PascalCase {
+Identifier <- PascalCase ('-' PascalCase)* {
     //debug("matched identifier %s\n", string(c.text))
     return string(c.text), nil
 }
