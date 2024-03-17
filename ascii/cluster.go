@@ -220,7 +220,7 @@ func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 	if err != nil {
 		return fmt.Errorf("error reading role column on cluster %s: %w", c.Name, err)
 	}
-	c.Scope, err = readRowAsciiDocString(row, columnMap, matter.TableColumnScope)
+	c.Scope, err = readRowAsciiDocString(row, columnMap, matter.TableColumnScope, matter.TableColumnContext)
 	if err != nil {
 		return fmt.Errorf("error reading scope column on cluster %s: %w", c.Name, err)
 	}
