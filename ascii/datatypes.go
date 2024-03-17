@@ -109,10 +109,34 @@ func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*ty
 			ids[id] = struct{}{}
 		}
 
-		if f.Type != nil && f.Type.BaseType == mattertypes.BaseDataTypeMessageID {
-			f.Constraint = constraint.AppendConstraint(f.Constraint, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}})
-		}
+		if f.Type != nil {
+			var cs constraint.ConstraintSet
+			switch f.Type.BaseType {
+			case mattertypes.BaseDataTypeMessageID:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
+			case mattertypes.BaseDataTypeIPAddress:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 4}}, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
+			case mattertypes.BaseDataTypeIPv4Address:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 4}}}
+			case mattertypes.BaseDataTypeIPv6Address:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
+			case mattertypes.BaseDataTypeIPv6Prefix:
+				cs = []constraint.Constraint{&constraint.RangeConstraint{Minimum: &constraint.IntLimit{Value: 1}, Maximum: &constraint.IntLimit{Value: 17}}}
+			case mattertypes.BaseDataTypeHardwareAddress:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 6}}, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 8}}}
+			}
+			if cs != nil {
+				if f.Type.IsArray() {
+					lc, ok := f.Constraint.(*constraint.ListConstraint)
+					if ok {
+						lc.EntryConstraint = constraint.AppendConstraint(lc.EntryConstraint, cs...)
+					}
+				} else {
+					f.Constraint = constraint.AppendConstraint(f.Constraint, cs...)
+				}
 
+			}
+		}
 		fields = append(fields, f)
 	}
 	return
