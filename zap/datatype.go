@@ -244,15 +244,15 @@ func DataTypeToZap(dataType *types.DataType) string {
 	case types.BaseDataTypeString:
 		return "char_string"
 	case types.BaseDataTypeIPAddress:
-		return "ipadr"
+		return "octet_string"
 	case types.BaseDataTypeIPv4Address:
-		return "ipv4addr"
+		return "octet_string"
 	case types.BaseDataTypeIPv6Address:
-		return "ipv6addr"
+		return "octet_string"
 	case types.BaseDataTypeIPv6Prefix:
-		return "ipv6pre"
+		return "octet_string"
 	case types.BaseDataTypeHardwareAddress:
-		return "hwadr"
+		return "octet_string"
 	case types.BaseDataTypeSemanticTag:
 		return "semtag"
 	case types.BaseDataTypeNamespace:
