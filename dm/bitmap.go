@@ -6,10 +6,11 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
 
-func renderBitmaps(cluster *matter.Cluster, dt *etree.Element) (err error) {
+func renderBitmaps(doc *ascii.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
 	bitmaps := make([]*matter.Bitmap, len(cluster.Bitmaps))
 	copy(bitmaps, cluster.Bitmaps)
 	slices.SortFunc(bitmaps, func(a, b *matter.Bitmap) int {
@@ -37,7 +38,7 @@ func renderBitmaps(cluster *matter.Cluster, dt *etree.Element) (err error) {
 				i.CreateAttr("bit", val.IntString())
 			}
 			i.CreateAttr("summary", v.Summary())
-			err = renderConformanceString(cluster, v.Conformance(), i)
+			err = renderConformanceString(doc, cluster, v.Conformance(), i)
 			if err != nil {
 				return
 			}

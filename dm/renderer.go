@@ -46,7 +46,7 @@ func (p Renderer) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc],
 	}
 	if len(appClusters) > 0 {
 		var s string
-		s, err = renderAppCluster(cxt, appClusters)
+		s, err = renderAppCluster(cxt, doc, appClusters)
 		if err != nil {
 			err = fmt.Errorf("failed rendering app clusters %s: %w", doc.Path, err)
 			return
@@ -55,7 +55,7 @@ func (p Renderer) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc],
 	}
 	if len(deviceTypes) > 0 {
 		var s string
-		s, err = renderDeviceType(cxt, deviceTypes)
+		s, err = renderDeviceType(cxt, doc, deviceTypes)
 		if err != nil {
 			err = fmt.Errorf("failed rendering device types %s: %w", doc.Path, err)
 			return

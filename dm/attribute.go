@@ -6,11 +6,12 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 )
 
-func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderAttributes(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
 	if len(cluster.Attributes) == 0 {
 		return
 	}
@@ -21,7 +22,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 	})
 	attributes := c.CreateElement("attributes")
 	for _, a := range as {
-		if conformance.IsZigbee(cluster.Attributes, a.Conformance) || conformance.IsDisallowed(a.Conformance) {
+		if conformance.IsZigbee(cluster.Attributes, a.Conformance) {
 			continue
 		}
 		ax := attributes.CreateElement("attribute")
@@ -33,7 +34,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 		}
 		renderAttributeAccess(ax, a.Access)
 		renderQuality(ax, a.Quality, matter.QualityAll^(matter.QualitySingleton))
-		err = renderConformanceString(cluster, a.Conformance, ax)
+		err = renderConformanceString(doc, cluster, a.Conformance, ax)
 		if err != nil {
 			return
 		}

@@ -5,18 +5,19 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 )
 
-func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderCommands(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
 	if len(cluster.Commands) == 0 {
 		return
 	}
 
 	cmds := make([]*matter.Command, 0, len(cluster.Commands))
 	for _, c := range cluster.Commands {
-		if conformance.IsZigbee(cluster.Commands, c.Conformance) || conformance.IsDisallowed(c.Conformance) {
+		if conformance.IsZigbee(cluster.Commands, c.Conformance) {
 			continue
 		}
 		cmds = append(cmds, c)
@@ -62,7 +63,7 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 			}
 		}
 
-		err = renderConformanceString(cluster, cmd.Conformance, cx)
+		err = renderConformanceString(doc, cluster, cmd.Conformance, cx)
 		if err != nil {
 			return
 		}
@@ -78,7 +79,7 @@ func renderCommands(cluster *matter.Cluster, c *etree.Element) (err error) {
 				i.CreateAttr("default", f.Default)
 			}
 			renderQuality(i, f.Quality, matter.QualityNullable)
-			err = renderConformanceString(cluster, f.Conformance, i)
+			err = renderConformanceString(doc, cmd.Fields, f.Conformance, i)
 			if err != nil {
 				return
 			}

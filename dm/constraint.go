@@ -72,7 +72,10 @@ func renderConstraintElement(name string, con constraint.Constraint, dataType *t
 		}
 	case constraint.ConstraintSet:
 		for _, cs := range con {
-			renderConstraintElement("constraint", cs, dataType, parent)
+			_, err = renderConstraintElement("constraint", cs, dataType, parent)
+			if err != nil {
+				return
+			}
 		}
 	default:
 		err = fmt.Errorf("unknown constraint type: %T", con)

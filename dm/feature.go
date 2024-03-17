@@ -4,10 +4,11 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
 
-func renderFeatures(cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderFeatures(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
 	if cluster.Features == nil || len(cluster.Features.Bits) == 0 {
 		return
 	}
@@ -29,7 +30,7 @@ func renderFeatures(cluster *matter.Cluster, c *etree.Element) (err error) {
 		if len(f.Summary()) > 0 {
 			feature.CreateAttr("summary", f.Summary())
 		}
-		err = renderConformanceString(cluster, f.Conformance(), feature)
+		err = renderConformanceString(doc, cluster, f.Conformance(), feature)
 		if err != nil {
 			return
 		}

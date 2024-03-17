@@ -5,10 +5,11 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
 
-func renderStructs(cluster *matter.Cluster, dt *etree.Element) (err error) {
+func renderStructs(doc *ascii.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
 	structs := make([]*matter.Struct, len(cluster.Structs))
 	copy(structs, cluster.Structs)
 	slices.SortFunc(structs, func(a, b *matter.Struct) int {
@@ -17,7 +18,7 @@ func renderStructs(cluster *matter.Cluster, dt *etree.Element) (err error) {
 	for _, s := range structs {
 		en := dt.CreateElement("struct")
 		en.CreateAttr("name", s.Name)
-		err = renderFields(cluster, s.Fields, en)
+		err = renderFields(doc, cluster, s.Fields, en)
 		if err != nil {
 			return
 		}
@@ -28,14 +29,14 @@ func renderStructs(cluster *matter.Cluster, dt *etree.Element) (err error) {
 	return
 }
 
-func renderFields(cluster *matter.Cluster, fs matter.FieldSet, parent *etree.Element) (err error) {
+func renderFields(doc *ascii.Doc, cluster *matter.Cluster, fs matter.FieldSet, parent *etree.Element) (err error) {
 	for _, f := range fs {
-		err = renderField(cluster, fs, f, parent)
+		err = renderField(doc, cluster, fs, f, parent)
 	}
 	return
 }
 
-func renderField(cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, parent *etree.Element) (err error) {
+func renderField(doc *ascii.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, parent *etree.Element) (err error) {
 	if !f.ID.Valid() {
 		return
 	}
@@ -45,7 +46,7 @@ func renderField(cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, p
 	renderDataType(f, i)
 	renderAttributeAccess(i, f.Access)
 	renderQuality(i, f.Quality, matter.QualityNullable)
-	err = renderConformanceString(fs, f.Conformance, i)
+	err = renderConformanceString(doc, fs, f.Conformance, i)
 	if err != nil {
 		return
 	}
