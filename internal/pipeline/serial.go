@@ -29,6 +29,7 @@ func processSerial[I, O any](cxt context.Context, name string, processor Individ
 		if done {
 			continue
 		}
+		fmt.Fprintf(os.Stderr, "%s\n", input.Path)
 		var outputs []*Data[O]
 		var extras []*Data[I]
 		outputs, extras, err = processor(cxt, input, counter, total)
