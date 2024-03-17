@@ -3,6 +3,7 @@ package files
 import (
 	"context"
 	"io/fs"
+	"log/slog"
 	"path/filepath"
 	"strings"
 
@@ -15,7 +16,17 @@ func getSpecPaths(specRoot string) (paths []string, err error) {
 	srcRoot := filepath.Join(specRoot, "/src/")
 	err = filepath.WalkDir(srcRoot, func(path string, d fs.DirEntry, err error) error {
 		if filepath.Ext(path) == ".adoc" && !strings.HasSuffix(path, "-draft.adoc") {
-			paths = append(paths, path)
+			var banned bool
+			for ban, reason := range bannedPaths {
+				if strings.HasSuffix(path, ban) {
+					slog.Debug("Skipping excluded", "file", path, "reason", reason)
+					banned = true
+					break
+				}
+			}
+			if !banned {
+				paths = append(paths, path)
+			}
 		}
 		return nil
 	})
