@@ -20,7 +20,7 @@ func (a *Anchor) Name() string {
 	if len(name) > 0 {
 		return name
 	}
-	return a.Label
+	return ""
 }
 
 func (doc *Doc) Anchors() (map[string]*Anchor, error) {

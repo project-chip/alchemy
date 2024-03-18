@@ -148,6 +148,5 @@ func referenceNameFromAttributes(el types.WithAttributes) string {
 		}
 		return title
 	}
-	slog.Debug("anchor element has no title attribute", "element", el)
 	return ""
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z][a-z]+(?:[A-Z][a-z]*)*([A-Z][a-z]*(?:[A-Z][a-z]*)*)*$`)
+var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z]+[a-z]+(?:[A-Z]+[a-z]*)*([A-Z]+[a-z]*(?:[A-Z]+[a-z]*)*)*$`)
 
 func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 
@@ -49,12 +49,22 @@ func normalizeAnchor(info *ascii.Anchor) {
 			info.Label = normalizeAnchorLabel(info.Name(), info.Element)
 		}
 	} else {
-		id, label := normalizeAnchorID(info.Name(), info.Element, info.Parent)
+		name := info.Name()
+		if len(name) == 0 {
+			name = info.Label
+		}
+		id, label := normalizeAnchorID(name, info.Element, info.Parent)
 		info.ID = id
 		info.Label = label
 	}
-	if info.Label == info.Name() {
-		info.Label = ""
+	name := info.Name()
+	if info.Label == name {
+		label := normalizeAnchorLabel(name, info.Element)
+		if len(label) > 0 && label != name {
+			info.Label = label
+		} else {
+			info.Label = ""
+		}
 	}
 }
 
@@ -93,6 +103,7 @@ func normalizeAnchorLabel(name string, element any) (label string) {
 	case *types.Table:
 		label = strings.TrimSpace(name)
 	default:
+		name = strings.TrimSuffix(name, " Type")
 		label = strings.TrimSpace(matter.StripReferenceSuffixes(name))
 	}
 	return
