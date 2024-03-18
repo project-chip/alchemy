@@ -408,6 +408,9 @@ func ZapToBaseDataType(s string) types.BaseDataType {
 	case "array":
 		return types.BaseDataTypeList
 	}
+	if len(s) > 0 {
+		return types.BaseDataTypeCustom
+	}
 	return types.BaseDataTypeUnknown
 }
 

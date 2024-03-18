@@ -30,11 +30,11 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[ty
 		if err != nil {
 			return
 		}
-		attr.Name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
+		attr.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		attr.Name = StripTypeSuffixes(attr.Name)
+		attr.Name = matter.StripTypeSuffixes(attr.Name)
 		attr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		attr.Type, err = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		if err != nil {

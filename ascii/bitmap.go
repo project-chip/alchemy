@@ -44,12 +44,12 @@ func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]matterty
 		row := rows[i]
 		var bit, name, summary string
 		var conf conformance.Set
-		name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
+		name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		name = StripTypeSuffixes(name)
-		summary, err = readRowValue(d, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		name = matter.StripTypeSuffixes(name)
+		summary, err = ReadRowValue(d, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}

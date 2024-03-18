@@ -70,7 +70,7 @@ func normalizeAnchorID(name string, element any, parent any) (id string, label s
 		switch p.SecType {
 		case matter.SectionDataTypeStruct, matter.SectionCommand, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap, matter.SectionEvent:
 			parentName = ascii.ReferenceName(p.Base)
-			parentName = ascii.StripTypeSuffixes(parentName)
+			parentName = matter.StripTypeSuffixes(parentName)
 			parentName, _ = normalizeAnchorID(parentName, p.Base, p.Parent)
 			parentName = strings.TrimPrefix(parentName, "ref_")
 		case matter.SectionUnknown:
@@ -123,7 +123,7 @@ func disambiguateAnchorSet(infos []*ascii.Anchor) error {
 			}
 			parentSections[i] = parentSection
 			parentName := ascii.ReferenceName(parentSection.Base)
-			parentName = ascii.StripTypeSuffixes(parentName)
+			parentName = matter.StripTypeSuffixes(parentName)
 			refParentId, _ := normalizeAnchorID(parentName, parentSection.Base, parentSection.Parent)
 			refIds[i] = refParentId + strings.TrimPrefix(refIds[i], "ref_")
 		}

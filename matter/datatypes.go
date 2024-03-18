@@ -40,3 +40,15 @@ func StripDataTypeSuffixes(dataType string) string {
 	}
 	return dataType
 }
+
+var typeSuffixes = []string{" Attribute", " Type", " Field", " Command", " Attribute", " Event"}
+
+func StripTypeSuffixes(dataType string) string {
+	for _, suffix := range typeSuffixes {
+		if strings.HasSuffix(dataType, suffix) {
+			dataType = dataType[0 : len(dataType)-len(suffix)]
+			break
+		}
+	}
+	return dataType
+}

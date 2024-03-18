@@ -29,6 +29,10 @@ type Entity interface {
 	EntityType() EntityType
 }
 
+func (et EntityType) String() string {
+	return entityTypeNames[et]
+}
+
 var (
 	entityTypeNames = map[EntityType]string{
 		EntityTypeUnknown:            "unknown",

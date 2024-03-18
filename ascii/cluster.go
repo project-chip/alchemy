@@ -172,7 +172,7 @@ func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, er
 			err = fmt.Errorf("error reading revision column: %w", err)
 			return
 		}
-		rev.Description, err = readRowValue(doc, row, columnMap, matter.TableColumnDescription)
+		rev.Description, err = ReadRowValue(doc, row, columnMap, matter.TableColumnDescription)
 		if err != nil {
 			err = fmt.Errorf("error reading revision description: %w", err)
 			return
@@ -196,7 +196,7 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Name, err = readRowValue(doc, row, columnMap, matter.TableColumnName)
+		c.Name, err = ReadRowValue(doc, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return nil, err
 		}

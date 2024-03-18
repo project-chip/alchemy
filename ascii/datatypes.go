@@ -50,11 +50,11 @@ func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*ty
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		f := matter.NewField()
-		f.Name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
+		f.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		f.Name = StripTypeSuffixes(f.Name)
+		f.Name = matter.StripTypeSuffixes(f.Name)
 		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		if err != nil {
 			return
@@ -358,19 +358,7 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 		return conformance.Set{&conformance.Mandatory{}}
 	}
 	s = newLineReplacer.Replace(s)
-	return conformance.ParseConformance(StripTypeSuffixes(s))
+	return conformance.ParseConformance(matter.StripTypeSuffixes(s))
 }
 
 var newLineReplacer = strings.NewReplacer("\r\n", "", "\r", "", "\n", "")
-
-var typeSuffixes = []string{" Attribute", " Type", " Field", " Command", " Attribute", " Event"}
-
-func StripTypeSuffixes(dataType string) string {
-	for _, suffix := range typeSuffixes {
-		if strings.HasSuffix(dataType, suffix) {
-			dataType = dataType[0 : len(dataType)-len(suffix)]
-			break
-		}
-	}
-	return dataType
-}

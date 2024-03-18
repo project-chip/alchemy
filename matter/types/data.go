@@ -17,6 +17,13 @@ func NewDataType(baseType BaseDataType, isArray bool) *DataType {
 	return &DataType{Name: BaseDataTypeName(baseType), BaseType: baseType}
 }
 
+func NewCustomDataType(dataType string, isArray bool) *DataType {
+	if isArray {
+		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: NewCustomDataType(dataType, false)}
+	}
+	return &DataType{Name: dataType, BaseType: BaseDataTypeCustom}
+}
+
 func ParseDataType(typeName string, isArray bool) *DataType {
 	if len(typeName) == 0 {
 		return nil

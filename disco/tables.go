@@ -54,7 +54,7 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	return
 }
 
-func (*Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType mattertypes.EntityType) (appendedIndex int, err error) {
+func (b *Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType mattertypes.EntityType) (appendedIndex int, err error) {
 	if len(rows) == 0 {
 		appendedIndex = -1
 		return
@@ -79,7 +79,7 @@ func (*Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, h
 			last := row.Cells[len(row.Cells)-1]
 			cell.Blank = last.Blank
 			if !cell.Blank {
-				err = setCellString(cell, getDefaultColumnValue(entityType, column))
+				err = setCellString(cell, b.getDefaultColumnValue(entityType, column, row, columnMap))
 			}
 		}
 		row.Cells = append(row.Cells, cell)
@@ -88,14 +88,38 @@ func (*Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, h
 	return
 }
 
-func getDefaultColumnValue(entityType mattertypes.EntityType, column matter.TableColumn) string {
+func (b *Ball) getDefaultColumnValue(entityType mattertypes.EntityType, column matter.TableColumn, row *types.TableRow, columnMap ascii.ColumnIndex) string {
 	switch column {
 	case matter.TableColumnConformance:
 		switch entityType {
 		case mattertypes.EntityTypeBitmapValue, mattertypes.EntityTypeEnumValue:
 			return "M"
 		}
+	case matter.TableColumnName:
+		switch entityType {
+		case mattertypes.EntityTypeBitmapValue, mattertypes.EntityTypeEnumValue:
+			val, _ := ascii.ReadRowValue(b.doc, row, columnMap, matter.TableColumnSummary)
+			if val != "" {
+				return matter.Case(val)
+			}
+		}
+	case matter.TableColumnSummary:
+		switch entityType {
+		case mattertypes.EntityTypeBitmapValue, mattertypes.EntityTypeEnumValue:
+			val, _ := ascii.ReadRowValue(b.doc, row, columnMap, matter.TableColumnName)
+			if val != "" {
+				return matter.Uncase(val)
+			}
+		}
+	case matter.TableColumnAccess:
+		switch entityType {
+		case mattertypes.EntityTypeEvent, mattertypes.EntityTypeAttribute:
+			return "R V"
+		case mattertypes.EntityTypeField:
+			return ""
+		}
 	}
+	slog.Debug("no default value for column", slog.String("column", column.String()), slog.String("entity", entityType.String()))
 	return ""
 }
 
