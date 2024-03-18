@@ -35,7 +35,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[type
 		if err != nil {
 			return
 		}
-		cmd.Name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
+		cmd.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}

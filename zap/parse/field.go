@@ -118,16 +118,23 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 
 	fieldBaseType := zap.ZapToBaseDataType(fieldType)
 	entryBaseType := zap.ZapToBaseDataType(entryType)
-	if isArray {
-		if entryBaseType != types.BaseDataTypeUnknown {
-			field.Type = types.NewDataType(entryBaseType, true)
-		} else {
+	if isArray || fieldBaseType == types.BaseDataTypeList {
+		switch entryBaseType {
+		case types.BaseDataTypeCustom:
+			field.Type = types.NewCustomDataType(entryType, true)
+		case types.BaseDataTypeUnknown:
 			field.Type = types.NewDataType(fieldBaseType, true)
-		}
-	} else if fieldBaseType == types.BaseDataTypeList {
+		default:
 		field.Type = types.NewDataType(entryBaseType, true)
+		}
+
 	} else {
+		switch fieldBaseType {
+		case types.BaseDataTypeCustom:
+			field.Type = types.NewCustomDataType(fieldType, false)
+		default:
 		field.Type = types.NewDataType(fieldBaseType, false)
+	}
 	}
 	var cons string
 	if len(max) > 0 && len(min) > 0 {

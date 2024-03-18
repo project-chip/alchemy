@@ -1,6 +1,7 @@
 package matter
 
 import (
+	"strings"
 	"sync"
 	"unicode"
 	"unicode/utf8"
@@ -80,4 +81,53 @@ func Case(s string) string {
 	}
 	return string(b)
 
+}
+
+type charClass uint8
+
+const (
+	charClassUnknown charClass = iota
+	charClassUpper
+	charClassLower
+	charClassDigit
+)
+
+func Uncase(s string) string {
+	runes := []rune(s)
+	var sb strings.Builder
+	sb.Grow(len(runes))
+	var last charClass
+	for _, r := range runes {
+		var current charClass
+		if unicode.IsUpper(r) {
+			current = charClassUpper
+		} else if unicode.IsLower(r) {
+			current = charClassLower
+
+		} else if unicode.IsDigit(r) {
+			current = charClassDigit
+		}
+		if last != current {
+			switch last {
+			case charClassUnknown:
+			case charClassUpper:
+				if current != charClassLower && current != charClassDigit {
+					sb.WriteRune(' ')
+				}
+			case charClassLower:
+				if current != charClassUnknown {
+					sb.WriteRune(' ')
+				}
+			default:
+				sb.WriteRune(' ')
+			}
+		}
+		switch current {
+		case charClassUpper:
+
+		}
+		sb.WriteRune(r)
+		last = current
+	}
+	return sb.String()
 }

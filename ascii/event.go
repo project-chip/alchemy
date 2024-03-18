@@ -24,11 +24,11 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[types.
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		e := &matter.Event{}
-		e.Name, err = readRowValue(d, row, columnMap, matter.TableColumnName)
+		e.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		e.Name = StripTypeSuffixes(e.Name)
+		e.Name = matter.StripTypeSuffixes(e.Name)
 		e.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return

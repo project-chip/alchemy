@@ -75,7 +75,7 @@ func readRowID(row *types.TableRow, columnMap ColumnIndex, column matter.TableCo
 	return matter.ParseNumber(id), nil
 }
 
-func readRowValue(doc *Doc, row *types.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
+func ReadRowValue(doc *Doc, row *types.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := columnMap[column]
 		if !ok {
@@ -113,7 +113,7 @@ func readRowCellValueElements(doc *Doc, elements []any, value *strings.Builder) 
 			var val string
 			anchor, _ := doc.getAnchor(el.ID.(string))
 			if anchor != nil {
-				val = StripTypeSuffixes(ReferenceName(anchor.Element))
+				val = matter.StripTypeSuffixes(ReferenceName(anchor.Element))
 			} else {
 				val = strings.TrimPrefix(el.ID.(string), "_")
 				val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined

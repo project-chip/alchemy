@@ -43,17 +43,17 @@ func (s *Section) toFeatures(d *Doc, entityMap map[types.WithAttributes][]matter
 			}
 		}
 
-		name, err = readRowValue(d, row, columnMap, matter.TableColumnFeature, matter.TableColumnName)
+		name, err = ReadRowValue(d, row, columnMap, matter.TableColumnFeature, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		name = StripTypeSuffixes(name)
+		name = matter.StripTypeSuffixes(name)
 
 		code, err = readRowAsciiDocString(row, columnMap, matter.TableColumnCode)
 		if err != nil {
 			return
 		}
-		summary, err = readRowValue(d, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = ReadRowValue(d, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}

@@ -79,12 +79,12 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 		for i := headerRowIndex + 1; i < len(rows); i++ {
 			row := rows[i]
 			ev := &matter.EnumValue{}
-			ev.Name, err = readRowValue(s.Doc, row, columnMap, matter.TableColumnName)
+			ev.Name, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnName)
 			if err != nil {
 				return nil, err
 			}
-			ev.Name = StripTypeSuffixes(ev.Name)
-			ev.Summary, err = readRowValue(s.Doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+			ev.Name = matter.StripTypeSuffixes(ev.Name)
+			ev.Summary, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 			if err != nil {
 				return nil, err
 			}
