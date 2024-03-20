@@ -49,6 +49,9 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	if len(args) > 0 {
 		filter := files.NewPathFilter[*ascii.Doc](args)
 		specDocs, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, filter, specDocs)
+		if err != nil {
+			return err
+		}
 	}
 
 	renderer := dm.NewRenderer(sdkRoot)

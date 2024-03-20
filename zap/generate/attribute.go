@@ -45,7 +45,10 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			continue
 		}
 		delete(attributes, attribute)
-		populateAttribute(ae, attribute, cluster, clusterPrefix, errata)
+		err = populateAttribute(ae, attribute, cluster, clusterPrefix, errata)
+		if err != nil {
+			return
+		}
 	}
 	for a := range attributes {
 		if conformance.IsZigbee(cluster, a.Conformance) {

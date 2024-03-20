@@ -194,6 +194,9 @@ func findSubsections(doc *ascii.Doc, parent *subSection, childPatterns ...subSec
 		}
 		var subs *subSection
 		subs, err = newParentSubSection(doc, ss, childPatterns...)
+		if err != nil {
+			return
+		}
 		subs.table, err = firstTableInfo(doc, ss)
 		if err != nil {
 			return
