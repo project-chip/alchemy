@@ -131,7 +131,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if text {
-		writeText(os.Stderr, diffs)
+		writeText(os.Stdout, diffs)
 		return
 	}
 
