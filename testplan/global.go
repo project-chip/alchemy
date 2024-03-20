@@ -188,7 +188,6 @@ func writeEventListAttribute(b *strings.Builder, doc *ascii.Doc, cluster *matter
 				expressions[event] = c.Expression
 
 			default:
-				fmt.Printf("bad conformance: %T\n", c)
 				slog.Warn("Unable to determine conformance for event", slog.String("clusterName", cluster.Name), slog.String("eventName", event.Name), slog.Any("conformance", c))
 				continue
 			}

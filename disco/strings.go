@@ -6,16 +6,12 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/internal/parse"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 var missingSpaceAfterPunctuationPattern = regexp.MustCompile(`([a-z])([.?!,])([A-Z])`)
 var multipleSpacesPattern = regexp.MustCompile(`([\w.?!,\(\)\-":]) {2,}([\w.?!,\(\)\-":])`)
 var lowercaseHexPattern = regexp.MustCompile(`(\b0x[0-9a-f]*[a-f][0-9a-f]*\b)`)
 var lowercasePattern = regexp.MustCompile(`[a-f]+`)
-
-var titleCaser = cases.Title(language.AmericanEnglish)
 
 func precleanStrings(elements []interface{}) {
 	parse.Search(elements, func(t *types.StringElement) bool {

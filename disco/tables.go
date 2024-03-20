@@ -2,6 +2,7 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 	"slices"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
