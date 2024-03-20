@@ -55,7 +55,6 @@ func Case(s string) string {
 						index++
 					}
 					b = utf8.AppendRune(b, runes[index])
-					index++
 				}
 				index = end
 			} else {

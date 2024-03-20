@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 
 	sqle "github.com/dolthub/go-mysql-server"
 	"github.com/dolthub/go-mysql-server/memory"
@@ -15,8 +14,6 @@ import (
 
 type Host struct {
 	db *memory.Database
-
-	lock sync.RWMutex
 
 	tableNames []string
 	tables     map[string]*memory.Table

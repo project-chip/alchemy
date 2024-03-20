@@ -155,21 +155,6 @@ func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Fiel
 	}
 }
 
-func renderPrivilege(a matter.Privilege) string {
-	switch a {
-	case matter.PrivilegeView:
-		return "view"
-	case matter.PrivilegeManage:
-		return "manage"
-	case matter.PrivilegeAdminister:
-		return "administer"
-	case matter.PrivilegeOperate:
-		return "operate"
-	default:
-		return ""
-	}
-}
-
 func getDefine(name string, prefix string, errata *zap.Errata) string {
 	define := strcase.ToScreamingDelimited(cleanAcronyms(name), '_', "", true)
 	if !strings.HasPrefix(define, prefix) {
