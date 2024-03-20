@@ -3,7 +3,6 @@ package pipeline
 import (
 	"context"
 	"fmt"
-	"reflect"
 
 	"github.com/puzpuzpuz/xsync/v3"
 )
@@ -31,7 +30,7 @@ func Process[I, O any](cxt context.Context, options Options, processor Processor
 		proc, ok := processor.(CollectiveProcessor[I, O])
 		if !ok {
 			proc = processor.(CollectiveProcessor[I, O])
-			err = fmt.Errorf("processor \"%s\" claimed to be collective, but does not implement CollectiveProcessor interface", processor.Name())
+			err = fmt.Errorf("processor \"%s\" claimed to be collective, but does not implement CollectiveProcessor interface: %v", processor.Name(), proc)
 			return
 		}
 		return processCollective[I, O](cxt, proc, input)
@@ -39,12 +38,7 @@ func Process[I, O any](cxt context.Context, options Options, processor Processor
 		proc, ok := processor.(IndividualProcessor[I, O])
 		if !ok {
 			proc = processor.(IndividualProcessor[I, O])
-			err = fmt.Errorf("processor \"%s\" claimed to be individual, but does not implement IndividualProcessor interface", processor.Name())
-			fooType := reflect.TypeOf(processor)
-			for i := 0; i < fooType.NumMethod(); i++ {
-				method := fooType.Method(i)
-				fmt.Printf("method: %v\n", method)
-			}
+			err = fmt.Errorf("processor \"%s\" claimed to be individual, but does not implement IndividualProcessor interface %v", processor.Name(), proc)
 			return
 		}
 		if options.Serial {

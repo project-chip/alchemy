@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareEvent(specEvent *matter.Event, zapEvent *matter.Event) (diffs []any) {
+func compareEvent(specEvent *matter.Event, zapEvent *matter.Event) (diffs []Diff) {
 	if !namesEqual(specEvent.Name, zapEvent.Name) {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyName, Spec: specEvent.Name, ZAP: zapEvent.Name})
 	}
@@ -17,15 +17,15 @@ func compareEvent(specEvent *matter.Event, zapEvent *matter.Event) (diffs []any)
 	if !specEvent.Access.Equal(zapEvent.Access) {
 		diffs = append(diffs, &AccessDiff{Type: DiffTypeMismatch, Property: DiffPropertyAccess, Spec: specEvent.Access, ZAP: zapEvent.Access})
 	}
-	diffs = append(diffs, compareConformance(specEvent.Conformance, zapEvent.Conformance)...)
-	fieldDiffs, err := compareFields(specEvent.Fields, zapEvent.Fields)
+	diffs = append(diffs, compareConformance(types.EntityTypeEvent, specEvent.Conformance, zapEvent.Conformance)...)
+	fieldDiffs, err := compareFields(types.EntityTypeField, specEvent.Fields, zapEvent.Fields)
 	if err == nil && len(fieldDiffs) > 0 {
-		diffs = append(diffs, fieldDiffs)
+		diffs = append(diffs, fieldDiffs...)
 	}
 	return
 }
 
-func compareEvents(specEvents []*matter.Event, zapEvents []*matter.Event) (diffs []any) {
+func compareEvents(specEvents []*matter.Event, zapEvents []*matter.Event) (diffs []Diff) {
 	specEventMap := make(map[string]*matter.Event)
 	for _, f := range specEvents {
 		specEventMap[f.ID.IntString()] = f

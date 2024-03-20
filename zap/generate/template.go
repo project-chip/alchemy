@@ -61,7 +61,7 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*a
 		errata = zap.DefaultErrata
 	}
 
-	destinations := buildDestinations(tg.sdkRoot, input.Content, entities, errata)
+	destinations := ZAPTemplateDestinations(tg.sdkRoot, input.Content.Path, entities, errata)
 
 	dependencies := xsync.NewMapOf[string, bool]()
 

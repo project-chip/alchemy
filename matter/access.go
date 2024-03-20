@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"strings"
 
 	"github.com/hasty/alchemy/matter/types"
 )
@@ -228,6 +229,50 @@ type Access struct {
 	FabricSensitivity FabricSensitivity `json:"fabricSensitive,omitempty"`
 
 	Timing Timing `json:"timed,omitempty"`
+}
+
+func (a Access) String() string {
+	var sb strings.Builder
+	if a.Read != PrivilegeUnknown {
+		sb.WriteString("read: ")
+		sb.WriteString(a.Read.String())
+	}
+	if a.Write != PrivilegeUnknown {
+		if sb.Len() > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString("write: ")
+		sb.WriteString(a.Write.String())
+		if a.OptionalWrite {
+			sb.WriteString(" (optional)")
+		}
+	}
+	if a.Invoke != PrivilegeUnknown {
+		if sb.Len() > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString("invoke: ")
+		sb.WriteString(a.Invoke.String())
+	}
+	if a.FabricScoping != FabricScopingUnknown {
+		if sb.Len() > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(a.FabricScoping.String())
+	}
+	if a.FabricSensitivity != FabricSensitivityUnknown {
+		if sb.Len() > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(a.FabricSensitivity.String())
+	}
+	if a.Timing != TimingUnknown {
+		if sb.Len() > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(a.Timing.String())
+	}
+	return sb.String()
 }
 
 func (a Access) IsFabricScoped() bool {

@@ -8,7 +8,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareEnum(specEnum *matter.Enum, zapEnum *matter.Enum) (diffs []any) {
+func compareEnum(specEnum *matter.Enum, zapEnum *matter.Enum) (diffs []Diff) {
 	specEnumMap := make(map[uint64]*matter.EnumValue)
 	for _, f := range specEnum.Values {
 		if !f.Value.Valid() {
@@ -37,15 +37,15 @@ func compareEnum(specEnum *matter.Enum, zapEnum *matter.Enum) (diffs []any) {
 		delete(specEnumMap, val)
 	}
 	for _, f := range specEnumMap {
-		diffs = append(diffs, newMissingDiff(f.Name, types.EntityTypeEnum, SourceZAP))
+		diffs = append(diffs, newMissingDiff(f.Name, types.EntityTypeEnumValue, SourceZAP))
 	}
 	for _, f := range zapEnumMap {
-		diffs = append(diffs, newMissingDiff(f.Name, types.EntityTypeEnum, SourceSpec))
+		diffs = append(diffs, newMissingDiff(f.Name, types.EntityTypeEnumValue, SourceSpec))
 	}
 	return
 }
 
-func compareEnums(specEnums []*matter.Enum, zapEnums []*matter.Enum) (diffs []any) {
+func compareEnums(specEnums []*matter.Enum, zapEnums []*matter.Enum) (diffs []Diff) {
 	specEnumMap := make(map[string]*matter.Enum)
 	for _, f := range specEnums {
 		specEnumMap[strings.ToLower(f.Name)] = f

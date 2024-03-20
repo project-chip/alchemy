@@ -1,106 +1,71 @@
 package compare
 
 import (
-	"fmt"
-	"io/fs"
-	"os"
-	"path/filepath"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-	"github.com/bytesparadise/libasciidoc/pkg/types"
-	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/matter/constraint"
+	mattertypes "github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
 
-func getAppDomains(specRoot string, settings []configuration.Setting) ([]string, map[string]matter.Domain, error) {
-	var appClusterPaths []string
-	var appClusterIndexPaths []string
-	err := filepath.WalkDir(specRoot, func(path string, d fs.DirEntry, err error) error {
-		if filepath.Ext(path) == ".adoc" {
-			docType, e := ascii.GetDocType(path)
-			if e != nil {
-				return e
-			}
-			switch docType {
-			case matter.DocTypeCluster:
-				appClusterPaths = append(appClusterPaths, path)
-			case matter.DocTypeAppClusterIndex:
-				appClusterIndexPaths = append(appClusterIndexPaths, path)
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, nil, err
-	}
-
-	domains := make(map[string]matter.Domain)
-
-	for i, file := range appClusterIndexPaths {
-		fmt.Fprintf(os.Stderr, "ZCLing index %s (%d of %d)...\n", file, i+1, len(appClusterIndexPaths))
-		doc, err := ascii.ParseFile(file, settings...)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		top := parse.FindFirst[*ascii.Section](doc.Elements)
-		if top == nil {
-			return nil, nil, err
-		}
-
-		domain := zap.StringToDomain(top.Name)
-		fmt.Printf("Index Name: %s domain: %v\n", top.Name, domain)
-
-		parse.Search[*types.Section](top.Base.Elements, func(t *types.Section) bool {
-			link := parse.FindFirst[*types.InlineLink](t.Title)
-			if link != nil {
-				linkPath, ok := link.Location.Path.(string)
-				if ok {
-					linkPath = filepath.Join(filepath.Dir(file), linkPath)
-					fmt.Printf("file link %s -> %s\n", file, linkPath)
-					domains[linkPath] = domain
-				}
-			}
-			return false
-		})
-	}
-	return appClusterPaths, domains, nil
-}
-
-func compareConformance(spec conformance.Set, zap conformance.Set) (diffs []any) {
+func compareConformance(entityType mattertypes.EntityType, spec conformance.Set, zap conformance.Set) (diffs []Diff) {
 	if len(spec) == 0 {
 		if len(zap) > 0 {
-			diffs = append(diffs, newMissingDiff("", DiffPropertyConformance, SourceSpec))
+			diffs = append(diffs, newMissingDiff("", entityType, DiffPropertyConformance, SourceSpec))
 		}
 		return
 	} else if len(zap) == 0 {
-		diffs = append(diffs, newMissingDiff("", DiffPropertyConformance, SourceZAP))
+		diffs = append(diffs, newMissingDiff("", entityType, DiffPropertyConformance, SourceZAP))
 		return
 	}
-	specMandatory := conformance.IsMandatory(spec)
-	zapMandatory := conformance.IsMandatory(zap)
-	if specMandatory != zapMandatory {
-		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: spec.AsciiDocString(), ZAP: zap.AsciiDocString()})
+
+	var specState = conformance.StateOptional
+	var zapState = conformance.StateOptional
+	if conformance.IsMandatory(spec) {
+		specState = conformance.StateMandatory
+	}
+	if conformance.IsMandatory(zap) {
+		zapState = conformance.StateMandatory
+	}
+
+	if specState != zapState {
+		diffs = append(diffs, &ConformanceDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: specState, ZAP: zapState})
 	}
 
 	return
 }
-func compareConstraint(spec constraint.Constraint, zap constraint.Constraint) (diffs []any) {
-	if spec == nil {
-		if zap == nil {
-			return
-		}
-	} else if zap != nil {
+func compareConstraint(entityType mattertypes.EntityType, specFieldSet matter.FieldSet, specField *matter.Field, zapFieldSet matter.FieldSet, zapField *matter.Field) (diffs []Diff) {
+	if specField.Constraint == nil && zapField.Constraint == nil {
 		return
 	}
-	_, ok := spec.(*constraint.AllConstraint)
-	if ok {
-		return
+
+	var maxProp = DiffPropertyMax
+	var minProp = DiffPropertyMin
+	if specField.Type != nil && (specField.Type.HasLength() || specField.Type.IsArray()) {
+		maxProp = DiffPropertyLength
+		minProp = DiffPropertyMinLength
+	}
+
+	specFrom, specTo := zap.GetMinMax(&matter.ConstraintContext{Field: specField, Fields: specFieldSet}, specField.Constraint)
+	zapFrom, zapTo := zap.GetMinMax(&matter.ConstraintContext{Field: zapField, Fields: zapFieldSet}, zapField.Constraint)
+	if specFrom.Defined() {
+		if !zapFrom.Defined() {
+			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: minProp, Spec: specFrom.ZapString(specField.Type)})
+		} else if !specFrom.ValueEquals(zapFrom) {
+			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: minProp, Spec: specFrom.ZapString(specField.Type), ZAP: zapFrom.ZapString(zapField.Type)})
+		}
+	} else if zapFrom.Defined() {
+		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: minProp, ZAP: zapFrom.ZapString(zapField.Type)})
+	}
+	if specTo.Defined() {
+		if !zapTo.Defined() {
+			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: maxProp, Spec: specTo.ZapString(specField.Type)})
+		} else if !specTo.ValueEquals(zapTo) {
+			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: maxProp, Spec: specTo.ZapString(specField.Type), ZAP: zapTo.ZapString(zapField.Type)})
+		}
+	} else if zapTo.Defined() {
+		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: maxProp, ZAP: zapTo.ZapString(zapField.Type)})
 	}
 	return
 }

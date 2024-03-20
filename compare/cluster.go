@@ -6,38 +6,27 @@ import (
 )
 
 type ClusterDifferences struct {
-	ID   *matter.Number
-	Name string
+	IdentifiedDiff
 
-	Diffs []any `json:"diffs,omitempty"`
-
-	Features   []any `json:"features,omitempty"`
-	Bitmaps    []any `json:"bitmaps,omitempty"`
-	Enums      []any `json:"enums,omitempty"`
-	Structs    []any `json:"structs,omitempty"`
-	Attributes []any `json:"attributes,omitempty"`
-	Events     []any `json:"events,omitempty"`
-	Commands   []any `json:"commands,omitempty"`
+	Features   []Diff `json:"features,omitempty"`
+	Bitmaps    []Diff `json:"bitmaps,omitempty"`
+	Enums      []Diff `json:"enums,omitempty"`
+	Structs    []Diff `json:"structs,omitempty"`
+	Attributes []Diff `json:"attributes,omitempty"`
+	Events     []Diff `json:"events,omitempty"`
+	Commands   []Diff `json:"commands,omitempty"`
 }
 
 func compareClusters(specCluster *matter.Cluster, zapCluster *matter.Cluster) (*ClusterDifferences, error) {
 
 	var err error
-	cd := &ClusterDifferences{ID: specCluster.ID, Name: specCluster.Name}
+	cd := &ClusterDifferences{IdentifiedDiff: IdentifiedDiff{ID: specCluster.ID, Name: specCluster.Name, Entity: types.EntityTypeCluster}}
 	if !namesEqual(specCluster.Name, zapCluster.Name) {
 		cd.Diffs = append(cd.Diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyName, Spec: specCluster.Name, ZAP: zapCluster.Name})
 	}
 
-	var specFeatures, zapFeatures *matter.Bitmap
-	if specCluster.Features != nil {
-		specFeatures = &specCluster.Features.Bitmap
-	}
-	if zapCluster.Features != nil {
-		zapFeatures = &zapCluster.Features.Bitmap
-
-	}
-	cd.Features = compareBitmapsByMask(specFeatures, zapFeatures, types.EntityTypeFeature)
-	cd.Attributes, err = compareFields(specCluster.Attributes, zapCluster.Attributes)
+	cd.Features = compareFeatures(specCluster.Features, zapCluster.Features)
+	cd.Attributes, err = compareFields(types.EntityTypeAttribute, specCluster.Attributes, zapCluster.Attributes)
 	cd.Bitmaps = compareBitmaps(specCluster.Bitmaps, zapCluster.Bitmaps)
 	cd.Enums = compareEnums(specCluster.Enums, zapCluster.Enums)
 	cd.Structs = compareStructs(specCluster.Structs, zapCluster.Structs)

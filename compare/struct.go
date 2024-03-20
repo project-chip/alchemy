@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareStruct(specStruct *matter.Struct, zapStruct *matter.Struct) (diffs []any) {
+func compareStruct(specStruct *matter.Struct, zapStruct *matter.Struct) (diffs []Diff) {
 	switch zapStruct.FabricScoping {
 	case matter.FabricScopingScoped:
 		if specStruct.FabricScoping != matter.FabricScopingScoped {
@@ -19,14 +19,14 @@ func compareStruct(specStruct *matter.Struct, zapStruct *matter.Struct) (diffs [
 		}
 	}
 
-	fieldDiffs, err := compareFields(specStruct.Fields, zapStruct.Fields)
+	fieldDiffs, err := compareFields(types.EntityTypeField, specStruct.Fields, zapStruct.Fields)
 	if err == nil && len(fieldDiffs) > 0 {
-		diffs = append(diffs, fieldDiffs)
+		diffs = append(diffs, fieldDiffs...)
 	}
 	return
 }
 
-func compareStructs(specStructs []*matter.Struct, zapStructs []*matter.Struct) (diffs []any) {
+func compareStructs(specStructs []*matter.Struct, zapStructs []*matter.Struct) (diffs []Diff) {
 	specStructMap := make(map[string]*matter.Struct)
 	for _, f := range specStructs {
 		specStructMap[strings.ToLower(f.Name)] = f
@@ -40,7 +40,7 @@ func compareStructs(specStructs []*matter.Struct, zapStructs []*matter.Struct) (
 		specName := name
 		specStruct, ok := specStructMap[specName]
 		if !ok {
-			specName += "command"
+			specName += "struct"
 			specStruct, ok = specStructMap[specName]
 			if !ok {
 				continue

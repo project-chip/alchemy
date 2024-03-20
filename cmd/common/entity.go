@@ -2,6 +2,7 @@ package common
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter/types"
@@ -23,7 +24,9 @@ func (sp *EntityFilter[I, O]) Process(cxt context.Context, inputs []*pipeline.Da
 		var entities []types.Entity
 		entities, err = i.Content.Entities()
 		if err != nil {
-			return
+			slog.WarnContext(cxt, "error converting to entities", slog.String("path", i.Path), slog.Any("error", err))
+			err = nil
+			continue
 		}
 		var matches []O
 		for _, e := range entities {

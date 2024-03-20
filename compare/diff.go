@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/constraint"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
@@ -68,6 +69,10 @@ const (
 	DiffPropertyCommandResponse
 	DiffPropertyCommandDirection
 	DiffPropertyPriority
+	DiffPropertyLength
+	DiffPropertyMinLength
+	DiffPropertyMax
+	DiffPropertyMin
 )
 
 var (
@@ -91,6 +96,10 @@ var (
 		DiffPropertyCommandResponse:   "commandResponse",
 		DiffPropertyCommandDirection:  "commandDirection",
 		DiffPropertyPriority:          "priority",
+		DiffPropertyLength:            "length",
+		DiffPropertyMinLength:         "minLength",
+		DiffPropertyMax:               "max",
+		DiffPropertyMin:               "min",
 	}
 	diffPropertyValues = map[string]DiffProperty{
 		"unknown":           DiffPropertyUnknown,
@@ -112,8 +121,16 @@ var (
 		"commandResponse":   DiffPropertyCommandResponse,
 		"commandDirection":  DiffPropertyCommandDirection,
 		"priority":          DiffPropertyPriority,
+		"length":            DiffPropertyLength,
+		"minLength":         DiffPropertyMinLength,
+		"max":               DiffPropertyMax,
+		"min":               DiffPropertyMin,
 	}
 )
+
+func (s DiffProperty) String() string {
+	return diffPropertyNames[s]
+}
 
 func (s DiffProperty) MarshalJSON() ([]byte, error) {
 	return json.Marshal(diffPropertyNames[s])
@@ -173,14 +190,11 @@ type IdentifiedDiff struct {
 	Entity mattertypes.EntityType `json:"entity,omitempty"`
 	ID     *matter.Number         `json:"id,omitempty"`
 	Name   string                 `json:"name,omitempty"`
-	Diffs  []any                  `json:"diffs,omitempty"`
+	Diffs  []Diff                 `json:"diffs,omitempty"`
 }
 
-type MaskDiff struct {
-	Type   DiffType               `json:"type,omitempty"`
-	Entity mattertypes.EntityType `json:"entity,omitempty"`
-	Mask   uint64                 `json:"mask"`
-	Diffs  []any                  `json:"diffs,omitempty"`
+func (d IdentifiedDiff) String() string {
+	return "identified"
 }
 
 type MissingDiff struct {
@@ -191,6 +205,10 @@ type MissingDiff struct {
 	ID       *matter.Number         `json:"id,omitempty"`
 	Name     string                 `json:"name,omitempty"`
 	Code     string                 `json:"code,omitempty"`
+}
+
+func (md MissingDiff) String() string {
+	return "missing"
 }
 
 func newMissingDiff(name string, props ...any) *MissingDiff {
@@ -219,6 +237,10 @@ type StringDiff struct {
 	ZAP      string       `json:"zap"`
 }
 
+func (d StringDiff) String() string {
+	return "string"
+}
+
 type BoolDiff struct {
 	Type     DiffType     `json:"type"`
 	Property DiffProperty `json:"property"`
@@ -226,11 +248,19 @@ type BoolDiff struct {
 	ZAP      bool         `json:"zap"`
 }
 
-type Missing struct {
-	Type     DiffType     `json:"type"`
-	Property DiffProperty `json:"property"`
-	Spec     string       `json:"spec"`
-	ZAP      string       `json:"zap"`
+func (d BoolDiff) String() string {
+	return "bool"
+}
+
+type ConformanceDiff struct {
+	Type     DiffType          `json:"type"`
+	Property DiffProperty      `json:"property"`
+	Spec     conformance.State `json:"spec"`
+	ZAP      conformance.State `json:"zap"`
+}
+
+func (d ConformanceDiff) String() string {
+	return "conformance"
 }
 
 type ConstraintDiff struct {
@@ -240,6 +270,10 @@ type ConstraintDiff struct {
 	ZAP      constraint.Constraint `json:"zap"`
 }
 
+func (d ConstraintDiff) String() string {
+	return "constraint"
+}
+
 type QualityDiff struct {
 	Type     DiffType       `json:"type"`
 	Property DiffProperty   `json:"property"`
@@ -247,9 +281,21 @@ type QualityDiff struct {
 	ZAP      matter.Quality `json:"zap"`
 }
 
+func (d QualityDiff) String() string {
+	return "quality"
+}
+
 type AccessDiff struct {
 	Type     DiffType      `json:"type"`
 	Property DiffProperty  `json:"property"`
 	Spec     matter.Access `json:"spec"`
 	ZAP      matter.Access `json:"zap"`
+}
+
+func (d AccessDiff) String() string {
+	return "access"
+}
+
+type Diff interface {
+	String() string
 }

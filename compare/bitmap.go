@@ -1,13 +1,14 @@
 package compare
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareBits(specBit matter.Bit, zapBit matter.Bit) (diffs []any) {
+func compareBits(specBit matter.Bit, zapBit matter.Bit) (diffs []Diff) {
 	specMask, err := specBit.Mask()
 	if err != nil {
 
@@ -25,7 +26,7 @@ func compareBits(specBit matter.Bit, zapBit matter.Bit) (diffs []any) {
 	return
 }
 
-func compareFeatures(specFeatures *matter.Features, zapFeatures *matter.Features) (diffs []any) {
+func compareFeatures(specFeatures *matter.Features, zapFeatures *matter.Features) (diffs []Diff) {
 	if specFeatures == nil {
 		if zapFeatures == nil {
 			return
@@ -37,7 +38,11 @@ func compareFeatures(specFeatures *matter.Features, zapFeatures *matter.Features
 		diffs = append(diffs, newMissingDiff(specFeatures.Name, types.EntityTypeBitmap, SourceZAP))
 		return
 	}
-	specBitmapMap := make(map[string]*matter.Feature)
+	featureDiffs := compareBitmapsByMask(&specFeatures.Bitmap, &zapFeatures.Bitmap, types.EntityTypeFeature)
+	if len(featureDiffs) > 0 {
+		diffs = append(diffs, &IdentifiedDiff{Type: DiffTypeMismatch, Name: "Features", Entity: types.EntityTypeFeature, Diffs: featureDiffs})
+	}
+	/*specBitmapMap := make(map[string]*matter.Feature)
 	for _, b := range specFeatures.Bits {
 		f := b.(*matter.Feature)
 		specBitmapMap[strings.ToLower(f.Code)] = f
@@ -66,11 +71,11 @@ func compareFeatures(specFeatures *matter.Features, zapFeatures *matter.Features
 	}
 	for _, f := range zapBitmapMap {
 		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Entity: types.EntityTypeFeature, Code: f.Code, Source: SourceSpec})
-	}
+	}*/
 	return
 }
 
-func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, entityType types.EntityType) (diffs []any) {
+func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, entityType types.EntityType) (diffs []Diff) {
 	if specBitmap == nil {
 		if zapBitmap == nil {
 			return
@@ -107,7 +112,7 @@ func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, e
 		delete(specBitmapMap, mask)
 		bitDiffs := compareBits(specBit, zapBit)
 		if len(bitDiffs) > 0 {
-			diffs = append(diffs, &MaskDiff{Type: DiffTypeMismatch, Entity: entityType, Mask: mask, Diffs: bitDiffs})
+			diffs = append(diffs, &IdentifiedDiff{Type: DiffTypeMismatch, Entity: entityType, Name: fmt.Sprintf("0x%04X", mask), Diffs: bitDiffs})
 		}
 	}
 	for _, f := range specBitmapMap {
@@ -119,7 +124,7 @@ func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, e
 	return
 }
 
-func compareBitmaps(specBitmaps []*matter.Bitmap, zapBitmaps []*matter.Bitmap) (diffs []any) {
+func compareBitmaps(specBitmaps []*matter.Bitmap, zapBitmaps []*matter.Bitmap) (diffs []Diff) {
 	specBitmapMap := make(map[string]*matter.Bitmap)
 	for _, f := range specBitmaps {
 		specBitmapMap[strings.ToLower(f.Name)] = f
