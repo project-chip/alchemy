@@ -154,7 +154,7 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*ty
 		for _, extra := range extraColumns {
 			newCells = append(newCells, row.Cells[extra.Offset])
 		}
-		slices.Clip(newCells)
+		newCells = slices.Clip(newCells)
 		row.Cells = newCells
 	}
 }
