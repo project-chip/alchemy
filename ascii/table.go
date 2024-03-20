@@ -3,6 +3,7 @@ package ascii
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -134,7 +135,7 @@ func readRowCellValueElements(doc *Doc, elements []any, value *strings.Builder) 
 				}
 				continue
 			}
-			// In the special case of superscript elements, we do a check to make sure it's not an asterisk, which should be ignored
+			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
 			err := readRowCellValueElements(doc, el.Elements, &quotedText)
 			if err != nil {
@@ -142,6 +143,12 @@ func readRowCellValueElements(doc *Doc, elements []any, value *strings.Builder) 
 			}
 			qt := quotedText.String()
 			if qt == "*" { //
+				continue
+			}
+			_, parseErr := strconv.Atoi(qt)
+			if parseErr == nil {
+				// This is probably a footnote
+				// The similar buildConstraintValue method does not do this, as there are exponential values in contraints
 				continue
 			}
 			value.WriteString(qt)
