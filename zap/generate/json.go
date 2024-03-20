@@ -46,7 +46,7 @@ func patchZapJsonFile(sdkRoot string, file string, files []string) (zclJSONPath 
 
 	xmls = mergeLines(xmls, fileMap, 2)
 
-	slices.Compact(xmls)
+	xmls = slices.Compact(xmls)
 	o.Set("xmlFile", xmls)
 
 	zclJSONBytes, err = json.MarshalIndent(o, "", "    ")
