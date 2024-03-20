@@ -154,6 +154,10 @@ func populateCommand(ce *etree.Element, c *matter.Command, cluster *matter.Clust
 				ce.RemoveChild(el)
 			}
 		}
+		if needsAccess {
+			el := ce.CreateElement("access")
+			setAccessAttributes(el, "invoke", c.Access.Invoke, errata)
+		}
 	} else {
 		for _, el := range ce.SelectElements("access") {
 			ce.RemoveChild(el)

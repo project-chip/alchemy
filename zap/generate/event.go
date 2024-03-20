@@ -112,6 +112,11 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 				ee.RemoveChild(el)
 			}
 		}
+		if needsAccess {
+			el := ee.CreateElement("access")
+			setAccessAttributes(el, "read", e.Access.Read, errata)
+		}
+
 	} else {
 		for _, el := range ee.SelectElements("access") {
 			ee.RemoveChild(el)
