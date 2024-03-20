@@ -32,10 +32,11 @@ func readEvent(d *xml.Decoder, e xml.StartElement) (event *matter.Event, err err
 			return nil, fmt.Errorf("unexpected event attribute: %s", a.Name.Local)
 		}
 	}
-	if optional == "false" {
-		event.Conformance = conformance.Set{&conformance.Mandatory{}}
-	} else {
+
+	if optional == "true" {
 		event.Conformance = conformance.Set{&conformance.Optional{}}
+	} else {
+		event.Conformance = conformance.Set{&conformance.Mandatory{}}
 	}
 	if isFabricSensitive == "true" {
 		event.Access.FabricSensitivity = matter.FabricSensitivitySensitive

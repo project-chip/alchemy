@@ -387,7 +387,7 @@ func ZapToBaseDataType(s string) types.BaseDataType {
 		return types.BaseDataTypeDataVersion
 	case "event_no":
 		return types.BaseDataTypeEventNumber
-	case "char_string":
+	case "char_string", "long_char_string":
 		return types.BaseDataTypeString
 	case "ipadr":
 		return types.BaseDataTypeIPAddress

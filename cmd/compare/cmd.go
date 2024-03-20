@@ -11,8 +11,10 @@ import (
 	"github.com/hasty/alchemy/compare"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
+	"github.com/hasty/alchemy/zap/generate"
 	"github.com/hasty/alchemy/zap/parse"
 	"github.com/puzpuzpuz/xsync/v3"
 	"github.com/spf13/cobra"
@@ -27,6 +29,7 @@ var Command = &cobra.Command{
 func init() {
 	Command.Flags().String("specRoot", "", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().String("sdkRoot", "", "the src root of your clone of project-chip/connectedhomeip")
+	Command.Flags().Bool("text", false, "output as text")
 	_ = Command.MarkFlagRequired("specRoot")
 	_ = Command.MarkFlagRequired("sdkRoot")
 }
@@ -37,9 +40,11 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
+	text, _ := cmd.Flags().GetBool("text")
 
 	asciiSettings := common.AsciiDocAttributes(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
+	fileOptions := files.Flags(cmd)
 
 	asciiSettings = append(ascii.GithubSettings(), asciiSettings...)
 
@@ -93,14 +98,40 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 
 	specEntityMap := make(map[string][]types.Entity, specEntities.Size())
 	specEntities.Range(func(path string, entities *pipeline.Data[[]types.Entity]) bool {
-		zapPath := zap.ZAPClusterPath(sdkRoot, path, entities.Content)
-		specEntityMap[zapPath] = entities.Content
+
+		errata, ok := zap.Erratas[filepath.Base(path)]
+		if !ok {
+			errata = zap.DefaultErrata
+		}
+
+		destinations := generate.ZAPTemplateDestinations(sdkRoot, path, entities.Content, errata)
+		for templatePath, entities := range destinations {
+			var clusters []types.Entity
+			for _, e := range entities {
+				switch e := e.(type) {
+				case *matter.Cluster:
+					clusters = append(clusters, e)
+				}
+			}
+			if len(clusters) > 0 {
+				specEntityMap[templatePath] = clusters
+			}
+		}
 		return true
 	})
 
-	var diffs []any
+	var diffs []*compare.ClusterDifferences
 	diffs, err = compare.CompareEntities(specEntityMap, zapEntityMap)
 	if err != nil {
+		return
+	}
+
+	if fileOptions.DryRun {
+		return nil
+	}
+
+	if text {
+		writeText(os.Stderr, diffs)
 		return
 	}
 

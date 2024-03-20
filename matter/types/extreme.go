@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 )
 
@@ -177,10 +178,44 @@ func (ce DataTypeExtreme) Equals(o DataTypeExtreme) bool {
 	}
 	switch ce.Type {
 	case DataTypeExtremeTypeInt64:
-		return ce.Int64 != o.Int64
+		return ce.Int64 == o.Int64
 	case DataTypeExtremeTypeUInt64:
-		return ce.UInt64 != o.UInt64
+		return ce.UInt64 == o.UInt64
 	default:
 		return true
+	}
+}
+
+func (ce DataTypeExtreme) ValueEquals(o DataTypeExtreme) bool {
+
+	switch ce.Type {
+	case DataTypeExtremeTypeInt64:
+		switch o.Type {
+		case DataTypeExtremeTypeInt64:
+			return ce.Int64 == o.Int64
+		case DataTypeExtremeTypeUInt64:
+			if o.UInt64 > math.MaxInt64 || ce.Int64 < 0 {
+				return false
+			}
+			return int64(o.UInt64) == ce.Int64
+		default:
+			return false
+		}
+	case DataTypeExtremeTypeUInt64:
+		switch o.Type {
+		case DataTypeExtremeTypeUInt64:
+			return ce.UInt64 == o.UInt64
+		case DataTypeExtremeTypeInt64:
+			if o.Int64 < 0 {
+				return false
+			}
+			return uint64(o.Int64) == ce.UInt64
+		default:
+			return false
+		}
+	case DataTypeExtremeTypeUndefined:
+		return false
+	default:
+		return ce.Type == o.Type
 	}
 }

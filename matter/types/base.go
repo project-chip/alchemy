@@ -116,6 +116,10 @@ func (bdt BaseDataType) IsUnsigned() bool {
 	return false
 }
 
+func (bdt BaseDataType) String() string {
+	return BaseDataTypeName(bdt)
+}
+
 func BaseDataTypeName(baseDataType BaseDataType) string {
 	switch baseDataType {
 	case BaseDataTypeUnknown:

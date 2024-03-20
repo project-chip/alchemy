@@ -8,7 +8,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func compareCommand(specCommand *matter.Command, zapCommand *matter.Command) (diffs []any) {
+func compareCommand(specCommand *matter.Command, zapCommand *matter.Command) (diffs []Diff) {
 	if !namesEqual(specCommand.Name, zapCommand.Name) {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyName, Spec: specCommand.Name, ZAP: zapCommand.Name})
 	}
@@ -23,15 +23,15 @@ func compareCommand(specCommand *matter.Command, zapCommand *matter.Command) (di
 			diffs = append(diffs, &AccessDiff{Type: DiffTypeMismatch, Property: DiffPropertyAccess, Spec: specCommand.Access, ZAP: zapCommand.Access})
 		}
 	}
-	diffs = append(diffs, compareConformance(specCommand.Conformance, zapCommand.Conformance)...)
-	fieldDiffs, err := compareFields(specCommand.Fields, zapCommand.Fields)
+	diffs = append(diffs, compareConformance(types.EntityTypeCommand, specCommand.Conformance, zapCommand.Conformance)...)
+	fieldDiffs, err := compareFields(types.EntityTypeCommandField, specCommand.Fields, zapCommand.Fields)
 	if err == nil && len(fieldDiffs) > 0 {
-		diffs = append(diffs, fieldDiffs)
+		diffs = append(diffs, fieldDiffs...)
 	}
 	return
 }
 
-func compareCommands(specCommands matter.CommandSet, zapCommands []*matter.Command) (diffs []any) {
+func compareCommands(specCommands matter.CommandSet, zapCommands []*matter.Command) (diffs []Diff) {
 	specCommandMap := make(map[uint64]*matter.Command)
 	specResponseMap := make(map[uint64]*matter.Command)
 	for _, f := range specCommands {
@@ -73,7 +73,7 @@ func compareCommands(specCommands matter.CommandSet, zapCommands []*matter.Comma
 	return
 }
 
-func compareCommandSets(specCommandMap map[uint64]*matter.Command, zapCommandMap map[uint64]*matter.Command) (diffs []any) {
+func compareCommandSets(specCommandMap map[uint64]*matter.Command, zapCommandMap map[uint64]*matter.Command) (diffs []Diff) {
 	for commandID, zapCommand := range zapCommandMap {
 		specCommand, ok := specCommandMap[commandID]
 		if !ok {

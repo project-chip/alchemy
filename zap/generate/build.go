@@ -22,10 +22,10 @@ func getDocDomain(doc *ascii.Doc) matter.Domain {
 	return matter.DomainUnknown
 }
 
-func buildDestinations(sdkRoot string, doc *ascii.Doc, entities []types.Entity, errata *zap.Errata) (destinations map[string][]types.Entity) {
+func ZAPTemplateDestinations(sdkRoot string, docPath string, entities []types.Entity, errata *zap.Errata) (destinations map[string][]types.Entity) {
 	destinations = make(map[string][]types.Entity)
 	if len(errata.ClusterSplit) == 0 {
-		newFile := zap.ZAPClusterName(doc.Path, errata, entities)
+		newFile := zap.ZAPClusterName(docPath, errata, entities)
 		newPath := getZapPath(sdkRoot, newFile)
 		destinations[newPath] = entities
 		return

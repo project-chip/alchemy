@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
@@ -46,7 +47,7 @@ func readField(d *xml.Decoder, e xml.StartElement, entityType types.EntityType, 
 	}
 }
 
-func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) error {
+func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (err error) {
 	var max, min, length, minLength string
 	var fieldType, entryType string
 	var isArray bool
@@ -76,7 +77,10 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 		case "entryType":
 			entryType = a.Value
 		case "array":
-			isArray = (a.Value == "true")
+			isArray, err = strconv.ParseBool(a.Value)
+			if err != nil {
+				return err
+			}
 		case "default", "defaut": // Ugh
 			field.Default = a.Value
 		case "length", "lenght": // Sigh
@@ -118,23 +122,23 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) e
 
 	fieldBaseType := zap.ZapToBaseDataType(fieldType)
 	entryBaseType := zap.ZapToBaseDataType(entryType)
-	if isArray || fieldBaseType == types.BaseDataTypeList {
+	if fieldBaseType == types.BaseDataTypeList {
 		switch entryBaseType {
 		case types.BaseDataTypeCustom:
 			field.Type = types.NewCustomDataType(entryType, true)
 		case types.BaseDataTypeUnknown:
-			field.Type = types.NewDataType(fieldBaseType, true)
+			field.Type = types.NewNamedDataType(fieldType, fieldBaseType, true)
 		default:
-		field.Type = types.NewDataType(entryBaseType, true)
+			field.Type = types.NewNamedDataType(entryType, entryBaseType, true)
 		}
 
 	} else {
 		switch fieldBaseType {
 		case types.BaseDataTypeCustom:
-			field.Type = types.NewCustomDataType(fieldType, false)
+			field.Type = types.NewCustomDataType(fieldType, isArray)
 		default:
-		field.Type = types.NewDataType(fieldBaseType, false)
-	}
+			field.Type = types.NewNamedDataType(fieldType, fieldBaseType, isArray)
+		}
 	}
 	var cons string
 	if len(max) > 0 && len(min) > 0 {

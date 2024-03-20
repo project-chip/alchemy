@@ -136,6 +136,7 @@ Compare loads the spec and the ZAP template XMLs and returns their differences i
 | :------------------------- | :-------------|
 | --specRoot                 | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
 | --sdkRoot                  | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
+| --text                     | Returns differences in a text format |
 
 #### Example
 

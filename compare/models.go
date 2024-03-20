@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func CompareEntities(specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []any, err error) {
+func CompareEntities(specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []*ClusterDifferences, err error) {
 	for path, sm := range specEntities {
 		zm, ok := zapEntities[path]
 		if !ok {
@@ -51,7 +51,7 @@ func CompareEntities(specEntities map[string][]types.Entity, zapEntities map[str
 				}
 				delete(zapClusters, cid)
 			} else {
-				slog.Debug("missing from spec entities", slog.Uint64("clusterId", cid), slog.String("path", path))
+				slog.Debug("missing from ZAP entities", slog.Uint64("clusterId", cid), slog.String("path", path))
 			}
 		}
 		for cid := range zapClusters {
@@ -67,18 +67,8 @@ func CompareEntities(specEntities map[string][]types.Entity, zapEntities map[str
 	for _, path := range missingZapEntities {
 		slog.Warn("missing from spec entities", slog.String("path", path))
 	}
-	slices.SortFunc(diffs, func(a, b any) int {
-		acd, ok := a.(*ClusterDifferences)
-		if ok {
-			bcd, ok := b.(*ClusterDifferences)
-			if ok {
-				return strings.Compare(acd.Name, bcd.Name)
-			}
-		}
-		if a == b {
-			return 0
-		}
-		return 1
+	slices.SortFunc(diffs, func(a, b *ClusterDifferences) int {
+		return strings.Compare(a.Name, b.Name)
 	})
 	return
 }
