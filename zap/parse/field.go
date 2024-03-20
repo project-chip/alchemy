@@ -86,7 +86,7 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 		case "length", "lenght": // Sigh
 			length = a.Value
 		case "minLength":
-			length = a.Value
+			minLength = a.Value
 		case "optional":
 			optional = a.Value
 		case "writable":
@@ -147,12 +147,12 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 		cons = fmt.Sprintf("max %s", max)
 	} else if len(min) > 0 {
 		cons = fmt.Sprintf("min %s", min)
+	} else if len(length) > 0 && len(minLength) > 0 {
+		cons = fmt.Sprintf("%s to %s", minLength, length)
 	} else if len(length) > 0 {
-		if len(minLength) > 0 {
-			cons = fmt.Sprintf("%s to %s", minLength, length)
-		} else {
-			cons = fmt.Sprintf("max %s", length)
-		}
+		cons = fmt.Sprintf("max %s", length)
+	} else if len(minLength) > 0 {
+		cons = fmt.Sprintf("min %s", minLength)
 	}
 	if cons != "" {
 		var err error
