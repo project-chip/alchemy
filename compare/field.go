@@ -58,12 +58,7 @@ func compareField(entityType types.EntityType, specFields matter.FieldSet, specF
 			diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyNullable, Spec: specField.Quality.Has(matter.QualityNullable), ZAP: zapField.Quality.Has(matter.QualityNullable)})
 		}
 	}
-	if !specField.Access.Equal(zapField.Access) {
-		if specField.Access.Read != matter.PrivilegeView && specField.Access.Write != matter.PrivilegeUnknown {
-			diffs = append(diffs, &AccessDiff{Type: DiffTypeMismatch, Property: DiffPropertyAccess, Spec: specField.Access, ZAP: zapField.Access})
-		}
-	}
-
+	diffs = append(diffs, compareAccess(entityType, specField.Access, zapField.Access)...)
 	defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: specField, Fields: specFields})
 	if defaultValue.Defined() {
 		specDefault := defaultValue.ZapString(specField.Type)

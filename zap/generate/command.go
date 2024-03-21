@@ -144,7 +144,7 @@ func populateCommand(ce *etree.Element, c *matter.Command, cluster *matter.Clust
 		setFieldAttributes(fe, f, c.Fields)
 		xml.AppendElement(ce, fe)
 	}
-	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate
+	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate && c.Direction != matter.InterfaceClient
 	if needsAccess {
 		for _, el := range ce.SelectElements("access") {
 			if needsAccess {

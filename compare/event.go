@@ -14,9 +14,7 @@ func compareEvent(specEvent *matter.Event, zapEvent *matter.Event) (diffs []Diff
 	if !strings.EqualFold(specEvent.Priority, zapEvent.Priority) {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyPriority, Spec: specEvent.Priority, ZAP: zapEvent.Priority})
 	}
-	if !specEvent.Access.Equal(zapEvent.Access) {
-		diffs = append(diffs, &AccessDiff{Type: DiffTypeMismatch, Property: DiffPropertyAccess, Spec: specEvent.Access, ZAP: zapEvent.Access})
-	}
+	diffs = append(diffs, compareAccess(types.EntityTypeEvent, specEvent.Access, zapEvent.Access)...)
 	diffs = append(diffs, compareConformance(types.EntityTypeEvent, specEvent.Conformance, zapEvent.Conformance)...)
 	fieldDiffs, err := compareFields(types.EntityTypeField, specEvent.Fields, zapEvent.Fields)
 	if err == nil && len(fieldDiffs) > 0 {

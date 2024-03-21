@@ -61,11 +61,15 @@ const (
 	DiffPropertyDefault
 	DiffPropertyConformance
 	DiffPropertyNullable
-	DiffPropertyAccess
-	DiffPropertyBit
-	DiffPropertyValue
+	DiffPropertyReadAccess
+	DiffPropertyWriteAccess
+	DiffPropertyInvokeAccess
+	DiffPropertyOptionalWrite
 	DiffPropertyFabricScoping
 	DiffPropertyFabricSensitivity
+	DiffPropertyTiming
+	DiffPropertyBit
+	DiffPropertyValue
 	DiffPropertyCommandResponse
 	DiffPropertyCommandDirection
 	DiffPropertyPriority
@@ -88,11 +92,15 @@ var (
 		DiffPropertyDefault:           "default",
 		DiffPropertyConformance:       "conformance",
 		DiffPropertyNullable:          "nullable",
-		DiffPropertyAccess:            "access",
+		DiffPropertyReadAccess:        "readAccess",
+		DiffPropertyWriteAccess:       "writeAccess",
+		DiffPropertyInvokeAccess:      "invokeAccess",
+		DiffPropertyOptionalWrite:     "optionalWrite",
 		DiffPropertyBit:               "bit",
 		DiffPropertyValue:             "value",
 		DiffPropertyFabricScoping:     "fabricScoping",
 		DiffPropertyFabricSensitivity: "fabricSensitivity",
+		DiffPropertyTiming:            "timing",
 		DiffPropertyCommandResponse:   "commandResponse",
 		DiffPropertyCommandDirection:  "commandDirection",
 		DiffPropertyPriority:          "priority",
@@ -113,11 +121,15 @@ var (
 		"default":           DiffPropertyDefault,
 		"conformance":       DiffPropertyConformance,
 		"nullable":          DiffPropertyNullable,
-		"access":            DiffPropertyAccess,
+		"readAccess":        DiffPropertyReadAccess,
+		"writeAccess":       DiffPropertyWriteAccess,
+		"invokeAccess":      DiffPropertyInvokeAccess,
+		"optionalWrite":     DiffPropertyOptionalWrite,
 		"bit":               DiffPropertyBit,
 		"value":             DiffPropertyValue,
 		"fabricScoping":     DiffPropertyFabricScoping,
 		"fabricSensitivity": DiffPropertyFabricSensitivity,
+		"timing":            DiffPropertyTiming,
 		"commandResponse":   DiffPropertyCommandResponse,
 		"commandDirection":  DiffPropertyCommandDirection,
 		"priority":          DiffPropertyPriority,
@@ -253,10 +265,11 @@ func (d BoolDiff) String() string {
 }
 
 type ConformanceDiff struct {
-	Type     DiffType          `json:"type"`
-	Property DiffProperty      `json:"property"`
-	Spec     conformance.State `json:"spec"`
-	ZAP      conformance.State `json:"zap"`
+	Type            DiffType          `json:"type"`
+	Property        DiffProperty      `json:"property"`
+	Spec            conformance.State `json:"spec"`
+	ZAP             conformance.State `json:"zap"`
+	SpecConfornance conformance.Set   `json:"specConformance"`
 }
 
 func (d ConformanceDiff) String() string {
@@ -285,17 +298,26 @@ func (d QualityDiff) String() string {
 	return "quality"
 }
 
-type AccessDiff struct {
-	Type     DiffType      `json:"type"`
-	Property DiffProperty  `json:"property"`
-	Spec     matter.Access `json:"spec"`
-	ZAP      matter.Access `json:"zap"`
-}
-
-func (d AccessDiff) String() string {
-	return "access"
-}
-
 type Diff interface {
 	String() string
+}
+
+type PropertyDiff[T ~uint8] struct {
+	Type     DiffType     `json:"type"`
+	Property DiffProperty `json:"property"`
+	Spec     T            `json:"spec"`
+	ZAP      T            `json:"zap"`
+}
+
+func (d PropertyDiff[T]) String() string {
+	return diffPropertyNames[d.Property]
+}
+
+func NewPropertyDiff[T ~uint8](diffType DiffType, property DiffProperty, spec T, zap T) *PropertyDiff[T] {
+	return &PropertyDiff[T]{
+		Type:     diffType,
+		Property: property,
+		Spec:     spec,
+		ZAP:      zap,
+	}
 }
