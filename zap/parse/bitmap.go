@@ -13,7 +13,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clusterIDs []*matter.Number, err error) {
+func (sp *ZapParser) readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clusterIDs []*matter.Number, err error) {
 	bitmap = &matter.Bitmap{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {

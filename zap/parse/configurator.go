@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
+func (sp *ZapParser) readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 	enums := make(map[uint64][]*matter.Enum)
 	bitmaps := make(map[uint64][]*matter.Bitmap)
 	structs := make(map[uint64][]*matter.Struct)
@@ -40,7 +40,7 @@ func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 			case "enum":
 				var en *matter.Enum
 				var clusterIDs []*matter.Number
-				en, clusterIDs, err = readEnum(d, t)
+				en, clusterIDs, err = sp.readEnum(d, t)
 				if err == nil {
 					for _, cid := range clusterIDs {
 						enums[cid.Value()] = append(enums[cid.Value()], en)
@@ -49,7 +49,7 @@ func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 			case "struct":
 				var s *matter.Struct
 				var clusterIDs []*matter.Number
-				s, clusterIDs, err = readStruct(d, t)
+				s, clusterIDs, err = sp.readStruct(d, t)
 				if err == nil {
 					for _, cid := range clusterIDs {
 						structs[cid.Value()] = append(structs[cid.Value()], s)
@@ -58,7 +58,7 @@ func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 			case "bitmap":
 				var bitmap *matter.Bitmap
 				var clusterIDs []*matter.Number
-				bitmap, clusterIDs, err = readBitmap(d, t)
+				bitmap, clusterIDs, err = sp.readBitmap(d, t)
 				if err == nil {
 					if bitmap.Name == "Feature" {
 						features = &matter.Features{Bitmap: *bitmap}
@@ -81,6 +81,9 @@ func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 						c.Bitmaps = append(c.Bitmaps, b...)
 					} else {
 						slog.Debug("orphan bitmaps", "clusterId", cid)
+						sp.lock.Lock()
+						sp.bitmapReferences[cid] = append(sp.bitmapReferences[cid], b...)
+						sp.lock.Unlock()
 					}
 				}
 				for cid, e := range enums {
@@ -88,6 +91,9 @@ func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 						c.Enums = append(c.Enums, e...)
 					} else {
 						slog.Debug("orphan enums", "clusterId", cid)
+						sp.lock.Lock()
+						sp.enumReferences[cid] = append(sp.enumReferences[cid], e...)
+						sp.lock.Unlock()
 					}
 				}
 				for cid, s := range structs {
@@ -95,6 +101,9 @@ func readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
 						c.Structs = append(c.Structs, s...)
 					} else {
 						slog.Debug("orphan structs", "clusterId", cid)
+						sp.lock.Lock()
+						sp.structReferences[cid] = append(sp.structReferences[cid], s...)
+						sp.lock.Unlock()
 					}
 				}
 				for _, c := range clusters {

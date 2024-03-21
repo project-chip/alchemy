@@ -6,6 +6,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log/slog"
+	"sync"
 
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
@@ -13,13 +15,28 @@ import (
 )
 
 type ZapParser struct {
+	lock sync.Mutex
+
+	clusterReferences map[uint64]*matter.Cluster
+	bitmapReferences  map[uint64][]*matter.Bitmap
+	enumReferences    map[uint64][]*matter.Enum
+	structReferences  map[uint64][]*matter.Struct
 }
 
-func (sp ZapParser) Name() string {
+func NewZapParser() *ZapParser {
+	return &ZapParser{
+		clusterReferences: make(map[uint64]*matter.Cluster),
+		bitmapReferences:  make(map[uint64][]*matter.Bitmap),
+		enumReferences:    make(map[uint64][]*matter.Enum),
+		structReferences:  make(map[uint64][]*matter.Struct),
+	}
+}
+
+func (sp *ZapParser) Name() string {
 	return "Parsing ZAP templates"
 }
 
-func (sp ZapParser) Type() pipeline.ProcessorType {
+func (sp *ZapParser) Type() pipeline.ProcessorType {
 	return pipeline.ProcessorTypeIndividual
 }
 
@@ -43,9 +60,17 @@ func (sp *ZapParser) Process(cxt context.Context, input *pipeline.Data[[]byte], 
 			switch t.Name.Local {
 			case "configurator":
 				var cm []types.Entity
-				cm, err = readConfigurator(d)
+				cm, err = sp.readConfigurator(d)
 				if err == nil {
 					entities = append(entities, cm...)
+					sp.lock.Lock()
+					for _, e := range cm {
+						switch e := e.(type) {
+						case *matter.Cluster:
+							sp.clusterReferences[e.ID.Value()] = e
+						}
+					}
+					sp.lock.Unlock()
 				}
 			default:
 				err = fmt.Errorf("unexpected top level element: %s", t.Name.Local)
@@ -58,6 +83,25 @@ func (sp *ZapParser) Process(cxt context.Context, input *pipeline.Data[[]byte], 
 			err = fmt.Errorf("error parsing %s: %w", input.Path, err)
 			return
 		}
+	}
+}
+
+func (sp *ZapParser) ResolveReferences() {
+	for cid, e := range sp.enumReferences {
+		c, ok := sp.clusterReferences[cid]
+		if !ok {
+			slog.Warn("unknown cluster reference for enum", "clusterId", cid)
+			continue
+		}
+		c.Enums = append(c.Enums, e...)
+	}
+	for cid, e := range sp.structReferences {
+		c, ok := sp.clusterReferences[cid]
+		if !ok {
+			slog.Warn("unknown cluster reference for struct", "clusterId", cid)
+			continue
+		}
+		c.Structs = append(c.Structs, e...)
 	}
 }
 
