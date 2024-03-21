@@ -50,7 +50,7 @@ func readField(d *xml.Decoder, e xml.StartElement, entityType types.EntityType, 
 func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (err error) {
 	var max, min, length, minLength string
 	var fieldType, entryType string
-	var isArray bool
+	var isArray, fabricSensitive bool
 	var optional, timed, writable string
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -59,7 +59,11 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 		case "name":
 			field.Name = a.Value
 		case "isFabricSensitive":
-			if a.Value == "true" {
+			fabricSensitive, err = strconv.ParseBool(a.Value)
+			if err != nil {
+				return err
+			}
+			if fabricSensitive {
 				field.Access.FabricSensitivity = matter.FabricSensitivitySensitive
 			} else {
 				field.Access.FabricSensitivity = matter.FabricSensitivityInsensitive
@@ -116,8 +120,7 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 		field.Access.Timing = matter.TimingUntimed
 	}
 	if writable == "true" {
-		// We don't know at this point what the write privilege is, so assume very high
-		field.Access.Write = matter.PrivilegeAdminister
+		field.Access.Write = matter.PrivilegeOperate
 	}
 
 	fieldBaseType := zap.ZapToBaseDataType(fieldType)

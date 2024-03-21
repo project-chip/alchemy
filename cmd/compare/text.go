@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/compare"
+	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -83,6 +85,28 @@ func writeIdentifiedDiffs(indent int, id *compare.IdentifiedDiff, w io.Writer) {
 			others = append(others, idd)
 		}
 	}
+	for _, idd := range others {
+		switch idd := idd.(type) {
+		case *compare.MissingDiff:
+			writeMissingDiff(w, idd, prefix)
+		case *compare.StringDiff:
+			writeStringDiff(w, idd, id.Entity, id.Name, prefix)
+		case *compare.PropertyDiff[matter.Privilege]:
+			writePrivilegeDiff(w, idd, prefix, id.Entity, id.Name)
+		case *compare.PropertyDiff[matter.FabricSensitivity]:
+			writeSensitivityDiff(w, idd, prefix, id.Entity, id.Name)
+		case *compare.PropertyDiff[matter.FabricScoping]:
+			writeScopingDiff(w, idd, prefix, id.Entity, id.Name)
+		case *compare.PropertyDiff[matter.Timing]:
+			writeTimingDiff(w, idd, prefix, id.Entity, id.Name)
+		case *compare.ConformanceDiff:
+			writeConformanceDiff(w, idd, id.Entity, id.Name, prefix)
+		case *compare.BoolDiff:
+			writeBoolDiff(w, idd, id.Entity, id.Name, prefix)
+		default:
+			fmt.Fprintf(w, "%sunrecognized identified diff: %T:\n", prefix, idd)
+		}
+	}
 	if len(identified) > 0 {
 		slices.SortFunc[[]*compare.IdentifiedDiff](identified, func(a *compare.IdentifiedDiff, b *compare.IdentifiedDiff) int {
 			return strings.Compare(a.Name, b.Name)
@@ -91,50 +115,26 @@ func writeIdentifiedDiffs(indent int, id *compare.IdentifiedDiff, w io.Writer) {
 			writeIdentifiedDiffs(indent+1, idd, w)
 		}
 	}
-	for _, idd := range others {
-		switch idd := idd.(type) {
-		case *compare.MissingDiff:
-			writeMissingDiff(w, idd, prefix)
-		case *compare.StringDiff:
-			writeStringDiff(w, idd, id.Entity, id.Name, prefix)
-		case *compare.AccessDiff:
-			writeAccessDiff(w, idd, prefix, id.Entity, id.Name)
-		case *compare.ConformanceDiff:
-			writeConformanceDiff(w, idd, id.Entity, id.Name, prefix)
-		case *compare.BoolDiff:
-			writeBoolDiff(w, idd, id.Entity, id.Name, prefix)
-		default:
-			fmt.Fprintf(w, "%suncreognized identified diff: %T:\n", prefix, idd)
-		}
-	}
 	if indent < 2 {
 		fmt.Fprintf(w, "\n")
 	}
 
 }
 
-func writeAccessDiff(w io.Writer, ad *compare.AccessDiff, prefix string, entityType types.EntityType, name string) {
-	if ad.Spec.Read != ad.ZAP.Read {
-		fmt.Fprintf(w, "%s%s %s has read access %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.ZAP.Read, ad.Spec.Read)
-	}
-	if ad.Spec.Write != ad.ZAP.Write {
-		fmt.Fprintf(w, "%s%s %s has write access %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.ZAP.Write, ad.Spec.Write)
-	}
-	if ad.Spec.OptionalWrite != ad.ZAP.OptionalWrite {
-		fmt.Fprintf(w, "%s%s %s has optional write %v, but is %v in the spec\n", prefix, name, entityType.String(), ad.ZAP.OptionalWrite, ad.Spec.OptionalWrite)
-	}
-	if ad.Spec.Invoke != ad.ZAP.Invoke {
-		fmt.Fprintf(w, "%s%s %s has invoke access %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.ZAP.Invoke, ad.Spec.Invoke)
-	}
-	if ad.Spec.FabricScoping != ad.ZAP.FabricScoping {
-		fmt.Fprintf(w, "%s%s %s has fabric scoping %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.ZAP.FabricScoping, ad.Spec.FabricScoping)
-	}
-	if ad.Spec.FabricSensitivity != ad.ZAP.FabricSensitivity {
-		fmt.Fprintf(w, "%s%s %s has fabric sensitivity %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.ZAP.FabricSensitivity, ad.Spec.FabricSensitivity)
-	}
-	if ad.Spec.Timing != ad.ZAP.Timing {
-		fmt.Fprintf(w, "%s%s %s has timing %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.ZAP.Timing, ad.Spec.Timing)
-	}
+func writePrivilegeDiff(w io.Writer, ad *compare.PropertyDiff[matter.Privilege], prefix string, entityType types.EntityType, name string) {
+	fmt.Fprintf(w, "%s%s %s has %s access %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.Property, ad.ZAP, ad.Spec)
+}
+
+func writeScopingDiff(w io.Writer, ad *compare.PropertyDiff[matter.FabricScoping], prefix string, entityType types.EntityType, name string) {
+	fmt.Fprintf(w, "%s%s %s has fabric scoping %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.ZAP, ad.Spec)
+}
+
+func writeSensitivityDiff(w io.Writer, ad *compare.PropertyDiff[matter.FabricSensitivity], prefix string, entityType types.EntityType, name string) {
+	fmt.Fprintf(w, "%s%s %s has fabric sensitivity %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.ZAP, ad.Spec)
+}
+
+func writeTimingDiff(w io.Writer, ad *compare.PropertyDiff[matter.Timing], prefix string, entityType types.EntityType, name string) {
+	fmt.Fprintf(w, "%s%s %s has timing %s, but is %s in the spec\n", prefix, name, entityType.String(), ad.ZAP, ad.Spec)
 }
 
 func writeMissingDiff(w io.Writer, md *compare.MissingDiff, prefix string) {
@@ -180,5 +180,16 @@ func writeBoolDiff(w io.Writer, sd *compare.BoolDiff, entityType types.EntityTyp
 }
 
 func writeConformanceDiff(w io.Writer, sd *compare.ConformanceDiff, entityType types.EntityType, name string, prefix string) {
+	if sd.ZAP == conformance.StateMandatory {
+		if len(sd.SpecConfornance) > 0 {
+			mc, ok := sd.SpecConfornance[0].(*conformance.Mandatory)
+			if ok {
+				if mc.Expression != nil {
+					fmt.Fprintf(w, "%s%s %s %s is marked as mandatory, but is only mandatory when %s\n", prefix, name, entityType, sd.Property.String(), mc.Expression.Description())
+					return
+				}
+			}
+		}
+	}
 	fmt.Fprintf(w, "%s%s %s %s is marked as %s, but should be %s\n", prefix, name, entityType, sd.Property.String(), sd.ZAP, sd.Spec)
 }

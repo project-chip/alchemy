@@ -18,11 +18,7 @@ func compareCommand(specCommand *matter.Command, zapCommand *matter.Command) (di
 	if specCommand.Direction != zapCommand.Direction {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyCommandDirection, Spec: specCommand.Direction.String(), ZAP: zapCommand.Direction.String()})
 	}
-	if !specCommand.Access.Equal(zapCommand.Access) {
-		if specCommand.Access.Read != matter.PrivilegeView && specCommand.Access.Write != matter.PrivilegeUnknown {
-			diffs = append(diffs, &AccessDiff{Type: DiffTypeMismatch, Property: DiffPropertyAccess, Spec: specCommand.Access, ZAP: zapCommand.Access})
-		}
-	}
+	diffs = append(diffs, compareAccess(types.EntityTypeCommand, specCommand.Access, zapCommand.Access)...)
 	diffs = append(diffs, compareConformance(types.EntityTypeCommand, specCommand.Conformance, zapCommand.Conformance)...)
 	fieldDiffs, err := compareFields(types.EntityTypeCommandField, specCommand.Fields, zapCommand.Fields)
 	if err == nil && len(fieldDiffs) > 0 {

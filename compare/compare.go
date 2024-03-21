@@ -30,7 +30,7 @@ func compareConformance(entityType mattertypes.EntityType, spec conformance.Set,
 	}
 
 	if specState != zapState {
-		diffs = append(diffs, &ConformanceDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: specState, ZAP: zapState})
+		diffs = append(diffs, &ConformanceDiff{Type: DiffTypeMismatch, Property: DiffPropertyConformance, Spec: specState, ZAP: zapState, SpecConfornance: spec})
 	}
 
 	return

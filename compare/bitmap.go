@@ -42,36 +42,6 @@ func compareFeatures(specFeatures *matter.Features, zapFeatures *matter.Features
 	if len(featureDiffs) > 0 {
 		diffs = append(diffs, &IdentifiedDiff{Type: DiffTypeMismatch, Name: "Features", Entity: types.EntityTypeFeature, Diffs: featureDiffs})
 	}
-	/*specBitmapMap := make(map[string]*matter.Feature)
-	for _, b := range specFeatures.Bits {
-		f := b.(*matter.Feature)
-		specBitmapMap[strings.ToLower(f.Code)] = f
-	}
-
-	zapBitmapMap := make(map[string]*matter.Feature)
-	for _, b := range zapFeatures.Bits {
-		f := b.(*matter.Feature)
-		zapBitmapMap[strings.ToLower(f.Code)] = f
-	}
-
-	for code, zapBit := range zapBitmapMap {
-		specBit, ok := specBitmapMap[code]
-		if !ok {
-			continue
-		}
-		delete(zapBitmapMap, code)
-		delete(specBitmapMap, code)
-		bitDiffs := compareBits(&specBit.BitmapBit, &zapBit.BitmapBit)
-		if len(bitDiffs) > 0 {
-			diffs = append(diffs, &IdentifiedDiff{Type: DiffTypeMismatch, Entity: types.EntityTypeFeature, Name: specBit.Name(), Diffs: bitDiffs})
-		}
-	}
-	for _, f := range specBitmapMap {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Entity: types.EntityTypeFeature, Code: f.Code, Source: SourceZAP})
-	}
-	for _, f := range zapBitmapMap {
-		diffs = append(diffs, &MissingDiff{Type: DiffTypeMissing, Entity: types.EntityTypeFeature, Code: f.Code, Source: SourceSpec})
-	}*/
 	return
 }
 
