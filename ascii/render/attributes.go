@@ -30,6 +30,8 @@ const (
 	AttributeFilterWidth
 	AttributeFilterPDFWidth
 	AttributeFilterRole
+	AttributeFilterAlign
+	AttributeFilterFloat
 )
 
 func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, exclude AttributeFilter) bool {
@@ -286,6 +288,10 @@ func getKeyValue(cxt *Context, key string, val interface{}, include AttributeFil
 	case types.AttrRoles:
 		attributeType = AttributeFilterRole
 		skipKey = true
+	case types.AttrFloat:
+		attributeType = AttributeFilterFloat
+	case types.AttrImageAlign:
+		attributeType = AttributeFilterAlign
 	case "pdfwidth":
 		attributeType = AttributeFilterPDFWidth
 	case types.AttrPositional1, types.AttrPositional2, types.AttrPositional3:
