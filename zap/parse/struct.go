@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterIDs []*matter.Number, err error) {
+func (sp *ZapParser) readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterIDs []*matter.Number, err error) {
 	s = &matter.Struct{}
 	var isFabricScoped string
 	for _, a := range e.Attr {

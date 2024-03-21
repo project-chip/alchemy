@@ -78,10 +78,12 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	var zapEntities *xsync.MapOf[string, *pipeline.Data[[]types.Entity]]
-	zapEntities, err = pipeline.Process[[]byte, []types.Entity](cxt, pipelineOptions, &parse.ZapParser{}, xmlFiles)
+	zapParser := parse.NewZapParser()
+	zapEntities, err = pipeline.Process[[]byte, []types.Entity](cxt, pipelineOptions, zapParser, xmlFiles)
 	if err != nil {
 		return
 	}
+	zapParser.ResolveReferences()
 
 	var specEntities *xsync.MapOf[string, *pipeline.Data[[]types.Entity]]
 	specEntities, err = pipeline.Process[*ascii.Doc, []types.Entity](cxt, pipelineOptions, &common.EntityFilter[*ascii.Doc, types.Entity]{}, specDocs)

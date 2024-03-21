@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs []*matter.Number, err error) {
+func (sp *ZapParser) readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs []*matter.Number, err error) {
 	en = &matter.Enum{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {

@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/hasty/alchemy/matter"
 )
@@ -77,6 +78,17 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 		case xml.EndElement:
 			switch t.Name.Local {
 			case "cluster":
+				for _, cmd := range cluster.Commands {
+					if cmd.Response != "" {
+						respName := strings.ToLower(cmd.Response)
+						for _, resp := range cluster.Commands {
+							if strings.ToLower(resp.Name) != respName {
+								continue
+							}
+							resp.Access.Invoke = cmd.Access.Invoke
+						}
+					}
+				}
 				return
 			default:
 				err = fmt.Errorf("unexpected cluster end element: %s", t.Name.Local)
@@ -91,6 +103,7 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 			return
 		}
 	}
+
 }
 
 func readClusterCode(d *xml.Decoder, e xml.StartElement) (id *matter.Number, err error) {

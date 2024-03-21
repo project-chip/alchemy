@@ -65,6 +65,14 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[type
 		commandMap[strings.ToLower(cmd.Name)] = cmd
 	}
 
+	for _, cmd := range commands {
+		if cmd.Response != "" {
+			if responseCommand, ok := commandMap[strings.ToLower(cmd.Response)]; ok && responseCommand.Access.Invoke == matter.PrivilegeUnknown {
+				responseCommand.Access.Invoke = cmd.Access.Invoke
+			}
+		}
+	}
+
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		switch s.SecType {
 		case matter.SectionCommand:
