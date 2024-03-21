@@ -23,10 +23,10 @@ jobs:
     steps:
       - name: Get tag
         id: tag
-        uses: devops-actions/action-get-tag@v1.0.1
+        uses: hasty/action-get-tag@main
         with:
           strip_v: true
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: wangyoucao577/go-release-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -52,7 +52,7 @@ jobs:
     steps:
       - name: Get tag
         id: tag
-        uses: devops-actions/action-get-tag@v1.0.1
+        uses: hasty/action-get-tag@main
         with:
           strip_v: true
       - uses: actions/checkout@v3
