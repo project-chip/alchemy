@@ -31,7 +31,7 @@ func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*types.Intern
 	}
 }
 
-func findRefSection(parent interface{}) *ascii.Section {
+func findRefSection(parent any) *ascii.Section {
 	switch p := parent.(type) {
 	case *ascii.Section:
 		return p

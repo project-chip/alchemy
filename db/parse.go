@@ -98,7 +98,7 @@ func readTable(cxt context.Context, doc *ascii.Doc, section *ascii.Section) (rs 
 
 func readTableRow(valueRow *asciitypes.TableRow, columnMap ascii.ColumnIndex, extraColumns []ascii.ExtraColumn, row *dbRow) error {
 	if row.values == nil {
-		row.values = make(map[matter.TableColumn]interface{})
+		row.values = make(map[matter.TableColumn]any)
 	}
 	for col, index := range columnMap {
 		val, err := ascii.RenderTableCell(valueRow.Cells[index])
@@ -109,7 +109,7 @@ func readTableRow(valueRow *asciitypes.TableRow, columnMap ascii.ColumnIndex, ex
 	}
 	if len(extraColumns) > 0 {
 		if row.extras == nil {
-			row.extras = make(map[string]interface{})
+			row.extras = make(map[string]any)
 
 		}
 		for _, e := range extraColumns {

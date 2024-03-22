@@ -12,7 +12,7 @@ import (
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (b *Ball) ensureTableOptions(elements []interface{}) {
+func (b *Ball) ensureTableOptions(elements []any) {
 	if !b.options.normalizeTableOptions {
 		return
 	}
@@ -167,7 +167,7 @@ func setCellString(cell *types.TableCell, v string) (err error) {
 		if err != nil {
 			return
 		}
-		err = cell.SetElements([]interface{}{p})
+		err = cell.SetElements([]any{p})
 		if err != nil {
 			return
 		}
@@ -179,11 +179,11 @@ func setCellString(cell *types.TableCell, v string) (err error) {
 		}
 	}
 	se, _ := types.NewStringElement(v)
-	err = p.SetElements([]interface{}{se})
+	err = p.SetElements([]any{se})
 	return
 }
 
-func setCellValue(cell *types.TableCell, val []interface{}) (err error) {
+func setCellValue(cell *types.TableCell, val []any) (err error) {
 	var p *types.Paragraph
 
 	if len(cell.Elements) == 0 {
@@ -191,7 +191,7 @@ func setCellValue(cell *types.TableCell, val []interface{}) (err error) {
 		if err != nil {
 			return
 		}
-		err = cell.SetElements([]interface{}{p})
+		err = cell.SetElements([]any{p})
 		if err != nil {
 			return
 		}

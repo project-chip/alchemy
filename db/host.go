@@ -28,12 +28,12 @@ var (
 )
 
 type dbRow struct {
-	values map[matter.TableColumn]interface{}
-	extras map[string]interface{}
+	values map[matter.TableColumn]any
+	extras map[string]any
 }
 
 func newDBRow() *dbRow {
-	return &dbRow{values: make(map[matter.TableColumn]interface{})}
+	return &dbRow{values: make(map[matter.TableColumn]any)}
 }
 
 func New() *Host {

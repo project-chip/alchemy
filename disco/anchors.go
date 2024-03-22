@@ -119,7 +119,7 @@ func setAnchorID(element types.WithAttributes, id string, label string) {
 }
 
 func disambiguateAnchorSet(infos []*ascii.Anchor) error {
-	parents := make([]interface{}, len(infos))
+	parents := make([]any, len(infos))
 	refIds := make([]string, len(infos))
 	for i, info := range infos {
 		parents[i] = info.Parent

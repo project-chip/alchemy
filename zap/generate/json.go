@@ -27,7 +27,7 @@ func patchZapJsonFile(sdkRoot string, file string, files []string) (zclJSONPath 
 		err = fmt.Errorf("missing xmlFile element in %s", zclJSONPath)
 		return
 	}
-	is, ok := val.([]interface{})
+	is, ok := val.([]any)
 	if !ok {
 		err = fmt.Errorf("xmlFile element in %s is not array", zclJSONPath)
 		return

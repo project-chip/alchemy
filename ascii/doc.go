@@ -23,7 +23,7 @@ type Doc struct {
 	Path string
 
 	Base     *types.Document
-	Elements []interface{}
+	Elements []any
 
 	docType matter.DocType
 
@@ -138,11 +138,11 @@ func firstLetterIsLower(s string) bool {
 	return unicode.IsLower(firstLetter)
 }
 
-func (d *Doc) GetElements() []interface{} {
+func (d *Doc) GetElements() []any {
 	return d.Elements
 }
 
-func (d *Doc) SetElements(elements []interface{}) error {
+func (d *Doc) SetElements(elements []any) error {
 	d.Elements = elements
 	return nil
 }

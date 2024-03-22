@@ -29,7 +29,7 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 	}
 	anchors := make(map[string]*Anchor)
 	crossReferences := doc.CrossReferences()
-	parse.Traverse(doc, doc.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
+	parse.Traverse(doc, doc.Elements, func(el any, parent parse.HasElements, index int) bool {
 		var wa types.WithAttributes
 		e, ok := el.(*Element)
 		if ok {

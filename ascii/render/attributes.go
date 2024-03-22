@@ -38,11 +38,11 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 	return ((at & include) == at) && ((at & exclude) != at)
 }
 
-func renderAttributes(cxt *Context, el interface{}, attributes types.Attributes, inline bool) error {
+func renderAttributes(cxt *Context, el any, attributes types.Attributes, inline bool) error {
 	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
 }
 
-func renderSelectAttributes(cxt *Context, el interface{}, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
+func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -62,7 +62,7 @@ func renderSelectAttributes(cxt *Context, el interface{}, attributes types.Attri
 			switch v := val.(type) {
 			case string:
 				title = v
-			case []interface{}:
+			case []any:
 				renderContext := NewContext(cxt, cxt.Doc)
 				err = RenderElements(renderContext, "", v)
 				title = renderContext.String()
@@ -78,10 +78,10 @@ func renderSelectAttributes(cxt *Context, el interface{}, attributes types.Attri
 			switch v := val.(type) {
 			case types.Roles:
 				roles = v
-			case []interface{}:
+			case []any:
 				roles = v
-			case interface{}:
-				roles = []interface{}{v}
+			case any:
+				roles = []any{v}
 			default:
 				err = fmt.Errorf("unknown roles type: %T", v)
 				return
@@ -271,7 +271,7 @@ func quoteAttributeValue(cxt *Context, val string) {
 	}
 }
 
-func getKeyValue(cxt *Context, key string, val interface{}, include AttributeFilter, exclude AttributeFilter) (keyVal string, skipKey bool, err error) {
+func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exclude AttributeFilter) (keyVal string, skipKey bool, err error) {
 	var attributeType AttributeFilter
 	switch key {
 	case types.AttrCols:
@@ -327,7 +327,7 @@ func getKeyValue(cxt *Context, key string, val interface{}, include AttributeFil
 					slog.Debug("unknown attribute option", "type", o)
 				}
 			}
-		case []interface{}:
+		case []any:
 
 			var columns []string
 			for _, e := range v {
@@ -432,9 +432,9 @@ func renderAttributeDeclaration(cxt *Context, ad *types.AttributeDeclaration) (e
 			cxt.WriteRune(' ')
 			cxt.WriteString(val)
 		case *types.Paragraph:
-			var previous interface{}
+			var previous any
 			err = renderParagraph(cxt, val, &previous)
-		case []interface{}:
+		case []any:
 			err = RenderElements(cxt, "", val)
 		case nil:
 		default:
@@ -451,13 +451,13 @@ func renderAttributeReset(cxt *Context, ar *types.AttributeReset) {
 	cxt.WriteString("!:\n")
 }
 
-func getAttributeStringValue(cxt *Context, val interface{}) (string, error) {
+func getAttributeStringValue(cxt *Context, val any) (string, error) {
 	switch s := val.(type) {
 	case string:
 		return s, nil
 	case *types.StringElement:
 		return s.Content, nil
-	case []interface{}:
+	case []any:
 		renderContext := NewContext(cxt, cxt.Doc)
 		err := RenderElements(renderContext, "", s)
 		if err != nil {

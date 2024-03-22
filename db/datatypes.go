@@ -108,7 +108,7 @@ func (h *Host) indexDataTypes(cxt context.Context, doc *ascii.Doc, ds *sectionIn
 			ci := &sectionInfo{
 				parent: ds,
 				values: &dbRow{
-					values: map[matter.TableColumn]interface{}{
+					values: map[matter.TableColumn]any{
 						matter.TableColumnClass: t,
 						matter.TableColumnName:  name,
 					},

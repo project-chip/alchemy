@@ -150,7 +150,7 @@ func renderListElements(cxt *Context, les *types.ListElements) (err error) {
 		case *types.ListContinuation:
 			cxt.WriteNewline()
 			cxt.WriteString("+\n")
-			err = RenderElements(cxt, "", []interface{}{el.Element})
+			err = RenderElements(cxt, "", []any{el.Element})
 		case *types.LabeledListElement:
 			err = renderLabeledListElement(cxt, el)
 		default:

@@ -57,7 +57,7 @@ func Parse(contents string, path string, settings ...configuration.Setting) (doc
 }
 
 func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...parser.Option) (*types.Document, error) {
-	done := make(chan interface{})
+	done := make(chan any)
 	defer close(done)
 
 	newContext := func() *parser.ParseContext {

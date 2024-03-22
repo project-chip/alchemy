@@ -6,12 +6,12 @@ import (
 )
 
 type HasElements interface {
-	SetElements([]interface{}) error
-	GetElements() []interface{}
+	SetElements([]any) error
+	GetElements() []any
 }
 
 type HasBase interface {
-	GetBase() interface{}
+	GetBase() any
 }
 
 func HexOrDec(s string) (uint64, error) {
