@@ -313,7 +313,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		}
 
 		var removedTable bool
-		parse.Filter(dt.section, func(i interface{}) (remove bool, shortCircuit bool) {
+		parse.Filter(dt.section, func(i any) (remove bool, shortCircuit bool) {
 			if t, ok := i.(*types.Table); ok && table == t {
 				removedTable = true
 				return true, true
@@ -326,7 +326,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 
-		dataTypeSection, _ := types.NewSection(dataTypesSection.Base.Level+1, []interface{}{title})
+		dataTypeSection, _ := types.NewSection(dataTypesSection.Base.Level+1, []any{title})
 
 		se, _ := types.NewStringElement(fmt.Sprintf("This data type is derived from %s", dt.dataType))
 		p, _ := types.NewParagraph(nil, se)
@@ -382,7 +382,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		table.Attributes.Unset(types.AttrTitle)
 
 		icr, _ := types.NewInternalCrossReference(newId, "")
-		err = setCellValue(dt.typeCell, []interface{}{icr})
+		err = setCellValue(dt.typeCell, []any{icr})
 		if err != nil {
 			return
 		}
@@ -400,7 +400,7 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 	if err != nil {
 		return nil, err
 	}
-	ts, _ := types.NewSection(top.Base.Level+1, []interface{}{title})
+	ts, _ := types.NewSection(top.Base.Level+1, []any{title})
 	bl, _ := types.NewBlankLine()
 	err = ts.AddElement(bl)
 	if err != nil {
@@ -419,7 +419,7 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 }
 
 func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
-	parents := make([]interface{}, len(infos))
+	parents := make([]any, len(infos))
 	dataTypeNames := make([]string, len(infos))
 	dataTypeRefs := make([]string, len(infos))
 	for i, info := range infos {

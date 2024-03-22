@@ -13,8 +13,8 @@ func (h *Host) indexDoc(ctx context.Context, doc *ascii.Doc, raw bool) (*section
 	ds := &sectionInfo{id: h.nextId(documentTable), values: &dbRow{}, children: make(map[string][]*sectionInfo)}
 	dt, _ := doc.DocType()
 	dts := matter.DocTypeNames[dt]
-	ds.values.values = map[matter.TableColumn]interface{}{matter.TableColumnName: filepath.Base(doc.Path), matter.TableColumnType: dts}
-	ds.values.extras = map[string]interface{}{"path": doc.Path}
+	ds.values.values = map[matter.TableColumn]any{matter.TableColumnName: filepath.Base(doc.Path), matter.TableColumnType: dts}
+	ds.values.extras = map[string]any{"path": doc.Path}
 	if raw {
 		for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
 			err := ascii.AssignSectionTypes(doc, top)

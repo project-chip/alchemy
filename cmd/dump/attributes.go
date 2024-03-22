@@ -23,7 +23,7 @@ func dumpAttributes(attributes types.Attributes, indent int) {
 			fmt.Print(v)
 		case types.Options:
 			dumpAttributeVals(v, indent+1)
-		case []interface{}:
+		case []any:
 			dumpAttributeVals(v, indent+1)
 		default:
 			fmt.Printf("unknown type: %T", val)
@@ -34,7 +34,7 @@ func dumpAttributes(attributes types.Attributes, indent int) {
 	fmt.Print("}\n")
 }
 
-func dumpAttributeVals(attributes []interface{}, indent int) {
+func dumpAttributeVals(attributes []any, indent int) {
 	fmt.Print("{\n")
 	for _, val := range attributes {
 		fmt.Print(strings.Repeat("\t", indent+1))

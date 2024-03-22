@@ -21,7 +21,7 @@ type Section struct {
 
 	SecType matter.Section
 
-	Elements []interface{}
+	Elements []any
 }
 
 func NewSection(doc *Doc, parent any, s *types.Section) (*Section, error) {
@@ -88,11 +88,11 @@ func (s *Section) AppendSection(ns *Section) error {
 	return nil
 }
 
-func (s *Section) GetElements() []interface{} {
+func (s *Section) GetElements() []any {
 	return s.Elements
 }
 
-func (s *Section) SetElements(elements []interface{}) error {
+func (s *Section) SetElements(elements []any) error {
 	s.Elements = elements
 	return s.Base.SetElements(elements)
 }
@@ -118,7 +118,7 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 		}
 	}
 
-	parse.Traverse(top, top.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
+	parse.Traverse(top, top.Elements, func(el any, parent parse.HasElements, index int) bool {
 		section, ok := el.(*Section)
 		if !ok {
 			return false

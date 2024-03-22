@@ -19,7 +19,7 @@ func getAccessSchemaColumns(tableName string) []*mms.Column {
 	}
 }
 
-func getAccessSchemaColumnValues(tableName string, access interface{}) []interface{} {
+func getAccessSchemaColumnValues(tableName string, access any) []any {
 	var readAccess, writeAccess, invokeAccess, fabricScoped, fabricSensitive, timed int8
 	s, ok := access.(string)
 	if ok {
@@ -43,5 +43,5 @@ func getAccessSchemaColumnValues(tableName string, access interface{}) []interfa
 		}
 
 	}
-	return []interface{}{readAccess, writeAccess, invokeAccess, fabricScoped, fabricSensitive, timed}
+	return []any{readAccess, writeAccess, invokeAccess, fabricScoped, fabricSensitive, timed}
 }

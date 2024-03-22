@@ -17,7 +17,7 @@ func getQualitySchemaColumns(tableName string) []*mms.Column {
 	}
 }
 
-func getQualitySchemaColumnValues(access interface{}) []interface{} {
+func getQualitySchemaColumnValues(access any) []any {
 	var nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton int8
 	if s, ok := access.(string); ok {
 		var val int8 = 1
@@ -46,5 +46,5 @@ func getQualitySchemaColumnValues(access interface{}) []interface{} {
 			}
 		}
 	}
-	return []interface{}{nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton}
+	return []any{nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton}
 }

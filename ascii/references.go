@@ -17,7 +17,7 @@ func (doc *Doc) CrossReferences() map[string][]*types.InternalCrossReference {
 		return doc.crossReferences
 	}
 	doc.crossReferences = make(map[string][]*types.InternalCrossReference)
-	parse.Traverse(nil, doc.Base.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
+	parse.Traverse(nil, doc.Base.Elements, func(el any, parent parse.HasElements, index int) bool {
 		if icr, ok := el.(*types.InternalCrossReference); ok {
 			id, ok := icr.ID.(string)
 			if !ok {
@@ -35,7 +35,7 @@ func (doc *Doc) CrossReferences() map[string][]*types.InternalCrossReference {
 // Rather than doing the right thing and fixing the parser, we'll just find these little suckers after the fact
 func PatchUnrecognizedReferences(doc *Doc) {
 	var elementsWithUnrecognizedReferences []parse.HasElements
-	parse.Traverse(nil, doc.Base.Elements, func(el interface{}, parent parse.HasElements, index int) bool {
+	parse.Traverse(nil, doc.Base.Elements, func(el any, parent parse.HasElements, index int) bool {
 		sc, ok := el.(*types.SpecialCharacter)
 		if !ok {
 			return false
@@ -64,7 +64,7 @@ func PatchUnrecognizedReferences(doc *Doc) {
 					label = parts[1]
 				}
 				icr, _ := types.NewInternalCrossReference(id, label)
-				n := slices.Replace(els, i, i+5, interface{}(icr))
+				n := slices.Replace(els, i, i+5, any(icr))
 				_ = e.SetElements(n)
 
 				break
@@ -73,7 +73,7 @@ func PatchUnrecognizedReferences(doc *Doc) {
 	}
 }
 
-func getUnrecognizedReference(els []interface{}) string {
+func getUnrecognizedReference(els []any) string {
 	if len(els) < 5 {
 		return ""
 	}
@@ -100,7 +100,7 @@ func getUnrecognizedReference(els []interface{}) string {
 	return s.Content
 }
 
-func ReferenceName(element interface{}) string {
+func ReferenceName(element any) string {
 	switch el := element.(type) {
 	case *types.Section:
 		var val strings.Builder

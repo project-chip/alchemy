@@ -8,7 +8,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 )
 
-func dumpElements(doc *ascii.Doc, elements []interface{}, indent int) {
+func dumpElements(doc *ascii.Doc, elements []any, indent int) {
 
 	for _, e := range elements {
 		fmt.Print(strings.Repeat("\t", indent))
@@ -38,7 +38,7 @@ func dumpElements(doc *ascii.Doc, elements []interface{}, indent int) {
 			dumpElements(doc, el.Elements, indent+1)
 		case *types.AttributeDeclaration:
 			fmt.Printf("{attrib}: %s", el.Name)
-			dumpElements(doc, []interface{}{el.Value}, indent+1)
+			dumpElements(doc, []any{el.Value}, indent+1)
 			fmt.Print("\n")
 		case *types.Paragraph:
 			fmt.Print("{para}: ")
@@ -115,7 +115,7 @@ func dumpElements(doc *ascii.Doc, elements []interface{}, indent int) {
 		case types.DocumentAuthors:
 			fmt.Print("{authors}\n")
 			for _, a := range el {
-				dumpElements(doc, []interface{}{a}, indent+1)
+				dumpElements(doc, []any{a}, indent+1)
 			}
 		case *types.DocumentAuthor:
 			fmt.Printf("{author %s", el.Email)
@@ -153,7 +153,7 @@ func dumpElements(doc *ascii.Doc, elements []interface{}, indent int) {
 			dumpElements(doc, el.Elements, indent+1)
 		case *types.ListContinuation:
 			fmt.Printf("{list con %d}\n", el.Offset)
-			dumpElements(doc, []interface{}{el.Element}, indent+1)
+			dumpElements(doc, []any{el.Element}, indent+1)
 		case *types.PredefinedAttribute:
 			fmt.Printf("{predef %s}", el.Name)
 		default:

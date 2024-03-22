@@ -7,28 +7,28 @@ import (
 )
 
 type Element struct {
-	Parent interface{}
-	Base   interface{}
+	Parent any
+	Base   any
 }
 
-func NewElement(parent interface{}, base interface{}) *Element {
+func NewElement(parent any, base any) *Element {
 	return &Element{Parent: parent, Base: base}
 }
 
-func (e *Element) GetElements() []interface{} {
+func (e *Element) GetElements() []any {
 	if we, ok := e.Base.(types.WithElements); ok {
 		return we.GetElements()
 	}
-	return []interface{}{}
+	return []any{}
 }
 
-func (e *Element) SetElements(elements []interface{}) error {
+func (e *Element) SetElements(elements []any) error {
 	if we, ok := e.Base.(types.WithElements); ok {
 		return we.SetElements(elements)
 	}
 	return fmt.Errorf("base element does not have elements: %T", e.Base)
 }
 
-func (e *Element) GetBase() interface{} {
+func (e *Element) GetBase() any {
 	return e.Base
 }
