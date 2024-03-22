@@ -14,17 +14,11 @@ func compareAccess(entityType types.EntityType, spec matter.Access, zap matter.A
 	case types.EntityTypeAttribute:
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyReadAccess, spec.Read, zap.Read, defaultAccess.Read)...)
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyWriteAccess, spec.Write, zap.Write, defaultAccess.Write)...)
-		if spec.OptionalWrite != zap.OptionalWrite {
-			diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyOptionalWrite, Spec: spec.OptionalWrite, ZAP: zap.OptionalWrite})
-		}
 	case types.EntityTypeField, types.EntityTypeCommandField:
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyReadAccess, spec.Read, zap.Read, defaultAccess.Read)...)
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyWriteAccess, spec.Write, zap.Write, defaultAccess.Write)...)
 		diffs = append(diffs, compareScoping(entityType, DiffPropertyFabricScoping, spec.FabricScoping, zap.FabricScoping, defaultAccess.FabricScoping)...)
 		diffs = append(diffs, compareSensitivity(entityType, DiffPropertyFabricSensitivity, spec.FabricSensitivity, zap.FabricSensitivity, defaultAccess.FabricSensitivity)...)
-		if spec.OptionalWrite != zap.OptionalWrite {
-			diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyOptionalWrite, Spec: spec.OptionalWrite, ZAP: zap.OptionalWrite})
-		}
 	case types.EntityTypeCommand:
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyInvokeAccess, spec.Invoke, zap.Invoke, defaultAccess.Invoke)...)
 		diffs = append(diffs, compareScoping(entityType, DiffPropertyFabricScoping, spec.FabricScoping, zap.FabricScoping, defaultAccess.FabricScoping)...)
