@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-
-	"github.com/puzpuzpuz/xsync/v3"
 )
 
 type CollectiveProcessor[I, O any] interface {
@@ -13,7 +11,7 @@ type CollectiveProcessor[I, O any] interface {
 	Process(cxt context.Context, inputs []*Data[I]) (outputs []*Data[O], err error)
 }
 
-func processCollective[I, O any](cxt context.Context, processor CollectiveProcessor[I, O], input *xsync.MapOf[string, *Data[I]]) (output *xsync.MapOf[string, *Data[O]], err error) {
+func processCollective[I, O any](cxt context.Context, processor CollectiveProcessor[I, O], input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
 	name := processor.Name()
 	if len(name) > 0 {
 		cyan.Fprintf(os.Stderr, "%s...\n", name)
@@ -30,7 +28,7 @@ func processCollective[I, O any](cxt context.Context, processor CollectiveProces
 	if err != nil {
 		return
 	}
-	output = xsync.NewMapOfPresized[string, *Data[O]](len(outputs))
+	output = NewMapPresized[string, *Data[O]](len(outputs))
 	for _, o := range outputs {
 		_, loaded := output.LoadAndStore(o.Path, o)
 		if loaded {

@@ -4,11 +4,9 @@ import (
 	"context"
 
 	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/ascii/render"
 	"github.com/hasty/alchemy/disco"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/puzpuzpuz/xsync/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -23,12 +21,16 @@ var Command = &cobra.Command{
 func discoBall(cmd *cobra.Command, args []string) (err error) {
 	cxt := context.Background()
 
-	var inputs *xsync.MapOf[string, *pipeline.Data[struct{}]]
+	var targeter pipeline.Targeter
+	var filter *files.PathFilter[*ascii.Doc]
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	if specRoot != "" {
-		inputs, err = pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
+		targeter = files.SpecTargeter(specRoot)
+		if len(args) > 0 {
+			filter = files.NewPathFilter[*ascii.Doc](args)
+		}
 	} else {
-		inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(args...))
+		targeter = files.PathsTargeter(args...)
 	}
 	if err != nil {
 		return err
@@ -38,28 +40,10 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 	discoOptions := getDiscoOptions(cmd)
 
-	docReader := ascii.NewReader("Reading docs")
-	docs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docReader, inputs)
-	if err != nil {
-		return err
-	}
-
-	baller := disco.NewBaller(discoOptions, pipelineOptions)
-	var balledDocs *xsync.MapOf[string, *pipeline.Data[render.InputDocument]]
-	balledDocs, err = pipeline.Process[*ascii.Doc, render.InputDocument](cxt, pipelineOptions, baller, docs)
-	if err != nil {
-		return err
-	}
-
-	renderer := render.NewRenderer()
-	var renders *xsync.MapOf[string, *pipeline.Data[string]]
-	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, balledDocs)
-	if err != nil {
-		return err
-	}
-
 	writer := files.NewWriter[string]("Writing disco-balled docs", fileOptions)
-	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, renders)
+
+	err = disco.Pipeline(cxt, targeter, pipelineOptions, discoOptions, filter, writer)
+
 	return
 }
 

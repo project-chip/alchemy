@@ -12,7 +12,6 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/testplan"
 	"github.com/hasty/alchemy/zap"
-	"github.com/puzpuzpuz/xsync/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -61,7 +60,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	var appClusterIndexes *xsync.MapOf[string, *pipeline.Data[*ascii.Doc]]
+	var appClusterIndexes pipeline.Map[string, *pipeline.Data[*ascii.Doc]]
 	appClusterIndexes, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
 
 	if err != nil {
@@ -86,14 +85,14 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	var clusters *xsync.MapOf[string, *pipeline.Data[*matter.Cluster]]
+	var clusters pipeline.Map[string, *pipeline.Data[*matter.Cluster]]
 	clusters, err = pipeline.Process[*ascii.Doc, *matter.Cluster](cxt, pipelineOptions, &common.EntityFilter[*ascii.Doc, *matter.Cluster]{}, specDocs)
 	if err != nil {
 		return err
 	}
 
 	generator := testplan.NewGenerator(testRoot, overwrite)
-	var testplans *xsync.MapOf[string, *pipeline.Data[string]]
+	var testplans pipeline.Map[string, *pipeline.Data[string]]
 	testplans, err = pipeline.Process[*matter.Cluster, string](cxt, pipelineOptions, generator, clusters)
 
 	writer := files.NewWriter[string]("Writing test plans", fileOptions)

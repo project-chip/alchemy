@@ -12,7 +12,6 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/zap"
 	"github.com/hasty/alchemy/zap/generate"
-	"github.com/puzpuzpuz/xsync/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -60,7 +59,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	var appClusterIndexes *xsync.MapOf[string, *pipeline.Data[*ascii.Doc]]
+	var appClusterIndexes pipeline.Map[string, *pipeline.Data[*ascii.Doc]]
 	appClusterIndexes, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
 
 	if err != nil {
@@ -85,8 +84,8 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	var clusters *xsync.MapOf[string, *pipeline.Data[*ascii.Doc]]
-	var deviceTypes *xsync.MapOf[string, *pipeline.Data[[]*matter.DeviceType]]
+	var clusters pipeline.Map[string, *pipeline.Data[*ascii.Doc]]
+	var deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
 	clusters, deviceTypes, err = generate.SplitZAPDocs(cxt, specDocs)
 	if err != nil {
 		return err
@@ -99,21 +98,21 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specParser.Spec)
-	var patchedDeviceTypes *xsync.MapOf[string, *pipeline.Data[[]byte]]
+	var patchedDeviceTypes pipeline.Map[string, *pipeline.Data[[]byte]]
 	patchedDeviceTypes, err = pipeline.Process[[]*matter.DeviceType, []byte](cxt, pipelineOptions, deviceTypePatcher, deviceTypes)
 	if err != nil {
 		return err
 	}
 
 	clusterListPatcher := generate.NewClusterListPatcher(sdkRoot)
-	var clusterList *xsync.MapOf[string, *pipeline.Data[[]byte]]
+	var clusterList pipeline.Map[string, *pipeline.Data[[]byte]]
 	clusterList, err = pipeline.Process[*ascii.Doc, []byte](cxt, pipelineOptions, clusterListPatcher, clusters)
 	if err != nil {
 		return
 	}
 
 	provisionalSaver := generate.NewProvisionalPatcher(sdkRoot)
-	var provisionalDocs *xsync.MapOf[string, *pipeline.Data[[]byte]]
+	var provisionalDocs pipeline.Map[string, *pipeline.Data[[]byte]]
 	provisionalDocs, err = pipeline.Process[struct{}, []byte](cxt, pipelineOptions, provisionalSaver, templateGenerator.ProvisionalZclFiles)
 	if err != nil {
 		return err

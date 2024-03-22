@@ -10,17 +10,15 @@ import (
 	"unicode/utf8"
 
 	"github.com/fatih/color"
-	"github.com/puzpuzpuz/xsync/v3"
 	"github.com/schollz/progressbar/v3"
 )
 
 var cyan = color.New(color.FgCyan).Add(color.Bold)
 
-func processParallel[I, O any](cxt context.Context, name string, processor IndividualProcess[I, O], queue chan *Data[I], total int32) (output *xsync.MapOf[string, *Data[O]], err error) {
+func processParallel[I, O any](cxt context.Context, name string, processor IndividualProcess[I, O], queue chan *Data[I], total int32) (output Map[string, *Data[O]], err error) {
 
-	processed := xsync.NewMapOfPresized[string, bool](int(total))
-	output = xsync.NewMapOfPresized[string, *Data[O]](int(total))
-
+	processed := NewConcurrentMapPresized[string, bool](int(total))
+	output = NewConcurrentMapPresized[string, *Data[O]](int(total))
 	cyan.Fprintf(os.Stderr, "%s...\n", name)
 	bar := progressbar.Default(int64(total))
 	var complete int32
