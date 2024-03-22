@@ -15,7 +15,6 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
-	"github.com/puzpuzpuz/xsync/v3"
 )
 
 type TemplateGenerator struct {
@@ -24,7 +23,7 @@ type TemplateGenerator struct {
 	pipeline pipeline.Options
 	sdkRoot  string
 
-	ProvisionalZclFiles *xsync.MapOf[string, *pipeline.Data[struct{}]]
+	ProvisionalZclFiles pipeline.Map[string, *pipeline.Data[struct{}]]
 }
 
 func NewTemplateGenerator(spec *matter.Spec, fileOptions files.Options, pipelineOptions pipeline.Options, sdkRoot string) *TemplateGenerator {
@@ -33,7 +32,7 @@ func NewTemplateGenerator(spec *matter.Spec, fileOptions files.Options, pipeline
 		file:                fileOptions,
 		pipeline:            pipelineOptions,
 		sdkRoot:             sdkRoot,
-		ProvisionalZclFiles: xsync.NewMapOf[string, *pipeline.Data[struct{}]](),
+		ProvisionalZclFiles: pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]](),
 	}
 }
 
@@ -63,7 +62,7 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*a
 
 	destinations := ZAPTemplateDestinations(tg.sdkRoot, input.Content.Path, entities, errata)
 
-	dependencies := xsync.NewMapOf[string, bool]()
+	dependencies := pipeline.NewConcurrentMap[string, bool]()
 
 	dependencies.Store(input.Content.Path, true)
 
@@ -136,9 +135,9 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*a
 	return
 }
 
-func SplitZAPDocs(cxt context.Context, inputs *xsync.MapOf[string, *pipeline.Data[*ascii.Doc]]) (clusters *xsync.MapOf[string, *pipeline.Data[*ascii.Doc]], deviceTypes *xsync.MapOf[string, *pipeline.Data[[]*matter.DeviceType]], err error) {
-	clusters = xsync.NewMapOf[string, *pipeline.Data[*ascii.Doc]]()
-	deviceTypes = xsync.NewMapOf[string, *pipeline.Data[[]*matter.DeviceType]]()
+func SplitZAPDocs(cxt context.Context, inputs pipeline.Map[string, *pipeline.Data[*ascii.Doc]]) (clusters pipeline.Map[string, *pipeline.Data[*ascii.Doc]], deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]], err error) {
+	clusters = pipeline.NewMap[string, *pipeline.Data[*ascii.Doc]]()
+	deviceTypes = pipeline.NewMap[string, *pipeline.Data[[]*matter.DeviceType]]()
 	inputs.Range(func(path string, data *pipeline.Data[*ascii.Doc]) bool {
 		var hasCluster bool
 		var dts []*matter.DeviceType

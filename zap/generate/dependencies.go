@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
-	"github.com/puzpuzpuz/xsync/v3"
 )
 
-func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies *xsync.MapOf[string, bool]) {
+func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies pipeline.Map[string, bool]) {
 	for _, m := range entities {
 		switch m := m.(type) {
 		case *matter.Cluster:
@@ -20,7 +20,7 @@ func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies *
 	}
 }
 
-func findClusterDependencies(spec *matter.Spec, c *matter.Cluster, dependencies *xsync.MapOf[string, bool]) {
+func findClusterDependencies(spec *matter.Spec, c *matter.Cluster, dependencies pipeline.Map[string, bool]) {
 	findFieldSetDependencies(spec, c.Attributes, dependencies)
 	for _, s := range c.Structs {
 		findFieldSetDependencies(spec, s.Fields, dependencies)
@@ -33,13 +33,13 @@ func findClusterDependencies(spec *matter.Spec, c *matter.Cluster, dependencies 
 	}
 }
 
-func findFieldSetDependencies(spec *matter.Spec, fs matter.FieldSet, dependencies *xsync.MapOf[string, bool]) {
+func findFieldSetDependencies(spec *matter.Spec, fs matter.FieldSet, dependencies pipeline.Map[string, bool]) {
 	for _, f := range fs {
 		findDataTypeDependencies(spec, f.Type, dependencies)
 	}
 }
 
-func findDataTypeDependencies(spec *matter.Spec, dt *types.DataType, dependencies *xsync.MapOf[string, bool]) {
+func findDataTypeDependencies(spec *matter.Spec, dt *types.DataType, dependencies pipeline.Map[string, bool]) {
 	if dt == nil {
 		return
 	}

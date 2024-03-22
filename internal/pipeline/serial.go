@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-
-	"github.com/puzpuzpuz/xsync/v3"
 )
 
-func processSerial[I, O any](cxt context.Context, name string, processor IndividualProcess[I, O], queue chan *Data[I], total int32) (output *xsync.MapOf[string, *Data[O]], err error) {
+func processSerial[I, O any](cxt context.Context, name string, processor IndividualProcess[I, O], queue chan *Data[I], total int32) (output Map[string, *Data[O]], err error) {
 	var counter int32
 	processed := make(map[string]bool, total)
-	output = xsync.NewMapOfPresized[string, *Data[O]](int(total))
+	output = NewMapPresized[string, *Data[O]](int(total))
 	cyan.Fprintf(os.Stderr, "%s...\n", name)
 
 	for {

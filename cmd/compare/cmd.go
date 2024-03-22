@@ -16,7 +16,6 @@ import (
 	"github.com/hasty/alchemy/zap"
 	"github.com/hasty/alchemy/zap/generate"
 	"github.com/hasty/alchemy/zap/parse"
-	"github.com/puzpuzpuz/xsync/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -70,14 +69,14 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	var xmlFiles *xsync.MapOf[string, *pipeline.Data[[]byte]]
+	var xmlFiles pipeline.Map[string, *pipeline.Data[[]byte]]
 	xmlFiles, err = pipeline.Process[struct{}, []byte](cxt, pipelineOptions, files.NewReader("Reading ZAP templates"), xmlPaths)
 
 	if err != nil {
 		return
 	}
 
-	var zapEntities *xsync.MapOf[string, *pipeline.Data[[]types.Entity]]
+	var zapEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
 	zapParser := parse.NewZapParser()
 	zapEntities, err = pipeline.Process[[]byte, []types.Entity](cxt, pipelineOptions, zapParser, xmlFiles)
 	if err != nil {
@@ -85,7 +84,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	}
 	zapParser.ResolveReferences()
 
-	var specEntities *xsync.MapOf[string, *pipeline.Data[[]types.Entity]]
+	var specEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
 	specEntities, err = pipeline.Process[*ascii.Doc, []types.Entity](cxt, pipelineOptions, &common.EntityFilter[*ascii.Doc, types.Entity]{}, specDocs)
 
 	if err != nil {

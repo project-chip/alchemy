@@ -3,8 +3,6 @@ package pipeline
 import (
 	"slices"
 	"strings"
-
-	"github.com/puzpuzpuz/xsync/v3"
 )
 
 type Data[T any] struct {
@@ -22,7 +20,7 @@ func SortData[T any](data []*Data[T]) {
 	})
 }
 
-func DataMapToSlice[T any](data *xsync.MapOf[string, *Data[T]]) (slice []*Data[T]) {
+func DataMapToSlice[T any](data Map[string, *Data[T]]) (slice []*Data[T]) {
 	data.Range(func(key string, value *Data[T]) bool {
 		slice = append(slice, value)
 		return true

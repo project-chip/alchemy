@@ -3,18 +3,16 @@ package pipeline
 import (
 	"context"
 	"fmt"
-
-	"github.com/puzpuzpuz/xsync/v3"
 )
 
 type Targeter func(cxt context.Context) ([]string, error)
 
-func Start[T any](cxt context.Context, targeter Targeter) (*xsync.MapOf[string, *Data[T]], error) {
+func Start[T any](cxt context.Context, targeter Targeter) (Map[string, *Data[T]], error) {
 	paths, err := targeter(cxt)
 	if err != nil {
 		return nil, err
 	}
-	output := xsync.NewMapOf[string, *Data[T]]()
+	output := NewMapPresized[string, *Data[T]](len(paths))
 	for _, p := range paths {
 		_, loaded := output.LoadAndStore(p, &Data[T]{Path: p})
 		if loaded {
@@ -24,7 +22,7 @@ func Start[T any](cxt context.Context, targeter Targeter) (*xsync.MapOf[string, 
 	return output, nil
 }
 
-func Process[I, O any](cxt context.Context, options Options, processor Processor, input *xsync.MapOf[string, *Data[I]]) (output *xsync.MapOf[string, *Data[O]], err error) {
+func Process[I, O any](cxt context.Context, options Options, processor Processor, input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
 	switch processor.Type() {
 	case ProcessorTypeCollective:
 		proc, ok := processor.(CollectiveProcessor[I, O])
@@ -49,7 +47,7 @@ func Process[I, O any](cxt context.Context, options Options, processor Processor
 	return
 }
 
-func ProcessSerialFunc[I, O any](cxt context.Context, options Options, input *xsync.MapOf[string, *Data[I]], name string, f IndividualProcess[I, O]) (output *xsync.MapOf[string, *Data[O]], err error) {
+func ProcessSerialFunc[I, O any](cxt context.Context, options Options, input Map[string, *Data[I]], name string, f IndividualProcess[I, O]) (output Map[string, *Data[O]], err error) {
 	total := int32(input.Size())
 	queue := make(chan *Data[I], total)
 	inputs := DataMapToSlice[I](input)
@@ -66,7 +64,7 @@ func ProcessSerialFunc[I, O any](cxt context.Context, options Options, input *xs
 	return processSerial[I, O](cxt, name, f, queue, total)
 }
 
-func ProcessParallelFunc[I, O any](cxt context.Context, options Options, input *xsync.MapOf[string, *Data[I]], name string, f IndividualProcess[I, O]) (output *xsync.MapOf[string, *Data[O]], err error) {
+func ProcessParallelFunc[I, O any](cxt context.Context, options Options, input Map[string, *Data[I]], name string, f IndividualProcess[I, O]) (output Map[string, *Data[O]], err error) {
 	total := int32(input.Size())
 	queue := make(chan *Data[I], total)
 	input.Range(func(key string, value *Data[I]) bool {

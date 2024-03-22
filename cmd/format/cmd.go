@@ -7,7 +7,6 @@ import (
 	"github.com/hasty/alchemy/ascii/render"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/puzpuzpuz/xsync/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +19,7 @@ var Command = &cobra.Command{
 func format(cmd *cobra.Command, args []string) (err error) {
 	cxt := context.Background()
 
-	var inputs *xsync.MapOf[string, *pipeline.Data[struct{}]]
+	var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
 
 	inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(args...))
 
@@ -38,7 +37,7 @@ func format(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	renderer := render.NewRenderer()
-	var renders *xsync.MapOf[string, *pipeline.Data[string]]
+	var renders pipeline.Map[string, *pipeline.Data[string]]
 	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, docs)
 	if err != nil {
 		return err
