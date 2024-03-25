@@ -3,7 +3,6 @@ package ascii
 import (
 	"log/slog"
 	"path/filepath"
-	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/internal/parse"
@@ -30,8 +29,6 @@ func buildTree(docs []*Doc) {
 				linkPath, ok := link.Location.Path.(string)
 				if ok {
 					linkPath = filepath.Join(filepath.Dir(path), linkPath)
-					linkPath = strings.ReplaceAll(linkPath, "energy-management.adoc", "energy_management.adoc")
-					slog.Debug("linked file\n", "from", path, "to", linkPath)
 					tree[doc] = append(tree[doc], linkPath)
 				}
 			}
