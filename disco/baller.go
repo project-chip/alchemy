@@ -30,7 +30,7 @@ func (r Baller) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc], i
 	for _, option := range r.discoOptions {
 		option(b)
 	}
-	err = b.Run(cxt)
+	err = b.disco(cxt)
 	if err != nil {
 		if err == EmptyDocError {
 			err = nil

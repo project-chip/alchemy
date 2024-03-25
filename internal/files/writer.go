@@ -25,14 +25,13 @@ func (w *writer) SetName(name string) {
 }
 
 func NewWriter[T string | []byte](name string, options Options) Writer[T] {
-	w := writer{name: name}
 	if options.DryRun {
-		return &DryRun[T]{writer: w}
+		return &DryRun[T]{writer: writer{name: name}}
 	}
 	if options.Patch {
-		return &Patcher[T]{writer: w}
+		return NewPatcher[T](name, os.Stdout)
 	}
-	return &FileWriter[T]{writer: w}
+	return &FileWriter[T]{writer: writer{name: name}}
 }
 
 type FileWriter[T string | []byte] struct {

@@ -1,3 +1,5 @@
+//go:build !github
+
 package cmd
 
 import (

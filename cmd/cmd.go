@@ -1,4 +1,4 @@
-//go:build !db
+//go:build !db && !github
 
 package cmd
 
