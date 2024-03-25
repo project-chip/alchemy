@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/hasty/alchemy/disco"
 	"github.com/hasty/alchemy/internal/files"
@@ -39,7 +40,19 @@ func Action() error {
 		return nil
 	}
 
-	targeter := files.PathsTargeter(changedFiles...)
+	var changedDocs []string
+	for _, path := range changedFiles {
+		if filepath.Ext(path) == ".adoc" {
+			changedDocs = append(changedDocs, path)
+		}
+	}
+
+	if len(changedDocs) == 0 {
+		action.Infof("No changed asciidoc files found\n")
+		return nil
+	}
+
+	targeter := files.PathsTargeter(changedDocs...)
 
 	pipelineOptions := pipeline.Options{NoProgress: true}
 
