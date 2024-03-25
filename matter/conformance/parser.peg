@@ -176,21 +176,32 @@ Identifier <- PascalCase ('-' PascalCase)* {
     return string(c.text), nil
 }
 
-ReferenceOp <- not:'!'? reference:Reference {
+ReferenceOp <- not:'!'? "<<" reference:ReferenceId label:(ReferenceLabel )? ">>" {
     //debug("matched reference op ref %s\n", reference)
     ic := &ReferenceExpression{Reference:reference.(string)}
+    if label != nil {
+        //debug("matched reference label ref %v\n", label)
+        ic.Label = label.(string)
+    }
     if not != nil {
         ic.Not = true
     }
     return ic, nil
 }
 
-Reference <- "<<" reference:ReferenceId ">>" {
-    //debug("matched reference %s\n", reference.(string))
-    return reference.(string), nil
+
+ReferenceLabel <- _ Comma _ label:ReferenceText  &">>" {
+    //debug("matched reference label %T\n", label)
+    return label.(string), nil
+}
+
+ReferenceText <- (!">>" .)+  {
+    //debug("matched reference label text %s\n", string(c.text))
+    return string(c.text), nil
 }
 
 ReferenceId <- "ref_" PascalCase {
+    //debug("matched reference %s\n", string(c.text))
     return string(c.text), nil
 }
 
@@ -281,25 +292,30 @@ Integer <- ([0-9]+) {
     }
 
 PascalCase <- Capitalized+ Capitalized* {
-        debug("matched pascal %s\n", string(c.text))
+        //debug("matched pascal %s\n", string(c.text))
 
 	return string(c.text), nil
 }
 
 Capitalized <- Uppercase+ Lowercase+ {
-        debug("matched capitalized %s\n", string(c.text))
+        //debug("matched capitalized %s\n", string(c.text))
 
 	return string(c.text), nil
 }
 
 Uppercase <- [A-Z] {
-    debug("matched uppercase %s\n", string(c.text))
+    //debug("matched uppercase %s\n", string(c.text))
 	return string(c.text), nil
 }
 
 Lowercase <- [a-z] {
-    debug("matched lowercase %s\n", string(c.text))
+    //debug("matched lowercase %s\n", string(c.text))
 	return string(c.text), nil
+}
+
+SameLineString <- [^\n]+ {
+    //debug("matched same line string %s\n", string(c.text))
+    return string(c.text), nil
 }
 
 _ "whitespace" ← [ \t\r\n]*

@@ -19,6 +19,7 @@ func TestOptional(t *testing.T) {
 type conformanceTestSuite struct {
 	Conformance        string
 	InvalidConformance bool
+	AsciiDocString     string
 
 	Tests []conformanceTest
 }
@@ -45,6 +46,12 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 		}
 		if result != test.Expected {
 			t.Errorf("failed checking conformance %s (parsed %s) with %v: expected %v, got %v", cts.Conformance, conformance.AsciiDocString(), test.Context, test.Expected, result)
+		}
+	}
+	if len(cts.AsciiDocString) > 0 {
+		ads := conformance.AsciiDocString()
+		if ads != cts.AsciiDocString {
+			t.Errorf("unexpected Asciidoc string for conformance \"%s\"; expected \"%s\", got \"%s\"", cts.Conformance, cts.AsciiDocString, ads)
 		}
 	}
 }
@@ -231,6 +238,35 @@ var otherwiseTests = []conformanceTestSuite{
 		Tests: []conformanceTest{
 			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
 			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": false}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
+		},
+	},
+	{
+		Conformance: "[Wi-Fi]",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": false}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
+		},
+	},
+	{
+		Conformance:    "<<ref_Ranges>>",
+		AsciiDocString: "<<ref_Ranges>>",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": false}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
+		},
+	},
+	{
+		Conformance:    "<<ref_Ranges, Ranges>>",
+		AsciiDocString: "<<ref_Ranges, Ranges>>",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateDisallowed},
 			{Context: Context{Values: map[string]any{"UltrasonicUnoccupiedToOccupiedDelay": false}}, Expected: StateDisallowed},
 			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},

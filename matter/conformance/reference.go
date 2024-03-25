@@ -3,18 +3,28 @@ package conformance
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 type ReferenceExpression struct {
 	Reference string `json:"ref"`
+	Label     string `json:"label,omitempty"`
 	Not       bool   `json:"not,omitempty"`
 }
 
 func (ie *ReferenceExpression) AsciiDocString() string {
+	var s strings.Builder
 	if ie.Not {
-		return fmt.Sprintf("!%s", ie.Reference)
+		s.WriteRune('!')
 	}
-	return ie.Reference
+	s.WriteString("<<")
+	s.WriteString(ie.Reference)
+	if len(ie.Label) > 0 {
+		s.WriteString(", ")
+		s.WriteString(ie.Label)
+	}
+	s.WriteString(">>")
+	return s.String()
 }
 
 func (ie *ReferenceExpression) Description() string {
