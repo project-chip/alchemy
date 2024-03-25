@@ -4,15 +4,15 @@ import (
 	"strings"
 )
 
-func ParseConformance(conformance string, options ...interface{}) Set {
-	c, err := tryParseConformance(conformance, options...)
+func ParseConformance(conformance string) Set {
+	c, err := tryParseConformance(conformance)
 	if err != nil {
 		return Set{&Generic{raw: conformance}}
 	}
 	return c
 }
 
-func tryParseConformance(conformance string, options ...interface{}) (Set, error) {
+func tryParseConformance(conformance string) (Set, error) {
 	conformance = strings.ReplaceAll(conformance, "\\|", "|")
 
 	c, err := ParseReader("", strings.NewReader(conformance))
