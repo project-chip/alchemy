@@ -23,7 +23,7 @@ func NewBall(doc *ascii.Doc) *Ball {
 	}
 }
 
-func (b *Ball) Run(cxt context.Context) error {
+func (b *Ball) disco(cxt context.Context) error {
 
 	dc := newContext(cxt)
 	doc := b.doc

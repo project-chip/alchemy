@@ -3,6 +3,7 @@ package files
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/hasty/alchemy/internal/pipeline"
@@ -13,6 +14,12 @@ import (
 
 type Patcher[T string | []byte] struct {
 	writer
+
+	out io.Writer
+}
+
+func NewPatcher[T string | []byte](name string, out io.Writer) Writer[T] {
+	return &Patcher[T]{writer: writer{name: name}, out: out}
 }
 
 func (sp *Patcher[T]) Type() pipeline.ProcessorType {
@@ -36,7 +43,9 @@ func (sp *Patcher[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (
 			existing = string(eb)
 		}
 		edits := myers.ComputeEdits(span.URIFromPath(i.Path), existing, string(i.Content))
-		fmt.Print(gotextdiff.ToUnified(i.Path, i.Path, existing, edits))
+		if len(edits) > 0 {
+			fmt.Fprintln(sp.out, gotextdiff.ToUnified(i.Path, i.Path, existing, edits))
+		}
 	}
 	return
 }

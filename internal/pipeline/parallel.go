@@ -15,12 +15,15 @@ import (
 
 var cyan = color.New(color.FgCyan).Add(color.Bold)
 
-func processParallel[I, O any](cxt context.Context, name string, processor IndividualProcess[I, O], queue chan *Data[I], total int32) (output Map[string, *Data[O]], err error) {
+func processParallel[I, O any](cxt context.Context, name string, processor IndividualProcess[I, O], queue chan *Data[I], total int32, showProgress bool) (output Map[string, *Data[O]], err error) {
 
 	processed := NewConcurrentMapPresized[string, bool](int(total))
 	output = NewConcurrentMapPresized[string, *Data[O]](int(total))
 	cyan.Fprintf(os.Stderr, "%s...\n", name)
-	bar := progressbar.Default(int64(total))
+	var bar *progressbar.ProgressBar
+	if showProgress {
+		bar = progressbar.Default(int64(total))
+	}
 	var complete int32
 
 	wg := newWorkGroup()
@@ -36,7 +39,9 @@ func processParallel[I, O any](cxt context.Context, name string, processor Indiv
 			break
 		}
 		if done {
-			bar.Add(1)
+			if bar != nil {
+				bar.Add(1)
+			}
 			continue
 		}
 		wg.run(cxt, func() error {
@@ -50,8 +55,10 @@ func processParallel[I, O any](cxt context.Context, name string, processor Indiv
 			if err != nil {
 				return err
 			}
-			bar.Describe(progressFileName(input.Path))
-			bar.Add(1)
+			if bar != nil {
+				bar.Describe(progressFileName(input.Path))
+				bar.Add(1)
+			}
 			processed.Store(input.Path, true)
 			for _, e := range extras {
 				_, loaded := processed.LoadOrStore(e.Path, false)
@@ -62,7 +69,9 @@ func processParallel[I, O any](cxt context.Context, name string, processor Indiv
 				select {
 				case queue <- e:
 					newTotal := atomic.AddInt32(&total, 1)
-					bar.ChangeMax(int(newTotal))
+					if bar != nil {
+						bar.ChangeMax(int(newTotal))
+					}
 				default:
 					return fmt.Errorf("queue full")
 				}
