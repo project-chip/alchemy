@@ -37,9 +37,9 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
 
-		b.addMissingColumns(dp.doc, events.section, eventsTable.element, eventsTable.rows, matter.EventsTableColumnOrder[:], nil, eventsTable.headerRow, eventsTable.columnMap, mattertypes.EntityTypeEvent)
+		b.addMissingColumns(dp.doc, events.section, eventsTable.element, eventsTable.rows, matter.Tables[matter.TableTypeEvents].ColumnOrder, nil, eventsTable.headerRow, eventsTable.columnMap, mattertypes.EntityTypeEvent)
 
-		b.reorderColumns(dp.doc, events.section, eventsTable.rows, matter.EventsTableColumnOrder[:], eventsTable.columnMap, eventsTable.extraColumns)
+		b.reorderColumns(dp.doc, events.section, eventsTable, matter.TableTypeEvents)
 
 		err = b.linkIndexTables(cxt, events)
 		if err != nil {
@@ -66,9 +66,9 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 				return fmt.Errorf("error renaming table header cells in event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			b.addMissingColumns(dp.doc, event.section, eventTable.element, eventTable.rows, matter.EventTableColumnOrder[:], nil, eventTable.headerRow, eventTable.columnMap, mattertypes.EntityTypeField)
+			b.addMissingColumns(dp.doc, event.section, eventTable.element, eventTable.rows, matter.Tables[matter.TableTypeEvent].ColumnOrder, nil, eventTable.headerRow, eventTable.columnMap, mattertypes.EntityTypeField)
 
-			b.reorderColumns(dp.doc, event.section, eventTable.rows, matter.EventTableColumnOrder[:], eventTable.columnMap, eventTable.extraColumns)
+			b.reorderColumns(dp.doc, event.section, &eventTable, matter.TableTypeEvent)
 
 			b.appendSubsectionTypes(event.section, eventTable.columnMap, eventTable.rows)
 

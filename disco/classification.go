@@ -23,22 +23,22 @@ func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (e
 			return nil
 		}
 
-		err = b.renameTableHeaderCells(classificationTable.rows, classificationTable.headerRow, classificationTable.columnMap, matter.ClassificationTableColumnNames)
+		err = b.renameTableHeaderCells(classificationTable.rows, classificationTable.headerRow, classificationTable.columnMap, matter.Tables[matter.TableTypeClassification].ColumnNames)
 		if err != nil {
 			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", classification.section.Name, dp.doc.Path, err)
 		}
 
-		var order []matter.TableColumn
+		var tableType matter.TableType
 
 		switch dp.docType {
 		case matter.DocTypeCluster:
-			order = matter.AppClusterClassificationTableColumnOrder[:]
+			tableType = matter.TableTypeAppClusterClassification
 		case matter.DocTypeDeviceType:
-			order = matter.DeviceTypeClassificationTableColumnOrder[:]
+			tableType = matter.TableTypeDeviceTypeClassification
 		}
 
-		if len(order) > 0 {
-			b.reorderColumns(dp.doc, classification.section, classificationTable.rows, order, classificationTable.columnMap, classificationTable.extraColumns)
+		if tableType != matter.TableTypeUnknown {
+			b.reorderColumns(dp.doc, classification.section, &classificationTable, tableType)
 		}
 	}
 	return

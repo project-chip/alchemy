@@ -109,12 +109,23 @@ type TableType uint8
 const (
 	TableTypeUnknown TableType = iota
 	TableTypeAttributes
+	TableTypeAppClusterClassification
+	TableTypeDeviceTypeClassification
+	TableTypeClassification
+	TableTypeClusterID
+	TableTypeCommands
+	TableTypeStruct
+	TableTypeEnum
+	TableTypeBitmap
+	TableTypeEvents
+	TableTypeEvent
 )
 
 type Table struct {
 	AllowedColumns  []TableColumn
 	RequiredColumns []TableColumn
 	ColumnOrder     []TableColumn
+	ColumnNames     map[TableColumn]string
 }
 
 var Tables = map[TableType]Table{
@@ -130,93 +141,103 @@ var Tables = map[TableType]Table{
 			TableColumnConformance,
 		},
 	},
-}
-
-var AppClusterClassificationTableColumnOrder = [...]TableColumn{
-	TableColumnHierarchy,
-	TableColumnRole,
-	TableColumnScope,
-	TableColumnContext, // This will get renamed to Scope
-	TableColumnPICS,
-}
-
-var DeviceTypeClassificationTableColumnOrder = [...]TableColumn{
-	TableColumnID,
-	TableColumnDeviceName,
-	TableColumnSuperset,
-	TableColumnClass, // This will get renamed to Scope
-	TableColumnScope,
-}
-
-var ClassificationTableColumnNames = map[TableColumn]string{
-	TableColumnContext: "Scope", // Rename Context to Scope
-	TableColumnPICS:    "PICS Code",
+	TableTypeAppClusterClassification: {
+		ColumnOrder: []TableColumn{
+			TableColumnHierarchy,
+			TableColumnRole,
+			TableColumnScope,
+			TableColumnContext, // This will get renamed to Scope
+			TableColumnPICS,
+		},
+	},
+	TableTypeDeviceTypeClassification: {
+		ColumnOrder: []TableColumn{
+			TableColumnID,
+			TableColumnDeviceName,
+			TableColumnSuperset,
+			TableColumnClass, // This will get renamed to Scope
+			TableColumnScope,
+		},
+	},
+	TableTypeClassification: {
+		ColumnNames: map[TableColumn]string{
+			TableColumnContext: "Scope", // Rename Context to Scope
+			TableColumnPICS:    "PICS Code",
+		},
+	},
+	TableTypeClusterID: {
+		ColumnOrder: []TableColumn{
+			TableColumnID,
+			TableColumnName,
+			TableColumnConformance,
+		},
+		RequiredColumns: []TableColumn{
+			TableColumnID,
+			TableColumnName,
+			TableColumnConformance,
+		},
+	},
+	TableTypeCommands: {
+		ColumnOrder: []TableColumn{
+			TableColumnID,
+			TableColumnName,
+			TableColumnDirection,
+			TableColumnResponse,
+			TableColumnAccess,
+			TableColumnConformance,
+		},
+	},
+	TableTypeStruct: {
+		ColumnOrder: []TableColumn{
+			TableColumnID,
+			TableColumnName,
+			TableColumnType,
+			TableColumnConstraint,
+			TableColumnQuality,
+			TableColumnDefault,
+			TableColumnAccess,
+			TableColumnConformance,
+		},
+	},
+	TableTypeEnum: {
+		ColumnOrder: []TableColumn{
+			TableColumnValue,
+			TableColumnName,
+			TableColumnSummary,
+			TableColumnConformance,
+		},
+	},
+	TableTypeBitmap: {
+		ColumnOrder: []TableColumn{
+			TableColumnBit,
+			TableColumnName,
+			TableColumnSummary,
+			TableColumnConformance,
+		},
+	},
+	TableTypeEvents: {
+		ColumnOrder: []TableColumn{
+			TableColumnID,
+			TableColumnName,
+			TableColumnPriority,
+			TableColumnQuality,
+			TableColumnAccess,
+			TableColumnConformance,
+		},
+	},
+	TableTypeEvent: {
+		ColumnOrder: []TableColumn{
+			TableColumnID,
+			TableColumnName,
+			TableColumnType,
+			TableColumnConstraint,
+			TableColumnQuality,
+			TableColumnDefault,
+			TableColumnConformance,
+		},
+	},
 }
 
 var ClusterIDSectionName = "Cluster ID"
 
-var ClusterIDTableColumnOrder = [...]TableColumn{
-	TableColumnID,
-	TableColumnName,
-	TableColumnConformance,
-}
-
-var ClusterIDTableRequiredColumns = [...]TableColumn{
-	TableColumnID,
-	TableColumnName,
-}
-
 var CommandsSectionName = "Commands"
-
-var CommandsTableColumnOrder = [...]TableColumn{
-	TableColumnID,
-	TableColumnName,
-	TableColumnDirection,
-	TableColumnResponse,
-	TableColumnAccess,
-	TableColumnConformance,
-}
-
-var StructTableColumnOrder = [...]TableColumn{
-	TableColumnID,
-	TableColumnName,
-	TableColumnType,
-	TableColumnConstraint,
-	TableColumnQuality,
-	TableColumnDefault,
-	TableColumnAccess,
-	TableColumnConformance,
-}
-
-var EnumTableColumnOrder = [...]TableColumn{
-	TableColumnValue,
-	TableColumnName,
-	TableColumnSummary,
-	TableColumnConformance,
-}
-
-var BitmapTableColumnOrder = [...]TableColumn{
-	TableColumnBit,
-	TableColumnName,
-	TableColumnSummary,
-	TableColumnConformance,
-}
-
-var EventsTableColumnOrder = [...]TableColumn{
-	TableColumnID,
-	TableColumnName,
-	TableColumnPriority,
-	TableColumnQuality,
-	TableColumnAccess,
-	TableColumnConformance,
-}
-
-var EventTableColumnOrder = [...]TableColumn{
-	TableColumnID,
-	TableColumnName,
-	TableColumnType,
-	TableColumnConstraint,
-	TableColumnQuality,
-	TableColumnDefault,
-	TableColumnConformance,
-}

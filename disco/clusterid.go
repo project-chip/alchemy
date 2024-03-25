@@ -27,7 +27,7 @@ func (b *Ball) organizeClusterIDSection(cxt *discoContext, dp *docParse) (err er
 			return fmt.Errorf("error renaming table header cells in cluster ID table in %s: %w", dp.doc.Path, err)
 		}
 
-		b.reorderColumns(dp.doc, clusterIDs.section, clusterIDsTable.rows, matter.ClusterIDTableColumnOrder[:], clusterIDsTable.columnMap, clusterIDsTable.extraColumns)
+		b.reorderColumns(dp.doc, clusterIDs.section, &clusterIDsTable, matter.TableTypeClusterID)
 	}
 	return
 }
