@@ -124,10 +124,19 @@ func (b *Ball) getDefaultColumnValue(entityType mattertypes.EntityType, column m
 	return ""
 }
 
-func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*types.TableRow, order []matter.TableColumn, columnMap ascii.ColumnIndex, extraColumns []ascii.ExtraColumn) {
+func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableInfo, tableType matter.TableType) (err error) {
 	if !b.options.reorderColumns {
 		return
 	}
+	rows := ti.rows
+	columnMap := ti.columnMap
+	extraColumns := ti.extraColumns
+	tableTemplate, ok := matter.Tables[tableType]
+	if !ok {
+		err = fmt.Errorf("missing table template for table type: %v", tableType)
+		return
+	}
+	order := tableTemplate.ColumnOrder
 	if len(rows) == 0 {
 		return
 	}
@@ -135,28 +144,40 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, rows []*ty
 	for i := range newColumnIndexes {
 		newColumnIndexes[i] = -1
 	}
-	for i, column := range order {
+	var index int
+	for _, column := range order {
 		if offset, ok := columnMap[column]; ok {
 			// column exists in existing order
-			newColumnIndexes[offset] = i
+			newColumnIndexes[offset] = index
+			index++
 		}
 	}
-	for i, extra := range extraColumns {
-		newColumnIndexes[extra.Offset] = len(order) + i
-	}
-	for _, row := range rows {
-		newCells := make([]*types.TableCell, 0, len(order)+len(extraColumns))
-		for _, column := range order {
-			if offset, ok := columnMap[column]; ok {
-				newCells = append(newCells, row.Cells[offset])
-			}
+	// Recognized columns, but not in the column order
+	for _, i := range columnMap {
+		if newColumnIndexes[i] == -1 {
+			newColumnIndexes[i] = index
+			index++
 		}
-		for _, extra := range extraColumns {
-			newCells = append(newCells, row.Cells[extra.Offset])
+	}
+	// Unrecognized columns come last
+	for i, v := range newColumnIndexes {
+		if v == -1 {
+			newColumnIndexes[i] = index
+			index++
+		}
+	}
+	for i, row := range rows {
+		newCells := make([]*types.TableCell, len(newColumnIndexes))
+		if len(row.Cells) != len(newColumnIndexes) {
+			err = fmt.Errorf("cell length mismatch; row %d has %d cells, expected %d", i, len(row.Cells), len(newColumnIndexes))
+		}
+		for j, cell := range row.Cells {
+			newCells[newColumnIndexes[j]] = cell
 		}
 		newCells = slices.Clip(newCells)
 		row.Cells = newCells
 	}
+	return
 }
 
 func setCellString(cell *types.TableCell, v string) (err error) {
