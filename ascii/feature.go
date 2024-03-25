@@ -70,7 +70,7 @@ func (s *Section) toFeatures(d *Doc, entityMap map[types.WithAttributes][]matter
 		switch s.SecType {
 		case matter.SectionFeature:
 
-			name := strings.TrimSuffix(s.Name, " Attribute")
+			name := strings.TrimSuffix(s.Name, " Feature")
 			a, ok := featureMap[name]
 			if !ok {
 				slog.Debug("unknown feature", "feature", name)
