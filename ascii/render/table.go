@@ -2,6 +2,7 @@ package render
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -74,7 +75,7 @@ func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) {
 		var format string
 		colSpan := 1
 		if c.formatter != nil {
-			format = c.formatter.Content
+			format = renderTableCellFormat(c.formatter)
 			colSpan = c.formatter.ColumnSpan
 		}
 		indent := fmt.Sprintf("%*s", indentLength, format)
@@ -274,4 +275,42 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 		}
 	}
 	return
+}
+
+func renderTableCellFormat(format *types.TableCellFormat) string {
+	var s strings.Builder
+	if format.ColumnSpan > 1 || format.RowSpan > 1 {
+		if format.ColumnSpan > 1 {
+			s.WriteString(strconv.Itoa(format.ColumnSpan))
+		}
+		if format.RowSpan > 1 {
+			s.WriteRune('.')
+			s.WriteString(strconv.Itoa(format.RowSpan))
+		}
+		s.WriteRune('+')
+	}
+	if format.Duplication > 1 {
+		s.WriteString(strconv.Itoa(format.Duplication))
+		s.WriteRune('*')
+	}
+	switch format.HorizontalAlignment {
+	case types.Left:
+		s.WriteRune('<')
+	case types.Center:
+		s.WriteRune('^')
+	case types.Right:
+		s.WriteRune('>')
+	}
+	switch format.VerticalAlignment {
+	case types.Top:
+		s.WriteString(".<")
+	case types.Middle:
+		s.WriteString(".^")
+	case types.Bottom:
+		s.WriteString(".>")
+	}
+	if len(format.Style) > 0 {
+		s.WriteString(string(format.Style))
+	}
+	return s.String()
 }
