@@ -124,6 +124,7 @@ const (
 type Table struct {
 	AllowedColumns  []TableColumn
 	RequiredColumns []TableColumn
+	BannedColumns   []TableColumn
 	ColumnOrder     []TableColumn
 	ColumnNames     map[TableColumn]string
 }

@@ -59,12 +59,15 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
 	}
 
-	err = b.addMissingColumns(dp.doc, ss.section, fieldsTable.element, fieldsTable.rows, matter.Tables[matter.TableTypeStruct].ColumnOrder, nil, fieldsTable.headerRow, fieldsTable.columnMap, mattertypes.EntityTypeField)
+	err = b.addMissingColumns(dp.doc, ss.section, fieldsTable.element, fieldsTable.rows, matter.Tables[matter.TableTypeStruct], nil, fieldsTable.headerRow, fieldsTable.columnMap, mattertypes.EntityTypeField)
 	if err != nil {
 		return fmt.Errorf("error adding missing table columns in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
 	}
 
-	b.reorderColumns(dp.doc, ss.section, fieldsTable, matter.TableTypeStruct)
+	err = b.reorderColumns(dp.doc, ss.section, fieldsTable, matter.TableTypeStruct)
+	if err != nil {
+		return err
+	}
 
 	b.appendSubsectionTypes(ss.section, fieldsTable.columnMap, fieldsTable.rows)
 
