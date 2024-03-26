@@ -66,8 +66,6 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 }
 
 func init() {
-	Command.Flags().String("specRoot", "", "the root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("sdkRoot", "", "the root of your clone of project-chip/connectedhomeip")
-	_ = Command.MarkFlagRequired("specRoot")
-	_ = Command.MarkFlagRequired("sdkRoot")
+	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
 }

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/hasty/alchemy/config"
 	"github.com/hasty/alchemy/disco"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
@@ -17,6 +18,8 @@ func Action() error {
 	cxt := context.Background()
 
 	action := githubactions.New()
+
+	action.Infof("Alchemy %s", config.Version())
 
 	githubContext, err := githubactions.Context()
 	if err != nil {

@@ -22,11 +22,9 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().String("specRoot", "", "the root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("testRoot", "", "the root of your clone of CHIP-Specifications/chip-test-plans")
+	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
 	Command.Flags().Bool("overwrite", false, "overwrite existing test plans")
-	_ = Command.MarkFlagRequired("specRoot")
-	_ = Command.MarkFlagRequired("testRoot")
 }
 
 func tp(cmd *cobra.Command, args []string) (err error) {

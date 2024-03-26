@@ -26,11 +26,9 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().String("specRoot", "", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("sdkRoot", "", "the src root of your clone of project-chip/connectedhomeip")
+	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	Command.Flags().String("sdkRoot", "connectedhomeip", "the src root of your clone of project-chip/connectedhomeip")
 	Command.Flags().Bool("text", false, "output as text")
-	_ = Command.MarkFlagRequired("specRoot")
-	_ = Command.MarkFlagRequired("sdkRoot")
 }
 
 func compareSpec(cmd *cobra.Command, args []string) (err error) {
@@ -122,7 +120,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	})
 
 	var diffs []*compare.ClusterDifferences
-	diffs, err = compare.CompareEntities(specEntityMap, zapEntityMap)
+	diffs, err = compare.CompareEntities(specParser.Spec, specEntityMap, zapEntityMap)
 	if err != nil {
 		return
 	}
