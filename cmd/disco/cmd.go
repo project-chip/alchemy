@@ -48,6 +48,7 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 }
 
 func init() {
+	Command.Flags().String("specRoot", "", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().Bool("linkIndexTables", false, "link index tables to child sections")
 	Command.Flags().Bool("addMissingColumns", true, "add standard columns missing from tables")
 	Command.Flags().Bool("reorderColumns", true, "rearrange table columns into disco-ball order")

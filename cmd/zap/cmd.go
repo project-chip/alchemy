@@ -22,11 +22,9 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().String("specRoot", "", "the root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("sdkRoot", "", "the root of your clone of project-chip/connectedhomeip")
+	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
 	Command.Flags().Bool("overwrite", false, "overwrite existing ZAP templates")
-	_ = Command.MarkFlagRequired("specRoot")
-	_ = Command.MarkFlagRequired("sdkRoot")
 }
 
 func zapTemplates(cmd *cobra.Command, args []string) (err error) {
