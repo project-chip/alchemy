@@ -46,7 +46,10 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return err
 		}
 
-		b.reorderColumns(dp.doc, attributes.section, attributesTable, matter.TableTypeAttributes)
+		err = b.reorderColumns(dp.doc, attributes.section, attributesTable, matter.TableTypeAttributes)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

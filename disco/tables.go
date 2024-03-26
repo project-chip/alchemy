@@ -39,11 +39,17 @@ func (b *Ball) ensureTableOptions(elements []any) {
 
 }
 
-func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, order []matter.TableColumn, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex, entityType mattertypes.EntityType) (err error) {
+func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, tableTemplate matter.Table, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex, entityType mattertypes.EntityType) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
 	delete(table.Attributes, "cols")
+	var order []matter.TableColumn
+	if len(tableTemplate.RequiredColumns) > 0 {
+		order = tableTemplate.RequiredColumns
+	} else {
+		order = tableTemplate.ColumnOrder
+	}
 	for _, column := range order {
 		if _, ok := columnMap[column]; !ok {
 			_, err = b.appendColumn(rows, columnMap, headerRowIndex, column, overrides, entityType)
@@ -66,7 +72,14 @@ func (b *Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex,
 		last := row.Cells[len(row.Cells)-1]
 		if i == headerRowIndex {
 			if last.Formatter != nil {
-				cell.Formatter = &types.TableCellFormat{ColumnSpan: 1, RowSpan: 1, Style: last.Formatter.Style, Content: last.Formatter.Content}
+				cell.Formatter = &types.TableCellFormat{
+					ColumnSpan:          1,
+					RowSpan:             1,
+					HorizontalAlignment: last.Formatter.HorizontalAlignment,
+					VerticalAlignment:   last.Formatter.VerticalAlignment,
+					Style:               last.Formatter.Style,
+					Content:             last.Formatter.Content,
+				}
 			}
 			name, ok := matter.GetColumnName(column, overrides)
 			if !ok {
@@ -141,6 +154,7 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 		return
 	}
 	newColumnIndexes := make([]int, len(columnMap)+len(extraColumns))
+	// In this little slice, -1 means "we don't know what to do with this column yet" and -2 means "we're excluding this column"
 	for i := range newColumnIndexes {
 		newColumnIndexes[i] = -1
 	}
@@ -153,11 +167,24 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 		}
 	}
 	// Recognized columns, but not in the column order
-	for _, i := range columnMap {
-		if newColumnIndexes[i] == -1 {
-			newColumnIndexes[i] = index
-			index++
+	for tc, i := range columnMap {
+		if newColumnIndexes[i] >= 0 {
+			continue
 		}
+		var banned bool
+		for _, bc := range tableTemplate.BannedColumns {
+			if tc == bc {
+				banned = true
+				break
+			}
+		}
+		if banned {
+			newColumnIndexes[i] = -2
+			continue
+		}
+		newColumnIndexes[i] = index
+		index++
+
 	}
 	// Unrecognized columns come last
 	for i, v := range newColumnIndexes {
@@ -166,17 +193,43 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 			index++
 		}
 	}
+	for i, v := range newColumnIndexes {
+		if v != -2 {
+			continue
+		}
+		for _, row := range rows {
+			cell := row.Cells[i]
+			if cell.Blank {
+				// OK, this cell is blank, likely because of a horizontal span
+				k := i - 1
+				for k >= 0 {
+					left := row.Cells[k]
+					if left.Formatter != nil && left.Formatter.ColumnSpan > 1 {
+						left.Formatter.ColumnSpan = left.Formatter.ColumnSpan - 1
+						break
+					}
+					k--
+				}
+			}
+		}
+	}
 	for i, row := range rows {
-		newCells := make([]*types.TableCell, len(newColumnIndexes))
+		newCells := make([]*types.TableCell, index)
 		if len(row.Cells) != len(newColumnIndexes) {
 			err = fmt.Errorf("cell length mismatch; row %d has %d cells, expected %d", i, len(row.Cells), len(newColumnIndexes))
+			return
 		}
 		for j, cell := range row.Cells {
-			newCells[newColumnIndexes[j]] = cell
+			newIndex := newColumnIndexes[j]
+			if newIndex < 0 {
+				continue
+			}
+			newCells[newIndex] = cell
 		}
 		newCells = slices.Clip(newCells)
 		row.Cells = newCells
 	}
+	ti.headerRow, ti.columnMap, ti.extraColumns, err = ascii.MapTableColumns(doc, ti.rows)
 	return
 }
 

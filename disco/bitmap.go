@@ -43,12 +43,15 @@ func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSe
 		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}
 
-	err = b.addMissingColumns(dp.doc, bms.section, bitsTable.element, bitsTable.rows, matter.Tables[matter.TableTypeBitmap].ColumnOrder, nil, bitsTable.headerRow, bitsTable.columnMap, types.EntityTypeBitmapValue)
+	err = b.addMissingColumns(dp.doc, bms.section, bitsTable.element, bitsTable.rows, matter.Tables[matter.TableTypeBitmap], nil, bitsTable.headerRow, bitsTable.columnMap, types.EntityTypeBitmapValue)
 	if err != nil {
 		return fmt.Errorf("error adding missing table columns in bitmap section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}
 
-	b.reorderColumns(dp.doc, bms.section, &bitsTable, matter.TableTypeBitmap)
+	err = b.reorderColumns(dp.doc, bms.section, &bitsTable, matter.TableTypeBitmap)
+	if err != nil {
+		return err
+	}
 
 	b.appendSubsectionTypes(bms.section, bitsTable.columnMap, bitsTable.rows)
 	return

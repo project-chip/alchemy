@@ -38,7 +38,10 @@ func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (e
 		}
 
 		if tableType != matter.TableTypeUnknown {
-			b.reorderColumns(dp.doc, classification.section, &classificationTable, tableType)
+			err = b.reorderColumns(dp.doc, classification.section, &classificationTable, tableType)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return
