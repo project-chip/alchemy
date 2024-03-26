@@ -63,9 +63,10 @@ func (b *Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex,
 	appendedIndex = len(rows[0].Cells)
 	for i, row := range rows {
 		cell := &types.TableCell{}
+		last := row.Cells[len(row.Cells)-1]
 		if i == headerRowIndex {
-			if headerRowIndex > 0 {
-				cell.Format = "h"
+			if last.Formatter != nil {
+				cell.Formatter = &types.TableCellFormat{ColumnSpan: 1, RowSpan: 1, Style: last.Formatter.Style, Content: last.Formatter.Content}
 			}
 			name, ok := matter.GetColumnName(column, overrides)
 			if !ok {
@@ -77,7 +78,6 @@ func (b *Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex,
 				return
 			}
 		} else {
-			last := row.Cells[len(row.Cells)-1]
 			cell.Blank = last.Blank
 			if !cell.Blank {
 				err = setCellString(cell, b.getDefaultColumnValue(entityType, column, row, columnMap))
