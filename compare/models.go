@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func CompareEntities(specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []*ClusterDifferences, err error) {
+func CompareEntities(spec *matter.Spec, specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []*ClusterDifferences, err error) {
 	for path, sm := range specEntities {
 		zm, ok := zapEntities[path]
 		if !ok {
@@ -42,7 +42,7 @@ func CompareEntities(specEntities map[string][]types.Entity, zapEntities map[str
 		for cid, sc := range specClusters {
 			if zc, ok := zapClusters[cid]; ok {
 				var clusterDiffs *ClusterDifferences
-				clusterDiffs, err = compareClusters(sc, zc)
+				clusterDiffs, err = compareClusters(spec, sc, zc)
 				if err != nil {
 					slog.Warn("unable to compare clusters", slog.String("path", path), slog.Uint64("clusterId", cid), slog.Any("error", err))
 					err = nil

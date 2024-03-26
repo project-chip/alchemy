@@ -45,9 +45,9 @@ func compareEnum(specEnum *matter.Enum, zapEnum *matter.Enum) (diffs []Diff) {
 	return
 }
 
-func compareEnums(specEnums []*matter.Enum, zapEnums []*matter.Enum) (diffs []Diff) {
+func compareEnums(spec *matter.Spec, specCluster *matter.Cluster, zapEnums []*matter.Enum) (diffs []Diff) {
 	specEnumMap := make(map[string]*matter.Enum)
-	for _, f := range specEnums {
+	for _, f := range specCluster.Enums {
 		specEnumMap[strings.ToLower(f.Name)] = f
 	}
 
@@ -73,6 +73,21 @@ func compareEnums(specEnums []*matter.Enum, zapEnums []*matter.Enum) (diffs []Di
 		}
 	}
 	for _, f := range specEnumMap {
+		clusters, ok := spec.ClusterRefs[f]
+		if ok {
+			var externalReference bool
+			for c := range clusters {
+				slog.Info("checking enum reference", "name", f.Name, "clusterName", c.Name)
+				if c == specCluster {
+					externalReference = true
+					break
+				}
+			}
+			if externalReference {
+				slog.Warn("Enum referred by different spec", "name", f.Name)
+				continue
+			}
+		}
 		diffs = append(diffs, newMissingDiff(f.Name, types.EntityTypeEnum, SourceZAP))
 	}
 	for _, f := range zapEnumMap {

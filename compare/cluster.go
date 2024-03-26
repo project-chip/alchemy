@@ -17,7 +17,7 @@ type ClusterDifferences struct {
 	Commands   []Diff `json:"commands,omitempty"`
 }
 
-func compareClusters(specCluster *matter.Cluster, zapCluster *matter.Cluster) (*ClusterDifferences, error) {
+func compareClusters(spec *matter.Spec, specCluster *matter.Cluster, zapCluster *matter.Cluster) (*ClusterDifferences, error) {
 
 	var err error
 	cd := &ClusterDifferences{IdentifiedDiff: IdentifiedDiff{ID: specCluster.ID, Name: specCluster.Name, Entity: types.EntityTypeCluster}}
@@ -28,7 +28,7 @@ func compareClusters(specCluster *matter.Cluster, zapCluster *matter.Cluster) (*
 	cd.Features = compareFeatures(specCluster.Features, zapCluster.Features)
 	cd.Attributes, err = compareFields(types.EntityTypeAttribute, specCluster.Attributes, zapCluster.Attributes)
 	cd.Bitmaps = compareBitmaps(specCluster.Bitmaps, zapCluster.Bitmaps)
-	cd.Enums = compareEnums(specCluster.Enums, zapCluster.Enums)
+	cd.Enums = compareEnums(spec, specCluster, zapCluster.Enums)
 	cd.Structs = compareStructs(specCluster.Structs, zapCluster.Structs)
 	cd.Commands = compareCommands(specCluster.Commands, zapCluster.Commands)
 	cd.Events = compareEvents(specCluster.Events, zapCluster.Events)
