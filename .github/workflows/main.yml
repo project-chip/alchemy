@@ -34,7 +34,7 @@ jobs:
           goarch: ${{ matrix.goarch }}
           project_path: "."
           binary_name: "alchemy"
-          ldflags: "-s -w"
+          ldflags: "-s -w -X 'github.com/hasty/alchemy/config.Tag=${{ steps.tag.outputs.tag }}'"
           extra_files: LICENSE README.md
           asset_name: "alchemy-${{ steps.tag.outputs.tag }}-${{ matrix.goos }}-${{ matrix.goarch }}"
   alchemy-db:
@@ -63,7 +63,7 @@ jobs:
           goarch: ${{ matrix.goarch }}
           project_path: "."
           binary_name: "alchemy-db"
-          ldflags: "-s -w"
+          ldflags: "-s -w -X 'github.com/hasty/alchemy/config.Tag=${{ steps.tag.outputs.tag }}'"
           build_flags: -tags ${{ matrix.tags }}
           extra_files: LICENSE README.md
           asset_name: "alchemy-db-${{ steps.tag.outputs.tag }}-${{ matrix.goos }}-${{ matrix.goarch }}"
