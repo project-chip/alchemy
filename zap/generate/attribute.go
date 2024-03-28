@@ -64,7 +64,10 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			continue
 		}
 		ae := etree.NewElement("attribute")
-		populateAttribute(ae, a, cluster, clusterPrefix, errata)
+		err = populateAttribute(ae, a, cluster, clusterPrefix, errata)
+		if err != nil {
+			return
+		}
 		xml.InsertElementByAttributeNumber(cle, ae, "code", a.ID, "globalAttribute", "server", "client", "domain")
 	}
 	return
