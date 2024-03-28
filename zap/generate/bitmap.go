@@ -51,7 +51,10 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, cluster 
 			ce.RemoveChild(eve)
 			continue
 		}
-		populateBitmap(configurator, eve, matchingBitmap, clusterIds, errata)
+		err = populateBitmap(configurator, eve, matchingBitmap, clusterIds, errata)
+		if err != nil {
+			return
+		}
 	}
 
 	for bm, clusterIds := range configurator.Bitmaps {
