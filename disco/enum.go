@@ -50,6 +50,10 @@ func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSecti
 	}
 
 	es.table.headerRow, es.table.columnMap, es.table.extraColumns, err = ascii.MapTableColumns(dp.doc, enumTable.rows)
+	if err != nil {
+		return fmt.Errorf("error reordering columns in enum table in section %s in %s: %w", es.section.Name, dp.doc.Path, err)
+
+	}
 	enumTable = es.table
 
 	err = b.reorderColumns(dp.doc, es.section, &enumTable, matter.TableTypeEnum)
