@@ -10,7 +10,7 @@ type ManufacturerLimit struct {
 	Value string
 }
 
-func (c *ManufacturerLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *ManufacturerLimit) ASCIIDocString(dataType *types.DataType) string {
 	return c.Value
 }
 

@@ -471,7 +471,7 @@ func TestSuite(t *testing.T) {
 		if max != ct.max {
 			t.Errorf("incorrect max value for \"%s\": expected %d, got %d", ct.constraint, ct.max, max)
 		}
-		as := c.AsciiDocString(ct.dataType)
+		as := c.ASCIIDocString(ct.dataType)
 		es := ct.constraint
 		if len(ct.asciiDoc) > 0 {
 			es = ct.asciiDoc

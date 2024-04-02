@@ -21,14 +21,14 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			slog.Warn("missing code attribute in cluster", slog.String("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name))
 			continue
 		}
-		attributeId := matter.ParseNumber(ce.Value)
-		if !attributeId.Valid() {
-			slog.Warn("invalid code attribute value in cluster", slog.String("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("id", attributeId.Text()))
+		attributeID := matter.ParseNumber(ce.Value)
+		if !attributeID.Valid() {
+			slog.Warn("invalid code attribute value in cluster", slog.String("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("id", attributeID.Text()))
 			continue
 		}
 		var attribute *matter.Field
 		for a := range attributes {
-			if !a.ID.Equals(attributeId) {
+			if !a.ID.Equals(attributeID) {
 				continue
 			}
 
@@ -40,7 +40,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			delete(attributes, a)
 		}
 		if attribute == nil {
-			slog.Warn("unrecognized code value in cluster", slog.String("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("code", attributeId.Text()))
+			slog.Warn("unrecognized code value in cluster", slog.String("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("code", attributeID.Text()))
 			cle.RemoveChild(ae)
 			continue
 		}

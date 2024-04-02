@@ -13,7 +13,7 @@ type ExpLimit struct {
 	Exp   int64
 }
 
-func (c *ExpLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *ExpLimit) ASCIIDocString(dataType *types.DataType) string {
 	return strconv.FormatInt(c.Value, 10) + "^" + strconv.FormatInt(c.Exp, 10) + "^"
 }
 

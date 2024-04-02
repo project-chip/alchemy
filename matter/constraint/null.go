@@ -9,12 +9,12 @@ import (
 type NullLimit struct {
 }
 
-func (c *NullLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *NullLimit) ASCIIDocString(dataType *types.DataType) string {
 	return "null"
 }
 
 func (c *NullLimit) DataModelString(dataType *types.DataType) string {
-	return c.AsciiDocString(dataType)
+	return c.ASCIIDocString(dataType)
 }
 
 func (c *NullLimit) Equal(o Limit) bool {

@@ -32,12 +32,12 @@ func (s *Section) toFeatures(d *Doc, entityMap map[types.WithAttributes][]matter
 		row := rows[i]
 		var bit, code, name, summary string
 		var conf conformance.Set
-		bit, err = readRowAsciiDocString(row, columnMap, matter.TableColumnBit)
+		bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnBit)
 		if err != nil {
 			return
 		}
 		if len(bit) == 0 {
-			bit, err = readRowAsciiDocString(row, columnMap, matter.TableColumnID)
+			bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnID)
 			if err != nil {
 				return
 			}
@@ -49,7 +49,7 @@ func (s *Section) toFeatures(d *Doc, entityMap map[types.WithAttributes][]matter
 		}
 		name = matter.StripTypeSuffixes(name)
 
-		code, err = readRowAsciiDocString(row, columnMap, matter.TableColumnCode)
+		code, err = readRowASCIIDocString(row, columnMap, matter.TableColumnCode)
 		if err != nil {
 			return
 		}

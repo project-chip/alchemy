@@ -10,12 +10,12 @@ type ReferenceLimit struct {
 	Value string
 }
 
-func (c *ReferenceLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *ReferenceLimit) ASCIIDocString(dataType *types.DataType) string {
 	return c.Value
 }
 
 func (c *ReferenceLimit) DataModelString(dataType *types.DataType) string {
-	return c.AsciiDocString(dataType)
+	return c.ASCIIDocString(dataType)
 }
 
 func (c *ReferenceLimit) Equal(o Limit) bool {

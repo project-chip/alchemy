@@ -49,17 +49,17 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[ty
 			return
 		}
 		var q string
-		q, err = readRowAsciiDocString(row, columnMap, matter.TableColumnQuality)
+		q, err = readRowASCIIDocString(row, columnMap, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
 		attr.Quality = matter.ParseQuality(q)
-		attr.Default, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDefault)
+		attr.Default, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDefault)
 		if err != nil {
 			return
 		}
 		var a string
-		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
+		a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}

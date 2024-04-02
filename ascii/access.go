@@ -138,7 +138,7 @@ func ParseAccess(vc string, entityType types.EntityType) (a matter.Access) {
 	return
 }
 
-func AccessToAsciiString(a matter.Access, entityType mattertypes.EntityType) string {
+func AccessToASCIIDocString(a matter.Access, entityType mattertypes.EntityType) string {
 	var out strings.Builder
 	switch entityType {
 	case mattertypes.EntityTypeCommand:

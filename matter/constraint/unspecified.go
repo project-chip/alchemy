@@ -9,7 +9,7 @@ import (
 type UnspecifiedLimit struct {
 }
 
-func (c *UnspecifiedLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *UnspecifiedLimit) ASCIIDocString(dataType *types.DataType) string {
 	return "-"
 }
 

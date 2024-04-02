@@ -24,7 +24,7 @@ func fixConformanceCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii
 
 		conf := conformance.ParseConformance(vc)
 
-		cs := conf.AsciiDocString()
+		cs := conf.ASCIIDocString()
 
 		if cs != vc {
 			err = setCellString(cell, cs)

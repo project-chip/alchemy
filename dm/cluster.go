@@ -61,11 +61,11 @@ func renderAppCluster(cxt context.Context, doc *ascii.Doc, clusters []*matter.Cl
 	}
 	ids := c.CreateElement("clusterIds")
 	for _, cid := range clusterIDs {
-		clusterId := ids.CreateElement("clusterId")
+		clusterID := ids.CreateElement("clusterId")
 		if cid.id.Valid() {
-			clusterId.CreateAttr("id", cid.id.HexString())
+			clusterID.CreateAttr("id", cid.id.HexString())
 		}
-		clusterId.CreateAttr("name", cid.name)
+		clusterID.CreateAttr("name", cid.name)
 	}
 	c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
 	class := c.CreateElement("classification")

@@ -97,7 +97,7 @@ func (s *Section) SetElements(elements []any) error {
 	return s.Base.SetElements(elements)
 }
 
-func (s *Section) GetAsciiSection() *types.Section {
+func (s *Section) GetASCIISection() *types.Section {
 	return s.Base
 }
 

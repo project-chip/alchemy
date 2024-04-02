@@ -14,13 +14,13 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 	deviceTypeRow.values[matter.TableColumnClass] = deviceType.Class
 	deviceTypeRow.values[matter.TableColumnScope] = deviceType.Scope
 
-	dti := &sectionInfo{id: h.nextId(deviceTypeTable), parent: parent, values: deviceTypeRow, children: make(map[string][]*sectionInfo)}
+	dti := &sectionInfo{id: h.nextID(deviceTypeTable), parent: parent, values: deviceTypeRow, children: make(map[string][]*sectionInfo)}
 
 	for _, r := range deviceType.Revisions {
 		revisionRow := newDBRow()
 		revisionRow.values[matter.TableColumnID] = r.Number
 		revisionRow.values[matter.TableColumnDescription] = r.Description
-		fci := &sectionInfo{id: h.nextId(deviceTypeRevisionTable), parent: dti, values: revisionRow}
+		fci := &sectionInfo{id: h.nextID(deviceTypeRevisionTable), parent: dti, values: revisionRow}
 		dti.children[deviceTypeRevisionTable] = append(dti.children[deviceTypeRevisionTable], fci)
 
 	}
@@ -28,7 +28,7 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 		revisionRow := newDBRow()
 		revisionRow.values[matter.TableColumnFeature] = c.Feature
 		revisionRow.values[matter.TableColumnDescription] = c.Description
-		fci := &sectionInfo{id: h.nextId(deviceTypeConditionTable), parent: dti, values: revisionRow}
+		fci := &sectionInfo{id: h.nextID(deviceTypeConditionTable), parent: dti, values: revisionRow}
 		dti.children[deviceTypeConditionTable] = append(dti.children[deviceTypeConditionTable], fci)
 
 	}
@@ -39,7 +39,7 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 		row.values[matter.TableColumnName] = c.ClusterName
 		row.values[matter.TableColumnQuality] = c.Quality.String()
 		if c.Conformance != nil {
-			row.values[matter.TableColumnConformance] = c.Conformance.AsciiDocString()
+			row.values[matter.TableColumnConformance] = c.Conformance.ASCIIDocString()
 		}
 		switch c.Interface {
 		case matter.InterfaceClient:
@@ -50,7 +50,7 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 			row.values[matter.TableColumnDirection] = "unknown"
 
 		}
-		fci := &sectionInfo{id: h.nextId(deviceTypeClusterRequirementTable), parent: dti, values: row}
+		fci := &sectionInfo{id: h.nextID(deviceTypeClusterRequirementTable), parent: dti, values: row}
 		dti.children[deviceTypeClusterRequirementTable] = append(dti.children[deviceTypeClusterRequirementTable], fci)
 
 	}

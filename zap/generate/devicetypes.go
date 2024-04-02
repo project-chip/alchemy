@@ -45,45 +45,45 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		}
 	}
 
-	deviceTypesXmlPath := filepath.Join(p.sdkRoot, "/src/app/zap-templates/zcl/data-model/chip/matter-devices.xml")
+	deviceTypesXMLPath := filepath.Join(p.sdkRoot, "/src/app/zap-templates/zcl/data-model/chip/matter-devices.xml")
 
-	var deviceTypesXml []byte
-	deviceTypesXml, err = os.ReadFile(deviceTypesXmlPath)
+	var deviceTypesXML []byte
+	deviceTypesXML, err = os.ReadFile(deviceTypesXMLPath)
 	if err != nil {
 		return
 	}
 
 	xml := etree.NewDocument()
-	err = xml.ReadFromBytes(deviceTypesXml)
+	err = xml.ReadFromBytes(deviceTypesXML)
 	if err != nil {
 		return
 	}
 
 	configurator := xml.SelectElement("configurator")
 	if configurator == nil {
-		err = fmt.Errorf("missing configurator element in %s", deviceTypesXmlPath)
+		err = fmt.Errorf("missing configurator element in %s", deviceTypesXMLPath)
 		return
 	}
 
 	deviceTypeElements := configurator.SelectElements("deviceType")
 	for _, deviceTypeElement := range deviceTypeElements {
-		deviceIdElement := deviceTypeElement.SelectElement("deviceId")
-		if deviceIdElement == nil {
+		deviceIDElement := deviceTypeElement.SelectElement("deviceId")
+		if deviceIDElement == nil {
 			slog.Warn("missing deviceId element")
 			continue
 		}
-		deviceTypeIdText := deviceIdElement.Text()
-		deviceTypeId := matter.ParseNumber(deviceTypeIdText)
-		if !deviceTypeId.Valid() {
-			slog.Warn("invalid deviceId", "text", deviceTypeId.Text())
+		deviceTypeIDText := deviceIDElement.Text()
+		deviceTypeID := matter.ParseNumber(deviceTypeIDText)
+		if !deviceTypeID.Valid() {
+			slog.Warn("invalid deviceId", "text", deviceTypeID.Text())
 			continue
 		}
-		deviceType, ok := deviceTypes[deviceTypeId.Value()]
+		deviceType, ok := deviceTypes[deviceTypeID.Value()]
 		if !ok {
 			continue
 		}
 		applyDeviceTypeToElement(p.spec, deviceType, deviceTypeElement)
-		delete(deviceTypes, deviceTypeId.Value())
+		delete(deviceTypes, deviceTypeID.Value())
 	}
 
 	for _, dt := range deviceTypes {
@@ -98,7 +98,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	if err != nil {
 		return
 	}
-	outputs = append(outputs, pipeline.NewData[[]byte](deviceTypesXmlPath, out))
+	outputs = append(outputs, pipeline.NewData[[]byte](deviceTypesXMLPath, out))
 	return
 }
 

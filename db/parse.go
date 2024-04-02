@@ -59,7 +59,7 @@ func (h *Host) readTableSection(cxt context.Context, doc *ascii.Doc, parent *sec
 		parent.children = make(map[string][]*sectionInfo, len(rows))
 	}
 	for _, r := range rows {
-		ci := &sectionInfo{id: h.nextId(name), parent: parent, values: r}
+		ci := &sectionInfo{id: h.nextID(name), parent: parent, values: r}
 		parent.children[name] = append(parent.children[name], ci)
 	}
 	return nil

@@ -348,14 +348,14 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 		newAttr := make(types.Attributes)
-		var newId string
+		var newID string
 		if id, ok := table.Attributes.GetAsString(types.AttrID); ok {
 			// Reuse the table's ID if it has one, so existing links get updated
-			newId = id
-			newAttr[types.AttrID] = newId
+			newID = id
+			newAttr[types.AttrID] = newID
 		} else {
-			newId = "ref_" + dt.ref + suffix
-			newAttr[types.AttrID] = newId + ", " + dt.name + suffix
+			newID = "ref_" + dt.ref + suffix
+			newAttr[types.AttrID] = newID + ", " + dt.name + suffix
 		}
 
 		dataTypeSection.AddAttributes(newAttr)
@@ -381,7 +381,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		table.Attributes.Unset(types.AttrID)
 		table.Attributes.Unset(types.AttrTitle)
 
-		icr, _ := types.NewInternalCrossReference(newId, "")
+		icr, _ := types.NewInternalCrossReference(newID, "")
 		err = setCellValue(dt.typeCell, []any{icr})
 		if err != nil {
 			return
@@ -435,17 +435,17 @@ func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
 				return fmt.Errorf("duplicate reference: %s in %T with invalid parent", dataTypeNames[i], parents[i])
 			}
 			parentSections[i] = parentSection
-			refParentId := strings.TrimSpace(matter.StripReferenceSuffixes(ascii.ReferenceName(parentSection.Base)))
-			dataTypeNames[i] = refParentId + dataTypeNames[i]
-			dataTypeRefs[i] = refParentId + dataTypeNames[i]
+			refParentID := strings.TrimSpace(matter.StripReferenceSuffixes(ascii.ReferenceName(parentSection.Base)))
+			dataTypeNames[i] = refParentID + dataTypeNames[i]
+			dataTypeRefs[i] = refParentID + dataTypeNames[i]
 		}
 		ids := make(map[string]struct{})
 		var duplicateIds bool
-		for _, refId := range dataTypeRefs {
-			if _, ok := ids[refId]; ok {
+		for _, refID := range dataTypeRefs {
+			if _, ok := ids[refID]; ok {
 				duplicateIds = true
 			}
-			ids[refId] = struct{}{}
+			ids[refID] = struct{}{}
 		}
 		if duplicateIds {
 			for i, info := range infos {

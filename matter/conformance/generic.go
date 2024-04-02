@@ -12,8 +12,8 @@ func (dc *Generic) RawText() string {
 	return dc.raw
 }
 
-func (dc *Generic) AsciiDocString() string {
-	return dc.raw
+func (g *Generic) ASCIIDocString() string {
+	return g.raw
 }
 
 func (dc *Generic) Description() string {

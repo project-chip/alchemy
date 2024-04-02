@@ -17,11 +17,11 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 		row.values[matter.TableColumnID] = e.ID.HexString()
 		row.values[matter.TableColumnName] = e.Name
 		row.values[matter.TableColumnPriority] = e.Priority
-		row.values[matter.TableColumnAccess] = ascii.AccessToAsciiString(e.Access, types.EntityTypeEvent)
+		row.values[matter.TableColumnAccess] = ascii.AccessToASCIIDocString(e.Access, types.EntityTypeEvent)
 		if e.Conformance != nil {
-			row.values[matter.TableColumnConformance] = e.Conformance.AsciiDocString()
+			row.values[matter.TableColumnConformance] = e.Conformance.ASCIIDocString()
 		}
-		ei := &sectionInfo{id: h.nextId(eventTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
+		ei := &sectionInfo{id: h.nextID(eventTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
 		parent.children[eventTable] = append(parent.children[eventTable], ei)
 		for _, ef := range e.Fields {
 			h.readField(ef, ei, eventFieldTable, types.EntityTypeEvent)

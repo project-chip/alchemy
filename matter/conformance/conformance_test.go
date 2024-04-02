@@ -12,14 +12,14 @@ func TestOptional(t *testing.T) {
 
 		t.Errorf("failed parsing: %v", err)
 	}
-	t.Logf("conformance: %s", conformance.AsciiDocString())
+	t.Logf("conformance: %s", conformance.ASCIIDocString())
 	t.Logf("description: %s", conformance.Description())
 }
 
 type conformanceTestSuite struct {
 	Conformance        string
 	InvalidConformance bool
-	AsciiDocString     string
+	ASCIIDocString     string
 
 	Tests []conformanceTest
 }
@@ -45,13 +45,13 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 			return
 		}
 		if result != test.Expected {
-			t.Errorf("failed checking conformance %s (parsed %s) with %v: expected %v, got %v", cts.Conformance, conformance.AsciiDocString(), test.Context, test.Expected, result)
+			t.Errorf("failed checking conformance %s (parsed %s) with %v: expected %v, got %v", cts.Conformance, conformance.ASCIIDocString(), test.Context, test.Expected, result)
 		}
 	}
-	if len(cts.AsciiDocString) > 0 {
-		ads := conformance.AsciiDocString()
-		if ads != cts.AsciiDocString {
-			t.Errorf("unexpected Asciidoc string for conformance \"%s\"; expected \"%s\", got \"%s\"", cts.Conformance, cts.AsciiDocString, ads)
+	if len(cts.ASCIIDocString) > 0 {
+		ads := conformance.ASCIIDocString()
+		if ads != cts.ASCIIDocString {
+			t.Errorf("unexpected Asciidoc string for conformance \"%s\"; expected \"%s\", got \"%s\"", cts.Conformance, cts.ASCIIDocString, ads)
 		}
 	}
 }
@@ -253,7 +253,7 @@ var otherwiseTests = []conformanceTestSuite{
 	},
 	{
 		Conformance:    "<<ref_Ranges>>",
-		AsciiDocString: "<<ref_Ranges>>",
+		ASCIIDocString: "<<ref_Ranges>>",
 		Tests: []conformanceTest{
 			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
 			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateDisallowed},
@@ -263,7 +263,7 @@ var otherwiseTests = []conformanceTestSuite{
 	},
 	{
 		Conformance:    "<<ref_Ranges, Ranges>>",
-		AsciiDocString: "<<ref_Ranges, Ranges>>",
+		ASCIIDocString: "<<ref_Ranges, Ranges>>",
 		Tests: []conformanceTest{
 			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateDisallowed},
 			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateDisallowed},

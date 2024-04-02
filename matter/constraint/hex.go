@@ -11,7 +11,7 @@ type HexLimit struct {
 	Value uint64
 }
 
-func (c *HexLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *HexLimit) ASCIIDocString(dataType *types.DataType) string {
 	val := c.Value
 	if dataType != nil {
 		switch dataType.Size() {

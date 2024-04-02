@@ -13,18 +13,18 @@ func (c *Optional) Type() Type {
 	return TypeOptional
 }
 
-func (cc *Optional) AsciiDocString() string {
+func (o *Optional) ASCIIDocString() string {
 	var s strings.Builder
-	if cc.Expression != nil {
+	if o.Expression != nil {
 		s.WriteString("[")
-		s.WriteString(trimUnnecessaryParens(cc.Expression.AsciiDocString()))
+		s.WriteString(trimUnnecessaryParens(o.Expression.ASCIIDocString()))
 		s.WriteString("]")
 	} else {
 		s.WriteString("O")
 	}
-	if cc.Choice != nil {
+	if o.Choice != nil {
 		s.WriteString(".")
-		s.WriteString(cc.Choice.AsciiDocString())
+		s.WriteString(o.Choice.ASCIIDocString())
 	}
 	return s.String()
 }

@@ -10,7 +10,7 @@ import (
 )
 
 func (h *Host) indexDoc(ctx context.Context, doc *ascii.Doc, raw bool) (*sectionInfo, error) {
-	ds := &sectionInfo{id: h.nextId(documentTable), values: &dbRow{}, children: make(map[string][]*sectionInfo)}
+	ds := &sectionInfo{id: h.nextID(documentTable), values: &dbRow{}, children: make(map[string][]*sectionInfo)}
 	dt, _ := doc.DocType()
 	dts := matter.DocTypeNames[dt]
 	ds.values.values = map[matter.TableColumn]any{matter.TableColumnName: filepath.Base(doc.Path), matter.TableColumnType: dts}

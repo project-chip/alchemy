@@ -41,7 +41,7 @@ func renderConformance(cs conformance.Set, b *strings.Builder, doc *ascii.Doc, c
 				b.WriteString("O")
 				if c.Choice != nil {
 					b.WriteRune('.')
-					b.WriteString(c.Choice.AsciiDocString())
+					b.WriteString(c.Choice.ASCIIDocString())
 				}
 				continue
 			}
@@ -50,7 +50,7 @@ func renderConformance(cs conformance.Set, b *strings.Builder, doc *ascii.Doc, c
 			b.WriteRune(']')
 			if c.Choice != nil {
 				b.WriteRune('.')
-				b.WriteString(c.Choice.AsciiDocString())
+				b.WriteString(c.Choice.ASCIIDocString())
 			}
 		default:
 			b.WriteString(fmt.Sprintf("unknown conformance: %T", c))

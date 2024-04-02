@@ -13,13 +13,13 @@ func (cs Set) Type() Type {
 	return ConstraintTypeSet
 }
 
-func (cs ConstraintSet) AsciiDocString(dataType *types.DataType) string {
+func (cs Set) ASCIIDocString(dataType *types.DataType) string {
 	var b strings.Builder
 	for _, con := range cs {
 		if b.Len() > 0 {
 			b.WriteString(", ")
 		}
-		b.WriteString(con.AsciiDocString(dataType))
+		b.WriteString(con.ASCIIDocString(dataType))
 	}
 	return b.String()
 }

@@ -17,7 +17,7 @@ var Command = &cobra.Command{
 	Short: "dump the parse tree of Matter documents",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-		asciiSettings := common.AsciiDocAttributes(cmd)
+		asciiSettings := common.ASCIIDocAttributes(cmd)
 		asciiOut, _ := cmd.Flags().GetBool("ascii")
 		jsonOut, _ := cmd.Flags().GetBool("json")
 

@@ -18,16 +18,16 @@ func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *z
 			slog.Warn("missing code element in cluster", slog.String("path", configurator.Doc.Path))
 			continue
 		}
-		clusterId := matter.ParseNumber(code)
-		if !clusterId.Valid() {
-			slog.Warn("invalid code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterId.Text()))
+		clusterID := matter.ParseNumber(code)
+		if !clusterID.Valid() {
+			slog.Warn("invalid code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
 			continue
 		}
 
 		var cluster *matter.Cluster
 		var skip bool
 		for c, handled := range configurator.Clusters {
-			if c.ID.Equals(clusterId) {
+			if c.ID.Equals(clusterID) {
 				cluster = c
 				skip = handled
 				configurator.Clusters[c] = true
@@ -40,7 +40,7 @@ func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *z
 
 		if cluster == nil {
 			// We don't have this cluster in the spec; leave it here for now
-			slog.Warn("unknown code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterId.Text()))
+			slog.Warn("unknown code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
 			continue
 		}
 		err = populateCluster(configurator, cle, cluster, errata)

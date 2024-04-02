@@ -133,7 +133,7 @@ func renderAttributesTest(cluster *matter.Cluster, b *strings.Builder) {
 					case *constraint.AllConstraint:
 					case *constraint.ExactConstraint:
 					case *constraint.RangeConstraint:
-						valrange = fmt.Sprintf(" {valrange} %s", c.AsciiDocString(a.Type))
+						valrange = fmt.Sprintf(" {valrange} %s", c.ASCIIDocString(a.Type))
 					}
 				}
 			}

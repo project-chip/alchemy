@@ -75,19 +75,19 @@ func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Name, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDeviceName)
+		c.Name, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDeviceName)
 		if err != nil {
 			return nil, err
 		}
-		c.Superset, err = readRowAsciiDocString(row, columnMap, matter.TableColumnSuperset)
+		c.Superset, err = readRowASCIIDocString(row, columnMap, matter.TableColumnSuperset)
 		if err != nil {
 			return nil, err
 		}
-		c.Class, err = readRowAsciiDocString(row, columnMap, matter.TableColumnClass)
+		c.Class, err = readRowASCIIDocString(row, columnMap, matter.TableColumnClass)
 		if err != nil {
 			return nil, err
 		}
-		c.Scope, err = readRowAsciiDocString(row, columnMap, matter.TableColumnScope)
+		c.Scope, err = readRowASCIIDocString(row, columnMap, matter.TableColumnScope)
 		if err != nil {
 			return nil, err
 		}

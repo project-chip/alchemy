@@ -3,8 +3,8 @@ package dump
 import "github.com/bytesparadise/libasciidoc/pkg/configuration"
 
 type Options struct {
-	Ascii bool
-	Json  bool
+	ASCII bool
+	JSON  bool
 
-	AsciiSettings []configuration.Setting
+	ASCIISettings []configuration.Setting
 }

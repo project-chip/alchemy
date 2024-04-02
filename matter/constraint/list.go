@@ -16,8 +16,8 @@ func (c *ListConstraint) Type() Type {
 	return ConstraintTypeList
 }
 
-func (c *ListConstraint) AsciiDocString(dataType *types.DataType) string {
-	return fmt.Sprintf("%s[%s]", c.Constraint.AsciiDocString(dataType), c.EntryConstraint.AsciiDocString(dataType))
+func (c *ListConstraint) ASCIIDocString(dataType *types.DataType) string {
+	return fmt.Sprintf("%s[%s]", c.Constraint.ASCIIDocString(dataType), c.EntryConstraint.ASCIIDocString(dataType))
 }
 
 func (c *ListConstraint) Equal(o Constraint) bool {

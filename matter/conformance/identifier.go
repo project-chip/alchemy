@@ -10,7 +10,7 @@ type IdentifierExpression struct {
 	Not bool   `json:"not,omitempty"`
 }
 
-func (ie *IdentifierExpression) AsciiDocString() string {
+func (ie *IdentifierExpression) ASCIIDocString() string {
 	if ie.Not {
 		return fmt.Sprintf("!%s", ie.ID)
 	}

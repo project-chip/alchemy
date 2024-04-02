@@ -14,8 +14,8 @@ func (c *ExactConstraint) Type() Type {
 	return ConstraintTypeExact
 }
 
-func (c *ExactConstraint) AsciiDocString(dataType *types.DataType) string {
-	return c.Value.AsciiDocString(dataType)
+func (c *ExactConstraint) ASCIIDocString(dataType *types.DataType) string {
+	return c.Value.ASCIIDocString(dataType)
 }
 
 func (c *ExactConstraint) Equal(o Constraint) bool {
