@@ -8,7 +8,7 @@ import (
 )
 
 type BooleanLimit struct {
-	Value bool
+	Value bool `json:"value"`
 }
 
 func (c *BooleanLimit) ASCIIDocString(dataType *types.DataType) string {

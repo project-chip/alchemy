@@ -48,3 +48,16 @@ func (c *ExactConstraint) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(js)
 }
+
+func (c *ExactConstraint) UnmarshalJSON(data []byte) (err error) {
+	var js struct {
+		Value json.RawMessage `json:"value"`
+	}
+	err = json.Unmarshal(data, &js)
+	if err != nil {
+		return
+	}
+
+	c.Value, err = UnmarshalLimit(js.Value)
+	return
+}

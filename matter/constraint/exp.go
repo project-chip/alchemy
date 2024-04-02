@@ -9,8 +9,8 @@ import (
 )
 
 type ExpLimit struct {
-	Value int64
-	Exp   int64
+	Value int64 `json:"value"`
+	Exp   int64 `json:"exp"`
 }
 
 func (c *ExpLimit) ASCIIDocString(dataType *types.DataType) string {

@@ -7,7 +7,7 @@ import (
 )
 
 type ManufacturerLimit struct {
-	Value string
+	Value string `json:"value,omitempty"`
 }
 
 func (c *ManufacturerLimit) ASCIIDocString(dataType *types.DataType) string {
@@ -43,8 +43,10 @@ func (c *ManufacturerLimit) Clone() Limit {
 
 func (c *ManufacturerLimit) MarshalJSON() ([]byte, error) {
 	js := map[string]any{
-		"type":  "manufacturerDefined",
-		"value": c.Value,
+		"type": "manufacturerDefined",
+	}
+	if len(c.Value) > 0 {
+		js["value"] = c.Value
 	}
 	return json.Marshal(js)
 }

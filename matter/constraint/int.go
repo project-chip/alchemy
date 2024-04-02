@@ -8,7 +8,7 @@ import (
 )
 
 type IntLimit struct {
-	Value int64
+	Value int64 `json:"value"`
 }
 
 func (c *IntLimit) ASCIIDocString(dataType *types.DataType) string {

@@ -49,3 +49,16 @@ func (c *MaxConstraint) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(js)
 }
+
+func (c *MaxConstraint) UnmarshalJSON(data []byte) (err error) {
+	var js struct {
+		Max json.RawMessage `json:"max"`
+	}
+	err = json.Unmarshal(data, &js)
+	if err != nil {
+		return
+	}
+
+	c.Maximum, err = UnmarshalLimit(js.Max)
+	return
+}
