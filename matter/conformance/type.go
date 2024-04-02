@@ -31,8 +31,8 @@ var TypeNames = map[Type]string{
 	TypeSet:         "set",
 }
 
-func (cs Type) String() string {
-	return TypeNames[cs]
+func (ct Type) String() string {
+	return TypeNames[ct]
 }
 
 var typeNameMap map[string]Type
@@ -44,17 +44,17 @@ func init() {
 	}
 }
 
-func (p Type) MarshalJSON() ([]byte, error) {
-	return json.Marshal(TypeNames[p])
+func (ct Type) MarshalJSON() ([]byte, error) {
+	return json.Marshal(TypeNames[ct])
 }
 
-func (p *Type) UnmarshalJSON(data []byte) error {
+func (ct *Type) UnmarshalJSON(data []byte) error {
 	var t string
 	if err := json.Unmarshal(data, &t); err != nil {
 		return fmt.Errorf("error parsing conformance type %s: %w", string(data), err)
 	}
 	var ok bool
-	*p, ok = typeNameMap[t]
+	*ct, ok = typeNameMap[t]
 	if !ok {
 		return fmt.Errorf("unknown conformance type: %s", t)
 	}

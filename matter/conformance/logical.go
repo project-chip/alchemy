@@ -197,14 +197,14 @@ func (le *LogicalExpression) Equal(e Expression) bool {
 	return true
 }
 
-func (fe *LogicalExpression) MarshalJSON() ([]byte, error) {
+func (le *LogicalExpression) MarshalJSON() ([]byte, error) {
 	js := map[string]any{
 		"type":    "logical",
-		"operand": fe.Operand,
-		"left":    fe.Left,
-		"right":   fe.Right,
+		"operand": le.Operand,
+		"left":    le.Left,
+		"right":   le.Right,
 	}
-	if fe.Not {
+	if le.Not {
 		js["not"] = true
 	}
 	return json.Marshal(js)

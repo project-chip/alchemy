@@ -62,97 +62,97 @@ func ParseFormattedNumber(s string) (*Number, types.NumberFormat) {
 	}, types.NumberFormatAuto
 }
 
-func (t Number) MarshalJSON() ([]byte, error) {
+func (n Number) MarshalJSON() ([]byte, error) {
 	var val strings.Builder
 	val.WriteRune('"')
-	switch t.format {
+	switch n.format {
 	case types.NumberFormatHex:
-		val.WriteString(t.HexString())
+		val.WriteString(n.HexString())
 	default:
-		val.WriteString(t.IntString())
+		val.WriteString(n.IntString())
 	}
 	val.WriteRune('"')
 	return []byte(val.String()), nil
 }
 
-func (t *Number) UnmarshalJSON(data []byte) error {
+func (n *Number) UnmarshalJSON(data []byte) error {
 	s := string(data)
 	if s == "null" || s == `""` {
 		return nil
 	}
-	n, _ := ParseFormattedNumber(s)
-	*t = *n
+	fn, _ := ParseFormattedNumber(s)
+	*n = *fn
 	return nil
 }
 
-func (id *Number) Equals(oid *Number) bool {
-	if id.value >= 0 && oid.value >= 0 {
-		return id.value == oid.value
+func (n *Number) Equals(oid *Number) bool {
+	if n.value >= 0 && oid.value >= 0 {
+		return n.value == oid.value
 	}
 	return false
 }
 
-func (id *Number) Compare(oid *Number) int {
-	if id.value < oid.value {
+func (n *Number) Compare(oid *Number) int {
+	if n.value < oid.value {
 		return -1
-	} else if id.value > oid.value {
+	} else if n.value > oid.value {
 		return 1
 	}
 	return 0
 }
 
-func (id *Number) Clone() *Number {
-	return &Number{text: id.text, value: id.value, format: id.format}
+func (n *Number) Clone() *Number {
+	return &Number{text: n.text, value: n.value, format: n.format}
 }
 
-func (id *Number) Is(oid uint64) bool {
-	if id.value >= 0 {
-		return int64(oid) == id.value
+func (n *Number) Is(oid uint64) bool {
+	if n.value >= 0 {
+		return int64(oid) == n.value
 	}
 	return false
 }
 
-func (id *Number) Valid() bool {
-	return id != nil && id.value >= 0
+func (n *Number) Valid() bool {
+	return n != nil && n.value >= 0
 }
 
-func (id *Number) Value() uint64 {
-	return uint64(id.value)
+func (n *Number) Value() uint64 {
+	return uint64(n.value)
 }
 
-func (id *Number) Text() string {
-	if id != nil {
-		return id.text
+func (n *Number) Text() string {
+	if n != nil {
+		return n.text
 	}
 	return ""
 }
 
-func (id *Number) Format() types.NumberFormat {
-	if id != nil {
-		return id.format
+func (n *Number) Format() types.NumberFormat {
+	if n != nil {
+		return n.format
 	}
 	return types.NumberFormatUndefined
 }
 
-func (id *Number) IntString() string {
-	if !id.Valid() {
-		return id.Text()
+func (n *Number) IntString() string {
+	if !n.Valid() {
+		return n.Text()
 	}
-	return strconv.FormatInt(id.value, 10)
+	return strconv.FormatInt(n.value, 10)
 }
 
-func (id *Number) HexString() string {
-	if !id.Valid() {
-		return id.text
+func (n *Number) HexString() string {
+	if !n.Valid() {
+		return n.text
 	}
-	return fmt.Sprintf("0x%04X", id.value)
+	return fmt.Sprintf("0x%04X", n.value)
 }
 
-func (id *Number) ShortHexString() string {
-	if !id.Valid() {
-		return id.text
+func (n *Number) ShortHexString() string {
+	if !n.Valid() {
+		return n.text
 	}
-	return fmt.Sprintf("0x%02X", id.value)
+	return fmt.Sprintf("0x%02X", n.value)
 }
 
 var InvalidID = &Number{value: -1}

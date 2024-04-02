@@ -197,8 +197,8 @@ func (t Timing) String() string {
 	}
 }
 
-func (fs Timing) MarshalJSON() ([]byte, error) {
-	return json.Marshal(fs.String())
+func (t Timing) MarshalJSON() ([]byte, error) {
+	return json.Marshal(t.String())
 }
 
 func (t *Timing) UnmarshalJSON(data []byte) error {

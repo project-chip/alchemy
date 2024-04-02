@@ -7,7 +7,7 @@ import (
 
 type Set []Conformance
 
-func (c Set) Type() Type {
+func (cs Set) Type() Type {
 	return TypeSet
 }
 

@@ -22,7 +22,7 @@ type DeviceType struct {
 	ElementRequirements []*ElementRequirement `json:"elementRequirements,omitempty"`
 }
 
-func (c *DeviceType) EntityType() types.EntityType {
+func (dt *DeviceType) EntityType() types.EntityType {
 	return types.EntityTypeDeviceType
 }
 

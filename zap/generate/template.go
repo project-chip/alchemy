@@ -36,16 +36,16 @@ func NewTemplateGenerator(spec *matter.Spec, fileOptions files.Options, pipeline
 	}
 }
 
-func (p TemplateGenerator) Name() string {
+func (tg TemplateGenerator) Name() string {
 	return "Generating ZAP XML"
 }
 
-func (p TemplateGenerator) Type() pipeline.ProcessorType {
+func (tg TemplateGenerator) Type() pipeline.ProcessorType {
 	return pipeline.ProcessorTypeIndividual
 }
 
-func (p TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*ascii.Doc], err error) {
-	return p.render(cxt, input)
+func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*ascii.Doc], err error) {
+	return tg.render(cxt, input)
 }
 
 func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*ascii.Doc]) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*ascii.Doc], err error) {

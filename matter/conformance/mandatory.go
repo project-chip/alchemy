@@ -8,7 +8,7 @@ type Mandatory struct {
 	Expression Expression `json:"expression,omitempty"`
 }
 
-func (c *Mandatory) Type() Type {
+func (m *Mandatory) Type() Type {
 	return TypeMandatory
 }
 
@@ -61,10 +61,10 @@ func (m *Mandatory) Equal(c Conformance) bool {
 	return true
 }
 
-func (c *Mandatory) Clone() Conformance {
+func (m *Mandatory) Clone() Conformance {
 	nm := &Mandatory{}
-	if c.Expression != nil {
-		nm.Expression = c.Expression.Clone()
+	if m.Expression != nil {
+		nm.Expression = m.Expression.Clone()
 	}
 	return nm
 }

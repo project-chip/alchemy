@@ -9,7 +9,7 @@ type Optional struct {
 	Choice     *Choice    `json:"choice,omitempty"`
 }
 
-func (c *Optional) Type() Type {
+func (o *Optional) Type() Type {
 	return TypeOptional
 }
 
@@ -29,26 +29,26 @@ func (o *Optional) ASCIIDocString() string {
 	return s.String()
 }
 
-func (cc *Optional) Description() string {
+func (o *Optional) Description() string {
 	var s strings.Builder
 	s.WriteString("optional")
-	if cc.Expression != nil {
+	if o.Expression != nil {
 		s.WriteString(" if ")
-		s.WriteString(cc.Expression.Description())
+		s.WriteString(o.Expression.Description())
 	}
-	if cc.Choice != nil {
+	if o.Choice != nil {
 		s.WriteString(" (")
-		s.WriteString(cc.Choice.Description())
+		s.WriteString(o.Choice.Description())
 		s.WriteString(")")
 	}
 	return s.String()
 }
 
-func (oc *Optional) Eval(context Context) (State, error) {
-	if oc.Expression == nil {
+func (o *Optional) Eval(context Context) (State, error) {
+	if o.Expression == nil {
 		return StateOptional, nil
 	}
-	t, err := oc.Expression.Eval(context)
+	t, err := o.Expression.Eval(context)
 	if err != nil {
 		return StateUnknown, err
 	}
@@ -58,41 +58,41 @@ func (oc *Optional) Eval(context Context) (State, error) {
 	return StateUnknown, nil
 }
 
-func (oc *Optional) Equal(c Conformance) bool {
-	ooc, ok := c.(*Optional)
+func (o *Optional) Equal(c Conformance) bool {
+	oc, ok := c.(*Optional)
 	if !ok {
 		return false
 	}
-	if oc.Choice != nil {
-		if ooc.Choice == nil {
+	if o.Choice != nil {
+		if oc.Choice == nil {
 			return false
 		}
-		if !oc.Choice.Equal(ooc.Choice) {
+		if !o.Choice.Equal(oc.Choice) {
 			return false
 		}
-	} else if ooc.Choice != nil {
+	} else if oc.Choice != nil {
 		return false
 	}
-	if oc.Expression != nil {
-		if ooc.Expression == nil {
+	if o.Expression != nil {
+		if oc.Expression == nil {
 			return false
 		}
-		if !oc.Expression.Equal(ooc.Expression) {
+		if !o.Expression.Equal(oc.Expression) {
 			return false
 		}
-	} else if ooc.Expression != nil {
+	} else if oc.Expression != nil {
 		return false
 	}
 	return true
 }
 
-func (c *Optional) Clone() Conformance {
+func (o *Optional) Clone() Conformance {
 	nm := &Optional{}
-	if c.Expression != nil {
-		nm.Expression = c.Expression.Clone()
+	if o.Expression != nil {
+		nm.Expression = o.Expression.Clone()
 	}
-	if c.Choice != nil {
-		nm.Choice = c.Choice.Clone()
+	if o.Choice != nil {
+		nm.Choice = o.Choice.Clone()
 	}
 	return nm
 }

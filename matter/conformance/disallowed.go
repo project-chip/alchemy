@@ -4,31 +4,31 @@ type Disallowed struct {
 	raw string
 }
 
-func (c *Disallowed) Type() Type {
+func (d *Disallowed) Type() Type {
 	return TypeDisallowed
 }
 
-func (dc *Disallowed) RawText() string {
-	return dc.raw
+func (d *Disallowed) RawText() string {
+	return d.raw
 }
 
 func (d *Disallowed) ASCIIDocString() string {
 	return "X"
 }
 
-func (dc *Disallowed) Description() string {
+func (d *Disallowed) Description() string {
 	return "disallowed"
 }
 
-func (id *Disallowed) Eval(context Context) (State, error) {
+func (d *Disallowed) Eval(context Context) (State, error) {
 	return StateDisallowed, nil
 }
 
-func (oc *Disallowed) Equal(c Conformance) bool {
+func (d *Disallowed) Equal(c Conformance) bool {
 	_, ok := c.(*Disallowed)
 	return ok
 }
 
-func (c *Disallowed) Clone() Conformance {
-	return &Disallowed{raw: c.raw}
+func (d *Disallowed) Clone() Conformance {
+	return &Disallowed{raw: d.raw}
 }
