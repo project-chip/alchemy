@@ -33,7 +33,7 @@ func (c *HexLimit) DataModelString(dataType *types.DataType) string {
 	return e.DataModelString(dataType)
 }
 
-func (c *HexLimit) Equal(o ConstraintLimit) bool {
+func (c *HexLimit) Equal(o Limit) bool {
 	if oc, ok := o.(*HexLimit); ok {
 		return oc.Value == c.Value
 	}
@@ -60,7 +60,7 @@ func (c *HexLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.value()
 }
 
-func (c *HexLimit) Clone() ConstraintLimit {
+func (c *HexLimit) Clone() Limit {
 	return &HexLimit{Value: c.Value}
 }
 

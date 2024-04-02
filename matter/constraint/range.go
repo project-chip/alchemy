@@ -8,11 +8,11 @@ import (
 )
 
 type RangeConstraint struct {
-	Minimum ConstraintLimit `json:"min"`
-	Maximum ConstraintLimit `json:"max"`
+	Minimum Limit `json:"min"`
+	Maximum Limit `json:"max"`
 }
 
-func (c *RangeConstraint) Type() ConstraintType {
+func (c *RangeConstraint) Type() Type {
 	return ConstraintTypeRange
 }
 

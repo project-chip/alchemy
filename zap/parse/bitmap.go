@@ -20,7 +20,7 @@ func (sp *ZapParser) readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *mat
 		case "name":
 			bitmap.Name = a.Value
 		case "type":
-			bitmap.Type = types.NewDataType(zap.ZapToBaseDataType(a.Value), false)
+			bitmap.Type = types.NewDataType(zap.ToBaseDataType(a.Value), false)
 		case "apiMaturity":
 		default:
 			return nil, nil, fmt.Errorf("unexpected bitmap attribute: %s", a.Name.Local)

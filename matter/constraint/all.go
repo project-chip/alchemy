@@ -14,7 +14,7 @@ func NewAllConstraint(value string) *AllConstraint {
 	return &AllConstraint{Value: value}
 }
 
-func (c *AllConstraint) Type() ConstraintType {
+func (c *AllConstraint) Type() Type {
 	return ConstraintTypeAll
 }
 

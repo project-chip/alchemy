@@ -38,7 +38,7 @@ func renderQuotedText(cxt *Context, qt *types.QuotedText) (err error) {
 		return
 	}
 	cxt.WriteString(wrapper)
-	err = RenderElements(cxt, "", qt.Elements)
+	err = Elements(cxt, "", qt.Elements)
 	cxt.WriteString(wrapper)
 	return
 }

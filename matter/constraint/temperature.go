@@ -20,7 +20,7 @@ func (c *TemperatureLimit) DataModelString(dataType *types.DataType) string {
 	return fmt.Sprintf("%d", c.limit(dataType).Int64)
 }
 
-func (c *TemperatureLimit) Equal(o ConstraintLimit) bool {
+func (c *TemperatureLimit) Equal(o Limit) bool {
 	if oc, ok := o.(*TemperatureLimit); ok {
 		return oc.Value == c.Value
 	}
@@ -58,7 +58,7 @@ func (c *TemperatureLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *TemperatureLimit) Clone() ConstraintLimit {
+func (c *TemperatureLimit) Clone() Limit {
 	return &TemperatureLimit{Value: c.Value.Copy()}
 }
 

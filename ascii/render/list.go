@@ -58,7 +58,7 @@ func renderOrderedListElement(cxt *Context, el *types.OrderedListElement) (err e
 	if err != nil {
 		return
 	}
-	err = RenderElements(cxt, bullet+" ", el.Elements)
+	err = Elements(cxt, bullet+" ", el.Elements)
 	return
 }
 
@@ -99,7 +99,7 @@ func renderUnorderedListElement(cxt *Context, el *types.UnorderedListElement) (e
 	if err != nil {
 		return
 	}
-	err = RenderElements(cxt, bullet+" ", el.Elements)
+	err = Elements(cxt, bullet+" ", el.Elements)
 	return
 }
 
@@ -127,13 +127,13 @@ func renderLabeledListElement(cxt *Context, el *types.LabeledListElement) error 
 	if err != nil {
 		return err
 	}
-	err = RenderElements(cxt, "", el.Term)
+	err = Elements(cxt, "", el.Term)
 	if err != nil {
 		return err
 	}
 	cxt.WriteString(string(el.Style))
 	cxt.WriteRune(' ')
-	err = RenderElements(cxt, "", el.Elements)
+	err = Elements(cxt, "", el.Elements)
 	if err != nil {
 		return err
 	}
@@ -150,7 +150,7 @@ func renderListElements(cxt *Context, les *types.ListElements) (err error) {
 		case *types.ListContinuation:
 			cxt.WriteNewline()
 			cxt.WriteString("+\n")
-			err = RenderElements(cxt, "", []any{el.Element})
+			err = Elements(cxt, "", []any{el.Element})
 		case *types.LabeledListElement:
 			err = renderLabeledListElement(cxt, el)
 		default:

@@ -89,7 +89,7 @@ func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matte
 
 	ee.CreateAttr("name", bm.Name)
 	if bm.Type != nil {
-		ee.CreateAttr("type", zap.DataTypeToZap(bm.Type))
+		ee.CreateAttr("type", zap.DataTypeName(bm.Type))
 	} else {
 		ee.CreateAttr("type", "bitmap8")
 	}

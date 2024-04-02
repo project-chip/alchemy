@@ -18,7 +18,7 @@ func (c *ManufacturerLimit) DataModelString(dataType *types.DataType) string {
 	return c.Value
 }
 
-func (c *ManufacturerLimit) Equal(o ConstraintLimit) bool {
+func (c *ManufacturerLimit) Equal(o Limit) bool {
 	if oc, ok := o.(*ManufacturerLimit); ok {
 		return oc.Value == c.Value
 	}
@@ -37,7 +37,7 @@ func (c *ManufacturerLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (c *ManufacturerLimit) Clone() ConstraintLimit {
+func (c *ManufacturerLimit) Clone() Limit {
 	return &ManufacturerLimit{Value: c.Value}
 }
 

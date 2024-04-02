@@ -19,7 +19,7 @@ func (c *BooleanLimit) DataModelString(dataType *types.DataType) string {
 	return strconv.FormatBool(c.Value)
 }
 
-func (c *BooleanLimit) Equal(o ConstraintLimit) bool {
+func (c *BooleanLimit) Equal(o Limit) bool {
 	if oc, ok := o.(*BooleanLimit); ok {
 		return oc.Value == c.Value
 	}
@@ -46,7 +46,7 @@ func (c *BooleanLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *BooleanLimit) Clone() ConstraintLimit {
+func (c *BooleanLimit) Clone() Limit {
 	return &BooleanLimit{Value: c.Value}
 }
 

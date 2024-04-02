@@ -110,7 +110,7 @@ type clusterRequirements struct {
 }
 
 func applyDeviceTypeToElement(spec *matter.Spec, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
-	xml.SetOrCreateSimpleElement(dte, "name", zap.ZAPDeviceTypeName(deviceType))
+	xml.SetOrCreateSimpleElement(dte, "name", zap.DeviceTypeName(deviceType))
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP")
 	xml.SetOrCreateSimpleElement(dte, "typeName", fmt.Sprintf("Matter %s", deviceType.Name))
 	xml.SetOrCreateSimpleElement(dte, "profileId", "0x0103").CreateAttr("editable", "false")

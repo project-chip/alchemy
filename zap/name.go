@@ -16,7 +16,7 @@ func CleanName(name string) string {
 	return strcase.ToCamel(name)
 }
 
-func ZAPClusterName(path string, errata *Errata, entities []types.Entity) string {
+func ClusterName(path string, errata *Errata, entities []types.Entity) string {
 
 	if errata.TemplatePath != "" {
 		return errata.TemplatePath
@@ -38,7 +38,7 @@ func ZAPClusterName(path string, errata *Errata, entities []types.Entity) string
 	return strcase.ToKebab(name)
 }
 
-func ZAPDeviceTypeName(deviceType *matter.DeviceType) string {
+func DeviceTypeName(deviceType *matter.DeviceType) string {
 	name := strcase.ToKebab(deviceType.Name)
 	return "MA-" + name
 }
@@ -48,14 +48,14 @@ func getZapPath(sdkRoot string, name string) string {
 	return newPath
 }
 
-func ZAPClusterPath(sdkRoot string, path string, entities []types.Entity) string {
+func ClusterPath(sdkRoot string, path string, entities []types.Entity) string {
 	newFile := filepath.Base(path)
 	errata, ok := Erratas[newFile]
 	if !ok {
 		errata = DefaultErrata
 	}
 
-	newFile = ZAPClusterName(path, errata, entities)
+	newFile = ClusterName(path, errata, entities)
 	newFile = strcase.ToKebab(newFile)
 	return getZapPath(sdkRoot, newFile)
 }

@@ -20,7 +20,7 @@ func (c *PercentLimit) DataModelString(dataType *types.DataType) string {
 	return c.Value.String()
 }
 
-func (c *PercentLimit) Equal(o ConstraintLimit) bool {
+func (c *PercentLimit) Equal(o Limit) bool {
 	if oc, ok := o.(*PercentLimit); ok {
 		return oc.Value == c.Value && oc.Hundredths == c.Hundredths
 	}
@@ -56,7 +56,7 @@ func (c *PercentLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *PercentLimit) Clone() ConstraintLimit {
+func (c *PercentLimit) Clone() Limit {
 	return &PercentLimit{Value: c.Value.Copy(), Hundredths: c.Hundredths}
 }
 

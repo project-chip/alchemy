@@ -64,7 +64,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 				title = v
 			case []any:
 				renderContext := NewContext(cxt, cxt.Doc)
-				err = RenderElements(renderContext, "", v)
+				err = Elements(renderContext, "", v)
 				title = renderContext.String()
 			default:
 				err = fmt.Errorf("unknown title type: %T", v)
@@ -435,7 +435,7 @@ func renderAttributeDeclaration(cxt *Context, ad *types.AttributeDeclaration) (e
 			var previous any
 			err = renderParagraph(cxt, val, &previous)
 		case []any:
-			err = RenderElements(cxt, "", val)
+			err = Elements(cxt, "", val)
 		case nil:
 		default:
 			err = fmt.Errorf("unknown attribute declaration value type: %T", ad.Value)
@@ -459,7 +459,7 @@ func getAttributeStringValue(cxt *Context, val any) (string, error) {
 		return s.Content, nil
 	case []any:
 		renderContext := NewContext(cxt, cxt.Doc)
-		err := RenderElements(renderContext, "", s)
+		err := Elements(renderContext, "", s)
 		if err != nil {
 			return "", err
 		}

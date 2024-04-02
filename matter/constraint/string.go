@@ -19,7 +19,7 @@ func (c *StringLimit) DataModelString(dataType *types.DataType) string {
 	return fmt.Sprintf("\"%s\"", c.Value)
 }
 
-func (c *StringLimit) Equal(o ConstraintLimit) bool {
+func (c *StringLimit) Equal(o Limit) bool {
 	_, ok := o.(*StringLimit)
 	return ok
 }
@@ -36,7 +36,7 @@ func (c *StringLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *StringLimit) Clone() ConstraintLimit {
+func (c *StringLimit) Clone() Limit {
 	return &StringLimit{}
 }
 

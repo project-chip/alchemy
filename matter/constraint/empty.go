@@ -17,7 +17,7 @@ func (c *EmptyLimit) DataModelString(dataType *types.DataType) string {
 	return "empty"
 }
 
-func (c *EmptyLimit) Equal(o ConstraintLimit) bool {
+func (c *EmptyLimit) Equal(o Limit) bool {
 	_, ok := o.(*EmptyLimit)
 	return ok
 }
@@ -34,7 +34,7 @@ func (c *EmptyLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *EmptyLimit) Clone() ConstraintLimit {
+func (c *EmptyLimit) Clone() Limit {
 	return &EmptyLimit{}
 }
 

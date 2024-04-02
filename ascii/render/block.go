@@ -60,7 +60,7 @@ func renderBlock(cxt *Context, block *types.DelimitedBlock, delimiter string) (e
 	cxt.WriteNewline()
 	cxt.WriteString(delimiter)
 	cxt.WriteNewline()
-	err = RenderElements(cxt, "", block.Elements)
+	err = Elements(cxt, "", block.Elements)
 	cxt.WriteNewline()
 	cxt.WriteString(delimiter)
 	cxt.WriteNewline()

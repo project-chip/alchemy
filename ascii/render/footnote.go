@@ -18,7 +18,7 @@ func renderFootnoteReference(cxt *Context, fr *types.FootnoteReference) (err err
 		return fmt.Errorf("missing footnote ID %d", fr.ID)
 	}
 	cxt.WriteString("footnote:[")
-	err = RenderElements(cxt, "", fn.Elements)
+	err = Elements(cxt, "", fn.Elements)
 	cxt.WriteString("]")
 	return
 }

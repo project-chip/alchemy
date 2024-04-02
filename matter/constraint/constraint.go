@@ -18,11 +18,11 @@ func ParseString(constraint string) (Constraint, error) {
 	return c.(Constraint), nil
 }
 
-type ConstraintType uint8
+type Type uint8
 
 const (
-	ConstraintTypeUnknown ConstraintType = iota
-	ConstraintTypeAll                    // Special section type for everything that comes before any known sections
+	ConstraintTypeUnknown Type = iota
+	ConstraintTypeAll          // Special section type for everything that comes before any known sections
 	ConstraintTypeDescribed
 	ConstraintTypeExact
 	ConstraintTypeGeneric
@@ -33,9 +33,9 @@ const (
 	ConstraintTypeSet
 )
 
-var nameConstraintType map[string]ConstraintType
+var nameConstraintType map[string]Type
 
-var constraintTypeNames = map[ConstraintType]string{
+var constraintTypeNames = map[Type]string{
 	ConstraintTypeUnknown:   "unknown",
 	ConstraintTypeAll:       "all",
 	ConstraintTypeDescribed: "described",
@@ -49,13 +49,13 @@ var constraintTypeNames = map[ConstraintType]string{
 }
 
 func init() {
-	nameConstraintType = make(map[string]ConstraintType, len(constraintTypeNames))
+	nameConstraintType = make(map[string]Type, len(constraintTypeNames))
 	for i, q := range constraintTypeNames {
 		nameConstraintType[q] = i
 	}
 }
 
-func (ct ConstraintType) MarshalJSON() ([]byte, error) {
+func (ct Type) MarshalJSON() ([]byte, error) {
 	v, ok := constraintTypeNames[ct]
 	if !ok {
 		return nil, fmt.Errorf("unknown constraint type %d", ct)
@@ -63,7 +63,7 @@ func (ct ConstraintType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v)
 }
 
-func (c *ConstraintType) UnmarshalJSON(bytes []byte) error {
+func (ct *Type) UnmarshalJSON(bytes []byte) error {
 	var name string
 	err := json.Unmarshal(bytes, &name)
 	if err != nil {
@@ -73,13 +73,13 @@ func (c *ConstraintType) UnmarshalJSON(bytes []byte) error {
 	if !ok {
 		return fmt.Errorf("unknown constraint type %s", name)
 	}
-	*c = v
+	*ct = v
 	return nil
 }
 
 type Constraint interface {
-	Type() ConstraintType
-	AsciiDocString(dataType *types.DataType) string
+	Type() Type
+	ASCIIDocString(dataType *types.DataType) string
 	Equal(o Constraint) bool
 	Min(c Context) (min types.DataTypeExtreme)
 	Max(c Context) (max types.DataTypeExtreme)
@@ -87,30 +87,31 @@ type Constraint interface {
 	Clone() Constraint
 }
 
-type ConstraintLimit interface {
-	AsciiDocString(dataType *types.DataType) string
+type Limit interface {
+	ASCIIDocString(dataType *types.DataType) string
 	DataModelString(dataType *types.DataType) string
-	Equal(o ConstraintLimit) bool
+	Equal(o Limit) bool
 	Min(c Context) (min types.DataTypeExtreme)
 	Max(c Context) (max types.DataTypeExtreme)
 	Default(c Context) (max types.DataTypeExtreme)
-	Clone() ConstraintLimit
+	Clone() Limit
 }
 
 func AppendConstraint(c Constraint, n ...Constraint) Constraint {
 	if c == nil {
-		return ConstraintSet(n)
+		return Set(n)
 	}
 	switch c := c.(type) {
 	// If the only constraint is no constraint, just replace it with the one provided
 	case *AllConstraint:
-		return ConstraintSet(n)
+		return Set(n)
+	// If the only constraint is an empty generic constraint, just replace it with the one provided
 	case *GenericConstraint:
 		if c.Value == "" {
-			return ConstraintSet(n)
+			return Set(n)
 		}
-	case ConstraintSet:
+	case Set:
 		return append(c, n...)
 	}
-	return append(ConstraintSet([]Constraint{c}), n...)
+	return append(Set([]Constraint{c}), n...)
 }
