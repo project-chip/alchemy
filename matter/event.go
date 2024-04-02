@@ -64,10 +64,10 @@ func (es EventSet) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
-func (evs EventSet) ToEntities() []types.Entity {
-	es := make([]types.Entity, 0, len(evs))
-	for _, e := range evs {
-		es = append(es, e)
+func (es EventSet) ToEntities() []types.Entity {
+	evs := make([]types.Entity, 0, len(es))
+	for _, e := range es {
+		evs = append(evs, e)
 	}
-	return es
+	return evs
 }

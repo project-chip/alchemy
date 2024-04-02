@@ -11,8 +11,8 @@ type Features struct {
 	Bitmap
 }
 
-func (f *Features) Clone() *Features {
-	return &Features{Bitmap: *f.Bitmap.Clone()}
+func (fs *Features) Clone() *Features {
+	return &Features{Bitmap: *fs.Bitmap.Clone()}
 }
 
 func (fs *Features) Identifier(id string) (types.Entity, bool) {
@@ -45,15 +45,15 @@ func (f *Feature) Clone() Bit {
 	return NewFeature(f.bit, f.name, f.Code, f.summary, f.conformance)
 }
 
-func (c *Feature) MarshalJSON() ([]byte, error) {
+func (f *Feature) MarshalJSON() ([]byte, error) {
 	type Alias Feature
 	return json.Marshal(
 		&struct {
 			*Alias
 			Code string `json:"code"`
 		}{
-			Alias: (*Alias)(c),
-			Code:  c.Code,
+			Alias: (*Alias)(f),
+			Code:  f.Code,
 		},
 	)
 

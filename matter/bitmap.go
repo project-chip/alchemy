@@ -19,23 +19,23 @@ type Bitmap struct {
 	Bits        BitSet          `json:"bits,omitempty"`
 }
 
-func (c *Bitmap) EntityType() types.EntityType {
+func (bm *Bitmap) EntityType() types.EntityType {
 	return types.EntityTypeBitmap
 }
 
-func (c *Bitmap) BaseDataType() types.BaseDataType {
-	return c.Type.BaseType
+func (bm *Bitmap) BaseDataType() types.BaseDataType {
+	return bm.Type.BaseType
 }
 
-func (c *Bitmap) NullValue() uint64 {
-	return c.Type.NullValue()
+func (bm *Bitmap) NullValue() uint64 {
+	return bm.Type.NullValue()
 }
 
-func (c *Bitmap) Size() int {
-	if c.Type == nil {
+func (bm *Bitmap) Size() int {
+	if bm.Type == nil {
 		return 8
 	}
-	switch c.Type.BaseType {
+	switch bm.Type.BaseType {
 	case types.BaseDataTypeMap64:
 		return 64
 	case types.BaseDataTypeMap32:
@@ -145,7 +145,7 @@ func NewBitmapBit(bit string, name string, summary string, conformance conforman
 	return &BitmapBit{bit: bit, name: name, summary: summary, conformance: conformance}
 }
 
-func (c *BitmapBit) EntityType() types.EntityType {
+func (bmb *BitmapBit) EntityType() types.EntityType {
 	return types.EntityTypeBitmapValue
 }
 
@@ -165,49 +165,49 @@ func (bmb *BitmapBit) Conformance() conformance.Set {
 	return bmb.conformance
 }
 
-func (c *BitmapBit) Clone() Bit {
-	nb := &BitmapBit{bit: c.bit, name: c.name, summary: c.summary}
-	if len(c.conformance) > 0 {
-		nb.conformance = c.conformance.CloneSet()
+func (bmb *BitmapBit) Clone() Bit {
+	nb := &BitmapBit{bit: bmb.bit, name: bmb.name, summary: bmb.summary}
+	if len(bmb.conformance) > 0 {
+		nb.conformance = bmb.conformance.CloneSet()
 	}
 	return nb
 }
 
-func (bb *BitmapBit) Inherit(parent Bit) error {
-	if len(bb.summary) == 0 {
-		bb.summary = parent.Summary()
+func (bmb *BitmapBit) Inherit(parent Bit) error {
+	if len(bmb.summary) == 0 {
+		bmb.summary = parent.Summary()
 	}
-	if len(bb.Conformance()) == 0 {
-		bb.conformance = parent.Conformance().CloneSet()
+	if len(bmb.Conformance()) == 0 {
+		bmb.conformance = parent.Conformance().CloneSet()
 	}
 	return nil
 }
 
-func (c *BitmapBit) MarshalJSON() ([]byte, error) {
+func (bmb *BitmapBit) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
 		Bit         string          `json:"bit,omitempty"`
 		Name        string          `json:"name,omitempty"`
 		Summary     string          `json:"summary,omitempty"`
 		Conformance conformance.Set `json:"conformance,omitempty"`
 	}{
-		Bit:         c.bit,
-		Name:        c.name,
-		Summary:     c.summary,
-		Conformance: c.conformance,
+		Bit:         bmb.bit,
+		Name:        bmb.name,
+		Summary:     bmb.summary,
+		Conformance: bmb.conformance,
 	})
 }
 
 var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)(?:\.{2,}|\s*\-\s*)(?P<To>[0-9]+)$`)
 
-func (bv *BitmapBit) Bits() (from uint64, to uint64, err error) {
-	from, err = parse.HexOrDec(bv.bit)
+func (bmb *BitmapBit) Bits() (from uint64, to uint64, err error) {
+	from, err = parse.HexOrDec(bmb.bit)
 	if err == nil {
 		to = from
 		return
 	}
-	matches := bitRangePattern.FindStringSubmatch(bv.bit)
+	matches := bitRangePattern.FindStringSubmatch(bmb.bit)
 	if len(matches) < 3 {
-		err = fmt.Errorf("invalid bit mask range: \"%s\"", bv.bit)
+		err = fmt.Errorf("invalid bit mask range: \"%s\"", bmb.bit)
 		return
 	}
 	from, err = parse.HexOrDec(matches[1])
@@ -221,8 +221,8 @@ func (bv *BitmapBit) Bits() (from uint64, to uint64, err error) {
 	return
 }
 
-func (bv *BitmapBit) Mask() (uint64, error) {
-	from, to, err := bv.Bits()
+func (bmb *BitmapBit) Mask() (uint64, error) {
+	from, to, err := bmb.Bits()
 	if err != nil {
 		return 0, err
 	}
@@ -236,8 +236,8 @@ func (bv *BitmapBit) Mask() (uint64, error) {
 	return val, nil
 }
 
-func (bv *BitmapBit) GetConformance() conformance.Set {
-	return bv.conformance
+func (bmb *BitmapBit) GetConformance() conformance.Set {
+	return bmb.conformance
 }
 
 type BitSet []Bit

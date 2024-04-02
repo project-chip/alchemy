@@ -15,8 +15,8 @@ func (ll *LengthLimit) ASCIIDocString(dataType *types.DataType) string {
 	return fmt.Sprintf("len(%s)", ll.Value)
 }
 
-func (c *LengthLimit) DataModelString(dataType *types.DataType) string {
-	return c.Value
+func (ll *LengthLimit) DataModelString(dataType *types.DataType) string {
+	return ll.Value
 }
 
 func (ll *LengthLimit) Equal(o Limit) bool {
@@ -26,34 +26,34 @@ func (ll *LengthLimit) Equal(o Limit) bool {
 	return false
 }
 
-func (c *LengthLimit) Min(cc Context) (min types.DataTypeExtreme) {
-	rc := cc.ReferenceConstraint(c.Value)
+func (ll *LengthLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	rc := cc.ReferenceConstraint(ll.Value)
 	if rc == nil {
 		return
 	}
 	return rc.Min(cc)
 }
 
-func (c *LengthLimit) Max(cc Context) (max types.DataTypeExtreme) {
-	rc := cc.ReferenceConstraint(c.Value)
+func (ll *LengthLimit) Max(cc Context) (max types.DataTypeExtreme) {
+	rc := cc.ReferenceConstraint(ll.Value)
 	if rc == nil {
 		return
 	}
 	return rc.Max(cc)
 }
 
-func (c *LengthLimit) Default(cc Context) (def types.DataTypeExtreme) {
-	return cc.Default(c.Value)
+func (ll *LengthLimit) Default(cc Context) (def types.DataTypeExtreme) {
+	return cc.Default(ll.Value)
 }
 
 func (ll *LengthLimit) Clone() Limit {
 	return &LengthLimit{Value: ll.Value}
 }
 
-func (c *LengthLimit) MarshalJSON() ([]byte, error) {
+func (ll *LengthLimit) MarshalJSON() ([]byte, error) {
 	js := map[string]any{
 		"type":  "length",
-		"value": c.Value,
+		"value": ll.Value,
 	}
 	return json.Marshal(js)
 }

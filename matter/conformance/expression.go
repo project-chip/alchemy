@@ -44,8 +44,8 @@ var ExpressionTypeNames = map[ExpressionType]string{
 	ExpressionTypeSet:         "set",
 }
 
-func (cs ExpressionType) String() string {
-	return ExpressionTypeNames[cs]
+func (et ExpressionType) String() string {
+	return ExpressionTypeNames[et]
 }
 
 var expressionTypeNameMap map[string]ExpressionType
@@ -57,17 +57,17 @@ func init() {
 	}
 }
 
-func (p ExpressionType) MarshalJSON() ([]byte, error) {
-	return json.Marshal(ExpressionTypeNames[p])
+func (et ExpressionType) MarshalJSON() ([]byte, error) {
+	return json.Marshal(ExpressionTypeNames[et])
 }
 
-func (p *ExpressionType) UnmarshalJSON(data []byte) error {
+func (et *ExpressionType) UnmarshalJSON(data []byte) error {
 	var t string
 	if err := json.Unmarshal(data, &t); err != nil {
 		return fmt.Errorf("error parsing conformance expression type %s: %w", string(data), err)
 	}
 	var ok bool
-	*p, ok = expressionTypeNameMap[t]
+	*et, ok = expressionTypeNameMap[t]
 	if !ok {
 		return fmt.Errorf("unknown conformance expression type: %s", t)
 	}

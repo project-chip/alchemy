@@ -38,12 +38,12 @@ func (e *Enum) Clone() *Enum {
 	return ne
 }
 
-func (en *Enum) Inherit(parent *Enum) error {
+func (e *Enum) Inherit(parent *Enum) error {
 	mergedValues := make(EnumValueSet, 0, len(parent.Values))
 	for _, ev := range parent.Values {
 		mergedValues = append(mergedValues, ev.Clone())
 	}
-	for _, ev := range en.Values {
+	for _, ev := range e.Values {
 		var matching *EnumValue
 		for _, mev := range mergedValues {
 			if ev.Name == mev.Name {
@@ -62,16 +62,16 @@ func (en *Enum) Inherit(parent *Enum) error {
 			matching.Conformance = ev.Conformance.CloneSet()
 		}
 	}
-	if en.Type == nil {
-		en.Type = parent.Type
+	if e.Type == nil {
+		e.Type = parent.Type
 	}
-	if len(en.Description) == 0 {
-		en.Description = parent.Description
+	if len(e.Description) == 0 {
+		e.Description = parent.Description
 	}
 	slices.SortFunc(mergedValues, func(a, b *EnumValue) int {
 		return a.Value.Compare(b.Value)
 	})
-	en.Values = mergedValues
+	e.Values = mergedValues
 	return nil
 }
 

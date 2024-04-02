@@ -54,8 +54,8 @@ var (
 	}
 )
 
-func (s EntityType) MarshalJSON() ([]byte, error) {
-	return json.Marshal(entityTypeNames[s])
+func (et EntityType) MarshalJSON() ([]byte, error) {
+	return json.Marshal(entityTypeNames[et])
 }
 
 type EntityStore interface {

@@ -27,11 +27,11 @@ func (re *ReferenceExpression) ASCIIDocString() string {
 	return s.String()
 }
 
-func (ie *ReferenceExpression) Description() string {
-	if ie.Not {
-		return fmt.Sprintf("not %s", ie.Reference)
+func (re *ReferenceExpression) Description() string {
+	if re.Not {
+		return fmt.Sprintf("not %s", re.Reference)
 	}
-	return ie.Reference
+	return re.Reference
 }
 
 func (re *ReferenceExpression) Eval(context Context) (bool, error) {

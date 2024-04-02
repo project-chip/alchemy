@@ -3,7 +3,7 @@ package conformance
 type Described struct {
 }
 
-func (c *Described) Type() Type {
+func (d *Described) Type() Type {
 	return TypeDescribed
 }
 
@@ -24,6 +24,6 @@ func (d *Described) Equal(c Conformance) bool {
 	return ok
 }
 
-func (c *Described) Clone() Conformance {
+func (d *Described) Clone() Conformance {
 	return &Described{}
 }
