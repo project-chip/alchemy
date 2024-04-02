@@ -13,7 +13,7 @@ func (c *DescribedConstraint) Type() Type {
 	return ConstraintTypeDescribed
 }
 
-func (c *DescribedConstraint) AsciiDocString(dataType *types.DataType) string {
+func (c *DescribedConstraint) ASCIIDocString(dataType *types.DataType) string {
 	return "desc"
 }
 

@@ -12,9 +12,9 @@ func (c *Mandatory) Type() Type {
 	return TypeMandatory
 }
 
-func (m *Mandatory) AsciiDocString() string {
+func (m *Mandatory) ASCIIDocString() string {
 	if m.Expression != nil {
-		return m.Expression.AsciiDocString()
+		return m.Expression.ASCIIDocString()
 	}
 	return "M"
 }

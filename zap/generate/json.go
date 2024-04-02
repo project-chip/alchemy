@@ -10,7 +10,7 @@ import (
 	"github.com/iancoleman/orderedmap"
 )
 
-func patchZapJsonFile(sdkRoot string, file string, files []string) (zclJSONPath string, zclJSONBytes []byte, err error) {
+func patchZapJSONFile(sdkRoot string, file string, files []string) (zclJSONPath string, zclJSONBytes []byte, err error) {
 	zclJSONPath = path.Join(sdkRoot, file)
 	zclJSONBytes, err = os.ReadFile(zclJSONPath)
 	if err != nil {

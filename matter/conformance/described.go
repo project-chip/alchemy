@@ -7,7 +7,7 @@ func (c *Described) Type() Type {
 	return TypeDescribed
 }
 
-func (d *Described) AsciiDocString() string {
+func (d *Described) ASCIIDocString() string {
 	return "desc"
 }
 

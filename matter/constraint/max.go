@@ -15,8 +15,8 @@ func (c *MaxConstraint) Type() Type {
 	return ConstraintTypeMax
 }
 
-func (c *MaxConstraint) AsciiDocString(dataType *types.DataType) string {
-	return fmt.Sprintf("max %s", c.Maximum.AsciiDocString(dataType))
+func (c *MaxConstraint) ASCIIDocString(dataType *types.DataType) string {
+	return fmt.Sprintf("max %s", c.Maximum.ASCIIDocString(dataType))
 }
 
 func (c *MaxConstraint) Equal(o Constraint) bool {

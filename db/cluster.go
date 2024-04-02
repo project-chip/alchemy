@@ -18,7 +18,7 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 	clusterRow.values[matter.TableColumnScope] = cluster.Scope
 	clusterRow.values[matter.TableColumnPICS] = cluster.PICS
 
-	ci := &sectionInfo{id: h.nextId(clusterTable), parent: parent, values: clusterRow, children: make(map[string][]*sectionInfo)}
+	ci := &sectionInfo{id: h.nextID(clusterTable), parent: parent, values: clusterRow, children: make(map[string][]*sectionInfo)}
 
 	if cluster.Features != nil {
 		for _, f := range cluster.Features.Bits {
@@ -27,7 +27,7 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 			featureRow.values[matter.TableColumnName] = f.Name()
 			featureRow.values[matter.TableColumnFeature] = f.Name()
 			featureRow.values[matter.TableColumnSummary] = f.Summary()
-			fci := &sectionInfo{id: h.nextId(featureTable), parent: parent, values: featureRow}
+			fci := &sectionInfo{id: h.nextID(featureTable), parent: parent, values: featureRow}
 			ci.children[featureTable] = append(ci.children[featureTable], fci)
 		}
 	}
@@ -55,7 +55,7 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 }
 
 func (h *Host) indexCluster(cxt context.Context, doc *ascii.Doc, ds *sectionInfo, top *ascii.Section) error {
-	ci := &sectionInfo{id: h.nextId(clusterTable), parent: ds, values: &dbRow{}}
+	ci := &sectionInfo{id: h.nextID(clusterTable), parent: ds, values: &dbRow{}}
 	for _, s := range parse.Skim[*ascii.Section](top.Elements) {
 		var err error
 		switch s.SecType {

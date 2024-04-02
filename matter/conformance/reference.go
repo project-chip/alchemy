@@ -12,16 +12,16 @@ type ReferenceExpression struct {
 	Not       bool   `json:"not,omitempty"`
 }
 
-func (ie *ReferenceExpression) AsciiDocString() string {
+func (re *ReferenceExpression) ASCIIDocString() string {
 	var s strings.Builder
-	if ie.Not {
+	if re.Not {
 		s.WriteRune('!')
 	}
 	s.WriteString("<<")
-	s.WriteString(ie.Reference)
-	if len(ie.Label) > 0 {
+	s.WriteString(re.Reference)
+	if len(re.Label) > 0 {
 		s.WriteString(", ")
-		s.WriteString(ie.Label)
+		s.WriteString(re.Label)
 	}
 	s.WriteString(">>")
 	return s.String()

@@ -41,12 +41,12 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[type
 		}
 		cmd.Name = strings.TrimSuffix(cmd.Name, " Command")
 		var dir string
-		dir, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDirection)
+		dir, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDirection)
 		if err != nil {
 			return
 		}
 		cmd.Direction = parseCommandDirection(dir)
-		cmd.Response, err = readRowAsciiDocString(row, columnMap, matter.TableColumnResponse)
+		cmd.Response, err = readRowASCIIDocString(row, columnMap, matter.TableColumnResponse)
 		if err != nil {
 			return
 		}
@@ -56,7 +56,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[type
 		}
 
 		var a string
-		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
+		a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}

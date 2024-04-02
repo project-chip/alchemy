@@ -14,7 +14,7 @@ func (c *GenericConstraint) Type() Type {
 	return ConstraintTypeGeneric
 }
 
-func (c *GenericConstraint) AsciiDocString(dataType *types.DataType) string {
+func (c *GenericConstraint) ASCIIDocString(dataType *types.DataType) string {
 	return c.Value
 }
 

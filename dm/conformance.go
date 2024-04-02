@@ -21,7 +21,7 @@ func renderConformanceString(doc *ascii.Doc, identifierStore conformance.Identif
 			for _, c := range cs {
 				err := renderConformance(doc, identifierStore, c, oc)
 				if err != nil {
-					return fmt.Errorf("error rendering conformance %s: %w", c.AsciiDocString(), err)
+					return fmt.Errorf("error rendering conformance %s: %w", c.ASCIIDocString(), err)
 				}
 			}
 		} else if len(cs) == 1 {
@@ -143,12 +143,12 @@ func renderConformanceExpression(doc *ascii.Doc, identifierStore conformance.Ide
 		}
 		err := renderConformanceExpression(doc, identifierStore, e.Left, el)
 		if err != nil {
-			return fmt.Errorf("error rendering conformance expression %s: %w", e.Left.AsciiDocString(), err)
+			return fmt.Errorf("error rendering conformance expression %s: %w", e.Left.ASCIIDocString(), err)
 		}
 		for _, r := range e.Right {
 			err = renderConformanceExpression(doc, identifierStore, r, el)
 			if err != nil {
-				return fmt.Errorf("error rendering conformance expression %s: %w", r.AsciiDocString(), err)
+				return fmt.Errorf("error rendering conformance expression %s: %w", r.ASCIIDocString(), err)
 			}
 
 		}

@@ -15,8 +15,8 @@ func (c *MinConstraint) Type() Type {
 	return ConstraintTypeMin
 }
 
-func (c *MinConstraint) AsciiDocString(dataType *types.DataType) string {
-	return fmt.Sprintf("min %s", c.Minimum.AsciiDocString(dataType))
+func (c *MinConstraint) ASCIIDocString(dataType *types.DataType) string {
+	return fmt.Sprintf("min %s", c.Minimum.ASCIIDocString(dataType))
 }
 
 func (c *MinConstraint) Equal(o Constraint) bool {

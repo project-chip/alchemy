@@ -11,7 +11,7 @@ type LengthLimit struct {
 	Value string
 }
 
-func (ll *LengthLimit) AsciiDocString(dataType *types.DataType) string {
+func (ll *LengthLimit) ASCIIDocString(dataType *types.DataType) string {
 	return fmt.Sprintf("len(%s)", ll.Value)
 }
 

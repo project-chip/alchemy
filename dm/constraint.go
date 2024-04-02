@@ -14,7 +14,7 @@ func renderConstraint(con constraint.Constraint, dataType *types.DataType, paren
 	}
 	_, err := renderConstraintElement("constraint", con, dataType, parent)
 	if err != nil {
-		return fmt.Errorf("error rendering constraint element %s: %w", con.AsciiDocString(dataType), err)
+		return fmt.Errorf("error rendering constraint element %s: %w", con.ASCIIDocString(dataType), err)
 	}
 	return nil
 }

@@ -11,7 +11,7 @@ type StringLimit struct {
 	Value string
 }
 
-func (c *StringLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *StringLimit) ASCIIDocString(dataType *types.DataType) string {
 	return fmt.Sprintf("\"%s\"", c.Value)
 }
 

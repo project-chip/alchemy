@@ -76,7 +76,7 @@ func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*ty
 			return
 		}
 		var q string
-		q, err = readRowAsciiDocString(row, columnMap, matter.TableColumnQuality)
+		q, err = readRowASCIIDocString(row, columnMap, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
@@ -84,13 +84,13 @@ func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*ty
 		if err != nil {
 			return
 		}
-		f.Default, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDefault)
+		f.Default, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDefault)
 		if err != nil {
 			return
 		}
 
 		var a string
-		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
+		a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}

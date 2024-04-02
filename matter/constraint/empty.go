@@ -9,7 +9,7 @@ import (
 type EmptyLimit struct {
 }
 
-func (c *EmptyLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *EmptyLimit) ASCIIDocString(dataType *types.DataType) string {
 	return "empty"
 }
 

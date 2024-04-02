@@ -22,7 +22,7 @@ var Command = &cobra.Command{
 		cxt := context.Background()
 		specRoot, _ := cmd.Flags().GetString("specRoot")
 
-		asciiSettings := common.AsciiDocAttributes(cmd)
+		asciiSettings := common.ASCIIDocAttributes(cmd)
 
 		address, _ := cmd.Flags().GetString("address")
 		port, _ := cmd.Flags().GetInt("port")

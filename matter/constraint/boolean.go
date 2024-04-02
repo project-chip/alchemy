@@ -11,7 +11,7 @@ type BooleanLimit struct {
 	Value bool
 }
 
-func (c *BooleanLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *BooleanLimit) ASCIIDocString(dataType *types.DataType) string {
 	return strconv.FormatBool(c.Value)
 }
 

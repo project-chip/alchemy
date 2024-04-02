@@ -11,7 +11,7 @@ type IntLimit struct {
 	Value int64
 }
 
-func (c *IntLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *IntLimit) ASCIIDocString(dataType *types.DataType) string {
 	return strconv.FormatInt(c.Value, 10)
 }
 

@@ -33,17 +33,17 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[types.
 		if err != nil {
 			return
 		}
-		e.Description, err = readRowAsciiDocString(row, columnMap, matter.TableColumnDescription)
+		e.Description, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
-		e.Priority, err = readRowAsciiDocString(row, columnMap, matter.TableColumnPriority)
+		e.Priority, err = readRowASCIIDocString(row, columnMap, matter.TableColumnPriority)
 		if err != nil {
 			return
 		}
 		e.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		var a string
-		a, err = readRowAsciiDocString(row, columnMap, matter.TableColumnAccess)
+		a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}

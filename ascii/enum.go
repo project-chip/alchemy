@@ -131,7 +131,7 @@ func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		ev := &matter.EnumValue{}
-		ev.Name, err = readRowAsciiDocString(row, columnMap, matter.TableColumnName)
+		ev.Name, err = readRowASCIIDocString(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
 		}

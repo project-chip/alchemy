@@ -47,18 +47,18 @@ func parseTable(doc *Doc, section *Section, t *types.Table) (rows []*types.Table
 	return
 }
 
-func readRowAsciiDocString(row *types.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
+func readRowASCIIDocString(row *types.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := columnMap[column]
 		if !ok {
 			continue
 		}
-		return readRowCellAsciiDocString(row, offset)
+		return readRowCellASCIIDocString(row, offset)
 	}
 	return "", nil
 }
 
-func readRowCellAsciiDocString(row *types.TableRow, offset int) (string, error) {
+func readRowCellASCIIDocString(row *types.TableRow, offset int) (string, error) {
 	cell := row.Cells[offset]
 	val, err := RenderTableCell(cell)
 	if err != nil {
@@ -69,7 +69,7 @@ func readRowCellAsciiDocString(row *types.TableRow, offset int) (string, error) 
 }
 
 func readRowID(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*matter.Number, error) {
-	id, err := readRowAsciiDocString(row, columnMap, column)
+	id, err := readRowASCIIDocString(row, columnMap, column)
 	if err != nil {
 		return matter.InvalidID, err
 	}

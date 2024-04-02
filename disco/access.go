@@ -24,7 +24,7 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, table *tableInfo, entityType matte
 			continue
 		}
 		access := ascii.ParseAccess(vc, entityType)
-		replacementAccess := ascii.AccessToAsciiString(access, entityType)
+		replacementAccess := ascii.AccessToASCIIDocString(access, entityType)
 		if vc != replacementAccess {
 			err = setCellString(cell, replacementAccess)
 			if err != nil {

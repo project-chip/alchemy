@@ -57,12 +57,12 @@ func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]matterty
 		if conf == nil {
 			conf = conformance.Set{&conformance.Mandatory{}}
 		}
-		bit, err = readRowAsciiDocString(row, columnMap, matter.TableColumnBit)
+		bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnBit)
 		if err != nil {
 			return
 		}
 		if len(bit) == 0 {
-			bit, err = readRowAsciiDocString(row, columnMap, matter.TableColumnValue)
+			bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnValue)
 			if err != nil {
 				return
 			}

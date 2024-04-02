@@ -68,7 +68,7 @@ func (h *Host) Run(address string, port int) error {
 	return nil
 }
 
-func (h *Host) nextId(s string) int32 {
+func (h *Host) nextID(s string) int32 {
 	id, ok := h.ids[s]
 	if !ok {
 		h.tableNames = append(h.tableNames, s)

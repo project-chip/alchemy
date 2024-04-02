@@ -11,13 +11,13 @@ func (c Set) Type() Type {
 	return TypeSet
 }
 
-func (cs Set) AsciiDocString() string {
+func (cs Set) ASCIIDocString() string {
 	var s strings.Builder
 	for _, c := range cs {
 		if s.Len() > 0 {
 			s.WriteString(", ")
 		}
-		s.WriteString(c.AsciiDocString())
+		s.WriteString(c.ASCIIDocString())
 		switch c := c.(type) {
 		case *Provisional, *Disallowed, *Deprecated:
 			return s.String()

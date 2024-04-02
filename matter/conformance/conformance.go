@@ -1,7 +1,7 @@
 package conformance
 
 type Conformance interface {
-	AsciiDocString() string
+	ASCIIDocString() string
 	Description() string
 
 	Type() Type

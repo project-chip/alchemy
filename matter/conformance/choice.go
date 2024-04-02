@@ -18,9 +18,9 @@ func (c *Choice) Description() string {
 	return fmt.Sprintf("set: %s", c.Set)
 }
 
-func (c *Choice) AsciiDocString() string {
+func (c *Choice) ASCIIDocString() string {
 	if c.Limit != nil {
-		return fmt.Sprintf("%s%s", c.Set, c.Limit.AsciiDocString())
+		return fmt.Sprintf("%s%s", c.Set, c.Limit.ASCIIDocString())
 	}
 	return c.Set
 }
@@ -46,7 +46,7 @@ func (c *Choice) Clone() *Choice {
 
 type ChoiceLimit interface {
 	Description(set string) string
-	AsciiDocString() string
+	ASCIIDocString() string
 
 	Equal(cl ChoiceLimit) bool
 	Clone() ChoiceLimit
@@ -60,7 +60,7 @@ func (c *ChoiceExactLimit) Description(set string) string {
 	return fmt.Sprintf("with exactly %d of set %s", c.Limit, set)
 }
 
-func (c *ChoiceExactLimit) AsciiDocString() string {
+func (c *ChoiceExactLimit) ASCIIDocString() string {
 	if c.Limit <= 1 {
 		return ""
 	}
@@ -103,7 +103,7 @@ func (c *ChoiceMinLimit) Description(set string) string {
 	return fmt.Sprintf("with at least %d of set %s", c.Min, set)
 }
 
-func (c *ChoiceMinLimit) AsciiDocString() string {
+func (c *ChoiceMinLimit) ASCIIDocString() string {
 	if c.Min > 1 {
 		return fmt.Sprintf("%d+", c.Min)
 	}
@@ -146,7 +146,7 @@ func (c *ChoiceMaxLimit) Description(set string) string {
 	return fmt.Sprintf("with at most %d of set %s", c.Max, set)
 }
 
-func (c *ChoiceMaxLimit) AsciiDocString() string {
+func (c *ChoiceMaxLimit) ASCIIDocString() string {
 	if c.Max > 1 {
 		return fmt.Sprintf("%d-", c.Max)
 	}
@@ -190,7 +190,7 @@ func (c *ChoiceRangeLimit) Description(set string) string {
 	return fmt.Sprintf("with between %d and %d of set %s", c.Min, c.Max, set)
 }
 
-func (c *ChoiceRangeLimit) AsciiDocString() string {
+func (c *ChoiceRangeLimit) ASCIIDocString() string {
 	return fmt.Sprintf("%d-%d", c.Min, c.Max)
 }
 

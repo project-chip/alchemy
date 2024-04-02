@@ -38,7 +38,7 @@ func fixConstraintCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.
 			continue
 		}
 		c = simplifyConstraints(c, dataType)
-		fixed := c.AsciiDocString(dataType)
+		fixed := c.ASCIIDocString(dataType)
 		if fixed != vc {
 			err = setCellString(cell, fixed)
 			if err != nil {

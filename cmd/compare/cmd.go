@@ -39,7 +39,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
 	text, _ := cmd.Flags().GetBool("text")
 
-	asciiSettings := common.AsciiDocAttributes(cmd)
+	asciiSettings := common.ASCIIDocAttributes(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
 

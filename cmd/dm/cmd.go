@@ -24,7 +24,7 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
 
-	asciiSettings := common.AsciiDocAttributes(cmd)
+	asciiSettings := common.ASCIIDocAttributes(cmd)
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 

@@ -10,7 +10,7 @@ type FeatureExpression struct {
 	Not     bool   `json:"not"`
 }
 
-func (fe *FeatureExpression) AsciiDocString() string {
+func (fe *FeatureExpression) ASCIIDocString() string {
 	if fe.Not {
 		return fmt.Sprintf("!%s", fe.Feature)
 	}

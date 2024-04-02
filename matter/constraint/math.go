@@ -14,12 +14,12 @@ type MathExpressionLimit struct {
 	Right   Limit
 }
 
-func (c *MathExpressionLimit) AsciiDocString(dataType *types.DataType) string {
-	return fmt.Sprintf("(%s %s %s)", c.Left.AsciiDocString(dataType), c.Operand, c.Right.AsciiDocString(dataType))
+func (c *MathExpressionLimit) ASCIIDocString(dataType *types.DataType) string {
+	return fmt.Sprintf("(%s %s %s)", c.Left.ASCIIDocString(dataType), c.Operand, c.Right.ASCIIDocString(dataType))
 }
 
 func (c *MathExpressionLimit) DataModelString(dataType *types.DataType) string {
-	return c.AsciiDocString(dataType)
+	return c.ASCIIDocString(dataType)
 }
 
 func (c *MathExpressionLimit) Equal(o Limit) bool {

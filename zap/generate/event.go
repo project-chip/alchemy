@@ -21,9 +21,9 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 			slog.Warn("missing code attribute in event", slog.String("path", configurator.Doc.Path))
 			continue
 		}
-		eventId := matter.ParseNumber(code.Value)
-		if !eventId.Valid() {
-			slog.Warn("invalid code ID in event", slog.String("path", configurator.Doc.Path), slog.String("commandId", eventId.Text()))
+		eventID := matter.ParseNumber(code.Value)
+		if !eventID.Valid() {
+			slog.Warn("invalid code ID in event", slog.String("path", configurator.Doc.Path), slog.String("commandId", eventID.Text()))
 			continue
 		}
 
@@ -32,7 +32,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 			if conformance.IsZigbee(cluster.Commands, e.Conformance) || conformance.IsDisallowed(e.Conformance) {
 				continue
 			}
-			if e.ID.Equals(eventId) {
+			if e.ID.Equals(eventID) {
 				matchingEvent = e
 				delete(events, e)
 				break
@@ -40,7 +40,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 		}
 
 		if matchingEvent == nil {
-			slog.Warn("unknown event ID", slog.String("path", configurator.Doc.Path), slog.String("eventId", eventId.Text()))
+			slog.Warn("unknown event ID", slog.String("path", configurator.Doc.Path), slog.String("eventId", eventID.Text()))
 			ce.RemoveChild(eve)
 			continue
 		}

@@ -6,7 +6,7 @@ import (
 )
 
 type Expression interface {
-	AsciiDocString() string
+	ASCIIDocString() string
 	Description() string
 
 	Eval(context Context) (bool, error)

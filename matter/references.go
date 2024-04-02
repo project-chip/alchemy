@@ -6,12 +6,12 @@ import (
 
 var DisallowedReferenceSuffixes = []string{"Command", "Feature", "Attribute", "Field", "Event"}
 
-func StripReferenceSuffixes(newId string) string {
+func StripReferenceSuffixes(newID string) string {
 	for _, suffix := range DisallowedReferenceSuffixes {
-		if strings.HasSuffix(newId, suffix) {
-			newId = newId[0 : len(newId)-len(suffix)]
+		if strings.HasSuffix(newID, suffix) {
+			newID = newID[0 : len(newID)-len(suffix)]
 			break
 		}
 	}
-	return newId
+	return newID
 }

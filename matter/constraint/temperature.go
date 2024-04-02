@@ -12,7 +12,7 @@ type TemperatureLimit struct {
 	Value decimal.Decimal
 }
 
-func (c *TemperatureLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *TemperatureLimit) ASCIIDocString(dataType *types.DataType) string {
 	return c.Value.String() + "°C"
 }
 

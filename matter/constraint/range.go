@@ -16,8 +16,8 @@ func (c *RangeConstraint) Type() Type {
 	return ConstraintTypeRange
 }
 
-func (c *RangeConstraint) AsciiDocString(dataType *types.DataType) string {
-	return fmt.Sprintf("%s to %s", c.Minimum.AsciiDocString(dataType), c.Maximum.AsciiDocString(dataType))
+func (c *RangeConstraint) ASCIIDocString(dataType *types.DataType) string {
+	return fmt.Sprintf("%s to %s", c.Minimum.ASCIIDocString(dataType), c.Maximum.ASCIIDocString(dataType))
 }
 
 func (c *RangeConstraint) Equal(o Constraint) bool {

@@ -18,7 +18,7 @@ func (c *AllConstraint) Type() Type {
 	return ConstraintTypeAll
 }
 
-func (c *AllConstraint) AsciiDocString(dataType *types.DataType) string {
+func (c *AllConstraint) ASCIIDocString(dataType *types.DataType) string {
 	return c.Value
 }
 

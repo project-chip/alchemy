@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func AsciiDocAttributes(cmd *cobra.Command) (settings []configuration.Setting) {
+func ASCIIDocAttributes(cmd *cobra.Command) (settings []configuration.Setting) {
 	attributes, _ := cmd.Flags().GetStringSlice("attribute")
 	for _, a := range attributes {
 		if len(a) == 0 {

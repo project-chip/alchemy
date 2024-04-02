@@ -25,7 +25,7 @@ func NewLogicalExpression(operand string, left Expression, right []any) (*Logica
 	return le, nil
 }
 
-func (le *LogicalExpression) AsciiDocString() string {
+func (le *LogicalExpression) ASCIIDocString() string {
 
 	switch le.Operand {
 	case "|":
@@ -33,17 +33,17 @@ func (le *LogicalExpression) AsciiDocString() string {
 		s.WriteRune('(')
 		if le.Not {
 			s.WriteRune('!')
-			s.WriteString(le.Left.AsciiDocString())
+			s.WriteString(le.Left.ASCIIDocString())
 			for _, r := range le.Right {
 				s.WriteString(" & !")
-				s.WriteString(r.AsciiDocString())
+				s.WriteString(r.ASCIIDocString())
 			}
 
 		} else {
-			s.WriteString(le.Left.AsciiDocString())
+			s.WriteString(le.Left.ASCIIDocString())
 			for _, r := range le.Right {
 				s.WriteString(" \\| ")
-				s.WriteString(r.AsciiDocString())
+				s.WriteString(r.ASCIIDocString())
 			}
 		}
 		s.WriteRune(')')
@@ -51,7 +51,7 @@ func (le *LogicalExpression) AsciiDocString() string {
 	case "&":
 		var s strings.Builder
 		s.WriteRune('(')
-		s.WriteString(le.Left.AsciiDocString())
+		s.WriteString(le.Left.ASCIIDocString())
 		for _, r := range le.Right {
 			if le.Not {
 
@@ -60,7 +60,7 @@ func (le *LogicalExpression) AsciiDocString() string {
 				s.WriteString(" & ")
 
 			}
-			s.WriteString(r.AsciiDocString())
+			s.WriteString(r.ASCIIDocString())
 		}
 		s.WriteRune(')')
 		return s.String()
@@ -71,10 +71,10 @@ func (le *LogicalExpression) AsciiDocString() string {
 			s.WriteString("!")
 		}
 		s.WriteRune('(')
-		s.WriteString(le.Left.AsciiDocString())
+		s.WriteString(le.Left.ASCIIDocString())
 		for _, r := range le.Right {
 			s.WriteString(" ^ ")
-			s.WriteString(r.AsciiDocString())
+			s.WriteString(r.ASCIIDocString())
 		}
 		s.WriteRune(')')
 		return s.String()

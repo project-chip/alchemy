@@ -12,7 +12,7 @@ type PercentLimit struct {
 	Hundredths bool
 }
 
-func (c *PercentLimit) AsciiDocString(dataType *types.DataType) string {
+func (c *PercentLimit) ASCIIDocString(dataType *types.DataType) string {
 	return c.Value.String() + "%"
 }
 

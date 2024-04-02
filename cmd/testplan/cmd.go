@@ -35,7 +35,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	testRoot, _ := cmd.Flags().GetString("testRoot")
 	overwrite, _ := cmd.Flags().GetBool("overwrite")
 
-	asciiSettings := common.AsciiDocAttributes(cmd)
+	asciiSettings := common.ASCIIDocAttributes(cmd)
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 

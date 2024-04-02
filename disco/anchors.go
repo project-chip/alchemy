@@ -120,31 +120,31 @@ func setAnchorID(element types.WithAttributes, id string, label string) {
 
 func disambiguateAnchorSet(infos []*ascii.Anchor) error {
 	parents := make([]any, len(infos))
-	refIds := make([]string, len(infos))
+	refIDs := make([]string, len(infos))
 	for i, info := range infos {
 		parents[i] = info.Parent
-		refIds[i] = info.ID
+		refIDs[i] = info.ID
 	}
 	parentSections := make([]*ascii.Section, len(infos))
 	for {
 		for i := range infos {
 			parentSection := findRefSection(parents[i])
 			if parentSection == nil {
-				return fmt.Errorf("duplicate anchor: %s with invalid parent", refIds[i])
+				return fmt.Errorf("duplicate anchor: %s with invalid parent", refIDs[i])
 			}
 			parentSections[i] = parentSection
 			parentName := ascii.ReferenceName(parentSection.Base)
 			parentName = matter.StripTypeSuffixes(parentName)
-			refParentId, _ := normalizeAnchorID(parentName, parentSection.Base, parentSection.Parent)
-			refIds[i] = refParentId + strings.TrimPrefix(refIds[i], "ref_")
+			refParentID, _ := normalizeAnchorID(parentName, parentSection.Base, parentSection.Parent)
+			refIDs[i] = refParentID + strings.TrimPrefix(refIDs[i], "ref_")
 		}
 		ids := make(map[string]struct{})
 		var duplicateIds bool
-		for _, refId := range refIds {
-			if _, ok := ids[refId]; ok {
+		for _, refID := range refIDs {
+			if _, ok := ids[refID]; ok {
 				duplicateIds = true
 			}
-			ids[refId] = struct{}{}
+			ids[refID] = struct{}{}
 		}
 		if duplicateIds {
 			for i := range infos {
@@ -155,8 +155,8 @@ func disambiguateAnchorSet(infos []*ascii.Anchor) error {
 		}
 	}
 	for i, info := range infos {
-		slog.Debug("Switching duplicate anchor", "from", info.ID, "to", refIds[i])
-		info.ID = refIds[i]
+		slog.Debug("Switching duplicate anchor", "from", info.ID, "to", refIDs[i])
+		info.ID = refIDs[i]
 	}
 	return nil
 }
