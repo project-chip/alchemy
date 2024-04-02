@@ -44,7 +44,7 @@ func (b *Ball) disco(cxt context.Context) error {
 
 	topLevelSection := parse.FindFirst[*ascii.Section](doc.Elements)
 	if topLevelSection == nil {
-		return EmptyDocError
+		return ErrEmptyDoc
 	}
 
 	dp, err := b.parseDoc(doc, docType, topLevelSection)

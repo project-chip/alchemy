@@ -32,7 +32,7 @@ func (r Baller) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc], i
 	}
 	err = b.disco(cxt)
 	if err != nil {
-		if err == EmptyDocError {
+		if err == ErrEmptyDoc {
 			err = nil
 			return
 		}

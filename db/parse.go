@@ -18,7 +18,7 @@ type sectionInfo struct {
 	children map[string][]*sectionInfo
 }
 
-var missingTable = fmt.Errorf("no table found")
+var errMissingTable = fmt.Errorf("no table found")
 
 func appendSectionToRow(cxt context.Context, doc *ascii.Doc, section *ascii.Section, row *dbRow) error {
 	t := ascii.FindFirstTable(section)
@@ -49,7 +49,7 @@ func appendSectionToRow(cxt context.Context, doc *ascii.Doc, section *ascii.Sect
 
 func (h *Host) readTableSection(cxt context.Context, doc *ascii.Doc, parent *sectionInfo, section *ascii.Section, name string) error {
 	rows, err := readTable(cxt, doc, section)
-	if err == missingTable {
+	if err == errMissingTable {
 		return nil
 	}
 	if err != nil {
@@ -68,7 +68,7 @@ func (h *Host) readTableSection(cxt context.Context, doc *ascii.Doc, parent *sec
 func readTable(cxt context.Context, doc *ascii.Doc, section *ascii.Section) (rs []*dbRow, err error) {
 	t := ascii.FindFirstTable(section)
 	if t == nil {
-		return nil, missingTable
+		return nil, errMissingTable
 	}
 	rows := ascii.TableRows(t)
 	if len(rows) < 2 {

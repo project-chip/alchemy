@@ -30,10 +30,9 @@ func compareFeatures(specFeatures *matter.Features, zapFeatures *matter.Features
 	if specFeatures == nil {
 		if zapFeatures == nil {
 			return
-		} else {
-			diffs = append(diffs, newMissingDiff(zapFeatures.Name, types.EntityTypeBitmap, SourceSpec))
-			return
 		}
+		diffs = append(diffs, newMissingDiff(zapFeatures.Name, types.EntityTypeBitmap, SourceSpec))
+		return
 	} else if zapFeatures == nil {
 		diffs = append(diffs, newMissingDiff(specFeatures.Name, types.EntityTypeBitmap, SourceZAP))
 		return
@@ -49,10 +48,9 @@ func compareBitmapsByMask(specBitmap *matter.Bitmap, zapBitmap *matter.Bitmap, e
 	if specBitmap == nil {
 		if zapBitmap == nil {
 			return
-		} else {
-			diffs = append(diffs, newMissingDiff(zapBitmap.Name, entityType, SourceSpec))
-			return
 		}
+		diffs = append(diffs, newMissingDiff(zapBitmap.Name, entityType, SourceSpec))
+		return
 	} else if zapBitmap == nil {
 		diffs = append(diffs, newMissingDiff(specBitmap.Name, entityType, SourceZAP))
 		return
