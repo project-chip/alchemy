@@ -12,7 +12,7 @@ type Section interface {
 	GetAsciiSection() *types.Section
 }
 
-func RenderElements(cxt *Context, prefix string, elements []any) (err error) {
+func Elements(cxt *Context, prefix string, elements []any) (err error) {
 	var previous any
 	for _, e := range elements {
 		if he, ok := e.(Section); ok {
@@ -25,7 +25,7 @@ func RenderElements(cxt *Context, prefix string, elements []any) (err error) {
 		case *types.Section:
 			err = renderSection(cxt, el)
 			if err == nil {
-				err = RenderElements(cxt, "", el.Elements)
+				err = Elements(cxt, "", el.Elements)
 			}
 		case *types.DelimitedBlock:
 			err = renderDelimitedBlock(cxt, el)
@@ -84,7 +84,7 @@ func RenderElements(cxt *Context, prefix string, elements []any) (err error) {
 			if err != nil {
 				return
 			}
-			err = RenderElements(cxt, "", el.Elements)
+			err = Elements(cxt, "", el.Elements)
 			cxt.WriteNewline()
 		case *types.PredefinedAttribute:
 			cxt.WriteString(fmt.Sprintf("{%s}", el.Name))
@@ -96,11 +96,11 @@ func RenderElements(cxt *Context, prefix string, elements []any) (err error) {
 			switch el.Kind {
 			case types.SinglePlusPassthrough, types.TriplePlusPassthrough:
 				cxt.WriteString(string(el.Kind))
-				err = RenderElements(cxt, "", el.Elements)
+				err = Elements(cxt, "", el.Elements)
 				cxt.WriteString(string(el.Kind))
 			case types.PassthroughMacro:
 				cxt.WriteString("pass:[")
-				err = RenderElements(cxt, "", el.Elements)
+				err = Elements(cxt, "", el.Elements)
 				cxt.WriteRune(']')
 			}
 		case *types.AttributeReset:

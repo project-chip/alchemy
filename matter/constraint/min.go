@@ -8,10 +8,10 @@ import (
 )
 
 type MinConstraint struct {
-	Minimum ConstraintLimit `json:"min"`
+	Minimum Limit `json:"min"`
 }
 
-func (c *MinConstraint) Type() ConstraintType {
+func (c *MinConstraint) Type() Type {
 	return ConstraintTypeMin
 }
 

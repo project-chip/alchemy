@@ -110,7 +110,7 @@ func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*ty
 		}
 
 		if f.Type != nil {
-			var cs constraint.ConstraintSet
+			var cs constraint.Set
 			switch f.Type.BaseType {
 			case mattertypes.BaseDataTypeMessageID:
 				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}

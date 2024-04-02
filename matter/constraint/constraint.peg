@@ -20,7 +20,7 @@ func debug(format string, a ...any) (n int, err error) {
 Input <- conf:Cons+ EOF {
     cs := conf.([]interface{})
 
-    var set ConstraintSet
+    var set Set
     for _, i := range cs {
         con := i.(Constraint)
         set = append(set, con)
@@ -50,7 +50,7 @@ Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
 	switch cons := cons.(type) {
 		case Constraint:
 			return cons, nil
-		case ConstraintLimit:
+		case Limit:
 			return &ExactConstraint{Value:cons}, nil
 		default:
 			return nil, fmt.Errorf("unexpected constraint type: %T", cons)
@@ -60,19 +60,19 @@ Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
 Range <- from:Limit " to " to:Limit {
 	debug("found range %s\n", string(c.text))
 	return &RangeConstraint  {
-		Minimum:from.(ConstraintLimit),
-		Maximum:to.(ConstraintLimit),
+		Minimum:from.(Limit),
+		Maximum:to.(Limit),
 	}, nil
 }
 
 Min <- [Mm] "in " _ limit:Limit {
 	debug("found min limit %s\n", string(c.text))
-	return &MinConstraint{Minimum:limit.(ConstraintLimit)}, nil
+	return &MinConstraint{Minimum:limit.(Limit)}, nil
 }
 
 Max <- [Mm] "ax " _ limit:Limit (_ "chars")? {
 	debug("found max limit %s\n", string(c.text))
-	return &MaxConstraint{Maximum:limit.(ConstraintLimit)}, nil
+	return &MaxConstraint{Maximum:limit.(Limit)}, nil
 }
 
 Described <- "desc" {
@@ -85,7 +85,7 @@ Any <- any:("any" / "all") {
 
 Limit <- limit:(MSLimit / NullLimit / EmptyLimit / StringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / LengthLimit / ReferenceLimit / UnspecifiedLimit ) {
 	debug("found limit %s\n", string(c.text))
-	return limit.(ConstraintLimit), nil
+	return limit.(Limit), nil
 }
 
 MSLimit <- "MS" {
@@ -137,14 +137,14 @@ Expression <- left:(IntLimit / LengthLimit / ReferenceLimit / HexLimit) _ operan
 	}
 	return &MathExpressionLimit{
 		Operand:string(val),
-		Left:left.(ConstraintLimit),
-		Right:right.(ConstraintLimit),
+		Left:left.(Limit),
+		Right:right.(Limit),
 	}, nil
 }
 
 IntConstraint <- i:IntLimit {
 	debug("found int limit %s\n", string(c.text))
-	return &MaxConstraint{Max:i.(ConstraintLimit)}, nil
+	return &MaxConstraint{Max:i.(Limit)}, nil
 }
 
 LengthLimit <- "len("i _ ref:PascalCase _ ')' {

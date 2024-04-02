@@ -111,7 +111,7 @@ func init() {
 	}
 }
 
-func DataTypeToZap(dataType *types.DataType) string {
+func DataTypeName(dataType *types.DataType) string {
 	switch dataType.BaseType {
 	case types.BaseDataTypeBoolean:
 		return "boolean"
@@ -265,7 +265,7 @@ func DataTypeToZap(dataType *types.DataType) string {
 	return dataType.Name
 }
 
-func ZapToBaseDataType(s string) types.BaseDataType {
+func ToBaseDataType(s string) types.BaseDataType {
 	switch strings.ToLower(s) {
 	case "boolean":
 		return types.BaseDataTypeBoolean
@@ -440,9 +440,9 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 		}
 	}
 	if f.Type.IsArray() {
-		return DataTypeToZap(f.Type.EntryType)
+		return DataTypeName(f.Type.EntryType)
 	}
-	return DataTypeToZap(f.Type)
+	return DataTypeName(f.Type)
 }
 
 func GetMinMax(cc *matter.ConstraintContext, c constraint.Constraint) (from types.DataTypeExtreme, to types.DataTypeExtreme) {

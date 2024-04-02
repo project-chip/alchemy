@@ -12,7 +12,7 @@ type ListConstraint struct {
 	EntryConstraint Constraint
 }
 
-func (c *ListConstraint) Type() ConstraintType {
+func (c *ListConstraint) Type() Type {
 	return ConstraintTypeList
 }
 

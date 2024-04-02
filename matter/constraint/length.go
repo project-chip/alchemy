@@ -19,7 +19,7 @@ func (c *LengthLimit) DataModelString(dataType *types.DataType) string {
 	return c.Value
 }
 
-func (ll *LengthLimit) Equal(o ConstraintLimit) bool {
+func (ll *LengthLimit) Equal(o Limit) bool {
 	if oc, ok := o.(*LengthLimit); ok {
 		return oc.Value == ll.Value
 	}
@@ -46,8 +46,8 @@ func (c *LengthLimit) Default(cc Context) (def types.DataTypeExtreme) {
 	return cc.Default(c.Value)
 }
 
-func (c *LengthLimit) Clone() ConstraintLimit {
-	return &LengthLimit{Value: c.Value}
+func (ll *LengthLimit) Clone() Limit {
+	return &LengthLimit{Value: ll.Value}
 }
 
 func (c *LengthLimit) MarshalJSON() ([]byte, error) {

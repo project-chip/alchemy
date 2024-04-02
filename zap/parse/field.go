@@ -123,8 +123,8 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 		field.Access.Write = matter.PrivilegeOperate
 	}
 
-	fieldBaseType := zap.ZapToBaseDataType(fieldType)
-	entryBaseType := zap.ZapToBaseDataType(entryType)
+	fieldBaseType := zap.ToBaseDataType(fieldType)
+	entryBaseType := zap.ToBaseDataType(entryType)
 	if fieldBaseType == types.BaseDataTypeList {
 		switch entryBaseType {
 		case types.BaseDataTypeCustom:

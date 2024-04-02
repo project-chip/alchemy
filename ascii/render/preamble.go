@@ -5,5 +5,5 @@ import (
 )
 
 func renderPreamble(cxt *Context, p *types.Preamble) error {
-	return RenderElements(cxt, "", p.Elements)
+	return Elements(cxt, "", p.Elements)
 }

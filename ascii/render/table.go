@@ -211,7 +211,7 @@ func renderTableSubElements(cxt *Context, t *types.Table, tbl *table) (err error
 	if t.Header != nil {
 		for _, c := range t.Header.Cells {
 			renderContext := NewContext(cxt, cxt.Doc)
-			err = RenderElements(renderContext, "", c.Elements)
+			err = Elements(renderContext, "", c.Elements)
 			if err != nil {
 				return
 			}
@@ -223,7 +223,7 @@ func renderTableSubElements(cxt *Context, t *types.Table, tbl *table) (err error
 		tr := &tableRow{}
 		for _, c := range row.Cells {
 			renderContext := NewContext(cxt, cxt.Doc)
-			err = RenderElements(renderContext, "", c.Elements)
+			err = Elements(renderContext, "", c.Elements)
 			if err != nil {
 				return
 			}
@@ -234,7 +234,7 @@ func renderTableSubElements(cxt *Context, t *types.Table, tbl *table) (err error
 	if t.Footer != nil {
 		for _, c := range t.Footer.Cells {
 			renderContext := NewContext(cxt, cxt.Doc)
-			err = RenderElements(renderContext, "", c.Elements)
+			err = Elements(renderContext, "", c.Elements)
 			if err != nil {
 				return
 			}

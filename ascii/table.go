@@ -199,7 +199,7 @@ func RenderTableCell(cell *types.TableCell) (string, error) {
 		return "", nil
 	}
 	out := render.NewContext(context.Background(), nil)
-	err := render.RenderElements(out, "", p.Elements)
+	err := render.Elements(out, "", p.Elements)
 	if err != nil {
 		return "", err
 	}

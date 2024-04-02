@@ -84,7 +84,7 @@ func populateEnum(configurator *zap.Configurator, ee *etree.Element, en *matter.
 	}
 
 	ee.CreateAttr("name", en.Name)
-	ee.CreateAttr("type", zap.DataTypeToZap(en.Type))
+	ee.CreateAttr("type", zap.DataTypeName(en.Type))
 
 	_, remainingClusterIds := amendExistingClusterCodes(ee, en, clusterIds)
 	flushClusterCodes(ee, remainingClusterIds)

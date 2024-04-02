@@ -120,7 +120,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	})
 
 	var diffs []*compare.ClusterDifferences
-	diffs, err = compare.CompareEntities(specParser.Spec, specEntityMap, zapEntityMap)
+	diffs, err = compare.Entities(specParser.Spec, specEntityMap, zapEntityMap)
 	if err != nil {
 		return
 	}

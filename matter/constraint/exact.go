@@ -7,10 +7,10 @@ import (
 )
 
 type ExactConstraint struct {
-	Value ConstraintLimit
+	Value Limit `json:"value"`
 }
 
-func (c *ExactConstraint) Type() ConstraintType {
+func (c *ExactConstraint) Type() Type {
 	return ConstraintTypeExact
 }
 

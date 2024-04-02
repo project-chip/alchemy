@@ -175,7 +175,7 @@ func typeString(cluster *matter.Cluster, dt *types.DataType) string {
 	}
 }
 
-func limitString(cluster *matter.Cluster, limit constraint.ConstraintLimit) string {
+func limitString(cluster *matter.Cluster, limit constraint.Limit) string {
 	switch limit := limit.(type) {
 	case *constraint.BooleanLimit:
 		return strconv.FormatBool(limit.Value)

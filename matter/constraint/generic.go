@@ -10,7 +10,7 @@ type GenericConstraint struct {
 	Value string
 }
 
-func (c *GenericConstraint) Type() ConstraintType {
+func (c *GenericConstraint) Type() Type {
 	return ConstraintTypeGeneric
 }
 

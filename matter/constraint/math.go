@@ -10,8 +10,8 @@ import (
 
 type MathExpressionLimit struct {
 	Operand string
-	Left    ConstraintLimit
-	Right   ConstraintLimit
+	Left    Limit
+	Right   Limit
 }
 
 func (c *MathExpressionLimit) AsciiDocString(dataType *types.DataType) string {
@@ -22,7 +22,7 @@ func (c *MathExpressionLimit) DataModelString(dataType *types.DataType) string {
 	return c.AsciiDocString(dataType)
 }
 
-func (c *MathExpressionLimit) Equal(o ConstraintLimit) bool {
+func (c *MathExpressionLimit) Equal(o Limit) bool {
 	if oc, ok := o.(*MathExpressionLimit); ok {
 		return oc.Operand == c.Operand && oc.Left.Equal(c.Left) && oc.Right.Equal(c.Right)
 	}
@@ -103,7 +103,7 @@ func (c *MathExpressionLimit) Default(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *MathExpressionLimit) Clone() ConstraintLimit {
+func (c *MathExpressionLimit) Clone() Limit {
 	return &MathExpressionLimit{Operand: c.Operand, Left: c.Left.Clone(), Right: c.Right.Clone()}
 }
 

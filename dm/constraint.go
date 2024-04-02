@@ -70,7 +70,7 @@ func renderConstraintElement(name string, con constraint.Constraint, dataType *t
 			cx.CreateAttr("type", "maxCount")
 			cx.CreateAttr("value", renderConstraintLimit(mc.Maximum, dataType))
 		}
-	case constraint.ConstraintSet:
+	case constraint.Set:
 		for _, cs := range con {
 			_, err = renderConstraintElement("constraint", cs, dataType, parent)
 			if err != nil {
@@ -83,7 +83,7 @@ func renderConstraintElement(name string, con constraint.Constraint, dataType *t
 	return
 }
 
-func renderConstraintLimit(limit constraint.ConstraintLimit, dataType *types.DataType) string {
+func renderConstraintLimit(limit constraint.Limit, dataType *types.DataType) string {
 	s := limit.DataModelString(dataType)
 	switch limit.(type) {
 	case *constraint.MathExpressionLimit:

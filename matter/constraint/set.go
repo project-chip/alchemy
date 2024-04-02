@@ -7,9 +7,9 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-type ConstraintSet []Constraint
+type Set []Constraint
 
-func (c ConstraintSet) Type() ConstraintType {
+func (cs Set) Type() Type {
 	return ConstraintTypeSet
 }
 
@@ -24,8 +24,8 @@ func (cs ConstraintSet) AsciiDocString(dataType *types.DataType) string {
 	return b.String()
 }
 
-func (cs ConstraintSet) Equal(o Constraint) bool {
-	ocs, ok := o.(ConstraintSet)
+func (cs Set) Equal(o Constraint) bool {
+	ocs, ok := o.(Set)
 	if !ok {
 		return false
 	}
@@ -40,7 +40,7 @@ func (cs ConstraintSet) Equal(o Constraint) bool {
 	return true
 }
 
-func (cs ConstraintSet) Min(c Context) (min types.DataTypeExtreme) {
+func (cs Set) Min(c Context) (min types.DataTypeExtreme) {
 	var from types.DataTypeExtreme
 
 	from = cs[0].Min(c)
@@ -56,7 +56,7 @@ func (cs ConstraintSet) Min(c Context) (min types.DataTypeExtreme) {
 	return from
 }
 
-func (cs ConstraintSet) Max(c Context) (max types.DataTypeExtreme) {
+func (cs Set) Max(c Context) (max types.DataTypeExtreme) {
 	var to types.DataTypeExtreme
 
 	to = cs[0].Min(c)
@@ -71,12 +71,12 @@ func (cs ConstraintSet) Max(c Context) (max types.DataTypeExtreme) {
 	return to
 }
 
-func (c ConstraintSet) Default(cc Context) (max types.DataTypeExtreme) {
+func (cs Set) Default(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (cs ConstraintSet) Clone() Constraint {
-	nc := make(ConstraintSet, 0, len(cs))
+func (cs Set) Clone() Constraint {
+	nc := make(Set, 0, len(cs))
 	for _, c := range cs {
 		nc = append(nc, c.Clone())
 	}

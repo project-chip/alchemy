@@ -9,6 +9,6 @@ func renderParagraph(cxt *Context, p *types.Paragraph, previous *any) (err error
 	if err != nil {
 		return
 	}
-	err = RenderElements(cxt, "", p.Elements)
+	err = Elements(cxt, "", p.Elements)
 	return
 }

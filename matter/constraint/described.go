@@ -9,7 +9,7 @@ import (
 type DescribedConstraint struct {
 }
 
-func (c *DescribedConstraint) Type() ConstraintType {
+func (c *DescribedConstraint) Type() Type {
 	return ConstraintTypeDescribed
 }
 

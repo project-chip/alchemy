@@ -19,7 +19,7 @@ func renderSection(cxt *Context, s *types.Section) (err error) {
 func renderSectionTitle(cxt *Context, title []any, level int) (err error) {
 	cxt.WriteString(strings.Repeat("=", level))
 	cxt.WriteRune(' ')
-	err = RenderElements(cxt, "", title)
+	err = Elements(cxt, "", title)
 	cxt.WriteNewline()
 	return
 }

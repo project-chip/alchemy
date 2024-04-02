@@ -8,10 +8,10 @@ import (
 )
 
 type MaxConstraint struct {
-	Maximum ConstraintLimit
+	Maximum Limit
 }
 
-func (c *MaxConstraint) Type() ConstraintType {
+func (c *MaxConstraint) Type() Type {
 	return ConstraintTypeMax
 }
 

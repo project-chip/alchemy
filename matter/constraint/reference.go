@@ -18,7 +18,7 @@ func (c *ReferenceLimit) DataModelString(dataType *types.DataType) string {
 	return c.AsciiDocString(dataType)
 }
 
-func (c *ReferenceLimit) Equal(o ConstraintLimit) bool {
+func (c *ReferenceLimit) Equal(o Limit) bool {
 	if oc, ok := o.(*ReferenceLimit); ok {
 		return oc.Value == c.Value
 	}
@@ -45,7 +45,7 @@ func (c *ReferenceLimit) Default(cc Context) (def types.DataTypeExtreme) {
 	return cc.Default(c.Value)
 }
 
-func (c *ReferenceLimit) Clone() ConstraintLimit {
+func (c *ReferenceLimit) Clone() Limit {
 	return &ReferenceLimit{Value: c.Value}
 }
 
