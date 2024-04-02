@@ -8,7 +8,7 @@ import (
 )
 
 type HexLimit struct {
-	Value uint64
+	Value uint64 `json:"value"`
 }
 
 func (c *HexLimit) ASCIIDocString(dataType *types.DataType) string {

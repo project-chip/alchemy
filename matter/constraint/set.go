@@ -1,6 +1,7 @@
 package constraint
 
 import (
+	"encoding/json"
 	"math"
 	"strings"
 
@@ -167,4 +168,33 @@ func maxExtreme(f1 types.DataTypeExtreme, f2 types.DataTypeExtreme) types.DataTy
 		}
 	}
 	return types.DataTypeExtreme{}
+}
+
+func (cs *Set) UnmarshalJSON(data []byte) (err error) {
+	var list []json.RawMessage
+	err = json.Unmarshal(data, &list)
+	if err != nil {
+		return
+	}
+	for _, l := range list {
+		var c Constraint
+		c, err = UnmarshalConstraint(l)
+		if err != nil {
+			return
+		}
+		*cs = append(*cs, c)
+	}
+	return
+}
+
+func UnmarshalConstraintSetJSON(list []json.RawMessage) (set Set, err error) {
+	for _, l := range list {
+		var c Constraint
+		c, err = UnmarshalConstraint(l)
+		if err != nil {
+			return
+		}
+		set = append(set, c)
+	}
+	return
 }

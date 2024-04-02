@@ -9,7 +9,7 @@ import (
 )
 
 type TemperatureLimit struct {
-	Value decimal.Decimal
+	Value decimal.Decimal `json:"value"`
 }
 
 func (c *TemperatureLimit) ASCIIDocString(dataType *types.DataType) string {

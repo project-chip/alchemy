@@ -45,9 +45,31 @@ func (c *ListConstraint) Clone() Constraint {
 
 func (c *ListConstraint) MarshalJSON() ([]byte, error) {
 	js := map[string]any{
-		"type":            "list",
-		"constraint":      c.Constraint,
-		"entryConstraint": c.EntryConstraint,
+		"type":       "list",
+		"constraint": c.Constraint,
+	}
+	if c.EntryConstraint != nil {
+		js["entryConstraint"] = c.EntryConstraint
 	}
 	return json.Marshal(js)
+}
+
+func (c *ListConstraint) UnmarshalJSON(data []byte) (err error) {
+	var js struct {
+		Constraint      json.RawMessage `json:"constraint"`
+		EntryConstraint json.RawMessage `json:"entryConstraint"`
+	}
+	err = json.Unmarshal(data, &js)
+	if err != nil {
+		return
+	}
+
+	c.Constraint, err = UnmarshalConstraint(js.Constraint)
+	if err != nil {
+		return
+	}
+	if len(js.EntryConstraint) > 0 {
+		c.EntryConstraint, err = UnmarshalConstraint(js.EntryConstraint)
+	}
+	return
 }

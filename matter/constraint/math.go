@@ -115,3 +115,21 @@ func (c *MathExpressionLimit) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(js)
 }
+
+func (c *MathExpressionLimit) UnmarshalJSON(data []byte) (err error) {
+	var js struct {
+		Left  json.RawMessage `json:"left"`
+		Right json.RawMessage `json:"right"`
+	}
+	err = json.Unmarshal(data, &js)
+	if err != nil {
+		return
+	}
+
+	c.Left, err = UnmarshalLimit(js.Left)
+	if err != nil {
+		return
+	}
+	c.Right, err = UnmarshalLimit(js.Right)
+	return
+}

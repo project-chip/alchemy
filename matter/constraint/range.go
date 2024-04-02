@@ -51,3 +51,21 @@ func (c *RangeConstraint) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(js)
 }
+
+func (c *RangeConstraint) UnmarshalJSON(data []byte) (err error) {
+	var js struct {
+		Max json.RawMessage `json:"max"`
+		Min json.RawMessage `json:"min"`
+	}
+	err = json.Unmarshal(data, &js)
+	if err != nil {
+		return
+	}
+
+	c.Minimum, err = UnmarshalLimit(js.Min)
+	if err != nil {
+		return
+	}
+	c.Maximum, err = UnmarshalLimit(js.Max)
+	return
+}

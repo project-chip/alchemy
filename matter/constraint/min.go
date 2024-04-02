@@ -49,3 +49,16 @@ func (c *MinConstraint) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(js)
 }
+
+func (c *MinConstraint) UnmarshalJSON(data []byte) (err error) {
+	var js struct {
+		Min json.RawMessage `json:"min"`
+	}
+	err = json.Unmarshal(data, &js)
+	if err != nil {
+		return
+	}
+
+	c.Minimum, err = UnmarshalLimit(js.Min)
+	return
+}

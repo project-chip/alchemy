@@ -7,7 +7,7 @@ import (
 )
 
 type GenericConstraint struct {
-	Value string
+	Value string `json:"value"`
 }
 
 func (c *GenericConstraint) Type() Type {
@@ -42,9 +42,12 @@ func (c *GenericConstraint) Clone() Constraint {
 }
 
 func (c *GenericConstraint) MarshalJSON() ([]byte, error) {
-	js := map[string]any{
-		"type":  "generic",
-		"value": c.Value,
+	js := struct {
+		constraintJSONBase
+		GenericConstraint
+	}{
+		constraintJSONBase{Type: "generic"},
+		*c,
 	}
 	return json.Marshal(js)
 }

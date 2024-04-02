@@ -7,7 +7,7 @@ import (
 )
 
 type AllConstraint struct {
-	Value string
+	Value string `json:"value"`
 }
 
 func NewAllConstraint(value string) *AllConstraint {

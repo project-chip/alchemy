@@ -8,8 +8,8 @@ import (
 )
 
 type PercentLimit struct {
-	Value      decimal.Decimal
-	Hundredths bool
+	Value      decimal.Decimal `json:"value"`
+	Hundredths bool            `json:"hundredths,omitempty"`
 }
 
 func (c *PercentLimit) ASCIIDocString(dataType *types.DataType) string {
