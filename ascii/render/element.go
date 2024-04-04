@@ -9,14 +9,14 @@ import (
 )
 
 type Section interface {
-	GetAsciiSection() *types.Section
+	GetASCIISection() *types.Section
 }
 
 func Elements(cxt *Context, prefix string, elements []any) (err error) {
 	var previous any
 	for _, e := range elements {
 		if he, ok := e.(Section); ok {
-			e = he.GetAsciiSection()
+			e = he.GetASCIISection()
 		}
 		if hb, ok := e.(parse.HasBase); ok {
 			e = hb.GetBase()
