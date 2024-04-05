@@ -332,13 +332,38 @@ func (a *Access) Inherit(parent Access) {
 }
 
 func DefaultAccess(entityType types.EntityType) Access {
-	a := Access{FabricSensitivity: FabricSensitivityInsensitive, FabricScoping: FabricScopingUnscoped, Timing: TimingUntimed}
+	return Access{
+		Read:              DefaultReadPrivilege(entityType),
+		Invoke:            DefaultInvokePrivilege(entityType),
+		FabricSensitivity: FabricSensitivityInsensitive,
+		FabricScoping:     FabricScopingUnscoped,
+		Timing:            TimingUntimed,
+	}
+}
+
+func DefaultReadPrivilege(entityType types.EntityType) Privilege {
+	switch entityType {
+	case types.EntityTypeAttribute, types.EntityTypeEvent: // Structs don't get R/W access
+		return PrivilegeView
+	default:
+		return PrivilegeUnknown
+	}
+}
+
+func DefaultWritePrivilege(entityType types.EntityType) Privilege {
+	switch entityType {
+	case types.EntityTypeAttribute, types.EntityTypeEvent: // Structs don't get R/W access
+		return PrivilegeOperate
+	default:
+		return PrivilegeUnknown
+	}
+}
+
+func DefaultInvokePrivilege(entityType types.EntityType) Privilege {
 	switch entityType {
 	case types.EntityTypeCommand:
-		a.Invoke = PrivilegeOperate
-	case types.EntityTypeStruct: // Structs don't get R/W access
+		return PrivilegeOperate
 	default:
-		a.Read = PrivilegeView
+		return PrivilegeUnknown
 	}
-	return a
 }
