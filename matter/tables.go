@@ -240,5 +240,6 @@ var Tables = map[TableType]Table{
 }
 
 var ClusterIDSectionName = "Cluster ID"
+var ClusterIDsSectionName = "Cluster IDs"
 
 var CommandsSectionName = "Commands"
