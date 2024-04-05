@@ -67,6 +67,8 @@ func (b *Ball) parseDoc(doc *ascii.Doc, docType matter.DocType, topLevelSection 
 				if err == nil {
 					ds.attributes = append(ds.attributes, attributes)
 				}
+			default:
+				slog.Warn("attributes section in non-cluster doc", slog.String("path", doc.Path))
 			}
 		case matter.SectionCommands:
 			var commands *subSection

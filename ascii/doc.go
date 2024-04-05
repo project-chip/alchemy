@@ -3,9 +3,6 @@ package ascii
 import (
 	"fmt"
 	"log/slog"
-	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 	"unicode"
 	"unicode/utf8"
@@ -61,76 +58,6 @@ func NewDoc(d *types.Document) (*Doc, error) {
 		}
 	}
 	return doc, nil
-}
-
-func (doc *Doc) DocType() (matter.DocType, error) {
-	if doc.docType != matter.DocTypeUnknown {
-		return doc.docType, nil
-	}
-	if len(doc.Path) == 0 {
-		return matter.DocTypeUnknown, fmt.Errorf("missing path")
-	}
-	return GetDocType(doc.Path)
-}
-
-func GetDocType(docPath string) (matter.DocType, error) {
-
-	switch filepath.Base(docPath) {
-	case "appclusters.adoc":
-		return matter.DocTypeAppClusters, nil
-	case "standard_namespaces.adoc":
-		return matter.DocTypeNamespaces, nil
-	case "device_library.adoc":
-		return matter.DocTypeDeviceTypes, nil
-	}
-
-	path, err := filepath.Abs(docPath)
-	if err != nil {
-		return matter.DocTypeUnknown, err
-	}
-	dir, file := filepath.Split(path)
-	pathParts := strings.Split(dir, string(os.PathSeparator))
-
-	for i := len(pathParts) - 1; i >= 0; i-- {
-		part := pathParts[i]
-		switch part {
-		case "app_clusters":
-			if firstLetterIsLower(file) {
-				return matter.DocTypeAppClusterIndex, nil
-			}
-			return matter.DocTypeCluster, nil
-		case "common_protocol":
-			return matter.DocTypeCommonProtocol, nil
-		case "data_model":
-			return matter.DocTypeDataModel, nil
-		case "device_attestation":
-			return matter.DocTypeDeviceAttestation, nil
-		case "device_types":
-			if firstLetterIsLower(file) {
-				return matter.DocTypeDeviceTypeIndex, nil
-			}
-			return matter.DocTypeDeviceType, nil
-		case "multi_admin":
-			return matter.DocTypeMultiAdmin, nil
-		case "namespaces":
-			return matter.DocTypeNamespace, nil
-		case "qr_code":
-			return matter.DocTypeQRCode, nil
-		case "rendezvous":
-			return matter.DocTypeRendezvous, nil
-		case "secure_channel":
-			return matter.DocTypeSecureChannel, nil
-		case "service_device_management":
-			if strings.HasSuffix(file, "Cluster.adoc") {
-				return matter.DocTypeCluster, nil
-			}
-			return matter.DocTypeServiceDeviceManagement, nil
-		case "softAp":
-			return matter.DocTypeSoftAP, nil
-		}
-	}
-	slog.Debug("could not determine doc type", "path", docPath)
-	return matter.DocTypeUnknown, nil
 }
 
 func firstLetterIsLower(s string) bool {
