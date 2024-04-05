@@ -141,6 +141,8 @@ func ParseAccess(vc string, entityType types.EntityType) (a matter.Access) {
 func AccessToASCIIDocString(a matter.Access, entityType mattertypes.EntityType) string {
 	var out strings.Builder
 	switch entityType {
+	case mattertypes.EntityTypeEvent:
+		out.WriteString(privilegeToString(a.Read))
 	case mattertypes.EntityTypeCommand:
 		out.WriteString(privilegeToString(a.Invoke))
 	case mattertypes.EntityTypeStruct:
