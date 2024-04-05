@@ -63,7 +63,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[ty
 		if err != nil {
 			return
 		}
-		attr.Access = ParseAccess(a, mattertypes.EntityTypeAttribute)
+		attr.Access, _ = ParseAccess(a, mattertypes.EntityTypeAttribute)
 		attributes = append(attributes, attr)
 		attributeMap[attr.Name] = attr
 	}

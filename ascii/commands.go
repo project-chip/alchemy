@@ -60,7 +60,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[type
 		if err != nil {
 			return
 		}
-		cmd.Access = ParseAccess(a, mattertypes.EntityTypeCommand)
+		cmd.Access, _ = ParseAccess(a, mattertypes.EntityTypeCommand)
 		commands = append(commands, cmd)
 		commandMap[strings.ToLower(cmd.Name)] = cmd
 	}

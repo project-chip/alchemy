@@ -140,7 +140,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.Access = ParseAccess(a, mattertypes.EntityTypeElementRequirement)
+		cr.Access, _ = ParseAccess(a, mattertypes.EntityTypeElementRequirement)
 		cr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		elementRequirements = append(elementRequirements, cr)
 	}

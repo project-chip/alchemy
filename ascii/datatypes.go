@@ -94,7 +94,7 @@ func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*ty
 		if err != nil {
 			return
 		}
-		f.Access = ParseAccess(a, entityType)
+		f.Access, _ = ParseAccess(a, entityType)
 		f.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return

@@ -47,7 +47,7 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[types.
 		if err != nil {
 			return
 		}
-		e.Access = ParseAccess(a, mattertypes.EntityTypeEvent)
+		e.Access, _ = ParseAccess(a, mattertypes.EntityTypeEvent)
 		if e.Access.Read == matter.PrivilegeUnknown {
 			// Sometimes the invoke access is omitted; we assume it's view
 			e.Access.Read = matter.PrivilegeView
