@@ -263,7 +263,11 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 	//length := out.Len()
 	for i, line := range lines {
 		line = strings.TrimSpace(line)
-		if i > 0 && !strings.HasPrefix(line, "// ") && !strings.HasPrefix(line, "ifdef::") && !strings.HasPrefix(line, "ifndef::") && !strings.HasPrefix(line, "endif::") {
+		directivePrefix := strings.HasPrefix(line, "ifdef::") || strings.HasPrefix(line, "ifndef::") || strings.HasPrefix(line, "endif::")
+		if directivePrefix {
+			out.WriteNewline()
+		}
+		if i > 0 && !strings.HasPrefix(line, "// ") && !directivePrefix {
 			out.WriteString(strings.Repeat(" ", indent))
 		}
 		v := fmt.Sprintf("%-*s", width, line)
