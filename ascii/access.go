@@ -97,7 +97,7 @@ func ParseAccess(vc string, entityType types.EntityType) (a matter.Access) {
 		if hasWrite {
 			if len(writeAccess) > 0 {
 				write = stringToPrivilege(writeAccess)
-			} else if read != matter.PrivilegeUnknown { // Sometimes both read and write are given in the same character
+			} else if read != matter.PrivilegeUnknown && read != matter.PrivilegeView { // Sometimes both read and write are given in the same character
 				write = read
 			}
 			if write == matter.PrivilegeUnknown {
