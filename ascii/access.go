@@ -105,6 +105,14 @@ func ParseAccess(vc string, entityType types.EntityType) (a matter.Access) {
 			}
 		}
 		invoke = stringToPrivilege(invokeAccess)
+	} else {
+		// No privileges at all
+		if hasRead {
+			read = matter.DefaultReadPrivilege(entityType)
+		}
+		if hasWrite {
+			write = matter.DefaultWritePrivilege(entityType)
+		}
 	}
 	switch entityType {
 	case types.EntityTypeCommand:
