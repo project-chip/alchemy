@@ -10,6 +10,7 @@ import (
 
 func getAccessSchemaColumns(tableName string) []*mms.Column {
 	return []*mms.Column{
+		{Name: "access", Type: types.Text, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "read_access", Type: types.Int8, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "write_access", Type: types.Int8, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "invoke_access", Type: types.Int8, Nullable: true, Source: tableName, PrimaryKey: false},
@@ -43,5 +44,5 @@ func getAccessSchemaColumnValues(tableName string, access any) []any {
 		}
 
 	}
-	return []any{readAccess, writeAccess, invokeAccess, fabricScoped, fabricSensitive, timed}
+	return []any{s, readAccess, writeAccess, invokeAccess, fabricScoped, fabricSensitive, timed}
 }
