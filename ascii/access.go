@@ -156,7 +156,14 @@ func AccessToASCIIDocString(a matter.Access, entityType mattertypes.EntityType) 
 					out.WriteRune('W')
 				}
 			}
+			if a.Read == matter.PrivilegeUnknown && a.Write == matter.PrivilegeUnknown {
+				break
+			}
 			out.WriteRune(' ')
+			if a.Read == a.Write {
+				out.WriteString(privilegeToString(a.Read))
+				break
+			}
 			if a.Read != matter.PrivilegeUnknown {
 				out.WriteString(privilegeToString(a.Read))
 			}
