@@ -38,11 +38,12 @@ func init() {
 	}
 }
 
-func ParseAccess(vc string, entityType types.EntityType) (a matter.Access) {
+func ParseAccess(vc string, entityType types.EntityType) (a matter.Access, parsed bool) {
 	matches := accessPattern.FindStringSubmatch(vc)
 	if matches == nil {
-		return matter.Access{}
+		return
 	}
+	parsed = true
 	access := make(map[accessCategoryMatch]string)
 	for i, s := range matches {
 		if s == "" {

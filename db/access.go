@@ -27,11 +27,11 @@ func getAccessSchemaColumnValues(tableName string, access any) []any {
 		var a matter.Access
 		switch tableName {
 		case commandTable:
-			a = ascii.ParseAccess(s, mattertypes.EntityTypeCommand)
+			a, _ = ascii.ParseAccess(s, mattertypes.EntityTypeCommand)
 		case structField:
-			a = ascii.ParseAccess(s, mattertypes.EntityTypeStruct)
+			a, _ = ascii.ParseAccess(s, mattertypes.EntityTypeStruct)
 		default:
-			a = ascii.ParseAccess(s, mattertypes.EntityTypeUnknown)
+			a, _ = ascii.ParseAccess(s, mattertypes.EntityTypeUnknown)
 		}
 		readAccess = int8(a.Read)
 		writeAccess = int8(a.Write)

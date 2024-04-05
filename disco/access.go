@@ -34,8 +34,12 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, table *tableInfo, entityType matte
 			continue
 		}
 		var access matter.Access
+		var parsed bool
 		if len(strings.TrimSpace(vc)) > 0 {
-			access = ascii.ParseAccess(vc, entityType)
+			access, parsed = ascii.ParseAccess(vc, entityType)
+			if !parsed {
+				continue
+			}
 		} else {
 			access = matter.DefaultAccess(entityType)
 		}
