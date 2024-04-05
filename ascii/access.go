@@ -19,7 +19,7 @@ const (
 	accessCategoryMatchTimed
 )
 
-var accessPattern = regexp.MustCompile(`^(?:(?:^|\s+)(?:(?P<ReadWrite>(?:R\*W)|(?:R\[W\])|(?:[RW]+))|(?P<Fabric>[FS]+)|(?P<Privileges>[VOMA]+)|(?P<Timed>T)))+\s*$`)
+var accessPattern = regexp.MustCompile(`^(?:(?:^|\s+)(?:(?P<ReadWrite>(?:R W)|(?:R\*W)|(?:R\[W\])|(?:[RW]+))|(?P<Fabric>[FS]+)|(?P<Privileges>[VOMA]+)|(?P<Timed>T)))+\s*$`)
 var accessPatternMatchMap map[int]accessCategoryMatch
 
 func init() {
@@ -60,7 +60,7 @@ func ParseAccess(vc string, entityType types.EntityType) (a matter.Access, parse
 	rw := access[accessCategoryMatchReadWrite]
 	var hasRead, hadRead, hasWrite, optionalWrite bool
 	switch rw {
-	case "RW", "WR":
+	case "RW", "WR", "R W":
 		hasRead = true
 		hadRead = true
 		hasWrite = true
