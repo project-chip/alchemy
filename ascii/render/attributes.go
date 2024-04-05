@@ -116,6 +116,12 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			renderAttributeAnchor(cxt, id, include, exclude, inline)
 			cxt.WriteRune('[')
 			cxt.WriteString(style)
+			if start, ok := attributes[types.AttrStart]; ok {
+				if start, ok := start.(string); ok {
+					cxt.WriteString(", start=")
+					cxt.WriteString(start)
+				}
+			}
 			cxt.WriteString("]\n")
 			renderAttributeTitle(cxt, title, include, exclude)
 			renderAttributeAnchor(cxt, id, include, exclude, inline)
