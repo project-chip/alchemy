@@ -45,7 +45,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[type
 		if err != nil {
 			return
 		}
-		cmd.Direction = parseCommandDirection(dir)
+		cmd.Direction = ParseCommandDirection(dir)
 		cmd.Response, err = readRowASCIIDocString(row, columnMap, matter.TableColumnResponse)
 		if err != nil {
 			return
@@ -119,7 +119,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[type
 	return
 }
 
-func parseCommandDirection(s string) matter.Interface {
+func ParseCommandDirection(s string) matter.Interface {
 	switch strings.TrimSpace(strings.ToLower(s)) {
 	case "client => server", "server <= client":
 		return matter.InterfaceServer

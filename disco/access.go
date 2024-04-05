@@ -1,6 +1,8 @@
 package disco
 
 import (
+	"strings"
+
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -17,16 +19,40 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, table *tableInfo, entityType matte
 	if !ok {
 		return
 	}
+	var directionIndex int
+	directionIndex = -1
+	if entityType == mattertypes.EntityTypeCommand {
+		directionIndex, ok = table.columnMap[matter.TableColumnDirection]
+		if !ok {
+			directionIndex = -1
+		}
+	}
 	for _, row := range table.rows[1:] {
-		cell := row.Cells[accessIndex]
-		vc, e := ascii.RenderTableCell(cell)
+		accessCell := row.Cells[accessIndex]
+		vc, e := ascii.RenderTableCell(accessCell)
 		if e != nil {
 			continue
 		}
-		access := ascii.ParseAccess(vc, entityType)
+		var access matter.Access
+		if len(strings.TrimSpace(vc)) > 0 {
+			access = ascii.ParseAccess(vc, entityType)
+		} else {
+			access = matter.DefaultAccess(entityType)
+		}
+		if directionIndex >= 0 {
+			directionCell := row.Cells[directionIndex]
+			rc, e := ascii.RenderTableCell(directionCell)
+			if e != nil {
+				continue
+			}
+			direction := ascii.ParseCommandDirection(rc)
+			if direction == matter.InterfaceClient {
+				access.Invoke = matter.PrivilegeUnknown
+			}
+		}
 		replacementAccess := ascii.AccessToASCIIDocString(access, entityType)
 		if vc != replacementAccess {
-			err = setCellString(cell, replacementAccess)
+			err = setCellString(accessCell, replacementAccess)
 			if err != nil {
 				return
 			}
