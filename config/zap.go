@@ -12,8 +12,14 @@ type ZapErrata struct {
 	SuppressClusterDefinePrefix  bool
 	DefineOverrides              map[string]string
 
-	WriteRoleAsPrivilege bool
-	SeparateStructs      []string
+	WritePrivilegeAsRole bool
+	SeparateStructs      map[string]struct{}
+
+	TemplatePath string
+
+	ClusterSplit map[string]string
+
+	Domain matter.Domain
 }
 
 type ZapSettings struct {
