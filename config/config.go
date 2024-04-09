@@ -1,6 +1,6 @@
 package config
 
 type Settings struct {
-	Disco DiscoSettings
+	Disco DiscoOptions
 	Zap   ZapSettings
 }
