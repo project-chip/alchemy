@@ -113,9 +113,7 @@ func ReferenceName(element any) string {
 			case *types.SpecialCharacter:
 				var char string
 				switch el.Name {
-				case "&":
-					char = el.Name
-				case ">":
+				case "&", ">", "<":
 					char = el.Name
 				default:
 					slog.Warn("unrecognized special character", "char", el.Name, "context", val.String())
