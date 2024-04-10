@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
+func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
 
 	for _, cle := range ce.SelectElements("cluster") {
 		code, ok := xml.ReadSimpleElement(cle, "code")
@@ -43,7 +43,7 @@ func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *z
 			slog.Warn("unknown code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
 			continue
 		}
-		err = populateCluster(configurator, cle, cluster, errata)
+		err = tg.populateCluster(configurator, cle, cluster, errata)
 		if err != nil {
 			return
 		}
@@ -59,7 +59,7 @@ func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *z
 		cle := etree.NewElement("cluster")
 		cle.CreateAttr("code", cluster.ID.HexString())
 		xml.AppendElement(ce, cle, "struct", "enum", "bitmap", "domain")
-		err = populateCluster(configurator, cle, cluster, errata)
+		err = tg.populateCluster(configurator, cle, cluster, errata)
 		if err != nil {
 			return
 		}
@@ -67,7 +67,7 @@ func renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *z
 	return
 }
 
-func populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
 
 	var define string
 	var clusterPrefix string
@@ -113,6 +113,9 @@ func populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster
 		server.CreateAttr("init", "false")
 		server.CreateAttr("tick", "false")
 		server.SetText("true")
+	}
+	if tg.generateFeaturesXML {
+		err = generateFeaturesXML(configurator, cle, cluster, errata)
 	}
 	err = generateClusterGlobalAttributes(configurator, cle, cluster, errata)
 	if err != nil {

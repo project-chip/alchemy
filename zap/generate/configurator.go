@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/dm"
 	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
@@ -23,7 +24,7 @@ func newZapTemplate() (x *etree.Document) {
 	return
 }
 
-func renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata *zap.Errata) (result string, err error) {
+func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata *zap.Errata) (result string, err error) {
 
 	var exampleCluster *matter.Cluster
 	for c := range configurator.Clusters {
@@ -45,7 +46,7 @@ func renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata
 	}
 
 	if exampleCluster != nil {
-		err = generateFeatures(configurator, ce, exampleCluster.Features, errata)
+		err = tg.generateFeatures(configurator, ce, exampleCluster.Features, errata)
 		if err != nil {
 			return
 		}
@@ -66,7 +67,7 @@ func renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata
 		return
 	}
 
-	err = renderClusters(configurator, ce, errata)
+	err = tg.renderClusters(configurator, ce, errata)
 	if err != nil {
 		return
 	}
@@ -87,7 +88,8 @@ func postProcessTemplate(s string) string {
 	return s
 }
 
-func generateFeatures(configurator *zap.Configurator, configuratorElement *etree.Element, features *matter.Features, errata *zap.Errata) (err error) {
+func (tg *TemplateGenerator) generateFeatures(configurator *zap.Configurator, configuratorElement *etree.Element, features *matter.Features, errata *zap.Errata) (err error) {
+
 	needFeatures := features != nil && len(features.Bits) > 0
 
 	bitmaps := configuratorElement.SelectElements("bitmap")
@@ -98,13 +100,16 @@ func generateFeatures(configurator *zap.Configurator, configuratorElement *etree
 		if nameAttr == nil || nameAttr.Value != "Feature" {
 			continue
 		}
-		if needFeatures {
+		if needFeatures && !tg.generateFeaturesXML {
 
 			err = populateBitmap(configurator, bm, &features.Bitmap, clusterIds, errata)
 			needFeatures = false
 		} else {
 			configuratorElement.RemoveChild(bm)
 		}
+	}
+	if tg.generateFeaturesXML {
+		return
 	}
 	if needFeatures {
 		fe := etree.NewElement("bitmap")
@@ -114,6 +119,36 @@ func generateFeatures(configurator *zap.Configurator, configuratorElement *etree
 		}
 		xml.AppendElement(configuratorElement, fe, "domain")
 	}
+	return
+}
+
+func generateFeaturesXML(configurator *zap.Configurator, configuratorElement *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+	features := cluster.Features
+	needFeatures := features != nil && len(features.Bits) > 0
+
+	bitmaps := configuratorElement.SelectElements("bitmap")
+
+	for _, bm := range bitmaps {
+		nameAttr := bm.SelectAttr("name")
+		if nameAttr == nil || nameAttr.Value != "Feature" {
+			continue
+		}
+		configuratorElement.RemoveChild(bm)
+	}
+	fse := configuratorElement.SelectElement("features")
+	if !needFeatures {
+		if fse != nil {
+			configuratorElement.RemoveChild(fse)
+		}
+		return
+	}
+	if fse == nil {
+		fse = etree.NewElement("features")
+		xml.AppendElement(configuratorElement, fse, "client", "server", "code", "define", "description", "domain", "name")
+	} else {
+		fse.Child = nil
+	}
+	err = dm.RenderFeatureElements(configurator.Doc, cluster, fse)
 	return
 }
 

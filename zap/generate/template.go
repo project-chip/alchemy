@@ -23,17 +23,31 @@ type TemplateGenerator struct {
 	pipeline pipeline.Options
 	sdkRoot  string
 
+	generateFeaturesXML bool
+
 	ProvisionalZclFiles pipeline.Map[string, *pipeline.Data[struct{}]]
 }
 
-func NewTemplateGenerator(spec *matter.Spec, fileOptions files.Options, pipelineOptions pipeline.Options, sdkRoot string) *TemplateGenerator {
-	return &TemplateGenerator{
+type TemplateOption func(tg *TemplateGenerator)
+
+func GenerateFeatureXML(generate bool) TemplateOption {
+	return func(tg *TemplateGenerator) {
+		tg.generateFeaturesXML = generate
+	}
+}
+
+func NewTemplateGenerator(spec *matter.Spec, fileOptions files.Options, pipelineOptions pipeline.Options, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
+	tg := &TemplateGenerator{
 		spec:                spec,
 		file:                fileOptions,
 		pipeline:            pipelineOptions,
 		sdkRoot:             sdkRoot,
 		ProvisionalZclFiles: pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]](),
 	}
+	for _, o := range options {
+		o(tg)
+	}
+	return tg
 }
 
 func (tg TemplateGenerator) Name() string {
@@ -122,7 +136,7 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*a
 			}
 
 		}
-		result, err = renderZapTemplate(configurator, doc, errata)
+		result, err = tg.renderZapTemplate(configurator, doc, errata)
 		if err != nil {
 			err = fmt.Errorf("failed rendering %s: %w", input.Content.Path, err)
 			return
