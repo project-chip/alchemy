@@ -24,7 +24,7 @@ var Command = &cobra.Command{
 func init() {
 	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
-	Command.Flags().Bool("overwrite", false, "overwrite existing ZAP templates")
+	Command.Flags().Bool("featureXML", false, "write new style feature XML")
 }
 
 func zapTemplates(cmd *cobra.Command, args []string) (err error) {
@@ -89,7 +89,13 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	templateGenerator := generate.NewTemplateGenerator(specParser.Spec, fileOptions, pipelineOptions, sdkRoot)
+	var templateOptions []generate.TemplateOption
+	featureXML, _ := cmd.Flags().GetBool("featureXML")
+	if featureXML {
+		templateOptions = append(templateOptions, generate.GenerateFeatureXML(true))
+	}
+
+	templateGenerator := generate.NewTemplateGenerator(specParser.Spec, fileOptions, pipelineOptions, sdkRoot, templateOptions...)
 	zapTemplateDocs, err := pipeline.Process[*ascii.Doc, string](cxt, pipelineOptions, templateGenerator, clusters)
 	if err != nil {
 		return err

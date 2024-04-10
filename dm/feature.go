@@ -13,6 +13,11 @@ func renderFeatures(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (
 		return
 	}
 	features := c.CreateElement("features")
+	err = RenderFeatureElements(doc, cluster, features)
+	return
+}
+
+func RenderFeatureElements(doc *ascii.Doc, cluster *matter.Cluster, features *etree.Element) (err error) {
 	for _, b := range cluster.Features.Bits {
 		f, ok := b.(*matter.Feature)
 		if !ok {
