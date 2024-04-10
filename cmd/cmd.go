@@ -1,17 +1,9 @@
-//go:build !db && !github
-
 package cmd
 
 import (
+	"log/slog"
 	"os"
 
-	"github.com/hasty/alchemy/cmd/compare"
-	"github.com/hasty/alchemy/cmd/disco"
-	"github.com/hasty/alchemy/cmd/dm"
-	"github.com/hasty/alchemy/cmd/dump"
-	"github.com/hasty/alchemy/cmd/format"
-	"github.com/hasty/alchemy/cmd/testplan"
-	"github.com/hasty/alchemy/cmd/zap"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -23,33 +15,31 @@ var rootCmd = &cobra.Command{
 	SilenceUsage: true,
 }
 
+var defaultCommand string
+
 func Execute() {
-	verbose, _ := rootCmd.Flags().GetBool("verbose")
-	if verbose {
-		logrus.SetLevel(logrus.DebugLevel)
-	} else {
-		logrus.SetLevel(logrus.ErrorLevel)
+	if len(defaultCommand) > 0 {
+		cmd, _, err := rootCmd.Find(os.Args[1:])
+		if err != nil || cmd.Use == rootCmd.Use {
+			rootCmd.SetArgs(append([]string{defaultCommand}, os.Args[1:]...))
+		}
 	}
 
 	err := rootCmd.Execute()
 	if err != nil {
-		os.Exit(1)
+		handleError(err)
 	}
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolP("dryrun", "d", false, "whether or not to actually output files")
-	rootCmd.PersistentFlags().BoolP("patch", "p", false, "generate patch file")
-	rootCmd.PersistentFlags().Bool("serial", false, "process files one-by-one")
 	rootCmd.PersistentFlags().Bool("verbose", false, "display verbose information")
-	rootCmd.PersistentFlags().StringSliceP("attribute", "a", []string{}, "attribute for pre-processing asciidoc; this flag can be provided more than once")
-
-	rootCmd.AddCommand(format.Command)
-	rootCmd.AddCommand(disco.Command)
-	rootCmd.AddCommand(zap.Command)
-	rootCmd.AddCommand(compare.Command)
-	rootCmd.AddCommand(conformanceCommand)
-	rootCmd.AddCommand(dump.Command)
-	rootCmd.AddCommand(dm.Command)
-	rootCmd.AddCommand(testplan.Command)
+	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+		verbose, _ := rootCmd.Flags().GetBool("verbose")
+		logrus.SetLevel(logrus.ErrorLevel)
+		if verbose {
+			slog.SetLogLoggerLevel(slog.LevelDebug)
+		} else {
+			slog.SetLogLoggerLevel(slog.LevelInfo)
+		}
+	}
 }

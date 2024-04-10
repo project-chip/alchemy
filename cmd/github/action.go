@@ -12,9 +12,10 @@ import (
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/sethvargo/go-githubactions"
+	"github.com/spf13/cobra"
 )
 
-func Action() error {
+func Action(cmd *cobra.Command, args []string) error {
 	cxt := context.Background()
 
 	action := githubactions.New()
