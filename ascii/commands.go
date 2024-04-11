@@ -109,7 +109,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[type
 				}
 				continue
 			}
-			c.Fields, err = d.readFields(cluster, headerRowIndex, rows, columnMap, mattertypes.EntityTypeCommand)
+			c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeCommand)
 			if err != nil {
 				return
 			}
