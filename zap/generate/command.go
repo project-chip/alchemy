@@ -128,7 +128,7 @@ func populateCommand(ce *etree.Element, c *matter.Command, cluster *matter.Clust
 			if conformance.IsZigbee(c.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
-			fe.CreateAttr("id", f.ID.IntString())
+			xml.PrependAttribute(fe, "id", f.ID.IntString())
 			setFieldAttributes(fe, f, c.Fields)
 			break
 		}

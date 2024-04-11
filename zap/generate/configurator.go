@@ -41,7 +41,8 @@ func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x
 
 	de := ce.SelectElement("domain")
 	if de == nil {
-		de = ce.CreateElement("domain")
+		de = etree.NewElement("domain")
+		xml.AppendElement(ce, de)
 		de.CreateAttr("name", matter.DomainNames[configurator.Doc.Domain])
 	}
 
