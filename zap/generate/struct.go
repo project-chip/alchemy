@@ -138,8 +138,7 @@ func populateStruct(configurator *zap.Configurator, ee *etree.Element, s *matter
 }
 
 func setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Field) {
-
-	e.CreateAttr("fieldId", v.ID.IntString())
+	xml.PrependAttribute(e, "fieldId", v.ID.IntString())
 	e.CreateAttr("name", v.Name)
 	writeDataType(e, s.Fields, v)
 	if v.Quality.Has(matter.QualityNullable) {

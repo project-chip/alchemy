@@ -160,3 +160,9 @@ func InsertElementByName(parent *etree.Element, el *etree.Element, alternatives 
 	}
 	parent.InsertChildAt(insertIndex, el)
 }
+
+func PrependAttribute(el *etree.Element, name string, value string) {
+	el.CreateAttr(name, value)
+	a := el.RemoveAttr(name)
+	el.Attr = append([]etree.Attr{*a}, el.Attr...)
+}
