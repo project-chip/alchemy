@@ -22,7 +22,9 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 		}
 	}
 
-	for _, s := range parse.Skim[*Section](s.Elements) {
+	elements := parse.Skim[*Section](s.Elements)
+
+	for _, s := range elements {
 		switch s.SecType {
 		case matter.SectionClusterID:
 			clusters, err = readClusterIDs(d, s)
@@ -32,10 +34,37 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 		}
 	}
 
+	var features *matter.Features
+	var bitmaps matter.BitmapSet
+	var enums matter.EnumSet
+	var structs matter.StructSet
+	for _, s := range elements {
+		switch s.SecType {
+		case matter.SectionDataTypes:
+			var bs matter.BitmapSet
+			var es matter.EnumSet
+			var ss matter.StructSet
+			bs, es, ss, err = s.toDataTypes(d, entityMap)
+			if err == nil {
+				bitmaps = append(bitmaps, bs...)
+				enums = append(enums, es...)
+				structs = append(structs, ss...)
+			}
+		case matter.SectionFeatures:
+			features, err = s.toFeatures(d, entityMap)
+		}
+		if err != nil {
+			return
+		}
+	}
+
 	for _, c := range clusters {
 		c.Description = description
+		c.Bitmaps = append(c.Bitmaps, bitmaps...)
+		c.Enums = append(c.Enums, enums...)
+		c.Structs = append(c.Structs, structs...)
+		c.Features = features
 
-		elements := parse.Skim[*Section](s.Elements)
 		for _, s := range elements {
 			switch s.SecType {
 			case matter.SectionClassification:
@@ -56,8 +85,6 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 				}
 			case matter.SectionClassification:
 				err = readClusterClassification(d, c, s)
-			case matter.SectionFeatures:
-				c.Features, err = s.toFeatures(d, entityMap)
 			case matter.SectionEvents:
 				c.Events, err = s.toEvents(d, c, entityMap)
 			case matter.SectionCommands:
@@ -66,9 +93,8 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:
 				err = parseDerivedCluster(d, s, c)
-			case matter.SectionDataTypes:
-				err = s.toDataTypes(d, c, entityMap)
 			case matter.SectionClusterID:
+			case matter.SectionDataTypes, matter.SectionFeatures: // Handled above
 			default:
 				var looseEntities []mattertypes.Entity
 				looseEntities, err = findLooseEntities(d, s, entityMap)
@@ -94,6 +120,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[types.WithAttributes][]matter
 		}
 		assignCustomDataTypes(c)
 	}
+
 	for _, c := range clusters {
 		entities = append(entities, c)
 	}

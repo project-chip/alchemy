@@ -14,7 +14,7 @@ import (
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster, entityMap map[types.WithAttributes][]mattertypes.Entity) (err error) {
+func (s *Section) toDataTypes(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, err error) {
 
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		switch s.SecType {
@@ -24,28 +24,28 @@ func (s *Section) toDataTypes(d *Doc, cluster *matter.Cluster, entityMap map[typ
 			if err != nil {
 				return
 			}
-			cluster.Bitmaps = append(cluster.Bitmaps, mb)
+			bitmaps = append(bitmaps, mb)
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
 			me, err = s.toEnum(d, entityMap)
 			if err != nil {
 				return
 			}
-			cluster.Enums = append(cluster.Enums, me)
+			enums = append(enums, me)
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
-			me, err = s.toStruct(d, cluster, entityMap)
+			me, err = s.toStruct(d, entityMap)
 			if err != nil {
 				return
 			}
-			cluster.Structs = append(cluster.Structs, me)
+			structs = append(structs, me)
 		default:
 		}
 	}
 	return
 }
 
-func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*types.TableRow, columnMap ColumnIndex, entityType mattertypes.EntityType) (fields []*matter.Field, err error) {
+func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap ColumnIndex, entityType mattertypes.EntityType) (fields []*matter.Field, err error) {
 	ids := make(map[uint64]struct{})
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
@@ -61,13 +61,7 @@ func (d *Doc) readFields(cluster *matter.Cluster, headerRowIndex int, rows []*ty
 		}
 		f.Type, err = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		if err != nil {
-			if cluster != nil && cluster.Hierarchy == "Base" && !conformance.IsDeprecated(f.Conformance) {
-				var clusterName string
-				if cluster != nil {
-					clusterName = cluster.Name
-				}
-				slog.Warn("error reading field data type", slog.String("path", d.Path), slog.String("cluster", clusterName), slog.String("name", f.Name), slog.Any("error", err))
-			}
+			slog.Debug("error reading field data type", slog.String("path", d.Path), slog.String("name", f.Name), slog.Any("error", err))
 			err = nil
 		}
 

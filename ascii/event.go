@@ -91,7 +91,7 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[types.
 				err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
 				return
 			}
-			e.Fields, err = d.readFields(cluster, headerRowIndex, rows, columnMap, mattertypes.EntityTypeEvent)
+			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeEvent)
 			entityMap[s.Base] = append(entityMap[s.Base], e)
 		}
 	}
