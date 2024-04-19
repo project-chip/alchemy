@@ -2,6 +2,7 @@ package ascii
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/types"
@@ -84,6 +85,10 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 				return nil, err
 			}
 			ev.Name = matter.StripTypeSuffixes(ev.Name)
+			if len(ev.Name) == 0 {
+				slog.Debug("skipping enum with no name", slog.String("path", s.Doc.Path), slog.String("section", s.Name))
+				continue
+			}
 			ev.Summary, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 			if err != nil {
 				return nil, err
@@ -99,15 +104,14 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 			}
 			values = append(values, ev)
 		}
-		valid := true
+		validValues := make(matter.EnumValueSet, 0, len(values))
 		for _, v := range values {
-			if !v.Value.Valid() {
-				valid = false
-				break
+			if v.Value.Valid() {
+				validValues = append(validValues, v)
 			}
 		}
-		if valid {
-			return values, nil
+		if len(validValues) > 0 {
+			return validValues, nil
 		}
 	}
 	return nil, nil
