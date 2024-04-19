@@ -36,7 +36,7 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 	slog.Debug("Inheriting cluster", "parent", parent.Name, "child", c.Name)
 	if parent.Features != nil {
 		if c.Features == nil || len(c.Features.Bits) == 0 {
-			linkedEntities = append(linkedEntities, parent.Features)
+			c.Features = parent.Features.Clone()
 		} else {
 			err = c.Features.Inherit(&parent.Features.Bitmap)
 			if err != nil {
