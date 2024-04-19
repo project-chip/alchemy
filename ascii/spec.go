@@ -234,7 +234,7 @@ func resolveDataType(spec *matter.Spec, mi entityIndex, cluster *matter.Cluster,
 					break
 				}
 			} else {
-				dataType.Entity = diambiguateDataType(entities, cluster, field)
+				dataType.Entity = disambiguateDataType(entities, cluster, field)
 			}
 		}
 		if cluster == nil || dataType.Entity == nil {
@@ -252,7 +252,7 @@ func resolveDataType(spec *matter.Spec, mi entityIndex, cluster *matter.Cluster,
 	}
 }
 
-func diambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, field *matter.Field) types.Entity {
+func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, field *matter.Field) types.Entity {
 	// If there are multiple entities with the same name, prefer the one on the current cluster
 	for m, c := range entities {
 		if c == cluster {
