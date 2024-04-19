@@ -52,7 +52,7 @@ func Elements(cxt *Context, prefix string, elements []any) (err error) {
 			err = renderAttributeDeclaration(cxt, el)
 		case *types.StringElement:
 			text := el.Content
-			if strings.HasPrefix(text, "endif::[]") {
+			if strings.HasPrefix(text, "ifdef::") || strings.HasPrefix(text, "ifndef::") || strings.HasPrefix(text, "endif::[]") {
 				cxt.WriteNewline()
 			}
 			cxt.WriteString(text)
