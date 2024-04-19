@@ -3,6 +3,7 @@ package constraint
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 
 	"github.com/hasty/alchemy/matter/types"
 )
@@ -114,4 +115,24 @@ func AppendConstraint(c Constraint, n ...Constraint) Constraint {
 		return append(c, n...)
 	}
 	return append(Set([]Constraint{c}), n...)
+}
+
+func IsBlank(c Constraint) bool {
+	switch c := c.(type) {
+	case *GenericConstraint:
+		slog.Info("constraint is generic", "c", c.Value)
+		return c.Value == ""
+	case Set:
+		slog.Info("constraint is set", "len", len(c))
+		if len(c) == 1 {
+			mc, ok := c[0].(*GenericConstraint)
+			if ok {
+				return mc.Value == ""
+			}
+		} else if len(c) == 0 {
+			return true
+		}
+
+	}
+	return false
 }
