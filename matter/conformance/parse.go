@@ -1,6 +1,7 @@
 package conformance
 
 import (
+	"log/slog"
 	"strings"
 )
 
@@ -91,6 +92,26 @@ func IsZigbee(store IdentifierStore, conformance Conformance) bool {
 	// If the absence of Zigbee makes this no longer allowed, then we call it a Zigbee only feature
 	if withoutZigbee == StateDisallowed && withZigbee != StateDisallowed {
 		return true
+	}
+	return false
+}
+
+func IsBlank(conformance Conformance) bool {
+	switch conformance := conformance.(type) {
+	case *Generic:
+		slog.Info("conformance is generic", "c", conformance.Description(), "raw", conformance.raw)
+		return conformance.raw == ""
+	case Set:
+		slog.Info("conformance is set", "c", conformance.Description(), "len", len(conformance))
+		if len(conformance) == 1 {
+			mc, ok := conformance[0].(*Generic)
+			if ok {
+				return mc.raw == ""
+			}
+		} else if len(conformance) == 0 {
+			return true
+		}
+
 	}
 	return false
 }
