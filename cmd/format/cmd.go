@@ -31,14 +31,20 @@ func format(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 
 	docReader := ascii.NewReader("Reading docs")
-	docs, err := pipeline.Process[struct{}, render.InputDocument](cxt, pipelineOptions, docReader, inputs)
+	docs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docReader, inputs)
+	if err != nil {
+		return err
+	}
+
+	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[render.InputDocument]](docs.Size())
+	err = pipeline.Cast[*ascii.Doc, render.InputDocument](docs, ids)
 	if err != nil {
 		return err
 	}
 
 	renderer := render.NewRenderer()
 	var renders pipeline.Map[string, *pipeline.Data[string]]
-	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, docs)
+	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, ids)
 	if err != nil {
 		return err
 	}

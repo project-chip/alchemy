@@ -1,6 +1,7 @@
 package pipeline
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 )
@@ -23,6 +24,19 @@ func SortData[T any](data []*Data[T]) {
 func DataMapToSlice[T any](data Map[string, *Data[T]]) (slice []*Data[T]) {
 	data.Range(func(key string, value *Data[T]) bool {
 		slice = append(slice, value)
+		return true
+	})
+	return
+}
+
+func Cast[T any, U any](from Map[string, *Data[T]], to Map[string, *Data[U]]) (err error) {
+	from.Range(func(key string, value *Data[T]) bool {
+		o, ok := any(value.Content).(U)
+		if !ok {
+			err = fmt.Errorf("cannot convert %T to %T", value.Content, new(U))
+			return false
+		}
+		to.Store(key, NewData[U](value.Path, o))
 		return true
 	})
 	return
