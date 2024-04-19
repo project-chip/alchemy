@@ -108,7 +108,7 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 			needsWrite = attribute.Access.Write != matter.PrivilegeOperate
 			ae.CreateAttr("writable", "true")
 		} else {
-			ae.CreateAttr("writable", "false")
+			ae.RemoveAttr("writable")
 		}
 		accessElements := ae.SelectElements("access")
 		for _, ax := range accessElements {
