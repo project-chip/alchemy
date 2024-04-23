@@ -19,7 +19,7 @@ func (cs Set) ASCIIDocString() string {
 		}
 		s.WriteString(c.ASCIIDocString())
 		switch c := c.(type) {
-		case *Provisional, *Disallowed, *Deprecated:
+		case *Disallowed, *Deprecated:
 			return s.String()
 		case *Optional:
 			if c.Expression == nil {

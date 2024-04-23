@@ -271,6 +271,16 @@ var otherwiseTests = []conformanceTestSuite{
 			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
 		},
 	},
+	{
+		Conformance:    "P, WATTS",
+		ASCIIDocString: "P, WATTS",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateProvisional},
+			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateProvisional},
+			{Context: Context{Values: map[string]any{"WATTS": false}}, Expected: StateProvisional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateProvisional},
+		},
+	},
 }
 
 func TestOtherwise(t *testing.T) {
