@@ -1,13 +1,13 @@
 package disco
 
 import (
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 )
 
-func fixConformanceCells(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex) (err error) {
+func fixConformanceCells(doc *ascii.Doc, rows []*elements.TableRow, columnMap ascii.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}

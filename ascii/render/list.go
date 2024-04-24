@@ -2,21 +2,19 @@ package render
 
 import (
 	"fmt"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
-func renderList(cxt *Context, l *types.List) (err error) {
+func renderList(cxt *Context, l *elements.List) (err error) {
 	err = renderAttributes(cxt, l, l.Attributes, false)
 	if err != nil {
 		return
 	}
 	switch l.Kind {
-	case types.OrderedListKind:
+	case elements.OrderedListKind:
 		err = renderOrderedList(cxt, l)
-	case types.UnorderedListKind:
+	case elements.UnorderedListKind:
 		err = renderUnorderedList(cxt, l)
-	case types.LabeledListKind:
+	case elements.LabeledListKind:
 		err = renderLabeledList(cxt, l)
 	default:
 		err = fmt.Errorf("unsupported list type: %s", l.Kind)
@@ -24,10 +22,10 @@ func renderList(cxt *Context, l *types.List) (err error) {
 	return
 }
 
-func renderOrderedList(cxt *Context, l *types.List) (err error) {
+func renderOrderedList(cxt *Context, l *elements.List) (err error) {
 	for _, e := range l.Elements {
 		switch el := e.(type) {
-		case *types.OrderedListElement:
+		case *elements.OrderedListElement:
 			err = renderOrderedListElement(cxt, el)
 		default:
 			err = fmt.Errorf("unknown ordered list element type: %T", el)
@@ -39,19 +37,19 @@ func renderOrderedList(cxt *Context, l *types.List) (err error) {
 	return
 }
 
-func renderOrderedListElement(cxt *Context, el *types.OrderedListElement) (err error) {
+func renderOrderedListElement(cxt *Context, el *elements.OrderedListElement) (err error) {
 	cxt.WriteNewline()
 	var bullet string
 	switch el.Style {
-	case types.Arabic:
+	case elements.Arabic:
 		bullet = "."
-	case types.LowerAlpha:
+	case elements.LowerAlpha:
 		bullet = ".."
-	case types.LowerRoman:
+	case elements.LowerRoman:
 		bullet = "..."
-	case types.UpperAlpha:
+	case elements.UpperAlpha:
 		bullet = "...."
-	case types.UpperRoman:
+	case elements.UpperRoman:
 		bullet = "....."
 	}
 	err = renderAttributes(cxt, el, el.Attributes, false)
@@ -62,11 +60,11 @@ func renderOrderedListElement(cxt *Context, el *types.OrderedListElement) (err e
 	return
 }
 
-func renderUnorderedList(cxt *Context, l *types.List) (err error) {
+func renderUnorderedList(cxt *Context, l *elements.List) (err error) {
 	cxt.WriteNewline()
 	for _, e := range l.Elements {
 		switch el := e.(type) {
-		case *types.UnorderedListElement:
+		case *elements.UnorderedListElement:
 			err = renderUnorderedListElement(cxt, el)
 		default:
 			err = fmt.Errorf("unknown unordered list element type: %T", el)
@@ -78,21 +76,21 @@ func renderUnorderedList(cxt *Context, l *types.List) (err error) {
 	return
 }
 
-func renderUnorderedListElement(cxt *Context, el *types.UnorderedListElement) (err error) {
+func renderUnorderedListElement(cxt *Context, el *elements.UnorderedListElement) (err error) {
 	cxt.WriteNewline()
 	var bullet string
 	switch el.BulletStyle {
-	case types.Dash:
+	case elements.Dash:
 		bullet = "-"
-	case types.OneAsterisk:
+	case elements.OneAsterisk:
 		bullet = "*"
-	case types.TwoAsterisks:
+	case elements.TwoAsterisks:
 		bullet = "**"
-	case types.ThreeAsterisks:
+	case elements.ThreeAsterisks:
 		bullet = "***"
-	case types.FourAsterisks:
+	case elements.FourAsterisks:
 		bullet = "****"
-	case types.FiveAsterisks:
+	case elements.FiveAsterisks:
 		bullet = "*****"
 	}
 	err = renderAttributes(cxt, el, el.Attributes, false)
@@ -103,10 +101,10 @@ func renderUnorderedListElement(cxt *Context, el *types.UnorderedListElement) (e
 	return
 }
 
-func renderLabeledList(cxt *Context, l *types.List) (err error) {
+func renderLabeledList(cxt *Context, l *elements.List) (err error) {
 	for _, e := range l.Elements {
 		switch el := e.(type) {
-		case *types.LabeledListElement:
+		case *elements.LabeledListElement:
 			err = renderLabeledListElement(cxt, el)
 			if err != nil {
 				return
@@ -121,7 +119,7 @@ func renderLabeledList(cxt *Context, l *types.List) (err error) {
 	return
 }
 
-func renderLabeledListElement(cxt *Context, el *types.LabeledListElement) error {
+func renderLabeledListElement(cxt *Context, el *elements.LabeledListElement) error {
 	cxt.WriteNewline()
 	err := renderAttributes(cxt, el, el.Attributes, false)
 	if err != nil {
@@ -140,18 +138,18 @@ func renderLabeledListElement(cxt *Context, el *types.LabeledListElement) error 
 	return nil
 }
 
-func renderListElements(cxt *Context, les *types.ListElements) (err error) {
+func renderListElements(cxt *Context, les *elements.ListElements) (err error) {
 	for _, le := range les.Elements {
 		switch el := le.(type) {
-		case *types.OrderedListElement:
+		case *elements.OrderedListElement:
 			err = renderOrderedListElement(cxt, el)
-		case *types.UnorderedListElement:
+		case *elements.UnorderedListElement:
 			err = renderUnorderedListElement(cxt, el)
-		case *types.ListContinuation:
+		case *elements.ListContinuation:
 			cxt.WriteNewline()
 			cxt.WriteString("+\n")
 			err = Elements(cxt, "", []any{el.Element})
-		case *types.LabeledListElement:
+		case *elements.LabeledListElement:
 			err = renderLabeledListElement(cxt, el)
 		default:
 			err = fmt.Errorf("unexpected list element: %T", le)

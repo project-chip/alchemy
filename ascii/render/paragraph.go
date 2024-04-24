@@ -1,11 +1,9 @@
 package render
 
-import (
-	"github.com/bytesparadise/libasciidoc/pkg/types"
-)
+import "github.com/hasty/adoc/elements"
 
-func renderParagraph(cxt *Context, p *types.Paragraph, previous *any) (err error) {
-	err = renderAttributes(cxt, p, p.Attributes, false)
+func renderParagraph(cxt *Context, p *elements.Paragraph, previous *any) (err error) {
+	err = renderAttributes(cxt, p, p.AttributeList, false)
 	if err != nil {
 		return
 	}

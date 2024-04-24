@@ -4,7 +4,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
@@ -14,14 +13,14 @@ var lowercaseHexPattern = regexp.MustCompile(`(\b0x[0-9a-f]*[a-f][0-9a-f]*\b)`)
 var lowercasePattern = regexp.MustCompile(`[a-f]+`)
 
 func precleanStrings(elements []any) {
-	parse.Search(elements, func(t *types.StringElement) bool {
+	parse.Search(elements, func(t *elements.String) bool {
 		t.Content = strings.ReplaceAll(t.Content, "\t", "  ")
 		return false
 	})
 }
 
 func (b *Ball) postCleanUpStrings(elements []any) {
-	parse.Search(elements, func(t *types.StringElement) bool {
+	parse.Search(elements, func(t *elements.String) bool {
 		if b.options.addSpaceAfterPunctuation {
 			t.Content = missingSpaceAfterPunctuationPattern.ReplaceAllString(t.Content, "$1$2 $3")
 		}

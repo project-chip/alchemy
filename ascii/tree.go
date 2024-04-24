@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"path/filepath"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
@@ -23,8 +23,8 @@ func buildTree(docs []*Doc) {
 			continue
 		}
 
-		parse.Search[*types.Section](top.Base.Elements, func(t *types.Section) bool {
-			link := parse.FindFirst[*types.InlineLink](t.Title)
+		parse.Search[*elements.Section](top.Base.Elements, func(t *elements.Section) bool {
+			link := parse.FindFirst[*elements.InlineLink](t.Title)
 			if link != nil {
 				linkPath, ok := link.Location.Path.(string)
 				if ok {

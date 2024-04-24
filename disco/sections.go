@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
@@ -76,14 +76,14 @@ func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]stru
 func setSectionTitle(sec *ascii.Section, title string) {
 	for _, e := range sec.Base.Title {
 		switch el := e.(type) {
-		case *types.StringElement:
+		case *elements.String:
 			el.Content = title
 			sec.Name = title
 		}
 	}
 }
 
-func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.ColumnIndex, rows []*types.TableRow) {
+func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.ColumnIndex, rows []*elements.TableRow) {
 	var subsectionSuffix string
 	var subsectionType matter.Section
 	switch section.SecType {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -61,7 +61,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 	if section.table.element == nil {
 		return nil
 	}
-	attributeCells := make(map[string]*types.Paragraph)
+	attributeCells := make(map[string]*elements.Paragraph)
 	nameIndex, ok := section.table.columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
@@ -77,14 +77,14 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 		if len(cell.Elements) == 0 {
 			continue
 		}
-		p, ok := cell.Elements[0].(*types.Paragraph)
+		p, ok := cell.Elements[0].(*elements.Paragraph)
 		if !ok {
 			continue
 		}
 		if len(p.Elements) == 0 {
 			continue
 		}
-		_, ok = p.Elements[0].(*types.StringElement)
+		_, ok = p.Elements[0].(*elements.String)
 		if !ok {
 			continue
 		}
@@ -106,7 +106,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 			continue
 		}
 		var id string
-		ide, ok := s.Base.Attributes[types.AttrID]
+		ide, ok := s.Base.AttributeList[elements.AttrID]
 		if ok {
 			id, ok = ide.(string)
 			if ok && strings.HasPrefix(id, "_") {
@@ -118,7 +118,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 			id, label = normalizeAnchorID(s.Name, nil, nil)
 			setAnchorID(s.Base, id, label)
 		}
-		icr, _ := types.NewInternalCrossReference(id, nil)
+		icr, _ := elements.NewInternalCrossReference(id, nil)
 		err := p.SetElements([]any{icr})
 		if err != nil {
 			return err

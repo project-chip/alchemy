@@ -5,13 +5,13 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (bm *matter.Bitmap, err error) {
+func (s *Section) toBitmap(d *Doc, entityMap map[elements.Attributable][]mattertypes.Entity) (bm *matter.Bitmap, err error) {
 	name := strings.TrimSuffix(s.Name, " Type")
 
 	dt := s.GetDataType()
@@ -27,7 +27,7 @@ func (s *Section) toBitmap(d *Doc, entityMap map[types.WithAttributes][]matterty
 		Name: name,
 		Type: dt,
 	}
-	var rows []*types.TableRow
+	var rows []*elements.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)

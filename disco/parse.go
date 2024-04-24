@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
@@ -37,8 +37,8 @@ type subSection struct {
 }
 
 type tableInfo struct {
-	element      *types.Table
-	rows         []*types.TableRow
+	element      *elements.Table
+	rows         []*elements.TableRow
 	headerRow    int
 	columnMap    ascii.ColumnIndex
 	extraColumns []ascii.ExtraColumn

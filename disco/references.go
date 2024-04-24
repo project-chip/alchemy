@@ -3,12 +3,11 @@ package disco
 import (
 	"log/slog"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
 
-func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*types.InternalCrossReference, anchors map[string]*ascii.Anchor) {
+func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*elements.InternalCrossReference, anchors map[string]*ascii.Anchor) {
 	for id, xrefs := range crossReferences {
 		info, ok := anchors[id]
 		if !ok {

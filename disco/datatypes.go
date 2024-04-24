@@ -5,11 +5,10 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 type DataTypeEntry struct {
@@ -18,8 +17,8 @@ type DataTypeEntry struct {
 	dataType         string
 	dataTypeCategory matter.DataTypeCategory
 	section          *ascii.Section
-	typeCell         *types.TableCell
-	definitionTable  *types.Table
+	typeCell         *elements.TableCell
+	definitionTable  *elements.Table
 	indexColumn      matter.TableColumn
 	existing         bool
 }
@@ -29,7 +28,7 @@ func getExistingDataTypes(cxt *discoContext, dp *docParse) {
 		return
 	}
 
-	for _, ss := range parse.FindAll[*ascii.Section](dp.dataTypes.section.Elements) {
+	for _, ss := range parse.FindAll[*ascii.Section](dp.dataelements.section.Elements) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		dataType := ss.GetDataType()
@@ -89,7 +88,7 @@ func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, 
 	return nil
 }
 
-func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*types.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
+func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*elements.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
 	sectionDataMap := make(map[string]*DataTypeEntry)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
@@ -224,14 +223,14 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		return
 	}
 	var dataTypesSection *ascii.Section
-	var entityType mattertypes.EntityType
+	var entityType matterelements.EntityType
 	switch dtc {
 	case matter.DataTypeCategoryBitmap:
-		entityType = mattertypes.EntityTypeBitmapValue
+		entityType = matterelements.EntityTypeBitmapValue
 	case matter.DataTypeCategoryEnum:
-		entityType = mattertypes.EntityTypeEnumValue
+		entityType = matterelements.EntityTypeEnumValue
 	case matter.DataTypeCategoryStruct:
-		entityType = mattertypes.EntityTypeField
+		entityType = matterelements.EntityTypeField
 	}
 	for _, dt := range dataTypeFields {
 		if dt.existing {
@@ -299,8 +298,8 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			}
 		}
 
-		var title *types.StringElement
-		title, err = types.NewStringElement(dt.name + suffix + " Type")
+		var title *elements.String
+		title, err = elements.NewStringElement(dt.name + suffix + " Type")
 		if err != nil {
 			return
 		}
@@ -314,7 +313,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 
 		var removedTable bool
 		parse.Filter(dt.section, func(i any) (remove bool, shortCircuit bool) {
-			if t, ok := i.(*types.Table); ok && table == t {
+			if t, ok := i.(*elements.Table); ok && table == t {
 				removedTable = true
 				return true, true
 			}
@@ -326,15 +325,15 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 
-		dataTypeSection, _ := types.NewSection(dataTypesSection.Base.Level+1, []any{title})
+		dataTypeSection, _ := elements.NewSection(dataTypesSection.Base.Level+1, []any{title})
 
-		se, _ := types.NewStringElement(fmt.Sprintf("This data type is derived from %s", dt.dataType))
-		p, _ := types.NewParagraph(nil, se)
+		se, _ := elements.NewStringElement(fmt.Sprintf("This data type is derived from %s", dt.dataType))
+		p, _ := elements.NewParagraph(nil, se)
 		err = dataTypeSection.AddElement(p)
 		if err != nil {
 			return
 		}
-		bl, _ := types.NewBlankLine()
+		bl, _ := elements.NewBlankLine()
 		err = dataTypeSection.AddElement(bl)
 		if err != nil {
 			return
@@ -347,15 +346,15 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		if err != nil {
 			return
 		}
-		newAttr := make(types.Attributes)
+		newAttr := make(elements.AttributeList)
 		var newID string
-		if id, ok := table.Attributes.GetAsString(types.AttrID); ok {
+		if id, ok := table.AttributeList.GetAsString(elements.AttrID); ok {
 			// Reuse the table's ID if it has one, so existing links get updated
 			newID = id
-			newAttr[types.AttrID] = newID
+			newAttr[elements.AttrID] = newID
 		} else {
 			newID = "ref_" + dt.ref + suffix
-			newAttr[types.AttrID] = newID + ", " + dt.name + suffix
+			newAttr[elements.AttrID] = newID + ", " + dt.name + suffix
 		}
 
 		dataTypeSection.AddAttributes(newAttr)
@@ -378,10 +377,10 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 
-		table.Attributes.Unset(types.AttrID)
-		table.Attributes.Unset(types.AttrTitle)
+		table.AttributeList.Unset(elements.AttrID)
+		table.AttributeList.Unset(elements.AttrTitle)
 
-		icr, _ := types.NewInternalCrossReference(newID, "")
+		icr, _ := elements.NewInternalCrossReference(newID, "")
 		err = setCellValue(dt.typeCell, []any{icr})
 		if err != nil {
 			return
@@ -396,12 +395,12 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 	if dataTypesSection != nil {
 		return dataTypesSection, nil
 	}
-	title, err := types.NewStringElement(matter.SectionTypeName(matter.SectionDataTypes))
+	title, err := elements.NewStringElement(matter.SectionTypeName(matter.SectionDataTypes))
 	if err != nil {
 		return nil, err
 	}
-	ts, _ := types.NewSection(top.Base.Level+1, []any{title})
-	bl, _ := types.NewBlankLine()
+	ts, _ := elements.NewSection(top.Base.Level+1, []any{title})
+	bl, _ := elements.NewBlankLine()
 	err = ts.AddElement(bl)
 	if err != nil {
 		return nil, err

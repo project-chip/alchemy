@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -17,14 +17,14 @@ type Section struct {
 	Name string
 
 	Parent any
-	Base   *types.Section
+	Base   *elements.Section
 
 	SecType matter.Section
 
 	Elements []any
 }
 
-func NewSection(doc *Doc, parent any, s *types.Section) (*Section, error) {
+func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
 	ss := &Section{Doc: doc, Parent: parent, Base: s}
 
 	var name strings.Builder
@@ -35,10 +35,10 @@ func NewSection(doc *Doc, parent any, s *types.Section) (*Section, error) {
 	ss.Name = name.String()
 	for _, e := range s.Elements {
 		switch el := e.(type) {
-		case *types.AttributeDeclaration:
+		case *elements.AttributeDeclaration:
 			doc.attributes[el.Name] = el.Value
 			ss.Elements = append(ss.Elements, NewElement(ss, e))
-		case *types.Section:
+		case *elements.Section:
 			s, err := NewSection(doc, ss, el)
 			if err != nil {
 				return nil, err
@@ -58,20 +58,20 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, elements ...any) (err e
 			err = buildSectionTitle(doc, title, e...)
 		case string:
 			title.WriteString(e)
-		case *types.StringElement:
+		case *elements.String:
 			title.WriteString(e.Content)
-		case *types.Symbol:
+		case *elements.Symbol:
 			title.WriteString(e.Name)
-		case *types.SpecialCharacter:
+		case *elements.SpecialCharacter:
 			title.WriteString(e.Name)
-		case *types.AttributeReference:
+		case *elements.AttributeReference:
 			attr, ok := doc.attributes[e.Name]
 			if !ok {
 				return fmt.Errorf("unknown section title attribute: %s", e.Name)
 			}
 			err = buildSectionTitle(doc, title, attr)
-		case *types.InlineLink:
-		case *types.QuotedText:
+		case *elements.InlineLink:
+		case *elements.QuotedText:
 
 		default:
 			err = fmt.Errorf("unknown section title component type: %T", e)
@@ -97,7 +97,7 @@ func (s *Section) SetElements(elements []any) error {
 	return s.Base.SetElements(elements)
 }
 
-func (s *Section) GetASCIISection() *types.Section {
+func (s *Section) GetASCIISection() *elements.Section {
 	return s.Base
 }
 
@@ -344,7 +344,7 @@ func guessDataTypeFromTable(section *Section, parent *Section) (sectionType matt
 	return
 }
 
-func (s *Section) toEntities(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) ([]mattertypes.Entity, error) {
+func (s *Section) toEntities(d *Doc, entityMap map[elements.Attributable][]mattertypes.Entity) ([]mattertypes.Entity, error) {
 	var entities []mattertypes.Entity
 	switch s.SecType {
 	case matter.SectionCluster:
@@ -378,10 +378,10 @@ var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<e
 //var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:(?:<<enum-def\s*,\s*)|(?:<<ref_DataTypeBitmap,))?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
 
 func (s *Section) GetDataType() *mattertypes.DataType {
-	var para *types.Paragraph
+	var para *elements.Paragraph
 	var ok bool
 	for _, e := range s.Base.Elements {
-		para, ok = e.(*types.Paragraph)
+		para, ok = e.(*elements.Paragraph)
 		if ok {
 			break
 		}
@@ -392,7 +392,7 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 	var dts string
 	for _, el := range para.Elements {
 		switch el := el.(type) {
-		case *types.StringElement:
+		case *elements.String:
 			match := dataTypeDefinitionPattern.FindStringSubmatch(el.Content)
 			if match != nil {
 				dts = match[1]
@@ -401,7 +401,7 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 			if strings.HasPrefix(el.Content, "This struct") {
 				dts = strings.TrimSuffix(s.Name, " Type")
 			}
-		case *types.InternalCrossReference:
+		case *elements.InternalCrossReference:
 			id, ok := el.ID.(string)
 			if !ok {
 				continue
@@ -426,7 +426,7 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 	return nil
 }
 
-func findLooseEntities(doc *Doc, section *Section, entityMap map[types.WithAttributes][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
+func findLooseEntities(doc *Doc, section *Section, entityMap map[elements.Attributable][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
 	parse.Traverse(doc, section.Elements, func(section *Section, parent parse.HasElements, index int) bool {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:

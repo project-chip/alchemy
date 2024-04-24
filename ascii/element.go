@@ -2,8 +2,6 @@ package ascii
 
 import (
 	"fmt"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
 type Element struct {
@@ -16,14 +14,14 @@ func NewElement(parent any, base any) *Element {
 }
 
 func (e *Element) GetElements() []any {
-	if we, ok := e.Base.(types.WithElements); ok {
+	if we, ok := e.Base.(elements.WithElements); ok {
 		return we.GetElements()
 	}
 	return []any{}
 }
 
 func (e *Element) SetElements(elements []any) error {
-	if we, ok := e.Base.(types.WithElements); ok {
+	if we, ok := e.Base.(elements.WithElements); ok {
 		return we.SetElements(elements)
 	}
 	return fmt.Errorf("base element does not have elements: %T", e.Base)

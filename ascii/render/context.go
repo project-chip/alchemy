@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
@@ -20,7 +20,7 @@ type Context struct {
 type InputDocument interface {
 	parse.HasElements
 
-	Footnotes() []*types.Footnote
+	Footnotes() []*elements.Footnote
 }
 
 func NewContext(parent context.Context, doc InputDocument) *Context {

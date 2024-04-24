@@ -6,19 +6,19 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
-func (doc *Doc) CrossReferences() map[string][]*types.InternalCrossReference {
+func (doc *Doc) CrossReferences() map[string][]*elements.InternalCrossReference {
 	doc.Lock()
 	if doc.crossReferences != nil {
 		doc.Unlock()
 		return doc.crossReferences
 	}
-	doc.crossReferences = make(map[string][]*types.InternalCrossReference)
+	doc.crossReferences = make(map[string][]*elements.InternalCrossReference)
 	parse.Traverse(nil, doc.Base.Elements, func(el any, parent parse.HasElements, index int) bool {
-		if icr, ok := el.(*types.InternalCrossReference); ok {
+		if icr, ok := el.(*elements.InternalCrossReference); ok {
 			id, ok := icr.ID.(string)
 			if !ok {
 				return false
@@ -36,7 +36,7 @@ func (doc *Doc) CrossReferences() map[string][]*types.InternalCrossReference {
 func PatchUnrecognizedReferences(doc *Doc) {
 	var elementsWithUnrecognizedReferences []parse.HasElements
 	parse.Traverse(nil, doc.Base.Elements, func(el any, parent parse.HasElements, index int) bool {
-		sc, ok := el.(*types.SpecialCharacter)
+		sc, ok := el.(*elements.SpecialCharacter)
 		if !ok {
 			return false
 		}
@@ -63,7 +63,7 @@ func PatchUnrecognizedReferences(doc *Doc) {
 				if len(parts) > 1 {
 					label = parts[1]
 				}
-				icr, _ := types.NewInternalCrossReference(id, label)
+				icr, _ := elements.NewInternalCrossReference(id, label)
 				n := slices.Replace(els, i, i+5, any(icr))
 				_ = e.SetElements(n)
 
@@ -77,23 +77,23 @@ func getUnrecognizedReference(els []any) string {
 	if len(els) < 5 {
 		return ""
 	}
-	sc, ok := els[0].(*types.SpecialCharacter)
+	sc, ok := els[0].(*elements.SpecialCharacter)
 	if !ok || sc.Name != "<" {
 		return ""
 	}
-	sc, ok = els[1].(*types.SpecialCharacter)
+	sc, ok = els[1].(*elements.SpecialCharacter)
 	if !ok || sc.Name != "<" {
 		return ""
 	}
-	s, ok := els[2].(*types.StringElement)
+	s, ok := els[2].(*elements.String)
 	if !ok {
 		return ""
 	}
-	sc, ok = els[3].(*types.SpecialCharacter)
+	sc, ok = els[3].(*elements.SpecialCharacter)
 	if !ok || sc.Name != ">" {
 		return ""
 	}
-	sc, ok = els[4].(*types.SpecialCharacter)
+	sc, ok = els[4].(*elements.SpecialCharacter)
 	if !ok || sc.Name != ">" {
 		return ""
 	}
@@ -102,15 +102,15 @@ func getUnrecognizedReference(els []any) string {
 
 func ReferenceName(element any) string {
 	switch el := element.(type) {
-	case *types.Section:
+	case *elements.Section:
 		var val strings.Builder
 		for _, el := range el.Title {
 			switch el := el.(type) {
-			case *types.StringElement:
+			case *elements.String:
 				val.WriteString(el.Content)
-			case *types.Symbol:
+			case *elements.Symbol:
 				val.WriteString(el.Name)
-			case *types.SpecialCharacter:
+			case *elements.SpecialCharacter:
 				var char string
 				switch el.Name {
 				case "&", ">", "<":
@@ -119,14 +119,14 @@ func ReferenceName(element any) string {
 					slog.Warn("unrecognized special character", "char", el.Name, "context", val.String())
 				}
 				val.WriteString(char)
-			case types.WithAttributes:
+			case elements.Attributable:
 				val.WriteString(referenceNameFromAttributes(el))
 			default:
 				slog.Warn("unknown section title element", "element", el, "type", fmt.Sprintf("%T", el))
 			}
 		}
 		return val.String()
-	case types.WithAttributes:
+	case elements.Attributable:
 		return referenceNameFromAttributes(el)
 	default:
 		slog.Warn("Unknown type to get reference name", "type", element)
@@ -134,7 +134,7 @@ func ReferenceName(element any) string {
 	return ""
 }
 
-func referenceNameFromAttributes(el types.WithAttributes) string {
+func referenceNameFromAttributes(el elements.Attributable) string {
 	attr := el.GetAttributes()
 	if attr == nil {
 		slog.Debug("anchor element has no attributes")

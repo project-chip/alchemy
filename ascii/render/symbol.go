@@ -2,36 +2,34 @@ package render
 
 import (
 	"fmt"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
-func renderQuotedText(cxt *Context, qt *types.QuotedText) (err error) {
+func renderQuotedText(cxt *Context, qt *elements.QuotedText) (err error) {
 	err = renderAttributes(cxt, qt, qt.Attributes, true)
 	if err != nil {
 		return
 	}
 	var wrapper string
 	switch qt.Kind {
-	case types.SingleQuoteBold:
+	case elements.SingleQuoteBold:
 		wrapper = "*"
-	case types.DoubleQuoteBold:
+	case elements.DoubleQuoteBold:
 		wrapper = "**"
-	case types.SingleQuoteMonospace:
+	case elements.SingleQuoteMonospace:
 		wrapper = "`"
-	case types.DoubleQuoteMonospace:
+	case elements.DoubleQuoteMonospace:
 		wrapper = "``"
-	case types.SingleQuoteSuperscript:
+	case elements.SingleQuoteSuperscript:
 		wrapper = "^"
-	case types.SingleQuoteSubscript:
+	case elements.SingleQuoteSubscript:
 		wrapper = "~"
-	case types.SingleQuoteItalic:
+	case elements.SingleQuoteItalic:
 		wrapper = "_"
-	case types.DoubleQuoteItalic:
+	case elements.DoubleQuoteItalic:
 		wrapper = "__"
-	case types.SingleQuoteMarked:
+	case elements.SingleQuoteMarked:
 		wrapper = "#"
-	case types.DoubleQuoteMarked:
+	case elements.DoubleQuoteMarked:
 		wrapper = "##"
 	default:
 		err = fmt.Errorf("unsupported quoted text kind: %s", qt.Kind)
@@ -43,7 +41,7 @@ func renderQuotedText(cxt *Context, qt *types.QuotedText) (err error) {
 	return
 }
 
-func renderSpecialCharacter(cxt *Context, s *types.SpecialCharacter) error {
+func renderSpecialCharacter(cxt *Context, s *elements.SpecialCharacter) error {
 	switch s.Name {
 	case "<":
 		cxt.WriteRune('<')
@@ -57,7 +55,7 @@ func renderSpecialCharacter(cxt *Context, s *types.SpecialCharacter) error {
 	return nil
 }
 
-func renderSymbol(cxt *Context, s *types.Symbol) error {
+func renderSymbol(cxt *Context, s *elements.Symbol) error {
 	switch s.Name {
 	case "'":
 		cxt.WriteRune('\'')
