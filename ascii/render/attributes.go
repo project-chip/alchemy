@@ -430,23 +430,7 @@ func renderAttributeDeclaration(cxt *Context, ad *types.AttributeDeclaration) (e
 		}
 	default:
 		cxt.WriteNewline()
-		cxt.WriteRune(':')
-		cxt.WriteString(ad.Name)
-		cxt.WriteString(":")
-		switch val := ad.Value.(type) {
-		case string:
-			cxt.WriteRune(' ')
-			cxt.WriteString(val)
-		case *types.Paragraph:
-			var previous any
-			err = renderParagraph(cxt, val, &previous)
-		case []any:
-			err = Elements(cxt, "", val)
-		case nil:
-		default:
-			err = fmt.Errorf("unknown attribute declaration value type: %T", ad.Value)
-		}
-		cxt.WriteRune('\n')
+		cxt.WriteString(ad.RawText())
 	}
 	return
 }
