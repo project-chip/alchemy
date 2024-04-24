@@ -8,7 +8,7 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/parser"
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/internal/text"
 )
@@ -37,7 +37,7 @@ func Parse(contents string, path string, settings ...configuration.Setting) (doc
 		return nil, err
 	}
 
-	var d *types.Document
+	var d *elements.Document
 
 	d, err = ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
 
@@ -56,7 +56,7 @@ func Parse(contents string, path string, settings ...configuration.Setting) (doc
 	return doc, nil
 }
 
-func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...parser.Option) (*types.Document, error) {
+func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...parser.Option) (*elements.Document, error) {
 	done := make(chan any)
 	defer close(done)
 
@@ -67,7 +67,7 @@ func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...par
 		return c
 	}
 
-	footnotes := types.NewFootnotes()
+	footnotes := elements.NewFootnotes()
 	doc, err := parser.Aggregate(newContext(),
 		parser.CollectFootnotes(footnotes, done,
 			parser.ApplySubstitutions(newContext(), done,

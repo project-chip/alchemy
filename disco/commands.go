@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -23,6 +23,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 		if len(commands.table.columnMap) < 2 {
 			return fmt.Errorf("can't rearrange commands table with so few matches")
 		}
+
 		err = b.fixAccessCells(dp.doc, &commands.table, mattertypes.EntityTypeCommand)
 		if err != nil {
 			return fmt.Errorf("error fixing access cells in commands table in %s: %w", dp.doc.Path, err)
@@ -70,7 +71,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 	return
 }
 
-func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*types.TableRow, columnMap ascii.ColumnIndex) (err error) {
+func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*elements.TableRow, columnMap ascii.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}

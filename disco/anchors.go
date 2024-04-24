@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
@@ -100,7 +100,7 @@ func normalizeAnchorID(name string, element any, parent any) (id string, label s
 
 func normalizeAnchorLabel(name string, element any) (label string) {
 	switch element.(type) {
-	case *types.Table:
+	case *elements.Table:
 		label = strings.TrimSpace(name)
 	default:
 		name = strings.TrimSuffix(name, " Type")
@@ -109,12 +109,12 @@ func normalizeAnchorLabel(name string, element any) (label string) {
 	return
 }
 
-func setAnchorID(element types.WithAttributes, id string, label string) {
-	newAttr := make(types.Attributes)
+func setAnchorID(element elements.Attributable, id string, label string) {
+	newAttr := make(elements.AttributeList)
 	if len(label) > 0 {
 		id += ", " + label
 	}
-	newAttr[types.AttrID] = id
+	newAttr[elements.AttrID] = id
 	element.AddAttributes(newAttr)
 }
 

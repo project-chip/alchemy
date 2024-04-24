@@ -6,15 +6,15 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/constraint"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toDataTypes(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, err error) {
+func (s *Section) toDataTypes(d *Doc, entityMap map[elements.Attributable][]types.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, err error) {
 
 	for _, s := range parse.Skim[*Section](s.Elements) {
 		switch s.SecType {
@@ -45,7 +45,7 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[types.WithAttributes][]matte
 	return
 }
 
-func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap ColumnIndex, entityType mattertypes.EntityType) (fields []*matter.Field, err error) {
+func (d *Doc) readFields(headerRowIndex int, rows []*elements.TableRow, columnMap ColumnIndex, entityType types.EntityType) (fields []*matter.Field, err error) {
 	ids := make(map[uint64]struct{})
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
@@ -106,17 +106,17 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 		if f.Type != nil {
 			var cs constraint.Set
 			switch f.Type.BaseType {
-			case mattertypes.BaseDataTypeMessageID:
+			case types.BaseDataTypeMessageID:
 				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
-			case mattertypes.BaseDataTypeIPAddress:
+			case types.BaseDataTypeIPAddress:
 				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 4}}, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
-			case mattertypes.BaseDataTypeIPv4Address:
+			case types.BaseDataTypeIPv4Address:
 				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 4}}}
-			case mattertypes.BaseDataTypeIPv6Address:
+			case types.BaseDataTypeIPv6Address:
 				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
-			case mattertypes.BaseDataTypeIPv6Prefix:
+			case types.BaseDataTypeIPv6Prefix:
 				cs = []constraint.Constraint{&constraint.RangeConstraint{Minimum: &constraint.IntLimit{Value: 1}, Maximum: &constraint.IntLimit{Value: 17}}}
-			case mattertypes.BaseDataTypeHardwareAddress:
+			case types.BaseDataTypeHardwareAddress:
 				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 6}}, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 8}}}
 			}
 			if cs != nil {
@@ -139,7 +139,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*types.TableRow, columnMap C
 var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeList)\[([^\]]+)\]`)
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
-func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*mattertypes.DataType, error) {
+func (d *Doc) ReadRowDataType(row *elements.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*types.DataType, error) {
 	i, ok := columnMap[column]
 	if !ok {
 		return nil, fmt.Errorf("missing %s column for data type", column)
@@ -148,7 +148,7 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 	if len(cell.Elements) == 0 {
 		return nil, fmt.Errorf("empty %s cell for data type", column)
 	}
-	p, ok := cell.Elements[0].(*types.Paragraph)
+	p, ok := cell.Elements[0].(*elements.Paragraph)
 	if !ok {
 		return nil, fmt.Errorf("missing paragraph in %s cell for data type", column)
 	}
@@ -160,9 +160,9 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 	var sb strings.Builder
 	for _, el := range p.Elements {
 		switch v := el.(type) {
-		case *types.StringElement:
+		case *elements.String:
 			sb.WriteString(v.Content)
-		case *types.InternalCrossReference:
+		case *elements.InternalCrossReference:
 			var name string
 			anchor, _ := d.getAnchor(v.ID.(string))
 			if anchor != nil {
@@ -175,7 +175,7 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 				name = strings.TrimPrefix(v.ID.(string), "_")
 			}
 			sb.WriteString(name)
-		case *types.SpecialCharacter:
+		case *elements.SpecialCharacter:
 		default:
 			slog.Warn("unknown data type value element", "type", v)
 		}
@@ -194,7 +194,7 @@ func (d *Doc) ReadRowDataType(row *types.TableRow, columnMap ColumnIndex, column
 		name = name[:commaIndex]
 	}
 	name = strings.TrimSuffix(name, " Type")
-	dt := mattertypes.ParseDataType(name, isArray)
+	dt := types.ParseDataType(name, isArray)
 	return dt, nil
 }
 
@@ -219,14 +219,14 @@ func (d *Doc) getAnchor(id string) (*Anchor, error) {
 	return nil, nil
 }
 
-func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *mattertypes.DataType) constraint.Constraint {
+func (d *Doc) getRowConstraint(row *elements.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *types.DataType) constraint.Constraint {
 	var val string
 	offset, ok := columnMap[column]
 	if ok {
 		cell := row.Cells[offset]
 		if len(cell.Elements) > 0 {
 			el := cell.Elements[0]
-			para, ok := el.(*types.Paragraph)
+			para, ok := el.(*elements.Paragraph)
 			if ok {
 				var sb strings.Builder
 				d.buildConstraintValue(para.Elements, &sb)
@@ -247,9 +247,9 @@ func (d *Doc) getRowConstraint(row *types.TableRow, columnMap ColumnIndex, colum
 func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
 	for _, el := range elements {
 		switch v := el.(type) {
-		case *types.StringElement:
+		case *elements.String:
 			sb.WriteString(v.Content)
-		case *types.InternalCrossReference:
+		case *elements.InternalCrossReference:
 			anchor, _ := d.getAnchor(v.ID.(string))
 			var name string
 			if anchor != nil {
@@ -258,9 +258,9 @@ func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
 				name = strings.TrimPrefix(v.ID.(string), "_")
 			}
 			sb.WriteString(name)
-		case *types.QuotedText:
+		case *elements.QuotedText:
 			switch v.Kind {
-			case types.SingleQuoteSuperscript:
+			case elements.SingleQuoteSuperscript:
 				var qt strings.Builder
 				d.buildConstraintValue(v.Elements, &qt)
 				val := qt.String()
@@ -270,7 +270,7 @@ func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
 				sb.WriteString(string(v.Kind))
 				sb.WriteString(val)
 				sb.WriteString(string(v.Kind))
-			case types.SingleQuoteBold:
+			case elements.SingleQuoteBold:
 				// This is usually an asterisk, and should be ignored
 			default:
 				slog.Warn("unexpected constraint quoted text", "doc", d.Path, "type", fmt.Sprintf("%T", v.Kind))
@@ -282,7 +282,7 @@ func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
 	}
 }
 
-func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, column matter.TableColumn) conformance.Set {
+func (d *Doc) getRowConformance(row *elements.TableRow, columnMap ColumnIndex, column matter.TableColumn) conformance.Set {
 	i, ok := columnMap[column]
 	if !ok {
 		return nil
@@ -291,7 +291,7 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 	if len(cell.Elements) == 0 {
 		return nil
 	}
-	p, ok := cell.Elements[0].(*types.Paragraph)
+	p, ok := cell.Elements[0].(*elements.Paragraph)
 	if !ok {
 		slog.Debug("unexpected non-paragraph in constraints cell", "doc", d.Path, "type", fmt.Sprintf("%T", cell.Elements[0]))
 		return nil
@@ -303,9 +303,9 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 	var sb strings.Builder
 	for _, el := range p.Elements {
 		switch v := el.(type) {
-		case *types.StringElement:
+		case *elements.String:
 			sb.WriteString(v.Content)
-		case *types.InternalCrossReference:
+		case *elements.InternalCrossReference:
 			id := v.ID.(string)
 			if strings.HasPrefix(id, "ref_") {
 				// This is a proper reference; allow the conformance parser to recognize it
@@ -320,11 +320,11 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 				}
 				sb.WriteString(name)
 			}
-		case *types.SpecialCharacter:
+		case *elements.SpecialCharacter:
 			sb.WriteString(v.Name)
-		case *types.QuotedText:
+		case *elements.QuotedText:
 			// This is usually an asterisk, and should be ignored
-		case *types.InlineLink:
+		case *elements.InlineLink:
 			if v.Location != nil {
 				if len(v.Location.Scheme) > 0 {
 					sb.WriteString(v.Location.Scheme)
@@ -335,7 +335,7 @@ func (d *Doc) getRowConformance(row *types.TableRow, columnMap ColumnIndex, colu
 					sb.WriteString(path)
 				}
 			}
-		case *types.PredefinedAttribute:
+		case *elements.PredefinedAttribute:
 			switch v.Name {
 			case "nbsp":
 				sb.WriteRune(' ')

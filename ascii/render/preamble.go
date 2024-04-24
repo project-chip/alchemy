@@ -1,9 +1,5 @@
 package render
 
-import (
-	"github.com/bytesparadise/libasciidoc/pkg/types"
-)
-
-func renderPreamble(cxt *Context, p *types.Preamble) error {
+func renderPreamble(cxt *Context, p *elements.Preamble) error {
 	return Elements(cxt, "", p.Elements)
 }

@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"strings"
 	"unicode/utf8"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
 type table struct {
@@ -22,14 +20,14 @@ type tableRow struct {
 type tableCell struct {
 	value     string
 	format    string
-	formatter *types.TableCellFormat
+	formatter *elements.TableCellFormat
 	blank     bool
 
 	width  int // width of the actual content in this cell
 	margin int // width of the formatter of the next cell
 }
 
-func renderTable(cxt *Context, t *types.Table) (err error) {
+func renderTable(cxt *Context, t *elements.Table) (err error) {
 
 	tbl := &table{header: &tableRow{}, footer: &tableRow{}}
 
@@ -207,7 +205,7 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 	return
 }
 
-func renderTableSubElements(cxt *Context, t *types.Table, tbl *table) (err error) {
+func renderTableSubElements(cxt *Context, t *elements.Table, tbl *table) (err error) {
 	if t.Header != nil {
 		for _, c := range t.Header.Cells {
 			renderContext := NewContext(cxt, cxt.Doc)
@@ -281,7 +279,7 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 	return
 }
 
-func renderTableCellFormat(format *types.TableCellFormat) string {
+func renderTableCellFormat(format *elements.TableCellFormat) string {
 	var s strings.Builder
 	if format.ColumnSpan > 1 || format.RowSpan > 1 {
 		if format.ColumnSpan > 1 {
@@ -298,19 +296,19 @@ func renderTableCellFormat(format *types.TableCellFormat) string {
 		s.WriteRune('*')
 	}
 	switch format.HorizontalAlignment {
-	case types.Left:
+	case elements.Left:
 		s.WriteRune('<')
-	case types.Center:
+	case elements.Center:
 		s.WriteRune('^')
-	case types.Right:
+	case elements.Right:
 		s.WriteRune('>')
 	}
 	switch format.VerticalAlignment {
-	case types.Top:
+	case elements.Top:
 		s.WriteString(".<")
-	case types.Middle:
+	case elements.Middle:
 		s.WriteString(".^")
-	case types.Bottom:
+	case elements.Bottom:
 		s.WriteString(".>")
 	}
 	if len(format.Style) > 0 {

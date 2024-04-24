@@ -4,14 +4,14 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
 type Anchor struct {
 	ID      string
 	Label   string
-	Element types.WithAttributes
+	Element elements.Attributable
 	Parent  parse.HasElements
 }
 
@@ -30,10 +30,10 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 	anchors := make(map[string]*Anchor)
 	crossReferences := doc.CrossReferences()
 	parse.Traverse(doc, doc.Elements, func(el any, parent parse.HasElements, index int) bool {
-		var wa types.WithAttributes
+		var wa elements.Attributable
 		e, ok := el.(*Element)
 		if ok {
-			if wa, ok = e.Base.(types.WithAttributes); !ok {
+			if wa, ok = e.Base.(elements.Attributable); !ok {
 				return false
 			}
 		} else if s, ok := el.(*Section); ok {
@@ -42,7 +42,7 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 			return false
 		}
 		attrs := wa.GetAttributes()
-		idAttr, ok := attrs[types.AttrID]
+		idAttr, ok := attrs[elements.AttrID]
 		if !ok {
 			return false
 		}

@@ -5,20 +5,19 @@ import (
 	"log/slog"
 	"slices"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func (b *Ball) ensureTableOptions(elements []any) {
 	if !b.options.normalizeTableOptions {
 		return
 	}
-	parse.Search(elements, func(t *types.Table) bool {
+	parse.Search(elements, func(t *elements.Table) bool {
 		if t.Attributes == nil {
-			t.Attributes = make(types.Attributes)
+			t.Attributes = make(elements.Attributes)
 		}
 		var excludedKeys []string
 		for k := range t.Attributes {
@@ -39,11 +38,11 @@ func (b *Ball) ensureTableOptions(elements []any) {
 
 }
 
-func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *types.Table, rows []*types.TableRow, tableTemplate matter.Table, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex, entityType mattertypes.EntityType) (err error) {
+func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *elements.Table, rows []*elements.TableRow, tableTemplate matter.Table, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex, entityType matterelements.EntityType) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
-	delete(table.Attributes, "cols")
+	delete(table.AttributeList, "cols")
 	var order []matter.TableColumn
 	if len(tableTemplate.RequiredColumns) > 0 {
 		order = tableTemplate.RequiredColumns
@@ -61,18 +60,18 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	return
 }
 
-func (b *Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType mattertypes.EntityType) (appendedIndex int, err error) {
+func (b *Ball) appendColumn(rows []*elements.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType matterelements.EntityType) (appendedIndex int, err error) {
 	if len(rows) == 0 {
 		appendedIndex = -1
 		return
 	}
 	appendedIndex = len(rows[0].Cells)
 	for i, row := range rows {
-		cell := &types.TableCell{}
+		cell := &elements.TableCell{}
 		last := row.Cells[len(row.Cells)-1]
 		if i == headerRowIndex {
 			if last.Formatter != nil {
-				cell.Formatter = &types.TableCellFormat{
+				cell.Formatter = &elements.TableCellFormat{
 					ColumnSpan:          1,
 					RowSpan:             1,
 					HorizontalAlignment: last.Formatter.HorizontalAlignment,
@@ -102,16 +101,16 @@ func (b *Ball) appendColumn(rows []*types.TableRow, columnMap ascii.ColumnIndex,
 	return
 }
 
-func (b *Ball) getDefaultColumnValue(entityType mattertypes.EntityType, column matter.TableColumn, row *types.TableRow, columnMap ascii.ColumnIndex) string {
+func (b *Ball) getDefaultColumnValue(entityType matterelements.EntityType, column matter.TableColumn, row *elements.TableRow, columnMap ascii.ColumnIndex) string {
 	switch column {
 	case matter.TableColumnConformance:
 		switch entityType {
-		case mattertypes.EntityTypeBitmapValue, mattertypes.EntityTypeEnumValue:
+		case matterelements.EntityTypeBitmapValue, matterelements.EntityTypeEnumValue:
 			return "M"
 		}
 	case matter.TableColumnName:
 		switch entityType {
-		case mattertypes.EntityTypeBitmapValue, mattertypes.EntityTypeEnumValue:
+		case matterelements.EntityTypeBitmapValue, matterelements.EntityTypeEnumValue:
 			val, _ := ascii.ReadRowValue(b.doc, row, columnMap, matter.TableColumnSummary)
 			if val != "" {
 				return matter.Case(val)
@@ -119,7 +118,7 @@ func (b *Ball) getDefaultColumnValue(entityType mattertypes.EntityType, column m
 		}
 	case matter.TableColumnSummary:
 		switch entityType {
-		case mattertypes.EntityTypeBitmapValue, mattertypes.EntityTypeEnumValue:
+		case matterelements.EntityTypeBitmapValue, matterelements.EntityTypeEnumValue:
 			val, _ := ascii.ReadRowValue(b.doc, row, columnMap, matter.TableColumnName)
 			if val != "" {
 				return matter.Uncase(val)
@@ -127,9 +126,9 @@ func (b *Ball) getDefaultColumnValue(entityType mattertypes.EntityType, column m
 		}
 	case matter.TableColumnAccess:
 		switch entityType {
-		case mattertypes.EntityTypeEvent, mattertypes.EntityTypeAttribute:
+		case matterelements.EntityTypeEvent, matterelements.EntityTypeAttribute:
 			return "R V"
-		case mattertypes.EntityTypeField:
+		case matterelements.EntityTypeField:
 			return ""
 		}
 	}
@@ -214,7 +213,7 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 		}
 	}
 	for i, row := range rows {
-		newCells := make([]*types.TableCell, index)
+		newCells := make([]*elements.TableCell, index)
 		if len(row.Cells) != len(newColumnIndexes) {
 			err = fmt.Errorf("cell length mismatch; row %d has %d cells, expected %d", i, len(row.Cells), len(newColumnIndexes))
 			return
@@ -233,11 +232,11 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 	return
 }
 
-func setCellString(cell *types.TableCell, v string) (err error) {
-	var p *types.Paragraph
+func setCellString(cell *elements.TableCell, v string) (err error) {
+	var p *elements.Paragraph
 
 	if len(cell.Elements) == 0 {
-		p, err = types.NewParagraph(nil)
+		p, err = elements.NewParagraph(nil)
 		if err != nil {
 			return
 		}
@@ -247,21 +246,21 @@ func setCellString(cell *types.TableCell, v string) (err error) {
 		}
 	} else {
 		var ok bool
-		p, ok = cell.Elements[0].(*types.Paragraph)
+		p, ok = cell.Elements[0].(*elements.Paragraph)
 		if !ok {
 			return fmt.Errorf("table cell does not have paragraph child")
 		}
 	}
-	se, _ := types.NewStringElement(v)
+	se, _ := elements.NewStringElement(v)
 	err = p.SetElements([]any{se})
 	return
 }
 
-func setCellValue(cell *types.TableCell, val []any) (err error) {
-	var p *types.Paragraph
+func setCellValue(cell *elements.TableCell, val []any) (err error) {
+	var p *elements.Paragraph
 
 	if len(cell.Elements) == 0 {
-		p, err = types.NewParagraph(nil)
+		p, err = elements.NewParagraph(nil)
 		if err != nil {
 			return
 		}
@@ -271,7 +270,7 @@ func setCellValue(cell *types.TableCell, val []any) (err error) {
 		}
 	} else {
 		var ok bool
-		p, ok = cell.Elements[0].(*types.Paragraph)
+		p, ok = cell.Elements[0].(*elements.Paragraph)
 		if !ok {
 			return fmt.Errorf("table cell does not have paragraph child")
 		}
@@ -280,7 +279,7 @@ func setCellValue(cell *types.TableCell, val []any) (err error) {
 	return
 }
 
-func copyCells(rows []*types.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {
+func copyCells(rows []*elements.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {
 	for i, row := range rows {
 		if i == headerRowIndex {
 			continue
@@ -301,7 +300,7 @@ func copyCells(rows []*types.TableRow, headerRowIndex int, fromIndex int, toInde
 	return
 }
 
-func (b *Ball) renameTableHeaderCells(rows []*types.TableRow, headerRowIndex int, columnMap ascii.ColumnIndex, overrides map[matter.TableColumn]string) (err error) {
+func (b *Ball) renameTableHeaderCells(rows []*elements.TableRow, headerRowIndex int, columnMap ascii.ColumnIndex, overrides map[matter.TableColumn]string) (err error) {
 	if !b.options.renameTableHeaders {
 		return
 	}

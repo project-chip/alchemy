@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
 type Section interface {
-	GetASCIISection() *types.Section
+	GetASCIISection() *elements.Section
 }
 
-func Elements(cxt *Context, prefix string, elements []any) (err error) {
+func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err error) {
 	var previous any
-	for _, e := range elements {
+	for _, e := range elementList {
 		if he, ok := e.(Section); ok {
 			e = he.GetASCIISection()
 		}
@@ -22,60 +22,56 @@ func Elements(cxt *Context, prefix string, elements []any) (err error) {
 			e = hb.GetBase()
 		}
 		switch el := e.(type) {
-		case *types.Section:
+		case *elements.Section:
 			err = renderSection(cxt, el)
 			if err == nil {
-				err = Elements(cxt, "", el.Elements)
+				err = Elements(cxt, "", el.Elements()...)
 			}
-		case *types.DelimitedBlock:
+		case *elements.DelimitedBlock:
 			err = renderDelimitedBlock(cxt, el)
-		case *types.Paragraph:
+		case *elements.Paragraph:
 			cxt.WriteString(prefix)
 			err = renderParagraph(cxt, el, &previous)
 			if err != nil {
 				return
 			}
-		case *types.Table:
+		case *elements.Table:
 			err = renderTable(cxt, el)
-		case *types.BlankLine:
-			switch previous.(type) {
-			case *types.StringElement, *types.FootnoteReference, *types.Paragraph:
-				//cxt.WriteNewline()
-			}
+		case *elements.EmptyLine:
 			cxt.WriteNewline()
 			cxt.WriteRune('\n')
-		case *types.InternalCrossReference:
+		case *elements.CrossReference:
 			err = renderInternalCrossReference(cxt, el)
-		case *types.List:
+		case *elements.List:
 			err = renderList(cxt, el)
-		case *types.AttributeDeclaration:
-			err = renderAttributeDeclaration(cxt, el)
-		case *types.StringElement:
-			text := el.Content
+		case *elements.AttributeEntry:
+			err = renderAttributeEntry(cxt, el)
+		case elements.String:
+			text := string(el)
 			if strings.HasPrefix(text, "ifdef::") || strings.HasPrefix(text, "ifndef::") || strings.HasPrefix(text, "endif::[]") {
 				cxt.WriteNewline()
 			}
 			cxt.WriteString(text)
-		case *types.SinglelineComment:
+		case *elements.SingleLineComment:
 			cxt.WriteNewline()
 			cxt.WriteString("//")
-			cxt.WriteString(el.Content)
+			cxt.WriteString(el.Value)
 			cxt.WriteNewline()
-		case *types.ImageBlock:
+		case *elements.BlockImage:
 			err = renderImageBlock(cxt, el)
-		case *types.InlineLink:
+		case *elements.Link:
 			err = renderInlineLink(cxt, el)
-		case *types.SpecialCharacter:
+		case *elements.SpecialCharacter:
 			err = renderSpecialCharacter(cxt, el)
-		case *types.QuotedText:
+		case *elements.QuotedText:
 			err = renderQuotedText(cxt, el)
-		case *types.Preamble:
+		case *elements.Preamble:
 			err = renderPreamble(cxt, el)
-		case *types.Symbol:
+		case *elements.Symbol:
 			err = renderSymbol(cxt, el)
-		case *types.LineBreak:
+		case *elements.LineContinuation:
 			cxt.WriteString(" +")
-		case *types.DocumentHeader:
+		case *elements.DocumentHeader:
 			err = renderAttributes(cxt, el, el.Attributes, false)
 			if err != nil {
 				return
@@ -86,39 +82,39 @@ func Elements(cxt *Context, prefix string, elements []any) (err error) {
 			}
 			err = Elements(cxt, "", el.Elements)
 			cxt.WriteNewline()
-		case *types.PredefinedAttribute:
-			cxt.WriteString(fmt.Sprintf("{%s}", el.Name))
-		case *types.InlineImage:
+		case elements.AttributeReference:
+			cxt.WriteString(fmt.Sprintf("{%s}", el.Name()))
+		case *elements.InlineImage:
 			err = renderInlineImage(cxt, el)
-		case *types.FootnoteReference:
+		case *elements.FootnoteReference:
 			err = renderFootnoteReference(cxt, el)
-		case *types.InlinePassthrough:
+		case *elements.InlinePassthrough:
 			switch el.Kind {
-			case types.SinglePlusPassthrough, types.TriplePlusPassthrough:
+			case elements.SinglePlusPassthrough, elements.TriplePlusPassthrough:
 				cxt.WriteString(string(el.Kind))
 				err = Elements(cxt, "", el.Elements)
 				cxt.WriteString(string(el.Kind))
-			case types.PassthroughMacro:
+			case elements.PassthroughMacro:
 				cxt.WriteString("pass:[")
 				err = Elements(cxt, "", el.Elements)
 				cxt.WriteRune(']')
 			}
-		case *types.AttributeReset:
+		case *elements.AttributeReset:
 			err = renderAttributes(cxt, el, el.Attributes, false)
 			if err != nil {
 				return
 			}
 			renderAttributeReset(cxt, el)
-		case *types.RawLine:
+		case *elements.RawLine:
 			cxt.WriteString(el.Content)
 			if el.EOL {
 				cxt.WriteRune('\n')
 			}
-		case *types.ListElements:
+		case *elements.ListElements:
 			err = renderListElements(cxt, el)
-		case *types.UnorderedListElement:
+		case *elements.UnorderedListElement:
 			err = renderUnorderedListElement(cxt, el)
-		case *types.OrderedListElement:
+		case *elements.OrderedListElement:
 			err = renderOrderedListElement(cxt, el)
 		case nil:
 		default:

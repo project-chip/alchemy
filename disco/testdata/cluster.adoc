@@ -1,0 +1,432 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+:toc:
+:toclevels: 3
+:sectnumlevels: 4
+:imagesdir: https://github.com/CHIP-Specifications/connectedhomeip-spec/blob/master/src/data_model/images
+endif::[]
+:sectnums:
+:sectanchors:
+ifndef::env-github[]
+:imagesdir: data_model/images
+endif::[]
+
+ifeval::["{docname}" != "TestCluster"]
+////
+endif::[]
+Copyright (C) Connectivity Standards Alliance (2021). All rights reserved.
+The information within this document is the property of the Connectivity
+Standards Alliance and its use and disclosure are restricted, except as
+expressly set forth herein.
+
+Connectivity Standards Alliance hereby grants you a fully-paid, non-exclusive,
+nontransferable, worldwide, limited and revocable license (without the right to
+sublicense), under Connectivity Standards Alliance's applicable copyright
+rights, to view, download, save, reproduce and use the document solely for your
+own internal purposes and in accordance with the terms of the license set forth
+herein. This license does not authorize you to, and you expressly warrant that
+you shall not: (a) permit others (outside your organization) to use this
+document; (b) post or publish this document; (c) modify, adapt, translate, or
+otherwise change this document in any manner or create any derivative work
+based on this document; (d) remove or modify any notice or label on this
+document, including this Copyright Notice, License and Disclaimer. The
+Connectivity Standards Alliance does not grant you any license hereunder other
+than as expressly stated herein.
+
+Elements of this document may be subject to third party intellectual property
+rights, including without limitation, patent, copyright or trademark rights,
+and any such third party may or may not be a member of the Connectivity
+Standards Alliance. Connectivity Standards Alliance members grant other
+Connectivity Standards Alliance members certain intellectual property rights as
+set forth in the Connectivity Standards Alliance IPR Policy. Connectivity
+Standards Alliance members do not grant you any rights under this license. The
+Connectivity Standards Alliance is not responsible for, and shall not be held
+responsible in any manner for, identifying or failing to identify any or all
+such third party intellectual property rights. Please visit www.csa-iot.org for
+more information on how to become a member of the Connectivity Standards
+Alliance.
+
+This document and the information contained herein are provided on an “AS IS”
+basis and the Connectivity Standards Alliance DISCLAIMS ALL WARRANTIES EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO (A) ANY WARRANTY THAT THE USE OF THE
+INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OF THIRD PARTIES (INCLUDING
+WITHOUT LIMITATION ANY INTELLECTUAL PROPERTY RIGHTS INCLUDING PATENT, COPYRIGHT
+OR TRADEMARK RIGHTS); OR (B) ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE, TITLE OR NONINFRINGEMENT. IN NO EVENT WILL THE
+CONNECTIVITY STANDARDS ALLIANCE BE LIABLE FOR ANY LOSS OF PROFITS, LOSS OF
+BUSINESS, LOSS OF USE OF DATA, INTERRUPTION OF BUSINESS, OR FOR ANY OTHER
+DIRECT, INDIRECT, SPECIAL OR EXEMPLARY, INCIDENTAL, PUNITIVE OR CONSEQUENTIAL
+DAMAGES OF ANY KIND, IN CONTRACT OR IN TORT, IN CONNECTION WITH THIS DOCUMENT
+OR THE INFORMATION CONTAINED HEREIN, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+LOSS OR DAMAGE.
+
+All company, brand and product names in this document may be trademarks that
+are the sole property of their respective owners.
+
+This notice and disclaimer must be included on all copies of this document.
+
+Connectivity Standards Alliance
+508 Second Street, Suite 206
+Davis, CA 95616, USA
+ifeval::["{docname}" != "DiscoBallCluster"]
+////
+endif::[]
+
+:xrefstyle: basic
+
+[[ref_TestCluster, Test Cluster]]
+= Test Cluster
+This test cluster illustrates various issues with clusters that Disco-balling should fix.
+
+== Classification
+
+|===
+| Hierarchy | Role        | Scope    | PICS Code
+| Base      | Application | Endpoint | TESTC
+|===
+
+== Cluster Identifiers
+
+This section has the wrong name.
+
+[options="header",valign="middle"]
+|===
+| Identification     | Name
+| 0x00ff             | LowercaseHex 
+|===
+
+== Revision History
+
+This revision history is in the wrong place in the doc.
+
+[options="header",valign="middle"]
+|===
+| Revision | Description
+| 1        | Initial Release
+| 2        | This is another release
+| 3        | A big update!
+| 4        | A little update
+| 5        | Reverting all the changes in revision 4
+| 6        | Reverting all the changes in revision 5, or re-reverting the changes in version 4
+| 7        | Complete rewrite
+ifndef::in-progress,srcattr,env-github[]
+| 8        | Undoing the disastrous complete rewrite in revision 7
+endif::[]
+|===
+
+== Features
+This cluster SHALL support the FeatureMap bitmap attribute as defined below.
+
+[options="header",valign="middle"]
+|===
+| Bit  | Code | Feature                | Summary
+| 0   s| SWF  | SingleWordFeature      | This table is missing the Conformance column
+| 1   s| MWF  | Multiple Word Feature  | Should get changed into a single word
+|===
+
+=== SingleWordFeature Feature
+This feature indicates the ability combine words into single words.
+
+=== MultipleWordFeature Feature
+This feature indicates the inability to combine words into single words.
+
+== Data Types
+
+[[ref_MyEnumeration, RotateEnum]]
+=== MyEnumeration
+This data type is derived from enum8. This section has the wrong name. This section is in the wrong place; it should come after the bitmap below.
+
+[options="header",valign="middle"]
+|===
+| Value  | Name          | Summary                              
+| 0     s| AnEnum              | This table cell is misaligned   
+| 1     s| AnotherEnum  | This table is missing conformance    
+| 2     s| A Third Enum | This shouldn't have spaces 
+|===
+
+==== AnEnum
+This value SHALL indicate that it's missing the "Value" suffix.
+
+==== AnotherEnum Value
+This value SHALL indicate that it's not too shabby.
+
+==== A Third Enum
+This value SHALL indicate that it needs to have its spaces removed.
+
+
+[[ref_MapbitBitmap, MapbitBitmap]]
+=== MapbitBitmap
+This section is missing the "Type" suffix, the table below is missing the Conformance column and the Bit is misnamed
+
+[options="header",valign="middle"]
+|===
+| Value  | Name            | Summary                       
+| 0   s| WobbleLeftRight | Indicate wobble left to right 
+| 1   s| WobbleUpDown    | Indicate wobble up and down   
+| 2   s| WobbleRound     | Indicate wobble around        
+|===
+
+[[ref_PatternStruct, PatternStruct]]
+=== PatternStruct Type
+This indicates a pattern of operation for a running disco ball.
+
+[options="header",valign="middle"]
+|===
+8+|Access Quality: Fabric Scoped
+h| ID  h| Name         h| Type              h| Constraint h| Quality h| Default h| Access h| Conformance
+ | 0   s| Duration      | uint16             | all         |          | 0        | RW      | M
+ | 1   s| Rotate        | <<ref_RotateEnum>> | desc        | X        | null     | RW      | M
+ | 2   s| RedundantMin  | uint8              | 0 to 200    | X        | null     | RW      | M
+ | 3   s| Axis          | uint8              | max 90      | X        | null     | RW      | AX \| WBL
+ | 4   s| WobbleSpeed   | uint8              | max 200     | X        | null     | RW      | WBL, O
+ | 5   s| Passcode      | string             | max 6       | X        | null     | RWS     | M
+|===
+
+==== Duration Field
+This SHALL indicate the time in seconds for the disco ball to perform the pattern.
+
+==== Rotate
+This section is missing the "Field" suffix.
+
+==== RedundantMin Field
+This field specifies a "0" minimum on an unsigned field.
+
+==== Axis Field
+This SHALL indicate the angle of the axis of rotation, or null to not change the angle.
+
+==== WobbleSpeed Field
+This SHALL indicate the speed of the axis wobble, or null to not change the speed.
+
+==== Passcode Field
+An optionally specified passcode that if present, needs to always be provided in the Pattern Request command to successfully invoke this pattern.
+
+== Status Codes
+
+=== StatusCodeEnum Type
+
+This data type is derived from <<ref_DataTypeEnum, enum8>>.
+
+[options="header",valign="middle"]
+|===
+| Value    | Name                | Summary
+| 0x02 s| UNSUPPORTED_PATTERN | The movement pattern is unsupported on the device even though all values are within constraints
+|===
+
+image::InlineTitle.png[title="This has an inline title"]
+
+image:AttributesNotAlphabetical.png[width=672,height=680]
+
+== Attributes
+
+This is a list with superfluous newlines:
+
+. This list should become more compact.
+
+. Without newlines in between entries.
+
+. And this more clearly a list.
+
+ifndef::in-progress,srcattr,env-github[]
+[options="header",valign="middle"]
+|===
+| ID       | Name          | Type                        | Constraint     | Quality | Default | Access     | Conformance
+| 0x0000  s| Run           | bool                        | all            |         | 0       | R V        | M
+| 0x0001  s| Rotate        | <<ref_RotateEnum>>          | all            |         | 0       | R V        | M
+| 0x0002  s| Speed         | uint8                       | 0 to 200       |         | 0       | R V        | M
+| 0x0003  s| Axis          | uint8                       | 0 to 90        |         | 0       | RW VO      | AX \| WBL
+| 0x0004  s| WobbleSpeed   | uint8                       | 0 to 200       |         | 0       | RW VO      | WBL
+| 0x0005  s| Patterns      | list[<<ref_PatternStruct>>] | max 16         | N       | 0       | RW VM T | PAT
+| 0x0006  s| Name          | string                      | max 16         | N       | 0       | RW VM      | P, O
+| 0x0007  s| WobbleSupport | <<ref_WobbleBitmap>>        | desc           |         |         | R V        | WobbleSetting
+| 0x0008  s| WobbleSetting | <<ref_WobbleBitmap>>        | desc           |         |         | RW VM      | [WBL]
+|===
+endif::[]
+ifdef::in-progress,srcattr,env-github[]
+[options="header",valign="middle"]
+|===
+| ID       | Name          | Type                        | Constraint     | Quality | Default | Access     | Conformance
+| 0x0000  s| Run           | bool                        | all            |         | 0       | R V        | M
+| 0x0001  s| Rotate        | <<ref_RotateEnum>>          | all            | A    | 0       | R V        | M
+| 0x0002  s| Speed         | uint8                       | 0 to 200       | A    | 0       | R V        | M
+| 0x0003  s| Axis          | uint8                       | 0 to 90        |         | 0       | RW VO      | AX \| WBL
+| 0x0004  s| WobbleSpeed   | uint8                       | 0 to 200       |         | 0       | RW VO      | WBL
+| 0x0005  s| Pattern       | list[<<ref_PatternStruct>>] | max 16         | A    | 0       | RW VM T | PAT
+| 0x0006  s| Name          | string                      | max 16         | N A  | 0       | RW VM      | P, O
+| 0x0007  s| WobbleSupport | <<ref_WobbleBitmap>>        | desc           |         |         | R V        | [WBL]
+| 0x0008  s| WobbleSetting | <<ref_WobbleBitmap>>        | desc           |         |         | RW VM      | [WBL]
+|===
+endif::[]
+
+=== Run 
+This section is missing the "Attribute" suffix.
+
+=== Rotate Attribute
+This attribute SHALL indicate the direction of rotation either clockwise or counterclockwise.
+
+=== Speed Attribute
+This attribute SHALL indicate the speed of the disco ball in revolutions per minute.
+
+=== Axis Attribute
+This attribute SHALL indicate the tilt of the axis of the disco ball, in degrees.
+
+=== WobbleSpeed Attribute
+This attribute SHALL indicate the speed of the wobble rotation in revolutions per minute.
+
+=== Pattern Attribute
+This attribute SHALL contain an ordered list of pattern entries.
+This list of patterns SHALL be used to operate the disco ball when the Pattern Request command is invoked.
+
+=== Name Attribute
+This attribute SHALL indicate a display name.
+
+[[ref_WobbleSupport, WobbleSupport]]
+=== WobbleSupport Attribute
+This attribute SHALL indicate the bits of the <<ref_WobbleBitmap>> supported by the device.
+
+=== WobbleSetting Attribute
+This attribute SHALL indicate the selected type of wobble.
+This attribute is constrained to, in case of a write interaction,
+only accept the bits indicated in the <<ref_WobbleSupport>> attribute.
+
+== Events
+This section should come after Commands. Also, the first table is missing the Quality column, and the second table is missing the Access column. The first table has an incomplete Access column ("V" is not qualified).
+
+ifndef::in-progress,srcattr,env-github[]
+[options="header",valign="middle"]
+|===
+| ID     | Name            | Priority | Access | Conformance
+| 0x00  s| Started         | INFO     | V      | M
+| 0x01  s| Stopped         | INFO     | V      | M
+| 0x02  s| PatternChange   | INFO     | V      | [PAT]
+|===
+endif::[]
+ifdef::in-progress,srcattr,env-github[]
+[options="header",valign="middle"]
+|===
+| ID     | Name            | Priority | Quality | Conformance
+| 0x00  s| Started         | INFO     | A       | M
+| 0x01  s| Stopped         | INFO     | A       | M
+| 0x02  s| PatternChange   | INFO     |         | [PAT]
+|===
+endif::[]
+
+=== Started Event
+This event SHALL be generated, when the Run attribute changes from false to true.
+
+=== Stopped Event
+This event SHALL be generated, when the Run attribute changes from true to false.
+
+=== PatternChange Event
+This event SHALL be generated when the Rotate, Speed, or WobbleSpeed attributes are written or
+changed locally as the result of processing the Pattern attribute.
+
+[options="header",valign="middle"]
+|===
+| ID  | Name         | Type                  | Constraint | Quality | Default | Conformance
+| 0  s| PrevPattern  | <<ref_PatternStruct>> |            | X       | null    | M
+| 1  s| CurPattern   | <<ref_PatternStruct>> |            |         |         | M
+| 2  s| NextPattern  | <<ref_PatternStruct>> |            | X       | null    | M
+| 3  s| Label        | string                | max 32     | X       | null    | O
+|===
+
+==== PrevPattern Field
+This field SHALL be the previous pattern run.
+If there is no previous pattern, then PrevPattern SHALL be null.
+
+==== CurPattern Field
+This field SHALL be the current pattern being run.
+
+==== NextPattern Field
+This field SHALL be the next in the pattern list.
+If there is no next pattern, the NextPattern event field SHALL be null.
+
+
+== Commands
+
+[options="header",valign="middle"]
+|===
+| ID     | Name           | Direction        | Response      | Access | Conformance
+| 0x00  s| StartRequest   | client => server | Y                 | O      | M
+| 0x01  s| StopRequest    | client => server | Y                 | O      | M
+| 0x02  s| ReverseRequest | client => server | Y                 | O      | REV
+| 0x03  s| WobbleRequest  | client => server | Y                 | O      | WBL
+| 0x04  s| PatternRequest | client => server | Y                 | M T    | PAT
+| 0x05  s| StatsRequest   | client => server | StatsResponse     | O      | STA
+| 0x06  s| WrongDirection | server => client | N                 | O      | STA
+|===
+
+=== StartRequest Command
+Upon receipt, this SHALL start the disco ball rotating using the data as follows:
+
+[options="header",valign="middle"]
+|===
+| ID  | Name    | Type               | Constraint | Quality | Default   | Conformance
+| 0  s| Speed   | uint8              | max 200    |         | MS        | M
+| 1  s| VagueConstraint  | <<ref_RotateEnum>> | max Speed - 1        |         | Clockwise | O
+|===
+
+==== Speed Field
+This SHALL indicate the rotation speed.
+
+==== VagueConstraint Field
+This field SHALL have its.
+
+=== StopRequest Command
+Upon receipt, this SHALL stop the disco ball rotating, and SHALL set the Run, Speed and Rotate attributes to 0.
+
+=== ReverseRequest Command
+Upon receipt, this SHALL reverse the direction of the disco ball rotation.
+This command MAY generate an error response of UNSUPPORTED_PATTERN.
+
+=== WobbleRequest Command
+Upon receipt, this SHALL wobble the disco ball on its axis at the speed in the WobbleSpeed attribute.
+This command MAY generate an error response of UNSUPPORTED_PATTERN.
+
+=== PatternRequest Command
+
+[options="header",valign="middle"]
+|===
+| ID | Name     | Type   | Constraint | Quality | Default | Conformance
+| 0 s| Passcode | string | max 6      |         | empty   | M
+|===
+
+==== Passcode Field
+If the passcode field is an empty string, this SHALL start the disco ball rotating using unprotected (i.e patterns that have no passcode) pattern list entries in sequence to control the disco ball.
+When the final entry in the list is processed the sequence SHALL restart at the first entry.
+
+If the passcode field is not an empty string, only the patterns that correspond to the provided passcode SHALL be invoked.
+
+=== StatsRequest Command
+Upon receipt, this SHALL generate a StatsResponse command.
+
+=== WrongDirection Command
+This command has its direction specified incorrectly.
+
+[options="header",valign="middle"]
+|===
+| ID  | Name               | Type   | Constraint | Quality | Default | Conformance
+| 0  s| MissingSuffix      | uint32 | all        |         | 0       | M
+| 1  s| InlineEnumeration  | enum8  | all        |         | 0       | [PAT] 
+|===
+
+==== MissingSuffix 
+This field is missing its "Field" suffix.
+
+==== InlineEnumeration Field
+This field has an inline enumeration in <<ref_Table_5_26>> that should be promoted.
+
+.Values of the InlineEnumeration Field of the WrongDirection Command
+[[ref_Table_5_26]]
+[cols=",4",options="header",width=50%]
+|===
+|Value |Description
+|0 |Put in the correct order.
+|1 |Fix the reference.
+|2 | Align the table
+|===
+
+:xrefstyle: full

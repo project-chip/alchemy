@@ -10,7 +10,8 @@ import (
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
 	"github.com/bytesparadise/libasciidoc/pkg/parser"
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/pipeline"
 )
 
@@ -42,7 +43,7 @@ func Read(contents string, path string) (doc *Doc, err error) {
 	config := configuration.NewConfiguration(configuration.WithFilename(path))
 	config.IgnoreIncludes = true
 
-	var d *types.Document
+	var d *elements.Document
 
 	d, err = ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
 

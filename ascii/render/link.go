@@ -2,11 +2,9 @@ package render
 
 import (
 	"fmt"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
-func renderInlineLink(cxt *Context, il *types.InlineLink) (err error) {
+func renderInlineLink(cxt *Context, il *elements.InlineLink) (err error) {
 	if il.Location != nil {
 		if len(il.Location.Scheme) > 0 {
 			cxt.WriteString(il.Location.Scheme)
@@ -23,7 +21,7 @@ func renderInlineLink(cxt *Context, il *types.InlineLink) (err error) {
 	return renderAttributes(cxt, il, il.Attributes, true)
 }
 
-func renderImageBlock(cxt *Context, ib *types.ImageBlock) (err error) {
+func renderImageBlock(cxt *Context, ib *elements.ImageBlock) (err error) {
 	cxt.WriteNewline()
 	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
@@ -46,7 +44,7 @@ func renderImageBlock(cxt *Context, ib *types.ImageBlock) (err error) {
 	return
 }
 
-func renderInlineImage(cxt *Context, ib *types.InlineImage) (err error) {
+func renderInlineImage(cxt *Context, ib *elements.InlineImage) (err error) {
 	cxt.WriteNewline()
 	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, true)
 	if err != nil {
@@ -69,7 +67,7 @@ func renderInlineImage(cxt *Context, ib *types.InlineImage) (err error) {
 	return
 }
 
-func getPath(l *types.Location) (string, error) {
+func getPath(l *elements.Location) (string, error) {
 	switch p := l.Path.(type) {
 	case string:
 		return p, nil

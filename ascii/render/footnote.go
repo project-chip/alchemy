@@ -2,12 +2,10 @@ package render
 
 import (
 	"fmt"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
-func renderFootnoteReference(cxt *Context, fr *types.FootnoteReference) (err error) {
-	var fn *types.Footnote
+func renderFootnoteReference(cxt *Context, fr *elements.FootnoteReference) (err error) {
+	var fn *elements.Footnote
 	for _, f := range cxt.Doc.Footnotes() {
 		if f.ID == fr.ID {
 			fn = f

@@ -2,8 +2,6 @@ package matter
 
 import (
 	"fmt"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
 type TableColumn uint8
@@ -86,11 +84,11 @@ func (tc TableColumn) String() string {
 	return fmt.Sprintf("unknown table column name: %d", tc)
 }
 
-var AllowedTableAttributes = types.Attributes{
+var AllowedTableAttributes = elements.Attributes{
 	"id":      nil,
 	"title":   nil,
 	"valign":  "middle",
-	"options": types.Options{"header"},
+	"options": elements.Options{"header"},
 }
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
 

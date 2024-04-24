@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -14,8 +14,8 @@ import (
 
 var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
-func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[types.WithAttributes][]mattertypes.Entity) (commands matter.CommandSet, err error) {
-	var rows []*types.TableRow
+func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[elements.Attributable][]mattertypes.Entity) (commands matter.CommandSet, err error) {
+	var rows []*elements.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
@@ -88,15 +88,15 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[type
 					continue
 				}
 			}
-			p := parse.FindFirst[*types.Paragraph](s.Elements)
+			p := parse.FindFirst[*elements.Paragraph](s.Elements)
 			if p != nil {
-				se := parse.FindFirst[*types.StringElement](p.Elements)
+				se := parse.FindFirst[*elements.String](p.Elements)
 				if se != nil {
 					c.Description = strings.ReplaceAll(se.Content, "\n", " ")
 				}
 			}
 
-			var rows []*types.TableRow
+			var rows []*elements.TableRow
 			var headerRowIndex int
 			var columnMap ColumnIndex
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
