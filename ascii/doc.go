@@ -8,7 +8,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -19,7 +20,7 @@ type Doc struct {
 
 	Path string
 
-	Base     *types.Document
+	Base     *elements.Document
 	Elements []any
 
 	docType matter.DocType
@@ -28,26 +29,26 @@ type Doc struct {
 	parents []*Doc
 
 	anchors         map[string]*Anchor
-	crossReferences map[string][]*types.InternalCrossReference
+	crossReferences map[string][]*elements.InternalCrossReference
 	attributes      map[string]any
 
 	entities       []mattertypes.Entity
 	entitiesParsed bool
 
-	entitiesBySection map[types.WithAttributes][]mattertypes.Entity
+	entitiesBySection map[elements.Attributable][]mattertypes.Entity
 }
 
-func NewDoc(d *types.Document) (*Doc, error) {
+func NewDoc(d *elements.Document) (*Doc, error) {
 	doc := &Doc{
 		Base:       d,
 		attributes: make(map[string]any),
 	}
 	for _, e := range d.Elements {
 		switch el := e.(type) {
-		case *types.AttributeDeclaration:
+		case *elements.AttributeDeclaration:
 			doc.attributes[el.Name] = el.Value
 			doc.Elements = append(doc.Elements, NewElement(doc, e))
-		case *types.Section:
+		case *elements.Section:
 			s, err := NewSection(doc, doc, el)
 			if err != nil {
 				return nil, err
@@ -74,7 +75,7 @@ func (doc *Doc) SetElements(elements []any) error {
 	return nil
 }
 
-func (doc *Doc) Footnotes() []*types.Footnote {
+func (doc *Doc) Footnotes() []*elements.Footnote {
 	return doc.Base.Footnotes
 }
 
@@ -98,7 +99,7 @@ func (doc *Doc) Entities() (entities []mattertypes.Entity, err error) {
 	}
 	doc.entitiesParsed = true
 
-	var entitiesBySection = make(map[types.WithAttributes][]mattertypes.Entity)
+	var entitiesBySection = make(map[elements.Attributable][]mattertypes.Entity)
 	for _, top := range parse.Skim[*Section](doc.Elements) {
 		err := AssignSectionTypes(doc, top)
 		if err != nil {

@@ -3,12 +3,12 @@ package render
 import (
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 )
 
-func renderSection(cxt *Context, s *types.Section) (err error) {
+func renderSection(cxt *Context, s *elements.Section) (err error) {
 	cxt.WriteNewline()
-	err = renderAttributes(cxt, s, s.Attributes, false)
+	err = renderAttributes(cxt, s, s.AttributeList, false)
 	if err != nil {
 		return
 	}

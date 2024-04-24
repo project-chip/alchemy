@@ -3,15 +3,17 @@ package parse
 import (
 	"strconv"
 	"strings"
+
+	"github.com/hasty/adoc/elements"
 )
 
 type HasElements interface {
-	SetElements([]any) error
-	GetElements() []any
+	SetElements([]elements.Element) error
+	GetElements() []elements.Element
 }
 
 type HasBase interface {
-	GetBase() any
+	GetBase() elements.Element
 }
 
 func HexOrDec(s string) (uint64, error) {

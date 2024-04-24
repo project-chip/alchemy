@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 )
 
-func dumpTable(doc *ascii.Doc, tbl *types.Table, indent int) {
+func dumpTable(doc *ascii.Doc, tbl *elements.Table, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{head}:\n")
 	dumpTableCells(doc, tbl.Header.Cells, indent+1)
@@ -19,13 +19,13 @@ func dumpTable(doc *ascii.Doc, tbl *types.Table, indent int) {
 	}
 }
 
-func dumpTableRow(doc *ascii.Doc, row *types.TableRow, indent int) {
+func dumpTableRow(doc *ascii.Doc, row *elements.TableRow, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{row}:\n")
 	dumpTableCells(doc, row.Cells, indent+1)
 }
 
-func dumpTableCells(doc *ascii.Doc, cells []*types.TableCell, indent int) {
+func dumpTableCells(doc *ascii.Doc, cells []*elements.TableCell, indent int) {
 	for _, c := range cells {
 		fmt.Print(strings.Repeat("\t", indent))
 		if c.Blank {

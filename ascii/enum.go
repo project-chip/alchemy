@@ -5,14 +5,14 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toEnum(d *Doc, entityMap map[types.WithAttributes][]mattertypes.Entity) (e *matter.Enum, err error) {
+func (s *Section) toEnum(d *Doc, entityMap map[elements.Attributable][]mattertypes.Entity) (e *matter.Enum, err error) {
 
 	name := strings.TrimSuffix(s.Name, " Type")
 	e = &matter.Enum{
@@ -59,8 +59,8 @@ func (s *Section) toEnum(d *Doc, entityMap map[types.WithAttributes][]mattertype
 }
 
 func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
-	var tables []*types.Table
-	parse.SkimFunc(s.Elements, func(t *types.Table) bool {
+	var tables []*elements.Table
+	parse.SkimFunc(s.Elements, func(t *elements.Table) bool {
 		tables = append(tables, t)
 		return false
 	})
@@ -68,7 +68,7 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 		return nil, fmt.Errorf("no enum field tables found")
 	}
 	for _, t := range tables {
-		var rows []*types.TableRow
+		var rows []*elements.TableRow
 		var headerRowIndex int
 		var columnMap ColumnIndex
 		var err error
@@ -118,7 +118,7 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 }
 
 func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
-	var rows []*types.TableRow
+	var rows []*elements.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)

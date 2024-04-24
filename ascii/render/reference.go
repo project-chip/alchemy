@@ -3,11 +3,9 @@ package render
 import (
 	"fmt"
 	"strings"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
-func renderInternalCrossReference(cxt *Context, cf *types.InternalCrossReference) (err error) {
+func renderInternalCrossReference(cxt *Context, cf *elements.InternalCrossReference) (err error) {
 	switch el := cf.OriginalID.(type) {
 	case string:
 		if strings.HasPrefix(el, "_") {

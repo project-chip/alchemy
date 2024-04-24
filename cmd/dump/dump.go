@@ -3,11 +3,9 @@ package dump
 import (
 	"fmt"
 	"strings"
-
-	"github.com/bytesparadise/libasciidoc/pkg/types"
 )
 
-func dumpTOC(tocs []*types.ToCSection, indent int) {
+func dumpTOC(tocs []*elements.ToCSection, indent int) {
 	for _, toc := range tocs {
 		fmt.Print(strings.Repeat("\t", indent))
 		fmt.Printf("{toc %d} %s.%s\n", toc.Level, toc.Number, toc.Title)
@@ -18,7 +16,7 @@ func dumpTOC(tocs []*types.ToCSection, indent int) {
 
 }
 
-func dumpLocation(l *types.Location) {
+func dumpLocation(l *elements.Location) {
 	if l != nil {
 		fmt.Printf("%s %s}", l.Scheme, l.Path.(string))
 	} else {

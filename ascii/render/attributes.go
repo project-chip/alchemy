@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 )
 
 type AttributeFilter uint32
@@ -38,11 +38,11 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 	return ((at & include) == at) && ((at & exclude) != at)
 }
 
-func renderAttributes(cxt *Context, el any, attributes types.Attributes, inline bool) error {
+func renderAttributes(cxt *Context, el any, attributes elements.AttributeList, inline bool) error {
 	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
 }
 
-func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
+func renderSelectAttributes(cxt *Context, el any, attributes elements.AttributeList, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -51,14 +51,14 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 	var title string
 	var style string
 	var keys []string
-	var roles types.Roles
+	var roles elements.Roles
 	for key, val := range attributes {
 		switch key {
-		case types.AttrID:
+		case elements.AttrID:
 			id = val.(string)
-		case types.AttrStyle:
+		case elements.AttrStyle:
 			style = val.(string)
-		case types.AttrTitle:
+		case elements.AttrTitle:
 			switch v := val.(type) {
 			case string:
 				title = v
@@ -70,13 +70,13 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 				err = fmt.Errorf("unknown title type: %T", v)
 				return
 			}
-		case types.AttrPositional1:
+		case elements.AttrPositional1:
 			if s, ok := val.(string); ok {
 				style = s
 			}
-		case types.AttrRoles:
+		case elements.AttrRoles:
 			switch v := val.(type) {
-			case types.Roles:
+			case elements.Roles:
 				roles = v
 			case []any:
 				roles = v
@@ -97,9 +97,9 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 
 	if len(style) > 0 && shouldRenderAttributeType(AttributeFilterStyle, include, exclude) {
 		switch style {
-		case types.Tip, types.Note, types.Important, types.Warning, types.Caution:
+		case elements.Tip, elements.Note, elements.Important, elements.Warning, elements.Caution:
 			switch el.(type) {
-			case *types.Paragraph:
+			case *elements.Paragraph:
 				cxt.WriteString(fmt.Sprintf("%s: ", style))
 			default:
 				cxt.WriteString(fmt.Sprintf("[%s]\n", style))
@@ -108,7 +108,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			cxt.WriteString("[none]\n")
 			renderAttributeTitle(cxt, title, include, exclude)
 			renderAttributeAnchor(cxt, id, include, exclude, inline)
-		case types.UpperRoman, types.LowerRoman, types.Arabic, types.UpperAlpha, types.LowerAlpha:
+		case elements.UpperRoman, elements.LowerRoman, elements.Arabic, elements.UpperAlpha, elements.LowerAlpha:
 			if !inline {
 				cxt.WriteNewline()
 			}
@@ -116,7 +116,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			renderAttributeAnchor(cxt, id, include, exclude, inline)
 			cxt.WriteRune('[')
 			cxt.WriteString(style)
-			if start, ok := attributes[types.AttrStart]; ok {
+			if start, ok := attributes[elements.AttrStart]; ok {
 				if start, ok := start.(string); ok {
 					cxt.WriteString(", start=")
 					cxt.WriteString(start)
@@ -137,7 +137,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			}
 			cxt.WriteRune('[')
 			cxt.WriteString(style)
-			lang, ok := attributes[types.AttrLanguage]
+			lang, ok := attributes[elements.AttrLanguage]
 			if ok {
 				cxt.WriteString(", ")
 				cxt.WriteString(lang.(string))
@@ -280,27 +280,27 @@ func quoteAttributeValue(cxt *Context, val string) {
 func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exclude AttributeFilter) (keyVal string, skipKey bool, err error) {
 	var attributeType AttributeFilter
 	switch key {
-	case types.AttrCols:
+	case elements.AttrCols:
 		attributeType = AttributeFilterCols
-	case types.AttrInlineLinkText:
+	case elements.AttrInlineLinkText:
 		attributeType = AttributeFilterText
-	case types.AttrImageAlt:
+	case elements.AttrImageAlt:
 		attributeType = AttributeFilterAlt
 		skipKey = true
-	case types.AttrHeight:
+	case elements.AttrHeight:
 		attributeType = AttributeFilterHeight
-	case types.AttrWidth:
+	case elements.AttrWidth:
 		attributeType = AttributeFilterWidth
-	case types.AttrRoles:
+	case elements.AttrRoles:
 		attributeType = AttributeFilterRole
 		skipKey = true
-	case types.AttrFloat:
+	case elements.AttrFloat:
 		attributeType = AttributeFilterFloat
-	case types.AttrImageAlign:
+	case elements.AttrImageAlign:
 		attributeType = AttributeFilterAlign
 	case "pdfwidth":
 		attributeType = AttributeFilterPDFWidth
-	case types.AttrPositional1, types.AttrPositional2, types.AttrPositional3:
+	case elements.AttrPositional1, elements.AttrPositional2, elements.AttrPositional3:
 		skipKey = true
 	}
 	if attributeType != AttributeFilterNone && !shouldRenderAttributeType(attributeType, include, exclude) {
@@ -324,7 +324,7 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 		case string:
 			keyVal = v
 
-		case types.Options:
+		case elements.Options:
 			for _, o := range v {
 				switch opt := o.(type) {
 				case string:
@@ -338,16 +338,16 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 			var columns []string
 			for _, e := range v {
 				switch tc := e.(type) {
-				case *types.TableColumn:
+				case *elements.TableColumn:
 					var val strings.Builder
 					if tc.Multiplier > 1 || tc.MultiplierSpecified {
 						val.WriteString(strconv.Itoa(tc.Multiplier))
 						val.WriteRune('*')
 					}
-					if tc.HAlign != types.HAlignDefault || tc.HAlignSpecified {
+					if tc.HAlign != elements.HAlignDefault || tc.HAlignSpecified {
 						val.WriteString(string(tc.HAlign))
 					}
-					if tc.VAlign != types.VAlignDefault || tc.VAlignSpecified {
+					if tc.VAlign != elements.VAlignDefault || tc.VAlignSpecified {
 						val.WriteRune('.')
 						val.WriteString(string(tc.VAlign))
 					}
@@ -380,7 +380,7 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 	return
 }
 
-func renderDiagramAttributes(cxt *Context, style string, id string, title string, keys []string, inline bool, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter) (err error) {
+func renderDiagramAttributes(cxt *Context, style string, id string, title string, keys []string, inline bool, attributes elements.AttributeList, include AttributeFilter, exclude AttributeFilter) (err error) {
 
 	renderAttributeTitle(cxt, title, include, exclude)
 	renderAttributeAnchor(cxt, id, include, exclude, inline)
@@ -413,10 +413,10 @@ func renderDiagramAttributes(cxt *Context, style string, id string, title string
 	return
 }
 
-func renderAttributeDeclaration(cxt *Context, ad *types.AttributeDeclaration) (err error) {
+func renderAttributeEntry(cxt *Context, ad *elements.AttributeEntry) (err error) {
 	switch ad.Name {
 	case "authors":
-		if authors, ok := ad.Value.(types.DocumentAuthors); ok {
+		if authors, ok := ad.Value().(elements.DocumentAuthors); ok {
 			for _, author := range authors {
 				if len(author.Email) > 0 {
 					cxt.WriteString(author.Email)
@@ -437,7 +437,7 @@ func renderAttributeDeclaration(cxt *Context, ad *types.AttributeDeclaration) (e
 		case string:
 			cxt.WriteRune(' ')
 			cxt.WriteString(val)
-		case *types.Paragraph:
+		case *elements.Paragraph:
 			var previous any
 			err = renderParagraph(cxt, val, &previous)
 		case []any:
@@ -451,7 +451,7 @@ func renderAttributeDeclaration(cxt *Context, ad *types.AttributeDeclaration) (e
 	return
 }
 
-func renderAttributeReset(cxt *Context, ar *types.AttributeReset) {
+func renderAttributeReset(cxt *Context, ar *elements.AttributeReset) {
 	cxt.WriteRune(':')
 	cxt.WriteString(ar.Name)
 	cxt.WriteString("!:\n")
@@ -461,7 +461,7 @@ func getAttributeStringValue(cxt *Context, val any) (string, error) {
 	switch s := val.(type) {
 	case string:
 		return s, nil
-	case *types.StringElement:
+	case *elements.String:
 		return s.Content, nil
 	case []any:
 		renderContext := NewContext(cxt, cxt.Doc)

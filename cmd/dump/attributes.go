@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 )
 
-func dumpAttributes(attributes types.Attributes, indent int) {
+func dumpAttributes(attributes elements.AttributeList, indent int) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -17,11 +17,11 @@ func dumpAttributes(attributes types.Attributes, indent int) {
 		fmt.Print(strings.Repeat("\t", indent+1))
 		fmt.Printf(" %s=", key)
 		switch v := val.(type) {
-		case *types.StringElement:
+		case *elements.String:
 			fmt.Print(v.Content)
 		case string:
 			fmt.Print(v)
-		case types.Options:
+		case elements.Options:
 			dumpAttributeVals(v, indent+1)
 		case []any:
 			dumpAttributeVals(v, indent+1)
@@ -39,11 +39,11 @@ func dumpAttributeVals(attributes []any, indent int) {
 	for _, val := range attributes {
 		fmt.Print(strings.Repeat("\t", indent+1))
 		switch v := val.(type) {
-		case *types.StringElement:
+		case *elements.String:
 			fmt.Print(v.Content)
 		case string:
 			fmt.Print(v)
-		case *types.TableColumn:
+		case *elements.TableColumn:
 			fmt.Printf("{col:\n")
 			fmt.Print(strings.Repeat("\t", indent+2))
 			fmt.Printf("multiplier: %d\n", v.Multiplier)

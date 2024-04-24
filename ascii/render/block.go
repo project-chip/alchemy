@@ -3,10 +3,10 @@ package render
 import (
 	"fmt"
 
-	"github.com/bytesparadise/libasciidoc/pkg/types"
+	"github.com/hasty/adoc/elements"
 )
 
-func renderDelimitedBlock(cxt *Context, db *types.DelimitedBlock) (err error) {
+func renderDelimitedBlock(cxt *Context, db *elements.DelimitedBlock) (err error) {
 	switch db.Kind {
 	case "comment":
 		err = renderComment(cxt, db)
@@ -30,29 +30,20 @@ func renderDelimitedBlock(cxt *Context, db *types.DelimitedBlock) (err error) {
 	return
 }
 
-func renderComment(cxt *Context, comment *types.DelimitedBlock) (err error) {
-	for _, e := range comment.Elements {
-		switch el := e.(type) {
-		case *types.StringElement:
-			cxt.WriteNewline()
-			cxt.WriteString("////")
-			cxt.WriteNewline()
-			text, _ := el.RawText()
-			cxt.WriteString(text)
-			cxt.WriteNewline()
-			cxt.WriteString("////")
-			cxt.WriteNewline()
-		default:
-			err = fmt.Errorf("unknown comment element type: %T", el)
-		}
-		if err != nil {
-			return
-		}
+func renderComment(cxt *Context, comment *elements.MultiLineComment) (err error) {
+	for _, e := range comment.Lines {
+		cxt.WriteNewline()
+		cxt.WriteString("////")
+		cxt.WriteNewline()
+		cxt.WriteString(e)
+		cxt.WriteNewline()
+		cxt.WriteString("////")
+		cxt.WriteNewline()
 	}
 	return
 }
 
-func renderBlock(cxt *Context, block *types.DelimitedBlock, delimiter string) (err error) {
+func renderBlock(cxt *Context, block *elements.DelimitedBlock, delimiter string) (err error) {
 	err = renderAttributes(cxt, block, block.Attributes, false)
 	if err != nil {
 		return
