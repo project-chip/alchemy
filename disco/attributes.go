@@ -26,7 +26,7 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(attributesTable.columnMap))
 		}
 
-		err = b.fixAccessCells(dp.doc, attributesTable, mattertypes.EntityTypeAttribute)
+		err = b.fixAccessCells(dp, attributes, mattertypes.EntityTypeAttribute)
 		if err != nil {
 			return err
 		}

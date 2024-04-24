@@ -15,6 +15,8 @@ type docParse struct {
 	doc     *ascii.Doc
 	docType matter.DocType
 
+	clusters map[*ascii.Section]*clusterInfo
+
 	classification []*subSection
 	clusterIDs     []*subSection
 	attributes     []*subSection
@@ -36,6 +38,10 @@ type subSection struct {
 	children    []*subSection
 }
 
+type clusterInfo struct {
+	classification *subSection
+}
+
 type tableInfo struct {
 	element      *types.Table
 	rows         []*types.TableRow
@@ -54,11 +60,11 @@ func newSubSectionChildPattern(suffix string, indexColumns ...matter.TableColumn
 }
 
 func (b *Ball) parseDoc(doc *ascii.Doc, docType matter.DocType, topLevelSection *ascii.Section) (ds *docParse, err error) {
-	ds = &docParse{doc: doc, docType: docType}
+	ds = &docParse{doc: doc, docType: docType, clusters: make(map[*ascii.Section]*clusterInfo)}
 	for _, section := range parse.FindAll[*ascii.Section](topLevelSection.Elements) {
 		switch section.SecType {
 		case matter.SectionCluster:
-
+			ds.clusters[section] = &clusterInfo{}
 		case matter.SectionAttributes:
 			switch docType {
 			case matter.DocTypeCluster:
@@ -81,6 +87,10 @@ func (b *Ball) parseDoc(doc *ascii.Doc, docType matter.DocType, topLevelSection 
 			classification, err = newSubSection(doc, section)
 			if err == nil {
 				ds.classification = append(ds.classification, classification)
+				ci := getSubsectionCluster(ds, section)
+				if ci != nil {
+					ci.classification = classification
+				}
 			}
 		case matter.SectionClusterID:
 			var clusterIDs *subSection
@@ -208,4 +218,24 @@ func findSubsections(doc *ascii.Doc, parent *subSection, childPatterns ...subSec
 		subSections = append(subSections, subs)
 	}
 	return
+}
+
+func getSubsectionCluster(ds *docParse, section *ascii.Section) *clusterInfo {
+	parent, ok := section.Parent.(*ascii.Section)
+	if ok {
+		for parent != nil {
+			if parent.SecType == matter.SectionCluster {
+				ci, ok := ds.clusters[parent]
+				if !ok {
+					ci = &clusterInfo{}
+					ds.clusters[parent] = ci
+				}
+				return ci
+			}
+			if parent, ok = parent.Parent.(*ascii.Section); !ok {
+				break
+			}
+		}
+	}
+	return nil
 }
