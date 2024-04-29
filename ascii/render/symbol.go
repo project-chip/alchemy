@@ -52,7 +52,7 @@ func renderFormattedText(cxt *Context, el elements.BlockElement, wrapper string)
 	return
 }
 
-func renderSpecialCharacter(cxt *Context, s *elements.SpecialCharacter) error {
+func renderSpecialCharacter(cxt *Context, s elements.SpecialCharacter) error {
 	cxt.WriteString(s.Character)
 	return nil
 }

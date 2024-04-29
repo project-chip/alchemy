@@ -15,7 +15,7 @@ func renderInternalCrossReference(cxt *Context, cf *elements.CrossReference) (er
 	cxt.WriteString("<<")
 	cxt.WriteString(id)
 	if len(cf.Set) > 0 {
-		cxt.WriteString(",")
+		cxt.WriteString(", ")
 		Elements(cxt, "", cf.Elements()...)
 	}
 	cxt.WriteString(">>")

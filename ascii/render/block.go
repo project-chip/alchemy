@@ -1,6 +1,8 @@
 package render
 
 import (
+	"strings"
+
 	"github.com/hasty/adoc/elements"
 )
 
@@ -28,19 +30,6 @@ import (
 	return
 }*/
 
-func renderMultiLineComment(cxt *Context, comment *elements.MultiLineComment) (err error) {
-	for _, e := range comment.Lines {
-		cxt.WriteNewline()
-		cxt.WriteString("////")
-		cxt.WriteNewline()
-		cxt.WriteString(e)
-		cxt.WriteNewline()
-		cxt.WriteString("////")
-		cxt.WriteNewline()
-	}
-	return
-}
-
 func renderBlock(cxt *Context, block elements.Element, delimiter string) (err error) {
 	ha, ok := block.(elements.Attributable)
 	if ok {
@@ -61,4 +50,33 @@ func renderBlock(cxt *Context, block elements.Element, delimiter string) (err er
 	cxt.WriteString(delimiter)
 	cxt.WriteNewline()
 	return
+}
+
+func renderDelimiter(cxt *Context, delimiter elements.Delimiter) {
+	var char string
+	switch delimiter.Type {
+	case elements.DelimitedBlockTypeComment:
+		char = "/"
+	case elements.DelimitedBlockTypeExample:
+		char = "="
+	case elements.DelimitedBlockTypeListing:
+		char = "-"
+	case elements.DelimitedBlockTypeLiteral:
+		char = "."
+	case elements.DelimitedBlockTypeNone:
+		return
+	case elements.DelimitedBlockTypeOpen:
+		char = "-"
+	case elements.DelimitedBlockTypePassthrough:
+		char = "+"
+	case elements.DelimitedBlockTypeQuote:
+		char = "_"
+	case elements.DelimitedBlockTypeSidebar:
+		char = "*"
+	case elements.DelimitedBlockTypeMultilineComment:
+		char = "/"
+	}
+	cxt.WriteNewline()
+	cxt.WriteString(strings.Repeat(char, delimiter.Length))
+	cxt.WriteNewline()
 }

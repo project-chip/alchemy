@@ -5,7 +5,6 @@ import (
 )
 
 func renderOrderedListElement(cxt *Context, el *elements.OrderedListItem) (err error) {
-	err = renderAttributes(cxt, el, el.Attributes(), false)
 
 	cxt.WriteNewline()
 
@@ -13,7 +12,9 @@ func renderOrderedListElement(cxt *Context, el *elements.OrderedListItem) (err e
 	if err != nil {
 		return
 	}
-	err = Elements(cxt, el.Marker+" ", el.Elements()...)
+	cxt.WriteString(el.Marker)
+	cxt.WriteString(" ")
+	err = Elements(cxt, "", el.Elements()...)
 	return
 }
 
@@ -24,7 +25,9 @@ func renderUnorderedListElement(cxt *Context, el *elements.UnorderedListItem) (e
 	if err != nil {
 		return
 	}
-	err = Elements(cxt, el.Marker+" ", el.Elements()...)
+	cxt.WriteString(el.Marker)
+	cxt.WriteString(" ")
+	err = Elements(cxt, "", el.Elements()...)
 	return
 }
 

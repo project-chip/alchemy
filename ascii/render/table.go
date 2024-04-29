@@ -10,9 +10,8 @@ import (
 )
 
 type table struct {
-	header *tableRow
-	rows   []*tableRow
-	footer *tableRow
+	columnCount int
+	rows        []*tableRow
 }
 
 type tableRow struct {
@@ -31,7 +30,7 @@ type tableCell struct {
 
 func renderTable(cxt *Context, t *elements.Table) (err error) {
 
-	tbl := &table{header: &tableRow{}, footer: &tableRow{}}
+	tbl := &table{columnCount: t.ColumnCount}
 
 	err = renderTableSubElements(cxt, t, tbl)
 	if err != nil {
@@ -47,11 +46,9 @@ func renderTable(cxt *Context, t *elements.Table) (err error) {
 
 	cxt.WriteString("|===")
 	cxt.WriteNewline()
-	renderRow(cxt, tbl.header.cells, colOffsets)
 	for _, row := range tbl.rows {
 		renderRow(cxt, row.cells, colOffsets)
 	}
-	renderRow(cxt, tbl.footer.cells, colOffsets)
 	cxt.WriteString("|===\n")
 	return
 }
@@ -99,7 +96,7 @@ func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) {
 }
 
 func calculateColumnOffsets(tbl *table) (colOffsets []int) {
-	colCount := len(tbl.header.cells)
+	colCount := tbl.columnCount
 	colOffsets = make([]int, colCount)
 
 	offsetMatrix := offsetMatrixForTable(tbl)
@@ -150,14 +147,11 @@ func calculateColumnOffsets(tbl *table) (colOffsets []int) {
 }
 
 func offsetMatrixForTable(tbl *table) [][]int {
-	offsetMatrix := make([][]int, len(tbl.rows)+2)
-
-	offsetMatrix[0] = offsetsForRow(tbl.header.cells)
+	offsetMatrix := make([][]int, len(tbl.rows))
 
 	for i, r := range tbl.rows {
-		offsetMatrix[i+1] = offsetsForRow(r.cells)
+		offsetMatrix[i] = offsetsForRow(r.cells)
 	}
-	offsetMatrix[len(offsetMatrix)-1] = offsetsForRow(tbl.footer.cells)
 	return offsetMatrix
 }
 
@@ -266,6 +260,9 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 }
 
 func renderTableCellFormat(format *elements.TableCellFormat) string {
+	if format == nil {
+		return ""
+	}
 	var s strings.Builder
 	colSpan := format.Span.Column.Get()
 	rowSpan := format.Span.Row.Get()
