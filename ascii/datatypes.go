@@ -144,27 +144,29 @@ func (d *Doc) ReadRowDataType(row *elements.TableRow, columnMap ColumnIndex, col
 	if !ok {
 		return nil, fmt.Errorf("missing %s column for data type", column)
 	}
-	cell := row.Cells[i]
-	if len(cell.Elements) == 0 {
+	cell := row.TableCells[i]
+	cellElements := cell.Elements()
+	if len(cellElements) == 0 {
 		return nil, fmt.Errorf("empty %s cell for data type", column)
 	}
-	p, ok := cell.Elements[0].(*elements.Paragraph)
+	p, ok := cellElements[0].(*elements.Paragraph)
 	if !ok {
 		return nil, fmt.Errorf("missing paragraph in %s cell for data type", column)
 	}
-	if len(p.Elements) == 0 {
+	pElements := p.Elements()
+	if len(pElements) == 0 {
 		return nil, fmt.Errorf("empty paragraph in %s cell for data type", column)
 	}
 	var isArray bool
 
 	var sb strings.Builder
-	for _, el := range p.Elements {
+	for _, el := range pElements {
 		switch v := el.(type) {
 		case *elements.String:
-			sb.WriteString(v.Content)
-		case *elements.InternalCrossReference:
+			sb.WriteString(v.Value)
+		case *elements.CrossReference:
 			var name string
-			anchor, _ := d.getAnchor(v.ID.(string))
+			anchor, _ := d.getAnchor(v.ID)
 			if anchor != nil {
 				name = ReferenceName(anchor.Element)
 				if len(name) == 0 {
@@ -172,7 +174,7 @@ func (d *Doc) ReadRowDataType(row *elements.TableRow, columnMap ColumnIndex, col
 				}
 			}
 			if len(name) == 0 {
-				name = strings.TrimPrefix(v.ID.(string), "_")
+				name = strings.TrimPrefix(v.ID, "_")
 			}
 			sb.WriteString(name)
 		case *elements.SpecialCharacter:
@@ -247,8 +249,8 @@ func (d *Doc) getRowConstraint(row *elements.TableRow, columnMap ColumnIndex, co
 func (d *Doc) buildConstraintValue(els []elements.Element, sb *strings.Builder) {
 	for _, el := range els {
 		switch v := el.(type) {
-		case elements.String:
-			sb.WriteString(string(v))
+		case *elements.String:
+			sb.WriteString(v.Value)
 		case *elements.CrossReference:
 			anchor, _ := d.getAnchor(v.ID)
 			var name string
@@ -298,8 +300,8 @@ func (d *Doc) getRowConformance(row *elements.TableRow, columnMap ColumnIndex, c
 	var sb strings.Builder
 	for _, el := range p.Elements() {
 		switch v := el.(type) {
-		case elements.String:
-			sb.WriteString(string(v))
+		case *elements.String:
+			sb.WriteString(v.Value)
 		case *elements.CrossReference:
 			id := v.ID
 			if strings.HasPrefix(id, "ref_") {
@@ -320,16 +322,15 @@ func (d *Doc) getRowConformance(row *elements.TableRow, columnMap ColumnIndex, c
 		case *elements.Bold:
 			// This is usually an asterisk, and should be ignored
 		case *elements.Link:
-			if v.Location != nil {
-				if len(v.Location.Scheme) > 0 {
-					sb.WriteString(v.Location.Scheme)
-				} else {
-					sb.WriteString("link:")
-				}
-				if path, ok := v.Location.Path.(string); ok {
-					sb.WriteString(path)
-				}
+			if len(v.URL.Scheme) > 0 {
+				sb.WriteString(v.URL.Scheme)
+			} else {
+				sb.WriteString("link:")
 			}
+			if path, ok := v.URL.Path.(string); ok {
+				sb.WriteString(path)
+			}
+
 		case *elements.CharacterReplacementReference:
 			switch v.Name() {
 			case "nbsp":

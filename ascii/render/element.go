@@ -42,8 +42,8 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			err = renderInternalCrossReference(cxt, el)
 		case *elements.AttributeEntry:
 			err = renderAttributeEntry(cxt, el)
-		case elements.String:
-			text := string(el)
+		case *elements.String:
+			text := el.Value
 			if strings.HasPrefix(text, "ifdef::") || strings.HasPrefix(text, "ifndef::") || strings.HasPrefix(text, "endif::[]") {
 				cxt.WriteNewline()
 			}

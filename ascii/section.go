@@ -28,14 +28,14 @@ func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
 	ss := &Section{Doc: doc, Parent: parent, Base: s}
 
 	var name strings.Builder
-	err := buildSectionTitle(doc, &name, s.Title)
+	err := buildSectionTitle(doc, &name, s.Title...)
 	if err != nil {
 		return nil, err
 	}
 	ss.Name = name.String()
-	for _, e := range s.Elements {
+	for _, e := range s.Elements() {
 		switch el := e.(type) {
-		case *elements.AttributeDeclaration:
+		case *elements.AttributeEntry:
 			doc.attributes[el.Name] = el.Value
 			ss.Elements = append(ss.Elements, NewElement(ss, e))
 		case *elements.Section:
@@ -51,28 +51,38 @@ func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
 	return ss, nil
 }
 
-func buildSectionTitle(doc *Doc, title *strings.Builder, els ...any) (err error) {
+func buildSectionTitle(doc *Doc, title *strings.Builder, els ...elements.Element) (err error) {
 	for _, e := range els {
 		switch e := e.(type) {
-		case []any:
-			err = buildSectionTitle(doc, title, e...)
-		case string:
-			title.WriteString(e)
-		case elements.String:
-			title.WriteString(string(e))
+		case *elements.String:
+			title.WriteString(e.Value)
 		case *elements.SpecialCharacter:
 			title.WriteString(e.Character)
-		case *elements.AttributeReference:
-			attr, ok := doc.attributes[e.Name]
+		case *elements.UserAttributeReference:
+
+			attr, ok := doc.attributes[elements.AttributeName(e.Name())]
 			if !ok {
 				return fmt.Errorf("unknown section title attribute: %s", e.Name)
 			}
-			err = buildSectionTitle(doc, title, attr)
+			switch val := attr.(type) {
+			case []elements.Element:
+				err = buildSectionTitle(doc, title, val...)
+			case elements.Element:
+				err = buildSectionTitle(doc, title, val)
+			default:
+				err = fmt.Errorf("unexpected section title attribute value type: %T", attr)
+			}
 		case *elements.Link:
 		case *elements.Bold:
 
 		default:
 			err = fmt.Errorf("unknown section title component type: %T", e)
+		}
+		if err != nil {
+			return
+		}
+		if he, ok := e.(elements.HasElements); ok {
+			err = buildSectionTitle(doc, title, he.Elements()...)
 		}
 		if err != nil {
 			return
@@ -316,7 +326,7 @@ func guessDataTypeFromTable(section *Section, parent *Section) (sectionType matt
 	if firstTable == nil {
 		return
 	}
-	rows := TableRows(firstTable)
+	rows := firstTable.TableRows
 	_, columnMap, _, err := MapTableColumns(section.Doc, rows)
 	if err != nil {
 		return
@@ -382,7 +392,7 @@ var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<e
 func (s *Section) GetDataType() *mattertypes.DataType {
 	var para *elements.Paragraph
 	var ok bool
-	for _, e := range s.Base.Elements {
+	for _, e := range s.Base.Elements() {
 		para, ok = e.(*elements.Paragraph)
 		if ok {
 			break
@@ -392,15 +402,15 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 		return nil
 	}
 	var dts string
-	for _, el := range para.Elements {
+	for _, el := range para.Elements() {
 		switch el := el.(type) {
 		case *elements.String:
-			match := dataTypeDefinitionPattern.FindStringSubmatch(el.Content)
+			match := dataTypeDefinitionPattern.FindStringSubmatch(el.Value)
 			if match != nil {
 				dts = match[1]
 				break
 			}
-			if strings.HasPrefix(el.Content, "This struct") {
+			if strings.HasPrefix(el.Value, "This struct") {
 				dts = strings.TrimSuffix(s.Name, " Type")
 			}
 		case *elements.InternalCrossReference:

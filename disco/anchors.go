@@ -110,12 +110,10 @@ func normalizeAnchorLabel(name string, element any) (label string) {
 }
 
 func setAnchorID(element elements.Attributable, id string, label string) {
-	newAttr := make(elements.AttributeList)
 	if len(label) > 0 {
 		id += ", " + label
 	}
-	newAttr[elements.AttrID] = id
-	element.AddAttributes(newAttr)
+	element.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameID), id))
 }
 
 func disambiguateAnchorSet(infos []*ascii.Anchor) error {
