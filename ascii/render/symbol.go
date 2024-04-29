@@ -1,10 +1,10 @@
 package render
 
 import (
-	"fmt"
+	"github.com/hasty/adoc/elements"
 )
 
-func renderQuotedText(cxt *Context, qt *elements.QuotedText) (err error) {
+/*func renderQuotedText(cxt *Context, qt *elements.QuotedText) (err error) {
 	err = renderAttributes(cxt, qt, qt.Attributes, true)
 	if err != nil {
 		return
@@ -39,22 +39,25 @@ func renderQuotedText(cxt *Context, qt *elements.QuotedText) (err error) {
 	err = Elements(cxt, "", qt.Elements)
 	cxt.WriteString(wrapper)
 	return
+}*/
+
+func renderFormattedText(cxt *Context, el elements.BlockElement, wrapper string) (err error) {
+	err = renderAttributes(cxt, el, el.Attributes(), true)
+	if err != nil {
+		return
+	}
+	cxt.WriteString(wrapper)
+	err = Elements(cxt, "", el.Elements()...)
+	cxt.WriteString(wrapper)
+	return
 }
 
 func renderSpecialCharacter(cxt *Context, s *elements.SpecialCharacter) error {
-	switch s.Name {
-	case "<":
-		cxt.WriteRune('<')
-	case ">":
-		cxt.WriteRune('>')
-	case "&":
-		cxt.WriteRune('&')
-	default:
-		return fmt.Errorf("unknown special character: %s", s.Name)
-	}
+	cxt.WriteString(s.Character)
 	return nil
 }
 
+/*
 func renderSymbol(cxt *Context, s *elements.Symbol) error {
 	switch s.Name {
 	case "'":
@@ -86,3 +89,4 @@ func renderSymbol(cxt *Context, s *elements.Symbol) error {
 	}
 	return nil
 }
+*/

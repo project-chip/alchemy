@@ -2,10 +2,7 @@ package render
 
 import (
 	"fmt"
-	"log/slog"
 	"math"
-	"slices"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -38,21 +35,42 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 	return ((at & include) == at) && ((at & exclude) != at)
 }
 
-func renderAttributes(cxt *Context, el any, attributes elements.AttributeList, inline bool) error {
+func renderAttributes(cxt *Context, el any, attributes []elements.Attribute, inline bool) error {
 	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
 }
 
-func renderSelectAttributes(cxt *Context, el any, attributes elements.AttributeList, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
+func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	if len(attributes) == 0 {
 		return
 	}
 
-	var id string
+	/*var vals []string
+	for _, a := range attributes {
+
+		switch a := a.(type) {
+		case *elements.NamedAttribute:
+			vals = append(vals, fmt.Sprintf("%s=\"%s\"", a.Name, a.Value()))
+		case *elements.PositionalAttribute:
+			vals = append(vals, )
+		}
+	}*/
+	/*var id string
 	var title string
 	var style string
 	var keys []string
 	var roles elements.Roles
-	for key, val := range attributes {
+	for _, val := range attributes {
+		switch val := val.(type) {
+		case *elements.NamedAttribute:
+			switch val.Name {
+			case elements.AttributeNameID:
+			case elements.AttributeNameStyle:
+			case elements.AttributeNameTitle:
+			case elements.AttributeNameRoles:
+
+			}
+		case *elements.PositionalAttribute:
+		}
 		switch key {
 		case elements.AttrID:
 			id = val.(string)
@@ -240,7 +258,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes elements.AttributeL
 				cxt.WriteRune('\n')
 			}
 		}
-	}
+	}*/
 	return
 }
 
@@ -277,6 +295,7 @@ func quoteAttributeValue(cxt *Context, val string) {
 	}
 }
 
+/*
 func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exclude AttributeFilter) (keyVal string, skipKey bool, err error) {
 	var attributeType AttributeFilter
 	switch key {
@@ -340,27 +359,56 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 				switch tc := e.(type) {
 				case *elements.TableColumn:
 					var val strings.Builder
-					if tc.Multiplier > 1 || tc.MultiplierSpecified {
-						val.WriteString(strconv.Itoa(tc.Multiplier))
+					if tc.Multiplier.IsSet() {
+						val.WriteString(strconv.Itoa(tc.Multiplier.Get()))
 						val.WriteRune('*')
 					}
-					if tc.HAlign != elements.HAlignDefault || tc.HAlignSpecified {
-						val.WriteString(string(tc.HAlign))
+					if tc.HorizontalAlign.IsSet() {
+						switch tc.HorizontalAlign.Get() {
+						case elements.TableCellHorizontalAlignLeft:
+							val.WriteRune('<')
+						case elements.TableCellHorizontalAlignCenter:
+							val.WriteRune('^')
+						case elements.TableCellHorizontalAlignRight:
+							val.WriteRune('>')
+						}
 					}
-					if tc.VAlign != elements.VAlignDefault || tc.VAlignSpecified {
+					if tc.VerticalAlign.IsSet() {
 						val.WriteRune('.')
-						val.WriteString(string(tc.VAlign))
+						switch tc.VerticalAlign.Get() {
+						case elements.TableCellVerticalAlignTop:
+							val.WriteRune('<')
+						case elements.TableCellVerticalAlignMiddle:
+							val.WriteRune('^')
+						case elements.TableCellVerticalAlignBottom:
+							val.WriteRune('>')
+						}
 					}
-					if tc.Autowidth {
-						val.WriteRune('~')
-					} else if tc.Weight > 1 || tc.WeightSpecified {
-						val.WriteString(strconv.Itoa(tc.Weight))
-					} else if tc.PercentageSpecified {
-						val.WriteString(strconv.Itoa(tc.Percentage))
-						val.WriteRune('%')
+					if tc.Width.IsSet() {
+						width := tc.Width.Get()
+						if width == -1 {
+							val.WriteRune('~')
+						} else {
+							val.WriteString(strconv.Itoa(int(width)))
+						}
 					}
-					if len(tc.Style) > 0 {
-						val.WriteString(string(tc.Style))
+					if tc.Style.IsSet() {
+						switch tc.Style.Get() {
+						case elements.TableCellStyleAsciiDoc:
+							val.WriteRune('a')
+						case elements.TableCellStyleDefault:
+							val.WriteRune('d')
+						case elements.TableCellStyleEmphasis:
+							val.WriteRune('e')
+						case elements.TableCellStyleHeader:
+							val.WriteRune('h')
+						case elements.TableCellStyleLiteral:
+							val.WriteRune('l')
+						case elements.TableCellStyleMonospace:
+							val.WriteRune('m')
+						case elements.TableCellStyleStrong:
+							val.WriteRune('s')
+						}
 					}
 					columns = append(columns, val.String())
 
@@ -379,7 +427,8 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 	}
 	return
 }
-
+*/
+/*
 func renderDiagramAttributes(cxt *Context, style string, id string, title string, keys []string, inline bool, attributes elements.AttributeList, include AttributeFilter, exclude AttributeFilter) (err error) {
 
 	renderAttributeTitle(cxt, title, include, exclude)
@@ -411,12 +460,12 @@ func renderDiagramAttributes(cxt *Context, style string, id string, title string
 		cxt.WriteRune('\n')
 	}
 	return
-}
+}*/
 
 func renderAttributeEntry(cxt *Context, ad *elements.AttributeEntry) (err error) {
 	switch ad.Name {
 	case "authors":
-		if authors, ok := ad.Value().(elements.DocumentAuthors); ok {
+		/*if authors, ok := ad.Value().(elements.DocumentAuthors); ok {
 			for _, author := range authors {
 				if len(author.Email) > 0 {
 					cxt.WriteString(author.Email)
@@ -427,25 +476,14 @@ func renderAttributeEntry(cxt *Context, ad *elements.AttributeEntry) (err error)
 				}
 				cxt.WriteRune('\n')
 			}
-		}
+		}*/
 	default:
 		cxt.WriteNewline()
 		cxt.WriteRune(':')
-		cxt.WriteString(ad.Name)
+		cxt.WriteString(string(ad.Name))
 		cxt.WriteString(":")
-		switch val := ad.Value.(type) {
-		case string:
-			cxt.WriteRune(' ')
-			cxt.WriteString(val)
-		case *elements.Paragraph:
-			var previous any
-			err = renderParagraph(cxt, val, &previous)
-		case []any:
-			err = Elements(cxt, "", val)
-		case nil:
-		default:
-			err = fmt.Errorf("unknown attribute declaration value type: %T", ad.Value)
-		}
+		err = Elements(cxt, "", ad.Value...)
+
 		cxt.WriteRune('\n')
 	}
 	return
@@ -453,7 +491,7 @@ func renderAttributeEntry(cxt *Context, ad *elements.AttributeEntry) (err error)
 
 func renderAttributeReset(cxt *Context, ar *elements.AttributeReset) {
 	cxt.WriteRune(':')
-	cxt.WriteString(ar.Name)
+	cxt.WriteString(string(ar.Name))
 	cxt.WriteString("!:\n")
 }
 
@@ -461,11 +499,11 @@ func getAttributeStringValue(cxt *Context, val any) (string, error) {
 	switch s := val.(type) {
 	case string:
 		return s, nil
-	case *elements.String:
-		return s.Content, nil
-	case []any:
+	case elements.String:
+		return string(s), nil
+	case []elements.Element:
 		renderContext := NewContext(cxt, cxt.Doc)
-		err := Elements(renderContext, "", s)
+		err := Elements(renderContext, "", s...)
 		if err != nil {
 			return "", err
 		}

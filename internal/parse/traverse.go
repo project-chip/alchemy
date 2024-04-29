@@ -2,9 +2,11 @@ package parse
 
 import (
 	"slices"
+
+	"github.com/hasty/adoc/elements"
 )
 
-func FindAll[T any](elements []any) []T {
+func FindAll[T any](elements []elements.Element) []T {
 	var list []T
 	find(elements, func(t T) bool {
 		list = append(list, t)
@@ -13,7 +15,7 @@ func FindAll[T any](elements []any) []T {
 	return list
 }
 
-func FindFirst[T any](elements []any) T {
+func FindFirst[T any](elements []elements.Element) T {
 	var found T
 	find(elements, func(t T) bool {
 		found = t
@@ -22,11 +24,11 @@ func FindFirst[T any](elements []any) T {
 	return found
 }
 
-func Search[T any](elements []any, callback func(t T) bool) {
+func Search[T any](elements []elements.Element, callback func(t T) bool) {
 	find(elements, callback)
 }
 
-func find[T any](elements []any, callback func(t T) bool) bool {
+func find[T any](elements []elements.Element, callback func(t T) bool) bool {
 	for _, e := range elements {
 		var shortCircuit bool
 		if el, ok := e.(T); ok {
@@ -55,7 +57,7 @@ func find[T any](elements []any, callback func(t T) bool) bool {
 	return false
 }
 
-func Skim[T any](elements []any) []T {
+func Skim[T any](elements []elements.Element) []T {
 	var list []T
 	for _, e := range elements {
 		if ae, ok := e.(HasBase); ok {
@@ -70,7 +72,7 @@ func Skim[T any](elements []any) []T {
 	return list
 }
 
-func SkimFunc[T any](elements []any, callback func(t T) bool) bool {
+func SkimFunc[T any](elements []elements.Element, callback func(t T) bool) bool {
 	for _, e := range elements {
 		var shortCircuit bool
 		if el, ok := e.(T); ok {
@@ -90,10 +92,10 @@ func SkimFunc[T any](elements []any, callback func(t T) bool) bool {
 
 func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit bool)) (shortCircuit bool) {
 	i := 0
-	elements := parent.GetElements()
+	els := parent.GetElements()
 	var removed bool
-	for i < len(elements) {
-		e := elements[i]
+	for i < len(els) {
+		e := els[i]
 		if ae, ok := e.(HasBase); ok {
 			e = ae.GetBase()
 		}
@@ -105,9 +107,9 @@ func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit 
 			break
 		}
 		remove, shortCircuit := callback(e)
-		var empty []any
+		var empty []elements.Element
 		if remove {
-			elements = slices.Replace(elements, i, i+1, empty...)
+			els = slices.Replace(els, i, i+1, empty...)
 			removed = true
 		} else {
 			i++
@@ -117,22 +119,22 @@ func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit 
 		}
 	}
 	if removed {
-		_ = parent.SetElements(elements)
+		_ = parent.SetElements(els)
 	}
 	return
 }
 
-func Traverse[T any](parent HasElements, elements []any, callback func(el T, parent HasElements, index int) bool) {
-	traverse(parent, elements, callback)
+func Traverse[T any](parent HasElements, els []elements.Element, callback func(el T, parent HasElements, index int) bool) {
+	traverse(parent, els, callback)
 }
 
-func traverse[T any](parent HasElements, elements []any, callback func(el T, parent HasElements, index int) bool) bool {
-	for i, e := range elements {
+func traverse[T any](parent HasElements, els []elements.Element, callback func(el T, parent HasElements, index int) bool) bool {
+	for i, e := range els {
 		if v, ok := e.(T); ok && callback(v, parent, i) {
 			return true
 		}
 	}
-	for _, e := range elements {
+	for _, e := range els {
 		switch el := e.(type) {
 		case HasElements:
 			if traverse(el, el.GetElements(), callback) {

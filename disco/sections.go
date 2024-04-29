@@ -40,7 +40,7 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	}
 	sections := divyUpSection(sec, validSectionTypes)
 
-	newOrder := make([]any, 0, len(sec.Elements))
+	newOrder := make([]elements.Element, 0, len(sec.Elements))
 	for _, st := range sectionOrder {
 		if els, ok := sections[st]; ok {
 
@@ -55,8 +55,8 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	return sec.SetElements(newOrder)
 }
 
-func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section][]any {
-	sections := make(map[matter.Section][]any)
+func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section][]elements.Element {
+	sections := make(map[matter.Section][]elements.Element)
 	lastSectionType := matter.SectionPrefix
 	for _, e := range sec.Elements {
 		switch el := e.(type) {
@@ -74,10 +74,10 @@ func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]stru
 }
 
 func setSectionTitle(sec *ascii.Section, title string) {
-	for _, e := range sec.Base.Title {
-		switch el := e.(type) {
-		case *elements.String:
-			el.Content = title
+	for i, e := range sec.Base.Title {
+		switch e.(type) {
+		case elements.String:
+			sec.Base.Title[i] = elements.String(title)
 			sec.Name = title
 		}
 	}
@@ -102,7 +102,7 @@ func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.Col
 
 		subSectionNames := make(map[string]struct{}, len(rows))
 		for _, row := range rows {
-			name, err := ascii.RenderTableCell(row.Cells[nameIndex])
+			name, err := ascii.RenderTableCell(row.TableCells[nameIndex])
 			if err != nil {
 				slog.Debug("could not get cell value for subsection", "err", err)
 				continue

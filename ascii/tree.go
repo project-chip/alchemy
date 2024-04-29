@@ -23,8 +23,8 @@ func buildTree(docs []*Doc) {
 			continue
 		}
 
-		parse.Search[*elements.Section](top.Base.Elements, func(t *elements.Section) bool {
-			link := parse.FindFirst[*elements.InlineLink](t.Title)
+		parse.Search[*elements.Section](top.Base.Elements(), func(t *elements.Section) bool {
+			link := parse.FindFirst[*elements.Link](t.Title)
 			if link != nil {
 				linkPath, ok := link.Location.Path.(string)
 				if ok {

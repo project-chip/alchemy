@@ -12,7 +12,7 @@ func (b *Ball) organizeClusterIDSection(cxt *discoContext, dp *docParse) (err er
 		if clusterIDsTable.element == nil {
 			return fmt.Errorf("no cluster ID section found")
 		}
-		if len(clusterIDsTable.element.Rows) > 2 {
+		if len(clusterIDsTable.element.TableRows) > 2 {
 			setSectionTitle(clusterIDs.section, matter.ClusterIDsSectionName)
 		} else {
 			setSectionTitle(clusterIDs.section, matter.ClusterIDSectionName)

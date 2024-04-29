@@ -41,12 +41,12 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 		} else {
 			return false
 		}
-		attrs := wa.GetAttributes()
-		idAttr, ok := attrs[elements.AttrID]
-		if !ok {
+		attrs := wa.Attributes()
+		idAttr := wa.GetAttributeByName(elements.AttributeNameID)
+		if idAttr == nil {
 			return false
 		}
-		id := strings.TrimSpace(idAttr.(string))
+		id := strings.TrimSpace(idAttr.Value().(string))
 		var label string
 		if parts := strings.Split(id, ","); len(parts) > 1 {
 			id = strings.TrimSpace(parts[0])

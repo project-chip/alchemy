@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/hasty/adoc/elements"
 )
 
 type table struct {
@@ -36,7 +38,7 @@ func renderTable(cxt *Context, t *elements.Table) (err error) {
 		return
 	}
 
-	err = renderAttributes(cxt, t, t.Attributes, false)
+	err = renderAttributes(cxt, t, t.Attributes(), false)
 	if err != nil {
 		return
 	}
@@ -74,7 +76,7 @@ func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) {
 		colSpan := 1
 		if c.formatter != nil {
 			format = renderTableCellFormat(c.formatter)
-			colSpan = c.formatter.ColumnSpan
+			colSpan = c.formatter.Span.Column.Get()
 		}
 		indent := fmt.Sprintf("%*s", indentLength, format)
 		cxt.WriteString(indent)
@@ -163,12 +165,14 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 	offsets = make([]int, len(cells))
 	for i, c := range cells {
 		colSpan := 1
+		var format string
 		if c.formatter != nil {
+			format = renderTableCellFormat(c.formatter)
 			if i == 0 {
-				indent := utf8.RuneCountInString(c.formatter.Content)
+				indent := utf8.RuneCountInString(format)
 				offsets[i] = indent
 			}
-			colSpan = c.formatter.ColumnSpan
+			colSpan = c.formatter.Span.Column.Get()
 		}
 		width := getCellWidth(c)
 		c.width = width
@@ -186,7 +190,8 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 				continue
 			}
 			if nextCell.formatter != nil {
-				c.margin = utf8.RuneCountInString(nextCell.formatter.Content)
+				format = renderTableCellFormat(nextCell.formatter)
+				c.margin = utf8.RuneCountInString(format)
 				width += c.margin
 			}
 			break
@@ -206,39 +211,20 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 }
 
 func renderTableSubElements(cxt *Context, t *elements.Table, tbl *table) (err error) {
-	if t.Header != nil {
-		for _, c := range t.Header.Cells {
-			renderContext := NewContext(cxt, cxt.Doc)
-			err = Elements(renderContext, "", c.Elements)
-			if err != nil {
-				return
-			}
-			tbl.header.cells = append(tbl.header.cells, &tableCell{value: strings.TrimSpace(renderContext.String()), format: c.Format, formatter: c.Formatter, blank: c.Blank})
-		}
-	}
 
-	for _, row := range t.Rows {
+	for _, row := range t.TableRows {
 		tr := &tableRow{}
-		for _, c := range row.Cells {
+		for _, c := range row.TableCells {
 			renderContext := NewContext(cxt, cxt.Doc)
-			err = Elements(renderContext, "", c.Elements)
+			err = Elements(renderContext, "", c.Elements()...)
 			if err != nil {
 				return
 			}
-			tr.cells = append(tr.cells, &tableCell{value: strings.TrimSpace(renderContext.String()), format: c.Format, formatter: c.Formatter, blank: c.Blank})
+			tr.cells = append(tr.cells, &tableCell{value: strings.TrimSpace(renderContext.String()), format: renderTableCellFormat(c.Format), formatter: c.Format, blank: c.Blank})
 		}
 		tbl.rows = append(tbl.rows, tr)
 	}
-	if t.Footer != nil {
-		for _, c := range t.Footer.Cells {
-			renderContext := NewContext(cxt, cxt.Doc)
-			err = Elements(renderContext, "", c.Elements)
-			if err != nil {
-				return
-			}
-			tbl.footer.cells = append(tbl.footer.cells, &tableCell{value: strings.TrimSpace(renderContext.String()), format: c.Format, formatter: c.Formatter, blank: c.Blank})
-		}
-	}
+
 	return
 }
 
@@ -281,38 +267,62 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 
 func renderTableCellFormat(format *elements.TableCellFormat) string {
 	var s strings.Builder
-	if format.ColumnSpan > 1 || format.RowSpan > 1 {
-		if format.ColumnSpan > 1 {
-			s.WriteString(strconv.Itoa(format.ColumnSpan))
+	colSpan := format.Span.Column.Get()
+	rowSpan := format.Span.Row.Get()
+	if (format.Span.Column.IsSet() && colSpan > 1) || (format.Span.Row.IsSet() && rowSpan > 1) {
+		if colSpan > 1 {
+			s.WriteString(strconv.Itoa(colSpan))
 		}
-		if format.RowSpan > 1 {
+		if rowSpan > 1 {
 			s.WriteRune('.')
-			s.WriteString(strconv.Itoa(format.RowSpan))
+			s.WriteString(strconv.Itoa(rowSpan))
 		}
 		s.WriteRune('+')
 	}
-	if format.Duplication > 1 {
-		s.WriteString(strconv.Itoa(format.Duplication))
-		s.WriteRune('*')
+	if format.Multiplier.IsSet() {
+		multipler := format.Multiplier.Get()
+		if multipler > 1 {
+			s.WriteString(strconv.Itoa(multipler))
+			s.WriteRune('*')
+
+		}
 	}
-	switch format.HorizontalAlignment {
-	case elements.Left:
-		s.WriteRune('<')
-	case elements.Center:
-		s.WriteRune('^')
-	case elements.Right:
-		s.WriteRune('>')
+	if format.HorizontalAlign.IsSet() {
+		switch format.HorizontalAlign.Get() {
+		case elements.TableCellHorizontalAlignLeft:
+			s.WriteRune('<')
+		case elements.TableCellHorizontalAlignCenter:
+			s.WriteRune('^')
+		case elements.TableCellHorizontalAlignRight:
+			s.WriteRune('>')
+		}
 	}
-	switch format.VerticalAlignment {
-	case elements.Top:
-		s.WriteString(".<")
-	case elements.Middle:
-		s.WriteString(".^")
-	case elements.Bottom:
-		s.WriteString(".>")
+	if format.VerticalAlign.IsSet() {
+		switch format.VerticalAlign.Get() {
+		case elements.TableCellVerticalAlignTop:
+			s.WriteString(".<")
+		case elements.TableCellVerticalAlignMiddle:
+			s.WriteString(".^")
+		case elements.TableCellVerticalAlignBottom:
+			s.WriteString(".>")
+		}
+
 	}
-	if len(format.Style) > 0 {
-		s.WriteString(string(format.Style))
+	if format.Style.IsSet() {
+		switch format.Style.Get() {
+		case elements.TableCellStyleAsciiDoc:
+			s.WriteRune('a')
+		case elements.TableCellStyleEmphasis:
+			s.WriteRune('e')
+		case elements.TableCellStyleHeader:
+			s.WriteRune('h')
+		case elements.TableCellStyleLiteral:
+			s.WriteRune('l')
+		case elements.TableCellStyleMonospace:
+			s.WriteRune('m')
+		case elements.TableCellStyleStrong:
+			s.WriteRune('s')
+		}
 	}
 	return s.String()
 }

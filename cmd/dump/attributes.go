@@ -7,18 +7,21 @@ import (
 	"github.com/hasty/adoc/elements"
 )
 
-func dumpAttributes(attributes elements.AttributeList, indent int) {
+func dumpAttributes(attributes []elements.Attribute, indent int) {
 	if len(attributes) == 0 {
 		return
 	}
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{attr:\n")
-	for key, val := range attributes {
+	for _, a := range attributes {
 		fmt.Print(strings.Repeat("\t", indent+1))
-		fmt.Printf(" %s=", key)
-		switch v := val.(type) {
-		case *elements.String:
-			fmt.Print(v.Content)
+		switch a := a.(type) {
+		case *elements.NamedAttribute:
+			fmt.Printf(" %s=", a.Name)
+		}
+		switch v := a.Value().(type) {
+		case elements.String:
+			fmt.Print(string(v))
 		case string:
 			fmt.Print(v)
 		case elements.Options:
@@ -26,7 +29,7 @@ func dumpAttributes(attributes elements.AttributeList, indent int) {
 		case []any:
 			dumpAttributeVals(v, indent+1)
 		default:
-			fmt.Printf("unknown type: %T", val)
+			fmt.Printf("unknown type: %T", v)
 		}
 		fmt.Print("\n")
 	}
@@ -39,8 +42,8 @@ func dumpAttributeVals(attributes []any, indent int) {
 	for _, val := range attributes {
 		fmt.Print(strings.Repeat("\t", indent+1))
 		switch v := val.(type) {
-		case *elements.String:
-			fmt.Print(v.Content)
+		case elements.String:
+			fmt.Print(v)
 		case string:
 			fmt.Print(v)
 		case *elements.TableColumn:
@@ -48,17 +51,13 @@ func dumpAttributeVals(attributes []any, indent int) {
 			fmt.Print(strings.Repeat("\t", indent+2))
 			fmt.Printf("multiplier: %d\n", v.Multiplier)
 			fmt.Print(strings.Repeat("\t", indent+2))
-			fmt.Printf("halign: %s\n", v.HAlign)
+			fmt.Printf("halign: %s\n", v.HorizontalAlign.Get().String())
 			fmt.Print(strings.Repeat("\t", indent+2))
-			fmt.Printf("valign: %s\n", v.VAlign)
+			fmt.Printf("valign: %s\n", v.VerticalAlign.Get().String())
 			fmt.Print(strings.Repeat("\t", indent+2))
-			fmt.Printf("weight: %d\n", v.Weight)
+			fmt.Printf("style: %s\n", v.Style.Get().String())
 			fmt.Print(strings.Repeat("\t", indent+2))
-			fmt.Printf("style: %s\n", v.Style)
-			fmt.Print(strings.Repeat("\t", indent+2))
-			fmt.Printf("autowidth: %v\n", v.Autowidth)
-			fmt.Print(strings.Repeat("\t", indent+2))
-			fmt.Printf("width: %s\n", v.Width)
+			fmt.Printf("width: %s\n", v.Width.Get().String())
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("}\n")
 		default:

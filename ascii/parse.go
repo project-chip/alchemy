@@ -7,23 +7,23 @@ import (
 	"strings"
 
 	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-	"github.com/bytesparadise/libasciidoc/pkg/parser"
 
+	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/parse"
 	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/internal/text"
 )
 
-func ParseFile(path string, settings ...configuration.Setting) (*Doc, error) {
+func ParseFile(path string) (*Doc, error) {
 
 	contents, err := readFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return Parse(contents, path, settings...)
+	return Parse(contents, path)
 }
 
-func Parse(contents string, path string, settings ...configuration.Setting) (doc *Doc, err error) {
-	baseConfig := make([]configuration.Setting, 0, len(settings)+1)
+func Parse(contents string, path string) (doc *Doc, err error) {
+	/*baseConfig := make([]configuration.Setting, 0, len(settings)+1)
 	baseConfig = append(baseConfig, configuration.WithFilename(path))
 	baseConfig = append(baseConfig, settings...)
 
@@ -35,11 +35,11 @@ func Parse(contents string, path string, settings ...configuration.Setting) (doc
 	contents, err = parser.Preprocess(strings.NewReader(contents), config)
 	if err != nil {
 		return nil, err
-	}
+	}*/
 
 	var d *elements.Document
 
-	d, err = ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
+	d, err = ParseDocument(strings.NewReader(contents), path)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed parse: %w", err)
@@ -56,11 +56,13 @@ func Parse(contents string, path string, settings ...configuration.Setting) (doc
 	return doc, nil
 }
 
-func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...parser.Option) (*elements.Document, error) {
+func ParseDocument(r io.Reader, path string) (*elements.Document, error) {
 	done := make(chan any)
 	defer close(done)
 
-	newContext := func() *parser.ParseContext {
+	return parse.Reader(path, r)
+
+	/*newContext := func() *parser.ParseContext {
 		c := parser.NewParseContext(config, opts...)
 		//c.IgnoreColumnDefs(true)
 		c.SuppressAttributeSubstitution(true)
@@ -82,8 +84,8 @@ func ParseDocument(r io.Reader, config *configuration.Configuration, opts ...par
 	}
 	if len(footnotes.Notes) > 0 {
 		doc.Footnotes = footnotes.Notes
-	}
-	return doc, nil
+	}*/
+	//	return doc, nil
 }
 
 type Parser struct {
