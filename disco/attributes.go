@@ -68,23 +68,24 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 	}
 
 	for _, row := range section.table.rows {
-		cell := row.Cells[nameIndex]
+		cell := row.TableCells[nameIndex]
 		cv, err := ascii.RenderTableCell(cell)
 		if err != nil {
 			continue
 		}
-
-		if len(cell.Elements) == 0 {
+		cellElements := cell.Elements()
+		if len(cellElements) == 0 {
 			continue
 		}
-		p, ok := cell.Elements[0].(*elements.Paragraph)
+		p, ok := cellElements[0].(*elements.Paragraph)
 		if !ok {
 			continue
 		}
-		if len(p.Elements) == 0 {
+		pElements := p.Elements()
+		if len(pElements) == 0 {
 			continue
 		}
-		_, ok = p.Elements[0].(*elements.String)
+		_, ok = pElements[0].(*elements.String)
 		if !ok {
 			continue
 		}
@@ -106,11 +107,14 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 			continue
 		}
 		var id string
-		ide, ok := s.Base.AttributeList[elements.AttrID]
-		if ok {
-			id, ok = ide.(string)
-			if ok && strings.HasPrefix(id, "_") {
-				ok = false
+		ide := s.Base.GetAttributeByName(elements.AttributeNameID)
+		if ide != nil {
+			idv, ok := ide.Value().(*elements.String)
+			if ok {
+				id = idv.Value
+				if strings.HasPrefix(id, "_") {
+					ok = false
+				}
 			}
 		}
 		if !ok {
@@ -118,8 +122,8 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 			id, label = normalizeAnchorID(s.Name, nil, nil)
 			setAnchorID(s.Base, id, label)
 		}
-		icr, _ := elements.NewInternalCrossReference(id, nil)
-		err := p.SetElements([]any{icr})
+		icr := elements.NewCrossReference(id)
+		err := p.SetElements([]elements.Element{icr})
 		if err != nil {
 			return err
 		}

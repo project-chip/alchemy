@@ -28,7 +28,7 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, table *tableInfo, entityType matte
 		}
 	}
 	for _, row := range table.rows[1:] {
-		accessCell := row.Cells[accessIndex]
+		accessCell := row.TableCells[accessIndex]
 		vc, e := ascii.RenderTableCell(accessCell)
 		if e != nil {
 			continue
@@ -44,7 +44,7 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, table *tableInfo, entityType matte
 			access = matter.DefaultAccess(entityType)
 		}
 		if directionIndex >= 0 {
-			directionCell := row.Cells[directionIndex]
+			directionCell := row.TableCells[directionIndex]
 			rc, e := ascii.RenderTableCell(directionCell)
 			if e != nil {
 				continue

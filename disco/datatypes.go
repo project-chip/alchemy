@@ -29,7 +29,7 @@ func getExistingDataTypes(cxt *discoContext, dp *docParse) {
 		return
 	}
 
-	for _, ss := range parse.FindAll[*ascii.Section](dp.dataelements.section.Elements) {
+	for _, ss := range parse.FindAll[*ascii.Section](dp.dataTypes.section.Elements) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		dataType := ss.GetDataType()
@@ -140,7 +140,7 @@ func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*elements.TableR
 			if table == nil {
 				continue
 			}
-			_, columnMap, _, err := ascii.MapTableColumns(b.doc, ascii.TableRows(table))
+			_, columnMap, _, err := ascii.MapTableColumns(b.doc, table.TableRows)
 			if err != nil {
 				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", s.Name, err)
 			}
@@ -245,7 +245,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		if table == nil {
 			continue
 		}
-		rows := ascii.TableRows(table)
+		rows := table.TableRows
 		var headerRowIndex int
 		var columnMap ascii.ColumnIndex
 		var extraColumns []ascii.ExtraColumn
@@ -299,11 +299,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			}
 		}
 
-		var title *elements.String
-		title, err = elements.NewStringElement(dt.name + suffix + " Type")
-		if err != nil {
-			return
-		}
+		title := elements.NewString(dt.name + suffix + " Type")
 
 		if dataTypesSection == nil {
 			dataTypesSection, err = ensureDataTypesSection(top)
@@ -326,39 +322,40 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 
-		dataTypeSection, _ := elements.NewSection(dataTypesSection.Base.Level+1, []any{title})
+		dataTypeSection := elements.NewSection([]elements.Element{title}, dataTypesSection.Base.Level+1)
 
-		se, _ := elements.NewStringElement(fmt.Sprintf("This data type is derived from %s", dt.dataType))
-		p, _ := elements.NewParagraph(nil, se)
-		err = dataTypeSection.AddElement(p)
+		se := elements.NewString(fmt.Sprintf("This data type is derived from %s", dt.dataType))
+		p := elements.NewParagraph(elements.AdmonitionNone)
+		p.SetElements([]elements.Element{se})
+		err = dataTypeSection.Append(p)
 		if err != nil {
 			return
 		}
 		bl := elements.NewEmptyLine("")
-		err = dataTypeSection.AddElement(bl)
+		err = dataTypeSection.Append(bl)
 		if err != nil {
 			return
 		}
-		err = dataTypeSection.AddElement(table)
+		err = dataTypeSection.Append(table)
 		if err != nil {
 			return
 		}
-		err = dataTypeSection.AddElement(bl)
+		err = dataTypeSection.Append(bl)
 		if err != nil {
 			return
-		}
-		newAttr := make(elements.AttributeList)
-		var newID string
-		if id, ok := table.AttributeList.GetAsString(elements.AttrID); ok {
-			// Reuse the table's ID if it has one, so existing links get updated
-			newID = id
-			newAttr[elements.AttrID] = newID
-		} else {
-			newID = "ref_" + dt.ref + suffix
-			newAttr[elements.AttrID] = newID + ", " + dt.name + suffix
 		}
 
-		dataTypeSection.AddAttributes(newAttr)
+		//newAttr := make(elements.AttributeList)
+		tableIDAttribute := table.GetAttributeByName(elements.AttributeNameID)
+		var newID string
+		if tableIDAttribute != nil {
+			// Reuse the table's ID if it has one, so existing links get updated
+			newID = tableIDAttribute.Raw()
+		} else {
+			newID = "ref_" + dt.ref + suffix + ", " + dt.name + suffix
+		}
+
+		dataTypeSection.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameID), newID))
 
 		var s *ascii.Section
 		s, err = ascii.NewSection(top.Doc, dataTypesSection, dataTypeSection)
@@ -378,11 +375,11 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 
-		table.AttributeList.Unset(elements.AttrID)
-		table.AttributeList.Unset(elements.AttrTitle)
+		table.DeleteAttribute(elements.AttributeNameID)
+		table.DeleteAttribute(elements.AttributeNameTitle)
 
-		icr, _ := elements.NewInternalCrossReference(newID, "")
-		err = setCellValue(dt.typeCell, []any{icr})
+		icr := elements.NewCrossReference(newID)
+		err = setCellValue(dt.typeCell, []elements.Element{icr})
 		if err != nil {
 			return
 		}
@@ -396,13 +393,10 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 	if dataTypesSection != nil {
 		return dataTypesSection, nil
 	}
-	title, err := elements.NewStringElement(matter.SectionTypeName(matter.SectionDataTypes))
-	if err != nil {
-		return nil, err
-	}
-	ts, _ := elements.NewSection(top.Base.Level+1, []any{title})
-	bl, _ := elements.NewBlankLine()
-	err = ts.AddElement(bl)
+	title := elements.NewString(matter.SectionTypeName(matter.SectionDataTypes))
+
+	ts := elements.NewSection([]elements.Element{title}, top.Base.Level+1)
+	err := ts.Append(elements.NewEmptyLine(""))
 	if err != nil {
 		return nil, err
 	}

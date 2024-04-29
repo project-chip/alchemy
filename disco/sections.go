@@ -77,7 +77,7 @@ func setSectionTitle(sec *ascii.Section, title string) {
 	for i, e := range sec.Base.Title {
 		switch e.(type) {
 		case elements.String:
-			sec.Base.Title[i] = elements.String(title)
+			sec.Base.Title[i] = elements.NewString(title)
 			sec.Name = title
 		}
 	}

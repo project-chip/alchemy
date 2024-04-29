@@ -25,7 +25,7 @@ func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*elements.Cro
 			xref.ID = info.ID
 			// If the cross reference has a label that's the same as the one we generated for the anchor, remove it
 			if len(xref.Set) == 1 {
-				if label, ok := xref.Set[0].(elements.String); ok && info.Label == string(label) {
+				if label, ok := xref.Set[0].(*elements.String); ok && info.Label == string(label.Value) {
 					clear(xref.Set)
 				}
 			}

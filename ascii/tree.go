@@ -26,7 +26,7 @@ func buildTree(docs []*Doc) {
 		parse.Search[*elements.Section](top.Base.Elements(), func(t *elements.Section) bool {
 			link := parse.FindFirst[*elements.Link](t.Title)
 			if link != nil {
-				linkPath, ok := link.Location.Path.(string)
+				linkPath, ok := link.URL.Path.(string)
 				if ok {
 					linkPath = filepath.Join(filepath.Dir(path), linkPath)
 					tree[doc] = append(tree[doc], linkPath)
