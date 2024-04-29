@@ -12,12 +12,7 @@ func renderLink(cxt *Context, il *elements.Link) (err error) {
 	} else {
 		cxt.WriteString("link:")
 	}
-	var path string
-	path, err = getPath(il.URL)
-	if err != nil {
-		return
-	}
-	cxt.WriteString(path)
+	Elements(cxt, "", il.URL.Path.([]elements.Element)...)
 
 	return renderAttributes(cxt, il, il.Attributes(), true)
 }

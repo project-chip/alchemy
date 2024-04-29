@@ -2,6 +2,8 @@ package matter
 
 import (
 	"fmt"
+
+	"github.com/hasty/adoc/elements"
 )
 
 type TableColumn uint8
@@ -84,11 +86,11 @@ func (tc TableColumn) String() string {
 	return fmt.Sprintf("unknown table column name: %d", tc)
 }
 
-var AllowedTableAttributes = map[string]any{
+var AllowedTableAttributes = map[elements.AttributeName]any{
 	"id":      nil,
 	"title":   nil,
 	"valign":  "middle",
-	"options": elements.Options{"header"},
+	"options": []string{"header"},
 }
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
 
