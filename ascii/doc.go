@@ -7,8 +7,6 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-
 	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
@@ -46,7 +44,7 @@ func NewDoc(d *elements.Document) (*Doc, error) {
 	for _, e := range d.Elements() {
 		switch el := e.(type) {
 		case *elements.AttributeEntry:
-			doc.attributes[el.Name] = el.Value
+			doc.attributes[el.Name] = el.Elements()
 			doc.Elements = append(doc.Elements, NewElement(doc, e))
 		case *elements.Section:
 			s, err := NewSection(doc, doc, el)
@@ -153,6 +151,6 @@ func (doc *Doc) Reference(ref string) (mattertypes.Entity, bool) {
 	return entities[0], true
 }
 
-func GithubSettings() []configuration.Setting {
-	return []configuration.Setting{configuration.WithAttribute("env-github", true)}
+func GithubSettings() []elements.Attribute {
+	return []elements.Attribute{elements.NewNamedAttribute("env-github", true)}
 }

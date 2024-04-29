@@ -8,9 +8,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-	"github.com/bytesparadise/libasciidoc/pkg/parser"
-
 	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/internal/pipeline"
 )
@@ -24,28 +21,25 @@ func readFile(path string) (string, error) {
 
 	if filepath.Base(path) == "DoorLock.adoc" {
 		var doorLockPattern = regexp.MustCompile(`\n+\s*[^&\n]+&#8224;\s+`)
-		contents = doorLockPattern.ReplaceAllString(contents, " ")
+		contents = doorLockPattern.ReplaceAllString(contents, "\n")
 	}
 	return contents, nil
 }
 
-func ReadFile(path string, settings ...configuration.Setting) (*Doc, error) {
+func ReadFile(path string, attributes ...elements.Attribute) (*Doc, error) {
 
 	contents, err := readFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return Read(contents, path)
+	return Read(contents, path, attributes...)
 }
 
-func Read(contents string, path string) (doc *Doc, err error) {
-
-	config := configuration.NewConfiguration(configuration.WithFilename(path))
-	config.IgnoreIncludes = true
+func Read(contents string, path string, attributes ...elements.Attribute) (doc *Doc, err error) {
 
 	var d *elements.Document
 
-	d, err = ParseDocument(strings.NewReader(contents), config, parser.MaxExpressions(2000000))
+	d, err = ParseDocument(strings.NewReader(contents), path, attributes...)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed parse: %w", err)
@@ -57,18 +51,15 @@ func Read(contents string, path string) (doc *Doc, err error) {
 	}
 	doc.Path = path
 
-	PatchUnrecognizedReferences(doc)
-
 	return doc, nil
 }
 
 type Reader struct {
-	name          string
-	asciiSettings []configuration.Setting
+	name string
 }
 
-func NewReader(name string, asciiSettings ...configuration.Setting) Reader {
-	return Reader{name: name, asciiSettings: asciiSettings}
+func NewReader(name string) Reader {
+	return Reader{name: name}
 }
 
 func (r Reader) Name() string {
@@ -81,7 +72,7 @@ func (r Reader) Type() pipeline.ProcessorType {
 
 func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
 	var doc *Doc
-	doc, err = ReadFile(input.Path, r.asciiSettings...)
+	doc, err = ReadFile(input.Path)
 	if err != nil {
 		return
 	}

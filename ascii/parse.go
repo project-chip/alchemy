@@ -6,23 +6,21 @@ import (
 	"io"
 	"strings"
 
-	"github.com/bytesparadise/libasciidoc/pkg/configuration"
-
 	"github.com/hasty/adoc/elements"
 	"github.com/hasty/adoc/parse"
 	"github.com/hasty/alchemy/internal/pipeline"
 )
 
-func ParseFile(path string) (*Doc, error) {
+func ParseFile(path string, attributes ...elements.Attribute) (*Doc, error) {
 
 	contents, err := readFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return Parse(contents, path)
+	return Parse(contents, path, attributes...)
 }
 
-func Parse(contents string, path string) (doc *Doc, err error) {
+func Parse(contents string, path string, attributes ...elements.Attribute) (doc *Doc, err error) {
 	/*baseConfig := make([]configuration.Setting, 0, len(settings)+1)
 	baseConfig = append(baseConfig, configuration.WithFilename(path))
 	baseConfig = append(baseConfig, settings...)
@@ -39,7 +37,7 @@ func Parse(contents string, path string) (doc *Doc, err error) {
 
 	var d *elements.Document
 
-	d, err = ParseDocument(strings.NewReader(contents), path)
+	d, err = ParseDocument(strings.NewReader(contents), path, attributes...)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed parse: %w", err)
@@ -51,12 +49,10 @@ func Parse(contents string, path string) (doc *Doc, err error) {
 	}
 	doc.Path = path
 
-	PatchUnrecognizedReferences(doc)
-
 	return doc, nil
 }
 
-func ParseDocument(r io.Reader, path string) (*elements.Document, error) {
+func ParseDocument(r io.Reader, path string, attributes ...elements.Attribute) (*elements.Document, error) {
 	done := make(chan any)
 	defer close(done)
 
@@ -89,11 +85,11 @@ func ParseDocument(r io.Reader, path string) (*elements.Document, error) {
 }
 
 type Parser struct {
-	asciiSettings []configuration.Setting
+	attributes []elements.Attribute
 }
 
-func NewParser(asciiSettings []configuration.Setting) Parser {
-	return Parser{asciiSettings: asciiSettings}
+func NewParser(attributes []elements.Attribute) Parser {
+	return Parser{attributes: attributes}
 }
 
 func (p Parser) Name() string {
@@ -106,7 +102,7 @@ func (p Parser) Type() pipeline.ProcessorType {
 
 func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
 	var doc *Doc
-	doc, err = ParseFile(input.Path, p.asciiSettings...)
+	doc, err = ParseFile(input.Path)
 	if err != nil {
 		return
 	}

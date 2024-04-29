@@ -16,7 +16,7 @@ func dumpElements(doc *ascii.Doc, els []elements.Element, indent int) {
 		if ok {
 			fmt.Printf("{SEC %d (%s)}:\n", as.Base.Level, as.SecType)
 
-			dumpAttributes(as.Base.AttributeList, indent+1)
+			dumpAttributes(as.Base.Attributes(), indent+1)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{title:}\n")
 			dumpElements(doc, as.Base.Title, indent+2)
@@ -32,68 +32,65 @@ func dumpElements(doc *ascii.Doc, els []elements.Element, indent int) {
 		switch el := e.(type) {
 		case *elements.EmptyLine:
 			fmt.Print("{empty}\n")
-		case *elements.DelimitedBlock:
-			fmt.Printf("{delim kind=%s}:\n", el.Kind)
-			dumpAttributes(el.Attributes, indent+1)
-			dumpElements(doc, el.Elements, indent+1)
+		/*case *elements.DelimitedBlock:
+		fmt.Printf("{delim kind=%s}:\n", el.Kind)
+		dumpAttributes(el.Attributes, indent+1)
+		dumpElements(doc, el.Elements, indent+1)*/
 		case *elements.AttributeEntry:
 			fmt.Printf("{attrib}: %s", el.Name)
-			dumpElements(doc, el.Value, indent+1)
+			dumpElements(doc, el.Elements(), indent+1)
 			fmt.Print("\n")
 		case *elements.Paragraph:
 			fmt.Print("{para}: ")
 			fmt.Print("\n")
-			dumpAttributes(el.Attributes, indent+1)
-			dumpElements(doc, el.Elements, indent+1)
+			dumpAttributes(el.Attributes(), indent+1)
+			dumpElements(doc, el.Elements(), indent+1)
 		case *elements.Section:
 			fmt.Printf("{sec %d}:\n", el.Level)
-			dumpAttributes(el.Attributes, indent+1)
+			dumpAttributes(el.Attributes(), indent+1)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{title:}\n")
 			dumpElements(doc, el.Title, indent+2)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el.Elements, indent+2)
+			dumpElements(doc, el.Elements(), indent+2)
 		case *elements.String:
-			fmt.Print("{se}: ", snippet(el.Content))
+			fmt.Print("{str}: ", snippet(el.Value))
 			fmt.Print("\n")
-		case string:
-			fmt.Print("{str}: ", snippet(el))
-			fmt.Print("\n")
-		case *elements.QuotedText:
-			fmt.Printf("{qt %s}:\n", el.Kind)
-			dumpAttributes(el.Attributes, indent+1)
+		case elements.FormattedTextElement:
+			fmt.Printf("{formatted text %d}:\n", el.TextFormat())
+			if a, ok := el.(elements.Attributable); ok {
+				dumpAttributes(a.Attributes(), indent+1)
+			}
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el.Elements, indent+2)
+			dumpElements(doc, el.Elements(), indent+2)
 		case *elements.Table:
 			fmt.Print("{tab}:\n")
-			dumpAttributes(el.Attributes, indent+1)
+			dumpAttributes(el.Attributes(), indent+1)
 			dumpTable(doc, el, indent+1)
-		case *elements.List:
-			fmt.Print("{list}:\n")
-			dumpAttributes(el.Attributes, indent+1)
-			dumpElements(doc, el.GetElements(), indent+1)
-		case *elements.OrderedListElement:
+		/*case *elements.List:
+		fmt.Print("{list}:\n")
+		dumpAttributes(el.Attributes, indent+1)
+		dumpElements(doc, el.GetElements(), indent+1)*/
+		case *elements.OrderedListItem:
 			fmt.Print("{ole}:\n")
-			dumpAttributes(el.Attributes, indent+1)
-			dumpElements(doc, el.GetElements(), indent+1)
-		case *elements.UnorderedListElement:
-			fmt.Printf("{uole bs=%s cs=%s}:\n", el.BulletStyle, el.CheckStyle)
-			dumpAttributes(el.Attributes, indent+1)
-			dumpElements(doc, el.GetElements(), indent+1)
-		case *elements.InternalCrossReference:
-			fmt.Printf("{xref id:%v label %v}\n", el.ID, el.Label)
+			dumpAttributes(el.Attributes(), indent+1)
+			dumpElements(doc, el.Elements(), indent+1)
+		case *elements.UnorderedListItem:
+			fmt.Printf("{uole bs=%s cl=%v}:\n", el.Marker, el.Checklist)
+			dumpAttributes(el.Attributes(), indent+1)
+			dumpElements(doc, el.Elements(), indent+1)
+		case *elements.CrossReference:
+			fmt.Printf("{xref id:%v label %v}\n", el.ID, el.Set)
 		case *elements.SpecialCharacter:
-			fmt.Printf("{sc: %s}\n", el.Name)
-		case *elements.Symbol:
-			fmt.Printf("{sym: %s}\n", el.Name)
-		case *elements.InlineLink:
+			fmt.Printf("{sc: %s}\n", el.Character)
+		case *elements.Link:
 			fmt.Printf("{link: ")
-			dumpLocation(el.Location)
+			dumpLocation(el.URL)
 			fmt.Print("}\n")
-			dumpAttributes(el.Attributes, indent+1)
-		case *elements.DocumentHeader:
+			dumpAttributes(el.Attributes(), indent+1)
+		/*case *elements.DocumentHeader:
 			fmt.Printf("{head}\n")
 			fmt.Print(strings.Repeat("\t", indent+1))
 			dumpAttributes(el.Attributes, indent+1)
@@ -136,24 +133,25 @@ func dumpElements(doc *ascii.Doc, els []elements.Element, indent int) {
 				dumpElements(doc, fn.Elements, indent+1)
 
 			}
+		*/
 		case *elements.InlineImage:
 			fmt.Printf("{image: ")
-			dumpLocation(el.Location)
+			dumpElements(doc, el.Path, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(el.Attributes, indent+1)
-		case *elements.ImageBlock:
+			dumpAttributes(el.Attributes(), indent+1)
+		case *elements.BlockImage:
 			fmt.Printf("{imageblock: ")
-			dumpLocation(el.Location)
+			dumpElements(doc, el.Path, indent+1)
 			fmt.Print("}\n")
-			dumpAttributes(el.Attributes, indent+1)
+			dumpAttributes(el.Attributes(), indent+1)
 		case *elements.AttributeReset:
 			fmt.Printf("{attr_reset: %s}\n", el.Name)
-		case *elements.ListElements:
-			fmt.Printf("{list els}\n")
-			dumpElements(doc, el.Elements, indent+1)
+		/*case *elements.ListElements:
+		fmt.Printf("{list els}\n")
+		dumpElements(doc, el.Elements, indent+1)*/
 		case *elements.ListContinuation:
-			fmt.Printf("{list con %d}\n", el.Offset)
-			dumpElements(doc, []any{el.Element}, indent+1)
+			fmt.Printf("{list con}\n")
+			dumpElements(doc, []elements.Element{el.Child()}, indent+1)
 		case *elements.CharacterReplacementReference:
 			fmt.Printf("{predef %s}", el.Name)
 		default:

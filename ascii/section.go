@@ -36,7 +36,7 @@ func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
 	for _, e := range s.Elements() {
 		switch el := e.(type) {
 		case *elements.AttributeEntry:
-			doc.attributes[el.Name] = el.Value
+			doc.attributes[el.Name] = el.Elements()
 			ss.Elements = append(ss.Elements, NewElement(ss, e))
 		case *elements.Section:
 			s, err := NewSection(doc, ss, el)
@@ -236,7 +236,11 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		if strings.HasSuffix(name, "struct type") || strings.HasSuffix(name, "struct") || strings.HasSuffix(name, "structure") {
 			return matter.SectionDataTypeStruct
 		}
-		name = strings.ToLower(section.Base.GetID())
+
+		idAttribute := section.Base.GetAttributeByName(elements.AttributeNameID)
+		if idAttribute != nil {
+			name = strings.ToLower(idAttribute.String())
+		}
 		if strings.HasSuffix(name, "bitmap") {
 			return matter.SectionDataTypeBitmap
 		}
@@ -413,15 +417,12 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 			if strings.HasPrefix(el.Value, "This struct") {
 				dts = strings.TrimSuffix(s.Name, " Type")
 			}
-		case *elements.InternalCrossReference:
-			id, ok := el.ID.(string)
-			if !ok {
-				continue
-			}
-			switch id {
+		case *elements.CrossReference:
+
+			switch el.ID {
 			case "ref_DataTypeBitmap", "ref_DataTypeEnum":
-				label, ok := el.Label.(string)
-				if !ok {
+				label := elements.ValueToString(el.Elements())
+				if len(label) == 0 {
 					continue
 				}
 				label = strings.TrimSpace(label)

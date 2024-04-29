@@ -122,7 +122,7 @@ func readRowCellValueElements(doc *Doc, els []elements.Element, value *strings.B
 			}
 			value.WriteString(val)
 		case *elements.Link:
-			value.WriteString()
+			value.WriteString(el.URL.Scheme)
 			l, ok := el.URL.Path.(string)
 			if ok {
 				value.WriteString(l)
@@ -148,7 +148,17 @@ func readRowCellValueElements(doc *Doc, els []elements.Element, value *strings.B
 		case *elements.SpecialCharacter:
 			value.WriteString(el.Character)
 		case *elements.InlinePassthrough:
-			value.WriteString(string(el.Kind))
+			value.WriteString("+")
+			err := readRowCellValueElements(doc, el.Elements(), value)
+			if err != nil {
+				return err
+			}
+		case *elements.InlineDoublePassthrough:
+			value.WriteString("++")
+			err := readRowCellValueElements(doc, el.Elements(), value)
+			if err != nil {
+				return err
+			}
 		case *elements.ThematicBreak:
 		case elements.HasElements:
 			err := readRowCellValueElements(doc, el.Elements(), value)

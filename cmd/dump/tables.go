@@ -29,11 +29,11 @@ func dumpTableCells(doc *ascii.Doc, cells []*elements.TableCell, indent int) {
 			fmt.Print("{cellblank}:\n")
 		} else {
 			fmt.Print("{cell}:\n")
-			if c.Formatter != nil {
+			if c.Format != nil {
 				fmt.Print(strings.Repeat("\t", indent+1))
-				fmt.Printf("{format: %s (cell %d row %d)}\n", c.Formatter.Content, c.Formatter.ColumnSpan, c.Formatter.RowSpan)
+				fmt.Printf("{format: %v (cell %d row %d)}\n", c.Format, c.Format.Span.Column.Get(), c.Format.Span.Row.Get())
 			}
-			dumpElements(doc, c.Elements, indent+1)
+			dumpElements(doc, c.Elements(), indent+1)
 
 		}
 	}

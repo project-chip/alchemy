@@ -29,7 +29,7 @@ func (e *Element) SetElements(els []elements.Element) error {
 	return fmt.Errorf("base element does not have elements: %T", e.Base)
 }
 
-func (e *Element) GetBase() any {
+func (e *Element) GetBase() elements.Element {
 	return e.Base
 }
 

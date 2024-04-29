@@ -20,12 +20,12 @@ func dumpAttributes(attributes []elements.Attribute, indent int) {
 			fmt.Printf(" %s=", a.Name)
 		}
 		switch v := a.Value().(type) {
-		case elements.String:
-			fmt.Print(string(v))
+		case *elements.String:
+			fmt.Print(v.Value)
 		case string:
 			fmt.Print(v)
-		case elements.Options:
-			dumpAttributeVals(v, indent+1)
+		/*case elements.Options:
+		dumpAttributeVals(v, indent+1)*/
 		case []any:
 			dumpAttributeVals(v, indent+1)
 		default:
@@ -49,7 +49,7 @@ func dumpAttributeVals(attributes []any, indent int) {
 		case *elements.TableColumn:
 			fmt.Printf("{col:\n")
 			fmt.Print(strings.Repeat("\t", indent+2))
-			fmt.Printf("multiplier: %d\n", v.Multiplier)
+			fmt.Printf("multiplier: %d\n", v.Multiplier.Get())
 			fmt.Print(strings.Repeat("\t", indent+2))
 			fmt.Printf("halign: %s\n", v.HorizontalAlign.Get().String())
 			fmt.Print(strings.Repeat("\t", indent+2))

@@ -3,25 +3,24 @@ package dump
 import (
 	"fmt"
 	"strings"
+
+	"github.com/hasty/adoc/elements"
 )
 
-func dumpTOC(tocs []*elements.ToCSection, indent int) {
-	for _, toc := range tocs {
-		fmt.Print(strings.Repeat("\t", indent))
-		fmt.Printf("{toc %d} %s.%s\n", toc.Level, toc.Number, toc.Title)
-		if len(toc.Children) > 0 {
-			dumpTOC(toc.Children, indent+1)
+/*
+	func dumpTOC(tocs []*elements.ToCSection, indent int) {
+		for _, toc := range tocs {
+			fmt.Print(strings.Repeat("\t", indent))
+			fmt.Printf("{toc %d} %s.%s\n", toc.Level, toc.Number, toc.Title)
+			if len(toc.Children) > 0 {
+				dumpTOC(toc.Children, indent+1)
+			}
 		}
-	}
 
 }
-
-func dumpLocation(l *elements.Location) {
-	if l != nil {
-		fmt.Printf("%s %s}", l.Scheme, l.Path.(string))
-	} else {
-		fmt.Printf("missing location")
-	}
+*/
+func dumpLocation(l elements.URL) {
+	fmt.Printf("%s %s}", l.Scheme, l.Path.(string))
 }
 
 func snippet(str string) string {
