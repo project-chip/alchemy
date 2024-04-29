@@ -16,9 +16,9 @@ func (s *Section) toClusters(d *Doc, entityMap map[elements.Attributable][]matte
 	var description string
 	p := parse.FindFirst[*elements.Paragraph](s.Elements)
 	if p != nil {
-		se := parse.FindFirst[elements.String](p.Elements())
-		if se != "" {
-			description = strings.ReplaceAll(string(se), "\n", " ")
+		se := parse.FindFirst[*elements.String](p.Elements())
+		if se != nil {
+			description = strings.ReplaceAll(se.Value, "\n", " ")
 		}
 	}
 

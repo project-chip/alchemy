@@ -41,7 +41,6 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 		} else {
 			return false
 		}
-		attrs := wa.Attributes()
 		idAttr := wa.GetAttributeByName(elements.AttributeNameID)
 		if idAttr == nil {
 			return false
@@ -52,9 +51,9 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 			id = strings.TrimSpace(parts[0])
 			label = strings.TrimSpace(parts[1])
 		}
-		reftext, ok := attrs.GetAsString("reftext")
-		if ok {
-			label = reftext
+		refText := wa.GetAttributeByName(elements.AttributeNameReferenceText)
+		if refText != nil {
+			label = refText.String()
 		}
 		info := &Anchor{
 			ID:      id,

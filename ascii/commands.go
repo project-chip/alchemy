@@ -90,9 +90,9 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[elem
 			}
 			p := parse.FindFirst[*elements.Paragraph](s.Elements)
 			if p != nil {
-				se := parse.FindFirst[elements.String](p.Elements())
-				if se != "" {
-					c.Description = strings.ReplaceAll(string(se), "\n", " ")
+				se := parse.FindFirst[*elements.String](p.Elements())
+				if se != nil {
+					c.Description = strings.ReplaceAll(se.Value, "\n", " ")
 				}
 			}
 

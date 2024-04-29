@@ -499,8 +499,8 @@ func getAttributeStringValue(cxt *Context, val any) (string, error) {
 	switch s := val.(type) {
 	case string:
 		return s, nil
-	case elements.String:
-		return string(s), nil
+	case *elements.String:
+		return s.Value, nil
 	case []elements.Element:
 		renderContext := NewContext(cxt, cxt.Doc)
 		err := Elements(renderContext, "", s...)

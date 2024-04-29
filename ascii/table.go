@@ -109,8 +109,8 @@ func readRowCellValue(doc *Doc, row *elements.TableRow, offset int) (string, err
 func readRowCellValueElements(doc *Doc, els []elements.Element, value *strings.Builder) error {
 	for _, el := range els {
 		switch el := el.(type) {
-		case elements.String:
-			value.WriteString(string(el))
+		case *elements.String:
+			value.WriteString(el.Value)
 		case *elements.CrossReference:
 			var val string
 			anchor, _ := doc.getAnchor(el.ID)
@@ -216,10 +216,10 @@ func (d *Doc) GetHeaderCellString(cell *elements.TableCell) (string, error) {
 func (d *Doc) readCellContent(els []elements.Element, content *strings.Builder) (err error) {
 	for _, s := range els {
 		switch s := s.(type) {
-		case elements.String:
-			content.WriteString(string(s))
-		case *elements.QuotedText:
-			return d.readCellContent(s.Elements, content)
+		case *elements.String:
+			content.WriteString(s.Value)
+		case elements.FormattedTextElement:
+			return d.readCellContent(s.Elements(), content)
 		case *elements.CrossReference:
 			var name string
 			anchor, _ := d.getAnchor(s.ID)
