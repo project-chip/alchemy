@@ -9,28 +9,30 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (b *Ball) ensureTableOptions(elements []any) {
+func (b *Ball) ensureTableOptions(els []elements.Element) {
 	if !b.options.normalizeTableOptions {
 		return
 	}
-	parse.Search(elements, func(t *elements.Table) bool {
-		if t.Attributes == nil {
-			t.Attributes = make(elements.Attributes)
-		}
-		var excludedKeys []string
-		for k := range t.Attributes {
-			if _, ok := matter.AllowedTableAttributes[k]; !ok {
-				excludedKeys = append(excludedKeys, k)
+	parse.Search(els, func(t *elements.Table) bool {
+		var excludedIndexes []int
+		for i, attr := range t.Attributes() {
+			na, ok := attr.(*elements.NamedAttribute)
+			if !ok {
+				continue
+			}
+			if _, ok := matter.AllowedTableAttributes[na.Name]; !ok {
+				excludedIndexes = append(excludedIndexes, i)
 			}
 		}
-		for _, k := range excludedKeys {
-			delete(t.Attributes, k)
+		for i := len(excludedIndexes) - 1; i >= 0; i-- {
+			t.List = slices.Delete(t.List, i, i)
 		}
 		for k, v := range matter.AllowedTableAttributes {
 			if v != nil {
-				t.Attributes[k] = v
+				t.SetAttribute(k, v)
 			}
 		}
 		return false
@@ -42,7 +44,7 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	if !b.options.addMissingColumns {
 		return
 	}
-	delete(table.AttributeList, "cols")
+	table.DeleteAttribute(elements.AttributeNameColumns)
 	var order []matter.TableColumn
 	if len(tableTemplate.RequiredColumns) > 0 {
 		order = tableTemplate.RequiredColumns
@@ -60,7 +62,7 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	return
 }
 
-func (b *Ball) appendColumn(rows []*elements.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType matterelements.EntityType) (appendedIndex int, err error) {
+func (b *Ball) appendColumn(rows []*elements.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType types.EntityType) (appendedIndex int, err error) {
 	if len(rows) == 0 {
 		appendedIndex = -1
 		return
@@ -71,7 +73,7 @@ func (b *Ball) appendColumn(rows []*elements.TableRow, columnMap ascii.ColumnInd
 		last := row.Cells[len(row.Cells)-1]
 		if i == headerRowIndex {
 			if last.Formatter != nil {
-				cell.Formatter = &elements.TableCellFormat{
+				cell.Format = &elements.TableCellFormat{
 					ColumnSpan:          1,
 					RowSpan:             1,
 					HorizontalAlignment: last.Formatter.HorizontalAlignment,

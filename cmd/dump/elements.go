@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
 )
 
-func dumpElements(doc *ascii.Doc, elements []any, indent int) {
+func dumpElements(doc *ascii.Doc, els []elements.Element, indent int) {
 
-	for _, e := range elements {
+	for _, e := range els {
 		fmt.Print(strings.Repeat("\t", indent))
 		as, ok := e.(*ascii.Section)
 		if ok {
@@ -29,15 +30,15 @@ func dumpElements(doc *ascii.Doc, elements []any, indent int) {
 			e = ae.Base
 		}
 		switch el := e.(type) {
-		case *elements.BlankLine:
-			fmt.Print("{blank}\n")
+		case *elements.EmptyLine:
+			fmt.Print("{empty}\n")
 		case *elements.DelimitedBlock:
 			fmt.Printf("{delim kind=%s}:\n", el.Kind)
 			dumpAttributes(el.Attributes, indent+1)
 			dumpElements(doc, el.Elements, indent+1)
-		case *elements.AttributeDeclaration:
+		case *elements.AttributeEntry:
 			fmt.Printf("{attrib}: %s", el.Name)
-			dumpElements(doc, []any{el.Value}, indent+1)
+			dumpElements(doc, el.Value, indent+1)
 			fmt.Print("\n")
 		case *elements.Paragraph:
 			fmt.Print("{para}: ")
@@ -153,7 +154,7 @@ func dumpElements(doc *ascii.Doc, elements []any, indent int) {
 		case *elements.ListContinuation:
 			fmt.Printf("{list con %d}\n", el.Offset)
 			dumpElements(doc, []any{el.Element}, indent+1)
-		case *elements.PredefinedAttribute:
+		case *elements.CharacterReplacementReference:
 			fmt.Printf("{predef %s}", el.Name)
 		default:
 			fmt.Printf("unknown render element type: %T\n", el)

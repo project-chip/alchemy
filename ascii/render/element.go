@@ -27,8 +27,6 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			if err == nil {
 				err = Elements(cxt, "", el.Elements()...)
 			}
-		case *elements.DelimitedBlock:
-			err = renderDelimitedBlock(cxt, el)
 		case *elements.Paragraph:
 			cxt.WriteString(prefix)
 			err = renderParagraph(cxt, el, &previous)
@@ -42,8 +40,6 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			cxt.WriteRune('\n')
 		case *elements.CrossReference:
 			err = renderInternalCrossReference(cxt, el)
-		case *elements.List:
-			err = renderList(cxt, el)
 		case *elements.AttributeEntry:
 			err = renderAttributeEntry(cxt, el)
 		case elements.String:
@@ -60,62 +56,58 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 		case *elements.BlockImage:
 			err = renderImageBlock(cxt, el)
 		case *elements.Link:
-			err = renderInlineLink(cxt, el)
+			err = renderLink(cxt, el)
 		case *elements.SpecialCharacter:
 			err = renderSpecialCharacter(cxt, el)
-		case *elements.QuotedText:
-			err = renderQuotedText(cxt, el)
-		case *elements.Preamble:
-			err = renderPreamble(cxt, el)
-		case *elements.Symbol:
-			err = renderSymbol(cxt, el)
+		case *elements.Bold:
+			err = renderFormattedText(cxt, el, "*")
+		case *elements.DoubleBold:
+			err = renderFormattedText(cxt, el, "**")
+		case *elements.Monospace:
+			err = renderFormattedText(cxt, el, "`")
+		case *elements.DoubleMonospace:
+			err = renderFormattedText(cxt, el, "``")
+		case *elements.Superscript:
+			err = renderFormattedText(cxt, el, "^")
+		case *elements.Subscript:
+			err = renderFormattedText(cxt, el, "~")
+		case *elements.Italic:
+			err = renderFormattedText(cxt, el, "_")
+		case *elements.DoubleItalic:
+			err = renderFormattedText(cxt, el, "__")
+		case *elements.Marked:
+			err = renderFormattedText(cxt, el, "#")
+		case *elements.DoubleMarked:
+			err = renderFormattedText(cxt, el, "##")
 		case *elements.LineContinuation:
 			cxt.WriteString(" +")
-		case *elements.DocumentHeader:
-			err = renderAttributes(cxt, el, el.Attributes, false)
-			if err != nil {
-				return
-			}
-			err = renderSectionTitle(cxt, el.Title, 1)
-			if err != nil {
-				return
-			}
-			err = Elements(cxt, "", el.Elements)
-			cxt.WriteNewline()
 		case elements.AttributeReference:
 			cxt.WriteString(fmt.Sprintf("{%s}", el.Name()))
 		case *elements.InlineImage:
 			err = renderInlineImage(cxt, el)
-		case *elements.FootnoteReference:
-			err = renderFootnoteReference(cxt, el)
-		case *elements.InlinePassthrough:
-			switch el.Kind {
-			case elements.SinglePlusPassthrough, elements.TriplePlusPassthrough:
-				cxt.WriteString(string(el.Kind))
-				err = Elements(cxt, "", el.Elements)
-				cxt.WriteString(string(el.Kind))
-			case elements.PassthroughMacro:
-				cxt.WriteString("pass:[")
-				err = Elements(cxt, "", el.Elements)
-				cxt.WriteRune(']')
-			}
+		//case *elements.FootnoteReference:
+		//	err = renderFootnoteReference(cxt, el)
+		/*case *elements.InlinePassthrough:
+		switch el.Kind {
+		case elements.SinglePlusPassthrough, elements.TriplePlusPassthrough:
+			cxt.WriteString(string(el.Kind))
+			err = Elements(cxt, "", el.Elements)
+			cxt.WriteString(string(el.Kind))
+		case elements.PassthroughMacro:
+			cxt.WriteString("pass:[")
+			err = Elements(cxt, "", el.Elements)
+			cxt.WriteRune(']')
+		}*/
 		case *elements.AttributeReset:
-			err = renderAttributes(cxt, el, el.Attributes, false)
-			if err != nil {
-				return
-			}
 			renderAttributeReset(cxt, el)
-		case *elements.RawLine:
-			cxt.WriteString(el.Content)
-			if el.EOL {
-				cxt.WriteRune('\n')
-			}
-		case *elements.ListElements:
-			err = renderListElements(cxt, el)
-		case *elements.UnorderedListElement:
+		case *elements.UnorderedListItem:
 			err = renderUnorderedListElement(cxt, el)
-		case *elements.OrderedListElement:
+		case *elements.OrderedListItem:
 			err = renderOrderedListElement(cxt, el)
+		case *elements.ListContinuation:
+			cxt.WriteNewline()
+			cxt.WriteString("+\n")
+			err = Elements(cxt, "", el.Child())
 		case nil:
 		default:
 			err = fmt.Errorf("unknown render element type: %T", el)

@@ -16,9 +16,9 @@ func (s *Section) toClusters(d *Doc, entityMap map[elements.Attributable][]matte
 	var description string
 	p := parse.FindFirst[*elements.Paragraph](s.Elements)
 	if p != nil {
-		se := parse.FindFirst[*elements.String](p.Elements)
-		if se != nil {
-			description = strings.ReplaceAll(se.Content, "\n", " ")
+		se := parse.FindFirst[elements.String](p.Elements())
+		if se != "" {
+			description = strings.ReplaceAll(string(se), "\n", " ")
 		}
 	}
 
@@ -260,12 +260,12 @@ func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 		switch ec.Name {
 		case "Context":
 			if len(c.Scope) == 0 {
-				c.Scope, err = RenderTableCell(row.Cells[ec.Offset])
+				c.Scope, err = RenderTableCell(row.TableCells[ec.Offset])
 			}
 		case "Primary Transaction":
 			if len(c.Scope) == 0 {
 				var pt string
-				pt, err = RenderTableCell(row.Cells[ec.Offset])
+				pt, err = RenderTableCell(row.TableCells[ec.Offset])
 				if err == nil {
 					if strings.HasPrefix(pt, "Type 1") {
 						c.Scope = "Endpoint"

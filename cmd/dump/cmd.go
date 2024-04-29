@@ -59,7 +59,7 @@ var Command = &cobra.Command{
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
-				dumpElements(doc, doc.Base.Elements, 0)
+				dumpElements(doc, doc.Base.Elements(), 0)
 			}
 		}
 		return nil

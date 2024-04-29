@@ -10,11 +10,8 @@ import (
 
 func dumpTable(doc *ascii.Doc, tbl *elements.Table, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
-	fmt.Print("{head}:\n")
-	dumpTableCells(doc, tbl.Header.Cells, indent+1)
-	fmt.Print(strings.Repeat("\t", indent))
-	fmt.Print("{body}:\n")
-	for _, row := range tbl.Rows {
+	fmt.Print("{cells}:\n")
+	for _, row := range tbl.TableRows {
 		dumpTableRow(doc, row, indent+1)
 	}
 }
@@ -22,7 +19,7 @@ func dumpTable(doc *ascii.Doc, tbl *elements.Table, indent int) {
 func dumpTableRow(doc *ascii.Doc, row *elements.TableRow, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{row}:\n")
-	dumpTableCells(doc, row.Cells, indent+1)
+	dumpTableCells(doc, row.TableCells, indent+1)
 }
 
 func dumpTableCells(doc *ascii.Doc, cells []*elements.TableCell, indent int) {

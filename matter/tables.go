@@ -84,7 +84,7 @@ func (tc TableColumn) String() string {
 	return fmt.Sprintf("unknown table column name: %d", tc)
 }
 
-var AllowedTableAttributes = elements.Attributes{
+var AllowedTableAttributes = map[string]any{
 	"id":      nil,
 	"title":   nil,
 	"valign":  "middle",

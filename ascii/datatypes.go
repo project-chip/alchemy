@@ -223,13 +223,13 @@ func (d *Doc) getRowConstraint(row *elements.TableRow, columnMap ColumnIndex, co
 	var val string
 	offset, ok := columnMap[column]
 	if ok {
-		cell := row.Cells[offset]
-		if len(cell.Elements) > 0 {
-			el := cell.Elements[0]
+		cell := row.TableCells[offset]
+		if len(cell.Elements()) > 0 {
+			el := cell.Elements()[0]
 			para, ok := el.(*elements.Paragraph)
 			if ok {
 				var sb strings.Builder
-				d.buildConstraintValue(para.Elements, &sb)
+				d.buildConstraintValue(para.Elements(), &sb)
 				val = strings.TrimSpace(sb.String())
 			}
 		}
@@ -244,38 +244,33 @@ func (d *Doc) getRowConstraint(row *elements.TableRow, columnMap ColumnIndex, co
 	return c
 }
 
-func (d *Doc) buildConstraintValue(elements []any, sb *strings.Builder) {
-	for _, el := range elements {
+func (d *Doc) buildConstraintValue(els []elements.Element, sb *strings.Builder) {
+	for _, el := range els {
 		switch v := el.(type) {
-		case *elements.String:
-			sb.WriteString(v.Content)
-		case *elements.InternalCrossReference:
-			anchor, _ := d.getAnchor(v.ID.(string))
+		case elements.String:
+			sb.WriteString(string(v))
+		case *elements.CrossReference:
+			anchor, _ := d.getAnchor(v.ID)
 			var name string
 			if anchor != nil {
 				name = matter.StripReferenceSuffixes(ReferenceName(anchor.Element))
 			} else {
-				name = strings.TrimPrefix(v.ID.(string), "_")
+				name = strings.TrimPrefix(v.ID, "_")
 			}
 			sb.WriteString(name)
-		case *elements.QuotedText:
-			switch v.Kind {
-			case elements.SingleQuoteSuperscript:
-				var qt strings.Builder
-				d.buildConstraintValue(v.Elements, &qt)
-				val := qt.String()
-				if val == "*" { // We ignore asterisks here
-					continue
-				}
-				sb.WriteString(string(v.Kind))
-				sb.WriteString(val)
-				sb.WriteString(string(v.Kind))
-			case elements.SingleQuoteBold:
-				// This is usually an asterisk, and should be ignored
-			default:
-				slog.Warn("unexpected constraint quoted text", "doc", d.Path, "type", fmt.Sprintf("%T", v.Kind))
+		case *elements.Superscript:
+			var qt strings.Builder
+			d.buildConstraintValue(v.Elements(), &qt)
+			val := qt.String()
+			if val == "*" { // We ignore asterisks here
+				continue
 			}
-
+			sb.WriteString("^")
+			sb.WriteString(val)
+			sb.WriteString("^")
+		case *elements.Bold:
+			// This is usually an asterisk, and should be ignored
+		case elements.HasElements:
 		default:
 			slog.Warn("unknown constraint value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
 		}
@@ -287,44 +282,44 @@ func (d *Doc) getRowConformance(row *elements.TableRow, columnMap ColumnIndex, c
 	if !ok {
 		return nil
 	}
-	cell := row.Cells[i]
-	if len(cell.Elements) == 0 {
+	cell := row.TableCells[i]
+	if len(cell.Elements()) == 0 {
 		return nil
 	}
-	p, ok := cell.Elements[0].(*elements.Paragraph)
+	p, ok := cell.Elements()[0].(*elements.Paragraph)
 	if !ok {
-		slog.Debug("unexpected non-paragraph in constraints cell", "doc", d.Path, "type", fmt.Sprintf("%T", cell.Elements[0]))
+		slog.Debug("unexpected non-paragraph in constraints cell", "doc", d.Path, "type", fmt.Sprintf("%T", cell.Elements()[0]))
 		return nil
 	}
-	if len(p.Elements) == 0 {
+	if len(p.Elements()) == 0 {
 		return nil
 	}
 
 	var sb strings.Builder
-	for _, el := range p.Elements {
+	for _, el := range p.Elements() {
 		switch v := el.(type) {
-		case *elements.String:
-			sb.WriteString(v.Content)
-		case *elements.InternalCrossReference:
-			id := v.ID.(string)
+		case elements.String:
+			sb.WriteString(string(v))
+		case *elements.CrossReference:
+			id := v.ID
 			if strings.HasPrefix(id, "ref_") {
 				// This is a proper reference; allow the conformance parser to recognize it
 				sb.WriteString(fmt.Sprintf("<<%s>>", id))
 			} else {
-				anchor, _ := d.getAnchor(v.ID.(string))
+				anchor, _ := d.getAnchor(v.ID)
 				var name string
 				if anchor != nil {
 					name = ReferenceName(anchor.Element)
 				} else {
-					name = strings.TrimPrefix(v.ID.(string), "_")
+					name = strings.TrimPrefix(v.ID, "_")
 				}
 				sb.WriteString(name)
 			}
 		case *elements.SpecialCharacter:
-			sb.WriteString(v.Name)
-		case *elements.QuotedText:
+			sb.WriteString(v.Character)
+		case *elements.Bold:
 			// This is usually an asterisk, and should be ignored
-		case *elements.InlineLink:
+		case *elements.Link:
 			if v.Location != nil {
 				if len(v.Location.Scheme) > 0 {
 					sb.WriteString(v.Location.Scheme)
@@ -335,8 +330,8 @@ func (d *Doc) getRowConformance(row *elements.TableRow, columnMap ColumnIndex, c
 					sb.WriteString(path)
 				}
 			}
-		case *elements.PredefinedAttribute:
-			switch v.Name {
+		case *elements.CharacterReplacementReference:
+			switch v.Name() {
 			case "nbsp":
 				sb.WriteRune(' ')
 			default:

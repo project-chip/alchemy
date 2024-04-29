@@ -1,9 +1,6 @@
 package render
 
-import (
-	"fmt"
-)
-
+/*
 func renderFootnoteReference(cxt *Context, fr *elements.FootnoteReference) (err error) {
 	var fn *elements.Footnote
 	for _, f := range cxt.Doc.Footnotes() {
@@ -20,3 +17,4 @@ func renderFootnoteReference(cxt *Context, fr *elements.FootnoteReference) (err 
 	cxt.WriteString("]")
 	return
 }
+*/
