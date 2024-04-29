@@ -9,6 +9,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type DataTypeEntry struct {
@@ -99,11 +100,11 @@ func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*elements.TableR
 		return nil, nil
 	}
 	for _, row := range rows {
-		cv, err := ascii.RenderTableCell(row.Cells[nameIndex])
+		cv, err := ascii.RenderTableCell(row.TableCells[nameIndex])
 		if err != nil {
 			continue
 		}
-		dtv, err := ascii.RenderTableCell(row.Cells[typeIndex])
+		dtv, err := ascii.RenderTableCell(row.TableCells[typeIndex])
 		if err != nil {
 			continue
 		}
@@ -123,7 +124,7 @@ func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*elements.TableR
 				ref:              name,
 				dataType:         dataType,
 				dataTypeCategory: dataTypeCategory,
-				typeCell:         row.Cells[typeIndex],
+				typeCell:         row.TableCells[typeIndex],
 			}
 		}
 	}
@@ -223,14 +224,14 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		return
 	}
 	var dataTypesSection *ascii.Section
-	var entityType matterelements.EntityType
+	var entityType types.EntityType
 	switch dtc {
 	case matter.DataTypeCategoryBitmap:
-		entityType = matterelements.EntityTypeBitmapValue
+		entityType = types.EntityTypeBitmapValue
 	case matter.DataTypeCategoryEnum:
-		entityType = matterelements.EntityTypeEnumValue
+		entityType = types.EntityTypeEnumValue
 	case matter.DataTypeCategoryStruct:
-		entityType = matterelements.EntityTypeField
+		entityType = types.EntityTypeField
 	}
 	for _, dt := range dataTypeFields {
 		if dt.existing {
@@ -333,7 +334,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		if err != nil {
 			return
 		}
-		bl, _ := elements.NewBlankLine()
+		bl := elements.NewEmptyLine("")
 		err = dataTypeSection.AddElement(bl)
 		if err != nil {
 			return

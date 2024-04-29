@@ -1,26 +1,23 @@
 package render
 
 import (
-	"fmt"
 	"strings"
+
+	"github.com/hasty/adoc/elements"
 )
 
-func renderInternalCrossReference(cxt *Context, cf *elements.InternalCrossReference) (err error) {
-	switch el := cf.OriginalID.(type) {
-	case string:
-		if strings.HasPrefix(el, "_") {
-			return
-		}
-		cxt.WriteString("<<")
-		cxt.WriteString(el)
-		if label, ok := cf.Label.(string); ok && len(label) > 0 {
-			cxt.WriteString(",")
-			cxt.WriteString(label)
-		}
-		cxt.WriteString(">>")
-	case nil:
-	default:
-		err = fmt.Errorf("unknown internal cross reference ID type: %T", el)
+func renderInternalCrossReference(cxt *Context, cf *elements.CrossReference) (err error) {
+	id := cf.ID
+
+	if strings.HasPrefix(id, "_") {
+		return
 	}
+	cxt.WriteString("<<")
+	cxt.WriteString(id)
+	if len(cf.Set) > 0 {
+		cxt.WriteString(",")
+		Elements(cxt, "", cf.Elements()...)
+	}
+	cxt.WriteString(">>")
 	return
 }

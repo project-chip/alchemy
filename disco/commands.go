@@ -80,7 +80,7 @@ func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*elements.TableRow, co
 		return
 	}
 	for _, row := range rows[1:] {
-		cell := row.Cells[accessIndex]
+		cell := row.TableCells[accessIndex]
 
 		vc, e := ascii.RenderTableCell(cell)
 		if e != nil {

@@ -148,7 +148,7 @@ func newParentSubSection(doc *ascii.Doc, section *ascii.Section, childPatterns .
 func firstTableInfo(doc *ascii.Doc, section *ascii.Section) (ti tableInfo, err error) {
 	ti.element = ascii.FindFirstTable(section)
 	if ti.element != nil {
-		ti.rows = ascii.TableRows(ti.element)
+		ti.rows = ti.element.TableRows
 		ti.headerRow, ti.columnMap, ti.extraColumns, err = ascii.MapTableColumns(doc, ti.rows)
 		if err != nil {
 			return
@@ -181,7 +181,7 @@ func findSubsections(doc *ascii.Doc, parent *subSection, childPatterns ...subSec
 	}
 	subSectionNames := make(map[string]int, len(parent.table.rows))
 	for i, row := range parent.table.rows {
-		subSectionName, err := ascii.RenderTableCell(row.Cells[index])
+		subSectionName, err := ascii.RenderTableCell(row.TableCells[index])
 		if err != nil {
 			slog.Debug("could not get cell value for entity index", "err", err)
 			continue

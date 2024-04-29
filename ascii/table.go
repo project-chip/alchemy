@@ -27,7 +27,7 @@ func parseFirstTable(doc *Doc, section *Section) (rows []*elements.TableRow, hea
 
 func parseTable(doc *Doc, section *Section, t *elements.Table) (rows []*elements.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 
-	rows = TableRows(t)
+	rows = t.TableRows
 	if len(rows) < 2 {
 		err = fmt.Errorf("not enough rows in table")
 		return
@@ -59,7 +59,7 @@ func readRowASCIIDocString(row *elements.TableRow, columnMap ColumnIndex, column
 }
 
 func readRowCellASCIIDocString(row *elements.TableRow, offset int) (string, error) {
-	cell := row.Cells[offset]
+	cell := row.TableCells[offset]
 	val, err := RenderTableCell(cell)
 	if err != nil {
 		return "", err
@@ -88,56 +88,49 @@ func ReadRowValue(doc *Doc, row *elements.TableRow, columnMap ColumnIndex, colum
 }
 
 func readRowCellValue(doc *Doc, row *elements.TableRow, offset int) (string, error) {
-	cell := row.Cells[offset]
-	if len(cell.Elements) == 0 {
+	cell := row.TableCells[offset]
+	cellElements := cell.Elements()
+	if len(cellElements) == 0 {
 		return "", nil
 	}
-	el := cell.Elements[0]
+	el := cellElements[0]
 	para, ok := el.(*elements.Paragraph)
 	if !ok {
 		return "", fmt.Errorf("name cell missing paragraph")
 	}
 	var value strings.Builder
-	err := readRowCellValueElements(doc, para.Elements, &value)
+	err := readRowCellValueElements(doc, para.Elements(), &value)
 	if err != nil {
 		return "", err
 	}
 	return strings.TrimSpace(value.String()), nil
 }
 
-func readRowCellValueElements(doc *Doc, elements []any, value *strings.Builder) error {
-	for _, el := range elements {
+func readRowCellValueElements(doc *Doc, els []elements.Element, value *strings.Builder) error {
+	for _, el := range els {
 		switch el := el.(type) {
-		case *elements.String:
-			value.WriteString(el.Content)
-		case *elements.InternalCrossReference:
+		case elements.String:
+			value.WriteString(string(el))
+		case *elements.CrossReference:
 			var val string
-			anchor, _ := doc.getAnchor(el.ID.(string))
+			anchor, _ := doc.getAnchor(el.ID)
 			if anchor != nil {
 				val = matter.StripTypeSuffixes(ReferenceName(anchor.Element))
 			} else {
-				val = strings.TrimPrefix(el.ID.(string), "_")
+				val = strings.TrimPrefix(el.ID, "_")
 				val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
 			}
 			value.WriteString(val)
-		case *elements.InlineLink:
-			if el.Location != nil {
-				l, ok := el.Location.Path.(string)
-				if ok {
-					value.WriteString(l)
-				}
+		case *elements.Link:
+			value.WriteString()
+			l, ok := el.URL.Path.(string)
+			if ok {
+				value.WriteString(l)
 			}
-		case *elements.QuotedText:
-			if el.Kind != elements.SingleQuoteSuperscript {
-				err := readRowCellValueElements(doc, el.Elements, value)
-				if err != nil {
-					return err
-				}
-				continue
-			}
+		case *elements.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
-			err := readRowCellValueElements(doc, el.Elements, &quotedText)
+			err := readRowCellValueElements(doc, el.Elements(), &quotedText)
 			if err != nil {
 				return err
 			}
@@ -152,13 +145,16 @@ func readRowCellValueElements(doc *Doc, elements []any, value *strings.Builder) 
 				continue
 			}
 			value.WriteString(qt)
-		case *elements.Symbol:
-			value.WriteString(el.Name)
 		case *elements.SpecialCharacter:
-			value.WriteString(el.Name)
+			value.WriteString(el.Character)
 		case *elements.InlinePassthrough:
 			value.WriteString(string(el.Kind))
-		case *elements.LineBreak:
+		case *elements.ThematicBreak:
+		case elements.HasElements:
+			err := readRowCellValueElements(doc, el.Elements(), value)
+			if err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("unexpected type in cell: %T", el)
 		}
@@ -175,31 +171,21 @@ func FindFirstTable(section *Section) *elements.Table {
 	return table
 }
 
-func TableRows(t *elements.Table) (rows []*elements.TableRow) {
-	rows = make([]*elements.TableRow, 0, len(t.Rows)+2)
-	if t.Header != nil {
-		rows = append(rows, t.Header)
-	}
-	rows = append(rows, t.Rows...)
-	if t.Footer != nil {
-		rows = append(rows, t.Footer)
-	}
-	return
-}
-
 func RenderTableCell(cell *elements.TableCell) (string, error) {
-	if len(cell.Elements) == 0 {
+	cellElements := cell.Elements()
+	if len(cellElements) == 0 {
 		return "", fmt.Errorf("missing table cell elements")
 	}
-	p, ok := cell.Elements[0].(*elements.Paragraph)
+	p, ok := cellElements[0].(*elements.Paragraph)
 	if !ok {
 		return "", fmt.Errorf("missing paragraph in table cell")
 	}
-	if len(p.Elements) == 0 {
+	pElements := p.Elements()
+	if len(pElements) == 0 {
 		return "", nil
 	}
 	out := render.NewContext(context.Background(), nil)
-	err := render.Elements(out, "", p.Elements)
+	err := render.Elements(out, "", pElements...)
 	if err != nil {
 		return "", err
 	}
@@ -207,44 +193,44 @@ func RenderTableCell(cell *elements.TableCell) (string, error) {
 }
 
 func (d *Doc) GetHeaderCellString(cell *elements.TableCell) (string, error) {
-	if len(cell.Elements) == 0 {
+	cellElements := cell.Elements()
+	if len(cellElements) == 0 {
 		return "", fmt.Errorf("missing table header cell elements")
 	}
-	p, ok := cell.Elements[0].(*elements.Paragraph)
+	p, ok := cellElements[0].(*elements.Paragraph)
 	if !ok {
 		return "", fmt.Errorf("missing paragraph in table cell")
 	}
-	if len(p.Elements) == 0 {
+	pElements := p.Elements()
+	if len(pElements) == 0 {
 		return "", nil
 	}
 	var v strings.Builder
-	err := d.readCellContent(p.Elements, &v)
+	err := d.readCellContent(pElements, &v)
 	if err != nil {
 		return "", err
 	}
 	return v.String(), nil
 }
 
-func (d *Doc) readCellContent(elements []any, content *strings.Builder) (err error) {
-	for _, s := range elements {
+func (d *Doc) readCellContent(els []elements.Element, content *strings.Builder) (err error) {
+	for _, s := range els {
 		switch s := s.(type) {
-		case *elements.String:
-			content.WriteString(s.Content)
+		case elements.String:
+			content.WriteString(string(s))
 		case *elements.QuotedText:
 			return d.readCellContent(s.Elements, content)
-		case *elements.InternalCrossReference:
+		case *elements.CrossReference:
 			var name string
-			anchor, _ := d.getAnchor(s.ID.(string))
+			anchor, _ := d.getAnchor(s.ID)
 			if anchor != nil {
 				name = ReferenceName(anchor.Element)
 			} else {
-				name = s.ID.(string)
+				name = s.ID
 			}
 			content.WriteString(name)
 		case *elements.SpecialCharacter:
-			content.WriteString(s.Name)
-		case *elements.Symbol:
-			content.WriteString(s.Name)
+			content.WriteString(s.Character)
 		default:
 			return fmt.Errorf("unknown element in table header cell: %T", s)
 		}
@@ -262,15 +248,15 @@ func MapTableColumns(doc *Doc, rows []*elements.TableRow) (headerRow int, column
 	headerRow = -1
 	for i, row := range rows {
 		if cellCount == -1 {
-			cellCount = len(row.Cells)
-		} else if cellCount != len(row.Cells) {
-			return -1, nil, nil, fmt.Errorf("can't map table columns with unequal cell counts between rows; row %d has %d cells, expected %d", i, len(row.Cells), cellCount)
+			cellCount = len(row.TableCells)
+		} else if cellCount != len(row.TableCells) {
+			return -1, nil, nil, fmt.Errorf("can't map table columns with unequal cell counts between rows; row %d has %d cells, expected %d", i, len(row.TableCells), cellCount)
 		}
 		if columnMap != nil { // We've already processed the columns
 			continue
 		}
 		var spares []ExtraColumn
-		for j, cell := range row.Cells {
+		for j, cell := range row.TableCells {
 			var val string
 			val, err = doc.GetHeaderCellString(cell)
 			if err != nil {

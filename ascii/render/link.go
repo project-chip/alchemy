@@ -2,41 +2,36 @@ package render
 
 import (
 	"fmt"
+
+	"github.com/hasty/adoc/elements"
 )
 
-func renderInlineLink(cxt *Context, il *elements.InlineLink) (err error) {
-	if il.Location != nil {
-		if len(il.Location.Scheme) > 0 {
-			cxt.WriteString(il.Location.Scheme)
-		} else {
-			cxt.WriteString("link:")
-		}
-		var path string
-		path, err = getPath(il.Location)
-		if err != nil {
-			return
-		}
-		cxt.WriteString(path)
+func renderLink(cxt *Context, il *elements.Link) (err error) {
+	if len(il.URL.Scheme) > 0 {
+		cxt.WriteString(il.URL.Scheme)
+	} else {
+		cxt.WriteString("link:")
 	}
-	return renderAttributes(cxt, il, il.Attributes, true)
+	var path string
+	path, err = getPath(il.URL)
+	if err != nil {
+		return
+	}
+	cxt.WriteString(path)
+
+	return renderAttributes(cxt, il, il.Attributes(), true)
 }
 
-func renderImageBlock(cxt *Context, ib *elements.ImageBlock) (err error) {
+func renderImageBlock(cxt *Context, ib *elements.BlockImage) (err error) {
 	cxt.WriteNewline()
-	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
+	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
 		return
 	}
 	cxt.WriteNewline()
 	cxt.WriteString("image::")
-	cxt.WriteString(ib.Location.Scheme)
-	var path string
-	path, err = getPath(ib.Location)
-	if err != nil {
-		return
-	}
-	cxt.WriteString(path)
-	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
+	Elements(cxt, "", ib.Path...)
+	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
 	if err != nil {
 		return
 	}
@@ -46,20 +41,14 @@ func renderImageBlock(cxt *Context, ib *elements.ImageBlock) (err error) {
 
 func renderInlineImage(cxt *Context, ib *elements.InlineImage) (err error) {
 	cxt.WriteNewline()
-	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, true)
+	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, true)
 	if err != nil {
 		return
 	}
 	cxt.WriteNewline()
 	cxt.WriteString("image:")
-	cxt.WriteString(ib.Location.Scheme)
-	var path string
-	path, err = getPath(ib.Location)
-	if err != nil {
-		return
-	}
-	cxt.WriteString(path)
-	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
+	Elements(cxt, "", ib.Path...)
+	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
 	if err != nil {
 		return
 	}
@@ -67,7 +56,7 @@ func renderInlineImage(cxt *Context, ib *elements.InlineImage) (err error) {
 	return
 }
 
-func getPath(l *elements.Location) (string, error) {
+func getPath(l elements.URL) (string, error) {
 	switch p := l.Path.(type) {
 	case string:
 		return p, nil

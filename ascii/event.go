@@ -73,8 +73,8 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[elemen
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 			if headerRowIndex > 0 {
 				firstRow := rows[0]
-				if len(firstRow.Cells) > 0 {
-					cv, rowErr := RenderTableCell(rows[0].Cells[0])
+				if len(firstRow.TableCells) > 0 {
+					cv, rowErr := RenderTableCell(rows[0].TableCells[0])
 					if rowErr == nil {
 						cv = strings.ToLower(cv)
 						if strings.Contains(cv, "fabric sensitive") || strings.Contains(cv, "fabric-sensitive") {

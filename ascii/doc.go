@@ -21,7 +21,7 @@ type Doc struct {
 	Path string
 
 	Base     *elements.Document
-	Elements []any
+	Elements []elements.Element
 
 	docType matter.DocType
 
@@ -29,8 +29,8 @@ type Doc struct {
 	parents []*Doc
 
 	anchors         map[string]*Anchor
-	crossReferences map[string][]*elements.InternalCrossReference
-	attributes      map[string]any
+	crossReferences map[string][]*elements.CrossReference
+	attributes      map[elements.AttributeName]any
 
 	entities       []mattertypes.Entity
 	entitiesParsed bool
@@ -41,11 +41,11 @@ type Doc struct {
 func NewDoc(d *elements.Document) (*Doc, error) {
 	doc := &Doc{
 		Base:       d,
-		attributes: make(map[string]any),
+		attributes: make(map[elements.AttributeName]any),
 	}
-	for _, e := range d.Elements {
+	for _, e := range d.Elements() {
 		switch el := e.(type) {
-		case *elements.AttributeDeclaration:
+		case *elements.AttributeEntry:
 			doc.attributes[el.Name] = el.Value
 			doc.Elements = append(doc.Elements, NewElement(doc, e))
 		case *elements.Section:
@@ -66,17 +66,17 @@ func firstLetterIsLower(s string) bool {
 	return unicode.IsLower(firstLetter)
 }
 
-func (doc *Doc) GetElements() []any {
+func (doc *Doc) GetElements() []elements.Element {
 	return doc.Elements
 }
 
-func (doc *Doc) SetElements(elements []any) error {
+func (doc *Doc) SetElements(elements []elements.Element) error {
 	doc.Elements = elements
 	return nil
 }
 
 func (doc *Doc) Footnotes() []*elements.Footnote {
-	return doc.Base.Footnotes
+	return nil
 }
 
 func (doc *Doc) Parents() []*Doc {

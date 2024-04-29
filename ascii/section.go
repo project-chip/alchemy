@@ -21,7 +21,7 @@ type Section struct {
 
 	SecType matter.Section
 
-	Elements []any
+	Elements []elements.Element
 }
 
 func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
@@ -51,27 +51,25 @@ func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
 	return ss, nil
 }
 
-func buildSectionTitle(doc *Doc, title *strings.Builder, elements ...any) (err error) {
-	for _, e := range elements {
+func buildSectionTitle(doc *Doc, title *strings.Builder, els ...any) (err error) {
+	for _, e := range els {
 		switch e := e.(type) {
 		case []any:
 			err = buildSectionTitle(doc, title, e...)
 		case string:
 			title.WriteString(e)
-		case *elements.String:
-			title.WriteString(e.Content)
-		case *elements.Symbol:
-			title.WriteString(e.Name)
+		case elements.String:
+			title.WriteString(string(e))
 		case *elements.SpecialCharacter:
-			title.WriteString(e.Name)
+			title.WriteString(e.Character)
 		case *elements.AttributeReference:
 			attr, ok := doc.attributes[e.Name]
 			if !ok {
 				return fmt.Errorf("unknown section title attribute: %s", e.Name)
 			}
 			err = buildSectionTitle(doc, title, attr)
-		case *elements.InlineLink:
-		case *elements.QuotedText:
+		case *elements.Link:
+		case *elements.Bold:
 
 		default:
 			err = fmt.Errorf("unknown section title component type: %T", e)
@@ -88,13 +86,17 @@ func (s *Section) AppendSection(ns *Section) error {
 	return nil
 }
 
-func (s *Section) GetElements() []any {
+func (s *Section) GetElements() []elements.Element {
 	return s.Elements
 }
 
-func (s *Section) SetElements(elements []any) error {
+func (s *Section) SetElements(elements []elements.Element) error {
 	s.Elements = elements
 	return s.Base.SetElements(elements)
+}
+
+func (s Section) Type() elements.ElementType {
+	return elements.ElementTypeBlock
 }
 
 func (s *Section) GetASCIISection() *elements.Section {
