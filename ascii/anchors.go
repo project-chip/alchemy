@@ -45,7 +45,7 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 		if idAttr == nil {
 			return false
 		}
-		id := strings.TrimSpace(idAttr.Value().(string))
+		id := strings.TrimSpace(idAttr.AsciiDocString())
 		var label string
 		if parts := strings.Split(id, ","); len(parts) > 1 {
 			id = strings.TrimSpace(parts[0])
@@ -53,7 +53,7 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 		}
 		refText := wa.GetAttributeByName(elements.AttributeNameReferenceText)
 		if refText != nil {
-			label = refText.String()
+			label = refText.AsciiDocString()
 		}
 		info := &Anchor{
 			ID:      id,

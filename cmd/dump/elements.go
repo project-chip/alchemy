@@ -8,7 +8,7 @@ import (
 	"github.com/hasty/alchemy/ascii"
 )
 
-func dumpElements(doc *ascii.Doc, els []elements.Element, indent int) {
+func dumpElements(doc *ascii.Doc, els elements.Set, indent int) {
 
 	for _, e := range els {
 		fmt.Print(strings.Repeat("\t", indent))
@@ -151,7 +151,7 @@ func dumpElements(doc *ascii.Doc, els []elements.Element, indent int) {
 		dumpElements(doc, el.Elements, indent+1)*/
 		case *elements.ListContinuation:
 			fmt.Printf("{list con}\n")
-			dumpElements(doc, []elements.Element{el.Child()}, indent+1)
+			dumpElements(doc, elements.Set{el.Child()}, indent+1)
 		case *elements.CharacterReplacementReference:
 			fmt.Printf("{predef %s}", el.Name)
 		default:

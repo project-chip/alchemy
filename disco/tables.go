@@ -12,7 +12,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func (b *Ball) ensureTableOptions(els []elements.Element) {
+func (b *Ball) ensureTableOptions(els elements.Set) {
 	if !b.options.normalizeTableOptions {
 		return
 	}
@@ -28,7 +28,7 @@ func (b *Ball) ensureTableOptions(els []elements.Element) {
 			}
 		}
 		for i := len(excludedIndexes) - 1; i >= 0; i-- {
-			t.List = slices.Delete(t.List, i, i)
+			t.AttributeList = slices.Delete(t.AttributeList, i, i)
 		}
 		for k, v := range matter.AllowedTableAttributes {
 			if v != nil {
@@ -53,7 +53,7 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	}
 	for _, column := range order {
 		if _, ok := columnMap[column]; !ok {
-			_, err = b.appendColumn(rows, columnMap, headerRowIndex, column, overrides, entityType)
+			_, err = b.appendColumn(table, columnMap, headerRowIndex, column, overrides, entityType)
 			if err != nil {
 				return
 			}
@@ -62,10 +62,23 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	return
 }
 
-func (b *Ball) appendColumn(rows []*elements.TableRow, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType types.EntityType) (appendedIndex int, err error) {
+func (b *Ball) appendColumn(table *elements.Table, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType types.EntityType) (appendedIndex int, err error) {
+	rows := table.TableRows()
 	if len(rows) == 0 {
 		appendedIndex = -1
 		return
+	}
+	table.ColumnCount += 1
+	var cols *elements.TableColumnsAttribute
+	var ok bool
+	for _, a := range table.Attributes() {
+		cols, ok = a.(*elements.TableColumnsAttribute)
+		if ok {
+			break
+		}
+	}
+	if cols != nil {
+		cols.Columns = append(cols.Columns, elements.NewTableColumn())
 	}
 	appendedIndex = len(rows[0].TableCells)
 	for i, row := range rows {
@@ -201,8 +214,8 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 				k := i - 1
 				for k >= 0 {
 					left := row.TableCells[k]
-					if left.Format != nil && left.Format.Span.Column.Get() > 1 {
-						left.Format.Span.Column = elements.One(left.Format.Span.Column.Get() - 1)
+					if left.Format != nil && left.Format.Span.Column.Value > 1 {
+						left.Format.Span.Column = elements.One(left.Format.Span.Column.Value - 1)
 						break
 					}
 					k--
@@ -226,50 +239,36 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 		newCells = slices.Clip(newCells)
 		row.TableCells = newCells
 	}
+	var cols *elements.TableColumnsAttribute
+	for _, a := range ti.element.Attributes() {
+		cols, ok = a.(*elements.TableColumnsAttribute)
+		if ok {
+			break
+		}
+	}
+	if cols != nil {
+		newColumns := make([]*elements.TableColumn, index)
+		for i, col := range cols.Columns {
+			newIndex := newColumnIndexes[i]
+			if newIndex < 0 {
+				continue
+			}
+			newColumns[newIndex] = col
+		}
+		cols.Columns = newColumns
+	}
 	ti.headerRow, ti.columnMap, ti.extraColumns, err = ascii.MapTableColumns(doc, ti.rows)
 	return
 }
 
 func setCellString(cell *elements.TableCell, v string) (err error) {
-	var p *elements.Paragraph
-	cellElements := cell.Elements()
-	if len(cellElements) == 0 {
-		p = elements.NewParagraph(elements.AdmonitionNone)
-		err = cell.SetElements([]elements.Element{p})
-		if err != nil {
-			return
-		}
-	} else {
-		var ok bool
-		p, ok = cellElements[0].(*elements.Paragraph)
-		if !ok {
-			return fmt.Errorf("table cell does not have paragraph child")
-		}
-	}
 	se := elements.NewString(v)
-	err = p.SetElements([]elements.Element{se})
+	err = cell.SetElements(elements.Set{se})
 	return
 }
 
-func setCellValue(cell *elements.TableCell, val []elements.Element) (err error) {
-	var p *elements.Paragraph
-
-	cellElements := cell.Elements()
-	if len(cellElements) == 0 {
-		p = elements.NewParagraph(elements.AdmonitionNone)
-		err = cell.SetElements([]elements.Element{p})
-		if err != nil {
-			return
-		}
-	} else {
-		var ok bool
-		p, ok = cellElements[0].(*elements.Paragraph)
-		if !ok {
-			return fmt.Errorf("table cell does not have paragraph child")
-		}
-	}
-	err = p.SetElements(val)
-	return
+func setCellValue(cell *elements.TableCell, val elements.Set) (err error) {
+	return cell.SetElements(val)
 }
 
 func copyCells(rows []*elements.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {

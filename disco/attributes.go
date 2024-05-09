@@ -123,7 +123,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 			setAnchorID(s.Base, id, label)
 		}
 		icr := elements.NewCrossReference(id)
-		err := p.SetElements([]elements.Element{icr})
+		err := p.SetElements(elements.Set{icr})
 		if err != nil {
 			return err
 		}

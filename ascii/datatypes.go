@@ -246,7 +246,7 @@ func (d *Doc) getRowConstraint(row *elements.TableRow, columnMap ColumnIndex, co
 	return c
 }
 
-func (d *Doc) buildConstraintValue(els []elements.Element, sb *strings.Builder) {
+func (d *Doc) buildConstraintValue(els elements.Set, sb *strings.Builder) {
 	for _, el := range els {
 		switch v := el.(type) {
 		case *elements.String:

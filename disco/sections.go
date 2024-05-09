@@ -40,7 +40,7 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	}
 	sections := divyUpSection(sec, validSectionTypes)
 
-	newOrder := make([]elements.Element, 0, len(sec.Elements))
+	newOrder := make(elements.Set, 0, len(sec.Elements))
 	for _, st := range sectionOrder {
 		if els, ok := sections[st]; ok {
 
@@ -55,8 +55,8 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	return sec.SetElements(newOrder)
 }
 
-func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section][]elements.Element {
-	sections := make(map[matter.Section][]elements.Element)
+func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]elements.Set {
+	sections := make(map[matter.Section]elements.Set)
 	lastSectionType := matter.SectionPrefix
 	for _, e := range sec.Elements {
 		switch el := e.(type) {
@@ -76,7 +76,7 @@ func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]stru
 func setSectionTitle(sec *ascii.Section, title string) {
 	for i, e := range sec.Base.Title {
 		switch e.(type) {
-		case elements.String:
+		case *elements.String:
 			sec.Base.Title[i] = elements.NewString(title)
 			sec.Name = title
 		}
