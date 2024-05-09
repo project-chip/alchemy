@@ -7,6 +7,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/hasty/adoc/elements"
+	"github.com/hasty/alchemy/internal/text"
 )
 
 type table struct {
@@ -15,12 +16,13 @@ type table struct {
 }
 
 type tableRow struct {
-	cells []*tableCell
+	index   int
+	element elements.Element
+	cells   []*tableCell
 }
 
 type tableCell struct {
 	value     string
-	format    string
 	formatter *elements.TableCellFormat
 	blank     bool
 
@@ -47,15 +49,22 @@ func renderTable(cxt *Context, t *elements.Table) (err error) {
 	cxt.WriteString("|===")
 	cxt.WriteNewline()
 	for _, row := range tbl.rows {
-		renderRow(cxt, row.cells, colOffsets)
+		if row.element != nil {
+			Elements(cxt, "", row.element)
+		} else {
+			err = renderRow(cxt, row.cells, colOffsets)
+		}
+		if err != nil {
+			return err
+		}
 	}
 	cxt.WriteString("|===\n")
 	return
 }
 
-func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) {
+func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) error {
 	if len(cells) == 0 {
-		return
+		return nil
 	}
 	//var row strings.Builder
 	var index int
@@ -63,6 +72,9 @@ func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) {
 	for i, c := range cells {
 		if c.blank {
 			continue
+		}
+		if i >= len(colOffsets) {
+			return fmt.Errorf("column offset out of bounds: %d vs %d", i, len(colOffsets))
 		}
 		offset := colOffsets[i]
 		var indentLength int
@@ -73,7 +85,7 @@ func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) {
 		colSpan := 1
 		if c.formatter != nil {
 			format = renderTableCellFormat(c.formatter)
-			colSpan = c.formatter.Span.Column.Get()
+			colSpan = c.formatter.Span.Column.Value
 		}
 		indent := fmt.Sprintf("%*s", indentLength, format)
 		cxt.WriteString(indent)
@@ -92,7 +104,8 @@ func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) {
 		index += wb
 
 	}
-	cxt.WriteRune('\n')
+	cxt.WriteNewline()
+	return nil
 }
 
 func calculateColumnOffsets(tbl *table) (colOffsets []int) {
@@ -150,6 +163,9 @@ func offsetMatrixForTable(tbl *table) [][]int {
 	offsetMatrix := make([][]int, len(tbl.rows))
 
 	for i, r := range tbl.rows {
+		if r.element != nil {
+			continue
+		}
 		offsetMatrix[i] = offsetsForRow(r.cells)
 	}
 	return offsetMatrix
@@ -166,7 +182,7 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 				indent := utf8.RuneCountInString(format)
 				offsets[i] = indent
 			}
-			colSpan = c.formatter.Span.Column.Get()
+			colSpan = c.formatter.Span.Column.Value
 		}
 		width := getCellWidth(c)
 		c.width = width
@@ -205,16 +221,23 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 }
 
 func renderTableSubElements(cxt *Context, t *elements.Table, tbl *table) (err error) {
-
-	for _, row := range t.TableRows {
+	var rowCount = 0
+	for _, row := range t.Elements() {
 		tr := &tableRow{}
-		for _, c := range row.TableCells {
-			renderContext := NewContext(cxt, cxt.Doc)
-			err = Elements(renderContext, "", c.Elements()...)
-			if err != nil {
-				return
+		switch row := row.(type) {
+		case *elements.TableRow:
+			tr.index = rowCount
+			rowCount++
+			for _, c := range row.TableCells {
+				renderContext := NewContext(cxt, cxt.Doc)
+				err = Elements(renderContext, "", c.Elements()...)
+				if err != nil {
+					return
+				}
+				tr.cells = append(tr.cells, &tableCell{value: text.TrimWhitespace(renderContext.String()), formatter: c.Format, blank: c.Blank})
 			}
-			tr.cells = append(tr.cells, &tableCell{value: strings.TrimSpace(renderContext.String()), format: renderTableCellFormat(c.Format), formatter: c.Format, blank: c.Blank})
+		default:
+			tr.element = row
 		}
 		tbl.rows = append(tbl.rows, tr)
 	}
@@ -264,9 +287,9 @@ func renderTableCellFormat(format *elements.TableCellFormat) string {
 		return ""
 	}
 	var s strings.Builder
-	colSpan := format.Span.Column.Get()
-	rowSpan := format.Span.Row.Get()
-	if (format.Span.Column.IsSet() && colSpan > 1) || (format.Span.Row.IsSet() && rowSpan > 1) {
+	colSpan := format.Span.Column.Value
+	rowSpan := format.Span.Row.Value
+	if (format.Span.Column.IsSet && colSpan > 1) || (format.Span.Row.IsSet && rowSpan > 1) {
 		if colSpan > 1 {
 			s.WriteString(strconv.Itoa(colSpan))
 		}
@@ -276,16 +299,16 @@ func renderTableCellFormat(format *elements.TableCellFormat) string {
 		}
 		s.WriteRune('+')
 	}
-	if format.Multiplier.IsSet() {
-		multipler := format.Multiplier.Get()
+	if format.Multiplier.IsSet {
+		multipler := format.Multiplier.Value
 		if multipler > 1 {
 			s.WriteString(strconv.Itoa(multipler))
 			s.WriteRune('*')
 
 		}
 	}
-	if format.HorizontalAlign.IsSet() {
-		switch format.HorizontalAlign.Get() {
+	if format.HorizontalAlign.IsSet {
+		switch format.HorizontalAlign.Value {
 		case elements.TableCellHorizontalAlignLeft:
 			s.WriteRune('<')
 		case elements.TableCellHorizontalAlignCenter:
@@ -294,8 +317,8 @@ func renderTableCellFormat(format *elements.TableCellFormat) string {
 			s.WriteRune('>')
 		}
 	}
-	if format.VerticalAlign.IsSet() {
-		switch format.VerticalAlign.Get() {
+	if format.VerticalAlign.IsSet {
+		switch format.VerticalAlign.Value {
 		case elements.TableCellVerticalAlignTop:
 			s.WriteString(".<")
 		case elements.TableCellVerticalAlignMiddle:
@@ -305,8 +328,8 @@ func renderTableCellFormat(format *elements.TableCellFormat) string {
 		}
 
 	}
-	if format.Style.IsSet() {
-		switch format.Style.Get() {
+	if format.Style.IsSet {
+		switch format.Style.Value {
 		case elements.TableCellStyleAsciiDoc:
 			s.WriteRune('a')
 		case elements.TableCellStyleEmphasis:

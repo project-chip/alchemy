@@ -19,7 +19,7 @@ type Doc struct {
 	Path string
 
 	Base     *elements.Document
-	Elements []elements.Element
+	Elements elements.Set
 
 	docType matter.DocType
 
@@ -64,11 +64,11 @@ func firstLetterIsLower(s string) bool {
 	return unicode.IsLower(firstLetter)
 }
 
-func (doc *Doc) GetElements() []elements.Element {
+func (doc *Doc) GetElements() elements.Set {
 	return doc.Elements
 }
 
-func (doc *Doc) SetElements(elements []elements.Element) error {
+func (doc *Doc) SetElements(elements elements.Set) error {
 	doc.Elements = elements
 	return nil
 }
@@ -152,5 +152,5 @@ func (doc *Doc) Reference(ref string) (mattertypes.Entity, bool) {
 }
 
 func GithubSettings() []elements.Attribute {
-	return []elements.Attribute{elements.NewNamedAttribute("env-github", true)}
+	return []elements.Attribute{elements.NewNamedAttribute("env-github", elements.Set{}, elements.AttributeQuoteTypeNone)}
 }

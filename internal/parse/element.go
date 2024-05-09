@@ -8,8 +8,8 @@ import (
 )
 
 type HasElements interface {
-	SetElements([]elements.Element) error
-	GetElements() []elements.Element
+	SetElements(elements.Set) error
+	GetElements() elements.Set
 }
 
 type HasBase interface {

@@ -113,7 +113,7 @@ func setAnchorID(element elements.Attributable, id string, label string) {
 	if len(label) > 0 {
 		id += ", " + label
 	}
-	element.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameID), id))
+	element.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameID), elements.Set{elements.NewString(id)}, elements.AttributeQuoteTypeDouble))
 }
 
 func disambiguateAnchorSet(infos []*ascii.Anchor) error {

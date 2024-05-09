@@ -21,7 +21,7 @@ type Section struct {
 
 	SecType matter.Section
 
-	Elements []elements.Element
+	Elements elements.Set
 }
 
 func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
@@ -65,7 +65,7 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, els ...elements.Element
 				return fmt.Errorf("unknown section title attribute: %s", e.Name)
 			}
 			switch val := attr.(type) {
-			case []elements.Element:
+			case elements.Set:
 				err = buildSectionTitle(doc, title, val...)
 			case elements.Element:
 				err = buildSectionTitle(doc, title, val)
@@ -96,17 +96,21 @@ func (s *Section) AppendSection(ns *Section) error {
 	return nil
 }
 
-func (s *Section) GetElements() []elements.Element {
+func (s *Section) GetElements() elements.Set {
 	return s.Elements
 }
 
-func (s *Section) SetElements(elements []elements.Element) error {
+func (s *Section) SetElements(elements elements.Set) error {
 	s.Elements = elements
 	return s.Base.SetElements(elements)
 }
 
 func (s Section) Type() elements.ElementType {
 	return elements.ElementTypeBlock
+}
+
+func (e *Section) Equals(o elements.Element) bool {
+	return e.Base.Equals(o)
 }
 
 func (s *Section) GetASCIISection() *elements.Section {
@@ -239,7 +243,7 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 
 		idAttribute := section.Base.GetAttributeByName(elements.AttributeNameID)
 		if idAttribute != nil {
-			name = strings.ToLower(idAttribute.String())
+			name = strings.ToLower(idAttribute.AsciiDocString())
 		}
 		if strings.HasSuffix(name, "bitmap") {
 			return matter.SectionDataTypeBitmap
@@ -330,7 +334,7 @@ func guessDataTypeFromTable(section *Section, parent *Section) (sectionType matt
 	if firstTable == nil {
 		return
 	}
-	rows := firstTable.TableRows
+	rows := firstTable.TableRows()
 	_, columnMap, _, err := MapTableColumns(section.Doc, rows)
 	if err != nil {
 		return

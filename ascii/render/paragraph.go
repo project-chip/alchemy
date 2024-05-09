@@ -7,18 +7,22 @@ func renderParagraph(cxt *Context, p *elements.Paragraph, previous *any) (err er
 	if err != nil {
 		return
 	}
-	switch p.Admonition {
-	case elements.AdmonitionNote:
-		cxt.WriteString("NOTE: ")
-	case elements.AdmonitionTip:
-		cxt.WriteString("TIP: ")
-	case elements.AdmonitionImportant:
-		cxt.WriteString("IMPORTANT: ")
-	case elements.AdmonitionCaution:
-		cxt.WriteString("CAUTION: ")
-	case elements.AdmonitionWarning:
-		cxt.WriteString("WARNING: ")
-	}
+	renderAdmonition(cxt, p.Admonition)
 	err = Elements(cxt, "", p.Elements()...)
 	return
+}
+
+func renderAdmonition(cxt *Context, a elements.AdmonitionType) {
+	switch a {
+	case elements.AdmonitionTypeNote:
+		cxt.WriteString("NOTE: ")
+	case elements.AdmonitionTypeTip:
+		cxt.WriteString("TIP: ")
+	case elements.AdmonitionTypeImportant:
+		cxt.WriteString("IMPORTANT: ")
+	case elements.AdmonitionTypeCaution:
+		cxt.WriteString("CAUTION: ")
+	case elements.AdmonitionTypeWarning:
+		cxt.WriteString("WARNING: ")
+	}
 }

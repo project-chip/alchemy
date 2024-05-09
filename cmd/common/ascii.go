@@ -14,7 +14,7 @@ func ASCIIDocAttributes(cmd *cobra.Command) (settings []elements.Attribute) {
 			continue
 		}
 		for _, set := range strings.Split(a, ",") {
-			settings = append(settings, elements.NewNamedAttribute(strings.TrimSpace(set), true))
+			settings = append(settings, elements.NewNamedAttribute(strings.TrimSpace(set), elements.Set{}, elements.AttributeQuoteTypeNone))
 		}
 	}
 	return

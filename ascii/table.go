@@ -27,7 +27,7 @@ func parseFirstTable(doc *Doc, section *Section) (rows []*elements.TableRow, hea
 
 func parseTable(doc *Doc, section *Section, t *elements.Table) (rows []*elements.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 
-	rows = t.TableRows
+	rows = t.TableRows()
 	if len(rows) < 2 {
 		err = fmt.Errorf("not enough rows in table")
 		return
@@ -106,7 +106,7 @@ func readRowCellValue(doc *Doc, row *elements.TableRow, offset int) (string, err
 	return strings.TrimSpace(value.String()), nil
 }
 
-func readRowCellValueElements(doc *Doc, els []elements.Element, value *strings.Builder) error {
+func readRowCellValueElements(doc *Doc, els elements.Set, value *strings.Builder) error {
 	for _, el := range els {
 		switch el := el.(type) {
 		case *elements.String:
@@ -184,18 +184,10 @@ func FindFirstTable(section *Section) *elements.Table {
 func RenderTableCell(cell *elements.TableCell) (string, error) {
 	cellElements := cell.Elements()
 	if len(cellElements) == 0 {
-		return "", fmt.Errorf("missing table cell elements")
-	}
-	p, ok := cellElements[0].(*elements.Paragraph)
-	if !ok {
-		return "", fmt.Errorf("missing paragraph in table cell")
-	}
-	pElements := p.Elements()
-	if len(pElements) == 0 {
 		return "", nil
 	}
 	out := render.NewContext(context.Background(), nil)
-	err := render.Elements(out, "", pElements...)
+	err := render.Elements(out, "", cellElements...)
 	if err != nil {
 		return "", err
 	}
@@ -205,25 +197,17 @@ func RenderTableCell(cell *elements.TableCell) (string, error) {
 func (d *Doc) GetHeaderCellString(cell *elements.TableCell) (string, error) {
 	cellElements := cell.Elements()
 	if len(cellElements) == 0 {
-		return "", fmt.Errorf("missing table header cell elements")
-	}
-	p, ok := cellElements[0].(*elements.Paragraph)
-	if !ok {
-		return "", fmt.Errorf("missing paragraph in table cell")
-	}
-	pElements := p.Elements()
-	if len(pElements) == 0 {
 		return "", nil
 	}
 	var v strings.Builder
-	err := d.readCellContent(pElements, &v)
+	err := d.readCellContent(cellElements, &v)
 	if err != nil {
 		return "", err
 	}
 	return v.String(), nil
 }
 
-func (d *Doc) readCellContent(els []elements.Element, content *strings.Builder) (err error) {
+func (d *Doc) readCellContent(els elements.Set, content *strings.Builder) (err error) {
 	for _, s := range els {
 		switch s := s.(type) {
 		case *elements.String:
@@ -241,6 +225,10 @@ func (d *Doc) readCellContent(els []elements.Element, content *strings.Builder) 
 			content.WriteString(name)
 		case *elements.SpecialCharacter:
 			content.WriteString(s.Character)
+		case *elements.NewLine:
+			content.WriteString(" ")
+		case *elements.Paragraph:
+			return d.readCellContent(s.Elements(), content)
 		default:
 			return fmt.Errorf("unknown element in table header cell: %T", s)
 		}

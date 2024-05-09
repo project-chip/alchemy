@@ -39,58 +39,175 @@ func renderAttributes(cxt *Context, el any, attributes []elements.Attribute, inl
 	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
 }
 
+func getAttributeType(name elements.AttributeName) AttributeFilter {
+	switch name {
+	case elements.AttributeNameTitle:
+		return AttributeFilterTitle
+	case elements.AttributeNameID:
+		return AttributeFilterID
+	case elements.AttributeNameColumns:
+		return AttributeFilterCols
+	case elements.AttributeNameStyle:
+		return AttributeFilterStyle
+	case elements.AttributeNameReferenceText:
+		return AttributeFilterText
+	case elements.AttributeNameAlternateText:
+		return AttributeFilterAlt
+	case elements.AttributeNameHeight:
+		return AttributeFilterHeight
+	case elements.AttributeNameWidth:
+		return AttributeFilterWidth
+	case elements.AttributeNamePDFWidth:
+		return AttributeFilterPDFWidth
+	case elements.AttributeNameAlign:
+		return AttributeFilterAlign
+	case elements.AttributeNameFloat:
+		return AttributeFilterFloat
+	}
+	return AttributeFilterNone
+}
+
 func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	if len(attributes) == 0 {
 		return
 	}
 
-	var titleAttributes []*elements.TitleAttribute
-	var anchors []*elements.Anchor
+	type attributeClass uint32
+
+	const (
+		attributeClassNone attributeClass = iota
+		attributeClassTitle
+		attributeClassAnchor
+		attributeClassInline
+	)
+
+	var list []attributeClass
+	var titleAttributes []elements.Attribute
+	var anchors []*elements.AnchorAttribute
 	var inlineAttributes []elements.Attribute
 	for _, a := range attributes {
 		switch a := a.(type) {
 		case *elements.TitleAttribute:
+			if len(titleAttributes) == 0 {
+				list = append(list, attributeClassTitle)
+			}
 			titleAttributes = append(titleAttributes, a)
-		case *elements.Anchor:
+		case *elements.AnchorAttribute:
+			if len(anchors) == 0 {
+				list = append(list, attributeClassAnchor)
+			}
 			anchors = append(anchors, a)
-		case *elements.NamedAttribute, *elements.PositionalAttribute, *elements.TableColumnsAttribute:
+		case *elements.NamedAttribute:
+			if a.Name == elements.AttributeNameTitle {
+				if len(titleAttributes) == 0 {
+					list = append(list, attributeClassTitle)
+				}
+				titleAttributes = append(titleAttributes, a)
+				break
+			}
+			if len(inlineAttributes) == 0 {
+				list = append(list, attributeClassInline)
+			}
+			inlineAttributes = append(inlineAttributes, a)
+		case *elements.PositionalAttribute, *elements.TableColumnsAttribute:
+			if len(inlineAttributes) == 0 {
+				list = append(list, attributeClassInline)
+			}
 			inlineAttributes = append(inlineAttributes, a)
 		default:
 			return fmt.Errorf("unexpected attribute type: %T", a)
 		}
 	}
-	if len(inlineAttributes) > 0 {
-		cxt.WriteString("[")
-		for i, ia := range inlineAttributes {
-			if i > 0 {
-				cxt.WriteRune(',')
+	for _, al := range list {
+		switch al {
+		case attributeClassTitle:
+			if !shouldRenderAttributeType(AttributeFilterTitle, include, exclude) {
+				continue
 			}
-			switch ia := ia.(type) {
-			case *elements.NamedAttribute:
-				cxt.WriteString(string(ia.Name))
-				cxt.WriteString("=\"")
-				err = renderQuotedAttributeValue(cxt, ia.Value())
-				cxt.WriteString("\"")
-			case *elements.PositionalAttribute:
-				err = renderNakedAttributeValue(cxt, ia.Value())
-			case *elements.TableColumnsAttribute:
-				cxt.WriteString("cols=\"")
-				renderQuotedAttributeValue(cxt, ia.AsciiDocString())
-				cxt.WriteString("\"")
-			default:
-				err = fmt.Errorf("unexpected inline attribute type: %T", ia)
+			for _, ta := range titleAttributes {
+				renderAttributeTitle(cxt, ta.Value().(elements.Set), include, exclude)
 			}
-			if err != nil {
-				return
+		case attributeClassAnchor:
+			if !shouldRenderAttributeType(AttributeFilterID, include, exclude) {
+				continue
 			}
+			for _, ta := range anchors {
+				renderAttributeAnchor(cxt, ta, include, exclude, inline)
+			}
+		case attributeClassInline:
+			filtered := make([]elements.Attribute, 0, len(inlineAttributes))
+			for _, ia := range inlineAttributes {
+				switch ia := ia.(type) {
+				case *elements.NamedAttribute:
+					if af := getAttributeType(ia.Name); af != AttributeFilterNone && !shouldRenderAttributeType(af, include, exclude) {
+						continue
+					}
+					filtered = append(filtered, ia)
+				case *elements.PositionalAttribute:
+					if af := getAttributeType(ia.ImpliedName); af != AttributeFilterNone && !shouldRenderAttributeType(af, include, exclude) {
+						continue
+					}
+					filtered = append(filtered, ia)
+				case *elements.TableColumnsAttribute:
+					if shouldRenderAttributeType(AttributeFilterCols, include, exclude) {
+						filtered = append(filtered, ia)
+					}
+				default:
+					err = fmt.Errorf("unexpected inline attribute type: %T", ia)
+				}
+			}
+			if len(filtered) == 0 {
+				continue
+			}
+			if !inline {
+				cxt.WriteNewline()
+			}
+			cxt.WriteString("[")
+			for i, ia := range filtered {
+				if i > 0 {
+					cxt.WriteRune(',')
+				}
+				switch ia := ia.(type) {
+				case *elements.NamedAttribute:
+					var s string
+					s, err = quoteAttributeValue(ia.Value())
+					if err != nil {
+						return
+					}
+					cxt.WriteString(string(ia.Name))
+					cxt.WriteString("=")
+					var quoteType string
+					switch ia.QuoteType() {
+					case elements.AttributeQuoteTypeDouble:
+						quoteType = "\""
+					case elements.AttributeQuoteTypeSingle:
+						quoteType = "'"
+					}
+					cxt.WriteString(quoteType)
+					cxt.WriteString(s)
+					cxt.WriteString(quoteType)
+				case *elements.PositionalAttribute:
+					err = renderNakedAttributeValue(cxt, ia.Value())
+				case *elements.TableColumnsAttribute:
+					cxt.WriteString("cols=\"")
+					cxt.WriteString(ia.AsciiDocString())
+					cxt.WriteString("\"")
+				default:
+					err = fmt.Errorf("unexpected inline attribute type: %T", ia)
+				}
+				if err != nil {
+					return
+				}
+			}
+			cxt.WriteString("]")
+			if !inline {
+				cxt.WriteString("\n")
+			}
+		default:
+			err = fmt.Errorf("unexpected attribute list element: %T", al)
+			return
 		}
-		cxt.WriteString("]\n")
-	}
-	for _, ta := range titleAttributes {
-		renderAttributeTitle(cxt, ta.Value().([]elements.Element), include, exclude)
-	}
-	for _, aa := range anchors {
-		renderAttributeAnchor(cxt, aa, include, exclude, inline)
+
 	}
 
 	/*var id string
@@ -301,14 +418,14 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 	return
 }
 
-func renderAttributeAnchor(cxt *Context, anchor *elements.Anchor, include AttributeFilter, exclude AttributeFilter, inline bool) {
-	id := anchor.String()
-	if len(id) > 0 && id[0] != '_' && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
+func renderAttributeAnchor(cxt *Context, anchor *elements.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) {
+	id := anchor.ID
+	if id != nil && len(id.Value) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
 		if !inline {
 			cxt.WriteNewline()
 		}
 		cxt.WriteString("[[")
-		cxt.WriteString(id)
+		cxt.WriteString(id.Value)
 		if len(anchor.Label) > 0 {
 			cxt.WriteString(", ")
 			Elements(cxt, "", anchor.Label...)
@@ -320,7 +437,7 @@ func renderAttributeAnchor(cxt *Context, anchor *elements.Anchor, include Attrib
 	}
 }
 
-func renderAttributeTitle(cxt *Context, title []elements.Element, include AttributeFilter, exclude AttributeFilter) {
+func renderAttributeTitle(cxt *Context, title elements.Set, include AttributeFilter, exclude AttributeFilter) {
 	if len(title) > 0 && shouldRenderAttributeType(AttributeFilterTitle, include, exclude) {
 		cxt.WriteNewline()
 		cxt.WriteRune('.')
@@ -329,7 +446,7 @@ func renderAttributeTitle(cxt *Context, title []elements.Element, include Attrib
 	}
 }
 
-func quoteAttributeValue(cxt *Context, val string) {
+/*func quoteAttributeValue(cxt *Context, val string) {
 	if _, err := strconv.Atoi(strings.TrimSuffix(val, "%")); err == nil {
 		cxt.WriteString(val)
 	} else {
@@ -337,29 +454,45 @@ func quoteAttributeValue(cxt *Context, val string) {
 		cxt.WriteString(val)
 		cxt.WriteRune('"')
 	}
-}
+}*/
 
 func renderQuotedAttributeValue(cxt *Context, val any) (err error) {
+	var s string
+	s, err = quoteAttributeValue(val)
+	if err != nil {
+		return
+	}
+	if _, err := strconv.Atoi(strings.TrimSuffix(s, "%")); err == nil {
+		cxt.WriteString(s)
+		return nil
+	}
+	cxt.WriteRune('"')
+	cxt.WriteString(s)
+	cxt.WriteRune('"')
+	return
+}
+
+func quoteAttributeValue(val any) (string, error) {
 	switch val := val.(type) {
 	case string:
-		cxt.WriteString(escapeQuotes(val))
+		return escapeQuotes(val), nil
 	case *elements.String:
-		cxt.WriteString(escapeQuotes(val.Value))
+		return escapeQuotes(val.Value), nil
 	case elements.AttributeReference:
-		cxt.WriteRune('{')
-		cxt.WriteString(val.Name())
-		cxt.WriteRune('}')
-	case []elements.Element:
+		return "{" + val.Name() + "}", nil
+	case elements.Set:
+		var sb strings.Builder
 		for _, a := range val {
-			err = renderQuotedAttributeValue(cxt, a)
+			s, err := quoteAttributeValue(a)
 			if err != nil {
-				return
+				return "", err
 			}
+			sb.WriteString(s)
 		}
+		return sb.String(), nil
 	default:
-		err = fmt.Errorf("unexpected attribute value type: %T", val)
+		return "", fmt.Errorf("unexpected attribute value type: %T", val)
 	}
-	return
 }
 
 func renderNakedAttributeValue(cxt *Context, val any) (err error) {
@@ -370,7 +503,7 @@ func renderNakedAttributeValue(cxt *Context, val any) (err error) {
 		cxt.WriteRune('{')
 		cxt.WriteString(val.Name())
 		cxt.WriteRune('}')
-	case []elements.Element:
+	case elements.Set:
 		for _, a := range val {
 			err = renderNakedAttributeValue(cxt, a)
 			if err != nil {
@@ -580,7 +713,7 @@ func renderAttributeEntry(cxt *Context, ad *elements.AttributeEntry) (err error)
 	return
 }
 
-func renderAttributeReset(cxt *Context, ar elements.AttributeReset) {
+func renderAttributeReset(cxt *Context, ar *elements.AttributeReset) {
 	cxt.WriteRune(':')
 	cxt.WriteString(string(ar.Name))
 	cxt.WriteString("!:\n")
@@ -592,7 +725,7 @@ func getAttributeStringValue(cxt *Context, val any) (string, error) {
 		return s, nil
 	case *elements.String:
 		return s.Value, nil
-	case []elements.Element:
+	case elements.Set:
 		renderContext := NewContext(cxt, cxt.Doc)
 		err := Elements(renderContext, "", s...)
 		if err != nil {
