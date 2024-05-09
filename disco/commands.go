@@ -23,8 +23,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 		if len(commands.table.columnMap) < 2 {
 			return fmt.Errorf("can't rearrange commands table with so few matches")
 		}
-
-		err = b.fixAccessCells(dp.doc, &commands.table, mattertypes.EntityTypeCommand)
+		err = b.fixAccessCells(dp, commands, mattertypes.EntityTypeCommand)
 		if err != nil {
 			return fmt.Errorf("error fixing access cells in commands table in %s: %w", dp.doc.Path, err)
 		}
