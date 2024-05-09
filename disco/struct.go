@@ -44,7 +44,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return nil
 	}
 
-	err = b.fixAccessCells(dp.doc, fieldsTable, mattertypes.EntityTypeStruct)
+	err = b.fixAccessCells(dp, ss, mattertypes.EntityTypeStruct)
 	if err != nil {
 		return fmt.Errorf("error fixing access cells in struct table in %s: %w", dp.doc.Path, err)
 	}

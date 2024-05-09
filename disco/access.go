@@ -8,10 +8,11 @@ import (
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (b *Ball) fixAccessCells(doc *ascii.Doc, table *tableInfo, entityType mattertypes.EntityType) (err error) {
+func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType mattertypes.EntityType) (err error) {
 	if !b.options.formatAccess {
 		return nil
 	}
+	table := &subSection.table
 	if len(table.rows) < 2 {
 		return
 	}
@@ -41,6 +42,13 @@ func (b *Ball) fixAccessCells(doc *ascii.Doc, table *tableInfo, entityType matte
 				continue
 			}
 		} else {
+			c := getSubsectionCluster(dp, subSection.section)
+			if c != nil {
+				ci := getClassificationInfo(&c.classification.table)
+				if ci.hierarchy != "Base" {
+					continue
+				}
+			}
 			access = matter.DefaultAccess(entityType)
 		}
 		if directionIndex >= 0 {

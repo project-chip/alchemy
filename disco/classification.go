@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -42,6 +43,29 @@ func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (e
 			if err != nil {
 				return err
 			}
+		}
+	}
+	return
+}
+
+type classificationInfo struct {
+	hierarchy string
+}
+
+func getClassificationInfo(classificationTable *tableInfo) (ci *classificationInfo) {
+	ci = &classificationInfo{}
+	hierarchyIndex, hasHierarchy := classificationTable.columnMap[matter.TableColumnHierarchy]
+	for i, row := range classificationTable.rows {
+		if i == classificationTable.headerRow {
+			continue
+		}
+		if hasHierarchy {
+			hierarchyCell := row.TableCells[hierarchyIndex]
+			vc, e := ascii.RenderTableCell(hierarchyCell)
+			if e != nil {
+				continue
+			}
+			ci.hierarchy = vc
 		}
 	}
 	return
