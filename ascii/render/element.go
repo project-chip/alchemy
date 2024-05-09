@@ -114,7 +114,7 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			cxt.WriteString("++")
 			err = Elements(cxt, "", el.Elements()...)
 			cxt.WriteString("++")
-		case elements.AttributeReset:
+		case *elements.AttributeReset:
 			renderAttributeReset(cxt, el)
 		case *elements.UnorderedListItem:
 			err = renderUnorderedListElement(cxt, el)
@@ -151,14 +151,14 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			cxt.WriteString(el.Right)
 			cxt.WriteString("]\n")
 		case *elements.EndIf:
-			cxt.WriteString("endif::[")
+			cxt.WriteString("endif::")
 			for i, a := range el.Attributes {
 				if i > 0 {
 					cxt.WriteString(",")
 				}
 				cxt.WriteString(string(a))
 			}
-			cxt.WriteString("]\n")
+			cxt.WriteString("[]\n")
 		case *elements.MultiLineComment:
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
@@ -167,12 +167,18 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			}
 			renderDelimiter(cxt, el.Delimiter)
 		case *elements.DescriptionListItem:
+			renderAttributes(cxt, el, el.Attributes(), false)
+			Elements(cxt, "", el.Term...)
+			cxt.WriteString(el.Marker)
+			cxt.WriteRune(' ')
+			Elements(cxt, "", el.Elements()...)
+			cxt.WriteNewline()
 		case *elements.LiteralBlock:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
 				cxt.WriteString(l)
-				cxt.WriteNewline()
+				cxt.WriteRune('\n')
 			}
 			renderDelimiter(cxt, el.Delimiter)
 		case *elements.SidebarBlock:
@@ -185,7 +191,7 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
 				cxt.WriteString(l)
-				cxt.WriteNewline()
+				cxt.WriteRune('\n')
 			}
 			renderDelimiter(cxt, el.Delimiter)
 		case *elements.ExampleBlock:
@@ -198,7 +204,7 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
 				cxt.WriteString(l)
-				cxt.WriteNewline()
+				cxt.WriteRune('\n')
 			}
 			renderDelimiter(cxt, el.Delimiter)
 		case *elements.OpenBlock:
@@ -209,7 +215,40 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 		case *elements.FileInclude:
 			cxt.WriteString("include::")
 			Elements(cxt, "", el.Elements()...)
-			renderAttributes(cxt, el, el.Attributes(), true)
+			attributes := el.Attributes()
+			if len(attributes) == 0 {
+				cxt.WriteString("[]\n")
+			} else {
+				renderAttributes(cxt, el, el.Attributes(), true)
+			}
+		case *elements.Anchor:
+			cxt.WriteString("[[")
+			cxt.WriteString(el.ID)
+			anchorElements := el.Elements()
+			if len(anchorElements) > 0 {
+				cxt.WriteString(", ")
+				Elements(cxt, "", anchorElements...)
+			}
+			cxt.WriteString("]]")
+		case *elements.Admonition:
+			renderAdmonition(cxt, el.AdmonitionType)
+		case *elements.AttachedBlock:
+			cxt.WriteString("+\n")
+			err = Elements(cxt, "", el.Child())
+		case *elements.LineBreak:
+			cxt.WriteString("+")
+		case *elements.Counter:
+			cxt.WriteString("{counter")
+			if !el.Display {
+				cxt.WriteRune('2')
+			}
+			cxt.WriteRune(':')
+			cxt.WriteString(el.Name)
+			if len(el.InitialValue) > 0 {
+				cxt.WriteRune(':')
+				cxt.WriteString(el.InitialValue)
+			}
+			cxt.WriteString("}")
 		case nil:
 		default:
 			err = fmt.Errorf("unknown render element type: %T", el)

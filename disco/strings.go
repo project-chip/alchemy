@@ -13,14 +13,14 @@ var multipleSpacesPattern = regexp.MustCompile(`([\w.?!,\(\)\-":]) {2,}([\w.?!,\
 var lowercaseHexPattern = regexp.MustCompile(`(\b0x[0-9a-f]*[a-f][0-9a-f]*\b)`)
 var lowercasePattern = regexp.MustCompile(`[a-f]+`)
 
-func precleanStrings(els []elements.Element) {
+func precleanStrings(els elements.Set) {
 	parse.Search(els, func(t *elements.String) bool {
 		t.Value = strings.ReplaceAll(t.Value, "\t", "  ")
 		return false
 	})
 }
 
-func (b *Ball) postCleanUpStrings(els []elements.Element) {
+func (b *Ball) postCleanUpStrings(els elements.Set) {
 	parse.Search(els, func(t *elements.String) bool {
 		if b.options.addSpaceAfterPunctuation {
 			t.Value = missingSpaceAfterPunctuationPattern.ReplaceAllString(t.Value, "$1$2 $3")

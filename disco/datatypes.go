@@ -140,7 +140,7 @@ func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*elements.TableR
 			if table == nil {
 				continue
 			}
-			_, columnMap, _, err := ascii.MapTableColumns(b.doc, table.TableRows)
+			_, columnMap, _, err := ascii.MapTableColumns(b.doc, table.TableRows())
 			if err != nil {
 				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", s.Name, err)
 			}
@@ -245,7 +245,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		if table == nil {
 			continue
 		}
-		rows := table.TableRows
+		rows := table.TableRows()
 		var headerRowIndex int
 		var columnMap ascii.ColumnIndex
 		var extraColumns []ascii.ExtraColumn
@@ -280,7 +280,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 					return
 				}
 			} else {
-				summaryIndex, err = b.appendColumn(rows, columnMap, headerRowIndex, matter.TableColumnSummary, nil, entityType)
+				summaryIndex, err = b.appendColumn(table, columnMap, headerRowIndex, matter.TableColumnSummary, nil, entityType)
 				if err != nil {
 					return
 				}
@@ -289,7 +289,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		_, hasNameColumn := columnMap[matter.TableColumnName]
 		if !hasNameColumn {
 			var nameIndex int
-			nameIndex, err = b.appendColumn(rows, columnMap, headerRowIndex, matter.TableColumnName, nil, entityType)
+			nameIndex, err = b.appendColumn(table, columnMap, headerRowIndex, matter.TableColumnName, nil, entityType)
 			if err != nil {
 				return
 			}
@@ -322,11 +322,11 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 
-		dataTypeSection := elements.NewSection([]elements.Element{title}, dataTypesSection.Base.Level+1)
+		dataTypeSection := elements.NewSection(elements.Set{title}, dataTypesSection.Base.Level+1)
 
 		se := elements.NewString(fmt.Sprintf("This data type is derived from %s", dt.dataType))
-		p := elements.NewParagraph(elements.AdmonitionNone)
-		p.SetElements([]elements.Element{se})
+		p := elements.NewParagraph()
+		p.SetElements(elements.Set{se})
 		err = dataTypeSection.Append(p)
 		if err != nil {
 			return
@@ -355,7 +355,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			newID = "ref_" + dt.ref + suffix + ", " + dt.name + suffix
 		}
 
-		dataTypeSection.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameID), newID))
+		dataTypeSection.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameID), elements.Set{elements.NewString(newID)}, elements.AttributeQuoteTypeDouble))
 
 		var s *ascii.Section
 		s, err = ascii.NewSection(top.Doc, dataTypesSection, dataTypeSection)
@@ -379,7 +379,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 		table.DeleteAttribute(elements.AttributeNameTitle)
 
 		icr := elements.NewCrossReference(newID)
-		err = setCellValue(dt.typeCell, []elements.Element{icr})
+		err = setCellValue(dt.typeCell, elements.Set{icr})
 		if err != nil {
 			return
 		}
@@ -395,7 +395,7 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 	}
 	title := elements.NewString(matter.SectionTypeName(matter.SectionDataTypes))
 
-	ts := elements.NewSection([]elements.Element{title}, top.Base.Level+1)
+	ts := elements.NewSection(elements.Set{title}, top.Base.Level+1)
 	err := ts.Append(elements.NewEmptyLine(""))
 	if err != nil {
 		return nil, err

@@ -148,7 +148,7 @@ func newParentSubSection(doc *ascii.Doc, section *ascii.Section, childPatterns .
 func firstTableInfo(doc *ascii.Doc, section *ascii.Section) (ti tableInfo, err error) {
 	ti.element = ascii.FindFirstTable(section)
 	if ti.element != nil {
-		ti.rows = ti.element.TableRows
+		ti.rows = ti.element.TableRows()
 		ti.headerRow, ti.columnMap, ti.extraColumns, err = ascii.MapTableColumns(doc, ti.rows)
 		if err != nil {
 			return

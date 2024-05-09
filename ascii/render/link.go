@@ -12,7 +12,7 @@ func renderLink(cxt *Context, il *elements.Link) (err error) {
 	} else {
 		cxt.WriteString("link:")
 	}
-	Elements(cxt, "", il.URL.Path.([]elements.Element)...)
+	Elements(cxt, "", il.URL.Path.(elements.Set)...)
 
 	return renderAttributes(cxt, il, il.Attributes(), true)
 }
@@ -36,7 +36,7 @@ func renderImageBlock(cxt *Context, ib *elements.BlockImage) (err error) {
 
 func renderInlineImage(cxt *Context, ib *elements.InlineImage) (err error) {
 	cxt.WriteNewline()
-	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, true)
+	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
 		return
 	}
@@ -47,7 +47,6 @@ func renderInlineImage(cxt *Context, ib *elements.InlineImage) (err error) {
 	if err != nil {
 		return
 	}
-	cxt.WriteNewline()
 	return
 }
 

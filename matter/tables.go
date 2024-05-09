@@ -86,11 +86,11 @@ func (tc TableColumn) String() string {
 	return fmt.Sprintf("unknown table column name: %d", tc)
 }
 
-var AllowedTableAttributes = map[elements.AttributeName]any{
+var AllowedTableAttributes = map[elements.AttributeName]elements.Set{
 	"id":      nil,
 	"title":   nil,
-	"valign":  "middle",
-	"options": []string{"header"},
+	"valign":  elements.Set{elements.NewString("middle")},
+	"options": elements.Set{elements.NewString("header")},
 }
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
 

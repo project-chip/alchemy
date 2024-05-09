@@ -15,14 +15,14 @@ func NewElement(parent any, base elements.Element) *Element {
 	return &Element{Parent: parent, Base: base}
 }
 
-func (e *Element) GetElements() []elements.Element {
+func (e *Element) GetElements() elements.Set {
 	if we, ok := e.Base.(elements.HasElements); ok {
 		return we.Elements()
 	}
-	return []elements.Element{}
+	return elements.Set{}
 }
 
-func (e *Element) SetElements(els []elements.Element) error {
+func (e *Element) SetElements(els elements.Set) error {
 	if we, ok := e.Base.(elements.HasElements); ok {
 		return we.SetElements(els)
 	}
@@ -35,4 +35,8 @@ func (e *Element) GetBase() elements.Element {
 
 func (e *Element) Type() elements.ElementType {
 	return e.Base.Type()
+}
+
+func (e *Element) Equals(o elements.Element) bool {
+	return e.Base.Equals(o)
 }

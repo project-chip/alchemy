@@ -73,7 +73,7 @@ func renderDelimiter(cxt *Context, delimiter elements.Delimiter) {
 		char = "_"
 	case elements.DelimitedBlockTypeSidebar:
 		char = "*"
-	case elements.DelimitedBlockTypeMultilineComment:
+	case elements.DelimitedBlockTypeMultiLineComment:
 		char = "/"
 	}
 	cxt.WriteNewline()
