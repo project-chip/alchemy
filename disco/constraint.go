@@ -19,7 +19,7 @@ func fixConstraintCells(doc *ascii.Doc, rows []*elements.TableRow, columnMap asc
 		return
 	}
 	for _, row := range rows[1:] {
-		cell := row.TableCells[constraintIndex]
+		cell := row.Cell(constraintIndex)
 		vc, e := ascii.RenderTableCell(cell)
 		if e != nil {
 			continue

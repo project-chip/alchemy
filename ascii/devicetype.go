@@ -13,7 +13,7 @@ import (
 func (s *Section) toDeviceTypes(d *Doc) (entities []mattertypes.Entity, err error) {
 	var deviceTypes []*matter.DeviceType
 	var description string
-	p := parse.FindFirst[*elements.Paragraph](s.Elements)
+	p := parse.FindFirst[*elements.Paragraph](s.Elements())
 	if p != nil {
 		se := parse.FindFirst[*elements.String](p.Elements())
 		if se != nil {
@@ -21,7 +21,7 @@ func (s *Section) toDeviceTypes(d *Doc) (entities []mattertypes.Entity, err erro
 		}
 	}
 
-	for _, s := range parse.Skim[*Section](s.Elements) {
+	for _, s := range parse.Skim[*Section](s.Elements()) {
 		switch s.SecType {
 		case matter.SectionClassification:
 			deviceTypes, err = readDeviceTypeIDs(d, s)
@@ -34,7 +34,7 @@ func (s *Section) toDeviceTypes(d *Doc) (entities []mattertypes.Entity, err erro
 	for _, c := range deviceTypes {
 		c.Description = description
 
-		elements := parse.Skim[*Section](s.Elements)
+		elements := parse.Skim[*Section](s.Elements())
 		for _, s := range elements {
 			switch s.SecType {
 			case matter.SectionClusterRequirements:
@@ -98,18 +98,18 @@ func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
 }
 
 func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) {
-	for _, e := range d.Elements {
+	for _, e := range d.Elements() {
 		switch e := e.(type) {
 		case *Section:
 			var baseClusterRequirements, elementRequirements *Section
-			parse.Traverse(e, e.Elements, func(sec *Section, parent parse.HasElements, index int) bool {
+			parse.Traverse(e, e.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
 				switch sec.SecType {
 				case matter.SectionClusterRequirements:
 					baseClusterRequirements = sec
 				case matter.SectionElementRequirements:
 					elementRequirements = sec
 				}
-				return false
+				return parse.SearchShouldContinue
 			})
 			if baseClusterRequirements == nil && elementRequirements == nil {
 				continue

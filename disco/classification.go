@@ -60,7 +60,7 @@ func getClassificationInfo(classificationTable *tableInfo) (ci *classificationIn
 			continue
 		}
 		if hasHierarchy {
-			hierarchyCell := row.TableCells[hierarchyIndex]
+			hierarchyCell := row.Cell(hierarchyIndex)
 			vc, e := ascii.RenderTableCell(hierarchyCell)
 			if e != nil {
 				continue

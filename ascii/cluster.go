@@ -14,7 +14,7 @@ import (
 func (s *Section) toClusters(d *Doc, entityMap map[elements.Attributable][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
 	var clusters []*matter.Cluster
 	var description string
-	p := parse.FindFirst[*elements.Paragraph](s.Elements)
+	p := parse.FindFirst[*elements.Paragraph](s.Elements())
 	if p != nil {
 		se := parse.FindFirst[*elements.String](p.Elements())
 		if se != nil {
@@ -22,7 +22,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[elements.Attributable][]matte
 		}
 	}
 
-	elements := parse.Skim[*Section](s.Elements)
+	elements := parse.Skim[*Section](s.Elements())
 
 	for _, s := range elements {
 		switch s.SecType {
@@ -256,16 +256,17 @@ func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 	if err != nil {
 		return fmt.Errorf("error reading PICS column on cluster %s: %w", c.Name, err)
 	}
+	tableCells := row.TableCells()
 	for _, ec := range extraColumns {
 		switch ec.Name {
 		case "Context":
 			if len(c.Scope) == 0 {
-				c.Scope, err = RenderTableCell(row.TableCells[ec.Offset])
+				c.Scope, err = RenderTableCell(tableCells[ec.Offset])
 			}
 		case "Primary Transaction":
 			if len(c.Scope) == 0 {
 				var pt string
-				pt, err = RenderTableCell(row.TableCells[ec.Offset])
+				pt, err = RenderTableCell(tableCells[ec.Offset])
 				if err == nil {
 					if strings.HasPrefix(pt, "Type 1") {
 						c.Scope = "Endpoint"
@@ -281,7 +282,7 @@ func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 }
 
 func parseDerivedCluster(d *Doc, s *Section, c *matter.Cluster) error {
-	elements := parse.Skim[*Section](s.Elements)
+	elements := parse.Skim[*Section](s.Elements())
 	for _, s := range elements {
 		switch s.SecType {
 		case matter.SectionModeTags:

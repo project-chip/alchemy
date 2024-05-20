@@ -89,23 +89,6 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			cxt.WriteString(fmt.Sprintf("{%s}", el.Name()))
 		case *elements.InlineImage:
 			err = renderInlineImage(cxt, el)
-		case elements.SingleLineComment:
-			cxt.WriteString("//")
-			cxt.WriteString(el.Value)
-			cxt.WriteNewline()
-		//case *elements.FootnoteReference:
-		//	err = renderFootnoteReference(cxt, el)
-		/*case *elements.InlinePassthrough:
-		switch el.Kind {
-		case elements.SinglePlusPassthrough, elements.TriplePlusPassthrough:
-			cxt.WriteString(string(el.Kind))
-			err = Elements(cxt, "", el.Elements)
-			cxt.WriteString(string(el.Kind))
-		case elements.PassthroughMacro:
-			cxt.WriteString("pass:[")
-			err = Elements(cxt, "", el.Elements)
-			cxt.WriteRune(']')
-		}*/
 		case *elements.InlinePassthrough:
 			cxt.WriteString("+")
 			err = Elements(cxt, "", el.Elements()...)
@@ -125,40 +108,13 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			cxt.WriteString("+\n")
 			err = Elements(cxt, "", el.Child())
 		case *elements.IfDef:
-			cxt.WriteString("ifdef::")
-			for i, a := range el.Attributes {
-				if i > 0 {
-					cxt.WriteString(",")
-				}
-				cxt.WriteString(string(a))
-			}
-			cxt.WriteString("[]\n")
+			renderConditional(cxt, "ifdef::", el.Attributes, el.Union)
 		case *elements.IfNDef:
-			cxt.WriteString("ifndef::")
-			for i, a := range el.Attributes {
-				if i > 0 {
-					cxt.WriteString(",")
-				}
-				cxt.WriteString(string(a))
-			}
-			cxt.WriteString("[]\n")
+			renderConditional(cxt, "ifndef::", el.Attributes, el.Union)
 		case *elements.IfEval:
-			cxt.WriteString("ifeval::[")
-			cxt.WriteString(el.Left)
-			cxt.WriteRune(' ')
-			cxt.WriteString(el.Operator.String())
-			cxt.WriteRune(' ')
-			cxt.WriteString(el.Right)
-			cxt.WriteString("]\n")
+			renderIfEval(cxt, el)
 		case *elements.EndIf:
-			cxt.WriteString("endif::")
-			for i, a := range el.Attributes {
-				if i > 0 {
-					cxt.WriteString(",")
-				}
-				cxt.WriteString(string(a))
-			}
-			cxt.WriteString("[]\n")
+			renderConditional(cxt, "endif::", el.Attributes, el.Union)
 		case *elements.MultiLineComment:
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
@@ -199,7 +155,7 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			renderDelimiter(cxt, el.Delimiter)
 			Elements(cxt, "", el.Elements()...)
 			renderDelimiter(cxt, el.Delimiter)
-		case *elements.PassthroughBlock:
+		case *elements.StemBlock:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
@@ -220,13 +176,14 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 				cxt.WriteString("[]\n")
 			} else {
 				renderAttributes(cxt, el, el.Attributes(), true)
+				cxt.WriteRune('\n')
 			}
 		case *elements.Anchor:
 			cxt.WriteString("[[")
 			cxt.WriteString(el.ID)
 			anchorElements := el.Elements()
 			if len(anchorElements) > 0 {
-				cxt.WriteString(", ")
+				cxt.WriteString(",")
 				Elements(cxt, "", anchorElements...)
 			}
 			cxt.WriteString("]]")

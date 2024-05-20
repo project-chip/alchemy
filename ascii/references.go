@@ -16,11 +16,11 @@ func (doc *Doc) CrossReferences() map[string][]*elements.CrossReference {
 		return doc.crossReferences
 	}
 	doc.crossReferences = make(map[string][]*elements.CrossReference)
-	parse.Traverse(nil, doc.Base.Elements(), func(el any, parent parse.HasElements, index int) bool {
+	parse.Traverse(nil, doc.Base.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
 		if icr, ok := el.(*elements.CrossReference); ok {
 			doc.crossReferences[icr.ID] = append(doc.crossReferences[icr.ID], icr)
 		}
-		return false
+		return parse.SearchShouldContinue
 	})
 	doc.Unlock()
 	return doc.crossReferences
@@ -59,14 +59,19 @@ func ReferenceName(element any) string {
 }
 
 func referenceNameFromAttributes(el elements.Attributable) string {
-
-	titleAttr := el.GetAttributeByName("title")
-	if titleAttr != nil {
-		title, ok := titleAttr.Value().(string)
-		if !ok {
-			slog.Warn("empty section title attribute")
+	for _, a := range el.Attributes() {
+		switch a := a.(type) {
+		case *elements.TitleAttribute:
+			return a.AsciiDocString()
+		case *elements.NamedAttribute:
+			if a.Name == elements.AttributeNameTitle {
+				title, ok := a.Value().(string)
+				if !ok {
+					slog.Warn("empty section title attribute")
+				}
+				return title
+			}
 		}
-		return title
 	}
 	return ""
 }

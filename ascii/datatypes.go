@@ -16,7 +16,7 @@ import (
 
 func (s *Section) toDataTypes(d *Doc, entityMap map[elements.Attributable][]types.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, err error) {
 
-	for _, s := range parse.Skim[*Section](s.Elements) {
+	for _, s := range parse.Skim[*Section](s.Elements()) {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap:
 			var mb *matter.Bitmap
@@ -144,44 +144,16 @@ func (d *Doc) ReadRowDataType(row *elements.TableRow, columnMap ColumnIndex, col
 	if !ok {
 		return nil, fmt.Errorf("missing %s column for data type", column)
 	}
-	cell := row.TableCells[i]
+	cell := row.Cell(i)
 	cellElements := cell.Elements()
 	if len(cellElements) == 0 {
 		return nil, fmt.Errorf("empty %s cell for data type", column)
 	}
-	p, ok := cellElements[0].(*elements.Paragraph)
-	if !ok {
-		return nil, fmt.Errorf("missing paragraph in %s cell for data type", column)
-	}
-	pElements := p.Elements()
-	if len(pElements) == 0 {
-		return nil, fmt.Errorf("empty paragraph in %s cell for data type", column)
-	}
+
 	var isArray bool
 
 	var sb strings.Builder
-	for _, el := range pElements {
-		switch v := el.(type) {
-		case *elements.String:
-			sb.WriteString(v.Value)
-		case *elements.CrossReference:
-			var name string
-			anchor, _ := d.getAnchor(v.ID)
-			if anchor != nil {
-				name = ReferenceName(anchor.Element)
-				if len(name) == 0 {
-					name = anchor.Label
-				}
-			}
-			if len(name) == 0 {
-				name = strings.TrimPrefix(v.ID, "_")
-			}
-			sb.WriteString(name)
-		case *elements.SpecialCharacter:
-		default:
-			slog.Warn("unknown data type value element", "type", v)
-		}
-	}
+	d.buildDataTypeString(cellElements, &sb)
 	var name string
 	var content = asteriskPattern.ReplaceAllString(sb.String(), "")
 	match := listDataTypeDefinitionPattern.FindStringSubmatch(content)
@@ -198,6 +170,36 @@ func (d *Doc) ReadRowDataType(row *elements.TableRow, columnMap ColumnIndex, col
 	name = strings.TrimSuffix(name, " Type")
 	dt := types.ParseDataType(name, isArray)
 	return dt, nil
+}
+
+func (d *Doc) buildDataTypeString(cellElements elements.Set, sb *strings.Builder) {
+	for _, el := range cellElements {
+		switch v := el.(type) {
+		case *elements.String:
+			sb.WriteString(v.Value)
+		case *elements.CrossReference:
+			var name string
+			anchor, _ := d.getAnchor(v.ID)
+			if anchor != nil {
+				name = ReferenceName(anchor.Element)
+				if len(name) == 0 {
+					name = elements.AttributeAsciiDocString(anchor.LabelElements)
+				}
+			} else {
+				slog.Info("missing anchor", "name", v.ID)
+
+			}
+			if len(name) == 0 {
+				name = strings.TrimPrefix(v.ID, "_")
+			}
+			sb.WriteString(name)
+		case *elements.SpecialCharacter:
+		case *elements.Paragraph:
+			d.buildDataTypeString(v.Elements(), sb)
+		default:
+			slog.Warn("unknown data type value element", "loc", parse.Position(el), "type", fmt.Sprintf("%T", v))
+		}
+	}
 }
 
 func (d *Doc) getAnchor(id string) (*Anchor, error) {
@@ -225,15 +227,13 @@ func (d *Doc) getRowConstraint(row *elements.TableRow, columnMap ColumnIndex, co
 	var val string
 	offset, ok := columnMap[column]
 	if ok {
-		cell := row.TableCells[offset]
-		if len(cell.Elements()) > 0 {
-			el := cell.Elements()[0]
-			para, ok := el.(*elements.Paragraph)
-			if ok {
-				var sb strings.Builder
-				d.buildConstraintValue(para.Elements(), &sb)
-				val = strings.TrimSpace(sb.String())
-			}
+		cell := row.Cell(offset)
+		cellElements := cell.Elements()
+		if len(cellElements) > 0 {
+			var sb strings.Builder
+			d.buildConstraintValue(cellElements, &sb)
+			val = strings.TrimSpace(sb.String())
+
 		}
 	}
 	val = strings.ReplaceAll(val, "\n", " ")
@@ -272,7 +272,10 @@ func (d *Doc) buildConstraintValue(els elements.Set, sb *strings.Builder) {
 			sb.WriteString("^")
 		case *elements.Bold:
 			// This is usually an asterisk, and should be ignored
+		case *elements.NewLine:
+			sb.WriteRune(' ')
 		case elements.HasElements:
+			d.buildConstraintValue(v.Elements(), sb)
 		default:
 			slog.Warn("unknown constraint value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
 		}
@@ -284,21 +287,24 @@ func (d *Doc) getRowConformance(row *elements.TableRow, columnMap ColumnIndex, c
 	if !ok {
 		return nil
 	}
-	cell := row.TableCells[i]
-	if len(cell.Elements()) == 0 {
+	cell := row.Cell(i)
+	cellElements := cell.Elements()
+	if len(cellElements) == 0 {
 		return nil
 	}
-	p, ok := cell.Elements()[0].(*elements.Paragraph)
-	if !ok {
-		slog.Debug("unexpected non-paragraph in constraints cell", "doc", d.Path, "type", fmt.Sprintf("%T", cell.Elements()[0]))
-		return nil
-	}
-	if len(p.Elements()) == 0 {
-		return nil
-	}
-
 	var sb strings.Builder
-	for _, el := range p.Elements() {
+	d.buildRowConformance(cellElements, &sb)
+
+	s := strings.TrimSpace(sb.String())
+	if len(s) == 0 {
+		return conformance.Set{&conformance.Mandatory{}}
+	}
+	s = newLineReplacer.Replace(s)
+	return conformance.ParseConformance(matter.StripTypeSuffixes(s))
+}
+
+func (d *Doc) buildRowConformance(cellElements elements.Set, sb *strings.Builder) {
+	for _, el := range cellElements {
 		switch v := el.(type) {
 		case *elements.String:
 			sb.WriteString(v.Value)
@@ -319,7 +325,7 @@ func (d *Doc) getRowConformance(row *elements.TableRow, columnMap ColumnIndex, c
 			}
 		case *elements.SpecialCharacter:
 			sb.WriteString(v.Character)
-		case *elements.Bold:
+		case *elements.Superscript:
 			// This is usually an asterisk, and should be ignored
 		case *elements.Link:
 			if len(v.URL.Scheme) > 0 {
@@ -338,17 +344,14 @@ func (d *Doc) getRowConformance(row *elements.TableRow, columnMap ColumnIndex, c
 			default:
 				slog.Warn("unknown predefined attribute", "doc", d.Path, "name", v.Name)
 			}
+		case *elements.NewLine:
+			sb.WriteRune(' ')
+		case elements.HasElements:
+			d.buildRowConformance(v.Elements(), sb)
 		default:
 			slog.Warn("unknown conformance value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
 		}
 	}
-
-	s := strings.TrimSpace(sb.String())
-	if len(s) == 0 {
-		return conformance.Set{&conformance.Mandatory{}}
-	}
-	s = newLineReplacer.Replace(s)
-	return conformance.ParseConformance(matter.StripTypeSuffixes(s))
 }
 
 var newLineReplacer = strings.NewReplacer("\r\n", "", "\r", "", "\n", "")

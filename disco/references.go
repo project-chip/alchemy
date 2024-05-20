@@ -2,6 +2,7 @@ package disco
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/hasty/adoc/elements"
 	"github.com/hasty/alchemy/ascii"
@@ -15,7 +16,7 @@ func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*elements.Cro
 			dt, _ := b.doc.DocType()
 			switch dt {
 			case matter.DocTypeCluster, matter.DocTypeDeviceType:
-				slog.Debug("cross reference points to non-existent anchor", "name", id)
+				slog.Info("cross reference points to non-existent anchor", "name", id)
 			}
 			continue
 		}
@@ -23,10 +24,14 @@ func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*elements.Cro
 		for _, xref := range xrefs {
 			//xref.OriginalID = info.ID
 			xref.ID = info.ID
+
 			// If the cross reference has a label that's the same as the one we generated for the anchor, remove it
 			if len(xref.Set) == 1 {
-				if label, ok := xref.Set[0].(*elements.String); ok && info.Label == string(label.Value) {
-					clear(xref.Set)
+				if label, ok := xref.Set[0].(*elements.String); ok {
+					labelString := strings.TrimSpace(elements.AttributeAsciiDocString(info.LabelElements))
+					if labelString == string(label.Value) {
+						xref.Set = nil
+					}
 				}
 			}
 		}

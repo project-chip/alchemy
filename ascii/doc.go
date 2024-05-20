@@ -18,8 +18,8 @@ type Doc struct {
 
 	Path string
 
-	Base     *elements.Document
-	Elements elements.Set
+	Base *elements.Document
+	elements.Set
 
 	docType matter.DocType
 
@@ -45,15 +45,15 @@ func NewDoc(d *elements.Document) (*Doc, error) {
 		switch el := e.(type) {
 		case *elements.AttributeEntry:
 			doc.attributes[el.Name] = el.Elements()
-			doc.Elements = append(doc.Elements, NewElement(doc, e))
+			doc.Append(NewElement(doc, e))
 		case *elements.Section:
 			s, err := NewSection(doc, doc, el)
 			if err != nil {
 				return nil, err
 			}
-			doc.Elements = append(doc.Elements, s)
+			doc.Append(s)
 		default:
-			doc.Elements = append(doc.Elements, NewElement(doc, e))
+			doc.Append(NewElement(doc, e))
 		}
 	}
 	return doc, nil
@@ -62,15 +62,6 @@ func NewDoc(d *elements.Document) (*Doc, error) {
 func firstLetterIsLower(s string) bool {
 	firstLetter, _ := utf8.DecodeRuneInString(s)
 	return unicode.IsLower(firstLetter)
-}
-
-func (doc *Doc) GetElements() elements.Set {
-	return doc.Elements
-}
-
-func (doc *Doc) SetElements(elements elements.Set) error {
-	doc.Elements = elements
-	return nil
 }
 
 func (doc *Doc) Footnotes() []*elements.Footnote {
@@ -98,7 +89,7 @@ func (doc *Doc) Entities() (entities []mattertypes.Entity, err error) {
 	doc.entitiesParsed = true
 
 	var entitiesBySection = make(map[elements.Attributable][]mattertypes.Entity)
-	for _, top := range parse.Skim[*Section](doc.Elements) {
+	for _, top := range parse.Skim[*Section](doc.Elements()) {
 		err := AssignSectionTypes(doc, top)
 		if err != nil {
 			return nil, err
@@ -151,6 +142,6 @@ func (doc *Doc) Reference(ref string) (mattertypes.Entity, bool) {
 	return entities[0], true
 }
 
-func GithubSettings() []elements.Attribute {
-	return []elements.Attribute{elements.NewNamedAttribute("env-github", elements.Set{}, elements.AttributeQuoteTypeNone)}
+func GithubSettings() []elements.AttributeName {
+	return []elements.AttributeName{elements.AttributeName("env-github")}
 }

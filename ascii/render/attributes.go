@@ -427,7 +427,7 @@ func renderAttributeAnchor(cxt *Context, anchor *elements.AnchorAttribute, inclu
 		cxt.WriteString("[[")
 		cxt.WriteString(id.Value)
 		if len(anchor.Label) > 0 {
-			cxt.WriteString(", ")
+			cxt.WriteString(",")
 			Elements(cxt, "", anchor.Label...)
 		}
 		cxt.WriteString("]]")

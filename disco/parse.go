@@ -61,7 +61,7 @@ func newSubSectionChildPattern(suffix string, indexColumns ...matter.TableColumn
 
 func (b *Ball) parseDoc(doc *ascii.Doc, docType matter.DocType, topLevelSection *ascii.Section) (ds *docParse, err error) {
 	ds = &docParse{doc: doc, docType: docType, clusters: make(map[*ascii.Section]*clusterInfo)}
-	for _, section := range parse.FindAll[*ascii.Section](topLevelSection.Elements) {
+	for _, section := range parse.FindAll[*ascii.Section](topLevelSection.Elements()) {
 		switch section.SecType {
 		case matter.SectionCluster:
 			ds.clusters[section] = &clusterInfo{}
@@ -191,14 +191,14 @@ func findSubsections(doc *ascii.Doc, parent *subSection, childPatterns ...subSec
 	}
 	subSectionNames := make(map[string]int, len(parent.table.rows))
 	for i, row := range parent.table.rows {
-		subSectionName, err := ascii.RenderTableCell(row.TableCells[index])
+		subSectionName, err := ascii.RenderTableCell(row.Cell(index))
 		if err != nil {
 			slog.Debug("could not get cell value for entity index", "err", err)
 			continue
 		}
 		subSectionNames[subSectionName] = i
 	}
-	for i, ss := range parse.Skim[*ascii.Section](parent.section.Elements) {
+	for i, ss := range parse.Skim[*ascii.Section](parent.section.Elements()) {
 		name := strings.TrimSuffix(ss.Name, childPattern.suffix)
 		var ok bool
 		if _, ok = subSectionNames[name]; !ok {

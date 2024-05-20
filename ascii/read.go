@@ -26,7 +26,7 @@ func readFile(path string) (string, error) {
 	return contents, nil
 }
 
-func ReadFile(path string, attributes ...elements.Attribute) (*Doc, error) {
+func ReadFile(path string, attributes ...elements.AttributeName) (*Doc, error) {
 
 	contents, err := readFile(path)
 	if err != nil {
@@ -35,14 +35,14 @@ func ReadFile(path string, attributes ...elements.Attribute) (*Doc, error) {
 	return Read(contents, path, attributes...)
 }
 
-func Read(contents string, path string, attributes ...elements.Attribute) (doc *Doc, err error) {
+func Read(contents string, path string, attributes ...elements.AttributeName) (doc *Doc, err error) {
 
 	var d *elements.Document
 
 	d, err = ParseDocument(strings.NewReader(contents), path, attributes...)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed parse: %w", err)
+		return nil, fmt.Errorf("read error in %s: %w", path, err)
 	}
 
 	doc, err = NewDoc(d)
