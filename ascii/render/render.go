@@ -10,7 +10,7 @@ import (
 
 func Render(cxt context.Context, doc InputDocument) (string, error) {
 	renderContext := NewContext(cxt, doc)
-	err := Elements(renderContext, "", doc.GetElements()...)
+	err := Elements(renderContext, "", doc.Elements()...)
 	if err != nil {
 		return "", err
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 )
 
 func processSerial[I, O any](cxt context.Context, name string, processor IndividualProcess[I, O], queue chan *Data[I], total int32) (output Map[string, *Data[O]], err error) {
@@ -27,13 +28,15 @@ func processSerial[I, O any](cxt context.Context, name string, processor Individ
 		if done {
 			continue
 		}
-		fmt.Fprintf(os.Stderr, "%s\n", input.Path)
+		fmt.Fprintf(os.Stderr, "%s...", input.Path)
 		var outputs []*Data[O]
 		var extras []*Data[I]
+		start := time.Now()
 		outputs, extras, err = processor(cxt, input, counter, total)
 		if err != nil {
 			return nil, err
 		}
+		fmt.Fprintf(os.Stderr, "%s\n", time.Now().Sub(start).String())
 		counter++
 		processed[input.Path] = true
 		for _, e := range extras {

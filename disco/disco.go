@@ -28,9 +28,9 @@ func (b *Ball) disco(cxt context.Context) error {
 	dc := newContext(cxt)
 	doc := b.doc
 
-	precleanStrings(doc.Elements)
+	precleanStrings(doc.Elements())
 
-	for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
+	for _, top := range parse.Skim[*ascii.Section](doc.Elements()) {
 		err := ascii.AssignSectionTypes(doc, top)
 		if err != nil {
 			return err
@@ -42,7 +42,7 @@ func (b *Ball) disco(cxt context.Context) error {
 		return fmt.Errorf("error assigning section types in %s: %w", doc.Path, err)
 	}
 
-	topLevelSection := parse.FindFirst[*ascii.Section](doc.Elements)
+	topLevelSection := parse.FindFirst[*ascii.Section](doc.Elements())
 	if topLevelSection == nil {
 		return ErrEmptyDoc
 	}
@@ -104,7 +104,7 @@ func (b *Ball) discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docT
 			}
 		}
 	}
-	b.ensureTableOptions(top.Elements)
-	b.postCleanUpStrings(top.Elements)
+	b.ensureTableOptions(top.Elements())
+	b.postCleanUpStrings(top.Elements())
 	return nil
 }

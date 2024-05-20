@@ -9,7 +9,7 @@ import (
 
 type HasElements interface {
 	SetElements(elements.Set) error
-	GetElements() elements.Set
+	Elements() elements.Set
 }
 
 type HasBase interface {

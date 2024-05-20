@@ -21,7 +21,7 @@ type Section struct {
 
 	SecType matter.Section
 
-	Elements elements.Set
+	elements.Set
 }
 
 func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
@@ -37,15 +37,15 @@ func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
 		switch el := e.(type) {
 		case *elements.AttributeEntry:
 			doc.attributes[el.Name] = el.Elements()
-			ss.Elements = append(ss.Elements, NewElement(ss, e))
+			ss.Append(NewElement(ss, e))
 		case *elements.Section:
 			s, err := NewSection(doc, ss, el)
 			if err != nil {
 				return nil, err
 			}
-			ss.Elements = append(ss.Elements, s)
+			ss.Append(s)
 		default:
-			ss.Elements = append(ss.Elements, NewElement(ss, e))
+			ss.Append(NewElement(ss, e))
 		}
 	}
 	return ss, nil
@@ -74,7 +74,7 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, els ...elements.Element
 			}
 		case *elements.Link:
 		case *elements.Bold:
-
+			err = buildSectionTitle(doc, title, e.Elements()...)
 		default:
 			err = fmt.Errorf("unknown section title component type: %T", e)
 		}
@@ -92,16 +92,11 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, els ...elements.Element
 }
 
 func (s *Section) AppendSection(ns *Section) error {
-	s.Elements = append(s.Elements, ns)
-	return nil
-}
-
-func (s *Section) GetElements() elements.Set {
-	return s.Elements
+	return s.Set.Append(ns)
 }
 
 func (s *Section) SetElements(elements elements.Set) error {
-	s.Elements = elements
+	s.Set.SetElements(elements)
 	return s.Base.SetElements(elements)
 }
 
@@ -134,14 +129,14 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 		}
 	}
 
-	parse.Traverse(top, top.Elements, func(el any, parent parse.HasElements, index int) bool {
+	parse.Traverse(top, top.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
 		section, ok := el.(*Section)
 		if !ok {
-			return false
+			return parse.SearchShouldContinue
 		}
 		ps, ok := parent.(*Section)
 		if !ok {
-			return false
+			return parse.SearchShouldContinue
 		}
 
 		section.SecType = getSectionType(ps, section)
@@ -152,19 +147,19 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 			}
 		}
 		slog.Debug("sec type", "name", section.Name, "type", section.SecType, "parent", ps.SecType)
-		return false
+		return parse.SearchShouldContinue
 	})
 	return nil
 }
 
 func FindSectionByType(top *Section, sectionType matter.Section) *Section {
 	var found *Section
-	parse.Search(top.Elements, func(s *Section) bool {
+	parse.Search(top.Elements(), func(s *Section) parse.SearchShould {
 		if s.SecType == sectionType {
 			found = s
-			return true
+			return parse.SearchShouldStop
 		}
-		return false
+		return parse.SearchShouldContinue
 	})
 	return found
 }
@@ -398,19 +393,12 @@ var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<e
 //var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:(?:<<enum-def\s*,\s*)|(?:<<ref_DataTypeBitmap,))?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
 
 func (s *Section) GetDataType() *mattertypes.DataType {
-	var para *elements.Paragraph
-	var ok bool
-	for _, e := range s.Base.Elements() {
-		para, ok = e.(*elements.Paragraph)
-		if ok {
-			break
-		}
-	}
-	if !ok {
+	var dts string
+	p := parse.FindFirst[*elements.Paragraph](s.Base.Elements())
+	if p == nil {
 		return nil
 	}
-	var dts string
-	for _, el := range para.Elements() {
+	for _, el := range p.Elements() {
 		switch el := el.(type) {
 		case *elements.String:
 			match := dataTypeDefinitionPattern.FindStringSubmatch(el.Value)
@@ -444,7 +432,7 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 }
 
 func findLooseEntities(doc *Doc, section *Section, entityMap map[elements.Attributable][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
-	parse.Traverse(doc, section.Elements, func(section *Section, parent parse.HasElements, index int) bool {
+	parse.Traverse(doc, section.Elements(), func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
@@ -465,7 +453,10 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[elements.Attrib
 				entities = append(entities, s)
 			}
 		}
-		return err != nil
+		if err != nil {
+			return parse.SearchShouldStop
+		}
+		return parse.SearchShouldContinue
 	})
 	return
 }

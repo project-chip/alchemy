@@ -24,7 +24,7 @@ func dumpTable(doc *ascii.Doc, tbl *elements.Table, indent int) {
 func dumpTableRow(doc *ascii.Doc, row *elements.TableRow, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{row}:\n")
-	dumpTableCells(doc, row.TableCells, indent+1)
+	dumpTableCells(doc, row.TableCells(), indent+1)
 }
 
 func dumpTableCells(doc *ascii.Doc, cells []*elements.TableCell, indent int) {

@@ -66,7 +66,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	pipeline.ProcessSerialFunc[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, appClusterIndexes, "Assigning index domains", func(cxt context.Context, input *pipeline.Data[*ascii.Doc], index, total int32) (outputs []*pipeline.Data[*ascii.Doc], extra []*pipeline.Data[*ascii.Doc], err error) {
 		doc := input.Content
-		top := parse.FindFirst[*ascii.Section](doc.Elements)
+		top := parse.FindFirst[*ascii.Section](doc.Elements())
 		if top != nil {
 			doc.Domain = zap.StringToDomain(top.Name)
 			slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)

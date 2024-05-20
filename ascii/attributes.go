@@ -67,7 +67,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[el
 		attributes = append(attributes, attr)
 		attributeMap[attr.Name] = attr
 	}
-	for _, s := range parse.Skim[*Section](s.Elements) {
+	for _, s := range parse.Skim[*Section](s.Elements()) {
 		switch s.SecType {
 		case matter.SectionAttribute:
 

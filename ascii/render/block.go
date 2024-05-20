@@ -6,30 +6,6 @@ import (
 	"github.com/hasty/adoc/elements"
 )
 
-/*func renderDelimitedBlock(cxt *Context, db *elements.DelimitedBlock) (err error) {
-	switch db.Kind {
-	case "comment":
-		err = renderMultiLineComment(cxt, db)
-	case "sidebar":
-		err = renderBlock(cxt, db, "****")
-	case "example":
-		err = renderBlock(cxt, db, "====")
-	case "listing":
-		err = renderBlock(cxt, db, "----")
-	case "literal":
-		err = renderBlock(cxt, db, "....")
-	case "fenced":
-		err = renderBlock(cxt, db, "```")
-	case "pass":
-		err = renderBlock(cxt, db, "++++")
-	case "open":
-		err = renderBlock(cxt, db, "--")
-	default:
-		err = fmt.Errorf("unknown delimited block kind: %s", db.Kind)
-	}
-	return
-}*/
-
 func renderBlock(cxt *Context, block elements.Element, delimiter string) (err error) {
 	ha, ok := block.(elements.Attributable)
 	if ok {
@@ -59,6 +35,8 @@ func renderDelimiter(cxt *Context, delimiter elements.Delimiter) {
 		char = "/"
 	case elements.DelimitedBlockTypeExample:
 		char = "="
+	case elements.DelimitedBlockTypeFenced:
+		char = "`"
 	case elements.DelimitedBlockTypeListing:
 		char = "-"
 	case elements.DelimitedBlockTypeLiteral:
@@ -67,7 +45,7 @@ func renderDelimiter(cxt *Context, delimiter elements.Delimiter) {
 		return
 	case elements.DelimitedBlockTypeOpen:
 		char = "-"
-	case elements.DelimitedBlockTypePassthrough:
+	case elements.DelimitedBlockTypeStem:
 		char = "+"
 	case elements.DelimitedBlockTypeQuote:
 		char = "_"

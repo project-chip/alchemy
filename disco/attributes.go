@@ -61,32 +61,16 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 	if section.table.element == nil {
 		return nil
 	}
-	attributeCells := make(map[string]*elements.Paragraph)
+	attributeCells := make(map[string]*elements.TableCell)
 	nameIndex, ok := section.table.columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
 	}
 
 	for _, row := range section.table.rows {
-		cell := row.TableCells[nameIndex]
+		cell := row.Cell(nameIndex)
 		cv, err := ascii.RenderTableCell(cell)
 		if err != nil {
-			continue
-		}
-		cellElements := cell.Elements()
-		if len(cellElements) == 0 {
-			continue
-		}
-		p, ok := cellElements[0].(*elements.Paragraph)
-		if !ok {
-			continue
-		}
-		pElements := p.Elements()
-		if len(pElements) == 0 {
-			continue
-		}
-		_, ok = pElements[0].(*elements.String)
-		if !ok {
 			continue
 		}
 
@@ -94,7 +78,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 		nameKey := strings.ToLower(name)
 
 		if _, ok := attributeCells[nameKey]; !ok {
-			attributeCells[nameKey] = p
+			attributeCells[nameKey] = cell
 		}
 	}
 	for _, ss := range section.children {
@@ -102,7 +86,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 		attributeName := matter.StripReferenceSuffixes(s.Name)
 		name := strings.TrimSpace(attributeName)
 
-		p, ok := attributeCells[strings.ToLower(name)]
+		cell, ok := attributeCells[strings.ToLower(name)]
 		if !ok {
 			continue
 		}
@@ -118,12 +102,12 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 			}
 		}
 		if !ok {
-			var label string
+			var label elements.Set
 			id, label = normalizeAnchorID(s.Name, nil, nil)
 			setAnchorID(s.Base, id, label)
 		}
 		icr := elements.NewCrossReference(id)
-		err := p.SetElements(elements.Set{icr})
+		err := cell.SetElements(elements.Set{icr})
 		if err != nil {
 			return err
 		}

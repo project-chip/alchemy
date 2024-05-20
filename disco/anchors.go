@@ -35,7 +35,7 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 			}
 		}
 		for _, info := range infos {
-			setAnchorID(info.Element, info.ID, info.Label)
+			setAnchorID(info.Element, info.ID, info.LabelElements)
 		}
 	}
 
@@ -45,32 +45,32 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 
 func normalizeAnchor(info *ascii.Anchor) {
 	if properAnchorPattern.Match([]byte(info.ID)) {
-		if len(info.Label) == 0 {
-			info.Label = normalizeAnchorLabel(info.Name(), info.Element)
+		if len(info.LabelElements) == 0 {
+			info.LabelElements = normalizeAnchorLabel(info.Name(), info.Element)
 		}
 	} else {
 		name := info.Name()
 		if len(name) == 0 {
-			name = info.Label
+			name = elements.AttributeAsciiDocString(info.LabelElements)
 		}
 		id, label := normalizeAnchorID(name, info.Element, info.Parent)
 		info.ID = id
-		info.Label = label
+		info.LabelElements = label
 	}
 	name := info.Name()
-	if info.Label == name {
+	if strings.TrimSpace(elements.AttributeAsciiDocString(info.LabelElements)) == name {
 		label := normalizeAnchorLabel(name, info.Element)
-		if len(label) > 0 && label != name {
-			info.Label = label
+		if len(label) > 0 && strings.TrimSpace(elements.AttributeAsciiDocString(label)) != name {
+			info.LabelElements = label
 		} else {
-			info.Label = ""
+			info.LabelElements = nil
 		}
 	}
 }
 
 var anchorInvalidCharacters = strings.NewReplacer(".", "", "(", "", ")", "")
 
-func normalizeAnchorID(name string, element any, parent any) (id string, label string) {
+func normalizeAnchorID(name string, element any, parent any) (id string, label elements.Set) {
 	var parentName string
 
 	label = normalizeAnchorLabel(name, element)
@@ -93,27 +93,58 @@ func normalizeAnchorID(name string, element any, parent any) (id string, label s
 	var ref strings.Builder
 	ref.WriteString("ref_")
 	ref.WriteString(parentName)
-	ref.WriteString(matter.Case(anchorInvalidCharacters.Replace(label)))
+	labelString := elements.AttributeAsciiDocString(label)
+	ref.WriteString(matter.Case(anchorInvalidCharacters.Replace(labelString)))
 	id = ref.String()
 	return
 }
 
-func normalizeAnchorLabel(name string, element any) (label string) {
+func normalizeAnchorLabel(name string, element any) (label elements.Set) {
 	switch element.(type) {
 	case *elements.Table:
-		label = strings.TrimSpace(name)
+		label = elements.Set{elements.NewString(strings.TrimSpace(name))}
 	default:
 		name = strings.TrimSuffix(name, " Type")
-		label = strings.TrimSpace(matter.StripReferenceSuffixes(name))
+		label = elements.Set{elements.NewString(strings.TrimSpace(matter.StripReferenceSuffixes(name)))}
 	}
 	return
 }
 
-func setAnchorID(element elements.Attributable, id string, label string) {
-	if len(label) > 0 {
-		id += ", " + label
+func setAnchorID(element elements.Attributable, id string, label elements.Set) {
+	var idAttribute *elements.NamedAttribute
+	var refTextAttribute *elements.NamedAttribute
+	for _, a := range element.Attributes() {
+		switch a := a.(type) {
+		case *elements.AnchorAttribute:
+			a.ID = elements.NewString(id)
+			if len(label) > 0 {
+				a.Label = label
+			} else {
+				a.Label = nil
+			}
+			return
+		case *elements.NamedAttribute:
+			switch a.Name {
+			case elements.AttributeNameID:
+				idAttribute = a
+			case elements.AttributeNameReferenceText:
+				refTextAttribute = a
+			}
+		}
 	}
-	element.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameID), elements.Set{elements.NewString(id)}, elements.AttributeQuoteTypeDouble))
+
+	if idAttribute != nil {
+		idAttribute.Val = elements.Set{elements.NewString(id)}
+		if len(label) > 0 {
+			if refTextAttribute != nil {
+				refTextAttribute.Val = label
+			} else {
+				element.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameReferenceText), label, elements.AttributeQuoteTypeDouble))
+			}
+		}
+		return
+	}
+	element.AppendAttribute(elements.NewAnchorAttribute(elements.NewString(id), label))
 }
 
 func disambiguateAnchorSet(infos []*ascii.Anchor) error {

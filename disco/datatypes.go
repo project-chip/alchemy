@@ -29,7 +29,7 @@ func getExistingDataTypes(cxt *discoContext, dp *docParse) {
 		return
 	}
 
-	for _, ss := range parse.FindAll[*ascii.Section](dp.dataTypes.section.Elements) {
+	for _, ss := range parse.FindAll[*ascii.Section](dp.dataTypes.section.Elements()) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		dataType := ss.GetDataType()
@@ -100,11 +100,11 @@ func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*elements.TableR
 		return nil, nil
 	}
 	for _, row := range rows {
-		cv, err := ascii.RenderTableCell(row.TableCells[nameIndex])
+		cv, err := ascii.RenderTableCell(row.Cell(nameIndex))
 		if err != nil {
 			continue
 		}
-		dtv, err := ascii.RenderTableCell(row.TableCells[typeIndex])
+		dtv, err := ascii.RenderTableCell(row.Cell(typeIndex))
 		if err != nil {
 			continue
 		}
@@ -124,11 +124,11 @@ func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*elements.TableR
 				ref:              name,
 				dataType:         dataType,
 				dataTypeCategory: dataTypeCategory,
-				typeCell:         row.TableCells[typeIndex],
+				typeCell:         row.Cell(typeIndex),
 			}
 		}
 	}
-	for _, el := range section.Elements {
+	for _, el := range section.Elements() {
 		if s, ok := el.(*ascii.Section); ok {
 			name := strings.TrimSpace(matter.StripReferenceSuffixes(s.Name))
 

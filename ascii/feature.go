@@ -66,7 +66,7 @@ func (s *Section) toFeatures(d *Doc, entityMap map[elements.Attributable][]matte
 		featureMap[name] = f
 	}
 
-	for _, s := range parse.Skim[*Section](s.Elements) {
+	for _, s := range parse.Skim[*Section](s.Elements()) {
 		switch s.SecType {
 		case matter.SectionFeature:
 
