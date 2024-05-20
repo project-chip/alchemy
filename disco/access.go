@@ -29,7 +29,7 @@ func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType m
 		}
 	}
 	for _, row := range table.rows[1:] {
-		accessCell := row.TableCells[accessIndex]
+		accessCell := row.Cell(accessIndex)
 		vc, e := ascii.RenderTableCell(accessCell)
 		if e != nil {
 			continue
@@ -52,7 +52,7 @@ func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType m
 			access = matter.DefaultAccess(entityType)
 		}
 		if directionIndex >= 0 {
-			directionCell := row.TableCells[directionIndex]
+			directionCell := row.Cell(directionIndex)
 			rc, e := ascii.RenderTableCell(directionCell)
 			if e != nil {
 				continue

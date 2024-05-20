@@ -40,7 +40,7 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	}
 	sections := divyUpSection(sec, validSectionTypes)
 
-	newOrder := make(elements.Set, 0, len(sec.Elements))
+	newOrder := make(elements.Set, 0, len(sec.Elements()))
 	for _, st := range sectionOrder {
 		if els, ok := sections[st]; ok {
 
@@ -58,7 +58,7 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]elements.Set {
 	sections := make(map[matter.Section]elements.Set)
 	lastSectionType := matter.SectionPrefix
-	for _, e := range sec.Elements {
+	for _, e := range sec.Elements() {
 		switch el := e.(type) {
 		case *ascii.Section:
 			if el.SecType != matter.SectionUnknown {
@@ -102,14 +102,14 @@ func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.Col
 
 		subSectionNames := make(map[string]struct{}, len(rows))
 		for _, row := range rows {
-			name, err := ascii.RenderTableCell(row.TableCells[nameIndex])
+			name, err := ascii.RenderTableCell(row.TableCells()[nameIndex])
 			if err != nil {
 				slog.Debug("could not get cell value for subsection", "err", err)
 				continue
 			}
 			subSectionNames[name] = struct{}{}
 		}
-		subSections := parse.FindAll[*ascii.Section](section.Elements)
+		subSections := parse.FindAll[*ascii.Section](section.Elements())
 		suffix := " " + subsectionSuffix
 		for _, ss := range subSections {
 			name := strings.TrimSuffix(ss.Name, suffix)

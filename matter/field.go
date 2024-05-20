@@ -43,7 +43,7 @@ func (f *Field) Inherit(parent *Field) {
 	if (f.Type == nil || f.Type.BaseType == types.BaseDataTypeUnknown) && parent.Type != nil {
 		f.Type = parent.Type.Clone()
 	}
-	slog.Info("inheriting field", "name", f.Name, "parent quality", parent.Quality, "field quality", f.Quality)
+	slog.Debug("inheriting field", "name", f.Name, "parent quality", parent.Quality, "field quality", f.Quality)
 	if !constraint.IsBlank(parent.Constraint) {
 		if constraint.IsBlank(f.Constraint) {
 			f.Constraint = parent.Constraint.Clone()

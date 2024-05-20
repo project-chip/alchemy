@@ -22,7 +22,7 @@ func dumpElements(doc *ascii.Doc, els elements.Set, indent int) {
 			dumpElements(doc, as.Base.Title, indent+2)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, as.Elements, indent+2)
+			dumpElements(doc, as.Elements(), indent+2)
 			continue
 		}
 		ae, ok := e.(*ascii.Element)

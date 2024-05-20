@@ -57,7 +57,7 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[elemen
 		eventMap[e.Name] = e
 	}
 
-	for _, s := range parse.Skim[*Section](s.Elements) {
+	for _, s := range parse.Skim[*Section](s.Elements()) {
 		switch s.SecType {
 		case matter.SectionEvent:
 
@@ -73,8 +73,9 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[elemen
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
 			if headerRowIndex > 0 {
 				firstRow := rows[0]
-				if len(firstRow.TableCells) > 0 {
-					cv, rowErr := RenderTableCell(rows[0].TableCells[0])
+				tableCells := firstRow.TableCells()
+				if len(tableCells) > 0 {
+					cv, rowErr := RenderTableCell(tableCells[0])
 					if rowErr == nil {
 						cv = strings.ToLower(cv)
 						if strings.Contains(cv, "fabric sensitive") || strings.Contains(cv, "fabric-sensitive") {

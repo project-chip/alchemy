@@ -73,7 +73,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[elem
 		}
 	}
 
-	for _, s := range parse.Skim[*Section](s.Elements) {
+	for _, s := range parse.Skim[*Section](s.Elements()) {
 		switch s.SecType {
 		case matter.SectionCommand:
 
@@ -88,12 +88,20 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[elem
 					continue
 				}
 			}
-			p := parse.FindFirst[*elements.Paragraph](s.Elements)
+			p := parse.FindFirst[*elements.Paragraph](s.Elements())
 			if p != nil {
-				se := parse.FindFirst[*elements.String](p.Elements())
-				if se != nil {
-					c.Description = strings.ReplaceAll(se.Value, "\n", " ")
+				var foundString bool
+				var description strings.Builder
+				for _, e := range p.Elements() {
+					s, ok := e.(*elements.String)
+					if ok {
+						foundString = true
+						description.WriteString(s.Value)
+					} else if foundString {
+						break
+					}
 				}
+				c.Description = strings.ReplaceAll(description.String(), "\n", " ")
 			}
 
 			var rows []*elements.TableRow

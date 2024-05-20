@@ -39,7 +39,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[elements.Attributable][]mattertyp
 	}
 
 	var subSectionValues matter.EnumValueSet
-	for _, el := range s.Elements {
+	for _, el := range s.Elements() {
 		switch el := el.(type) {
 		case *Section:
 			if strings.HasSuffix(el.Name, " Range") {
@@ -60,7 +60,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[elements.Attributable][]mattertyp
 
 func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 	var tables []*elements.Table
-	parse.SkimFunc(s.Elements, func(t *elements.Table) bool {
+	parse.SkimFunc(s.Elements(), func(t *elements.Table) bool {
 		tables = append(tables, t)
 		return false
 	})

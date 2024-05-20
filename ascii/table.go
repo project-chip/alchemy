@@ -59,7 +59,7 @@ func readRowASCIIDocString(row *elements.TableRow, columnMap ColumnIndex, column
 }
 
 func readRowCellASCIIDocString(row *elements.TableRow, offset int) (string, error) {
-	cell := row.TableCells[offset]
+	cell := row.Cell(offset)
 	val, err := RenderTableCell(cell)
 	if err != nil {
 		return "", err
@@ -88,18 +88,13 @@ func ReadRowValue(doc *Doc, row *elements.TableRow, columnMap ColumnIndex, colum
 }
 
 func readRowCellValue(doc *Doc, row *elements.TableRow, offset int) (string, error) {
-	cell := row.TableCells[offset]
+	cell := row.Cell(offset)
 	cellElements := cell.Elements()
 	if len(cellElements) == 0 {
 		return "", nil
 	}
-	el := cellElements[0]
-	para, ok := el.(*elements.Paragraph)
-	if !ok {
-		return "", fmt.Errorf("name cell missing paragraph")
-	}
 	var value strings.Builder
-	err := readRowCellValueElements(doc, para.Elements(), &value)
+	err := readRowCellValueElements(doc, cellElements, &value)
 	if err != nil {
 		return "", err
 	}
@@ -160,6 +155,8 @@ func readRowCellValueElements(doc *Doc, els elements.Set, value *strings.Builder
 				return err
 			}
 		case *elements.ThematicBreak:
+		case *elements.NewLine:
+			value.WriteString(" ")
 		case elements.HasElements:
 			err := readRowCellValueElements(doc, el.Elements(), value)
 			if err != nil {
@@ -174,7 +171,7 @@ func readRowCellValueElements(doc *Doc, els elements.Set, value *strings.Builder
 
 func FindFirstTable(section *Section) *elements.Table {
 	var table *elements.Table
-	parse.SkimFunc(section.Elements, func(t *elements.Table) bool {
+	parse.SkimFunc(section.Elements(), func(t *elements.Table) bool {
 		table = t
 		return true
 	})
@@ -245,16 +242,17 @@ func MapTableColumns(doc *Doc, rows []*elements.TableRow) (headerRow int, column
 	var cellCount = -1
 	headerRow = -1
 	for i, row := range rows {
+		tableCells := row.TableCells()
 		if cellCount == -1 {
-			cellCount = len(row.TableCells)
-		} else if cellCount != len(row.TableCells) {
-			return -1, nil, nil, fmt.Errorf("can't map table columns with unequal cell counts between rows; row %d has %d cells, expected %d", i, len(row.TableCells), cellCount)
+			cellCount = len(tableCells)
+		} else if cellCount != len(tableCells) {
+			return -1, nil, nil, fmt.Errorf("can't map table columns with unequal cell counts between rows; row %d has %d cells, expected %d", i, len(tableCells), cellCount)
 		}
 		if columnMap != nil { // We've already processed the columns
 			continue
 		}
 		var spares []ExtraColumn
-		for j, cell := range row.TableCells {
+		for j, cell := range tableCells {
 			var val string
 			val, err = doc.GetHeaderCellString(cell)
 			if err != nil {

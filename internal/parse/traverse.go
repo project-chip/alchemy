@@ -6,31 +6,39 @@ import (
 	"github.com/hasty/adoc/elements"
 )
 
+type SearchShould uint8
+
+const (
+	SearchShouldContinue SearchShould = iota
+	SearchShouldStop
+	SearchShouldSkip
+)
+
 func FindAll[T any](elements elements.Set) []T {
 	var list []T
-	find(elements, func(t T) bool {
+	find(elements, func(t T) SearchShould {
 		list = append(list, t)
-		return false
+		return SearchShouldContinue
 	})
 	return list
 }
 
 func FindFirst[T any](elements elements.Set) T {
 	var found T
-	find(elements, func(t T) bool {
+	find(elements, func(t T) SearchShould {
 		found = t
-		return true
+		return SearchShouldStop
 	})
 	return found
 }
 
-func Search[T any](elements elements.Set, callback func(t T) bool) {
+func Search[T any](elements elements.Set, callback func(t T) SearchShould) {
 	find(elements, callback)
 }
 
-func find[T any](elements elements.Set, callback func(t T) bool) bool {
+func find[T any](elements elements.Set, callback func(t T) SearchShould) SearchShould {
 	for _, e := range elements {
-		var shortCircuit bool
+		var shortCircuit SearchShould
 		if el, ok := e.(T); ok {
 			shortCircuit = callback(el)
 		} else if ae, ok := e.(HasBase); ok {
@@ -39,22 +47,27 @@ func find[T any](elements elements.Set, callback func(t T) bool) bool {
 				shortCircuit = callback(el)
 			}
 		}
-		if shortCircuit {
-			return true
+		switch shortCircuit {
+		case SearchShouldStop:
+			return shortCircuit
+		case SearchShouldSkip:
+			continue
+		case SearchShouldContinue:
 		}
+
 		if he, ok := e.(HasElements); ok {
-			shortCircuit = find(he.GetElements(), callback)
+			shortCircuit = find(he.Elements(), callback)
 		} else if ae, ok := e.(HasBase); ok {
 			be := ae.GetBase()
 			if el, ok := be.(HasElements); ok {
-				shortCircuit = find(el.GetElements(), callback)
+				shortCircuit = find(el.Elements(), callback)
 			}
 		}
-		if shortCircuit {
-			return true
+		if shortCircuit == SearchShouldStop {
+			return shortCircuit
 		}
 	}
-	return false
+	return SearchShouldContinue
 }
 
 func Skim[T any](elements elements.Set) []T {
@@ -92,7 +105,7 @@ func SkimFunc[T any](elements elements.Set, callback func(t T) bool) bool {
 
 func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit bool)) (shortCircuit bool) {
 	i := 0
-	els := parent.GetElements()
+	els := parent.Elements()
 	var removed bool
 	for i < len(els) {
 		e := els[i]
@@ -124,23 +137,27 @@ func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit 
 	return
 }
 
-func Traverse[T any](parent HasElements, els elements.Set, callback func(el T, parent HasElements, index int) bool) {
+func Traverse[T any](parent HasElements, els elements.Set, callback func(el T, parent HasElements, index int) SearchShould) {
 	traverse(parent, els, callback)
 }
 
-func traverse[T any](parent HasElements, els elements.Set, callback func(el T, parent HasElements, index int) bool) bool {
+func traverse[T any](parent HasElements, els elements.Set, callback func(el T, parent HasElements, index int) SearchShould) SearchShould {
+
 	for i, e := range els {
-		if v, ok := e.(T); ok && callback(v, parent, i) {
-			return true
+		if v, ok := e.(T); ok {
+			switch callback(v, parent, i) {
+			case SearchShouldStop:
+				return SearchShouldStop
+			case SearchShouldSkip:
+				continue
+			}
 		}
-	}
-	for _, e := range els {
-		switch el := e.(type) {
-		case HasElements:
-			if traverse(el, el.GetElements(), callback) {
-				return true
+		if v, ok := e.(HasElements); ok {
+			switch traverse(v, v.Elements(), callback) {
+			case SearchShouldStop:
+				return SearchShouldStop
 			}
 		}
 	}
-	return false
+	return SearchShouldContinue
 }

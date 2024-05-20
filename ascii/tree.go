@@ -18,12 +18,12 @@ func buildTree(docs []*Doc) {
 		path := doc.Path
 		docPaths[path] = doc
 
-		top := parse.FindFirst[*Section](doc.Elements)
+		top := parse.FindFirst[*Section](doc.Elements())
 		if top == nil {
 			continue
 		}
 
-		parse.Search[*elements.Section](top.Base.Elements(), func(t *elements.Section) bool {
+		parse.Search[*elements.Section](top.Base.Elements(), func(t *elements.Section) parse.SearchShould {
 			link := parse.FindFirst[*elements.Link](t.Title)
 			if link != nil {
 				linkPath, ok := link.URL.Path.(string)
@@ -32,7 +32,7 @@ func buildTree(docs []*Doc) {
 					tree[doc] = append(tree[doc], linkPath)
 				}
 			}
-			return false
+			return parse.SearchShouldContinue
 		})
 	}
 

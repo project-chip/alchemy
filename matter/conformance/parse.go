@@ -99,10 +99,10 @@ func IsZigbee(store IdentifierStore, conformance Conformance) bool {
 func IsBlank(conformance Conformance) bool {
 	switch conformance := conformance.(type) {
 	case *Generic:
-		slog.Info("conformance is generic", "c", conformance.Description(), "raw", conformance.raw)
+		slog.Debug("conformance is generic", "c", conformance.Description(), "raw", conformance.raw)
 		return conformance.raw == ""
 	case Set:
-		slog.Info("conformance is set", "c", conformance.Description(), "len", len(conformance))
+		slog.Debug("conformance is set", "c", conformance.Description(), "len", len(conformance))
 		if len(conformance) == 1 {
 			mc, ok := conformance[0].(*Generic)
 			if ok {

@@ -16,7 +16,7 @@ func (b *Ball) ensureTableOptions(els elements.Set) {
 	if !b.options.normalizeTableOptions {
 		return
 	}
-	parse.Search(els, func(t *elements.Table) bool {
+	parse.Search(els, func(t *elements.Table) parse.SearchShould {
 		var excludedIndexes []int
 		for i, attr := range t.Attributes() {
 			na, ok := attr.(*elements.NamedAttribute)
@@ -35,7 +35,7 @@ func (b *Ball) ensureTableOptions(els elements.Set) {
 				t.SetAttribute(k, v)
 			}
 		}
-		return false
+		return parse.SearchShouldContinue
 	})
 
 }
@@ -80,10 +80,10 @@ func (b *Ball) appendColumn(table *elements.Table, columnMap ascii.ColumnIndex, 
 	if cols != nil {
 		cols.Columns = append(cols.Columns, elements.NewTableColumn())
 	}
-	appendedIndex = len(rows[0].TableCells)
+	appendedIndex = len(rows[0].Set)
 	for i, row := range rows {
 		cell := &elements.TableCell{}
-		last := row.TableCells[len(row.TableCells)-1]
+		last := row.Cell(len(row.Set) - 1)
 		if i == headerRowIndex {
 			if last.Format != nil {
 				cell.Format = elements.NewTableCellFormat()
@@ -106,7 +106,7 @@ func (b *Ball) appendColumn(table *elements.Table, columnMap ascii.ColumnIndex, 
 				err = setCellString(cell, b.getDefaultColumnValue(entityType, column, row, columnMap))
 			}
 		}
-		row.TableCells = append(row.TableCells, cell)
+		row.Append(cell)
 	}
 	columnMap[column] = appendedIndex
 	return
@@ -208,12 +208,13 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 			continue
 		}
 		for _, row := range rows {
-			cell := row.TableCells[i]
+			tableCells := row.TableCells()
+			cell := row.Cell(i)
 			if cell.Blank {
 				// OK, this cell is blank, likely because of a horizontal span
 				k := i - 1
 				for k >= 0 {
-					left := row.TableCells[k]
+					left := tableCells[k]
 					if left.Format != nil && left.Format.Span.Column.Value > 1 {
 						left.Format.Span.Column = elements.One(left.Format.Span.Column.Value - 1)
 						break
@@ -224,12 +225,13 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 		}
 	}
 	for i, row := range rows {
-		newCells := make([]*elements.TableCell, index)
-		if len(row.TableCells) != len(newColumnIndexes) {
-			err = fmt.Errorf("cell length mismatch; row %d has %d cells, expected %d", i, len(row.TableCells), len(newColumnIndexes))
+		newCells := make(elements.Set, index)
+		tableCells := row.TableCells()
+		if len(tableCells) != len(newColumnIndexes) {
+			err = fmt.Errorf("cell length mismatch; row %d has %d cells, expected %d", i, len(tableCells), len(newColumnIndexes))
 			return
 		}
-		for j, cell := range row.TableCells {
+		for j, cell := range tableCells {
 			newIndex := newColumnIndexes[j]
 			if newIndex < 0 {
 				continue
@@ -237,7 +239,7 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 			newCells[newIndex] = cell
 		}
 		newCells = slices.Clip(newCells)
-		row.TableCells = newCells
+		row.Set = newCells
 	}
 	var cols *elements.TableColumnsAttribute
 	for _, a := range ti.element.Attributes() {
@@ -276,15 +278,16 @@ func copyCells(rows []*elements.TableRow, headerRowIndex int, fromIndex int, toI
 		if i == headerRowIndex {
 			continue
 		}
+		tableCells := row.TableCells()
 		var value string
-		value, err = ascii.RenderTableCell(row.TableCells[fromIndex])
+		value, err = ascii.RenderTableCell(tableCells[fromIndex])
 		if err != nil {
 			return
 		}
 		if transformer != nil {
 			value = transformer(value)
 		}
-		err = setCellString(row.TableCells[toIndex], value)
+		err = setCellString(tableCells[toIndex], value)
 		if err != nil {
 			return
 		}
@@ -301,7 +304,7 @@ func (b *Ball) renameTableHeaderCells(rows []*elements.TableRow, headerRowIndex 
 	for k, v := range columnMap {
 		reverseMap[v] = k
 	}
-	for i, cell := range headerRow.TableCells {
+	for i, cell := range headerRow.TableCells() {
 		tc, ok := reverseMap[i]
 		if !ok {
 			continue

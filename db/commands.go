@@ -61,7 +61,7 @@ func (h *Host) indexCommands(cxt context.Context, doc *ascii.Doc, ci *sectionInf
 			}
 		}
 	}
-	for _, s := range parse.Skim[*ascii.Section](es.Elements) {
+	for _, s := range parse.Skim[*ascii.Section](es.Elements()) {
 		switch s.SecType {
 		case matter.SectionCommand:
 			name := strings.TrimSuffix(s.Name, " Command")

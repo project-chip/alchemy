@@ -35,14 +35,15 @@ var Command = &cobra.Command{
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
 
-				for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
+				for _, top := range parse.Skim[*ascii.Section](doc.Elements()) {
 					err := ascii.AssignSectionTypes(doc, top)
 					if err != nil {
 						return err
 					}
 				}
-				dumpElements(doc, doc.Elements, 0)
+				dumpElements(doc, doc.Elements(), 0)
 			} else if jsonOut {
+				asciiSettings = append(asciiSettings, ascii.GithubSettings()...)
 				doc, err := ascii.ParseFile(f, asciiSettings...)
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)

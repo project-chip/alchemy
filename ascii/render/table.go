@@ -228,7 +228,7 @@ func renderTableSubElements(cxt *Context, t *elements.Table, tbl *table) (err er
 		case *elements.TableRow:
 			tr.index = rowCount
 			rowCount++
-			for _, c := range row.TableCells {
+			for _, c := range row.TableCells() {
 				renderContext := NewContext(cxt, cxt.Doc)
 				err = Elements(renderContext, "", c.Elements()...)
 				if err != nil {

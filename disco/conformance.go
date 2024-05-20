@@ -16,7 +16,7 @@ func fixConformanceCells(doc *ascii.Doc, rows []*elements.TableRow, columnMap as
 		return
 	}
 	for _, row := range rows[1:] {
-		cell := row.TableCells[conformanceIndex]
+		cell := row.Cell(conformanceIndex)
 		vc, e := ascii.RenderTableCell(cell)
 		if e != nil {
 			continue
