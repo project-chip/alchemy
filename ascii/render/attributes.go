@@ -39,10 +39,11 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 }
 
 func renderAttributes(cxt *Context, el any, attributes types.Attributes, inline bool) error {
-	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
+	_, err := renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
+	return err
 }
 
-func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
+func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter, inline bool) (n int, err error) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -102,10 +103,12 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			case *types.Paragraph:
 				cxt.WriteString(fmt.Sprintf("%s: ", style))
 			default:
+				n++
 				cxt.WriteString(fmt.Sprintf("[%s]\n", style))
 			}
 		case "none":
 			cxt.WriteString("[none]\n")
+			n++
 			renderAttributeTitle(cxt, title, include, exclude)
 			renderAttributeAnchor(cxt, id, include, exclude, inline)
 		case types.UpperRoman, types.LowerRoman, types.Arabic, types.UpperAlpha, types.LowerAlpha:
@@ -116,8 +119,10 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			renderAttributeAnchor(cxt, id, include, exclude, inline)
 			cxt.WriteRune('[')
 			cxt.WriteString(style)
+			n++
 			if start, ok := attributes[types.AttrStart]; ok {
 				if start, ok := start.(string); ok {
+					n++
 					cxt.WriteString(", start=")
 					cxt.WriteString(start)
 				}
@@ -137,6 +142,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			}
 			cxt.WriteRune('[')
 			cxt.WriteString(style)
+			n++
 			lang, ok := attributes[types.AttrLanguage]
 			if ok {
 				cxt.WriteString(", ")
@@ -152,6 +158,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			}
 			cxt.WriteRune('[')
 			cxt.WriteString(style)
+			n++
 			for _, key := range keys {
 				var keyVal string
 				var skipKey bool
@@ -163,6 +170,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 					continue
 				}
 				cxt.WriteRune(',')
+				n++
 				if skipKey {
 					cxt.WriteString(keyVal)
 				} else {
@@ -187,6 +195,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			case string:
 				cxt.WriteRune('.')
 				cxt.WriteString(rs)
+				n++
 			default:
 				slog.Debug("unknown role type", "role", r)
 			}
@@ -201,13 +210,13 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 	}
 	renderAttributeTitle(cxt, title, include, exclude)
 	renderAttributeAnchor(cxt, id, include, exclude, inline)
+	n = 0
 	if len(keys) > 0 {
 		sort.Strings(keys)
 		if !inline {
 			cxt.WriteNewline()
 		}
 
-		count := 0
 		for _, key := range keys {
 			var keyVal string
 			var skipKey bool
@@ -217,7 +226,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 			}
 
 			if len(keyVal) != 0 {
-				if count == 0 {
+				if n == 0 {
 					cxt.WriteString("[")
 				} else {
 					cxt.WriteRune(',')
@@ -230,11 +239,11 @@ func renderSelectAttributes(cxt *Context, el any, attributes types.Attributes, i
 					quoteAttributeValue(cxt, keyVal)
 				}
 
-				count++
+				n++
 			}
 
 		}
-		if count > 0 {
+		if n > 0 {
 			cxt.WriteRune(']')
 			if !inline {
 				cxt.WriteRune('\n')
@@ -380,13 +389,14 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 	return
 }
 
-func renderDiagramAttributes(cxt *Context, style string, id string, title string, keys []string, inline bool, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter) (err error) {
+func renderDiagramAttributes(cxt *Context, style string, id string, title string, keys []string, inline bool, attributes types.Attributes, include AttributeFilter, exclude AttributeFilter) (n int, err error) {
 
 	renderAttributeTitle(cxt, title, include, exclude)
 	renderAttributeAnchor(cxt, id, include, exclude, inline)
 	cxt.WriteString("[")
 	cxt.WriteString(style)
 	slices.Sort(keys)
+	n = 1
 	for _, key := range keys {
 		var keyVal string
 		var skipKey bool
@@ -397,6 +407,7 @@ func renderDiagramAttributes(cxt *Context, style string, id string, title string
 		if keyVal == "" {
 			continue
 		}
+		n++
 		cxt.WriteRune(',')
 		if skipKey {
 			cxt.WriteString(keyVal)

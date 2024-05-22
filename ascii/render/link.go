@@ -25,7 +25,7 @@ func renderInlineLink(cxt *Context, il *types.InlineLink) (err error) {
 
 func renderImageBlock(cxt *Context, ib *types.ImageBlock) (err error) {
 	cxt.WriteNewline()
-	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
+	_, err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
 		return
 	}
@@ -38,9 +38,13 @@ func renderImageBlock(cxt *Context, ib *types.ImageBlock) (err error) {
 		return
 	}
 	cxt.WriteString(path)
-	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
+	var count int
+	count, err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
 	if err != nil {
 		return
+	}
+	if count == 0 {
+		cxt.WriteString("[]")
 	}
 	cxt.WriteNewline()
 	return
@@ -48,7 +52,7 @@ func renderImageBlock(cxt *Context, ib *types.ImageBlock) (err error) {
 
 func renderInlineImage(cxt *Context, ib *types.InlineImage) (err error) {
 	cxt.WriteNewline()
-	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, true)
+	_, err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, true)
 	if err != nil {
 		return
 	}
@@ -61,9 +65,13 @@ func renderInlineImage(cxt *Context, ib *types.InlineImage) (err error) {
 		return
 	}
 	cxt.WriteString(path)
-	err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
+	var count int
+	count, err = renderSelectAttributes(cxt, ib, ib.Attributes, AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
 	if err != nil {
 		return
+	}
+	if count == 0 {
+		cxt.WriteString("[]")
 	}
 	cxt.WriteNewline()
 	return
