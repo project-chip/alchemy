@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/text"
 )
 
@@ -17,20 +17,20 @@ type table struct {
 
 type tableRow struct {
 	index   int
-	element elements.Element
+	element asciidoc.Element
 	cells   []*tableCell
 }
 
 type tableCell struct {
 	value     string
-	formatter *elements.TableCellFormat
+	formatter *asciidoc.TableCellFormat
 	blank     bool
 
 	width  int // width of the actual content in this cell
 	margin int // width of the formatter of the next cell
 }
 
-func renderTable(cxt *Context, t *elements.Table) (err error) {
+func renderTable(cxt *Context, t *asciidoc.Table) (err error) {
 
 	tbl := &table{columnCount: t.ColumnCount}
 
@@ -220,12 +220,12 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 	return
 }
 
-func renderTableSubElements(cxt *Context, t *elements.Table, tbl *table) (err error) {
+func renderTableSubElements(cxt *Context, t *asciidoc.Table, tbl *table) (err error) {
 	var rowCount = 0
 	for _, row := range t.Elements() {
 		tr := &tableRow{}
 		switch row := row.(type) {
-		case *elements.TableRow:
+		case *asciidoc.TableRow:
 			tr.index = rowCount
 			rowCount++
 			for _, c := range row.TableCells() {
@@ -282,7 +282,7 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 	return
 }
 
-func renderTableCellFormat(format *elements.TableCellFormat) string {
+func renderTableCellFormat(format *asciidoc.TableCellFormat) string {
 	if format == nil {
 		return ""
 	}
@@ -309,38 +309,38 @@ func renderTableCellFormat(format *elements.TableCellFormat) string {
 	}
 	if format.HorizontalAlign.IsSet {
 		switch format.HorizontalAlign.Value {
-		case elements.TableCellHorizontalAlignLeft:
+		case asciidoc.TableCellHorizontalAlignLeft:
 			s.WriteRune('<')
-		case elements.TableCellHorizontalAlignCenter:
+		case asciidoc.TableCellHorizontalAlignCenter:
 			s.WriteRune('^')
-		case elements.TableCellHorizontalAlignRight:
+		case asciidoc.TableCellHorizontalAlignRight:
 			s.WriteRune('>')
 		}
 	}
 	if format.VerticalAlign.IsSet {
 		switch format.VerticalAlign.Value {
-		case elements.TableCellVerticalAlignTop:
+		case asciidoc.TableCellVerticalAlignTop:
 			s.WriteString(".<")
-		case elements.TableCellVerticalAlignMiddle:
+		case asciidoc.TableCellVerticalAlignMiddle:
 			s.WriteString(".^")
-		case elements.TableCellVerticalAlignBottom:
+		case asciidoc.TableCellVerticalAlignBottom:
 			s.WriteString(".>")
 		}
 
 	}
 	if format.Style.IsSet {
 		switch format.Style.Value {
-		case elements.TableCellStyleAsciiDoc:
+		case asciidoc.TableCellStyleAsciiDoc:
 			s.WriteRune('a')
-		case elements.TableCellStyleEmphasis:
+		case asciidoc.TableCellStyleEmphasis:
 			s.WriteRune('e')
-		case elements.TableCellStyleHeader:
+		case asciidoc.TableCellStyleHeader:
 			s.WriteRune('h')
-		case elements.TableCellStyleLiteral:
+		case asciidoc.TableCellStyleLiteral:
 			s.WriteRune('l')
-		case elements.TableCellStyleMonospace:
+		case asciidoc.TableCellStyleMonospace:
 			s.WriteRune('m')
-		case elements.TableCellStyleStrong:
+		case asciidoc.TableCellStyleStrong:
 			s.WriteRune('s')
 		}
 	}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -13,9 +13,9 @@ import (
 func (s *Section) toDeviceTypes(d *Doc) (entities []mattertypes.Entity, err error) {
 	var deviceTypes []*matter.DeviceType
 	var description string
-	p := parse.FindFirst[*elements.Paragraph](s.Elements())
+	p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
 	if p != nil {
-		se := parse.FindFirst[*elements.String](p.Elements())
+		se := parse.FindFirst[*asciidoc.String](p.Elements())
 		if se != nil {
 			description = strings.ReplaceAll(se.Value, "\n", " ")
 		}

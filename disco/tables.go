@@ -5,21 +5,21 @@ import (
 	"log/slog"
 	"slices"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func (b *Ball) ensureTableOptions(els elements.Set) {
+func (b *Ball) ensureTableOptions(els asciidoc.Set) {
 	if !b.options.normalizeTableOptions {
 		return
 	}
-	parse.Search(els, func(t *elements.Table) parse.SearchShould {
+	parse.Search(els, func(t *asciidoc.Table) parse.SearchShould {
 		var excludedIndexes []int
 		for i, attr := range t.Attributes() {
-			na, ok := attr.(*elements.NamedAttribute)
+			na, ok := attr.(*asciidoc.NamedAttribute)
 			if !ok {
 				continue
 			}
@@ -40,11 +40,11 @@ func (b *Ball) ensureTableOptions(els elements.Set) {
 
 }
 
-func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *elements.Table, rows []*elements.TableRow, tableTemplate matter.Table, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex, entityType types.EntityType) (err error) {
+func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *asciidoc.Table, rows []*asciidoc.TableRow, tableTemplate matter.Table, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex, entityType types.EntityType) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
-	table.DeleteAttribute(elements.AttributeNameColumns)
+	table.DeleteAttribute(asciidoc.AttributeNameColumns)
 	var order []matter.TableColumn
 	if len(tableTemplate.RequiredColumns) > 0 {
 		order = tableTemplate.RequiredColumns
@@ -62,31 +62,31 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	return
 }
 
-func (b *Ball) appendColumn(table *elements.Table, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType types.EntityType) (appendedIndex int, err error) {
+func (b *Ball) appendColumn(table *asciidoc.Table, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType types.EntityType) (appendedIndex int, err error) {
 	rows := table.TableRows()
 	if len(rows) == 0 {
 		appendedIndex = -1
 		return
 	}
 	table.ColumnCount += 1
-	var cols *elements.TableColumnsAttribute
+	var cols *asciidoc.TableColumnsAttribute
 	var ok bool
 	for _, a := range table.Attributes() {
-		cols, ok = a.(*elements.TableColumnsAttribute)
+		cols, ok = a.(*asciidoc.TableColumnsAttribute)
 		if ok {
 			break
 		}
 	}
 	if cols != nil {
-		cols.Columns = append(cols.Columns, elements.NewTableColumn())
+		cols.Columns = append(cols.Columns, asciidoc.NewTableColumn())
 	}
 	appendedIndex = len(rows[0].Set)
 	for i, row := range rows {
-		cell := &elements.TableCell{}
+		cell := &asciidoc.TableCell{}
 		last := row.Cell(len(row.Set) - 1)
 		if i == headerRowIndex {
 			if last.Format != nil {
-				cell.Format = elements.NewTableCellFormat()
+				cell.Format = asciidoc.NewTableCellFormat()
 				cell.Format.HorizontalAlign = last.Format.HorizontalAlign
 				cell.Format.VerticalAlign = last.Format.VerticalAlign
 				cell.Format.Style = last.Format.Style
@@ -112,7 +112,7 @@ func (b *Ball) appendColumn(table *elements.Table, columnMap ascii.ColumnIndex, 
 	return
 }
 
-func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.TableColumn, row *elements.TableRow, columnMap ascii.ColumnIndex) string {
+func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.TableColumn, row *asciidoc.TableRow, columnMap ascii.ColumnIndex) string {
 	switch column {
 	case matter.TableColumnConformance:
 		switch entityType {
@@ -216,7 +216,7 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 				for k >= 0 {
 					left := tableCells[k]
 					if left.Format != nil && left.Format.Span.Column.Value > 1 {
-						left.Format.Span.Column = elements.One(left.Format.Span.Column.Value - 1)
+						left.Format.Span.Column = asciidoc.One(left.Format.Span.Column.Value - 1)
 						break
 					}
 					k--
@@ -225,7 +225,7 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 		}
 	}
 	for i, row := range rows {
-		newCells := make(elements.Set, index)
+		newCells := make(asciidoc.Set, index)
 		tableCells := row.TableCells()
 		if len(tableCells) != len(newColumnIndexes) {
 			err = fmt.Errorf("cell length mismatch; row %d has %d cells, expected %d", i, len(tableCells), len(newColumnIndexes))
@@ -241,15 +241,15 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 		newCells = slices.Clip(newCells)
 		row.Set = newCells
 	}
-	var cols *elements.TableColumnsAttribute
+	var cols *asciidoc.TableColumnsAttribute
 	for _, a := range ti.element.Attributes() {
-		cols, ok = a.(*elements.TableColumnsAttribute)
+		cols, ok = a.(*asciidoc.TableColumnsAttribute)
 		if ok {
 			break
 		}
 	}
 	if cols != nil {
-		newColumns := make([]*elements.TableColumn, index)
+		newColumns := make([]*asciidoc.TableColumn, index)
 		for i, col := range cols.Columns {
 			newIndex := newColumnIndexes[i]
 			if newIndex < 0 {
@@ -263,17 +263,17 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 	return
 }
 
-func setCellString(cell *elements.TableCell, v string) (err error) {
-	se := elements.NewString(v)
-	err = cell.SetElements(elements.Set{se})
+func setCellString(cell *asciidoc.TableCell, v string) (err error) {
+	se := asciidoc.NewString(v)
+	err = cell.SetElements(asciidoc.Set{se})
 	return
 }
 
-func setCellValue(cell *elements.TableCell, val elements.Set) (err error) {
+func setCellValue(cell *asciidoc.TableCell, val asciidoc.Set) (err error) {
 	return cell.SetElements(val)
 }
 
-func copyCells(rows []*elements.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {
+func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {
 	for i, row := range rows {
 		if i == headerRowIndex {
 			continue
@@ -295,7 +295,7 @@ func copyCells(rows []*elements.TableRow, headerRowIndex int, fromIndex int, toI
 	return
 }
 
-func (b *Ball) renameTableHeaderCells(rows []*elements.TableRow, headerRowIndex int, columnMap ascii.ColumnIndex, overrides map[matter.TableColumn]string) (err error) {
+func (b *Ball) renameTableHeaderCells(rows []*asciidoc.TableRow, headerRowIndex int, columnMap ascii.ColumnIndex, overrides map[matter.TableColumn]string) (err error) {
 	if !b.options.renameTableHeaders {
 		return
 	}

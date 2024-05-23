@@ -3,7 +3,7 @@ package parse
 import (
 	"slices"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
 type SearchShould uint8
@@ -14,7 +14,7 @@ const (
 	SearchShouldSkip
 )
 
-func FindAll[T any](elements elements.Set) []T {
+func FindAll[T any](elements asciidoc.Set) []T {
 	var list []T
 	find(elements, func(t T) SearchShould {
 		list = append(list, t)
@@ -23,7 +23,7 @@ func FindAll[T any](elements elements.Set) []T {
 	return list
 }
 
-func FindFirst[T any](elements elements.Set) T {
+func FindFirst[T any](elements asciidoc.Set) T {
 	var found T
 	find(elements, func(t T) SearchShould {
 		found = t
@@ -32,11 +32,11 @@ func FindFirst[T any](elements elements.Set) T {
 	return found
 }
 
-func Search[T any](elements elements.Set, callback func(t T) SearchShould) {
+func Search[T any](elements asciidoc.Set, callback func(t T) SearchShould) {
 	find(elements, callback)
 }
 
-func find[T any](elements elements.Set, callback func(t T) SearchShould) SearchShould {
+func find[T any](elements asciidoc.Set, callback func(t T) SearchShould) SearchShould {
 	for _, e := range elements {
 		var shortCircuit SearchShould
 		if el, ok := e.(T); ok {
@@ -70,7 +70,7 @@ func find[T any](elements elements.Set, callback func(t T) SearchShould) SearchS
 	return SearchShouldContinue
 }
 
-func Skim[T any](elements elements.Set) []T {
+func Skim[T any](elements asciidoc.Set) []T {
 	var list []T
 	for _, e := range elements {
 		if ae, ok := e.(HasBase); ok {
@@ -85,7 +85,7 @@ func Skim[T any](elements elements.Set) []T {
 	return list
 }
 
-func SkimFunc[T any](elements elements.Set, callback func(t T) bool) bool {
+func SkimFunc[T any](elements asciidoc.Set, callback func(t T) bool) bool {
 	for _, e := range elements {
 		var shortCircuit bool
 		if el, ok := e.(T); ok {
@@ -120,7 +120,7 @@ func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit 
 			break
 		}
 		remove, shortCircuit := callback(e)
-		var empty elements.Set
+		var empty asciidoc.Set
 		if remove {
 			els = slices.Replace(els, i, i+1, empty...)
 			removed = true
@@ -137,11 +137,11 @@ func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit 
 	return
 }
 
-func Traverse[T any](parent HasElements, els elements.Set, callback func(el T, parent HasElements, index int) SearchShould) {
+func Traverse[T any](parent HasElements, els asciidoc.Set, callback func(el T, parent HasElements, index int) SearchShould) {
 	traverse(parent, els, callback)
 }
 
-func traverse[T any](parent HasElements, els elements.Set, callback func(el T, parent HasElements, index int) SearchShould) SearchShould {
+func traverse[T any](parent HasElements, els asciidoc.Set, callback func(el T, parent HasElements, index int) SearchShould) SearchShould {
 
 	for i, e := range els {
 		if v, ok := e.(T); ok {

@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/pipeline"
 )
 
@@ -26,7 +26,7 @@ func readFile(path string) (string, error) {
 	return contents, nil
 }
 
-func ReadFile(path string, attributes ...elements.AttributeName) (*Doc, error) {
+func ReadFile(path string, attributes ...asciidoc.AttributeName) (*Doc, error) {
 
 	contents, err := readFile(path)
 	if err != nil {
@@ -35,9 +35,9 @@ func ReadFile(path string, attributes ...elements.AttributeName) (*Doc, error) {
 	return Read(contents, path, attributes...)
 }
 
-func Read(contents string, path string, attributes ...elements.AttributeName) (doc *Doc, err error) {
+func Read(contents string, path string, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
 
-	var d *elements.Document
+	var d *asciidoc.Document
 
 	d, err = ParseDocument(strings.NewReader(contents), path, attributes...)
 

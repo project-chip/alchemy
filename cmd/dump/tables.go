@@ -4,30 +4,30 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii"
 )
 
-func dumpTable(doc *ascii.Doc, tbl *elements.Table, indent int) {
+func dumpTable(doc *ascii.Doc, tbl *asciidoc.Table, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{cells}:\n")
 	for _, row := range tbl.Elements() {
 		switch row := row.(type) {
-		case *elements.TableRow:
+		case *asciidoc.TableRow:
 			dumpTableRow(doc, row, indent+1)
 		default:
-			dumpElements(doc, elements.Set{row}, indent+1)
+			dumpElements(doc, asciidoc.Set{row}, indent+1)
 		}
 	}
 }
 
-func dumpTableRow(doc *ascii.Doc, row *elements.TableRow, indent int) {
+func dumpTableRow(doc *ascii.Doc, row *asciidoc.TableRow, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{row}:\n")
 	dumpTableCells(doc, row.TableCells(), indent+1)
 }
 
-func dumpTableCells(doc *ascii.Doc, cells []*elements.TableCell, indent int) {
+func dumpTableCells(doc *ascii.Doc, cells []*asciidoc.TableCell, indent int) {
 	for _, c := range cells {
 		fmt.Print(strings.Repeat("\t", indent))
 		if c.Blank {

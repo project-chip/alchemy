@@ -4,15 +4,15 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[elements.Attributable][]mattertypes.Entity) (attributes matter.FieldSet, err error) {
-	var rows []*elements.TableRow
+func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (attributes matter.FieldSet, err error) {
+	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)

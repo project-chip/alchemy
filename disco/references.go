@@ -4,12 +4,12 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
 
-func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*elements.CrossReference, anchors map[string]*ascii.Anchor) {
+func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*asciidoc.CrossReference, anchors map[string]*ascii.Anchor) {
 	for id, xrefs := range crossReferences {
 		info, ok := anchors[id]
 		if !ok {
@@ -27,8 +27,8 @@ func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*elements.Cro
 
 			// If the cross reference has a label that's the same as the one we generated for the anchor, remove it
 			if len(xref.Set) == 1 {
-				if label, ok := xref.Set[0].(*elements.String); ok {
-					labelString := strings.TrimSpace(elements.AttributeAsciiDocString(info.LabelElements))
+				if label, ok := xref.Set[0].(*asciidoc.String); ok {
+					labelString := strings.TrimSpace(asciidoc.AttributeAsciiDocString(info.LabelElements))
 					if labelString == string(label.Value) {
 						xref.Set = nil
 					}

@@ -5,18 +5,18 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toClusters(d *Doc, entityMap map[elements.Attributable][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
+func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
 	var clusters []*matter.Cluster
 	var description string
-	p := parse.FindFirst[*elements.Paragraph](s.Elements())
+	p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
 	if p != nil {
-		se := parse.FindFirst[*elements.String](p.Elements())
+		se := parse.FindFirst[*asciidoc.String](p.Elements())
 		if se != nil {
 			description = strings.ReplaceAll(se.Value, "\n", " ")
 		}
@@ -183,7 +183,7 @@ func assignCustomDataType(c *matter.Cluster, dt *mattertypes.DataType) {
 }
 
 func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, err error) {
-	var rows []*elements.TableRow
+	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(doc, s)

@@ -5,14 +5,14 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[elements.Attributable][]mattertypes.Entity) (events matter.EventSet, err error) {
-	var rows []*elements.TableRow
+func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (events matter.EventSet, err error) {
+	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
@@ -67,7 +67,7 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[elemen
 				slog.Debug("unknown event", "event", name)
 				continue
 			}
-			var rows []*elements.TableRow
+			var rows []*asciidoc.TableRow
 			var headerRowIndex int
 			var columnMap ColumnIndex
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)

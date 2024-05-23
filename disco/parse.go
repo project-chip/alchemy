@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
@@ -43,8 +43,8 @@ type clusterInfo struct {
 }
 
 type tableInfo struct {
-	element      *elements.Table
-	rows         []*elements.TableRow
+	element      *asciidoc.Table
+	rows         []*asciidoc.TableRow
 	headerRow    int
 	columnMap    ascii.ColumnIndex
 	extraColumns []ascii.ExtraColumn

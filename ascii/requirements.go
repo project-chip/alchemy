@@ -5,14 +5,14 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.ClusterRequirement, err error) {
-	var rows []*elements.TableRow
+	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
@@ -68,7 +68,7 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 }
 
 func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.ElementRequirement, err error) {
-	var rows []*elements.TableRow
+	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
@@ -148,7 +148,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 }
 
 func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err error) {
-	var rows []*elements.TableRow
+	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	var extraColumns []ExtraColumn

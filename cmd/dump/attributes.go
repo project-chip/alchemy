@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
-func dumpAttributes(attributes []elements.Attribute, indent int) {
+func dumpAttributes(attributes []asciidoc.Attribute, indent int) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -16,15 +16,15 @@ func dumpAttributes(attributes []elements.Attribute, indent int) {
 	for _, a := range attributes {
 		fmt.Print(strings.Repeat("\t", indent+1))
 		switch a := a.(type) {
-		case *elements.NamedAttribute:
+		case *asciidoc.NamedAttribute:
 			fmt.Printf(" %s=", a.Name)
 		}
 		switch v := a.Value().(type) {
-		case *elements.String:
+		case *asciidoc.String:
 			fmt.Print(v.Value)
 		case string:
 			fmt.Print(v)
-		/*case elements.Options:
+		/*case asciidoc.Options:
 		dumpAttributeVals(v, indent+1)*/
 		case []any:
 			dumpAttributeVals(v, indent+1)
@@ -42,11 +42,11 @@ func dumpAttributeVals(attributes []any, indent int) {
 	for _, val := range attributes {
 		fmt.Print(strings.Repeat("\t", indent+1))
 		switch v := val.(type) {
-		case elements.String:
+		case asciidoc.String:
 			fmt.Print(v)
 		case string:
 			fmt.Print(v)
-		case *elements.TableColumn:
+		case *asciidoc.TableColumn:
 			fmt.Printf("{col:\n")
 			fmt.Print(strings.Repeat("\t", indent+2))
 			fmt.Printf("multiplier: %d\n", v.Multiplier.Value)

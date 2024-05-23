@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
@@ -13,15 +13,15 @@ var multipleSpacesPattern = regexp.MustCompile(`([\w.?!,\(\)\-":]) {2,}([\w.?!,\
 var lowercaseHexPattern = regexp.MustCompile(`(\b0x[0-9a-f]*[a-f][0-9a-f]*\b)`)
 var lowercasePattern = regexp.MustCompile(`[a-f]+`)
 
-func precleanStrings(els elements.Set) {
-	parse.Search(els, func(t *elements.String) parse.SearchShould {
+func precleanStrings(els asciidoc.Set) {
+	parse.Search(els, func(t *asciidoc.String) parse.SearchShould {
 		t.Value = strings.ReplaceAll(t.Value, "\t", "  ")
 		return parse.SearchShouldContinue
 	})
 }
 
-func (b *Ball) postCleanUpStrings(els elements.Set) {
-	parse.Search(els, func(t *elements.String) parse.SearchShould {
+func (b *Ball) postCleanUpStrings(els asciidoc.Set) {
+	parse.Search(els, func(t *asciidoc.String) parse.SearchShould {
 		if b.options.addSpaceAfterPunctuation {
 			t.Value = missingSpaceAfterPunctuationPattern.ReplaceAllString(t.Value, "$1$2 $3")
 		}

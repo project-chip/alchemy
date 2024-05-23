@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
@@ -51,16 +51,16 @@ func normalizeAnchor(info *ascii.Anchor) {
 	} else {
 		name := info.Name()
 		if len(name) == 0 {
-			name = elements.AttributeAsciiDocString(info.LabelElements)
+			name = asciidoc.AttributeAsciiDocString(info.LabelElements)
 		}
 		id, label := normalizeAnchorID(name, info.Element, info.Parent)
 		info.ID = id
 		info.LabelElements = label
 	}
 	name := info.Name()
-	if strings.TrimSpace(elements.AttributeAsciiDocString(info.LabelElements)) == name {
+	if strings.TrimSpace(asciidoc.AttributeAsciiDocString(info.LabelElements)) == name {
 		label := normalizeAnchorLabel(name, info.Element)
-		if len(label) > 0 && strings.TrimSpace(elements.AttributeAsciiDocString(label)) != name {
+		if len(label) > 0 && strings.TrimSpace(asciidoc.AttributeAsciiDocString(label)) != name {
 			info.LabelElements = label
 		} else {
 			info.LabelElements = nil
@@ -70,7 +70,7 @@ func normalizeAnchor(info *ascii.Anchor) {
 
 var anchorInvalidCharacters = strings.NewReplacer(".", "", "(", "", ")", "")
 
-func normalizeAnchorID(name string, element any, parent any) (id string, label elements.Set) {
+func normalizeAnchorID(name string, element any, parent any) (id string, label asciidoc.Set) {
 	var parentName string
 
 	label = normalizeAnchorLabel(name, element)
@@ -93,58 +93,58 @@ func normalizeAnchorID(name string, element any, parent any) (id string, label e
 	var ref strings.Builder
 	ref.WriteString("ref_")
 	ref.WriteString(parentName)
-	labelString := elements.AttributeAsciiDocString(label)
+	labelString := asciidoc.AttributeAsciiDocString(label)
 	ref.WriteString(matter.Case(anchorInvalidCharacters.Replace(labelString)))
 	id = ref.String()
 	return
 }
 
-func normalizeAnchorLabel(name string, element any) (label elements.Set) {
+func normalizeAnchorLabel(name string, element any) (label asciidoc.Set) {
 	switch element.(type) {
-	case *elements.Table:
-		label = elements.Set{elements.NewString(strings.TrimSpace(name))}
+	case *asciidoc.Table:
+		label = asciidoc.Set{asciidoc.NewString(strings.TrimSpace(name))}
 	default:
 		name = strings.TrimSuffix(name, " Type")
-		label = elements.Set{elements.NewString(strings.TrimSpace(matter.StripReferenceSuffixes(name)))}
+		label = asciidoc.Set{asciidoc.NewString(strings.TrimSpace(matter.StripReferenceSuffixes(name)))}
 	}
 	return
 }
 
-func setAnchorID(element elements.Attributable, id string, label elements.Set) {
-	var idAttribute *elements.NamedAttribute
-	var refTextAttribute *elements.NamedAttribute
+func setAnchorID(element asciidoc.Attributable, id string, label asciidoc.Set) {
+	var idAttribute *asciidoc.NamedAttribute
+	var refTextAttribute *asciidoc.NamedAttribute
 	for _, a := range element.Attributes() {
 		switch a := a.(type) {
-		case *elements.AnchorAttribute:
-			a.ID = elements.NewString(id)
+		case *asciidoc.AnchorAttribute:
+			a.ID = asciidoc.NewString(id)
 			if len(label) > 0 {
 				a.Label = label
 			} else {
 				a.Label = nil
 			}
 			return
-		case *elements.NamedAttribute:
+		case *asciidoc.NamedAttribute:
 			switch a.Name {
-			case elements.AttributeNameID:
+			case asciidoc.AttributeNameID:
 				idAttribute = a
-			case elements.AttributeNameReferenceText:
+			case asciidoc.AttributeNameReferenceText:
 				refTextAttribute = a
 			}
 		}
 	}
 
 	if idAttribute != nil {
-		idAttribute.Val = elements.Set{elements.NewString(id)}
+		idAttribute.Val = asciidoc.Set{asciidoc.NewString(id)}
 		if len(label) > 0 {
 			if refTextAttribute != nil {
 				refTextAttribute.Val = label
 			} else {
-				element.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameReferenceText), label, elements.AttributeQuoteTypeDouble))
+				element.AppendAttribute(asciidoc.NewNamedAttribute(string(asciidoc.AttributeNameReferenceText), label, asciidoc.AttributeQuoteTypeDouble))
 			}
 		}
 		return
 	}
-	element.AppendAttribute(elements.NewAnchorAttribute(elements.NewString(id), label))
+	element.AppendAttribute(asciidoc.NewAnchorAttribute(asciidoc.NewString(id), label))
 }
 
 func disambiguateAnchorSet(infos []*ascii.Anchor) error {

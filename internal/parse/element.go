@@ -4,16 +4,16 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
 type HasElements interface {
-	SetElements(elements.Set) error
-	Elements() elements.Set
+	SetElements(asciidoc.Set) error
+	Elements() asciidoc.Set
 }
 
 type HasBase interface {
-	GetBase() elements.Element
+	GetBase() asciidoc.Element
 }
 
 func HexOrDec(s string) (uint64, error) {

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -14,8 +14,8 @@ import (
 
 var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
-func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[elements.Attributable][]mattertypes.Entity) (commands matter.CommandSet, err error) {
-	var rows []*elements.TableRow
+func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (commands matter.CommandSet, err error) {
+	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
@@ -88,12 +88,12 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[elem
 					continue
 				}
 			}
-			p := parse.FindFirst[*elements.Paragraph](s.Elements())
+			p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
 			if p != nil {
 				var foundString bool
 				var description strings.Builder
 				for _, e := range p.Elements() {
-					s, ok := e.(*elements.String)
+					s, ok := e.(*asciidoc.String)
 					if ok {
 						foundString = true
 						description.WriteString(s.Value)
@@ -104,7 +104,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[elem
 				c.Description = strings.ReplaceAll(description.String(), "\n", " ")
 			}
 
-			var rows []*elements.TableRow
+			var rows []*asciidoc.TableRow
 			var headerRowIndex int
 			var columnMap ColumnIndex
 			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)

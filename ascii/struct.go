@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toStruct(d *Doc, entityMap map[elements.Attributable][]mattertypes.Entity) (ms *matter.Struct, err error) {
+func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (ms *matter.Struct, err error) {
 	name := strings.TrimSuffix(s.Name, " Type")
-	var rows []*elements.TableRow
+	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
