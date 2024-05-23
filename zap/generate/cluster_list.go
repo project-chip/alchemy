@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/iancoleman/orderedmap"
 	"github.com/iancoleman/strcase"
 )
@@ -31,7 +31,7 @@ func (p ClusterListPatcher) Type() pipeline.ProcessorType {
 	return pipeline.ProcessorTypeCollective
 }
 
-func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*ascii.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
+func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	clusterListPath := path.Join(p.sdkRoot, "/src/app/zap_cluster_list.json")
 	var clusterListBytes []byte

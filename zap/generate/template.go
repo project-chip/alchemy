@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
@@ -58,11 +58,11 @@ func (tg TemplateGenerator) Type() pipeline.ProcessorType {
 	return pipeline.ProcessorTypeIndividual
 }
 
-func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*ascii.Doc], err error) {
+func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*spec.Doc], err error) {
 	return tg.render(cxt, input)
 }
 
-func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*ascii.Doc]) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*ascii.Doc], err error) {
+func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*spec.Doc], err error) {
 	var entities []types.Entity
 	entities, err = input.Content.Entities()
 	if err != nil {
@@ -149,10 +149,10 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*a
 	return
 }
 
-func SplitZAPDocs(cxt context.Context, inputs pipeline.Map[string, *pipeline.Data[*ascii.Doc]]) (clusters pipeline.Map[string, *pipeline.Data[*ascii.Doc]], deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]], err error) {
-	clusters = pipeline.NewMap[string, *pipeline.Data[*ascii.Doc]]()
+func SplitZAPDocs(cxt context.Context, inputs pipeline.Map[string, *pipeline.Data[*spec.Doc]]) (clusters pipeline.Map[string, *pipeline.Data[*spec.Doc]], deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]], err error) {
+	clusters = pipeline.NewMap[string, *pipeline.Data[*spec.Doc]]()
 	deviceTypes = pipeline.NewMap[string, *pipeline.Data[[]*matter.DeviceType]]()
-	inputs.Range(func(path string, data *pipeline.Data[*ascii.Doc]) bool {
+	inputs.Range(func(path string, data *pipeline.Data[*spec.Doc]) bool {
 		var hasCluster bool
 		var dts []*matter.DeviceType
 		var entities []types.Entity

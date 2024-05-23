@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 type Ball struct {
-	doc *ascii.Doc
+	doc *spec.Doc
 
 	options options
 }
 
-func NewBall(doc *ascii.Doc) *Ball {
+func NewBall(doc *spec.Doc) *Ball {
 	return &Ball{
 		doc:     doc,
 		options: defaultOptions,
@@ -30,8 +30,8 @@ func (b *Ball) disco(cxt context.Context) error {
 
 	precleanStrings(doc.Elements())
 
-	for _, top := range parse.Skim[*ascii.Section](doc.Elements()) {
-		err := ascii.AssignSectionTypes(doc, top)
+	for _, top := range parse.Skim[*spec.Section](doc.Elements()) {
+		err := spec.AssignSectionTypes(doc, top)
 		if err != nil {
 			return err
 		}
@@ -42,7 +42,7 @@ func (b *Ball) disco(cxt context.Context) error {
 		return fmt.Errorf("error assigning section types in %s: %w", doc.Path, err)
 	}
 
-	topLevelSection := parse.FindFirst[*ascii.Section](doc.Elements())
+	topLevelSection := parse.FindFirst[*spec.Section](doc.Elements())
 	if topLevelSection == nil {
 		return ErrEmptyDoc
 	}
@@ -84,7 +84,7 @@ func (b *Ball) disco(cxt context.Context) error {
 	return b.normalizeAnchors(doc)
 }
 
-func (b *Ball) discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docType matter.DocType) error {
+func (b *Ball) discoBallTopLevelSection(doc *spec.Doc, top *spec.Section, docType matter.DocType) error {
 	if b.options.reorderSections {
 		sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 		if !ok {
@@ -96,7 +96,7 @@ func (b *Ball) discoBallTopLevelSection(doc *ascii.Doc, top *ascii.Section, docT
 				return fmt.Errorf("error reordering sections in %s: %w", doc.Path, err)
 			}
 		}
-		dataTypesSection := ascii.FindSectionByType(top, matter.SectionDataTypes)
+		dataTypesSection := spec.FindSectionByType(top, matter.SectionDataTypes)
 		if dataTypesSection != nil {
 			err := reorderSection(dataTypesSection, matter.DataTypeSectionOrder)
 			if err != nil {

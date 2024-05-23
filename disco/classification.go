@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (err error) {
@@ -61,7 +61,7 @@ func getClassificationInfo(classificationTable *tableInfo) (ci *classificationIn
 		}
 		if hasHierarchy {
 			hierarchyCell := row.Cell(hierarchyIndex)
-			vc, e := ascii.RenderTableCell(hierarchyCell)
+			vc, e := spec.RenderTableCell(hierarchyCell)
 			if e != nil {
 				continue
 			}

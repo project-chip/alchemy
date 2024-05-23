@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
 type conformanceEntityFormatter func(entity types.Entity) string
 
-func renderPicsConformance(b *strings.Builder, doc *ascii.Doc, cluster *matter.Cluster, cs conformance.Set) {
+func renderPicsConformance(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, cs conformance.Set) {
 	if len(cs) == 0 {
 		return
 	}
 	renderConformance(cs, b, doc, cluster, entityPICS)
 }
 
-func renderFeatureConformance(b *strings.Builder, doc *ascii.Doc, cluster *matter.Cluster, cs conformance.Set) {
+func renderFeatureConformance(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, cs conformance.Set) {
 	if len(cs) == 0 {
 		return
 	}
@@ -27,7 +27,7 @@ func renderFeatureConformance(b *strings.Builder, doc *ascii.Doc, cluster *matte
 	renderConformance(cs, b, doc, cluster, entityVariable)
 }
 
-func renderConformance(cs conformance.Set, b *strings.Builder, doc *ascii.Doc, cluster *matter.Cluster, formatter conformanceEntityFormatter) {
+func renderConformance(cs conformance.Set, b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, formatter conformanceEntityFormatter) {
 	for _, c := range cs {
 		switch c := c.(type) {
 		case *conformance.Mandatory:
@@ -58,7 +58,7 @@ func renderConformance(cs conformance.Set, b *strings.Builder, doc *ascii.Doc, c
 	}
 }
 
-func renderExpression(b *strings.Builder, doc *ascii.Doc, cluster *matter.Cluster, exp conformance.Expression, formatter conformanceEntityFormatter) {
+func renderExpression(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, exp conformance.Expression, formatter conformanceEntityFormatter) {
 	switch exp := exp.(type) {
 	case *conformance.EqualityExpression:
 		b.WriteRune('(')

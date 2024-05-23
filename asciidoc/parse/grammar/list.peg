@@ -1,0 +1,31 @@
+
+ListItemValue = line:InlineElement+ &EndOfLine lines:(ListItemLine)* attachedBlocks:(AttachedBlocks)? {
+    value := []any{line}
+    if lines != nil {
+        value = append(value, lines)
+    }
+     if attachedBlocks != nil {
+        value = append(value, attachedBlocks.([]any))
+    }
+    return flat(value), nil
+}
+
+AttachedBlock = element:(AttachedBlockElement) &EndOfLine {
+    return element, nil
+}
+
+AttachedBlockElement = "+" _* NewLine value:(BlockElements) {
+    return asciidoc.NewAttachedBlock(value.(asciidoc.Element)), nil
+}
+
+ListContinuation = "+" _* NewLine value:BlockElement {
+    return compose(c, asciidoc.NewListContinuation(value.(asciidoc.Element)))
+}
+
+ListItemLine = EndOfLine !OrderedListMarker !UnorderedListMarker !BlockDelimiters  element:InlineElement+ &EndOfLine {
+    return []any{&asciidoc.NewLine{}, element}, nil
+}
+
+AttachedBlocks = blocks:(AttachedBlockElement)+ &EndOfLine {
+    return blocks, nil
+}

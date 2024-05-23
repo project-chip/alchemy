@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 func getAppClusterPath(sdkRoot string, path string) string {
@@ -23,7 +23,7 @@ type clusterID struct {
 	name string
 }
 
-func renderAppCluster(cxt context.Context, doc *ascii.Doc, clusters []*matter.Cluster) (output string, err error) {
+func renderAppCluster(cxt context.Context, doc *spec.Doc, clusters []*matter.Cluster) (output string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)

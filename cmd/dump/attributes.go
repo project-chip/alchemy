@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
+	"github.com/hasty/alchemy/asciidoc"
 )
 
 func dumpAttributes(attributes []asciidoc.Attribute, indent int) {

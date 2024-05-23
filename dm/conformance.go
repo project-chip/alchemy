@@ -5,12 +5,12 @@ import (
 	"strconv"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func renderConformanceString(doc *ascii.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
+func renderConformanceString(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
 	if c == nil {
 		return nil
 	}
@@ -37,7 +37,7 @@ func renderConformanceString(doc *ascii.Doc, identifierStore conformance.Identif
 	return nil
 }
 
-func renderConformance(doc *ascii.Doc, identifierStore conformance.IdentifierStore, con conformance.Conformance, parent *etree.Element) (err error) {
+func renderConformance(doc *spec.Doc, identifierStore conformance.IdentifierStore, con conformance.Conformance, parent *etree.Element) (err error) {
 	switch con := con.(type) {
 	case *conformance.Mandatory:
 		_, isEquality := con.Expression.(*conformance.EqualityExpression)
@@ -91,7 +91,7 @@ func renderConformance(doc *ascii.Doc, identifierStore conformance.IdentifierSto
 	return nil
 }
 
-func renderConformanceExpression(doc *ascii.Doc, identifierStore conformance.IdentifierStore, exp conformance.Expression, parent *etree.Element) error {
+func renderConformanceExpression(doc *spec.Doc, identifierStore conformance.IdentifierStore, exp conformance.Expression, parent *etree.Element) error {
 	if exp == nil {
 		return nil
 	}
@@ -182,7 +182,7 @@ func renderConformanceExpression(doc *ascii.Doc, identifierStore conformance.Ide
 	return nil
 }
 
-func renderConformanceEqualityExpression(doc *ascii.Doc, cluster conformance.IdentifierStore, exp *conformance.EqualityExpression, parent *etree.Element) (err error) {
+func renderConformanceEqualityExpression(doc *spec.Doc, cluster conformance.IdentifierStore, exp *conformance.EqualityExpression, parent *etree.Element) (err error) {
 	var e *etree.Element
 	if exp.Not {
 		e = parent.CreateElement("notEqualTerm")

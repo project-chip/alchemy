@@ -6,12 +6,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/cmd/common"
 	"github.com/hasty/alchemy/compare"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 	"github.com/hasty/alchemy/zap/generate"
@@ -43,21 +43,21 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
 
-	asciiSettings = append(ascii.GithubSettings(), asciiSettings...)
+	asciiSettings = append(spec.GithubSettings(), asciiSettings...)
 
 	specFiles, err := pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
 	if err != nil {
 		return err
 	}
 
-	docParser := ascii.NewParser(asciiSettings)
-	specDocs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docParser, specFiles)
+	docParser := spec.NewParser(asciiSettings)
+	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err
 	}
 
 	var specParser files.SpecParser
-	specDocs, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, &specParser, specDocs)
+	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocs)
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	zapParser.ResolveReferences()
 
 	var specEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
-	specEntities, err = pipeline.Process[*ascii.Doc, []types.Entity](cxt, pipelineOptions, &common.EntityFilter[*ascii.Doc, types.Entity]{}, specDocs)
+	specEntities, err = pipeline.Process[*spec.Doc, []types.Entity](cxt, pipelineOptions, &common.EntityFilter[*spec.Doc, types.Entity]{}, specDocs)
 
 	if err != nil {
 		return

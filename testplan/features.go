@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func renderFeatures(doc *ascii.Doc, cluster *matter.Cluster, b *strings.Builder) {
+func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder) {
 	if cluster.Features != nil && len(cluster.Features.Bits) > 0 {
 		b.WriteString("==== Features\n\n// FeatureMap defined macros\n")
 		for _, bit := range cluster.Features.Bits {

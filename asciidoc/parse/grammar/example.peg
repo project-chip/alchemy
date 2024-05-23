@@ -1,0 +1,45 @@
+
+Example =
+    start:(ExampleStart)
+    lines:(!ExampleDelimiter Element)*
+    ExampleEnd {
+        return compose(c, asciidoc.NewExampleBlock(start.(asciidoc.Delimiter)), setElements[*asciidoc.ExampleBlock](join(lines.([]any))))
+    }
+
+ExampleStart = delimiter:ExampleDelimiter EndOfLine &{
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeExample, delimiter.(asciidoc.Delimiter).Length)
+        return true, nil
+    } {
+        debugPosition(c, "matched example start: %s\n", string(c.text))
+        return delimiter, nil
+    }
+
+ExampleEnd = delimiter:ExampleDelimiter &EndOfLine &{
+    debugPosition(c, "matched example end: %s\n", string(c.text))
+    previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeExample)
+    if previous == delimiter.(asciidoc.Delimiter).Length {
+        c.popDelimitedLevel(asciidoc.DelimitedBlockTypeExample)
+        return true, nil
+    }
+    debugPosition(c, "example end wrong length: %s (%d vs. %d)\n", string(c.text), previous, delimiter.(asciidoc.Delimiter).Length)
+    return false, nil
+    } 
+
+ExampleEquals = hyphens:("====" "="*) &{
+        return delimitedLength(hyphens) >= 4, nil
+    } 
+    { 
+    debugPosition(c, "matched example equals: %s\n", string(c.text))
+        return delimitedLength(hyphens), nil
+    }
+
+ExampleDelimiter = hyphens:(ExampleEquals) 
+    _*  
+    {
+    debugPosition(c, "matched example delimiter: %s\n", string(c.text))
+        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeExample, Length:hyphens.(int)}, nil
+    }
+
+ExampleLine = (!ExampleDelimiter NotEndOfFile line:AnyText EndOfLine) {
+    return line.(string), nil
+}

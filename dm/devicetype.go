@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -20,7 +20,7 @@ func getDeviceTypePath(sdkRoot string, path string) string {
 	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
 }
 
-func renderDeviceType(cxt context.Context, doc *ascii.Doc, deviceTypes []*matter.DeviceType) (output string, err error) {
+func renderDeviceType(cxt context.Context, doc *spec.Doc, deviceTypes []*matter.DeviceType) (output string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
@@ -98,7 +98,7 @@ func renderDeviceType(cxt context.Context, doc *ascii.Doc, deviceTypes []*matter
 	return
 }
 
-func renderElementRequirements(doc *ascii.Doc, deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
+func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
 	erMap := make(map[types.EntityType][]*matter.ElementRequirement)
 	for _, er := range deviceType.ElementRequirements {
 		if er.ID.Equals(cr.ID) {
@@ -193,7 +193,7 @@ func renderElementRequirements(doc *ascii.Doc, deviceType *matter.DeviceType, cr
 	return
 }
 
-func renderAttributeRequirement(doc *ascii.Doc, deviceType *matter.DeviceType, er *matter.ElementRequirement, parent *etree.Element) (err error) {
+func renderAttributeRequirement(doc *spec.Doc, deviceType *matter.DeviceType, er *matter.ElementRequirement, parent *etree.Element) (err error) {
 	var code string
 	var attribute *matter.Field
 	var dataType *types.DataType

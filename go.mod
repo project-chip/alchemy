@@ -5,7 +5,6 @@ go 1.21
 require (
 	github.com/beevik/etree v1.2.0
 	github.com/bmatcuk/doublestar/v4 v4.6.0
-	github.com/bytesparadise/libasciidoc v0.8.0
 	github.com/dolthub/go-mysql-server v0.17.0
 	github.com/fatih/color v1.16.0
 	github.com/google/go-github/v60 v60.0.0
@@ -22,10 +21,8 @@ require (
 )
 
 require (
-	github.com/alecthomas/chroma/v2 v2.11.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/dlclark/regexp2 v1.10.0 // indirect
 	github.com/dolthub/flatbuffers/v23 v23.3.3-dh.2 // indirect
 	github.com/dolthub/go-icu-regex v0.0.0-20230524105445-af7e7991c97e // indirect
 	github.com/dolthub/jsonpath v0.0.2-0.20230525180605-8dc13778fd72 // indirect
@@ -35,7 +32,6 @@ require (
 	github.com/gocraft/dbr/v2 v2.7.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/google/pprof v0.0.0-20231127191134-f3a68a39ae15 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -44,8 +40,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/mitchellh/hashstructure v1.1.0 // indirect
-	github.com/onsi/ginkgo/v2 v2.13.1 // indirect
-	github.com/onsi/gomega v1.29.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
@@ -68,5 +62,4 @@ require (
 	google.golang.org/grpc v1.58.2 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/src-d/go-errors.v1 v1.0.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

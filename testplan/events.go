@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func renderEvents(doc *ascii.Doc, cluster *matter.Cluster, b *strings.Builder) {
+func renderEvents(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder) {
 	if len(cluster.Events) == 0 {
 		return
 	}

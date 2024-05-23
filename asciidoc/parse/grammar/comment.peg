@@ -1,0 +1,60 @@
+SingleLineComment = SingleLineCommentDelimiter !"//" comment:(SingleLineCommentContent) &EndOfLine {
+    debugPosition(c, "matched comment \"%s\" (%d)\n", comment.(string), len(comment.(string)))
+    return compose(c, asciidoc.NewSingleLineComment(comment.(string)))
+}
+
+SingleLineCommentDelimiter = "//" {
+    debugPosition(c, "matched comment delimiter\n")
+    return string(c.text), nil
+}
+
+SingleLineCommentContent = [^\n]* {
+    debugPosition(c, "matched comment content\n")
+    return string(c.text), nil
+}
+
+MultiLineComment =
+    start:(MultiLineCommentStart)
+    lines:(MultiLineCommentLine)*
+    MultiLineCommentEnd {
+        return compose(c, asciidoc.NewMultiLineComment(start.(asciidoc.Delimiter)), setLines[*asciidoc.MultiLineComment](cast[any, string](lines.([]any))))
+    }
+
+MultiLineCommentStart = delimiter:MultiLineCommentDelimiter EndOfLine  &{
+    debugPosition(c, "matched MultiLineComment start: %s\n", string(c.text))
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeMultiLineComment, delimiter.(asciidoc.Delimiter).Length)
+        return true, nil
+    } {
+        return delimiter, nil
+    }
+
+MultiLineCommentEnd = delimiter:MultiLineCommentDelimiter &EndOfLine &{
+    debugPosition(c, "matched MultiLineComment end: %s\n", string(c.text))
+    previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeMultiLineComment)
+    if previous == delimiter.(asciidoc.Delimiter).Length {
+        c.popDelimitedLevel(asciidoc.DelimitedBlockTypeMultiLineComment)
+        return true, nil
+    }
+    debugPosition(c, "MultiLineComment end wrong length: %s (%d vs. %d)\n", string(c.text), previous, delimiter.(asciidoc.Delimiter).Length)
+    return false, nil
+    } 
+
+MultiLineCommentForwardSlashes = forwardSlashes:("////" "/"*) &{
+    debugPosition(c, "checking MultiLineComment slashes: %d\n", delimitedLength(forwardSlashes))
+        return delimitedLength(forwardSlashes) >= 4, nil
+    } 
+    { 
+        debugPosition(c, "matched MultiLineComment slashes: %s\n", string(c.text))
+        return delimitedLength(forwardSlashes), nil
+    }
+
+MultiLineCommentDelimiter = forwardSlashes:(MultiLineCommentForwardSlashes) 
+    _*  
+    {
+        debugPosition(c, "matched MultiLineComment delimiter: %s\n", string(c.text))
+        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeMultiLineComment, Length:forwardSlashes.(int)}, nil
+    }
+
+MultiLineCommentLine = (!MultiLineCommentDelimiter NotEndOfFile line:AnyText EndOfLine) {
+    return line.(string), nil
+}

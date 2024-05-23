@@ -6,21 +6,21 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z]+[a-z]+(?:[A-Z]+[a-z]*)*([A-Z]+[a-z]*(?:[A-Z]+[a-z]*)*)*$`)
 
-func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
+func (b *Ball) normalizeAnchors(doc *spec.Doc) error {
 
 	anchors, err := doc.Anchors()
 	if err != nil {
 		return fmt.Errorf("error fetching anchors in %s: %w", doc.Path, err)
 	}
 
-	newAnchors := make(map[string][]*ascii.Anchor)
+	newAnchors := make(map[string][]*spec.Anchor)
 	for _, info := range anchors {
 		// Fix all the bad references, and add to list of new anchors, ignoring duplicates for now
 		normalizeAnchor(info)
@@ -43,7 +43,7 @@ func (b *Ball) normalizeAnchors(doc *ascii.Doc) error {
 	return nil
 }
 
-func normalizeAnchor(info *ascii.Anchor) {
+func normalizeAnchor(info *spec.Anchor) {
 	if properAnchorPattern.Match([]byte(info.ID)) {
 		if len(info.LabelElements) == 0 {
 			info.LabelElements = normalizeAnchorLabel(info.Name(), info.Element)
@@ -76,10 +76,10 @@ func normalizeAnchorID(name string, element any, parent any) (id string, label a
 	label = normalizeAnchorLabel(name, element)
 
 	switch p := parent.(type) {
-	case *ascii.Section:
+	case *spec.Section:
 		switch p.SecType {
 		case matter.SectionDataTypeStruct, matter.SectionCommand, matter.SectionDataTypeEnum, matter.SectionDataTypeBitmap, matter.SectionEvent:
-			parentName = ascii.ReferenceName(p.Base)
+			parentName = spec.ReferenceName(p.Base)
 			parentName = matter.StripTypeSuffixes(parentName)
 			parentName, _ = normalizeAnchorID(parentName, p.Base, p.Parent)
 			parentName = strings.TrimPrefix(parentName, "ref_")
@@ -147,14 +147,14 @@ func setAnchorID(element asciidoc.Attributable, id string, label asciidoc.Set) {
 	element.AppendAttribute(asciidoc.NewAnchorAttribute(asciidoc.NewString(id), label))
 }
 
-func disambiguateAnchorSet(infos []*ascii.Anchor) error {
+func disambiguateAnchorSet(infos []*spec.Anchor) error {
 	parents := make([]any, len(infos))
 	refIDs := make([]string, len(infos))
 	for i, info := range infos {
 		parents[i] = info.Parent
 		refIDs[i] = info.ID
 	}
-	parentSections := make([]*ascii.Section, len(infos))
+	parentSections := make([]*spec.Section, len(infos))
 	for {
 		for i := range infos {
 			parentSection := findRefSection(parents[i])
@@ -162,7 +162,7 @@ func disambiguateAnchorSet(infos []*ascii.Anchor) error {
 				return fmt.Errorf("duplicate anchor: %s with invalid parent", refIDs[i])
 			}
 			parentSections[i] = parentSection
-			parentName := ascii.ReferenceName(parentSection.Base)
+			parentName := spec.ReferenceName(parentSection.Base)
 			parentName = matter.StripTypeSuffixes(parentName)
 			refParentID, _ := normalizeAnchorID(parentName, parentSection.Base, parentSection.Parent)
 			refIDs[i] = refParentID + strings.TrimPrefix(refIDs[i], "ref_")

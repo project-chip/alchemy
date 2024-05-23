@@ -3,8 +3,8 @@ package disco
 import (
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
@@ -30,14 +30,14 @@ func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType m
 	}
 	for _, row := range table.rows[1:] {
 		accessCell := row.Cell(accessIndex)
-		vc, e := ascii.RenderTableCell(accessCell)
+		vc, e := spec.RenderTableCell(accessCell)
 		if e != nil {
 			continue
 		}
 		var access matter.Access
 		var parsed bool
 		if len(strings.TrimSpace(vc)) > 0 {
-			access, parsed = ascii.ParseAccess(vc, entityType)
+			access, parsed = spec.ParseAccess(vc, entityType)
 			if !parsed {
 				continue
 			}
@@ -53,16 +53,16 @@ func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType m
 		}
 		if directionIndex >= 0 {
 			directionCell := row.Cell(directionIndex)
-			rc, e := ascii.RenderTableCell(directionCell)
+			rc, e := spec.RenderTableCell(directionCell)
 			if e != nil {
 				continue
 			}
-			direction := ascii.ParseCommandDirection(rc)
+			direction := spec.ParseCommandDirection(rc)
 			if direction == matter.InterfaceClient {
 				access.Invoke = matter.PrivilegeUnknown
 			}
 		}
-		replacementAccess := ascii.AccessToASCIIDocString(access, entityType)
+		replacementAccess := spec.AccessToASCIIDocString(access, entityType)
 		if vc != replacementAccess {
 			err = setCellString(accessCell, replacementAccess)
 			if err != nil {

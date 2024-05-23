@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -79,7 +79,7 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string,
 	}
 	sr.values[matter.TableColumnQuality] = f.Quality.String()
 	sr.values[matter.TableColumnDefault] = f.Default
-	sr.values[matter.TableColumnAccess] = ascii.AccessToASCIIDocString(f.Access, entityType)
+	sr.values[matter.TableColumnAccess] = spec.AccessToASCIIDocString(f.Access, entityType)
 	if f.Conformance != nil {
 		sr.values[matter.TableColumnConformance] = f.Conformance.ASCIIDocString()
 	}
@@ -87,11 +87,11 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string,
 	parent.children[tableName] = append(parent.children[tableName], sv)
 }
 
-func (h *Host) indexDataTypes(cxt context.Context, doc *ascii.Doc, ds *sectionInfo, dts *ascii.Section) (err error) {
+func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInfo, dts *spec.Section) (err error) {
 	if ds.children == nil {
 		ds.children = make(map[string][]*sectionInfo)
 	}
-	for _, s := range parse.Skim[*ascii.Section](dts.Elements()) {
+	for _, s := range parse.Skim[*spec.Section](dts.Elements()) {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct:
 			var t string

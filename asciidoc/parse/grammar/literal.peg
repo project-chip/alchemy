@@ -1,0 +1,40 @@
+
+Literal =
+    start:(LiteralStart)
+    lines:(LiteralLine)*
+    LiteralEnd {
+        return compose(c, asciidoc.NewLiteralBlock(start.(asciidoc.Delimiter)), setLines[*asciidoc.LiteralBlock](cast[any,string](lines.([]any))))
+    }
+
+LiteralStart = BeginningOfLine delimiter:LiteralDelimiter EndOfLine &{
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeLiteral, delimiter.(asciidoc.Delimiter).Length)
+        return true, nil
+    } {
+        return delimiter, nil
+    }
+
+LiteralEnd = BeginningOfLine delimiter:LiteralDelimiter &EndOfLine &{
+    previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeLiteral)
+    if previous == delimiter.(asciidoc.Delimiter).Length {
+        c.popDelimitedLevel(asciidoc.DelimitedBlockTypeLiteral)
+        return true, nil
+    }
+    return false, nil
+    } 
+
+LiteralDots = dots:("...." "."*) &{
+        return delimitedLength(dots) >= 4, nil
+    } 
+    { 
+        return delimitedLength(dots), nil
+    }
+
+LiteralDelimiter = dots:(LiteralDots) 
+    _*  
+    {
+        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeLiteral, Length:dots.(int)}, nil
+    }
+
+LiteralLine = (!LiteralDelimiter NotEndOfFile line:AnyText EndOfLine) {
+    return line.(string), nil
+}

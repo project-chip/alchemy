@@ -3,15 +3,15 @@ package zap
 import (
 	"log/slog"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
 type Configurator struct {
 	Spec *matter.Spec
-	Doc  *ascii.Doc
+	Doc  *spec.Doc
 
 	Features []*matter.Number
 	Bitmaps  map[*matter.Bitmap][]*matter.Number
@@ -22,7 +22,7 @@ type Configurator struct {
 	ClusterIDs []string
 }
 
-func NewConfigurator(spec *matter.Spec, doc *ascii.Doc, entities []types.Entity) (*Configurator, error) {
+func NewConfigurator(spec *matter.Spec, doc *spec.Doc, entities []types.Entity) (*Configurator, error) {
 	c := &Configurator{
 		Spec:     spec,
 		Doc:      doc,

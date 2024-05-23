@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
+	"github.com/hasty/alchemy/asciidoc"
 )
 
 type HasElements interface {

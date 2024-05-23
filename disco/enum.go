@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -49,7 +49,7 @@ func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSecti
 		return fmt.Errorf("error adding missing table columns in enum section %s in %s: %w", es.section.Name, dp.doc.Path, err)
 	}
 
-	es.table.headerRow, es.table.columnMap, es.table.extraColumns, err = ascii.MapTableColumns(dp.doc, enumTable.rows)
+	es.table.headerRow, es.table.columnMap, es.table.extraColumns, err = spec.MapTableColumns(dp.doc, enumTable.rows)
 	if err != nil {
 		return fmt.Errorf("error reordering columns in enum table in section %s in %s: %w", es.section.Name, dp.doc.Path, err)
 

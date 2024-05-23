@@ -1,0 +1,11 @@
+
+Document = content:(Element)+ EndOfFile {
+   debugPosition(c, "document: %T %s\n", content, string(c.text))
+   return flat(content.([]any)), nil
+}
+
+Element = element:(BlockElement / InlineElements)  {
+   debugPosition(c, "element: %T %s\n", element, string(c.text))
+	return element, nil
+}
+

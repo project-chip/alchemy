@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func renderEnums(doc *ascii.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
+func renderEnums(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
 	enums := make([]*matter.Enum, len(cluster.Enums))
 	copy(enums, cluster.Enums)
 	slices.SortFunc(enums, func(a, b *matter.Enum) int {

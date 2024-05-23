@@ -1,0 +1,107 @@
+
+IfDef = IfDefStatement attributes:(ConditionalAttributes) "[]" _*  &EndOfLine {
+    attr := attributes.(conditionalAttributes)
+    return asciidoc.NewIfDef(attr.names, attr.union), nil
+}
+
+IfDefStatement = "ifdef::" {
+    debugPosition(c, "matched ifdef statement: %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+IfNDef = "ifndef::" attributes:(ConditionalAttributes) "[]" _*  &EndOfLine {
+     attr := attributes.(conditionalAttributes)
+    return asciidoc.NewIfNDef(attr.names, attr.union), nil
+}
+
+InlineIfDef = "ifdef::" attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" _* {
+    attr := attributes.(conditionalAttributes)
+    return compose(c, asciidoc.NewInlineIfDef(attr.names), setElements[*asciidoc.InlineIfDef](content))
+}
+
+InlineIfNDef = "ifndef::" attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" _* {
+    attr := attributes.(conditionalAttributes)
+    return compose(c, asciidoc.NewInlineIfNDef(attr.names), setElements[*asciidoc.InlineIfNDef](content))
+}
+
+EndIfDef = EndIfDefStatement attributes:(ConditionalAttributes)? "[]"  _* &EndOfLine  {
+    var attr []asciidoc.AttributeName
+    var union asciidoc.ConditionalUnion
+    if attributes != nil {
+        attr = attributes.(conditionalAttributes).names
+        union = attributes.(conditionalAttributes).union
+    }
+    return asciidoc.NewEndIf(attr, union), nil
+}
+
+EndIfDefStatement = "endif::" {
+    debugPosition(c, "matched endif statement: %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+ConditionalAttributes = attr:(ConditionalAttributesAny / ConditionalAttributesAll) {
+     debugPosition(c, "matched conditional attr: %s\n", string(c.text))
+    return attr, nil
+}
+
+ConditionalAttributesAny = names:(
+    name:AttributeEntryName _* ","? _* 
+    &{
+        return len(name.(string)) > 0, nil
+    }
+    {
+        return asciidoc.AttributeName(name.(string)), nil
+    }
+)+ {
+    return conditionalAttributes{names:cast[any, asciidoc.AttributeName](names.([]any)), union: asciidoc.ConditionalUnionAny}, nil
+}
+
+ConditionalAttributesAll = names:(
+    name:AttributeEntryName _* "+"? _* 
+    &{
+        return len(name.(string)) > 0, nil
+    }
+    {
+        return asciidoc.AttributeName(name.(string)), nil
+    }
+)+ {
+    return conditionalAttributes{names:cast[any, asciidoc.AttributeName](names.([]any)), union: asciidoc.ConditionalUnionAll}, nil
+}
+
+InlineConditionalContent = content:(!"]" element:InlineElement {
+    return element, nil
+})+ {
+    return content, nil
+}
+
+IfEval = IfEvalStatement "[" _* left:(IfEvalValue) _*  operand:(IfEvalOperator) _* right:(IfEvalValue) _* "]" _*  {
+     debugPosition(c, "matched ifeval: %s\n", string(c.text))
+    return asciidoc.NewIfEval(left.(asciidoc.IfEvalValue), operand.(asciidoc.ConditionalOperator), right.(asciidoc.IfEvalValue)), nil
+}
+
+IfEvalStatement = "ifeval::" {
+    debugPosition(c, "matched ifeval statement: %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+IfEvalValue = val:(SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {
+    return asciidoc.IfEvalValue{Quote:val.(*attributeValue).quote, Value:val.(*attributeValue).value}, nil
+}
+
+/*IfEvalValue = "\"" (!"\"" ("\\\"" / CharacterClassInline))+ "\"" { 
+    debugPosition(c, "matched ifeval value: %s\n", string(c.text))
+    return string(c.text), nil }
+    / "'" (!"'" ("\\'"/ CharacterClassInline))+ "'" { 
+         debugPosition(c, "matched ifeval value: %s\n", string(c.text))
+        return string(c.text), nil }
+    / (!"\"" !"'" !"]" CharacterClassInline)+  { 
+         debugPosition(c, "matched ifeval value: %s\n", string(c.text))
+        return string(c.text), nil }*/
+
+IfEvalOperator <-
+      ("==" { return asciidoc.ConditionalOperatorEqual, nil })
+    / ("!=" { return asciidoc.ConditionalOperatorNotEqual, nil })
+    / ("<"  { return asciidoc.ConditionalOperatorLessThan, nil })
+    / ("<=" { return asciidoc.ConditionalOperatorLessThanOrEqual, nil })
+    / (">"  { return asciidoc.ConditionalOperatorGreaterThan, nil })
+    / (">=" { return asciidoc.ConditionalOperatorGreaterThanOrEqual, nil })

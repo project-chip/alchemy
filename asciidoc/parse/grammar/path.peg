@@ -1,0 +1,12 @@
+
+Path = !"[" elements:( PathElement+) {
+    debugPosition(c, "matched path \"%s\"\n", string(c.text))
+    return mergeStrings(elements.([]any)), nil
+} 
+
+PathElement = (([^\r\n{.<>!?,;[\] ])+ {
+    return asciidoc.NewString(string(c.text)), nil
+} / ([.?!;,] &(!_ !EndOfFile)) {
+    return asciidoc.NewString(string(c.text)), nil
+} / AttributeReference) 
+

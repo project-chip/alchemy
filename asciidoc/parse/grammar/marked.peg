@@ -1,0 +1,32 @@
+
+MarkedText = (SingleMarkedText / DoubleMarkedText)
+
+SingleMarkedText = !Escape "#" &(!"#") value:(SingleMarkedTextValue) "#" !"#" &(!Alphanumeric) {
+    debugPosition(c, "match Marked text %s\n", string(c.text))
+    return value, nil
+}
+
+SingleMarkedTextValue = !_ value:(!_ value:(SingleMarkedTextElement)+ { return value, nil})+ {
+    debugPosition(c, "match Marked element %s\n", string(c.text))
+    return compose(c, asciidoc.NewMarked(), setElements[*asciidoc.Marked](flat(value.([]any))))
+}
+
+SingleMarkedTextElement = !("#" !"#") element:(FormattedTextElement) {
+    debugPosition(c, "match Marked text element %s\n", string(c.text))
+    return element, nil
+}
+
+DoubleMarkedText = !DoubleEscape "##" value:(DoubleMarkedTextValue) "##"  {
+    debugPosition(c, "match double Marked text %s\n", string(c.text))
+    return value, nil
+}
+
+DoubleMarkedTextValue = !_ value:(!_ value:(DoubleMarkedTextElement)+ { return value, nil})+ {
+    debugPosition(c, "match double Marked element %s\n", string(c.text))
+    return compose(c, asciidoc.NewDoubleMarked(), setElements[*asciidoc.DoubleMarked](flat(value.([]any))))
+}
+
+DoubleMarkedTextElement = !("##") element:(FormattedTextElement) {
+    debugPosition(c, "match double Marked text element %s\n", string(c.text))
+    return element, nil
+}

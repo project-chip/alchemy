@@ -1,0 +1,32 @@
+
+CrossReference = InternalCrossReference / DocumentCrossReference
+
+InternalCrossReference = CrossReferenceStart id:(CrossReferenceID) label:(_* "," label:(_* CrossReferenceLabel) { return label, nil})? ">>" {
+    var lbl asciidoc.Set
+    if label != nil {
+        lbl = join(label.([]any))
+    }
+    return compose(c, asciidoc.NewCrossReference(id.(string)), setElements[*asciidoc.CrossReference](lbl))
+}
+
+CrossReferenceStart = "<<" 
+
+CrossReferenceID <- (Alpha / [:_]) [\p{L}\p{N} _:.-]* { 
+    debugPosition(c, "matched cross reference ID: %s\n", string(c.text))
+    // See: https://docs.asciidoctor.org/asciidoc/latest/attributes/id/#valid-id-characters
+    return string(c.text), nil
+}
+
+CrossReferenceLabel = (
+    ([^<>{[\]]+ {
+        return asciidoc.NewString(string(c.text)), nil
+    })
+    / arv:AttributeReference {
+        return arv, nil
+    }
+    / ("{" { return string(c.text), nil})
+)+
+
+DocumentCrossReference = "xref:" path:(Path) attributes:(InlineAttributes) {
+    return compose(c, asciidoc.NewDocumentCrossReference(path.(asciidoc.Set)), setAttributes[*asciidoc.DocumentCrossReference](attributes))
+}

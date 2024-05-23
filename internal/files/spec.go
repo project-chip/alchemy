@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 func getSpecPaths(specRoot string) (paths []string, err error) {
@@ -51,12 +51,12 @@ func (sp SpecParser) Type() pipeline.ProcessorType {
 	return pipeline.ProcessorTypeCollective
 }
 
-func (sp *SpecParser) Process(cxt context.Context, inputs []*pipeline.Data[*ascii.Doc]) (outputs []*pipeline.Data[*ascii.Doc], err error) {
-	docs := make([]*ascii.Doc, 0, len(inputs))
+func (sp *SpecParser) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[*spec.Doc], err error) {
+	docs := make([]*spec.Doc, 0, len(inputs))
 	for _, i := range inputs {
 		docs = append(docs, i.Content)
 	}
-	sp.Spec, err = ascii.BuildSpec(docs)
+	sp.Spec, err = spec.BuildSpec(docs)
 	outputs = inputs
 	return
 }

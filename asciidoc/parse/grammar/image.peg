@@ -1,0 +1,10 @@
+
+BlockImage = "image::" path:(Path) attributes:(InlineAttributes) _*  {
+    return compose(c, asciidoc.NewBlockImage(path.(asciidoc.Set)), setAttributes[*asciidoc.BlockImage](attributes))
+}
+
+InlineImage = InlineImageDelimiter !":" path:(Path) attributes:(InlineAttributes)  {
+    return compose(c, asciidoc.NewInlineImage(path.(asciidoc.Set)), setAttributes[*asciidoc.InlineImage](attributes))
+}
+
+InlineImageDelimiter = "image:"

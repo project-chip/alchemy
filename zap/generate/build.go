@@ -3,13 +3,13 @@ package generate
 import (
 	"log/slog"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
 
-func getDocDomain(doc *ascii.Doc) matter.Domain {
+func getDocDomain(doc *spec.Doc) matter.Domain {
 	if doc.Domain != matter.DomainUnknown {
 		return doc.Domain
 	}

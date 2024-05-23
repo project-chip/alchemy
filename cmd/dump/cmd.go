@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/cmd/common"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/parse"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/spf13/cobra"
 )
 
@@ -30,21 +30,21 @@ var Command = &cobra.Command{
 				fmt.Fprintf(os.Stderr, "Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
 			}
 			if asciiOut {
-				doc, err := ascii.ReadFile(f, asciiSettings...)
+				doc, err := spec.ReadFile(f, asciiSettings...)
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
 
-				for _, top := range parse.Skim[*ascii.Section](doc.Elements()) {
-					err := ascii.AssignSectionTypes(doc, top)
+				for _, top := range parse.Skim[*spec.Section](doc.Elements()) {
+					err := spec.AssignSectionTypes(doc, top)
 					if err != nil {
 						return err
 					}
 				}
 				dumpElements(doc, doc.Elements(), 0)
 			} else if jsonOut {
-				asciiSettings = append(asciiSettings, ascii.GithubSettings()...)
-				doc, err := ascii.ParseFile(f, asciiSettings...)
+				asciiSettings = append(asciiSettings, spec.GithubSettings()...)
+				doc, err := spec.ParseFile(f, asciiSettings...)
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
@@ -56,7 +56,7 @@ var Command = &cobra.Command{
 				//encoder.SetIndent("", "\t")
 				return encoder.Encode(entities)
 			} else {
-				doc, err := ascii.ReadFile(f, asciiSettings...)
+				doc, err := spec.ReadFile(f, asciiSettings...)
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}

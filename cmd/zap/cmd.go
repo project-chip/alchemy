@@ -4,12 +4,12 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/cmd/common"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/zap"
 	"github.com/hasty/alchemy/zap/generate"
 	"github.com/spf13/cobra"
@@ -38,35 +38,35 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 
-	asciiSettings = append(ascii.GithubSettings(), asciiSettings...)
+	asciiSettings = append(spec.GithubSettings(), asciiSettings...)
 
 	specFiles, err := pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
 	if err != nil {
 		return err
 	}
 
-	docParser := ascii.NewParser(asciiSettings)
-	specDocs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docParser, specFiles)
+	docParser := spec.NewParser(asciiSettings)
+	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err
 	}
 
 	var specParser files.SpecParser
-	specDocs, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, &specParser, specDocs)
+	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocs)
 	if err != nil {
 		return err
 	}
 
-	var appClusterIndexes pipeline.Map[string, *pipeline.Data[*ascii.Doc]]
-	appClusterIndexes, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
+	var appClusterIndexes pipeline.Map[string, *pipeline.Data[*spec.Doc]]
+	appClusterIndexes, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
 
 	if err != nil {
 		return err
 	}
 
-	pipeline.ProcessSerialFunc[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, appClusterIndexes, "Assigning index domains", func(cxt context.Context, input *pipeline.Data[*ascii.Doc], index, total int32) (outputs []*pipeline.Data[*ascii.Doc], extra []*pipeline.Data[*ascii.Doc], err error) {
+	pipeline.ProcessSerialFunc[*spec.Doc, *spec.Doc](cxt, pipelineOptions, appClusterIndexes, "Assigning index domains", func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
 		doc := input.Content
-		top := parse.FindFirst[*ascii.Section](doc.Elements())
+		top := parse.FindFirst[*spec.Section](doc.Elements())
 		if top != nil {
 			doc.Domain = zap.StringToDomain(top.Name)
 			slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
@@ -75,14 +75,14 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	})
 
 	if len(args) > 0 { // Filter the spec by whatever extra args were passed
-		filter := files.NewPathFilter[*ascii.Doc](args)
-		specDocs, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, filter, specDocs)
+		filter := files.NewPathFilter[*spec.Doc](args)
+		specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return err
 		}
 	}
 
-	var clusters pipeline.Map[string, *pipeline.Data[*ascii.Doc]]
+	var clusters pipeline.Map[string, *pipeline.Data[*spec.Doc]]
 	var deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
 	clusters, deviceTypes, err = generate.SplitZAPDocs(cxt, specDocs)
 	if err != nil {
@@ -96,7 +96,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	templateGenerator := generate.NewTemplateGenerator(specParser.Spec, fileOptions, pipelineOptions, sdkRoot, templateOptions...)
-	zapTemplateDocs, err := pipeline.Process[*ascii.Doc, string](cxt, pipelineOptions, templateGenerator, clusters)
+	zapTemplateDocs, err := pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, templateGenerator, clusters)
 	if err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	clusterListPatcher := generate.NewClusterListPatcher(sdkRoot)
 	var clusterList pipeline.Map[string, *pipeline.Data[[]byte]]
-	clusterList, err = pipeline.Process[*ascii.Doc, []byte](cxt, pipelineOptions, clusterListPatcher, clusters)
+	clusterList, err = pipeline.Process[*spec.Doc, []byte](cxt, pipelineOptions, clusterListPatcher, clusters)
 	if err != nil {
 		return
 	}

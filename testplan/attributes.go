@@ -7,14 +7,14 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
 )
 
-func renderAttributes(doc *ascii.Doc, cluster *matter.Cluster, b *strings.Builder) {
+func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder) {
 	if len(cluster.Attributes) == 0 {
 		return
 	}

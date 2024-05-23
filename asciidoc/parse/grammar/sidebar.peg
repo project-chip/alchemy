@@ -1,0 +1,35 @@
+Sidebar =
+    start:(SidebarStart)
+    lines:(!SidebarDelimiter Element)*
+    SidebarEnd {
+        return compose(c, asciidoc.NewSidebarBlock(start.(asciidoc.Delimiter)), setElements[*asciidoc.SidebarBlock](join(lines.([]any))))
+    }
+
+SidebarStart = delimiter:SidebarDelimiter EndOfLine &{
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeSidebar, delimiter.(asciidoc.Delimiter).Length)
+        return true, nil
+    } {
+        return delimiter, nil
+    }
+
+SidebarEnd = delimiter:SidebarDelimiter &EndOfLine &{
+    previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeSidebar)
+    if previous == delimiter.(asciidoc.Delimiter).Length {
+        c.popDelimitedLevel(asciidoc.DelimitedBlockTypeSidebar)
+        return true, nil
+    }
+    return false, nil
+    } 
+
+SidebarAsterisks = asterisks:("****" "*"*) &{
+        return delimitedLength(asterisks) >= 4, nil
+    } 
+    { 
+        return delimitedLength(asterisks), nil
+    }
+
+SidebarDelimiter = asterisks:(SidebarAsterisks) 
+    _*  
+    {
+        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeSidebar, Length:asterisks.(int)}, nil
+    }

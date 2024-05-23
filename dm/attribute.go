@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func renderAttributes(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
 	if len(cluster.Attributes) == 0 {
 		return
 	}

@@ -3,11 +3,11 @@ package dm
 import (
 	"context"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/cmd/common"
 	"github.com/hasty/alchemy/dm"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/spf13/cobra"
 )
 
@@ -28,34 +28,34 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 
-	asciiSettings = append(ascii.GithubSettings(), asciiSettings...)
+	asciiSettings = append(spec.GithubSettings(), asciiSettings...)
 
 	specFiles, err := pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
 	if err != nil {
 		return err
 	}
 
-	docParser := ascii.NewParser(asciiSettings)
-	specDocs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docParser, specFiles)
+	docParser := spec.NewParser(asciiSettings)
+	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err
 	}
 	var specParser files.SpecParser
-	specDocs, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, &specParser, specDocs)
+	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocs)
 	if err != nil {
 		return err
 	}
 
 	if len(args) > 0 {
-		filter := files.NewPathFilter[*ascii.Doc](args)
-		specDocs, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, filter, specDocs)
+		filter := files.NewPathFilter[*spec.Doc](args)
+		specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return err
 		}
 	}
 
 	renderer := dm.NewRenderer(sdkRoot)
-	dataModelDocs, err := pipeline.Process[*ascii.Doc, string](cxt, pipelineOptions, renderer, specDocs)
+	dataModelDocs, err := pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, renderer, specDocs)
 	if err != nil {
 		return err
 	}

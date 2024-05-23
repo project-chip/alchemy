@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 )
 

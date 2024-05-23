@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 type sectionInfo struct {
@@ -19,16 +19,16 @@ type sectionInfo struct {
 
 var errMissingTable = fmt.Errorf("no table found")
 
-func appendSectionToRow(cxt context.Context, doc *ascii.Doc, section *ascii.Section, row *dbRow) error {
-	t := ascii.FindFirstTable(section)
+func appendSectionToRow(cxt context.Context, doc *spec.Doc, section *spec.Section, row *dbRow) error {
+	t := spec.FindFirstTable(section)
 	if t == nil {
 		return fmt.Errorf("no table found")
 	}
-	rows := ascii.TableRows(t)
+	rows := spec.TableRows(t)
 	if len(rows) < 2 {
 		return fmt.Errorf("not enough rows in table")
 	}
-	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(doc, rows)
+	headerRowIndex, columnMap, extraColumns, err := spec.MapTableColumns(doc, rows)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for section %s: %w", section.Name, err)
 	}
@@ -46,7 +46,7 @@ func appendSectionToRow(cxt context.Context, doc *ascii.Doc, section *ascii.Sect
 	return nil
 }
 
-func (h *Host) readTableSection(cxt context.Context, doc *ascii.Doc, parent *sectionInfo, section *ascii.Section, name string) error {
+func (h *Host) readTableSection(cxt context.Context, doc *spec.Doc, parent *sectionInfo, section *spec.Section, name string) error {
 	rows, err := readTable(cxt, doc, section)
 	if err == errMissingTable {
 		return nil
@@ -64,16 +64,16 @@ func (h *Host) readTableSection(cxt context.Context, doc *ascii.Doc, parent *sec
 	return nil
 }
 
-func readTable(cxt context.Context, doc *ascii.Doc, section *ascii.Section) (rs []*dbRow, err error) {
-	t := ascii.FindFirstTable(section)
+func readTable(cxt context.Context, doc *spec.Doc, section *spec.Section) (rs []*dbRow, err error) {
+	t := spec.FindFirstTable(section)
 	if t == nil {
 		return nil, errMissingTable
 	}
-	rows := ascii.TableRows(t)
+	rows := spec.TableRows(t)
 	if len(rows) < 2 {
 		return nil, fmt.Errorf("not enough rows in table")
 	}
-	headerRowIndex, columnMap, extraColumns, err := ascii.MapTableColumns(doc, rows)
+	headerRowIndex, columnMap, extraColumns, err := spec.MapTableColumns(doc, rows)
 	if err != nil {
 		return nil, err
 	}
@@ -95,12 +95,12 @@ func readTable(cxt context.Context, doc *ascii.Doc, section *ascii.Section) (rs 
 	return
 }
 
-func readTableRow(valueRow *asciiasciidoc.TableRow, columnMap ascii.ColumnIndex, extraColumns []ascii.ExtraColumn, row *dbRow) error {
+func readTableRow(valueRow *asciiasciidoc.TableRow, columnMap spec.ColumnIndex, extraColumns []spec.ExtraColumn, row *dbRow) error {
 	if row.values == nil {
 		row.values = make(map[matter.TableColumn]any)
 	}
 	for col, index := range columnMap {
-		val, err := ascii.RenderTableCell(valueRow.Cells[index])
+		val, err := spec.RenderTableCell(valueRow.Cells[index])
 		if err != nil {
 			return err
 		}
@@ -112,7 +112,7 @@ func readTableRow(valueRow *asciiasciidoc.TableRow, columnMap ascii.ColumnIndex,
 
 		}
 		for _, e := range extraColumns {
-			val, err := ascii.RenderTableCell(valueRow.Cells[e.Offset])
+			val, err := spec.RenderTableCell(valueRow.Cells[e.Offset])
 			if err != nil {
 				return err
 			}

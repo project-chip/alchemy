@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func renderStructs(doc *ascii.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
+func renderStructs(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
 	structs := make([]*matter.Struct, len(cluster.Structs))
 	copy(structs, cluster.Structs)
 	slices.SortFunc(structs, func(a, b *matter.Struct) int {
@@ -29,14 +29,14 @@ func renderStructs(doc *ascii.Doc, cluster *matter.Cluster, dt *etree.Element) (
 	return
 }
 
-func renderFields(doc *ascii.Doc, cluster *matter.Cluster, fs matter.FieldSet, parent *etree.Element) (err error) {
+func renderFields(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, parent *etree.Element) (err error) {
 	for _, f := range fs {
 		err = renderField(doc, cluster, fs, f, parent)
 	}
 	return
 }
 
-func renderField(doc *ascii.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, parent *etree.Element) (err error) {
+func renderField(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, parent *etree.Element) (err error) {
 	if !f.ID.Valid() {
 		return
 	}

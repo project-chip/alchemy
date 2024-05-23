@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func dumpTable(doc *ascii.Doc, tbl *asciidoc.Table, indent int) {
+func dumpTable(doc *spec.Doc, tbl *asciidoc.Table, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{cells}:\n")
 	for _, row := range tbl.Elements() {
@@ -21,13 +21,13 @@ func dumpTable(doc *ascii.Doc, tbl *asciidoc.Table, indent int) {
 	}
 }
 
-func dumpTableRow(doc *ascii.Doc, row *asciidoc.TableRow, indent int) {
+func dumpTableRow(doc *spec.Doc, row *asciidoc.TableRow, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("{row}:\n")
 	dumpTableCells(doc, row.TableCells(), indent+1)
 }
 
-func dumpTableCells(doc *ascii.Doc, cells []*asciidoc.TableCell, indent int) {
+func dumpTableCells(doc *spec.Doc, cells []*asciidoc.TableCell, indent int) {
 	for _, c := range cells {
 		fmt.Print(strings.Repeat("\t", indent))
 		if c.Blank {

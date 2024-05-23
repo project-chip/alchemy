@@ -1,0 +1,129 @@
+
+SpecialCharacter = ("<" / ">" / "&") {
+    return asciidoc.NewSpecialCharacter(string(c.text)), nil
+}
+
+SingleTilde = "`" &(!"`")
+
+Apostrophe = ("\\'" &[\p{L}] {
+    return asciidoc.NewString("'"), nil
+    } / "'" &[\p{L}] {
+        return asciidoc.NewString("'"), nil
+    }
+)
+
+Punctuation = ( ([,;.?)/:!="'@-[\]]) / ("(" !"(" )) {
+    debug("matched punctuation: %s\n", string(c.text))
+    return asciidoc.NewString(string(c.text)), nil
+}
+
+LineBreak = "+" _* &(EndOfLine) &{
+    debugPosition(c, "checking line continuation: %v\n", c.previousRuneIsWhitespace())
+    return c.previousRuneIsWhitespace(), nil
+} {
+    debug("line continuation\n")
+    return &asciidoc.LineBreak{}, nil
+}
+
+CurvedQuote = (SingleCurvedQuote / DoubleCurvedQuote)
+
+DoubleCurvedQuote = ("\"`" / "`\"") { return string(c.text), nil}
+
+SingleCurvedQuote = ("'`" / "`'") { return string(c.text), nil}
+
+EmptyLine = BeginningOfLine _* NewLine {
+        debugPosition(c, "matched empty line %d chars \"%s\"\n", len(string(c.text)), string(c.text))
+        return compose(c, asciidoc.NewEmptyLine(string(c.text)))
+    }
+
+SoftNewLine = !"\\" NewLine
+
+NewLine = ("\n" / "\r" / "\r\n"  ) {
+    debugPosition(c, "newline\n")
+    return compose(c, &asciidoc.NewLine{})
+}
+
+Percentage <- percentage:PositiveInteger "%" {
+    return percentage, nil
+}
+
+PositiveInteger <- ([0-9]+) &{
+    return len(string(c.text)) < 10, nil
+} {
+    return strconv.Atoi(string(c.text))
+}
+
+NotNewLine = !NewLine
+
+NotSpace = !_
+
+Alpha = [\p{L}]
+
+Alphanumeric = [\p{L}\p{N}]
+
+EndOfFile = !. {
+    debugPosition(c, "endoffile\n")
+    return string(c.text), nil
+}
+
+NotEndOfFile = &(.)
+
+BeginningOfLine = !OffsetCharacter
+
+OffsetCharacter = . &{
+    debugPosition(c, "checking offset character: \"%s\" column %d\n", string(c.text), c.currentColumn())
+    return c.currentColumn() > 1, nil
+}
+
+Indent = _* &(!_) &{
+    debugPosition(c, "checking indent: %d\n", c.pos.col)
+    return c.pos.col < 2, nil
+} {
+     debugPosition(c, "indent\n")
+    return nil, nil
+}
+
+EndOfLine = NewLine / EndOfFile
+
+InlineText = text:(Alphanumeric+ { return string(c.text), nil})
+
+UnbrokenText = CharacterClassInline+ {
+    debugPosition(c, "unbroken: %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+AnyText = CharacterClassInline* {
+    debugPosition(c, "any: %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+AnySpaces = _* {
+    return string(c.text), nil
+}
+
+
+CharacterClassAll = (. / NewLine) {
+    debugPosition(c, "matched all: \"%s\"\n", string(c.text))
+    return string(c.text), nil
+}
+
+CharacterClassInline = [^\n] 
+
+CharacterGroupWord = [\p{M}\p{Nd}\p{Pc}\p{Join_Control}\p{L}] {
+    debugPosition(c, "matched CharacterGroupWord: \"%s\"\n", string(c.text))
+    return asciidoc.NewString(string(c.text)), nil
+}
+
+__ = _+ {
+    debugPosition(c, "matched spaces: \"%s\"\n", string(c.text))
+    return string(c.text), nil
+}
+
+_ = [ \t] {
+    debugPosition(c, "matched space: \"%s\"\n", string(c.text))
+    return string(c.text), nil
+}
+
+Escape = "\\" { return string(c.text), nil }
+
+DoubleEscape = "\\\\" { return string(c.text), nil }

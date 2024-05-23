@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
 )
@@ -29,7 +29,7 @@ func (sp Generator) Type() pipeline.ProcessorType {
 	return pipeline.ProcessorTypeIndividual
 }
 
-func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*ascii.Doc], err error) {
+func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*spec.Doc], err error) {
 	doc := input.Content
 	path := doc.Path
 
