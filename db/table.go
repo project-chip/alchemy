@@ -8,8 +8,8 @@ import (
 	"github.com/dolthub/go-mysql-server/memory"
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/iancoleman/strcase"
 )
 
@@ -25,11 +25,11 @@ func (h *Host) createTable(cxt *mms.Context, tableName string, parentTable strin
 	return nil
 }
 
-func buildTableSchema(sections []*sectionInfo, tableName string, parentName string, columns []matter.TableColumn) (mms.Schema, []ascii.ExtraColumn) {
-	extraColumns := make(map[string]*ascii.ExtraColumn)
+func buildTableSchema(sections []*sectionInfo, tableName string, parentName string, columns []matter.TableColumn) (mms.Schema, []spec.ExtraColumn) {
+	extraColumns := make(map[string]*spec.ExtraColumn)
 	for _, si := range sections {
 		for e := range si.values.extras {
-			extraColumns[strings.ToLower(e)] = &ascii.ExtraColumn{Name: e}
+			extraColumns[strings.ToLower(e)] = &spec.ExtraColumn{Name: e}
 		}
 	}
 	schema := mms.Schema{
@@ -65,17 +65,17 @@ func buildTableSchema(sections []*sectionInfo, tableName string, parentName stri
 	}
 
 	offset := len(schema)
-	var extra []ascii.ExtraColumn
+	var extra []spec.ExtraColumn
 	for _, e := range extraColumns {
 		schema = append(schema, &mms.Column{Name: strcase.ToSnake(e.Name), Type: types.Text, Nullable: true, Source: tableName, PrimaryKey: true})
-		extra = append(extra, ascii.ExtraColumn{Name: e.Name})
+		extra = append(extra, spec.ExtraColumn{Name: e.Name})
 		e.Offset = offset
 		offset++
 	}
 	return schema, extra
 }
 
-func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTable string, sections []*sectionInfo, schema mms.Schema, columns []matter.TableColumn, extra []ascii.ExtraColumn) error {
+func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTable string, sections []*sectionInfo, schema mms.Schema, columns []matter.TableColumn, extra []spec.ExtraColumn) error {
 	for _, si := range sections {
 		row := mms.NewRow(si.id)
 		if len(parentTable) > 0 {

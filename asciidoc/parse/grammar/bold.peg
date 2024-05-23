@@ -1,0 +1,32 @@
+
+BoldText = (SingleBoldText / DoubleBoldText)
+
+SingleBoldText = !Escape "*" &(!"*") value:(SingleBoldTextValue) "*" !"*" &(!Alphanumeric) {
+    debugPosition(c, "match bold text %s\n", string(c.text))
+    return value, nil
+}
+
+SingleBoldTextValue = !_ value:(!_ value:(SingleBoldTextElement)+ { return value, nil})+ {
+    debugPosition(c, "match bold element %s\n", string(c.text))
+    return compose(c, asciidoc.NewBold(), setElements[*asciidoc.Bold](flat(value.([]any))))
+}
+
+SingleBoldTextElement = !("*" !"*") element:(FormattedTextElement) {
+    debugPosition(c, "match bold text element %s\n", string(c.text))
+    return element, nil
+}
+
+DoubleBoldText = !DoubleEscape "**" value:(DoubleBoldTextValue) "**"  {
+    debugPosition(c, "match double bold text %s\n", string(c.text))
+    return value, nil
+}
+
+DoubleBoldTextValue = !_ value:(!_ value:(DoubleBoldTextElement)+ { return value, nil})+ {
+    debugPosition(c, "match double bold element %s\n", string(c.text))
+    return compose(c, asciidoc.NewDoubleBold(), setElements[*asciidoc.DoubleBold](flat(value.([]any))))
+}
+
+DoubleBoldTextElement = !("**") element:(FormattedTextElement) {
+    debugPosition(c, "match double bold text element %s\n", string(c.text))
+    return element, nil
+}

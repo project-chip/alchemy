@@ -1,0 +1,52 @@
+
+
+
+UppercaseRoman = thousands:"M"* hundreds:UppercaseRomanHundreds? tens:(UppercaseRomanTens)? ones:(UppercaseRomanOnes)? &{
+    return thousands != nil || hundreds != nil || tens != nil || ones != nil, nil
+} {
+    return string(c.text), nil
+}
+
+
+UppercaseRomanHundreds = (
+    "CM"
+    / "CD"
+    / ("D" hundreds:"C"* &{ return len(hundreds.([]any)) < 4, nil})
+)
+
+UppercaseRomanTens = (
+    "XC"
+    / "XL"
+    / ("L"? tens:"X"* &{ return len(tens.([]any)) < 4, nil})
+)
+
+UppercaseRomanOnes = (
+    "IX"
+    / "IV"
+    / ("V"? ones:"I"* &{ return len(ones.([]any)) < 4, nil})
+)
+
+LowercaseRoman = thousands:"m"* hundreds:LowercaseRomanHundreds? tens:(LowercaseRomanTens)? ones:(LowercaseRomanOnes)? &{
+    return thousands != nil || hundreds != nil || tens != nil || ones != nil, nil
+} {
+    return string(c.text), nil
+}
+
+
+LowercaseRomanHundreds = (
+    "cm"
+    / "cd"
+    / ("d" hundreds:"c"* &{ return len(hundreds.([]any)) < 4, nil})
+)
+
+LowercaseRomanTens = (
+    "xc"
+    / "xl"
+    / ("l"? tens:"x"* &{ return len(tens.([]any)) < 4, nil})
+)
+
+LowercaseRomanOnes = (
+    "ix"
+    / "iv"
+    / ("v"? ones:"i"* &{ return len(ones.([]any)) < 4, nil})
+)

@@ -3,13 +3,13 @@ package disco
 import (
 	"context"
 
-	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/ascii/render"
+	"github.com/hasty/alchemy/asciidoc/render"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func Pipeline(cxt context.Context, targeter pipeline.Targeter, pipelineOptions pipeline.Options, discoOptions []Option, filter *files.PathFilter[*ascii.Doc], writer files.Writer[string]) (err error) {
+func Pipeline(cxt context.Context, targeter pipeline.Targeter, pipelineOptions pipeline.Options, discoOptions []Option, filter *files.PathFilter[*spec.Doc], writer files.Writer[string]) (err error) {
 
 	var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
 	inputs, err = pipeline.Start[struct{}](cxt, targeter)
@@ -18,15 +18,15 @@ func Pipeline(cxt context.Context, targeter pipeline.Targeter, pipelineOptions p
 		return err
 	}
 
-	docReader := ascii.NewReader("Reading docs")
-	docs, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docReader, inputs)
+	docReader := spec.NewReader("Reading docs")
+	docs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
 	if err != nil {
 		return err
 	}
 
 	baller := NewBaller(discoOptions, pipelineOptions)
 	var balledDocs pipeline.Map[string, *pipeline.Data[render.InputDocument]]
-	balledDocs, err = pipeline.Process[*ascii.Doc, render.InputDocument](cxt, pipelineOptions, baller, docs)
+	balledDocs, err = pipeline.Process[*spec.Doc, render.InputDocument](cxt, pipelineOptions, baller, docs)
 	if err != nil {
 		return err
 	}

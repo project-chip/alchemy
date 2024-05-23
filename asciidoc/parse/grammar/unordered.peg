@@ -1,0 +1,29 @@
+
+
+UnorderedListItem = marker:(UnorderedListMarker) checklist:(Checklist)? value:(ListItemValue) {
+    cl, _ := checklist.(asciidoc.Checklist)
+    debug("found unordered list item: %s\n", marker.(listMarker).marker)
+    m := marker.(listMarker)
+    return compose(c, asciidoc.NewUnorderedListItem(m.indent, m.marker, cl), setElements[*asciidoc.UnorderedListItem](value.(asciidoc.Set)))
+}
+
+
+UnorderedListMarker = indent:(AnySpaces) marker:(("*"+ / "-"+) {
+    return string(c.text), nil
+}) &{
+    return len(marker.(string)) <= 5, nil 
+}
+__
+{
+    return listMarker{marker:marker.(string), indent:indent.(string)}, nil
+}
+
+
+Checklist = &"[" 
+checklist:(
+      "[ ]" { return asciidoc.ChecklistUnchecked, nil } 
+    / "[*]" { return asciidoc.ChecklistChecked, nil } 
+    / "[x]" { return asciidoc.ChecklistChecked, nil }
+    ) __ {
+        return checklist, nil
+    }

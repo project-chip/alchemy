@@ -1,0 +1,38 @@
+
+DescriptionListItem = inlineAnchor:(AnchorAttribute)? term:(DescriptionListTerm) marker:(DescriptionListMarker) whitespace:(_ / NewLine)+ value:(DescriptionListItemValue) {
+    debugPosition(c, "found description list item: %s\n", marker.(string))
+    dli := asciidoc.NewDescriptionListItem(marker.(string), term.(asciidoc.Set))
+    values := cast[any, asciidoc.Element](whitespace.([]any))
+    values = append(values, value.(asciidoc.Set)...) 
+    cos := []composeOption[*asciidoc.DescriptionListItem]{setElements[*asciidoc.DescriptionListItem](asciidoc.Set(values))}
+    if inlineAnchor != nil {
+        cos = append(cos, setAttributes[*asciidoc.DescriptionListItem](inlineAnchor))
+    }
+    return compose(c, dli, cos...)
+}
+
+DescriptionListTerm = term:(!DescriptionListMarker !EndOfLine InlineElement)+ {
+    return flat(term.([]any)), nil
+}
+
+DescriptionListMarker = _* marker:((":" / ";")+ {
+    return string(c.text), nil
+}) &{
+    switch marker.(string) {
+        case "::", ":::", "::::", ";;":
+        return true, nil
+    }
+    return false, nil
+}
+_*
+{
+    return marker.(string), nil
+}
+
+DescriptionListItemValue = line:(InlineElement+ / BlockElement) attachedBlocks:(AttachedBlocks)?  &EndOfLine  {
+    value := []any{line}
+    if attachedBlocks != nil {
+        value = append(value, attachedBlocks.([]any))
+    }
+    return flat(value), nil
+}

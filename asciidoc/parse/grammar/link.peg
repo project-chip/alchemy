@@ -1,0 +1,23 @@
+
+
+
+Link = link:(HTMLLink / PrefixedLink / ExternalLink / Email) {
+        debugPosition(c, "matched link\n")
+    return link, nil
+}
+
+HTMLLink = "<" url:(FullURL) ">" {
+    debugPosition(c, "matched HTML link\n")
+    return asciidoc.NewLink(url.(asciidoc.URL)), nil
+}
+
+PrefixedLink = !"\\" "link:" url:URL attributes:(InlineAttributes) {
+    debugPosition(c, "matched link:\n")
+
+    return compose(c, asciidoc.NewLink(url.(asciidoc.URL)), setAttributes[*asciidoc.Link](attributes))
+}
+
+ExternalLink = !"\\" url:(FullURL) attributes:(InlineAttributes)? {
+    debugPosition(c, "matched external link\n")
+    return compose(c, asciidoc.NewLink(url.(asciidoc.URL)), setAttributes[*asciidoc.Link](attributes))
+}

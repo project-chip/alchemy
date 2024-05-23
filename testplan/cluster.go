@@ -3,11 +3,11 @@ package testplan
 import (
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func renderClusterTestPlan(doc *ascii.Doc, cluster *matter.Cluster) (output string, err error) {
+func renderClusterTestPlan(doc *spec.Doc, cluster *matter.Cluster) (output string, err error) {
 	var out strings.Builder
 	err = renderHeader(cluster, &out)
 	if err != nil {

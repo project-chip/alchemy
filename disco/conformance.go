@@ -1,13 +1,13 @@
 package disco
 
 import (
-	"github.com/hasty/adoc/asciidoc"
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func fixConformanceCells(doc *ascii.Doc, rows []*asciidoc.TableRow, columnMap ascii.ColumnIndex) (err error) {
+func fixConformanceCells(doc *spec.Doc, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}
@@ -17,7 +17,7 @@ func fixConformanceCells(doc *ascii.Doc, rows []*asciidoc.TableRow, columnMap as
 	}
 	for _, row := range rows[1:] {
 		cell := row.Cell(conformanceIndex)
-		vc, e := ascii.RenderTableCell(cell)
+		vc, e := spec.RenderTableCell(cell)
 		if e != nil {
 			continue
 		}

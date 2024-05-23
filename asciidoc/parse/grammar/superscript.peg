@@ -1,0 +1,20 @@
+
+
+SuperscriptText = "^"  value:(SuperscriptTextValue) "^" {
+    debugPosition(c, "match superscript text %s\n", string(c.text))
+    return value, nil
+}
+
+SuperscriptTextValue = !_ value:(!_ value:(SuperscriptTextElement)+ { return value, nil})+ {
+    debugPosition(c, "match superscript element %s\n", string(c.text))
+    return compose(c, asciidoc.NewSuperscript(), setElements[*asciidoc.Superscript](flat(value.([]any))))
+}
+
+SuperscriptTextElement = !("^") element:(FormattedTextElement) {
+    debugPosition(c, "match superscript text element %s\n", string(c.text))
+    return element, nil
+}
+
+EscapedSuperscript = (Escape "^" SuperscriptTextValue "^") {
+    return asciidoc.NewString(string(c.text)), nil
+}

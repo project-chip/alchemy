@@ -1,0 +1,34 @@
+
+InlinePassthrough = attributes:(FormatAttributes)?  text:(InlineSinglePassthrough / InlineDoublePassthrough) {
+    return compose(c, text.(asciidoc.AttributableElement), setAttributes[asciidoc.AttributableElement](attributes))
+}
+
+InlineSinglePassthrough = !Escape "+" &(!"+") value:(SinglePassthroughTextValue) "+" !"+" &(!Alphanumeric) {
+    debugPosition(c, "match inline single Passthrough text %s\n", string(c.text))
+    return value, nil
+}
+
+SinglePassthroughTextValue = !_ value:(!_ value:(SinglePassthroughTextElement)+ { return value, nil})+ {
+    debugPosition(c, "match inline single Passthrough element %s\n", string(c.text))
+    return compose(c, asciidoc.NewInlinePassthrough(), setElements[*asciidoc.InlinePassthrough](flat(value.([]any))))
+}
+
+SinglePassthroughTextElement = !("+" !"+") element:(FormattedTextElement) {
+    debugPosition(c, "match inline single Passthrough text element %s\n", string(c.text))
+    return element, nil
+}
+
+InlineDoublePassthrough = !DoubleEscape "++" value:(DoublePassthroughTextValue) "++"  {
+    debugPosition(c, "match inline double Passthrough text %s\n", string(c.text))
+    return value, nil
+}
+
+DoublePassthroughTextValue = !_ value:(!_ value:(DoublePassthroughTextElement)+ { return value, nil})+ {
+    debugPosition(c, "match inline single Passthrough element %s\n", string(c.text))
+    return compose(c, asciidoc.NewInlineDoublePassthrough(), setElements[*asciidoc.InlineDoublePassthrough](flat(value.([]any))))
+}
+
+DoublePassthroughTextElement = !("++") element:(FormattedTextElement) {
+    debugPosition(c, "match inline double Passthrough text element %s\n", string(c.text))
+    return element, nil
+}

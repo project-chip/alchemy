@@ -3,10 +3,10 @@ package disco
 import (
 	"context"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/disco"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/spf13/cobra"
 )
 
@@ -22,12 +22,12 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 	cxt := context.Background()
 
 	var targeter pipeline.Targeter
-	var filter *files.PathFilter[*ascii.Doc]
+	var filter *files.PathFilter[*spec.Doc]
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	if specRoot != "" {
 		targeter = files.SpecTargeter(specRoot)
 		if len(args) > 0 {
-			filter = files.NewPathFilter[*ascii.Doc](args)
+			filter = files.NewPathFilter[*spec.Doc](args)
 		}
 	} else {
 		targeter = files.PathsTargeter(args...)

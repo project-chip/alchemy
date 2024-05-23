@@ -3,8 +3,8 @@ package db
 import (
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
@@ -27,11 +27,11 @@ func getAccessSchemaColumnValues(tableName string, access any) []any {
 		var a matter.Access
 		switch tableName {
 		case commandTable:
-			a, _ = ascii.ParseAccess(s, mattertypes.EntityTypeCommand)
+			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeCommand)
 		case structField:
-			a, _ = ascii.ParseAccess(s, mattertypes.EntityTypeStruct)
+			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeStruct)
 		default:
-			a, _ = ascii.ParseAccess(s, mattertypes.EntityTypeUnknown)
+			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeUnknown)
 		}
 		readAccess = int8(a.Read)
 		writeAccess = int8(a.Write)

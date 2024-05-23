@@ -1,0 +1,41 @@
+
+Listing =
+    start:(ListingStart)
+    lines:(ListingLine)*
+    ListingEnd {
+        return compose(c, asciidoc.NewListing(start.(asciidoc.Delimiter)), setLines[*asciidoc.Listing](cast[any, string](lines.([]any))))
+    }
+
+ListingStart = BeginningOfLine delimiter:ListingDelimiter EndOfLine &{
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeListing, delimiter.(asciidoc.Delimiter).Length)
+        return true, nil
+    } {
+        return delimiter, nil
+    }
+
+ListingEnd = BeginningOfLine delimiter:ListingDelimiter &EndOfLine &{
+    previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeListing)
+    if previous == delimiter.(asciidoc.Delimiter).Length {
+        c.popDelimitedLevel(asciidoc.DelimitedBlockTypeListing)
+        return true, nil
+    }
+    return false, nil
+    } 
+
+ListingHyphens = hyphens:("----" "-"*) &{
+        return delimitedLength(hyphens) == 4, nil
+    } 
+    { 
+        return delimitedLength(hyphens), nil
+    }
+
+ListingDelimiter = hyphens:(ListingHyphens) 
+    _*  
+    {
+        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeListing, Length:hyphens.(int)}, nil
+    }
+
+ListingLine = (!ListingDelimiter NotEndOfFile line:AnyText EndOfLine) {
+    debugPosition(c, "matched listing line \"%s\" (%d)\n", line.(string), len(line.(string)))
+    return line.(string), nil
+}

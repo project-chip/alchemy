@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func renderFeatures(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
 	if cluster.Features == nil || len(cluster.Features.Bits) == 0 {
 		return
 	}
@@ -17,7 +17,7 @@ func renderFeatures(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (
 	return
 }
 
-func RenderFeatureElements(doc *ascii.Doc, cluster *matter.Cluster, features *etree.Element) (err error) {
+func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etree.Element) (err error) {
 	for _, b := range cluster.Features.Bits {
 		f, ok := b.(*matter.Feature)
 		if !ok {

@@ -1,0 +1,32 @@
+
+MonospaceText = (SingleMonospaceText / DoubleMonospaceText)
+
+SingleMonospaceText =!Escape "`" &(!"`") value:(SingleMonospaceTextValue) "`" !"`" &(!Alphanumeric) {
+    debugPosition(c, "match Monospace text %s\n", string(c.text))
+    return value, nil
+}
+
+SingleMonospaceTextValue = !_ value:(!_ value:(SingleMonospaceTextElement)+ { return value, nil})+ {
+    debugPosition(c, "match Monospace element %s\n", string(c.text))
+    return asciidoc.NewMonospace(flat(value.([]any))), nil
+}
+
+SingleMonospaceTextElement = !("`" !"`") element:(FormattedTextElement) {
+    debugPosition(c, "match Monospace text element %s\n", string(c.text))
+    return element, nil
+}
+
+DoubleMonospaceText =!DoubleEscape "``" value:(DoubleMonospaceTextValue) "``"  {
+    debugPosition(c, "match double Monospace text %s\n", string(c.text))
+    return value, nil
+}
+
+DoubleMonospaceTextValue = !_ value:(!_ value:(DoubleMonospaceTextElement)+ { return value, nil})+ {
+    debugPosition(c, "match double Monospace element %s\n", string(c.text))
+    return asciidoc.NewDoubleMonospace(flat(value.([]any))), nil
+}
+
+DoubleMonospaceTextElement = !("``") element:(FormattedTextElement) {
+    debugPosition(c, "match double Monospace text element %s\n", string(c.text))
+    return element, nil
+}

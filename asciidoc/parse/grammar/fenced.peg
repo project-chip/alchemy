@@ -1,0 +1,45 @@
+
+Fenced =
+    start:(FencedStart)
+    lines:(!FencedDelimiter Element)*
+    FencedEnd {
+        return compose(c, asciidoc.NewFencedBlock(start.(asciidoc.Delimiter)), setElements[*asciidoc.FencedBlock](join(lines.([]any))))
+    }
+
+FencedStart = delimiter:FencedDelimiter EndOfLine &{
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeFenced, delimiter.(asciidoc.Delimiter).Length)
+        return true, nil
+    } {
+        debugPosition(c, "matched fenced start: %s\n", string(c.text))
+        return delimiter, nil
+    }
+
+FencedEnd = delimiter:FencedDelimiter &EndOfLine &{
+    debugPosition(c, "matched fenced end: %s\n", string(c.text))
+    previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeFenced)
+    if previous == delimiter.(asciidoc.Delimiter).Length {
+        c.popDelimitedLevel(asciidoc.DelimitedBlockTypeFenced)
+        return true, nil
+    }
+    debugPosition(c, "Fenced end wrong length: %s (%d vs. %d)\n", string(c.text), previous, delimiter.(asciidoc.Delimiter).Length)
+    return false, nil
+    } 
+
+FencedBackticks = backticks:("```" "="*) &{
+        return delimitedLength(backticks) >= 4, nil
+    } 
+    { 
+    debugPosition(c, "matched fenced backticks: %s\n", string(c.text))
+        return delimitedLength(backticks), nil
+    }
+
+FencedDelimiter = hyphens:(FencedBackticks) 
+    _*  
+    {
+    debugPosition(c, "matched Fenced delimiter: %s\n", string(c.text))
+        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeFenced, Length:hyphens.(int)}, nil
+    }
+
+FencedLine = (!FencedDelimiter NotEndOfFile line:AnyText EndOfLine) {
+    return line.(string), nil
+}

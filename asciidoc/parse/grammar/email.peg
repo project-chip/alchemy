@@ -1,0 +1,21 @@
+Email = name:(EmailName) "@" domain:(EmailDomain) {
+    return compose(c, asciidoc.NewEmail(name.(string) + "@" + domain.(string)))
+}
+
+EmailName = name:((Alphanumeric / [!#$%&'*+-/=?^_`{|}~.])+ {  // See https://en.wikipedia.org/wiki/Email_address#Local-part
+        return string(c.text), nil
+}) &{
+    n := name.(string)
+    return !strings.Contains(n, "..") && !strings.HasPrefix(n, ".") && !strings.HasSuffix(n, "."), nil
+} {
+    return name.(string), nil
+}
+
+EmailDomain = domain:(((Alphanumeric)+ ("." (Alphanumeric / "-")+)*) {
+    return string(c.text), nil
+}) &{
+    d := domain.(string)
+     return !strings.HasPrefix(d, "-") && !strings.HasSuffix(d, "-"), nil
+} {
+    return domain.(string), nil
+}

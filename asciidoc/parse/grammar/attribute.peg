@@ -1,0 +1,135 @@
+AttributeEntry = ":" name:(AttributeEntryName) ":" _* value:(AttributeEntryElements) {
+    debugPosition(c, "matched attribute entry: %s value: %v\n", string(c.text), value)
+    return compose(c, asciidoc.NewAttributeEntry(name.(string)), setElements[*asciidoc.AttributeEntry](value))
+}
+
+AttributeEntryName = CharacterGroupWord (CharacterGroupWord / "-")* {
+    debugPosition(c, "matched attribute entry name: %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+AttributeEntryElements = value:AttributeEntryElement*  {
+     debugPosition(c, "matched attribute entry elements: %s (%d)\n", string(c.text), len(value.([]any)))
+    return join[asciidoc.Element](flat(value.([]any))), nil
+}
+
+AttributeEntryElement = (LineBreak EndOfLine / CharacterClassInline) 
+
+AttributeReset = ":!" name:(AttributeEntryName) ":" _*  {
+    return compose(c, asciidoc.NewAttributeReset(name.(string)))
+} / ":" name:(AttributeEntryName) "!:" _*  {
+    return compose(c, asciidoc.NewAttributeReset(name.(string)))
+}
+
+// Attributes = !"\\" !"[" "[" !"[" attributes:(AttributeList) !"]" "]" !"]" {
+Attributes = !"\\" "[" !"[" attributes:(AttributeList) "]" {
+     debugPosition(c, "matched attributes: %s\n", string(c.text))
+    return attributes, nil
+}
+
+
+AttributeList = attributes:(AttributeListItem)*  {
+     debugPosition(c, "matched attribute list: %s\n", string(c.text))
+    return extractAttributes(attributes.([]any), nil)
+}
+
+AttributeListItem = !"]" _* attribute:(Attribute) _* ","? {
+    return attribute, nil
+}
+
+Attribute = name:( (name:(NamedAttributeName) _* "=" _*) { return name, nil })? value:(SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {
+    if name != nil {
+        return asciidoc.NewNamedAttribute(name.(string), value.(*attributeValue).value, value.(*attributeValue).quote), nil
+    }
+    return asciidoc.NewPositionalAttribute(value.(*attributeValue).value), nil
+}
+
+ShorthandAttributes = !"\\" "[" !"[" attribute:(ShorthandAttribute) "]" {
+     debugPosition(c, "matched attributes: %s\n", string(c.text))
+    return attribute, nil
+}
+
+ShorthandAttribute = style:(ShorthandAttributeValue)? values:(ShorthandID / ShorthandRole / ShorthandOption)+ {
+    return asciidoc.NewShorthandAttribute(style, values.([]any))
+}
+
+ShorthandStyle = value:ShorthandAttributeValue {
+    return asciidoc.NewShorthandID(value.(asciidoc.Set)), nil
+}
+
+ShorthandID = "#" value:ShorthandAttributeValue {
+    return asciidoc.NewShorthandID(value.(asciidoc.Set)), nil
+}
+
+ShorthandRole = "." value:ShorthandAttributeValue {
+    return asciidoc.NewShorthandRole(value.(asciidoc.Set)), nil
+}
+
+ShorthandOption = "%" value:ShorthandAttributeValue {
+    return asciidoc.NewShorthandOption(value.(asciidoc.Set)), nil
+}
+
+ShorthandAttributeValue = value:(!"#" !"." !"%" SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {
+    return value, nil
+}
+
+SingleQuoteAttributeValue = "'" value:(SingleQuoteAttributeValueElement)* "'" {
+    return &attributeValue{value:join(value.([]any)), quote:asciidoc.AttributeQuoteTypeSingle}, nil
+}
+
+SingleQuoteAttributeValueElement = (
+    "\\'" { return asciidoc.NewString("'"), nil } / 
+    Alphanumeric / 
+    _ / 
+    CurvedQuote / 
+    AttributeReference /
+    [^\r\n\\' ]+ {
+        return asciidoc.NewString(string(c.text)), nil
+    }
+)
+
+DoubleQuoteAttributeValue = "\"" value:(DoubleQuoteAttributeValueElement)* "\"" {
+    return &attributeValue{value:join(value.([]any)), quote:asciidoc.AttributeQuoteTypeDouble}, nil
+}
+
+DoubleQuoteAttributeValueElement = (
+    "\\\"" { return asciidoc.NewString("\""), nil }  / 
+    Alphanumeric / 
+    _ / 
+    CurvedQuote /
+    AttributeReference /
+    [^\r\n\\" ]+ {
+        return asciidoc.NewString(string(c.text)), nil
+    }
+)
+
+NakedAttributeValue = !_ value:(
+    AttributeReference / 
+    _ / 
+    [^=\], ]+ { // Stop on commas, equals, spaces or end bracket
+    return asciidoc.NewString(string(c.text)), nil
+    }
+)+ {
+    debugPosition(c, "matched naked attribute value elements: %s\n", string(c.text))
+    return &attributeValue{value:join[asciidoc.Element](flat(value.([]any)))}, nil
+}
+
+InlineAttributes = "[" attributes:(AttributeList) "]" {
+    debugPosition(c, "matched inline attributes: %s\n", string(c.text))
+    return attributes, nil
+}
+
+NamedAttributeName = [A-Za-z0-9_] [A-Za-z0-9_-]* {
+    debugPosition(c, "matched named attribute name: %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+AttributeReference = attribute:(AttributeReferenceValue / Counter) {
+    return attribute, nil
+}
+
+AttributeReferenceValue = !"\\" "{" name:AttributeEntryName "}" {
+    return populatePosition(c, asciidoc.NewAttributeReference(name.(string))), nil
+}
+
+

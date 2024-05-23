@@ -1,0 +1,11 @@
+
+ThematicBreak = ("'''" / "*" _? "*" _? "*" / "-" _? "-" _? "-" / "_" _? "_" _? "_") _* &EndOfLine {
+    debugPosition(c, "thematic break: %s\n", string(c.text))
+    return compose(c, asciidoc.NewThematicBreak())
+}
+
+
+PageBreak = ("<<<") _* &EndOfLine {
+    debugPosition(c, "page break: %s\n", string(c.text))
+    return compose(c, asciidoc.NewPageBreak())
+}

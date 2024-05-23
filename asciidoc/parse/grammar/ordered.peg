@@ -1,0 +1,31 @@
+
+
+OrderedListItem = marker:(OrderedListMarker)  value:(ListItemValue) {
+     debugPosition(c, "found ordered list item: %v\n", marker)
+     m := marker.(listMarker)
+    return compose(c, asciidoc.NewOrderedListItem(m.indent, m.marker), setElements[*asciidoc.OrderedListItem](value.(asciidoc.Set)))
+}
+
+
+OrderedListMarker = indent:(AnySpaces) marker:(ordinal:(("."+) {
+    debugPosition(c, "matched ordered list ordinal marker\n")
+    return string(c.text), nil
+}) &{
+       debugPosition(c, "checking ordered list ordinal marker:%T\n", ordinal)
+    return len(ordinal.(string)) <= 5, nil 
+} {
+       debugPosition(c, "returning ordered list ordinal marker:%T\n", ordinal)
+
+    return ordinal, nil
+}
+/ [0-9]+ "." { return string(c.text), nil }
+/ [a-z] "." { return string(c.text), nil }
+/ [A-Z] "." { return string(c.text), nil }
+/ LowercaseRoman ")" { return string(c.text), nil }
+/ UppercaseRoman ")" { return string(c.text), nil }
+)
+__
+{
+    debugPosition(c, "matched ordered list marker\n")
+    return listMarker{marker:marker.(string), indent:indent.(string)}, nil
+}

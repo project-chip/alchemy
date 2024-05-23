@@ -1,0 +1,9 @@
+
+FileInclude = !"\\" "include::" path:(FileIncludePath) attributes:(InlineAttributes) _* &EndOfLine {
+    return compose(c, asciidoc.NewFileInclude(), setElements[*asciidoc.FileInclude](path), setAttributes[*asciidoc.FileInclude](attributes))
+}
+
+
+FileIncludePath = !_ path:Path {
+    return path, nil
+}

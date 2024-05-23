@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -56,7 +56,7 @@ func dataModelName(dataType *types.DataType) string {
 	}
 }
 
-func renderDataTypes(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderDataTypes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
 	if len(cluster.Enums) == 0 && len(cluster.Bitmaps) == 0 && len(cluster.Structs) == 0 {
 		return
 	}

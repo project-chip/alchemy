@@ -1,0 +1,41 @@
+
+PreParse = content:(PreParseElement)+ EndOfFile {
+    debugPosition(c, "complete preparse: %T\n", flat(content.([]any)))
+    return flat(content.([]any)), nil
+}
+
+PreParseElement = !EndOfFile BeginningOfLine element:(IfDefBlock / IfNDefBlock / IfEvalBlock / AttributeEntry / AttributeReset / PreParseLine) EndOfLine {
+    return element, nil
+}
+
+PreParseLine = !EndIfDefStatement content:PreParseLineElement* &EndOfLine {
+     debugPosition(c, "matched preparse line: \"%s\"\n", string(c.text))
+    return flat(append(content.([]any), &asciidoc.NewLine{})), nil
+}
+
+PreParseLineElement = (
+    arv:AttributeReference {
+        return arv, nil
+    }
+    /
+    ([^\r\n{]+ {
+        return asciidoc.NewString(string(c.text)), nil
+    })
+    / ("{" { return string(c.text), nil})
+)
+
+IfDefBlock = IfDefStatement attributes:(ConditionalAttributes) "[]" _*  EndOfLine lines:(PreParseElement)*  EndIfDef  {
+    attr := attributes.(conditionalAttributes)
+    return compose(c, asciidoc.NewIfDefBlock(attr.names, attr.union), setElements[*asciidoc.IfDefBlock](flat(lines.([]any))))
+}
+
+IfNDefBlock = "ifndef::" attributes:(ConditionalAttributes) "[]" _*  EndOfLine lines:(PreParseElement)*  EndIfDef  {
+    attr := attributes.(conditionalAttributes)
+    return compose(c, asciidoc.NewIfNDefBlock(attr.names, attr.union), setElements[*asciidoc.IfNDefBlock](flat(lines.([]any))))
+}
+
+IfEvalBlock = IfEvalStatement "[" _* left:(IfEvalValue) _*  operand:(IfEvalOperator) _* right:(IfEvalValue) _* "]" _*  EndOfLine lines:(PreParseElement)*  EndIfDef  {
+    return compose(c, asciidoc.NewIfEvalBlock(left.(asciidoc.IfEvalValue), operand.(asciidoc.ConditionalOperator), right.(asciidoc.IfEvalValue)), setElements[*asciidoc.IfEvalBlock](flat(lines.([]any))))
+
+}
+

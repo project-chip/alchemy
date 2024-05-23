@@ -1,0 +1,33 @@
+Open =
+    start:(OpenStart)
+    lines:(!OpenDelimiter Element)*
+    OpenEnd {
+        return compose(c, asciidoc.NewOpenBlock(start.(asciidoc.Delimiter)), setElements[*asciidoc.OpenBlock](join(lines.([]any))))
+    }
+
+OpenStart = delimiter:OpenDelimiter EndOfLine &{
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeOpen, delimiter.(asciidoc.Delimiter).Length)
+        return true, nil
+    } {
+        return delimiter, nil
+    }
+
+OpenEnd = delimiter:OpenDelimiter &EndOfLine &{
+    previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeOpen)
+    if previous == delimiter.(asciidoc.Delimiter).Length {
+        c.popDelimitedLevel(asciidoc.DelimitedBlockTypeOpen)
+        return true, nil
+    }
+    return false, nil
+    } 
+
+OpenEquals = hyphens:("--") 
+    { 
+        return string(c.text), nil
+    }
+
+OpenDelimiter = hyphens:(OpenEquals) 
+    _*  
+    {
+        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeOpen, Length:len(hyphens.(string))}, nil
+    }

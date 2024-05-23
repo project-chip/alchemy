@@ -1,0 +1,22 @@
+
+Counter = CounterIncrement / CounterSilentIncrement
+
+CounterIncrement = !"\\" "{counter:" name:AttributeEntryName initialValue:(CounterInitialValue)? "}" {
+    return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, true)), nil
+}
+
+CounterSilentIncrement = !"\\" "{counter2:" name:AttributeEntryName initialValue:(CounterInitialValue)? "}" {
+    return populatePosition(c, asciidoc.NewCounter(name.(string), initialValue, false)), nil
+}
+
+CounterInitialValue = ":" initializer:(CounterInitializer) {
+    return initializer, nil
+}
+
+CounterInitializer = ([a-zA-Z] { 
+    return string(c.text), nil
+    } 
+    / [0-9]+ { 
+        return strconv.Atoi(string(c.text))
+    } 
+)

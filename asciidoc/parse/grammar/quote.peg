@@ -1,0 +1,35 @@
+Quote =
+    start:(QuoteStart)
+    lines:(!QuoteDelimiter Element)*
+    QuoteEnd {
+        return compose(c, asciidoc.NewQuoteBlock(start.(asciidoc.Delimiter)), setElements[*asciidoc.QuoteBlock](join(lines.([]any))))
+    }
+
+QuoteStart = delimiter:QuoteDelimiter EndOfLine &{
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeQuote, delimiter.(asciidoc.Delimiter).Length)
+        return true, nil
+    } {
+        return delimiter, nil
+    }
+
+QuoteEnd = delimiter:QuoteDelimiter &EndOfLine &{
+    previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeQuote)
+    if previous == delimiter.(asciidoc.Delimiter).Length {
+        c.popDelimitedLevel(asciidoc.DelimitedBlockTypeQuote)
+        return true, nil
+    }
+    return false, nil
+} 
+
+QuoteUnderlines = underlines:("____" "_"*) &{
+        return delimitedLength(underlines) >= 4, nil
+    } 
+    { 
+        return delimitedLength(underlines), nil
+    }
+
+QuoteDelimiter = underlines:(QuoteUnderlines) 
+    _*  
+    {
+        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeQuote, Length:underlines.(int)}, nil
+    }
