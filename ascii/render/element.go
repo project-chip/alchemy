@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
 type Section interface {
-	GetASCIISection() *elements.Section
+	GetASCIISection() *asciidoc.Section
 }
 
-func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err error) {
+func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err error) {
 	var previous any
 	for _, e := range elementList {
 		if he, ok := e.(Section); ok {
@@ -22,114 +22,114 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 			e = hb.GetBase()
 		}
 		switch el := e.(type) {
-		case elements.EmptyLine:
+		case asciidoc.EmptyLine:
 			cxt.WriteNewline()
 			cxt.WriteRune('\n')
-		case *elements.NewLine:
+		case *asciidoc.NewLine:
 			cxt.WriteRune('\n')
-		case *elements.Section:
+		case *asciidoc.Section:
 			err = renderSection(cxt, el)
 			if err == nil {
 				err = Elements(cxt, "", el.Elements()...)
 			}
-		case *elements.Paragraph:
+		case *asciidoc.Paragraph:
 			err = renderParagraph(cxt, el, &previous)
 			if err != nil {
 				return
 			}
-		case *elements.Table:
+		case *asciidoc.Table:
 			err = renderTable(cxt, el)
-		case *elements.EmptyLine:
+		case *asciidoc.EmptyLine:
 			cxt.WriteNewline()
 			cxt.WriteRune('\n')
-		case *elements.CrossReference:
+		case *asciidoc.CrossReference:
 			err = renderInternalCrossReference(cxt, el)
-		case *elements.AttributeEntry:
+		case *asciidoc.AttributeEntry:
 			err = renderAttributeEntry(cxt, el)
-		case *elements.String:
+		case *asciidoc.String:
 			text := el.Value
 			if strings.HasPrefix(text, "ifdef::") || strings.HasPrefix(text, "ifndef::") || strings.HasPrefix(text, "endif::[]") {
 				cxt.WriteNewline()
 			}
 			cxt.WriteString(text)
-		case *elements.SingleLineComment:
+		case *asciidoc.SingleLineComment:
 			cxt.WriteNewline()
 			cxt.WriteString("//")
 			cxt.WriteString(el.Value)
 			cxt.WriteNewline()
-		case *elements.BlockImage:
+		case *asciidoc.BlockImage:
 			err = renderImageBlock(cxt, el)
-		case *elements.Link:
+		case *asciidoc.Link:
 			err = renderLink(cxt, el)
-		case elements.SpecialCharacter:
+		case asciidoc.SpecialCharacter:
 			err = renderSpecialCharacter(cxt, el)
-		case *elements.Bold:
+		case *asciidoc.Bold:
 			err = renderFormattedText(cxt, el, "*")
-		case *elements.DoubleBold:
+		case *asciidoc.DoubleBold:
 			err = renderFormattedText(cxt, el, "**")
-		case *elements.Monospace:
+		case *asciidoc.Monospace:
 			err = renderFormattedText(cxt, el, "`")
-		case *elements.DoubleMonospace:
+		case *asciidoc.DoubleMonospace:
 			err = renderFormattedText(cxt, el, "``")
-		case *elements.Superscript:
+		case *asciidoc.Superscript:
 			err = renderFormattedText(cxt, el, "^")
-		case *elements.Subscript:
+		case *asciidoc.Subscript:
 			err = renderFormattedText(cxt, el, "~")
-		case *elements.Italic:
+		case *asciidoc.Italic:
 			err = renderFormattedText(cxt, el, "_")
-		case *elements.DoubleItalic:
+		case *asciidoc.DoubleItalic:
 			err = renderFormattedText(cxt, el, "__")
-		case *elements.Marked:
+		case *asciidoc.Marked:
 			err = renderFormattedText(cxt, el, "#")
-		case *elements.DoubleMarked:
+		case *asciidoc.DoubleMarked:
 			err = renderFormattedText(cxt, el, "##")
-		case *elements.LineContinuation:
+		case *asciidoc.LineContinuation:
 			cxt.WriteString(" +")
-		case elements.AttributeReference:
+		case asciidoc.AttributeReference:
 			cxt.WriteString(fmt.Sprintf("{%s}", el.Name()))
-		case *elements.InlineImage:
+		case *asciidoc.InlineImage:
 			err = renderInlineImage(cxt, el)
-		case *elements.InlinePassthrough:
+		case *asciidoc.InlinePassthrough:
 			cxt.WriteString("+")
 			err = Elements(cxt, "", el.Elements()...)
 			cxt.WriteString("+")
-		case *elements.InlineDoublePassthrough:
+		case *asciidoc.InlineDoublePassthrough:
 			cxt.WriteString("++")
 			err = Elements(cxt, "", el.Elements()...)
 			cxt.WriteString("++")
-		case *elements.AttributeReset:
+		case *asciidoc.AttributeReset:
 			renderAttributeReset(cxt, el)
-		case *elements.UnorderedListItem:
+		case *asciidoc.UnorderedListItem:
 			err = renderUnorderedListElement(cxt, el)
-		case *elements.OrderedListItem:
+		case *asciidoc.OrderedListItem:
 			err = renderOrderedListElement(cxt, el)
-		case *elements.ListContinuation:
+		case *asciidoc.ListContinuation:
 			cxt.WriteNewline()
 			cxt.WriteString("+\n")
 			err = Elements(cxt, "", el.Child())
-		case *elements.IfDef:
+		case *asciidoc.IfDef:
 			renderConditional(cxt, "ifdef::", el.Attributes, el.Union)
-		case *elements.IfNDef:
+		case *asciidoc.IfNDef:
 			renderConditional(cxt, "ifndef::", el.Attributes, el.Union)
-		case *elements.IfEval:
+		case *asciidoc.IfEval:
 			renderIfEval(cxt, el)
-		case *elements.EndIf:
+		case *asciidoc.EndIf:
 			renderConditional(cxt, "endif::", el.Attributes, el.Union)
-		case *elements.MultiLineComment:
+		case *asciidoc.MultiLineComment:
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
 				cxt.WriteString(l)
 				cxt.WriteRune('\n')
 			}
 			renderDelimiter(cxt, el.Delimiter)
-		case *elements.DescriptionListItem:
+		case *asciidoc.DescriptionListItem:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			Elements(cxt, "", el.Term...)
 			cxt.WriteString(el.Marker)
 			cxt.WriteRune(' ')
 			Elements(cxt, "", el.Elements()...)
 			cxt.WriteNewline()
-		case *elements.LiteralBlock:
+		case *asciidoc.LiteralBlock:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
@@ -137,12 +137,12 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 				cxt.WriteRune('\n')
 			}
 			renderDelimiter(cxt, el.Delimiter)
-		case *elements.SidebarBlock:
+		case *asciidoc.SidebarBlock:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			renderDelimiter(cxt, el.Delimiter)
 			Elements(cxt, "", el.Elements()...)
 			renderDelimiter(cxt, el.Delimiter)
-		case *elements.Listing:
+		case *asciidoc.Listing:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
@@ -150,12 +150,12 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 				cxt.WriteRune('\n')
 			}
 			renderDelimiter(cxt, el.Delimiter)
-		case *elements.ExampleBlock:
+		case *asciidoc.ExampleBlock:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			renderDelimiter(cxt, el.Delimiter)
 			Elements(cxt, "", el.Elements()...)
 			renderDelimiter(cxt, el.Delimiter)
-		case *elements.StemBlock:
+		case *asciidoc.StemBlock:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			renderDelimiter(cxt, el.Delimiter)
 			for _, l := range el.Lines() {
@@ -163,12 +163,12 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 				cxt.WriteRune('\n')
 			}
 			renderDelimiter(cxt, el.Delimiter)
-		case *elements.OpenBlock:
+		case *asciidoc.OpenBlock:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			renderDelimiter(cxt, el.Delimiter)
 			Elements(cxt, "", el.Elements()...)
 			renderDelimiter(cxt, el.Delimiter)
-		case *elements.FileInclude:
+		case *asciidoc.FileInclude:
 			cxt.WriteString("include::")
 			Elements(cxt, "", el.Elements()...)
 			attributes := el.Attributes()
@@ -178,7 +178,7 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 				renderAttributes(cxt, el, el.Attributes(), true)
 				cxt.WriteRune('\n')
 			}
-		case *elements.Anchor:
+		case *asciidoc.Anchor:
 			cxt.WriteString("[[")
 			cxt.WriteString(el.ID)
 			anchorElements := el.Elements()
@@ -187,14 +187,14 @@ func Elements(cxt *Context, prefix string, elementList ...elements.Element) (err
 				Elements(cxt, "", anchorElements...)
 			}
 			cxt.WriteString("]]")
-		case *elements.Admonition:
+		case *asciidoc.Admonition:
 			renderAdmonition(cxt, el.AdmonitionType)
-		case *elements.AttachedBlock:
+		case *asciidoc.AttachedBlock:
 			cxt.WriteString("+\n")
 			err = Elements(cxt, "", el.Child())
-		case *elements.LineBreak:
+		case *asciidoc.LineBreak:
 			cxt.WriteString("+")
-		case *elements.Counter:
+		case *asciidoc.Counter:
 			cxt.WriteString("{counter")
 			if !el.Display {
 				cxt.WriteRune('2')

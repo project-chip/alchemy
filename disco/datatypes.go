@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
@@ -18,8 +18,8 @@ type DataTypeEntry struct {
 	dataType         string
 	dataTypeCategory matter.DataTypeCategory
 	section          *ascii.Section
-	typeCell         *elements.TableCell
-	definitionTable  *elements.Table
+	typeCell         *asciidoc.TableCell
+	definitionTable  *asciidoc.Table
 	indexColumn      matter.TableColumn
 	existing         bool
 }
@@ -89,7 +89,7 @@ func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, 
 	return nil
 }
 
-func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*elements.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
+func (b *Ball) getDataTypes(columnMap ascii.ColumnIndex, rows []*asciidoc.TableRow, section *ascii.Section) (map[string]*DataTypeEntry, error) {
 	sectionDataMap := make(map[string]*DataTypeEntry)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
@@ -299,7 +299,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			}
 		}
 
-		title := elements.NewString(dt.name + suffix + " Type")
+		title := asciidoc.NewString(dt.name + suffix + " Type")
 
 		if dataTypesSection == nil {
 			dataTypesSection, err = ensureDataTypesSection(top)
@@ -310,7 +310,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 
 		var removedTable bool
 		parse.Filter(dt.section, func(i any) (remove bool, shortCircuit bool) {
-			if t, ok := i.(*elements.Table); ok && table == t {
+			if t, ok := i.(*asciidoc.Table); ok && table == t {
 				removedTable = true
 				return true, true
 			}
@@ -322,16 +322,16 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 
-		dataTypeSection := elements.NewSection(elements.Set{title}, dataTypesSection.Base.Level+1)
+		dataTypeSection := asciidoc.NewSection(asciidoc.Set{title}, dataTypesSection.Base.Level+1)
 
-		se := elements.NewString(fmt.Sprintf("This data type is derived from %s", dt.dataType))
-		p := elements.NewParagraph()
-		p.SetElements(elements.Set{se})
+		se := asciidoc.NewString(fmt.Sprintf("This data type is derived from %s", dt.dataType))
+		p := asciidoc.NewParagraph()
+		p.SetElements(asciidoc.Set{se})
 		err = dataTypeSection.Append(p)
 		if err != nil {
 			return
 		}
-		bl := elements.NewEmptyLine("")
+		bl := asciidoc.NewEmptyLine("")
 		err = dataTypeSection.Append(bl)
 		if err != nil {
 			return
@@ -345,8 +345,8 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 
-		//newAttr := make(elements.AttributeList)
-		tableIDAttribute := table.GetAttributeByName(elements.AttributeNameID)
+		//newAttr := make(asciidoc.AttributeList)
+		tableIDAttribute := table.GetAttributeByName(asciidoc.AttributeNameID)
 		var newID string
 		if tableIDAttribute != nil {
 			// Reuse the table's ID if it has one, so existing links get updated
@@ -355,7 +355,7 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			newID = "ref_" + dt.ref + suffix + ", " + dt.name + suffix
 		}
 
-		dataTypeSection.AppendAttribute(elements.NewNamedAttribute(string(elements.AttributeNameID), elements.Set{elements.NewString(newID)}, elements.AttributeQuoteTypeDouble))
+		dataTypeSection.AppendAttribute(asciidoc.NewNamedAttribute(string(asciidoc.AttributeNameID), asciidoc.Set{asciidoc.NewString(newID)}, asciidoc.AttributeQuoteTypeDouble))
 
 		var s *ascii.Section
 		s, err = ascii.NewSection(top.Doc, dataTypesSection, dataTypeSection)
@@ -375,11 +375,11 @@ func (b *Ball) promoteDataType(top *ascii.Section, suffix string, dataTypeFields
 			return
 		}
 
-		table.DeleteAttribute(elements.AttributeNameID)
-		table.DeleteAttribute(elements.AttributeNameTitle)
+		table.DeleteAttribute(asciidoc.AttributeNameID)
+		table.DeleteAttribute(asciidoc.AttributeNameTitle)
 
-		icr := elements.NewCrossReference(newID)
-		err = setCellValue(dt.typeCell, elements.Set{icr})
+		icr := asciidoc.NewCrossReference(newID)
+		err = setCellValue(dt.typeCell, asciidoc.Set{icr})
 		if err != nil {
 			return
 		}
@@ -393,10 +393,10 @@ func ensureDataTypesSection(top *ascii.Section) (*ascii.Section, error) {
 	if dataTypesSection != nil {
 		return dataTypesSection, nil
 	}
-	title := elements.NewString(matter.SectionTypeName(matter.SectionDataTypes))
+	title := asciidoc.NewString(matter.SectionTypeName(matter.SectionDataTypes))
 
-	ts := elements.NewSection(elements.Set{title}, top.Base.Level+1)
-	err := ts.Append(elements.NewEmptyLine(""))
+	ts := asciidoc.NewSection(asciidoc.Set{title}, top.Base.Level+1)
+	err := ts.Append(asciidoc.NewEmptyLine(""))
 	if err != nil {
 		return nil, err
 	}

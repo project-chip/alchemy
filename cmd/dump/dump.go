@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
 /*
-	func dumpTOC(tocs []*elements.ToCSection, indent int) {
+	func dumpTOC(tocs []*asciidoc.ToCSection, indent int) {
 		for _, toc := range tocs {
 			fmt.Print(strings.Repeat("\t", indent))
 			fmt.Printf("{toc %d} %s.%s\n", toc.Level, toc.Number, toc.Title)
@@ -19,7 +19,7 @@ import (
 
 }
 */
-func dumpLocation(l elements.URL) {
+func dumpLocation(l asciidoc.URL) {
 	fmt.Printf("%s %s}", l.Scheme, l.Path.(string))
 }
 

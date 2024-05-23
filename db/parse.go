@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	asciitypes 
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 )
@@ -96,7 +95,7 @@ func readTable(cxt context.Context, doc *ascii.Doc, section *ascii.Section) (rs 
 	return
 }
 
-func readTableRow(valueRow *asciielements.TableRow, columnMap ascii.ColumnIndex, extraColumns []ascii.ExtraColumn, row *dbRow) error {
+func readTableRow(valueRow *asciiasciidoc.TableRow, columnMap ascii.ColumnIndex, extraColumns []ascii.ExtraColumn, row *dbRow) error {
 	if row.values == nil {
 		row.values = make(map[matter.TableColumn]any)
 	}

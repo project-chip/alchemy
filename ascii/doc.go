@@ -7,7 +7,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -18,8 +18,8 @@ type Doc struct {
 
 	Path string
 
-	Base *elements.Document
-	elements.Set
+	Base *asciidoc.Document
+	asciidoc.Set
 
 	docType matter.DocType
 
@@ -27,26 +27,26 @@ type Doc struct {
 	parents []*Doc
 
 	anchors         map[string]*Anchor
-	crossReferences map[string][]*elements.CrossReference
-	attributes      map[elements.AttributeName]any
+	crossReferences map[string][]*asciidoc.CrossReference
+	attributes      map[asciidoc.AttributeName]any
 
 	entities       []mattertypes.Entity
 	entitiesParsed bool
 
-	entitiesBySection map[elements.Attributable][]mattertypes.Entity
+	entitiesBySection map[asciidoc.Attributable][]mattertypes.Entity
 }
 
-func NewDoc(d *elements.Document) (*Doc, error) {
+func NewDoc(d *asciidoc.Document) (*Doc, error) {
 	doc := &Doc{
 		Base:       d,
-		attributes: make(map[elements.AttributeName]any),
+		attributes: make(map[asciidoc.AttributeName]any),
 	}
 	for _, e := range d.Elements() {
 		switch el := e.(type) {
-		case *elements.AttributeEntry:
+		case *asciidoc.AttributeEntry:
 			doc.attributes[el.Name] = el.Elements()
 			doc.Append(NewElement(doc, e))
-		case *elements.Section:
+		case *asciidoc.Section:
 			s, err := NewSection(doc, doc, el)
 			if err != nil {
 				return nil, err
@@ -64,7 +64,7 @@ func firstLetterIsLower(s string) bool {
 	return unicode.IsLower(firstLetter)
 }
 
-func (doc *Doc) Footnotes() []*elements.Footnote {
+func (doc *Doc) Footnotes() []*asciidoc.Footnote {
 	return nil
 }
 
@@ -88,7 +88,7 @@ func (doc *Doc) Entities() (entities []mattertypes.Entity, err error) {
 	}
 	doc.entitiesParsed = true
 
-	var entitiesBySection = make(map[elements.Attributable][]mattertypes.Entity)
+	var entitiesBySection = make(map[asciidoc.Attributable][]mattertypes.Entity)
 	for _, top := range parse.Skim[*Section](doc.Elements()) {
 		err := AssignSectionTypes(doc, top)
 		if err != nil {
@@ -142,6 +142,6 @@ func (doc *Doc) Reference(ref string) (mattertypes.Entity, bool) {
 	return entities[0], true
 }
 
-func GithubSettings() []elements.AttributeName {
-	return []elements.AttributeName{elements.AttributeName("env-github")}
+func GithubSettings() []asciidoc.AttributeName {
+	return []asciidoc.AttributeName{asciidoc.AttributeName("env-github")}
 }

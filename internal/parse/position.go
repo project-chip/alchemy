@@ -3,11 +3,11 @@ package parse
 import (
 	"fmt"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
-func Position(el elements.Element) string {
-	p, ok := el.(elements.HasPosition)
+func Position(el asciidoc.Element) string {
+	p, ok := el.(asciidoc.HasPosition)
 	if !ok {
 		return "unknown"
 	}

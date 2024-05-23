@@ -1,8 +1,8 @@
 package render
 
 /*
-func renderFootnoteReference(cxt *Context, fr *elements.FootnoteReference) (err error) {
-	var fn *elements.Footnote
+func renderFootnoteReference(cxt *Context, fr *asciidoc.FootnoteReference) (err error) {
+	var fn *asciidoc.Footnote
 	for _, f := range cxt.Doc.Footnotes() {
 		if f.ID == fr.ID {
 			fn = f

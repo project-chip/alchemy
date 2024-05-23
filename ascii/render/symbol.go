@@ -1,10 +1,8 @@
 package render
 
-import (
-	"github.com/hasty/adoc/elements"
-)
+import "github.com/hasty/adoc/asciidoc"
 
-func renderFormattedText(cxt *Context, el elements.BlockElement, wrapper string) (err error) {
+func renderFormattedText(cxt *Context, el asciidoc.BlockElement, wrapper string) (err error) {
 	err = renderAttributes(cxt, el, el.Attributes(), true)
 	if err != nil {
 		return
@@ -15,7 +13,7 @@ func renderFormattedText(cxt *Context, el elements.BlockElement, wrapper string)
 	return
 }
 
-func renderSpecialCharacter(cxt *Context, s elements.SpecialCharacter) error {
+func renderSpecialCharacter(cxt *Context, s asciidoc.SpecialCharacter) error {
 	cxt.WriteString(s.Character)
 	return nil
 }

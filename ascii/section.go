@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -17,14 +17,14 @@ type Section struct {
 	Name string
 
 	Parent any
-	Base   *elements.Section
+	Base   *asciidoc.Section
 
 	SecType matter.Section
 
-	elements.Set
+	asciidoc.Set
 }
 
-func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
+func NewSection(doc *Doc, parent any, s *asciidoc.Section) (*Section, error) {
 	ss := &Section{Doc: doc, Parent: parent, Base: s}
 
 	var name strings.Builder
@@ -35,10 +35,10 @@ func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
 	ss.Name = name.String()
 	for _, e := range s.Elements() {
 		switch el := e.(type) {
-		case *elements.AttributeEntry:
+		case *asciidoc.AttributeEntry:
 			doc.attributes[el.Name] = el.Elements()
 			ss.Append(NewElement(ss, e))
-		case *elements.Section:
+		case *asciidoc.Section:
 			s, err := NewSection(doc, ss, el)
 			if err != nil {
 				return nil, err
@@ -51,29 +51,29 @@ func NewSection(doc *Doc, parent any, s *elements.Section) (*Section, error) {
 	return ss, nil
 }
 
-func buildSectionTitle(doc *Doc, title *strings.Builder, els ...elements.Element) (err error) {
+func buildSectionTitle(doc *Doc, title *strings.Builder, els ...asciidoc.Element) (err error) {
 	for _, e := range els {
 		switch e := e.(type) {
-		case *elements.String:
+		case *asciidoc.String:
 			title.WriteString(e.Value)
-		case *elements.SpecialCharacter:
+		case *asciidoc.SpecialCharacter:
 			title.WriteString(e.Character)
-		case *elements.UserAttributeReference:
+		case *asciidoc.UserAttributeReference:
 
-			attr, ok := doc.attributes[elements.AttributeName(e.Name())]
+			attr, ok := doc.attributes[asciidoc.AttributeName(e.Name())]
 			if !ok {
 				return fmt.Errorf("unknown section title attribute: %s", e.Name)
 			}
 			switch val := attr.(type) {
-			case elements.Set:
+			case asciidoc.Set:
 				err = buildSectionTitle(doc, title, val...)
-			case elements.Element:
+			case asciidoc.Element:
 				err = buildSectionTitle(doc, title, val)
 			default:
 				err = fmt.Errorf("unexpected section title attribute value type: %T", attr)
 			}
-		case *elements.Link:
-		case *elements.Bold:
+		case *asciidoc.Link:
+		case *asciidoc.Bold:
 			err = buildSectionTitle(doc, title, e.Elements()...)
 		default:
 			err = fmt.Errorf("unknown section title component type: %T", e)
@@ -81,7 +81,7 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, els ...elements.Element
 		if err != nil {
 			return
 		}
-		if he, ok := e.(elements.HasElements); ok {
+		if he, ok := e.(asciidoc.HasElements); ok {
 			err = buildSectionTitle(doc, title, he.Elements()...)
 		}
 		if err != nil {
@@ -95,20 +95,20 @@ func (s *Section) AppendSection(ns *Section) error {
 	return s.Set.Append(ns)
 }
 
-func (s *Section) SetElements(elements elements.Set) error {
+func (s *Section) SetElements(elements asciidoc.Set) error {
 	s.Set.SetElements(elements)
 	return s.Base.SetElements(elements)
 }
 
-func (s Section) Type() elements.ElementType {
-	return elements.ElementTypeBlock
+func (s Section) Type() asciidoc.ElementType {
+	return asciidoc.ElementTypeBlock
 }
 
-func (e *Section) Equals(o elements.Element) bool {
+func (e *Section) Equals(o asciidoc.Element) bool {
 	return e.Base.Equals(o)
 }
 
-func (s *Section) GetASCIISection() *elements.Section {
+func (s *Section) GetASCIISection() *asciidoc.Section {
 	return s.Base
 }
 
@@ -236,7 +236,7 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return matter.SectionDataTypeStruct
 		}
 
-		idAttribute := section.Base.GetAttributeByName(elements.AttributeNameID)
+		idAttribute := section.Base.GetAttributeByName(asciidoc.AttributeNameID)
 		if idAttribute != nil {
 			name = strings.ToLower(idAttribute.AsciiDocString())
 		}
@@ -359,7 +359,7 @@ func guessDataTypeFromTable(section *Section, parent *Section) (sectionType matt
 	return
 }
 
-func (s *Section) toEntities(d *Doc, entityMap map[elements.Attributable][]mattertypes.Entity) ([]mattertypes.Entity, error) {
+func (s *Section) toEntities(d *Doc, entityMap map[asciidoc.Attributable][]mattertypes.Entity) ([]mattertypes.Entity, error) {
 	var entities []mattertypes.Entity
 	switch s.SecType {
 	case matter.SectionCluster:
@@ -394,13 +394,13 @@ var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<e
 
 func (s *Section) GetDataType() *mattertypes.DataType {
 	var dts string
-	p := parse.FindFirst[*elements.Paragraph](s.Base.Elements())
+	p := parse.FindFirst[*asciidoc.Paragraph](s.Base.Elements())
 	if p == nil {
 		return nil
 	}
 	for _, el := range p.Elements() {
 		switch el := el.(type) {
-		case *elements.String:
+		case *asciidoc.String:
 			match := dataTypeDefinitionPattern.FindStringSubmatch(el.Value)
 			if match != nil {
 				dts = match[1]
@@ -409,11 +409,11 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 			if strings.HasPrefix(el.Value, "This struct") {
 				dts = strings.TrimSuffix(s.Name, " Type")
 			}
-		case *elements.CrossReference:
+		case *asciidoc.CrossReference:
 
 			switch el.ID {
 			case "ref_DataTypeBitmap", "ref_DataTypeEnum":
-				label := elements.ValueToString(el.Elements())
+				label := asciidoc.ValueToString(el.Elements())
 				if len(label) == 0 {
 					continue
 				}
@@ -431,7 +431,7 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 	return nil
 }
 
-func findLooseEntities(doc *Doc, section *Section, entityMap map[elements.Attributable][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
+func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
 	parse.Traverse(doc, section.Elements(), func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:

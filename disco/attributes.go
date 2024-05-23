@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -61,7 +61,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 	if section.table.element == nil {
 		return nil
 	}
-	attributeCells := make(map[string]*elements.TableCell)
+	attributeCells := make(map[string]*asciidoc.TableCell)
 	nameIndex, ok := section.table.columnMap[matter.TableColumnName]
 	if !ok {
 		return nil
@@ -91,9 +91,9 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 			continue
 		}
 		var id string
-		ide := s.Base.GetAttributeByName(elements.AttributeNameID)
+		ide := s.Base.GetAttributeByName(asciidoc.AttributeNameID)
 		if ide != nil {
-			idv, ok := ide.Value().(*elements.String)
+			idv, ok := ide.Value().(*asciidoc.String)
 			if ok {
 				id = idv.Value
 				if strings.HasPrefix(id, "_") {
@@ -102,12 +102,12 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 			}
 		}
 		if !ok {
-			var label elements.Set
+			var label asciidoc.Set
 			id, label = normalizeAnchorID(s.Name, nil, nil)
 			setAnchorID(s.Base, id, label)
 		}
-		icr := elements.NewCrossReference(id)
-		err := cell.SetElements(elements.Set{icr})
+		icr := asciidoc.NewCrossReference(id)
+		err := cell.SetElements(asciidoc.Set{icr})
 		if err != nil {
 			return err
 		}

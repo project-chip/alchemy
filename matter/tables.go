@@ -3,7 +3,7 @@ package matter
 import (
 	"fmt"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
 type TableColumn uint8
@@ -86,11 +86,11 @@ func (tc TableColumn) String() string {
 	return fmt.Sprintf("unknown table column name: %d", tc)
 }
 
-var AllowedTableAttributes = map[elements.AttributeName]elements.Set{
+var AllowedTableAttributes = map[asciidoc.AttributeName]asciidoc.Set{
 	"id":      nil,
 	"title":   nil,
-	"valign":  elements.Set{elements.NewString("middle")},
-	"options": elements.Set{elements.NewString("header")},
+	"valign":  asciidoc.Set{asciidoc.NewString("middle")},
+	"options": asciidoc.Set{asciidoc.NewString("header")},
 }
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
 

@@ -1,8 +1,8 @@
 package render
 
-import "github.com/hasty/adoc/elements"
+import "github.com/hasty/adoc/asciidoc"
 
-func renderParagraph(cxt *Context, p *elements.Paragraph, previous *any) (err error) {
+func renderParagraph(cxt *Context, p *asciidoc.Paragraph, previous *any) (err error) {
 	err = renderAttributes(cxt, p, p.Attributes(), false)
 	if err != nil {
 		return
@@ -12,17 +12,17 @@ func renderParagraph(cxt *Context, p *elements.Paragraph, previous *any) (err er
 	return
 }
 
-func renderAdmonition(cxt *Context, a elements.AdmonitionType) {
+func renderAdmonition(cxt *Context, a asciidoc.AdmonitionType) {
 	switch a {
-	case elements.AdmonitionTypeNote:
+	case asciidoc.AdmonitionTypeNote:
 		cxt.WriteString("NOTE: ")
-	case elements.AdmonitionTypeTip:
+	case asciidoc.AdmonitionTypeTip:
 		cxt.WriteString("TIP: ")
-	case elements.AdmonitionTypeImportant:
+	case asciidoc.AdmonitionTypeImportant:
 		cxt.WriteString("IMPORTANT: ")
-	case elements.AdmonitionTypeCaution:
+	case asciidoc.AdmonitionTypeCaution:
 		cxt.WriteString("CAUTION: ")
-	case elements.AdmonitionTypeWarning:
+	case asciidoc.AdmonitionTypeWarning:
 		cxt.WriteString("WARNING: ")
 	}
 }
