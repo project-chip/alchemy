@@ -6,13 +6,13 @@ import (
 	"io"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/adoc/parse"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/internal/text"
 )
 
-func ParseFile(path string, attributes ...elements.AttributeName) (*Doc, error) {
+func ParseFile(path string, attributes ...asciidoc.AttributeName) (*Doc, error) {
 
 	contents, err := readFile(path)
 	if err != nil {
@@ -21,7 +21,7 @@ func ParseFile(path string, attributes ...elements.AttributeName) (*Doc, error) 
 	return Parse(contents, path, attributes...)
 }
 
-func Parse(contents string, path string, attributes ...elements.AttributeName) (doc *Doc, err error) {
+func Parse(contents string, path string, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
 	/*baseConfig := make([]configuration.Setting, 0, len(settings)+1)
 	baseConfig = append(baseConfig, configuration.WithFilename(path))
 	baseConfig = append(baseConfig, settings...)
@@ -38,7 +38,7 @@ func Parse(contents string, path string, attributes ...elements.AttributeName) (
 
 	contents = text.RemoveComments(contents)
 
-	var d *elements.Document
+	var d *asciidoc.Document
 
 	d, err = ParseDocument(strings.NewReader(contents), path, attributes...)
 
@@ -55,7 +55,7 @@ func Parse(contents string, path string, attributes ...elements.AttributeName) (
 	return doc, nil
 }
 
-func ParseDocument(r io.Reader, path string, attributes ...elements.AttributeName) (*elements.Document, error) {
+func ParseDocument(r io.Reader, path string, attributes ...asciidoc.AttributeName) (*asciidoc.Document, error) {
 	done := make(chan any)
 	defer close(done)
 
@@ -75,7 +75,7 @@ func ParseDocument(r io.Reader, path string, attributes ...elements.AttributeNam
 	}
 
 	if len(parsed) == 0 {
-		return &elements.Document{}, nil
+		return &asciidoc.Document{}, nil
 	}
 
 	return parse.Reader(path, strings.NewReader(parsed))
@@ -87,7 +87,7 @@ func ParseDocument(r io.Reader, path string, attributes ...elements.AttributeNam
 		return c
 	}
 
-	footnotes := elements.NewFootnotes()
+	footnotes := asciidoc.NewFootnotes()
 	doc, err := parser.Aggregate(newContext(),
 		parser.CollectFootnotes(footnotes, done,
 			parser.ApplySubstitutions(newContext(), done,
@@ -107,10 +107,10 @@ func ParseDocument(r io.Reader, path string, attributes ...elements.AttributeNam
 }
 
 type Parser struct {
-	attributes []elements.AttributeName
+	attributes []asciidoc.AttributeName
 }
 
-func NewParser(attributes []elements.AttributeName) Parser {
+func NewParser(attributes []asciidoc.AttributeName) Parser {
 	return Parser{attributes: attributes}
 }
 

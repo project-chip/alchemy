@@ -3,14 +3,14 @@ package ascii
 import (
 	"log/slog"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
 type Anchor struct {
 	ID            string
-	LabelElements elements.Set
-	Element       elements.Attributable
+	LabelElements asciidoc.Set
+	Element       asciidoc.Attributable
 	Parent        parse.HasElements
 }
 
@@ -29,10 +29,10 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 	anchors := make(map[string]*Anchor)
 	crossReferences := doc.CrossReferences()
 	parse.Traverse(doc, doc.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
-		var wa elements.Attributable
+		var wa asciidoc.Attributable
 		e, ok := el.(*Element)
 		if ok {
-			if wa, ok = e.Base.(elements.Attributable); !ok {
+			if wa, ok = e.Base.(asciidoc.Attributable); !ok {
 				return parse.SearchShouldContinue
 			}
 		} else if s, ok := el.(*Section); ok {
@@ -40,24 +40,24 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 		} else {
 			return parse.SearchShouldSkip
 		}
-		var idAttr elements.Attribute
-		var refTextAttr *elements.NamedAttribute
+		var idAttr asciidoc.Attribute
+		var refTextAttr *asciidoc.NamedAttribute
 		for _, a := range wa.Attributes() {
 			switch a := a.(type) {
-			case *elements.AnchorAttribute:
+			case *asciidoc.AnchorAttribute:
 				idAttr = a
 
-			case *elements.NamedAttribute:
+			case *asciidoc.NamedAttribute:
 				switch a.Name {
-				case elements.AttributeNameID:
+				case asciidoc.AttributeNameID:
 					idAttr = a
-				case elements.AttributeNameReferenceText:
+				case asciidoc.AttributeNameReferenceText:
 					refTextAttr = a
 				}
 			}
 		}
 		if idAttr == nil {
-			if s, ok := wa.(*elements.Section); ok {
+			if s, ok := wa.(*asciidoc.Section); ok {
 				id := s.Name()
 
 				if _, ok := crossReferences[id]; ok { // If there's a cross-reference for it, then we'll need to make an anchor
@@ -79,12 +79,12 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 			return parse.SearchShouldContinue
 		}
 		var id string
-		var labelSet elements.Set
+		var labelSet asciidoc.Set
 		switch idAttr := idAttr.(type) {
-		case *elements.AnchorAttribute:
+		case *asciidoc.AnchorAttribute:
 			id = idAttr.ID.Value
 			labelSet = idAttr.Label
-		case *elements.NamedAttribute:
+		case *asciidoc.NamedAttribute:
 			id = idAttr.AsciiDocString()
 		}
 		if refTextAttr != nil {
@@ -95,7 +95,7 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 			id = strings.TrimSpace(parts[0])
 			label = strings.TrimSpace(parts[1])
 		}
-		refText := wa.GetAttributeByName(elements.AttributeNameReferenceText)
+		refText := wa.GetAttributeByName(asciidoc.AttributeNameReferenceText)
 		if refText != nil {
 			label = refText.AsciiDocString()
 		}*/

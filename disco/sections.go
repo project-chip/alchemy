@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
@@ -40,7 +40,7 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	}
 	sections := divyUpSection(sec, validSectionTypes)
 
-	newOrder := make(elements.Set, 0, len(sec.Elements()))
+	newOrder := make(asciidoc.Set, 0, len(sec.Elements()))
 	for _, st := range sectionOrder {
 		if els, ok := sections[st]; ok {
 
@@ -55,8 +55,8 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	return sec.SetElements(newOrder)
 }
 
-func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]elements.Set {
-	sections := make(map[matter.Section]elements.Set)
+func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Set {
+	sections := make(map[matter.Section]asciidoc.Set)
 	lastSectionType := matter.SectionPrefix
 	for _, e := range sec.Elements() {
 		switch el := e.(type) {
@@ -76,14 +76,14 @@ func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]stru
 func setSectionTitle(sec *ascii.Section, title string) {
 	for i, e := range sec.Base.Title {
 		switch e.(type) {
-		case *elements.String:
-			sec.Base.Title[i] = elements.NewString(title)
+		case *asciidoc.String:
+			sec.Base.Title[i] = asciidoc.NewString(title)
 			sec.Name = title
 		}
 	}
 }
 
-func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.ColumnIndex, rows []*elements.TableRow) {
+func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.ColumnIndex, rows []*asciidoc.TableRow) {
 	var subsectionSuffix string
 	var subsectionType matter.Section
 	switch section.SecType {

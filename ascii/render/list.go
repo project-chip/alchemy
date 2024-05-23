@@ -1,10 +1,8 @@
 package render
 
-import (
-	"github.com/hasty/adoc/elements"
-)
+import "github.com/hasty/adoc/asciidoc"
 
-func renderOrderedListElement(cxt *Context, el *elements.OrderedListItem) (err error) {
+func renderOrderedListElement(cxt *Context, el *asciidoc.OrderedListItem) (err error) {
 
 	cxt.WriteNewline()
 
@@ -18,7 +16,7 @@ func renderOrderedListElement(cxt *Context, el *elements.OrderedListItem) (err e
 	return
 }
 
-func renderUnorderedListElement(cxt *Context, el *elements.UnorderedListItem) (err error) {
+func renderUnorderedListElement(cxt *Context, el *asciidoc.UnorderedListItem) (err error) {
 	cxt.WriteNewline()
 
 	err = renderAttributes(cxt, el, el.Attributes(), false)
@@ -31,7 +29,7 @@ func renderUnorderedListElement(cxt *Context, el *elements.UnorderedListItem) (e
 	return
 }
 
-func renderLabeledListElement(cxt *Context, el *elements.DescriptionListItem) error {
+func renderLabeledListElement(cxt *Context, el *asciidoc.DescriptionListItem) error {
 	cxt.WriteNewline()
 	err := renderAttributes(cxt, el, el.Attributes(), false)
 	if err != nil {

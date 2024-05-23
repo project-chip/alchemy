@@ -3,11 +3,11 @@ package render
 import (
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
-func renderBlock(cxt *Context, block elements.Element, delimiter string) (err error) {
-	ha, ok := block.(elements.Attributable)
+func renderBlock(cxt *Context, block asciidoc.Element, delimiter string) (err error) {
+	ha, ok := block.(asciidoc.Attributable)
 	if ok {
 		err = renderAttributes(cxt, block, ha.Attributes(), false)
 
@@ -18,7 +18,7 @@ func renderBlock(cxt *Context, block elements.Element, delimiter string) (err er
 	cxt.WriteNewline()
 	cxt.WriteString(delimiter)
 	cxt.WriteNewline()
-	he, ok := block.(elements.HasElements)
+	he, ok := block.(asciidoc.HasElements)
 	if ok {
 		err = Elements(cxt, "", he.Elements()...)
 	}
@@ -28,30 +28,30 @@ func renderBlock(cxt *Context, block elements.Element, delimiter string) (err er
 	return
 }
 
-func renderDelimiter(cxt *Context, delimiter elements.Delimiter) {
+func renderDelimiter(cxt *Context, delimiter asciidoc.Delimiter) {
 	var char string
 	switch delimiter.Type {
-	case elements.DelimitedBlockTypeComment:
+	case asciidoc.DelimitedBlockTypeComment:
 		char = "/"
-	case elements.DelimitedBlockTypeExample:
+	case asciidoc.DelimitedBlockTypeExample:
 		char = "="
-	case elements.DelimitedBlockTypeFenced:
+	case asciidoc.DelimitedBlockTypeFenced:
 		char = "`"
-	case elements.DelimitedBlockTypeListing:
+	case asciidoc.DelimitedBlockTypeListing:
 		char = "-"
-	case elements.DelimitedBlockTypeLiteral:
+	case asciidoc.DelimitedBlockTypeLiteral:
 		char = "."
-	case elements.DelimitedBlockTypeNone:
+	case asciidoc.DelimitedBlockTypeNone:
 		return
-	case elements.DelimitedBlockTypeOpen:
+	case asciidoc.DelimitedBlockTypeOpen:
 		char = "-"
-	case elements.DelimitedBlockTypeStem:
+	case asciidoc.DelimitedBlockTypeStem:
 		char = "+"
-	case elements.DelimitedBlockTypeQuote:
+	case asciidoc.DelimitedBlockTypeQuote:
 		char = "_"
-	case elements.DelimitedBlockTypeSidebar:
+	case asciidoc.DelimitedBlockTypeSidebar:
 		char = "*"
-	case elements.DelimitedBlockTypeMultiLineComment:
+	case asciidoc.DelimitedBlockTypeMultiLineComment:
 		char = "/"
 	}
 	cxt.WriteNewline()

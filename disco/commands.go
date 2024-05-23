@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -70,7 +70,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 	return
 }
 
-func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*elements.TableRow, columnMap ascii.ColumnIndex) (err error) {
+func (b *Ball) fixCommandDirection(doc *ascii.Doc, rows []*asciidoc.TableRow, columnMap ascii.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}

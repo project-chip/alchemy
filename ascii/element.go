@@ -3,40 +3,40 @@ package ascii
 import (
 	"fmt"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
 type Element struct {
 	Parent any
-	Base   elements.Element
+	Base   asciidoc.Element
 }
 
-func NewElement(parent any, base elements.Element) *Element {
+func NewElement(parent any, base asciidoc.Element) *Element {
 	return &Element{Parent: parent, Base: base}
 }
 
-func (e *Element) GetElements() elements.Set {
-	if we, ok := e.Base.(elements.HasElements); ok {
+func (e *Element) GetElements() asciidoc.Set {
+	if we, ok := e.Base.(asciidoc.HasElements); ok {
 		return we.Elements()
 	}
-	return elements.Set{}
+	return asciidoc.Set{}
 }
 
-func (e *Element) SetElements(els elements.Set) error {
-	if we, ok := e.Base.(elements.HasElements); ok {
+func (e *Element) SetElements(els asciidoc.Set) error {
+	if we, ok := e.Base.(asciidoc.HasElements); ok {
 		return we.SetElements(els)
 	}
 	return fmt.Errorf("base element does not have elements: %T", e.Base)
 }
 
-func (e *Element) GetBase() elements.Element {
+func (e *Element) GetBase() asciidoc.Element {
 	return e.Base
 }
 
-func (e *Element) Type() elements.ElementType {
+func (e *Element) Type() asciidoc.ElementType {
 	return e.Base.Type()
 }
 
-func (e *Element) Equals(o elements.Element) bool {
+func (e *Element) Equals(o asciidoc.Element) bool {
 	return e.Base.Equals(o)
 }

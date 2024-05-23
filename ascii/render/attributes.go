@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
 type AttributeFilter uint32
@@ -35,39 +35,39 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 	return ((at & include) == at) && ((at & exclude) != at)
 }
 
-func renderAttributes(cxt *Context, el any, attributes []elements.Attribute, inline bool) error {
+func renderAttributes(cxt *Context, el any, attributes []asciidoc.Attribute, inline bool) error {
 	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
 }
 
-func getAttributeType(name elements.AttributeName) AttributeFilter {
+func getAttributeType(name asciidoc.AttributeName) AttributeFilter {
 	switch name {
-	case elements.AttributeNameTitle:
+	case asciidoc.AttributeNameTitle:
 		return AttributeFilterTitle
-	case elements.AttributeNameID:
+	case asciidoc.AttributeNameID:
 		return AttributeFilterID
-	case elements.AttributeNameColumns:
+	case asciidoc.AttributeNameColumns:
 		return AttributeFilterCols
-	case elements.AttributeNameStyle:
+	case asciidoc.AttributeNameStyle:
 		return AttributeFilterStyle
-	case elements.AttributeNameReferenceText:
+	case asciidoc.AttributeNameReferenceText:
 		return AttributeFilterText
-	case elements.AttributeNameAlternateText:
+	case asciidoc.AttributeNameAlternateText:
 		return AttributeFilterAlt
-	case elements.AttributeNameHeight:
+	case asciidoc.AttributeNameHeight:
 		return AttributeFilterHeight
-	case elements.AttributeNameWidth:
+	case asciidoc.AttributeNameWidth:
 		return AttributeFilterWidth
-	case elements.AttributeNamePDFWidth:
+	case asciidoc.AttributeNamePDFWidth:
 		return AttributeFilterPDFWidth
-	case elements.AttributeNameAlign:
+	case asciidoc.AttributeNameAlign:
 		return AttributeFilterAlign
-	case elements.AttributeNameFloat:
+	case asciidoc.AttributeNameFloat:
 		return AttributeFilterFloat
 	}
 	return AttributeFilterNone
 }
 
-func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
+func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -82,23 +82,23 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 	)
 
 	var list []attributeClass
-	var titleAttributes []elements.Attribute
-	var anchors []*elements.AnchorAttribute
-	var inlineAttributes []elements.Attribute
+	var titleAttributes []asciidoc.Attribute
+	var anchors []*asciidoc.AnchorAttribute
+	var inlineAttributes []asciidoc.Attribute
 	for _, a := range attributes {
 		switch a := a.(type) {
-		case *elements.TitleAttribute:
+		case *asciidoc.TitleAttribute:
 			if len(titleAttributes) == 0 {
 				list = append(list, attributeClassTitle)
 			}
 			titleAttributes = append(titleAttributes, a)
-		case *elements.AnchorAttribute:
+		case *asciidoc.AnchorAttribute:
 			if len(anchors) == 0 {
 				list = append(list, attributeClassAnchor)
 			}
 			anchors = append(anchors, a)
-		case *elements.NamedAttribute:
-			if a.Name == elements.AttributeNameTitle {
+		case *asciidoc.NamedAttribute:
+			if a.Name == asciidoc.AttributeNameTitle {
 				if len(titleAttributes) == 0 {
 					list = append(list, attributeClassTitle)
 				}
@@ -109,7 +109,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 				list = append(list, attributeClassInline)
 			}
 			inlineAttributes = append(inlineAttributes, a)
-		case *elements.PositionalAttribute, *elements.TableColumnsAttribute:
+		case *asciidoc.PositionalAttribute, *asciidoc.TableColumnsAttribute:
 			if len(inlineAttributes) == 0 {
 				list = append(list, attributeClassInline)
 			}
@@ -125,7 +125,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 				continue
 			}
 			for _, ta := range titleAttributes {
-				renderAttributeTitle(cxt, ta.Value().(elements.Set), include, exclude)
+				renderAttributeTitle(cxt, ta.Value().(asciidoc.Set), include, exclude)
 			}
 		case attributeClassAnchor:
 			if !shouldRenderAttributeType(AttributeFilterID, include, exclude) {
@@ -135,20 +135,20 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 				renderAttributeAnchor(cxt, ta, include, exclude, inline)
 			}
 		case attributeClassInline:
-			filtered := make([]elements.Attribute, 0, len(inlineAttributes))
+			filtered := make([]asciidoc.Attribute, 0, len(inlineAttributes))
 			for _, ia := range inlineAttributes {
 				switch ia := ia.(type) {
-				case *elements.NamedAttribute:
+				case *asciidoc.NamedAttribute:
 					if af := getAttributeType(ia.Name); af != AttributeFilterNone && !shouldRenderAttributeType(af, include, exclude) {
 						continue
 					}
 					filtered = append(filtered, ia)
-				case *elements.PositionalAttribute:
+				case *asciidoc.PositionalAttribute:
 					if af := getAttributeType(ia.ImpliedName); af != AttributeFilterNone && !shouldRenderAttributeType(af, include, exclude) {
 						continue
 					}
 					filtered = append(filtered, ia)
-				case *elements.TableColumnsAttribute:
+				case *asciidoc.TableColumnsAttribute:
 					if shouldRenderAttributeType(AttributeFilterCols, include, exclude) {
 						filtered = append(filtered, ia)
 					}
@@ -168,7 +168,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 					cxt.WriteRune(',')
 				}
 				switch ia := ia.(type) {
-				case *elements.NamedAttribute:
+				case *asciidoc.NamedAttribute:
 					var s string
 					s, err = quoteAttributeValue(ia.Value())
 					if err != nil {
@@ -178,17 +178,17 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 					cxt.WriteString("=")
 					var quoteType string
 					switch ia.QuoteType() {
-					case elements.AttributeQuoteTypeDouble:
+					case asciidoc.AttributeQuoteTypeDouble:
 						quoteType = "\""
-					case elements.AttributeQuoteTypeSingle:
+					case asciidoc.AttributeQuoteTypeSingle:
 						quoteType = "'"
 					}
 					cxt.WriteString(quoteType)
 					cxt.WriteString(s)
 					cxt.WriteString(quoteType)
-				case *elements.PositionalAttribute:
+				case *asciidoc.PositionalAttribute:
 					err = renderNakedAttributeValue(cxt, ia.Value())
-				case *elements.TableColumnsAttribute:
+				case *asciidoc.TableColumnsAttribute:
 					cxt.WriteString("cols=\"")
 					cxt.WriteString(ia.AsciiDocString())
 					cxt.WriteString("\"")
@@ -214,25 +214,25 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 	var title string
 	var style string
 	var keys []string
-	var roles elements.Roles
+	var roles asciidoc.Roles
 	for _, val := range attributes {
 		switch val := val.(type) {
-		case *elements.NamedAttribute:
+		case *asciidoc.NamedAttribute:
 			switch val.Name {
-			case elements.AttributeNameID:
-			case elements.AttributeNameStyle:
-			case elements.AttributeNameTitle:
-			case elements.AttributeNameRoles:
+			case asciidoc.AttributeNameID:
+			case asciidoc.AttributeNameStyle:
+			case asciidoc.AttributeNameTitle:
+			case asciidoc.AttributeNameRoles:
 
 			}
-		case *elements.PositionalAttribute:
+		case *asciidoc.PositionalAttribute:
 		}
 		switch key {
-		case elements.AttrID:
+		case asciidoc.AttrID:
 			id = val.(string)
-		case elements.AttrStyle:
+		case asciidoc.AttrStyle:
 			style = val.(string)
-		case elements.AttrTitle:
+		case asciidoc.AttrTitle:
 			switch v := val.(type) {
 			case string:
 				title = v
@@ -244,13 +244,13 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 				err = fmt.Errorf("unknown title type: %T", v)
 				return
 			}
-		case elements.AttrPositional1:
+		case asciidoc.AttrPositional1:
 			if s, ok := val.(string); ok {
 				style = s
 			}
-		case elements.AttrRoles:
+		case asciidoc.AttrRoles:
 			switch v := val.(type) {
-			case elements.Roles:
+			case asciidoc.Roles:
 				roles = v
 			case []any:
 				roles = v
@@ -271,9 +271,9 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 
 	if len(style) > 0 && shouldRenderAttributeType(AttributeFilterStyle, include, exclude) {
 		switch style {
-		case elements.Tip, elements.Note, elements.Important, elements.Warning, elements.Caution:
+		case asciidoc.Tip, asciidoc.Note, asciidoc.Important, asciidoc.Warning, asciidoc.Caution:
 			switch el.(type) {
-			case *elements.Paragraph:
+			case *asciidoc.Paragraph:
 				cxt.WriteString(fmt.Sprintf("%s: ", style))
 			default:
 				cxt.WriteString(fmt.Sprintf("[%s]\n", style))
@@ -282,7 +282,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 			cxt.WriteString("[none]\n")
 			renderAttributeTitle(cxt, title, include, exclude)
 			renderAttributeAnchor(cxt, id, include, exclude, inline)
-		case elements.UpperRoman, elements.LowerRoman, elements.Arabic, elements.UpperAlpha, elements.LowerAlpha:
+		case asciidoc.UpperRoman, asciidoc.LowerRoman, asciidoc.Arabic, asciidoc.UpperAlpha, asciidoc.LowerAlpha:
 			if !inline {
 				cxt.WriteNewline()
 			}
@@ -290,7 +290,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 			renderAttributeAnchor(cxt, id, include, exclude, inline)
 			cxt.WriteRune('[')
 			cxt.WriteString(style)
-			if start, ok := attributes[elements.AttrStart]; ok {
+			if start, ok := attributes[asciidoc.AttrStart]; ok {
 				if start, ok := start.(string); ok {
 					cxt.WriteString(", start=")
 					cxt.WriteString(start)
@@ -311,7 +311,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 			}
 			cxt.WriteRune('[')
 			cxt.WriteString(style)
-			lang, ok := attributes[elements.AttrLanguage]
+			lang, ok := attributes[asciidoc.AttrLanguage]
 			if ok {
 				cxt.WriteString(", ")
 				cxt.WriteString(lang.(string))
@@ -418,7 +418,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []elements.Attribut
 	return
 }
 
-func renderAttributeAnchor(cxt *Context, anchor *elements.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) {
+func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) {
 	id := anchor.ID
 	if id != nil && len(id.Value) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
 		if !inline {
@@ -437,7 +437,7 @@ func renderAttributeAnchor(cxt *Context, anchor *elements.AnchorAttribute, inclu
 	}
 }
 
-func renderAttributeTitle(cxt *Context, title elements.Set, include AttributeFilter, exclude AttributeFilter) {
+func renderAttributeTitle(cxt *Context, title asciidoc.Set, include AttributeFilter, exclude AttributeFilter) {
 	if len(title) > 0 && shouldRenderAttributeType(AttributeFilterTitle, include, exclude) {
 		cxt.WriteNewline()
 		cxt.WriteRune('.')
@@ -476,11 +476,11 @@ func quoteAttributeValue(val any) (string, error) {
 	switch val := val.(type) {
 	case string:
 		return escapeQuotes(val), nil
-	case *elements.String:
+	case *asciidoc.String:
 		return escapeQuotes(val.Value), nil
-	case elements.AttributeReference:
+	case asciidoc.AttributeReference:
 		return "{" + val.Name() + "}", nil
-	case elements.Set:
+	case asciidoc.Set:
 		var sb strings.Builder
 		for _, a := range val {
 			s, err := quoteAttributeValue(a)
@@ -497,13 +497,13 @@ func quoteAttributeValue(val any) (string, error) {
 
 func renderNakedAttributeValue(cxt *Context, val any) (err error) {
 	switch val := val.(type) {
-	case *elements.String:
+	case *asciidoc.String:
 		cxt.WriteString(escapeQuotes(val.Value))
-	case elements.AttributeReference:
+	case asciidoc.AttributeReference:
 		cxt.WriteRune('{')
 		cxt.WriteString(val.Name())
 		cxt.WriteRune('}')
-	case elements.Set:
+	case asciidoc.Set:
 		for _, a := range val {
 			err = renderNakedAttributeValue(cxt, a)
 			if err != nil {
@@ -524,27 +524,27 @@ func escapeQuotes(s string) string {
 func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exclude AttributeFilter) (keyVal string, skipKey bool, err error) {
 	var attributeType AttributeFilter
 	switch key {
-	case elements.AttrCols:
+	case asciidoc.AttrCols:
 		attributeType = AttributeFilterCols
-	case elements.AttrInlineLinkText:
+	case asciidoc.AttrInlineLinkText:
 		attributeType = AttributeFilterText
-	case elements.AttrImageAlt:
+	case asciidoc.AttrImageAlt:
 		attributeType = AttributeFilterAlt
 		skipKey = true
-	case elements.AttrHeight:
+	case asciidoc.AttrHeight:
 		attributeType = AttributeFilterHeight
-	case elements.AttrWidth:
+	case asciidoc.AttrWidth:
 		attributeType = AttributeFilterWidth
-	case elements.AttrRoles:
+	case asciidoc.AttrRoles:
 		attributeType = AttributeFilterRole
 		skipKey = true
-	case elements.AttrFloat:
+	case asciidoc.AttrFloat:
 		attributeType = AttributeFilterFloat
-	case elements.AttrImageAlign:
+	case asciidoc.AttrImageAlign:
 		attributeType = AttributeFilterAlign
 	case "pdfwidth":
 		attributeType = AttributeFilterPDFWidth
-	case elements.AttrPositional1, elements.AttrPositional2, elements.AttrPositional3:
+	case asciidoc.AttrPositional1, asciidoc.AttrPositional2, asciidoc.AttrPositional3:
 		skipKey = true
 	}
 	if attributeType != AttributeFilterNone && !shouldRenderAttributeType(attributeType, include, exclude) {
@@ -568,7 +568,7 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 		case string:
 			keyVal = v
 
-		case elements.Options:
+		case asciidoc.Options:
 			for _, o := range v {
 				switch opt := o.(type) {
 				case string:
@@ -582,7 +582,7 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 			var columns []string
 			for _, e := range v {
 				switch tc := e.(type) {
-				case *elements.TableColumn:
+				case *asciidoc.TableColumn:
 					var val strings.Builder
 					if tc.Multiplier.IsSet() {
 						val.WriteString(strconv.Itoa(tc.Multiplier.Get()))
@@ -590,22 +590,22 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 					}
 					if tc.HorizontalAlign.IsSet() {
 						switch tc.HorizontalAlign.Get() {
-						case elements.TableCellHorizontalAlignLeft:
+						case asciidoc.TableCellHorizontalAlignLeft:
 							val.WriteRune('<')
-						case elements.TableCellHorizontalAlignCenter:
+						case asciidoc.TableCellHorizontalAlignCenter:
 							val.WriteRune('^')
-						case elements.TableCellHorizontalAlignRight:
+						case asciidoc.TableCellHorizontalAlignRight:
 							val.WriteRune('>')
 						}
 					}
 					if tc.VerticalAlign.IsSet() {
 						val.WriteRune('.')
 						switch tc.VerticalAlign.Get() {
-						case elements.TableCellVerticalAlignTop:
+						case asciidoc.TableCellVerticalAlignTop:
 							val.WriteRune('<')
-						case elements.TableCellVerticalAlignMiddle:
+						case asciidoc.TableCellVerticalAlignMiddle:
 							val.WriteRune('^')
-						case elements.TableCellVerticalAlignBottom:
+						case asciidoc.TableCellVerticalAlignBottom:
 							val.WriteRune('>')
 						}
 					}
@@ -619,19 +619,19 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 					}
 					if tc.Style.IsSet() {
 						switch tc.Style.Get() {
-						case elements.TableCellStyleAsciiDoc:
+						case asciidoc.TableCellStyleAsciiDoc:
 							val.WriteRune('a')
-						case elements.TableCellStyleDefault:
+						case asciidoc.TableCellStyleDefault:
 							val.WriteRune('d')
-						case elements.TableCellStyleEmphasis:
+						case asciidoc.TableCellStyleEmphasis:
 							val.WriteRune('e')
-						case elements.TableCellStyleHeader:
+						case asciidoc.TableCellStyleHeader:
 							val.WriteRune('h')
-						case elements.TableCellStyleLiteral:
+						case asciidoc.TableCellStyleLiteral:
 							val.WriteRune('l')
-						case elements.TableCellStyleMonospace:
+						case asciidoc.TableCellStyleMonospace:
 							val.WriteRune('m')
-						case elements.TableCellStyleStrong:
+						case asciidoc.TableCellStyleStrong:
 							val.WriteRune('s')
 						}
 					}
@@ -654,7 +654,7 @@ func getKeyValue(cxt *Context, key string, val any, include AttributeFilter, exc
 }
 */
 /*
-func renderDiagramAttributes(cxt *Context, style string, id string, title string, keys []string, inline bool, attributes elements.AttributeList, include AttributeFilter, exclude AttributeFilter) (err error) {
+func renderDiagramAttributes(cxt *Context, style string, id string, title string, keys []string, inline bool, attributes asciidoc.AttributeList, include AttributeFilter, exclude AttributeFilter) (err error) {
 
 	renderAttributeTitle(cxt, title, include, exclude)
 	renderAttributeAnchor(cxt, id, include, exclude, inline)
@@ -687,10 +687,10 @@ func renderDiagramAttributes(cxt *Context, style string, id string, title string
 	return
 }*/
 
-func renderAttributeEntry(cxt *Context, ad *elements.AttributeEntry) (err error) {
+func renderAttributeEntry(cxt *Context, ad *asciidoc.AttributeEntry) (err error) {
 	switch ad.Name {
 	case "authors":
-		/*if authors, ok := ad.Value().(elements.DocumentAuthors); ok {
+		/*if authors, ok := ad.Value().(asciidoc.DocumentAuthors); ok {
 			for _, author := range authors {
 				if len(author.Email) > 0 {
 					cxt.WriteString(author.Email)
@@ -713,7 +713,7 @@ func renderAttributeEntry(cxt *Context, ad *elements.AttributeEntry) (err error)
 	return
 }
 
-func renderAttributeReset(cxt *Context, ar *elements.AttributeReset) {
+func renderAttributeReset(cxt *Context, ar *asciidoc.AttributeReset) {
 	cxt.WriteRune(':')
 	cxt.WriteString(string(ar.Name))
 	cxt.WriteString("!:\n")
@@ -723,9 +723,9 @@ func getAttributeStringValue(cxt *Context, val any) (string, error) {
 	switch s := val.(type) {
 	case string:
 		return s, nil
-	case *elements.String:
+	case *asciidoc.String:
 		return s.Value, nil
-	case elements.Set:
+	case asciidoc.Set:
 		renderContext := NewContext(cxt, cxt.Doc)
 		err := Elements(renderContext, "", s...)
 		if err != nil {

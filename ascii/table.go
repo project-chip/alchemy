@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 	"github.com/hasty/alchemy/ascii/render"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
@@ -16,7 +16,7 @@ type ColumnIndex map[matter.TableColumn]int
 
 var ErrNoTableFound = fmt.Errorf("no table found")
 
-func parseFirstTable(doc *Doc, section *Section) (rows []*elements.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
+func parseFirstTable(doc *Doc, section *Section) (rows []*asciidoc.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 	t := FindFirstTable(section)
 	if t == nil {
 		err = ErrNoTableFound
@@ -25,7 +25,7 @@ func parseFirstTable(doc *Doc, section *Section) (rows []*elements.TableRow, hea
 	return parseTable(doc, section, t)
 }
 
-func parseTable(doc *Doc, section *Section, t *elements.Table) (rows []*elements.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
+func parseTable(doc *Doc, section *Section, t *asciidoc.Table) (rows []*asciidoc.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 
 	rows = t.TableRows()
 	if len(rows) < 2 {
@@ -47,7 +47,7 @@ func parseTable(doc *Doc, section *Section, t *elements.Table) (rows []*elements
 	return
 }
 
-func readRowASCIIDocString(row *elements.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
+func readRowASCIIDocString(row *asciidoc.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := columnMap[column]
 		if !ok {
@@ -58,7 +58,7 @@ func readRowASCIIDocString(row *elements.TableRow, columnMap ColumnIndex, column
 	return "", nil
 }
 
-func readRowCellASCIIDocString(row *elements.TableRow, offset int) (string, error) {
+func readRowCellASCIIDocString(row *asciidoc.TableRow, offset int) (string, error) {
 	cell := row.Cell(offset)
 	val, err := RenderTableCell(cell)
 	if err != nil {
@@ -68,7 +68,7 @@ func readRowCellASCIIDocString(row *elements.TableRow, offset int) (string, erro
 	return val, nil
 }
 
-func readRowID(row *elements.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*matter.Number, error) {
+func readRowID(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*matter.Number, error) {
 	id, err := readRowASCIIDocString(row, columnMap, column)
 	if err != nil {
 		return matter.InvalidID, err
@@ -76,7 +76,7 @@ func readRowID(row *elements.TableRow, columnMap ColumnIndex, column matter.Tabl
 	return matter.ParseNumber(id), nil
 }
 
-func ReadRowValue(doc *Doc, row *elements.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
+func ReadRowValue(doc *Doc, row *asciidoc.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := columnMap[column]
 		if !ok {
@@ -87,7 +87,7 @@ func ReadRowValue(doc *Doc, row *elements.TableRow, columnMap ColumnIndex, colum
 	return "", nil
 }
 
-func readRowCellValue(doc *Doc, row *elements.TableRow, offset int) (string, error) {
+func readRowCellValue(doc *Doc, row *asciidoc.TableRow, offset int) (string, error) {
 	cell := row.Cell(offset)
 	cellElements := cell.Elements()
 	if len(cellElements) == 0 {
@@ -101,12 +101,12 @@ func readRowCellValue(doc *Doc, row *elements.TableRow, offset int) (string, err
 	return strings.TrimSpace(value.String()), nil
 }
 
-func readRowCellValueElements(doc *Doc, els elements.Set, value *strings.Builder) error {
+func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder) error {
 	for _, el := range els {
 		switch el := el.(type) {
-		case *elements.String:
+		case *asciidoc.String:
 			value.WriteString(el.Value)
-		case *elements.CrossReference:
+		case *asciidoc.CrossReference:
 			var val string
 			anchor, _ := doc.getAnchor(el.ID)
 			if anchor != nil {
@@ -116,13 +116,13 @@ func readRowCellValueElements(doc *Doc, els elements.Set, value *strings.Builder
 				val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
 			}
 			value.WriteString(val)
-		case *elements.Link:
+		case *asciidoc.Link:
 			value.WriteString(el.URL.Scheme)
 			l, ok := el.URL.Path.(string)
 			if ok {
 				value.WriteString(l)
 			}
-		case *elements.Superscript:
+		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
 			err := readRowCellValueElements(doc, el.Elements(), &quotedText)
@@ -140,24 +140,24 @@ func readRowCellValueElements(doc *Doc, els elements.Set, value *strings.Builder
 				continue
 			}
 			value.WriteString(qt)
-		case *elements.SpecialCharacter:
+		case *asciidoc.SpecialCharacter:
 			value.WriteString(el.Character)
-		case *elements.InlinePassthrough:
+		case *asciidoc.InlinePassthrough:
 			value.WriteString("+")
 			err := readRowCellValueElements(doc, el.Elements(), value)
 			if err != nil {
 				return err
 			}
-		case *elements.InlineDoublePassthrough:
+		case *asciidoc.InlineDoublePassthrough:
 			value.WriteString("++")
 			err := readRowCellValueElements(doc, el.Elements(), value)
 			if err != nil {
 				return err
 			}
-		case *elements.ThematicBreak:
-		case *elements.NewLine:
+		case *asciidoc.ThematicBreak:
+		case *asciidoc.NewLine:
 			value.WriteString(" ")
-		case elements.HasElements:
+		case asciidoc.HasElements:
 			err := readRowCellValueElements(doc, el.Elements(), value)
 			if err != nil {
 				return err
@@ -169,16 +169,16 @@ func readRowCellValueElements(doc *Doc, els elements.Set, value *strings.Builder
 	return nil
 }
 
-func FindFirstTable(section *Section) *elements.Table {
-	var table *elements.Table
-	parse.SkimFunc(section.Elements(), func(t *elements.Table) bool {
+func FindFirstTable(section *Section) *asciidoc.Table {
+	var table *asciidoc.Table
+	parse.SkimFunc(section.Elements(), func(t *asciidoc.Table) bool {
 		table = t
 		return true
 	})
 	return table
 }
 
-func RenderTableCell(cell *elements.TableCell) (string, error) {
+func RenderTableCell(cell *asciidoc.TableCell) (string, error) {
 	cellElements := cell.Elements()
 	if len(cellElements) == 0 {
 		return "", nil
@@ -191,7 +191,7 @@ func RenderTableCell(cell *elements.TableCell) (string, error) {
 	return out.String(), nil
 }
 
-func (d *Doc) GetHeaderCellString(cell *elements.TableCell) (string, error) {
+func (d *Doc) GetHeaderCellString(cell *asciidoc.TableCell) (string, error) {
 	cellElements := cell.Elements()
 	if len(cellElements) == 0 {
 		return "", nil
@@ -204,14 +204,14 @@ func (d *Doc) GetHeaderCellString(cell *elements.TableCell) (string, error) {
 	return v.String(), nil
 }
 
-func (d *Doc) readCellContent(els elements.Set, content *strings.Builder) (err error) {
+func (d *Doc) readCellContent(els asciidoc.Set, content *strings.Builder) (err error) {
 	for _, s := range els {
 		switch s := s.(type) {
-		case *elements.String:
+		case *asciidoc.String:
 			content.WriteString(s.Value)
-		case elements.FormattedTextElement:
+		case asciidoc.FormattedTextElement:
 			return d.readCellContent(s.Elements(), content)
-		case *elements.CrossReference:
+		case *asciidoc.CrossReference:
 			var name string
 			anchor, _ := d.getAnchor(s.ID)
 			if anchor != nil {
@@ -220,11 +220,11 @@ func (d *Doc) readCellContent(els elements.Set, content *strings.Builder) (err e
 				name = s.ID
 			}
 			content.WriteString(name)
-		case *elements.SpecialCharacter:
+		case *asciidoc.SpecialCharacter:
 			content.WriteString(s.Character)
-		case *elements.NewLine:
+		case *asciidoc.NewLine:
 			content.WriteString(" ")
-		case *elements.Paragraph:
+		case *asciidoc.Paragraph:
 			return d.readCellContent(s.Elements(), content)
 		default:
 			return fmt.Errorf("unknown element in table header cell: %T", s)
@@ -238,7 +238,7 @@ type ExtraColumn struct {
 	Offset int
 }
 
-func MapTableColumns(doc *Doc, rows []*elements.TableRow) (headerRow int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
+func MapTableColumns(doc *Doc, rows []*asciidoc.TableRow) (headerRow int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 	var cellCount = -1
 	headerRow = -1
 	for i, row := range rows {

@@ -3,10 +3,10 @@ package render
 import (
 	"strings"
 
-	"github.com/hasty/adoc/elements"
+	"github.com/hasty/adoc/asciidoc"
 )
 
-func renderSection(cxt *Context, s *elements.Section) (err error) {
+func renderSection(cxt *Context, s *asciidoc.Section) (err error) {
 	err = renderAttributes(cxt, s, s.Attributes(), false)
 	if err != nil {
 		return
@@ -15,7 +15,7 @@ func renderSection(cxt *Context, s *elements.Section) (err error) {
 	return
 }
 
-func renderSectionTitle(cxt *Context, title elements.Set, level int) (err error) {
+func renderSectionTitle(cxt *Context, title asciidoc.Set, level int) (err error) {
 	cxt.WriteString(strings.Repeat("=", level))
 	cxt.WriteRune(' ')
 	err = Elements(cxt, "", title...)
