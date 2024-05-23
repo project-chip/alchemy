@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/dolthub/go-mysql-server/sql"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/cmd/common"
 	"github.com/hasty/alchemy/db"
 	"github.com/hasty/alchemy/internal/files"
@@ -35,19 +34,19 @@ var Command = &cobra.Command{
 			return err
 		}
 
-		docParser := ascii.NewParser(asciiSettings)
-		specDocMap, err := pipeline.Process[struct{}, *ascii.Doc](cxt, pipelineOptions, docParser, specFiles)
+		docParser := spec.NewParser(asciiSettings)
+		specDocMap, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
 		if err != nil {
 			return err
 		}
 		var specParser files.SpecParser
-		specDocMap, err = pipeline.Process[*ascii.Doc, *ascii.Doc](cxt, pipelineOptions, &specParser, specDocMap)
+		specDocMap, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocMap)
 		if err != nil {
 			return err
 		}
 
-		specDocs := make([]*ascii.Doc, 0, specDocMap.Size())
-		specDocMap.Range(func(key string, value *pipeline.Data[*ascii.Doc]) bool {
+		specDocs := make([]*spec.Doc, 0, specDocMap.Size())
+		specDocMap.Range(func(key string, value *pipeline.Data[*spec.Doc]) bool {
 			specDocs = append(specDocs, value.Content)
 			return true
 		})

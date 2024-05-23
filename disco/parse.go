@@ -5,17 +5,17 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 type docParse struct {
-	doc     *ascii.Doc
+	doc     *spec.Doc
 	docType matter.DocType
 
-	clusters map[*ascii.Section]*clusterInfo
+	clusters map[*spec.Section]*clusterInfo
 
 	classification []*subSection
 	clusterIDs     []*subSection
@@ -31,7 +31,7 @@ type docParse struct {
 }
 
 type subSection struct {
-	section     *ascii.Section
+	section     *spec.Section
 	table       tableInfo
 	parent      *subSection
 	parentIndex int
@@ -46,8 +46,8 @@ type tableInfo struct {
 	element      *asciidoc.Table
 	rows         []*asciidoc.TableRow
 	headerRow    int
-	columnMap    ascii.ColumnIndex
-	extraColumns []ascii.ExtraColumn
+	columnMap    spec.ColumnIndex
+	extraColumns []spec.ExtraColumn
 }
 
 type subSectionChildPattern struct {
@@ -59,9 +59,9 @@ func newSubSectionChildPattern(suffix string, indexColumns ...matter.TableColumn
 	return subSectionChildPattern{suffix: suffix, indexColumns: indexColumns}
 }
 
-func (b *Ball) parseDoc(doc *ascii.Doc, docType matter.DocType, topLevelSection *ascii.Section) (ds *docParse, err error) {
-	ds = &docParse{doc: doc, docType: docType, clusters: make(map[*ascii.Section]*clusterInfo)}
-	for _, section := range parse.FindAll[*ascii.Section](topLevelSection.Elements()) {
+func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *spec.Section) (ds *docParse, err error) {
+	ds = &docParse{doc: doc, docType: docType, clusters: make(map[*spec.Section]*clusterInfo)}
+	for _, section := range parse.FindAll[*spec.Section](topLevelSection.Elements()) {
 		switch section.SecType {
 		case matter.SectionCluster:
 			ds.clusters[section] = &clusterInfo{}
@@ -136,11 +136,11 @@ func (b *Ball) parseDoc(doc *ascii.Doc, docType matter.DocType, topLevelSection 
 	return
 }
 
-func newSubSection(doc *ascii.Doc, section *ascii.Section) (ss *subSection, err error) {
+func newSubSection(doc *spec.Doc, section *spec.Section) (ss *subSection, err error) {
 	return newParentSubSection(doc, section)
 }
 
-func newParentSubSection(doc *ascii.Doc, section *ascii.Section, childPatterns ...subSectionChildPattern) (ss *subSection, err error) {
+func newParentSubSection(doc *spec.Doc, section *spec.Section, childPatterns ...subSectionChildPattern) (ss *subSection, err error) {
 	ss = &subSection{section: section}
 	ss.table, err = firstTableInfo(doc, section)
 	if err != nil {
@@ -155,11 +155,11 @@ func newParentSubSection(doc *ascii.Doc, section *ascii.Section, childPatterns .
 	return
 }
 
-func firstTableInfo(doc *ascii.Doc, section *ascii.Section) (ti tableInfo, err error) {
-	ti.element = ascii.FindFirstTable(section)
+func firstTableInfo(doc *spec.Doc, section *spec.Section) (ti tableInfo, err error) {
+	ti.element = spec.FindFirstTable(section)
 	if ti.element != nil {
 		ti.rows = ti.element.TableRows()
-		ti.headerRow, ti.columnMap, ti.extraColumns, err = ascii.MapTableColumns(doc, ti.rows)
+		ti.headerRow, ti.columnMap, ti.extraColumns, err = spec.MapTableColumns(doc, ti.rows)
 		if err != nil {
 			return
 		}
@@ -167,7 +167,7 @@ func firstTableInfo(doc *ascii.Doc, section *ascii.Section) (ti tableInfo, err e
 	return
 }
 
-func findSubsections(doc *ascii.Doc, parent *subSection, childPatterns ...subSectionChildPattern) (subSections []*subSection, err error) {
+func findSubsections(doc *spec.Doc, parent *subSection, childPatterns ...subSectionChildPattern) (subSections []*subSection, err error) {
 	if parent.table.element == nil {
 		return
 	}
@@ -191,14 +191,14 @@ func findSubsections(doc *ascii.Doc, parent *subSection, childPatterns ...subSec
 	}
 	subSectionNames := make(map[string]int, len(parent.table.rows))
 	for i, row := range parent.table.rows {
-		subSectionName, err := ascii.RenderTableCell(row.Cell(index))
+		subSectionName, err := spec.RenderTableCell(row.Cell(index))
 		if err != nil {
 			slog.Debug("could not get cell value for entity index", "err", err)
 			continue
 		}
 		subSectionNames[subSectionName] = i
 	}
-	for i, ss := range parse.Skim[*ascii.Section](parent.section.Elements()) {
+	for i, ss := range parse.Skim[*spec.Section](parent.section.Elements()) {
 		name := strings.TrimSuffix(ss.Name, childPattern.suffix)
 		var ok bool
 		if _, ok = subSectionNames[name]; !ok {
@@ -220,8 +220,8 @@ func findSubsections(doc *ascii.Doc, parent *subSection, childPatterns ...subSec
 	return
 }
 
-func getSubsectionCluster(ds *docParse, section *ascii.Section) *clusterInfo {
-	parent, ok := section.Parent.(*ascii.Section)
+func getSubsectionCluster(ds *docParse, section *spec.Section) *clusterInfo {
+	parent, ok := section.Parent.(*spec.Section)
 	if ok {
 		for parent != nil {
 			if parent.SecType == matter.SectionCluster {
@@ -232,7 +232,7 @@ func getSubsectionCluster(ds *docParse, section *ascii.Section) *clusterInfo {
 				}
 				return ci
 			}
-			if parent, ok = parent.Parent.(*ascii.Section); !ok {
+			if parent, ok = parent.Parent.(*spec.Section); !ok {
 				break
 			}
 		}

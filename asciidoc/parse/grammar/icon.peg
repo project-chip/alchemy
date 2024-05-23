@@ -1,0 +1,5 @@
+
+
+Icon = "icon:" path:((Alphanumeric / "_" / "-")+ { return string(c.text), nil}) attributes:(InlineAttributes) {
+    return compose(c, asciidoc.NewIcon(path.(string)), setAttributes[*asciidoc.Icon](attributes))
+}

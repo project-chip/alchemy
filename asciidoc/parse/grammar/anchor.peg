@@ -1,0 +1,29 @@
+
+Anchor = !"\\" "[[" id:(CrossReferenceID) label:(_* "," label:(AnchorLabel) { return label, nil})? "]]" {
+    var lbl asciidoc.Set
+    if label != nil {
+        lbl = join(label.([]any))
+    }
+    debugPosition(c, "matched anchor: %s\n", string(c.text))
+    return compose(c, asciidoc.NewAnchor(id.(string), lbl))
+}
+
+AnchorAttribute = !"\\" "[[" id:(CrossReferenceID) label:(_* "," label:(AnchorLabel) { return label, nil})? "]]" {
+    var lbl asciidoc.Set
+    if label != nil {
+        lbl = join(label.([]any))
+    }
+    debugPosition(c, "matched anchor attribute: %s\n", string(c.text))
+    return populatePosition(c, asciidoc.NewAnchorAttribute(asciidoc.NewString(id.(string)), lbl)), nil
+}
+
+AnchorLabel = ( !"]]"
+    ([^\r\n{[\]]+ {
+        return asciidoc.NewString(string(c.text)), nil
+    })
+    / arv:AttributeReference {
+        return arv, nil
+    }
+    / ("{" { return asciidoc.NewString(string(c.text)), nil})
+)+
+

@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
@@ -27,7 +27,7 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 
 		}
 		row.values[matter.TableColumnResponse] = c.Response
-		row.values[matter.TableColumnAccess] = ascii.AccessToASCIIDocString(c.Access, mattertypes.EntityTypeCommand)
+		row.values[matter.TableColumnAccess] = spec.AccessToASCIIDocString(c.Access, mattertypes.EntityTypeCommand)
 		if c.Conformance != nil {
 			row.values[matter.TableColumnConformance] = c.Conformance.ASCIIDocString()
 		}
@@ -40,7 +40,7 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 	return nil
 }
 
-func (h *Host) indexCommands(cxt context.Context, doc *ascii.Doc, ci *sectionInfo, es *ascii.Section) error {
+func (h *Host) indexCommands(cxt context.Context, doc *spec.Doc, ci *sectionInfo, es *spec.Section) error {
 	if ci.children == nil {
 		ci.children = make(map[string][]*sectionInfo)
 	}
@@ -61,7 +61,7 @@ func (h *Host) indexCommands(cxt context.Context, doc *ascii.Doc, ci *sectionInf
 			}
 		}
 	}
-	for _, s := range parse.Skim[*ascii.Section](es.Elements()) {
+	for _, s := range parse.Skim[*spec.Section](es.Elements()) {
 		switch s.SecType {
 		case matter.SectionCommand:
 			name := strings.TrimSuffix(s.Name, " Command")

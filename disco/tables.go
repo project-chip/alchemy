@@ -5,10 +5,10 @@ import (
 	"log/slog"
 	"slices"
 
-	"github.com/hasty/adoc/asciidoc"
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -40,7 +40,7 @@ func (b *Ball) ensureTableOptions(els asciidoc.Set) {
 
 }
 
-func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *asciidoc.Table, rows []*asciidoc.TableRow, tableTemplate matter.Table, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap ascii.ColumnIndex, entityType types.EntityType) (err error) {
+func (b *Ball) addMissingColumns(doc *spec.Doc, section *spec.Section, table *asciidoc.Table, rows []*asciidoc.TableRow, tableTemplate matter.Table, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap spec.ColumnIndex, entityType types.EntityType) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
@@ -62,7 +62,7 @@ func (b *Ball) addMissingColumns(doc *ascii.Doc, section *ascii.Section, table *
 	return
 }
 
-func (b *Ball) appendColumn(table *asciidoc.Table, columnMap ascii.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType types.EntityType) (appendedIndex int, err error) {
+func (b *Ball) appendColumn(table *asciidoc.Table, columnMap spec.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType types.EntityType) (appendedIndex int, err error) {
 	rows := table.TableRows()
 	if len(rows) == 0 {
 		appendedIndex = -1
@@ -112,7 +112,7 @@ func (b *Ball) appendColumn(table *asciidoc.Table, columnMap ascii.ColumnIndex, 
 	return
 }
 
-func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.TableColumn, row *asciidoc.TableRow, columnMap ascii.ColumnIndex) string {
+func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.TableColumn, row *asciidoc.TableRow, columnMap spec.ColumnIndex) string {
 	switch column {
 	case matter.TableColumnConformance:
 		switch entityType {
@@ -122,7 +122,7 @@ func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.
 	case matter.TableColumnName:
 		switch entityType {
 		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			val, _ := ascii.ReadRowValue(b.doc, row, columnMap, matter.TableColumnSummary)
+			val, _ := spec.ReadRowValue(b.doc, row, columnMap, matter.TableColumnSummary)
 			if val != "" {
 				return matter.Case(val)
 			}
@@ -130,7 +130,7 @@ func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.
 	case matter.TableColumnSummary:
 		switch entityType {
 		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			val, _ := ascii.ReadRowValue(b.doc, row, columnMap, matter.TableColumnName)
+			val, _ := spec.ReadRowValue(b.doc, row, columnMap, matter.TableColumnName)
 			if val != "" {
 				return matter.Uncase(val)
 			}
@@ -147,7 +147,7 @@ func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.
 	return ""
 }
 
-func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableInfo, tableType matter.TableType) (err error) {
+func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *tableInfo, tableType matter.TableType) (err error) {
 	if !b.options.reorderColumns {
 		return
 	}
@@ -259,7 +259,7 @@ func (b *Ball) reorderColumns(doc *ascii.Doc, section *ascii.Section, ti *tableI
 		}
 		cols.Columns = newColumns
 	}
-	ti.headerRow, ti.columnMap, ti.extraColumns, err = ascii.MapTableColumns(doc, ti.rows)
+	ti.headerRow, ti.columnMap, ti.extraColumns, err = spec.MapTableColumns(doc, ti.rows)
 	return
 }
 
@@ -280,7 +280,7 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 		}
 		tableCells := row.TableCells()
 		var value string
-		value, err = ascii.RenderTableCell(tableCells[fromIndex])
+		value, err = spec.RenderTableCell(tableCells[fromIndex])
 		if err != nil {
 			return
 		}
@@ -295,7 +295,7 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 	return
 }
 
-func (b *Ball) renameTableHeaderCells(rows []*asciidoc.TableRow, headerRowIndex int, columnMap ascii.ColumnIndex, overrides map[matter.TableColumn]string) (err error) {
+func (b *Ball) renameTableHeaderCells(rows []*asciidoc.TableRow, headerRowIndex int, columnMap spec.ColumnIndex, overrides map[matter.TableColumn]string) (err error) {
 	if !b.options.renameTableHeaders {
 		return
 	}

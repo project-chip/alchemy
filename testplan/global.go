@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 var globalHeader = `
@@ -35,7 +35,7 @@ include::../common/required_devices.adoc[]
 
 `
 
-func renderGlobalAttributesTestCase(doc *ascii.Doc, cluster *matter.Cluster, b *strings.Builder) (err error) {
+func renderGlobalAttributesTestCase(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder) (err error) {
 	b.WriteString(globalHeader)
 
 	b.WriteString("===== Test Procedure\n")
@@ -81,7 +81,7 @@ func renderGlobalAttributesTestCase(doc *ascii.Doc, cluster *matter.Cluster, b *
 	return
 }
 
-func writeAttributeListAttribute(b *strings.Builder, doc *ascii.Doc, cluster *matter.Cluster) {
+func writeAttributeListAttribute(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster) {
 	b.WriteString("| 4 | {REF_ATTRIBUTELIST} |  | {THread} _AttributeList_ attribute.  | {DUTreply} the _AttributeList_ attribute and have the list of supported attributes\n")
 	if len(cluster.Attributes) == 0 {
 		b.WriteString("{noEntryStdRgn} +\n")
@@ -156,7 +156,7 @@ func writeAttributeListAttribute(b *strings.Builder, doc *ascii.Doc, cluster *ma
 
 }
 
-func writeEventListAttribute(b *strings.Builder, doc *ascii.Doc, cluster *matter.Cluster) {
+func writeEventListAttribute(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster) {
 	b.WriteString("| 5^*^ | {REF_EVENTLIST} | | {THread} _EventList_ attribute. | {DUTreply} the _EventList_ attribute and have the list of supported events:\n")
 	if len(cluster.Events) == 0 {
 		b.WriteString("{noEntryStdRgn} +\n")

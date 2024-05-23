@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func dumpElements(doc *ascii.Doc, els asciidoc.Set, indent int) {
+func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 
 	for _, e := range els {
 		fmt.Print(strings.Repeat("\t", indent))
-		as, ok := e.(*ascii.Section)
+		as, ok := e.(*spec.Section)
 		if ok {
 			fmt.Printf("{SEC %d (%s)}:\n", as.Base.Level, as.SecType)
 
@@ -25,7 +25,7 @@ func dumpElements(doc *ascii.Doc, els asciidoc.Set, indent int) {
 			dumpElements(doc, as.Elements(), indent+2)
 			continue
 		}
-		ae, ok := e.(*ascii.Element)
+		ae, ok := e.(*spec.Element)
 		if ok {
 			e = ae.Base
 		}

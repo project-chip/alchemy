@@ -3,7 +3,7 @@ package matter
 import (
 	"fmt"
 
-	"github.com/hasty/adoc/asciidoc"
+	"github.com/hasty/alchemy/asciidoc"
 )
 
 type TableColumn uint8

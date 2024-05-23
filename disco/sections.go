@@ -5,10 +5,10 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 type sectionOrganizer func(dc *discoContext, dp *docParse) error
@@ -33,7 +33,7 @@ func (b *Ball) organizeSubSections(dc *discoContext, dp *docParse) (err error) {
 	return
 }
 
-func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
+func reorderSection(sec *spec.Section, sectionOrder []matter.Section) error {
 	validSectionTypes := make(map[matter.Section]struct{}, len(sectionOrder)+1)
 	for _, st := range sectionOrder {
 		validSectionTypes[st] = struct{}{}
@@ -55,12 +55,12 @@ func reorderSection(sec *ascii.Section, sectionOrder []matter.Section) error {
 	return sec.SetElements(newOrder)
 }
 
-func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Set {
+func divyUpSection(sec *spec.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Set {
 	sections := make(map[matter.Section]asciidoc.Set)
 	lastSectionType := matter.SectionPrefix
 	for _, e := range sec.Elements() {
 		switch el := e.(type) {
-		case *ascii.Section:
+		case *spec.Section:
 			if el.SecType != matter.SectionUnknown {
 				_, ok := validSectionTypes[el.SecType]
 				if ok {
@@ -73,7 +73,7 @@ func divyUpSection(sec *ascii.Section, validSectionTypes map[matter.Section]stru
 	return sections
 }
 
-func setSectionTitle(sec *ascii.Section, title string) {
+func setSectionTitle(sec *spec.Section, title string) {
 	for i, e := range sec.Base.Title {
 		switch e.(type) {
 		case *asciidoc.String:
@@ -83,7 +83,7 @@ func setSectionTitle(sec *ascii.Section, title string) {
 	}
 }
 
-func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.ColumnIndex, rows []*asciidoc.TableRow) {
+func (b *Ball) appendSubsectionTypes(section *spec.Section, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow) {
 	var subsectionSuffix string
 	var subsectionType matter.Section
 	switch section.SecType {
@@ -102,14 +102,14 @@ func (b *Ball) appendSubsectionTypes(section *ascii.Section, columnMap ascii.Col
 
 		subSectionNames := make(map[string]struct{}, len(rows))
 		for _, row := range rows {
-			name, err := ascii.RenderTableCell(row.TableCells()[nameIndex])
+			name, err := spec.RenderTableCell(row.TableCells()[nameIndex])
 			if err != nil {
 				slog.Debug("could not get cell value for subsection", "err", err)
 				continue
 			}
 			subSectionNames[name] = struct{}{}
 		}
-		subSections := parse.FindAll[*ascii.Section](section.Elements())
+		subSections := parse.FindAll[*spec.Section](section.Elements())
 		suffix := " " + subsectionSuffix
 		for _, ss := range subSections {
 			name := strings.TrimSuffix(ss.Name, suffix)

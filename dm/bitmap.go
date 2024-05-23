@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func renderBitmaps(doc *ascii.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
+func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
 	bitmaps := make([]*matter.Bitmap, len(cluster.Bitmaps))
 	copy(bitmaps, cluster.Bitmaps)
 	slices.SortFunc(bitmaps, func(a, b *matter.Bitmap) int {

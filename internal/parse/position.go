@@ -3,7 +3,7 @@ package parse
 import (
 	"fmt"
 
-	"github.com/hasty/adoc/asciidoc"
+	"github.com/hasty/alchemy/asciidoc"
 )
 
 func Position(el asciidoc.Element) string {

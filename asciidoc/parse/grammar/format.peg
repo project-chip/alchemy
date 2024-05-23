@@ -1,0 +1,31 @@
+
+FormattedText = attributes:(ShorthandAttributes)?  text:(
+    BoldText 
+    / ItalicText 
+    / MonospaceText 
+    / MarkedText
+    / SuperscriptText
+    / SubscriptText
+    ) {
+        return compose(c, text.(asciidoc.AttributableElement), setAttributes[asciidoc.AttributableElement](attributes))
+    }
+
+FormattedTextElement = (
+    InlineText / 
+    __ / 
+    Apostrophe / 
+    Punctuation / 
+    AttributeReference / 
+    FormattedText / 
+    Icon / 
+    InlineImage / 
+    Link /
+    Anchor / 
+    SpecialCharacter / 
+    CharacterClassInline
+)
+
+FormatAttributes = "[" attributes:(ShorthandAttribute) "]" {
+    debugPosition(c, "matched shorthand attributes: %s\n", string(c.text))
+    return attributes, nil
+}

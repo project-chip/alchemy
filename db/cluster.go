@@ -3,9 +3,9 @@ package db
 import (
 	"context"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -54,9 +54,9 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 	return nil
 }
 
-func (h *Host) indexCluster(cxt context.Context, doc *ascii.Doc, ds *sectionInfo, top *ascii.Section) error {
+func (h *Host) indexCluster(cxt context.Context, doc *spec.Doc, ds *sectionInfo, top *spec.Section) error {
 	ci := &sectionInfo{id: h.nextID(clusterTable), parent: ds, values: &dbRow{}}
-	for _, s := range parse.Skim[*ascii.Section](top.Elements) {
+	for _, s := range parse.Skim[*spec.Section](top.Elements()) {
 		var err error
 		switch s.SecType {
 		case matter.SectionClusterID:
@@ -76,7 +76,7 @@ func (h *Host) indexCluster(cxt context.Context, doc *ascii.Doc, ds *sectionInfo
 			return err
 		}
 	}
-	for _, s := range parse.Skim[*ascii.Section](top.Elements) {
+	for _, s := range parse.Skim[*spec.Section](top.Elements()) {
 		var err error
 		switch s.SecType {
 		case matter.SectionAttributes:

@@ -4,24 +4,24 @@ import (
 	"context"
 	"path/filepath"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func (h *Host) indexDoc(ctx context.Context, doc *ascii.Doc, raw bool) (*sectionInfo, error) {
+func (h *Host) indexDoc(ctx context.Context, doc *spec.Doc, raw bool) (*sectionInfo, error) {
 	ds := &sectionInfo{id: h.nextID(documentTable), values: &dbRow{}, children: make(map[string][]*sectionInfo)}
 	dt, _ := doc.DocType()
 	dts := matter.DocTypeNames[dt]
 	ds.values.values = map[matter.TableColumn]any{matter.TableColumnName: filepath.Base(doc.Path), matter.TableColumnType: dts}
 	ds.values.extras = map[string]any{"path": doc.Path}
 	if raw {
-		for _, top := range parse.Skim[*ascii.Section](doc.Elements) {
-			err := ascii.AssignSectionTypes(doc, top)
+		for _, top := range parse.Skim[*spec.Section](doc.Elements()) {
+			err := spec.AssignSectionTypes(doc, top)
 			if err != nil {
 				return nil, err
 			}
-			for _, s := range parse.Skim[*ascii.Section](top.Elements) {
+			for _, s := range parse.Skim[*spec.Section](top.Elements()) {
 				var err error
 				switch s.SecType {
 				case matter.SectionClusterID:

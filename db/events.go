@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/alchemy/ascii"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -17,7 +17,7 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 		row.values[matter.TableColumnID] = e.ID.HexString()
 		row.values[matter.TableColumnName] = e.Name
 		row.values[matter.TableColumnPriority] = e.Priority
-		row.values[matter.TableColumnAccess] = ascii.AccessToASCIIDocString(e.Access, types.EntityTypeEvent)
+		row.values[matter.TableColumnAccess] = spec.AccessToASCIIDocString(e.Access, types.EntityTypeEvent)
 		if e.Conformance != nil {
 			row.values[matter.TableColumnConformance] = e.Conformance.ASCIIDocString()
 		}
@@ -30,7 +30,7 @@ func (h *Host) indexEventModels(cxt context.Context, parent *sectionInfo, cluste
 	return nil
 }
 
-func (h *Host) indexEvents(cxt context.Context, doc *ascii.Doc, ci *sectionInfo, es *ascii.Section) error {
+func (h *Host) indexEvents(cxt context.Context, doc *spec.Doc, ci *sectionInfo, es *spec.Section) error {
 	if ci.children == nil {
 		ci.children = make(map[string][]*sectionInfo)
 	}
@@ -51,7 +51,7 @@ func (h *Host) indexEvents(cxt context.Context, doc *ascii.Doc, ci *sectionInfo,
 			}
 		}
 	}
-	for _, s := range parse.Skim[*ascii.Section](es.Elements()) {
+	for _, s := range parse.Skim[*spec.Section](es.Elements()) {
 		switch s.SecType {
 		case matter.SectionEvent:
 			name := strings.TrimSuffix(s.Name, " Event")

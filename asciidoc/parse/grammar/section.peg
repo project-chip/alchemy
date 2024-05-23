@@ -1,0 +1,32 @@
+Section = level:([=]+ {
+    debugPosition(c, "matched section level %s\n", string(c.text))
+        return len(c.text) - 1, nil
+    }) 
+    &{
+        debugPosition(c, "check section level: %d\n", level.(int))
+        return level.(int) < 6, nil
+    }
+    __ title:(SectionTitle) &EndOfLine  {
+        debugPosition(c, "matched section\n")
+        return compose(c, asciidoc.NewSection(join(flat(title.([]any))), level.(int)))
+    }
+
+SectionTitle = (SectionTitleValue)+
+
+SectionTitleValue = !EndOfLine element:(
+    UnbrokenText 
+    / __ 
+    / Apostrophe 
+    / Punctuation  
+    / FormattedText
+    // InlinePassthrough
+    / Link 
+    / SpecialCharacter 
+    / Icon 
+    / AttributeReference 
+    / Anchor
+    // Footnote
+    / CharacterClassInline
+) {
+    return element, nil
+}

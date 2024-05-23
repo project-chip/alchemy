@@ -1,0 +1,33 @@
+
+
+InlineElements = content:(InlineElement)+ eol:EndOfLine {
+    debugPosition(c, "inline elements: %s\n", string(c.text))
+    els := flat(content.([]any))
+    if eol, ok := eol.(*asciidoc.NewLine); ok {
+        els = append(els, eol)
+    }
+    return els, nil
+}
+
+InlineElement = element:(
+    Admonition /
+    InlinePassthrough /
+    FormattedText /
+    Icon / 
+    InlineImage / 
+    Link /
+    Anchor / 
+    CrossReference / 
+    AttributeReference /
+    LineBreak /
+    NakedInlineText /
+    CharacterClassInline 
+    )  {
+    debugPosition(c, "inline element: \"%s\" (%T)\n", string(c.text), element)
+    return element, nil
+}
+
+NakedInlineText = (!URLScheme !InlineImageDelimiter [A-Za-z ])+ { 
+    debugPosition(c, "matched naked inline text: %s\n", string(c.text))
+    return asciidoc.NewString(string(c.text)), nil
+}

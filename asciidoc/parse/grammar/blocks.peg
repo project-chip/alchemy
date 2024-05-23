@@ -1,0 +1,151 @@
+
+BlockElement = BeginningOfLine element:(BlockElements) EndOfLine
+&{
+    debugPosition(c, "checking block element: %T %v\n", element, element)
+    return element != nil, nil
+} {
+    debugPosition(c, "block element: %T %v\n", element, element)
+    return compose(c, element.(asciidoc.Element))
+}
+
+BlockElements = blockElement: (
+    BlockEmptyLine /
+    AttributableBlocks /
+    Table /
+    // AttachedBlock /
+    NakedBlocks /
+    NakedBlockAttributes
+) {
+    debugPosition(c, "matched block element: %T\n", blockElement)
+    return blockElement, nil
+}
+
+NakedBlocks = block: (
+    MultiLineComment / 
+    SingleLineComment /
+    AttributeEntry / 
+    AttributeReset /
+    IfDef /
+    IfNDef / 
+    IfEval /
+    EndIfDef /
+    FileInclude /
+    DescriptionListItem /
+    ListContinuation /
+    NewLine
+) {
+    debugPosition(c, "matched naked block element: %T %s\n", block, string(c.text))
+    return block, nil
+}
+
+AttributableBlocks = attributes:(BlockElementAttributes)? element:( 
+    Listing / 
+    Open /
+    Example /
+    Sidebar /
+    Quote /
+    Literal /
+    Stem /
+    Section / 
+    ThematicBreak /
+    PageBreak /
+    BlockImage /
+    OrderedListItem / 
+    UnorderedListItem / 
+    DescriptionListItem 
+      ) &{
+        return attributes != nil || element != nil, nil
+    } 
+    {
+        if element == nil {
+         debugPosition(c, "matched naked block attributes: \"%s\"\n",string(c.text))
+           return asciidoc.NewBlockAttributes(attributes.(asciidoc.AttributeList)), nil
+        }
+        if attributes != nil {
+            debugPosition(c, "matched attributed element!: %T %v (%d)\n", element, attributes, len(attributes.([]asciidoc.Attribute)))
+        }
+        debugPosition(c, "matched attributable block element: %T attributes: %T \"%s\"\n", element, attributes, string(c.text))
+        return compose(c, element.(asciidoc.AttributableElement), setAttributes[asciidoc.AttributableElement](attributes))
+    }
+
+BlockAttributes = attribute:(
+    (anchor:(AnchorAttribute) {
+        return anchor, nil
+    }) 
+    / (title:(BlockTitle) {
+        return title, nil
+    }) 
+    / (attributes:(Attributes)  {
+        return attributes, nil
+    }) 
+    / (attributes:(ShorthandAttributes) {
+        return attributes, nil
+    })
+    ) {
+    debugPosition(c, "matched block attribute: %v\n", attribute)
+    return attribute, nil
+}
+
+BlockTitle = BeginningOfLine "." ![ .] content:(BlockTitleContent) {
+    debugPosition(c, "matched block title!: %s\n", string(c.text))
+    els, err := coalesce(content.(asciidoc.Set))
+    if err != nil {
+        return nil, err
+    }
+    return asciidoc.NewTitleAttribute(els), nil
+}
+
+BlockTitleContent = content:(NakedInlineText / Alphanumeric / _ / Punctuation / AttributeReference / CharacterGroupWord )+ {
+    return flat(content.([]any)), nil
+}
+
+BlockEmptyLine = _* &NewLine {
+    debugPosition(c, "matched block empty line %d chars \"%s\"\n", len(string(c.text)), string(c.text))
+    return compose(c, asciidoc.NewEmptyLine(string(c.text)))
+}
+
+BlockElementAttribute = attributes:(BlockAttributes) _* &EndOfLine {
+    debugPosition(c, "matched block element attribute: \"%s\"\n",string(c.text))
+    return attributes, nil
+}
+
+BlockElementAdditionalAttribute = NewLine attributes:(BlockAttributes) _* &EndOfLine {
+    debugPosition(c, "matched additional block element attribute: \"%s\"\n",string(c.text))
+    return attributes, nil
+}
+
+BlockElementAttributes = attribute:(BlockElementAttribute) additionalAttributes:(BlockElementAdditionalAttribute)* EndOfLine EmptyLine* {
+    debugPosition(c, "matched block attributes!: %v additional: (%d)\n", attribute, len(additionalAttributes.([]any)))
+    attributes := []any{attribute}
+    if additionalAttributes != nil {
+        attributes = append(attributes, additionalAttributes.([]any)...)
+    }
+    return extractAttributes(attributes, nil)
+}
+
+NakedBlockAttributes = attribute:(BlockElementAttribute) additionalAttributes:(BlockElementAdditionalAttribute)* {
+    debugPosition(c, "matched naked block attributes: \"%s\"\n",string(c.text))
+    attributes := []any{attribute}
+    if additionalAttributes != nil {
+        attributes = append(attributes, additionalAttributes.([]any)...)
+    }
+    as, err := extractAttributes(attributes, nil)
+    if err != nil {
+        return nil, err
+    }
+    return asciidoc.NewBlockAttributes(as), nil
+}
+
+BlockDelimiters <-
+    !Alphanumeric
+    delimiter:(
+        MultiLineCommentForwardSlashes
+        / ExampleEquals
+        / FencedBackticks
+        / ListingHyphens
+        / LiteralDots
+        / StemPluses
+        / QuoteUnderlines
+        / SidebarAsterisks) {
+            return delimiter, nil
+        }

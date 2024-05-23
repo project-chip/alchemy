@@ -1,0 +1,12 @@
+
+Footnote = "footnote:" id:(FootnoteId)? "[" value:(FootnoteValue)* "]" {
+    return asciidoc.NewFootnote(id.(string), value.([]any)), nil
+}
+
+FootnoteId = Alphanumeric+ {
+    return string(c.text), nil
+}
+
+FootnoteValue = !"]" element:( InlineText / __ / Apostrophe / Quote / Punctuation / Macro / LineBreak / AttributeReference / SpecialCharacter / EmptyLine / CharacterClassInline) {
+    return element, nil
+}

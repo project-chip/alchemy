@@ -1,0 +1,322 @@
+
+Table = attributes:(BlockElementAttributes)? TableStart cells:(TableElements) TableEnd {
+    debugPosition(c, "TABLE: matched table \"%s\" (%v)\n", string(c.text), attributes)
+    table, err := parseTable(attributes, cells.([]any))
+    if err != nil {
+        return nil, err
+    }
+    debugPosition(c, "TABLE: matched table row count %d\n",len(table.Set))
+    return compose(c, table)
+}
+
+TableElements = te:(TableElement)* {
+    debugPosition(c, "TABLE: matched table elements \"%s\" (%T)\n", string(c.text), te)
+    return te, nil
+}
+
+TableElement = element:(
+        TableEmptyLine 
+        / TableMacros
+        / TableRow
+        )  {
+    debugPosition(c, "TABLE: matched table element \"%s\" (%T)\n", string(c.text), element)
+    return element, nil
+}
+
+TableStart = !"\\" "|===" "="* _* &EndOfLine  {
+    debugPosition(c, "TABLE: matched table start %s\n", string(c.text))
+    return asciidoc.NewString(string(c.text)), nil
+}
+
+TableEmptyLine = !TableEnd NewLine _* &(NewLine )  {
+    debugPosition(c, "TABLE: matched table empty line %s\n", string(c.text))
+    return compose(c, asciidoc.NewEmptyLine(string(c.text)))
+}
+
+TableMacros = (TableIfDef / TableIfNDef / TableEndIfDef / TableComment / TableMultiLineComment)
+
+TableIfDef = !TableEnd NewLine _* ifdef:IfDef  {
+    debugPosition(c, "TABLE: matched table ifdef %s\n", string(c.text))
+    return compose(c, ifdef.(*asciidoc.IfDef))
+}
+
+TableIfNDef = !TableEnd NewLine _* ifndef:IfNDef   {
+    debugPosition(c, "TABLE: matched table ifndef %s\n", string(c.text))
+    return compose(c, ifndef.(*asciidoc.IfNDef))
+}
+
+TableEndIfDef = !TableEnd NewLine _* endifdef:EndIfDef   {
+    debugPosition(c, "TABLE: matched table end if %s\n", string(c.text))
+    return compose(c, endifdef.(*asciidoc.EndIf))
+}
+
+TableComment = !TableEnd NewLine comment:(SingleLineComment)   {
+    debugPosition(c, "TABLE: matched table comment %s\n", string(c.text))
+    return compose(c, comment.(*asciidoc.SingleLineComment))
+}
+
+TableMultiLineComment = !TableEnd NewLine comment:(MultiLineComment)   {
+    debugPosition(c, "TABLE: matched table multiline comment %s\n", string(c.text))
+    return compose(c, comment.(*asciidoc.MultiLineComment))
+}
+
+TableEmptyLines = TableEmptyLine+
+
+TableCellInlineContent = content:(TableCellInlineContentElement)* EndOfFile {
+    debugPosition(c, "TABLE: matched table cell inline content: %s\n", string(c.text))
+    return trim(mergeStrings(flat(content.([]any)))), nil 
+}
+
+TableCellInlineContentElement = element:(
+    FormattedText /
+    Icon / 
+    InlineImage / 
+    Link /
+    Anchor /  
+    CrossReference /
+    AttributeReference /
+    LineBreak /
+    NakedInlineTableCellText /
+    CharacterClassInline /
+    NewLine 
+    )  {
+    debugPosition(c, "TABLE: inline table element: \"%s\"\n", string(c.text))
+    return element, nil
+}
+
+TableEnd = NewLine !"\\" "|===" "="* _* &EndOfLine   {
+    debugPosition(c, "TABLE: matched table end %s\n", string(c.text))
+    return asciidoc.NewString(string(c.text)), nil
+}
+
+TableRow = initial:(InitialInlineTableCell ) additional:(AdditionalInlineTableCell)* &(TableEnd / TableCellDelimiter /  NewLine  ) {
+        debugPosition(c, "TABLE ROW: matched table row \"%s\"\n", string(c.text))
+
+    var rows = []*asciidoc.TableCell{initial.(*asciidoc.TableCell)}
+    if len(additional.([]any)) > 0 {
+        rows = append(rows, cast[any, *asciidoc.TableCell](additional.([]any))...)
+    }
+    return rows, nil
+}
+
+TableCellDelimiter = (AdditionalTableCellDelimiter / InitialTableCellDelimiter)
+
+InitialInlineTableCell = format:(InitialTableCellDelimiter) content:(InlineTableLines) &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter /  NewLine  ) 
+    {
+    debugPosition(c, "TABLE: matched initial inline table cell \"%s\" (format:%v)\n", string(c.text), format)
+    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](content.(asciidoc.Set)) )
+}
+
+AdditionalInlineTableCell =  format:(AdditionalTableCellDelimiter) content:(InlineTableLines) &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter /  NewLine  ) {
+    debugPosition(c, "TABLE: matched additional inline table cell \"%s\" (format:%v)\n", string(c.text), format)
+    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](content.(asciidoc.Set)) )
+}
+
+InitialBlockTableCell = format:(InitialTableCellDelimiter) content:(BlockTableElement / InlineTableElements)* &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter /  NewLine  ) &{
+   debugPosition(c, "TABLE: checking block initial table cell\n")
+       return format != nil && format.(*asciidoc.TableCellFormat).Style.Value == asciidoc.TableCellStyleAsciiDoc, nil
+    }
+    {
+    debugPosition(c, "TABLE: matched initial block table cell \"%s\" (format:%v)\n", string(c.text), format)
+    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](asciidoc.Set(cast[any, asciidoc.Element](content.([]any)))))
+}
+
+AdditionalBlockTableCell = format:(AdditionalTableCellDelimiter) content:(BlockTableElement / InlineTableElements)* &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter /  NewLine  ) &{
+   debugPosition(c, "TABLE: checking additional block table cell\n")
+       return format != nil && format.(*asciidoc.TableCellFormat).Style.Value == asciidoc.TableCellStyleAsciiDoc, nil
+    }
+    {
+    debugPosition(c, "TABLE: matched additional block table cell \"%s\" (format:%v) (%T)\n", string(c.text), format, content)
+    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](asciidoc.Set(cast[any, asciidoc.Element](content.([]any)))))
+}
+
+InlineTableLines = content:(MultiLineTableCell / InlineTableElements / EmptyCell) {
+    debugPosition(c, "TABLE: matched inline table lines \"%s\" (%T)\n", string(c.text), content)
+    return content, nil
+}
+
+EmptyCell = &(TableEnd / TableCellDelimiter /  NewLine) {
+    debugPosition(c, "TABLE: empty cell: \"%s\"\n", string(c.text))
+    return asciidoc.Set{asciidoc.NewString(string(c.text))}, nil
+}
+
+ValidTableCellPrefix = !TableEnd !TableCellDelimiter 
+
+ValidMultilineTableCellPrefix = !MultiLineComment !SingleLineComment
+
+MultiLineTableCell = lines:(InlineTableCellLine)+ content:(InlineTableCellLastLine) {
+    var cellLines asciidoc.Set
+    if lines != nil  {
+        debugPosition(c, "TABLE LINES: inline table lines (%d), content (%d): \"%s\"\n", len(lines.([]any)), len(content.([]asciidoc.Element)),  string(c.text))
+        cellLines = flat(lines.([]any))
+    } else {
+        debugPosition(c, "TABLE CELL: inline table lines (0), content (%d): \"%s\"\n", len(content.([]any)), string(c.text))
+    }
+    cellLines = append(cellLines, content.([]asciidoc.Element)...)
+    return trim(cellLines), nil
+}
+
+InlineTableCellLine = InlineTableCellEmptyLine / InlineTableCellIntermediateLine 
+
+InlineTableCellIntermediateLine = ValidTableCellPrefix newline:NewLine? ValidMultilineTableCellPrefix content:(InlineTableElement)+ newlineBeforeEmptyLine:(nl:NewLine _* &(NewLine) { return nl, nil})? &NewLine !(TableMacros / TableEnd / TableCellDelimiter  ) &(InlineTableCellLine / InlineTableCellLastLine) 
+ {
+    debugPosition(c, "TABLE: inline table intermediate cell line (%d): \"%s\"\n", len(content.([]any)), string(c.text))
+    var els []asciidoc.Element
+    if newline != nil {
+        els = []asciidoc.Element{newline.(*asciidoc.NewLine)}
+    }
+    els = append(els, trim(mergeStrings(flat(content.([]any))))...)
+    if newlineBeforeEmptyLine != nil {
+        els = append(els, newlineBeforeEmptyLine.(*asciidoc.NewLine))
+    }
+    return els, nil
+}
+
+InlineTableCellEmptyLine = ValidTableCellPrefix NewLine _* &(NewLine) !TableEnd !TableCellDelimiter !TableMacros &(InlineTableCellLine / InlineTableCellLastLine) 
+ {
+    debugPosition(c, "TABLE: inline table intermediate cell empty line (%d): \"%s\"\n",string(c.text))
+    return asciidoc.Set{asciidoc.EmptyLine{}}, nil
+}
+
+InlineTableCellLastLine = ValidTableCellPrefix nl:NewLine ValidMultilineTableCellPrefix content:(InlineTableElement)+ &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter)
+ {
+    debugPosition(c, "TABLE: inline table last cell line (%d): \"%s\"\n", len(content.([]any)), string(c.text))
+    var els = []asciidoc.Element{nl.(*asciidoc.NewLine)}
+    els = append(els, trim(mergeStrings(flat(content.([]any))))...)
+    return els, nil
+}
+
+BlockTableCellLine = content:(BlockTableElement / InlineTableCellIntermediateLine ) {
+    debugPosition(c, "TABLE: block table cell line: \"%s\"\n",string(c.text))
+    return content, nil
+}
+
+BlockTableCellLastLine = ValidTableCellPrefix NewLine content:(InlineTableElement)+ &(TableEnd / TableCellDelimiter)
+ {
+    debugPosition(c, "TABLE: inline table last cell line (%d): \"%s\"\n", len(content.([]any)), string(c.text))
+    return trim(mergeStrings(flat(content.([]any)))), nil
+}
+
+InlineTableElements = ValidTableCellPrefix content:(InlineTableElement)+ 
+    {
+    debugPosition(c, "TABLE: inline table elements (%d): %s\n", len(content.([]any)), string(c.text))
+    return trim(mergeStrings(flat(content.([]any)))), nil
+}
+
+InlineTableElement = ValidTableCellPrefix  element:(
+    NakedInlineTableCellText /
+    CharacterClassTableCell 
+    )  {
+    debugPosition(c, "TABLE: inline table element: \"%s\"\n", string(c.text))
+    return element, nil
+}
+
+BlockTableElement = !InitialTableCellDelimiter _*  element:(BlockElement) !TableCellDelimiter  !TableEnd  {
+     debugPosition(c, "TABLE: block table element %T: %s\n", element, string(c.text))
+    return element, nil
+}
+
+
+NakedInlineTableCellText = ([A-Za-z ] !TableCellDelimiter !TableEnd)+ { 
+    debugPosition(c, "TABLE: matched naked inline table cell text: %s\n", string(c.text))
+    return asciidoc.NewString(string(c.text)), nil
+}
+
+CharacterClassTableCell = ("\\|" / [^|\r\n])  {
+    debugPosition(c, "TABLE: matched table cell character: \"%s\"\n", string(c.text))
+    return string(c.text), nil
+}
+
+// First table cell format in a row just needs to follow a new line
+InitialTableCellDelimiter = !TableEnd NewLine _* format:(TableCellFormat)? !"\\" "|"  {
+    debugPosition(c, "TABLE: matched initial table cell delimiter %s\n", string(c.text))
+    if format != nil {
+        return format, nil
+    }
+    return asciidoc.NewTableCellFormat(), nil
+}
+
+AdditionalTableCellDelimiter = !TableEnd format:(AdditionalTableCellFormat)? !"\\" "|"  {
+    debugPosition(c, "TABLE: matched additional table cell delimiter \"%s\" format:%v\n", string(c.text), format)
+    return format, nil
+}
+
+// First table cell format in a row just needs to follow a new line
+InitialTableCellFormat = _* format:(TableCellFormat) &{
+    debugPosition(c, "TABLE: checking initial table cell format \"%s\"\n", string(c.text))
+    return format != nil, nil
+} {
+    debugPosition(c, "TABLE: matched initial table cell format \"%s\"\n", string(c.text))
+    return format, nil
+}
+
+// Subsequent table cell formats in a row need a space
+AdditionalTableCellFormat = lead:(_+) format:(TableCellFormat) &{
+    debugPosition(c, "TABLE: checking table cell format \"%s\"\n", string(c.text))
+    return lead != nil && format != nil, nil
+} {
+    debugPosition(c, "TABLE: matched table cell format \"%s\"\n", string(c.text))
+    return format, nil
+}
+
+TableCellSpan = column:(n:PositiveInteger  { 
+            debugPosition(c, "TABLE: matched col span:%s\n", string(c.text))
+            return n, nil }
+        )? row: ("." n:PositiveInteger { 
+             debugPosition(c, "TABLE: matched row span:%s\n", string(c.text))
+            return n, nil 
+       }
+       )? "+" 
+       {
+            span := asciidoc.NewTableCellSpan()
+            span.Column = asciidoc.Maybe[int](column, span.Column.Value)
+            span.Row = asciidoc.Maybe[int](row, span.Row.Value)
+            return span, nil
+       }
+
+TableCellFormat =  
+    multiplier:(
+        multiplier:([1-9][0-9]* {return string(c.text), nil}) "*" { 
+            return strconv.Atoi(multiplier.(string)) 
+        }
+    )?
+    span:(
+        span:(TableCellSpan) {
+        debugPosition(c, "TABLE: checking span: %s %T %v\n", string(c.text), span, span)
+        return span, nil
+        }
+    )?
+    horizontalAlign:(
+        "<" { return asciidoc.TableCellHorizontalAlignLeft, nil }
+        / ">" { return asciidoc.TableCellHorizontalAlignRight, nil }
+        / "^" { return  asciidoc.TableCellHorizontalAlignCenter, nil }
+    )?
+    verticalAlign:(
+        ".<" { return asciidoc.TableCellVerticalAlignTop, nil }
+        / ".>" { return asciidoc.TableCellVerticalAlignBottom, nil }
+        / ".^" { return asciidoc.TableCellVerticalAlignMiddle, nil }
+    )?
+    style:(
+        "a" { return asciidoc.TableCellStyleAsciiDoc, nil }
+        / "d" { return asciidoc.TableCellStyleDefault, nil }
+        / "e" { return  asciidoc.TableCellStyleEmphasis, nil }
+        / "h" { return  asciidoc.TableCellStyleHeader, nil }
+        / "l" { return  asciidoc.TableCellStyleLiteral, nil }
+        / "m" { return  asciidoc.TableCellStyleMonospace, nil }
+        / "s" { return  asciidoc.TableCellStyleStrong, nil }
+    )?
+     &{
+        return (multiplier != nil || span != nil || horizontalAlign != nil || verticalAlign != nil || style != nil), nil
+    }
+     {
+    debugPosition(c, "TABLE: matched table cell format: %s\n", string(c.text))
+    format := asciidoc.NewTableCellFormat()
+    format.Multiplier = asciidoc.Maybe[int](multiplier, format.Multiplier.Value)
+    if span != nil {
+        format.Span = span.(asciidoc.TableCellSpan)
+    }
+    format.HorizontalAlign = asciidoc.Maybe[asciidoc.TableCellHorizontalAlign](horizontalAlign, format.HorizontalAlign.Value)
+    format.VerticalAlign = asciidoc.Maybe[asciidoc.TableCellVerticalAlign](verticalAlign, format.VerticalAlign.Value)
+    format.Style = asciidoc.Maybe[asciidoc.TableCellStyle](style, format.Style.Value)
+    return format, nil
+}

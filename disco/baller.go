@@ -4,9 +4,9 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/hasty/alchemy/ascii"
-	"github.com/hasty/alchemy/ascii/render"
+	"github.com/hasty/alchemy/asciidoc/render"
 	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 type Baller struct {
@@ -25,7 +25,7 @@ func (r Baller) Type() pipeline.ProcessorType {
 	return pipeline.ProcessorTypeIndividual
 }
 
-func (r Baller) Process(cxt context.Context, input *pipeline.Data[*ascii.Doc], index int32, total int32) (outputs []*pipeline.Data[render.InputDocument], extras []*pipeline.Data[*ascii.Doc], err error) {
+func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[render.InputDocument], extras []*pipeline.Data[*spec.Doc], err error) {
 	b := NewBall(input.Content)
 	for _, option := range r.discoOptions {
 		option(b)

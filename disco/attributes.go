@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
@@ -69,7 +69,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 
 	for _, row := range section.table.rows {
 		cell := row.Cell(nameIndex)
-		cv, err := ascii.RenderTableCell(cell)
+		cv, err := spec.RenderTableCell(cell)
 		if err != nil {
 			continue
 		}

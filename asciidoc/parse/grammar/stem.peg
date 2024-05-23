@@ -1,0 +1,42 @@
+
+Stem =
+    start:(StemStart)
+    lines:(StemLine)*
+    StemEnd {
+        return compose(c, asciidoc.NewStemBlock(start.(asciidoc.Delimiter)), setLines[*asciidoc.StemBlock](cast[any, string](lines.([]any))))
+    }
+
+StemStart = delimiter:StemDelimiter EndOfLine &{
+        c.pushDelimitedLevel(asciidoc.DelimitedBlockTypeStem, delimiter.(asciidoc.Delimiter).Length)
+        return true, nil
+    } {
+        return delimiter, nil
+    }
+
+StemEnd = delimiter:StemDelimiter &EndOfLine &{
+    previous := c.peekDelimitedLevel(asciidoc.DelimitedBlockTypeStem)
+    if previous == delimiter.(asciidoc.Delimiter).Length {
+        c.popDelimitedLevel(asciidoc.DelimitedBlockTypeStem)
+        return true, nil
+    }
+    return false, nil
+    } 
+
+StemPluses = pluses:("++++" "+"*) &{
+        return delimitedLength(pluses) >= 4, nil
+    } 
+    { 
+        return delimitedLength(pluses), nil
+    }
+
+StemDelimiter = pluses:(StemPluses) 
+    _*  
+    {
+        return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeStem, Length:pluses.(int)}, nil
+    }
+
+StemLine = (!StemDelimiter NotEndOfFile line:AnyText EndOfLine) {
+    return line.(string), nil
+}
+
+

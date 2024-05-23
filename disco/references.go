@@ -4,12 +4,12 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/adoc/asciidoc"
-	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
-func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*asciidoc.CrossReference, anchors map[string]*ascii.Anchor) {
+func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*asciidoc.CrossReference, anchors map[string]*spec.Anchor) {
 	for id, xrefs := range crossReferences {
 		info, ok := anchors[id]
 		if !ok {
@@ -38,13 +38,13 @@ func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*asciidoc.Cro
 	}
 }
 
-func findRefSection(parent any) *ascii.Section {
+func findRefSection(parent any) *spec.Section {
 	switch p := parent.(type) {
-	case *ascii.Section:
+	case *spec.Section:
 		return p
-	case *ascii.Element:
+	case *spec.Element:
 		return findRefSection(p.Parent)
-	case *ascii.Doc:
+	case *spec.Doc:
 		return nil
 	default:
 		return nil
