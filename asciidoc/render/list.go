@@ -4,7 +4,7 @@ import "github.com/hasty/alchemy/asciidoc"
 
 func renderOrderedListElement(cxt *Context, el *asciidoc.OrderedListItem) (err error) {
 
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 
 	err = renderAttributes(cxt, el, el.Attributes(), false)
 	if err != nil {
@@ -17,7 +17,7 @@ func renderOrderedListElement(cxt *Context, el *asciidoc.OrderedListItem) (err e
 }
 
 func renderUnorderedListElement(cxt *Context, el *asciidoc.UnorderedListItem) (err error) {
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 
 	err = renderAttributes(cxt, el, el.Attributes(), false)
 	if err != nil {
@@ -30,7 +30,7 @@ func renderUnorderedListElement(cxt *Context, el *asciidoc.UnorderedListItem) (e
 }
 
 func renderLabeledListElement(cxt *Context, el *asciidoc.DescriptionListItem) error {
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	err := renderAttributes(cxt, el, el.Attributes(), false)
 	if err != nil {
 		return err

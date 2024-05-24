@@ -47,7 +47,7 @@ func renderTable(cxt *Context, t *asciidoc.Table) (err error) {
 	colOffsets := calculateColumnOffsets(tbl)
 
 	cxt.WriteString("|===")
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	for _, row := range tbl.rows {
 		if row.element != nil {
 			Elements(cxt, "", row.element)
@@ -104,7 +104,7 @@ func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) error {
 		index += wb
 
 	}
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	return nil
 }
 
@@ -266,7 +266,7 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 		line = strings.TrimSpace(line)
 		directivePrefix := strings.HasPrefix(line, "ifdef::") || strings.HasPrefix(line, "ifndef::") || strings.HasPrefix(line, "endif::")
 		if directivePrefix {
-			out.WriteNewline()
+			out.EnsureNewLine()
 		}
 		if i > 0 && !strings.HasPrefix(line, "// ") && !directivePrefix {
 			out.WriteString(strings.Repeat(" ", indent))

@@ -14,7 +14,7 @@ func Render(cxt context.Context, doc InputDocument) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	renderContext.WriteNewline()
+	renderContext.EnsureNewLine()
 	output := strings.TrimSpace(renderContext.String())
 	return postProcess(output), nil
 }

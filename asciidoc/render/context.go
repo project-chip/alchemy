@@ -43,7 +43,7 @@ func (o *Context) WriteRune(r rune) {
 	o.lastRune = r
 }
 
-func (o *Context) WriteNewline() {
+func (o *Context) EnsureNewLine() {
 	if o.lastRune == '\n' {
 		return
 	}

@@ -19,6 +19,6 @@ func renderSectionTitle(cxt *Context, title asciidoc.Set, level int) (err error)
 	cxt.WriteString(strings.Repeat("=", level))
 	cxt.WriteRune(' ')
 	err = Elements(cxt, "", title...)
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	return
 }
