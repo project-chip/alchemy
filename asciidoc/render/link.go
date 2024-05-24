@@ -18,29 +18,29 @@ func renderLink(cxt *Context, il *asciidoc.Link) (err error) {
 }
 
 func renderImageBlock(cxt *Context, ib *asciidoc.BlockImage) (err error) {
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
 		return
 	}
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	cxt.WriteString("image::")
 	Elements(cxt, "", ib.Path...)
 	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
 	if err != nil {
 		return
 	}
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	return
 }
 
 func renderInlineImage(cxt *Context, ib *asciidoc.InlineImage) (err error) {
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
 		return
 	}
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	cxt.WriteString("image:")
 	Elements(cxt, "", ib.Path...)
 	err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)

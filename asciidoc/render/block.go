@@ -15,16 +15,16 @@ func renderBlock(cxt *Context, block asciidoc.Element, delimiter string) (err er
 	if err != nil {
 		return
 	}
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	cxt.WriteString(delimiter)
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	he, ok := block.(asciidoc.HasElements)
 	if ok {
 		err = Elements(cxt, "", he.Elements()...)
 	}
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	cxt.WriteString(delimiter)
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	return
 }
 
@@ -54,7 +54,7 @@ func renderDelimiter(cxt *Context, delimiter asciidoc.Delimiter) {
 	case asciidoc.DelimitedBlockTypeMultiLineComment:
 		char = "/"
 	}
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 	cxt.WriteString(strings.Repeat(char, delimiter.Length))
-	cxt.WriteNewline()
+	cxt.EnsureNewLine()
 }
