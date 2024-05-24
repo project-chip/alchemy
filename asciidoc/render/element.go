@@ -23,7 +23,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		}
 		switch el := e.(type) {
 		case asciidoc.EmptyLine:
-			cxt.WriteNewline()
+			cxt.EnsureNewLine()
 			cxt.WriteRune('\n')
 		case *asciidoc.NewLine:
 			cxt.WriteRune('\n')
@@ -40,7 +40,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		case *asciidoc.Table:
 			err = renderTable(cxt, el)
 		case *asciidoc.EmptyLine:
-			cxt.WriteNewline()
+			cxt.EnsureNewLine()
 			cxt.WriteRune('\n')
 		case *asciidoc.CrossReference:
 			err = renderInternalCrossReference(cxt, el)
@@ -49,14 +49,14 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		case *asciidoc.String:
 			text := el.Value
 			if strings.HasPrefix(text, "ifdef::") || strings.HasPrefix(text, "ifndef::") || strings.HasPrefix(text, "endif::[]") {
-				cxt.WriteNewline()
+				cxt.EnsureNewLine()
 			}
 			cxt.WriteString(text)
 		case *asciidoc.SingleLineComment:
-			cxt.WriteNewline()
+			cxt.EnsureNewLine()
 			cxt.WriteString("//")
 			cxt.WriteString(el.Value)
-			cxt.WriteNewline()
+			cxt.EnsureNewLine()
 		case *asciidoc.BlockImage:
 			err = renderImageBlock(cxt, el)
 		case *asciidoc.Link:
@@ -104,7 +104,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		case *asciidoc.OrderedListItem:
 			err = renderOrderedListElement(cxt, el)
 		case *asciidoc.ListContinuation:
-			cxt.WriteNewline()
+			cxt.EnsureNewLine()
 			cxt.WriteString("+\n")
 			err = Elements(cxt, "", el.Child())
 		case *asciidoc.IfDef:
@@ -128,7 +128,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 			cxt.WriteString(el.Marker)
 			cxt.WriteRune(' ')
 			Elements(cxt, "", el.Elements()...)
-			cxt.WriteNewline()
+			cxt.EnsureNewLine()
 		case *asciidoc.LiteralBlock:
 			renderAttributes(cxt, el, el.Attributes(), false)
 			renderDelimiter(cxt, el.Delimiter)

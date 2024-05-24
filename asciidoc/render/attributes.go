@@ -160,7 +160,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribut
 				continue
 			}
 			if !inline {
-				cxt.WriteNewline()
+				cxt.EnsureNewLine()
 			}
 			cxt.WriteString("[")
 			for i, ia := range filtered {
@@ -209,212 +209,6 @@ func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribut
 		}
 
 	}
-
-	/*var id string
-	var title string
-	var style string
-	var keys []string
-	var roles asciidoc.Roles
-	for _, val := range attributes {
-		switch val := val.(type) {
-		case *asciidoc.NamedAttribute:
-			switch val.Name {
-			case asciidoc.AttributeNameID:
-			case asciidoc.AttributeNameStyle:
-			case asciidoc.AttributeNameTitle:
-			case asciidoc.AttributeNameRoles:
-
-			}
-		case *asciidoc.PositionalAttribute:
-		}
-		switch key {
-		case asciidoc.AttrID:
-			id = val.(string)
-		case asciidoc.AttrStyle:
-			style = val.(string)
-		case asciidoc.AttrTitle:
-			switch v := val.(type) {
-			case string:
-				title = v
-			case []any:
-				renderContext := NewContext(cxt, cxt.Doc)
-				err = Elements(renderContext, "", v)
-				title = renderContext.String()
-			default:
-				err = fmt.Errorf("unknown title type: %T", v)
-				return
-			}
-		case asciidoc.AttrPositional1:
-			if s, ok := val.(string); ok {
-				style = s
-			}
-		case asciidoc.AttrRoles:
-			switch v := val.(type) {
-			case asciidoc.Roles:
-				roles = v
-			case []any:
-				roles = v
-			case any:
-				roles = []any{v}
-			default:
-				err = fmt.Errorf("unknown roles type: %T", v)
-				return
-			}
-
-		default:
-			keys = append(keys, key)
-		}
-		if err != nil {
-			return
-		}
-	}
-
-	if len(style) > 0 && shouldRenderAttributeType(AttributeFilterStyle, include, exclude) {
-		switch style {
-		case asciidoc.Tip, asciidoc.Note, asciidoc.Important, asciidoc.Warning, asciidoc.Caution:
-			switch el.(type) {
-			case *asciidoc.Paragraph:
-				cxt.WriteString(fmt.Sprintf("%s: ", style))
-			default:
-				cxt.WriteString(fmt.Sprintf("[%s]\n", style))
-			}
-		case "none":
-			cxt.WriteString("[none]\n")
-			renderAttributeTitle(cxt, title, include, exclude)
-			renderAttributeAnchor(cxt, id, include, exclude, inline)
-		case asciidoc.UpperRoman, asciidoc.LowerRoman, asciidoc.Arabic, asciidoc.UpperAlpha, asciidoc.LowerAlpha:
-			if !inline {
-				cxt.WriteNewline()
-			}
-			renderAttributeTitle(cxt, title, include, exclude)
-			renderAttributeAnchor(cxt, id, include, exclude, inline)
-			cxt.WriteRune('[')
-			cxt.WriteString(style)
-			if start, ok := attributes[asciidoc.AttrStart]; ok {
-				if start, ok := start.(string); ok {
-					cxt.WriteString(", start=")
-					cxt.WriteString(start)
-				}
-			}
-			cxt.WriteString("]\n")
-			renderAttributeTitle(cxt, title, include, exclude)
-			renderAttributeAnchor(cxt, id, include, exclude, inline)
-			return
-		case "a2s", "actdiag", "plantuml", "qrcode", "blockdiag", "d2", "lilypond", "ditaa", "graphviz", "asciimath":
-			return renderDiagramAttributes(cxt, style, id, title, keys, inline, attributes, include, exclude)
-		case "literal_paragraph":
-		case "source":
-			renderAttributeTitle(cxt, title, include, exclude)
-			renderAttributeAnchor(cxt, id, include, exclude, inline)
-			if !inline {
-				cxt.WriteNewline()
-			}
-			cxt.WriteRune('[')
-			cxt.WriteString(style)
-			lang, ok := attributes[asciidoc.AttrLanguage]
-			if ok {
-				cxt.WriteString(", ")
-				cxt.WriteString(lang.(string))
-			}
-			cxt.WriteString("]\n")
-			renderAttributeTitle(cxt, title, include, exclude)
-			renderAttributeAnchor(cxt, id, include, exclude, inline)
-			return
-		default:
-			if !inline {
-				cxt.WriteNewline()
-			}
-			cxt.WriteRune('[')
-			cxt.WriteString(style)
-			for _, key := range keys {
-				var keyVal string
-				var skipKey bool
-				keyVal, skipKey, err = getKeyValue(cxt, key, attributes[key], include, exclude)
-				if err != nil {
-					return
-				}
-				if keyVal == "" {
-					continue
-				}
-				cxt.WriteRune(',')
-				if skipKey {
-					cxt.WriteString(keyVal)
-				} else {
-					cxt.WriteString(key)
-					cxt.WriteRune('=')
-					quoteAttributeValue(cxt, keyVal)
-				}
-			}
-			cxt.WriteString("]\n")
-			renderAttributeTitle(cxt, title, include, exclude)
-			renderAttributeAnchor(cxt, id, include, exclude, inline)
-			return
-		}
-	}
-	if len(roles) > 0 {
-		if !inline {
-			cxt.WriteNewline()
-		}
-		cxt.WriteString("[")
-		for _, r := range roles {
-			switch rs := r.(type) {
-			case string:
-				cxt.WriteRune('.')
-				cxt.WriteString(rs)
-			default:
-				slog.Debug("unknown role type", "role", r)
-			}
-		}
-		cxt.WriteString("]")
-		if !inline {
-			cxt.WriteNewline()
-		}
-		renderAttributeTitle(cxt, title, include, exclude)
-		renderAttributeAnchor(cxt, id, include, exclude, inline)
-		return
-	}
-	renderAttributeTitle(cxt, title, include, exclude)
-	renderAttributeAnchor(cxt, id, include, exclude, inline)
-	if len(keys) > 0 {
-		sort.Strings(keys)
-		if !inline {
-			cxt.WriteNewline()
-		}
-
-		count := 0
-		for _, key := range keys {
-			var keyVal string
-			var skipKey bool
-			keyVal, skipKey, err = getKeyValue(cxt, key, attributes[key], include, exclude)
-			if err != nil {
-				return
-			}
-
-			if len(keyVal) != 0 {
-				if count == 0 {
-					cxt.WriteString("[")
-				} else {
-					cxt.WriteRune(',')
-				}
-				if skipKey {
-					cxt.WriteString(keyVal)
-				} else {
-					cxt.WriteString(key)
-					cxt.WriteRune('=')
-					quoteAttributeValue(cxt, keyVal)
-				}
-
-				count++
-			}
-
-		}
-		if count > 0 {
-			cxt.WriteRune(']')
-			if !inline {
-				cxt.WriteRune('\n')
-			}
-		}
-	}*/
 	return
 }
 
@@ -422,7 +216,7 @@ func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, inclu
 	id := anchor.ID
 	if id != nil && len(id.Value) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
 		if !inline {
-			cxt.WriteNewline()
+			cxt.EnsureNewLine()
 		}
 		cxt.WriteString("[[")
 		cxt.WriteString(id.Value)
@@ -439,10 +233,10 @@ func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, inclu
 
 func renderAttributeTitle(cxt *Context, title asciidoc.Set, include AttributeFilter, exclude AttributeFilter) {
 	if len(title) > 0 && shouldRenderAttributeType(AttributeFilterTitle, include, exclude) {
-		cxt.WriteNewline()
+		cxt.EnsureNewLine()
 		cxt.WriteRune('.')
 		Elements(cxt, "", title...)
-		cxt.WriteNewline()
+		cxt.EnsureNewLine()
 	}
 }
 
