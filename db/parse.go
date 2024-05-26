@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/spec"
 )
@@ -24,7 +25,7 @@ func appendSectionToRow(cxt context.Context, doc *spec.Doc, section *spec.Sectio
 	if t == nil {
 		return fmt.Errorf("no table found")
 	}
-	rows := spec.TableRows(t)
+	rows := t.TableRows()
 	if len(rows) < 2 {
 		return fmt.Errorf("not enough rows in table")
 	}
@@ -69,7 +70,7 @@ func readTable(cxt context.Context, doc *spec.Doc, section *spec.Section) (rs []
 	if t == nil {
 		return nil, errMissingTable
 	}
-	rows := spec.TableRows(t)
+	rows := t.TableRows()
 	if len(rows) < 2 {
 		return nil, fmt.Errorf("not enough rows in table")
 	}
@@ -95,12 +96,13 @@ func readTable(cxt context.Context, doc *spec.Doc, section *spec.Section) (rs []
 	return
 }
 
-func readTableRow(valueRow *asciiasciidoc.TableRow, columnMap spec.ColumnIndex, extraColumns []spec.ExtraColumn, row *dbRow) error {
+func readTableRow(valueRow *asciidoc.TableRow, columnMap spec.ColumnIndex, extraColumns []spec.ExtraColumn, row *dbRow) error {
 	if row.values == nil {
 		row.values = make(map[matter.TableColumn]any)
 	}
+
 	for col, index := range columnMap {
-		val, err := spec.RenderTableCell(valueRow.Cells[index])
+		val, err := spec.RenderTableCell(valueRow.Cell(index))
 		if err != nil {
 			return err
 		}
@@ -112,7 +114,7 @@ func readTableRow(valueRow *asciiasciidoc.TableRow, columnMap spec.ColumnIndex, 
 
 		}
 		for _, e := range extraColumns {
-			val, err := spec.RenderTableCell(valueRow.Cells[e.Offset])
+			val, err := spec.RenderTableCell(valueRow.Cell(e.Offset))
 			if err != nil {
 				return err
 			}
