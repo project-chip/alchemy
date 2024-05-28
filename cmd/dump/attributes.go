@@ -18,6 +18,8 @@ func dumpAttributes(attributes []asciidoc.Attribute, indent int) {
 		switch a := a.(type) {
 		case *asciidoc.NamedAttribute:
 			fmt.Printf(" %s=", a.Name)
+		default:
+			fmt.Printf("%T=", a)
 		}
 		switch v := a.Value().(type) {
 		case *asciidoc.String:
@@ -26,6 +28,8 @@ func dumpAttributes(attributes []asciidoc.Attribute, indent int) {
 			fmt.Print(v)
 		/*case asciidoc.Options:
 		dumpAttributeVals(v, indent+1)*/
+		case asciidoc.Set:
+			dumpElements(nil, v, indent+1)
 		case []any:
 			dumpAttributeVals(v, indent+1)
 		default:

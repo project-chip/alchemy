@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/matter/spec"
 )
 
 /*
@@ -19,8 +20,9 @@ import (
 
 }
 */
-func dumpLocation(l asciidoc.URL) {
-	fmt.Printf("%s %s}", l.Scheme, l.Path.(string))
+func dumpLocation(doc *spec.Doc, l asciidoc.URL, indent int) {
+	fmt.Printf("%s", l.Scheme)
+	dumpElements(doc, l.Path.(asciidoc.Set), indent)
 }
 
 func snippet(str string) string {
