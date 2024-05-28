@@ -70,6 +70,7 @@ type UnorderedListItem struct {
 
 func NewUnorderedListItem(indent string, marker string, checklist Checklist) *UnorderedListItem {
 	return &UnorderedListItem{
+		Indent:    indent,
 		Marker:    marker,
 		Checklist: checklist,
 	}

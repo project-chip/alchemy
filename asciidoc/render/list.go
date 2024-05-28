@@ -10,6 +10,7 @@ func renderOrderedListElement(cxt *Context, el *asciidoc.OrderedListItem) (err e
 	if err != nil {
 		return
 	}
+	cxt.WriteString(el.Indent)
 	cxt.WriteString(el.Marker)
 	cxt.WriteString(" ")
 	err = Elements(cxt, "", el.Elements()...)
@@ -23,6 +24,7 @@ func renderUnorderedListElement(cxt *Context, el *asciidoc.UnorderedListItem) (e
 	if err != nil {
 		return
 	}
+	cxt.WriteString(el.Indent)
 	cxt.WriteString(el.Marker)
 	cxt.WriteString(" ")
 	err = Elements(cxt, "", el.Elements()...)
