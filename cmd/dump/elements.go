@@ -30,8 +30,12 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			e = ae.Base
 		}
 		switch el := e.(type) {
-		case *asciidoc.EmptyLine:
+		case asciidoc.EmptyLine:
 			fmt.Print("{empty}\n")
+		case *asciidoc.NewLine:
+			fmt.Print("{newline}\n")
+		case *asciidoc.LineBreak:
+			fmt.Print("{linebreak}\n")
 		/*case *asciidoc.DelimitedBlock:
 		fmt.Printf("{delim kind=%s}:\n", el.Kind)
 		dumpAttributes(el.Attributes, indent+1)
@@ -87,7 +91,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			fmt.Printf("{sc: %s}\n", el.Character)
 		case *asciidoc.Link:
 			fmt.Printf("{link: ")
-			dumpLocation(el.URL)
+			dumpLocation(doc, el.URL, indent+1)
 			fmt.Print("}\n")
 			dumpAttributes(el.Attributes(), indent+1)
 		/*case *asciidoc.DocumentHeader:
@@ -146,6 +150,15 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			dumpAttributes(el.Attributes(), indent+1)
 		case *asciidoc.AttributeReset:
 			fmt.Printf("{attr_reset: %s}\n", el.Name)
+		case *asciidoc.Listing:
+			fmt.Printf("{listing\n")
+			dumpAttributes(el.Attributes(), indent+1)
+			for i, l := range el.Lines() {
+				fmt.Print(strings.Repeat("\t", indent+1))
+				fmt.Printf("%d: \"%s\"\n", i, l)
+			}
+			fmt.Print(strings.Repeat("\t", indent))
+			fmt.Printf("}\n")
 		/*case *asciidoc.ListElements:
 		fmt.Printf("{list els}\n")
 		dumpElements(doc, el.Elements, indent+1)*/
@@ -153,7 +166,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			fmt.Printf("{list con}\n")
 			dumpElements(doc, asciidoc.Set{el.Child()}, indent+1)
 		case *asciidoc.CharacterReplacementReference:
-			fmt.Printf("{predef %s}", el.Name)
+			fmt.Printf("{predef %s}", el.Name())
 		default:
 			fmt.Printf("unknown render element type: %T\n", el)
 		}
