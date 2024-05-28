@@ -262,13 +262,14 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 		return
 	}
 	//length := out.Len()
+	isAsciiDoc := c.formatter != nil && c.formatter.Style.Value == asciidoc.TableCellStyleAsciiDoc
 	for i, line := range lines {
 		line = strings.TrimSpace(line)
 		directivePrefix := strings.HasPrefix(line, "ifdef::") || strings.HasPrefix(line, "ifndef::") || strings.HasPrefix(line, "endif::")
 		if directivePrefix {
 			out.EnsureNewLine()
 		}
-		if i > 0 && !strings.HasPrefix(line, "// ") && !directivePrefix {
+		if i > 0 && !strings.HasPrefix(line, "// ") && !directivePrefix && !isAsciiDoc {
 			out.WriteString(strings.Repeat(" ", indent))
 		}
 		v := fmt.Sprintf("%-*s", width, line)
