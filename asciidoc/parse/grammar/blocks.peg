@@ -95,7 +95,7 @@ BlockTitle = BeginningOfLine "." ![ .] content:(BlockTitleContent) {
     return asciidoc.NewTitleAttribute(els), nil
 }
 
-BlockTitleContent = content:(NakedInlineText / Alphanumeric / _ / Punctuation / AttributeReference / CharacterGroupWord )+ {
+BlockTitleContent = content:(NakedInlineText / Alphanumeric / _ / Punctuation / AttributeReference / CharacterClassInline )+ {
     return flat(content.([]any)), nil
 }
 
