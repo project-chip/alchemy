@@ -11,7 +11,7 @@ import (
 	"github.com/hasty/alchemy/matter/spec"
 )
 
-var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z]+[a-z]+(?:[A-Z]+[a-z]*)*([A-Z]+[a-z]*(?:[A-Z]+[a-z]*)*)*$`)
+var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z0-9]+[a-z0-9]+(?:[A-Z]+[a-z]*)*([A-Z0-9]+[a-z0-9]*(?:[A-Z0-9]+[a-z0-9]*)*)*$`)
 
 func (b *Ball) normalizeAnchors(doc *spec.Doc) error {
 
