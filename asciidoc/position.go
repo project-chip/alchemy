@@ -1,9 +1,18 @@
 package asciidoc
 
 type position struct {
+	path   string
 	line   int
 	column int
 	offset int
+}
+
+func (p position) Path() string {
+	return p.path
+}
+
+func (p *position) SetPath(path string) {
+	p.path = path
 }
 
 func (p position) Position() (line int, column int, offset int) {
@@ -20,6 +29,8 @@ func (p *position) SetPosition(line int, column int, offset int) {
 }
 
 type HasPosition interface {
+	Path() string
+	SetPath(path string)
 	Position() (line int, column int, offset int)
 	SetPosition(line int, column int, offset int)
 }
