@@ -61,6 +61,7 @@ func ReferenceName(element any) string {
 func referenceNameFromAttributes(el asciidoc.Attributable) string {
 	for _, a := range el.Attributes() {
 		switch a := a.(type) {
+		case *asciidoc.AnchorAttribute:
 		case *asciidoc.TitleAttribute:
 			return a.AsciiDocString()
 		case *asciidoc.NamedAttribute:
@@ -71,6 +72,8 @@ func referenceNameFromAttributes(el asciidoc.Attributable) string {
 				}
 				return title
 			}
+		default:
+			slog.Warn("Unknown attribute type to get reference name", "type", a, "val", a.Value())
 		}
 	}
 	return ""
