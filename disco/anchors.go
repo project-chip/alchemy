@@ -31,7 +31,20 @@ func (b *Ball) normalizeAnchors(doc *spec.Doc) error {
 		if len(infos) > 1 { // We ended up with some duplicate anchors
 			err := disambiguateAnchorSet(infos)
 			if err != nil {
-				return fmt.Errorf("error disambiguating anchors %s in %s: %w", a, doc.Path, err)
+				var error strings.Builder
+				for i, info := range infos {
+					pos, ok := info.Element.(asciidoc.HasPosition)
+					if !ok {
+						error.WriteString("unknown")
+						continue
+					}
+					if i > 0 {
+						error.WriteRune(',')
+					}
+					line, col, _ := pos.Position()
+					error.WriteString(fmt.Sprintf("%s(%d:%d)", pos.Path(), line, col))
+				}
+				return fmt.Errorf("error disambiguating anchors %s in %s: %w (%s)", a, doc.Path, err, error.String())
 			}
 		}
 		for _, info := range infos {
