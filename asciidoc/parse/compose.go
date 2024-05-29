@@ -69,6 +69,7 @@ func setLines[T asciidoc.HasLines](els any) composeOption[T] {
 }
 
 func populatePosition(c *current, el asciidoc.HasPosition) asciidoc.HasPosition {
+	el.SetPath(c.parser.filename)
 	el.SetPosition(c.currentPosition())
 	return el
 }
