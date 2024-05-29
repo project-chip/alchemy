@@ -221,8 +221,13 @@ func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, inclu
 		cxt.WriteString("[[")
 		cxt.WriteString(id.Value)
 		if len(anchor.Label) > 0 {
-			cxt.WriteString(",")
-			Elements(cxt, "", anchor.Label...)
+			label := NewContext(cxt, nil)
+			Elements(label, "", anchor.Label...)
+			lbl := label.String()
+			if len(lbl) > 0 {
+				cxt.WriteString(",")
+				cxt.WriteString(lbl)
+			}
 		}
 		cxt.WriteString("]]")
 		if !inline {
@@ -313,7 +318,6 @@ func renderNakedAttributeValue(cxt *Context, val any) (err error) {
 func escapeQuotes(s string) string {
 	return strings.ReplaceAll(s, "\"", "\\\"")
 }
-
 
 func renderAttributeEntry(cxt *Context, ad *asciidoc.AttributeEntry) (err error) {
 	switch ad.Name {

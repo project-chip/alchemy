@@ -270,9 +270,8 @@ func (d *Doc) buildConstraintValue(els asciidoc.Set, sb *strings.Builder) {
 			sb.WriteString("^")
 			sb.WriteString(val)
 			sb.WriteString("^")
-		case *asciidoc.Bold:
-			// This is usually an asterisk, and should be ignored
-		case *asciidoc.NewLine:
+		case *asciidoc.Bold: // This is usually an asterisk, and should be ignored
+		case *asciidoc.NewLine, *asciidoc.LineBreak:
 			sb.WriteRune(' ')
 		case asciidoc.HasElements:
 			d.buildConstraintValue(v.Elements(), sb)
