@@ -2,6 +2,7 @@ package files
 
 import (
 	"context"
+	"os"
 	"path/filepath"
 
 	"github.com/hasty/alchemy/internal/pipeline"
@@ -31,11 +32,31 @@ func (p PathFilter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) 
 	for _, p := range p.paths {
 		pathMap[filepath.Base(p)] = struct{}{}
 	}
+	stats := make([]os.FileInfo, 0, len(p.paths))
+	for _, p := range p.paths {
+		var fi os.FileInfo
+		fi, err = os.Stat(p)
+		if err != nil {
+			return
+		}
+		stats = append(stats, fi)
+	}
 	for _, d := range inputs {
-		p := filepath.Base(d.Path)
-		if _, ok := pathMap[p]; ok {
-			outputs = append(outputs, d)
-			delete(pathMap, p)
+		var fi os.FileInfo
+		fi, err = os.Stat(d.Path)
+		if err != nil {
+			return
+		}
+		for i, ofi := range stats {
+			if os.SameFile(fi, ofi) {
+				outputs = append(outputs, d)
+				if len(stats) <= 1 {
+					stats = nil
+					return
+				}
+				stats[i] = stats[len(stats)-1]
+				stats = stats[:len(stats)-1]
+			}
 		}
 	}
 	return
