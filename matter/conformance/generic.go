@@ -1,5 +1,7 @@
 package conformance
 
+import "fmt"
+
 type Generic struct {
 	raw string
 }
@@ -17,7 +19,7 @@ func (g *Generic) ASCIIDocString() string {
 }
 
 func (g *Generic) Description() string {
-	return g.raw
+	return fmt.Sprintf("generic: %s", g.raw)
 }
 
 func (g *Generic) Eval(context Context) (State, error) {
