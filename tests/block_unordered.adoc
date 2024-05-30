@@ -1,0 +1,4 @@
+- `ProtocolCode` value 0x0000 SHALL be reserved for use as success placeholder when either a `GeneralCode` of _SUCCESS_ (0) or _CONTINUE_ (10) are present.
+- `ProtocolCode` value 0xFFFF SHALL be reserved to indicate that no additional protocol-specific status code is available.
+  - When the `GeneralCode` is _FAILURE_, the `ProtocolCode` value of 0xFFFF SHOULD NOT be used, since the conveyance of specific error codes assists in troubleshooting.
+- `ProtocolCode` values 0x0001 through 0xFFFE SHALL be used to convey protocol-specific status indications.

@@ -1,0 +1,4 @@
+|===
+|This content is duplicated across two columns 
+.2+^.>s| This cell spans 3 rows (`3+`).
+|===
