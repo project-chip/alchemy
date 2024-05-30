@@ -1,0 +1,11 @@
+|===
+| Q              | Quieter Reporting  | attribute data   | Data with fluctuating data rate or where some deltas are meaningless or undesirable to report.
+| S              | Scene              | attribute        | The attribute is part of a scene
+| X              | Nullable           | data fields      | The <<ref_DataTypes>> of the data field is <<ref_Nullable, nullable>>
+
+//This is currently commented out until we actually have any use for this.
+// | !_W_           |                    | device type      | The quality _W_ (from those defined above in this table) is disallowed.
+| !_W_           |                    | device type      | The quality _W_ (from those defined above in this table) is disallowed.
+
+
+|===

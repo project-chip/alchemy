@@ -1,0 +1,10 @@
+
+[options="header",valign="middle"]
+|===
+ | Name               | Keypad^*^ | Remote^*^ | RFID^*^
+s| Normal             | Y         | Y         | Y
+s| Vacation           | N         | Y         | N
+s| Privacy            | N         | N         | N
+s| NoRemoteLockUnlock | Y         | N         | Y
+s| Passage            | N/A       | N/A       | N/A
+|===

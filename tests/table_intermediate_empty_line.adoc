@@ -1,0 +1,26 @@
+|===
+|Cell in column 1, row 1
+Some extra content
+
+Some other extra content
+|Cell in column 1, row 2
+Some extra content
+
+|Cell in column 1, row 3
+Some extra content
+|Cell in column 1, row 4
+    
+Some extra content
+    
+Some other extra content
+    
+|Cell in column 1, row 5
+
+Some extra content
+    
+Some other extra content
+
+Even more extra content
+
+|Cell in column 1, row 6, with a xref: <<ref_Ref>>
+|===

@@ -1,0 +1,7 @@
+[options="header",valign="middle"]
+|===
+| ID     | Name                           | Priority   | Access | Conformance
+| 0x00  s| RemainingScreenTimeExpired     | INFO       | V      | ST
+| 0x01  s| EnteringBlockContentTimeWindow | INFO       | V      | BTW
+
+|===

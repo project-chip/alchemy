@@ -1,0 +1,3 @@
+
+image::./images/lighting/media/image3.png[image,height=85,width=167]
+

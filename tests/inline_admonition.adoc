@@ -1,0 +1,11 @@
+TIP: If you want the output to look familiar, copy (or link) the AsciiDoc stylesheet, asciiasciidoc.css, to the output directory.
+
+NOTE: Items marked with TODO are either not yet supported or work in progress.
+
+. If the lock already has an Aliro Reader configuration defined,
+. If the lock already has an Aliro Reader configuration defined,
+  (i.e. the AliroReaderVerificationKey attribute is not null),
+  the response SHALL be INVALID_IN_STATE.
+ +
+NOTE: This avoids accidentally overwriting values that were just set by a different administrator.
+This avoids accidentally overwriting values that were just set by a different administrator.
