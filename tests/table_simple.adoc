@@ -1,0 +1,5 @@
+[options="header", valign="middle"]
+|===
+| ID   | Name     | Type | Constraint | Quality | Default | Access | Conformance
+| 2   s| ModeTags |      | 1 to 8     |         |         |        |
+|===

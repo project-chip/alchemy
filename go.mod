@@ -1,6 +1,6 @@
 module github.com/hasty/alchemy
 
-go 1.21
+go 1.22
 
 require (
 	github.com/beevik/etree v1.2.0
@@ -12,6 +12,7 @@ require (
 	github.com/iancoleman/orderedmap v0.3.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/puzpuzpuz/xsync/v3 v3.1.0
+	github.com/sanity-io/litter v1.5.5
 	github.com/schollz/progressbar/v3 v3.14.1
 	github.com/sethvargo/go-githubactions v1.2.0
 	github.com/shopspring/decimal v1.3.1
