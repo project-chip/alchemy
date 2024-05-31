@@ -1,0 +1,15 @@
+
+= Book
+:doctype: book
+
+= Part 1
+
+.Intro title
+[partintro]
+--
+This is a part intro with a title.
+--
+
+== Chapter 1
+
+content

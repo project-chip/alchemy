@@ -1,0 +1,24 @@
+
+= Main Document
+Doc Writer
+
+Main document written by {author}.
+
+:leveloffset: 1
+
+// begin simulated include::[]
+= Standalone Document
+:author: Junior Writer
+
+Standalone document written by {author}.
+
+== Section in Standalone
+
+Standalone section text.
+// end simulated include::[]
+
+:leveloffset!:
+
+== Section in Main
+
+Main section text.

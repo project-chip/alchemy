@@ -1,0 +1,7 @@
+
+[asciimath]
+++++
+f: bbb"N" -> bbb"N" \
+\
+f: x |-> x + 1
+++++

@@ -1,0 +1,6 @@
+
+[[debian, Debian, Ubuntu]]
+.Installation on Debian
+----
+$ apt-get install asciidoctor
+----

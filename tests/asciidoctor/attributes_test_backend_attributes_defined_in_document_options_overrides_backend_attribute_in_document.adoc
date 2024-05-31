@@ -1,0 +1,4 @@
+
+:uri: http://example.org
+
+{uri}

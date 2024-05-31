@@ -1,0 +1,12 @@
+
+[subs=attributes+]
+....
+
+
+  first line
+
+last line
+
+{empty}
+
+....

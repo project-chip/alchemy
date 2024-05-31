@@ -1,0 +1,5 @@
+
+:imagesdir: images
+
+[%interactive]
+image::http://example.org/tiger.svg?foo=bar[Tiger,100]

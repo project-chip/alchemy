@@ -1,0 +1,4 @@
+.chop
+      (<indexterm>
+      <primary>index term</primary>
+      </indexterm>index term for text)

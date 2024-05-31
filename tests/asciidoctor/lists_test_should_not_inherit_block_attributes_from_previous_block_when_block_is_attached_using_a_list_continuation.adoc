@@ -1,0 +1,8 @@
+
+* complex list item
++
+[source,xml]
+----
+<name>value</name> <!--1-->
+----
+<1> a configuration value

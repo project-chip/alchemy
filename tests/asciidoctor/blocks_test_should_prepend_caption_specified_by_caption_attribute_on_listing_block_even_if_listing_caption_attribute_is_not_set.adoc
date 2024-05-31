@@ -1,0 +1,6 @@
+
+[caption="Listing {counter:listing-number}. "]
+.Behold!
+----
+listing block content
+----

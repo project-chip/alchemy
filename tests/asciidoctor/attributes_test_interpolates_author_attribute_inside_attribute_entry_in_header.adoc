@@ -1,0 +1,6 @@
+
+= Title
+Author Name
+:name: {author}
+
+preamble

@@ -1,0 +1,8 @@
+
+= Document Title
+:attribute-missing: warn
+
+[id=]
+== Section {missing}
+
+That's all, folks!

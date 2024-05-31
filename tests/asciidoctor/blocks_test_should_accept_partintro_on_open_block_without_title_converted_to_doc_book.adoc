@@ -1,0 +1,16 @@
+
+= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+--
+This is a part intro.
+
+It can have multiple paragraphs.
+--
+
+== Chapter 1
+
+content

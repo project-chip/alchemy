@@ -1,0 +1,6 @@
+
+.Toggle Me
+[%collapsible%open]
+====
+This content is revealed when the user clicks the words "Toggle Me".
+====

@@ -1,0 +1,3 @@
+
+[bibliography]
+- [[[1984]]] George Orwell. _1984_. New American Library. 1950.

@@ -1,0 +1,8 @@
+
+:type: passthrough
+
+[subs="attributes,quotes,macros"]
+++++
+This is a _{type}_ block.
+http://asciidoc.org
+++++

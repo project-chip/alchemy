@@ -1,0 +1,17 @@
+
+= Book Title
+:doctype: book
+:sectnums:
+:partnums:
+
+= First Part
+
+part intro
+
+== First Chapter
+
+= Second Part
+
+part intro
+
+== Second Chapter

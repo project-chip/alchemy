@@ -1,0 +1,5 @@
+
+= Document Title
+Doc Writer <thedoctor@asciidoc.org>; Junior Writer <junior@asciidoctor.org>
+
+content

@@ -1,0 +1,6 @@
+
+:imagesdir: fixtures
+:data-uri:
+
+[%inline]
+image::circle.svg[Tiger,100]

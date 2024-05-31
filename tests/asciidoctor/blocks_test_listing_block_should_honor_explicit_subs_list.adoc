@@ -1,0 +1,9 @@
+
+[subs="specialcharacters,quotes"]
+----
+$ *python functional_tests.py*
+Traceback (most recent call last):
+  File "functional_tests.py", line 4, in <module>
+    assert 'Django' in browser.title
+AssertionError
+----

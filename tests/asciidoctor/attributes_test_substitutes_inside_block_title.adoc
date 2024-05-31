@@ -1,0 +1,5 @@
+
+:gem_name: asciidoctor
+
+.Require the +{gem_name}+ gem
+To use {gem_name}, the first thing to do is to import it in your Ruby source file.

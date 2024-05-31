@@ -1,0 +1,25 @@
+
+:numbered:
+
+== Section One
+
+:numbered!:
+
+[appendix]
+== Attribute Options
+
+Details
+
+[appendix]
+== Migration
+
+Details
+
+=== Gotchas
+
+Details
+
+[glossary]
+== Glossary
+
+Terms

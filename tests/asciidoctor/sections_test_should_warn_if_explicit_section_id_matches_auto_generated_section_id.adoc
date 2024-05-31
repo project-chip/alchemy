@@ -1,0 +1,9 @@
+
+== Do Not Repeat Yourself
+
+content
+
+[#_do_not_repeat_yourself]
+== Do Not Repeat Yourself
+
+content

@@ -1,0 +1,21 @@
+
+= Document Title
+:numbered:
+
+:numbered!:
+
+== Colophon Section
+
+== Another Colophon Section
+
+== Final Colophon Section
+
+:numbered:
+
+== Section One
+
+=== Section One Subsection
+
+== Section Two
+
+== Section Three

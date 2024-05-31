@@ -1,0 +1,11 @@
+
+= Article Title
+
+Begin with <<TMMM>>.
+Then move on to <<Fowler_1997>>.
+
+[bibliography]
+== References
+
+* [[[TMMM]]] Brooks F. _The Mythical Man-Month_. Addison-Wesley. 1975.
+* [[[Fowler_1997,1]]] Fowler M. _Analysis Patterns: Reusable Object Models_. Addison-Wesley. 1997.

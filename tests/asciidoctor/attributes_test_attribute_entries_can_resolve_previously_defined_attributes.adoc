@@ -1,0 +1,11 @@
+
+= Title
+Author Name
+v1.0, 2010-01-01: First release!
+:a: value
+:a2: {a}
+:revdate2: {revdate}
+
+{a} == {a2}
+
+{revdate} == {revdate2}

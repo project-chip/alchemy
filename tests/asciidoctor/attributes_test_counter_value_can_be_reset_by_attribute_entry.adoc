@@ -1,0 +1,8 @@
+
+:mycounter:
+
+before: {counter:mycounter} {counter:mycounter} {counter:mycounter}
+
+:mycounter!:
+
+after: {counter:mycounter}

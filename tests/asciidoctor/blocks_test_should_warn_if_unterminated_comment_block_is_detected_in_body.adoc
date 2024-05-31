@@ -1,0 +1,7 @@
+
+before comment block
+
+////
+content that has been disabled
+
+supposed to be after comment block, except it got swallowed by block comment

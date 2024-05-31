@@ -1,0 +1,4 @@
+
+:caption:
+
+TIP: Override the caption of an admonition block using an attribute entry

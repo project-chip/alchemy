@@ -1,0 +1,6 @@
+
+= AsciiDoc
+Stuart Rackham <founder@asciidoc.org>
+:Author Initials: SJR
+
+more info...

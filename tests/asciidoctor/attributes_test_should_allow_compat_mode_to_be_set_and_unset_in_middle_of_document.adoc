@@ -1,0 +1,15 @@
+
+:foo: bar
+
+[[paragraph-a]]
+`{foo}`
+
+:compat-mode!:
+
+[[paragraph-b]]
+`{foo}`
+
+:compat-mode:
+
+[[paragraph-c]]
+`{foo}`

@@ -1,0 +1,11 @@
+
+= eve(1)
+:doctype: manpage
+
+== NAME
+
+eve, probe - analyzes an image to determine if it is a picture of a life form
+
+== SYNOPSIS
+
+*eve* [OPTION]... FILE...

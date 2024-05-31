@@ -1,0 +1,11 @@
+
+= AsciiDoc
+Stuart Rackham <founder@asciidoc.org>
+v8.6.8, 2012-07-12: See changelog.
+:description: AsciiDoc user guide
+:keywords: asciidoc,documentation
+:copyright: Stuart Rackham
+
+== Version 8.6.8
+
+more info...

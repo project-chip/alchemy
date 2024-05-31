@@ -1,0 +1,10 @@
+
+= Document Title
+:doctype: book
+:preface-title: Preface
+
+Preface content.
+
+== First Section
+
+Section content.

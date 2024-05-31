@@ -1,0 +1,12 @@
+
+|===
+
+|Column 1 |Column 2
+
+|Data A1
+|Data B1
+
+|Data A2
+|Data B2
+
+|===

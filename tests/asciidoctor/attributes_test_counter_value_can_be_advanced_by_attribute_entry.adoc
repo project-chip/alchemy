@@ -1,0 +1,6 @@
+
+before: {counter:mycounter}
+
+:mycounter: 10
+
+after: {counter:mycounter}

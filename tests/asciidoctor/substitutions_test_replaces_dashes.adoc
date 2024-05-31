@@ -1,0 +1,8 @@
+
+-- foo foo--bar foo\--bar foo -- bar foo \-- bar
+stuff in between
+-- foo
+stuff in between
+foo --
+stuff in between
+foo --

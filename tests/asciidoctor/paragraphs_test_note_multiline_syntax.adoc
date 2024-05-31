@@ -1,0 +1,7 @@
+
+ifdef::asciidoctor-version[]
+[sidebar]
+First line of sidebar.
+ifdef::backend[The backend is {backend}.]
+Last line of sidebar.
+endif::[]

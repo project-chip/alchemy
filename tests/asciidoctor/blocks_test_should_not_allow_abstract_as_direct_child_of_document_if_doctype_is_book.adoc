@@ -1,0 +1,5 @@
+
+:doctype: book
+
+[abstract]
+Abstract for book without title is invalid.

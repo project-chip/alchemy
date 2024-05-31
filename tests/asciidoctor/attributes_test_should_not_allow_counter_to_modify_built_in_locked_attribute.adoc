@@ -1,0 +1,2 @@
+
+{counter:max-include-depth:128} is one more than {max-include-depth}

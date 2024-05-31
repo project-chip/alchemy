@@ -1,0 +1,26 @@
+
+[cols="1e,1,5a"]
+|===
+|Name |Backends |Description
+
+|badges |xhtml11, html5 |
+Link badges ('XHTML 1.1' and 'CSS') in document footers.
+
+[NOTE]
+====
+The path names of images, icons and scripts are relative path
+names to the output document not the source document.
+====
+|[[X97]] docinfo, docinfo1, docinfo2 |All backends |
+These three attributes control which document information
+files will be included in the the header of the output file:
+
+docinfo:: Include `<filename>-docinfo.<ext>`
+docinfo1:: Include `docinfo.<ext>`
+docinfo2:: Include `docinfo.<ext>` and `<filename>-docinfo.<ext>`
+
+Where `<filename>` is the file name (sans extension) of the AsciiDoc
+input file and `<ext>` is `.html` for HTML outputs or `.xml` for
+DocBook outputs. If the input file is the standard input then the
+output file name is used.
+|===

@@ -1,0 +1,2 @@
+
+{counter:foo:ignored} is not {foo}

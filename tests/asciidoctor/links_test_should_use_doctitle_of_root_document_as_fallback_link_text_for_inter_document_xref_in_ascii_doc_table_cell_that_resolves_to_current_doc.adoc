@@ -1,0 +1,6 @@
+
+= Document Title
+
+|===
+a|See xref:test.adoc[]
+|===

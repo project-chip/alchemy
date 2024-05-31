@@ -1,0 +1,3 @@
+
+[bibliography]
+* [[[Fowler_1997,1]]] Fowler M. _Analysis Patterns: Reusable Object Models_. Addison-Wesley. 1997.

@@ -1,0 +1,12 @@
+
+#attributes                               |toc|toc-position|toc-placement|toc-class
+toc                                       |   |nil         |auto         |nil
+toc=header                                |   |nil         |auto         |nil
+toc=beeboo                                |   |nil         |auto         |nil
+toc=left                                  |   |left        |auto         |toc2
+toc2                                      |   |left        |auto         |toc2
+toc=right                                 |   |right       |auto         |toc2
+toc=preamble                              |   |content     |preamble     |nil
+toc=macro                                 |   |content     |macro        |nil
+toc toc-placement=macro toc-position=left |   |content     |macro        |nil
+toc toc-placement!                        |   |content     |macro        |nil

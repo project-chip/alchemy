@@ -1,0 +1,5 @@
+
+:data-uri:
+:imagesdir: fixtures
+
+image::unreadable.gif[Dot]

@@ -1,0 +1,7 @@
+
+:doctitle: Override
+= Document Title
+
+{doctitle}
+
+== First Section

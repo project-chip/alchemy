@@ -1,0 +1,9 @@
+
+outside
+
+----
+inside
+
+still inside
+
+eof

@@ -1,0 +1,21 @@
+
+= Book
+:doctype: book
+:toc:
+:numbered:
+
+= Part 1
+
+== First Section of Part 1
+
+blah
+
+== Second Section of Part 1
+
+blah
+
+= Part 2
+
+== First Section of Part 2
+
+blah

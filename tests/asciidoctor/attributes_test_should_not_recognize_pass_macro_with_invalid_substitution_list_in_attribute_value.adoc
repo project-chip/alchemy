@@ -1,0 +1,10 @@
+
+:holygrail:
+ifdef::holygrail[]
+The holy grail has been found!
+endif::holygrail[]
+
+:holygrail!:
+ifndef::holygrail[]
+Buggers! What happened to the grail?
+endif::holygrail[]

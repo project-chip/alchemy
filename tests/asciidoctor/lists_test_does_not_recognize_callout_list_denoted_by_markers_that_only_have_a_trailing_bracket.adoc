@@ -1,0 +1,5 @@
+
+----
+require 'asciidoctor' # <1>
+----
+1> Not a callout list item

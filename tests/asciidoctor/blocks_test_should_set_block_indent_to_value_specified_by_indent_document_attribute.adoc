@@ -1,0 +1,11 @@
+
+:source-indent: 1
+
+[source,ruby]
+----
+    def names
+
+      @names.split
+
+    end
+----

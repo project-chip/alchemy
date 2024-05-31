@@ -1,0 +1,9 @@
+
+[cols="1,1,1a",separator=;]
+,===
+element;description;example
+
+paragraph;contiguous lines of words and phrases;"
+  one sentence, one line
+  "
+,===

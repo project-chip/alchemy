@@ -1,0 +1,8 @@
+
+= Main Document
+Doc Writer
+
+:leveloffset: 1
+
+[float]
+= Discrete Heading

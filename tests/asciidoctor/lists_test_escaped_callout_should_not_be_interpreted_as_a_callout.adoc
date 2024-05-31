@@ -1,0 +1,6 @@
+
+[source,text]
+----
+require 'asciidoctor' # \<1>
+Asciidoctor.convert 'convert me!' \<2>
+----

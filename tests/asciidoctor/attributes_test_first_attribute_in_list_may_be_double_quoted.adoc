@@ -1,0 +1,5 @@
+
+["quote", "author", "source", role="famous"]
+____
+A famous quote.
+____

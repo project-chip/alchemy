@@ -1,0 +1,7 @@
+
+= Title
+Author Name
+2013-01-01
+:date: {revdate}
+
+preamble

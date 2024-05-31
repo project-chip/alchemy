@@ -1,0 +1,6 @@
+
+= Document Title
+:big: big
+:bigfoot: {big}foot
+
+{bigfoot}

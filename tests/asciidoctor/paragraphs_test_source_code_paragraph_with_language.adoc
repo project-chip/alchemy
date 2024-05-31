@@ -1,0 +1,3 @@
+
+[source, perl]
+die 'zomg perl is tough';

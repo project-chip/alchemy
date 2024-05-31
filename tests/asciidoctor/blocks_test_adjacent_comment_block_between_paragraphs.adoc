@@ -1,0 +1,6 @@
+
+first paragraph
+////
+block comment
+////
+second paragraph

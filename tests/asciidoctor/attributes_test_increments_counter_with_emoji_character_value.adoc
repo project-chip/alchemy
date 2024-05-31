@@ -1,0 +1,8 @@
+
+[subs=attributes]
+++++
+{counter:smiley:😋}
+{counter:smiley}
+{counter:smiley}
+{smiley}
+++++

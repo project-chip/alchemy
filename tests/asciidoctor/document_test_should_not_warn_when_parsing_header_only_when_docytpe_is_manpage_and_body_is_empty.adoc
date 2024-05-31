@@ -1,0 +1,4 @@
+
+= cmd(1)
+Author Name
+:doctype: manpage

@@ -1,0 +1,15 @@
+
+Section
+-------
+
+* first
++
+----
+list = [1, 2, 3];
+----
++
+* second
+== not a heading
+* third
+
+fin.

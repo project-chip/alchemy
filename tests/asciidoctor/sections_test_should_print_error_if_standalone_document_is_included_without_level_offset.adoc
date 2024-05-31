@@ -1,0 +1,13 @@
+
+= Main Document
+Doc Writer
+
+text in main document
+
+// begin simulated include::[]
+= Standalone Document
+:author: Junior Writer
+
+text in standalone document
+
+// end simulated include::[]

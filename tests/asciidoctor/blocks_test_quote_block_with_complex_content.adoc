@@ -1,0 +1,6 @@
+
+____
+A famous quote.
+
+NOTE: _That_ was inspiring.
+____

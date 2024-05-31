@@ -1,0 +1,9 @@
+
+= Article Title
+
+Please read <<Fowler_1997>>.
+
+[bibliography]
+== References
+
+* [[[Fowler_1997]]] Fowler M. _Analysis Patterns: Reusable Object Models_. Addison-Wesley. 1997.

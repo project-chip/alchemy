@@ -1,0 +1,8 @@
+
+:numbered:
+:!appendix-caption:
+
+[appendix]
+== Attribute Options
+
+Details

@@ -1,0 +1,11 @@
+
+Check out that <<open>>!
+
+[[open,Open Block]]
+--
+This is an open block.
+
+TIP: An open block can have other blocks inside of it.
+--
+
+Back to our regularly scheduled programming.

@@ -1,0 +1,5 @@
+
+[role="dry"]
+. Once
+. Again
+. Refactor!

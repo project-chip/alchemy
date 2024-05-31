@@ -1,0 +1,7 @@
+
+term1::
+  def1
+  -- and a note
+
+term2::
+  def2

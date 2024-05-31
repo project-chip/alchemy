@@ -1,0 +1,10 @@
+
+[source, ruby]
+----
+require 'asciidoctor' # <.>
+doc = Asciidoctor::Document.new('Hello, World!') # <.>
+puts doc.convert # <.>
+----
+<.> Describe the first line
+<.> Describe the second line
+<.> Describe the third line

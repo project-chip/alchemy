@@ -1,0 +1,7 @@
+
+[horizontal]
+term::
+alt term::
+description
+
+last::
