@@ -1,0 +1,18 @@
+
+= Document Title
+:toc:
+
+== Section A
+
+|===
+a|
+= Subdocument Title
+:toc: macro
+
+[#table-cell-toc]
+toc::[]
+
+== Subdocument Section A
+
+content
+|===

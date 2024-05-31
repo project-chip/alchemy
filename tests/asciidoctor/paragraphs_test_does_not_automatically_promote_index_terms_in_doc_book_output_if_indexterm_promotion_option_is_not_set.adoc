@@ -1,0 +1,5 @@
+
+The Siberian Tiger is one of the biggest living cats.
+indexterm:[Big cats,Tigers,Siberian Tiger]
+Note that multi-entry terms generate separate index entries.
+(((Operating Systems,Linux)))

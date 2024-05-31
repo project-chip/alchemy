@@ -1,0 +1,4 @@
+
+:imagesdir: assets
+
+video::http://example.org/podcast.mp3[]

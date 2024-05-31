@@ -1,0 +1,9 @@
+
+[asciimath]
+++++
+x+b/(2a)<+-sqrt((b^2)/(4a^2)-c/a)
+++++
+
+[asciimath]
+++++
+++++

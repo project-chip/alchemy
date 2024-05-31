@@ -1,0 +1,3 @@
+
+[open#openpara,reftext="Open Paragraph"]
+This is an open paragraph.

@@ -1,0 +1,4 @@
+
+:signature: pass:a[{author} + \
+{title} + \
+{email}]

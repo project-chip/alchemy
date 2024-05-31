@@ -1,0 +1,3 @@
+
+[literal]
+image::not-an-image-block[]

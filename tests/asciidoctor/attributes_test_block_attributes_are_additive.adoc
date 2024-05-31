@@ -1,0 +1,4 @@
+
+[id='foo']
+[role='lead']
+A paragraph.

@@ -1,0 +1,23 @@
+
+[[one]]
+
+== Section One
+
+paragraph
+
+[[sub]]
+// try to mess this up!
+
+=== Sub-section
+
+paragraph
+
+[role='classy']
+
+////
+block comment
+////
+
+== Section Two
+
+content

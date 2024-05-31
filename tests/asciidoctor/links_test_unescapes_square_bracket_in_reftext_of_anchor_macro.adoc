@@ -1,0 +1,4 @@
+
+see <<foo>>
+
+anchor:foo[b[a\]r]tex

@@ -1,0 +1,5 @@
+
+[source, ruby]
+----
+puts "The syntax <1> at the end of the line makes a code callout"
+----

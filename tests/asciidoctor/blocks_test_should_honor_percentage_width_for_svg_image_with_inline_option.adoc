@@ -1,0 +1,4 @@
+
+:imagesdir: fixtures
+
+image::circle.svg[Circle,50%,opts=inline]

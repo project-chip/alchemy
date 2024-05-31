@@ -1,0 +1,4 @@
+
+:imagesdir: img
+
+image::tiger.png[Tiger, link=self]

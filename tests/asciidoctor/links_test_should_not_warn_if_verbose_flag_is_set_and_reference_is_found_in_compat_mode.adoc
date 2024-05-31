@@ -1,0 +1,7 @@
+
+[[foobar]]
+== Foobar
+
+== Section B
+
+See <<foobar>>.

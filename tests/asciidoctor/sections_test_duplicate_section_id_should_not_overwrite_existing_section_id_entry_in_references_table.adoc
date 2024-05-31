@@ -1,0 +1,10 @@
+
+[#install]
+== First Install
+
+content
+
+[#install]
+== Second Install
+
+content

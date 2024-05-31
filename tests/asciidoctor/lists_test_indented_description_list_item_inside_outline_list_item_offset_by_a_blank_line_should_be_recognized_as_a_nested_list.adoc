@@ -1,0 +1,12 @@
+
+* item 1
+
+  term a:: description a
++
+attached paragraph
+
+  term b:: description b
++
+attached paragraph
+
+* item 2

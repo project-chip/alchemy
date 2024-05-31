@@ -1,0 +1,8 @@
+
+:stem: latexmath
+:eqnums: all
+
+[stem]
+++++
+y = x^2
+++++

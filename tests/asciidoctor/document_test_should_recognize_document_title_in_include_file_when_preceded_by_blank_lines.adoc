@@ -1,0 +1,2 @@
+
+include::fixtures/include-with-leading-blank-line.adoc[]

@@ -1,0 +1,6 @@
+
+[#manual]
+= Reference Manual
+:xrefstyle: full
+
+This is the <<manual>>.

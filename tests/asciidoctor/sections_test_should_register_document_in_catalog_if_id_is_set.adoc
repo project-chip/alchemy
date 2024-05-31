@@ -1,0 +1,5 @@
+
+[[manual,Manual]]
+= Reference Manual
+
+preamble

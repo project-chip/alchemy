@@ -1,0 +1,4 @@
+
+normal text
+[literal]
+literal text

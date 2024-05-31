@@ -1,0 +1,7 @@
+
+|===
+|                 2+| Node 0          2+| Node 1
+
+| Host processes    | Core 0 | Core 1   | Core 4 | Core 5
+| Guest processes   | Core 2 | Core 3   | Core 6 | Core 7
+|===

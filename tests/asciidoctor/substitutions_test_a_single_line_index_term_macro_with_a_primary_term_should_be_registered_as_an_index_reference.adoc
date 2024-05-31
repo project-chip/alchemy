@@ -1,0 +1,4 @@
+
+Tigers are big, scary cats.
+indexterm:[Tigers, "[Big\],
+scary cats"]

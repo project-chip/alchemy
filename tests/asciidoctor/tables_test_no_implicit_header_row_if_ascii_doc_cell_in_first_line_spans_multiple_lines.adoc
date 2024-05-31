@@ -1,0 +1,14 @@
+
+[cols=2*]
+|===
+a|contains AsciiDoc content
+
+* a
+* b
+* c
+a|contains no AsciiDoc content
+
+just text
+|A2
+|B2
+|===

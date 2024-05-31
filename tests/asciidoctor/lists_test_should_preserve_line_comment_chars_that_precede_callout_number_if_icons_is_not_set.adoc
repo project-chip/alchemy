@@ -1,0 +1,25 @@
+
+[source,ruby]
+----
+puts 'Hello, world!' # <1>
+----
+<1> Ruby
+
+[source,groovy]
+----
+println 'Hello, world!' // <1>
+----
+<1> Groovy
+
+[source,clojure]
+----
+(def hello (fn [] "Hello, world!")) ;; <1>
+(hello)
+----
+<1> Clojure
+
+[source,haskell]
+----
+main = putStrLn "Hello, World!" -- <1>
+----
+<1> Haskell

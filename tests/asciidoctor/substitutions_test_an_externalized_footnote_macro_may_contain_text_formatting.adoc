@@ -1,0 +1,4 @@
+
+:fn-disclaimer: pass:q[footnote:[Only available with an _active_ subscription.]]
+
+You can download patches from the production page.{fn-disclaimer}

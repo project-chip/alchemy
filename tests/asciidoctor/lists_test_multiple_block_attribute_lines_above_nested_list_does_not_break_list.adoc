@@ -1,0 +1,10 @@
+
+Operating Systems::
+[[variants]]
+[horizontal]
+  Linux::: Fedora
+  BSD::: OpenBSD
+
+Cloud Providers::
+  PaaS::: OpenShift
+  IaaS::: AWS

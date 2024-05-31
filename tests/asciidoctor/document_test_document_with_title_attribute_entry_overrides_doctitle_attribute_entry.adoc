@@ -1,0 +1,9 @@
+
+= Document Title
+:snapshot: {doctitle}
+:doctitle: doctitle
+:title: Override
+
+{snapshot}, {doctitle}
+
+== First Section

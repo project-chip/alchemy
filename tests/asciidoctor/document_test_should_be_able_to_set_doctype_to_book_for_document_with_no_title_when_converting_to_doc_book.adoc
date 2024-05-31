@@ -1,0 +1,15 @@
+
+= eve(1)
+Andrew Stanton
+v1.0.0
+:doctype: manpage
+:manmanual: EVE
+:mansource: EVE
+
+== NAME
+
+eve, islifeform - analyzes an image to determine if it's a picture of a life form
+
+== SYNOPSIS
+
+*eve* ['OPTION']... 'FILE'...

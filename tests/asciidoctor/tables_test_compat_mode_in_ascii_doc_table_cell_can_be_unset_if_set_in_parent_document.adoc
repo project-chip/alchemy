@@ -1,0 +1,15 @@
+
+:compat-mode:
+
+The word 'italic' is emphasized.
+
+[cols=1*]
+|===
+|The word 'oblique' is emphasized.
+a|
+:!compat-mode:
+
+The word 'slanted' is not emphasized.
+|===
+
+The word 'askew' is emphasized.

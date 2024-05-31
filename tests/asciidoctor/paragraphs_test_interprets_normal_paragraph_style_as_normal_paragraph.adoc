@@ -1,0 +1,4 @@
+
+[normal]
+Normal paragraph.
+Nothing special.

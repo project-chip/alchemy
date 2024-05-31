@@ -1,0 +1,6 @@
+
+- [ ] todo
+- [x] done
+- [ ] another todo
+- [*] another done
+- plain

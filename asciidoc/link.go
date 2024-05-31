@@ -25,5 +25,5 @@ func (a *Link) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.URL.Equals(&oa.URL)
+	return a.URL.Equals(oa.URL)
 }

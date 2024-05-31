@@ -1,0 +1,6 @@
+
+:icons: font
+:iconsdir: images/icons
+
+[TIP,icon=a]
+Override the icon of an admonition block using an attribute

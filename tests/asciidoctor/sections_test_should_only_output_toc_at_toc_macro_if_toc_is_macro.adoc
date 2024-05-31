@@ -1,0 +1,15 @@
+
+= Article
+:toc: macro
+
+Once upon a time...
+
+toc::[]
+
+== Section One
+
+It was a dark and stormy night...
+
+== Section Two
+
+They couldn't believe their eyes when...

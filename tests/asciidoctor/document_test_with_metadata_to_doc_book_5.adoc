@@ -1,0 +1,7 @@
+
+= AsciiDoc
+Stuart Rackham <founder@asciidoc.org>
+
+== Version 8.6.8
+
+more info...

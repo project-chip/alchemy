@@ -1,0 +1,12 @@
+
+* item 1
+
+  . item 1.1
++
+attached paragraph
+
+  . item 1.2
++
+attached paragraph
+
+* item 2

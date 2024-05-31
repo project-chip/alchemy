@@ -1,0 +1,6 @@
+
+Here is an index entry for ((tigers)).
+indexterm:[Big cats,Tigers,Siberian Tiger]
+Here is an index entry for indexterm2:[Linux].
+(((Operating Systems,Linux)))
+Note that multi-entry terms generate separate index entries.

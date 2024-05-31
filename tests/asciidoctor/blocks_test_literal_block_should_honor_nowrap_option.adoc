@@ -1,0 +1,5 @@
+
+[options="nowrap"]
+----
+Do not wrap me if I get too long.
+----

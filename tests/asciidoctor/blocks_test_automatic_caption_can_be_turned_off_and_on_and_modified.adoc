@@ -1,0 +1,20 @@
+
+.first example
+====
+an example
+====
+
+:caption:
+
+.second example
+====
+another example
+====
+
+:caption!:
+:example-caption: Exhibit
+
+.third example
+====
+yet another example
+====

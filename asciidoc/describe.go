@@ -33,8 +33,6 @@ func Describe(el Element) string {
 		return fmt.Sprintf("Comment %s ", el.Value)
 	case *MultiLineComment:
 		return fmt.Sprintf("MultiLine Comment %s ", strings.Join(el.Lines(), "\n"))
-	case Counter:
-		return fmt.Sprintf("Counter %s (%s)", el.Name, el.InitialValue)
 	case Email:
 		return fmt.Sprintf("email %s ", el.Address)
 	case *ExampleBlock:

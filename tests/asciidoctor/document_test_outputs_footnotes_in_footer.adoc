@@ -1,0 +1,4 @@
+
+A footnote footnote:[An example footnote.];
+a second footnote with a reference ID footnote:note2[Second footnote.];
+and finally a reference to the second footnote footnote:note2[].

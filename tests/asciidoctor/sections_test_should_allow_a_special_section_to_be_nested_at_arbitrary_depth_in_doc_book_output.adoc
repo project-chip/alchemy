@@ -1,0 +1,18 @@
+
+= Document Title
+:doctype: book
+
+== Glossaries
+
+[glossary]
+=== Glossary A
+
+Glossaries are optional.
+Glossaries entries are an example of a style of AsciiDoc description lists.
+
+[glossary]
+A glossary term::
+The corresponding definition.
+
+A second glossary term::
+The corresponding definition.

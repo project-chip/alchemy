@@ -1,0 +1,10 @@
+
+= asciidoctor(1)
+
+== NAME
+
+asciidoctor - Process text
+
+== SYNOPSIS
+
+some text

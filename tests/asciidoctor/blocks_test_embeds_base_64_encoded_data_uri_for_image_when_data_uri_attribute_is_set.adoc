@@ -1,0 +1,5 @@
+
+:data-uri:
+:imagesdir: fixtures
+
+image::dot.gif[Dot]

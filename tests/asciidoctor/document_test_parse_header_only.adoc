@@ -1,0 +1,6 @@
+
+= Document Title
+Author Name
+:foo: bar
+
+preamble

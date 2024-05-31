@@ -1,0 +1,10 @@
+
+:platform-name: n/a
+== Overview
+
+:platform-name: Linux
+
+[[install,install on {platform-name}]]
+== Install
+
+content

@@ -1,0 +1,4 @@
+
+:imagesdir: images
+
+image::http://asciidoc.org/images/tiger.png[Tiger]

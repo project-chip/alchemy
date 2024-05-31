@@ -1,0 +1,20 @@
+
+.Horizontal and vertical source data
+[width="80%",cols="3,^2,^2,10",options="header"]
+|===
+|Date |Duration |Avg HR |Notes
+
+|22-Aug-08 |10:24 | 157 |
+Worked out MSHR (max sustainable heart rate) by going hard
+for this interval.
+
+|22-Aug-08 |23:03 | 152 |
+Back-to-back with previous interval.
+
+|24-Aug-08 |40:00 | 145 |
+Moderately hard interspersed with 3x 3min intervals (2 min
+hard + 1 min really hard taking the HR up to 160).
+
+I am getting in shape!
+
+|===

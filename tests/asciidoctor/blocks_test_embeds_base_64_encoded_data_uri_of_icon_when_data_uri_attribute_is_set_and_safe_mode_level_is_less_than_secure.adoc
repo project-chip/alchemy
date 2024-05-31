@@ -1,0 +1,8 @@
+
+:icons:
+:iconsdir: fixtures
+:icontype: gif
+:data-uri:
+
+[TIP]
+You can use icons for admonitions by setting the 'icons' attribute.

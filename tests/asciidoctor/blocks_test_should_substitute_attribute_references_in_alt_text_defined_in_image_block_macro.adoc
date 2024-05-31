@@ -1,0 +1,4 @@
+
+:alt-text: Tiger
+
+image::images/tiger.png[{alt-text}]

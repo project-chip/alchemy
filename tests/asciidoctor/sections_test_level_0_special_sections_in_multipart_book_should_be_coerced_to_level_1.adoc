@@ -1,0 +1,14 @@
+
+= Multipart Book
+Doc Writer
+:doctype: book
+
+[preface]
+= Preface
+
+Preface text
+
+[appendix]
+= Appendix
+
+Appendix text

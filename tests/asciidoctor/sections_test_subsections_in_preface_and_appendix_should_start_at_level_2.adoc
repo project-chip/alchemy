@@ -1,0 +1,32 @@
+
+= Multipart Book
+Doc Writer
+:doctype: book
+
+[preface]
+= Preface
+
+Preface content
+
+=== Preface subsection
+
+Preface subsection content
+
+= Part 1
+
+.Part intro title
+[partintro]
+Part intro content
+
+== Chapter 1
+
+content
+
+[appendix]
+= Appendix
+
+Appendix content
+
+=== Appendix subsection
+
+Appendix subsection content

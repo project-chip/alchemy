@@ -1,0 +1,33 @@
+
+:doctype: book
+:sectnums:
+
+[preface]
+== Preface
+
+=== Preface Subsection
+
+content
+
+== Section One
+
+content
+
+[appendix]
+== Attribute Options
+
+Details
+
+[appendix]
+== Migration
+
+Details
+
+=== Gotchas
+
+Details
+
+[glossary]
+== Glossary
+
+Terms

@@ -1,0 +1,4 @@
+
+:imagesdir: assets
+
+video::cats-vs-dogs.avi[cats-and-dogs.png, 200, 300]

@@ -1,0 +1,5 @@
+
+:attribute-missing: drop-line
+
+Line 1: This line should appear in the output.
+Line 2: Oh no, a {bogus-attribute}! This line should not appear in the output.

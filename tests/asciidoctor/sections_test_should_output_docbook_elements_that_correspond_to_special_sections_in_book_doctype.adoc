@@ -1,0 +1,77 @@
+
+= Multipart Book
+:doctype: book
+:idprefix:
+
+[abstract]
+= Abstract Title
+
+Normal chapter (no abstract in book)
+
+[dedication]
+= Dedication Title
+
+Dedication content
+
+[preface]
+= Preface Title
+
+Preface content
+
+=== Preface sub-section
+
+Preface subsection content
+
+= Part 1
+
+[partintro]
+.Part intro title
+Part intro content
+
+== Chapter 1
+
+blah blah
+
+== Chapter 2
+
+blah blah
+
+= Part 2
+
+[partintro]
+blah blah
+
+== Chapter 3
+
+blah blah
+
+== Chapter 4
+
+blah blah
+
+[appendix]
+= Appendix Title
+
+Appendix content
+
+=== Appendix sub-section
+
+Appendix sub-section content
+
+[bibliography]
+= Bibliography Title
+
+Bibliography content
+
+[glossary]
+= Glossary Title
+
+Glossary content
+
+[colophon]
+= Colophon Title
+
+Colophon content
+
+[index]
+= Index Title

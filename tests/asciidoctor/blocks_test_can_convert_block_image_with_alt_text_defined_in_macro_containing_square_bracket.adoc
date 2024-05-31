@@ -1,0 +1,3 @@
+
+[Tiger]
+image::images/tiger.png[]

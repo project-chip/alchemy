@@ -1,0 +1,13 @@
+
+= Article
+:toc: preamble
+
+Yada yada
+
+== Section One
+
+It was a dark and stormy night...
+
+== Section Two
+
+They couldn't believe their eyes when...

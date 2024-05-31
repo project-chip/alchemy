@@ -1,0 +1,16 @@
+
+= Book Title
+:doctype: book
+
+[.newbie]
+= Part 1
+
+== Chapter A
+
+content
+
+= Part 2
+
+== Chapter B
+
+content

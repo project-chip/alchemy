@@ -1,0 +1,27 @@
+
+= Article
+Doc Writer
+
+== Section 1
+
+The adventure.
+
+=== Subsection One
+
+It was a dark and stormy night...
+
+=== Subsection Two
+
+They couldn't believe their eyes when...
+
+== Section 2
+
+The return.
+
+=== Subsection Three
+
+While they were returning...
+
+=== Subsection Four
+
+That's all she wrote!

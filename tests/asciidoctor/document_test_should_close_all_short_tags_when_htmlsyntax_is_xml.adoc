@@ -1,0 +1,45 @@
+
+= Document Title
+Author Name
+v1.0, 2001-01-01
+:icons:
+:favicon:
+
+image:tiger.png[]
+
+image::tiger.png[]
+
+* [x] one
+* [ ] two
+
+|===
+|A |B
+|===
+
+[horizontal, labelwidth="25%", itemwidth="75%"]
+term:: description
+
+NOTE: note
+
+[quote,Author,Source]
+____
+Quote me.
+____
+
+[verse,Author,Source]
+____
+A tall tale.
+____
+
+[options="autoplay,loop"]
+video::screencast.ogg[]
+
+video::12345[vimeo]
+
+[options="autoplay,loop"]
+audio::podcast.ogg[]
+
+one +
+two
+
+'''

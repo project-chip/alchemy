@@ -1,0 +1,5 @@
+
+[verse]
+____
+_GET /groups/link:#group-id[\{group-id\}]_
+____

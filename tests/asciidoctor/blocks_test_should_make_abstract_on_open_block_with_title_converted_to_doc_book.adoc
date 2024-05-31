@@ -1,0 +1,8 @@
+
+= Article
+
+.My abstract
+[abstract]
+--
+This article is about stuff.
+--

@@ -10,6 +10,6 @@ var blockTests = parseTests{
 	{"block image", "block_image.adoc", blockImage},
 }
 
-func TestBlocks(t *testing.T) {
+func TestBlockElements(t *testing.T) {
 	blockTests.run(t)
 }

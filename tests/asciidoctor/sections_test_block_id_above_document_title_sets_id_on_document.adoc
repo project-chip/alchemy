@@ -1,0 +1,6 @@
+
+[[reference]]
+= Reference Manual
+:css-signature: refguide
+
+preamble

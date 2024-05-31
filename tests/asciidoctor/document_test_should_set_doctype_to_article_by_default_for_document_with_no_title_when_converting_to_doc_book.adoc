@@ -1,0 +1,16 @@
+
+= asciidoctor(1)
+:mansource: Asciidoctor
+:manmanual: Asciidoctor Manual
+
+== NAME
+
+asciidoctor - Process text
+
+== SYNOPSIS
+
+some text
+
+== First Section
+
+section body

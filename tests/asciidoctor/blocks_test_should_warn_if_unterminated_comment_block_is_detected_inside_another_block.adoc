@@ -1,0 +1,9 @@
+
+before sidebar block
+
+****
+////
+content that has been disabled
+****
+
+supposed to be after sidebar block, except it got swallowed by block comment

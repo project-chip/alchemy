@@ -1,0 +1,3 @@
+
+.The AsciiDoc Tiger
+image::images/tiger.png[Tiger]

@@ -1,0 +1,14 @@
+
+= Title
+
+Preamble
+
+== First Section
+
+Paragraph 1
+
+Paragraph 2
+
+== Second Section
+
+Last words

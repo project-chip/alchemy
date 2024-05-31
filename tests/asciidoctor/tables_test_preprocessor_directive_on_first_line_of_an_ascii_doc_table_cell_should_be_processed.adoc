@@ -1,0 +1,4 @@
+
+|===
+a|include::fixtures/include-file.adoc[]
+|===

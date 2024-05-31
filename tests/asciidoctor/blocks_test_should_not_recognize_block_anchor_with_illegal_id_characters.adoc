@@ -1,0 +1,5 @@
+
+[[illegal$id,Reference Text]]
+----
+content
+----

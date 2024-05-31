@@ -1,0 +1,7 @@
+
+|===
+a|
+:icons:
+
+NOTE: This admonition does not have a font-based icon.
+|===

@@ -1,0 +1,6 @@
+
+:attribute-missing: drop-line
+
+This is
+blah blah {foobarbaz}
+all there is.

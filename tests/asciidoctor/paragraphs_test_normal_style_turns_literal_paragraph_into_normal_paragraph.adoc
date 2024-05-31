@@ -1,0 +1,4 @@
+
+[normal]
+ normal paragraph,
+ despite the leading indent

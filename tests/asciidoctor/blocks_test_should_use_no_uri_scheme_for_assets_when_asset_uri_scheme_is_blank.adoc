@@ -1,0 +1,9 @@
+
+:asset-uri-scheme:
+:icons: font
+:source-highlighter: highlightjs
+
+TIP: You can control the URI scheme used for assets with the asset-uri-scheme attribute
+
+[source,ruby]
+puts "AsciiDoc, FTW!"

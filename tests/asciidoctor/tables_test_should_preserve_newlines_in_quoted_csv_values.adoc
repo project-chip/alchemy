@@ -1,0 +1,15 @@
+
+[cols="1,1,1l"]
+,===
+"A
+B
+C","one
+
+two
+
+three","do
+
+re
+
+me"
+,===

@@ -1,0 +1,7 @@
+
+[cols=1a]
+|===
+|[[foo,Foo]]* not AsciiDoc
+
+| AsciiDoc
+|===

@@ -1,0 +1,5 @@
+
+[.role1]
+[role=role2]
+[.role3]
+Text

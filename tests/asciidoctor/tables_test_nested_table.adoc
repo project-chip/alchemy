@@ -1,0 +1,10 @@
+
+[cols="1,2a"]
+|===
+|Normal cell
+|Cell with nested table
+[cols="2,1"]
+!===
+!Nested table cell 1 !Nested table cell 2
+!===
+|===

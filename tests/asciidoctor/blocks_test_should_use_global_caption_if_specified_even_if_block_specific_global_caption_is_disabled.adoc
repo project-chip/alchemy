@@ -1,0 +1,10 @@
+
+:!example-caption:
+:caption: Look!{sp}
+
+.Writing Docs with AsciiDoc
+====
+Here's how you write AsciiDoc.
+
+You just write.
+====

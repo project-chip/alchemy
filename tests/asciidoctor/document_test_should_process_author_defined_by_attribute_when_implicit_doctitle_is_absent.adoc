@@ -1,0 +1,4 @@
+
+:author: Doc Writer
+
+{lastname}, {firstname} ({authorinitials})

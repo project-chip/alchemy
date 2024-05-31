@@ -1,0 +1,15 @@
+
+= Document Title
+:numbered:
+
+preamble
+
+== Section One
+
+|===
+a|content
+|===
+
+== Section Two
+
+content

@@ -1,0 +1,3 @@
+
+[horizontal, options="strong"]
+term:: def

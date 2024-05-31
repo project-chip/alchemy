@@ -1,0 +1,2 @@
+
+image::images/tiger.png[Tiger, link='http://en.wikipedia.org/wiki/Tiger']

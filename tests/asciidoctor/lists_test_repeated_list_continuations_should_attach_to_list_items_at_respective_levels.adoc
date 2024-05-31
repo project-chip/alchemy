@@ -1,0 +1,19 @@
+
+== Lists
+
+. list item 1
+
+* nested list item 1
++
+--
+open block for nested list item 1
+--
++
+* nested list item 2
++
+paragraph for nested list item 2
+
++
+paragraph for list item 1
+
+. list item 2
