@@ -1,0 +1,4 @@
+
+Line 1
+{set:a}
+Line 2

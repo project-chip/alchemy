@@ -155,7 +155,9 @@ func parseColumnAttribute(a *NamedAttribute) (*TableColumnsAttribute, error) {
 		}
 		return &TableColumnsAttribute{Columns: cols}, nil
 	}
-	ccs := strings.Split(cs, ",")
+	ccs := strings.FieldsFunc(cs, func(r rune) bool {
+		return r == ',' || r == ';'
+	})
 	cols := make([]*TableColumn, 0, len(ccs))
 	for _, c := range ccs {
 		col := NewTableColumn()

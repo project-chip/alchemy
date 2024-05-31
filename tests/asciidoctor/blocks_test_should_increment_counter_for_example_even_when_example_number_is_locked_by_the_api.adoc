@@ -1,0 +1,14 @@
+
+.Writing Docs with AsciiDoc
+====
+Here's how you write AsciiDoc.
+
+You just write.
+====
+
+.Writing Docs with DocBook
+====
+Here's how you write DocBook.
+
+You futz with XML.
+====

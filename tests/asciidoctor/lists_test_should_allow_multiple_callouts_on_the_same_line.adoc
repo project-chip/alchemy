@@ -1,0 +1,14 @@
+
+[source, ruby]
+----
+require 'asciidoctor' <1>
+doc = Asciidoctor.load('Hello, World!') # <2> <3> <4>
+puts doc.convert <5><6>
+exit 0
+----
+<1> Require library
+<2> Load document from String
+<3> Uses default backend and doctype
+<4> One more for good luck
+<5> Renders document to String
+<6> Prints output to stdout

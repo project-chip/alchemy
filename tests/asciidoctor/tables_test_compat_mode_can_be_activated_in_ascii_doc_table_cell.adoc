@@ -1,0 +1,7 @@
+
+|===
+a|
+:compat-mode:
+
+The word 'italic' is emphasized.
+|===

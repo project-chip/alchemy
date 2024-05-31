@@ -1,0 +1,15 @@
+
+= Main Document
+Doc Writer
+
+Main preamble.
+
+:leveloffset: 1
+
+= Standalone Document
+
+Standalone preamble.
+
+:leveloffset!:
+
+== Level 1 Section

@@ -1,0 +1,9 @@
+
+....
+Roses are red <1>
+Violets are blue <2>
+....
+
+
+<1> And so is Ruby
+<2> But violet is more like purple

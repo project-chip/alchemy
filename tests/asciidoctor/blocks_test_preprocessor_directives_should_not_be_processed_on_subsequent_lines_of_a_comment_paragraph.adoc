@@ -1,0 +1,6 @@
+
+[comment]
+first line of content
+ifdef::asciidoctor[////]
+
+this line should be shown

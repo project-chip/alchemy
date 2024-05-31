@@ -1,5 +1,5 @@
 
-DescriptionListItem = inlineAnchor:(AnchorAttribute)? term:(DescriptionListTerm) marker:(DescriptionListMarker) whitespace:(_ / NewLine)+ value:(DescriptionListItemValue) {
+DescriptionListItem = inlineAnchor:(AnchorAttribute)? term:(DescriptionListTerm) marker:(DescriptionListMarker) whitespace:(_ { return asciidoc.NewString(string(c.text)), nil } / NewLine)+ value:(DescriptionListItemValue) {
     debugPosition(c, "found description list item: %s\n", marker.(string))
     dli := asciidoc.NewDescriptionListItem(marker.(string), term.(asciidoc.Set))
     values := cast[any, asciidoc.Element](whitespace.([]any))

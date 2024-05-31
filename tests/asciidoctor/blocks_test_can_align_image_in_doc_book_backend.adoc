@@ -1,0 +1,4 @@
+
+:attribute-missing: skip
+
+image::{bogus}[]

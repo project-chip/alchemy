@@ -1,0 +1,23 @@
+
+= Book
+:doctype: book
+
+Back then...
+
+= Chapter One
+
+[partintro]
+It was a dark and stormy night...
+
+== Scene One
+
+Someone's gonna get axed.
+
+= Chapter Two
+
+[partintro]
+They couldn't believe their eyes when...
+
+== Scene One
+
+The axe came swinging.

@@ -1,0 +1,7 @@
+
+= asciidoctor ( 1 )
+:doctype: manpage
+
+== NAME
+
+asciidoctor - converts AsciiDoc source files to HTML, DocBook and other formats

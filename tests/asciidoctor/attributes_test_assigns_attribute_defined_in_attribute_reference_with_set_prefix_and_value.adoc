@@ -1,0 +1,6 @@
+
+:attribute-missing: drop-line
+:foo:
+
+{set:foo!}
+{foo}yes

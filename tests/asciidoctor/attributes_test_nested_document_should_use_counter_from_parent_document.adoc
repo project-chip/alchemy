@@ -1,0 +1,17 @@
+
+.Title for Foo
+image::foo.jpg[]
+
+[cols="2*a"]
+|===
+|
+.Title for Bar
+image::bar.jpg[]
+
+|
+.Title for Baz
+image::baz.jpg[]
+|===
+
+.Title for Qux
+image::qux.jpg[]

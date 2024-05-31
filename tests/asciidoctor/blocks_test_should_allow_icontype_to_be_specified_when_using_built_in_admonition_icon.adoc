@@ -1,0 +1,3 @@
+
+[TIP,icon=hint]
+Set the icontype using either the icontype attribute on the icons attribute.

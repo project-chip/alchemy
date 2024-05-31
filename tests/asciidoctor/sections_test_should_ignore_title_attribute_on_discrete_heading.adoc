@@ -1,0 +1,5 @@
+
+[discrete,title="Captured!"]
+== Independent Heading!
+
+not in section

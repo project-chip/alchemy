@@ -1,0 +1,8 @@
+
+= cmd(1)
+Author Name
+:doctype: manpage
+
+== Name
+
+cmd - does stuff

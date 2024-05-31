@@ -1,0 +1,8 @@
+
+* first item
+
+  <code>text</code>
+
+  more <code>text</code>
+
+* second item

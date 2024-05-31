@@ -1,0 +1,7 @@
+
+[cols="1,1,1a",separator=;]
+,===
+element;description;example
+
+thematic break,a visible break; also known as a horizontal rule;---
+,===

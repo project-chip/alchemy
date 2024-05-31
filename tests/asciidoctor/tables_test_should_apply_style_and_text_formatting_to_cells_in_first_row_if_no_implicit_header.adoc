@@ -1,0 +1,7 @@
+
+[cols="s,e"]
+|===
+| _strong_ | *emphasis*
+| strong
+| emphasis
+|===

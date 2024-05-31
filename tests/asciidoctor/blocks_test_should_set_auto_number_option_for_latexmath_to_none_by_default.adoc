@@ -1,0 +1,7 @@
+
+:stem: latexmath
+
+[stem]
+++++
+y = x^2
+++++

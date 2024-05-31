@@ -1,0 +1,9 @@
+
+[cols=2,separator=!]
+|===
+!Pipe output to vim
+a!
+----
+asciidoctor -o - -s test.adoc | view -
+----
+|===

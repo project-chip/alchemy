@@ -1,0 +1,10 @@
+
+[cols="1e,1", options="header"]
+|===
+|{set:cellbgcolor:green}green
+|{set:cellbgcolor!}
+plain
+|{set:cellbgcolor:red}red
+|{set:cellbgcolor!}
+plain
+|===

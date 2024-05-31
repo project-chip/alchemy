@@ -1,0 +1,14 @@
+
+= Book Title
+:doctype: book
+
+== Chapter 1
+
+|===
+a|
+= AsciiDoc Table Cell
+
+doctype={doctype}
+{backend-html5-doctype-article}
+{backend-html5-doctype-book}
+|===

@@ -1,0 +1,10 @@
+
+[source, xml]
+----
+<section>
+  <title>Section Title</title> <!--1-->
+  <simpara>Just a paragraph</simpara> <!--2-->
+</section>
+----
+<1> The title is required
+<2> The content isn't

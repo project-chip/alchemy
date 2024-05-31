@@ -1,0 +1,6 @@
+
+= Book
+:doctype: book
+
+[abstract]
+Abstract for book with title is valid

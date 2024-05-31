@@ -1,0 +1,30 @@
+
+= Book
+Doc Writer
+:doctype: book
+
+= Part 1
+
+[partintro]
+The adventure.
+
+== Chapter One
+
+It was a dark and stormy night...
+
+== Chapter Two
+
+They couldn't believe their eyes when...
+
+= Part 2
+
+[partintro]
+The return.
+
+== Chapter Three
+
+While they were returning...
+
+== Chapter Four
+
+That's all she wrote!

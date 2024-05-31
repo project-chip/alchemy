@@ -1,0 +1,5 @@
+
+[#idname]
+= Document Title
+
+content

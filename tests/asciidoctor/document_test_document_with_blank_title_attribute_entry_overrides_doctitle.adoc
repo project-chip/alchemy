@@ -1,0 +1,7 @@
+
+= Document Title
+:title:
+
+{doctitle}
+
+== First Section

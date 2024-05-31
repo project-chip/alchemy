@@ -1,0 +1,8 @@
+
+= {app}(1)
+:doctype: manpage
+:app: Asciidoctor
+
+== NAME
+
+asciidoctor - converts AsciiDoc source files to HTML, DocBook and other formats

@@ -1,8 +1,6 @@
 package render
 
 import (
-	"fmt"
-
 	"github.com/hasty/alchemy/asciidoc"
 )
 
@@ -12,7 +10,7 @@ func renderLink(cxt *Context, il *asciidoc.Link) (err error) {
 	} else {
 		cxt.WriteString("link:")
 	}
-	Elements(cxt, "", il.URL.Path.(asciidoc.Set)...)
+	Elements(cxt, "", il.URL.Path...)
 
 	return renderAttributes(cxt, il, il.Attributes(), true)
 }
@@ -48,13 +46,4 @@ func renderInlineImage(cxt *Context, ib *asciidoc.InlineImage) (err error) {
 		return
 	}
 	return
-}
-
-func getPath(l asciidoc.URL) (string, error) {
-	switch p := l.Path.(type) {
-	case string:
-		return p, nil
-	default:
-		return "", fmt.Errorf("unknown image location path type: %T", p)
-	}
 }

@@ -1,0 +1,5 @@
+
+:tip-caption: Pro Tip
+
+[caption="Pro Tip"]
+TIP: Override the caption of an admonition block using an attribute entry

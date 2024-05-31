@@ -1,0 +1,7 @@
+
+image::outer.png[]
+
+|===
+a|
+image::inner.png[]
+|===

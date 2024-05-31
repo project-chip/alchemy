@@ -1,0 +1,6 @@
+
+--
+This is an open block.
+
+It can span multiple lines.
+--

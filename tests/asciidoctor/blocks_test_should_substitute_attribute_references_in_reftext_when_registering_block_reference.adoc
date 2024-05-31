@@ -1,0 +1,7 @@
+
+:label-tiger: Tiger
+
+[[tiger-evolution,Evolution of the {label-tiger}]]
+****
+Information about the evolution of the tiger.
+****

@@ -1,0 +1,4 @@
+
+first line
+// line comment
+second line

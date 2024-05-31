@@ -1,0 +1,9 @@
+
+= Document Title
+:toc:
+
+toc::[]
+
+This document has no sections.
+
+It only has content.

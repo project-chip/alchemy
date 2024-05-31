@@ -1,0 +1,14 @@
+
+= Document Title
+
+== Section A
+
+|===
+a|
+= Subdocument Title
+:toc:
+
+== Subdocument Section A
+
+content
+|===

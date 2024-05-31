@@ -1,0 +1,5 @@
+
+The highest peak in the Front Range is <<grays-peak>>, which tops <<mount-evans>> by just a few feet.
+
+[[mount-evans,Mount Evans]]Mount Evans:: 14,271 feet
+[[grays-peak]]Grays Peak:: 14,278 feet

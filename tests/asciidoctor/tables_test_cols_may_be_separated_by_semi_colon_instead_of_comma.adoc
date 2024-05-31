@@ -1,0 +1,6 @@
+
+[cols="1s;3m"]
+|===
+| strong
+| mono
+|===

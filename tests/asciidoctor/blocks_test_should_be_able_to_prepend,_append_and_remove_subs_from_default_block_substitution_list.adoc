@@ -1,0 +1,7 @@
+
+:application: asciidoctor
+
+[subs="attributes+,-verbatim,+specialcharacters,+macros"]
+....
+https://{application}.org[{gt}{gt}] <1>
+....

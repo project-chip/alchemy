@@ -1,0 +1,7 @@
+
+Install instructions:
+
+ yum install ruby rubygems
+ gem install asciidoctor
+
+You're good to go!

@@ -1,0 +1,3 @@
+
+[Alt Text]
+image::images/tiger.png[Tiger]

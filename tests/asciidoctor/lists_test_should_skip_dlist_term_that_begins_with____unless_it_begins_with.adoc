@@ -1,0 +1,6 @@
+
+category a::
+//ignored term:: def
+
+category b::
+///term:: def

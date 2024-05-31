@@ -1,0 +1,12 @@
+
+= Book Title
+:doctype: book
+
+[#ch1]
+== Chapter 1
+
+So it begins.
+
+Read <<other-chapters.adoc#ch2>> to find out what happens next!
+
+include::other-chapters.adoc[tags=**]

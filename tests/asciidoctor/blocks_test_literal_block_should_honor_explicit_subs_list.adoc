@@ -1,0 +1,5 @@
+
+[subs="verbatim,quotes"]
+----
+Map<String, String> *attributes*; //<1>
+----

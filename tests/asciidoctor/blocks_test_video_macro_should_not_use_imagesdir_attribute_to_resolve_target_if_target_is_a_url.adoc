@@ -1,0 +1,4 @@
+
+:imagesdir: assets
+
+video::http://example.org/videos/cats-vs-dogs.avi[]

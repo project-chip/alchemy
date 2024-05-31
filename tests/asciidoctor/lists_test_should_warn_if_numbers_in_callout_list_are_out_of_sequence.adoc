@@ -1,0 +1,9 @@
+
+----
+<beans> <1>
+  <bean class="com.example.HelloWorld"/>
+</beans>
+----
+<1> Container of beans.
+Beans are fun.
+<3> An actual bean.

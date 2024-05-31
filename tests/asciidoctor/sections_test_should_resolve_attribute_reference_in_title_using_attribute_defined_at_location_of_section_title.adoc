@@ -1,0 +1,16 @@
+
+:platform-id: linux
+:platform-name: Linux
+
+[#install-{platform-id}]
+== Install on {platform-name}
+
+content
+
+:platform-id: win32
+:platform-name: Windows
+
+[#install-{platform-id}]
+== Install on {platform-name}
+
+content

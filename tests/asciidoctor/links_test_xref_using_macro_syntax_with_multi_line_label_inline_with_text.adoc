@@ -1,0 +1,6 @@
+
+Want to learn xref:tigers[about
+tigers]?
+
+[#tigers]
+== Tigers

@@ -1,0 +1,25 @@
+
+= Article
+:toc:
+:toc-placement: macro
+:toc-title: Contents
+:toc-class: contents
+:toclevels: 1
+
+Preamble.
+
+toc::[]
+
+== Section 1
+
+=== Section 1.1
+
+==== Section 1.1.1
+
+==== Section 1.1.2
+
+=== Section 1.2
+
+== Section 2
+
+Fin.

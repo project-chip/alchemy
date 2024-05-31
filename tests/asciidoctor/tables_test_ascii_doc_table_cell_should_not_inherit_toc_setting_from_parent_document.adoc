@@ -1,0 +1,12 @@
+
+= Document Title
+:toc:
+
+== Section
+
+|===
+a|
+== Section in Nested Document
+
+content
+|===

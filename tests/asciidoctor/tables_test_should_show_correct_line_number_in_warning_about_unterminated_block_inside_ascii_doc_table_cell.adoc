@@ -1,0 +1,14 @@
+
+outside
+
+* list item
++
+|===
+|cell
+a|inside
+
+====
+unterminated example block
+|===
+
+eof

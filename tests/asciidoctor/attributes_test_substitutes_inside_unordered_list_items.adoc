@@ -1,0 +1,7 @@
+
+= Title
+Author Name
+:attribute-a: value
+:attribute-b: {attribute-a}
+
+preamble

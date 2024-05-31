@@ -1,0 +1,4 @@
+
+:imagesdir: images
+
+image::tiger.png[Tiger]

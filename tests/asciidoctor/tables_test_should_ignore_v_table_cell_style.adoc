@@ -1,0 +1,10 @@
+
+[cols=2*]
+|===
+v|
+  one
+  two
+three
+
+  | normal
+|===

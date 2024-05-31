@@ -1,0 +1,29 @@
+
+= Document Title
+
+== Section
+
+=== Subsection of Section
+
+allowed
+
+[appendix]
+== Appendix
+
+=== Subsection of Appendix
+
+allowed
+
+[glossary]
+== Glossary
+
+=== Subsection of Glossary
+
+not allowed
+
+[bibliography]
+== Bibliography
+
+=== Subsection of Bibliography
+
+not allowed

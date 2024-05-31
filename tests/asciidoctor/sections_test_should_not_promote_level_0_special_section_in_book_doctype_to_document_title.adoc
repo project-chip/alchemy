@@ -1,0 +1,7 @@
+
+:doctype: book
+
+[appendix]
+= Installation
+
+Installation details here.

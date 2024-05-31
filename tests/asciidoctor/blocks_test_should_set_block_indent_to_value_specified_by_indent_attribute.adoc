@@ -1,0 +1,9 @@
+
+[indent="1"]
+----
+    def names
+
+      @names.split
+
+    end
+----

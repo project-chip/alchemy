@@ -1,0 +1,7 @@
+
+Choose a design pattern.footnote:[See <<gof>> to find a collection of design patterns.]
+
+[bibliography]
+== Bibliography
+
+* [[[gof]]] Erich Gamma, et al. _Design Patterns: Elements of Reusable Object-Oriented Software._ Addison-Wesley. 1994.

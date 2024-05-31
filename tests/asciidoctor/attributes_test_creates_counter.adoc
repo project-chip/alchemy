@@ -1,0 +1,4 @@
+
+:mycounter: 0
+
+{counter:mycounter}

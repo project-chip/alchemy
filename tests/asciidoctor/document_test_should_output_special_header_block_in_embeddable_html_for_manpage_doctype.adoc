@@ -1,0 +1,12 @@
+
+= asciidoctor(1)
+:doctype: manpage
+:showtitle:
+
+== NAME
+
+asciidoctor - converts AsciiDoc source files to HTML, DocBook and other formats
+
+== SYNOPSIS
+
+*asciidoctor* ['OPTION']... 'FILE'..

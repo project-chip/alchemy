@@ -1,0 +1,7 @@
+
+term1:: def
++
+[verse]
+la la la
+
+term2:: def

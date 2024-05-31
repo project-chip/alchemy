@@ -1,0 +1,24 @@
+
+= Document Title
+:doctype: book
+:numbered:
+
+== Chapter 1
+
+content
+
+= Part 1
+
+== Chapter 2
+
+content
+
+= Part 2
+
+== Chapter 3
+
+content
+
+== Chapter 4
+
+content

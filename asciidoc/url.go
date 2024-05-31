@@ -5,10 +5,10 @@ type URL struct {
 	raw
 
 	Scheme string
-	Path   any
+	Path   Set
 }
 
-func NewURL(scheme string, path any) URL {
+func NewURL(scheme string, path Set) URL {
 	return URL{Scheme: scheme, Path: path}
 }
 
@@ -21,5 +21,5 @@ func (a URL) Equals(o Element) bool {
 	if !ok {
 		return false
 	}
-	return a.Scheme == oa.Scheme && a.Path == oa.Path
+	return a.Scheme == oa.Scheme && a.Path.Equals(oa.Path)
 }

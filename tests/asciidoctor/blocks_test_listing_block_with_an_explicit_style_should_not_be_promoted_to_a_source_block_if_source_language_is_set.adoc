@@ -1,0 +1,7 @@
+
+:source-language: ruby
+
+[listing]
+----
+puts 'Hello, Ruby!'
+----

@@ -1,0 +1,5 @@
+
+:imagesdir: images
+
+[%interactive]
+image::tiger.svg[Tiger,100,fallback=tiger.png]

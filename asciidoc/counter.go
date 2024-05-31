@@ -18,8 +18,8 @@ func (Counter) Type() ElementType {
 	return ElementTypeInline
 }
 
-func (a Counter) Equals(o Element) bool {
-	oa, ok := o.(Counter)
+func (a *Counter) Equals(o Element) bool {
+	oa, ok := o.(*Counter)
 	if !ok {
 		return false
 	}
@@ -29,5 +29,5 @@ func (a Counter) Equals(o Element) bool {
 	if a.InitialValue != oa.InitialValue {
 		return false
 	}
-	return a.Display != oa.Display
+	return a.Display == oa.Display
 }

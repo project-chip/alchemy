@@ -1,0 +1,6 @@
+
+:icons:
+:iconsdir: icons
+
+[TIP]
+You can use icons for admonitions by setting the 'icons' attribute.

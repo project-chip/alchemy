@@ -1,0 +1,7 @@
+
+[cols="1a,1"]
+|===
+|
+  literal
+| normal
+|===

@@ -1,0 +1,4 @@
+
+A. This is the story about
+   AsciiDoc. It begins here.
+B. And it ends here.

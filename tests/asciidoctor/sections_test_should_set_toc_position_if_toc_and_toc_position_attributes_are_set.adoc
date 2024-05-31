@@ -1,0 +1,13 @@
+
+= Article
+:toc:
+:toc-position: right
+:numbered:
+
+== Section One
+
+It was a dark and stormy night...
+
+== Section Two
+
+They couldn't believe their eyes when...

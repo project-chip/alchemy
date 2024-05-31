@@ -21,6 +21,6 @@ var tableTests = parseTests{
 	{"table special character", "table_special_character.adoc", tableSpecialCharacter},
 }
 
-func TestTables(t *testing.T) {
+func TestBlockTables(t *testing.T) {
 	tableTests.run(t)
 }

@@ -1,0 +1,5 @@
+
+See the <<tigers, `+[tigers]+`>> section for details about tigers.
+
+[#tigers]
+== Tigers

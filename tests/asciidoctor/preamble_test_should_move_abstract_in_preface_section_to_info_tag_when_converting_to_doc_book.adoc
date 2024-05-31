@@ -1,0 +1,11 @@
+
+= Document Title
+:doctype: book
+
+[preface]
+== Preface
+
+[abstract]
+This is the abstract.
+
+== Fin

@@ -1,0 +1,8 @@
+
+[source,erlang,line-comment=%]
+----
+hello_world() -> % <1>
+  io:fwrite("hello, world~n"). %<2>
+----
+<1> Erlang function clause head.
+<2> ~n adds a new line to the output.

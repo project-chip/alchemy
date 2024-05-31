@@ -1,0 +1,17 @@
+
+= Main Document
+Doc Writer
+
+Main preamble.
+
+:leveloffset: 1
+
+= Chapter 1
+
+content
+
+:leveloffset: +1
+
+= Standalone Section
+
+content

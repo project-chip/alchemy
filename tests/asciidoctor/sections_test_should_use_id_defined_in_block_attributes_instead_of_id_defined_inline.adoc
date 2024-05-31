@@ -1,0 +1,5 @@
+
+[#idname-block]
+= Document Title [[idname-inline]]
+
+content

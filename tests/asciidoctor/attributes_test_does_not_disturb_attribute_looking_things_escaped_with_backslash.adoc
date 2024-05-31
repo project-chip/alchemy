@@ -1,0 +1,6 @@
+
+:forecast: snow
+
+----
+puts 'The forecast for today is {forecast}'
+----

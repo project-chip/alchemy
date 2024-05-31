@@ -1,0 +1,10 @@
+
+= Book Title
+:doctype: book
+:sectnums:
+:chapter-signifier: Chapter
+:chapter-number: 9
+
+== Not the Beginning
+
+== Maybe the End

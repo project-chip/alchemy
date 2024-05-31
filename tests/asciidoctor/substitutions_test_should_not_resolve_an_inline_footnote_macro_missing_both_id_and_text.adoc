@@ -1,0 +1,4 @@
+
+The footnote:[] macro can be used for defining and referencing footnotes.
+
+The footnoteref:[] macro is now deprecated.

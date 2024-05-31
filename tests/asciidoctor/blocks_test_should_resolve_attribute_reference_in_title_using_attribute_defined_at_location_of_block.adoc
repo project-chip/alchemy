@@ -1,0 +1,14 @@
+
+= Document Title
+:foo: baz
+
+intro paragraph. see <<free-standing>>.
+
+:foo: bar
+
+.foo is {foo}
+[#formal-para]
+paragraph with title
+
+[discrete#free-standing]
+== foo is still {foo}

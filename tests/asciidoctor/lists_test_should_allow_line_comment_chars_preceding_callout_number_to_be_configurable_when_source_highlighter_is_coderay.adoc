@@ -1,0 +1,7 @@
+
+[source,html,line-comment=-#]
+----
+-# <1>
+%p Hello
+----
+<1> Prints a paragraph with the text "Hello"

@@ -1,0 +1,8 @@
+
+:doctype: book
+.Block title
+= Document Title
+
+== First Section
+
+paragraph

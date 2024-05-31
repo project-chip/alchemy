@@ -1,0 +1,9 @@
+
+term::
++
+--
+Open block as description of term.
+
+And some more detail...
+--
+anotherterm:: def

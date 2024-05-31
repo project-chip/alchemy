@@ -1,0 +1,10 @@
+
+--
+This is an open block.
+
+It can span multiple lines.
+
+____
+It can hold great quotes like this one.
+____
+--

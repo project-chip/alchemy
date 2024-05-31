@@ -1,0 +1,5 @@
+
+:a:
+
+Line 1: This line should appear in the output.
+Line 2: {set:a!}This line should not appear in the output.

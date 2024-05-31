@@ -1,0 +1,7 @@
+
+== Section
+
+.Sidebar
+****
+Content goes here
+****

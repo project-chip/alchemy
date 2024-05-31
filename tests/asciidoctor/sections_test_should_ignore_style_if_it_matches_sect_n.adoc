@@ -1,0 +1,12 @@
+
+= Document Title
+
+[sect1]
+== Section Level 1
+
+content
+
+[sect2]
+== Section Level 2
+
+content

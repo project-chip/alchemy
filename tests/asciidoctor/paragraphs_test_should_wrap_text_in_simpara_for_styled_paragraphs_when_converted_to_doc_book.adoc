@@ -1,0 +1,28 @@
+
+= Book
+:doctype: book
+
+[preface]
+= About this book
+
+[abstract]
+An abstract for the book.
+
+= Part 1
+
+[partintro]
+An intro to this part.
+
+== Chapter 1
+
+[sidebar]
+Just a side note.
+
+[example]
+As you can see here.
+
+[quote]
+Wise words from a wise person.
+
+[open]
+Make it what you want.

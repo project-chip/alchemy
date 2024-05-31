@@ -121,7 +121,7 @@ func (a *DescriptionListItem) Equals(o Element) bool {
 	if !ok {
 		return false
 	}
-	if a.Marker != oa.Marker || a.Term.Equals(oa.Term) {
+	if a.Marker != oa.Marker || !a.Term.Equals(oa.Term) {
 		return false
 	}
 	if !a.AttributeList.Equals(oa.AttributeList) {
@@ -134,7 +134,7 @@ type AttachedBlock struct {
 	position
 	raw
 
-	child Element
+	ChildElement Element
 }
 
 func (AttachedBlock) Type() ElementType {
@@ -143,7 +143,7 @@ func (AttachedBlock) Type() ElementType {
 
 func NewAttachedBlock(child Element) *AttachedBlock {
 	return &AttachedBlock{
-		child: child,
+		ChildElement: child,
 	}
 }
 
@@ -153,18 +153,18 @@ func (a *AttachedBlock) Equals(o Element) bool {
 		return false
 	}
 
-	return a.child.Equals(oa.child)
+	return a.ChildElement.Equals(oa.ChildElement)
 }
 
 func (s *AttachedBlock) Child() Element {
-	return s.child
+	return s.ChildElement
 }
 
 type ListContinuation struct {
 	position
 	raw
 
-	child Element
+	ChildElement Element
 }
 
 func (ListContinuation) Type() ElementType {
@@ -172,12 +172,12 @@ func (ListContinuation) Type() ElementType {
 }
 
 func (s *ListContinuation) Child() Element {
-	return s.child
+	return s.ChildElement
 }
 
 func NewListContinuation(child Element) *ListContinuation {
 	return &ListContinuation{
-		child: child,
+		ChildElement: child,
 	}
 }
 
@@ -186,5 +186,5 @@ func (a *ListContinuation) Equals(o Element) bool {
 	if !ok {
 		return false
 	}
-	return a.child.Equals(oa.child)
+	return a.ChildElement.Equals(oa.ChildElement)
 }

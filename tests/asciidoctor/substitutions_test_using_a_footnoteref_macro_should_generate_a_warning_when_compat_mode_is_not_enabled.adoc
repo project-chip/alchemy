@@ -1,0 +1,6 @@
+
+You can download the software from the product page.footnote:sub[Option only available if you have an active subscription.]
+
+You can also file a support request.footnote:sub[]
+
+If all else fails, you can give us a call.footnoteref:[sub]

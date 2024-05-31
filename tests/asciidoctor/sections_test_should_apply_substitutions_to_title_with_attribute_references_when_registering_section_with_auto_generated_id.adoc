@@ -1,0 +1,11 @@
+
+= Document Title
+:foo: bar
+
+See <<_section_baz>>.
+
+:foo: baz
+
+== Section {foo}
+
+That's all, folks!

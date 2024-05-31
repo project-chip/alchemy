@@ -1,0 +1,60 @@
+
+= Document Title
+:doctype: book
+
+[preface]
+= Preface
+
+=== Subsection of Preface
+
+allowed
+
+[colophon]
+= Colophon
+
+=== Subsection of Colophon
+
+not allowed
+
+[dedication]
+= Dedication
+
+=== Subsection of Dedication
+
+not allowed
+
+= Part 1
+
+[abstract]
+== Abstract
+
+=== Subsection of Abstract
+
+allowed
+
+== Chapter 1
+
+=== Subsection of Chapter
+
+allowed
+
+[appendix]
+= Appendix
+
+=== Subsection of Appendix
+
+allowed
+
+[glossary]
+= Glossary
+
+=== Subsection of Glossary
+
+not allowed
+
+[bibliography]
+= Bibliography
+
+=== Subsection of Bibliography
+
+not allowed

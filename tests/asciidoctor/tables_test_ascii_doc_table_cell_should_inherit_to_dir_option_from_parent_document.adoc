@@ -1,0 +1,5 @@
+, parse: true, to_dir: testdir
+      |===
+      a|
+      AsciiDoc table cell
+      |===

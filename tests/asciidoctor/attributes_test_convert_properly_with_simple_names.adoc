@@ -1,0 +1,6 @@
+
+:He-Man: The most powerful man in the universe
+
+He-Man: {He-Man}
+
+She-Ra: {She-Ra}
