@@ -11,6 +11,7 @@ require (
 	github.com/hexops/gotextdiff v1.0.3
 	github.com/iancoleman/orderedmap v0.3.0
 	github.com/iancoleman/strcase v0.3.0
+	github.com/lithammer/dedent v1.1.0
 	github.com/puzpuzpuz/xsync/v3 v3.1.0
 	github.com/sanity-io/litter v1.5.5
 	github.com/schollz/progressbar/v3 v3.14.1
