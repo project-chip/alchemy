@@ -9,19 +9,13 @@ Table = attributes:(BlockElementAttributes)? TableStart cells:(TableElements) Ta
     return compose(c, table)
 }
 
-TableElements = te:(TableElement)* {
-    debugPosition(c, "TABLE: matched table elements \"%s\" (%T)\n", string(c.text), te)
-    return te, nil
-}
+TableElements = (TableElement)* 
 
-TableElement = element:(
+TableElement = (
         TableEmptyLine 
         / TableMacros
         / TableRow
-        )  {
-    debugPosition(c, "TABLE: matched table element \"%s\" (%T)\n", string(c.text), element)
-    return element, nil
-}
+        ) 
 
 TableStart = !"\\" "|===" "="* _* &EndOfLine  {
     debugPosition(c, "TABLE: matched table start %s\n", string(c.text))
