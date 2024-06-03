@@ -73,10 +73,15 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			fmt.Print("{tab}:\n")
 			dumpAttributes(el.Attributes(), indent+1)
 			dumpTable(doc, el, indent+1)
-		/*case *asciidoc.List:
-		fmt.Print("{list}:\n")
-		dumpAttributes(el.Attributes, indent+1)
-		dumpElements(doc, el.GetElements(), indent+1)*/
+		case *asciidoc.IfDef:
+			fmt.Print("{ifdef ")
+			dumpConditional(el.Attributes, el.Union, indent)
+		case *asciidoc.IfNDef:
+			fmt.Print("{ifndef ")
+			dumpConditional(el.Attributes, el.Union, indent)
+		case *asciidoc.EndIf:
+			fmt.Print("{endif ")
+			dumpConditional(el.Attributes, el.Union, indent)
 		case *asciidoc.OrderedListItem:
 			fmt.Print("{ole}:\n")
 			dumpAttributes(el.Attributes(), indent+1)
@@ -94,6 +99,12 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			dumpLocation(doc, el.URL, indent+1)
 			fmt.Print("}\n")
 			dumpAttributes(el.Attributes(), indent+1)
+		case *asciidoc.FileInclude:
+			fmt.Printf("{include:\n")
+			dumpAttributes(el.Attributes(), indent+1)
+			dumpElements(doc, el.Elements(), indent+1)
+			fmt.Print(strings.Repeat("\t", indent))
+			fmt.Print("}\n")
 		/*case *asciidoc.DocumentHeader:
 			fmt.Printf("{head}\n")
 			fmt.Print(strings.Repeat("\t", indent+1))
@@ -171,4 +182,22 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			fmt.Printf("unknown render element type: %T\n", el)
 		}
 	}
+}
+
+func dumpConditional(attributes asciidoc.AttributeNames, union asciidoc.ConditionalUnion, indent int) {
+	if len(attributes) == 0 {
+		fmt.Print("}\n")
+		return
+	}
+	if union == asciidoc.ConditionalUnionAll {
+		fmt.Print("all of:\n")
+	} else {
+		fmt.Print("any of:\n")
+	}
+	for _, s := range attributes {
+		fmt.Print(strings.Repeat("\t", indent+1))
+		fmt.Printf("%s\n", s)
+	}
+	fmt.Print(strings.Repeat("\t", indent))
+	fmt.Print("}\n")
 }

@@ -332,10 +332,7 @@ func (d *Doc) buildRowConformance(cellElements asciidoc.Set, sb *strings.Builder
 			} else {
 				sb.WriteString("link:")
 			}
-			if path, ok := v.URL.Path.(string); ok {
-				sb.WriteString(path)
-			}
-
+			d.buildRowConformance(v.URL.Path, sb)
 		case *asciidoc.CharacterReplacementReference:
 			switch v.Name() {
 			case "nbsp":

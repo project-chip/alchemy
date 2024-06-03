@@ -22,7 +22,7 @@ import (
 */
 func dumpLocation(doc *spec.Doc, l asciidoc.URL, indent int) {
 	fmt.Printf("%s", l.Scheme)
-	dumpElements(doc, l.Path.(asciidoc.Set), indent)
+	dumpElements(doc, l.Path, indent)
 }
 
 func snippet(str string) string {
