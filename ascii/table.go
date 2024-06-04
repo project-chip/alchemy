@@ -111,6 +111,10 @@ func readRowCellValueElements(doc *Doc, elements []any, value *strings.Builder) 
 		case *types.StringElement:
 			value.WriteString(el.Content)
 		case *types.InternalCrossReference:
+			if label, ok := el.Label.(string); ok && len(label) > 0 {
+				value.WriteString(label)
+				continue
+			}
 			var val string
 			anchor, _ := doc.getAnchor(el.ID.(string))
 			if anchor != nil {
