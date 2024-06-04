@@ -49,17 +49,17 @@ func renderCommands(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (
 			if cmd.Response != "" {
 				cx.CreateAttr("response", cmd.Response)
 			}
-		}
-		if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() {
-			a := cx.CreateElement("access")
-			if cmd.Access.Invoke != matter.PrivilegeUnknown {
-				a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
-			}
-			if cmd.Access.IsFabricScoped() {
-				a.CreateAttr("fabricScoped", "true")
-			}
-			if cmd.Access.IsTimed() {
-				a.CreateAttr("timed", "true")
+			if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() {
+				a := cx.CreateElement("access")
+				if cmd.Access.Invoke != matter.PrivilegeUnknown {
+					a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
+				}
+				if cmd.Access.IsFabricScoped() {
+					a.CreateAttr("fabricScoped", "true")
+				}
+				if cmd.Access.IsTimed() {
+					a.CreateAttr("timed", "true")
+				}
 			}
 		}
 
