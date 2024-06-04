@@ -38,7 +38,14 @@ func parseTable(attributes any, els []any) (table *asciidoc.Table, err error) {
 	cellIndex := 0
 	var currentTableRow *asciidoc.TableRow
 	colSkip := make(map[int]int)
+	var copiedPosition bool
 	for _, el := range els {
+		if !copiedPosition {
+			if pos, ok := el.(asciidoc.HasPosition); ok {
+				copyPosition(pos, table)
+				copiedPosition = true
+			}
+		}
 		switch el := el.(type) {
 		case []*asciidoc.TableCell:
 			for _, cell := range el {

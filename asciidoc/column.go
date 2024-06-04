@@ -155,9 +155,7 @@ func parseColumnAttribute(a *NamedAttribute) (*TableColumnsAttribute, error) {
 		}
 		return &TableColumnsAttribute{Columns: cols}, nil
 	}
-	ccs := strings.FieldsFunc(cs, func(r rune) bool {
-		return r == ',' || r == ';'
-	})
+	ccs := splitColsValue(cs)
 	cols := make([]*TableColumn, 0, len(ccs))
 	for _, c := range ccs {
 		col := NewTableColumn()
@@ -242,6 +240,19 @@ func parseColumnAttribute(a *NamedAttribute) (*TableColumnsAttribute, error) {
 	}
 
 	return &TableColumnsAttribute{Columns: cols}, nil
+}
+
+func splitColsValue(val string) (cols []string) {
+	for {
+		commaIndex := strings.IndexAny(val, ",;")
+		if commaIndex == -1 {
+			cols = append(cols, val)
+			break
+		}
+		cols = append(cols, val[:commaIndex])
+		val = val[commaIndex+1:]
+	}
+	return
 }
 
 type columnMatch uint8
