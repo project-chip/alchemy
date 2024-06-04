@@ -158,6 +158,7 @@ func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Fiel
 		x.CreateAttr("entryType", dts)
 	} else {
 		x.CreateAttr("type", dts)
+		x.RemoveAttr("entryType")
 	}
 }
 
