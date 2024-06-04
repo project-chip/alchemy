@@ -24,11 +24,11 @@ func dataModelName(dataType *types.DataType) string {
 	case types.BaseDataTypeSystimeMicroseconds:
 		return "systemtime-us"
 	case types.BaseDataTypeAmperage:
-		return "amperage-ma"
+		return "amperage-mA"
 	case types.BaseDataTypeVoltage:
-		return "voltage-mv"
+		return "voltage-mV"
 	case types.BaseDataTypeEnergy:
-		return "energy-mwh"
+		return "energy-mWh"
 	case types.BaseDataTypeVendorID:
 		return "vendor-id"
 	case types.BaseDataTypeSubjectID:
@@ -40,7 +40,7 @@ func dataModelName(dataType *types.DataType) string {
 	case types.BaseDataTypeFabricID:
 		return "fabric-id"
 	case types.BaseDataTypeFabricIndex:
-		return "fabric-index"
+		return "fabric-idx"
 	case types.BaseDataTypeActionID:
 		return "action-id"
 	case types.BaseDataTypeEndpointNumber:
@@ -96,7 +96,6 @@ func renderDefault(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
 	}
 	cons, err := constraint.ParseString(f.Default)
 	if err != nil {
-		cons = &constraint.GenericConstraint{Value: f.Default}
 		return
 	}
 	ec, ok := cons.(*constraint.ExactConstraint)
