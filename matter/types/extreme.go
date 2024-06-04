@@ -133,7 +133,7 @@ func (ce *DataTypeExtreme) DataModelString(dataType *DataType) string {
 		if dataType != nil {
 			switch dataType.BaseType {
 			case BaseDataTypeBoolean:
-				return strconv.FormatBool(ce.Int64 == 1)
+				return strconv.FormatBool(ce.UInt64 == 1)
 			}
 		}
 		return ce.formatUint64(dataType, ce.UInt64)
