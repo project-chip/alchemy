@@ -8,6 +8,16 @@ import (
 
 func renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {
 
+	if f.Access.Write != matter.PrivilegeUnknown && f.Type != nil && f.Type.Size() > 2 {
+		// ZAP can't handle min/max on types whose size is larger than two bytes, due to limitations in the template generation code
+		// See https://github.com/project-chip/zap/blob/master/src-electron/generator/helper-endpointconfig.js#L465
+		el.RemoveAttr("min")
+		el.RemoveAttr("max")
+		el.RemoveAttr("minLength")
+		el.RemoveAttr("length")
+		return
+	}
+
 	from, to := zap.GetMinMax(&matter.ConstraintContext{Field: f, Fields: fs}, f.Constraint)
 
 	if !from.Defined() {
