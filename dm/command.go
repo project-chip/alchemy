@@ -44,12 +44,21 @@ func renderCommands(doc *ascii.Doc, cluster *matter.Cluster, c *etree.Element) (
 		switch cmd.Direction {
 		case matter.InterfaceClient:
 			cx.CreateAttr("direction", "responseFromServer")
+			if cmd.Access.IsFabricScoped() {
+				a := cx.CreateElement("access")
+				if cmd.Access.IsFabricScoped() {
+					a.CreateAttr("fabricScoped", "true")
+				}
+				if cmd.Access.IsTimed() {
+					a.CreateAttr("timed", "true")
+				}
+			}
 		case matter.InterfaceServer:
 			cx.CreateAttr("direction", "commandToServer")
 			if cmd.Response != "" {
 				cx.CreateAttr("response", cmd.Response)
 			}
-			if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() {
+			if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() || cmd.Access.IsTimed() {
 				a := cx.CreateElement("access")
 				if cmd.Access.Invoke != matter.PrivilegeUnknown {
 					a.CreateAttr("invokePrivilege", strings.ToLower(matter.PrivilegeNamesShort[cmd.Access.Invoke]))
