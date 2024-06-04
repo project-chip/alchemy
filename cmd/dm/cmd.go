@@ -60,8 +60,17 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
+	clusterIDJSON, err := renderer.GenerateClusterIDsJson()
+	if err != nil {
+		return err
+	}
+	dataModelDocs.Store(clusterIDJSON.Path, clusterIDJSON)
+
 	writer := files.NewWriter[string]("Writing data model", fileOptions)
 	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, dataModelDocs)
+	if err != nil {
+		return err
+	}
 	return
 }
 
