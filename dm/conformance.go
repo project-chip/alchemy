@@ -6,6 +6,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/ascii"
+	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/types"
 )
@@ -164,15 +165,23 @@ func renderConformanceExpression(doc *ascii.Doc, identifierStore conformance.Ide
 			if !ok {
 				parent.CreateElement("condition").CreateAttr("name", e.Reference)
 			} else {
-				switch entity.EntityType() {
-				case types.EntityTypeAttribute, types.EntityTypeCondition:
-					parent.CreateElement("attribute").CreateAttr("name", e.Reference)
-				case types.EntityTypeCommand:
-					parent.CreateElement("command").CreateAttr("name", e.Reference)
-				case types.EntityTypeField:
-					parent.CreateElement("field").CreateAttr("name", e.Reference)
+				switch entity := entity.(type) {
+				case *matter.Field:
+					switch entity.EntityType() {
+					case types.EntityTypeAttribute:
+						parent.CreateElement("attribute").CreateAttr("name", entity.Name)
+					case types.EntityTypeField:
+						parent.CreateElement("field").CreateAttr("name", entity.Name)
+					}
+				case *matter.Command:
+					parent.CreateElement("command").CreateAttr("name", entity.Name)
 				default:
-					parent.CreateElement("condition").CreateAttr("name", e.Reference)
+					switch entity.EntityType() {
+					case types.EntityTypeCondition:
+						parent.CreateElement("attribute").CreateAttr("name", e.Reference)
+					default:
+						parent.CreateElement("condition").CreateAttr("name", e.Reference)
+					}
 				}
 			}
 		}
