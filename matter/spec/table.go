@@ -107,6 +107,9 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 		case *asciidoc.String:
 			value.WriteString(el.Value)
 		case *asciidoc.CrossReference:
+			if len(el.Set) > 0 {
+				return readRowCellValueElements(doc, el.Set, value)
+			}
 			var val string
 			anchor, _ := doc.getAnchor(el.ID)
 			if anchor != nil {

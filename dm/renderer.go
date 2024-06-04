@@ -2,31 +2,39 @@ package dm
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
+	"path/filepath"
+	"slices"
+	"sync"
 
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/spec"
+	"github.com/iancoleman/orderedmap"
 )
 
 type Renderer struct {
 	sdkRoot string
+
+	clusters     []*matter.Cluster
+	clustersLock sync.Mutex
 }
 
 func NewRenderer(sdkRoot string) *Renderer {
 	return &Renderer{sdkRoot: sdkRoot}
 }
 
-func (p Renderer) Name() string {
+func (p *Renderer) Name() string {
 	return "Saving data model"
 }
 
-func (p Renderer) Type() pipeline.ProcessorType {
+func (p *Renderer) Type() pipeline.ProcessorType {
 	return pipeline.ProcessorTypeIndividual
 }
 
-func (p Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*spec.Doc], err error) {
+func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*spec.Doc], err error) {
 	doc := input.Content
 	entites, err := doc.Entities()
 	if err != nil {
@@ -51,6 +59,9 @@ func (p Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], 
 			err = fmt.Errorf("failed rendering app clusters %s: %w", doc.Path, err)
 			return
 		}
+		p.clustersLock.Lock()
+		p.clusters = append(p.clusters, appClusters...)
+		p.clustersLock.Unlock()
 		outputs = append(outputs, &pipeline.Data[string]{Path: getAppClusterPath(p.sdkRoot, doc.Path), Content: s})
 	}
 	if len(deviceTypes) > 0 {
@@ -70,4 +81,25 @@ func (p Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], 
 		}
 	}
 	return
+}
+
+func (p *Renderer) GenerateClusterIDsJson() (*pipeline.Data[string], error) {
+	p.clustersLock.Lock()
+	defer p.clustersLock.Unlock()
+	slices.SortFunc(p.clusters, func(a *matter.Cluster, b *matter.Cluster) int {
+		return a.ID.Compare(b.ID)
+	})
+	o := orderedmap.New()
+	for _, c := range p.clusters {
+		if c.ID.Valid() {
+			o.Set(c.ID.IntString(), c.Name)
+		}
+	}
+	b, err := json.MarshalIndent(o, "", "    ")
+	if err != nil {
+		err = fmt.Errorf("error marshaling cluster ID json: %w", err)
+		return nil, err
+	}
+	path := filepath.Join(p.sdkRoot, "/data_model/clusters/cluster_ids.json")
+	return pipeline.NewData(path, string(b)), nil
 }
