@@ -44,7 +44,11 @@ func renderAppCluster(cxt context.Context, doc *spec.Doc, clusters []*matter.Clu
 	if cluster.ID.Valid() {
 		c.CreateAttr("id", cluster.ID.HexString())
 	}
-	c.CreateAttr("name", cluster.Name)
+	name := cluster.Name
+	if !strings.HasSuffix(name, " Cluster") {
+		name += " Cluster"
+	}
+	c.CreateAttr("name", name)
 
 	revs := c.CreateElement("revisionHistory")
 	var latestRev uint64 = 0
