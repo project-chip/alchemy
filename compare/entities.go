@@ -22,6 +22,10 @@ func Entities(spec *matter.Spec, specEntities map[string][]types.Entity, zapEnti
 		specClusters := make(map[uint64]*matter.Cluster)
 		for _, m := range sm {
 			switch v := m.(type) {
+			case *matter.ClusterGroup:
+				for _, c := range v.Clusters {
+					specClusters[c.ID.Value()] = c
+				}
 			case *matter.Cluster:
 				specClusters[v.ID.Value()] = v
 			default:

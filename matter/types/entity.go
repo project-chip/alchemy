@@ -9,6 +9,7 @@ type EntityType uint8
 const (
 	EntityTypeUnknown EntityType = iota
 	EntityTypeCluster
+	EntityTypeClusterGroup
 	EntityTypeBitmap
 	EntityTypeBitmapValue
 	EntityTypeEnum

@@ -21,7 +21,7 @@ func (mi entityIndex) addEntity(name string, entity types.Entity, cluster *matte
 	m[entity] = cluster
 }
 
-func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
+func BuildSpec(docs []*Doc, ignoreHierarchy bool) (spec *matter.Spec, err error) {
 
 	buildTree(docs)
 
@@ -68,48 +68,18 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 
 		for _, m := range entities {
 			switch m := m.(type) {
-			case *matter.Cluster:
-				if m.ID.Valid() {
-					spec.ClustersByID[m.ID.Value()] = m
+			case *matter.ClusterGroup:
+				for _, c := range m.Clusters {
+					addClusterToSpec(spec, d, c, entityIndex)
 				}
-				spec.ClustersByName[m.Name] = m
+			case *matter.Cluster:
 				switch m.Name {
 				case "Basic Information":
 					basicInformationCluster = m
 				case "Bridged Device Basic Information":
 					bridgedBasicInformationCluster = m
 				}
-
-				for _, en := range m.Bitmaps {
-					_, ok := spec.Bitmaps[en.Name]
-					if ok {
-						slog.Debug("multiple bitmaps with same name", "name", en.Name)
-					} else {
-						spec.Bitmaps[en.Name] = en
-					}
-					spec.DocRefs[en] = d.Path
-					entityIndex.addEntity(en.Name, en, m)
-				}
-				for _, en := range m.Enums {
-					_, ok := spec.Enums[en.Name]
-					if ok {
-						slog.Debug("multiple enums with same name", "name", en.Name)
-					} else {
-						spec.Enums[en.Name] = en
-					}
-					spec.DocRefs[en] = d.Path
-					entityIndex.addEntity(en.Name, en, m)
-				}
-				for _, en := range m.Structs {
-					_, ok := spec.Structs[en.Name]
-					if ok {
-						slog.Debug("multiple structs with same name", "name", en.Name)
-					} else {
-						spec.Structs[en.Name] = en
-					}
-					spec.DocRefs[en] = d.Path
-					entityIndex.addEntity(en.Name, en, m)
-				}
+				addClusterToSpec(spec, d, m, entityIndex)
 			case *matter.DeviceType:
 				spec.DeviceTypes[m.ID.Value()] = m
 			case *matter.Bitmap:
@@ -144,7 +114,9 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 		}
 	}
 
-	resolveHierarchy(spec)
+	if !ignoreHierarchy {
+		resolveHierarchy(spec)
+	}
 	resolveDataTypeReferences(spec, entityIndex)
 	err = updateBridgedBasicInformationCluster(basicInformationCluster, bridgedBasicInformationCluster)
 	if err != nil {
@@ -176,6 +148,44 @@ func BuildSpec(docs []*Doc) (spec *matter.Spec, err error) {
 		}
 	}
 	return
+}
+
+func addClusterToSpec(spec *matter.Spec, d *Doc, m *matter.Cluster, entityIndex entityIndex) {
+	if m.ID.Valid() {
+		spec.ClustersByID[m.ID.Value()] = m
+	}
+	spec.ClustersByName[m.Name] = m
+
+	for _, en := range m.Bitmaps {
+		_, ok := spec.Bitmaps[en.Name]
+		if ok {
+			slog.Debug("multiple bitmaps with same name", "name", en.Name)
+		} else {
+			spec.Bitmaps[en.Name] = en
+		}
+		spec.DocRefs[en] = d.Path
+		entityIndex.addEntity(en.Name, en, m)
+	}
+	for _, en := range m.Enums {
+		_, ok := spec.Enums[en.Name]
+		if ok {
+			slog.Debug("multiple enums with same name", "name", en.Name)
+		} else {
+			spec.Enums[en.Name] = en
+		}
+		spec.DocRefs[en] = d.Path
+		entityIndex.addEntity(en.Name, en, m)
+	}
+	for _, en := range m.Structs {
+		_, ok := spec.Structs[en.Name]
+		if ok {
+			slog.Debug("multiple structs with same name", "name", en.Name)
+		} else {
+			spec.Structs[en.Name] = en
+		}
+		spec.DocRefs[en] = d.Path
+		entityIndex.addEntity(en.Name, en, m)
+	}
 }
 
 func resolveDataTypeReferences(spec *matter.Spec, mi entityIndex) {

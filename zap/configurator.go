@@ -33,37 +33,44 @@ func NewConfigurator(spec *matter.Spec, doc *spec.Doc, entities []types.Entity) 
 	}
 	for _, m := range entities {
 		switch v := m.(type) {
+		case *matter.ClusterGroup:
+			for _, cl := range v.Clusters {
+				c.addCluster(cl)
+			}
 		case *matter.Cluster:
-
-			c.addTypes(v.Attributes)
-			if v.Features != nil {
-				c.addEntityType(v.Features)
-			}
-			for _, s := range v.Bitmaps {
-				c.addEntityType(s)
-			}
-			for _, s := range v.Enums {
-				c.addEntityType(s)
-			}
-			for _, s := range v.Structs {
-				c.addEntityType(s)
-			}
-			for _, cmd := range v.Commands {
-				c.addTypes(cmd.Fields)
-			}
-			for _, e := range v.Events {
-				c.addTypes(e.Fields)
-			}
-
-			if v.ID.Valid() {
-				c.ClusterIDs = append(c.ClusterIDs, v.ID.HexString())
-			}
-			c.Clusters[v] = false
+			c.addCluster(v)
 		case *matter.Bitmap, *matter.Enum, *matter.Struct:
 			c.addEntityType(v)
 		}
 	}
 	return c, nil
+}
+
+func (c *Configurator) addCluster(v *matter.Cluster) {
+	c.addTypes(v.Attributes)
+	if v.Features != nil {
+		c.addEntityType(v.Features)
+	}
+	for _, s := range v.Bitmaps {
+		c.addEntityType(s)
+	}
+	for _, s := range v.Enums {
+		c.addEntityType(s)
+	}
+	for _, s := range v.Structs {
+		c.addEntityType(s)
+	}
+	for _, cmd := range v.Commands {
+		c.addTypes(cmd.Fields)
+	}
+	for _, e := range v.Events {
+		c.addTypes(e.Fields)
+	}
+
+	if v.ID.Valid() {
+		c.ClusterIDs = append(c.ClusterIDs, v.ID.HexString())
+	}
+	c.Clusters[v] = false
 }
 
 func (c *Configurator) addTypes(fs matter.FieldSet) {

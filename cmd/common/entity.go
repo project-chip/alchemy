@@ -20,6 +20,9 @@ func (sp *EntityFilter[I, O]) Type() pipeline.ProcessorType {
 }
 
 func (sp *EntityFilter[I, O]) Process(cxt context.Context, inputs []*pipeline.Data[I]) (outputs []*pipeline.Data[[]O], err error) {
+	type explodable interface {
+		Explode() []O
+	}
 	for _, i := range inputs {
 		var entities []types.Entity
 		entities, err = i.Content.Entities()
@@ -31,6 +34,10 @@ func (sp *EntityFilter[I, O]) Process(cxt context.Context, inputs []*pipeline.Da
 		var matches []O
 		for _, e := range entities {
 			switch e := e.(type) {
+			case explodable:
+				for _, o := range e.Explode() {
+					matches = append(matches, o)
+				}
 			case O:
 				matches = append(matches, e)
 			}

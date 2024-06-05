@@ -5,14 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"os"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"sync"
 
+	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/spec"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/orderedmap"
+	"github.com/iancoleman/strcase"
 )
 
 type Renderer struct {
@@ -42,28 +47,55 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 		err = nil
 		return
 	}
-	var appClusters []*matter.Cluster
+	var appClusters []types.Entity
 	var deviceTypes []*matter.DeviceType
 	for _, e := range entites {
 		switch e := e.(type) {
-		case *matter.Cluster:
+		case *matter.ClusterGroup, *matter.Cluster:
 			appClusters = append(appClusters, e)
 		case *matter.DeviceType:
 			deviceTypes = append(deviceTypes, e)
 		}
 	}
-	if len(appClusters) > 0 {
+
+	if len(appClusters) == 1 {
 		var s string
-		s, err = renderAppCluster(cxt, doc, appClusters)
+		switch e := appClusters[0].(type) {
+		case *matter.ClusterGroup:
+			if len(e.Clusters) == 0 {
+				err = fmt.Errorf("empty cluster group %s", doc.Path)
+				return
+			}
+			s, err = p.renderAppCluster(cxt, doc, e.Clusters...)
+		case *matter.Cluster:
+			s, err = p.renderAppCluster(cxt, doc, e)
+		}
 		if err != nil {
 			err = fmt.Errorf("failed rendering app clusters %s: %w", doc.Path, err)
 			return
 		}
-		p.clustersLock.Lock()
-		p.clusters = append(p.clusters, appClusters...)
-		p.clustersLock.Unlock()
-		outputs = append(outputs, &pipeline.Data[string]{Path: getAppClusterPath(p.sdkRoot, doc.Path), Content: s})
+		outputs = append(outputs, &pipeline.Data[string]{Path: getAppClusterPath(p.sdkRoot, doc.Path, ""), Content: s})
+	} else if len(appClusters) > 1 {
+		for _, e := range appClusters {
+			var s string
+			var clusterName string
+			switch e := e.(type) {
+			case *matter.ClusterGroup:
+				s, err = p.renderAppCluster(cxt, doc, e.Clusters...)
+				clusterName = e.Clusters[0].Name
+			case *matter.Cluster:
+				s, err = p.renderAppCluster(cxt, doc, e)
+				clusterName = e.Name
+			}
+			if err != nil {
+				err = fmt.Errorf("failed rendering app clusters %s: %w", doc.Path, err)
+				return
+			}
+			clusterName = strcase.ToCamel(clusterName + " Cluster")
+			outputs = append(outputs, &pipeline.Data[string]{Path: getAppClusterPath(p.sdkRoot, doc.Path, clusterName), Content: s})
+		}
 	}
+
 	if len(deviceTypes) > 0 {
 		var s string
 		s, err = renderDeviceType(cxt, doc, deviceTypes)
@@ -84,22 +116,62 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 }
 
 func (p *Renderer) GenerateClusterIDsJson() (*pipeline.Data[string], error) {
+	type cluster struct {
+		id   *matter.Number
+		name string
+	}
+	clusters := make(map[uint64]string)
+
+	path := filepath.Join(p.sdkRoot, "/data_model/clusters/cluster_ids.json")
+
+	exists, err := files.Exists(path)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		var clusterListBytes []byte
+		clusterListBytes, err = os.ReadFile(path)
+		if err != nil {
+			return nil, err
+		}
+		var clusterList map[string]any
+		err = json.Unmarshal(clusterListBytes, &clusterList)
+		if err != nil {
+			return nil, err
+		}
+		for id, name := range clusterList {
+			mid := matter.ParseNumber(id)
+			if mid.Valid() {
+				clusters[mid.Value()] = name.(string)
+			}
+		}
+	}
+
 	p.clustersLock.Lock()
 	defer p.clustersLock.Unlock()
-	slices.SortFunc(p.clusters, func(a *matter.Cluster, b *matter.Cluster) int {
-		return a.ID.Compare(b.ID)
-	})
-	o := orderedmap.New()
 	for _, c := range p.clusters {
 		if c.ID.Valid() {
-			o.Set(c.ID.IntString(), c.Name)
+			clusters[c.ID.Value()] = c.Name
 		}
+	}
+
+	var clusterIDs []uint64
+	for id := range clusters {
+		clusterIDs = append(clusterIDs, id)
+	}
+
+	slices.Sort(clusterIDs)
+	o := orderedmap.New()
+	for _, cid := range clusterIDs {
+		name := clusters[cid]
+		id := strconv.FormatUint(cid, 10)
+		o.Set(id, name)
+
 	}
 	b, err := json.MarshalIndent(o, "", "    ")
 	if err != nil {
 		err = fmt.Errorf("error marshaling cluster ID json: %w", err)
 		return nil, err
 	}
-	path := filepath.Join(p.sdkRoot, "/data_model/clusters/cluster_ids.json")
 	return pipeline.NewData(path, string(b)), nil
 }
