@@ -2518,26 +2518,58 @@ var shouldReturnEmptyidsTable = &asciidoc.Document{
 		asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.String{
-			Value: "|===",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "a|",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.BlockImage{
+		&asciidoc.Table{
 			AttributeList: nil,
-			Path: asciidoc.Set{
-				&asciidoc.String{
-					Value: "inner.png",
+			ColumnCount:   1,
+			Set: asciidoc.Set{
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 1,
+									IsSet: true,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.NewLine{},
+								&asciidoc.BlockImage{
+									AttributeList: nil,
+									Path: asciidoc.Set{
+										&asciidoc.String{
+											Value: "inner.png",
+										},
+									},
+								},
+							},
+							Blank: false,
+						},
+					},
 				},
 			},
 		},
-		&asciidoc.String{
-			Value: "|===",
-		},
-		&asciidoc.NewLine{},
 	},
 }
 
