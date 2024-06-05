@@ -66,6 +66,10 @@ func (sp *ZapParser) Process(cxt context.Context, input *pipeline.Data[[]byte], 
 					sp.lock.Lock()
 					for _, e := range cm {
 						switch e := e.(type) {
+						case *matter.ClusterGroup:
+							for _, c := range e.Clusters {
+								sp.clusterReferences[c.ID.Value()] = c
+							}
 						case *matter.Cluster:
 							sp.clusterReferences[e.ID.Value()] = e
 						}

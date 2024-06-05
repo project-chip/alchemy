@@ -41,6 +41,8 @@ func SpecTargeter(specRoot string) func(cxt context.Context) ([]string, error) {
 
 type SpecParser struct {
 	Spec *matter.Spec
+
+	IgnoreHierarchy bool
 }
 
 func (sp SpecParser) Name() string {
@@ -56,7 +58,7 @@ func (sp *SpecParser) Process(cxt context.Context, inputs []*pipeline.Data[*spec
 	for _, i := range inputs {
 		docs = append(docs, i.Content)
 	}
-	sp.Spec, err = spec.BuildSpec(docs)
+	sp.Spec, err = spec.BuildSpec(docs, sp.IgnoreHierarchy)
 	outputs = inputs
 	return
 }

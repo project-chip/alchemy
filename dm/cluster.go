@@ -13,9 +13,13 @@ import (
 	"github.com/hasty/alchemy/matter/spec"
 )
 
-func getAppClusterPath(sdkRoot string, path string) string {
+func getAppClusterPath(sdkRoot string, path string, clusterName string) string {
 	path = filepath.Base(path)
-	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/clusters/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
+	file := strings.TrimSuffix(path, filepath.Ext(path))
+	if len(clusterName) > 0 {
+		file += "-" + clusterName
+	}
+	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/clusters/%s.xml", file))
 }
 
 type clusterID struct {
@@ -23,7 +27,7 @@ type clusterID struct {
 	name string
 }
 
-func renderAppCluster(cxt context.Context, doc *spec.Doc, clusters []*matter.Cluster) (output string, err error) {
+func (p *Renderer) renderAppCluster(cxt context.Context, doc *spec.Doc, clusters ...*matter.Cluster) (output string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
@@ -110,5 +114,9 @@ func renderAppCluster(cxt context.Context, doc *spec.Doc, clusters []*matter.Clu
 	var b bytes.Buffer
 	_, err = x.WriteTo(&b)
 	output = b.String()
+
+	p.clustersLock.Lock()
+	p.clusters = append(p.clusters, clusters...)
+	p.clustersLock.Unlock()
 	return
 }

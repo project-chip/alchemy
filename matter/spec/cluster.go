@@ -121,8 +121,10 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]matte
 		assignCustomDataTypes(c)
 	}
 
-	for _, c := range clusters {
-		entities = append(entities, c)
+	if len(clusters) == 1 {
+		entities = append(entities, clusters[0])
+	} else if len(clusters) > 1 {
+		entities = append(entities, &matter.ClusterGroup{Clusters: clusters})
 	}
 	entityMap[s.Base] = append(entityMap[s.Base], entities...)
 	return entities, nil

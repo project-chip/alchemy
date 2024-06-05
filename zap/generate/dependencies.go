@@ -12,6 +12,10 @@ import (
 func findDependencies(spec *matter.Spec, entities []types.Entity, dependencies pipeline.Map[string, bool]) {
 	for _, m := range entities {
 		switch m := m.(type) {
+		case *matter.ClusterGroup:
+			for _, c := range m.Clusters {
+				findClusterDependencies(spec, c, dependencies)
+			}
 		case *matter.Cluster:
 			findClusterDependencies(spec, m, dependencies)
 		case *matter.Struct:

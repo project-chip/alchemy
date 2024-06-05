@@ -39,6 +39,13 @@ func (h *Host) indexDoc(ctx context.Context, doc *spec.Doc, raw bool) (*sectionI
 		}
 		for _, m := range entities {
 			switch v := m.(type) {
+			case *matter.ClusterGroup:
+				for _, c := range v.Clusters {
+					err = h.indexClusterModel(ctx, ds, c)
+					if err != nil {
+						break
+					}
+				}
 			case *matter.Cluster:
 				err = h.indexClusterModel(ctx, ds, v)
 			case *matter.DeviceType:

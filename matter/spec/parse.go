@@ -22,19 +22,6 @@ func ParseFile(path string, attributes ...asciidoc.AttributeName) (*Doc, error) 
 }
 
 func Parse(contents string, path string, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
-	/*baseConfig := make([]configuration.Setting, 0, len(settings)+1)
-	baseConfig = append(baseConfig, configuration.WithFilename(path))
-	baseConfig = append(baseConfig, settings...)
-
-	config := configuration.NewConfiguration(baseConfig...)
-	config.IgnoreIncludes = true
-
-
-
-	contents, err = parser.Preprocess(strings.NewReader(contents), config)
-	if err != nil {
-		return nil, err
-	}*/
 
 	contents = text.RemoveComments(contents)
 
@@ -78,32 +65,8 @@ func ParseDocument(r io.Reader, path string, attributes ...asciidoc.AttributeNam
 		return &asciidoc.Document{}, nil
 	}
 
+
 	return parse.Reader(path, strings.NewReader(parsed))
-
-	/*newContext := func() *parser.ParseContext {
-		c := parser.NewParseContext(config, opts...)
-		//c.IgnoreColumnDefs(true)
-		c.SuppressAttributeSubstitution(true)
-		return c
-	}
-
-	footnotes := asciidoc.NewFootnotes()
-	doc, err := parser.Aggregate(newContext(),
-		parser.CollectFootnotes(footnotes, done,
-			parser.ApplySubstitutions(newContext(), done,
-				parser.RefineFragments(newContext(), r, done,
-					parser.ParseDocumentFragments(newContext(), r, done),
-				),
-			),
-		),
-	)
-	if err != nil {
-		return nil, err
-	}
-	if len(footnotes.Notes) > 0 {
-		doc.Footnotes = footnotes.Notes
-	}*/
-	//	return doc, nil
 }
 
 type Parser struct {
