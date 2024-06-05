@@ -28,7 +28,7 @@ func ClusterName(path string, errata *Errata, entities []types.Entity) string {
 	var suffix string
 	for _, m := range entities {
 		switch m.(type) {
-		case *matter.Cluster:
+		case *matter.Cluster, matter.ClusterGroup:
 			suffix = "Cluster"
 		}
 	}
@@ -46,16 +46,4 @@ func DeviceTypeName(deviceType *matter.DeviceType) string {
 func getZapPath(sdkRoot string, name string) string {
 	newPath := filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip", name+".xml")
 	return newPath
-}
-
-func ClusterPath(sdkRoot string, path string, entities []types.Entity) string {
-	newFile := filepath.Base(path)
-	errata, ok := Erratas[newFile]
-	if !ok {
-		errata = DefaultErrata
-	}
-
-	newFile = ClusterName(path, errata, entities)
-	newFile = strcase.ToKebab(newFile)
-	return getZapPath(sdkRoot, newFile)
 }

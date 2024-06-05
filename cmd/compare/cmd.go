@@ -108,6 +108,10 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 			var clusters []types.Entity
 			for _, e := range entities {
 				switch e := e.(type) {
+				case *matter.ClusterGroup:
+					for _, c := range e.Clusters {
+						clusters = append(clusters, c)
+					}
 				case *matter.Cluster:
 					clusters = append(clusters, e)
 				}

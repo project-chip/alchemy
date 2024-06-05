@@ -7,6 +7,18 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
+type ClusterGroup struct {
+	Clusters []*Cluster
+}
+
+func (c ClusterGroup) EntityType() types.EntityType {
+	return types.EntityTypeClusterGroup
+}
+
+func (c ClusterGroup) Explode() []*Cluster {
+	return c.Clusters
+}
+
 type Cluster struct {
 	ID          *Number     `json:"id,omitempty"`
 	Name        string      `json:"name,omitempty"`

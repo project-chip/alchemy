@@ -39,6 +39,12 @@ func ZAPTemplateDestinations(sdkRoot string, docPath string, entities []types.En
 		var clusters []types.Entity
 		for _, m := range entities {
 			switch m := m.(type) {
+			case *matter.ClusterGroup:
+				for _, c := range m.Clusters {
+					if c.ID.Equals(cid) {
+						clusters = append(clusters, c)
+					}
+				}
 			case *matter.Cluster:
 				if m.ID.Equals(cid) {
 					clusters = append(clusters, m)

@@ -41,6 +41,7 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 	var specParser files.SpecParser
+	specParser.IgnoreHierarchy = true
 	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocs)
 	if err != nil {
 		return err
