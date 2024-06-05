@@ -32,6 +32,10 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		if len(a.Default) > 0 {
 			ax.CreateAttr("default", a.Default)
 		}
+		err = renderAnonymousType(doc, cluster, ax, a)
+		if err != nil {
+			return
+		}
 		renderAttributeAccess(ax, a.Access)
 		renderQuality(ax, a.Quality, matter.QualityAll^(matter.QualitySingleton))
 		err = renderConformanceString(doc, cluster, a.Conformance, ax)
@@ -44,6 +48,41 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		}
 		renderDefault(cluster.Attributes, a, ax)
 	}
+	return
+}
+
+func renderAnonymousType(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Element, field *matter.Field) error {
+	switch at := field.AnonymousType.(type) {
+	case *matter.AnonymousEnum:
+		return renderAnonymousEnum(doc, cluster, ax, at)
+	case *matter.AnonymousBitmap:
+		return renderAnonymousBitmap(doc, cluster, ax, at)
+	default:
+	}
+	return nil
+}
+
+func renderAnonymousEnum(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Element, an *matter.AnonymousEnum) (err error) {
+	en := ax.CreateElement("enum")
+	for index, v := range an.Values {
+		err = renderEnumValue(doc, cluster, en, index, v)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func renderAnonymousBitmap(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Element, bm *matter.AnonymousBitmap) (err error) {
+	en := ax.CreateElement("bitmap")
+	size := bm.Size()
+	for _, v := range bm.Bits {
+		err = renderBit(doc, cluster, en, v, size)
+		if err != nil {
+			return
+		}
+	}
+
 	return
 }
 

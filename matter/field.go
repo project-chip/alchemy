@@ -19,6 +19,9 @@ type Field struct {
 	Default     string                `json:"default,omitempty"`
 	Conformance conformance.Set       `json:"conformance,omitempty"`
 
+	// Hopefully this will go away as we continue disco-balling the spec
+	AnonymousType any `json:"anonymousType,omitempty"`
+
 	entity types.EntityType
 }
 

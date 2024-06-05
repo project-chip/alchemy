@@ -21,28 +21,33 @@ func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (e
 		en.CreateAttr("name", bm.Name)
 		size := bm.Size() / 4
 		for _, v := range bm.Bits {
-			val := matter.ParseNumber(v.Bit())
-			var mask uint64
-			if !val.Valid() {
-				var e error
-				mask, e = v.Mask()
-				if e != nil {
-					continue
-				}
-			}
-			i := en.CreateElement("bitfield")
-			i.CreateAttr("name", v.Name())
-			if mask > 0 {
-				i.CreateAttr("mask", fmt.Sprintf("0x%0*X", size, mask))
-			} else {
-				i.CreateAttr("bit", val.IntString())
-			}
-			i.CreateAttr("summary", v.Summary())
-			err = renderConformanceString(doc, cluster, v.Conformance(), i)
+			err = renderBit(doc, cluster, en, v, size)
 			if err != nil {
 				return
 			}
 		}
 	}
+	return
+}
+
+func renderBit(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, v matter.Bit, size int) (err error) {
+	val := matter.ParseNumber(v.Bit())
+	var mask uint64
+	if !val.Valid() {
+		var e error
+		mask, e = v.Mask()
+		if e != nil {
+			return
+		}
+	}
+	i := en.CreateElement("bitfield")
+	i.CreateAttr("name", v.Name())
+	if mask > 0 {
+		i.CreateAttr("mask", fmt.Sprintf("0x%0*X", size, mask))
+	} else {
+		i.CreateAttr("bit", val.IntString())
+	}
+	i.CreateAttr("summary", v.Summary())
+	err = renderConformanceString(doc, cluster, v.Conformance(), i)
 	return
 }

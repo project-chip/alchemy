@@ -88,20 +88,10 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[asci
 					continue
 				}
 			}
-			p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
-			if p != nil {
-				var foundString bool
-				var description strings.Builder
-				for _, e := range p.Elements() {
-					s, ok := e.(*asciidoc.String)
-					if ok {
-						foundString = true
-						description.WriteString(s.Value)
-					} else if foundString {
-						break
-					}
-				}
-				c.Description = strings.ReplaceAll(description.String(), "\n", " ")
+
+			var desc = parse.FindFirst[*asciidoc.String](s.Elements())
+			if desc != nil {
+				c.Description = strings.ReplaceAll(desc.Value, "\n", " ")
 			}
 
 			var rows []*asciidoc.TableRow
@@ -122,6 +112,14 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[asci
 				return
 			}
 			entityMap[s.Base] = append(entityMap[s.Base], c)
+			fieldMap := make(map[string]*matter.Field, len(c.Fields))
+			for _, f := range c.Fields {
+				fieldMap[f.Name] = f
+			}
+			err = s.mapFields(fieldMap, entityMap)
+			if err != nil {
+				return
+			}
 		}
 	}
 	return
