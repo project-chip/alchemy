@@ -11,6 +11,7 @@ import (
 	"github.com/hasty/alchemy/db"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/spf13/cobra"
 )
 
