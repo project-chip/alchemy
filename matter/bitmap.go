@@ -250,3 +250,24 @@ func (bs BitSet) Identifier(name string) (types.Entity, bool) {
 	}
 	return nil, false
 }
+
+type AnonymousBitmap struct {
+	Type *types.DataType `json:"type,omitempty"`
+	Bits BitSet          `json:"bits,omitempty"`
+}
+
+func (bm *AnonymousBitmap) Size() int {
+	if bm.Type == nil {
+		return 8
+	}
+	switch bm.Type.BaseType {
+	case types.BaseDataTypeMap64:
+		return 64
+	case types.BaseDataTypeMap32:
+		return 32
+	case types.BaseDataTypeMap16:
+		return 16
+	default:
+		return 8
+	}
+}

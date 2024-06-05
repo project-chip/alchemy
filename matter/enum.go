@@ -119,3 +119,8 @@ func (es EnumValueSet) Identifier(name string) (types.Entity, bool) {
 	}
 	return nil, false
 }
+
+type AnonymousEnum struct {
+	Type   *types.DataType `json:"type,omitempty"`
+	Values EnumValueSet    `json:"values,omitempty"`
+}

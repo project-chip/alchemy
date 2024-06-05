@@ -94,6 +94,14 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[asciid
 			}
 			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeEvent)
 			entityMap[s.Base] = append(entityMap[s.Base], e)
+			fieldMap := make(map[string]*matter.Field, len(e.Fields))
+			for _, f := range e.Fields {
+				fieldMap[f.Name] = f
+			}
+			err = s.mapFields(fieldMap, entityMap)
+			if err != nil {
+				return
+			}
 		}
 	}
 	return
