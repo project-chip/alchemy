@@ -97,7 +97,7 @@ AnyText = CharacterClassInline* {
     return string(c.text), nil
 }
 
-AnySpaces = _* {
+AnySpaces = [ \t]* {
     return string(c.text), nil
 }
 

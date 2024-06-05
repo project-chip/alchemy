@@ -12705,7 +12705,7 @@ var shouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderR
 		asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Paragraph{
+		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TableColumnsAttribute{
 					Columns: []*asciidoc.TableColumn{
@@ -12764,29 +12764,86 @@ var shouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderR
 					},
 				},
 			},
+			ColumnCount: 2,
 			Set: asciidoc.Set{
-				&asciidoc.String{
-					Value: "|===",
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.NewLine{},
+								&asciidoc.String{
+									Value: "literal",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "normal",
+								},
+							},
+							Blank: false,
+						},
+					},
 				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "|",
-				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "  literal",
-				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "| normal",
-				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "|===",
-				},
-				&asciidoc.NewLine{},
 			},
-			Admonition: 0,
 		},
 	},
 }
@@ -15005,7 +15062,7 @@ var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &ascii
 		asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Paragraph{
+		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
 					Val: asciidoc.Set{
@@ -15141,73 +15198,630 @@ var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &ascii
 					Quote: 2,
 				},
 			},
+			ColumnCount: 4,
 			Set: asciidoc.Set{
-				&asciidoc.String{
-					Value: "|===",
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "Date",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "Duration",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "Avg HR",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "Notes",
+								},
+							},
+							Blank: false,
+						},
+					},
 				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "|Date |Duration |Avg HR |Notes",
+				asciidoc.EmptyLine{
+					Text: "\n",
 				},
-				&asciidoc.NewLine{},
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "22-Aug-08",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "10:24",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "157",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.NewLine{},
+								&asciidoc.String{
+									Value: "Worked out MSHR (max sustainable heart rate) by going hard",
+								},
+								&asciidoc.NewLine{},
+								&asciidoc.String{
+									Value: "for this interval.",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+				asciidoc.EmptyLine{
+					Text: "\n",
+				},
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "22-Aug-08",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "23:03",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "152",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.NewLine{},
+								&asciidoc.String{
+									Value: "Back-to-back with previous interval.",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+				asciidoc.EmptyLine{
+					Text: "\n",
+				},
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "24-Aug-08",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "40:00",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "145",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.NewLine{},
+								&asciidoc.String{
+									Value: "Moderately hard interspersed with 3x 3min intervals (2 min",
+								},
+								&asciidoc.NewLine{},
+								&asciidoc.String{
+									Value: "hard + 1 min really hard taking the HR up to 160).",
+								},
+								&asciidoc.NewLine{},
+								&asciidoc.NewLine{},
+								&asciidoc.String{
+									Value: "I am getting in shape!",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+				asciidoc.EmptyLine{
+					Text: "\n",
+				},
 			},
-			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
-			Text: "",
-		},
-		&asciidoc.String{
-			Value: "|22-Aug-08 |10:24 | 157 |",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "Worked out MSHR (max sustainable heart rate) by going hard",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "for this interval.",
-		},
-		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
-			Text: "",
-		},
-		&asciidoc.String{
-			Value: "|22-Aug-08 |23:03 | 152 |",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "Back-to-back with previous interval.",
-		},
-		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
-			Text: "",
-		},
-		&asciidoc.String{
-			Value: "|24-Aug-08 |40:00 | 145 |",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "Moderately hard interspersed with 3x 3min intervals (2 min",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "hard + 1 min really hard taking the HR up to 160).",
-		},
-		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
-			Text: "",
-		},
-		&asciidoc.String{
-			Value: "I am getting in shape!",
-		},
-		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
-			Text: "",
-		},
-		&asciidoc.String{
-			Value: "|===",
-		},
-		&asciidoc.NewLine{},
 	},
 }
 
@@ -19433,26 +20047,93 @@ var shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStart
 		asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.String{
-			Value: "|===",
+		&asciidoc.Table{
+			AttributeList: nil,
+			ColumnCount:   1,
+			Set: asciidoc.Set{
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 1,
+									IsSet: true,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.NewLine{},
+								&asciidoc.String{
+									Value: "$ command",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 1,
+									IsSet: true,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "paragraph",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+			},
 		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "a|",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: " $ command",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "a| paragraph",
-		},
-		&asciidoc.NewLine{},
-		&asciidoc.String{
-			Value: "|===",
-		},
-		&asciidoc.NewLine{},
 	},
 }
 
@@ -20642,7 +21323,7 @@ var compatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document
 		asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Paragraph{
+		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TableColumnsAttribute{
 					Columns: []*asciidoc.TableColumn{
@@ -20675,29 +21356,90 @@ var compatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document
 					},
 				},
 			},
+			ColumnCount: 1,
 			Set: asciidoc.Set{
-				&asciidoc.String{
-					Value: "|===",
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "The word 'oblique' is emphasized.",
+								},
+							},
+							Blank: false,
+						},
+					},
 				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "|The word 'oblique' is emphasized.",
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 1,
+									IsSet: true,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.NewLine{},
+								&asciidoc.String{
+									Value: "The word 'slanted' is emphasized.",
+								},
+							},
+							Blank: false,
+						},
+					},
 				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "a|",
-				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "The word 'slanted' is emphasized.",
-				},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "|===",
-				},
-				&asciidoc.NewLine{},
 			},
-			Admonition: 0,
 		},
 		asciidoc.EmptyLine{
 			Text: "",
