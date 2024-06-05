@@ -2,10 +2,8 @@ package spec
 
 import (
 	"log/slog"
-	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -67,19 +65,6 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 		attributes = append(attributes, attr)
 		attributeMap[attr.Name] = attr
 	}
-	for _, s := range parse.Skim[*Section](s.Elements()) {
-		switch s.SecType {
-		case matter.SectionAttribute:
-
-			name := strings.TrimSuffix(s.Name, " Attribute")
-			a, ok := attributeMap[name]
-			if !ok {
-				slog.Debug("unknown attribute", "attribute", name)
-				continue
-			}
-
-			entityMap[s.Base] = append(entityMap[s.Base], a)
-		}
-	}
+	err = s.mapFields(attributeMap, entityMap)
 	return
 }

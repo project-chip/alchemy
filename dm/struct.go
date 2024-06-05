@@ -44,6 +44,10 @@ func renderField(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *
 	i.CreateAttr("id", f.ID.IntString())
 	i.CreateAttr("name", f.Name)
 	renderDataType(f, i)
+	err = renderAnonymousType(doc, cluster, i, f)
+	if err != nil {
+		return
+	}
 	renderAttributeAccess(i, f.Access)
 	renderQuality(i, f.Quality, matter.QualityNullable)
 	err = renderConformanceString(doc, fs, f.Conformance, i)

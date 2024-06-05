@@ -87,6 +87,10 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 			if len(f.Default) > 0 {
 				i.CreateAttr("default", f.Default)
 			}
+			err = renderAnonymousType(doc, cluster, i, f)
+			if err != nil {
+				return
+			}
 			renderQuality(i, f.Quality, matter.QualityNullable)
 			err = renderConformanceString(doc, cmd.Fields, f.Conformance, i)
 			if err != nil {
