@@ -17,29 +17,29 @@ TableElement = (
         / TableRow
         ) 
 
-TableStart = !"\\" "|===" "="* _* &EndOfLine  {
+TableStart = !"\\" "|===" "="* AnySpaces &EndOfLine  {
     debugPosition(c, "TABLE: matched table start %s\n", string(c.text))
     return asciidoc.NewString(string(c.text)), nil
 }
 
-TableEmptyLine = !TableEnd NewLine _* &(NewLine )  {
+TableEmptyLine = !TableEnd NewLine AnySpaces &(NewLine )  {
     debugPosition(c, "TABLE: matched table empty line %s\n", string(c.text))
     return compose(c, asciidoc.NewEmptyLine(string(c.text)))
 }
 
 TableMacros = (TableIfDef / TableIfNDef / TableEndIfDef / TableComment / TableMultiLineComment)
 
-TableIfDef = !TableEnd NewLine _* ifdef:IfDef  {
+TableIfDef = !TableEnd NewLine AnySpaces ifdef:IfDef  {
     debugPosition(c, "TABLE: matched table ifdef %s\n", string(c.text))
     return compose(c, ifdef.(*asciidoc.IfDef))
 }
 
-TableIfNDef = !TableEnd NewLine _* ifndef:IfNDef   {
+TableIfNDef = !TableEnd NewLine AnySpaces ifndef:IfNDef   {
     debugPosition(c, "TABLE: matched table ifndef %s\n", string(c.text))
     return compose(c, ifndef.(*asciidoc.IfNDef))
 }
 
-TableEndIfDef = !TableEnd NewLine _* endifdef:EndIfDef   {
+TableEndIfDef = !TableEnd NewLine AnySpaces endifdef:EndIfDef   {
     debugPosition(c, "TABLE: matched table end if %s\n", string(c.text))
     return compose(c, endifdef.(*asciidoc.EndIf))
 }
@@ -78,7 +78,7 @@ TableCellInlineContentElement = element:(
     return element, nil
 }
 
-TableEnd = NewLine !"\\" "|===" "="* _* &EndOfLine   {
+TableEnd = NewLine !"\\" "|===" "="* AnySpaces &EndOfLine   {
     debugPosition(c, "TABLE: matched table end %s\n", string(c.text))
     return asciidoc.NewString(string(c.text)), nil
 }
@@ -138,7 +138,7 @@ ValidTableCellPrefix = !TableEnd !TableCellDelimiter
 
 ValidMultilineTableCellPrefix = !MultiLineComment !SingleLineComment
 
-MultiLineTableCell = lines:(InlineTableCellLine)+ content:(InlineTableCellLastLine) {
+MultiLineTableCell = lines:(InlineTableCellLine)* content:(InlineTableCellLastLine) {
     var cellLines asciidoc.Set
     if lines != nil  {
         debugPosition(c, "TABLE LINES: inline table lines (%d), content (%d): \"%s\"\n", len(lines.([]any)), len(content.([]asciidoc.Element)),  string(c.text))
@@ -152,7 +152,7 @@ MultiLineTableCell = lines:(InlineTableCellLine)+ content:(InlineTableCellLastLi
 
 InlineTableCellLine = InlineTableCellEmptyLine / InlineTableCellIntermediateLine 
 
-InlineTableCellIntermediateLine = ValidTableCellPrefix newline:NewLine? ValidMultilineTableCellPrefix content:(InlineTableElement)+ newlineBeforeEmptyLine:(nl:NewLine _* &(NewLine) { return nl, nil})? &NewLine !(TableMacros / TableEnd / TableCellDelimiter  ) &(InlineTableCellLine / InlineTableCellLastLine) 
+InlineTableCellIntermediateLine = ValidTableCellPrefix newline:NewLine? ValidMultilineTableCellPrefix content:(InlineTableElement)* newlineBeforeEmptyLine:(nl:NewLine AnySpaces &(NewLine) { return nl, nil})? &NewLine !(TableMacros / TableEnd / TableCellDelimiter  ) &(InlineTableCellLine / InlineTableCellLastLine) 
  {
     debugPosition(c, "TABLE: inline table intermediate cell line (%d): \"%s\"\n", len(content.([]any)), string(c.text))
     var els []asciidoc.Element
@@ -166,7 +166,7 @@ InlineTableCellIntermediateLine = ValidTableCellPrefix newline:NewLine? ValidMul
     return els, nil
 }
 
-InlineTableCellEmptyLine = ValidTableCellPrefix NewLine _* &(NewLine) !TableEnd !TableCellDelimiter !TableMacros &(InlineTableCellLine / InlineTableCellLastLine) 
+InlineTableCellEmptyLine = ValidTableCellPrefix NewLine AnySpaces &(NewLine) !TableEnd !TableCellDelimiter !TableMacros &(InlineTableCellLine / InlineTableCellLastLine) 
  {
     debugPosition(c, "TABLE: inline table intermediate cell empty line (%d): \"%s\"\n",string(c.text))
     return asciidoc.Set{asciidoc.EmptyLine{}}, nil
@@ -205,7 +205,7 @@ InlineTableElement = ValidTableCellPrefix  element:(
     return element, nil
 }
 
-BlockTableElement = !InitialTableCellDelimiter _*  element:(BlockElement) !TableCellDelimiter  !TableEnd  {
+BlockTableElement = !InitialTableCellDelimiter AnySpaces  element:(BlockElement) !TableCellDelimiter  !TableEnd  {
      debugPosition(c, "TABLE: block table element %T: %s\n", element, string(c.text))
     return element, nil
 }
@@ -222,7 +222,7 @@ CharacterClassTableCell = ("\\|" / [^|\r\n])  {
 }
 
 // First table cell format in a row just needs to follow a new line
-InitialTableCellDelimiter = !TableEnd NewLine _* format:(TableCellFormat)? !"\\" "|"  {
+InitialTableCellDelimiter = !TableEnd NewLine AnySpaces format:(TableCellFormat)? !"\\" "|"  {
     debugPosition(c, "TABLE: matched initial table cell delimiter %s\n", string(c.text))
     if format != nil {
         return format, nil
@@ -236,7 +236,7 @@ AdditionalTableCellDelimiter = !TableEnd format:(AdditionalTableCellFormat)? !"\
 }
 
 // First table cell format in a row just needs to follow a new line
-InitialTableCellFormat = _* format:(TableCellFormat) &{
+InitialTableCellFormat = AnySpaces format:(TableCellFormat) &{
     debugPosition(c, "TABLE: checking initial table cell format \"%s\"\n", string(c.text))
     return format != nil, nil
 } {
@@ -245,7 +245,7 @@ InitialTableCellFormat = _* format:(TableCellFormat) &{
 }
 
 // Subsequent table cell formats in a row need a space
-AdditionalTableCellFormat = lead:(_+) format:(TableCellFormat) &{
+AdditionalTableCellFormat = lead:(__) format:(TableCellFormat) &{
     debugPosition(c, "TABLE: checking table cell format \"%s\"\n", string(c.text))
     return lead != nil && format != nil, nil
 } {
