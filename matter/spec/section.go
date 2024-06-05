@@ -394,12 +394,12 @@ var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<e
 
 func (s *Section) GetDataType() *mattertypes.DataType {
 	var dts string
-	p := parse.FindFirst[*asciidoc.Paragraph](s.Base.Elements())
-	if p == nil {
-		return nil
-	}
-	for _, el := range p.Elements() {
+	for _, el := range s.Elements() {
+		if se, ok := el.(*Element); ok {
+			el = se.Base
+		}
 		switch el := el.(type) {
+		case asciidoc.EmptyLine:
 		case *asciidoc.String:
 			match := dataTypeDefinitionPattern.FindStringSubmatch(el.Value)
 			if match != nil {
@@ -410,7 +410,6 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 				dts = strings.TrimSuffix(s.Name, " Type")
 			}
 		case *asciidoc.CrossReference:
-
 			switch el.ID {
 			case "ref_DataTypeBitmap", "ref_DataTypeEnum":
 				label := asciidoc.ValueToString(el.Elements())
@@ -419,6 +418,10 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 				}
 				label = strings.TrimSpace(label)
 				dts = label
+			}
+		default:
+			if el.Type() == asciidoc.ElementTypeBlock {
+				break
 			}
 		}
 		if len(dts) > 0 {

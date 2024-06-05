@@ -11,9 +11,7 @@ const (
 	ElementTypeUnknown ElementType = iota
 	ElementTypeDocument
 	ElementTypeBlock
-	ElementTypeBlockTerminal
 	ElementTypeInline
-	ElementTypeInlineTerminal
 	ElementTypeInlineLiteral
 	ElementTypeAttribute
 	ElementTypeAttributes
