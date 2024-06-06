@@ -154,6 +154,7 @@ func NewTableCellFormat() *TableCellFormat {
 		Span:            NewTableCellSpan(),
 		HorizontalAlign: Default(TableCellHorizontalAlignLeft),
 		VerticalAlign:   Default(TableCellVerticalAlignTop),
+		Style:           Default(TableCellStyleDefault),
 	}
 }
 
