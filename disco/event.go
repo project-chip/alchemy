@@ -32,7 +32,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			return fmt.Errorf("error fixing conformance cells for event table in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
 
-		err = b.renameTableHeaderCells(eventsTable.rows, eventsTable.headerRow, eventsTable.columnMap, nil)
+		err = b.renameTableHeaderCells(dp.doc, eventsTable, nil)
 		if err != nil {
 			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
@@ -64,7 +64,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 				return fmt.Errorf("error fixing conformance cells for event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.renameTableHeaderCells(eventTable.rows, eventTable.headerRow, eventTable.columnMap, nil)
+			err = b.renameTableHeaderCells(dp.doc, &eventTable, nil)
 			if err != nil {
 				return fmt.Errorf("error renaming table header cells in event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}

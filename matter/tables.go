@@ -89,8 +89,8 @@ func (tc TableColumn) String() string {
 var AllowedTableAttributes = map[asciidoc.AttributeName]asciidoc.Set{
 	"id":      nil,
 	"title":   nil,
-	"valign":  asciidoc.Set{asciidoc.NewString("middle")},
-	"options": asciidoc.Set{asciidoc.NewString("header")},
+	"valign":  {asciidoc.NewString("middle")},
+	"options": {asciidoc.NewString("header")},
 }
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
 
@@ -119,6 +119,7 @@ const (
 	TableTypeBitmap
 	TableTypeEvents
 	TableTypeEvent
+	TableTypeFeatures
 )
 
 type Table struct {
@@ -207,6 +208,9 @@ var Tables = map[TableType]Table{
 			TableColumnSummary,
 			TableColumnConformance,
 		},
+		ColumnNames: map[TableColumn]string{
+			TableColumnDescription: "Summary", // Rename Description to Summary
+		},
 	},
 	TableTypeBitmap: {
 		ColumnOrder: []TableColumn{
@@ -235,6 +239,18 @@ var Tables = map[TableType]Table{
 			TableColumnQuality,
 			TableColumnDefault,
 			TableColumnConformance,
+		},
+	},
+	TableTypeFeatures: {
+		ColumnOrder: []TableColumn{
+			TableColumnBit,
+			TableColumnCode,
+			TableColumnFeature,
+			TableColumnConformance,
+			TableColumnSummary,
+		},
+		ColumnNames: map[TableColumn]string{
+			TableColumnID: "Bit", // Rename ID to Bit
 		},
 	},
 }

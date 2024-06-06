@@ -122,7 +122,7 @@ func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.
 	case matter.TableColumnName:
 		switch entityType {
 		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			val, _ := spec.ReadRowValue(b.doc, row, columnMap, matter.TableColumnSummary)
+			val, _ := spec.ReadRowValue(b.doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 			if val != "" {
 				return matter.Case(val)
 			}
@@ -295,13 +295,13 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 	return
 }
 
-func (b *Ball) renameTableHeaderCells(rows []*asciidoc.TableRow, headerRowIndex int, columnMap spec.ColumnIndex, overrides map[matter.TableColumn]string) (err error) {
+func (b *Ball) renameTableHeaderCells(doc *spec.Doc, table *tableInfo, overrides map[matter.TableColumn]string) (err error) {
 	if !b.options.renameTableHeaders {
 		return
 	}
-	headerRow := rows[headerRowIndex]
+	headerRow := table.rows[table.headerRow]
 	reverseMap := make(map[int]matter.TableColumn)
-	for k, v := range columnMap {
+	for k, v := range table.columnMap {
 		reverseMap[v] = k
 	}
 	for i, cell := range headerRow.TableCells() {
@@ -317,5 +317,6 @@ func (b *Ball) renameTableHeaderCells(rows []*asciidoc.TableRow, headerRowIndex 
 			}
 		}
 	}
+	table.headerRow, table.columnMap, table.extraColumns, err = spec.MapTableColumns(doc, table.rows)
 	return
 }

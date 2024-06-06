@@ -57,6 +57,7 @@ func init() {
 	Command.Flags().Bool("promoteDataTypes", true, "promote inline data types to Data Types section")
 	Command.Flags().Bool("reorderSections", true, "reorder sections in disco-ball order")
 	Command.Flags().Bool("normalizeTableOptions", true, "remove existing table options and replace with standard disco-ball options")
+	Command.Flags().Bool("normalizeFeatureNames", true, "correct invalid feature names")
 	Command.Flags().Bool("fixCommandDirection", true, "normalize command directions")
 	Command.Flags().Bool("appendSubsectionTypes", true, "add missing suffixes to data type sections (e.g. \"Bit\", \"Value\", \"Field\", etc.)")
 	Command.Flags().Bool("uppercaseHex", true, "uppercase hex values")
@@ -81,6 +82,7 @@ func getDiscoOptions(cmd *cobra.Command) []disco.Option {
 		"uppercaseHex":             disco.UppercaseHex,
 		"addSpaceAfterPunctuation": disco.AddSpaceAfterPunctuation,
 		"removeExtraSpaces":        disco.RemoveExtraSpaces,
+		"normalizeFeatureNames":    disco.NormalizeFeatureNames,
 	}
 	var discoOptions []disco.Option
 	for name, o := range optionFuncs {
