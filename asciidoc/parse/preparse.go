@@ -38,6 +38,9 @@ func PreParseReader(context *AttributeContext, path string, reader io.Reader) (s
 
 		result := asciidoc.NewWriter(nil)
 		err = preparse(context, asciidoc.NewReader(vals), result)
+		if err != nil {
+			return "", err
+		}
 		if debugParser {
 			fmt.Printf("\n\n\n\n\n\n")
 			dump(0, result.Set()...)

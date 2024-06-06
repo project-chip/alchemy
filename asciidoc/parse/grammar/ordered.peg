@@ -27,5 +27,5 @@ OrderedListMarker = indent:(AnySpaces) marker:(ordinal:(("."+) {
 __
 {
     debugPosition(c, "matched ordered list marker\n")
-    return listMarker{marker:marker.(string), indent:indent.(string)}, nil
+    return listMarker{marker:marker.(string), indent:toString(indent)}, nil
 }

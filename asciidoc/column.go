@@ -57,6 +57,10 @@ func (tcf *TableColumn) Equals(otcf *TableColumn) bool {
 	return true
 }
 
+func (tcf *TableColumn) IsDefault() bool {
+	return tcf.HorizontalAlign.Value == TableCellHorizontalAlignLeft && tcf.VerticalAlign.Value == TableCellVerticalAlignTop && tcf.Width.Value == 1 && tcf.Percentage.Value == 0 && tcf.Style.Value == TableCellStyleDefault
+}
+
 func NewTableColumn() *TableColumn {
 	return &TableColumn{
 		Multiplier:      Default(1),

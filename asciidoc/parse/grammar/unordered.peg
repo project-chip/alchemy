@@ -15,7 +15,7 @@ UnorderedListMarker = indent:(AnySpaces) marker:(("*"+ / "-"+) {
 }
 __
 {
-    return listMarker{marker:marker.(string), indent:indent.(string)}, nil
+    return listMarker{marker:marker.(string), indent:toString(indent)}, nil
 }
 
 

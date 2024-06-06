@@ -159,7 +159,7 @@ InlineTableCellIntermediateLine = ValidTableCellPrefix newline:NewLine? ValidMul
     if newline != nil {
         els = []asciidoc.Element{newline.(*asciidoc.NewLine)}
     }
-    els = append(els, trim(mergeStrings(flat(content.([]any))))...)
+     els = append(els, mergeStrings(flat(content.([]any)))...)
     if newlineBeforeEmptyLine != nil {
         els = append(els, newlineBeforeEmptyLine.(*asciidoc.NewLine))
     }

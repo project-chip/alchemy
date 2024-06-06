@@ -34,6 +34,7 @@ func renderTable(cxt *Context, t *asciidoc.Table) (err error) {
 
 	tbl := &table{columnCount: t.ColumnCount}
 
+	columns := getTableColumns(t)
 	err = renderTableSubElements(cxt, t, tbl)
 	if err != nil {
 		return
@@ -52,7 +53,7 @@ func renderTable(cxt *Context, t *asciidoc.Table) (err error) {
 		if row.element != nil {
 			Elements(cxt, "", row.element)
 		} else {
-			err = renderRow(cxt, row.cells, colOffsets)
+			err = renderRow(cxt, row.cells, colOffsets, columns)
 		}
 		if err != nil {
 			return err
@@ -62,7 +63,28 @@ func renderTable(cxt *Context, t *asciidoc.Table) (err error) {
 	return
 }
 
-func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) error {
+func getTableColumns(table *asciidoc.Table) (columns []*asciidoc.TableColumn) {
+	for _, a := range table.Attributes() {
+		switch a := a.(type) {
+		case *asciidoc.TableColumnsAttribute:
+			for _, c := range a.Columns {
+				var multipler int
+				if c.Multiplier.IsSet {
+					multipler = c.Multiplier.Value
+				} else {
+					multipler = 1
+				}
+				for i := 0; i < multipler; i++ {
+					columns = append(columns, c)
+				}
+			}
+
+		}
+	}
+	return
+}
+
+func renderRow(cxt *Context, cells []*tableCell, colOffsets []int, columns []*asciidoc.TableColumn) error {
 	if len(cells) == 0 {
 		return nil
 	}
@@ -92,15 +114,17 @@ func renderRow(cxt *Context, cells []*tableCell, colOffsets []int) error {
 		index += utf8.RuneCountInString(indent)
 		cxt.WriteString("| ")
 		index += 2
+		effectiveFormat := inheritColumnFormat(c.formatter, i, columns)
+
 		if i == len(cells)-1 || i+colSpan > len(cells)-1 {
-			writeCellValue(cxt, c, c.width, index)
+			writeCellValue(cxt, c, c.width, index, effectiveFormat)
 			break
 		}
 		contentLength := c.width
 		if c.margin > 0 {
 			contentLength -= (c.margin + 1)
 		}
-		wb := writeCellValue(cxt, c, contentLength, index)
+		wb := writeCellValue(cxt, c, contentLength, index, effectiveFormat)
 		index += wb
 
 	}
@@ -245,6 +269,29 @@ func renderTableSubElements(cxt *Context, t *asciidoc.Table, tbl *table) (err er
 	return
 }
 
+func inheritColumnFormat(format *asciidoc.TableCellFormat, column int, columns []*asciidoc.TableColumn) *asciidoc.TableCellFormat {
+	if column >= len(columns) {
+		return format
+	}
+	col := columns[column]
+	if col.IsDefault() {
+		return format
+	}
+	if format == nil {
+		format = asciidoc.NewTableCellFormat()
+	}
+	if !format.HorizontalAlign.IsSet && col.HorizontalAlign.IsSet {
+		format.HorizontalAlign = col.HorizontalAlign
+	}
+	if !format.VerticalAlign.IsSet && col.VerticalAlign.IsSet {
+		format.VerticalAlign = col.VerticalAlign
+	}
+	if !format.Style.IsSet && col.Style.IsSet {
+		format.Style = col.Style
+	}
+	return format
+}
+
 func getCellWidth(c *tableCell) int {
 	lines := strings.Split(c.value, "\n")
 	if len(lines) == 1 {
@@ -253,7 +300,7 @@ func getCellWidth(c *tableCell) int {
 	return utf8.RuneCountInString(strings.TrimSpace(lines[len(lines)-1]))
 }
 
-func writeCellValue(out *Context, c *tableCell, width int, indent int) (count int) {
+func writeCellValue(out *Context, c *tableCell, width int, indent int, effectiveFormat *asciidoc.TableCellFormat) (count int) {
 	lines := strings.Split(c.value, "\n")
 	if len(lines) == 1 {
 		v := fmt.Sprintf("%-*s", width, c.value)
@@ -262,9 +309,11 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 		return
 	}
 	//length := out.Len()
-	isAsciiDoc := c.formatter != nil && c.formatter.Style.Value == asciidoc.TableCellStyleAsciiDoc
+	isAsciiDoc := effectiveFormat != nil && effectiveFormat.Style.Value == asciidoc.TableCellStyleAsciiDoc
 	for i, line := range lines {
-		line = strings.TrimSpace(line)
+		if !isAsciiDoc {
+			line = strings.TrimSpace(line)
+		}
 		directivePrefix := strings.HasPrefix(line, "ifdef::") || strings.HasPrefix(line, "ifndef::") || strings.HasPrefix(line, "endif::")
 		if directivePrefix {
 			out.EnsureNewLine()
@@ -275,7 +324,7 @@ func writeCellValue(out *Context, c *tableCell, width int, indent int) (count in
 		v := fmt.Sprintf("%-*s", width, line)
 		out.WriteString(v)
 		if i < len(lines)-1 {
-			out.WriteRune('\n')
+			out.EnsureNewLine()
 		} else {
 			count = utf8.RuneCountInString(v)
 		}

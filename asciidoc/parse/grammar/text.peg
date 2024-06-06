@@ -97,10 +97,7 @@ AnyText = CharacterClassInline* {
     return string(c.text), nil
 }
 
-AnySpaces = [ \t]* {
-    return string(c.text), nil
-}
-
+AnySpaces = [ \t]* 
 
 CharacterClassAll = (. / NewLine) {
     debugPosition(c, "matched all: \"%s\"\n", string(c.text))
@@ -114,7 +111,7 @@ CharacterGroupWord = [\p{M}\p{Nd}\p{Pc}\p{Join_Control}\p{L}] {
     return asciidoc.NewString(string(c.text)), nil
 }
 
-__ = _+ {
+__ = [ \t]+ {
     debugPosition(c, "matched spaces: \"%s\"\n", string(c.text))
     return string(c.text), nil
 }
