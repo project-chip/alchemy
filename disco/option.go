@@ -16,6 +16,7 @@ type options struct {
 	uppercaseHex             bool
 	addSpaceAfterPunctuation bool
 	removeExtraSpaces        bool
+	normalizeFeatureNames    bool
 }
 
 var defaultOptions = options{
@@ -32,6 +33,7 @@ var defaultOptions = options{
 	uppercaseHex:             true,
 	addSpaceAfterPunctuation: true,
 	removeExtraSpaces:        true,
+	normalizeFeatureNames:    true,
 }
 
 func LinkIndexTables(link bool) Option {
@@ -109,5 +111,11 @@ func RemoveExtraSpaces(add bool) Option {
 func NormalizeTableOptions(add bool) Option {
 	return func(b *Ball) {
 		b.options.normalizeTableOptions = add
+	}
+}
+
+func NormalizeFeatureNames(add bool) Option {
+	return func(b *Ball) {
+		b.options.normalizeFeatureNames = add
 	}
 }

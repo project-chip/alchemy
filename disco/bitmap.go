@@ -38,7 +38,7 @@ func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSe
 		return nil
 	}
 
-	err = b.renameTableHeaderCells(bitsTable.rows, bitsTable.headerRow, bitsTable.columnMap, nil)
+	err = b.renameTableHeaderCells(b.doc, &bitsTable, nil)
 	if err != nil {
 		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}

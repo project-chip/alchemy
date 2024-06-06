@@ -245,55 +245,52 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 		if table == nil {
 			continue
 		}
-		rows := table.TableRows()
-		var headerRowIndex int
-		var columnMap spec.ColumnIndex
-		var extraColumns []spec.ExtraColumn
-		headerRowIndex, columnMap, extraColumns, err = spec.MapTableColumns(b.doc, rows)
+		ti := tableInfo{element: table, rows: table.TableRows()}
+		ti.headerRow, ti.columnMap, ti.extraColumns, err = spec.MapTableColumns(b.doc, ti.rows)
 		if err != nil {
 			err = fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", dt.section.Name, err)
 			return
 		}
-		if valueIndex, ok := columnMap[firstColumnType]; !ok || valueIndex > 0 {
+		if valueIndex, ok := ti.columnMap[firstColumnType]; !ok || valueIndex > 0 {
 			continue
 		}
 
-		summaryIndex, hasSummaryColumn := columnMap[matter.TableColumnSummary]
+		summaryIndex, hasSummaryColumn := ti.columnMap[matter.TableColumnSummary]
 		if !hasSummaryColumn {
-			descriptionIndex, hasDescriptionColumn := columnMap[matter.TableColumnDescription]
+			descriptionIndex, hasDescriptionColumn := ti.columnMap[matter.TableColumnDescription]
 			if hasDescriptionColumn {
 				// Use the description column as the summary
-				delete(columnMap, matter.TableColumnDescription)
-				columnMap[matter.TableColumnSummary] = descriptionIndex
+				delete(ti.columnMap, matter.TableColumnDescription)
+				ti.columnMap[matter.TableColumnSummary] = descriptionIndex
 				summaryIndex = descriptionIndex
-				err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+				err = b.renameTableHeaderCells(top.Doc, &ti, nil)
 				if err != nil {
 					return
 				}
-			} else if len(extraColumns) > 0 {
+			} else if len(ti.extraColumns) > 0 {
 				// Hrm, no summary or description on this promoted data type table
 				// Take the first extra column and rename it
-				summaryIndex = extraColumns[0].Offset
-				columnMap[matter.TableColumnSummary] = summaryIndex
-				err = b.renameTableHeaderCells(rows, headerRowIndex, columnMap, nil)
+				summaryIndex = ti.extraColumns[0].Offset
+				ti.columnMap[matter.TableColumnSummary] = summaryIndex
+				err = b.renameTableHeaderCells(top.Doc, &ti, nil)
 				if err != nil {
 					return
 				}
 			} else {
-				summaryIndex, err = b.appendColumn(table, columnMap, headerRowIndex, matter.TableColumnSummary, nil, entityType)
+				summaryIndex, err = b.appendColumn(table, ti.columnMap, ti.headerRow, matter.TableColumnSummary, nil, entityType)
 				if err != nil {
 					return
 				}
 			}
 		}
-		_, hasNameColumn := columnMap[matter.TableColumnName]
+		_, hasNameColumn := ti.columnMap[matter.TableColumnName]
 		if !hasNameColumn {
 			var nameIndex int
-			nameIndex, err = b.appendColumn(table, columnMap, headerRowIndex, matter.TableColumnName, nil, entityType)
+			nameIndex, err = b.appendColumn(table, ti.columnMap, ti.headerRow, matter.TableColumnName, nil, entityType)
 			if err != nil {
 				return
 			}
-			err = copyCells(rows, headerRowIndex, summaryIndex, nameIndex, matter.Case)
+			err = copyCells(ti.rows, ti.headerRow, summaryIndex, nameIndex, matter.Case)
 			if err != nil {
 				return
 			}
