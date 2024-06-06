@@ -18,6 +18,7 @@ func (b *Ball) organizeSubSections(dc *discoContext, dp *docParse) (err error) {
 		b.organizeAttributesSection,
 		b.organizeClassificationSection,
 		b.organizeClusterIDSection,
+		b.organizeFeaturesSection,
 		b.organizeBitmapSections,
 		b.organizeEnumSections,
 		b.organizeStructSections,

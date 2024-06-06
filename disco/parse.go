@@ -20,6 +20,7 @@ type docParse struct {
 	classification []*subSection
 	clusterIDs     []*subSection
 	attributes     []*subSection
+	features       []*subSection
 
 	dataTypes *subSection
 	bitmaps   []*subSection
@@ -75,6 +76,17 @@ func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *
 				}
 			default:
 				slog.Warn("attributes section in non-cluster doc", slog.String("path", doc.Path))
+			}
+		case matter.SectionFeatures:
+			switch docType {
+			case matter.DocTypeCluster:
+				var features *subSection
+				features, err = newParentSubSection(doc, section, newSubSectionChildPattern(" Feature", matter.TableColumnName))
+				if err == nil {
+					ds.features = append(ds.features, features)
+				}
+			default:
+				slog.Warn("features section in non-cluster doc", slog.String("path", doc.Path))
 			}
 		case matter.SectionCommands:
 			var commands *subSection

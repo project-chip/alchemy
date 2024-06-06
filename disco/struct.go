@@ -54,7 +54,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return err
 	}
 
-	err = b.renameTableHeaderCells(fieldsTable.rows, fieldsTable.headerRow, fieldsTable.columnMap, nil)
+	err = b.renameTableHeaderCells(dp.doc, fieldsTable, nil)
 	if err != nil {
 		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
 	}
