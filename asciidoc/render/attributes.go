@@ -36,7 +36,8 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 }
 
 func renderAttributes(cxt *Context, el any, attributes []asciidoc.Attribute, inline bool) error {
-	return renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
+	_, err := renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
+	return err
 }
 
 func getAttributeType(name asciidoc.AttributeName) AttributeFilter {
@@ -67,7 +68,7 @@ func getAttributeType(name asciidoc.AttributeName) AttributeFilter {
 	return AttributeFilterNone
 }
 
-func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
+func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (n int, err error) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -115,7 +116,8 @@ func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribut
 			}
 			inlineAttributes = append(inlineAttributes, a)
 		default:
-			return fmt.Errorf("unexpected attribute type: %T", a)
+			err = fmt.Errorf("unexpected attribute type: %T", a)
+			return
 		}
 	}
 	for _, al := range list {
@@ -198,6 +200,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribut
 				if err != nil {
 					return
 				}
+				n++
 			}
 			cxt.WriteString("]")
 			if !inline {
