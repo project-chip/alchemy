@@ -31,7 +31,7 @@ func parseTable(attributes any, els []any) (table *asciidoc.Table, err error) {
 			return
 		}
 	}
-	table.ColumnCount, _, err = getColumnCount(table, els)
+	table.ColumnCount, err = getColumnCount(table, els)
 	if err != nil {
 		return
 	}
@@ -126,7 +126,7 @@ func parseTable(attributes any, els []any) (table *asciidoc.Table, err error) {
 	return
 }
 
-func getColumnCount(table *asciidoc.Table, els []any) (columnCount int, columns []*asciidoc.TableColumn, err error) {
+func getColumnCount(table *asciidoc.Table, els []any) (columnCount int, err error) {
 	for _, a := range table.Attributes() {
 		switch a := a.(type) {
 		case *asciidoc.TableColumnsAttribute:

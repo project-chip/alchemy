@@ -4435,11 +4435,11 @@ var shouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralT
 							Set: asciidoc.Set{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
-									Value: "one",
+									Value: "  one",
 								},
 								&asciidoc.NewLine{},
 								&asciidoc.String{
-									Value: "two",
+									Value: "  two",
 								},
 								&asciidoc.NewLine{},
 								&asciidoc.String{

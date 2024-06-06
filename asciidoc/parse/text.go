@@ -8,6 +8,29 @@ import (
 	"github.com/hasty/alchemy/asciidoc"
 )
 
+func toString(e any) string {
+	var sb strings.Builder
+	toStringBuilder(e, &sb)
+	return sb.String()
+}
+
+func toStringBuilder(e any, sb *strings.Builder) {
+	switch e := e.(type) {
+	case []any:
+		for _, c := range e {
+			toStringBuilder(c, sb)
+		}
+	case string:
+		sb.WriteString(e)
+	case []byte:
+		sb.WriteString(string(e))
+	case *asciidoc.String:
+		sb.WriteString(e.Value)
+	default:
+		sb.WriteString(fmt.Sprintf("unknown string type: %T", e))
+	}
+}
+
 func mergeStrings[T any](els []T) (out asciidoc.Set) {
 	var s strings.Builder
 	for _, e := range els {
