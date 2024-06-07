@@ -24,6 +24,13 @@ func Pipeline(cxt context.Context, targeter pipeline.Targeter, pipelineOptions p
 		return err
 	}
 
+	var specBuilder spec.Builder
+	specBuilder.IgnoreHierarchy = true
+	docs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, docs)
+	if err != nil {
+		return err
+	}
+
 	baller := NewBaller(discoOptions, pipelineOptions)
 	var balledDocs pipeline.Map[string, *pipeline.Data[render.InputDocument]]
 	balledDocs, err = pipeline.Process[*spec.Doc, render.InputDocument](cxt, pipelineOptions, baller, docs)

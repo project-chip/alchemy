@@ -25,15 +25,12 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 	var filter *files.PathFilter[*spec.Doc]
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	if specRoot != "" {
-		targeter = files.SpecTargeter(specRoot)
+		targeter = spec.Targeter(specRoot)
 		if len(args) > 0 {
 			filter = files.NewPathFilter[*spec.Doc](args)
 		}
 	} else {
 		targeter = files.PathsTargeter(args...)
-	}
-	if err != nil {
-		return err
 	}
 
 	pipelineOptions := pipeline.Flags(cmd)
