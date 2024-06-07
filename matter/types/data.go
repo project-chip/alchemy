@@ -38,6 +38,7 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 	if isArray {
 		return &DataType{Name: "list", BaseType: BaseDataTypeList, EntryType: ParseDataType(typeName, false)}
 	}
+	typeName = strings.TrimSpace(typeName)
 	typeName = strings.TrimPrefix(typeName, "ref_")
 	typeName = strings.TrimPrefix(typeName, "DataType")
 	dt := &DataType{Name: typeName}
@@ -98,9 +99,9 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 	case "map64":
 		dt.BaseType = BaseDataTypeMap64
 
-	case "string":
+	case "string", "character string":
 		dt.BaseType = BaseDataTypeString
-	case "octstr":
+	case "octstr", "octet string":
 		dt.BaseType = BaseDataTypeOctStr
 	case "percent":
 		dt.BaseType = BaseDataTypePercent
@@ -120,7 +121,7 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeElapsedSeconds
 	case "epoch-s", "utc": // utc is deprecated
 		dt.BaseType = BaseDataTypeEpochSeconds
-	case "epoch-us", "epochus":
+	case "epoch-us", "epochus", "epoch time in microseconds":
 		dt.BaseType = BaseDataTypeEpochMicroseconds
 	case "systime_ms", "systime-ms", "systemtimems":
 		dt.BaseType = BaseDataTypeSystimeMilliseconds
@@ -128,6 +129,8 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeSystimeMicroseconds
 	case "posix-ms", "posixms":
 		dt.BaseType = BaseDataTypePosixMilliseconds
+	case "date":
+		dt.BaseType = BaseDataTypeDate
 	case "action-id":
 		dt.BaseType = BaseDataTypeActionID
 	case "attrib-id", "attribute-id":
@@ -150,21 +153,21 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeFabricID
 	case "fabric-idx", "fabricidx":
 		dt.BaseType = BaseDataTypeFabricIndex
-	case "field-id", "fieldid":
+	case "field-id", "fieldid", "field id":
 		dt.BaseType = BaseDataTypeFieldID
-	case "group-id", "groupid":
+	case "group-id", "groupid", "group id":
 		dt.BaseType = BaseDataTypeGroupID
-	case "node-id", "nodeid":
+	case "node-id", "nodeid", "node id":
 		dt.BaseType = BaseDataTypeNodeID
-	case "subject-id", "subjectid":
+	case "subject-id", "subjectid", "subject id":
 		dt.BaseType = BaseDataTypeSubjectID
 	case "transaction-id":
 		dt.BaseType = BaseDataTypeTransactionID
-	case "vendor-id", "vendorid":
+	case "vendor-id", "vendorid", "vendor id":
 		dt.BaseType = BaseDataTypeVendorID
 	case "endpoint-id":
 		dt.BaseType = BaseDataTypeEndpointID
-	case "endpoint-no", "endpointnumber":
+	case "endpoint-no", "endpointnumber", "endpoint number":
 		dt.BaseType = BaseDataTypeEndpointNumber
 	case "eui64":
 		dt.BaseType = BaseDataTypeIeeeAddress
@@ -174,11 +177,11 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeUnsignedTemperature
 	case "signedtemperature":
 		dt.BaseType = BaseDataTypeSignedTemperature
-	case "hwadr":
+	case "hwadr", "hardware address":
 		dt.BaseType = BaseDataTypeHardwareAddress
-	case "ipv4adr":
+	case "ipv4adr", "ipv4 address":
 		dt.BaseType = BaseDataTypeIPv4Address
-	case "ipv6adr":
+	case "ipv6adr", "ipv6 address":
 		dt.BaseType = BaseDataTypeIPv6Address
 	case "ipv6pre":
 		dt.BaseType = BaseDataTypeIPv6Prefix
@@ -190,6 +193,8 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypePriority
 	case "messageid":
 		dt.BaseType = BaseDataTypeMessageID
+	case "tag":
+		dt.BaseType = BaseDataTypeTag
 	default:
 		dt.BaseType = BaseDataTypeCustom
 	}
