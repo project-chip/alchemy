@@ -1,4 +1,4 @@
-AttributeEntry = ":" name:(AttributeEntryName) ":" _* value:(AttributeEntryElements) {
+AttributeEntry = ":" name:(AttributeEntryName) ":" AnySpaces value:(AttributeEntryElements) {
     debugPosition(c, "matched attribute entry: %s value: %v\n", string(c.text), value)
     return compose(c, asciidoc.NewAttributeEntry(name.(string)), setElements[*asciidoc.AttributeEntry](value))
 }
@@ -15,9 +15,9 @@ AttributeEntryElements = value:AttributeEntryElement*  {
 
 AttributeEntryElement = (LineBreak EndOfLine / CharacterClassInline) 
 
-AttributeReset = ":!" name:(AttributeEntryName) ":" _*  {
+AttributeReset = ":!" name:(AttributeEntryName) ":" AnySpaces  {
     return compose(c, asciidoc.NewAttributeReset(name.(string)))
-} / ":" name:(AttributeEntryName) "!:" _*  {
+} / ":" name:(AttributeEntryName) "!:" AnySpaces  {
     return compose(c, asciidoc.NewAttributeReset(name.(string)))
 }
 
@@ -33,11 +33,11 @@ AttributeList = attributes:(AttributeListItem)*  {
     return extractAttributes(attributes.([]any), nil)
 }
 
-AttributeListItem = !"]" _* attribute:(Attribute) _* ","? {
+AttributeListItem = !"]" AnySpaces attribute:(Attribute) AnySpaces ","? {
     return attribute, nil
 }
 
-Attribute = name:( (name:(NamedAttributeName) _* "=" _*) { return name, nil })? value:(SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {
+Attribute = name:( (name:(NamedAttributeName) AnySpaces "=" AnySpaces) { return name, nil })? value:(SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {
     if name != nil {
         return asciidoc.NewNamedAttribute(name.(string), value.(*attributeValue).value, value.(*attributeValue).quote), nil
     }
