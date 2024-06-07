@@ -45,7 +45,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 
 	asciiSettings = append(spec.GithubSettings(), asciiSettings...)
 
-	specFiles, err := pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
+	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
 	}
@@ -56,8 +56,8 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	var specParser files.SpecParser
-	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocs)
+	var specBuilder spec.Builder
+	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	})
 
 	var diffs []*compare.ClusterDifferences
-	diffs, err = compare.Entities(specParser.Spec, specEntityMap, zapEntityMap)
+	diffs, err = compare.Entities(specBuilder.Spec, specEntityMap, zapEntityMap)
 	if err != nil {
 		return
 	}

@@ -65,7 +65,6 @@ func ParseDocument(r io.Reader, path string, attributes ...asciidoc.AttributeNam
 		return &asciidoc.Document{}, nil
 	}
 
-
 	return parse.Reader(path, strings.NewReader(parsed))
 }
 

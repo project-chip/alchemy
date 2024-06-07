@@ -10,7 +10,6 @@ import (
 
 var bannedPaths map[string]string = map[string]string{
 	"namespaces/Namespace-Common-Position.adoc": "parser does not support nested tables",
-	"secure_channel/Discovery.adoc":             "parser gets stuck parsing",
 }
 
 func Paths(filepaths []string) ([]string, error) {

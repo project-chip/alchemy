@@ -40,7 +40,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	asciiSettings = append(spec.GithubSettings(), asciiSettings...)
 
-	specFiles, err := pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
+	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
 	}
@@ -51,8 +51,8 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	var specParser files.SpecParser
-	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocs)
+	var specBuilder spec.Builder
+	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
@@ -95,13 +95,13 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		templateOptions = append(templateOptions, generate.GenerateFeatureXML(true))
 	}
 
-	templateGenerator := generate.NewTemplateGenerator(specParser.Spec, fileOptions, pipelineOptions, sdkRoot, templateOptions...)
+	templateGenerator := generate.NewTemplateGenerator(specBuilder.Spec, fileOptions, pipelineOptions, sdkRoot, templateOptions...)
 	zapTemplateDocs, err := pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, templateGenerator, clusters)
 	if err != nil {
 		return err
 	}
 
-	deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specParser.Spec)
+	deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specBuilder.Spec)
 	var patchedDeviceTypes pipeline.Map[string, *pipeline.Data[[]byte]]
 	patchedDeviceTypes, err = pipeline.Process[[]*matter.DeviceType, []byte](cxt, pipelineOptions, deviceTypePatcher, deviceTypes)
 	if err != nil {
