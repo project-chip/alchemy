@@ -30,7 +30,7 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 
 	asciiSettings = append(spec.GithubSettings(), asciiSettings...)
 
-	specFiles, err := pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
+	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
 	}
@@ -40,9 +40,9 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return err
 	}
-	var specParser files.SpecParser
-	specParser.IgnoreHierarchy = true
-	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocs)
+	var specBuilder spec.Builder
+	specBuilder.IgnoreHierarchy = true
+	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}

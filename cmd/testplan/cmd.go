@@ -41,7 +41,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 
 	asciiSettings = append(spec.GithubSettings(), asciiSettings...)
 
-	specFiles, err := pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
+	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
 	}
@@ -52,8 +52,8 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	var specParser files.SpecParser
-	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocs)
+	var specBuilder spec.Builder
+	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
@@ -95,6 +95,9 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	generator := testplan.NewGenerator(testRoot, overwrite)
 	var testplans pipeline.Map[string, *pipeline.Data[string]]
 	testplans, err = pipeline.Process[*matter.Cluster, string](cxt, pipelineOptions, generator, clusters)
+	if err != nil {
+		return err
+	}
 
 	writer := files.NewWriter[string]("Writing test plans", fileOptions)
 	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, testplans)
