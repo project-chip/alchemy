@@ -29,7 +29,7 @@ QuoteUnderlines = underlines:("____" "_"*) &{
     }
 
 QuoteDelimiter = underlines:(QuoteUnderlines) 
-    _*  
+    AnySpaces  
     {
         return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeQuote, Length:underlines.(int)}, nil
     }

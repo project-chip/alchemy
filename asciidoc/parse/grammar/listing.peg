@@ -30,7 +30,7 @@ ListingHyphens = hyphens:("----" "-"*) &{
     }
 
 ListingDelimiter = hyphens:(ListingHyphens) 
-    _*  
+    AnySpaces  
     {
         return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeListing, Length:hyphens.(int)}, nil
     }

@@ -30,7 +30,7 @@ LiteralDots = dots:("...." "."*) &{
     }
 
 LiteralDelimiter = dots:(LiteralDots) 
-    _*  
+    AnySpaces  
     {
         return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeLiteral, Length:dots.(int)}, nil
     }

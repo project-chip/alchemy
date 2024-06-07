@@ -15,7 +15,7 @@ DescriptionListTerm = term:(!DescriptionListMarker !EndOfLine InlineElement)+ {
     return flat(term.([]any)), nil
 }
 
-DescriptionListMarker = _* marker:((":" / ";")+ {
+DescriptionListMarker = AnySpaces marker:((":" / ";")+ {
     return string(c.text), nil
 }) &{
     switch marker.(string) {
@@ -24,7 +24,7 @@ DescriptionListMarker = _* marker:((":" / ";")+ {
     }
     return false, nil
 }
-_*
+AnySpaces
 {
     return marker.(string), nil
 }

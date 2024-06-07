@@ -1,30 +1,27 @@
 
-IfDef = IfDefStatement attributes:(ConditionalAttributes) "[]" _*  &EndOfLine {
+IfDef = IfDefStatement attributes:(ConditionalAttributes) "[]" AnySpaces  &EndOfLine {
     attr := attributes.(conditionalAttributes)
     return asciidoc.NewIfDef(attr.names, attr.union), nil
 }
 
-IfDefStatement = "ifdef::" {
-    debugPosition(c, "matched ifdef statement: %s\n", string(c.text))
-    return string(c.text), nil
-}
+IfDefStatement = "ifdef::" 
 
-IfNDef = "ifndef::" attributes:(ConditionalAttributes) "[]" _*  &EndOfLine {
+IfNDef = "ifndef::" attributes:(ConditionalAttributes) "[]" AnySpaces  &EndOfLine {
      attr := attributes.(conditionalAttributes)
     return asciidoc.NewIfNDef(attr.names, attr.union), nil
 }
 
-InlineIfDef = "ifdef::" attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" _* {
+InlineIfDef = "ifdef::" attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" AnySpaces {
     attr := attributes.(conditionalAttributes)
     return compose(c, asciidoc.NewInlineIfDef(attr.names), setElements[*asciidoc.InlineIfDef](content))
 }
 
-InlineIfNDef = "ifndef::" attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" _* {
+InlineIfNDef = "ifndef::" attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" AnySpaces {
     attr := attributes.(conditionalAttributes)
     return compose(c, asciidoc.NewInlineIfNDef(attr.names), setElements[*asciidoc.InlineIfNDef](content))
 }
 
-EndIfDef = EndIfDefStatement attributes:(ConditionalAttributes)? "[]"  _* &EndOfLine  {
+EndIfDef = EndIfDefStatement attributes:(ConditionalAttributes)? "[]"  AnySpaces &EndOfLine  {
     var attr []asciidoc.AttributeName
     var union asciidoc.ConditionalUnion
     if attributes != nil {
@@ -45,7 +42,7 @@ ConditionalAttributes = attr:(ConditionalAttributesAny / ConditionalAttributesAl
 }
 
 ConditionalAttributesAny = names:(
-    name:AttributeEntryName _* ","? _* 
+    name:AttributeEntryName AnySpaces ","? AnySpaces 
     &{
         return len(name.(string)) > 0, nil
     }
@@ -57,7 +54,7 @@ ConditionalAttributesAny = names:(
 }
 
 ConditionalAttributesAll = names:(
-    name:AttributeEntryName _* "+"? _* 
+    name:AttributeEntryName AnySpaces "+"? AnySpaces 
     &{
         return len(name.(string)) > 0, nil
     }
@@ -74,7 +71,7 @@ InlineConditionalContent = content:(!"]" element:InlineElement {
     return content, nil
 }
 
-IfEval = IfEvalStatement "[" _* left:(IfEvalValue) _*  operand:(IfEvalOperator) _* right:(IfEvalValue) _* "]" _*  {
+IfEval = IfEvalStatement "[" AnySpaces left:(IfEvalValue) AnySpaces  operand:(IfEvalOperator) AnySpaces right:(IfEvalValue) AnySpaces "]" AnySpaces  {
      debugPosition(c, "matched ifeval: %s\n", string(c.text))
     return asciidoc.NewIfEval(left.(asciidoc.IfEvalValue), operand.(asciidoc.ConditionalOperator), right.(asciidoc.IfEvalValue)), nil
 }

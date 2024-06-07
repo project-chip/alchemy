@@ -1,5 +1,5 @@
 
-Anchor = !"\\" "[[" id:(CrossReferenceID) label:(_* "," label:(AnchorLabel) { return label, nil})? "]]" {
+Anchor = !"\\" "[[" id:(CrossReferenceID) label:(AnySpaces "," label:(AnchorLabel) { return label, nil})? "]]" {
     var lbl asciidoc.Set
     if label != nil {
         lbl = join(label.([]any))
@@ -8,7 +8,7 @@ Anchor = !"\\" "[[" id:(CrossReferenceID) label:(_* "," label:(AnchorLabel) { re
     return compose(c, asciidoc.NewAnchor(id.(string), lbl))
 }
 
-AnchorAttribute = !"\\" "[[" id:(CrossReferenceID) label:(_* "," label:(AnchorLabel) { return label, nil})? "]]" {
+AnchorAttribute = !"\\" "[[" id:(CrossReferenceID) label:(AnySpaces "," label:(AnchorLabel) { return label, nil})? "]]" {
     var lbl asciidoc.Set
     if label != nil {
         lbl = join(label.([]any))

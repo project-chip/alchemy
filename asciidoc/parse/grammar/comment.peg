@@ -49,7 +49,7 @@ MultiLineCommentForwardSlashes = forwardSlashes:("////" "/"*) &{
     }
 
 MultiLineCommentDelimiter = forwardSlashes:(MultiLineCommentForwardSlashes) 
-    _*  
+    AnySpaces  
     {
         debugPosition(c, "matched MultiLineComment delimiter: %s\n", string(c.text))
         return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeMultiLineComment, Length:forwardSlashes.(int)}, nil

@@ -30,7 +30,7 @@ StemPluses = pluses:("++++" "+"*) &{
     }
 
 StemDelimiter = pluses:(StemPluses) 
-    _*  
+    AnySpaces  
     {
         return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeStem, Length:pluses.(int)}, nil
     }
