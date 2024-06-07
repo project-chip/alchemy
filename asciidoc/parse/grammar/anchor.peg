@@ -18,7 +18,7 @@ AnchorAttribute = !"\\" "[[" id:(CrossReferenceID) label:(AnySpaces "," label:(A
 }
 
 AnchorLabel = ( !"]]"
-    ([^\r\n{[\]]+ {
+    ([^\r\n{\]]+ {
         return asciidoc.NewString(string(c.text)), nil
     })
     / arv:AttributeReference {
