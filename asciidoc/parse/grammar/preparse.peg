@@ -24,17 +24,17 @@ PreParseLineElement = (
     / ("{" { return string(c.text), nil})
 )
 
-IfDefBlock = IfDefStatement attributes:(ConditionalAttributes) "[]" _*  EndOfLine lines:(PreParseElement)*  EndIfDef  {
+IfDefBlock = IfDefStatement attributes:(ConditionalAttributes) "[]" AnySpaces  EndOfLine lines:(PreParseElement)*  EndIfDef  {
     attr := attributes.(conditionalAttributes)
     return compose(c, asciidoc.NewIfDefBlock(attr.names, attr.union), setElements[*asciidoc.IfDefBlock](flat(lines.([]any))))
 }
 
-IfNDefBlock = "ifndef::" attributes:(ConditionalAttributes) "[]" _*  EndOfLine lines:(PreParseElement)*  EndIfDef  {
+IfNDefBlock = "ifndef::" attributes:(ConditionalAttributes) "[]" AnySpaces  EndOfLine lines:(PreParseElement)*  EndIfDef  {
     attr := attributes.(conditionalAttributes)
     return compose(c, asciidoc.NewIfNDefBlock(attr.names, attr.union), setElements[*asciidoc.IfNDefBlock](flat(lines.([]any))))
 }
 
-IfEvalBlock = IfEvalStatement "[" _* left:(IfEvalValue) _*  operand:(IfEvalOperator) _* right:(IfEvalValue) _* "]" _*  EndOfLine lines:(PreParseElement)*  EndIfDef  {
+IfEvalBlock = IfEvalStatement "[" AnySpaces left:(IfEvalValue) AnySpaces  operand:(IfEvalOperator) AnySpaces right:(IfEvalValue) AnySpaces "]" AnySpaces  EndOfLine lines:(PreParseElement)*  EndIfDef  {
     return compose(c, asciidoc.NewIfEvalBlock(left.(asciidoc.IfEvalValue), operand.(asciidoc.ConditionalOperator), right.(asciidoc.IfEvalValue)), setElements[*asciidoc.IfEvalBlock](flat(lines.([]any))))
 
 }

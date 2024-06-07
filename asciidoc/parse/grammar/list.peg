@@ -14,11 +14,11 @@ AttachedBlock = element:(AttachedBlockElement) &EndOfLine {
     return element, nil
 }
 
-AttachedBlockElement = "+" _* NewLine value:(BlockElements) {
+AttachedBlockElement = "+" AnySpaces NewLine value:(BlockElements) {
     return asciidoc.NewAttachedBlock(value.(asciidoc.Element)), nil
 }
 
-ListContinuation = "+" _* NewLine value:BlockElement {
+ListContinuation = "+" AnySpaces NewLine value:BlockElement {
     return compose(c, asciidoc.NewListContinuation(value.(asciidoc.Element)))
 }
 

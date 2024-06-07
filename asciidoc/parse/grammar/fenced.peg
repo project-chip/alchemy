@@ -34,7 +34,7 @@ FencedBackticks = backticks:("```" "="*) &{
     }
 
 FencedDelimiter = hyphens:(FencedBackticks) 
-    _*  
+    AnySpaces  
     {
     debugPosition(c, "matched Fenced delimiter: %s\n", string(c.text))
         return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeFenced, Length:hyphens.(int)}, nil

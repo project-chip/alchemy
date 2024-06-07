@@ -1,7 +1,7 @@
 
 CrossReference = InternalCrossReference / DocumentCrossReference
 
-InternalCrossReference = CrossReferenceStart id:(CrossReferenceID) label:(_* "," label:(_* CrossReferenceLabel) { return label, nil})? ">>" {
+InternalCrossReference = CrossReferenceStart id:(CrossReferenceID) label:(AnySpaces "," label:(AnySpaces CrossReferenceLabel) { return label, nil})? ">>" {
     var lbl asciidoc.Set
     if label != nil {
         lbl = join(label.([]any))

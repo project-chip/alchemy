@@ -27,7 +27,7 @@ OpenEquals = hyphens:("--")
     }
 
 OpenDelimiter = hyphens:(OpenEquals) 
-    _*  
+    AnySpaces  
     {
         return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeOpen, Length:len(hyphens.(string))}, nil
     }

@@ -1,5 +1,5 @@
 
-BlockImage = "image::" path:(Path) attributes:(InlineAttributes) _*  {
+BlockImage = "image::" path:(Path) attributes:(InlineAttributes) AnySpaces  {
     return compose(c, asciidoc.NewBlockImage(path.(asciidoc.Set)), setAttributes[*asciidoc.BlockImage](attributes))
 }
 

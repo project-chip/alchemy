@@ -99,17 +99,17 @@ BlockTitleContent = content:(NakedInlineText / Alphanumeric / _ / Punctuation / 
     return flat(content.([]any)), nil
 }
 
-BlockEmptyLine = _* &NewLine {
+BlockEmptyLine = AnySpaces &NewLine {
     debugPosition(c, "matched block empty line %d chars \"%s\"\n", len(string(c.text)), string(c.text))
     return compose(c, asciidoc.NewEmptyLine(string(c.text)))
 }
 
-BlockElementAttribute = attributes:(BlockAttributes) _* &EndOfLine {
+BlockElementAttribute = attributes:(BlockAttributes) AnySpaces &EndOfLine {
     debugPosition(c, "matched block element attribute: \"%s\"\n",string(c.text))
     return attributes, nil
 }
 
-BlockElementAdditionalAttribute = NewLine attributes:(BlockAttributes) _* &EndOfLine {
+BlockElementAdditionalAttribute = NewLine attributes:(BlockAttributes) AnySpaces &EndOfLine {
     debugPosition(c, "matched additional block element attribute: \"%s\"\n",string(c.text))
     return attributes, nil
 }

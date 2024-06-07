@@ -29,7 +29,7 @@ SidebarAsterisks = asterisks:("****" "*"*) &{
     }
 
 SidebarDelimiter = asterisks:(SidebarAsterisks) 
-    _*  
+    AnySpaces  
     {
         return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeSidebar, Length:asterisks.(int)}, nil
     }

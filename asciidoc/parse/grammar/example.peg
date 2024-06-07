@@ -34,7 +34,7 @@ ExampleEquals = hyphens:("====" "="*) &{
     }
 
 ExampleDelimiter = hyphens:(ExampleEquals) 
-    _*  
+    AnySpaces  
     {
     debugPosition(c, "matched example delimiter: %s\n", string(c.text))
         return asciidoc.Delimiter{Type:asciidoc.DelimitedBlockTypeExample, Length:hyphens.(int)}, nil

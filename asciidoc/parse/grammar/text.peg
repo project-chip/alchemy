@@ -17,7 +17,7 @@ Punctuation = ( ([,;.?)/:!="'@-[\]]) / ("(" !"(" )) {
     return asciidoc.NewString(string(c.text)), nil
 }
 
-LineBreak = "+" _* &(EndOfLine) &{
+LineBreak = "+" AnySpaces &(EndOfLine) &{
     debugPosition(c, "checking line continuation: %v\n", c.previousRuneIsWhitespace())
     return c.previousRuneIsWhitespace(), nil
 } {
@@ -31,7 +31,7 @@ DoubleCurvedQuote = ("\"`" / "`\"") { return string(c.text), nil}
 
 SingleCurvedQuote = ("'`" / "`'") { return string(c.text), nil}
 
-EmptyLine = BeginningOfLine _* NewLine {
+EmptyLine = BeginningOfLine AnySpaces NewLine {
         debugPosition(c, "matched empty line %d chars \"%s\"\n", len(string(c.text)), string(c.text))
         return compose(c, asciidoc.NewEmptyLine(string(c.text)))
     }
@@ -75,7 +75,7 @@ OffsetCharacter = . &{
     return c.currentColumn() > 1, nil
 }
 
-Indent = _* &(!_) &{
+Indent = AnySpaces &(!_) &{
     debugPosition(c, "checking indent: %d\n", c.pos.col)
     return c.pos.col < 2, nil
 } {
