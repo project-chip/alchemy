@@ -63,6 +63,8 @@ func (na *AnchorAttribute) AsciiDocString() string {
 }
 
 type Anchor struct {
+	position
+
 	ID string
 	Set
 }

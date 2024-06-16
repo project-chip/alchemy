@@ -23,23 +23,28 @@ type Doc struct {
 
 	docType matter.DocType
 
-	Domain  matter.Domain
-	parents []*Doc
+	Domain   matter.Domain
+	parents  []*Doc
+	children []*Doc
 
-	anchors         map[string]*Anchor
-	crossReferences map[string][]*asciidoc.CrossReference
-	attributes      map[asciidoc.AttributeName]any
+	referenceIndex
+	attributes map[asciidoc.AttributeName]any
 
 	entities       []mattertypes.Entity
 	entitiesParsed bool
 
 	entitiesBySection map[asciidoc.Attributable][]mattertypes.Entity
+
+	spec  *Specification
+	group *DocGroup
 }
 
-func NewDoc(d *asciidoc.Document) (*Doc, error) {
+func NewDoc(d *asciidoc.Document, path string) (*Doc, error) {
 	doc := &Doc{
-		Base:       d,
-		attributes: make(map[asciidoc.AttributeName]any),
+		Base:           d,
+		Path:           path,
+		attributes:     make(map[asciidoc.AttributeName]any),
+		referenceIndex: newReferenceIndex(),
 	}
 	for _, e := range d.Elements() {
 		switch el := e.(type) {
@@ -76,9 +81,19 @@ func (doc *Doc) Parents() []*Doc {
 	return p
 }
 
+func (doc *Doc) Group() *DocGroup {
+	return doc.group
+}
+
 func (doc *Doc) addParent(parent *Doc) {
 	doc.Lock()
 	doc.parents = append(doc.parents, parent)
+	doc.Unlock()
+}
+
+func (doc *Doc) addChild(child *Doc) {
+	doc.Lock()
+	doc.children = append(doc.children, child)
 	doc.Unlock()
 }
 
@@ -109,17 +124,18 @@ func (doc *Doc) Entities() (entities []mattertypes.Entity, err error) {
 
 func (doc *Doc) Reference(ref string) (mattertypes.Entity, bool) {
 
-	a, err := doc.getAnchor(ref)
+	a := doc.FindAnchor(ref)
 
-	if err != nil {
-		slog.Warn("failed getting anchor", slog.String("path", doc.Path), slog.String("reference", ref), slog.Any("error", err))
-		return nil, false
-	}
 	if a == nil {
 		slog.Warn("unknown reference", slog.String("path", doc.Path), slog.String("reference", ref))
 		return nil, false
 	}
-	entities, ok := doc.entitiesBySection[a.Element]
+	wa, ok := a.Element.(asciidoc.Attributable)
+	if !ok {
+		slog.Warn("reference to non-entity", slog.String("path", doc.Path), slog.String("reference", ref))
+		return nil, false
+	}
+	entities, ok := doc.entitiesBySection[wa]
 	if !ok {
 		slog.Warn("unknown reference entity", slog.String("path", doc.Path), slog.String("reference", ref), slog.Any("count", len(doc.entitiesBySection)))
 		for sec, e := range doc.entitiesBySection {

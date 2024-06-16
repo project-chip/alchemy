@@ -101,33 +101,38 @@ func readRowCellValue(doc *Doc, row *asciidoc.TableRow, offset int) (string, err
 	return strings.TrimSpace(value.String()), nil
 }
 
-func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder) error {
+func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder) (err error) {
 	for _, el := range els {
 		switch el := el.(type) {
 		case *asciidoc.String:
 			value.WriteString(el.Value)
+		case asciidoc.FormattedTextElement:
+			err = readRowCellValueElements(doc, el.Elements(), value)
+		case *asciidoc.Paragraph:
+			err = readRowCellValueElements(doc, el.Elements(), value)
 		case *asciidoc.CrossReference:
 			if len(el.Set) > 0 {
-				return readRowCellValueElements(doc, el.Set, value)
-			}
-			var val string
-			anchor, _ := doc.getAnchor(el.ID)
-			if anchor != nil {
-				val = matter.StripTypeSuffixes(ReferenceName(anchor.Element))
+				readRowCellValueElements(doc, el.Set, value)
 			} else {
-				val = strings.TrimPrefix(el.ID, "_")
-				val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
+				var val string
+				anchor := doc.FindAnchor(el.ID)
+				if anchor != nil {
+					val = matter.StripTypeSuffixes(ReferenceName(anchor.Element))
+				} else {
+					val = strings.TrimPrefix(el.ID, "_")
+					val = strings.TrimPrefix(val, "ref_") // Trim, and hope someone else has it defined
+				}
+				value.WriteString(val)
 			}
-			value.WriteString(val)
 		case *asciidoc.Link:
 			value.WriteString(el.URL.Scheme)
 			readRowCellValueElements(doc, el.URL.Path, value)
 		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
-			err := readRowCellValueElements(doc, el.Elements(), &quotedText)
+			err = readRowCellValueElements(doc, el.Elements(), &quotedText)
 			if err != nil {
-				return err
+				return
 			}
 			qt := quotedText.String()
 			if qt == "*" { //
@@ -144,26 +149,20 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 			value.WriteString(el.Character)
 		case *asciidoc.InlinePassthrough:
 			value.WriteString("+")
-			err := readRowCellValueElements(doc, el.Elements(), value)
-			if err != nil {
-				return err
-			}
+			err = readRowCellValueElements(doc, el.Elements(), value)
 		case *asciidoc.InlineDoublePassthrough:
 			value.WriteString("++")
-			err := readRowCellValueElements(doc, el.Elements(), value)
-			if err != nil {
-				return err
-			}
+			err = readRowCellValueElements(doc, el.Elements(), value)
 		case *asciidoc.ThematicBreak:
 		case *asciidoc.NewLine:
 			value.WriteString(" ")
 		case asciidoc.HasElements:
-			err := readRowCellValueElements(doc, el.Elements(), value)
-			if err != nil {
-				return err
-			}
+			err = readRowCellValueElements(doc, el.Elements(), value)
 		default:
 			return fmt.Errorf("unexpected type in cell: %T", el)
+		}
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -197,40 +196,11 @@ func (d *Doc) GetHeaderCellString(cell *asciidoc.TableCell) (string, error) {
 		return "", nil
 	}
 	var v strings.Builder
-	err := d.readCellContent(cellElements, &v)
+	err := readRowCellValueElements(d, cellElements, &v)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error reading table header cell: %w", err)
 	}
 	return v.String(), nil
-}
-
-func (d *Doc) readCellContent(els asciidoc.Set, content *strings.Builder) (err error) {
-	for _, s := range els {
-		switch s := s.(type) {
-		case *asciidoc.String:
-			content.WriteString(s.Value)
-		case asciidoc.FormattedTextElement:
-			return d.readCellContent(s.Elements(), content)
-		case *asciidoc.CrossReference:
-			var name string
-			anchor, _ := d.getAnchor(s.ID)
-			if anchor != nil {
-				name = ReferenceName(anchor.Element)
-			} else {
-				name = s.ID
-			}
-			content.WriteString(name)
-		case *asciidoc.SpecialCharacter:
-			content.WriteString(s.Character)
-		case *asciidoc.NewLine:
-			content.WriteString(" ")
-		case *asciidoc.Paragraph:
-			return d.readCellContent(s.Elements(), content)
-		default:
-			return fmt.Errorf("unknown element in table header cell: %T", s)
-		}
-	}
-	return nil
 }
 
 type ExtraColumn struct {
@@ -344,6 +314,8 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnCondition
 	case "mode tag value":
 		return matter.TableColumnModeTagValue
+	case "status code":
+		return matter.TableColumnStatusCode
 	}
 	return matter.TableColumnUnknown
 }

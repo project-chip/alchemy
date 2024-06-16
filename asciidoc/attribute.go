@@ -216,83 +216,6 @@ func (na *TitleAttribute) AsciiDocString() string {
 	return AttributeAsciiDocString(na.Val)
 }
 
-type ShorthandStyle struct {
-	attribute
-
-	Val Set
-}
-
-func NewShorthandStyle(value Set) *ShorthandID {
-	return &ShorthandID{Val: value}
-}
-
-type ShorthandID struct {
-	attribute
-
-	Val Set
-}
-
-func NewShorthandID(value Set) *ShorthandID {
-	return &ShorthandID{Val: value}
-}
-
-type ShorthandRole struct {
-	attribute
-
-	Val Set
-}
-
-func NewShorthandRole(value Set) *ShorthandRole {
-	return &ShorthandRole{Val: value}
-}
-
-type ShorthandOption struct {
-	attribute
-
-	Val Set
-}
-
-func NewShorthandOption(value Set) *ShorthandOption {
-	return &ShorthandOption{Val: value}
-}
-
-type ShorthandAttribute struct {
-	Style   *ShorthandStyle
-	ID      *ShorthandID
-	Roles   []*ShorthandRole
-	Options []*ShorthandOption
-}
-
-func (ae ShorthandAttribute) Type() ElementType {
-	return ElementTypeAttribute
-}
-
-func (ae *ShorthandAttribute) Value() any {
-	var sb strings.Builder
-
-	return sb.String()
-}
-
-func NewShorthandAttribute(style any, values []any) (*ShorthandAttribute, error) {
-	sha := &ShorthandAttribute{}
-	if s, ok := style.(*ShorthandStyle); ok {
-		sha.Style = s
-	}
-	for _, v := range values {
-		switch v := v.(type) {
-		case *ShorthandID:
-			sha.ID = v
-		case *ShorthandRole:
-			sha.Roles = append(sha.Roles, v)
-		case *ShorthandOption:
-			sha.Options = append(sha.Options, v)
-		default:
-			return nil, fmt.Errorf("unexpected type in shorthand attribute: %T", v)
-		}
-	}
-	return sha, nil
-}
-
 type AttributeReference interface {
 	HasPosition
 	Element
@@ -426,5 +349,7 @@ func attributeAsciiDocStringElement(sb *strings.Builder, e Element) {
 		sb.WriteRune('{')
 		sb.WriteString(e.Name())
 		sb.WriteRune('}')
+	default:
+		sb.WriteString(fmt.Sprintf("ERROR: unexpected attribute element: %T", e))
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
@@ -50,6 +51,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		f := matter.NewField()
+		f.Source = newSource(d, row)
 		f.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
@@ -97,7 +99,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 			id := f.ID.Value()
 			_, ok := ids[id]
 			if ok {
-				slog.Warn("duplicate field ID", "doc", d.Path, "name", f.Name, "id", id)
+				slog.Warn("duplicate field ID", log.Path("source", f.Source), slog.String("name", f.Name), slog.Uint64("id", id))
 				continue
 			}
 			ids[id] = struct{}{}
@@ -178,21 +180,26 @@ func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder
 		case *asciidoc.String:
 			sb.WriteString(v.Value)
 		case *asciidoc.CrossReference:
-			var name string
-			anchor, _ := d.getAnchor(v.ID)
-			if anchor != nil {
-				name = ReferenceName(anchor.Element)
-				if len(name) == 0 {
-					name = asciidoc.AttributeAsciiDocString(anchor.LabelElements)
-				}
-			} else {
-				slog.Info("missing anchor", "name", v.ID)
+			if len(v.Set) > 0 {
+				d.buildDataTypeString(v.Set, sb)
 
+			} else {
+				var name string
+				anchor := d.FindAnchor(v.ID)
+				if anchor != nil {
+					name = ReferenceName(anchor.Element)
+					if len(name) == 0 {
+						name = asciidoc.AttributeAsciiDocString(anchor.LabelElements)
+					}
+				} else {
+					slog.Info("missing anchor", slog.String("name", v.ID), log.Path("source", newSource(d, v)))
+
+				}
+				if len(name) == 0 {
+					name = strings.TrimPrefix(v.ID, "_")
+				}
+				sb.WriteString(name)
 			}
-			if len(name) == 0 {
-				name = strings.TrimPrefix(v.ID, "_")
-			}
-			sb.WriteString(name)
 		case *asciidoc.SpecialCharacter:
 		case *asciidoc.Paragraph:
 			d.buildDataTypeString(v.Elements(), sb)
@@ -200,27 +207,6 @@ func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder
 			slog.Warn("unknown data type value element", "loc", parse.Position(el), "type", fmt.Sprintf("%T", v))
 		}
 	}
-}
-
-func (d *Doc) getAnchor(id string) (*Anchor, error) {
-	anchors, err := d.Anchors()
-	if err != nil {
-		return nil, err
-	}
-	if a, ok := anchors[id]; ok {
-		return a, nil
-	}
-	for _, p := range d.Parents() {
-		slog.Debug("checking parents for anchor", "id", id)
-		a, err := p.getAnchor(id)
-		if err != nil {
-			return nil, err
-		}
-		if a != nil {
-			return a, nil
-		}
-	}
-	return nil, nil
 }
 
 func (d *Doc) getRowConstraint(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *types.DataType) constraint.Constraint {
@@ -252,7 +238,7 @@ func (d *Doc) buildConstraintValue(els asciidoc.Set, sb *strings.Builder) {
 		case *asciidoc.String:
 			sb.WriteString(v.Value)
 		case *asciidoc.CrossReference:
-			anchor, _ := d.getAnchor(v.ID)
+			anchor := d.FindAnchor(v.ID)
 			var name string
 			if anchor != nil {
 				name = matter.StripReferenceSuffixes(ReferenceName(anchor.Element))
@@ -313,7 +299,7 @@ func (d *Doc) buildRowConformance(cellElements asciidoc.Set, sb *strings.Builder
 				// This is a proper reference; allow the conformance parser to recognize it
 				sb.WriteString(fmt.Sprintf("<<%s>>", id))
 			} else {
-				anchor, _ := d.getAnchor(v.ID)
+				anchor := d.FindAnchor(v.ID)
 				var name string
 				if anchor != nil {
 					name = ReferenceName(anchor.Element)

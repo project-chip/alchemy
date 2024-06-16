@@ -143,7 +143,7 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct:
 			if section.Base.Level > 2 {
-				slog.Warn("Unusual depth for section type", slog.String("name", section.Name), slog.String("type", section.SecType.String()), slog.String("path", doc.Path))
+				slog.Debug("Unusual depth for section type", slog.String("name", section.Name), slog.String("type", section.SecType.String()), slog.String("path", doc.Path))
 			}
 		}
 		slog.Debug("sec type", "name", section.Name, "type", section.SecType, "parent", ps.SecType)
@@ -210,7 +210,7 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			if strings.HasSuffix(name, " attribute set") {
 				return matter.SectionAttributes
 			}
-			return matter.SectionUnknown
+			return deriveSectionType(section, parent)
 		}
 	case matter.SectionDerivedClusterNamespace:
 		switch name {
@@ -254,6 +254,7 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		if strings.HasSuffix(name, " field") {
 			return matter.SectionField
 		}
+		return deriveSectionType(section, parent)
 	case matter.SectionCommands:
 		if strings.HasSuffix(name, " command") {
 			return matter.SectionCommand

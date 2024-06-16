@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/hasty/alchemy/asciidoc/render"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter/spec"
 )
@@ -25,7 +24,7 @@ func (r Baller) Type() pipeline.ProcessorType {
 	return pipeline.ProcessorTypeIndividual
 }
 
-func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[render.InputDocument], extras []*pipeline.Data[*spec.Doc], err error) {
+func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[*spec.Doc], extras []*pipeline.Data[*spec.Doc], err error) {
 	b := NewBall(input.Content)
 	for _, option := range r.discoOptions {
 		option(b)
@@ -40,6 +39,6 @@ func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], in
 		err = nil
 		return
 	}
-	outputs = append(outputs, pipeline.NewData[render.InputDocument](input.Path, input.Content))
+	outputs = append(outputs, pipeline.NewData[*spec.Doc](input.Path, input.Content))
 	return
 }

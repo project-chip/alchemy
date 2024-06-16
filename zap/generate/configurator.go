@@ -12,6 +12,7 @@ import (
 	"github.com/hasty/alchemy/dm"
 	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
@@ -183,7 +184,7 @@ func flushClusterCodes(parent *etree.Element, clusterIDs []*matter.Number) {
 	}
 }
 
-func clusterIdsForEntity(spec *matter.Spec, entity types.Entity) (clusterIDs []*matter.Number) {
+func clusterIdsForEntity(spec *spec.Specification, entity types.Entity) (clusterIDs []*matter.Number) {
 	refs, ok := spec.ClusterRefs[entity]
 	if !ok {
 		slog.Warn("unknown cluster ref for entity", "val", entity)
