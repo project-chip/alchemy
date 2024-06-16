@@ -25,6 +25,9 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 	if !strings.HasSuffix(lower, "struct type") {
 		if strings.HasSuffix(lower, "struct") {
 			setSectionTitle(ss.section, name+" Type")
+		} else if strings.HasSuffix(lower, " type") {
+			name = name[:len(name)-5]
+			setSectionTitle(ss.section, name+"Struct Type")
 		} else {
 			setSectionTitle(ss.section, name+"Struct Type")
 		}
