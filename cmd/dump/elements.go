@@ -170,6 +170,16 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			}
 			fmt.Print(strings.Repeat("\t", indent))
 			fmt.Printf("}\n")
+		case *asciidoc.SingleLineComment:
+			fmt.Print("{comment}: ", snippet(el.Value))
+			fmt.Print("\n")
+		case *asciidoc.Anchor:
+			fmt.Printf("{anchor \"%s\"", el.ID)
+			if len(el.Set) > 0 {
+				fmt.Print("\n")
+				dumpElements(doc, el.Set, indent+1)
+			}
+			fmt.Print("}\n")
 		/*case *asciidoc.ListElements:
 		fmt.Printf("{list els}\n")
 		dumpElements(doc, el.Elements, indent+1)*/
@@ -177,7 +187,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			fmt.Printf("{list con}\n")
 			dumpElements(doc, asciidoc.Set{el.Child()}, indent+1)
 		case *asciidoc.CharacterReplacementReference:
-			fmt.Printf("{predef %s}", el.Name())
+			fmt.Printf("{predef %s}\n", el.Name())
 		default:
 			fmt.Printf("unknown render element type: %T\n", el)
 		}

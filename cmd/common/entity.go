@@ -35,15 +35,13 @@ func (sp *EntityFilter[I, O]) Process(cxt context.Context, inputs []*pipeline.Da
 		for _, e := range entities {
 			switch e := e.(type) {
 			case explodable:
-				for _, o := range e.Explode() {
-					matches = append(matches, o)
-				}
+				matches = append(matches, e.Explode()...)
 			case O:
 				matches = append(matches, e)
 			}
 		}
 		if len(matches) > 0 {
-			outputs = append(outputs, pipeline.NewData[[]O](i.Path, matches))
+			outputs = append(outputs, pipeline.NewData(i.Path, matches))
 		}
 	}
 	return
