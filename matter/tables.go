@@ -27,6 +27,7 @@ const (
 	TableColumnValue
 	TableColumnBit
 	TableColumnCode
+	TableColumnStatusCode
 	TableColumnFeature
 	TableColumnDeviceName
 	TableColumnSuperset
@@ -62,6 +63,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnValue:        "Value",
 	TableColumnBit:          "Bit",
 	TableColumnCode:         "Code",
+	TableColumnStatusCode:   "Status Code",
 	TableColumnFeature:      "Feature",
 	TableColumnDeviceName:   "Device Name",
 	TableColumnSuperset:     "Superset",
@@ -210,6 +212,7 @@ var Tables = map[TableType]Table{
 		},
 		ColumnNames: map[TableColumn]string{
 			TableColumnDescription: "Summary", // Rename Description to Summary
+			TableColumnStatusCode:  "Value",   // Rename Status Code in enums to Value
 		},
 	},
 	TableTypeBitmap: {
