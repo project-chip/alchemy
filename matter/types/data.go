@@ -123,11 +123,11 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeEpochSeconds
 	case "epoch-us", "epochus", "epoch time in microseconds":
 		dt.BaseType = BaseDataTypeEpochMicroseconds
-	case "systime_ms", "systime-ms", "systemtimems":
+	case "systime_ms", "systime-ms", "systemtimems", "system time in milliseconds":
 		dt.BaseType = BaseDataTypeSystimeMilliseconds
-	case "systime_us", "systime-us", "systemtimeus":
+	case "systime_us", "systime-us", "systemtimeus", "system time in microseconds":
 		dt.BaseType = BaseDataTypeSystimeMicroseconds
-	case "posix-ms", "posixms":
+	case "posix-ms", "posixms", "posix time in milliseconds":
 		dt.BaseType = BaseDataTypePosixMilliseconds
 	case "date":
 		dt.BaseType = BaseDataTypeDate
@@ -179,11 +179,13 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeSignedTemperature
 	case "hwadr", "hardware address":
 		dt.BaseType = BaseDataTypeHardwareAddress
+	case "ipadr":
+		dt.BaseType = BaseDataTypeIPAddress
 	case "ipv4adr", "ipv4 address":
 		dt.BaseType = BaseDataTypeIPv4Address
 	case "ipv6adr", "ipv6 address":
 		dt.BaseType = BaseDataTypeIPv6Address
-	case "ipv6pre":
+	case "ipv6pre", "ipv6 prefix":
 		dt.BaseType = BaseDataTypeIPv6Prefix
 	case "semtag":
 		dt.BaseType = BaseDataTypeSemanticTag
@@ -195,6 +197,8 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeMessageID
 	case "tag":
 		dt.BaseType = BaseDataTypeTag
+	case "homeloc", "HomeLocationStruct":
+		dt.BaseType = BaseDataTypeHomeLocation
 	default:
 		dt.BaseType = BaseDataTypeCustom
 	}
