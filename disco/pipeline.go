@@ -2,6 +2,7 @@ package disco
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hasty/alchemy/asciidoc/render"
 	"github.com/hasty/alchemy/internal/files"
@@ -9,38 +10,76 @@ import (
 	"github.com/hasty/alchemy/matter/spec"
 )
 
-func Pipeline(cxt context.Context, targeter pipeline.Targeter, pipelineOptions pipeline.Options, discoOptions []Option, filter *files.PathFilter[*spec.Doc], writer files.Writer[string]) (err error) {
+func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineOptions pipeline.Options, discoOptions []Option, writer files.Writer[string]) (err error) {
 
-	var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
-	inputs, err = pipeline.Start[struct{}](cxt, targeter)
+	var docs pipeline.Map[string, *pipeline.Data[*spec.Doc]]
+	if specRoot != "" {
 
-	if err != nil {
-		return err
+		specTargeter := spec.Targeter(specRoot)
+
+		var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
+		inputs, err = pipeline.Start[struct{}](cxt, specTargeter)
+		if err != nil {
+			return err
+		}
+
+		docReader := spec.NewReader("Reading spec docs")
+		docs, err = pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
+		if err != nil {
+			return err
+		}
+
+		var specBuilder spec.Builder
+		docs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, docs)
+		if err != nil {
+			return err
+		}
+		if len(docPaths) > 0 {
+			filter := files.NewPathFilter[*spec.Doc](docPaths)
+			docs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, filter, docs)
+			if err != nil {
+				return err
+			}
+		}
+	} else if len(docPaths) > 0 {
+		var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
+		inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(docPaths...))
+		if err != nil {
+			return err
+		}
+
+		docReader := spec.NewReader("Reading docs")
+		docs, err = pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = fmt.Errorf("disco ball requires spec root or document paths")
+		return
 	}
 
-	docReader := spec.NewReader("Reading docs")
-	docs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
-	if err != nil {
-		return err
-	}
-
-	var specBuilder spec.Builder
-	specBuilder.IgnoreHierarchy = true
-	docs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, docs)
 	if err != nil {
 		return err
 	}
 
 	baller := NewBaller(discoOptions, pipelineOptions)
-	var balledDocs pipeline.Map[string, *pipeline.Data[render.InputDocument]]
-	balledDocs, err = pipeline.Process[*spec.Doc, render.InputDocument](cxt, pipelineOptions, baller, docs)
+
+	var balledDocs pipeline.Map[string, *pipeline.Data[*spec.Doc]]
+	balledDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, baller, docs)
+	if err != nil {
+		return err
+	}
+
+	anchorNormalizer := newAnchorNormalizer(discoOptions, pipelineOptions)
+	var normalizedDocs pipeline.Map[string, *pipeline.Data[render.InputDocument]]
+	normalizedDocs, err = pipeline.Process[*spec.Doc, render.InputDocument](cxt, pipelineOptions, anchorNormalizer, balledDocs)
 	if err != nil {
 		return err
 	}
 
 	renderer := render.NewRenderer()
 	var renders pipeline.Map[string, *pipeline.Data[string]]
-	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, balledDocs)
+	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, normalizedDocs)
 	if err != nil {
 		return err
 	}

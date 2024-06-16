@@ -10,7 +10,7 @@ import (
 )
 
 type Configurator struct {
-	Spec *matter.Spec
+	Spec *spec.Specification
 	Doc  *spec.Doc
 
 	Features []*matter.Number
@@ -22,7 +22,7 @@ type Configurator struct {
 	ClusterIDs []string
 }
 
-func NewConfigurator(spec *matter.Spec, doc *spec.Doc, entities []types.Entity) (*Configurator, error) {
+func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.Entity) (*Configurator, error) {
 	c := &Configurator{
 		Spec:     spec,
 		Doc:      doc,

@@ -31,6 +31,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]mattertyp
 
 	e.Values, err = s.findEnumValues()
 	if err != nil {
+		slog.Warn("error finding enum values", slog.Any("err", err))
 		return
 	}
 
@@ -101,6 +102,12 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 			ev.Value, err = readRowID(row, columnMap, matter.TableColumnValue)
 			if err != nil {
 				return nil, err
+			}
+			if !ev.Value.Valid() {
+				ev.Value, err = readRowID(row, columnMap, matter.TableColumnStatusCode)
+				if err != nil {
+					return nil, err
+				}
 			}
 			values = append(values, ev)
 		}

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -45,7 +46,7 @@ func compareEnum(specEnum *matter.Enum, zapEnum *matter.Enum) (diffs []Diff) {
 	return
 }
 
-func compareEnums(spec *matter.Spec, specCluster *matter.Cluster, zapEnums []*matter.Enum) (diffs []Diff) {
+func compareEnums(spec *spec.Specification, specCluster *matter.Cluster, zapEnums []*matter.Enum) (diffs []Diff) {
 	specEnumMap := make(map[string]*matter.Enum)
 	for _, f := range specCluster.Enums {
 		specEnumMap[strings.ToLower(f.Name)] = f

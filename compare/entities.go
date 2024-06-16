@@ -7,10 +7,11 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func Entities(spec *matter.Spec, specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []*ClusterDifferences, err error) {
+func Entities(spec *spec.Specification, specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []*ClusterDifferences, err error) {
 	for path, sm := range specEntities {
 		zm, ok := zapEntities[path]
 		if !ok {

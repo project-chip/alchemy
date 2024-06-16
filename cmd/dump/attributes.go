@@ -18,6 +18,8 @@ func dumpAttributes(attributes []asciidoc.Attribute, indent int) {
 		switch a := a.(type) {
 		case *asciidoc.NamedAttribute:
 			fmt.Printf(" %s=", a.Name)
+		case *asciidoc.ShorthandAttribute:
+			fmt.Printf(" shorthand=%s", a.AsciiDocString())
 		default:
 			fmt.Printf("%T=", a)
 		}

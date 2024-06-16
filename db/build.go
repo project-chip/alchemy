@@ -5,11 +5,10 @@ import (
 	"log/slog"
 
 	"github.com/dolthub/go-mysql-server/sql"
-	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/spec"
 )
 
-func (h *Host) Build(sc *sql.Context, spec *matter.Spec, docs []*spec.Doc, raw bool) error {
+func (h *Host) Build(sc *sql.Context, spec *spec.Specification, docs []*spec.Doc, raw bool) error {
 	h.base = &sectionInfo{children: make(map[string][]*sectionInfo)}
 	var sis []*sectionInfo
 	for _, d := range docs {

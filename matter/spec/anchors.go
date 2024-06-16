@@ -1,17 +1,33 @@
 package spec
 
 import (
+	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
+	"github.com/hasty/alchemy/matter"
 )
 
 type Anchor struct {
+	Document      *Doc
+	Source        matter.Source
 	ID            string
 	LabelElements asciidoc.Set
-	Element       asciidoc.Attributable
+	Element       asciidoc.Element
 	Parent        parse.HasElements
+}
+
+func NewAnchor(doc *Doc, id string, element asciidoc.Element, parent parse.HasElements, label ...asciidoc.Element) *Anchor {
+	return &Anchor{
+		Document:      doc,
+		Source:        newSource(doc, element),
+		ID:            id,
+		Element:       element,
+		Parent:        parent,
+		LabelElements: label,
+	}
 }
 
 func (a *Anchor) Name() string {
@@ -22,31 +38,142 @@ func (a *Anchor) Name() string {
 	return ""
 }
 
-func (doc *Doc) Anchors() (map[string]*Anchor, error) {
-	if doc.anchors != nil {
-		return doc.anchors, nil
+func (a *Anchor) SyncToDoc(id string) {
+	if id != a.ID {
+		a.Document.changeAnchor(a, id)
+		if a.Document.group != nil {
+			a.Document.group.changeAnchor(a, id)
+		}
+		a.ID = id
 	}
-	anchors := make(map[string]*Anchor)
-	crossReferences := doc.CrossReferences()
-	parse.Traverse(doc, doc.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
-		var wa asciidoc.Attributable
-		e, ok := el.(*Element)
-		if ok {
-			if wa, ok = e.Base.(asciidoc.Attributable); !ok {
-				return parse.SearchShouldContinue
+	switch e := a.Element.(type) {
+	case *asciidoc.Anchor:
+		e.ID = a.ID
+		e.Set = make(asciidoc.Set, len(a.LabelElements))
+		copy(e.Set, a.LabelElements)
+	case asciidoc.Attributable:
+		var idAttribute asciidoc.Attribute
+		var refTextAttribute *asciidoc.NamedAttribute
+		for _, attr := range e.Attributes() {
+			switch attr := attr.(type) {
+			case *asciidoc.ShorthandAttribute:
+				if attr.ID != nil {
+					idAttribute = attr
+				}
+			case *asciidoc.AnchorAttribute:
+				attr.ID = asciidoc.NewString(a.ID)
+				if len(a.LabelElements) > 0 {
+					attr.Label = make(asciidoc.Set, len(a.LabelElements))
+					copy(attr.Label, a.LabelElements)
+				} else {
+					attr.Label = nil
+				}
+				return
+			case *asciidoc.NamedAttribute:
+				switch attr.Name {
+				case asciidoc.AttributeNameID:
+					idAttribute = attr
+				case asciidoc.AttributeNameReferenceText:
+					refTextAttribute = attr
+				}
 			}
-		} else if s, ok := el.(*Section); ok {
-			wa = s.Base
-		} else {
+		}
+		if idAttribute != nil {
+			switch idAttribute := idAttribute.(type) {
+			case *asciidoc.ShorthandAttribute:
+				idAttribute.ID.Val = asciidoc.Set{asciidoc.NewString(a.ID)}
+				return
+			case *asciidoc.NamedAttribute:
+				idAttribute.Val = asciidoc.Set{asciidoc.NewString(a.ID)}
+				if len(a.LabelElements) > 0 {
+					if refTextAttribute != nil {
+						refTextAttribute.Val = make(asciidoc.Set, len(a.LabelElements))
+						copy(refTextAttribute.Val, a.LabelElements)
+					} else {
+						e.AppendAttribute(asciidoc.NewNamedAttribute(string(asciidoc.AttributeNameReferenceText), a.LabelElements, asciidoc.AttributeQuoteTypeDouble))
+					}
+				}
+				return
+			}
+		}
+		e.AppendAttribute(asciidoc.NewAnchorAttribute(asciidoc.NewString(a.ID), a.LabelElements))
+	}
+
+}
+
+func (doc *Doc) Anchors() (map[string][]*Anchor, error) {
+	if doc.referenceIndex.anchorsParsed {
+		return doc.referenceIndex.anchors, nil
+	}
+
+	var crossReferences map[string][]*CrossReference
+	if doc.group != nil {
+		crossReferences = doc.group.crossReferences
+	} else {
+		crossReferences = doc.CrossReferences()
+	}
+	parse.Traverse(doc, doc.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
+		var anchor *Anchor
+		switch el := el.(type) {
+		case *asciidoc.Anchor:
+			anchor = NewAnchor(doc, el.ID, el, parent, el.Set...)
+		case *Element:
+			switch el := el.Base.(type) {
+			case *asciidoc.Anchor:
+				anchor = NewAnchor(doc, el.ID, el, parent, el.Set...)
+			default:
+				anchor = doc.makeAnchor(parent, el, crossReferences)
+			}
+		case *Section:
+			anchor = doc.makeAnchor(parent, el.Base, crossReferences)
+			if anchor != nil {
+				sectionName := el.Name
+				doc.anchorsByLabel[sectionName] = append(doc.anchorsByLabel[sectionName], anchor)
+			}
+		case asciidoc.Element:
+			anchor = doc.makeAnchor(parent, el, crossReferences)
+		default:
+			slog.Warn("unexpected anchor element", "type", fmt.Sprintf("%T", el))
 			return parse.SearchShouldSkip
 		}
-		var idAttr asciidoc.Attribute
-		var refTextAttr *asciidoc.NamedAttribute
+		if anchor != nil {
+			doc.anchors[anchor.ID] = append(doc.anchors[anchor.ID], anchor)
+			if len(anchor.LabelElements) > 0 {
+				label := strings.TrimSpace(asciidoc.AttributeAsciiDocString(anchor.LabelElements))
+				if len(label) > 0 {
+					doc.anchorsByLabel[label] = append(doc.anchorsByLabel[label], anchor)
+				}
+			}
+
+		}
+		return parse.SearchShouldContinue
+	})
+	doc.anchorsParsed = true
+	return doc.anchors, nil
+}
+
+func (doc *Doc) makeAnchor(parent parse.HasElements, element asciidoc.Element, crossReferences map[string][]*CrossReference) *Anchor {
+	// If there's a cross-reference for it, then we'll need to make an anchor
+	id, labelSet := getAnchorElements(element, crossReferences)
+	if id == "" {
+		return nil
+	}
+	a := NewAnchor(doc, id, element, parent, labelSet...)
+	return a
+}
+
+func getAnchorElements(element asciidoc.Element, crossReferences map[string][]*CrossReference) (id string, labelSet asciidoc.Set) {
+	var idAttr asciidoc.Attribute
+	var refTextAttr *asciidoc.NamedAttribute
+	if wa, ok := element.(asciidoc.Attributable); ok {
 		for _, a := range wa.Attributes() {
 			switch a := a.(type) {
 			case *asciidoc.AnchorAttribute:
 				idAttr = a
-
+			case *asciidoc.ShorthandAttribute:
+				if a.ID != nil {
+					idAttr = a
+				}
 			case *asciidoc.NamedAttribute:
 				switch a.Name {
 				case asciidoc.AttributeNameID:
@@ -56,79 +183,51 @@ func (doc *Doc) Anchors() (map[string]*Anchor, error) {
 				}
 			}
 		}
-		if idAttr == nil {
-			if s, ok := wa.(*asciidoc.Section); ok {
-				id := s.Name()
+	}
 
-				if _, ok := crossReferences[id]; ok { // If there's a cross-reference for it, then we'll need to make an anchor
-
-					if _, ok := anchors[id]; ok {
-						slog.Debug("duplicate anchor; can't fix", "id", id)
-						return parse.SearchShouldContinue
-					}
-
-					info := &Anchor{
-						ID:      id,
-						Element: wa,
-						Parent:  parent,
-					}
-
-					anchors[id] = info
-				}
+	if idAttr == nil {
+		if s, ok := element.(*asciidoc.Section); ok {
+			id = s.Name()
+			if _, ok := crossReferences[id]; ok {
+				return
 			}
-			return parse.SearchShouldContinue
 		}
-		var id string
-		var labelSet asciidoc.Set
-		switch idAttr := idAttr.(type) {
-		case *asciidoc.AnchorAttribute:
-			id = idAttr.ID.Value
-			labelSet = idAttr.Label
-		case *asciidoc.NamedAttribute:
-			id = idAttr.AsciiDocString()
-		}
-		if refTextAttr != nil {
-			labelSet = refTextAttr.Val
-		}
-		/*id := strings.TrimSpace(idAttr.AsciiDocString())
-		if parts := strings.Split(id, ","); len(parts) > 1 {
-			id = strings.TrimSpace(parts[0])
-			label = strings.TrimSpace(parts[1])
-		}
-		refText := wa.GetAttributeByName(asciidoc.AttributeNameReferenceText)
-		if refText != nil {
-			label = refText.AsciiDocString()
-		}*/
-		info := &Anchor{
-			ID:            id,
-			LabelElements: labelSet,
-			Element:       wa,
-			Parent:        parent,
-		}
-		if _, ok := anchors[id]; ok {
-			slog.Debug("duplicate anchor; can't fix", "id", id)
-			return parse.SearchShouldContinue
-		}
+		return "", nil
+	}
+	switch idAttr := idAttr.(type) {
+	case *asciidoc.ShorthandAttribute:
+		id = asciidoc.AttributeAsciiDocString(idAttr.ID.Val)
+	case *asciidoc.AnchorAttribute:
+		id = idAttr.ID.Value
+		labelSet = idAttr.Label
+	case *asciidoc.NamedAttribute:
+		id = idAttr.AsciiDocString()
+	}
+	if refTextAttr != nil {
+		labelSet = refTextAttr.Val
+	}
+	return
+}
 
-		anchors[id] = info
-		/*if !strings.HasPrefix(id, "_") {
+func (d *Doc) FindAnchor(id string) *Anchor {
+	a := d.findAnchor(d.Path, id)
+	if a != nil {
+		return a
+	}
+	a = d.findAnchorByLabel(d.Path, id)
+	if a != nil {
+		return a
+	}
+	if d.group != nil {
+		a = d.group.findAnchor(d.Path, id)
+		if a != nil {
+			return a
+		}
+		a = d.group.findAnchorByLabel(d.Path, id)
+		if a != nil {
+			return a
+		}
+	}
 
-		} else { // Anchors prefaced with "_" may have been created by the parser
-			if _, ok := crossReferences[id]; ok { // If there's a cross-reference for it, then we'll render it
-				anchors[id] = info
-			} else { // If there isn't a cross reference to the id, there might be one to its original version
-				unescaped := strings.TrimSpace(strings.ReplaceAll(id, "_", " "))
-				if _, ok = crossReferences[unescaped]; ok {
-					if _, ok := anchors[unescaped]; ok {
-						slog.Debug("duplicate anchor; can't fix", "id", unescaped)
-						return false
-					}
-					anchors[unescaped] = info
-				}
-			}
-		}*/
-		return parse.SearchShouldContinue
-	})
-	doc.anchors = anchors
-	return anchors, nil
+	return nil
 }

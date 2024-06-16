@@ -6,7 +6,6 @@ import (
 	"github.com/hasty/alchemy/disco"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter/spec"
 	"github.com/spf13/cobra"
 )
 
@@ -21,17 +20,7 @@ var Command = &cobra.Command{
 func discoBall(cmd *cobra.Command, args []string) (err error) {
 	cxt := context.Background()
 
-	var targeter pipeline.Targeter
-	var filter *files.PathFilter[*spec.Doc]
 	specRoot, _ := cmd.Flags().GetString("specRoot")
-	if specRoot != "" {
-		targeter = spec.Targeter(specRoot)
-		if len(args) > 0 {
-			filter = files.NewPathFilter[*spec.Doc](args)
-		}
-	} else {
-		targeter = files.PathsTargeter(args...)
-	}
 
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
@@ -39,7 +28,7 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 
 	writer := files.NewWriter[string]("Writing disco-balled docs", fileOptions)
 
-	err = disco.Pipeline(cxt, targeter, pipelineOptions, discoOptions, filter, writer)
+	err = disco.Pipeline(cxt, specRoot, args, pipelineOptions, discoOptions, writer)
 
 	return
 }

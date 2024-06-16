@@ -110,7 +110,7 @@ func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribut
 				list = append(list, attributeClassInline)
 			}
 			inlineAttributes = append(inlineAttributes, a)
-		case *asciidoc.PositionalAttribute, *asciidoc.TableColumnsAttribute:
+		case *asciidoc.PositionalAttribute, *asciidoc.TableColumnsAttribute, *asciidoc.ShorthandAttribute:
 			if len(inlineAttributes) == 0 {
 				list = append(list, attributeClassInline)
 			}
@@ -154,6 +154,10 @@ func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribut
 					if shouldRenderAttributeType(AttributeFilterCols, include, exclude) {
 						filtered = append(filtered, ia)
 					}
+				case *asciidoc.ShorthandAttribute:
+					if shouldRenderAttributeType(AttributeFilterID, include, exclude) {
+						filtered = append(filtered, ia)
+					}
 				default:
 					err = fmt.Errorf("unexpected inline attribute type: %T", ia)
 				}
@@ -194,6 +198,8 @@ func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribut
 					cxt.WriteString("cols=\"")
 					cxt.WriteString(ia.AsciiDocString())
 					cxt.WriteString("\"")
+				case *asciidoc.ShorthandAttribute:
+					cxt.WriteString(ia.AsciiDocString())
 				default:
 					err = fmt.Errorf("unexpected inline attribute type: %T", ia)
 				}

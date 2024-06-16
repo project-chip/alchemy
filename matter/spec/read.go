@@ -45,11 +45,10 @@ func Read(contents string, path string, attributes ...asciidoc.AttributeName) (d
 		return nil, fmt.Errorf("read error in %s: %w", path, err)
 	}
 
-	doc, err = NewDoc(d)
+	doc, err = NewDoc(d, path)
 	if err != nil {
 		return nil, err
 	}
-	doc.Path = path
 
 	return doc, nil
 }

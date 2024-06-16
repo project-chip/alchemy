@@ -2,6 +2,7 @@ package compare
 
 import (
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -17,7 +18,7 @@ type ClusterDifferences struct {
 	Commands   []Diff `json:"commands,omitempty"`
 }
 
-func compareClusters(spec *matter.Spec, specCluster *matter.Cluster, zapCluster *matter.Cluster) (*ClusterDifferences, error) {
+func compareClusters(spec *spec.Specification, specCluster *matter.Cluster, zapCluster *matter.Cluster) (*ClusterDifferences, error) {
 
 	var err error
 	cd := &ClusterDifferences{IdentifiedDiff: IdentifiedDiff{ID: specCluster.ID, Name: specCluster.Name, Entity: types.EntityTypeCluster}}

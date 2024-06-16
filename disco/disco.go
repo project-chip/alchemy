@@ -81,7 +81,7 @@ func (b *Ball) disco(cxt context.Context) error {
 	if err != nil {
 		return fmt.Errorf("error disco balling top level section in %s: %w", doc.Path, err)
 	}
-	return b.normalizeAnchors(doc)
+	return nil
 }
 
 func (b *Ball) discoBallTopLevelSection(doc *spec.Doc, top *spec.Section, docType matter.DocType) error {
