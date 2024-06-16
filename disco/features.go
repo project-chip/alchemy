@@ -47,7 +47,7 @@ func (b *Ball) organizeFeaturesSection(cxt *discoContext, dp *docParse) (err err
 			vc = strings.TrimSpace(vc)
 			if strings.Contains(vc, " ") {
 				vc = matter.Case(vc)
-				slog.Info("fixing feature name", "name", vc)
+				slog.Debug("fixing feature name", "name", vc)
 				err = setCellString(featureCell, vc)
 				if err != nil {
 					return
