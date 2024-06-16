@@ -3,8 +3,8 @@ package files
 import (
 	"context"
 	"os"
-	"path/filepath"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/hasty/alchemy/internal/pipeline"
 )
 
@@ -28,18 +28,21 @@ func (p PathFilter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) 
 	if len(p.paths) == 0 {
 		return inputs, nil
 	}
-	pathMap := make(map[string]struct{})
-	for _, p := range p.paths {
-		pathMap[filepath.Base(p)] = struct{}{}
-	}
 	stats := make([]os.FileInfo, 0, len(p.paths))
 	for _, p := range p.paths {
-		var fi os.FileInfo
-		fi, err = os.Stat(p)
+		var expandedPaths []string
+		expandedPaths, err = doublestar.FilepathGlob(p)
 		if err != nil {
-			return
+			return nil, err
 		}
-		stats = append(stats, fi)
+		for _, ep := range expandedPaths {
+			var fi os.FileInfo
+			fi, err = os.Stat(ep)
+			if err != nil {
+				return
+			}
+			stats = append(stats, fi)
+		}
 	}
 	for _, d := range inputs {
 		var fi os.FileInfo

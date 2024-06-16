@@ -14,16 +14,17 @@ import (
 	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
 
 type DeviceTypesPatcher struct {
 	sdkRoot string
-	spec    *matter.Spec
+	spec    *spec.Specification
 }
 
-func NewDeviceTypesPatcher(sdkRoot string, spec *matter.Spec) *DeviceTypesPatcher {
+func NewDeviceTypesPatcher(sdkRoot string, spec *spec.Specification) *DeviceTypesPatcher {
 	return &DeviceTypesPatcher{sdkRoot: sdkRoot, spec: spec}
 }
 
@@ -109,7 +110,7 @@ type clusterRequirements struct {
 	elementRequirements     []*matter.ElementRequirement
 }
 
-func applyDeviceTypeToElement(spec *matter.Spec, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
+func applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
 	xml.SetOrCreateSimpleElement(dte, "name", zap.DeviceTypeName(deviceType))
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP")
 	xml.SetOrCreateSimpleElement(dte, "typeName", fmt.Sprintf("Matter %s", deviceType.Name))
@@ -186,7 +187,7 @@ func applyDeviceTypeToElement(spec *matter.Spec, deviceType *matter.DeviceType, 
 	return
 }
 
-func setIncludeAttributes(clustersElement *etree.Element, spec *matter.Spec, deviceType *matter.DeviceType, cr *clusterRequirements) {
+func setIncludeAttributes(clustersElement *etree.Element, spec *spec.Specification, deviceType *matter.DeviceType, cr *clusterRequirements) {
 	cluster, ok := spec.ClustersByName[cr.name]
 	if !ok {
 		slog.Debug("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))

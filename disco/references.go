@@ -2,36 +2,35 @@ package disco
 
 import (
 	"log/slog"
-	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/matter/spec"
 )
 
-func (b *Ball) rewriteCrossReferences(crossReferences map[string][]*asciidoc.CrossReference, anchors map[string]*spec.Anchor) {
-	for id, xrefs := range crossReferences {
-		info, ok := anchors[id]
-		if !ok {
-			dt, _ := b.doc.DocType()
-			switch dt {
-			case matter.DocTypeCluster, matter.DocTypeDeviceType:
-				slog.Info("cross reference points to non-existent anchor", "name", id)
+func rewriteCrossReferences(doc *spec.Doc) {
+	for id, xrefs := range doc.CrossReferences() {
+		anchor := doc.FindAnchor(id)
+		if anchor == nil {
+			sources := []any{slog.String("name", id)}
+			for _, xref := range xrefs {
+				sources = append(sources, log.Path("source", xref.Source))
 			}
+			slog.Info("cross reference points to non-existent or ambiguous anchor", sources...)
 			continue
 		}
-
-		for _, xref := range xrefs {
-			//xref.OriginalID = info.ID
-			xref.ID = info.ID
-
-			// If the cross reference has a label that's the same as the one we generated for the anchor, remove it
-			if len(xref.Set) == 1 {
-				if label, ok := xref.Set[0].(*asciidoc.String); ok {
-					labelString := strings.TrimSpace(asciidoc.AttributeAsciiDocString(info.LabelElements))
-					if labelString == string(label.Value) {
-						xref.Set = nil
-					}
+		anchorLabel := labelText(anchor.LabelElements)
+		// We're going to be modifying the underlying array, so we need to make a copy of the slice
+		xrefsToChange := make([]*spec.CrossReference, len(xrefs))
+		copy(xrefsToChange, xrefs)
+		for _, xref := range xrefsToChange {
+			if anchor.ID != xref.Reference.ID {
+				xref.SyncToDoc(anchor.ID)
+			}
+			if len(xref.Reference.Set) > 0 {
+				// If the cross reference has a label that's the same as the one we generated for the anchor, remove it
+				refText := labelText(xref.Reference.Set)
+				if anchorLabel == refText {
+					xref.Reference.Set = nil
 				}
 			}
 		}

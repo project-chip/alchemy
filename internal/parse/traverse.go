@@ -144,20 +144,35 @@ func Traverse[T any](parent HasElements, els asciidoc.Set, callback func(el T, p
 func traverse[T any](parent HasElements, els asciidoc.Set, callback func(el T, parent HasElements, index int) SearchShould) SearchShould {
 
 	for i, e := range els {
-		if v, ok := e.(T); ok {
-			switch callback(v, parent, i) {
-			case SearchShouldStop:
-				return SearchShouldStop
-			case SearchShouldSkip:
-				continue
+		var shortCircuit SearchShould
+		if el, ok := e.(T); ok {
+			shortCircuit = callback(el, parent, i)
+		} else if ae, ok := e.(HasBase); ok {
+			be := ae.GetBase()
+			if el, ok := be.(T); ok {
+				shortCircuit = callback(el, parent, i)
 			}
 		}
-		if v, ok := e.(HasElements); ok {
-			switch traverse(v, v.Elements(), callback) {
-			case SearchShouldStop:
-				return SearchShouldStop
+		switch shortCircuit {
+		case SearchShouldStop:
+			return shortCircuit
+		case SearchShouldSkip:
+			continue
+		case SearchShouldContinue:
+		}
+
+		if he, ok := e.(HasElements); ok {
+			shortCircuit = traverse(he, he.Elements(), callback)
+		} else if ae, ok := e.(HasBase); ok {
+			be := ae.GetBase()
+			if el, ok := be.(HasElements); ok {
+				shortCircuit = traverse(el, el.Elements(), callback)
 			}
 		}
+		if shortCircuit == SearchShouldStop {
+			return shortCircuit
+		}
+
 	}
 	return SearchShouldContinue
 }

@@ -18,7 +18,7 @@ import (
 )
 
 type TemplateGenerator struct {
-	spec     *matter.Spec
+	spec     *spec.Specification
 	file     files.Options
 	pipeline pipeline.Options
 	sdkRoot  string
@@ -36,7 +36,7 @@ func GenerateFeatureXML(generate bool) TemplateOption {
 	}
 }
 
-func NewTemplateGenerator(spec *matter.Spec, fileOptions files.Options, pipelineOptions pipeline.Options, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
+func NewTemplateGenerator(spec *spec.Specification, fileOptions files.Options, pipelineOptions pipeline.Options, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
 	tg := &TemplateGenerator{
 		spec:                spec,
 		file:                fileOptions,

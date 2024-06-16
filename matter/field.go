@@ -23,6 +23,8 @@ type Field struct {
 	AnonymousType any `json:"anonymousType,omitempty"`
 
 	entity types.EntityType
+
+	Source Source `json:"source,omitempty"`
 }
 
 func NewField() *Field {

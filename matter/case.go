@@ -14,7 +14,7 @@ func AddCaseAcronym(s string) {
 }
 
 func isSeparator(r rune) bool {
-	return r == '.' || r == ' ' || r == '-' || r == '_'
+	return r == '.' || r == ' ' || r == '-' || r == '_' || r == '(' || r == ')'
 }
 
 func Case(s string) string {

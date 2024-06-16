@@ -19,7 +19,7 @@ SectionTitleValue = !EndOfLine element:(
     / Apostrophe 
     / Punctuation  
     / FormattedText
-    // InlinePassthrough
+    / InlinePassthrough
     / Link 
     / SpecialCharacter 
     / Icon 
