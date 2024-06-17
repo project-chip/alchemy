@@ -105,91 +105,132 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			erMap[er.Element] = append(erMap[er.Element], er)
 		}
 	}
-	for _, entity := range []types.EntityType{types.EntityTypeFeature, types.EntityTypeAttribute, types.EntityTypeCommand, types.EntityTypeEvent} {
-		ers, ok := erMap[entity]
-		if !ok || len(ers) == 0 {
-			continue
-		}
-		var erx *etree.Element
-		switch entity {
-		case types.EntityTypeAttribute:
-			erx = clx.CreateElement("attributes")
-		case types.EntityTypeFeature:
-			erx = clx.CreateElement("features")
-		case types.EntityTypeEvent:
-			erx = clx.CreateElement("events")
-		case types.EntityTypeCommand:
-			erx = clx.CreateElement("commands")
-		}
-		for _, er := range ers {
-			switch entity {
-			case types.EntityTypeAttribute:
-				err = renderAttributeRequirement(doc, deviceType, er, erx)
-			case types.EntityTypeCommand:
-				ex := erx.CreateElement("command")
-				var code string
-				if er.Cluster != nil {
-					for _, cmd := range er.Cluster.Commands {
-						if cmd.Name == er.Name {
-							code = cmd.ID.HexString()
-							break
-						}
-					}
-				}
-				if code != "" {
-					ex.CreateAttr("id", code)
-				}
-				ex.CreateAttr("name", er.Name)
-				err = renderConformanceString(doc, deviceType, er.Conformance, ex)
-				if err != nil {
-					return
-				}
-			case types.EntityTypeEvent:
-				ex := erx.CreateElement("event")
-				var code string
-				if er.Cluster != nil {
-					for _, ev := range er.Cluster.Events {
-						if ev.Name == er.Name {
-							code = ev.ID.HexString()
-							break
-						}
-					}
-				}
-				if code != "" {
-					ex.CreateAttr("id", code)
-				}
-				ex.CreateAttr("name", er.Name)
-				err = renderConformanceString(doc, deviceType, er.Conformance, ex)
-				if err != nil {
-					return
-				}
+	var featureRequirements []*matter.ElementRequirement
+	var attributeRequirements []*matter.ElementRequirement
+	var commandRequirements map[string][]*matter.ElementRequirement
+	var eventRequirements []*matter.ElementRequirement
+	for _, er := range deviceType.ElementRequirements {
+		if er.ID.Equals(cr.ID) {
+			switch er.Element {
 			case types.EntityTypeFeature:
-				ex := erx.CreateElement("feature")
-				var code string
-
-				featureCode := er.Name
-				if strings.ContainsRune(featureCode, ' ') {
-					featureCode = matter.Case(featureCode)
+				featureRequirements = append(featureRequirements, er)
+			case types.EntityTypeAttribute:
+				attributeRequirements = append(attributeRequirements, er)
+			case types.EntityTypeEvent:
+				eventRequirements = append(eventRequirements, er)
+			case types.EntityTypeCommand, types.EntityTypeCommandField:
+				if commandRequirements == nil {
+					commandRequirements = make(map[string][]*matter.ElementRequirement)
 				}
+				commandRequirements[er.Name] = append(commandRequirements[er.Name], er)
+			}
+		}
+	}
+	if len(featureRequirements) > 0 {
+		erx := clx.CreateElement("features")
+		for _, fr := range featureRequirements {
+			ex := erx.CreateElement("feature")
+			var code string
 
-				if er.Cluster != nil && er.Cluster.Features != nil {
-					for _, b := range er.Cluster.Features.Bits {
-						f := b.(*matter.Feature)
-						if f.Code == featureCode {
-							code = f.Code
-							break
-						}
+			featureCode := fr.Name
+			if strings.ContainsRune(featureCode, ' ') {
+				featureCode = matter.Case(featureCode)
+			}
+
+			if fr.Cluster != nil && fr.Cluster.Features != nil {
+				for _, b := range fr.Cluster.Features.Bits {
+					f := b.(*matter.Feature)
+					if f.Code == featureCode {
+						code = f.Code
+						break
 					}
 				}
-				ex.CreateAttr("code", code)
-				ex.CreateAttr("name", er.Name)
-				err = renderConformanceString(doc, deviceType, er.Conformance, ex)
+			}
+			ex.CreateAttr("code", code)
+			ex.CreateAttr("name", fr.Name)
+			err = renderConformanceString(doc, deviceType, fr.Conformance, ex)
+			if err != nil {
+				return
+			}
+		}
+	}
+	if len(attributeRequirements) > 0 {
+		erx := clx.CreateElement("attributes")
+		for _, ar := range attributeRequirements {
+			err = renderAttributeRequirement(doc, deviceType, ar, erx)
+			if err != nil {
+				return
+			}
+		}
+	}
+	if len(commandRequirements) > 0 {
+		erx := clx.CreateElement("commands")
+
+		for name, crs := range commandRequirements {
+			var commandRequirement *matter.ElementRequirement
+			var fieldRequirements []*matter.ElementRequirement
+			for _, cr := range crs {
+				switch cr.Element {
+				case types.EntityTypeCommand:
+					commandRequirement = cr
+				case types.EntityTypeCommandField:
+					fieldRequirements = append(fieldRequirements, cr)
+				}
+			}
+			ex := erx.CreateElement("command")
+			var code string
+			for _, cmd := range cr.Cluster.Commands {
+				if cmd.Name == name {
+					code = cmd.ID.HexString()
+					break
+				}
+			}
+
+			if code != "" {
+				ex.CreateAttr("id", code)
+			}
+			ex.CreateAttr("name", name)
+			if commandRequirement != nil {
+				err = renderConformanceString(doc, deviceType, commandRequirement.Conformance, ex)
+				if err != nil {
+					return
+				}
+			}
+			for _, fr := range fieldRequirements {
+				fx := ex.CreateElement("field")
+				fx.CreateAttr("name", fr.Field)
+				err = renderConformanceString(doc, deviceType, fr.Conformance, fx)
 				if err != nil {
 					return
 				}
 			}
 		}
+
 	}
+	if len(eventRequirements) > 0 {
+		erx := clx.CreateElement("events")
+		for _, er := range eventRequirements {
+			ex := erx.CreateElement("event")
+			var code string
+			if er.Cluster != nil {
+				for _, ev := range er.Cluster.Events {
+					if ev.Name == er.Name {
+						code = ev.ID.HexString()
+						break
+					}
+				}
+			}
+			if code != "" {
+				ex.CreateAttr("id", code)
+			}
+			ex.CreateAttr("name", er.Name)
+			err = renderConformanceString(doc, deviceType, er.Conformance, ex)
+			if err != nil {
+				return
+			}
+		}
+	}
+
 	return
 }
 
