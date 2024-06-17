@@ -50,6 +50,7 @@ type ElementRequirement struct {
 	ClusterName string           `json:"clusterName,omitempty"`
 	Element     types.EntityType `json:"element,omitempty"`
 	Name        string           `json:"name,omitempty"`
+	Field       string           `json:"field,omitempty"`
 
 	Constraint  constraint.Constraint `json:"constraint,omitempty"`
 	Quality     Quality               `json:"quality,omitempty"`
