@@ -58,13 +58,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 					var args []any
 					args = append(args, slog.String("id", id), slog.Any("error", err))
 					for _, info := range infos {
-						path := info.Document.Path
-						pos, ok := info.Element.(asciidoc.HasPosition)
-						if ok {
-							line, col, _ := pos.Position()
-							path += fmt.Sprintf("(%d:%d)", line, col)
-						}
-						args = append(args, slog.String("source", path))
+						args = append(args, log.Element("path", info.Document.Path, info.Element))
 					}
 
 					slog.Warn("failed disambiguating anchor", args...)

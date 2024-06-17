@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/matter"
 )
 
@@ -20,4 +21,17 @@ func Path(name string, source matter.Source) slog.Attr {
 		path.WriteString(strconv.Itoa(l))
 	}
 	return slog.String(name, path.String())
+}
+
+func Element(name string, path string, element asciidoc.Element) slog.Attr {
+	var arg strings.Builder
+	arg.WriteString(path)
+	if hp, ok := element.(asciidoc.HasPosition); ok {
+		l, _, _ := hp.Position()
+		if l >= 0 {
+			arg.WriteRune(':')
+			arg.WriteString(strconv.Itoa(l))
+		}
+	}
+	return slog.String(name, arg.String())
 }

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/spec"
@@ -75,7 +76,7 @@ func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *
 					ds.attributes = append(ds.attributes, attributes)
 				}
 			default:
-				slog.Warn("attributes section in non-cluster doc", slog.String("path", doc.Path))
+				slog.Warn("attributes section in non-cluster doc", log.Element("path", doc.Path, section.Base))
 			}
 		case matter.SectionFeatures:
 			switch docType {
@@ -86,7 +87,7 @@ func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *
 					ds.features = append(ds.features, features)
 				}
 			default:
-				slog.Warn("features section in non-cluster doc", slog.String("path", doc.Path))
+				slog.Warn("features section in non-cluster doc", log.Element("path", doc.Path, section.Base))
 			}
 		case matter.SectionCommands:
 			var commands *subSection

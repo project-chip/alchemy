@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 )
 
-func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, err error) {
+func readCluster(path string, d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, err error) {
 	cluster = &matter.Cluster{}
 	for _, a := range e.Attr {
 		switch a.Name.Local {
@@ -56,7 +56,7 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 				_, err = readSimpleElement(d, t.Name.Local)
 			case "event":
 				var event *matter.Event
-				event, err = readEvent(d, t)
+				event, err = readEvent(path, d, t)
 				if err == nil {
 					cluster.Events = append(cluster.Events, event)
 				}
@@ -64,7 +64,7 @@ func readCluster(d *xml.Decoder, e xml.StartElement) (cluster *matter.Cluster, e
 				cluster.Name, err = readSimpleElement(d, t.Name.Local)
 			case "command":
 				var command *matter.Command
-				command, err = readCommand(d, t)
+				command, err = readCommand(path, d, t)
 				if err == nil {
 					cluster.Commands = append(cluster.Commands, command)
 				}

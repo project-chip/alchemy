@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
@@ -31,7 +32,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]mattertyp
 
 	e.Values, err = s.findEnumValues()
 	if err != nil {
-		slog.Warn("error finding enum values", slog.Any("err", err))
+		slog.Warn("error finding enum values", log.Element("path", d.Path, s.Base), slog.Any("err", err))
 		return
 	}
 

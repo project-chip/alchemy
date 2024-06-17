@@ -27,8 +27,8 @@ type Field struct {
 	Source Source `json:"source,omitempty"`
 }
 
-func NewField() *Field {
-	return &Field{entity: types.EntityTypeField}
+func NewField(source Source) *Field {
+	return &Field{entity: types.EntityTypeField, Source: source}
 }
 
 func NewAttribute() *Field {
@@ -71,7 +71,7 @@ func (f *Field) Inherit(parent *Field) {
 }
 
 func (f *Field) Clone() *Field {
-	nf := &Field{ID: f.ID.Clone(), Name: f.Name, Quality: f.Quality, Access: f.Access, Default: f.Default, entity: f.entity}
+	nf := &Field{ID: f.ID.Clone(), Name: f.Name, Quality: f.Quality, Access: f.Access, Default: f.Default, entity: f.entity, Source: f.Source}
 	if f.Type != nil {
 		nf.Type = f.Type.Clone()
 	}
