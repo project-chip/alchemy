@@ -120,6 +120,13 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
+		if cr.Element == mattertypes.EntityTypeCommandField {
+			parts := strings.FieldsFunc(cr.Name, func(r rune) bool { return r == '.' })
+			if len(parts) == 2 {
+				cr.Name = parts[0]
+				cr.Field = parts[1]
+			}
+		}
 		var q string
 		q, err = readRowASCIIDocString(row, columnMap, matter.TableColumnQuality)
 		if err != nil {
