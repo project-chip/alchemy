@@ -105,7 +105,11 @@ func (doc *Doc) Anchors() (map[string][]*Anchor, error) {
 	if doc.referenceIndex.anchorsParsed {
 		return doc.referenceIndex.anchors, nil
 	}
+	doc.findAnchors()
+	return doc.anchors, nil
+}
 
+func (doc *Doc) findAnchors() {
 	var crossReferences map[string][]*CrossReference
 	if doc.group != nil {
 		crossReferences = doc.group.crossReferences
@@ -149,7 +153,6 @@ func (doc *Doc) Anchors() (map[string][]*Anchor, error) {
 		return parse.SearchShouldContinue
 	})
 	doc.anchorsParsed = true
-	return doc.anchors, nil
 }
 
 func (doc *Doc) makeAnchor(parent parse.HasElements, element asciidoc.Element, crossReferences map[string][]*CrossReference) *Anchor {
