@@ -60,7 +60,7 @@ func (sp *ZapParser) Process(cxt context.Context, input *pipeline.Data[[]byte], 
 			switch t.Name.Local {
 			case "configurator":
 				var cm []types.Entity
-				cm, err = sp.readConfigurator(d)
+				cm, err = sp.readConfigurator(input.Path, d)
 				if err == nil {
 					entities = append(entities, cm...)
 					sp.lock.Lock()

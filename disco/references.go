@@ -15,7 +15,7 @@ func rewriteCrossReferences(doc *spec.Doc) {
 			for _, xref := range xrefs {
 				sources = append(sources, log.Path("source", xref.Source))
 			}
-			slog.Info("cross reference points to non-existent or ambiguous anchor", sources...)
+			slog.Warn("cross reference points to non-existent or ambiguous anchor", sources...)
 			continue
 		}
 		anchorLabel := labelText(anchor.LabelElements)

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -34,7 +35,7 @@ func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]mattert
 
 	if err != nil {
 		if err == ErrNoTableFound {
-			slog.Warn("no table found for bitmap", slog.String("name", bm.Name))
+			slog.Warn("no table found for bitmap", log.Element("path", s.Doc.Path, s.Base), slog.String("name", bm.Name))
 			return bm, nil
 		}
 		return nil, fmt.Errorf("failed reading bitmap %s: %w", name, err)

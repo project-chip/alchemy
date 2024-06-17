@@ -142,7 +142,7 @@ func buildSpec(docs []*Doc, ignoreHierarchy bool) (spec *Specification, err erro
 				}
 				d.spec.addEntity(m.Name, m, nil)
 			default:
-				slog.Warn("unknown entity type", "type", fmt.Sprintf("%T", m))
+				slog.Warn("unknown entity type", "path", d.Path, "type", fmt.Sprintf("%T", m))
 			}
 			spec.DocRefs[m] = d.Path
 		}
@@ -262,7 +262,7 @@ func resolveDataType(spec *Specification, cluster *matter.Cluster, field *matter
 			if cluster != nil {
 				clusterName = cluster.Name
 			}
-			slog.Warn("missing type on field", slog.String("name", field.Name), slog.String("cluster", clusterName))
+			slog.Warn("missing type on field", log.Path("path", field.Source), slog.String("name", field.Name), slog.String("cluster", clusterName))
 		}
 		return
 	}
@@ -316,7 +316,7 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 	}
 	// Can't disambiguate out this data model
 
-	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name)
+	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name, log.Path("source", field.Source))
 	for m, c := range entities {
 		var clusterName string
 		if c != nil {

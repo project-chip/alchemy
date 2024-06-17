@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -132,7 +133,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		}
 		cr.Constraint, err = constraint.ParseString(c)
 		if err != nil {
-			slog.Warn("failed parsing constraint", slog.String("path", s.Doc.Path), slog.String("constraint", c))
+			slog.Warn("failed parsing constraint", log.Element("path", d.Path, row), slog.String("constraint", c))
 			cr.Constraint = &constraint.GenericConstraint{Value: c}
 		}
 		var a string

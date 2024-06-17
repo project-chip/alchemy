@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -84,7 +85,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[asci
 				name = parentheticalExpressionPattern.ReplaceAllString(name, "")
 				c, ok = commandMap[name]
 				if !ok {
-					slog.Warn("unknown command", "path", d.Path, "command", s.Name)
+					slog.Warn("unknown command", log.Element("path", d.Path, s.Base), "command", s.Name)
 					continue
 				}
 			}
@@ -102,7 +103,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[asci
 				if err == ErrNoTableFound {
 					err = nil
 				} else {
-					slog.Warn("No valid command parameter table found", "command", name, "path", d.Path)
+					slog.Warn("No valid command parameter table found", log.Element("path", d.Path, s.Base), "command", name)
 					err = nil
 				}
 				continue

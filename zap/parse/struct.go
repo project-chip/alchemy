@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func (sp *ZapParser) readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterIDs []*matter.Number, err error) {
+func (sp *ZapParser) readStruct(path string, d *xml.Decoder, e xml.StartElement) (s *matter.Struct, clusterIDs []*matter.Number, err error) {
 	s = &matter.Struct{}
 	var isFabricScoped string
 	for _, a := range e.Attr {
@@ -51,7 +51,7 @@ func (sp *ZapParser) readStruct(d *xml.Decoder, e xml.StartElement) (s *matter.S
 				s.Description, err = readSimpleElement(d, t.Name.Local)
 			case "item":
 				var f *matter.Field
-				f, err = readField(d, t, types.EntityTypeStruct, "item")
+				f, err = readField(path, d, t, types.EntityTypeStruct, "item")
 				if err != nil {
 					slog.Warn("error reading struct field", slog.Any("error", err))
 				} else {

@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func (sp *ZapParser) readConfigurator(d *xml.Decoder) (entities []types.Entity, err error) {
+func (sp *ZapParser) readConfigurator(path string, d *xml.Decoder) (entities []types.Entity, err error) {
 	enums := make(map[uint64][]*matter.Enum)
 	bitmaps := make(map[uint64][]*matter.Bitmap)
 	structs := make(map[uint64][]*matter.Struct)
@@ -30,7 +30,7 @@ func (sp *ZapParser) readConfigurator(d *xml.Decoder) (entities []types.Entity, 
 			switch t.Name.Local {
 			case "cluster":
 				var cluster *matter.Cluster
-				cluster, err = readCluster(d, t)
+				cluster, err = readCluster(path, d, t)
 				if err == nil {
 					clusters[cluster.ID.Value()] = cluster
 					entities = append(entities, cluster)
@@ -49,7 +49,7 @@ func (sp *ZapParser) readConfigurator(d *xml.Decoder) (entities []types.Entity, 
 			case "struct":
 				var s *matter.Struct
 				var clusterIDs []*matter.Number
-				s, clusterIDs, err = sp.readStruct(d, t)
+				s, clusterIDs, err = sp.readStruct(path, d, t)
 				if err == nil {
 					for _, cid := range clusterIDs {
 						structs[cid.Value()] = append(structs[cid.Value()], s)
