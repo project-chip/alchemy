@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -109,7 +110,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]matte
 						case *matter.Enum:
 							c.Enums = append(c.Enums, le)
 						default:
-							slog.Warn("unexpected loose entity", "path", d.Path, "entity", le)
+							slog.Warn("unexpected loose entity", log.Element("path", d.Path, s.Base), "entity", le)
 						}
 					}
 				}

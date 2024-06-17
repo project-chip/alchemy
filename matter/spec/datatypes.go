@@ -50,8 +50,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 	ids := make(map[uint64]struct{})
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		f := matter.NewField()
-		f.Source = newSource(d, row)
+		f := matter.NewField(newSource(d, row))
 		f.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
@@ -142,6 +141,9 @@ var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeLis
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
 func (d *Doc) ReadRowDataType(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*types.DataType, error) {
+	if !d.anchorsParsed {
+		d.findAnchors()
+	}
 	i, ok := columnMap[column]
 	if !ok {
 		return nil, fmt.Errorf("missing %s column for data type", column)
@@ -192,8 +194,7 @@ func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder
 						name = asciidoc.AttributeAsciiDocString(anchor.LabelElements)
 					}
 				} else {
-					slog.Info("missing anchor", slog.String("name", v.ID), log.Path("source", newSource(d, v)))
-
+					slog.Warn("data type references unknown anchor", slog.String("name", v.ID), log.Path("source", newSource(d, v)))
 				}
 				if len(name) == 0 {
 					name = strings.TrimPrefix(v.ID, "_")
@@ -204,16 +205,17 @@ func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder
 		case *asciidoc.Paragraph:
 			d.buildDataTypeString(v.Elements(), sb)
 		default:
-			slog.Warn("unknown data type value element", "loc", parse.Position(el), "type", fmt.Sprintf("%T", v))
+			slog.Warn("unknown data type value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", v))
 		}
 	}
 }
 
 func (d *Doc) getRowConstraint(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *types.DataType) constraint.Constraint {
 	var val string
+	var cell *asciidoc.TableCell
 	offset, ok := columnMap[column]
 	if ok {
-		cell := row.Cell(offset)
+		cell = row.Cell(offset)
 		cellElements := cell.Elements()
 		if len(cellElements) > 0 {
 			var sb strings.Builder
@@ -226,7 +228,7 @@ func (d *Doc) getRowConstraint(row *asciidoc.TableRow, columnMap ColumnIndex, co
 	var c constraint.Constraint
 	c, err := constraint.ParseString(val)
 	if err != nil {
-		slog.Warn("failed parsing constraint cell", "path", d.Path, slog.String("constraint", val))
+		slog.Warn("failed parsing constraint cell", log.Element("path", d.Path, cell), slog.String("constraint", val))
 		return &constraint.GenericConstraint{Value: val}
 	}
 	return c
@@ -262,7 +264,7 @@ func (d *Doc) buildConstraintValue(els asciidoc.Set, sb *strings.Builder) {
 		case asciidoc.HasElements:
 			d.buildConstraintValue(v.Elements(), sb)
 		default:
-			slog.Warn("unknown constraint value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
+			slog.Warn("unknown constraint value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", el))
 		}
 	}
 }
@@ -324,14 +326,14 @@ func (d *Doc) buildRowConformance(cellElements asciidoc.Set, sb *strings.Builder
 			case "nbsp":
 				sb.WriteRune(' ')
 			default:
-				slog.Warn("unknown predefined attribute", "doc", d.Path, "name", v.Name)
+				slog.Warn("unknown predefined attribute", log.Element("path", d.Path, el), "name", v.Name)
 			}
 		case *asciidoc.NewLine:
 			sb.WriteRune(' ')
 		case asciidoc.HasElements:
 			d.buildRowConformance(v.Elements(), sb)
 		default:
-			slog.Warn("unknown conformance value element", "doc", d.Path, "type", fmt.Sprintf("%T", el))
+			slog.Warn("unknown conformance value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", el))
 		}
 	}
 }

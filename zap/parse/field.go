@@ -13,8 +13,8 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func readField(d *xml.Decoder, e xml.StartElement, entityType types.EntityType, name string) (field *matter.Field, err error) {
-	field = matter.NewField()
+func readField(path string, d *xml.Decoder, e xml.StartElement, entityType types.EntityType, name string) (field *matter.Field, err error) {
+	field = matter.NewField(newSource(path, d))
 	field.Access = matter.DefaultAccess(entityType)
 	err = readFieldAttributes(e, field, name)
 	if err != nil {

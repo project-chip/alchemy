@@ -7,12 +7,13 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 )
 
 func buildTree(docs []*Doc) {
 
-	tree := make(map[*Doc][]string)
+	tree := make(map[*Doc][]*asciidoc.FileInclude)
 	docPaths := make(map[string]*Doc)
 
 	for _, doc := range docs {
@@ -21,21 +22,22 @@ func buildTree(docs []*Doc) {
 		docPaths[path] = doc
 
 		parse.Search(doc.Elements(), func(link *asciidoc.FileInclude) parse.SearchShould {
-			var p strings.Builder
-			doc.buildDataTypeString(link.Set, &p)
-			linkPath := filepath.Join(filepath.Dir(path), p.String())
-			tree[doc] = append(tree[doc], linkPath)
+
+			tree[doc] = append(tree[doc], link)
 			return parse.SearchShouldContinue
 		})
 	}
 
 	for doc, children := range tree {
-		for _, child := range children {
-			if cd, ok := docPaths[child]; ok {
+		for _, link := range children {
+			var p strings.Builder
+			doc.buildDataTypeString(link.Set, &p)
+			linkPath := filepath.Join(filepath.Dir(doc.Path), p.String())
+			if cd, ok := docPaths[linkPath]; ok {
 				cd.addParent(doc)
 				doc.addChild(cd)
 			} else {
-				slog.Warn("unknown child path", "parent", doc.Path, "child", child)
+				slog.Warn("unknown child path", log.Element("parent", doc.Path, link), "child", linkPath)
 			}
 		}
 	}
