@@ -115,7 +115,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 
 func (AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (anchorGroups map[*spec.DocGroup]*anchorGroup, err error) {
 	anchorGroups = make(map[*spec.DocGroup]*anchorGroup)
-	unaffiliatedDocs := spec.NewDocGroup()
+	unaffiliatedDocs := spec.NewDocGroup("")
 	for _, input := range inputs {
 		doc := input.Content
 
