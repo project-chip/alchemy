@@ -65,7 +65,11 @@ func renderDeviceType(cxt context.Context, doc *spec.Doc, deviceTypes []*matter.
 			reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
 			copy(reqs, deviceType.ClusterRequirements)
 			slices.SortFunc(reqs, func(a, b *matter.ClusterRequirement) int {
-				return a.ID.Compare(b.ID)
+				cmp := a.ID.Compare(b.ID)
+				if cmp != 0 {
+					return cmp
+				}
+				return a.Interface.Compare(b.Interface)
 			})
 			for _, cr := range reqs {
 				clx := cx.CreateElement("cluster")
