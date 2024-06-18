@@ -118,6 +118,7 @@ func (doc *Doc) findAnchors() {
 	}
 	parse.Traverse(doc, doc.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
 		var anchor *Anchor
+		var label string
 		switch el := el.(type) {
 		case *asciidoc.Anchor:
 			anchor = NewAnchor(doc, el.ID, el, parent, el.Set...)
@@ -131,8 +132,8 @@ func (doc *Doc) findAnchors() {
 		case *Section:
 			anchor = doc.makeAnchor(parent, el.Base, crossReferences)
 			if anchor != nil {
-				sectionName := el.Name
-				doc.anchorsByLabel[sectionName] = append(doc.anchorsByLabel[sectionName], anchor)
+				label = el.Name
+				doc.anchorsByLabel[label] = append(doc.anchorsByLabel[label], anchor)
 			}
 		case asciidoc.Element:
 			anchor = doc.makeAnchor(parent, el, crossReferences)
@@ -143,9 +144,9 @@ func (doc *Doc) findAnchors() {
 		if anchor != nil {
 			doc.anchors[anchor.ID] = append(doc.anchors[anchor.ID], anchor)
 			if len(anchor.LabelElements) > 0 {
-				label := strings.TrimSpace(asciidoc.AttributeAsciiDocString(anchor.LabelElements))
-				if len(label) > 0 {
-					doc.anchorsByLabel[label] = append(doc.anchorsByLabel[label], anchor)
+				anchorLabel := strings.TrimSpace(asciidoc.AttributeAsciiDocString(anchor.LabelElements))
+				if len(anchorLabel) > 0 && anchorLabel != label {
+					doc.anchorsByLabel[anchorLabel] = append(doc.anchorsByLabel[anchorLabel], anchor)
 				}
 			}
 
