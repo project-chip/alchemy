@@ -9,6 +9,7 @@ import (
 	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/spec"
 )
 
@@ -30,6 +31,9 @@ type docParse struct {
 
 	commands []*subSection
 	events   []*subSection
+
+	tableCache       map[*asciidoc.Table]*tableInfo
+	conformanceCache map[asciidoc.Element]conformance.Set
 }
 
 type subSection struct {
@@ -61,19 +65,25 @@ func newSubSectionChildPattern(suffix string, indexColumns ...matter.TableColumn
 	return subSectionChildPattern{suffix: suffix, indexColumns: indexColumns}
 }
 
-func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *spec.Section) (ds *docParse, err error) {
-	ds = &docParse{doc: doc, docType: docType, clusters: make(map[*spec.Section]*clusterInfo)}
+func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *spec.Section) (dp *docParse, err error) {
+	dp = &docParse{
+		doc:              doc,
+		docType:          docType,
+		clusters:         make(map[*spec.Section]*clusterInfo),
+		conformanceCache: make(map[asciidoc.Element]conformance.Set),
+		tableCache:       make(map[*asciidoc.Table]*tableInfo),
+	}
 	for _, section := range parse.FindAll[*spec.Section](topLevelSection.Elements()) {
 		switch section.SecType {
 		case matter.SectionCluster:
-			ds.clusters[section] = &clusterInfo{}
+			dp.clusters[section] = &clusterInfo{}
 		case matter.SectionAttributes:
 			switch docType {
 			case matter.DocTypeCluster:
 				var attributes *subSection
-				attributes, err = newParentSubSection(doc, section, newSubSectionChildPattern(" Attribute", matter.TableColumnName))
+				attributes, err = newParentSubSection(dp, section, newSubSectionChildPattern(" Attribute", matter.TableColumnName))
 				if err == nil {
-					ds.attributes = append(ds.attributes, attributes)
+					dp.attributes = append(dp.attributes, attributes)
 				}
 			default:
 				slog.Warn("attributes section in non-cluster doc", log.Element("path", doc.Path, section.Base))
@@ -82,63 +92,63 @@ func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *
 			switch docType {
 			case matter.DocTypeCluster:
 				var features *subSection
-				features, err = newParentSubSection(doc, section, newSubSectionChildPattern(" Feature", matter.TableColumnName))
+				features, err = newParentSubSection(dp, section, newSubSectionChildPattern(" Feature", matter.TableColumnName))
 				if err == nil {
-					ds.features = append(ds.features, features)
+					dp.features = append(dp.features, features)
 				}
 			default:
 				slog.Warn("features section in non-cluster doc", log.Element("path", doc.Path, section.Base))
 			}
 		case matter.SectionCommands:
 			var commands *subSection
-			commands, err = newParentSubSection(doc, section, newSubSectionChildPattern(" Command", matter.TableColumnName), newSubSectionChildPattern(" Field", matter.TableColumnName))
+			commands, err = newParentSubSection(dp, section, newSubSectionChildPattern(" Command", matter.TableColumnName), newSubSectionChildPattern(" Field", matter.TableColumnName))
 			if err == nil {
-				ds.commands = append(ds.commands, commands)
+				dp.commands = append(dp.commands, commands)
 			}
 		case matter.SectionClassification:
 			var classification *subSection
-			classification, err = newSubSection(doc, section)
+			classification, err = newSubSection(dp, section)
 			if err == nil {
-				ds.classification = append(ds.classification, classification)
-				ci := getSubsectionCluster(ds, section)
+				dp.classification = append(dp.classification, classification)
+				ci := getSubsectionCluster(dp, section)
 				if ci != nil {
 					ci.classification = classification
 				}
 			}
 		case matter.SectionClusterID:
 			var clusterIDs *subSection
-			clusterIDs, err = newSubSection(doc, section)
+			clusterIDs, err = newSubSection(dp, section)
 			if err == nil {
-				ds.clusterIDs = append(ds.clusterIDs, clusterIDs)
+				dp.clusterIDs = append(dp.clusterIDs, clusterIDs)
 			}
 		case matter.SectionDataTypes:
-			ds.dataTypes, err = newSubSection(doc, section)
+			dp.dataTypes, err = newSubSection(dp, section)
 		case matter.SectionDataTypeBitmap:
 			var bm *subSection
-			bm, err = newParentSubSection(doc, section, newSubSectionChildPattern(" Bitmap", matter.TableColumnBit, matter.TableColumnID))
+			bm, err = newParentSubSection(dp, section, newSubSectionChildPattern(" Bitmap", matter.TableColumnBit, matter.TableColumnID))
 			if err != nil {
 				break
 			}
-			ds.bitmaps = append(ds.bitmaps, bm)
+			dp.bitmaps = append(dp.bitmaps, bm)
 		case matter.SectionDataTypeEnum:
 			var e *subSection
-			e, err = newParentSubSection(doc, section, newSubSectionChildPattern(" Enum", matter.TableColumnName))
+			e, err = newParentSubSection(dp, section, newSubSectionChildPattern(" Enum", matter.TableColumnName))
 			if err != nil {
 				break
 			}
-			ds.enums = append(ds.enums, e)
+			dp.enums = append(dp.enums, e)
 		case matter.SectionDataTypeStruct:
 			var e *subSection
-			e, err = newParentSubSection(doc, section, newSubSectionChildPattern(" Field", matter.TableColumnName))
+			e, err = newParentSubSection(dp, section, newSubSectionChildPattern(" Field", matter.TableColumnName))
 			if err != nil {
 				break
 			}
-			ds.structs = append(ds.structs, e)
+			dp.structs = append(dp.structs, e)
 		case matter.SectionEvents:
 			var events *subSection
-			events, err = newParentSubSection(doc, section, newSubSectionChildPattern(" Event", matter.TableColumnName), newSubSectionChildPattern(" Field", matter.TableColumnName))
+			events, err = newParentSubSection(dp, section, newSubSectionChildPattern(" Event", matter.TableColumnName), newSubSectionChildPattern(" Field", matter.TableColumnName))
 			if err == nil {
-				ds.events = append(ds.events, events)
+				dp.events = append(dp.events, events)
 			}
 		}
 		if err != nil {
@@ -149,13 +159,13 @@ func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *
 	return
 }
 
-func newSubSection(doc *spec.Doc, section *spec.Section) (ss *subSection, err error) {
-	return newParentSubSection(doc, section)
+func newSubSection(dp *docParse, section *spec.Section) (ss *subSection, err error) {
+	return newParentSubSection(dp, section)
 }
 
-func newParentSubSection(doc *spec.Doc, section *spec.Section, childPatterns ...subSectionChildPattern) (ss *subSection, err error) {
+func newParentSubSection(dp *docParse, section *spec.Section, childPatterns ...subSectionChildPattern) (ss *subSection, err error) {
 	ss = &subSection{section: section}
-	ss.table, err = firstTableInfo(doc, section)
+	ss.table, err = firstTableInfo(dp, section)
 	if err != nil {
 		return
 	}
@@ -163,24 +173,25 @@ func newParentSubSection(doc *spec.Doc, section *spec.Section, childPatterns ...
 		return
 	}
 	if len(childPatterns) > 0 {
-		ss.children, err = findSubsections(doc, ss, childPatterns...)
+		ss.children, err = findSubsections(dp, ss, childPatterns...)
 	}
 	return
 }
 
-func firstTableInfo(doc *spec.Doc, section *spec.Section) (ti tableInfo, err error) {
+func firstTableInfo(dp *docParse, section *spec.Section) (ti tableInfo, err error) {
 	ti.element = spec.FindFirstTable(section)
 	if ti.element != nil {
 		ti.rows = ti.element.TableRows()
-		ti.headerRow, ti.columnMap, ti.extraColumns, err = spec.MapTableColumns(doc, ti.rows)
+		ti.headerRow, ti.columnMap, ti.extraColumns, err = spec.MapTableColumns(dp.doc, ti.rows)
 		if err != nil {
 			return
 		}
+		dp.tableCache[ti.element] = &ti
 	}
 	return
 }
 
-func findSubsections(doc *spec.Doc, parent *subSection, childPatterns ...subSectionChildPattern) (subSections []*subSection, err error) {
+func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSectionChildPattern) (subSections []*subSection, err error) {
 	if parent.table.element == nil {
 		return
 	}
@@ -218,11 +229,11 @@ func findSubsections(doc *spec.Doc, parent *subSection, childPatterns ...subSect
 			continue
 		}
 		var subs *subSection
-		subs, err = newParentSubSection(doc, ss, childPatterns...)
+		subs, err = newParentSubSection(dp, ss, childPatterns...)
 		if err != nil {
 			return
 		}
-		subs.table, err = firstTableInfo(doc, ss)
+		subs.table, err = firstTableInfo(dp, ss)
 		if err != nil {
 			return
 		}

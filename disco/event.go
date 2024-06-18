@@ -27,7 +27,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			return fmt.Errorf("error fixing access cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
 
-		err = fixConformanceCells(dp.doc, eventsTable.rows, eventsTable.columnMap)
+		err = fixConformanceCells(dp, eventsTable.rows, eventsTable.columnMap)
 		if err != nil {
 			return fmt.Errorf("error fixing conformance cells for event table in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
@@ -59,7 +59,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 				return fmt.Errorf("error fixing constraint cells for event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = fixConformanceCells(dp.doc, eventTable.rows, eventTable.columnMap)
+			err = fixConformanceCells(dp, eventTable.rows, eventTable.columnMap)
 			if err != nil {
 				return fmt.Errorf("error fixing conformance cells for event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
