@@ -175,11 +175,16 @@ func buildSpec(docs []*Doc, ignoreHierarchy bool) (spec *Specification, err erro
 		for _, cr := range dt.ClusterRequirements {
 			if c, ok := spec.ClustersByID[cr.ID.Value()]; ok {
 				cr.Cluster = c
+			} else {
+				slog.Warn("unknown cluster ID for cluster requirement on device type", "clusterId", cr.ID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
 			}
 		}
 		for _, er := range dt.ElementRequirements {
 			if c, ok := spec.ClustersByID[er.ID.Value()]; ok {
 				er.Cluster = c
+			} else {
+				slog.Warn("unknown cluster ID for element requirement on device type", "clusterId", er.ID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
+
 			}
 		}
 	}
