@@ -22,7 +22,6 @@ func buildTree(docs []*Doc) {
 		docPaths[path] = doc
 
 		parse.Search(doc.Elements(), func(link *asciidoc.FileInclude) parse.SearchShould {
-
 			tree[doc] = append(tree[doc], link)
 			return parse.SearchShouldContinue
 		})
@@ -45,7 +44,7 @@ func buildTree(docs []*Doc) {
 }
 
 func dumpTree(r *Doc, indent int) {
-	fmt.Printf(strings.Repeat("\t", indent))
+	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Printf("%s\n", r.Path)
 	for _, c := range r.children {
 		dumpTree(c, indent+1)

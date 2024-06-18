@@ -20,6 +20,12 @@ type DeviceType struct {
 
 	ClusterRequirements []*ClusterRequirement `json:"clusterRequirements,omitempty"`
 	ElementRequirements []*ElementRequirement `json:"elementRequirements,omitempty"`
+
+	Source Source
+}
+
+func NewDeviceType(source Source) *DeviceType {
+	return &DeviceType{Source: source}
 }
 
 func (dt *DeviceType) EntityType() types.EntityType {

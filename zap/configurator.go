@@ -128,7 +128,7 @@ func (c *Configurator) addEntityType(entity types.Entity) {
 func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []*matter.Number) {
 	refs, ok := c.Spec.ClusterRefs[entity]
 	if !ok {
-		slog.Warn("unknown cluster ref when searching for cluster codes", "val", entity, "path", c.Doc.Path)
+		slog.Warn("unknown cluster ref when searching for cluster codes", slog.String("path", c.Doc.Path), matter.LogEntity(entity))
 		return
 	}
 	for ref := range refs {
