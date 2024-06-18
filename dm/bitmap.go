@@ -31,21 +31,24 @@ func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (e
 }
 
 func renderBit(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, v matter.Bit, size int) (err error) {
-	val := matter.ParseNumber(v.Bit())
-	var mask uint64
-	if !val.Valid() {
-		var e error
-		mask, e = v.Mask()
-		if e != nil {
-			return
-		}
-	}
 	i := en.CreateElement("bitfield")
 	i.CreateAttr("name", v.Name())
-	if mask > 0 {
-		i.CreateAttr("mask", fmt.Sprintf("0x%0*X", size, mask))
-	} else {
+	val := matter.ParseNumber(v.Bit())
+	if val.Valid() {
 		i.CreateAttr("bit", val.IntString())
+	} else {
+		var from, to uint64
+		from, to, err = v.Bits()
+		if err != nil {
+			var mask uint64
+			mask, err = v.Mask()
+			if err == nil {
+				i.CreateAttr("mask", fmt.Sprintf("0x%0*X", size, mask))
+			}
+			return
+		}
+		i.CreateAttr("from", fmt.Sprintf("0x%0*X", size, from))
+		i.CreateAttr("to", fmt.Sprintf("0x%0*X", size, to))
 	}
 	i.CreateAttr("summary", v.Summary())
 	err = renderConformanceString(doc, cluster, v.Conformance(), i)
