@@ -8,18 +8,22 @@ import (
 )
 
 type DocGroup struct {
+	Root string
 	referenceIndex
 }
 
-func NewDocGroup() *DocGroup {
+func NewDocGroup(root string) *DocGroup {
 	return &DocGroup{
+		Root:           root,
 		referenceIndex: newReferenceIndex(),
 	}
 }
 
 func setSpec(d *Doc, si *Specification, docGroup *DocGroup) {
 	if d.group != nil {
-		slog.Warn("multiple doc groups!", "path", d.Path)
+		if d.group.Root != docGroup.Root {
+			slog.Warn("multiple doc group roots", "path", d.Path, "root", d.group.Root, "newRoot", docGroup.Root)
+		}
 		return
 	}
 	d.spec = si
