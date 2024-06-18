@@ -47,7 +47,8 @@ func buildSpec(docs []*Doc, ignoreHierarchy bool) (spec *Specification, err erro
 		if len(d.parents) > 0 {
 			continue
 		}
-		dg := NewDocGroup()
+
+		dg := NewDocGroup(d.Path)
 		setSpec(d, spec, dg)
 	}
 
