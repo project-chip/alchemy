@@ -33,24 +33,24 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 		case asciidoc.EmptyLine:
 			fmt.Print("{empty}\n")
 		case *asciidoc.NewLine:
-			fmt.Print("{newline}\n")
+			fmt.Printf("{newline%s}\n", dumpPosition(el))
 		case *asciidoc.LineBreak:
-			fmt.Print("{linebreak}\n")
+			fmt.Printf("{linebreak%s}\n", dumpPosition(el))
 		/*case *asciidoc.DelimitedBlock:
 		fmt.Printf("{delim kind=%s}:\n", el.Kind)
 		dumpAttributes(el.Attributes, indent+1)
 		dumpElements(doc, el.Elements, indent+1)*/
 		case *asciidoc.AttributeEntry:
-			fmt.Printf("{attrib}: %s", el.Name)
+			fmt.Printf("{attrib%s}: %s", dumpPosition(el), el.Name)
 			dumpElements(doc, el.Elements(), indent+1)
 			fmt.Print("\n")
 		case *asciidoc.Paragraph:
-			fmt.Print("{para}: ")
+			fmt.Printf("{para%s}: ", dumpPosition(el))
 			fmt.Print("\n")
 			dumpAttributes(el.Attributes(), indent+1)
 			dumpElements(doc, el.Elements(), indent+1)
 		case *asciidoc.Section:
-			fmt.Printf("{sec %d}:\n", el.Level)
+			fmt.Printf("{sec %d%s}:\n", el.Level, dumpPosition(el))
 			dumpAttributes(el.Attributes(), indent+1)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{title:}\n")
@@ -62,7 +62,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			fmt.Print("{str}: ", snippet(el.Value))
 			fmt.Print("\n")
 		case asciidoc.FormattedTextElement:
-			fmt.Printf("{formatted text %d}:\n", el.TextFormat())
+			fmt.Printf("{formatted text %d%s}:\n", el.TextFormat(), dumpPosition(el))
 			if a, ok := el.(asciidoc.Attributable); ok {
 				dumpAttributes(a.Attributes(), indent+1)
 			}
@@ -70,7 +70,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			fmt.Printf("{body:}\n")
 			dumpElements(doc, el.Elements(), indent+2)
 		case *asciidoc.Table:
-			fmt.Print("{tab}:\n")
+			fmt.Printf("{tab%s}:\n", dumpPosition(el))
 			dumpAttributes(el.Attributes(), indent+1)
 			dumpTable(doc, el, indent+1)
 		case *asciidoc.IfDef:
@@ -210,4 +210,12 @@ func dumpConditional(attributes asciidoc.AttributeNames, union asciidoc.Conditio
 	}
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Print("}\n")
+}
+
+func dumpPosition(el asciidoc.Element) string {
+	if hp, ok := el.(asciidoc.HasPosition); ok {
+		l, c, _ := hp.Position()
+		return fmt.Sprintf(" %d:%d", l, c)
+	}
+	return ""
 }
