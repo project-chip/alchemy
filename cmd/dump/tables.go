@@ -23,7 +23,7 @@ func dumpTable(doc *spec.Doc, tbl *asciidoc.Table, indent int) {
 
 func dumpTableRow(doc *spec.Doc, row *asciidoc.TableRow, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
-	fmt.Print("{row}:\n")
+	fmt.Printf("{row%s}:\n", dumpPosition(row))
 	dumpTableCells(doc, row.TableCells(), indent+1)
 }
 
@@ -33,7 +33,7 @@ func dumpTableCells(doc *spec.Doc, cells []*asciidoc.TableCell, indent int) {
 		if c.Blank {
 			fmt.Print("{cellblank}:\n")
 		} else {
-			fmt.Print("{cell}:\n")
+			fmt.Printf("{cell%s}:\n", dumpPosition(c))
 			if c.Format != nil {
 				fmt.Print(strings.Repeat("\t", indent+1))
 				fmt.Printf("{format: %v (cell %d row %d)}\n", c.Format, c.Format.Span.Column.Value, c.Format.Span.Row.Value)
