@@ -183,10 +183,12 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			}
 			ex := erx.CreateElement("command")
 			var code string
-			for _, cmd := range cr.Cluster.Commands {
-				if cmd.Name == name {
-					code = cmd.ID.HexString()
-					break
+			if cr.Cluster != nil {
+				for _, cmd := range cr.Cluster.Commands {
+					if cmd.Name == name {
+						code = cmd.ID.HexString()
+						break
+					}
 				}
 			}
 
