@@ -7,10 +7,10 @@ import (
 	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (attributes matter.FieldSet, err error) {
+func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[asciidoc.Attributable][]types.Entity) (attributes matter.FieldSet, err error) {
 	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -43,7 +43,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 			}
 			err = nil
 		}
-		attr.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, attr.Type)
+		attr.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint)
 		if err != nil {
 			return
 		}
@@ -62,7 +62,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 		if err != nil {
 			return
 		}
-		attr.Access, _ = ParseAccess(a, mattertypes.EntityTypeAttribute)
+		attr.Access, _ = ParseAccess(a, types.EntityTypeAttribute)
 		attributes = append(attributes, attr)
 		attributeMap[attr.Name] = attr
 	}

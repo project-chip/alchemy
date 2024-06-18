@@ -36,8 +36,5 @@ func readClient(d *xml.Decoder, e xml.StartElement) (err error) {
 		default:
 			return fmt.Errorf("unexpected client level type: %T", t)
 		}
-		if err != nil {
-			return
-		}
 	}
 }

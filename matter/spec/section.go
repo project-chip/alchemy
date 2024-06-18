@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Section struct {
@@ -63,7 +63,8 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, els ...asciidoc.Element
 
 			attr, ok := doc.attributes[asciidoc.AttributeName(e.Name())]
 			if !ok {
-				return fmt.Errorf("unknown section title attribute: %s", e.Name)
+				err = fmt.Errorf("unknown section title attribute: %s", e.Name())
+				return
 			}
 			switch val := attr.(type) {
 			case asciidoc.Set:
@@ -318,7 +319,7 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 			return matter.SectionDataTypeEnum
 		} else if dataType.IsMap() {
 			return matter.SectionDataTypeBitmap
-		} else if dataType.BaseType == mattertypes.BaseDataTypeCustom {
+		} else if dataType.BaseType == types.BaseDataTypeCustom {
 			return matter.SectionDataTypeStruct
 		}
 	}
@@ -361,8 +362,8 @@ func guessDataTypeFromTable(section *Section, parent *Section) (sectionType matt
 	return
 }
 
-func (s *Section) toEntities(d *Doc, entityMap map[asciidoc.Attributable][]mattertypes.Entity) ([]mattertypes.Entity, error) {
-	var entities []mattertypes.Entity
+func (s *Section) toEntities(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) ([]types.Entity, error) {
+	var entities []types.Entity
 	switch s.SecType {
 	case matter.SectionCluster:
 		clusters, err := s.toClusters(d, entityMap)
@@ -378,7 +379,7 @@ func (s *Section) toEntities(d *Doc, entityMap map[asciidoc.Attributable][]matte
 		entities = append(entities, deviceTypes...)
 	default:
 		var err error
-		var looseEntities []mattertypes.Entity
+		var looseEntities []types.Entity
 		looseEntities, err = findLooseEntities(d, s, entityMap)
 		if err != nil {
 			return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
@@ -394,7 +395,7 @@ var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<e
 
 //var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:(?:<<enum-def\s*,\s*)|(?:<<ref_DataTypeBitmap,))?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
 
-func (s *Section) GetDataType() *mattertypes.DataType {
+func (s *Section) GetDataType() *types.DataType {
 	var dts string
 	for _, el := range s.Elements() {
 		if se, ok := el.(*Element); ok {
@@ -431,12 +432,12 @@ func (s *Section) GetDataType() *mattertypes.DataType {
 		}
 	}
 	if len(dts) > 0 {
-		return mattertypes.ParseDataType(dts, false)
+		return types.ParseDataType(dts, false)
 	}
 	return nil
 }
 
-func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
+func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attributable][]types.Entity) (entities []types.Entity, err error) {
 	parse.Traverse(doc, section.Elements(), func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:

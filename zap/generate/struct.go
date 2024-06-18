@@ -12,7 +12,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func generateStructs(configurator *zap.Configurator, configuratorElement *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+func generateStructs(configurator *zap.Configurator, configuratorElement *etree.Element, errata *zap.Errata) (err error) {
 
 	for _, se := range configuratorElement.SelectElements("struct") {
 
@@ -49,12 +49,12 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 
 				amendedClusterCodes, remainingClusterIds := amendExistingClusterCodes(se, matchingStruct, clusterIds)
 
-				populateStruct(configurator, se, matchingStruct, cluster, errata, amendedClusterCodes, false)
+				populateStruct(se, matchingStruct, amendedClusterCodes, false)
 				configurator.Structs[matchingStruct] = remainingClusterIds
 				continue
 			}
 		}
-		populateStruct(configurator, se, matchingStruct, cluster, errata, clusterIds, false)
+		populateStruct(se, matchingStruct, clusterIds, false)
 		configurator.Structs[matchingStruct] = nil
 	}
 
@@ -77,21 +77,21 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 
 				for _, clusterID := range clusterIds {
 					bme := etree.NewElement("struct")
-					populateStruct(configurator, bme, s, cluster, errata, []*matter.Number{clusterID}, false)
+					populateStruct(bme, s, []*matter.Number{clusterID}, false)
 					xml.AppendElement(configuratorElement, bme, "enum", "bitmap")
 				}
 				continue
 			}
 		}
 		bme := etree.NewElement("struct")
-		populateStruct(configurator, bme, s, cluster, errata, clusterIds, true)
+		populateStruct(bme, s, clusterIds, true)
 		xml.InsertElementByAttribute(configuratorElement, bme, "name", "enum", "bitmap", "domain")
 	}
 
 	return
 }
 
-func populateStruct(configurator *zap.Configurator, ee *etree.Element, s *matter.Struct, cluster *matter.Cluster, errata *zap.Errata, clusterIDs []*matter.Number, provisional bool) (remainingClusterIDs []*matter.Number) {
+func populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Number, provisional bool) (remainingClusterIDs []*matter.Number) {
 
 	ee.CreateAttr("name", s.Name)
 	if provisional {

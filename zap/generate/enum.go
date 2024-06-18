@@ -13,7 +13,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func generateEnums(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+func generateEnums(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
 
 	for _, eve := range ce.SelectElements("enum") {
 

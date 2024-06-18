@@ -2,7 +2,6 @@ package dm
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"path/filepath"
 	"slices"
@@ -20,7 +19,7 @@ func getDeviceTypePath(sdkRoot string, path string) string {
 	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
 }
 
-func renderDeviceType(cxt context.Context, doc *spec.Doc, deviceTypes []*matter.DeviceType) (output string, err error) {
+func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
@@ -81,7 +80,7 @@ func renderDeviceType(cxt context.Context, doc *spec.Doc, deviceTypes []*matter.
 				case matter.InterfaceServer:
 					clx.CreateAttr("side", "server")
 				}
-				renderQuality(clx, cr.Quality, matter.QualityAll)
+				renderQuality(clx, cr.Quality)
 				err = renderConformanceString(doc, deviceType, cr.Conformance, clx)
 				if err != nil {
 					return
@@ -261,7 +260,7 @@ func renderAttributeRequirement(doc *spec.Doc, deviceType *matter.DeviceType, er
 	ex.CreateAttr("name", er.Name)
 
 	renderAttributeAccess(ex, er.Access)
-	renderQuality(ex, er.Quality, matter.QualityAll^matter.QualitySingleton)
+	renderQuality(ex, er.Quality)
 	err = renderConformanceString(doc, deviceType, er.Conformance, ex)
 	if err != nil {
 		return

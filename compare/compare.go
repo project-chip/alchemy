@@ -5,11 +5,11 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/hasty/alchemy/zap"
 )
 
-func compareConformance(entityType mattertypes.EntityType, spec conformance.Set, zap conformance.Set) (diffs []Diff) {
+func compareConformance(entityType types.EntityType, spec conformance.Set, zap conformance.Set) (diffs []Diff) {
 	if len(spec) == 0 {
 		if len(zap) > 0 {
 			diffs = append(diffs, newMissingDiff("", entityType, DiffPropertyConformance, SourceSpec))
@@ -35,7 +35,7 @@ func compareConformance(entityType mattertypes.EntityType, spec conformance.Set,
 
 	return
 }
-func compareConstraint(entityType mattertypes.EntityType, specFieldSet matter.FieldSet, specField *matter.Field, zapFieldSet matter.FieldSet, zapField *matter.Field) (diffs []Diff) {
+func compareConstraint(entityType types.EntityType, specFieldSet matter.FieldSet, specField *matter.Field, zapFieldSet matter.FieldSet, zapField *matter.Field) (diffs []Diff) {
 	if specField.Constraint == nil && zapField.Constraint == nil {
 		return
 	}

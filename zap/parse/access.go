@@ -57,8 +57,5 @@ func readAccess(d *xml.Decoder, e xml.StartElement, access *matter.Access) (err 
 		default:
 			return fmt.Errorf("unexpected access level type: %T", t)
 		}
-		if err != nil {
-			return
-		}
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/dolthub/go-mysql-server/sql/types"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/spec"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func getAccessSchemaColumns(tableName string) []*mms.Column {
@@ -27,11 +27,11 @@ func getAccessSchemaColumnValues(tableName string, access any) []any {
 		var a matter.Access
 		switch tableName {
 		case commandTable:
-			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeCommand)
+			a, _ = spec.ParseAccess(s, types.EntityTypeCommand)
 		case structField:
-			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeStruct)
+			a, _ = spec.ParseAccess(s, types.EntityTypeStruct)
 		default:
-			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeUnknown)
+			a, _ = spec.ParseAccess(s, types.EntityTypeUnknown)
 		}
 		readAccess = int8(a.Read)
 		writeAccess = int8(a.Write)

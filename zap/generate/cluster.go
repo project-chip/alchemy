@@ -115,9 +115,12 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 		server.SetText("true")
 	}
 	if tg.generateFeaturesXML {
-		err = generateFeaturesXML(configurator, cle, cluster, errata)
+		err = generateFeaturesXML(configurator, cle, cluster)
+		if err != nil {
+			return
+		}
 	}
-	err = generateClusterGlobalAttributes(configurator, cle, cluster, errata)
+	err = generateClusterGlobalAttributes(configurator, cle, cluster)
 	if err != nil {
 		return
 	}
@@ -136,7 +139,7 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 	return
 }
 
-func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster) (err error) {
 	globalAttributes := cle.SelectElements("globalAttribute")
 	var setClusterRevision bool
 	for _, globalAttribute := range globalAttributes {
