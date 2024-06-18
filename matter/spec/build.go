@@ -32,12 +32,12 @@ func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (
 	for _, i := range inputs {
 		docs = append(docs, i.Content)
 	}
-	sp.Spec, err = buildSpec(docs, sp.IgnoreHierarchy)
+	sp.Spec, err = sp.buildSpec(docs)
 	outputs = inputs
 	return
 }
 
-func buildSpec(docs []*Doc, ignoreHierarchy bool) (spec *Specification, err error) {
+func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 
 	buildTree(docs)
 
@@ -145,15 +145,22 @@ func buildSpec(docs []*Doc, ignoreHierarchy bool) (spec *Specification, err erro
 			default:
 				slog.Warn("unknown entity type", "path", d.Path, "type", fmt.Sprintf("%T", m))
 			}
-			spec.DocRefs[m] = d.Path
+			switch m := m.(type) {
+			case *matter.ClusterGroup:
+				for _, c := range m.Clusters {
+					spec.DocRefs[c] = d.Path
+				}
+			default:
+				spec.DocRefs[m] = d.Path
+			}
 		}
 
 	}
 
-	if !ignoreHierarchy {
+	if !sp.IgnoreHierarchy {
 		resolveHierarchy(spec)
 	}
-	resolveDataTypeReferences(spec)
+	sp.resolveDataTypeReferences(spec)
 	err = updateBridgedBasicInformationCluster(basicInformationCluster, bridgedBasicInformationCluster)
 	if err != nil {
 		return
@@ -163,11 +170,14 @@ func buildSpec(docs []*Doc, ignoreHierarchy bool) (spec *Specification, err erro
 		if c.Features != nil {
 			spec.ClusterRefs.Add(c, c.Features)
 		}
+		for _, en := range c.Bitmaps {
+			spec.ClusterRefs.Add(c, en)
+		}
 		for _, en := range c.Enums {
-			switch en.Name {
-			case "ModeTag":
-				spec.ClusterRefs.Add(c, en)
-			}
+			spec.ClusterRefs.Add(c, en)
+		}
+		for _, en := range c.Structs {
+			spec.ClusterRefs.Add(c, en)
 		}
 	}
 
@@ -229,10 +239,10 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 	}
 }
 
-func resolveDataTypeReferences(spec *Specification) {
+func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
 	for _, s := range spec.Structs {
 		for _, f := range s.Fields {
-			resolveDataType(spec, nil, f, f.Type)
+			sp.resolveDataType(spec, nil, f, f.Type)
 		}
 	}
 	for _, cluster := range spec.ClustersByID {
@@ -240,41 +250,43 @@ func resolveDataTypeReferences(spec *Specification) {
 			if a.Type == nil {
 				continue
 			}
-			resolveDataType(spec, cluster, a, a.Type)
+			sp.resolveDataType(spec, cluster, a, a.Type)
 		}
 		for _, s := range cluster.Structs {
 			for _, f := range s.Fields {
-				resolveDataType(spec, cluster, f, f.Type)
+				sp.resolveDataType(spec, cluster, f, f.Type)
 			}
 		}
 		for _, s := range cluster.Events {
 			for _, f := range s.Fields {
-				resolveDataType(spec, cluster, f, f.Type)
+				sp.resolveDataType(spec, cluster, f, f.Type)
 			}
 		}
 		for _, s := range cluster.Commands {
 			for _, f := range s.Fields {
-				resolveDataType(spec, cluster, f, f.Type)
+				sp.resolveDataType(spec, cluster, f, f.Type)
 			}
 		}
 	}
 
 }
 
-func resolveDataType(spec *Specification, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
+func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
 	if dataType == nil {
-		if !conformance.IsDeprecated(field.Conformance) {
+		if !conformance.IsDeprecated(field.Conformance) && (cluster == nil || cluster.Hierarchy == "Base") {
 			var clusterName string
 			if cluster != nil {
 				clusterName = cluster.Name
 			}
-			slog.Warn("missing type on field", log.Path("path", field.Source), slog.String("name", field.Name), slog.String("cluster", clusterName))
+			if !sp.IgnoreHierarchy {
+				slog.Warn("missing type on field", log.Path("path", field.Source), slog.String("name", field.Name), slog.String("cluster", clusterName))
+			}
 		}
 		return
 	}
 	switch dataType.BaseType {
 	case types.BaseDataTypeList:
-		resolveDataType(spec, cluster, field, dataType.EntryType)
+		sp.resolveDataType(spec, cluster, field, dataType.EntryType)
 	case types.BaseDataTypeCustom:
 		if dataType.Entity == nil {
 			entities := spec.entities[dataType.Name]
@@ -299,7 +311,7 @@ func resolveDataType(spec *Specification, cluster *matter.Cluster, field *matter
 			return
 		}
 		for _, f := range s.Fields {
-			resolveDataType(spec, cluster, f, f.Type)
+			sp.resolveDataType(spec, cluster, f, f.Type)
 		}
 	}
 }
