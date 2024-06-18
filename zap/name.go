@@ -39,8 +39,8 @@ func ClusterName(path string, errata *Errata, entities []types.Entity) string {
 }
 
 func DeviceTypeName(deviceType *matter.DeviceType) string {
-	name := strcase.ToKebab(deviceType.Name)
-	return "MA-" + name
+	name := matter.Case(deviceType.Name)
+	return "MA-" + strings.ToLower(name)
 }
 
 func getZapPath(sdkRoot string, name string) string {
