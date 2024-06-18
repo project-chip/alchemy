@@ -1,6 +1,21 @@
+
+
 # Alchemy
 
 Alchemy is a command line tool for modifying and transforming Matter spec documents.
+<img src="./alchemy.svg" align="right"/>
+
+It can:
+- Format your spec documents, aligning table cells, removing unneeded spacing, etc.
+- Disco-ball your spec documents, aligning them with Matter spec style guidelines
+- Generate ZAP XML files for clusters and device types
+- Generate Data Model XML files
+- Generate basic test plans for clusters
+- Compare the Matter spec to the SDK and generate a list of differences
+- Present the Matter spec as a MySQL-compatible database to run queries against
+- Print English-language explanations of Matter conformance strings
+
+<br clear="right"/>
 
 ## Installation
 
