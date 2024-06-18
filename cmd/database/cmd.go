@@ -9,7 +9,6 @@ import (
 	"github.com/dolthub/go-mysql-server/sql"
 	"github.com/hasty/alchemy/cmd/common"
 	"github.com/hasty/alchemy/db"
-	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/matter/spec"
 	"github.com/spf13/cobra"
@@ -30,25 +29,25 @@ var Command = &cobra.Command{
 
 		pipelineOptions := pipeline.Flags(cmd)
 
-		specFiles, err := pipeline.Start[struct{}](cxt, files.SpecTargeter(specRoot))
+		specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
 		if err != nil {
 			return err
 		}
 
 		docParser := spec.NewParser(asciiSettings)
-		specDocMap, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
+		specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
 		if err != nil {
 			return err
 		}
-		var specParser files.SpecParser
-		specDocMap, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specParser, specDocMap)
+		var specBuilder spec.Builder
+		specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
 		if err != nil {
 			return err
 		}
 
-		specDocs := make([]*spec.Doc, 0, specDocMap.Size())
-		specDocMap.Range(func(key string, value *pipeline.Data[*spec.Doc]) bool {
-			specDocs = append(specDocs, value.Content)
+		docs := make([]*spec.Doc, 0, specDocs.Size())
+		specDocs.Range(func(key string, value *pipeline.Data[*spec.Doc]) bool {
+			docs = append(docs, value.Content)
 			return true
 		})
 
@@ -56,7 +55,7 @@ var Command = &cobra.Command{
 		sc.SetCurrentDatabase("matter")
 
 		h := db.New()
-		err = h.Build(sc, specParser.Spec, specDocs, raw)
+		err = h.Build(sc, specBuilder.Spec, docs, raw)
 		if err != nil {
 			return fmt.Errorf("error building DB: %w", err)
 		}
