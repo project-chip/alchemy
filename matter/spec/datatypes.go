@@ -17,32 +17,40 @@ import (
 
 func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, err error) {
 
-	for _, s := range parse.Skim[*Section](s.Elements()) {
+	parse.Traverse(s, s.Elements(), func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap:
 			var mb *matter.Bitmap
 			mb, err = s.toBitmap(d, entityMap)
 			if err != nil {
-				return
+				slog.Warn("Error converting section to bitmap", log.Element("path", d.Path, s.Base), slog.Any("error", err))
+				err = nil
+			} else {
+				bitmaps = append(bitmaps, mb)
 			}
-			bitmaps = append(bitmaps, mb)
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
 			me, err = s.toEnum(d, entityMap)
 			if err != nil {
-				return
+				slog.Warn("Error converting section to enum", log.Element("path", d.Path, s.Base), slog.Any("error", err))
+				err = nil
+			} else {
+				enums = append(enums, me)
 			}
-			enums = append(enums, me)
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
 			me, err = s.toStruct(d, entityMap)
 			if err != nil {
-				return
+				slog.Warn("Error converting section to struct", log.Element("path", d.Path, s.Base), slog.Any("error", err))
+				err = nil
+			} else {
+				structs = append(structs, me)
 			}
-			structs = append(structs, me)
 		default:
 		}
-	}
+		return parse.SearchShouldContinue
+	})
+
 	return
 }
 
@@ -194,7 +202,7 @@ func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder
 						name = asciidoc.AttributeAsciiDocString(anchor.LabelElements)
 					}
 				} else {
-					slog.Warn("data type references unknown anchor", slog.String("name", v.ID), log.Path("source", newSource(d, v)))
+					slog.Warn("data type references unknown or ambiguous anchor", slog.String("name", v.ID), log.Path("source", newSource(d, v)))
 				}
 				if len(name) == 0 {
 					name = strings.TrimPrefix(v.ID, "_")
