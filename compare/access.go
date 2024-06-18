@@ -17,17 +17,17 @@ func compareAccess(entityType types.EntityType, spec matter.Access, zap matter.A
 	case types.EntityTypeField, types.EntityTypeCommandField:
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyReadAccess, spec.Read, zap.Read, defaultAccess.Read)...)
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyWriteAccess, spec.Write, zap.Write, defaultAccess.Write)...)
-		diffs = append(diffs, compareScoping(entityType, DiffPropertyFabricScoping, spec.FabricScoping, zap.FabricScoping, defaultAccess.FabricScoping)...)
-		diffs = append(diffs, compareSensitivity(entityType, DiffPropertyFabricSensitivity, spec.FabricSensitivity, zap.FabricSensitivity, defaultAccess.FabricSensitivity)...)
+		diffs = append(diffs, compareScoping(DiffPropertyFabricScoping, spec.FabricScoping, zap.FabricScoping, defaultAccess.FabricScoping)...)
+		diffs = append(diffs, compareSensitivity(DiffPropertyFabricSensitivity, spec.FabricSensitivity, zap.FabricSensitivity, defaultAccess.FabricSensitivity)...)
 	case types.EntityTypeCommand:
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyInvokeAccess, spec.Invoke, zap.Invoke, defaultAccess.Invoke)...)
-		diffs = append(diffs, compareScoping(entityType, DiffPropertyFabricScoping, spec.FabricScoping, zap.FabricScoping, defaultAccess.FabricScoping)...)
-		diffs = append(diffs, compareSensitivity(entityType, DiffPropertyFabricSensitivity, spec.FabricSensitivity, zap.FabricSensitivity, defaultAccess.FabricSensitivity)...)
-		diffs = append(diffs, compareTiming(entityType, DiffPropertyTiming, spec.Timing, zap.Timing, defaultAccess.Timing)...)
+		diffs = append(diffs, compareScoping(DiffPropertyFabricScoping, spec.FabricScoping, zap.FabricScoping, defaultAccess.FabricScoping)...)
+		diffs = append(diffs, compareSensitivity(DiffPropertyFabricSensitivity, spec.FabricSensitivity, zap.FabricSensitivity, defaultAccess.FabricSensitivity)...)
+		diffs = append(diffs, compareTiming(DiffPropertyTiming, spec.Timing, zap.Timing, defaultAccess.Timing)...)
 	case types.EntityTypeEvent:
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyReadAccess, spec.Read, zap.Read, defaultAccess.Read)...)
-		diffs = append(diffs, compareScoping(entityType, DiffPropertyFabricScoping, spec.FabricScoping, zap.FabricScoping, defaultAccess.FabricScoping)...)
-		diffs = append(diffs, compareSensitivity(entityType, DiffPropertyFabricSensitivity, spec.FabricSensitivity, zap.FabricSensitivity, defaultAccess.FabricSensitivity)...)
+		diffs = append(diffs, compareScoping(DiffPropertyFabricScoping, spec.FabricScoping, zap.FabricScoping, defaultAccess.FabricScoping)...)
+		diffs = append(diffs, compareSensitivity(DiffPropertyFabricSensitivity, spec.FabricSensitivity, zap.FabricSensitivity, defaultAccess.FabricSensitivity)...)
 	default:
 		slog.Warn("unexpected entity for access comparison", "entityType", entityType)
 	}
@@ -47,7 +47,7 @@ func comparePrivilege(entityType types.EntityType, prop DiffProperty, spec matte
 	return
 }
 
-func compareScoping(entityType types.EntityType, prop DiffProperty, spec matter.FabricScoping, zap matter.FabricScoping, defaultSpec matter.FabricScoping) (diffs []Diff) {
+func compareScoping(prop DiffProperty, spec matter.FabricScoping, zap matter.FabricScoping, defaultSpec matter.FabricScoping) (diffs []Diff) {
 	if zap == matter.FabricScopingUnknown && spec == defaultSpec {
 		return
 	}
@@ -60,7 +60,7 @@ func compareScoping(entityType types.EntityType, prop DiffProperty, spec matter.
 	return
 }
 
-func compareSensitivity(entityType types.EntityType, prop DiffProperty, spec matter.FabricSensitivity, zap matter.FabricSensitivity, defaultSpec matter.FabricSensitivity) (diffs []Diff) {
+func compareSensitivity(prop DiffProperty, spec matter.FabricSensitivity, zap matter.FabricSensitivity, defaultSpec matter.FabricSensitivity) (diffs []Diff) {
 	if zap == matter.FabricSensitivityUnknown && spec == defaultSpec {
 		return
 	}
@@ -73,7 +73,7 @@ func compareSensitivity(entityType types.EntityType, prop DiffProperty, spec mat
 	return
 }
 
-func compareTiming(entityType types.EntityType, prop DiffProperty, spec matter.Timing, zap matter.Timing, defaultSpec matter.Timing) (diffs []Diff) {
+func compareTiming(prop DiffProperty, spec matter.Timing, zap matter.Timing, defaultSpec matter.Timing) (diffs []Diff) {
 	if zap == matter.TimingUnknown && spec == defaultSpec {
 		return
 	}

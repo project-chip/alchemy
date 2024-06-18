@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func (b *Ball) organizeStructSections(cxt *discoContext, dp *docParse) (err error) {
@@ -47,7 +47,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return nil
 	}
 
-	err = b.fixAccessCells(dp, ss, mattertypes.EntityTypeStruct)
+	err = b.fixAccessCells(dp, ss, types.EntityTypeStruct)
 	if err != nil {
 		return fmt.Errorf("error fixing access cells in struct table in %s: %w", dp.doc.Path, err)
 	}
@@ -62,7 +62,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
 	}
 
-	err = b.addMissingColumns(dp.doc, ss.section, fieldsTable.element, fieldsTable.rows, matter.Tables[matter.TableTypeStruct], nil, fieldsTable.headerRow, fieldsTable.columnMap, mattertypes.EntityTypeField)
+	err = b.addMissingColumns(dp.doc, ss.section, fieldsTable.element, fieldsTable.rows, matter.Tables[matter.TableTypeStruct], nil, fieldsTable.headerRow, fieldsTable.columnMap, types.EntityTypeField)
 	if err != nil {
 		return fmt.Errorf("error adding missing table columns in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
 	}

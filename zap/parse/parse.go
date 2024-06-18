@@ -171,9 +171,6 @@ func Ignore(d *xml.Decoder, name string) (err error) {
 			}
 		default:
 		}
-		if err != nil {
-			return
-		}
 	}
 }
 
@@ -197,9 +194,6 @@ func Extract(d *xml.Decoder, el xml.StartElement) (tokens []xml.Token, err error
 			default:
 			}
 		default:
-		}
-		if err != nil {
-			return
 		}
 	}
 }

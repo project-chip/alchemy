@@ -65,16 +65,13 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 		}
 		f.Name = matter.StripTypeSuffixes(f.Name)
 		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
-		if err != nil {
-			return
-		}
 		f.Type, err = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		if err != nil {
 			slog.Debug("error reading field data type", slog.String("path", d.Path), slog.String("name", f.Name), slog.Any("error", err))
 			err = nil
 		}
 
-		f.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint, f.Type)
+		f.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint)
 		if err != nil {
 			return
 		}
@@ -84,9 +81,6 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 			return
 		}
 		f.Quality = matter.ParseQuality(q)
-		if err != nil {
-			return
-		}
 		f.Default, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDefault)
 		if err != nil {
 			return
@@ -218,7 +212,7 @@ func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder
 	}
 }
 
-func (d *Doc) getRowConstraint(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn, parentDataType *types.DataType) constraint.Constraint {
+func (d *Doc) getRowConstraint(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn) constraint.Constraint {
 	var val string
 	var cell *asciidoc.TableCell
 	offset, ok := columnMap[column]

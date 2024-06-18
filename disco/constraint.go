@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
 	"github.com/hasty/alchemy/matter/spec"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func fixConstraintCells(doc *spec.Doc, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
@@ -50,7 +50,7 @@ func fixConstraintCells(doc *spec.Doc, rows []*asciidoc.TableRow, columnMap spec
 	return
 }
 
-func simplifyConstraints(cons constraint.Constraint, dataType *mattertypes.DataType) constraint.Constraint {
+func simplifyConstraints(cons constraint.Constraint, dataType *types.DataType) constraint.Constraint {
 	switch c := cons.(type) {
 	case *constraint.RangeConstraint:
 		switch from := c.Minimum.(type) {

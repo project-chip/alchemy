@@ -10,7 +10,7 @@ import (
 	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Doc struct {
@@ -30,10 +30,10 @@ type Doc struct {
 	referenceIndex
 	attributes map[asciidoc.AttributeName]any
 
-	entities       []mattertypes.Entity
+	entities       []types.Entity
 	entitiesParsed bool
 
-	entitiesBySection map[asciidoc.Attributable][]mattertypes.Entity
+	entitiesBySection map[asciidoc.Attributable][]types.Entity
 
 	spec  *Specification
 	group *DocGroup
@@ -97,20 +97,20 @@ func (doc *Doc) addChild(child *Doc) {
 	doc.Unlock()
 }
 
-func (doc *Doc) Entities() (entities []mattertypes.Entity, err error) {
+func (doc *Doc) Entities() (entities []types.Entity, err error) {
 	if doc.entitiesParsed {
 		return doc.entities, nil
 	}
 	doc.entitiesParsed = true
 
-	var entitiesBySection = make(map[asciidoc.Attributable][]mattertypes.Entity)
+	var entitiesBySection = make(map[asciidoc.Attributable][]types.Entity)
 	for _, top := range parse.Skim[*Section](doc.Elements()) {
 		err := AssignSectionTypes(doc, top)
 		if err != nil {
 			return nil, err
 		}
 
-		var m []mattertypes.Entity
+		var m []types.Entity
 		m, err = top.toEntities(doc, entitiesBySection)
 		if err != nil {
 			return nil, fmt.Errorf("failed converting doc %s to entities: %w", doc.Path, err)
@@ -122,7 +122,7 @@ func (doc *Doc) Entities() (entities []mattertypes.Entity, err error) {
 	return
 }
 
-func (doc *Doc) Reference(ref string) (mattertypes.Entity, bool) {
+func (doc *Doc) Reference(ref string) (types.Entity, bool) {
 
 	a := doc.FindAnchor(ref)
 

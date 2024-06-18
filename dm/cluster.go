@@ -2,7 +2,6 @@ package dm
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"path/filepath"
 	"strconv"
@@ -27,7 +26,7 @@ type clusterID struct {
 	name string
 }
 
-func (p *Renderer) renderAppCluster(cxt context.Context, doc *spec.Doc, clusters ...*matter.Cluster) (output string, err error) {
+func (p *Renderer) renderAppCluster(doc *spec.Doc, clusters ...*matter.Cluster) (output string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)

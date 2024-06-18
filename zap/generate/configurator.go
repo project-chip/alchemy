@@ -54,17 +54,17 @@ func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x
 		}
 	}
 
-	err = generateBitmaps(configurator, ce, exampleCluster, errata)
+	err = generateBitmaps(configurator, ce, errata)
 	if err != nil {
 		return
 	}
 
-	err = generateEnums(configurator, ce, exampleCluster, errata)
+	err = generateEnums(configurator, ce, errata)
 	if err != nil {
 		return
 	}
 
-	err = generateStructs(configurator, ce, exampleCluster, errata)
+	err = generateStructs(configurator, ce, errata)
 	if err != nil {
 		return
 	}
@@ -104,7 +104,7 @@ func (tg *TemplateGenerator) generateFeatures(configurator *zap.Configurator, co
 		}
 		if needFeatures && !tg.generateFeaturesXML {
 
-			err = populateBitmap(configurator, bm, &features.Bitmap, clusterIds, errata)
+			err = populateBitmap(bm, &features.Bitmap, clusterIds, errata)
 			needFeatures = false
 		} else {
 			configuratorElement.RemoveChild(bm)
@@ -115,7 +115,7 @@ func (tg *TemplateGenerator) generateFeatures(configurator *zap.Configurator, co
 	}
 	if needFeatures {
 		fe := etree.NewElement("bitmap")
-		err = populateBitmap(configurator, fe, &features.Bitmap, clusterIds, errata)
+		err = populateBitmap(fe, &features.Bitmap, clusterIds, errata)
 		if err != nil {
 			return
 		}
@@ -124,7 +124,7 @@ func (tg *TemplateGenerator) generateFeatures(configurator *zap.Configurator, co
 	return
 }
 
-func generateFeaturesXML(configurator *zap.Configurator, configuratorElement *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+func generateFeaturesXML(configurator *zap.Configurator, configuratorElement *etree.Element, cluster *matter.Cluster) (err error) {
 	features := cluster.Features
 	needFeatures := features != nil && len(features.Bits) > 0
 

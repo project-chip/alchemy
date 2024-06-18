@@ -5,10 +5,10 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/spec"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType mattertypes.EntityType) (err error) {
+func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType types.EntityType) (err error) {
 	if !b.options.formatAccess {
 		return nil
 	}
@@ -22,7 +22,7 @@ func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType m
 	}
 	var directionIndex int
 	directionIndex = -1
-	if entityType == mattertypes.EntityTypeCommand {
+	if entityType == types.EntityTypeCommand {
 		directionIndex, ok = table.columnMap[matter.TableColumnDirection]
 		if !ok {
 			directionIndex = -1

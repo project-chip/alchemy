@@ -6,28 +6,6 @@ import (
 	"github.com/hasty/alchemy/asciidoc"
 )
 
-func renderBlock(cxt *Context, block asciidoc.Element, delimiter string) (err error) {
-	ha, ok := block.(asciidoc.Attributable)
-	if ok {
-		err = renderAttributes(cxt, block, ha.Attributes(), false)
-
-	}
-	if err != nil {
-		return
-	}
-	cxt.EnsureNewLine()
-	cxt.WriteString(delimiter)
-	cxt.EnsureNewLine()
-	he, ok := block.(asciidoc.HasElements)
-	if ok {
-		err = Elements(cxt, "", he.Elements()...)
-	}
-	cxt.EnsureNewLine()
-	cxt.WriteString(delimiter)
-	cxt.EnsureNewLine()
-	return
-}
-
 func renderDelimiter(cxt *Context, delimiter asciidoc.Delimiter) {
 	var char string
 	switch delimiter.Type {

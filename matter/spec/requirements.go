@@ -9,7 +9,7 @@ import (
 	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.ClusterRequirement, err error) {
@@ -99,15 +99,15 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		}
 		switch strings.ToLower(e) {
 		case "feature":
-			cr.Element = mattertypes.EntityTypeFeature
+			cr.Element = types.EntityTypeFeature
 		case "attribute":
-			cr.Element = mattertypes.EntityTypeAttribute
+			cr.Element = types.EntityTypeAttribute
 		case "command":
-			cr.Element = mattertypes.EntityTypeCommand
+			cr.Element = types.EntityTypeCommand
 		case "command field":
-			cr.Element = mattertypes.EntityTypeCommandField
+			cr.Element = types.EntityTypeCommandField
 		case "event":
-			cr.Element = mattertypes.EntityTypeEvent
+			cr.Element = types.EntityTypeEvent
 		default:
 			if e != "" {
 				err = fmt.Errorf("unknown element type: \"%s\"", e)
@@ -120,7 +120,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		if cr.Element == mattertypes.EntityTypeCommandField {
+		if cr.Element == types.EntityTypeCommandField {
 			parts := strings.FieldsFunc(cr.Name, func(r rune) bool { return r == '.' })
 			if len(parts) == 2 {
 				cr.Name = parts[0]
@@ -148,7 +148,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.Access, _ = ParseAccess(a, mattertypes.EntityTypeElementRequirement)
+		cr.Access, _ = ParseAccess(a, types.EntityTypeElementRequirement)
 		cr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		elementRequirements = append(elementRequirements, cr)
 	}

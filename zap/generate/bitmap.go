@@ -13,7 +13,7 @@ import (
 	"github.com/hasty/alchemy/zap"
 )
 
-func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
 
 	for _, eve := range ce.SelectElements("bitmap") {
 
@@ -51,7 +51,7 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, cluster 
 			ce.RemoveChild(eve)
 			continue
 		}
-		err = populateBitmap(configurator, eve, matchingBitmap, clusterIds, errata)
+		err = populateBitmap(eve, matchingBitmap, clusterIds, errata)
 		if err != nil {
 			return
 		}
@@ -62,13 +62,13 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, cluster 
 			continue
 		}
 		bme := etree.NewElement("bitmap")
-		populateBitmap(configurator, bme, bm, clusterIds, errata)
+		populateBitmap(bme, bm, clusterIds, errata)
 		xml.InsertElementByAttribute(ce, bme, "name", "domain")
 	}
 	return
 }
 
-func populateBitmap(configurator *zap.Configurator, ee *etree.Element, bm *matter.Bitmap, clusterIds []*matter.Number, errata *zap.Errata) (err error) {
+func populateBitmap(ee *etree.Element, bm *matter.Bitmap, clusterIds []*matter.Number, errata *zap.Errata) (err error) {
 
 	var valFormat string
 	if bm.Name == "Feature" {

@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/matter/constraint"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 type Source uint8
@@ -198,11 +198,11 @@ func (s *DiffType) UnmarshalJSON(data []byte) (err error) {
 }
 
 type IdentifiedDiff struct {
-	Type   DiffType               `json:"type,omitempty"`
-	Entity mattertypes.EntityType `json:"entity,omitempty"`
-	ID     *matter.Number         `json:"id,omitempty"`
-	Name   string                 `json:"name,omitempty"`
-	Diffs  []Diff                 `json:"diffs,omitempty"`
+	Type   DiffType         `json:"type,omitempty"`
+	Entity types.EntityType `json:"entity,omitempty"`
+	ID     *matter.Number   `json:"id,omitempty"`
+	Name   string           `json:"name,omitempty"`
+	Diffs  []Diff           `json:"diffs,omitempty"`
 }
 
 func (d IdentifiedDiff) String() string {
@@ -210,13 +210,13 @@ func (d IdentifiedDiff) String() string {
 }
 
 type MissingDiff struct {
-	Type     DiffType               `json:"type"`
-	Entity   mattertypes.EntityType `json:"entity,omitempty"`
-	Source   Source                 `json:"source,omitempty"`
-	Property DiffProperty           `json:"property,omitempty"`
-	ID       *matter.Number         `json:"id,omitempty"`
-	Name     string                 `json:"name,omitempty"`
-	Code     string                 `json:"code,omitempty"`
+	Type     DiffType         `json:"type"`
+	Entity   types.EntityType `json:"entity,omitempty"`
+	Source   Source           `json:"source,omitempty"`
+	Property DiffProperty     `json:"property,omitempty"`
+	ID       *matter.Number   `json:"id,omitempty"`
+	Name     string           `json:"name,omitempty"`
+	Code     string           `json:"code,omitempty"`
 }
 
 func (md MissingDiff) String() string {
@@ -229,7 +229,7 @@ func newMissingDiff(name string, props ...any) *MissingDiff {
 		switch prop := prop.(type) {
 		case string:
 			diff.Code = prop
-		case mattertypes.EntityType:
+		case types.EntityType:
 			diff.Entity = prop
 		case Source:
 			diff.Source = prop

@@ -9,7 +9,6 @@ import (
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
-	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, cluster *matter.Cluster) error {
@@ -27,7 +26,7 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 
 		}
 		row.values[matter.TableColumnResponse] = c.Response
-		row.values[matter.TableColumnAccess] = spec.AccessToASCIIDocString(c.Access, mattertypes.EntityTypeCommand)
+		row.values[matter.TableColumnAccess] = spec.AccessToASCIIDocString(c.Access, types.EntityTypeCommand)
 		if c.Conformance != nil {
 			row.values[matter.TableColumnConformance] = c.Conformance.ASCIIDocString()
 		}

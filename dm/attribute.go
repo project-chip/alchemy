@@ -37,7 +37,7 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 			return
 		}
 		renderAttributeAccess(ax, a.Access)
-		renderQuality(ax, a.Quality, matter.QualityAll^(matter.QualitySingleton))
+		renderQuality(ax, a.Quality)
 		err = renderConformanceString(doc, cluster, a.Conformance, ax)
 		if err != nil {
 			return
@@ -118,7 +118,7 @@ func renderAttributeAccess(ax *etree.Element, a matter.Access) {
 	}
 }
 
-func renderQuality(parent *etree.Element, q matter.Quality, mask matter.Quality) {
+func renderQuality(parent *etree.Element, q matter.Quality) {
 	changeOmitted := q.Has(matter.QualityChangedOmitted)
 	nullable := q.Has(matter.QualityNullable)
 	scene := q.Has(matter.QualityScene)
@@ -130,21 +130,6 @@ func renderQuality(parent *etree.Element, q matter.Quality, mask matter.Quality)
 		return
 	}
 	qx := parent.CreateElement("quality")
-	/*qx.CreateAttr("changeOmitted", strconv.FormatBool(changeOmitted))
-	qx.CreateAttr("nullable", strconv.FormatBool(nullable))
-	qx.CreateAttr("scene", strconv.FormatBool(scene))
-	if fixed {
-		qx.CreateAttr("persistence", "fixed")
-	} else if nonvolatile {
-		qx.CreateAttr("persistence", "nonVolatile")
-	} else {
-		qx.CreateAttr("persistence", "volatile")
-	}
-	qx.CreateAttr("reportable", strconv.FormatBool(reportable))
-	if singleton {
-		qx.CreateAttr("singleton", strconv.FormatBool(singleton))
-	}
-	return*/
 	if changeOmitted {
 		qx.CreateAttr("changeOmitted", strconv.FormatBool(changeOmitted))
 	}

@@ -10,12 +10,12 @@ import (
 	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
-func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (commands matter.CommandSet, err error) {
+func (s *Section) toCommands(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (commands matter.CommandSet, err error) {
 	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -52,16 +52,12 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[asci
 			return
 		}
 		cmd.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
-		if err != nil {
-			return
-		}
-
 		var a string
 		a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}
-		cmd.Access, _ = ParseAccess(a, mattertypes.EntityTypeCommand)
+		cmd.Access, _ = ParseAccess(a, types.EntityTypeCommand)
 		commands = append(commands, cmd)
 		commandMap[strings.ToLower(cmd.Name)] = cmd
 	}
@@ -108,7 +104,7 @@ func (s *Section) toCommands(d *Doc, cluster *matter.Cluster, entityMap map[asci
 				}
 				continue
 			}
-			c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeCommand)
+			c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeCommand)
 			if err != nil {
 				return
 			}
