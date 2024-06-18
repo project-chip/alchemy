@@ -49,3 +49,12 @@ func (s *Interface) UnmarshalJSON(data []byte) (err error) {
 	}
 	return nil
 }
+
+func (i Interface) Compare(o Interface) int {
+	if i < o {
+		return 1
+	} else if i > o {
+		return -1
+	}
+	return 0
+}
