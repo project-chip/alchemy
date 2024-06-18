@@ -24,7 +24,7 @@ var Command = &cobra.Command{
 func init() {
 	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
-	Command.Flags().Bool("featureXML", false, "write new style feature XML")
+	Command.Flags().Bool("featureXML", true, "write new style feature XML")
 }
 
 func zapTemplates(cmd *cobra.Command, args []string) (err error) {
