@@ -43,7 +43,6 @@ var Command = &cobra.Command{
 				}
 				dumpElements(doc, doc.Elements(), 0)
 			} else if jsonOut {
-				asciiSettings = append(asciiSettings, spec.GithubSettings()...)
 				doc, err := spec.ParseFile(f, asciiSettings...)
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
