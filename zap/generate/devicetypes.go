@@ -173,21 +173,21 @@ func applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.Devic
 			clustersElement.RemoveChild(include)
 			continue
 		}
-		setIncludeAttributes(include, spec, deviceType, crs)
+		setIncludeAttributes(clustersElement, include, spec, deviceType, crs)
 		delete(clusterRequirementsByName, strings.ToLower(ca.Value))
 	}
 	for _, crs := range [][]*matter.ClusterRequirement{spec.BaseDeviceType.ClusterRequirements, deviceType.ClusterRequirements} {
 		for _, cr := range crs {
 			crr, ok := clusterRequirementsByName[strings.ToLower(cr.ClusterName)]
 			if ok {
-				setIncludeAttributes(clustersElement, spec, deviceType, crr)
+				setIncludeAttributes(clustersElement, nil, spec, deviceType, crr)
 			}
 		}
 	}
 	return
 }
 
-func setIncludeAttributes(clustersElement *etree.Element, spec *spec.Specification, deviceType *matter.DeviceType, cr *clusterRequirements) {
+func setIncludeAttributes(clustersElement *etree.Element, include *etree.Element, spec *spec.Specification, deviceType *matter.DeviceType, cr *clusterRequirements) {
 	cluster, ok := spec.ClustersByName[cr.name]
 	if !ok {
 		slog.Debug("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
@@ -239,7 +239,9 @@ func setIncludeAttributes(clustersElement *etree.Element, spec *spec.Specificati
 		}
 	}
 
-	include := clustersElement.CreateElement("include")
+	if include == nil {
+		include = clustersElement.CreateElement("include")
+	}
 	include.CreateAttr("cluster", cr.name)
 
 	xml.SetNonexistentAttr(include, "client", strconv.FormatBool(client))
