@@ -36,7 +36,7 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return err
 		}
 
-		err = fixConformanceCells(dp.doc, attributesTable.rows, attributesTable.columnMap)
+		err = fixConformanceCells(dp, attributesTable.rows, attributesTable.columnMap)
 		if err != nil {
 			return err
 		}

@@ -49,26 +49,28 @@ func init() {
 	Command.Flags().Bool("uppercaseHex", true, "uppercase hex values")
 	Command.Flags().Bool("addSpaceAfterPunctuation", true, "add missing space after punctuation")
 	Command.Flags().Bool("removeExtraSpaces", true, "remove extraneous spaces")
+	Command.Flags().Bool("disambiguateConformanceChoice", false, "ensure conformance choices are only used once per document")
 }
 
 type discoOption func(bool) disco.Option
 
 func getDiscoOptions(cmd *cobra.Command) []disco.Option {
 	var optionFuncs = map[string]discoOption{
-		"linkIndexTables":          disco.LinkIndexTables,
-		"addMissingColumns":        disco.AddMissingColumns,
-		"reorderColumns":           disco.ReorderColumns,
-		"renameTableHeaders":       disco.RenameTableHeaders,
-		"formatAccess":             disco.FormatAccess,
-		"promoteDataTypes":         disco.PromoteDataTypes,
-		"reorderSections":          disco.ReorderSections,
-		"normalizeTableOptions":    disco.NormalizeTableOptions,
-		"fixCommandDirection":      disco.FixCommandDirection,
-		"appendSubsectionTypes":    disco.AppendSubsectionTypes,
-		"uppercaseHex":             disco.UppercaseHex,
-		"addSpaceAfterPunctuation": disco.AddSpaceAfterPunctuation,
-		"removeExtraSpaces":        disco.RemoveExtraSpaces,
-		"normalizeFeatureNames":    disco.NormalizeFeatureNames,
+		"linkIndexTables":               disco.LinkIndexTables,
+		"addMissingColumns":             disco.AddMissingColumns,
+		"reorderColumns":                disco.ReorderColumns,
+		"renameTableHeaders":            disco.RenameTableHeaders,
+		"formatAccess":                  disco.FormatAccess,
+		"promoteDataTypes":              disco.PromoteDataTypes,
+		"reorderSections":               disco.ReorderSections,
+		"normalizeTableOptions":         disco.NormalizeTableOptions,
+		"fixCommandDirection":           disco.FixCommandDirection,
+		"appendSubsectionTypes":         disco.AppendSubsectionTypes,
+		"uppercaseHex":                  disco.UppercaseHex,
+		"addSpaceAfterPunctuation":      disco.AddSpaceAfterPunctuation,
+		"removeExtraSpaces":             disco.RemoveExtraSpaces,
+		"normalizeFeatureNames":         disco.NormalizeFeatureNames,
+		"disambiguateConformanceChoice": disco.DisambiguateConformanceChoice,
 	}
 	var discoOptions []disco.Option
 	for name, o := range optionFuncs {

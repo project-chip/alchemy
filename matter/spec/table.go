@@ -154,10 +154,13 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 			value.WriteString("++")
 			err = readRowCellValueElements(doc, el.Elements(), value)
 		case *asciidoc.ThematicBreak:
+		case asciidoc.EmptyLine:
 		case *asciidoc.NewLine:
 			value.WriteString(" ")
 		case asciidoc.HasElements:
 			err = readRowCellValueElements(doc, el.Elements(), value)
+		case *asciidoc.LineBreak:
+			value.WriteString(" ")
 		default:
 			return fmt.Errorf("unexpected type in cell: %T", el)
 		}
