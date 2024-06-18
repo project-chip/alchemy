@@ -43,8 +43,6 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
 
-	asciiSettings = append(spec.GithubSettings(), asciiSettings...)
-
 	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err

@@ -28,8 +28,6 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 
-	asciiSettings = append(spec.GithubSettings(), asciiSettings...)
-
 	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
