@@ -98,7 +98,6 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeMap32
 	case "map64":
 		dt.BaseType = BaseDataTypeMap64
-
 	case "string", "character string":
 		dt.BaseType = BaseDataTypeString
 	case "octstr", "octet string":
