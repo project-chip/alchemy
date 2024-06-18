@@ -4,30 +4,35 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/asciidoc/parse"
 	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/internal/text"
 )
 
 func ParseFile(path string, attributes ...asciidoc.AttributeName) (*Doc, error) {
 
-	contents, err := readFile(path)
+	contents, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	return Parse(contents, path, attributes...)
+	defer contents.Close()
+	return parseReader(contents, path, attributes...)
 }
 
 func Parse(contents string, path string, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
+	return parseReader(strings.NewReader(contents), path, attributes...)
 
-	contents = text.RemoveComments(contents)
+}
 
+func parseReader(r io.Reader, path string, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
 	var d *asciidoc.Document
 
-	d, err = ParseDocument(strings.NewReader(contents), path, attributes...)
+	d, err = ParseDocument(r, path, attributes...)
 
 	if err != nil {
 		return nil, fmt.Errorf("parse error in %s: %w", path, err)
@@ -42,13 +47,6 @@ func Parse(contents string, path string, attributes ...asciidoc.AttributeName) (
 }
 
 func ParseDocument(r io.Reader, path string, attributes ...asciidoc.AttributeName) (*asciidoc.Document, error) {
-	done := make(chan any)
-	defer close(done)
-
-	if len(attributes) == 0 {
-		return parse.Reader(path, r)
-	}
-
 	ac := &parse.AttributeContext{}
 
 	for _, a := range attributes {
@@ -62,6 +60,11 @@ func ParseDocument(r io.Reader, path string, attributes ...asciidoc.AttributeNam
 
 	if len(parsed) == 0 {
 		return &asciidoc.Document{}, nil
+	}
+
+	if filepath.Base(path) == "DoorLock.adoc" { // Craptastic workaround for very weird table cell
+		var doorLockPattern = regexp.MustCompile(`\n+\s*[^&\n]+&#8224;\s+`)
+		parsed = doorLockPattern.ReplaceAllString(parsed, "\n")
 	}
 
 	return parse.Reader(path, strings.NewReader(parsed))
