@@ -8,11 +8,11 @@ import (
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
 )
 
-func (s *Section) mapFields(fieldMap map[string]*matter.Field, entityMap map[asciidoc.Attributable][]mattertypes.Entity) error {
+func (s *Section) mapFields(fieldMap map[string]*matter.Field, entityMap map[asciidoc.Attributable][]types.Entity) error {
 	for _, s := range parse.Skim[*Section](s.Elements()) {
 		var name string
 		switch s.SecType {

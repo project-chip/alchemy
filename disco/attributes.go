@@ -7,7 +7,7 @@ import (
 	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/spec"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err error) {
@@ -26,7 +26,7 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(attributesTable.columnMap))
 		}
 
-		err = b.fixAccessCells(dp, attributes, mattertypes.EntityTypeAttribute)
+		err = b.fixAccessCells(dp, attributes, types.EntityTypeAttribute)
 		if err != nil {
 			return err
 		}

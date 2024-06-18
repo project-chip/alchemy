@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
@@ -274,7 +275,7 @@ func setIncludeAttributes(clustersElement *etree.Element, include *etree.Element
 				requiredEvents[er.Name] = struct{}{}
 				cxt.Values[er.Name] = true
 			default:
-				slog.Warn("Element requirement with unrecognized element type", slog.Any("entityType", er.Element))
+				slog.Warn("Element requirement with unrecognized element type", slog.String("entityType", er.Element.String()))
 			}
 		}
 	}

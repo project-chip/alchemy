@@ -35,8 +35,8 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 	return ((at & include) == at) && ((at & exclude) != at)
 }
 
-func renderAttributes(cxt *Context, el any, attributes []asciidoc.Attribute, inline bool) error {
-	_, err := renderSelectAttributes(cxt, el, attributes, AttributeFilterAll, AttributeFilterNone, inline)
+func renderAttributes(cxt *Context, attributes []asciidoc.Attribute, inline bool) error {
+	_, err := renderSelectAttributes(cxt, attributes, AttributeFilterAll, AttributeFilterNone, inline)
 	return err
 }
 
@@ -68,7 +68,7 @@ func getAttributeType(name asciidoc.AttributeName) AttributeFilter {
 	return AttributeFilterNone
 }
 
-func renderSelectAttributes(cxt *Context, el any, attributes []asciidoc.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (n int, err error) {
+func renderSelectAttributes(cxt *Context, attributes []asciidoc.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (n int, err error) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -253,16 +253,6 @@ func renderAttributeTitle(cxt *Context, title asciidoc.Set, include AttributeFil
 		cxt.EnsureNewLine()
 	}
 }
-
-/*func quoteAttributeValue(cxt *Context, val string) {
-	if _, err := strconv.Atoi(strings.TrimSuffix(val, "%")); err == nil {
-		cxt.WriteString(val)
-	} else {
-		cxt.WriteRune('"')
-		cxt.WriteString(val)
-		cxt.WriteRune('"')
-	}
-}*/
 
 func renderQuotedAttributeValue(cxt *Context, val any) (err error) {
 	var s string

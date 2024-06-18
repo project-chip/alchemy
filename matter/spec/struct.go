@@ -6,10 +6,10 @@ import (
 
 	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (ms *matter.Struct, err error) {
+func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (ms *matter.Struct, err error) {
 	name := strings.TrimSuffix(s.Name, " Type")
 	var rows []*asciidoc.TableRow
 	var headerRowIndex int
@@ -35,7 +35,7 @@ func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]mattert
 			}
 		}
 	}
-	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeStruct)
+	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeStruct)
 	entityMap[s.Base] = append(entityMap[s.Base], ms)
 	return
 }

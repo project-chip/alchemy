@@ -12,12 +12,12 @@ func renderLink(cxt *Context, il *asciidoc.Link) (err error) {
 	}
 	Elements(cxt, "", il.URL.Path...)
 
-	return renderAttributes(cxt, il, il.Attributes(), true)
+	return renderAttributes(cxt, il.Attributes(), true)
 }
 
 func renderImageBlock(cxt *Context, ib *asciidoc.BlockImage) (err error) {
 	cxt.EnsureNewLine()
-	_, err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
+	_, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
 		return
 	}
@@ -25,7 +25,7 @@ func renderImageBlock(cxt *Context, ib *asciidoc.BlockImage) (err error) {
 	cxt.WriteString("image::")
 	Elements(cxt, "", ib.Path...)
 	var count int
-	count, err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
+	count, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
 	if err != nil {
 		return
 	}
@@ -38,7 +38,7 @@ func renderImageBlock(cxt *Context, ib *asciidoc.BlockImage) (err error) {
 
 func renderInlineImage(cxt *Context, ib *asciidoc.InlineImage) (err error) {
 	cxt.EnsureNewLine()
-	_, err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
+	_, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
 		return
 	}
@@ -46,7 +46,7 @@ func renderInlineImage(cxt *Context, ib *asciidoc.InlineImage) (err error) {
 	cxt.WriteString("image:")
 	Elements(cxt, "", ib.Path...)
 	var count int
-	count, err = renderSelectAttributes(cxt, ib, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
+	count, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
 	if err != nil {
 		return
 	}

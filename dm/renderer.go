@@ -66,9 +66,9 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 				err = fmt.Errorf("empty cluster group %s", doc.Path)
 				return
 			}
-			s, err = p.renderAppCluster(cxt, doc, e.Clusters...)
+			s, err = p.renderAppCluster(doc, e.Clusters...)
 		case *matter.Cluster:
-			s, err = p.renderAppCluster(cxt, doc, e)
+			s, err = p.renderAppCluster(doc, e)
 		}
 		if err != nil {
 			err = fmt.Errorf("failed rendering app clusters %s: %w", doc.Path, err)
@@ -81,10 +81,10 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 			var clusterName string
 			switch e := e.(type) {
 			case *matter.ClusterGroup:
-				s, err = p.renderAppCluster(cxt, doc, e.Clusters...)
+				s, err = p.renderAppCluster(doc, e.Clusters...)
 				clusterName = e.Clusters[0].Name
 			case *matter.Cluster:
-				s, err = p.renderAppCluster(cxt, doc, e)
+				s, err = p.renderAppCluster(doc, e)
 				clusterName = e.Name
 			}
 			if err != nil {
@@ -98,7 +98,7 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 
 	if len(deviceTypes) > 0 {
 		var s string
-		s, err = renderDeviceType(cxt, doc, deviceTypes)
+		s, err = renderDeviceType(doc, deviceTypes)
 		if err != nil {
 			err = fmt.Errorf("failed rendering device types %s: %w", doc.Path, err)
 			return
@@ -116,10 +116,7 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 }
 
 func (p *Renderer) GenerateClusterIDsJson() (*pipeline.Data[string], error) {
-	type cluster struct {
-		id   *matter.Number
-		name string
-	}
+
 	clusters := make(map[uint64]string)
 
 	path := filepath.Join(p.sdkRoot, "/data_model/clusters/cluster_ids.json")

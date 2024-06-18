@@ -10,10 +10,10 @@ import (
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (e *matter.Enum, err error) {
+func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (e *matter.Enum, err error) {
 
 	name := strings.TrimSuffix(s.Name, " Type")
 	e = &matter.Enum{
@@ -21,7 +21,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]mattertyp
 	}
 	dt := s.GetDataType()
 	if dt == nil {
-		dt = mattertypes.ParseDataType("enum8", false)
+		dt = types.ParseDataType("enum8", false)
 	}
 
 	if !dt.IsEnum() {
@@ -57,6 +57,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]mattertyp
 		}
 	}
 	e.Values = subSectionValues
+	entityMap[s.Base] = append(entityMap[s.Base], e)
 	return
 }
 
@@ -135,10 +136,10 @@ func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
 	}
 	e = &matter.Enum{
 		Name: "ModeTag",
-		Type: mattertypes.ParseDataType("enum16", false),
+		Type: types.ParseDataType("enum16", false),
 	}
 
-	e.Type = mattertypes.ParseDataType("enum16", false)
+	e.Type = types.ParseDataType("enum16", false)
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]

@@ -7,7 +7,7 @@ import (
 )
 
 func renderSection(cxt *Context, s *asciidoc.Section) (err error) {
-	err = renderAttributes(cxt, s, s.Attributes(), false)
+	err = renderAttributes(cxt, s.Attributes(), false)
 	if err != nil {
 		return
 	}

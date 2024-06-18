@@ -4,12 +4,11 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
 )
 
-func buildDestinations(sdkRoot string, doc *spec.Doc, entities []types.Entity) (destinations map[string]*matter.Cluster) {
+func buildDestinations(sdkRoot string, entities []types.Entity) (destinations map[string]*matter.Cluster) {
 	destinations = make(map[string]*matter.Cluster)
 
 	for _, e := range entities {

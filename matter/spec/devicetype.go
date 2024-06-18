@@ -7,10 +7,10 @@ import (
 	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toDeviceTypes(d *Doc) (entities []mattertypes.Entity, err error) {
+func (s *Section) toDeviceTypes(d *Doc) (entities []types.Entity, err error) {
 	var deviceTypes []*matter.DeviceType
 	var description string
 	p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
@@ -130,8 +130,5 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 			return
 		}
 	}
-	if baseDeviceType == nil {
-		return nil, fmt.Errorf("failed to find base device type")
-	}
-	return
+	return nil, fmt.Errorf("failed to find base device type")
 }

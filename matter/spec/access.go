@@ -6,7 +6,6 @@ import (
 
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/types"
-	mattertypes "github.com/hasty/alchemy/matter/types"
 )
 
 type accessCategoryMatch uint8
@@ -147,14 +146,14 @@ func ParseAccess(vc string, entityType types.EntityType) (a matter.Access, parse
 	return
 }
 
-func AccessToASCIIDocString(a matter.Access, entityType mattertypes.EntityType) string {
+func AccessToASCIIDocString(a matter.Access, entityType types.EntityType) string {
 	var out strings.Builder
 	switch entityType {
-	case mattertypes.EntityTypeEvent:
+	case types.EntityTypeEvent:
 		out.WriteString(privilegeToString(a.Read))
-	case mattertypes.EntityTypeCommand:
+	case types.EntityTypeCommand:
 		out.WriteString(privilegeToString(a.Invoke))
-	case mattertypes.EntityTypeStruct:
+	case types.EntityTypeStruct:
 	default:
 		if a.Read != matter.PrivilegeUnknown || a.Write != matter.PrivilegeUnknown {
 			if a.Read != matter.PrivilegeUnknown {

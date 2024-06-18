@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
 func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error) {
@@ -22,7 +22,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			return fmt.Errorf("can't rearrange events table with so few matches in section %s in %s", events.section.Name, dp.doc.Path)
 		}
 
-		err = b.fixAccessCells(dp, events, mattertypes.EntityTypeEvent)
+		err = b.fixAccessCells(dp, events, types.EntityTypeEvent)
 		if err != nil {
 			return fmt.Errorf("error fixing access cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
@@ -37,7 +37,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
 
-		b.addMissingColumns(dp.doc, events.section, eventsTable.element, eventsTable.rows, matter.Tables[matter.TableTypeEvents], nil, eventsTable.headerRow, eventsTable.columnMap, mattertypes.EntityTypeEvent)
+		b.addMissingColumns(dp.doc, events.section, eventsTable.element, eventsTable.rows, matter.Tables[matter.TableTypeEvents], nil, eventsTable.headerRow, eventsTable.columnMap, types.EntityTypeEvent)
 
 		err = b.reorderColumns(dp.doc, events.section, eventsTable, matter.TableTypeEvents)
 		if err != nil {
@@ -69,7 +69,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 				return fmt.Errorf("error renaming table header cells in event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.addMissingColumns(dp.doc, event.section, eventTable.element, eventTable.rows, matter.Tables[matter.TableTypeEvent], nil, eventTable.headerRow, eventTable.columnMap, mattertypes.EntityTypeField)
+			err = b.addMissingColumns(dp.doc, event.section, eventTable.element, eventTable.rows, matter.Tables[matter.TableTypeEvent], nil, eventTable.headerRow, eventTable.columnMap, types.EntityTypeField)
 			if err != nil {
 				return fmt.Errorf("error adding missing columns to event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}

@@ -8,10 +8,10 @@ import (
 	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (events matter.EventSet, err error) {
+func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (events matter.EventSet, err error) {
 	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -47,7 +47,7 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[asciid
 		if err != nil {
 			return
 		}
-		e.Access, _ = ParseAccess(a, mattertypes.EntityTypeEvent)
+		e.Access, _ = ParseAccess(a, types.EntityTypeEvent)
 		if e.Access.Read == matter.PrivilegeUnknown {
 			// Sometimes the invoke access is omitted; we assume it's view
 			e.Access.Read = matter.PrivilegeView
@@ -92,7 +92,10 @@ func (s *Section) toEvents(d *Doc, cluster *matter.Cluster, entityMap map[asciid
 				err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
 				return
 			}
-			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, mattertypes.EntityTypeEvent)
+			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeEvent)
+			if err != nil {
+				return
+			}
 			entityMap[s.Base] = append(entityMap[s.Base], e)
 			fieldMap := make(map[string]*matter.Field, len(e.Fields))
 			for _, f := range e.Fields {

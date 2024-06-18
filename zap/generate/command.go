@@ -56,7 +56,7 @@ func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster
 			ce.RemoveChild(cmde)
 			continue
 		}
-		populateCommand(cmde, matchingCommand, cluster, errata)
+		populateCommand(cmde, matchingCommand, errata)
 	}
 
 	var remainingCommands []*matter.Command
@@ -71,13 +71,13 @@ func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster
 		}
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
-		populateCommand(cme, command, cluster, errata)
+		populateCommand(cme, command, errata)
 		xml.InsertElementByAttribute(ce, cme, "code", "attribute")
 	}
 	return
 }
 
-func populateCommand(ce *etree.Element, c *matter.Command, cluster *matter.Cluster, errata *zap.Errata) {
+func populateCommand(ce *etree.Element, c *matter.Command, errata *zap.Errata) {
 	mandatory := conformance.IsMandatory(c.Conformance)
 
 	var serverSource bool

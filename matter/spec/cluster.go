@@ -9,10 +9,10 @@ import (
 	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (entities []mattertypes.Entity, err error) {
+func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (entities []types.Entity, err error) {
 	var clusters []*matter.Cluster
 	var description string
 	p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
@@ -87,9 +87,9 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]matte
 			case matter.SectionClassification:
 				err = readClusterClassification(d, c, s)
 			case matter.SectionEvents:
-				c.Events, err = s.toEvents(d, c, entityMap)
+				c.Events, err = s.toEvents(d, entityMap)
 			case matter.SectionCommands:
-				c.Commands, err = s.toCommands(d, c, entityMap)
+				c.Commands, err = s.toCommands(d, entityMap)
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:
@@ -97,7 +97,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]matte
 			case matter.SectionClusterID:
 			case matter.SectionDataTypes, matter.SectionFeatures: // Handled above
 			default:
-				var looseEntities []mattertypes.Entity
+				var looseEntities []types.Entity
 				looseEntities, err = findLooseEntities(d, s, entityMap)
 				if err != nil {
 					return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
@@ -152,13 +152,13 @@ func assignCustomDataTypes(c *matter.Cluster) {
 	}
 }
 
-func assignCustomDataType(c *matter.Cluster, dt *mattertypes.DataType) {
+func assignCustomDataType(c *matter.Cluster, dt *types.DataType) {
 	if dt == nil {
 		return
 	} else if dt.IsArray() {
 		assignCustomDataType(c, dt.EntryType)
 		return
-	} else if dt.BaseType != mattertypes.BaseDataTypeCustom {
+	} else if dt.BaseType != types.BaseDataTypeCustom {
 		return
 	}
 	if dt.Entity != nil {

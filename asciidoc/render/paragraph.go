@@ -2,8 +2,8 @@ package render
 
 import "github.com/hasty/alchemy/asciidoc"
 
-func renderParagraph(cxt *Context, p *asciidoc.Paragraph, previous *any) (err error) {
-	err = renderAttributes(cxt, p, p.Attributes(), false)
+func renderParagraph(cxt *Context, p *asciidoc.Paragraph) (err error) {
+	err = renderAttributes(cxt, p.Attributes(), false)
 	if err != nil {
 		return
 	}

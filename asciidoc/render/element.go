@@ -13,7 +13,6 @@ type Section interface {
 }
 
 func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err error) {
-	var previous any
 	for _, e := range elementList {
 		if he, ok := e.(Section); ok {
 			e = he.GetASCIISection()
@@ -33,7 +32,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 				err = Elements(cxt, "", el.Elements()...)
 			}
 		case *asciidoc.Paragraph:
-			err = renderParagraph(cxt, el, &previous)
+			err = renderParagraph(cxt, el)
 			if err != nil {
 				return
 			}
@@ -53,10 +52,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 			}
 			cxt.WriteString(text)
 		case *asciidoc.SingleLineComment:
-			cxt.EnsureNewLine()
-			cxt.WriteString("//")
-			cxt.WriteString(el.Value)
-			cxt.EnsureNewLine()
+			renderSingleLineComment(cxt, el)
 		case *asciidoc.BlockImage:
 			err = renderImageBlock(cxt, el)
 		case *asciidoc.Link:
@@ -116,77 +112,25 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		case *asciidoc.EndIf:
 			renderConditional(cxt, "endif::", el.Attributes, el.Union)
 		case *asciidoc.MultiLineComment:
-			renderDelimiter(cxt, el.Delimiter)
-			for _, l := range el.Lines() {
-				cxt.WriteString(l)
-				cxt.WriteRune('\n')
-			}
-			renderDelimiter(cxt, el.Delimiter)
+			renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.DescriptionListItem:
-			renderAttributes(cxt, el, el.Attributes(), false)
-			Elements(cxt, "", el.Term...)
-			cxt.WriteString(el.Marker)
-			cxt.WriteRune(' ')
-			Elements(cxt, "", el.Elements()...)
-			cxt.EnsureNewLine()
+			renderDescriptionListItem(cxt, el)
 		case *asciidoc.LiteralBlock:
-			renderAttributes(cxt, el, el.Attributes(), false)
-			renderDelimiter(cxt, el.Delimiter)
-			for _, l := range el.Lines() {
-				cxt.WriteString(l)
-				cxt.WriteRune('\n')
-			}
-			renderDelimiter(cxt, el.Delimiter)
+			renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.SidebarBlock:
-			renderAttributes(cxt, el, el.Attributes(), false)
-			renderDelimiter(cxt, el.Delimiter)
-			Elements(cxt, "", el.Elements()...)
-			renderDelimiter(cxt, el.Delimiter)
+			renderDelimitedElements(cxt, el, el.Delimiter)
 		case *asciidoc.Listing:
-			renderAttributes(cxt, el, el.Attributes(), false)
-			renderDelimiter(cxt, el.Delimiter)
-			for _, l := range el.Lines() {
-				cxt.WriteString(l)
-				cxt.WriteRune('\n')
-			}
-			renderDelimiter(cxt, el.Delimiter)
+			renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.ExampleBlock:
-			renderAttributes(cxt, el, el.Attributes(), false)
-			renderDelimiter(cxt, el.Delimiter)
-			Elements(cxt, "", el.Elements()...)
-			renderDelimiter(cxt, el.Delimiter)
+			renderDelimitedElements(cxt, el, el.Delimiter)
 		case *asciidoc.StemBlock:
-			renderAttributes(cxt, el, el.Attributes(), false)
-			renderDelimiter(cxt, el.Delimiter)
-			for _, l := range el.Lines() {
-				cxt.WriteString(l)
-				cxt.WriteRune('\n')
-			}
-			renderDelimiter(cxt, el.Delimiter)
+			renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.OpenBlock:
-			renderAttributes(cxt, el, el.Attributes(), false)
-			renderDelimiter(cxt, el.Delimiter)
-			Elements(cxt, "", el.Elements()...)
-			renderDelimiter(cxt, el.Delimiter)
+			renderDelimitedElements(cxt, el, el.Delimiter)
 		case *asciidoc.FileInclude:
-			cxt.WriteString("include::")
-			Elements(cxt, "", el.Elements()...)
-			attributes := el.Attributes()
-			if len(attributes) == 0 {
-				cxt.WriteString("[]\n")
-			} else {
-				renderAttributes(cxt, el, el.Attributes(), true)
-				cxt.WriteRune('\n')
-			}
+			renderFileInclude(cxt, el)
 		case *asciidoc.Anchor:
-			cxt.WriteString("[[")
-			cxt.WriteString(el.ID)
-			anchorElements := el.Elements()
-			if len(anchorElements) > 0 {
-				cxt.WriteString(",")
-				Elements(cxt, "", anchorElements...)
-			}
-			cxt.WriteString("]]")
+			renderAnchor(cxt, el)
 		case *asciidoc.Admonition:
 			renderAdmonition(cxt, el.AdmonitionType)
 		case *asciidoc.AttachedBlock:
@@ -195,17 +139,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		case *asciidoc.LineBreak:
 			cxt.WriteString("+")
 		case *asciidoc.Counter:
-			cxt.WriteString("{counter")
-			if !el.Display {
-				cxt.WriteRune('2')
-			}
-			cxt.WriteRune(':')
-			cxt.WriteString(el.Name)
-			if len(el.InitialValue) > 0 {
-				cxt.WriteRune(':')
-				cxt.WriteString(el.InitialValue)
-			}
-			cxt.WriteString("}")
+			renderCounter(cxt, el)
 		case nil:
 		default:
 			err = fmt.Errorf("unknown render element type: %T", el)
@@ -213,7 +147,6 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		if err != nil {
 			return
 		}
-		previous = e
 	}
 	return
 }

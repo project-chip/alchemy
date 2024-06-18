@@ -49,7 +49,7 @@ func renderField(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *
 		return
 	}
 	renderAttributeAccess(i, f.Access)
-	renderQuality(i, f.Quality, matter.QualityNullable)
+	renderQuality(i, f.Quality)
 	err = renderConformanceString(doc, fs, f.Conformance, i)
 	if err != nil {
 		return

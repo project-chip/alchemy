@@ -9,15 +9,15 @@ import (
 	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (bm *matter.Bitmap, err error) {
+func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (bm *matter.Bitmap, err error) {
 	name := strings.TrimSuffix(s.Name, " Type")
 
 	dt := s.GetDataType()
 	if dt == nil {
-		dt = mattertypes.ParseDataType("map8", false)
+		dt = types.ParseDataType("map8", false)
 	}
 
 	if !dt.IsMap() {

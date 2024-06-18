@@ -9,10 +9,10 @@ import (
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/conformance"
-	mattertypes "github.com/hasty/alchemy/matter/types"
+	"github.com/hasty/alchemy/matter/types"
 )
 
-func (s *Section) toFeatures(d *Doc, entityMap map[asciidoc.Attributable][]mattertypes.Entity) (features *matter.Features, err error) {
+func (s *Section) toFeatures(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (features *matter.Features, err error) {
 	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -24,7 +24,7 @@ func (s *Section) toFeatures(d *Doc, entityMap map[asciidoc.Attributable][]matte
 	features = &matter.Features{
 		Bitmap: matter.Bitmap{
 			Name: "Feature",
-			Type: mattertypes.ParseDataType("map32", false),
+			Type: types.ParseDataType("map32", false),
 		},
 	}
 	featureMap := make(map[string]*matter.Feature)

@@ -45,7 +45,7 @@ var (
 		EntityTypeStruct:             "struct",
 		EntityTypeAttribute:          "attribute",
 		EntityTypeCommand:            "command",
-		EntityTypeCommandField:       "field",
+		EntityTypeCommandField:       "commandField",
 		EntityTypeEvent:              "event",
 		EntityTypeFeature:            "feature",
 		EntityTypeDeviceType:         "deviceType",
