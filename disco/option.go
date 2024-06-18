@@ -3,37 +3,39 @@ package disco
 type Option func(b *Ball)
 
 type options struct {
-	linkIndexTables          bool
-	addMissingColumns        bool
-	reorderColumns           bool
-	renameTableHeaders       bool
-	formatAccess             bool
-	promoteDataTypes         bool
-	reorderSections          bool
-	normalizeTableOptions    bool
-	fixCommandDirection      bool
-	appendSubsectionTypes    bool
-	uppercaseHex             bool
-	addSpaceAfterPunctuation bool
-	removeExtraSpaces        bool
-	normalizeFeatureNames    bool
+	linkIndexTables               bool
+	addMissingColumns             bool
+	reorderColumns                bool
+	renameTableHeaders            bool
+	formatAccess                  bool
+	promoteDataTypes              bool
+	reorderSections               bool
+	normalizeTableOptions         bool
+	fixCommandDirection           bool
+	appendSubsectionTypes         bool
+	uppercaseHex                  bool
+	addSpaceAfterPunctuation      bool
+	removeExtraSpaces             bool
+	normalizeFeatureNames         bool
+	disambiguateConformanceChoice bool
 }
 
 var defaultOptions = options{
-	linkIndexTables:          false,
-	addMissingColumns:        true,
-	reorderColumns:           true,
-	renameTableHeaders:       true,
-	formatAccess:             true,
-	promoteDataTypes:         true,
-	reorderSections:          true,
-	normalizeTableOptions:    true,
-	fixCommandDirection:      true,
-	appendSubsectionTypes:    true,
-	uppercaseHex:             true,
-	addSpaceAfterPunctuation: true,
-	removeExtraSpaces:        true,
-	normalizeFeatureNames:    true,
+	linkIndexTables:               false,
+	addMissingColumns:             true,
+	reorderColumns:                true,
+	renameTableHeaders:            true,
+	formatAccess:                  true,
+	promoteDataTypes:              true,
+	reorderSections:               true,
+	normalizeTableOptions:         true,
+	fixCommandDirection:           true,
+	appendSubsectionTypes:         true,
+	uppercaseHex:                  true,
+	addSpaceAfterPunctuation:      true,
+	removeExtraSpaces:             true,
+	normalizeFeatureNames:         true,
+	disambiguateConformanceChoice: false,
 }
 
 func LinkIndexTables(link bool) Option {
@@ -117,5 +119,11 @@ func NormalizeTableOptions(add bool) Option {
 func NormalizeFeatureNames(add bool) Option {
 	return func(b *Ball) {
 		b.options.normalizeFeatureNames = add
+	}
+}
+
+func DisambiguateConformanceChoice(add bool) Option {
+	return func(b *Ball) {
+		b.options.disambiguateConformanceChoice = add
 	}
 }

@@ -28,7 +28,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 			return fmt.Errorf("error fixing access cells in commands table in %s: %w", dp.doc.Path, err)
 		}
 
-		err = fixConformanceCells(dp.doc, commands.table.rows, commands.table.columnMap)
+		err = fixConformanceCells(dp, commands.table.rows, commands.table.columnMap)
 		if err != nil {
 			return fmt.Errorf("error fixing conformance cells in commands table in %s: %w", dp.doc.Path, err)
 		}
@@ -56,7 +56,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 			if err != nil {
 				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
 			}
-			err = fixConformanceCells(dp.doc, command.table.rows, command.table.columnMap)
+			err = fixConformanceCells(dp, command.table.rows, command.table.columnMap)
 			if err != nil {
 				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
 			}

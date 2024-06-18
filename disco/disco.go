@@ -81,6 +81,13 @@ func (b *Ball) disco(cxt context.Context) error {
 	if err != nil {
 		return fmt.Errorf("error disco balling top level section in %s: %w", doc.Path, err)
 	}
+
+	if b.options.disambiguateConformanceChoice {
+		err = disambiguateConformance(dp)
+		if err != nil {
+			return fmt.Errorf("error disambiguating conformance in %s: %w", doc.Path, err)
+		}
+	}
 	return nil
 }
 
