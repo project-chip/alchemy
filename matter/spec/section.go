@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hasty/alchemy/asciidoc"
+	"github.com/hasty/alchemy/internal/log"
 	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
 	mattertypes "github.com/hasty/alchemy/matter/types"
@@ -441,19 +442,28 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attrib
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
 			bm, err = section.toBitmap(doc, entityMap)
-			if err == nil {
+			if err != nil {
+				slog.Warn("Error converting loose section to bitmap", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				err = nil
+			} else {
 				entities = append(entities, bm)
 			}
 		case matter.SectionDataTypeEnum:
 			var e *matter.Enum
 			e, err = section.toEnum(doc, entityMap)
-			if err == nil {
+			if err != nil {
+				slog.Warn("Error converting loose section to enum", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				err = nil
+			} else {
 				entities = append(entities, e)
 			}
 		case matter.SectionDataTypeStruct:
 			var s *matter.Struct
 			s, err = section.toStruct(doc, entityMap)
-			if err == nil {
+			if err != nil {
+				slog.Warn("Error converting loose section to struct", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				err = nil
+			} else {
 				entities = append(entities, s)
 			}
 		}
