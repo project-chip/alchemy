@@ -93,31 +93,44 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		templateOptions = append(templateOptions, generate.GenerateFeatureXML(true))
 	}
 
-	templateGenerator := generate.NewTemplateGenerator(specBuilder.Spec, fileOptions, pipelineOptions, sdkRoot, templateOptions...)
-	zapTemplateDocs, err := pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, templateGenerator, clusters)
-	if err != nil {
-		return err
+	var zapTemplateDocs pipeline.Map[string, *pipeline.Data[string]]
+	var provisionalZclFiles pipeline.Map[string, *pipeline.Data[struct{}]]
+	if clusters.Size() > 0 {
+		templateGenerator := generate.NewTemplateGenerator(specBuilder.Spec, fileOptions, pipelineOptions, sdkRoot, templateOptions...)
+		zapTemplateDocs, err = pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, templateGenerator, clusters)
+		if err != nil {
+			return err
+		}
+		provisionalZclFiles = templateGenerator.ProvisionalZclFiles
 	}
 
-	deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specBuilder.Spec)
 	var patchedDeviceTypes pipeline.Map[string, *pipeline.Data[[]byte]]
-	patchedDeviceTypes, err = pipeline.Process[[]*matter.DeviceType, []byte](cxt, pipelineOptions, deviceTypePatcher, deviceTypes)
-	if err != nil {
-		return err
+	if deviceTypes.Size() > 0 {
+		deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specBuilder.Spec)
+		patchedDeviceTypes, err = pipeline.Process[[]*matter.DeviceType, []byte](cxt, pipelineOptions, deviceTypePatcher, deviceTypes)
+		if err != nil {
+			return err
+		}
+
 	}
 
-	clusterListPatcher := generate.NewClusterListPatcher(sdkRoot)
 	var clusterList pipeline.Map[string, *pipeline.Data[[]byte]]
-	clusterList, err = pipeline.Process[*spec.Doc, []byte](cxt, pipelineOptions, clusterListPatcher, clusters)
-	if err != nil {
-		return
+	clusterListPatcher := generate.NewClusterListPatcher(sdkRoot)
+	if clusters.Size() > 0 {
+		clusterList, err = pipeline.Process[*spec.Doc, []byte](cxt, pipelineOptions, clusterListPatcher, clusters)
+		if err != nil {
+			return
+		}
 	}
 
-	provisionalSaver := generate.NewProvisionalPatcher(sdkRoot)
 	var provisionalDocs pipeline.Map[string, *pipeline.Data[[]byte]]
-	provisionalDocs, err = pipeline.Process[struct{}, []byte](cxt, pipelineOptions, provisionalSaver, templateGenerator.ProvisionalZclFiles)
-	if err != nil {
-		return err
+	if provisionalZclFiles != nil && provisionalZclFiles.Size() > 0 {
+		provisionalSaver := generate.NewProvisionalPatcher(sdkRoot)
+		provisionalDocs, err = pipeline.Process[struct{}, []byte](cxt, pipelineOptions, provisionalSaver, provisionalZclFiles)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	stringWriter := files.NewWriter[string]("Writing ZAP templates", fileOptions)
@@ -127,16 +140,21 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	byteWriter := files.NewWriter[[]byte]("Writing provisional docs", fileOptions)
-	_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, provisionalDocs)
-	if err != nil {
-		return err
+	byteWriter := files.NewWriter[[]byte]("", fileOptions)
+	if provisionalDocs != nil && provisionalDocs.Size() > 0 {
+		byteWriter.SetName("Writing provisional docs")
+		_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, provisionalDocs)
+		if err != nil {
+			return err
+		}
 	}
 
-	byteWriter.SetName("Writing deviceTypes")
-	_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, patchedDeviceTypes)
-	if err != nil {
-		return err
+	if patchedDeviceTypes != nil && patchedDeviceTypes.Size() > 0 {
+		byteWriter.SetName("Writing deviceTypes")
+		_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, patchedDeviceTypes)
+		if err != nil {
+			return err
+		}
 	}
 
 	byteWriter.SetName("Writing cluster list")
