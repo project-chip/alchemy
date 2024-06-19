@@ -7,6 +7,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/hasty/alchemy/internal/xml"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/conformance"
 	"github.com/hasty/alchemy/zap"
 )
 
@@ -75,6 +76,14 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 	define = getDefine(cluster.Name+" Cluster", "", errata)
 	if len(errata.ClusterDefinePrefix) > 0 {
 		clusterPrefix = errata.ClusterDefinePrefix
+	}
+
+	if cluster.Conformance != nil {
+		if conformance.IsProvisional(cluster.Conformance) {
+			cle.CreateAttr("apiMaturity", "provisional")
+		} else {
+			cle.RemoveAttr("apiMaturity")
+		}
 	}
 
 	attributes := make(map[*matter.Field]struct{})

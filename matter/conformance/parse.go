@@ -22,6 +22,22 @@ func tryParseConformance(conformance string) (Set, error) {
 	return c.(Set), err
 }
 
+func IsProvisional(conformance Conformance) bool {
+	if conformance == nil {
+		return false
+	}
+	switch conformance := conformance.(type) {
+	case *Provisional:
+		return true
+	case Set:
+		if len(conformance) > 0 {
+			_, ok := conformance[0].(*Provisional)
+			return ok
+		}
+	}
+	return false
+}
+
 func IsMandatory(conformance Conformance) bool {
 	if conformance == nil {
 		return false
