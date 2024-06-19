@@ -20,11 +20,12 @@ func (c ClusterGroup) Explode() []*Cluster {
 }
 
 type Cluster struct {
-	ID          *Number     `json:"id,omitempty"`
-	Name        string      `json:"name,omitempty"`
-	Description string      `json:"description,omitempty"`
-	Revisions   []*Revision `json:"revisions,omitempty"`
-	Base        bool        `json:"baseCluster,omitempty"`
+	ID          *Number         `json:"id,omitempty"`
+	Name        string          `json:"name,omitempty"`
+	Description string          `json:"description,omitempty"`
+	Revisions   []*Revision     `json:"revisions,omitempty"`
+	Base        bool            `json:"baseCluster,omitempty"`
+	Conformance conformance.Set `json:"conformance,omitempty"`
 
 	Hierarchy string `json:"hierarchy,omitempty"`
 	Role      string `json:"role,omitempty"`
