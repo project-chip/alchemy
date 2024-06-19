@@ -43,7 +43,6 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	for _, input := range inputs {
 		for _, dt := range input.Content {
 			deviceTypes[dt.ID.Value()] = dt
-
 		}
 	}
 
