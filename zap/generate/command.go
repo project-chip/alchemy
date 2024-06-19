@@ -115,6 +115,34 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *zap.Errata) {
 		ce.RemoveAttr("mustUseTimedInvoke")
 	}
 
+	de := ce.SelectElement("description")
+	if de == nil {
+		de = etree.NewElement("description")
+		ce.Child = append([]etree.Token{de}, ce.Child...)
+	}
+	de.SetText(c.Description)
+
+	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate && c.Direction != matter.InterfaceClient
+	if needsAccess {
+		for _, el := range ce.SelectElements("access") {
+			if needsAccess {
+				setAccessAttributes(el, "invoke", c.Access.Invoke, errata)
+				needsAccess = false
+			} else {
+				ce.RemoveChild(el)
+			}
+		}
+		if needsAccess {
+			el := etree.NewElement("access")
+			xml.AppendElement(ce, el, "description")
+			setAccessAttributes(el, "invoke", c.Access.Invoke, errata)
+		}
+	} else {
+		for _, el := range ce.SelectElements("access") {
+			ce.RemoveChild(el)
+		}
+	}
+
 	argIndex := 0
 	argElements := ce.SelectElements("arg")
 	for _, fe := range argElements {
@@ -139,28 +167,9 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *zap.Errata) {
 		if conformance.IsZigbee(c.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
-		fe := etree.NewElement("arg")
+		fe := ce.CreateElement("arg")
 		fe.CreateAttr("id", f.ID.IntString())
 		setFieldAttributes(fe, f, c.Fields)
 		xml.AppendElement(ce, fe)
-	}
-	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate && c.Direction != matter.InterfaceClient
-	if needsAccess {
-		for _, el := range ce.SelectElements("access") {
-			if needsAccess {
-				setAccessAttributes(el, "invoke", c.Access.Invoke, errata)
-				needsAccess = false
-			} else {
-				ce.RemoveChild(el)
-			}
-		}
-		if needsAccess {
-			el := ce.CreateElement("access")
-			setAccessAttributes(el, "invoke", c.Access.Invoke, errata)
-		}
-	} else {
-		for _, el := range ce.SelectElements("access") {
-			ce.RemoveChild(el)
-		}
 	}
 }
