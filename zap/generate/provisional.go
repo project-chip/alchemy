@@ -2,6 +2,7 @@ package generate
 
 import (
 	"context"
+	"path/filepath"
 
 	"github.com/hasty/alchemy/internal/pipeline"
 )
@@ -26,7 +27,7 @@ func (p ProvisionalPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 
 	files := make([]string, 0, len(inputs))
 	for _, input := range inputs {
-		files = append(files, input.Path)
+		files = append(files, filepath.Base(input.Path))
 	}
 
 	var path string

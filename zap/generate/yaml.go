@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"strings"
@@ -28,7 +29,7 @@ func patchTestsYamlBytes(sdkRoot string, files []string) (testsYamlPath string, 
 
 	filesMap := make(map[string]struct{})
 	for _, file := range files {
-		path := fmt.Sprintf("%ssrc/app/zap-templates/zcl/data-model/chip/%s \\\n", indent, strings.TrimPrefix(file, "connectedhomeip/"))
+		path := fmt.Sprintf("%ssrc/app/zap-templates/zcl/data-model/chip/%s \\\n", indent, filepath.Base(file))
 		filesMap[path] = struct{}{}
 	}
 
