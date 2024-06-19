@@ -230,6 +230,7 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 		if err != nil {
 			return nil, err
 		}
+		c.Conformance = doc.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		clusters = append(clusters, c)
 	}
 
