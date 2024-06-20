@@ -93,12 +93,9 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 		var id string
 		ide := s.Base.GetAttributeByName(asciidoc.AttributeNameID)
 		if ide != nil {
-			idv, ok := ide.Value().(*asciidoc.String)
-			if ok {
-				id = idv.Value
-				if strings.HasPrefix(id, "_") {
-					ok = false
-				}
+			id = ide.AsciiDocString()
+			if strings.HasPrefix(id, "_") {
+				ok = false
 			}
 		}
 		if !ok {

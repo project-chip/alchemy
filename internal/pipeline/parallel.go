@@ -40,7 +40,7 @@ func processParallel[I, O any](cxt context.Context, name string, processor Indiv
 		}
 		if done {
 			if bar != nil {
-				bar.Add(1)
+				_ = bar.Add(1)
 			}
 			continue
 		}
@@ -57,7 +57,7 @@ func processParallel[I, O any](cxt context.Context, name string, processor Indiv
 			}
 			if bar != nil {
 				bar.Describe(progressFileName(input.Path))
-				bar.Add(1)
+				_ = bar.Add(1)
 			}
 			processed.Store(input.Path, true)
 			for _, e := range extras {
