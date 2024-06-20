@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"log/slog"
 	"slices"
 
 	"github.com/hasty/alchemy/asciidoc"
@@ -124,14 +125,23 @@ func (cs *coalesceState) flushInline(out asciidoc.Set) asciidoc.Set {
 		cs.inlineElements = nil
 		return out
 	}
+	var err error
 	p := copyPosition(out, asciidoc.NewParagraph())
 	if cs.blockAttributes != nil {
-		p.ReadAttributes(p, cs.blockAttributes.AttributeList...)
+		err = p.ReadAttributes(p, cs.blockAttributes.AttributeList...)
+		if err != nil {
+			slog.Warn("error reading attributes while flushing inline elements", slog.Any("error", err))
+			err = nil
+		}
 		bsIndex := slices.IndexFunc(cs.inlineElements, func(e asciidoc.Element) bool {
 			return e == cs.blockAttributes
 		})
 		if bsIndex >= 0 {
-			cs.inlineElements.SetElements(slices.Delete(cs.inlineElements, bsIndex, bsIndex+1))
+			err = cs.inlineElements.SetElements(slices.Delete(cs.inlineElements, bsIndex, bsIndex+1))
+			if err != nil {
+				slog.Warn("error setting elements while flushing inline elements", slog.Any("error", err))
+				err = nil
+			}
 		}
 		cs.blockAttributes = nil
 	}
@@ -139,7 +149,11 @@ func (cs *coalesceState) flushInline(out asciidoc.Set) asciidoc.Set {
 		p.Admonition = cs.admonition.AdmonitionType
 		attributes := cs.admonition.Attributes()
 		if len(attributes) > 0 {
-			p.ReadAttributes(p, attributes...)
+			err = p.ReadAttributes(p, attributes...)
+			if err != nil {
+				slog.Warn("error reading attributes while flushing inline elements", slog.Any("error", err))
+				err = nil
+			}
 		}
 		cs.admonition = nil
 	}

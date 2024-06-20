@@ -20,7 +20,10 @@ func UnmarshalConstraint(raw json.RawMessage) (c Constraint, err error) {
 	switch base.Type {
 	case "generic":
 		c = &GenericConstraint{}
-		json.Unmarshal(raw, c)
+		err = json.Unmarshal(raw, c)
+		if err != nil {
+			return
+		}
 	default:
 		err = fmt.Errorf("unknown constraint type: \"%s\"", base.Type)
 	}
