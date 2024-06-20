@@ -130,7 +130,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		case *asciidoc.FileInclude:
 			renderFileInclude(cxt, el)
 		case *asciidoc.Anchor:
-			renderAnchor(cxt, el)
+			err = renderAnchor(cxt, el)
 		case *asciidoc.Admonition:
 			renderAdmonition(cxt, el.AdmonitionType)
 		case *asciidoc.AttachedBlock:

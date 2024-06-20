@@ -235,7 +235,7 @@ func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *a
 	}
 	parentSections := make([]*spec.Section, len(conflictedAnchors))
 	for {
-		for i, _ := range conflictedAnchors {
+		for i := range conflictedAnchors {
 			parentSection := findRefSection(parents[i])
 			if parentSection == nil {
 				var errMsg strings.Builder

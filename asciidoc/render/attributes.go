@@ -127,14 +127,20 @@ func renderSelectAttributes(cxt *Context, attributes []asciidoc.Attribute, inclu
 				continue
 			}
 			for _, ta := range titleAttributes {
-				renderAttributeTitle(cxt, ta.Value().(asciidoc.Set), include, exclude)
+				err = renderAttributeTitle(cxt, ta.Value().(asciidoc.Set), include, exclude)
+				if err != nil {
+					return
+				}
 			}
 		case attributeClassAnchor:
 			if !shouldRenderAttributeType(AttributeFilterID, include, exclude) {
 				continue
 			}
 			for _, ta := range anchors {
-				renderAttributeAnchor(cxt, ta, include, exclude, inline)
+				err = renderAttributeAnchor(cxt, ta, include, exclude, inline)
+				if err != nil {
+					return
+				}
 			}
 		case attributeClassInline:
 			filtered := make([]asciidoc.Attribute, 0, len(inlineAttributes))
@@ -221,7 +227,7 @@ func renderSelectAttributes(cxt *Context, attributes []asciidoc.Attribute, inclu
 	return
 }
 
-func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) {
+func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	id := anchor.ID
 	if id != nil && len(id.Value) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
 		if !inline {
@@ -231,7 +237,10 @@ func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, inclu
 		cxt.WriteString(id.Value)
 		if len(anchor.Label) > 0 {
 			label := NewContext(cxt, nil)
-			Elements(label, "", anchor.Label...)
+			err = Elements(label, "", anchor.Label...)
+			if err != nil {
+				return
+			}
 			lbl := label.String()
 			if len(lbl) > 0 {
 				cxt.WriteString(",")
@@ -243,15 +252,20 @@ func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, inclu
 			cxt.WriteRune('\n')
 		}
 	}
+	return
 }
 
-func renderAttributeTitle(cxt *Context, title asciidoc.Set, include AttributeFilter, exclude AttributeFilter) {
+func renderAttributeTitle(cxt *Context, title asciidoc.Set, include AttributeFilter, exclude AttributeFilter) (err error) {
 	if len(title) > 0 && shouldRenderAttributeType(AttributeFilterTitle, include, exclude) {
 		cxt.EnsureNewLine()
 		cxt.WriteRune('.')
-		Elements(cxt, "", title...)
+		err = Elements(cxt, "", title...)
+		if err != nil {
+			return
+		}
 		cxt.EnsureNewLine()
 	}
+	return
 }
 
 func renderQuotedAttributeValue(cxt *Context, val any) (err error) {
