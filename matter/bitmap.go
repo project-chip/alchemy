@@ -218,6 +218,9 @@ func (bmb *BitmapBit) Bits() (from uint64, to uint64, err error) {
 	if err != nil {
 		return
 	}
+	if from > to {
+		to, from = from, to
+	}
 	return
 }
 
@@ -228,6 +231,9 @@ func (bmb *BitmapBit) Mask() (uint64, error) {
 	}
 	if from == to {
 		return 1 << (from), nil
+	}
+	if from > to {
+		to, from = from, to
 	}
 	var val uint64
 	for i := from; i <= to; i++ {
