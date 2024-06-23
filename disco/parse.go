@@ -56,6 +56,16 @@ type tableInfo struct {
 	extraColumns []spec.ExtraColumn
 }
 
+func (ti *tableInfo) getColumnIndex(columns ...matter.TableColumn) (index int, ok bool) {
+	for _, column := range columns {
+		index, ok = ti.columnMap[column]
+		if ok {
+			return
+		}
+	}
+	return
+}
+
 type subSectionChildPattern struct {
 	suffix       string
 	indexColumns []matter.TableColumn

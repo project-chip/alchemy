@@ -37,7 +37,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
 
-		b.addMissingColumns(dp.doc, events.section, eventsTable.element, eventsTable.rows, matter.Tables[matter.TableTypeEvents], nil, eventsTable.headerRow, eventsTable.columnMap, types.EntityTypeEvent)
+		b.addMissingColumns(eventsTable, matter.Tables[matter.TableTypeEvents], nil, types.EntityTypeEvent)
 
 		err = b.reorderColumns(dp.doc, events.section, eventsTable, matter.TableTypeEvents)
 		if err != nil {
@@ -54,7 +54,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			if eventTable.element == nil {
 				continue
 			}
-			err = fixConstraintCells(dp.doc, eventTable.rows, eventTable.columnMap)
+			err = fixConstraintCells(dp.doc, &eventTable)
 			if err != nil {
 				return fmt.Errorf("error fixing constraint cells for event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
@@ -69,7 +69,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 				return fmt.Errorf("error renaming table header cells in event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.addMissingColumns(dp.doc, event.section, eventTable.element, eventTable.rows, matter.Tables[matter.TableTypeEvent], nil, eventTable.headerRow, eventTable.columnMap, types.EntityTypeField)
+			err = b.addMissingColumns(&eventTable, matter.Tables[matter.TableTypeEvent], nil, types.EntityTypeField)
 			if err != nil {
 				return fmt.Errorf("error adding missing columns to event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}

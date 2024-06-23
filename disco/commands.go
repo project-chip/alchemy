@@ -52,7 +52,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 			if command.table.element == nil {
 				continue
 			}
-			err = fixConstraintCells(dp.doc, command.table.rows, command.table.columnMap)
+			err = fixConstraintCells(dp.doc, &command.table)
 			if err != nil {
 				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
 			}
