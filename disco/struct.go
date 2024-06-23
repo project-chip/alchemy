@@ -52,7 +52,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return fmt.Errorf("error fixing access cells in struct table in %s: %w", dp.doc.Path, err)
 	}
 
-	err = fixConstraintCells(dp.doc, fieldsTable.rows, fieldsTable.columnMap)
+	err = fixConstraintCells(dp.doc, fieldsTable)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
 	}
 
-	err = b.addMissingColumns(dp.doc, ss.section, fieldsTable.element, fieldsTable.rows, matter.Tables[matter.TableTypeStruct], nil, fieldsTable.headerRow, fieldsTable.columnMap, types.EntityTypeField)
+	err = b.addMissingColumns(fieldsTable, matter.Tables[matter.TableTypeStruct], nil, types.EntityTypeField)
 	if err != nil {
 		return fmt.Errorf("error adding missing table columns in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
 	}

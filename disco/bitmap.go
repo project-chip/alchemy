@@ -3,9 +3,12 @@ package disco
 import (
 	"fmt"
 	"log/slog"
+	"regexp"
 	"strings"
 
+	"github.com/hasty/alchemy/internal/parse"
 	"github.com/hasty/alchemy/matter"
+	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
@@ -43,7 +46,7 @@ func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSe
 		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}
 
-	err = b.addMissingColumns(dp.doc, bms.section, bitsTable.element, bitsTable.rows, matter.Tables[matter.TableTypeBitmap], nil, bitsTable.headerRow, bitsTable.columnMap, types.EntityTypeBitmapValue)
+	err = b.addMissingColumns(&bitsTable, matter.Tables[matter.TableTypeBitmap], nil, types.EntityTypeBitmapValue)
 	if err != nil {
 		return fmt.Errorf("error adding missing table columns in bitmap section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}
@@ -54,5 +57,46 @@ func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSe
 	}
 
 	b.appendSubsectionTypes(bms.section, bitsTable.columnMap, bitsTable.rows)
+
+	b.fixBitmapRange(bms)
 	return
+}
+
+var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)(?<Separator>\.{2,}|\s*\-\s*)(?P<To>[0-9]+)$`)
+
+func (b *Ball) fixBitmapRange(bms *subSection) {
+	bitIndex, ok := bms.table.getColumnIndex(matter.TableColumnBit, matter.TableColumnValue)
+	if !ok {
+		return
+	}
+	for i, row := range bms.table.rows {
+		if i == bms.table.headerRow {
+			continue
+		}
+		cell := row.Cell(bitIndex)
+		bit, err := spec.RenderTableCell(cell)
+		if err != nil {
+			continue
+		}
+		matches := bitRangePattern.FindStringSubmatch(bit)
+		if len(matches) < 4 {
+			continue
+		}
+		start, err := parse.HexOrDec(matches[1])
+		if err != nil {
+			continue
+		}
+		end, err := parse.HexOrDec(matches[3])
+		if err != nil {
+			continue
+		}
+		if start < end {
+			setCellString(cell, fmt.Sprintf("%d..%d", end, start))
+			continue
+		}
+		if strings.TrimSpace(matches[2]) == "-" {
+			setCellString(cell, fmt.Sprintf("%d..%d", start, end))
+			continue
+		}
+	}
 }

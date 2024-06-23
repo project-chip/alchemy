@@ -3,29 +3,28 @@ package disco
 import (
 	"log/slog"
 
-	"github.com/hasty/alchemy/asciidoc"
 	"github.com/hasty/alchemy/matter"
 	"github.com/hasty/alchemy/matter/constraint"
 	"github.com/hasty/alchemy/matter/spec"
 	"github.com/hasty/alchemy/matter/types"
 )
 
-func fixConstraintCells(doc *spec.Doc, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
-	if len(rows) < 2 {
+func fixConstraintCells(doc *spec.Doc, ti *tableInfo) (err error) {
+	if len(ti.rows) < 2 {
 		return
 	}
-	constraintIndex, ok := columnMap[matter.TableColumnConstraint]
+	constraintIndex, ok := ti.getColumnIndex(matter.TableColumnConstraint)
 	if !ok {
 		return
 	}
-	for _, row := range rows[1:] {
+	for _, row := range ti.rows[1:] {
 		cell := row.Cell(constraintIndex)
 		vc, e := spec.RenderTableCell(cell)
 		if e != nil {
 			continue
 		}
 
-		dataType, e := doc.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		dataType, e := doc.ReadRowDataType(row, ti.columnMap, matter.TableColumnType)
 		if e != nil {
 			slog.Debug("error reading data type for constraint", slog.String("path", doc.Path), slog.Any("error", e))
 			continue

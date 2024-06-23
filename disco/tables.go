@@ -40,11 +40,11 @@ func (b *Ball) ensureTableOptions(els asciidoc.Set) {
 
 }
 
-func (b *Ball) addMissingColumns(doc *spec.Doc, section *spec.Section, table *asciidoc.Table, rows []*asciidoc.TableRow, tableTemplate matter.Table, overrides map[matter.TableColumn]string, headerRowIndex int, columnMap spec.ColumnIndex, entityType types.EntityType) (err error) {
+func (b *Ball) addMissingColumns(ti *tableInfo, tableTemplate matter.Table, overrides map[matter.TableColumn]string, entityType types.EntityType) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
-	table.DeleteAttribute(asciidoc.AttributeNameColumns)
+	ti.element.DeleteAttribute(asciidoc.AttributeNameColumns)
 	var order []matter.TableColumn
 	if len(tableTemplate.RequiredColumns) > 0 {
 		order = tableTemplate.RequiredColumns
@@ -52,8 +52,8 @@ func (b *Ball) addMissingColumns(doc *spec.Doc, section *spec.Section, table *as
 		order = tableTemplate.ColumnOrder
 	}
 	for _, column := range order {
-		if _, ok := columnMap[column]; !ok {
-			_, err = b.appendColumn(table, columnMap, headerRowIndex, column, overrides, entityType)
+		if _, ok := ti.columnMap[column]; !ok {
+			_, err = b.appendColumn(ti.element, ti.columnMap, ti.headerRow, column, overrides, entityType)
 			if err != nil {
 				return
 			}

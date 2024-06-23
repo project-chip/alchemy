@@ -44,7 +44,7 @@ func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSecti
 		return fmt.Errorf("error renaming table header cells in enum table in section %s in %s: %w", es.section.Name, dp.doc.Path, err)
 	}
 
-	err = b.addMissingColumns(dp.doc, es.section, enumTable.element, enumTable.rows, matter.Tables[matter.TableTypeEnum], nil, enumTable.headerRow, enumTable.columnMap, types.EntityTypeEnumValue)
+	err = b.addMissingColumns(&enumTable, matter.Tables[matter.TableTypeEnum], nil, types.EntityTypeEnumValue)
 	if err != nil {
 		return fmt.Errorf("error adding missing table columns in enum section %s in %s: %w", es.section.Name, dp.doc.Path, err)
 	}
