@@ -401,7 +401,7 @@ var preambleInBookDoctype = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -462,7 +462,7 @@ var preambleInBookDoctype = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -608,7 +608,7 @@ var shouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocBook = &ascii
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -666,7 +666,7 @@ var shouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook = &asciidoc
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -740,7 +740,7 @@ var shouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBook = &asciid
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "preface",
                   },
@@ -759,7 +759,7 @@ var shouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBook = &asciid
               AttributeList: asciidoc.AttributeList{
                 &asciidoc.ShorthandAttribute{
                   Style: &asciidoc.ShorthandStyle{
-                    Val: asciidoc.Set{
+                    Set: asciidoc.Set{
                       &asciidoc.String{
                         Value: "abstract",
                       },

@@ -9,11 +9,11 @@ import (
 type ShorthandStyle struct {
 	attribute
 
-	Val Set
+	Set
 }
 
 func NewShorthandStyle(value Set) *ShorthandStyle {
-	return &ShorthandStyle{Val: value}
+	return &ShorthandStyle{Set: value}
 }
 
 func (sa *ShorthandStyle) Equals(osa *ShorthandStyle) bool {
@@ -23,17 +23,17 @@ func (sa *ShorthandStyle) Equals(osa *ShorthandStyle) bool {
 	if osa == nil {
 		return false
 	}
-	return sa.Val.Equals(osa.Val)
+	return sa.Set.Equals(osa.Set)
 }
 
 type ShorthandID struct {
 	attribute
 
-	Val Set
+	Set
 }
 
 func NewShorthandID(value Set) *ShorthandID {
-	return &ShorthandID{Val: value}
+	return &ShorthandID{Set: value}
 }
 
 func (sa *ShorthandID) Equals(osa *ShorthandID) bool {
@@ -43,17 +43,17 @@ func (sa *ShorthandID) Equals(osa *ShorthandID) bool {
 	if osa == nil {
 		return false
 	}
-	return sa.Val.Equals(osa.Val)
+	return sa.Set.Equals(osa.Set)
 }
 
 type ShorthandRole struct {
 	attribute
 
-	Val Set
+	Set
 }
 
 func NewShorthandRole(value Set) *ShorthandRole {
-	return &ShorthandRole{Val: value}
+	return &ShorthandRole{Set: value}
 }
 
 func (sa *ShorthandRole) Equals(osa *ShorthandRole) bool {
@@ -63,17 +63,17 @@ func (sa *ShorthandRole) Equals(osa *ShorthandRole) bool {
 	if osa == nil {
 		return false
 	}
-	return sa.Val.Equals(osa.Val)
+	return sa.Set.Equals(osa.Set)
 }
 
 type ShorthandOption struct {
 	attribute
 
-	Val Set
+	Set
 }
 
 func NewShorthandOption(value Set) *ShorthandOption {
-	return &ShorthandOption{Val: value}
+	return &ShorthandOption{Set: value}
 }
 
 func (sa *ShorthandOption) Equals(osa *ShorthandOption) bool {
@@ -83,7 +83,7 @@ func (sa *ShorthandOption) Equals(osa *ShorthandOption) bool {
 	if osa == nil {
 		return false
 	}
-	return sa.Val.Equals(osa.Val)
+	return sa.Set.Equals(osa.Set)
 }
 
 type ShorthandAttribute struct {
@@ -152,22 +152,22 @@ func (na *ShorthandAttribute) SetValue(v any) error {
 func (na *ShorthandAttribute) AsciiDocString() string {
 	var s strings.Builder
 	if na.Style != nil {
-		s.WriteString(AttributeAsciiDocString(na.Style.Val))
+		s.WriteString(AttributeAsciiDocString(na.Style.Set))
 	}
 	if na.ID != nil {
 		s.WriteRune('#')
-		s.WriteString(AttributeAsciiDocString(na.ID.Val))
+		s.WriteString(AttributeAsciiDocString(na.ID.Set))
 	}
 	if len(na.Roles) > 0 {
 		for _, r := range na.Roles {
 			s.WriteRune('.')
-			s.WriteString(AttributeAsciiDocString(r.Val))
+			s.WriteString(AttributeAsciiDocString(r.Set))
 		}
 	}
 	if len(na.Options) > 0 {
 		for _, o := range na.Options {
 			s.WriteRune('%')
-			s.WriteString(AttributeAsciiDocString(o.Val))
+			s.WriteString(AttributeAsciiDocString(o.Set))
 		}
 	}
 	return s.String()
@@ -210,6 +210,43 @@ func parseShorthandAttribute(pa *PositionalAttribute) *ShorthandAttribute {
 }
 
 func parseShorthandAttributeValues(els Set) (style *ShorthandStyle, id *ShorthandID, roles []*ShorthandRole, options []*ShorthandOption) {
+	/*if len(els) == 0 {
+		return
+	}
+	var currentShorthand asciidoc.HasElements
+	for _, el := range els {
+		switch el := el.(type) {
+		case *String:
+			val := el.Value
+			if len(val) == 0 {
+				continue
+			}
+			for {
+				hashIndex := strings.IndexAny(val, ".#%")
+				if hashIndex < 0 {
+					if style == nil {
+						style = NewShorthandStyle(Set{NewString(val)})
+						currentShorthand = style.Val
+					}
+				}
+				if hashIndex > 0 {
+					if style == nil {
+						style = NewShorthandStyle(Set{NewString(val[:hashIndex])})
+					}
+				}
+				switch val[hashIndex] {
+				case '.':
+				case '#':
+				case '%':
+				}
+
+			}
+		default:
+			if currentSet == nil {
+
+			}
+		}
+	}*/
 	val := AttributeAsciiDocString(els)
 	matches := shorthandAttributePattern.FindStringSubmatch(val)
 	if matches == nil {

@@ -3039,7 +3039,7 @@ var shouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsAReference = 
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -5749,7 +5749,7 @@ var shouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImplicitStyle
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "loweralpha",
               },
@@ -5800,7 +5800,7 @@ var shouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasses = &asci
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "loweralpha",
               },
@@ -5864,7 +5864,7 @@ var shouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.Document{
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "reversed",
                 },
@@ -5935,7 +5935,7 @@ var shouldRepresentImplicitRoleAttributeAsStyleClass = &asciidoc.Document{
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "dry",
                 },
@@ -5985,7 +5985,7 @@ var shouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasses = &asci
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "loweralpha",
               },
@@ -5994,7 +5994,7 @@ var shouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasses = &asci
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "dry",
                 },
@@ -7400,7 +7400,7 @@ var verseParagraphInsideADescriptionList = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -8461,7 +8461,7 @@ var shouldConvertGlossaryListWithProperSemantics = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "glossary",
               },
@@ -8502,7 +8502,7 @@ var consecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook = &asciido
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "glossary",
               },
@@ -8543,7 +8543,7 @@ var shouldConvertHorizontalListWithProperMarkup = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "horizontal",
               },
@@ -8587,7 +8587,7 @@ var shouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "horizontal",
               },
@@ -8636,7 +8636,7 @@ var shouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "horizontal",
               },
@@ -8685,7 +8685,7 @@ var shouldAddStrongClassToLabelIfStrongOptionIsSet = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "horizontal",
               },
@@ -8731,7 +8731,7 @@ var consecutiveTermsInHorizontalListShouldShareSameCell = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "horizontal",
               },
@@ -8778,7 +8778,7 @@ var consecutiveTermsInHorizontalListShouldShareSameEntryInDocbook = &asciidoc.Do
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "horizontal",
               },
@@ -8826,7 +8826,7 @@ var shouldConvertHorizontalListInDocbookWithProperMarkup = &asciidoc.Document{
         },
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "horizontal",
               },
@@ -8876,7 +8876,7 @@ var shouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "qanda",
               },
@@ -8945,7 +8945,7 @@ var shouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "qanda",
               },
@@ -9014,7 +9014,7 @@ var consecutiveQuestionsShouldShareSameQuestionElementInDocbook = &asciidoc.Docu
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "qanda",
               },
@@ -9071,7 +9071,7 @@ var shouldConvertBibliographyListWithProperSemantics = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "bibliography",
               },
@@ -9151,7 +9151,7 @@ var shouldConvertBibliographyListWithProperSemanticsToDocBook = &asciidoc.Docume
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "bibliography",
               },
@@ -9242,7 +9242,7 @@ var shouldWarnIfABibliographyIdIsAlreadyInUse = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "bibliography",
               },
@@ -9302,7 +9302,7 @@ var shouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliographySection 
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "bibliography",
               },
@@ -9460,7 +9460,7 @@ var shouldNotRecognizeBibliographyAnchorThatBeginsWithADigit = &asciidoc.Documen
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "bibliography",
               },
@@ -9510,7 +9510,7 @@ var shouldRecognizeBibliographyAnchorThatContainsADigitButDoesNotStartWithOne = 
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "bibliography",
               },
@@ -9557,7 +9557,7 @@ var shouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "bibliography",
                   },
@@ -9660,7 +9660,7 @@ var shouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "bibliography",
                   },
@@ -9792,7 +9792,7 @@ var shouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend = &asciid
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "bibliography",
               },
@@ -11433,7 +11433,7 @@ var attachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = &as
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -11619,7 +11619,7 @@ var blockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicated = &asci
               ID: nil,
               Roles: []*asciidoc.ShorthandRole{
                 &asciidoc.ShorthandRole{
-                  Val: asciidoc.Set{
+                  Set: asciidoc.Set{
                     &asciidoc.String{
                       Value: "rolename",
                     },
@@ -11714,7 +11714,7 @@ var blockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated = &asciidoc.
               ID: nil,
               Roles: []*asciidoc.ShorthandRole{
                 &asciidoc.ShorthandRole{
-                  Val: asciidoc.Set{
+                  Set: asciidoc.Set{
                     &asciidoc.String{
                       Value: "rolename",
                     },
@@ -11937,7 +11937,7 @@ var multipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &asciidoc.Docum
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "horizontal",
               },
@@ -12013,7 +12013,7 @@ var multipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakLi
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "horizontal",
               },
@@ -12891,7 +12891,7 @@ var listingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList = &asciidoc.
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -12945,7 +12945,7 @@ var listingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList = &asciid
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13009,7 +13009,7 @@ var listingBlockWithACalloutThatRefersToTwoDifferentLines = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13059,7 +13059,7 @@ var sourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList = &asciido
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13120,7 +13120,7 @@ var twoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
         },
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13162,7 +13162,7 @@ var twoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
         },
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13225,7 +13225,7 @@ var twoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Document{
         },
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13271,7 +13271,7 @@ var twoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Document{
         },
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13320,7 +13320,7 @@ var calloutListRetainsBlockContent = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13406,7 +13406,7 @@ var calloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13492,7 +13492,7 @@ var escapedCalloutShouldNotBeInterpretedAsACallout = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13533,7 +13533,7 @@ var shouldAutonumberCallouts = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13587,7 +13587,7 @@ var shouldNotRecognizeCalloutsInMiddleOfLine = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13627,7 +13627,7 @@ var shouldAllowMultipleCalloutsOnTheSameLine = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13694,7 +13694,7 @@ var shouldAllowXmlCommentStyleCallouts = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13856,7 +13856,7 @@ var shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13895,7 +13895,7 @@ var shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13934,7 +13934,7 @@ var shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -13974,7 +13974,7 @@ var shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -14018,7 +14018,7 @@ var shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciido
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -14057,7 +14057,7 @@ var shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciido
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -14096,7 +14096,7 @@ var shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciido
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -14136,7 +14136,7 @@ var shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciido
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -14180,7 +14180,7 @@ var shouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified = &asciidoc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -14238,7 +14238,7 @@ var shouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWhenSourceH
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -14351,7 +14351,7 @@ var calloutListWithIconsEnabled = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -14405,7 +14405,7 @@ var calloutListWithFontBasedIconsEnabled = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -14574,7 +14574,7 @@ var shouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIconsAttribu
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "interactive",
                 },
