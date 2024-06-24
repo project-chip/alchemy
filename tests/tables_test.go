@@ -3626,7 +3626,7 @@ var preservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "header",
                 },
@@ -6960,7 +6960,7 @@ var explicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asciidoc.Docum
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "autowidth",
                 },
@@ -11793,7 +11793,7 @@ var tableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document{
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "autowidth",
                 },
@@ -13475,7 +13475,7 @@ var noImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Document{
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "noheader",
                 },
@@ -19735,7 +19735,7 @@ var asciiDocContent = &asciidoc.Document{
                   AttributeList: asciidoc.AttributeList{
                     &asciidoc.ShorthandAttribute{
                       Style: &asciidoc.ShorthandStyle{
-                        Val: asciidoc.Set{
+                        Set: asciidoc.Set{
                           &asciidoc.String{
                             Value: "NOTE",
                           },
@@ -20727,7 +20727,7 @@ var shouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle = &as
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "header",
                 },
@@ -21075,7 +21075,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
                           AttributeList: asciidoc.AttributeList{
                             &asciidoc.ShorthandAttribute{
                               Style: &asciidoc.ShorthandStyle{
-                                Val: asciidoc.Set{
+                                Set: asciidoc.Set{
                                   &asciidoc.String{
                                     Value: "source",
                                   },
@@ -21171,7 +21171,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
                           AttributeList: asciidoc.AttributeList{
                             &asciidoc.ShorthandAttribute{
                               Style: &asciidoc.ShorthandStyle{
-                                Val: asciidoc.Set{
+                                Set: asciidoc.Set{
                                   &asciidoc.String{
                                     Value: "source",
                                   },
@@ -21230,7 +21230,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
               AttributeList: asciidoc.AttributeList{
                 &asciidoc.ShorthandAttribute{
                   Style: &asciidoc.ShorthandStyle{
-                    Val: asciidoc.Set{
+                    Set: asciidoc.Set{
                       &asciidoc.String{
                         Value: "source",
                       },
@@ -22446,7 +22446,7 @@ var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciid
                             &asciidoc.ShorthandAttribute{
                               Style: nil,
                               ID: &asciidoc.ShorthandID{
-                                Val: asciidoc.Set{
+                                Set: asciidoc.Set{
                                   &asciidoc.String{
                                     Value: "table-cell-toc",
                                   },
@@ -23077,7 +23077,7 @@ var tableWithBreakableOptionDocbook5 = &asciidoc.Document{
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "breakable",
                 },
@@ -23265,7 +23265,7 @@ var tableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "unbreakable",
                 },
@@ -23848,7 +23848,7 @@ var shouldNotDropTrailingEmptyCellInTsvDataWhenLoadedFromAnIncludeFile = &asciid
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "header",
                 },

@@ -2009,7 +2009,7 @@ var shouldSetAuthorcountTo0IfAuthorNotSetByAttributeAndDocumentStartsWithLevel0S
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "preface",
               },
@@ -2802,7 +2802,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "horizontal",
                   },
@@ -2863,7 +2863,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "quote",
                   },
@@ -2910,7 +2910,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "verse",
                   },

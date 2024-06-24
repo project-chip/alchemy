@@ -272,7 +272,7 @@ var interpretsNormalParagraphStyleAsNormalParagraph = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "normal",
               },
@@ -307,7 +307,7 @@ var removesIndentationFromLiteralParagraphMarkedAsNormal = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "normal",
               },
@@ -350,7 +350,7 @@ var normalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "literal",
               },
@@ -420,7 +420,7 @@ var normalStyleTurnsLiteralParagraphIntoNormalParagraph = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "normal",
               },
@@ -589,7 +589,7 @@ var shouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet = &asciidoc.Docu
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "hardbreaks",
                 },
@@ -729,7 +729,7 @@ var literalParagraph = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "literal",
               },
@@ -786,7 +786,7 @@ var listingParagraph = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "listing",
               },
@@ -817,7 +817,7 @@ var sourceParagraph = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -848,7 +848,7 @@ var sourceCodeParagraphWithLanguage = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -892,7 +892,7 @@ var literalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "normal",
               },
@@ -962,7 +962,7 @@ var singleLineQuoteParagraph = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -993,7 +993,7 @@ var quoteParagraphTerminatesAtListContinuation = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -1026,7 +1026,7 @@ var verseParagraph = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -1071,7 +1071,7 @@ var quoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
         },
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -1113,7 +1113,7 @@ var noteMultilineSyntax = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "sidebar",
               },
@@ -1184,7 +1184,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "preface",
               },
@@ -1203,7 +1203,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -1243,7 +1243,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -1275,7 +1275,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
               AttributeList: asciidoc.AttributeList{
                 &asciidoc.ShorthandAttribute{
                   Style: &asciidoc.ShorthandStyle{
-                    Val: asciidoc.Set{
+                    Set: asciidoc.Set{
                       &asciidoc.String{
                         Value: "sidebar",
                       },
@@ -1301,7 +1301,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
               AttributeList: asciidoc.AttributeList{
                 &asciidoc.ShorthandAttribute{
                   Style: &asciidoc.ShorthandStyle{
-                    Val: asciidoc.Set{
+                    Set: asciidoc.Set{
                       &asciidoc.String{
                         Value: "example",
                       },
@@ -1327,7 +1327,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
               AttributeList: asciidoc.AttributeList{
                 &asciidoc.ShorthandAttribute{
                   Style: &asciidoc.ShorthandStyle{
-                    Val: asciidoc.Set{
+                    Set: asciidoc.Set{
                       &asciidoc.String{
                         Value: "quote",
                       },
@@ -1353,7 +1353,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
               AttributeList: asciidoc.AttributeList{
                 &asciidoc.ShorthandAttribute{
                   Style: &asciidoc.ShorthandStyle{
-                    Val: asciidoc.Set{
+                    Set: asciidoc.Set{
                       &asciidoc.String{
                         Value: "open",
                       },
@@ -1400,7 +1400,7 @@ var shouldConvertOpenParagraphToOpenBlock = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "open",
               },
@@ -1453,7 +1453,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "preface",
               },
@@ -1472,7 +1472,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -1519,7 +1519,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -1558,7 +1558,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
               AttributeList: asciidoc.AttributeList{
                 &asciidoc.ShorthandAttribute{
                   Style: &asciidoc.ShorthandStyle{
-                    Val: asciidoc.Set{
+                    Set: asciidoc.Set{
                       &asciidoc.String{
                         Value: "sidebar",
                       },
@@ -1591,7 +1591,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
               AttributeList: asciidoc.AttributeList{
                 &asciidoc.ShorthandAttribute{
                   Style: &asciidoc.ShorthandStyle{
-                    Val: asciidoc.Set{
+                    Set: asciidoc.Set{
                       &asciidoc.String{
                         Value: "example",
                       },
@@ -1624,7 +1624,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
               AttributeList: asciidoc.AttributeList{
                 &asciidoc.ShorthandAttribute{
                   Style: &asciidoc.ShorthandStyle{
-                    Val: asciidoc.Set{
+                    Set: asciidoc.Set{
                       &asciidoc.String{
                         Value: "quote",
                       },
@@ -1678,7 +1678,7 @@ var shouldOutputNilAndWarnIfFirstBlockIsNotAParagraph = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "foo",
               },
@@ -1709,7 +1709,7 @@ var shouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsEnabled = &asci
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "foo",
               },

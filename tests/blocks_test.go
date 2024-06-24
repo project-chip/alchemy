@@ -467,7 +467,7 @@ var horizontalRuleBetweenBlocks = &asciidoc.Document{
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "fancy",
                 },
@@ -824,7 +824,7 @@ var preprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock = &asciidoc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "comment",
               },
@@ -869,7 +869,7 @@ var preprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagra
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "comment",
               },
@@ -911,7 +911,7 @@ var commentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "comment",
               },
@@ -959,7 +959,7 @@ var commentStyleOnParagraphShouldOnlySkipParagraph = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "comment",
               },
@@ -1001,7 +1001,7 @@ var commentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &asciidoc.Do
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "comment",
               },
@@ -1028,7 +1028,7 @@ var commentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &asciidoc.Do
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "example",
               },
@@ -1073,14 +1073,14 @@ var shouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock = &asciid
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "comment",
                   },
                 },
               },
               ID: &asciidoc.ShorthandID{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "idname",
                   },
@@ -1187,7 +1187,7 @@ var quoteBlockWithAttribution = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -1239,14 +1239,14 @@ var quoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
             },
           },
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "justice-to-all",
               },
@@ -1254,7 +1254,7 @@ var quoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
           },
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "solidarity",
                 },
@@ -1305,7 +1305,7 @@ var settingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -1408,7 +1408,7 @@ var quoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -1463,7 +1463,7 @@ var epigraphQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "epigraph",
                 },
@@ -1747,7 +1747,7 @@ var singleLineVerseBlockWithoutAttribution = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -1781,7 +1781,7 @@ var singleLineVerseBlockWithAttribution = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -1833,7 +1833,7 @@ var singleLineVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -1885,7 +1885,7 @@ var singleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Do
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -1894,7 +1894,7 @@ var singleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Do
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "epigraph",
                 },
@@ -1945,7 +1945,7 @@ var multiStanzaVerseBlock = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -1986,7 +1986,7 @@ var verseBlockDoesNotContainBlockElements = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -2033,7 +2033,7 @@ var verseShouldHaveNormalSubs = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -2067,7 +2067,7 @@ var shouldNotRecognizeCalloutsInAVerse = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -2105,7 +2105,7 @@ var shouldPerformNormalSubsOnAVerseBlock = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "verse",
               },
@@ -2677,7 +2677,7 @@ var shouldCreateDetailsSummarySetIfCollapsibleOptionIsSet = &asciidoc.Document{
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "collapsible",
                 },
@@ -2720,14 +2720,14 @@ var shouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet = &asciidoc.Doc
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "collapsible",
                 },
               },
             },
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "open",
                 },
@@ -2763,7 +2763,7 @@ var shouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNotSpecifed 
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "collapsible",
                 },
@@ -2830,7 +2830,7 @@ var shouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc.Document{
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "collapsible",
                 },
@@ -3135,7 +3135,7 @@ var shouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "verse",
                   },
@@ -3323,7 +3323,7 @@ var shouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute = &asciidoc.Do
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -3793,7 +3793,7 @@ var listingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldNotBePromot
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "listing",
               },
@@ -3844,7 +3844,7 @@ var listingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLang
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "listing",
               },
@@ -3875,7 +3875,7 @@ var sourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbook = &asci
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -3906,7 +3906,7 @@ var sourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInsideFormalpara
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -4082,14 +4082,14 @@ var shouldTransferIdAndReftextOnOpenParagraphToDocBookOutput = &asciidoc.Documen
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "open",
               },
             },
           },
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "openpara",
               },
@@ -4186,7 +4186,7 @@ var shouldTransferRoleOnOpenBlockToDocBookOutput = &asciidoc.Document{
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "container",
                 },
@@ -4226,7 +4226,7 @@ var shouldTransferRoleOnOpenParagraphToDocBookOutput = &asciidoc.Document{
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "container",
                 },
@@ -4320,7 +4320,7 @@ var doesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault = &asciidoc.Docu
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "pass",
               },
@@ -4443,7 +4443,7 @@ var shouldNotCrashWhenConvertingStemBlockThatHasNoLines = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "stem",
               },
@@ -4472,7 +4472,7 @@ var shouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines = &asciidoc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "latexmath",
               },
@@ -4503,7 +4503,7 @@ var shouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlreadyPresent =
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "latexmath",
               },
@@ -4534,7 +4534,7 @@ var shouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend = &asciidoc.Docum
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "latexmath",
               },
@@ -4576,7 +4576,7 @@ var shouldSetAutoNumberOptionForLatexmathToNoneByDefault = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "stem",
               },
@@ -4626,7 +4626,7 @@ var shouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone = &asciidoc.D
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "stem",
               },
@@ -4672,7 +4672,7 @@ var shouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet = &asciidoc.Document
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "stem",
               },
@@ -4724,7 +4724,7 @@ var shouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll = &asciidoc.Doc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "stem",
               },
@@ -4755,7 +4755,7 @@ var shouldNotSplitEquationInAsciiMathBlockAtSingleNewline = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "asciimath",
               },
@@ -4787,7 +4787,7 @@ var shouldSplitEquationInAsciiMathBlockAtEscapedNewline = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "asciimath",
               },
@@ -4819,7 +4819,7 @@ var shouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines = &asciidoc.D
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "asciimath",
               },
@@ -4852,7 +4852,7 @@ var shouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBreaks = &asc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "asciimath",
               },
@@ -4886,7 +4886,7 @@ var shouldAddAsciiMathDelimitersAroundAsciimathBlockContent = &asciidoc.Document
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "asciimath",
               },
@@ -4917,7 +4917,7 @@ var shouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlreadyPresent =
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "asciimath",
               },
@@ -4948,7 +4948,7 @@ var shouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIs
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "asciimath",
               },
@@ -4974,7 +4974,7 @@ var shouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIs
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "asciimath",
               },
@@ -5010,7 +5010,7 @@ var shouldOutputTitleForLatexmathBlockIfDefined = &asciidoc.Document{
         },
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "latexmath",
               },
@@ -5052,7 +5052,7 @@ var shouldOutputTitleForAsciimathBlockIfDefined = &asciidoc.Document{
         },
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "asciimath",
               },
@@ -5083,7 +5083,7 @@ var shouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeIsAsciimath
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "stem",
               },
@@ -5114,7 +5114,7 @@ var shouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeIsLatexmath
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "stem",
               },
@@ -5156,7 +5156,7 @@ var shouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes = 
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "stem",
               },
@@ -5196,7 +5196,7 @@ var shouldNotWarnIfBlockStyleIsUnknown = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "foo",
               },
@@ -5230,7 +5230,7 @@ var shouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled = &asciidoc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "foo",
               },
@@ -7120,7 +7120,7 @@ var audioMacroShouldHonorAllOptions = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7166,7 +7166,7 @@ var canResolveIconRelativeToCustomIconsdir = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7216,7 +7216,7 @@ var shouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7256,7 +7256,7 @@ var shouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon = &asciidoc.D
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7323,7 +7323,7 @@ var embedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsL
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7381,7 +7381,7 @@ var shouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet = &asci
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7448,7 +7448,7 @@ var doesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater = &
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7506,7 +7506,7 @@ var cleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeas
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7548,7 +7548,7 @@ var shouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont =
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7598,7 +7598,7 @@ var fontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciidoc.Document
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "TIP",
               },
@@ -7678,7 +7678,7 @@ var shouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciidoc.Document
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -7754,7 +7754,7 @@ var shouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -7919,7 +7919,7 @@ var shouldAllowSourceStyleToBeSpecifiedOnLiteralBlock = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -7950,7 +7950,7 @@ var shouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock = &asciidoc.Doc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "source",
               },
@@ -7996,7 +7996,7 @@ var shouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &asciidoc.D
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -8079,7 +8079,7 @@ var shouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle = &asci
             },
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -8156,7 +8156,7 @@ var shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -8206,7 +8206,7 @@ var shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook = &asciidoc.Doc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "abstract",
               },
@@ -8243,7 +8243,7 @@ var shouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.Docu
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -8305,7 +8305,7 @@ var shouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Documen
             },
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -8361,7 +8361,7 @@ var shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook = &a
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "abstract",
                   },
@@ -8411,7 +8411,7 @@ var shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBo
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "abstract",
               },
@@ -8470,7 +8470,7 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -8575,7 +8575,7 @@ var shouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
             },
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -8652,7 +8652,7 @@ var shouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -8691,7 +8691,7 @@ var shouldNotAllowPartintroUnlessDoctypeIsBook = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "partintro",
               },
@@ -8750,7 +8750,7 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.D
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -8855,7 +8855,7 @@ var shouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Docu
             },
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -8932,7 +8932,7 @@ var shouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &asciidoc.Docume
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "partintro",
                   },
@@ -8971,7 +8971,7 @@ var shouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook = &asciidoc.Doc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "partintro",
               },
@@ -9438,7 +9438,7 @@ var shouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock
             &asciidoc.ShorthandAttribute{
               Style: nil,
               ID: &asciidoc.ShorthandID{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "formal-para",
                   },
@@ -9463,14 +9463,14 @@ var shouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock
           AttributeList: asciidoc.AttributeList{
             &asciidoc.ShorthandAttribute{
               Style: &asciidoc.ShorthandStyle{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "discrete",
                   },
                 },
               },
               ID: &asciidoc.ShorthandID{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "free-standing",
                   },

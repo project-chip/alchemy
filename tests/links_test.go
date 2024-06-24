@@ -146,7 +146,7 @@ var xrefUsingAngledBracketSyntaxWithLabel = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -185,7 +185,7 @@ var xrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecified = &asci
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -223,7 +223,7 @@ var xrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty = &asciidoc.
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -266,7 +266,7 @@ var xrefUsingAngledBracketSyntaxWithQuotedLabel = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -315,7 +315,7 @@ var xrefUsingAngledBracketSyntaxInlineWithText = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -364,7 +364,7 @@ var xrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Doc
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -413,7 +413,7 @@ var xrefWithEscapedText = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -451,7 +451,7 @@ var xrefUsingMacroSyntax = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "sect-a",
               },
@@ -478,7 +478,7 @@ var xrefUsingMacroSyntax = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "sect-b",
               },
@@ -531,7 +531,7 @@ var xrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -569,7 +569,7 @@ var xrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -611,7 +611,7 @@ var xrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -667,7 +667,7 @@ var xrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &asciidoc.
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -723,7 +723,7 @@ var xrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &asciidoc.
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "tigers",
               },
@@ -777,7 +777,7 @@ var xrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "foobar",
               },
@@ -891,7 +891,7 @@ var shouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationIsNotFound
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "foobar",
               },
@@ -958,7 +958,7 @@ var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedIntoCurren
             &asciidoc.ShorthandAttribute{
               Style: nil,
               ID: &asciidoc.ShorthandID{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "ch1",
                   },
@@ -1037,7 +1037,7 @@ var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedEntirelyIn
             &asciidoc.ShorthandAttribute{
               Style: nil,
               ID: &asciidoc.ShorthandID{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "ch1",
                   },
@@ -1126,7 +1126,7 @@ var shouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartiallyIncludedI
             &asciidoc.ShorthandAttribute{
               Style: nil,
               ID: &asciidoc.ShorthandID{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "ch1",
                   },
@@ -1215,7 +1215,7 @@ var shouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndParti
             &asciidoc.ShorthandAttribute{
               Style: nil,
               ID: &asciidoc.ShorthandID{
-                Val: asciidoc.Set{
+                Set: asciidoc.Set{
                   &asciidoc.String{
                     Value: "ch1",
                   },
@@ -1301,7 +1301,7 @@ var shouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsToCurrentD
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "foobar",
               },
@@ -1544,7 +1544,7 @@ var shouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc.Document
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "docid",
               },
@@ -1695,7 +1695,7 @@ var shouldNotFailToResolveBrokenXrefInTitleOfBlockWithId = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "p1",
               },
@@ -1733,7 +1733,7 @@ var shouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "p1",
               },
@@ -1766,7 +1766,7 @@ var shouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "conclusion",
               },
@@ -1797,7 +1797,7 @@ var shouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "s1",
               },
@@ -1842,7 +1842,7 @@ var shouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "a",
               },
@@ -1869,7 +1869,7 @@ var shouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "b",
               },
@@ -1900,7 +1900,7 @@ var shouldDropNestedAnchorInXreftext = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "a",
               },
@@ -1927,7 +1927,7 @@ var shouldDropNestedAnchorInXreftext = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "b",
               },
@@ -1958,7 +1958,7 @@ var shouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "s1",
               },
@@ -1999,7 +1999,7 @@ var shouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "forward",
               },
@@ -2037,7 +2037,7 @@ var shouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciidoc.Documen
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "s1",
               },
@@ -2107,7 +2107,7 @@ var shouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "s1",
               },
@@ -2134,7 +2134,7 @@ var shouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "s2",
               },

@@ -81,7 +81,7 @@ func (a *Anchor) SyncToDoc(id string) {
 		if idAttribute != nil {
 			switch idAttribute := idAttribute.(type) {
 			case *asciidoc.ShorthandAttribute:
-				idAttribute.ID.Val = asciidoc.Set{asciidoc.NewString(a.ID)}
+				idAttribute.ID.Set = asciidoc.Set{asciidoc.NewString(a.ID)}
 				return
 			case *asciidoc.NamedAttribute:
 				idAttribute.Val = asciidoc.Set{asciidoc.NewString(a.ID)}
@@ -200,7 +200,7 @@ func getAnchorElements(element asciidoc.Element, crossReferences map[string][]*C
 	}
 	switch idAttr := idAttr.(type) {
 	case *asciidoc.ShorthandAttribute:
-		id = asciidoc.AttributeAsciiDocString(idAttr.ID.Val)
+		id = asciidoc.AttributeAsciiDocString(idAttr.ID.Set)
 	case *asciidoc.AnchorAttribute:
 		id = idAttr.ID.Value
 		labelSet = idAttr.Label

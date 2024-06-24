@@ -206,7 +206,7 @@ var shouldBeAbleToReferenceABibliographyEntryInAFootnote = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "bibliography",
               },

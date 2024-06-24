@@ -54,19 +54,19 @@ ShorthandAttribute = style:(ShorthandAttributeValue)? values:(ShorthandID / Shor
 }
 
 ShorthandStyle = value:ShorthandAttributeValue {
-    return asciidoc.NewShorthandID(value.(asciidoc.Set)), nil
+    return asciidoc.NewShorthandID(value.(asciidoc.Set)...), nil
 }
 
 ShorthandID = "#" value:ShorthandAttributeValue {
-    return asciidoc.NewShorthandID(value.(asciidoc.Set)), nil
+    return asciidoc.NewShorthandID(value.(asciidoc.Set)...), nil
 }
 
 ShorthandRole = "." value:ShorthandAttributeValue {
-    return asciidoc.NewShorthandRole(value.(asciidoc.Set)), nil
+    return asciidoc.NewShorthandRole(value.(asciidoc.Set)...), nil
 }
 
 ShorthandOption = "%" value:ShorthandAttributeValue {
-    return asciidoc.NewShorthandOption(value.(asciidoc.Set)), nil
+    return asciidoc.NewShorthandOption(value.(asciidoc.Set)...), nil
 }
 
 ShorthandAttributeValue = value:(!"#" !"." !"%" SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {

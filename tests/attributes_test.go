@@ -2300,7 +2300,7 @@ var positionalAttributesAssignedToBlock = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -2352,7 +2352,7 @@ var normalSubstitutionsArePerformedOnSingleQuotedPositionalAttribute = &asciidoc
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -2404,7 +2404,7 @@ var normalSubstitutionsArePerformedOnSingleQuotedNamedAttribute = &asciidoc.Docu
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -2484,7 +2484,7 @@ var attributeListMayNotBeginWithSpace = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -2543,7 +2543,7 @@ var firstAttributeInListMayBeDoubleQuoted = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -2604,7 +2604,7 @@ var firstAttributeInListMayBeSingleQuoted = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "quote",
               },
@@ -2881,7 +2881,7 @@ var rolesSetsTheRoleAttributeOnTheNode = &asciidoc.Document{
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "{lead}",
               },
@@ -2912,14 +2912,14 @@ var idRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax = &
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "literal",
               },
             },
           },
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "first",
               },
@@ -2927,7 +2927,7 @@ var idRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax = &
           },
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "lead",
                 },
@@ -2936,7 +2936,7 @@ var idRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax = &
           },
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "step",
                 },
@@ -2965,7 +2965,7 @@ var idRoleAndOptionsAttributesCanBeSpecifiedUsingShorthandSyntaxOnBlockStyleUsin
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "literal",
               },
@@ -3026,14 +3026,14 @@ var multipleRolesAndOptionsCanBeSpecifiedInBlockStyleUsingShorthandSyntax = &asc
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role1",
                 },
               },
             },
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role2",
                 },
@@ -3042,14 +3042,14 @@ var multipleRolesAndOptionsCanBeSpecifiedInBlockStyleUsingShorthandSyntax = &asc
           },
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "option1",
                 },
               },
             },
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "option2",
                 },
@@ -3082,7 +3082,7 @@ var optionsSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeA
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "option1",
                 },
@@ -3123,7 +3123,7 @@ var rolesSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdd
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role1",
                 },
@@ -3165,7 +3165,7 @@ var settingARoleUsingTheRoleAttributeReplacesAnyExistingRoles = &asciidoc.Docume
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role1",
                 },
@@ -3214,7 +3214,7 @@ var settingARoleUsingTheShorthandSyntaxOnBlockStyleShouldNotClearTheId = &asciid
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "id",
               },
@@ -3256,7 +3256,7 @@ var aRoleCanBeAddedUsingAddRoleWhenTheNodeHasNoRoles = &asciidoc.Document{
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role1",
                 },
@@ -3289,7 +3289,7 @@ var aRoleIsNotAddedUsingAddRoleIfTheNodeAlreadyHasThatRole = &asciidoc.Document{
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role1",
                 },
@@ -3322,14 +3322,14 @@ var anExistingRoleCanBeRemovedUsingRemoveRole = &asciidoc.Document{
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role1",
                 },
               },
             },
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role2",
                 },
@@ -3362,7 +3362,7 @@ var rolesAreRemovedWhenLastRoleIsRemovedUsingRemoveRole = &asciidoc.Document{
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role1",
                 },
@@ -3395,7 +3395,7 @@ var rolesAreNotChangedWhenANonExistentRoleIsRemovedUsingRemoveRole = &asciidoc.D
           ID: nil,
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "role1",
                 },
@@ -3434,7 +3434,7 @@ var rolesAreNotChangedWhenUsingRemoveRoleIfTheNodeHasNoRoles = &asciidoc.Documen
           Roles: nil,
           Options: []*asciidoc.ShorthandOption{
             &asciidoc.ShorthandOption{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "interactive",
                 },
@@ -3459,14 +3459,14 @@ var idAndRoleAttributesCanBeSpecifiedOnSectionStyleUsingShorthandSyntax = &ascii
       AttributeList: asciidoc.AttributeList{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "dedication",
               },
             },
           },
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "dedication",
               },
@@ -3474,7 +3474,7 @@ var idAndRoleAttributesCanBeSpecifiedOnSectionStyleUsingShorthandSyntax = &ascii
           },
           Roles: []*asciidoc.ShorthandRole{
             &asciidoc.ShorthandRole{
-              Val: asciidoc.Set{
+              Set: asciidoc.Set{
                 &asciidoc.String{
                   Value: "small",
                 },
@@ -3510,7 +3510,7 @@ var idAttributeSpecifiedUsingShorthandSyntaxShouldNotCreateASpecialSection = &as
         &asciidoc.ShorthandAttribute{
           Style: nil,
           ID: &asciidoc.ShorthandID{
-            Val: asciidoc.Set{
+            Set: asciidoc.Set{
               &asciidoc.String{
                 Value: "idname",
               },
