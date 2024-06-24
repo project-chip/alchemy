@@ -12,79 +12,79 @@ func TestParagraphs(t *testing.T) {
 
 var paragraphsTests = parseTests{
 	
-	{"should treat plain text separated by blank lines as paragraphs", "asciidoctor/paragraphs_test_should_treat_plain_text_separated_by_blank_lines_as_paragraphs.adoc", shouldTreatPlainTextSeparatedByBlankLinesAsParagraphs},
+	{ "should treat plain text separated by blank lines as paragraphs", "asciidoctor/paragraphs_test_should_treat_plain_text_separated_by_blank_lines_as_paragraphs.adoc", shouldTreatPlainTextSeparatedByBlankLinesAsParagraphs },
 	
-	{"should associate block title with paragraph", "asciidoctor/paragraphs_test_should_associate_block_title_with_paragraph.adoc", shouldAssociateBlockTitleWithParagraph},
+	{ "should associate block title with paragraph", "asciidoctor/paragraphs_test_should_associate_block_title_with_paragraph.adoc", shouldAssociateBlockTitleWithParagraph },
 	
-	{"no duplicate block before next section", "asciidoctor/paragraphs_test_no_duplicate_block_before_next_section.adoc", noDuplicateBlockBeforeNextSection},
+	{ "no duplicate block before next section", "asciidoctor/paragraphs_test_no_duplicate_block_before_next_section.adoc", noDuplicateBlockBeforeNextSection },
 	
-	{"does not treat wrapped line as a list item", "asciidoctor/paragraphs_test_does_not_treat_wrapped_line_as_a_list_item.adoc", doesNotTreatWrappedLineAsAListItem},
+	{ "does not treat wrapped line as a list item", "asciidoctor/paragraphs_test_does_not_treat_wrapped_line_as_a_list_item.adoc", doesNotTreatWrappedLineAsAListItem },
 	
-	{"does not treat wrapped line as a block title", "asciidoctor/paragraphs_test_does_not_treat_wrapped_line_as_a_block_title.adoc", doesNotTreatWrappedLineAsABlockTitle},
+	{ "does not treat wrapped line as a block title", "asciidoctor/paragraphs_test_does_not_treat_wrapped_line_as_a_block_title.adoc", doesNotTreatWrappedLineAsABlockTitle },
 	
-	{"interprets normal paragraph style as normal paragraph", "asciidoctor/paragraphs_test_interprets_normal_paragraph_style_as_normal_paragraph.adoc", interpretsNormalParagraphStyleAsNormalParagraph},
+	{ "interprets normal paragraph style as normal paragraph", "asciidoctor/paragraphs_test_interprets_normal_paragraph_style_as_normal_paragraph.adoc", interpretsNormalParagraphStyleAsNormalParagraph },
 	
-	{"removes indentation from literal paragraph marked as normal", "asciidoctor/paragraphs_test_removes_indentation_from_literal_paragraph_marked_as_normal.adoc", removesIndentationFromLiteralParagraphMarkedAsNormal},
+	{ "removes indentation from literal paragraph marked as normal", "asciidoctor/paragraphs_test_removes_indentation_from_literal_paragraph_marked_as_normal.adoc", removesIndentationFromLiteralParagraphMarkedAsNormal },
 	
-	{"normal paragraph terminates at block attribute list", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_block_attribute_list.adoc", normalParagraphTerminatesAtBlockAttributeList},
+	{ "normal paragraph terminates at block attribute list", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_block_attribute_list.adoc", normalParagraphTerminatesAtBlockAttributeList },
 	
-	{"normal paragraph terminates at block delimiter", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_block_delimiter.adoc", normalParagraphTerminatesAtBlockDelimiter},
+	{ "normal paragraph terminates at block delimiter", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_block_delimiter.adoc", normalParagraphTerminatesAtBlockDelimiter },
 	
-	{"normal paragraph terminates at list continuation", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_list_continuation.adoc", normalParagraphTerminatesAtListContinuation},
+	{ "normal paragraph terminates at list continuation", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_list_continuation.adoc", normalParagraphTerminatesAtListContinuation },
 	
-	{"normal style turns literal paragraph into normal paragraph", "asciidoctor/paragraphs_test_normal_style_turns_literal_paragraph_into_normal_paragraph.adoc", normalStyleTurnsLiteralParagraphIntoNormalParagraph},
+	{ "normal style turns literal paragraph into normal paragraph", "asciidoctor/paragraphs_test_normal_style_turns_literal_paragraph_into_normal_paragraph.adoc", normalStyleTurnsLiteralParagraphIntoNormalParagraph },
 	
-	{"automatically promotes index terms in DocBook output if indexterm-promotion-option is set", "asciidoctor/paragraphs_test_automatically_promotes_index_terms_in_doc_book_output_if_indexterm_promotion_option_is_set.adoc", automaticallyPromotesIndexTermsInDocBookOutputIfIndextermPromotionOptionIsSet},
+	{ "automatically promotes index terms in DocBook output if indexterm-promotion-option is set", "asciidoctor/paragraphs_test_automatically_promotes_index_terms_in_doc_book_output_if_indexterm_promotion_option_is_set.adoc", automaticallyPromotesIndexTermsInDocBookOutputIfIndextermPromotionOptionIsSet },
 	
-	{"does not automatically promote index terms in DocBook output if indexterm-promotion-option is not set", "asciidoctor/paragraphs_test_does_not_automatically_promote_index_terms_in_doc_book_output_if_indexterm_promotion_option_is_not_set.adoc", doesNotAutomaticallyPromoteIndexTermsInDocBookOutputIfIndextermPromotionOptionIsNotSet},
+	{ "does not automatically promote index terms in DocBook output if indexterm-promotion-option is not set", "asciidoctor/paragraphs_test_does_not_automatically_promote_index_terms_in_doc_book_output_if_indexterm_promotion_option_is_not_set.adoc", doesNotAutomaticallyPromoteIndexTermsInDocBookOutputIfIndextermPromotionOptionIsNotSet },
 	
-	{"normal paragraph should honor explicit subs list", "asciidoctor/paragraphs_test_normal_paragraph_should_honor_explicit_subs_list.adoc", normalParagraphShouldHonorExplicitSubsList},
+	{ "normal paragraph should honor explicit subs list", "asciidoctor/paragraphs_test_normal_paragraph_should_honor_explicit_subs_list.adoc", normalParagraphShouldHonorExplicitSubsList },
 	
-	{"normal paragraph should honor specialchars shorthand", "asciidoctor/paragraphs_test_normal_paragraph_should_honor_specialchars_shorthand.adoc", normalParagraphShouldHonorSpecialcharsShorthand},
+	{ "normal paragraph should honor specialchars shorthand", "asciidoctor/paragraphs_test_normal_paragraph_should_honor_specialchars_shorthand.adoc", normalParagraphShouldHonorSpecialcharsShorthand },
 	
-	{"should add a hardbreak at end of each line when hardbreaks option is set", "asciidoctor/paragraphs_test_should_add_a_hardbreak_at_end_of_each_line_when_hardbreaks_option_is_set.adoc", shouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet},
+	{ "should add a hardbreak at end of each line when hardbreaks option is set", "asciidoctor/paragraphs_test_should_add_a_hardbreak_at_end_of_each_line_when_hardbreaks_option_is_set.adoc", shouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet },
 	
-	{"should be able to toggle hardbreaks by setting hardbreaks-option on document", "asciidoctor/paragraphs_test_should_be_able_to_toggle_hardbreaks_by_setting_hardbreaks_option_on_document.adoc", shouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocument},
+	{ "should be able to toggle hardbreaks by setting hardbreaks-option on document", "asciidoctor/paragraphs_test_should_be_able_to_toggle_hardbreaks_by_setting_hardbreaks_option_on_document.adoc", shouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocument },
 	
-	{"single-line literal paragraphs", "asciidoctor/paragraphs_test_single_line_literal_paragraphs.adoc", singleLineLiteralParagraphs},
+	{ "single-line literal paragraphs", "asciidoctor/paragraphs_test_single_line_literal_paragraphs.adoc", singleLineLiteralParagraphs },
 	
-	{"multi-line literal paragraph", "asciidoctor/paragraphs_test_multi_line_literal_paragraph.adoc", multiLineLiteralParagraph},
+	{ "multi-line literal paragraph", "asciidoctor/paragraphs_test_multi_line_literal_paragraph.adoc", multiLineLiteralParagraph },
 	
-	{"literal paragraph", "asciidoctor/paragraphs_test_literal_paragraph.adoc", literalParagraph},
+	{ "literal paragraph", "asciidoctor/paragraphs_test_literal_paragraph.adoc", literalParagraph },
 	
-	{"should read content below literal style verbatim", "asciidoctor/paragraphs_test_should_read_content_below_literal_style_verbatim.adoc", shouldReadContentBelowLiteralStyleVerbatim},
+	{ "should read content below literal style verbatim", "asciidoctor/paragraphs_test_should_read_content_below_literal_style_verbatim.adoc", shouldReadContentBelowLiteralStyleVerbatim },
 	
-	{"listing paragraph", "asciidoctor/paragraphs_test_listing_paragraph.adoc", listingParagraph},
+	{ "listing paragraph", "asciidoctor/paragraphs_test_listing_paragraph.adoc", listingParagraph },
 	
-	{"source paragraph", "asciidoctor/paragraphs_test_source_paragraph.adoc", sourceParagraph},
+	{ "source paragraph", "asciidoctor/paragraphs_test_source_paragraph.adoc", sourceParagraph },
 	
-	{"source code paragraph with language", "asciidoctor/paragraphs_test_source_code_paragraph_with_language.adoc", sourceCodeParagraphWithLanguage},
+	{ "source code paragraph with language", "asciidoctor/paragraphs_test_source_code_paragraph_with_language.adoc", sourceCodeParagraphWithLanguage },
 	
-	{"literal paragraph terminates at block attribute list", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_block_attribute_list.adoc", literalParagraphTerminatesAtBlockAttributeList},
+	{ "literal paragraph terminates at block attribute list", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_block_attribute_list.adoc", literalParagraphTerminatesAtBlockAttributeList },
 	
-	{"literal paragraph terminates at block delimiter", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_block_delimiter.adoc", literalParagraphTerminatesAtBlockDelimiter},
+	{ "literal paragraph terminates at block delimiter", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_block_delimiter.adoc", literalParagraphTerminatesAtBlockDelimiter },
 	
-	{"literal paragraph terminates at list continuation", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_list_continuation.adoc", literalParagraphTerminatesAtListContinuation},
+	{ "literal paragraph terminates at list continuation", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_list_continuation.adoc", literalParagraphTerminatesAtListContinuation },
 	
-	{"single-line quote paragraph", "asciidoctor/paragraphs_test_single_line_quote_paragraph.adoc", singleLineQuoteParagraph},
+	{ "single-line quote paragraph", "asciidoctor/paragraphs_test_single_line_quote_paragraph.adoc", singleLineQuoteParagraph },
 	
-	{"quote paragraph terminates at list continuation", "asciidoctor/paragraphs_test_quote_paragraph_terminates_at_list_continuation.adoc", quoteParagraphTerminatesAtListContinuation},
+	{ "quote paragraph terminates at list continuation", "asciidoctor/paragraphs_test_quote_paragraph_terminates_at_list_continuation.adoc", quoteParagraphTerminatesAtListContinuation },
 	
-	{"verse paragraph", "asciidoctor/paragraphs_test_verse_paragraph.adoc", verseParagraph},
+	{ "verse paragraph", "asciidoctor/paragraphs_test_verse_paragraph.adoc", verseParagraph },
 	
-	{"quote paragraph should honor explicit subs list", "asciidoctor/paragraphs_test_quote_paragraph_should_honor_explicit_subs_list.adoc", quoteParagraphShouldHonorExplicitSubsList},
+	{ "quote paragraph should honor explicit subs list", "asciidoctor/paragraphs_test_quote_paragraph_should_honor_explicit_subs_list.adoc", quoteParagraphShouldHonorExplicitSubsList },
 	
-	{"note multiline syntax", "asciidoctor/paragraphs_test_note_multiline_syntax.adoc", noteMultilineSyntax},
+	{ "note multiline syntax", "asciidoctor/paragraphs_test_note_multiline_syntax.adoc", noteMultilineSyntax },
 	
-	{"should wrap text in simpara for styled paragraphs when converted to DocBook", "asciidoctor/paragraphs_test_should_wrap_text_in_simpara_for_styled_paragraphs_when_converted_to_doc_book.adoc", shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook},
+	{ "should wrap text in simpara for styled paragraphs when converted to DocBook", "asciidoctor/paragraphs_test_should_wrap_text_in_simpara_for_styled_paragraphs_when_converted_to_doc_book.adoc", shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook },
 	
-	{"should convert open paragraph to open block", "asciidoctor/paragraphs_test_should_convert_open_paragraph_to_open_block.adoc", shouldConvertOpenParagraphToOpenBlock},
+	{ "should convert open paragraph to open block", "asciidoctor/paragraphs_test_should_convert_open_paragraph_to_open_block.adoc", shouldConvertOpenParagraphToOpenBlock },
 	
-	{"should wrap text in simpara for styled paragraphs with title when converted to DocBook", "asciidoctor/paragraphs_test_should_wrap_text_in_simpara_for_styled_paragraphs_with_title_when_converted_to_doc_book.adoc", shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook},
+	{ "should wrap text in simpara for styled paragraphs with title when converted to DocBook", "asciidoctor/paragraphs_test_should_wrap_text_in_simpara_for_styled_paragraphs_with_title_when_converted_to_doc_book.adoc", shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook },
 	
-	{"should output nil and warn if first block is not a paragraph", "asciidoctor/paragraphs_test_should_output_nil_and_warn_if_first_block_is_not_a_paragraph.adoc", shouldOutputNilAndWarnIfFirstBlockIsNotAParagraph},
+	{ "should output nil and warn if first block is not a paragraph", "asciidoctor/paragraphs_test_should_output_nil_and_warn_if_first_block_is_not_a_paragraph.adoc", shouldOutputNilAndWarnIfFirstBlockIsNotAParagraph },
 	
-	{"should log debug message if paragraph style is unknown and debug level is enabled", "asciidoctor/paragraphs_test_should_log_debug_message_if_paragraph_style_is_unknown_and_debug_level_is_enabled.adoc", shouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsEnabled},
+	{ "should log debug message if paragraph style is unknown and debug level is enabled", "asciidoctor/paragraphs_test_should_log_debug_message_if_paragraph_style_is_unknown_and_debug_level_is_enabled.adoc", shouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsEnabled },
 	
 }
 
@@ -270,14 +270,17 @@ var interpretsNormalParagraphStyleAsNormalParagraph = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "normal",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "normal",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -302,14 +305,17 @@ var removesIndentationFromLiteralParagraphMarkedAsNormal = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "normal",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "normal",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -342,14 +348,17 @@ var normalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
     &asciidoc.NewLine{},
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "literal",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "literal",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -409,14 +418,17 @@ var normalStyleTurnsLiteralParagraphIntoNormalParagraph = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "normal",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "normal",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -571,12 +583,17 @@ var shouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet = &asciidoc.Docu
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "%hardbreaks",
+        &asciidoc.ShorthandAttribute{
+          Style: nil,
+          ID: nil,
+          Roles: nil,
+          Options: []*asciidoc.ShorthandOption{
+            &asciidoc.ShorthandOption{
+              Val: asciidoc.Set{
+                &asciidoc.String{
+                  Value: "hardbreaks",
+                },
+              },
             },
           },
         },
@@ -710,14 +727,17 @@ var literalParagraph = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "literal",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "literal",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -764,14 +784,17 @@ var listingParagraph = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "listing",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "listing",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -792,14 +815,17 @@ var sourceParagraph = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "source",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "source",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -820,14 +846,17 @@ var sourceCodeParagraphWithLanguage = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "source",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "source",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
         &asciidoc.PositionalAttribute{
           Offset: 1,
@@ -861,14 +890,17 @@ var literalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
     &asciidoc.NewLine{},
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "normal",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "normal",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -928,14 +960,17 @@ var singleLineQuoteParagraph = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "quote",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "quote",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -956,14 +991,17 @@ var quoteParagraphTerminatesAtListContinuation = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "quote",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "quote",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -986,14 +1024,17 @@ var verseParagraph = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "verse",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "verse",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -1028,14 +1069,17 @@ var quoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
           },
           Quote: 2,
         },
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "quote",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "quote",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -1067,14 +1111,17 @@ var noteMultilineSyntax = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "sidebar",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "sidebar",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -1135,14 +1182,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
     },
     &asciidoc.Section{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "preface",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "preface",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -1151,14 +1201,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
         },
         &asciidoc.Paragraph{
           AttributeList: asciidoc.AttributeList{
-            &asciidoc.PositionalAttribute{
-              Offset: 0,
-              ImpliedName: "",
-              Val: asciidoc.Set{
-                &asciidoc.String{
-                  Value: "abstract",
+            &asciidoc.ShorthandAttribute{
+              Style: &asciidoc.ShorthandStyle{
+                Val: asciidoc.Set{
+                  &asciidoc.String{
+                    Value: "abstract",
+                  },
                 },
               },
+              ID: nil,
+              Roles: nil,
+              Options: nil,
             },
           },
           Set: asciidoc.Set{
@@ -1188,14 +1241,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
         },
         &asciidoc.Paragraph{
           AttributeList: asciidoc.AttributeList{
-            &asciidoc.PositionalAttribute{
-              Offset: 0,
-              ImpliedName: "",
-              Val: asciidoc.Set{
-                &asciidoc.String{
-                  Value: "partintro",
+            &asciidoc.ShorthandAttribute{
+              Style: &asciidoc.ShorthandStyle{
+                Val: asciidoc.Set{
+                  &asciidoc.String{
+                    Value: "partintro",
+                  },
                 },
               },
+              ID: nil,
+              Roles: nil,
+              Options: nil,
             },
           },
           Set: asciidoc.Set{
@@ -1217,14 +1273,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
             },
             &asciidoc.Paragraph{
               AttributeList: asciidoc.AttributeList{
-                &asciidoc.PositionalAttribute{
-                  Offset: 0,
-                  ImpliedName: "",
-                  Val: asciidoc.Set{
-                    &asciidoc.String{
-                      Value: "sidebar",
+                &asciidoc.ShorthandAttribute{
+                  Style: &asciidoc.ShorthandStyle{
+                    Val: asciidoc.Set{
+                      &asciidoc.String{
+                        Value: "sidebar",
+                      },
                     },
                   },
+                  ID: nil,
+                  Roles: nil,
+                  Options: nil,
                 },
               },
               Set: asciidoc.Set{
@@ -1240,14 +1299,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
             },
             &asciidoc.Paragraph{
               AttributeList: asciidoc.AttributeList{
-                &asciidoc.PositionalAttribute{
-                  Offset: 0,
-                  ImpliedName: "",
-                  Val: asciidoc.Set{
-                    &asciidoc.String{
-                      Value: "example",
+                &asciidoc.ShorthandAttribute{
+                  Style: &asciidoc.ShorthandStyle{
+                    Val: asciidoc.Set{
+                      &asciidoc.String{
+                        Value: "example",
+                      },
                     },
                   },
+                  ID: nil,
+                  Roles: nil,
+                  Options: nil,
                 },
               },
               Set: asciidoc.Set{
@@ -1263,14 +1325,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
             },
             &asciidoc.Paragraph{
               AttributeList: asciidoc.AttributeList{
-                &asciidoc.PositionalAttribute{
-                  Offset: 0,
-                  ImpliedName: "",
-                  Val: asciidoc.Set{
-                    &asciidoc.String{
-                      Value: "quote",
+                &asciidoc.ShorthandAttribute{
+                  Style: &asciidoc.ShorthandStyle{
+                    Val: asciidoc.Set{
+                      &asciidoc.String{
+                        Value: "quote",
+                      },
                     },
                   },
+                  ID: nil,
+                  Roles: nil,
+                  Options: nil,
                 },
               },
               Set: asciidoc.Set{
@@ -1286,14 +1351,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
             },
             &asciidoc.Paragraph{
               AttributeList: asciidoc.AttributeList{
-                &asciidoc.PositionalAttribute{
-                  Offset: 0,
-                  ImpliedName: "",
-                  Val: asciidoc.Set{
-                    &asciidoc.String{
-                      Value: "open",
+                &asciidoc.ShorthandAttribute{
+                  Style: &asciidoc.ShorthandStyle{
+                    Val: asciidoc.Set{
+                      &asciidoc.String{
+                        Value: "open",
+                      },
                     },
                   },
+                  ID: nil,
+                  Roles: nil,
+                  Options: nil,
                 },
               },
               Set: asciidoc.Set{
@@ -1330,14 +1398,17 @@ var shouldConvertOpenParagraphToOpenBlock = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "open",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "open",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -1380,14 +1451,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
     },
     &asciidoc.Section{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "preface",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "preface",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -1396,14 +1470,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
         },
         &asciidoc.Paragraph{
           AttributeList: asciidoc.AttributeList{
-            &asciidoc.PositionalAttribute{
-              Offset: 0,
-              ImpliedName: "",
-              Val: asciidoc.Set{
-                &asciidoc.String{
-                  Value: "abstract",
+            &asciidoc.ShorthandAttribute{
+              Style: &asciidoc.ShorthandStyle{
+                Val: asciidoc.Set{
+                  &asciidoc.String{
+                    Value: "abstract",
+                  },
                 },
               },
+              ID: nil,
+              Roles: nil,
+              Options: nil,
             },
             &asciidoc.TitleAttribute{
               Val: asciidoc.Set{
@@ -1440,14 +1517,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
         },
         &asciidoc.Paragraph{
           AttributeList: asciidoc.AttributeList{
-            &asciidoc.PositionalAttribute{
-              Offset: 0,
-              ImpliedName: "",
-              Val: asciidoc.Set{
-                &asciidoc.String{
-                  Value: "partintro",
+            &asciidoc.ShorthandAttribute{
+              Style: &asciidoc.ShorthandStyle{
+                Val: asciidoc.Set{
+                  &asciidoc.String{
+                    Value: "partintro",
+                  },
                 },
               },
+              ID: nil,
+              Roles: nil,
+              Options: nil,
             },
             &asciidoc.TitleAttribute{
               Val: asciidoc.Set{
@@ -1476,14 +1556,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
             },
             &asciidoc.Paragraph{
               AttributeList: asciidoc.AttributeList{
-                &asciidoc.PositionalAttribute{
-                  Offset: 0,
-                  ImpliedName: "",
-                  Val: asciidoc.Set{
-                    &asciidoc.String{
-                      Value: "sidebar",
+                &asciidoc.ShorthandAttribute{
+                  Style: &asciidoc.ShorthandStyle{
+                    Val: asciidoc.Set{
+                      &asciidoc.String{
+                        Value: "sidebar",
+                      },
                     },
                   },
+                  ID: nil,
+                  Roles: nil,
+                  Options: nil,
                 },
                 &asciidoc.TitleAttribute{
                   Val: asciidoc.Set{
@@ -1506,14 +1589,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
             },
             &asciidoc.Paragraph{
               AttributeList: asciidoc.AttributeList{
-                &asciidoc.PositionalAttribute{
-                  Offset: 0,
-                  ImpliedName: "",
-                  Val: asciidoc.Set{
-                    &asciidoc.String{
-                      Value: "example",
+                &asciidoc.ShorthandAttribute{
+                  Style: &asciidoc.ShorthandStyle{
+                    Val: asciidoc.Set{
+                      &asciidoc.String{
+                        Value: "example",
+                      },
                     },
                   },
+                  ID: nil,
+                  Roles: nil,
+                  Options: nil,
                 },
                 &asciidoc.TitleAttribute{
                   Val: asciidoc.Set{
@@ -1536,14 +1622,17 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
             },
             &asciidoc.Paragraph{
               AttributeList: asciidoc.AttributeList{
-                &asciidoc.PositionalAttribute{
-                  Offset: 0,
-                  ImpliedName: "",
-                  Val: asciidoc.Set{
-                    &asciidoc.String{
-                      Value: "quote",
+                &asciidoc.ShorthandAttribute{
+                  Style: &asciidoc.ShorthandStyle{
+                    Val: asciidoc.Set{
+                      &asciidoc.String{
+                        Value: "quote",
+                      },
                     },
                   },
+                  ID: nil,
+                  Roles: nil,
+                  Options: nil,
                 },
                 &asciidoc.TitleAttribute{
                   Val: asciidoc.Set{
@@ -1587,14 +1676,17 @@ var shouldOutputNilAndWarnIfFirstBlockIsNotAParagraph = &asciidoc.Document{
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "foo",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "foo",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{
@@ -1615,14 +1707,17 @@ var shouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsEnabled = &asci
     },
     &asciidoc.Paragraph{
       AttributeList: asciidoc.AttributeList{
-        &asciidoc.PositionalAttribute{
-          Offset: 0,
-          ImpliedName: "",
-          Val: asciidoc.Set{
-            &asciidoc.String{
-              Value: "foo",
+        &asciidoc.ShorthandAttribute{
+          Style: &asciidoc.ShorthandStyle{
+            Val: asciidoc.Set{
+              &asciidoc.String{
+                Value: "foo",
+              },
             },
           },
+          ID: nil,
+          Roles: nil,
+          Options: nil,
         },
       },
       Set: asciidoc.Set{

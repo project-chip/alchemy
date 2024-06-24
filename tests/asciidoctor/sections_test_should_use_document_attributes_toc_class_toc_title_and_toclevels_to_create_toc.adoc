@@ -1,0 +1,20 @@
+
+= Article
+:toc:
+:toc-title: Contents
+:toc-class: toc2
+:toclevels: 1
+
+== Section 1
+
+=== Section 1.1
+
+==== Section 1.1.1
+
+==== Section 1.1.2
+
+=== Section 1.2
+
+== Section 2
+
+Fin.
