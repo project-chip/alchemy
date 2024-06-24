@@ -1,0 +1,29 @@
+
+= Article
+:toc:
+:toc-placement: macro
+:toc-title: Ignored
+:toc-class: ignored
+:toclevels: 5
+:tocdepth: 1
+
+Preamble.
+
+[[contents]]
+[role="contents"]
+.Contents
+toc::[levels={tocdepth}]
+
+== Section 1
+
+=== Section 1.1
+
+==== Section 1.1.1
+
+==== Section 1.1.2
+
+=== Section 1.2
+
+== Section 2
+
+Fin.

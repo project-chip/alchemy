@@ -12,29 +12,29 @@ func TestPreamble(t *testing.T) {
 
 var preambleTests = parseTests{
 	
-	{"title and single paragraph preamble before section", "asciidoctor/preamble_test_title_and_single_paragraph_preamble_before_section.adoc", titleAndSingleParagraphPreambleBeforeSection},
+	{ "title and single paragraph preamble before section", "asciidoctor/preamble_test_title_and_single_paragraph_preamble_before_section.adoc", titleAndSingleParagraphPreambleBeforeSection },
 	
-	{"title of preface is blank by default in DocBook output", "asciidoctor/preamble_test_title_of_preface_is_blank_by_default_in_doc_book_output.adoc", titleOfPrefaceIsBlankByDefaultInDocBookOutput},
+	{ "title of preface is blank by default in DocBook output", "asciidoctor/preamble_test_title_of_preface_is_blank_by_default_in_doc_book_output.adoc", titleOfPrefaceIsBlankByDefaultInDocBookOutput },
 	
-	{"preface-title attribute is assigned as title of preface in DocBook output", "asciidoctor/preamble_test_preface_title_attribute_is_assigned_as_title_of_preface_in_doc_book_output.adoc", prefaceTitleAttributeIsAssignedAsTitleOfPrefaceInDocBookOutput},
+	{ "preface-title attribute is assigned as title of preface in DocBook output", "asciidoctor/preamble_test_preface_title_attribute_is_assigned_as_title_of_preface_in_doc_book_output.adoc", prefaceTitleAttributeIsAssignedAsTitleOfPrefaceInDocBookOutput },
 	
-	{"title and multi-paragraph preamble before section", "asciidoctor/preamble_test_title_and_multi_paragraph_preamble_before_section.adoc", titleAndMultiParagraphPreambleBeforeSection},
+	{ "title and multi-paragraph preamble before section", "asciidoctor/preamble_test_title_and_multi_paragraph_preamble_before_section.adoc", titleAndMultiParagraphPreambleBeforeSection },
 	
-	{"should not wrap content in preamble if document has title but no sections", "asciidoctor/preamble_test_should_not_wrap_content_in_preamble_if_document_has_title_but_no_sections.adoc", shouldNotWrapContentInPreambleIfDocumentHasTitleButNoSections},
+	{ "should not wrap content in preamble if document has title but no sections", "asciidoctor/preamble_test_should_not_wrap_content_in_preamble_if_document_has_title_but_no_sections.adoc", shouldNotWrapContentInPreambleIfDocumentHasTitleButNoSections },
 	
-	{"title and section without preamble", "asciidoctor/preamble_test_title_and_section_without_preamble.adoc", titleAndSectionWithoutPreamble},
+	{ "title and section without preamble", "asciidoctor/preamble_test_title_and_section_without_preamble.adoc", titleAndSectionWithoutPreamble },
 	
-	{"no title with preamble and section", "asciidoctor/preamble_test_no_title_with_preamble_and_section.adoc", noTitleWithPreambleAndSection},
+	{ "no title with preamble and section", "asciidoctor/preamble_test_no_title_with_preamble_and_section.adoc", noTitleWithPreambleAndSection },
 	
-	{"preamble in book doctype", "asciidoctor/preamble_test_preamble_in_book_doctype.adoc", preambleInBookDoctype},
+	{ "preamble in book doctype", "asciidoctor/preamble_test_preamble_in_book_doctype.adoc", preambleInBookDoctype },
 	
-	{"should output table of contents in preamble if toc-placement attribute value is preamble", "asciidoctor/preamble_test_should_output_table_of_contents_in_preamble_if_toc_placement_attribute_value_is_preamble.adoc", shouldOutputTableOfContentsInPreambleIfTocPlacementAttributeValueIsPreamble},
+	{ "should output table of contents in preamble if toc-placement attribute value is preamble", "asciidoctor/preamble_test_should_output_table_of_contents_in_preamble_if_toc_placement_attribute_value_is_preamble.adoc", shouldOutputTableOfContentsInPreambleIfTocPlacementAttributeValueIsPreamble },
 	
-	{"should move abstract in implicit preface to info tag when converting to DocBook", "asciidoctor/preamble_test_should_move_abstract_in_implicit_preface_to_info_tag_when_converting_to_doc_book.adoc", shouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocBook},
+	{ "should move abstract in implicit preface to info tag when converting to DocBook", "asciidoctor/preamble_test_should_move_abstract_in_implicit_preface_to_info_tag_when_converting_to_doc_book.adoc", shouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocBook },
 	
-	{"should move abstract as first section to info tag when converting to DocBook", "asciidoctor/preamble_test_should_move_abstract_as_first_section_to_info_tag_when_converting_to_doc_book.adoc", shouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook},
+	{ "should move abstract as first section to info tag when converting to DocBook", "asciidoctor/preamble_test_should_move_abstract_as_first_section_to_info_tag_when_converting_to_doc_book.adoc", shouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook },
 	
-	{"should move abstract in preface section to info tag when converting to DocBook", "asciidoctor/preamble_test_should_move_abstract_in_preface_section_to_info_tag_when_converting_to_doc_book.adoc", shouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBook},
+	{ "should move abstract in preface section to info tag when converting to DocBook", "asciidoctor/preamble_test_should_move_abstract_in_preface_section_to_info_tag_when_converting_to_doc_book.adoc", shouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBook },
 	
 }
 
@@ -399,14 +399,17 @@ var preambleInBookDoctype = &asciidoc.Document{
         },
         &asciidoc.Paragraph{
           AttributeList: asciidoc.AttributeList{
-            &asciidoc.PositionalAttribute{
-              Offset: 0,
-              ImpliedName: "",
-              Val: asciidoc.Set{
-                &asciidoc.String{
-                  Value: "partintro",
+            &asciidoc.ShorthandAttribute{
+              Style: &asciidoc.ShorthandStyle{
+                Val: asciidoc.Set{
+                  &asciidoc.String{
+                    Value: "partintro",
+                  },
                 },
               },
+              ID: nil,
+              Roles: nil,
+              Options: nil,
             },
           },
           Set: asciidoc.Set{
@@ -457,14 +460,17 @@ var preambleInBookDoctype = &asciidoc.Document{
         },
         &asciidoc.Paragraph{
           AttributeList: asciidoc.AttributeList{
-            &asciidoc.PositionalAttribute{
-              Offset: 0,
-              ImpliedName: "",
-              Val: asciidoc.Set{
-                &asciidoc.String{
-                  Value: "partintro",
+            &asciidoc.ShorthandAttribute{
+              Style: &asciidoc.ShorthandStyle{
+                Val: asciidoc.Set{
+                  &asciidoc.String{
+                    Value: "partintro",
+                  },
                 },
               },
+              ID: nil,
+              Roles: nil,
+              Options: nil,
             },
           },
           Set: asciidoc.Set{
@@ -600,14 +606,17 @@ var shouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocBook = &ascii
         },
         &asciidoc.Paragraph{
           AttributeList: asciidoc.AttributeList{
-            &asciidoc.PositionalAttribute{
-              Offset: 0,
-              ImpliedName: "",
-              Val: asciidoc.Set{
-                &asciidoc.String{
-                  Value: "abstract",
+            &asciidoc.ShorthandAttribute{
+              Style: &asciidoc.ShorthandStyle{
+                Val: asciidoc.Set{
+                  &asciidoc.String{
+                    Value: "abstract",
+                  },
                 },
               },
+              ID: nil,
+              Roles: nil,
+              Options: nil,
             },
           },
           Set: asciidoc.Set{
@@ -655,14 +664,17 @@ var shouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook = &asciidoc
         },
         &asciidoc.Section{
           AttributeList: asciidoc.AttributeList{
-            &asciidoc.PositionalAttribute{
-              Offset: 0,
-              ImpliedName: "",
-              Val: asciidoc.Set{
-                &asciidoc.String{
-                  Value: "abstract",
+            &asciidoc.ShorthandAttribute{
+              Style: &asciidoc.ShorthandStyle{
+                Val: asciidoc.Set{
+                  &asciidoc.String{
+                    Value: "abstract",
+                  },
                 },
               },
+              ID: nil,
+              Roles: nil,
+              Options: nil,
             },
           },
           Set: asciidoc.Set{
@@ -726,14 +738,17 @@ var shouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBook = &asciid
         },
         &asciidoc.Section{
           AttributeList: asciidoc.AttributeList{
-            &asciidoc.PositionalAttribute{
-              Offset: 0,
-              ImpliedName: "",
-              Val: asciidoc.Set{
-                &asciidoc.String{
-                  Value: "preface",
+            &asciidoc.ShorthandAttribute{
+              Style: &asciidoc.ShorthandStyle{
+                Val: asciidoc.Set{
+                  &asciidoc.String{
+                    Value: "preface",
+                  },
                 },
               },
+              ID: nil,
+              Roles: nil,
+              Options: nil,
             },
           },
           Set: asciidoc.Set{
@@ -742,14 +757,17 @@ var shouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBook = &asciid
             },
             &asciidoc.Paragraph{
               AttributeList: asciidoc.AttributeList{
-                &asciidoc.PositionalAttribute{
-                  Offset: 0,
-                  ImpliedName: "",
-                  Val: asciidoc.Set{
-                    &asciidoc.String{
-                      Value: "abstract",
+                &asciidoc.ShorthandAttribute{
+                  Style: &asciidoc.ShorthandStyle{
+                    Val: asciidoc.Set{
+                      &asciidoc.String{
+                        Value: "abstract",
+                      },
                     },
                   },
+                  ID: nil,
+                  Roles: nil,
+                  Options: nil,
                 },
               },
               Set: asciidoc.Set{

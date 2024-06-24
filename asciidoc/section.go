@@ -14,7 +14,7 @@ type Section struct {
 	Title Set
 	Level int
 
-	Parent *Section
+	parent *Section
 }
 
 func NewSection(title Set, level int) *Section {
@@ -23,6 +23,14 @@ func NewSection(title Set, level int) *Section {
 
 func (Section) Type() ElementType {
 	return ElementTypeBlock
+}
+
+func (s *Section) Parent() *Section {
+	return s.parent
+}
+
+func (s *Section) AddChild(c *Section) {
+	c.parent = s
 }
 
 func (a *Section) Equals(o Element) bool {
