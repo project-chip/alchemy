@@ -2882,8 +2882,8 @@ var rolesSetsTheRoleAttributeOnTheNode = &asciidoc.Document{
         &asciidoc.ShorthandAttribute{
           Style: &asciidoc.ShorthandStyle{
             Set: asciidoc.Set{
-              &asciidoc.String{
-                Value: "{lead}",
+              &asciidoc.UserAttributeReference{
+                Value: "lead",
               },
             },
           },

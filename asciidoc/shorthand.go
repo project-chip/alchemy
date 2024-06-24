@@ -2,7 +2,6 @@ package asciidoc
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 )
 
@@ -12,18 +11,18 @@ type ShorthandStyle struct {
 	Set
 }
 
-func NewShorthandStyle(value Set) *ShorthandStyle {
+func NewShorthandStyle(value ...Element) *ShorthandStyle {
 	return &ShorthandStyle{Set: value}
 }
 
-func (sa *ShorthandStyle) Equals(osa *ShorthandStyle) bool {
-	if sa == nil {
-		return osa == nil
+func (sa *ShorthandStyle) Equals(osa Element) bool {
+	if osa, ok := osa.(*ShorthandStyle); ok {
+		if osa == nil {
+			return sa == nil
+		}
+		return sa.Set.Equals(osa.Set)
 	}
-	if osa == nil {
-		return false
-	}
-	return sa.Set.Equals(osa.Set)
+	return false
 }
 
 type ShorthandID struct {
@@ -32,18 +31,18 @@ type ShorthandID struct {
 	Set
 }
 
-func NewShorthandID(value Set) *ShorthandID {
+func NewShorthandID(value ...Element) *ShorthandID {
 	return &ShorthandID{Set: value}
 }
 
-func (sa *ShorthandID) Equals(osa *ShorthandID) bool {
-	if sa == nil {
-		return osa == nil
+func (sa *ShorthandID) Equals(osa Element) bool {
+	if osa, ok := osa.(*ShorthandID); ok {
+		if osa == nil {
+			return sa == nil
+		}
+		return sa.Set.Equals(osa.Set)
 	}
-	if osa == nil {
-		return false
-	}
-	return sa.Set.Equals(osa.Set)
+	return false
 }
 
 type ShorthandRole struct {
@@ -52,18 +51,18 @@ type ShorthandRole struct {
 	Set
 }
 
-func NewShorthandRole(value Set) *ShorthandRole {
+func NewShorthandRole(value ...Element) *ShorthandRole {
 	return &ShorthandRole{Set: value}
 }
 
-func (sa *ShorthandRole) Equals(osa *ShorthandRole) bool {
-	if sa == nil {
-		return osa == nil
+func (sa *ShorthandRole) Equals(osa Element) bool {
+	if osa, ok := osa.(*ShorthandRole); ok {
+		if osa == nil {
+			return sa == nil
+		}
+		return sa.Set.Equals(osa.Set)
 	}
-	if osa == nil {
-		return false
-	}
-	return sa.Set.Equals(osa.Set)
+	return false
 }
 
 type ShorthandOption struct {
@@ -72,18 +71,19 @@ type ShorthandOption struct {
 	Set
 }
 
-func NewShorthandOption(value Set) *ShorthandOption {
+func NewShorthandOption(value ...Element) *ShorthandOption {
 	return &ShorthandOption{Set: value}
 }
 
-func (sa *ShorthandOption) Equals(osa *ShorthandOption) bool {
-	if sa == nil {
-		return osa == nil
+func (sa *ShorthandOption) Equals(osa Element) bool {
+	if osa, ok := osa.(*ShorthandOption); ok {
+		if osa == nil {
+			return sa == nil
+		}
+		eq := sa.Set.Equals(osa.Set)
+		return eq
 	}
-	if osa == nil {
-		return false
-	}
-	return sa.Set.Equals(osa.Set)
+	return false
 }
 
 type ShorthandAttribute struct {
@@ -119,9 +119,11 @@ func (ta *ShorthandAttribute) Equals(oa Attribute) bool {
 		return false
 	}
 	if !ta.Style.Equals(ota.Style) {
+		fmt.Printf("styles not equal\n")
 		return false
 	}
 	if !ta.ID.Equals(ota.ID) {
+		fmt.Printf("ids not equal\n")
 		return false
 	}
 	if len(ta.Roles) != len(ota.Roles) {
@@ -130,12 +132,19 @@ func (ta *ShorthandAttribute) Equals(oa Attribute) bool {
 	for i, r := range ta.Roles {
 		or := ota.Roles[i]
 		if !r.Equals(or) {
+			fmt.Printf("role not equal\n")
+
 			return false
 		}
+	}
+	if len(ta.Options) != len(ota.Options) {
+		return false
 	}
 	for i, r := range ta.Options {
 		or := ota.Options[i]
 		if !r.Equals(or) {
+			fmt.Printf("option not equal\n")
+
 			return false
 		}
 	}
@@ -193,9 +202,6 @@ func NewShorthandAttribute(style any, values []any) (*ShorthandAttribute, error)
 	return sha, nil
 }
 
-var shorthandAttributePattern = regexp.MustCompile(`^(?P<Style>[^#\.%\n]+)?(?P<Elements>(?:[#\.%][^#\.%\n]+)*)$`)
-var shorthandElementPattern = regexp.MustCompile(`[#\.%][^#\.%\n]+`)
-
 func parseShorthandAttribute(pa *PositionalAttribute) *ShorthandAttribute {
 	style, id, roles, options := parseShorthandAttributeValues(pa.Val)
 	if style == nil && id == nil && len(roles) == 0 && len(options) == 0 {
@@ -210,10 +216,10 @@ func parseShorthandAttribute(pa *PositionalAttribute) *ShorthandAttribute {
 }
 
 func parseShorthandAttributeValues(els Set) (style *ShorthandStyle, id *ShorthandID, roles []*ShorthandRole, options []*ShorthandOption) {
-	/*if len(els) == 0 {
+	if len(els) == 0 {
 		return
 	}
-	var currentShorthand asciidoc.HasElements
+	var currentShorthand HasElements
 	for _, el := range els {
 		switch el := el.(type) {
 		case *String:
@@ -224,55 +230,75 @@ func parseShorthandAttributeValues(els Set) (style *ShorthandStyle, id *Shorthan
 			for {
 				hashIndex := strings.IndexAny(val, ".#%")
 				if hashIndex < 0 {
-					if style == nil {
-						style = NewShorthandStyle(Set{NewString(val)})
-						currentShorthand = style.Val
+					if currentShorthand == nil { // We haven't hit any shorthands yet, so this must be a style
+						style = NewShorthandStyle()
+						currentShorthand = style
+					}
+					currentShorthand.Append(NewString(val))
+					break
+				}
+				if hashIndex >= 0 {
+					if hashIndex > 0 { // We have some text at the beginning
+						if currentShorthand == nil { // We haven't hit any shorthands yet, so this must be a style
+							style = NewShorthandStyle()
+							currentShorthand = style
+						}
+						currentShorthand.Append(NewString(val[:hashIndex]))
 					}
 				}
-				if hashIndex > 0 {
-					if style == nil {
-						style = NewShorthandStyle(Set{NewString(val[:hashIndex])})
+				switch cs := currentShorthand.(type) {
+				case nil:
+				case *ShorthandStyle:
+					if len(cs.Set) > 0 {
+						style = cs
+					}
+				case *ShorthandID:
+					if len(cs.Set) > 0 {
+						id = cs
+					}
+				case *ShorthandRole:
+					if len(cs.Set) > 0 {
+						roles = append(roles, cs)
+					}
+				case *ShorthandOption:
+					if len(cs.Set) > 0 {
+						options = append(options, cs)
 					}
 				}
 				switch val[hashIndex] {
 				case '.':
+					currentShorthand = NewShorthandRole()
 				case '#':
+					currentShorthand = NewShorthandID()
 				case '%':
+					currentShorthand = NewShorthandOption()
 				}
-
+				val = val[hashIndex+1:]
 			}
 		default:
-			if currentSet == nil {
-
+			if currentShorthand == nil { // Must be a style
+				currentShorthand = NewShorthandStyle()
 			}
+			currentShorthand.Append(el)
 		}
-	}*/
-	val := AttributeAsciiDocString(els)
-	matches := shorthandAttributePattern.FindStringSubmatch(val)
-	if matches == nil {
-		return
 	}
-	ss := matches[1]
-	if len(ss) > 0 {
-		style = NewShorthandStyle(Set{NewString(ss)})
-	}
-	elements := matches[2]
-	if len(elements) > 0 {
-		ems := shorthandElementPattern.FindAllString(elements, -1)
-		if ems == nil {
-			return
+	switch cs := currentShorthand.(type) {
+	case nil:
+	case *ShorthandStyle:
+		if len(cs.Set) > 0 {
+			style = cs
 		}
-		for _, em := range ems {
-			head := em[0]
-			val := em[1:]
-			switch head {
-			case '#':
-				id = NewShorthandID(Set{NewString(val)})
-			case '.':
-				roles = append(roles, NewShorthandRole(Set{NewString(val)}))
-			case '%':
-				options = append(options, NewShorthandOption(Set{NewString(val)}))
-			}
+	case *ShorthandID:
+		if len(cs.Set) > 0 {
+			id = cs
+		}
+	case *ShorthandRole:
+		if len(cs.Set) > 0 {
+			roles = append(roles, cs)
+		}
+	case *ShorthandOption:
+		if len(cs.Set) > 0 {
+			options = append(options, cs)
 		}
 	}
 	return
