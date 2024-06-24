@@ -73,8 +73,8 @@ var otherwiseTests = []conformanceTestSuite{
 			{Context: Context{Values: map[string]any{"STA": true, "SFR": true}}, Expected: StateOptional},
 			{Context: Context{Values: map[string]any{"PA": true}}, Expected: StateOptional},
 			{Context: Context{Values: map[string]any{"CF": true}}, Expected: StateMandatory},
-			{Context: Context{Values: map[string]any{"DF": true, "CF": true}}, Expected: StateOptional},
-			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"SFR": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateMandatory},
 		},
 	},
 	{
