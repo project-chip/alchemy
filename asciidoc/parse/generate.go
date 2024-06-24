@@ -57,7 +57,7 @@ func main() {
 			grammar.WriteString("\n\n")
 		}
 
-		args := []string{"-optimize-basic-latin"}
+		args := []string{}
 		if !debugParser {
 			args = append(args, "-optimize-parser")
 			//args = append(args, "-optimize-grammar")
