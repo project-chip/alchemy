@@ -1,6 +1,6 @@
 package render
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 func renderAnchor(cxt *Context, el *asciidoc.Anchor) (err error) {
 	cxt.WriteString("[[")

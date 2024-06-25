@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
 type Reader struct {

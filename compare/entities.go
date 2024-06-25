@@ -6,9 +6,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func Entities(spec *spec.Specification, specEntities map[string][]types.Entity, zapEntities map[string][]types.Entity) (diffs []*ClusterDifferences, err error) {

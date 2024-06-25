@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type field struct {

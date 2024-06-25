@@ -3,7 +3,7 @@ package parse
 import (
 	"slices"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 type SearchShould uint8

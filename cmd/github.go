@@ -3,7 +3,7 @@
 package cmd
 
 import (
-	"github.com/hasty/alchemy/cmd/github"
+	"github.com/project-chip/alchemy/cmd/github"
 	"github.com/sethvargo/go-githubactions"
 )
 

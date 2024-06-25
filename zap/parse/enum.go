@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/zap"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func (sp *ZapParser) readEnum(d *xml.Decoder, e xml.StartElement) (en *matter.Enum, clusterIDs []*matter.Number, err error) {

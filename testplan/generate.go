@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
-	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type Generator struct {

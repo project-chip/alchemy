@@ -4,14 +4,14 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/hasty/alchemy/cmd/common"
-	"github.com/hasty/alchemy/internal/files"
-	"github.com/hasty/alchemy/internal/parse"
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
-	"github.com/hasty/alchemy/zap"
-	"github.com/hasty/alchemy/zap/generate"
+	"github.com/project-chip/alchemy/cmd/common"
+	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/zap"
+	"github.com/project-chip/alchemy/zap/generate"
 	"github.com/spf13/cobra"
 )
 

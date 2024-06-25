@@ -11,9 +11,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/hasty/alchemy/asciidoc/parse"
 	"github.com/iancoleman/strcase"
 	"github.com/lithammer/dedent"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/sanity-io/litter"
 )
 
@@ -109,7 +109,7 @@ func main() {
 }
 
 func cleanObjectDump(s string) string {
-	return strings.ReplaceAll(s, "[github.com/hasty/alchemy/", "[")
+	return strings.ReplaceAll(s, "[github.com/project-chip/alchemy/", "[")
 }
 
 var testTemplate = `package tests
@@ -117,7 +117,7 @@ var testTemplate = `package tests
 import (
 	"testing"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 func Test{{.Name}}(t *testing.T) {

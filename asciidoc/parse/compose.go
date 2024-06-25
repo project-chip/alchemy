@@ -3,7 +3,7 @@ package parse
 import (
 	"fmt"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 type composeOption[T asciidoc.Element] func(t T) error

@@ -1,6 +1,6 @@
 package config
 
-import "github.com/hasty/alchemy/matter"
+import "github.com/project-chip/alchemy/matter"
 
 var Default = Settings{
 	Zap: ZapSettings{

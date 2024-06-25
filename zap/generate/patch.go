@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func mergeLines(lines []string, newLineMap map[string]struct{}, skip int) []string {

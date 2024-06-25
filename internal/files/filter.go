@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
 type PathFilter[T any] struct {

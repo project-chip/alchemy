@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type Baller struct {

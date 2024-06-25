@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"slices"
 
-	"github.com/hasty/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/log"
 )
 
 type referenceIndex struct {

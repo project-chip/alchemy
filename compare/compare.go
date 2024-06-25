@@ -3,10 +3,10 @@ package compare
 import (
 	"strings"
 
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/zap"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func compareConformance(entityType types.EntityType, spec conformance.Set, zap conformance.Set) (diffs []Diff) {

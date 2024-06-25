@@ -1,6 +1,6 @@
 package render
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 func renderFileInclude(cxt *Context, el *asciidoc.FileInclude) {
 	cxt.WriteString("include::")

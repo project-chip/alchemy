@@ -3,7 +3,7 @@ package disco
 import (
 	"fmt"
 
-	"github.com/hasty/alchemy/matter"
+	"github.com/project-chip/alchemy/matter"
 )
 
 func (b *Ball) organizeClusterIDSection(cxt *discoContext, dp *docParse) (err error) {

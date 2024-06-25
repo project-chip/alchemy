@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/hasty/alchemy/internal/parse"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type Ball struct {

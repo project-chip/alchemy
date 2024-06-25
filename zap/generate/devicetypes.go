@@ -10,14 +10,14 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/internal/log"
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/internal/xml"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/matter/spec"
-	"github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/zap"
+	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/xml"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
 type DeviceTypesPatcher struct {

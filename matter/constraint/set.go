@@ -5,7 +5,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type Set []Constraint

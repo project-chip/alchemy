@@ -3,7 +3,7 @@ package render
 import (
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 func renderInternalCrossReference(cxt *Context, cf *asciidoc.CrossReference) (err error) {

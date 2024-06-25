@@ -1,6 +1,6 @@
 package parse
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 type delimitedBlockState map[asciidoc.DelimitedBlockType][]int
 

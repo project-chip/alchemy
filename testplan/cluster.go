@@ -3,8 +3,8 @@ package testplan
 import (
 	"strings"
 
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func renderClusterTestPlan(doc *spec.Doc, cluster *matter.Cluster) (output string, err error) {

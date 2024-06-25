@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type MathExpressionLimit struct {

@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Get tag
         id: tag
-        uses: hasty/action-get-tag@main
+        uses: devops-actions/action-get-tag@main
         with:
           strip_v: true
       - uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
           goarch: ${{ matrix.goarch }}
           project_path: "."
           binary_name: "alchemy"
-          ldflags: "-s -w -X 'github.com/hasty/alchemy/config.Tag=${{ steps.tag.outputs.tag }}'"
+          ldflags: "-s -w -X 'github.com/project-chip/alchemy/config.Tag=${{ steps.tag.outputs.tag }}'"
           extra_files: LICENSE README.md
           asset_name: "alchemy-${{ steps.tag.outputs.tag }}-${{ matrix.goos }}-${{ matrix.goarch }}"
   alchemy-db:
@@ -52,7 +52,7 @@ jobs:
     steps:
       - name: Get tag
         id: tag
-        uses: hasty/action-get-tag@main
+        uses: devops-actions/action-get-tag@main
         with:
           strip_v: true
       - uses: actions/checkout@v4
@@ -63,7 +63,7 @@ jobs:
           goarch: ${{ matrix.goarch }}
           project_path: "."
           binary_name: "alchemy-db"
-          ldflags: "-s -w -X 'github.com/hasty/alchemy/config.Tag=${{ steps.tag.outputs.tag }}'"
+          ldflags: "-s -w -X 'github.com/project-chip/alchemy/config.Tag=${{ steps.tag.outputs.tag }}'"
           build_flags: -tags ${{ matrix.tags }}
           extra_files: LICENSE README.md
           asset_name: "alchemy-db-${{ steps.tag.outputs.tag }}-${{ matrix.goos }}-${{ matrix.goarch }}"

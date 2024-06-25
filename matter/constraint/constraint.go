@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func ParseString(constraint string) (Constraint, error) {

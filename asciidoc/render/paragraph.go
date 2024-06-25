@@ -1,6 +1,6 @@
 package render
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 func renderParagraph(cxt *Context, p *asciidoc.Paragraph) (err error) {
 	err = renderAttributes(cxt, p.Attributes(), false)

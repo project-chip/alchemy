@@ -3,7 +3,7 @@ package common
 import (
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/spf13/cobra"
 )
 

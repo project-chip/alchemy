@@ -1,6 +1,6 @@
 package parse
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 func buildDoc(els asciidoc.Set) (d *asciidoc.Document, err error) {
 	d = &asciidoc.Document{}

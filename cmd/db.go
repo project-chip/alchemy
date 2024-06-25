@@ -3,7 +3,7 @@
 package cmd
 
 import (
-	"github.com/hasty/alchemy/cmd/database"
+	"github.com/project-chip/alchemy/cmd/database"
 )
 
 func init() {

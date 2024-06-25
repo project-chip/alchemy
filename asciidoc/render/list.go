@@ -1,6 +1,6 @@
 package render
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 func renderOrderedListElement(cxt *Context, el *asciidoc.OrderedListItem) (err error) {
 

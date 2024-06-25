@@ -6,11 +6,11 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/hasty/alchemy/internal/parse"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/zap"
+	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func (sp *ZapParser) readBitmap(d *xml.Decoder, e xml.StartElement) (bitmap *matter.Bitmap, clusterIDs []*matter.Number, err error) {

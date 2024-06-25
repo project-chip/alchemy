@@ -3,9 +3,9 @@ package common
 import (
 	"context"
 
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type DocTypeFilter struct {

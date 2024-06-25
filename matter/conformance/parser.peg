@@ -5,7 +5,7 @@ import (
     "fmt"
     "strconv"
 
-    "github.com/hasty/alchemy/matter"
+    "github.com/project-chip/alchemy/matter"
 )
 
 func debug(format string, a ...any) (n int, err error) {

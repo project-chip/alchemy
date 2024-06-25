@@ -9,9 +9,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/asciidoc/parse"
-	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
 func ParseFile(path string, attributes ...asciidoc.AttributeName) (*Doc, error) {

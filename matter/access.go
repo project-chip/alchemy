@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type Privilege uint8

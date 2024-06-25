@@ -1,7 +1,7 @@
 package render
 
 import (
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 func renderLink(cxt *Context, il *asciidoc.Link) (err error) {

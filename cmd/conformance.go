@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hasty/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/spf13/cobra"
 )
 

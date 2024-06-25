@@ -1,6 +1,6 @@
 package render
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 func renderConditional(cxt *Context, prefix string, attributes asciidoc.AttributeNames, union asciidoc.ConditionalUnion) {
 	cxt.WriteString(prefix)

@@ -1,6 +1,6 @@
 package conformance
 
-import "github.com/hasty/alchemy/matter/types"
+import "github.com/project-chip/alchemy/matter/types"
 
 type IdentifierStore interface {
 	Identifier(id string) (types.Entity, bool)

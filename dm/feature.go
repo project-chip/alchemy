@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {

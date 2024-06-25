@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
 func Render(cxt context.Context, doc InputDocument) (string, error) {

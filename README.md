@@ -21,7 +21,7 @@ It can:
 
 ### Prebuilt Binaries
 
-Download the latest releases from the [GitHub release page](https://github.com/hasty/alchemy/releases).
+Download the latest releases from the [GitHub release page](https://github.com/project-chip/alchemy/releases).
 
 There are two builds for each architecture: plain and db. The db build includes the [DB Feature](#alchemy-db) below, but at the expense of a larger binary.
 

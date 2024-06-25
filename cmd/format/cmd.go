@@ -3,10 +3,10 @@ package format
 import (
 	"context"
 
-	"github.com/hasty/alchemy/asciidoc/render"
-	"github.com/hasty/alchemy/internal/files"
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/asciidoc/render"
+	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/spf13/cobra"
 )
 

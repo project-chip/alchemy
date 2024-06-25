@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/hasty/alchemy/cmd"
+	"github.com/project-chip/alchemy/cmd"
 )
 
 var start = time.Now()

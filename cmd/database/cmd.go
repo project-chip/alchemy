@@ -7,10 +7,10 @@ import (
 	"fmt"
 
 	"github.com/dolthub/go-mysql-server/sql"
-	"github.com/hasty/alchemy/cmd/common"
-	"github.com/hasty/alchemy/db"
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/cmd/common"
+	"github.com/project-chip/alchemy/db"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/spf13/cobra"
 )
 

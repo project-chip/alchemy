@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hasty/alchemy/cmd/common"
-	"github.com/hasty/alchemy/internal/files"
-	"github.com/hasty/alchemy/internal/parse"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/cmd/common"
+	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/spf13/cobra"
 )
 

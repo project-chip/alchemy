@@ -4,9 +4,9 @@ import (
 	"context"
 	"path/filepath"
 
-	"github.com/hasty/alchemy/internal/parse"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func (h *Host) indexDoc(ctx context.Context, doc *spec.Doc, raw bool) (*sectionInfo, error) {

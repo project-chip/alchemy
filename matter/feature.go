@@ -3,8 +3,8 @@ package matter
 import (
 	"encoding/json"
 
-	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type Features struct {

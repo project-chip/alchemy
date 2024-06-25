@@ -3,7 +3,7 @@ package render
 import (
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 func renderDelimiter(cxt *Context, delimiter asciidoc.Delimiter) {

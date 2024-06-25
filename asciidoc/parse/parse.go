@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 func File(path string) (*asciidoc.Document, error) {

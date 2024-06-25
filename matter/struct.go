@@ -1,6 +1,6 @@
 package matter
 
-import "github.com/hasty/alchemy/matter/types"
+import "github.com/project-chip/alchemy/matter/types"
 
 type Struct struct {
 	Name          string        `json:"name,omitempty"`

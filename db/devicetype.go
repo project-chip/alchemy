@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	"github.com/hasty/alchemy/matter"
+	"github.com/project-chip/alchemy/matter"
 )
 
 func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, deviceType *matter.DeviceType) error {

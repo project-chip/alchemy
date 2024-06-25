@@ -3,9 +3,9 @@ package disco
 import (
 	"context"
 
-	"github.com/hasty/alchemy/disco"
-	"github.com/hasty/alchemy/internal/files"
-	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/disco"
+	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/spf13/cobra"
 )
 

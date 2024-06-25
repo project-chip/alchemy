@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hasty/alchemy/matter"
+	"github.com/project-chip/alchemy/matter"
 )
 
 var header = `= *%s Cluster Test Plan*

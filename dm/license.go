@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hasty/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/files"
 )
 
 var copyrightPattern = regexp.MustCompile(`Copyright\s+\(C\)\s+Connectivity\s+Standards\s+Alliance\s+\((?P<Year>[0-9]+)\)`)

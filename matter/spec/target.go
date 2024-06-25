@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hasty/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/files"
 )
 
 func getSpecPaths(specRoot string) (paths []string, err error) {

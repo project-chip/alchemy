@@ -3,10 +3,10 @@ package disco
 import (
 	"log/slog"
 
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/constraint"
-	"github.com/hasty/alchemy/matter/spec"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/constraint"
+	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func fixConstraintCells(doc *spec.Doc, ti *tableInfo) (err error) {

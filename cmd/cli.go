@@ -3,13 +3,13 @@
 package cmd
 
 import (
-	"github.com/hasty/alchemy/cmd/compare"
-	"github.com/hasty/alchemy/cmd/disco"
-	"github.com/hasty/alchemy/cmd/dm"
-	"github.com/hasty/alchemy/cmd/dump"
-	"github.com/hasty/alchemy/cmd/format"
-	"github.com/hasty/alchemy/cmd/testplan"
-	"github.com/hasty/alchemy/cmd/zap"
+	"github.com/project-chip/alchemy/cmd/compare"
+	"github.com/project-chip/alchemy/cmd/disco"
+	"github.com/project-chip/alchemy/cmd/dm"
+	"github.com/project-chip/alchemy/cmd/dump"
+	"github.com/project-chip/alchemy/cmd/format"
+	"github.com/project-chip/alchemy/cmd/testplan"
+	"github.com/project-chip/alchemy/cmd/zap"
 )
 
 func init() {

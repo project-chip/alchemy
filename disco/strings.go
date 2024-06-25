@@ -4,8 +4,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/parse"
 )
 
 var missingSpaceAfterPunctuationPattern = regexp.MustCompile(`([a-z])([.?!,])([A-Z])`)

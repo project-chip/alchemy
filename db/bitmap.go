@@ -3,7 +3,7 @@ package db
 import (
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
-	"github.com/hasty/alchemy/matter"
+	"github.com/project-chip/alchemy/matter"
 )
 
 func getBitmapSchemaColumns(tableName string) []*mms.Column {

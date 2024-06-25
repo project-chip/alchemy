@@ -3,9 +3,9 @@ package testplan
 import (
 	"strings"
 
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func buildDestinations(sdkRoot string, entities []types.Entity) (destinations map[string]*matter.Cluster) {

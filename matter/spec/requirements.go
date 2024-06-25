@@ -5,11 +5,11 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/internal/log"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/constraint"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/constraint"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.ClusterRequirement, err error) {

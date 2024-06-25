@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/sanity-io/litter"
 )
 
@@ -34,7 +34,7 @@ func (pt *parseTest) run() error {
 }
 
 func cleanObjectDump(s string) string {
-	return strings.ReplaceAll(s, "[github.com/hasty/alchemy/", "[")
+	return strings.ReplaceAll(s, "[github.com/project-chip/alchemy/", "[")
 }
 
 type parseTests []parseTest

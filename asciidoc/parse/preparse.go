@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 func PreParseFile(context *AttributeContext, path string) (string, error) {
