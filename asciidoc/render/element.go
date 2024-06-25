@@ -140,6 +140,8 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 			cxt.WriteString("+")
 		case *asciidoc.Counter:
 			renderCounter(cxt, el)
+		case *asciidoc.ThematicBreak:
+			cxt.WriteString("'''\n")
 		case nil:
 		default:
 			err = fmt.Errorf("unknown render element type: %T", el)
