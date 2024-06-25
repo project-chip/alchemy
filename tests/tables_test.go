@@ -4964,8 +4964,8 @@ var doesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciidoc.Document
                 IsSet: false,
               },
               Percentage: asciidoc.Optional[int]{
-                Value: 0,
-                IsSet: false,
+								Value: 15,
+								IsSet: true,
               },
               Style: asciidoc.Optional[asciidoc.TableCellStyle]{
                 Value: 0,
@@ -5977,8 +5977,8 @@ var equallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookOutput = &a
                 IsSet: false,
               },
               Percentage: asciidoc.Optional[int]{
-                Value: 0,
-                IsSet: false,
+								Value: 15,
+								IsSet: true,
               },
               Style: asciidoc.Optional[asciidoc.TableCellStyle]{
                 Value: 0,
@@ -15874,8 +15874,8 @@ var percentagesAsColumnWidths = &asciidoc.Document{
                 IsSet: false,
               },
               Percentage: asciidoc.Optional[int]{
-                Value: 0,
-                IsSet: false,
+								Value: 10,
+								IsSet: true,
               },
               Style: asciidoc.Optional[asciidoc.TableCellStyle]{
                 Value: 0,
@@ -15900,8 +15900,8 @@ var percentagesAsColumnWidths = &asciidoc.Document{
                 IsSet: false,
               },
               Percentage: asciidoc.Optional[int]{
-                Value: 0,
-                IsSet: false,
+								Value: 90,
+								IsSet: true,
               },
               Style: asciidoc.Optional[asciidoc.TableCellStyle]{
                 Value: 0,
