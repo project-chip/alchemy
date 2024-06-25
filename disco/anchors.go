@@ -7,12 +7,12 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/asciidoc/render"
-	"github.com/hasty/alchemy/internal/log"
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/render"
+	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 var properAnchorPattern = regexp.MustCompile(`^ref_[A-Z0-9]+[a-z0-9]*(?:[A-Z]+[a-z]*)*([A-Z0-9]+[a-z0-9]*(?:[A-Z0-9]+[a-z0-9]*)*)*$`)

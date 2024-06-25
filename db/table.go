@@ -8,9 +8,9 @@ import (
 	"github.com/dolthub/go-mysql-server/memory"
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func (h *Host) createTable(cxt *mms.Context, tableName string, parentTable string, sections []*sectionInfo, columns []matter.TableColumn) error {

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/internal/parse"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func (s *Section) toDeviceTypes(d *Doc) (entities []types.Entity, err error) {

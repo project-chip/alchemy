@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	litter.Config.HomePackage = "github.com/hasty/alchemy"
+	litter.Config.HomePackage = "github.com/project-chip/alchemy"
 }
 
 var tableTests = parseTests{

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {

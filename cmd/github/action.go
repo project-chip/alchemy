@@ -7,10 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hasty/alchemy/config"
-	"github.com/hasty/alchemy/disco"
-	"github.com/hasty/alchemy/internal/files"
-	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/config"
+	"github.com/project-chip/alchemy/disco"
+	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/sethvargo/go-githubactions"
 	"github.com/spf13/cobra"
 )

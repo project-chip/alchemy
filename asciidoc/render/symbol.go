@@ -1,6 +1,6 @@
 package render
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 func renderFormattedText(cxt *Context, el asciidoc.BlockElement, wrapper string) (err error) {
 	err = renderAttributes(cxt, el.Attributes(), true)

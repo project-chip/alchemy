@@ -9,9 +9,9 @@ import (
 	"log/slog"
 	"sync"
 
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type ZapParser struct {

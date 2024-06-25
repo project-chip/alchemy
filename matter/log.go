@@ -3,7 +3,7 @@ package matter
 import (
 	"log/slog"
 
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func LogEntity(en types.Entity) slog.Attr {

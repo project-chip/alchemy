@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func (h *Host) indexStructs(cluster *matter.Cluster, parent *sectionInfo) {

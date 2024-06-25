@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func (b *Ball) organizeStructSections(cxt *discoContext, dp *docParse) (err error) {

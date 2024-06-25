@@ -5,10 +5,10 @@ import (
 	"strconv"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/matter/spec"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func renderConformanceString(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {

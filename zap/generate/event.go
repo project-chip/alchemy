@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	axml "github.com/hasty/alchemy/internal/xml"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/zap"
+	axml "github.com/project-chip/alchemy/internal/xml"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, events map[*matter.Event]struct{}, errata *zap.Errata) (err error) {

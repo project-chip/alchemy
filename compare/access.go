@@ -3,8 +3,8 @@ package compare
 import (
 	"log/slog"
 
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func compareAccess(entityType types.EntityType, spec matter.Access, zap matter.Access) (diffs []Diff) {

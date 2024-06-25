@@ -6,8 +6,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/internal/text"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/text"
 )
 
 type table struct {

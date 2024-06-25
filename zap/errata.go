@@ -1,6 +1,6 @@
 package zap
 
-import "github.com/hasty/alchemy/matter"
+import "github.com/project-chip/alchemy/matter"
 
 type Errata struct {
 	SuppressAttributePermissions bool

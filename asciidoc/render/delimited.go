@@ -1,6 +1,6 @@
 package render
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 func renderDelimitedLines(cxt *Context, el asciidoc.HasLines, delimiter asciidoc.Delimiter) {
 	if ae, ok := el.(asciidoc.Attributable); ok {

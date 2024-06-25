@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hasty/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
 type DryRun[T string | []byte] struct {

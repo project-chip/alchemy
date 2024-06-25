@@ -1,4 +1,4 @@
-module github.com/hasty/alchemy
+module github.com/project-chip/alchemy
 
 go 1.22
 

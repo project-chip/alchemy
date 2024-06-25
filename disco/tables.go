@@ -5,11 +5,11 @@ import (
 	"log/slog"
 	"slices"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/internal/parse"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func (b *Ball) ensureTableOptions(els asciidoc.Set) {

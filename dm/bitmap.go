@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {

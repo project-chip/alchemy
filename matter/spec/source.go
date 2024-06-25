@@ -1,7 +1,7 @@
 package spec
 
 import (
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 type source struct {

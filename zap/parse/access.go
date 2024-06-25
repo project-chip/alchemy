@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/hasty/alchemy/matter"
+	"github.com/project-chip/alchemy/matter"
 )
 
 func readAccess(d *xml.Decoder, e xml.StartElement, access *matter.Access) (err error) {

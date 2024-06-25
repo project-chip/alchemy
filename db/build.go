@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/dolthub/go-mysql-server/sql"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func (h *Host) Build(sc *sql.Context, spec *spec.Specification, docs []*spec.Doc, raw bool) error {

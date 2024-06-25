@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hasty/alchemy/asciidoc/render"
-	"github.com/hasty/alchemy/internal/files"
-	"github.com/hasty/alchemy/internal/pipeline"
-	"github.com/hasty/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/asciidoc/render"
+	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineOptions pipeline.Options, discoOptions []Option, writer files.Writer[string]) (err error) {

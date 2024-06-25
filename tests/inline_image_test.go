@@ -1,6 +1,6 @@
 package tests
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 var inlineImage = &asciidoc.Document{
 	Set: asciidoc.Set{

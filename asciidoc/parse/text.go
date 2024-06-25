@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 func toString(e any) string {

@@ -1,6 +1,6 @@
 package parse
 
-import "github.com/hasty/alchemy/asciidoc"
+import "github.com/project-chip/alchemy/asciidoc"
 
 func copyPosition[T asciidoc.HasPosition](source any, element T) T {
 	switch source := source.(type) {

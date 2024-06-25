@@ -6,10 +6,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/hasty/alchemy/internal/pipeline"
 	"github.com/hexops/gotextdiff"
 	"github.com/hexops/gotextdiff/myers"
 	"github.com/hexops/gotextdiff/span"
+	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
 type Patcher[T string | []byte] struct {

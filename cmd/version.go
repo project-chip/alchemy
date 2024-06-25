@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hasty/alchemy/config"
+	"github.com/project-chip/alchemy/config"
 	"github.com/spf13/cobra"
 )
 

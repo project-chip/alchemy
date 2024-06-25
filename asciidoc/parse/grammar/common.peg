@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-    "github.com/hasty/alchemy/asciidoc"
+    "github.com/project-chip/alchemy/asciidoc"
 )
 
 }

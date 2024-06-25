@@ -2,8 +2,8 @@ package generate
 
 import (
 	"github.com/beevik/etree"
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/zap"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {

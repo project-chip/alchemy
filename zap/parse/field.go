@@ -6,11 +6,11 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/conformance"
-	"github.com/hasty/alchemy/matter/constraint"
-	"github.com/hasty/alchemy/matter/types"
-	"github.com/hasty/alchemy/zap"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
+	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func readField(path string, d *xml.Decoder, e xml.StartElement, entityType types.EntityType, name string) (field *matter.Field, err error) {

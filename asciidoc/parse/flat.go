@@ -3,7 +3,7 @@ package parse
 import (
 	"fmt"
 
-	"github.com/hasty/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 func cast[F any, T any](in []F) (out []T) {

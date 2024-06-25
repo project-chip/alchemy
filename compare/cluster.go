@@ -1,9 +1,9 @@
 package compare
 
 import (
-	"github.com/hasty/alchemy/matter"
-	"github.com/hasty/alchemy/matter/spec"
-	"github.com/hasty/alchemy/matter/types"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type ClusterDifferences struct {

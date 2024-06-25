@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hasty/alchemy/asciidoc"
-	"github.com/hasty/alchemy/asciidoc/render"
-	"github.com/hasty/alchemy/internal/parse"
-	"github.com/hasty/alchemy/matter"
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/asciidoc/render"
+	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/matter"
 )
 
 type ColumnIndex map[matter.TableColumn]int
