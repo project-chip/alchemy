@@ -218,6 +218,13 @@ func parseColumnAttribute(a *NamedAttribute) (*TableColumnsAttribute, error) {
 					}
 					col.Width = One(TableColumnWidth(width))
 				}
+			case columnMatchPercentage:
+				percentage, err := strconv.Atoi(s)
+				if err != nil {
+					return nil, fmt.Errorf("invalid width %s: %w", s, err)
+
+				}
+				col.Percentage = One(int(percentage))
 			case columnMatchStyle:
 				switch s {
 				case "a":

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/hasty/alchemy/asciidoc/render"
 	"github.com/hasty/alchemy/cmd/common"
 	"github.com/hasty/alchemy/internal/files"
 	"github.com/hasty/alchemy/internal/parse"
@@ -24,6 +25,7 @@ var Command = &cobra.Command{
 func init() {
 	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
+	Command.Flags().String("testRoot", "chip-test-plans", "the root of your clone of CHIP-Specifications/chip-test-plans")
 	Command.Flags().Bool("overwrite", false, "overwrite existing test plans")
 }
 
@@ -84,21 +86,34 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	var clusters pipeline.Map[string, *pipeline.Data[*matter.Cluster]]
-	clusters, err = pipeline.Process[*spec.Doc, *matter.Cluster](cxt, pipelineOptions, &common.EntityFilter[*spec.Doc, *matter.Cluster]{}, specDocs)
+	generator := testplan.NewGenerator(testRoot, overwrite)
+	var testplans pipeline.Map[string, *pipeline.Data[string]]
+	testplans, err = pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, generator, specDocs)
 	if err != nil {
 		return err
 	}
 
-	generator := testplan.NewGenerator(testRoot, overwrite)
-	var testplans pipeline.Map[string, *pipeline.Data[string]]
-	testplans, err = pipeline.Process[*matter.Cluster, string](cxt, pipelineOptions, generator, clusters)
+	docReader := spec.NewStringReader("Reading test plans")
+	testplanDocs, err := pipeline.Process[string, *spec.Doc](cxt, pipelineOptions, docReader, testplans)
+	if err != nil {
+		return err
+	}
+
+	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[render.InputDocument]](testplanDocs.Size())
+	err = pipeline.Cast(testplanDocs, ids)
+	if err != nil {
+		return err
+	}
+
+	renderer := render.NewRenderer()
+	var renders pipeline.Map[string, *pipeline.Data[string]]
+	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, ids)
 	if err != nil {
 		return err
 	}
 
 	writer := files.NewWriter[string]("Writing test plans", fileOptions)
-	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, testplans)
+	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, renders)
 	if err != nil {
 		return err
 	}

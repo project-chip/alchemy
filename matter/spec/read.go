@@ -63,3 +63,29 @@ func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
 	return
 }
+
+type StringReader struct {
+	name string
+}
+
+func NewStringReader(name string) StringReader {
+	return StringReader{name: name}
+}
+
+func (r StringReader) Name() string {
+	return r.name
+}
+
+func (r StringReader) Type() pipeline.ProcessorType {
+	return pipeline.ProcessorTypeIndividual
+}
+
+func (r StringReader) Process(cxt context.Context, input *pipeline.Data[string], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[string], err error) {
+	var doc *Doc
+	doc, err = Read(input.Content, input.Path)
+	if err != nil {
+		return
+	}
+	outputs = append(outputs, &pipeline.Data[*Doc]{Path: input.Path, Content: doc})
+	return
+}

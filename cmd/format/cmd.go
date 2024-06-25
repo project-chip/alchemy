@@ -37,7 +37,7 @@ func format(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	ids := pipeline.NewConcurrentMapPresized[string, *pipeline.Data[render.InputDocument]](docs.Size())
-	err = pipeline.Cast[*spec.Doc, render.InputDocument](docs, ids)
+	err = pipeline.Cast(docs, ids)
 	if err != nil {
 		return err
 	}
