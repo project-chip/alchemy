@@ -1,0 +1,64 @@
+
+
+ChoiceRange <- lower:Integer '-' upper:Integer {
+    minVal := lower.(int)
+    if minVal <= 0 {
+        return nil, fmt.Errorf("invalid minimum: %d", minVal)
+    } 
+    maxVal := upper.(int)
+    if maxVal <= 0  && minVal > maxVal {
+        return nil, fmt.Errorf("invalid maximum: %d", maxVal)
+    } 
+    return &ChoiceRangeLimit{Min:minVal, Max:maxVal}, nil
+}
+
+ChoiceMin <- limit:Integer? '+' {
+    if limit == nil {
+        return &ChoiceMinLimit{Min:1}, nil
+    }
+    minVal := limit.(int)
+    if minVal <= 0 {
+        return nil, fmt.Errorf("invalid minimum: %d", minVal)
+    }    
+    return &ChoiceMinLimit{Min:minVal}, nil
+}
+
+ChoiceMax <- limit:Integer? '-' {
+     if limit == nil {
+        return &ChoiceMaxLimit{Max:1}, nil
+    }
+    maxVal := limit.(int)
+    if maxVal <= 0 {
+        return nil, fmt.Errorf("invalid maximum: %d", maxVal)
+    } 
+    return &ChoiceMaxLimit{Max:maxVal}, nil
+}
+
+ChoiceExact <- limit:Integer {
+    exact := limit.(int)
+    if exact <= 0 {
+        return nil, fmt.Errorf("invalid exact: %d", exact)
+    } 
+    return &ChoiceExactLimit{Limit:exact}, nil
+}
+
+ChoiceLimit <- limit:(ChoiceRange / ChoiceMin / ChoiceMax / ChoiceExact) {
+    return limit.(ChoiceLimit), nil
+}
+
+Set <- [a-z]+ {
+    return string(c.text), nil
+}
+
+Choice <- '.' set:Set limit:ChoiceLimit? {
+    choice := &Choice{Set:set.(string)}
+    if limit != nil {
+        switch v := limit.(type) {
+            case ChoiceLimit:
+            choice.Limit = v
+            default:
+            return nil, fmt.Errorf("unexpected choice limit type: %T", limit)
+        }
+    }
+    return choice, nil
+}

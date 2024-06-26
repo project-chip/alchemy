@@ -1,0 +1,60 @@
+StringLimit <- "\"" limit:[^"]* "\"" {
+	var val []uint8
+	for _, d := range limit.([]any) {
+		val = append(val, d.([]uint8)...)
+	}
+	return &StringLimit{Value:string(val)}, nil
+}
+
+Float <- Integer ("." [0-9]+) {
+	debug("found float %s\n", string(c.text))
+	return decimal.NewFromString(string(c.text))
+}
+
+Integer <- sign:('-'/'+')? digits:Digits  {
+	debug("found int %s\n", string(c.text))
+	return strconv.ParseInt(string(c.text), 10, 64)
+}
+
+Hex <- "0x"i hex:[0-9A-Fa-f]+ {
+	var val []uint8
+	for _, d := range hex.([]interface{}) {
+		val = append(val, d.([]uint8)...)
+	}
+	debug("found hex %s\n", string(val))
+	return strconv.ParseUint(string(val), 16, 64)
+}
+
+PascalCase <- Capitalized+ Capitalized* {
+	debug("found pascal %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Capitalized <- Uppercase+ Lowercase+ {
+	debug("found capitalized %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Uppercase <- [A-Z] {
+	debug("found uppercase %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Lowercase <- [a-z] {
+	debug("found lowercase %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+_ "whitespace" ← [ \t\r\n]*
+
+Comma <- ',' 
+
+Digits <- [0-9]+ {
+	return strconv.ParseInt(string(c.text), 10, 64)
+}
+
+Exp <- "^" digits:Digits "^"? {
+	return digits, nil
+}
+
+EOF ← !.

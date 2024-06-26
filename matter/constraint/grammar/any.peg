@@ -1,0 +1,3 @@
+Any <- any:("any" / "all") {
+	return &AllConstraint{Value:string(any.([]uint8))}, nil
+}

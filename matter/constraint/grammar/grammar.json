@@ -1,0 +1,19 @@
+{
+  "grammars": [
+    {
+      "path": "parser.go",
+      "files": [
+        "constraint.peg",
+        "limit.peg",
+        "any.peg",
+        "described.peg",
+        "boolean.peg",
+        "expression.peg",
+        "range.peg",
+        "reference.peg",
+        "number.peg",
+        "text.peg"
+      ]
+    }
+  ]
+}

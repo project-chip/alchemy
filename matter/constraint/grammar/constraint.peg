@@ -1,0 +1,70 @@
+{
+package constraint
+
+import (
+	"fmt"
+	"math/big"
+    "strconv"
+	"strings"
+
+	 "github.com/shopspring/decimal"
+)
+
+func debug(format string, a ...any) (n int, err error) {
+	return
+	return fmt.Fprintf(os.Stdout, format, a...)
+}
+
+}
+
+Input <- conf:Cons+ EOF {
+    cs := conf.([]interface{})
+
+    var set Set
+    for _, i := range cs {
+        con := i.(Constraint)
+        set = append(set, con)
+    }
+	if len(set) == 1 {
+		return set[0], nil
+	}
+    return set, nil
+}
+
+Cons <- cons:Constraint entry:EntryConstraint? (_ Comma _)? {
+	if entry != nil {
+		return &ListConstraint {
+			Constraint:cons.(Constraint),
+			EntryConstraint:entry.(Constraint),
+		}, nil
+	}
+	return cons, nil
+}
+
+EntryConstraint <- _ "[" _ cons:Constraint _ "]" {
+	debug("found entry %s\n", string(c.text))
+	return cons.(Constraint), nil
+}
+
+Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
+	switch cons := cons.(type) {
+		case Constraint:
+			return cons, nil
+		case Limit:
+			return &ExactConstraint{Value:cons}, nil
+		default:
+			return nil, fmt.Errorf("unexpected constraint type: %T", cons)
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+

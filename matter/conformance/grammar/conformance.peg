@@ -1,0 +1,60 @@
+{
+package conformance
+
+import (
+    "fmt"
+    "strconv"
+
+    "github.com/project-chip/alchemy/matter"
+)
+
+func debug(format string, a ...any) (n int, err error) {
+	return
+	//return fmt.Fprintf(os.Stdout, format, a...)
+}
+
+}
+
+Input <- conf:Conformance+ EOF {
+    cs := conf.([]interface{})
+
+    var set Set
+    for _, i := range cs {
+        con := i.(Conformance)
+        set = append(set, con)
+    }
+    return set, nil
+}
+
+Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
+    exp := i.(Expression)
+    o := &Optional{Expression:exp}
+    if choice != nil {
+        o.Choice = choice.(*Choice)
+    }
+    return o, nil   
+} / eq:Equality _ Comma? _ {
+    exp := eq.(Expression)
+    return &Mandatory{Expression:exp}, nil
+} / 'M'  _ Comma? _ {
+    return &Mandatory{}, nil
+} / 'O' choice:Choice?  _ Comma? _ {
+    o := &Optional{}
+    if choice != nil {
+        o.Choice = choice.(*Choice)
+    }
+    return o, nil
+} / 'P'  _ Comma? _ {
+    return &Provisional{}, nil
+} / 'D'  _ Comma? _ {
+    return &Deprecated{}, nil
+} / 'X'  _ Comma? _ {
+    return &Disallowed{}, nil
+} / "desc"  _ Comma? _ { 
+     return &Described{}, nil
+
+}
+
+
+
+

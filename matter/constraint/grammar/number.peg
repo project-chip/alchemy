@@ -1,0 +1,50 @@
+IntConstraint <- i:IntLimit {
+	debug("found int limit %s\n", string(c.text))
+	return &MaxConstraint{Maximum:i.(Limit)}, nil
+}
+
+LengthLimit <- "len("i _ ref:PascalCase _ ')' {
+	r := ref.(string)
+	debug("found length limit %s\n", r)
+	return &LengthLimit{Value:r}, nil
+}
+
+TempLimit <- f:( Float / Integer ) "°C" {
+	debug("found temp %s\n", string(c.text))
+	switch f := f.(type) {
+		case int64:
+			return &TemperatureLimit{Value:decimal.NewFromInt(f)}, nil
+		case decimal.Decimal:
+			return &TemperatureLimit{Value:f}, nil
+		default:
+			return nil, fmt.Errorf("unknown temperature limit type: %T", f)
+	}
+}
+
+PercentageLimit <- f:(Float / Integer) "%" {
+	debug("found percent %s\n", string(c.text))
+	switch f := f.(type) {
+		case int64:
+			return &PercentLimit{Value:decimal.NewFromInt(f)}, nil
+		case decimal.Decimal:
+			return &PercentLimit{Value:f}, nil
+		default:
+			return nil, fmt.Errorf("unknown percentage limit type: %T", f)
+	}
+}
+
+IntLimit <- i:Integer e:Exp? {
+	if e != nil {
+		debug("found exp limit %s\n", string(c.text))
+		return &ExpLimit{Value:i.(int64), Exp:e.(int64)}, nil
+	}
+	debug("found int limit %s\n", string(c.text))
+	return &IntLimit{Value:i.(int64)}, nil
+}
+
+
+HexLimit <- h:Hex {
+	debug("found hex limit %s\n", string(c.text))
+	return &HexLimit{Value:h.(uint64)}, nil
+}
+
