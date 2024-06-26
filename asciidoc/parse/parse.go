@@ -22,8 +22,16 @@ func File(path string) (*asciidoc.Document, error) {
 }
 
 func Reader(path string, reader io.Reader) (*asciidoc.Document, error) {
+	b, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, err
+	}
+	return Bytes(path, b)
+}
+
+func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 	start := time.Now()
-	vals, err := ParseReader(path, reader)
+	vals, err := Parse(path, b)
 	if err != nil {
 		fmt.Printf("error parsing: %v\n", err)
 		return nil, err
@@ -57,4 +65,8 @@ func Reader(path string, reader io.Reader) (*asciidoc.Document, error) {
 	default:
 		return nil, fmt.Errorf("unexpected type in File: %T", vals)
 	}
+}
+
+func String(path string, s string) (*asciidoc.Document, error) {
+	return Bytes(path, []byte(s))
 }

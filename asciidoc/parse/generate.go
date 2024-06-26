@@ -52,7 +52,7 @@ func main() {
 				os.Exit(1)
 				return
 			}
-			slog.Info("file", "path", path)
+			slog.Info("adding grammar file", "path", path)
 			grammar.WriteString(string(b))
 			grammar.WriteString("\n\n")
 		}
@@ -121,6 +121,8 @@ func main() {
 			parser = strings.ReplaceAll(parser, "globalStore: make(storeDict),", "globalStore: make(storeDict),\n\t\t\tdelimitedBlockState: make(delimitedBlockState),")
 
 			parser = strings.ReplaceAll(parser, "recoveryStack []map[string]any", "recoveryStack []map[string]any\n\toffset position")
+			parser = strings.ReplaceAll(parser, "vals := make([]any, 0, len(seq.exprs))", "var vals []any")
+			parser = strings.ReplaceAll(parser, "basicLatinChars [128]bool", "//basicLatinChars [128]bool")
 
 			err = os.WriteFile(grammarOutput.Path, []byte(parser), os.ModeAppend|0644)
 			if err != nil {

@@ -15,7 +15,7 @@ func ParseConformance(conformance string) Set {
 func tryParseConformance(conformance string) (Set, error) {
 	conformance = strings.ReplaceAll(conformance, "\\|", "|")
 
-	c, err := ParseReader("", strings.NewReader(conformance))
+	c, err := Parse("", []byte(conformance))
 	if err != nil {
 		return nil, err
 	}
