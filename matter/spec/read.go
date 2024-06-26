@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -18,15 +17,19 @@ func ReadFile(path string) (*Doc, error) {
 		return nil, err
 	}
 	defer contents.Close()
-	return read(contents, path)
+	b, err := io.ReadAll(contents)
+	if err != nil {
+		return nil, err
+	}
+	return read(b, path)
 }
 
 func Read(contents string, path string) (doc *Doc, err error) {
-	return read(strings.NewReader(contents), path)
+	return read([]byte(contents), path)
 }
 
-func read(r io.Reader, path string) (doc *Doc, err error) {
-	d, err := parse.Reader(path, r)
+func read(b []byte, path string) (doc *Doc, err error) {
+	d, err := parse.Bytes(path, b)
 	if err != nil {
 		return nil, fmt.Errorf("read error in %s: %w", path, err)
 	}

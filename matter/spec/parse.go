@@ -67,7 +67,7 @@ func ParseDocument(r io.Reader, path string, attributes ...asciidoc.AttributeNam
 		parsed = doorLockPattern.ReplaceAllString(parsed, "\n")
 	}
 
-	return parse.Reader(path, strings.NewReader(parsed))
+	return parse.String(path, parsed)
 }
 
 type Parser struct {

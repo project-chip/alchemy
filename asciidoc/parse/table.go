@@ -2,14 +2,13 @@ package parse
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 )
 
-func parseTable(attributes any, els []any) (table *asciidoc.Table, err error) {
+func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 	/*fmt.Fprintf(os.Stderr, "parseTable: %T\n", els)
-	for _, el := range els {
+	for _, el := range els.([]any) {
 		fmt.Fprintf(os.Stderr, "\t%T\n", el)
 		switch el := el.(type) {
 		case []any:
@@ -31,7 +30,14 @@ func parseTable(attributes any, els []any) (table *asciidoc.Table, err error) {
 			return
 		}
 	}
-	table.ColumnCount, err = getColumnCount(table, els)
+	var elements []any
+	switch els := els.(type) {
+	case nil:
+		return
+	case []any:
+		elements = els
+	}
+	table.ColumnCount, err = getColumnCount(table, elements)
 	if err != nil {
 		return
 	}
@@ -39,7 +45,7 @@ func parseTable(attributes any, els []any) (table *asciidoc.Table, err error) {
 	var currentTableRow *asciidoc.TableRow
 	colSkip := make(map[int]int)
 	var copiedPosition bool
-	for _, el := range els {
+	for _, el := range elements {
 		if !copiedPosition {
 			if pos, ok := el.(asciidoc.HasPosition); ok {
 				copyPosition(pos, table)
@@ -115,6 +121,9 @@ func parseTable(attributes any, els []any) (table *asciidoc.Table, err error) {
 			err = fmt.Errorf("unexpected type in table elements: %T", el)
 			return
 		}
+	}
+	if currentTableRow == nil {
+		return
 	}
 	for cellIndex < table.ColumnCount {
 		err = currentTableRow.Append(&asciidoc.TableCell{Blank: true})
@@ -261,9 +270,12 @@ func parseInlineCell(tc *asciidoc.TableCell) error {
 	if err != nil {
 		return err
 	}
+	if val == "" {
+		return nil
+	}
 	line, col, offset := tc.Position()
 	col++
-	vals, err := ParseReader("", strings.NewReader(val), Entrypoint("TableCellInlineContent"), initialPosition(line, col, offset))
+	vals, err := Parse("", []byte(val), Entrypoint("TableCellInlineContent"), initialPosition(line, col, offset))
 	if err != nil {
 		return err
 	}
@@ -291,9 +303,12 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 	if err != nil {
 		return err
 	}
+	if val == "" {
+		return nil
+	}
 	line, col, offset := tc.Position()
 	col++
-	vals, err := ParseReader("", strings.NewReader(val), initialPosition(line, col, offset))
+	vals, err := Parse("", []byte(val), initialPosition(line, col, offset))
 	if err != nil {
 		return err
 	}
