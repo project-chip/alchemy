@@ -1,0 +1,20 @@
+Term <- '(' _ exp:Expression _ ')' {
+	debug("found term add/subtract %s\n", string(c.text))
+    return exp, nil
+} / exp:(Expression) {
+	debug("found term expression %s\n", string(c.text))
+    return exp, nil
+}
+
+Expression <- left:(IntLimit / LengthLimit / ReferenceLimit / HexLimit) _ operand:('+'/'-'/'*'/'-') _ right:Limit {
+	debug("found expression %s\n", string(c.text))
+	var val []uint8
+	for _, d := range operand.([]uint8) {
+		val = append(val, d)
+	}
+	return &MathExpressionLimit{
+		Operand:string(val),
+		Left:left.(Limit),
+		Right:right.(Limit),
+	}, nil
+}

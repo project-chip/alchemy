@@ -1,0 +1,14 @@
+{
+  "grammars": [
+    {
+      "path": "parser.go",
+      "files": [
+        "conformance.peg",
+        "math.peg",
+        "reference.peg",
+        "choice.peg",
+        "text.peg"
+      ]
+    }
+  ]
+}

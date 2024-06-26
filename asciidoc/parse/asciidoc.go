@@ -16801,8 +16801,8 @@ type current struct {
 	// consistent state.
 	globalStore storeDict
 	delimitedBlockState delimitedBlockState
-	parser *parser
 	tableColumnsAttribute *asciidoc.TableColumnsAttribute
+	parser *parser
 }
 
 type storeDict map[string]any

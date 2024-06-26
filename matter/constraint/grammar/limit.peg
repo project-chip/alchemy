@@ -1,0 +1,22 @@
+
+Limit <- limit:(MSLimit / NullLimit / EmptyLimit / StringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / LengthLimit / ReferenceLimit / UnspecifiedLimit ) {
+	debug("found limit %s\n", string(c.text))
+	return limit.(Limit), nil
+}
+
+MSLimit <- "MS" {
+	return &ManufacturerLimit{Value:string(c.text)}, nil
+}
+
+NullLimit <- "null"i {
+	return &NullLimit{}, nil
+}
+
+UnspecifiedLimit <- ("-" / "–" / "N/A"i) EOF {
+	return &UnspecifiedLimit{}, nil
+}
+
+EmptyLimit <- ("empty" / "[]") {
+	return &EmptyLimit{}, nil
+}
+
