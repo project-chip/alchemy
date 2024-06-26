@@ -63,7 +63,10 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, els ...asciidoc.Element
 
 			attr, ok := doc.attributes[asciidoc.AttributeName(e.Name())]
 			if !ok {
-				err = fmt.Errorf("unknown section title attribute: %s", e.Name())
+				title.WriteRune('{')
+				title.WriteString(e.Name())
+				title.WriteRune('}')
+				slog.Warn("unknown section title attribute", "name", e.Name())
 				return
 			}
 			switch val := attr.(type) {
