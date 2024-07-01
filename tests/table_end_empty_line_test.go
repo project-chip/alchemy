@@ -13,6 +13,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 							Value: "header",
 						},
 					},
+					Quote: 2,
 				},
 				&asciidoc.NamedAttribute{
 					Name: "valign",
@@ -21,6 +22,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 							Value: "middle",
 						},
 					},
+					Quote: 2,
 				},
 			},
 			ColumnCount: 5,

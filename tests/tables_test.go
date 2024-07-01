@@ -4000,11 +4000,7 @@ var shouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
-								&asciidoc.String{
-									Value: "",
-								},
-							},
+							Set:   asciidoc.Set{},
 							Blank: false,
 						},
 					},
@@ -17445,11 +17441,7 @@ var assignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
-								&asciidoc.String{
-									Value: "",
-								},
-							},
+							Set:   asciidoc.Set{},
 							Blank: false,
 						},
 						&asciidoc.TableCell{

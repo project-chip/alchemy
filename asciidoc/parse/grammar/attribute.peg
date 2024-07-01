@@ -69,9 +69,7 @@ ShorthandOption = "%" value:ShorthandAttributeValue {
     return asciidoc.NewShorthandOption(value.(asciidoc.Set)...), nil
 }
 
-ShorthandAttributeValue = value:(!"#" !"." !"%" SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {
-    return value, nil
-}
+ShorthandAttributeValue = (!"#" !"." !"%" SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue)
 
 SingleQuoteAttributeValue = "'" value:(SingleQuoteAttributeValueElement)* "'" {
     return &attributeValue{value:join(value.([]any)), quote:asciidoc.AttributeQuoteTypeSingle}, nil
@@ -124,9 +122,7 @@ NamedAttributeName = [A-Za-z0-9_] [A-Za-z0-9_-]* {
     return string(c.text), nil
 }
 
-AttributeReference = attribute:(AttributeReferenceValue / Counter) {
-    return attribute, nil
-}
+AttributeReference = AttributeReferenceValue / Counter
 
 AttributeReferenceValue = !"\\" "{" name:AttributeEntryName "}" {
     return populatePosition(c, asciidoc.NewAttributeReference(name.(string))), nil

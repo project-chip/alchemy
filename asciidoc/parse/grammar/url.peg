@@ -1,17 +1,13 @@
 
-URLScheme = ("https://" / "http://" / "ftp://" / "irc://" / "mailto:") {
-    debugPosition(c, "matched url scheme\n")
-    return string(c.text), nil
-}
+URLScheme = ("https://" / "http://" / "ftp://" / "irc://" / "mailto:") 
 
 URL = scheme:(URLScheme)? path:(Path) {
     debugPosition(c, "matched url\n")
-    s, _ := scheme.(string)
-    return compose(c, asciidoc.NewURL(s, path.(asciidoc.Set)))
+    return compose(c, asciidoc.NewURL(toString(scheme), path.(asciidoc.Set)))
 }
 
 FullURL = !"[" scheme:(URLScheme) path:(Path) {
     debugPosition(c, "matched full url\n")
-    return compose(c, asciidoc.NewURL(scheme.(string), path.(asciidoc.Set)))
+    return compose(c, asciidoc.NewURL(toString(scheme), path.(asciidoc.Set)))
 }
 

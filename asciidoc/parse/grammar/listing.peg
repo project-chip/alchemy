@@ -36,6 +36,6 @@ ListingDelimiter = hyphens:(ListingHyphens)
     }
 
 ListingLine = (!ListingDelimiter NotEndOfFile line:AnyText EndOfLine) {
-    debugPosition(c, "matched listing line \"%s\" (%d)\n", line.(string), len(line.(string)))
-    return line.(string), nil
+    debugPosition(c, "matched listing line \"%s\"\n", toString(line))
+    return toString(line), nil
 }

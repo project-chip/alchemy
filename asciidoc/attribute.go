@@ -123,6 +123,9 @@ func (na *NamedAttribute) Equals(oa Attribute) bool {
 	if !na.Val.Equals(ona.Val) {
 		return false
 	}
+	if na.Quote != ona.Quote {
+		return false
+	}
 	return true
 }
 

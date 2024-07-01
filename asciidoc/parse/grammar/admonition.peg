@@ -1,11 +1,8 @@
 
-Admonition = BeginningOfLine admonition:(
+Admonition = BeginningOfLine 
     "NOTE: " { return asciidoc.NewAdmonition(asciidoc.AdmonitionTypeNote), nil} 
     / "TIP: " { return asciidoc.NewAdmonition(asciidoc.AdmonitionTypeTip), nil} 
     / "IMPORTANT: " { return asciidoc.NewAdmonition(asciidoc.AdmonitionTypeImportant), nil} 
     / "CAUTON: " { return asciidoc.NewAdmonition(asciidoc.AdmonitionTypeCaution), nil} 
     / "WARNING: " { return asciidoc.NewAdmonition(asciidoc.AdmonitionTypeWarning), nil}
-    ) {
-    debugPosition(c, "matched admonition: %s\n", string(c.text))
-    return admonition, nil
-}
+    

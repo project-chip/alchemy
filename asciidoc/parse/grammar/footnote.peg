@@ -7,6 +7,4 @@ FootnoteId = Alphanumeric+ {
     return string(c.text), nil
 }
 
-FootnoteValue = !"]" element:( InlineText / __ / Apostrophe / Quote / Punctuation / Macro / LineBreak / AttributeReference / SpecialCharacter / EmptyLine / CharacterClassInline) {
-    return element, nil
-}
+FootnoteValue = !"]" ( InlineText / __ / Apostrophe / Quote / Punctuation / Macro / LineBreak / AttributeReference / SpecialCharacter / EmptyLine / CharacterClassInline) 
