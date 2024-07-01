@@ -13,6 +13,7 @@ var blockAttributes = &asciidoc.Document{
 							Value: "lead",
 						},
 					},
+					Quote: 2,
 				},
 			},
 			Set: asciidoc.Set{

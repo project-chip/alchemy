@@ -11,10 +11,7 @@ SingleItalicTextValue = !_ value:(!_ value:(SingleItalicTextElement)+ { return v
     return asciidoc.NewItalic(flat(value.([]any))), nil
 }
 
-SingleItalicTextElement = !("_" !"_") element:(FormattedTextElement) {
-    debugPosition(c, "match Italic text element %s\n", string(c.text))
-    return element, nil
-}
+SingleItalicTextElement = !("_" !"_") FormattedTextElement
 
 DoubleItalicText = !DoubleEscape "__" value:(DoubleItalicTextValue) "__"  {
     debugPosition(c, "match double Italic text %s\n", string(c.text))
@@ -26,7 +23,4 @@ DoubleItalicTextValue = !_ value:(!_ value:(DoubleItalicTextElement)+ { return v
     return asciidoc.NewDoubleItalic(flat(value.([]any))), nil
 }
 
-DoubleItalicTextElement = !("__") element:(FormattedTextElement) {
-    debugPosition(c, "match double Italic text element %s\n", string(c.text))
-    return element, nil
-}
+DoubleItalicTextElement = !("__") FormattedTextElement

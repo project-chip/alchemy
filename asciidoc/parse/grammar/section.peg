@@ -13,7 +13,7 @@ Section = level:([=]+ {
 
 SectionTitle = (SectionTitleValue)+
 
-SectionTitleValue = !EndOfLine element:(
+SectionTitleValue = !EndOfLine (
     UnbrokenText 
     / __ 
     / Apostrophe 
@@ -27,6 +27,4 @@ SectionTitleValue = !EndOfLine element:(
     / Anchor
     // Footnote
     / CharacterClassInline
-) {
-    return element, nil
-}
+) 

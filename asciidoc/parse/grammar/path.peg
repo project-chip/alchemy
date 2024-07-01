@@ -4,9 +4,7 @@ Path = !"[" elements:( PathElement+) {
     return mergeStrings(elements.([]any)), nil
 } 
 
-PathElement = (([^\r\n{.<>!?,;[\] ])+ {
-    return asciidoc.NewString(string(c.text)), nil
-} / ([.?!;,] &(!_ !EndOfFile)) {
-    return asciidoc.NewString(string(c.text)), nil
-} / AttributeReference) 
+PathElement = (([^\r\n{.<>!?,;[\] ])+ 
+ / ([.?!;,] &(!_ !EndOfFile))
+ / AttributeReference) 
 

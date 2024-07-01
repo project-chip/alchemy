@@ -13,6 +13,7 @@ var tableSimple = &asciidoc.Document{
 							Value: "header",
 						},
 					},
+					Quote: 2,
 				},
 				&asciidoc.NamedAttribute{
 					Name: "valign",
@@ -21,6 +22,7 @@ var tableSimple = &asciidoc.Document{
 							Value: "middle",
 						},
 					},
+					Quote: 2,
 				},
 			},
 			ColumnCount: 8,
@@ -600,11 +602,7 @@ var tableSimple = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
-								&asciidoc.String{
-									Value: "",
-								},
-							},
+							Set:   asciidoc.Set{},
 							Blank: false,
 						},
 					},

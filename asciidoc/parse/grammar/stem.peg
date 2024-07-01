@@ -36,7 +36,7 @@ StemDelimiter = pluses:(StemPluses)
     }
 
 StemLine = (!StemDelimiter NotEndOfFile line:AnyText EndOfLine) {
-    return line.(string), nil
+    return toString(line), nil
 }
 
 

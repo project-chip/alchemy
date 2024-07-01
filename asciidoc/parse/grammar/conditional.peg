@@ -31,15 +31,9 @@ EndIfDef = EndIfDefStatement attributes:(ConditionalAttributes)? "[]"  AnySpaces
     return asciidoc.NewEndIf(attr, union), nil
 }
 
-EndIfDefStatement = "endif::" {
-    debugPosition(c, "matched endif statement: %s\n", string(c.text))
-    return string(c.text), nil
-}
+EndIfDefStatement = "endif::" 
 
-ConditionalAttributes = attr:(ConditionalAttributesAny / ConditionalAttributesAll) {
-     debugPosition(c, "matched conditional attr: %s\n", string(c.text))
-    return attr, nil
-}
+ConditionalAttributes = ConditionalAttributesAny / ConditionalAttributesAll
 
 ConditionalAttributesAny = names:(
     name:AttributeEntryName AnySpaces ","? AnySpaces 
@@ -65,11 +59,7 @@ ConditionalAttributesAll = names:(
     return conditionalAttributes{names:cast[any, asciidoc.AttributeName](names.([]any)), union: asciidoc.ConditionalUnionAll}, nil
 }
 
-InlineConditionalContent = content:(!"]" element:InlineElement {
-    return element, nil
-})+ {
-    return content, nil
-}
+InlineConditionalContent = !"]" InlineElement+ 
 
 IfEval = IfEvalStatement "[" AnySpaces left:(IfEvalValue) AnySpaces  operand:(IfEvalOperator) AnySpaces right:(IfEvalValue) AnySpaces "]" AnySpaces  {
      debugPosition(c, "matched ifeval: %s\n", string(c.text))
@@ -84,16 +74,6 @@ IfEvalStatement = "ifeval::" {
 IfEvalValue = val:(SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {
     return asciidoc.IfEvalValue{Quote:val.(*attributeValue).quote, Value:val.(*attributeValue).value}, nil
 }
-
-/*IfEvalValue = "\"" (!"\"" ("\\\"" / CharacterClassInline))+ "\"" { 
-    debugPosition(c, "matched ifeval value: %s\n", string(c.text))
-    return string(c.text), nil }
-    / "'" (!"'" ("\\'"/ CharacterClassInline))+ "'" { 
-         debugPosition(c, "matched ifeval value: %s\n", string(c.text))
-        return string(c.text), nil }
-    / (!"\"" !"'" !"]" CharacterClassInline)+  { 
-         debugPosition(c, "matched ifeval value: %s\n", string(c.text))
-        return string(c.text), nil }*/
 
 IfEvalOperator <-
       ("==" { return asciidoc.ConditionalOperatorEqual, nil })

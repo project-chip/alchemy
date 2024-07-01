@@ -61,7 +61,7 @@ TableCellInlineContent = content:(TableCellInlineContentElement)* EndOfFile {
     return trim(mergeStrings(flat(content.([]any)))), nil 
 }
 
-TableCellInlineContentElement = element:(
+TableCellInlineContentElement =(
     FormattedText /
     Icon / 
     InlineImage / 
@@ -73,15 +73,9 @@ TableCellInlineContentElement = element:(
     NakedInlineTableCellText /
     CharacterClassInline /
     NewLine 
-    )  {
-    debugPosition(c, "TABLE: inline table element: \"%s\"\n", string(c.text))
-    return element, nil
-}
+    ) 
 
-TableEnd = NewLine !"\\" "|===" "="* AnySpaces &EndOfLine   {
-    debugPosition(c, "TABLE: matched table end %s\n", string(c.text))
-    return asciidoc.NewString(string(c.text)), nil
-}
+TableEnd = NewLine !"\\" "|===" "="* AnySpaces &EndOfLine  
 
 TableRow = initial:(InitialInlineTableCell ) additional:(AdditionalInlineTableCell)* &(TableEnd / TableCellDelimiter /  NewLine  ) {
         debugPosition(c, "TABLE ROW: matched table row \"%s\"\n", string(c.text))
@@ -131,7 +125,7 @@ InlineTableLines = content:(MultiLineTableCell / InlineTableElements / EmptyCell
 
 EmptyCell = &(TableEnd / TableCellDelimiter /  NewLine) {
     debugPosition(c, "TABLE: empty cell: \"%s\"\n", string(c.text))
-    return asciidoc.Set{asciidoc.NewString(string(c.text))}, nil
+    return asciidoc.Set{}, nil
 }
 
 ValidTableCellPrefix = !TableEnd !TableCellDelimiter 

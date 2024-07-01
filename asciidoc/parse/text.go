@@ -26,6 +26,7 @@ func toStringBuilder(e any, sb *strings.Builder) {
 		sb.WriteString(string(e))
 	case *asciidoc.String:
 		sb.WriteString(e.Value)
+	case nil:
 	default:
 		sb.WriteString(fmt.Sprintf("unknown string type: %T", e))
 	}
@@ -33,8 +34,20 @@ func toStringBuilder(e any, sb *strings.Builder) {
 
 func mergeStrings[T any](els []T) (out asciidoc.Set) {
 	var s strings.Builder
+	out = mergeStringsInternal(els, &s)
+	if s.Len() > 0 {
+		out = append(out, asciidoc.NewString(s.String()))
+	}
+	return
+}
+
+func mergeStringsInternal[T any](els []T, s *strings.Builder) (out asciidoc.Set) {
 	for _, e := range els {
 		switch e := any(e).(type) {
+		case string:
+			s.WriteString(e)
+		case []byte:
+			s.WriteString(string(e))
 		case *asciidoc.String:
 			s.WriteString(e.Value)
 		case asciidoc.Element:
@@ -43,12 +56,12 @@ func mergeStrings[T any](els []T) (out asciidoc.Set) {
 				s.Reset()
 			}
 			out = append(out, e)
+		case []any:
+			out = append(out, mergeStringsInternal(e, s)...)
+		case nil:
 		default:
 			fmt.Printf("unexpected type in string merge: %T\n", e)
 		}
-	}
-	if s.Len() > 0 {
-		out = append(out, asciidoc.NewString(s.String()))
 	}
 	return
 }

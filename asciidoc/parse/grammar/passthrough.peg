@@ -13,10 +13,7 @@ SinglePassthroughTextValue = !_ value:(!_ value:(SinglePassthroughTextElement)+ 
     return compose(c, asciidoc.NewInlinePassthrough(), setElements[*asciidoc.InlinePassthrough](flat(value.([]any))))
 }
 
-SinglePassthroughTextElement = !("+" !"+") element:(FormattedTextElement) {
-    debugPosition(c, "match inline single Passthrough text element %s\n", string(c.text))
-    return element, nil
-}
+SinglePassthroughTextElement = !("+" !"+") FormattedTextElement
 
 InlineDoublePassthrough = !DoubleEscape "++" value:(DoublePassthroughTextValue) "++"  {
     debugPosition(c, "match inline double Passthrough text %s\n", string(c.text))
@@ -28,7 +25,4 @@ DoublePassthroughTextValue = !_ value:(!_ value:(DoublePassthroughTextElement)+ 
     return compose(c, asciidoc.NewInlineDoublePassthrough(), setElements[*asciidoc.InlineDoublePassthrough](flat(value.([]any))))
 }
 
-DoublePassthroughTextElement = !("++") element:(FormattedTextElement) {
-    debugPosition(c, "match inline double Passthrough text element %s\n", string(c.text))
-    return element, nil
-}
+DoublePassthroughTextElement = !("++") FormattedTextElement

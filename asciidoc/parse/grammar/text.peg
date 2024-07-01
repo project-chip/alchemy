@@ -92,10 +92,7 @@ UnbrokenText = CharacterClassInline+ {
     return string(c.text), nil
 }
 
-AnyText = CharacterClassInline* {
-    debugPosition(c, "any: %s\n", string(c.text))
-    return string(c.text), nil
-}
+AnyText = [^\n]* 
 
 AnySpaces = [ \t]* 
 
@@ -106,10 +103,7 @@ CharacterClassAll = (. / NewLine) {
 
 CharacterClassInline = [^\n] 
 
-CharacterGroupWord = [\p{M}\p{Nd}\p{Pc}\p{Join_Control}\p{L}] {
-    debugPosition(c, "matched CharacterGroupWord: \"%s\"\n", string(c.text))
-    return asciidoc.NewString(string(c.text)), nil
-}
+CharacterGroupWord = [\p{M}\p{Nd}\p{Pc}\p{Join_Control}\p{L}] 
 
 __ = [ \t]+ {
     debugPosition(c, "matched spaces: \"%s\"\n", string(c.text))

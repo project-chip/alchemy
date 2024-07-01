@@ -14,14 +14,10 @@ PreParseLine = !EndIfDefStatement content:PreParseLineElement* &EndOfLine {
 }
 
 PreParseLineElement = (
-    arv:AttributeReference {
-        return arv, nil
-    }
+   AttributeReference 
     /
-    ([^\r\n{]+ {
-        return asciidoc.NewString(string(c.text)), nil
-    })
-    / ("{" { return string(c.text), nil})
+    ([^\r\n{]+ )
+    / "{" 
 )
 
 IfDefBlock = IfDefStatement attributes:(ConditionalAttributes) "[]" AnySpaces  EndOfLine lines:(PreParseElement)*  EndIfDef  {

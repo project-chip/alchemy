@@ -36,5 +36,5 @@ LiteralDelimiter = dots:(LiteralDots)
     }
 
 LiteralLine = (!LiteralDelimiter NotEndOfFile line:AnyText EndOfLine) {
-    return line.(string), nil
+    return toString(line), nil
 }
