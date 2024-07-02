@@ -18,7 +18,6 @@ DescriptionListTerm = term:(!DescriptionListMarker !EndOfLine InlineElement)+ {
 DescriptionListMarker = AnySpaces marker:((":" / ";")+ {
     return string(c.text), nil
 }) &{
-    fmt.Printf("checking marker: \"%s\"\n", marker.(string))
     switch marker.(string) {
         case "::", ":::", "::::", ";;":
         return true, nil
