@@ -27,9 +27,9 @@ LineBreak = "+" AnySpaces &(EndOfLine) &{
 
 CurvedQuote = (SingleCurvedQuote / DoubleCurvedQuote)
 
-DoubleCurvedQuote = ("\"`" / "`\"") { return string(c.text), nil}
+DoubleCurvedQuote = ("\"`" / "`\"") 
 
-SingleCurvedQuote = ("'`" / "`'") { return string(c.text), nil}
+SingleCurvedQuote = ("'`" / "`'") 
 
 EmptyLine = BeginningOfLine AnySpaces NewLine {
         debugPosition(c, "matched empty line %d chars \"%s\"\n", len(string(c.text)), string(c.text))
@@ -61,10 +61,7 @@ Alpha = [\p{L}]
 
 Alphanumeric = [\p{L}\p{N}]
 
-EndOfFile = !. {
-    debugPosition(c, "endoffile\n")
-    return string(c.text), nil
-}
+EndOfFile = !. 
 
 NotEndOfFile = &(.)
 
@@ -115,6 +112,6 @@ _ = [ \t] {
     return string(c.text), nil
 }
 
-Escape = "\\" { return string(c.text), nil }
+Escape = "\\" 
 
-DoubleEscape = "\\\\" { return string(c.text), nil }
+DoubleEscape = "\\\\" 
