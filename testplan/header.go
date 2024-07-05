@@ -25,23 +25,10 @@ ifndef::env-github[]
 endif::[]
 :sectanchors:
 :doctype: book
-:revnumber: 0.1
-:revdate: %s
 :author: Matter CSG Test Plans Tiger Team
 :sectnums:
 :picsCode: %s
 :clustername: %s
-
-ifdef::env-github[]
-*Document History*
-|===
-|*Rev*|*Date*|*Author*|*Description*
-|0.1|%s|<author>|Initial Test Plan for {picsCode}
-|===
-
-*Common Introduction*
-include::intro.adoc[Introduction]
-endif::[]
 
 // Common AsciiDocAttributes
 include::../common/cluster_common.adoc[]
