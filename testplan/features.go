@@ -21,6 +21,11 @@ func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder) 
 			b.WriteString(fmt.Sprintf(":PICS_SF_%s: {PICS_S}.F%02d({F_%s})\n", f.Code, i, f.Code))
 		}
 		b.WriteRune('\n')
+		for i, bit := range cluster.Features.Bits {
+			f := bit.(*matter.Feature)
+			b.WriteString(fmt.Sprintf(":PICS_SF_%s_CONFORMANCE: {PICS_S}.F%02d\n", f.Code, i))
+		}
+		b.WriteRune('\n')
 		b.WriteString("|===\n")
 		b.WriteString("| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*\n")
 		for _, bit := range cluster.Features.Bits {
@@ -30,7 +35,7 @@ func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder) 
 			b.WriteString("} | {devsup} ")
 			b.WriteString(f.Summary())
 			b.WriteString(" | ")
-			renderFeatureConformance(b, doc, cluster, f.Conformance())
+			renderPicsConformance(b, doc, cluster, f.Conformance())
 			b.WriteString(" | \n")
 		}
 		b.WriteString("|===\n\n\n")
