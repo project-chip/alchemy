@@ -31,7 +31,11 @@ func renderEvents(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder) {
 	}
 	b.WriteRune('\n')
 	for i, name := range names {
-		b.WriteString(fmt.Sprintf(":PICS_S%-*s : {PICS_S}.A%04x({%s})\n", longest, name, i, name))
+		b.WriteString(fmt.Sprintf(":PICS_S%-*s : {PICS_S}.E%02x({%s})\n", longest, name, i, name))
+	}
+	b.WriteRune('\n')
+	for i, name := range names {
+		b.WriteString(fmt.Sprintf(":PICS_S%-*s_CONFORMANCE : {PICS_S}.E%02x\n", longest, name, i))
 	}
 	b.WriteString("\n\n|===\n")
 	b.WriteString("| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*\n")
@@ -39,7 +43,6 @@ func renderEvents(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder) {
 		name := names[i]
 		b.WriteString(fmt.Sprintf("| {PICS_S%s} | {devimp} sending the _{%s}_ event?| ", name, name))
 		if len(event.Conformance) > 0 {
-			b.WriteString("{PICS_S}: ")
 			renderPicsConformance(b, doc, cluster, event.Conformance)
 		}
 		b.WriteString(" |\n")

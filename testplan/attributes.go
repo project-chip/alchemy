@@ -39,13 +39,16 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder
 	for i, name := range names {
 		b.WriteString(fmt.Sprintf(":PICS_S%-*s : {PICS_S}.A%04x({%s})\n", longest, name, i, name))
 	}
+	b.WriteRune('\n')
+	for i, name := range names {
+		b.WriteString(fmt.Sprintf(":PICS_S%-*s_CONFORMANCE : {PICS_S}.A%04x\n", longest, name, i))
+	}
 	b.WriteString("\n\n|===\n")
 	b.WriteString("| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*\n")
 	for i, a := range cluster.Attributes {
 		name := names[i]
 		b.WriteString(fmt.Sprintf("| {PICS_S%s} | {devimp} the _{%s}_ attribute?| ", name, name))
 		if len(a.Conformance) > 0 {
-			b.WriteString("{PICS_S}: ")
 			renderPicsConformance(b, doc, cluster, a.Conformance)
 		}
 		b.WriteString(" |\n")
