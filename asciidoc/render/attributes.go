@@ -170,10 +170,10 @@ func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include
 			if len(filtered) == 0 {
 				continue
 			}
-			cxt.FlushWrap()
 			if !inline {
 				cxt.EnsureNewLine()
 			}
+			cxt.FlushWrap()
 			cxt.StartBlock()
 			cxt.WriteString("[")
 			for i, ia := range filtered {
@@ -232,10 +232,10 @@ func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include
 func renderAttributeAnchor(cxt Target, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	id := anchor.ID
 	if id != nil && len(id.Value) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
-		cxt.FlushWrap()
 		if !inline {
 			cxt.EnsureNewLine()
 		}
+		cxt.FlushWrap()
 		cxt.StartBlock()
 		cxt.WriteString("[[")
 		cxt.WriteString(id.Value)
@@ -262,8 +262,8 @@ func renderAttributeAnchor(cxt Target, anchor *asciidoc.AnchorAttribute, include
 
 func renderAttributeTitle(cxt Target, title asciidoc.Set, include AttributeFilter, exclude AttributeFilter) (err error) {
 	if len(title) > 0 && shouldRenderAttributeType(AttributeFilterTitle, include, exclude) {
-		cxt.FlushWrap()
 		cxt.EnsureNewLine()
+		cxt.FlushWrap()
 		cxt.StartBlock()
 		cxt.WriteRune('.')
 		err = Elements(cxt, "", title...)

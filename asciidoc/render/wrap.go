@@ -89,7 +89,8 @@ func (o *wrappedTarget) writeRune(r rune) {
 				o.lastRemovedNewline = -1
 			}
 			lineLength := index - o.lastNewline
-			if lineLength > 1 && lineLength < o.wrapLength { // We have a new line, but we're under our wrap length; tentatively remove it
+			shortLine := lineLength > 1 && lineLength < o.wrapLength
+			if shortLine && o.lastRune != '+' { // We have a new line, but we're under our wrap length; tentatively remove it
 				r = ' '
 				o.lastSpace = index
 				o.lastRemovedNewline = index

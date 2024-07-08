@@ -32,7 +32,6 @@ func renderDelimiter(cxt Target, delimiter asciidoc.Delimiter) {
 	case asciidoc.DelimitedBlockTypeMultiLineComment:
 		char = "/"
 	}
-	cxt.FlushWrap()
 	cxt.EnsureNewLine()
 	cxt.WriteString(strings.Repeat(char, delimiter.Length))
 	cxt.EnsureNewLine()
