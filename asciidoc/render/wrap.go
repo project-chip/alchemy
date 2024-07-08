@@ -3,7 +3,6 @@ package render
 import (
 	"context"
 	"strings"
-	"unicode"
 	"unicode/utf8"
 	"unsafe"
 )
@@ -25,6 +24,7 @@ type wrappedTarget struct {
 	lastInsertedNewline int
 	lastRemovedNewline  int
 	lastSpace           int
+	indented            bool
 
 	blocks        []*strings.Builder
 	currentBlock  *strings.Builder
@@ -73,7 +73,6 @@ func (o *wrappedTarget) writeWrappedText(s string) {
 
 func (o *wrappedTarget) writeRune(r rune) {
 	index := len(o.out)
-
 	switch r {
 	case '\r': // We just strip these out as we go
 		return
@@ -81,6 +80,7 @@ func (o *wrappedTarget) writeRune(r rune) {
 		if o.lastNewline == index-1 { // Double new line; don't remove
 			o.lastNewline = index
 			o.lastSpace = -1
+			o.indented = false
 		} else {
 			if o.lastRemovedNewline >= 0 && o.lastRemovedNewline == index-1 {
 				// Hrm; newline right after a removed newline; restore the old newline
@@ -90,23 +90,33 @@ func (o *wrappedTarget) writeRune(r rune) {
 			}
 			lineLength := index - o.lastNewline
 			shortLine := lineLength > 1 && lineLength < o.wrapLength
-			if shortLine && o.lastRune != '+' { // We have a new line, but we're under our wrap length; tentatively remove it
+			if shortLine && !o.indented && o.lastRune != '+' { // We have a new line, but we're under our wrap length; tentatively remove it
 				r = ' '
 				o.lastSpace = index
 				o.lastRemovedNewline = index
 			} else {
 				o.lastNewline = index
 				o.lastSpace = -1
+				o.indented = false
 			}
 		}
 	default:
-		if unicode.IsSpace(r) {
+		if isWhitespace(r) {
+			if o.lastRemovedNewline != -1 && o.lastRemovedNewline == index-1 {
+				o.indented = true
+				o.out[o.lastRemovedNewline] = '\n'
+				o.lastNewline = o.lastRemovedNewline
+				o.lastRemovedNewline = -1
+			}
 			o.lastSpace = index
 		}
 	}
 
 	o.out = utf8.AppendRune(o.out, r)
 	o.lastRune = r
+	if o.indented {
+		return
+	}
 	if len(o.out)-o.lastNewline <= o.wrapLength { // We're within our wrap length
 		return
 	}
@@ -146,7 +156,7 @@ func (o *wrappedTarget) WriteRune(r rune) {
 			o.lastNewline = len(o.out)
 			o.lastSpace = -1
 		default:
-			if unicode.IsSpace(r) {
+			if isWhitespace(r) {
 				o.lastSpace = len(o.out)
 			}
 		}
@@ -217,6 +227,7 @@ func (o *wrappedTarget) updateLastIndexes() {
 	if o.lastSpace < o.lastNewline {
 		o.lastSpace = -1
 	}
+	o.indented = false
 }
 
 func (o *wrappedTarget) StartBlock() {
@@ -262,4 +273,12 @@ func lastIndexRune(b []byte, r rune) int {
 		}
 	}
 	return -1
+}
+
+func isWhitespace(r rune) bool {
+	switch r {
+	case '\t', ' ', 0xA0: // Tabs, spaces and nbsps
+		return true
+	}
+	return false
 }
