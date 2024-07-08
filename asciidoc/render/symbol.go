@@ -2,7 +2,7 @@ package render
 
 import "github.com/project-chip/alchemy/asciidoc"
 
-func renderFormattedText(cxt *Context, el asciidoc.BlockElement, wrapper string) (err error) {
+func renderFormattedText(cxt Target, el asciidoc.BlockElement, wrapper string) (err error) {
 	err = renderAttributes(cxt, el.Attributes(), true)
 	if err != nil {
 		return
@@ -13,7 +13,7 @@ func renderFormattedText(cxt *Context, el asciidoc.BlockElement, wrapper string)
 	return
 }
 
-func renderSpecialCharacter(cxt *Context, s asciidoc.SpecialCharacter) error {
+func renderSpecialCharacter(cxt Target, s asciidoc.SpecialCharacter) error {
 	cxt.WriteString(s.Character)
 	return nil
 }

@@ -12,7 +12,7 @@ type Section interface {
 	GetASCIISection() *asciidoc.Section
 }
 
-func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err error) {
+func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err error) {
 	for _, e := range elementList {
 		if he, ok := e.(Section); ok {
 			e = he.GetASCIISection()
@@ -80,9 +80,13 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		case *asciidoc.DoubleMarked:
 			err = renderFormattedText(cxt, el, "##")
 		case *asciidoc.LineContinuation:
+			cxt.DisableWrap()
 			cxt.WriteString(" +")
+			cxt.EnableWrap()
 		case asciidoc.AttributeReference:
+			cxt.StartBlock()
 			cxt.WriteString(fmt.Sprintf("{%s}", el.Name()))
+			cxt.EndBlock()
 		case *asciidoc.InlineImage:
 			err = renderInlineImage(cxt, el)
 		case *asciidoc.InlinePassthrough:

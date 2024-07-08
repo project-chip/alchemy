@@ -2,7 +2,8 @@ package render
 
 import "github.com/project-chip/alchemy/asciidoc"
 
-func renderParagraph(cxt *Context, p *asciidoc.Paragraph) (err error) {
+func renderParagraph(cxt Target, p *asciidoc.Paragraph) (err error) {
+	cxt.FlushWrap()
 	err = renderAttributes(cxt, p.Attributes(), false)
 	if err != nil {
 		return
@@ -12,7 +13,8 @@ func renderParagraph(cxt *Context, p *asciidoc.Paragraph) (err error) {
 	return
 }
 
-func renderAdmonition(cxt *Context, a asciidoc.AdmonitionType) {
+func renderAdmonition(cxt Target, a asciidoc.AdmonitionType) {
+	cxt.StartBlock()
 	switch a {
 	case asciidoc.AdmonitionTypeNote:
 		cxt.WriteString("NOTE: ")
@@ -25,4 +27,5 @@ func renderAdmonition(cxt *Context, a asciidoc.AdmonitionType) {
 	case asciidoc.AdmonitionTypeWarning:
 		cxt.WriteString("WARNING: ")
 	}
+	cxt.EndBlock()
 }
