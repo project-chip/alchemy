@@ -185,7 +185,7 @@ func RenderTableCell(cell *asciidoc.TableCell) (string, error) {
 	if len(cellElements) == 0 {
 		return "", nil
 	}
-	out := render.NewContext(context.Background(), nil)
+	out := render.NewUnwrappedTarget(context.Background())
 	err := render.Elements(out, "", cellElements...)
 	if err != nil {
 		return "", err

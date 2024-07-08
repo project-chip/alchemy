@@ -2,7 +2,9 @@ package render
 
 import "github.com/project-chip/alchemy/asciidoc"
 
-func renderAnchor(cxt *Context, el *asciidoc.Anchor) (err error) {
+func renderAnchor(cxt Target, el *asciidoc.Anchor) (err error) {
+	cxt.FlushWrap()
+	cxt.StartBlock()
 	cxt.WriteString("[[")
 	cxt.WriteString(el.ID)
 	anchorElements := el.Elements()
@@ -11,5 +13,6 @@ func renderAnchor(cxt *Context, el *asciidoc.Anchor) (err error) {
 		err = Elements(cxt, "", anchorElements...)
 	}
 	cxt.WriteString("]]")
+	cxt.EndBlock()
 	return
 }

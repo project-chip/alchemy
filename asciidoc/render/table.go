@@ -30,7 +30,7 @@ type tableCell struct {
 	margin int // width of the formatter of the next cell
 }
 
-func renderTable(cxt *Context, t *asciidoc.Table) (err error) {
+func renderTable(cxt Target, t *asciidoc.Table) (err error) {
 
 	tbl := &table{columnCount: t.ColumnCount}
 
@@ -47,6 +47,8 @@ func renderTable(cxt *Context, t *asciidoc.Table) (err error) {
 
 	colOffsets := calculateColumnOffsets(tbl)
 
+	cxt.FlushWrap()
+	cxt.DisableWrap()
 	cxt.WriteString("|===")
 	cxt.EnsureNewLine()
 	for _, row := range tbl.rows {
@@ -60,6 +62,7 @@ func renderTable(cxt *Context, t *asciidoc.Table) (err error) {
 		}
 	}
 	cxt.WriteString("|===\n")
+	cxt.EnableWrap()
 	return
 }
 
@@ -84,7 +87,7 @@ func getTableColumns(table *asciidoc.Table) (columns []*asciidoc.TableColumn) {
 	return
 }
 
-func renderRow(cxt *Context, cells []*tableCell, colOffsets []int, columns []*asciidoc.TableColumn) error {
+func renderRow(cxt Target, cells []*tableCell, colOffsets []int, columns []*asciidoc.TableColumn) error {
 	if len(cells) == 0 {
 		return nil
 	}
@@ -244,7 +247,7 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 	return
 }
 
-func renderTableSubElements(cxt *Context, t *asciidoc.Table, tbl *table) (err error) {
+func renderTableSubElements(cxt Target, t *asciidoc.Table, tbl *table) (err error) {
 	var rowCount = 0
 	for _, row := range t.Elements() {
 		tr := &tableRow{}
@@ -253,7 +256,7 @@ func renderTableSubElements(cxt *Context, t *asciidoc.Table, tbl *table) (err er
 			tr.index = rowCount
 			rowCount++
 			for _, c := range row.TableCells() {
-				renderContext := NewContext(cxt, cxt.Doc)
+				renderContext := cxt.Subtarget()
 				err = Elements(renderContext, "", c.Elements()...)
 				if err != nil {
 					return
@@ -300,7 +303,7 @@ func getCellWidth(c *tableCell) int {
 	return utf8.RuneCountInString(strings.TrimSpace(lines[len(lines)-1]))
 }
 
-func writeCellValue(out *Context, c *tableCell, width int, indent int, effectiveFormat *asciidoc.TableCellFormat) (count int) {
+func writeCellValue(out Target, c *tableCell, width int, indent int, effectiveFormat *asciidoc.TableCellFormat) (count int) {
 	lines := strings.Split(c.value, "\n")
 	if len(lines) == 1 {
 		v := fmt.Sprintf("%-*s", width, c.value)
