@@ -106,6 +106,7 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 		case *asciidoc.ListContinuation:
 			cxt.EnsureNewLine()
 			cxt.WriteString("+\n")
+			cxt.FlushWrap()
 			err = Elements(cxt, "", el.Child())
 		case *asciidoc.IfDef:
 			renderConditional(cxt, "ifdef::", el.Attributes, el.Union)
@@ -142,6 +143,7 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			err = Elements(cxt, "", el.Child())
 		case *asciidoc.LineBreak:
 			cxt.WriteString("+")
+			cxt.FlushWrap()
 		case *asciidoc.Counter:
 			renderCounter(cxt, el)
 		case *asciidoc.ThematicBreak:
