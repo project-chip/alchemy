@@ -317,11 +317,11 @@ func (d *Doc) buildRowConformance(cellElements asciidoc.Set, sb *strings.Builder
 		case *asciidoc.Superscript:
 			// This is usually an asterisk, and should be ignored
 		case *asciidoc.Link:
-			if len(v.URL.Scheme) > 0 {
-				sb.WriteString(v.URL.Scheme)
-			} else {
-				sb.WriteString("link:")
-			}
+			sb.WriteString(v.URL.Scheme)
+			d.buildRowConformance(v.URL.Path, sb)
+		case *asciidoc.LinkMacro:
+			sb.WriteString("link:")
+			sb.WriteString(v.URL.Scheme)
 			d.buildRowConformance(v.URL.Path, sb)
 		case *asciidoc.CharacterReplacementReference:
 			switch v.Name() {

@@ -57,6 +57,8 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			err = renderImageBlock(cxt, el)
 		case *asciidoc.Link:
 			err = renderLink(cxt, el)
+		case *asciidoc.LinkMacro:
+			err = renderLinkMacro(cxt, el)
 		case asciidoc.SpecialCharacter:
 			err = renderSpecialCharacter(cxt, el)
 		case *asciidoc.Bold:

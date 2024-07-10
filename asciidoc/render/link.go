@@ -6,11 +6,15 @@ import (
 
 func renderLink(cxt Target, il *asciidoc.Link) (err error) {
 	cxt.StartBlock()
-	if len(il.URL.Scheme) > 0 {
-		cxt.WriteString(il.URL.Scheme)
-	} else {
-		cxt.WriteString("link:")
-	}
+	cxt.WriteString(il.URL.Scheme)
+	Elements(cxt, "", il.URL.Path...)
+	err = renderAttributes(cxt, il.Attributes(), true)
+	return
+}
+
+func renderLinkMacro(cxt Target, il *asciidoc.LinkMacro) (err error) {
+	cxt.WriteString("link:")
+	cxt.WriteString(il.URL.Scheme)
 	Elements(cxt, "", il.URL.Path...)
 
 	err = renderAttributes(cxt, il.Attributes(), true)

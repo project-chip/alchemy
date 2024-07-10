@@ -24,7 +24,7 @@ InlineElement = (
     CharacterClassInline 
     )  
 
-NakedInlineText = (!URLScheme !InlineImageDelimiter [A-Za-z ])+ { 
+NakedInlineText = (!URLScheme !LinkMacro !InlineImageDelimiter [A-Za-z ])+ { 
     debugPosition(c, "matched naked inline text: %s\n", string(c.text))
     return asciidoc.NewString(string(c.text)), nil
 }

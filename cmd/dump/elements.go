@@ -61,6 +61,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 		case *asciidoc.String:
 			fmt.Print("{str}: ", snippet(el.Value))
 			fmt.Print("\n")
+
 		case asciidoc.FormattedTextElement:
 			fmt.Printf("{formatted text %d%s}:\n", el.TextFormat(), dumpPosition(el))
 			if a, ok := el.(asciidoc.Attributable); ok {
@@ -92,10 +93,15 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			dumpElements(doc, el.Elements(), indent+1)
 		case *asciidoc.CrossReference:
 			fmt.Printf("{xref id:%v label %v}\n", el.ID, el.Set)
-		case *asciidoc.SpecialCharacter:
+		case asciidoc.SpecialCharacter:
 			fmt.Printf("{sc: %s}\n", el.Character)
 		case *asciidoc.Link:
 			fmt.Printf("{link: ")
+			dumpLocation(doc, el.URL, indent+1)
+			fmt.Print("}\n")
+			dumpAttributes(el.Attributes(), indent+1)
+		case *asciidoc.LinkMacro:
+			fmt.Printf("{link macro: ")
 			dumpLocation(doc, el.URL, indent+1)
 			fmt.Print("}\n")
 			dumpAttributes(el.Attributes(), indent+1)
