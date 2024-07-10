@@ -61,7 +61,7 @@ func Action(cmd *cobra.Command, args []string) error {
 	var out bytes.Buffer
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
 
-	err = disco.Pipeline(cxt, ".", changedDocs, pipelineOptions, nil, writer)
+	err = disco.Pipeline(cxt, ".", changedDocs, pipelineOptions, nil, nil, writer)
 	if err != nil {
 		return fmt.Errorf("failed disco-balling: %v", err)
 	}
