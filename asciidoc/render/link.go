@@ -8,11 +8,14 @@ func renderLink(cxt Target, il *asciidoc.Link) (err error) {
 	cxt.StartBlock()
 	cxt.WriteString(il.URL.Scheme)
 	Elements(cxt, "", il.URL.Path...)
+
 	err = renderAttributes(cxt, il.Attributes(), true)
+	cxt.EndBlock()
 	return
 }
 
 func renderLinkMacro(cxt Target, il *asciidoc.LinkMacro) (err error) {
+	cxt.StartBlock()
 	cxt.WriteString("link:")
 	cxt.WriteString(il.URL.Scheme)
 	Elements(cxt, "", il.URL.Path...)
