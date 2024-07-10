@@ -10,7 +10,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineOptions pipeline.Options, discoOptions []Option, writer files.Writer[string]) (err error) {
+func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineOptions pipeline.Options, discoOptions []Option, renderOptions []render.Option, writer files.Writer[string]) (err error) {
 
 	var docs pipeline.Map[string, *pipeline.Data[*spec.Doc]]
 	if specRoot != "" {
@@ -77,7 +77,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 		return err
 	}
 
-	renderer := render.NewRenderer()
+	renderer := render.NewRenderer(renderOptions...)
 	var renders pipeline.Map[string, *pipeline.Data[string]]
 	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, normalizedDocs)
 	if err != nil {
