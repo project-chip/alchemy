@@ -124,6 +124,9 @@ func (o *wrappedTarget) writeRune(r rune) {
 		return
 	}
 	o.out[o.lastSpace] = '\n'
+	if o.lastSpace == len(o.out)-1 {
+		o.lastRune = '\n'
+	}
 	o.lastNewline = o.lastSpace
 	o.lastInsertedNewline = o.lastSpace
 	o.lastSpace = -1
@@ -131,7 +134,7 @@ func (o *wrappedTarget) writeRune(r rune) {
 }
 
 func (o *wrappedTarget) writeBlockText(s string) {
-	if o.lastNewline != -1 && (len(o.out)-o.lastNewline)+len(s) > o.wrapLength {
+	if o.lastNewline != -1 && (len(o.out)-o.lastNewline)+len(s) > o.wrapLength && o.lastNewline != len(o.out)-1 {
 		// We're outside our wrap length, but we can't split the block, so prepend a newline
 		o.insertNewLine()
 	}
@@ -170,7 +173,6 @@ func (o *wrappedTarget) WriteRune(r rune) {
 		return
 	}
 	o.writeRune(r)
-
 }
 
 func (o *wrappedTarget) EnsureNewLine() {
@@ -190,7 +192,8 @@ func (o *wrappedTarget) EnsureNewLine() {
 	if o.lastBlockRune == '\n' { // The current block just wrote a newline, so skip
 		return
 	}
-	o.WriteRune('\n')
+	o.currentBlock.WriteRune('\n')
+	o.lastBlockRune = '\n'
 }
 
 func (o *wrappedTarget) String() string {
@@ -206,6 +209,8 @@ func (o *wrappedTarget) FlushWrap() {
 	if o.lastRemovedNewline >= 0 && len(o.out) == o.lastRemovedNewline+1 {
 		// We ended on a new line and removed it; restore the new line
 		o.out[o.lastRemovedNewline] = '\n'
+		o.lastRune = '\n'
+		o.lastNewline = o.lastRemovedNewline
 		o.lastRemovedNewline = -1
 	}
 }
