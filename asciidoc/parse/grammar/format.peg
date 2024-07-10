@@ -21,6 +21,7 @@ FormattedTextElement = (
     InlineImage / 
     Link /
     Anchor / 
+    CrossReference / 
     SpecialCharacter / 
     CharacterClassInline
 )

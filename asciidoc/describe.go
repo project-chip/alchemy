@@ -55,6 +55,8 @@ func Describe(el Element) string {
 		return "empty line"
 	case *Link:
 		return fmt.Sprintf("link %s ", Describe(el.URL))
+	case *LinkMacro:
+		return fmt.Sprintf("link macro %s ", Describe(el.URL))
 	case *OrderedListItem:
 		return fmt.Sprintf("orderedListItem (%s)", el.Marker)
 	case *UnorderedListItem:

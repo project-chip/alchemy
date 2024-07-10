@@ -70,7 +70,7 @@ func (al *AttributeList) ReadAttributes(el Element, attributes ...Attribute) (er
 			switch positionIndex {
 			case 0:
 				switch el.(type) {
-				case *InlineImage, *BlockImage, *Link, *DocumentCrossReference:
+				case *InlineImage, *BlockImage, *Link, *LinkMacro, *DocumentCrossReference:
 					a.ImpliedName = AttributeNameAlternateText
 				default:
 					sa := parseShorthandAttribute(a)

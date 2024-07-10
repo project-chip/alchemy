@@ -127,6 +127,9 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 		case *asciidoc.Link:
 			value.WriteString(el.URL.Scheme)
 			readRowCellValueElements(doc, el.URL.Path, value)
+		case *asciidoc.LinkMacro:
+			value.WriteString(el.URL.Scheme)
+			readRowCellValueElements(doc, el.URL.Path, value)
 		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
