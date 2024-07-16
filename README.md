@@ -56,6 +56,10 @@ Format does not alter the content of the document, but does make it easier to re
 
 #### Examples
 
+| Flag                            | Default  | Description   |	
+| :------------------------------ |:--------:| :-------------|
+| --wrap                          | none     | The number of characters to wrap lines without disrupting Asciidoc syntax |
+
 Format a single document:
 
 ```console
@@ -71,7 +75,13 @@ alchemy format connectedhomeip-spec/src/app_clusters/*.adoc
 Recursively format all documents in the spec:
 
 ```console
-alchemy format connectedhomeip-spec/src/\*\*/*.adoc
+alchemy format connectedhomeip-spec/src/\*\*/\*.adoc
+```
+
+Word-wrap all documents in a directory to 120 characters:
+
+```console
+alchemy format connectedhomeip-spec/src/app_clusters/*.adoc --wrap=120
 ```
 
 ### disco
@@ -114,6 +124,7 @@ Disco-ball is more aggressive than format, and attempts to rewrite the document 
 | --normalizeFeatureNames         | true     | Normalize feature names to be compatible with downstream code generation |
 | --disambiguateConformanceChoice | false    | Ensure that each document only uses each conformance choice identifier once |
 | --specRoot                      | <empty>  | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| --wrap                          | none     | The number of characters to wrap lines without disrupting Asciidoc syntax |
 
 #### Examples
 
@@ -126,14 +137,20 @@ alchemy disco connectedhomeip-spec/src/app_clusters/Thermostat.adoc
 Disco-ball the whole spec:
 
 ```console
-alchemy disco --specRoot connectedhomeip-spec
+alchemy disco --specRoot=./connectedhomeip-spec
 ```
 
 
 Disco-ball a single document, but update any other documents if needed (e.g. rewriting a reference):
 
 ```console
-alchemy disco --specRoot connectedhomeip-spec connectedhomeip-spec/src/app_clusters/Thermostat.adoc
+alchemy disco --specRoot=./connectedhomeip-spec ./connectedhomeip-spec/src/app_clusters/Thermostat.adoc
+```
+
+Disco-ball a single document, wrapping the text at 120 characters and linking table entries to their associated sections:
+
+```console
+alchemy disco connectedhomeip-spec/src/app_clusters/Thermostat.adoc --wrap=120 --linkIndexTables
 ```
 
 ### zap
