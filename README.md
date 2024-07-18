@@ -236,7 +236,7 @@ Testplan generates basic test plan adoc files from the spec.
 | Flag                       | Default                | Description   |	
 | :------------------------- |:----------------------:| :-------------|
 | --specRoot                 | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| --sdkRoot                  | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
+| --testRoot                 | ./chip-test-plans      | The root of your clone of [the Matter test plans](https://github.com/CHIP-Specifications/chip-test-plans) |
 | --overwrite                | false                  | Overwrite existing XML files instead of amending them
 
 
