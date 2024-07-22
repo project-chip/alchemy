@@ -126,7 +126,8 @@ func renderQuality(parent *etree.Element, q matter.Quality) {
 	nonvolatile := q.Has(matter.QualityNonVolatile)
 	reportable := q.Has(matter.QualityReportable)
 	singleton := q.Has(matter.QualitySingleton)
-	if !changeOmitted && !nullable && !scene && !fixed && !nonvolatile && !reportable && !singleton {
+	atomicWrite := q.Has(matter.QualityAtomicWrite)
+	if !changeOmitted && !nullable && !scene && !fixed && !nonvolatile && !reportable && !singleton && !atomicWrite {
 		return
 	}
 	qx := parent.CreateElement("quality")
@@ -153,5 +154,8 @@ func renderQuality(parent *etree.Element, q matter.Quality) {
 	}
 	if singleton {
 		qx.CreateAttr("singleton", strconv.FormatBool(singleton))
+	}
+	if atomicWrite {
+		qx.CreateAttr("atomicWrite", strconv.FormatBool(atomicWrite))
 	}
 }

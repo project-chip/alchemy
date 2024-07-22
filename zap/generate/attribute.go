@@ -89,6 +89,11 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 	} else {
 		ae.RemoveAttr("reportable")
 	}
+	if attribute.Quality.Has(matter.QualityAtomicWrite) {
+		ae.CreateAttr("mustUseAtomicWrite", "true")
+	} else {
+		ae.RemoveAttr("mustUseAtomicWrite")
+	}
 	renderConstraint(ae, cluster.Attributes, attribute)
 	setFieldDefault(ae, attribute, cluster.Attributes)
 	if ((attribute.Access.Read == matter.PrivilegeUnknown || attribute.Access.Read == matter.PrivilegeView) && (attribute.Access.Write == matter.PrivilegeUnknown || attribute.Access.Write == matter.PrivilegeOperate)) || errata.SuppressAttributePermissions {
@@ -96,6 +101,11 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 			ae.CreateAttr("writable", "true")
 		} else {
 			ae.RemoveAttr("writable")
+		}
+		if attribute.Access.IsTimed() {
+			ae.CreateAttr("mustUseTimedWrite", "true")
+		} else {
+			ae.RemoveAttr("mustUseTimedWrite")
 		}
 		ae.Child = nil
 		ae.SetText(attribute.Name)
@@ -109,6 +119,11 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 			ae.CreateAttr("writable", "true")
 		} else {
 			ae.RemoveAttr("writable")
+		}
+		if attribute.Access.IsTimed() {
+			ae.CreateAttr("mustUseTimedWrite", "true")
+		} else {
+			ae.RemoveAttr("mustUseTimedWrite")
 		}
 		accessElements := ae.SelectElements("access")
 		for _, ax := range accessElements {
