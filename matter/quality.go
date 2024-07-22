@@ -16,8 +16,9 @@ const (
 	QualitySingleton                 = 1 << (iota - 1)
 	QualityLargeMessage              = 1 << (iota - 1)
 	QualitySourceAttribution         = 1 << (iota - 1)
+	QualityAtomicWrite               = 1 << (iota - 1)
 
-	QualityAll = QualityNullable | QualityNonVolatile | QualityFixed | QualityScene | QualityReportable | QualityChangedOmitted | QualityDiagnostics | QualitySingleton | QualityLargeMessage | QualitySourceAttribution
+	QualityAll = QualityNullable | QualityNonVolatile | QualityFixed | QualityScene | QualityReportable | QualityChangedOmitted | QualityDiagnostics | QualitySingleton | QualityLargeMessage | QualitySourceAttribution | QualityAtomicWrite
 )
 
 var identifierQualities = map[rune]Quality{
@@ -31,6 +32,7 @@ var identifierQualities = map[rune]Quality{
 	'I': QualitySingleton,
 	'L': QualityLargeMessage,
 	'A': QualitySourceAttribution,
+	'T': QualityAtomicWrite,
 }
 
 var qualityIdentifiers map[Quality]rune

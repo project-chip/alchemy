@@ -31,6 +31,41 @@ func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.E
 		Clusters: make(map[*matter.Cluster]bool),
 		Structs:  make(map[*matter.Struct][]*matter.Number),
 	}
+	// Don't do this until we have support for global attributes, structs, bools, etc.
+	/*
+		var atomicAttributes bool
+		for _, m := range entities {
+			switch v := m.(type) {
+			case *matter.ClusterGroup:
+				for _, cl := range v.Clusters {
+					if hasAtomicAttributes(cl) {
+						atomicAttributes = true
+						c.Spec.ClusterRefs.Add(cl, atomicRequestTypeEnum)
+						c.Spec.ClusterRefs.Add(cl, atomicAttributeStatusStruct)
+						c.Spec.ClusterRefs.Add(cl, atomicRequest)
+						c.Spec.ClusterRefs.Add(cl, atomicResponse)
+						cl.Commands = append(cl.Commands, atomicRequest)
+						cl.Commands = append(cl.Commands, atomicResponse)
+					}
+				}
+			case *matter.Cluster:
+				if hasAtomicAttributes(v) {
+					atomicAttributes = true
+					c.Spec.ClusterRefs.Add(v, atomicRequestTypeEnum)
+					c.Spec.ClusterRefs.Add(v, atomicAttributeStatusStruct)
+					c.Spec.ClusterRefs.Add(v, atomicRequest)
+					c.Spec.ClusterRefs.Add(v, atomicResponse)
+					v.Commands = append(v.Commands, atomicRequest)
+					v.Commands = append(v.Commands, atomicResponse)
+				}
+			}
+
+		}
+		if atomicAttributes {
+			c.addEntityType(atomicRequestTypeEnum)
+			c.addEntityType(atomicAttributeStatusStruct)
+		}
+	*/
 	for _, m := range entities {
 		switch v := m.(type) {
 		case *matter.ClusterGroup:

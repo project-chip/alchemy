@@ -14,11 +14,12 @@ func getQualitySchemaColumns(tableName string) []*mms.Column {
 		{Name: "reportable", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "changes_omitted", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "singleton", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
+		{Name: "atomic_write", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 	}
 }
 
 func getQualitySchemaColumnValues(access any) []any {
-	var nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton int8
+	var nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton, atomic int8
 	if s, ok := access.(string); ok {
 		var val int8 = 1
 		for _, r := range s {
@@ -37,6 +38,8 @@ func getQualitySchemaColumnValues(access any) []any {
 				changesOmitted = val
 			case 'I':
 				singleton = val
+			case 'T':
+				atomic = val
 			case '!':
 				val = -1
 				continue
@@ -46,5 +49,5 @@ func getQualitySchemaColumnValues(access any) []any {
 			}
 		}
 	}
-	return []any{nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton}
+	return []any{nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton, atomic}
 }
