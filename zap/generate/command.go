@@ -120,7 +120,9 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *zap.Errata) {
 		de = etree.NewElement("description")
 		ce.Child = append([]etree.Token{de}, ce.Child...)
 	}
-	de.SetText(c.Description)
+	if len(c.Description) > 0 {
+		de.SetText(c.Description)
+	}
 
 	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate && c.Direction != matter.InterfaceClient
 	if needsAccess {

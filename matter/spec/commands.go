@@ -86,10 +86,7 @@ func (s *Section) toCommands(d *Doc, entityMap map[asciidoc.Attributable][]types
 				}
 			}
 
-			var desc = parse.FindFirst[*asciidoc.String](s.Elements())
-			if desc != nil {
-				c.Description = strings.ReplaceAll(desc.Value, "\n", " ")
-			}
+			c.Description = getDescription(d, s.Elements())
 
 			var rows []*asciidoc.TableRow
 			var headerRowIndex int

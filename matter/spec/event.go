@@ -33,10 +33,6 @@ func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 		if err != nil {
 			return
 		}
-		e.Description, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDescription)
-		if err != nil {
-			return
-		}
 		e.Priority, err = readRowASCIIDocString(row, columnMap, matter.TableColumnPriority)
 		if err != nil {
 			return
@@ -67,6 +63,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 				slog.Debug("unknown event", "event", name)
 				continue
 			}
+			e.Description = getDescription(d, s.Set)
 			var rows []*asciidoc.TableRow
 			var headerRowIndex int
 			var columnMap ColumnIndex
