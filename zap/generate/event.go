@@ -74,6 +74,15 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 		ee.RemoveAttr("optional")
 	}
 
+	de := ee.SelectElement("description")
+	if de == nil {
+		de = etree.NewElement("description")
+		ee.Child = append([]etree.Token{de}, ee.Child...)
+	}
+	if len(e.Description) > 0 {
+		de.SetText(e.Description)
+	}
+
 	fieldIndex := 0
 	fieldElements := ee.SelectElements("field")
 	for _, fe := range fieldElements {
