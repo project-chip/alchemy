@@ -73,15 +73,6 @@ func (c *Configurator) addCluster(v *matter.Cluster) {
 	if v.Features != nil {
 		c.addEntityType(v.Features)
 	}
-	for _, s := range v.Bitmaps {
-		c.addEntityType(s)
-	}
-	for _, s := range v.Enums {
-		c.addEntityType(s)
-	}
-	for _, s := range v.Structs {
-		c.addEntityType(s)
-	}
 	for _, cmd := range v.Commands {
 		c.addTypes(cmd.Fields)
 	}
