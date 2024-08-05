@@ -49,7 +49,7 @@ var toRanges = map[BaseDataType]DataTypeExtreme{
 
 	BaseDataTypeTemperature:           {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt16, Format: NumberFormatInt},
 	BaseDataTypeTemperatureDifference: {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt16, Format: NumberFormatInt},
-	BaseDataTypeSignedTemperature:     {Type: DataTypeExtremeTypeInt64, Int64: math.MinInt8, Format: NumberFormatInt},
+	BaseDataTypeSignedTemperature:     {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt8, Format: NumberFormatInt},
 	BaseDataTypeUnsignedTemperature:   {Type: DataTypeExtremeTypeUInt64, UInt64: math.MaxUint8, Format: NumberFormatInt},
 }
 
