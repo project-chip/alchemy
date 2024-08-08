@@ -18,7 +18,7 @@ func getAppClusterPath(sdkRoot string, path string, clusterName string) string {
 	if len(clusterName) > 0 {
 		file += "-" + clusterName
 	}
-	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/clusters/%s.xml", file))
+	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/master/clusters/%s.xml", file))
 }
 
 type clusterID struct {
