@@ -6,14 +6,13 @@ Integer <- ([0-9]+) {
     }
 
 PascalCase <- Capitalized+ Capitalized* {
-        //debug("matched pascal %s\n", string(c.text))
-
+    //debug("matched pascal %s\n", string(c.text))
 	return string(c.text), nil
 }
 
-Capitalized <- Uppercase+ Lowercase+ {
-        //debug("matched capitalized %s\n", string(c.text))
 
+Capitalized <- Uppercase+ Lowercase* {
+    //debug("matched capitalized %s\n", string(c.text))
 	return string(c.text), nil
 }
 
