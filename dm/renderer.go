@@ -119,7 +119,7 @@ func (p *Renderer) GenerateClusterIDsJson() (*pipeline.Data[string], error) {
 
 	clusters := make(map[uint64]string)
 
-	path := filepath.Join(p.sdkRoot, "/data_model/clusters/cluster_ids.json")
+	path := filepath.Join(p.sdkRoot, "/data_model/master/clusters/cluster_ids.json")
 
 	exists, err := files.Exists(path)
 	if err != nil {

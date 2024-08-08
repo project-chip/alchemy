@@ -16,7 +16,7 @@ import (
 
 func getDeviceTypePath(sdkRoot string, path string) string {
 	path = filepath.Base(path)
-	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
+	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/master/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
 }
 
 func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output string, err error) {
