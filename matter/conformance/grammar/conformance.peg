@@ -26,33 +26,35 @@ Input <- conf:Conformance+ EOF {
     return set, nil
 }
 
-Conformance <- '[' i:Equality ']' choice:Choice? _ Comma? _ {
+ConformanceSeparator <- (_ Comma _) / &EOF
+
+Conformance <- '[' i:Equality ']' choice:Choice? ConformanceSeparator {
     exp := i.(Expression)
     o := &Optional{Expression:exp}
     if choice != nil {
         o.Choice = choice.(*Choice)
     }
     return o, nil   
-} / eq:Equality _ Comma? _ {
-    exp := eq.(Expression)
-    return &Mandatory{Expression:exp}, nil
-} / 'M'  _ Comma? _ {
+}  / 'M'  ConformanceSeparator {
     return &Mandatory{}, nil
-} / 'O' choice:Choice?  _ Comma? _ {
+} / 'O' choice:Choice?  ConformanceSeparator {
     o := &Optional{}
     if choice != nil {
         o.Choice = choice.(*Choice)
     }
     return o, nil
-} / 'P'  _ Comma? _ {
+} / 'P'  ConformanceSeparator {
+    debug("matched provisional %s\n", string(c.text))
     return &Provisional{}, nil
-} / 'D'  _ Comma? _ {
+} / 'D'  ConformanceSeparator {
     return &Deprecated{}, nil
-} / 'X'  _ Comma? _ {
+} / 'X'  ConformanceSeparator {
     return &Disallowed{}, nil
-} / "desc"  _ Comma? _ { 
+} / "desc"  ConformanceSeparator { 
      return &Described{}, nil
-
+} / eq:Equality ConformanceSeparator {
+    exp := eq.(Expression)
+    return &Mandatory{Expression:exp}, nil
 }
 
 

@@ -96,10 +96,10 @@ FeatureTerm <- not:'!'? '(' _  eq:Equality _ ')' {
         }
     }
     return eq, nil
+} / feature:FeatureOp {
+    return feature, nil 
 } / reference:ReferenceOp {
     return reference, nil 
 } / identifier:IdentifierOp {
     return identifier, nil 
-} / feature:FeatureOp {
-    return feature, nil 
-}
+} 

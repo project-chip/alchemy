@@ -59,7 +59,7 @@ FeatureOp <- not:'!'? feature:Feature {
 }
 
 
-Feature <- [A-Z][A-Z0-9_]+ {
+Feature <- [A-Z][A-Z0-9_]+ &(![A-Za-z0-9_] / EOF) {
     return string(c.text), nil
 }
 
