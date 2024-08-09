@@ -11,7 +11,7 @@ UnorderedListItem = marker:(UnorderedListMarker) checklist:(Checklist)? value:(L
 UnorderedListMarker = indent:(AnySpaces) marker:(("*"+ / "-"+) {
     return string(c.text), nil
 }) &{
-    return len(marker.(string)) <= 5, nil 
+    return len(marker.(string)) <= 10, nil 
 }
 __
 {
