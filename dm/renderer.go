@@ -21,14 +21,14 @@ import (
 )
 
 type Renderer struct {
-	sdkRoot string
+	dmRoot string
 
 	clusters     []*matter.Cluster
 	clustersLock sync.Mutex
 }
 
-func NewRenderer(sdkRoot string) *Renderer {
-	return &Renderer{sdkRoot: sdkRoot}
+func NewRenderer(dmRoot string) *Renderer {
+	return &Renderer{dmRoot: dmRoot}
 }
 
 func (p *Renderer) Name() string {
@@ -74,7 +74,7 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 			err = fmt.Errorf("failed rendering app clusters %s: %w", doc.Path, err)
 			return
 		}
-		outputs = append(outputs, &pipeline.Data[string]{Path: getAppClusterPath(p.sdkRoot, doc.Path, ""), Content: s})
+		outputs = append(outputs, &pipeline.Data[string]{Path: getAppClusterPath(p.dmRoot, doc.Path, ""), Content: s})
 	} else if len(appClusters) > 1 {
 		for _, e := range appClusters {
 			var s string
@@ -92,7 +92,7 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 				return
 			}
 			clusterName = strcase.ToCamel(clusterName + " Cluster")
-			outputs = append(outputs, &pipeline.Data[string]{Path: getAppClusterPath(p.sdkRoot, doc.Path, clusterName), Content: s})
+			outputs = append(outputs, &pipeline.Data[string]{Path: getAppClusterPath(p.dmRoot, doc.Path, clusterName), Content: s})
 		}
 	}
 
@@ -103,7 +103,7 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 			err = fmt.Errorf("failed rendering device types %s: %w", doc.Path, err)
 			return
 		}
-		outputs = append(outputs, &pipeline.Data[string]{Path: getDeviceTypePath(p.sdkRoot, doc.Path), Content: s})
+		outputs = append(outputs, &pipeline.Data[string]{Path: getDeviceTypePath(p.dmRoot, doc.Path), Content: s})
 	}
 	for _, o := range outputs {
 		o.Content, err = patchLicense(o.Content, o.Path)
@@ -119,7 +119,7 @@ func (p *Renderer) GenerateClusterIDsJson() (*pipeline.Data[string], error) {
 
 	clusters := make(map[uint64]string)
 
-	path := filepath.Join(p.sdkRoot, "/data_model/master/clusters/cluster_ids.json")
+	path := filepath.Join(p.dmRoot, "/clusters/cluster_ids.json")
 
 	exists, err := files.Exists(path)
 	if err != nil {
