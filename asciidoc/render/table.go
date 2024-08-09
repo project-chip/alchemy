@@ -119,7 +119,7 @@ func renderRow(cxt Target, cells []*tableCell, colOffsets []int, columns []*asci
 		index += 2
 		effectiveFormat := inheritColumnFormat(c.formatter, i, columns)
 
-		if i == len(cells)-1 || i+colSpan > len(cells)-1 {
+		if i == len(cells)-1 || i+colSpan > len(cells)-1 { // Either this is the last cell, or all subsequent cells are blank
 			writeCellValue(cxt, c, c.width, index, effectiveFormat)
 			break
 		}
@@ -229,6 +229,11 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 			if nextCell.formatter != nil {
 				format = renderTableCellFormat(nextCell.formatter)
 				c.margin = utf8.RuneCountInString(format)
+				if c.width != 0 {
+					c.width += c.margin + 1 // We added two spaces above
+				} else if !c.blank {
+					c.width += c.margin // Empty cell, we only added one space above
+				}
 				width += c.margin
 			}
 			break
