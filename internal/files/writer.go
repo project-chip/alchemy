@@ -3,6 +3,7 @@ package files
 import (
 	"context"
 	"os"
+	"path/filepath"
 
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
@@ -47,6 +48,13 @@ func (sp *FileWriter[T]) Type() pipeline.ProcessorType {
 }
 
 func (sp *FileWriter[T]) Process(cxt context.Context, input *pipeline.Data[T], index int32, total int32) (outputs []*pipeline.Data[struct{}], extras []*pipeline.Data[T], err error) {
+	dir := filepath.Dir(input.Path)
+	if _, de := os.Stat(dir); os.IsNotExist(de) {
+		err = os.MkdirAll(dir, os.ModePerm)
+		if err != nil {
+			return
+		}
+	}
 	err = os.WriteFile(input.Path, []byte(input.Content), os.ModeAppend|0644)
 	return
 }
