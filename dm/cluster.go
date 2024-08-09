@@ -12,13 +12,13 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func getAppClusterPath(sdkRoot string, path string, clusterName string) string {
+func getAppClusterPath(dmRoot string, path string, clusterName string) string {
 	path = filepath.Base(path)
 	file := strings.TrimSuffix(path, filepath.Ext(path))
 	if len(clusterName) > 0 {
 		file += "-" + clusterName
 	}
-	return filepath.Join(sdkRoot, fmt.Sprintf("/data_model/master/clusters/%s.xml", file))
+	return filepath.Join(dmRoot, fmt.Sprintf("/clusters/%s.xml", file))
 }
 
 type clusterID struct {
