@@ -16,6 +16,9 @@ func (fs *Features) Clone() *Features {
 }
 
 func (fs *Features) Identifier(id string) (types.Entity, bool) {
+	if fs == nil {
+		return nil, false
+	}
 	if len(fs.Bits) == 0 {
 		return nil, false
 	}
