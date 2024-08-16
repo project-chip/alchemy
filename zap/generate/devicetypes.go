@@ -78,13 +78,13 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		var deviceType *matter.DeviceType
 		deviceIDElement := deviceTypeElement.SelectElement("deviceId")
 		if deviceIDElement != nil {
-		deviceTypeIDText := deviceIDElement.Text()
-		deviceTypeID := matter.ParseNumber(deviceTypeIDText)
+			deviceTypeIDText := deviceIDElement.Text()
+			deviceTypeID := matter.ParseNumber(deviceTypeIDText)
 			if deviceTypeID.Valid() {
 				if (deviceTypeID.Value() & utilityDevicesMask) == utilityDevicesMask {
 					// Exception for the all clusters app, etc
-			continue
-		}
+					continue
+				}
 				deviceType = deviceTypesByID[deviceTypeID.Value()]
 				if deviceType != nil {
 					delete(deviceTypesByID, deviceTypeID.Value())
@@ -98,8 +98,8 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			deviceTypeElement := deviceTypeElement.SelectElement("typeName")
 			if deviceTypeElement == nil {
 				slog.Warn("missing deviceId and typeName elements")
-			continue
-		}
+				continue
+			}
 			deviceTypeIDText := deviceTypeElement.Text()
 			deviceType = deviceTypesByName[deviceTypeIDText]
 			if deviceType != nil {
@@ -107,7 +107,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			}
 		}
 		if deviceType != nil {
-		applyDeviceTypeToElement(p.spec, deviceType, deviceTypeElement)
+			applyDeviceTypeToElement(p.spec, deviceType, deviceTypeElement)
 		} else {
 			configurator.RemoveChild(deviceTypeElement)
 		}
@@ -144,7 +144,7 @@ type clusterRequirements struct {
 func applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
 	xml.SetOrCreateSimpleElement(dte, "name", zap.DeviceTypeName(deviceType))
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP")
-	xml.SetOrCreateSimpleElement(dte, "typeName", fmt.Sprintf("Matter %s", deviceType.Name))
+	xml.SetOrCreateSimpleElement(dte, "typeName", matterDeviceTypeName(deviceType))
 	xml.SetOrCreateSimpleElement(dte, "profileId", "0x0103").CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString()).CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class)
@@ -283,6 +283,7 @@ func setIncludeAttributes(clustersElement *etree.Element, include *etree.Element
 	requiredAttributes := make(map[string]struct{})
 	requiredAttributeDefines := make(map[string]struct{})
 	requiredCommands := make(map[string]struct{})
+	requiredCommandFields := make(map[string]map[string]struct{})
 	requiredEvents := make(map[string]struct{})
 
 	for _, er := range cr.elementRequirements {
@@ -304,8 +305,16 @@ func setIncludeAttributes(clustersElement *etree.Element, include *etree.Element
 			case types.EntityTypeEvent:
 				requiredEvents[er.Name] = struct{}{}
 				cxt.Values[er.Name] = true
+			case types.EntityTypeCommandField:
+				cf, ok := requiredCommandFields[er.Name]
+				if !ok {
+					cf = make(map[string]struct{})
+					requiredCommandFields[er.Name] = cf
+					cxt.Values[er.Name] = true
+				}
+				cf[er.Field] = struct{}{}
 			default:
-				slog.Warn("Element requirement with unrecognized element type", slog.String("entityType", er.Element.String()))
+				slog.Warn("Element requirement with unrecognized element type", slog.String("deviceType", deviceType.Name), slog.String("entityType", er.Element.String()))
 			}
 		}
 	}
@@ -380,6 +389,46 @@ func setIncludeAttributes(clustersElement *etree.Element, include *etree.Element
 		rae.SetText(ra)
 		xml.InsertElementByName(include, rae, "requireAttribute")
 	}
+	rcfs := include.SelectElements("requireCommandField")
+	for _, rc := range rcfs {
+		rcfc := rc.SelectElement("command")
+		if rcfc == nil {
+			include.RemoveChild(rc)
+			continue
+		}
+		rct := rcfc.Text()
+		fields, required := requiredCommandFields[rct]
+		if required {
+			delete(requiredCommandFields, rct)
+		} else {
+			include.RemoveChild(rc)
+			continue
+		}
+		rcffs := rc.SelectElements("field")
+		for _, rcff := range rcffs {
+			rcft := rc.Text()
+			_, required := fields[rcft]
+			if required {
+				delete(fields, rcft)
+			} else {
+				rc.RemoveChild(rcff)
+			}
+		}
+		for rcft := range fields {
+			rae := etree.NewElement("field")
+			rae.SetText(rcft)
+			xml.InsertElementByName(rc, rae, "command")
+		}
+	}
+	for rcfc, rcffs := range requiredCommandFields {
+		rcfe := etree.NewElement("requireCommandField")
+		rcfce := rcfe.CreateElement("command")
+		rcfce.SetText(rcfc)
+		for rcff := range rcffs {
+			rcfe.CreateElement("field").SetText(rcff)
+		}
+		xml.InsertElementByName(include, rcfe, "requireAttribute", "requireCommand")
+	}
 	res := include.SelectElements("requireEvent")
 	for _, re := range res {
 		ret := re.Text()
@@ -393,6 +442,10 @@ func setIncludeAttributes(clustersElement *etree.Element, include *etree.Element
 	for ra := range requiredEvents {
 		rae := etree.NewElement("requireEvent")
 		rae.SetText(ra)
-		xml.InsertElementByName(include, rae, "requireAttribute", "requireCommand")
+		xml.InsertElementByName(include, rae, "requireAttribute", "requireCommand", "requireCommandField")
 	}
+}
+
+func matterDeviceTypeName(deviceType *matter.DeviceType) string {
+	return fmt.Sprintf("Matter %s", deviceType.Name)
 }
