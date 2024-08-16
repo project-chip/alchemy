@@ -20,6 +20,8 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
+var utilityDevicesMask uint64 = 0xFF000000
+
 type DeviceTypesPatcher struct {
 	sdkRoot string
 	spec    *spec.Specification
@@ -39,10 +41,15 @@ func (p DeviceTypesPatcher) Type() pipeline.ProcessorType {
 
 func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data[[]*matter.DeviceType]) (outputs []*pipeline.Data[[]byte], err error) {
 
-	deviceTypes := make(map[uint64]*matter.DeviceType)
+	deviceTypesByID := make(map[uint64]*matter.DeviceType)
+	deviceTypesByName := make(map[string]*matter.DeviceType)
 	for _, input := range inputs {
 		for _, dt := range input.Content {
-			deviceTypes[dt.ID.Value()] = dt
+			if dt.ID.Valid() {
+				deviceTypesByID[dt.ID.Value()] = dt
+			} else {
+				deviceTypesByName[matterDeviceTypeName(dt)] = dt
+			}
 		}
 	}
 
@@ -68,26 +75,50 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 
 	deviceTypeElements := configurator.SelectElements("deviceType")
 	for _, deviceTypeElement := range deviceTypeElements {
+		var deviceType *matter.DeviceType
 		deviceIDElement := deviceTypeElement.SelectElement("deviceId")
-		if deviceIDElement == nil {
-			slog.Warn("missing deviceId element")
-			continue
-		}
+		if deviceIDElement != nil {
 		deviceTypeIDText := deviceIDElement.Text()
 		deviceTypeID := matter.ParseNumber(deviceTypeIDText)
-		if !deviceTypeID.Valid() {
-			slog.Warn("invalid deviceId", "text", deviceTypeID.Text())
+			if deviceTypeID.Valid() {
+				if (deviceTypeID.Value() & utilityDevicesMask) == utilityDevicesMask {
+					// Exception for the all clusters app, etc
 			continue
 		}
-		deviceType, ok := deviceTypes[deviceTypeID.Value()]
-		if !ok {
+				deviceType = deviceTypesByID[deviceTypeID.Value()]
+				if deviceType != nil {
+					delete(deviceTypesByID, deviceTypeID.Value())
+				}
+			} else {
+				slog.Warn("invalid deviceId", "text", deviceTypeID.Text())
+			}
+
+		}
+		if deviceType == nil {
+			deviceTypeElement := deviceTypeElement.SelectElement("typeName")
+			if deviceTypeElement == nil {
+				slog.Warn("missing deviceId and typeName elements")
 			continue
 		}
+			deviceTypeIDText := deviceTypeElement.Text()
+			deviceType = deviceTypesByName[deviceTypeIDText]
+			if deviceType != nil {
+				delete(deviceTypesByName, deviceTypeIDText)
+			}
+		}
+		if deviceType != nil {
 		applyDeviceTypeToElement(p.spec, deviceType, deviceTypeElement)
-		delete(deviceTypes, deviceTypeID.Value())
+		} else {
+			configurator.RemoveChild(deviceTypeElement)
+		}
 	}
 
-	for _, dt := range deviceTypes {
+	for _, dt := range deviceTypesByID {
+		slog.Info("missing device type", slog.String("name", dt.Name))
+		applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
+	}
+
+	for _, dt := range deviceTypesByName {
 		slog.Info("missing device type", slog.String("name", dt.Name))
 		applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
 	}

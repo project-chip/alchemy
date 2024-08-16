@@ -87,7 +87,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				}
 			case matter.DocTypeDataModel:
 
-		}
+			}
 		}
 
 		var entities []types.Entity
@@ -143,7 +143,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 		return
 	}
 
-	for _, c := range spec.ClustersByID {
+	for _, c := range spec.ClustersByName {
 		if c.Features != nil {
 			spec.ClusterRefs.Add(c, c.Features)
 		}
@@ -222,11 +222,8 @@ func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
 			sp.resolveDataType(spec, nil, f, f.Type)
 		}
 	}
-	for _, cluster := range spec.ClustersByID {
+	for _, cluster := range spec.ClustersByName {
 		for _, a := range cluster.Attributes {
-			if a.Type == nil {
-				continue
-			}
 			sp.resolveDataType(spec, cluster, a, a.Type)
 		}
 		for _, s := range cluster.Structs {
