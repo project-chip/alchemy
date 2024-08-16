@@ -129,6 +129,10 @@ func dataModelName(dataType *types.DataType) string {
 		return "devtype-id"
 	case types.BaseDataTypeStatus:
 		return "status"
+	case types.BaseDataTypeEndpointID:
+		return "endpoint-id"
+	case types.BaseDataTypeTag:
+		return "tag"
 	default:
 		slog.Warn("unknown data model type", "name", dataType.Name)
 		return dataType.Name
