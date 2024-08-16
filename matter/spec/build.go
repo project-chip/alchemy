@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"path/filepath"
 
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -77,30 +76,26 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 
 	for _, d := range docs {
 		slog.Debug("building spec", "path", d.Path)
-		fileName := filepath.Base(d.Path)
 
-		switch fileName {
+		dt, dterr := d.DocType()
+		if dterr == nil {
+			switch dt {
+			case matter.DocTypeBaseDeviceType:
+				spec.BaseDeviceType, err = d.toBaseDeviceType()
+				if err != nil {
+					return
+				}
+			case matter.DocTypeDataModel:
 
-		case "Data-Model.adoc":
-			// This file yields some fake entities due to the section titles, so we ignore it.
-			continue
 		}
+		}
+
 		var entities []types.Entity
 		entities, err = d.Entities()
 		if err != nil {
 			slog.Warn("error building entities", "doc", d.Path, "error", err)
 			continue
 		}
-
-		switch fileName {
-		case "BaseDeviceType.adoc":
-			spec.BaseDeviceType, err = d.toBaseDeviceType()
-			if err != nil {
-				return
-			}
-			continue
-		}
-
 		for _, m := range entities {
 			switch m := m.(type) {
 			case *matter.ClusterGroup:
@@ -116,32 +111,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				}
 				addClusterToSpec(spec, d, m, d.spec)
 			case *matter.DeviceType:
-				spec.DeviceTypes[m.ID.Value()] = m
-			case *matter.Bitmap:
-				_, ok := spec.Bitmaps[m.Name]
-				if ok {
-					slog.Debug("multiple bitmaps with same name", "name", m.Name)
-				} else {
-
-					spec.Bitmaps[m.Name] = m
-				}
-				d.spec.addEntity(m.Name, m, nil)
-			case *matter.Enum:
-				_, ok := spec.Enums[m.Name]
-				if ok {
-					slog.Debug("multiple enums with same name", "name", m.Name)
-				} else {
-					spec.Enums[m.Name] = m
-				}
-				d.spec.addEntity(m.Name, m, nil)
-			case *matter.Struct:
-				_, ok := spec.Structs[m.Name]
-				if ok {
-					slog.Debug("multiple structs with same name", "name", m.Name)
-				} else {
-					spec.Structs[m.Name] = m
-				}
-				d.spec.addEntity(m.Name, m, nil)
+				spec.DeviceTypes = append(spec.DeviceTypes, m)
 			default:
 				slog.Warn("unknown entity type", "path", d.Path, "type", fmt.Sprintf("%T", m))
 			}
@@ -153,6 +123,13 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 			default:
 				spec.DocRefs[m] = d.Path
 			}
+		}
+
+		err = addGlobalEntities(spec, d)
+
+		if err != nil {
+			slog.Warn("error building global objects", "doc", d.Path, "error", err)
+			continue
 		}
 
 	}
@@ -208,31 +185,31 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 	spec.ClustersByName[m.Name] = m
 
 	for _, en := range m.Bitmaps {
-		_, ok := spec.Bitmaps[en.Name]
+		_, ok := spec.bitmapIndex[en.Name]
 		if ok {
 			slog.Debug("multiple bitmaps with same name", "name", en.Name)
 		} else {
-			spec.Bitmaps[en.Name] = en
+			spec.bitmapIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d.Path
 		specIndex.addEntity(en.Name, en, m)
 	}
 	for _, en := range m.Enums {
-		_, ok := spec.Enums[en.Name]
+		_, ok := spec.enumIndex[en.Name]
 		if ok {
 			slog.Debug("multiple enums with same name", "name", en.Name)
 		} else {
-			spec.Enums[en.Name] = en
+			spec.enumIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d.Path
 		specIndex.addEntity(en.Name, en, m)
 	}
 	for _, en := range m.Structs {
-		_, ok := spec.Structs[en.Name]
+		_, ok := spec.structIndex[en.Name]
 		if ok {
 			slog.Debug("multiple structs with same name", "name", en.Name)
 		} else {
-			spec.Structs[en.Name] = en
+			spec.structIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d.Path
 		specIndex.addEntity(en.Name, en, m)
@@ -240,7 +217,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 }
 
 func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
-	for _, s := range spec.Structs {
+	for _, s := range spec.structIndex {
 		for _, f := range s.Fields {
 			sp.resolveDataType(spec, nil, f, f.Type)
 		}

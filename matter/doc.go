@@ -21,6 +21,7 @@ const (
 	DocTypeSecureChannel
 	DocTypeServiceDeviceManagement
 	DocTypeSoftAP
+	DocTypeBaseDeviceType
 )
 
 var DocTypeNames = map[DocType]string{
@@ -42,4 +43,5 @@ var DocTypeNames = map[DocType]string{
 	DocTypeSecureChannel:           "SecureChannel",
 	DocTypeServiceDeviceManagement: "ServiceDeviceManagement",
 	DocTypeSoftAP:                  "SoftAP",
+	DocTypeBaseDeviceType:          "BaseDeviceType",
 }

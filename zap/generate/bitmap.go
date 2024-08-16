@@ -13,13 +13,13 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
+func generateBitmaps(bitmaps map[*matter.Bitmap][]*matter.Number, sourcePath string, parent *etree.Element, errata *zap.Errata) (err error) {
 
-	for _, eve := range ce.SelectElements("bitmap") {
+	for _, eve := range parent.SelectElements("bitmap") {
 
 		nameAttr := eve.SelectAttr("name")
 		if nameAttr == nil {
-			slog.Warn("missing name attribute in bitmap", slog.String("path", configurator.Doc.Path))
+			slog.Warn("missing name attribute in bitmap", slog.String("path", sourcePath))
 			continue
 		}
 		name := nameAttr.Value
@@ -32,12 +32,12 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, errata *
 		var matchingBitmap *matter.Bitmap
 		var clusterIds []*matter.Number
 		var skip bool
-		for bm, handled := range configurator.Bitmaps {
+		for bm, handled := range bitmaps {
 			if bm.Name == name || strings.TrimSuffix(bm.Name, "Bitmap") == name {
 				matchingBitmap = bm
 				clusterIds = handled
 				skip = len(handled) == 0
-				configurator.Bitmaps[bm] = nil
+				bitmaps[bm] = nil
 				break
 			}
 		}
@@ -47,8 +47,8 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, errata *
 		}
 
 		if matchingBitmap == nil {
-			slog.Warn("unknown bitmap name", slog.String("path", configurator.Doc.Path), slog.String("bitmapName", name))
-			ce.RemoveChild(eve)
+			slog.Warn("unknown bitmap name", slog.String("path", sourcePath), slog.String("bitmapName", name))
+			parent.RemoveChild(eve)
 			continue
 		}
 		err = populateBitmap(eve, matchingBitmap, clusterIds, errata)
@@ -57,13 +57,13 @@ func generateBitmaps(configurator *zap.Configurator, ce *etree.Element, errata *
 		}
 	}
 
-	for bm, clusterIds := range configurator.Bitmaps {
+	for bm, clusterIds := range bitmaps {
 		if len(clusterIds) == 0 {
 			continue
 		}
 		bme := etree.NewElement("bitmap")
 		populateBitmap(bme, bm, clusterIds, errata)
-		xml.InsertElementByAttribute(ce, bme, "name", "domain")
+		xml.InsertElementByAttribute(parent, bme, "name", "domain")
 	}
 	return
 }

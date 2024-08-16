@@ -94,6 +94,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	var zapTemplateDocs pipeline.Map[string, *pipeline.Data[string]]
+	var globalObjectFiles pipeline.Map[string, *pipeline.Data[string]]
 	var provisionalZclFiles pipeline.Map[string, *pipeline.Data[struct{}]]
 	if clusters.Size() > 0 {
 		templateGenerator := generate.NewTemplateGenerator(specBuilder.Spec, fileOptions, pipelineOptions, sdkRoot, templateOptions...)
@@ -102,6 +103,11 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 			return err
 		}
 		provisionalZclFiles = templateGenerator.ProvisionalZclFiles
+
+		globalObjectFiles, err = templateGenerator.RenderGlobalObjecs(cxt)
+		if err != nil {
+			return err
+		}
 	}
 
 	var patchedDeviceTypes pipeline.Map[string, *pipeline.Data[[]byte]]
@@ -152,6 +158,14 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	if patchedDeviceTypes != nil && patchedDeviceTypes.Size() > 0 {
 		byteWriter.SetName("Writing deviceTypes")
 		_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, patchedDeviceTypes)
+		if err != nil {
+			return err
+		}
+	}
+
+	if globalObjectFiles != nil && globalObjectFiles.Size() > 0 {
+		stringWriter.SetName("Writing global objects")
+		_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, stringWriter, globalObjectFiles)
 		if err != nil {
 			return err
 		}
