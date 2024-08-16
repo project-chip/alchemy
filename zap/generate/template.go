@@ -25,7 +25,8 @@ type TemplateGenerator struct {
 
 	generateFeaturesXML bool
 
-	ProvisionalZclFiles pipeline.Map[string, *pipeline.Data[struct{}]]
+	ProvisionalZclFiles      pipeline.Map[string, *pipeline.Data[struct{}]]
+	globalObjectDependencies pipeline.Map[types.Entity, struct{}]
 }
 
 type TemplateOption func(tg *TemplateGenerator)
@@ -38,11 +39,12 @@ func GenerateFeatureXML(generate bool) TemplateOption {
 
 func NewTemplateGenerator(spec *spec.Specification, fileOptions files.Options, pipelineOptions pipeline.Options, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
 	tg := &TemplateGenerator{
-		spec:                spec,
-		file:                fileOptions,
-		pipeline:            pipelineOptions,
-		sdkRoot:             sdkRoot,
-		ProvisionalZclFiles: pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]](),
+		spec:                     spec,
+		file:                     fileOptions,
+		pipeline:                 pipelineOptions,
+		sdkRoot:                  sdkRoot,
+		ProvisionalZclFiles:      pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]](),
+		globalObjectDependencies: pipeline.NewConcurrentMap[types.Entity, struct{}](),
 	}
 	for _, o := range options {
 		o(tg)
@@ -86,7 +88,7 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*s
 			continue
 		}
 
-		findDependencies(tg.spec, entities, dependencies)
+		tg.findDependencies(tg.spec, entities, dependencies)
 
 		input.Content.Domain = getDocDomain(input.Content)
 

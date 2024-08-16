@@ -16,19 +16,45 @@ import (
 var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
 func (s *Section) toCommands(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (commands matter.CommandSet, err error) {
+
+	t := FindFirstTable(s)
+	if t == nil {
+
+		return
+	}
+
+	var commandMap map[string]*matter.Command
+	commands, commandMap, err = s.buildCommands(d, t)
+	if err != nil {
+		err = fmt.Errorf("error reading commands table: %w", err)
+		return
+	}
+
+	for _, s := range parse.Skim[*Section](s.Elements()) {
+		switch s.SecType {
+		case matter.SectionCommand:
+			var c *matter.Command
+			c, err = s.toCommand(d, commandMap, entityMap)
+			if err != nil {
+				return
+			}
+			if c != nil {
+				entityMap[s.Base] = append(entityMap[s.Base], c)
+			}
+		}
+	}
+	return
+}
+
+func (s *Section) buildCommands(d *Doc, t *asciidoc.Table) (commands matter.CommandSet, commandMap map[string]*matter.Command, err error) {
 	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+	rows, headerRowIndex, columnMap, _, err = parseTable(d, s, t)
 	if err != nil {
-		if err == ErrNoTableFound {
-			err = nil
-		} else {
-			err = fmt.Errorf("error reading commands table: %w", err)
-		}
 		return
 	}
-	commandMap := make(map[string]*matter.Command)
+	commandMap = make(map[string]*matter.Command)
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		cmd := &matter.Command{}
@@ -69,54 +95,51 @@ func (s *Section) toCommands(d *Doc, entityMap map[asciidoc.Attributable][]types
 			}
 		}
 	}
+	return
+}
 
-	for _, s := range parse.Skim[*Section](s.Elements()) {
-		switch s.SecType {
-		case matter.SectionCommand:
-
-			name := strings.TrimSuffix(strings.ToLower(s.Name), " command")
-			c, ok := commandMap[name]
-			if !ok {
-				// Command sometimes have an parenthetical abbreviation after their name
-				name = parentheticalExpressionPattern.ReplaceAllString(name, "")
-				c, ok = commandMap[name]
-				if !ok {
-					slog.Warn("unknown command", log.Element("path", d.Path, s.Base), "command", s.Name)
-					continue
-				}
-			}
-
-			c.Description = getDescription(d, s.Elements())
-
-			var rows []*asciidoc.TableRow
-			var headerRowIndex int
-			var columnMap ColumnIndex
-			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
-			if err != nil {
-				if err == ErrNoTableFound {
-					err = nil
-				} else {
-					slog.Warn("No valid command parameter table found", log.Element("path", d.Path, s.Base), "command", name)
-					err = nil
-				}
-				continue
-			}
-			c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeCommand)
-			if err != nil {
-				return
-			}
-			entityMap[s.Base] = append(entityMap[s.Base], c)
-			fieldMap := make(map[string]*matter.Field, len(c.Fields))
-			for _, f := range c.Fields {
-				fieldMap[f.Name] = f
-			}
-			err = s.mapFields(fieldMap, entityMap)
-			if err != nil {
-				return
-			}
+func (s *Section) toCommand(d *Doc, commandMap map[string]*matter.Command, entityMap map[asciidoc.Attributable][]types.Entity) (*matter.Command, error) {
+	name := strings.TrimSuffix(strings.ToLower(s.Name), " command")
+	c, ok := commandMap[name]
+	if !ok {
+		// Command sometimes have an parenthetical abbreviation after their name
+		name = parentheticalExpressionPattern.ReplaceAllString(name, "")
+		c, ok = commandMap[name]
+		if !ok {
+			slog.Warn("unknown command", log.Element("path", d.Path, s.Base), "command", s.Name)
+			return nil, nil
 		}
 	}
-	return
+
+	c.Description = getDescription(d, s.Elements())
+
+	var rows []*asciidoc.TableRow
+	var headerRowIndex int
+	var columnMap ColumnIndex
+	var err error
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+	if err != nil {
+		if err == ErrNoTableFound {
+			err = nil
+		} else {
+			slog.Warn("No valid command parameter table found", log.Element("path", d.Path, s.Base), "command", name)
+			err = nil
+		}
+		return nil, nil
+	}
+	c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeCommand)
+	if err != nil {
+		return nil, err
+	}
+	fieldMap := make(map[string]*matter.Field, len(c.Fields))
+	for _, f := range c.Fields {
+		fieldMap[f.Name] = f
+	}
+	err = s.mapFields(fieldMap, entityMap)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 func ParseCommandDirection(s string) matter.Interface {

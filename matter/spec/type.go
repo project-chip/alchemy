@@ -15,6 +15,14 @@ func (doc *Doc) DocType() (matter.DocType, error) {
 	if doc.docType != matter.DocTypeUnknown {
 		return doc.docType, nil
 	}
+	dt, err := doc.determineDocType()
+	if err == nil {
+		doc.docType = dt
+	}
+	return dt, err
+}
+
+func (doc *Doc) determineDocType() (matter.DocType, error) {
 	if len(doc.Path) == 0 {
 		return matter.DocTypeUnknown, fmt.Errorf("missing path")
 	}
@@ -26,6 +34,8 @@ func (doc *Doc) DocType() (matter.DocType, error) {
 		return matter.DocTypeNamespaces, nil
 	case "device_library.adoc":
 		return matter.DocTypeDeviceTypes, nil
+	case "BaseDeviceType.adoc":
+		return matter.DocTypeBaseDeviceType, nil
 	}
 
 	path, err := filepath.Abs(doc.Path)

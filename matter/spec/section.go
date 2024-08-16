@@ -20,7 +20,8 @@ type Section struct {
 	Parent any
 	Base   *asciidoc.Section
 
-	SecType matter.Section
+	SecType              matter.Section
+	sectionTypesAssigned bool
 
 	asciidoc.Set
 }
@@ -118,6 +119,9 @@ func (s *Section) GetASCIISection() *asciidoc.Section {
 }
 
 func AssignSectionTypes(doc *Doc, top *Section) error {
+	if top.sectionTypesAssigned {
+		return nil
+	}
 	docType, err := doc.DocType()
 	if err != nil {
 		return err
@@ -151,9 +155,10 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 				slog.Debug("Unusual depth for section type", slog.String("name", section.Name), slog.String("type", section.SecType.String()), slog.String("path", doc.Path))
 			}
 		}
-		slog.Debug("sec type", "name", section.Name, "type", section.SecType, "parent", ps.SecType)
+		slog.Debug("sec type", "name", section.Name, "type", section.SecType, "parent", ps.Name, "parentType", ps.SecType)
 		return parse.SearchShouldContinue
 	})
+	top.sectionTypesAssigned = true
 	return nil
 }
 
@@ -189,6 +194,8 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		return matter.SectionEndpointComposition
 	case "derived cluster namespace":
 		return matter.SectionDerivedClusterNamespace
+	case "global elements":
+		return matter.SectionGlobalElements
 	}
 	switch parent.SecType {
 	case matter.SectionTop, matter.SectionCluster, matter.SectionDeviceType:
@@ -289,6 +296,9 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 	if strings.HasSuffix(name, "Enum Type") || strings.HasSuffix(name, "Enum") {
 		return matter.SectionDataTypeEnum
 	}
+	if strings.HasSuffix(name, " Command") {
+		return matter.SectionCommand
+	}
 	if strings.HasSuffix(name, "Struct Type") || strings.HasSuffix(name, "Struct") {
 		return matter.SectionDataTypeStruct
 	}
@@ -380,6 +390,16 @@ func (s *Section) toEntities(d *Doc, entityMap map[asciidoc.Attributable][]types
 			return nil, err
 		}
 		entities = append(entities, deviceTypes...)
+
+	}
+	return entities, nil
+}
+
+func (s *Section) toGlobalObjects(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) ([]types.Entity, error) {
+	var entities []types.Entity
+	switch s.SecType {
+	case matter.SectionCluster, matter.SectionDeviceType:
+		return nil, nil
 	default:
 		var err error
 		var looseEntities []types.Entity
@@ -395,8 +415,6 @@ func (s *Section) toEntities(d *Doc, entityMap map[asciidoc.Attributable][]types
 }
 
 var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
-
-//var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:(?:<<enum-def\s*,\s*)|(?:<<ref_DataTypeBitmap,))?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
 
 func (s *Section) GetDataType() *types.DataType {
 	var dts string
@@ -469,6 +487,15 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attrib
 				err = nil
 			} else {
 				entities = append(entities, s)
+			}
+		case matter.SectionGlobalElements:
+			var ges []types.Entity
+			ges, err = section.toGlobalElements(doc, entityMap)
+			if err != nil {
+				slog.Warn("Error converting loose section to global entities", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				err = nil
+			} else {
+				entities = append(entities, ges...)
 			}
 		}
 		if err != nil {

@@ -109,6 +109,8 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 							c.Bitmaps = append(c.Bitmaps, le)
 						case *matter.Enum:
 							c.Enums = append(c.Enums, le)
+						case *matter.Struct:
+							c.Structs = append(c.Structs, le)
 						default:
 							slog.Warn("unexpected loose entity", log.Element("path", d.Path, s.Base), "entity", le)
 						}

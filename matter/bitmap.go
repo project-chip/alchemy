@@ -58,7 +58,10 @@ func (bm *Bitmap) Clone() *Bitmap {
 	return nbm
 }
 
-func (bm Bitmap) Identifier(id string) (types.Entity, bool) {
+func (bm *Bitmap) Identifier(id string) (types.Entity, bool) {
+	if bm == nil {
+		return nil, false
+	}
 	if len(bm.Bits) == 0 {
 		return nil, false
 	}

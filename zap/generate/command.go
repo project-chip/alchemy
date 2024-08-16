@@ -12,31 +12,28 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, commands map[*matter.Command]struct{}, errata *zap.Errata) (err error) {
+func generateCommands(commands map[*matter.Command][]*matter.Number, docPath string, parent *etree.Element, errata *zap.Errata) (err error) {
 
-	for _, cmde := range ce.SelectElements("command") {
+	for _, cmde := range parent.SelectElements("command") {
 
 		code := cmde.SelectAttr("code")
 		if code == nil {
-			slog.Warn("missing code attribute in command", slog.String("path", configurator.Doc.Path))
+			slog.Warn("missing code attribute in command", slog.String("path", docPath))
 			continue
 		}
 		source := cmde.SelectAttr("source")
 		if code == nil {
-			slog.Warn("missing source attribute in command", slog.String("path", configurator.Doc.Path))
+			slog.Warn("missing source attribute in command", slog.String("path", docPath))
 			continue
 		}
 		commandID := matter.ParseNumber(code.Value)
 		if !commandID.Valid() {
-			slog.Warn("invalid code ID in command", slog.String("path", configurator.Doc.Path), slog.String("commandId", commandID.Text()))
+			slog.Warn("invalid code ID in command", slog.String("path", docPath), slog.String("commandId", commandID.Text()))
 			continue
 		}
 
 		var matchingCommand *matter.Command
 		for c := range commands {
-			if conformance.IsZigbee(cluster.Commands, c.Conformance) || conformance.IsDisallowed(c.Conformance) {
-				continue
-			}
 			if c.ID.Equals(commandID) {
 				if c.Direction == matter.InterfaceServer && source.Value == "client" {
 					matchingCommand = c
@@ -52,8 +49,8 @@ func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster
 		}
 
 		if matchingCommand == nil {
-			slog.Warn("unknown command ID", slog.String("path", configurator.Doc.Path), slog.String("commandId", commandID.Text()))
-			ce.RemoveChild(cmde)
+			slog.Warn("unknown command ID", slog.String("path", docPath), slog.String("commandId", commandID.Text()))
+			parent.RemoveChild(cmde)
 			continue
 		}
 		populateCommand(cmde, matchingCommand, errata)
@@ -66,13 +63,11 @@ func generateCommands(configurator *zap.Configurator, ce *etree.Element, cluster
 	slices.SortFunc(remainingCommands, func(a, b *matter.Command) int { return strings.Compare(a.Name, b.Name) })
 
 	for _, command := range remainingCommands {
-		if conformance.IsZigbee(cluster.Commands, command.Conformance) || conformance.IsDisallowed(command.Conformance) {
-			continue
-		}
+
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
 		populateCommand(cme, command, errata)
-		xml.InsertElementByAttribute(ce, cme, "code", "attribute")
+		xml.InsertElementByAttribute(parent, cme, "code", "attribute")
 	}
 	return
 }

@@ -13,13 +13,13 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateEnums(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
+func generateEnums(enums map[*matter.Enum][]*matter.Number, sourcePath string, ce *etree.Element, errata *zap.Errata) (err error) {
 
 	for _, eve := range ce.SelectElements("enum") {
 
 		nameAttr := eve.SelectAttr("name")
 		if nameAttr == nil {
-			slog.Warn("missing name attribute in enum", slog.String("path", configurator.Doc.Path))
+			slog.Warn("missing name attribute in enum", slog.String("path", sourcePath))
 			continue
 		}
 		name := nameAttr.Value
@@ -27,12 +27,12 @@ func generateEnums(configurator *zap.Configurator, ce *etree.Element, errata *za
 		var matchingEnum *matter.Enum
 		var clusterIds []*matter.Number
 		var skip bool
-		for bm, handled := range configurator.Enums {
+		for bm, handled := range enums {
 			if bm.Name == name || strings.TrimSuffix(bm.Name, "Enum") == name {
 				matchingEnum = bm
 				skip = len(handled) == 0
 				clusterIds = handled
-				configurator.Enums[bm] = nil
+				enums[bm] = nil
 				break
 			}
 		}
@@ -42,15 +42,15 @@ func generateEnums(configurator *zap.Configurator, ce *etree.Element, errata *za
 		}
 
 		if matchingEnum == nil {
-			slog.Warn("unknown enum name", slog.String("path", configurator.Doc.Path), slog.String("enumName", name))
+			slog.Warn("unknown enum name", slog.String("path", sourcePath), slog.String("enumName", name))
 			ce.RemoveChild(eve)
 			continue
 		}
-		populateEnum(configurator, eve, matchingEnum, clusterIds, errata)
+		populateEnum(eve, matchingEnum, clusterIds, errata)
 	}
 
 	var remainingEnums []*matter.Enum
-	for en, clusterIds := range configurator.Enums {
+	for en, clusterIds := range enums {
 		if len(clusterIds) == 0 {
 			continue
 		}
@@ -65,15 +65,18 @@ func generateEnums(configurator *zap.Configurator, ce *etree.Element, errata *za
 
 	for _, en := range remainingEnums {
 		bme := etree.NewElement("enum")
-		clusterIds := clusterIdsForEntity(configurator.Spec, en)
-		populateEnum(configurator, bme, en, clusterIds, errata)
+		clusterIds := enums[en]
+		if len(clusterIds) == 0 {
+			continue
+		}
+		populateEnum(bme, en, clusterIds, errata)
 		xml.InsertElementByAttribute(ce, bme, "name", "bitmap", "domain")
 	}
 
 	return
 }
 
-func populateEnum(configurator *zap.Configurator, ee *etree.Element, en *matter.Enum, clusterIds []*matter.Number, errata *zap.Errata) (err error) {
+func populateEnum(ee *etree.Element, en *matter.Enum, clusterIds []*matter.Number, errata *zap.Errata) (err error) {
 
 	var valFormat string
 	switch en.Type.BaseType {

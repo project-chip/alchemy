@@ -12,13 +12,13 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateStructs(configurator *zap.Configurator, configuratorElement *etree.Element, errata *zap.Errata) (err error) {
+func generateStructs(structs map[*matter.Struct][]*matter.Number, docPath string, configuratorElement *etree.Element, errata *zap.Errata) (err error) {
 
 	for _, se := range configuratorElement.SelectElements("struct") {
 
 		nameAttr := se.SelectAttr("name")
 		if nameAttr == nil {
-			slog.Warn("missing name attribute in struct", slog.String("path", configurator.Doc.Path))
+			slog.Warn("missing name attribute in struct", slog.String("path", docPath))
 			continue
 		}
 		name := nameAttr.Value
@@ -26,7 +26,7 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 		var matchingStruct *matter.Struct
 		var clusterIds []*matter.Number
 		var skip bool
-		for s, handled := range configurator.Structs {
+		for s, handled := range structs {
 			if s.Name == name || strings.TrimSuffix(s.Name, "Struct") == name {
 				matchingStruct = s
 				skip = len(handled) == 0
@@ -40,26 +40,26 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 		}
 
 		if matchingStruct == nil {
-			slog.Warn("unknown struct name", slog.String("path", configurator.Doc.Path), slog.String("structName", name))
+			slog.Warn("unknown struct name", slog.String("path", docPath), slog.String("structName", name))
 			configuratorElement.RemoveChild(se)
 			continue
 		}
-		if errata.SeparateStructs != nil {
+		if errata != nil && errata.SeparateStructs != nil {
 			if _, ok := errata.SeparateStructs[name]; ok {
 
 				amendedClusterCodes, remainingClusterIds := amendExistingClusterCodes(se, matchingStruct, clusterIds)
 
 				populateStruct(se, matchingStruct, amendedClusterCodes, false)
-				configurator.Structs[matchingStruct] = remainingClusterIds
+				structs[matchingStruct] = remainingClusterIds
 				continue
 			}
 		}
 		populateStruct(se, matchingStruct, clusterIds, false)
-		configurator.Structs[matchingStruct] = nil
+		structs[matchingStruct] = nil
 	}
 
 	var remainingStructs []*matter.Struct
-	for s, clusterIds := range configurator.Structs {
+	for s, clusterIds := range structs {
 		if len(clusterIds) == 0 {
 			continue
 		}
@@ -71,8 +71,8 @@ func generateStructs(configurator *zap.Configurator, configuratorElement *etree.
 	})
 
 	for _, s := range remainingStructs {
-		clusterIds := configurator.Structs[s]
-		if errata.SeparateStructs != nil {
+		clusterIds := structs[s]
+		if errata != nil && errata.SeparateStructs != nil {
 			if _, ok := errata.SeparateStructs[s.Name]; ok {
 
 				for _, clusterID := range clusterIds {

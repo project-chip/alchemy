@@ -12,7 +12,6 @@ import (
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
@@ -54,17 +53,17 @@ func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x
 		}
 	}
 
-	err = generateBitmaps(configurator, ce, errata)
+	err = generateBitmaps(configurator.Bitmaps, configurator.Doc.Path, ce, errata)
 	if err != nil {
 		return
 	}
 
-	err = generateEnums(configurator, ce, errata)
+	err = generateEnums(configurator.Enums, configurator.Doc.Path, ce, errata)
 	if err != nil {
 		return
 	}
 
-	err = generateStructs(configurator, ce, errata)
+	err = generateStructs(configurator.Structs, configurator.Doc.Path, ce, errata)
 	if err != nil {
 		return
 	}
@@ -74,12 +73,20 @@ func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x
 		return
 	}
 
+	s, err := xmlToString(x)
+	return s, err
+}
+
+func xmlToString(x *etree.Document) (string, error) {
 	x.Indent(2)
 	var b bytes.Buffer
-	_, err = x.WriteTo(&b)
+	_, err := x.WriteTo(&b)
+	if err != nil {
+		return "", err
+	}
 	s := b.String()
 	s = postProcessTemplate(s)
-	return s, err
+	return s, nil
 }
 
 var tagClosePattern = regexp.MustCompile(`(?m)/(?P<Tag>bitmap|cluster|command|enum|event|struct)>\n(\s+)<`)
@@ -162,6 +169,7 @@ func amendExistingClusterCodes(parent *etree.Element, entity types.Entity, clust
 		ca := cce.SelectAttr("code")
 		if ca == nil {
 			slog.Debug("missing cluster code", "val", entity)
+			parent.RemoveChild(cce)
 			continue
 		}
 		id := matter.ParseNumber(ca.Value)
@@ -178,21 +186,11 @@ func amendExistingClusterCodes(parent *etree.Element, entity types.Entity, clust
 
 func flushClusterCodes(parent *etree.Element, clusterIDs []*matter.Number) {
 	for _, clusterID := range clusterIDs {
+		if !clusterID.Valid() {
+			continue
+		}
 		ce := etree.NewElement("cluster")
 		patchNumberAttribute(ce, clusterID, "code")
 		xml.AppendElement(parent, ce, "cluster")
 	}
-}
-
-func clusterIdsForEntity(spec *spec.Specification, entity types.Entity) (clusterIDs []*matter.Number) {
-	refs, ok := spec.ClusterRefs[entity]
-	if !ok {
-		slog.Warn("unknown cluster ref for entity", "val", entity)
-		return
-	}
-	for ref := range refs {
-		clusterIDs = append(clusterIDs, ref.ID)
-	}
-	matter.SortNumbers(clusterIDs)
-	return
 }

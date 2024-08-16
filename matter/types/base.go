@@ -90,7 +90,6 @@ const (
 
 	BaseDataTypeMessageID
 	BaseDataTypeDeviceType
-	BaseDataTypeHomeLocation
 )
 
 type HasBaseDataType interface {
@@ -282,8 +281,6 @@ func BaseDataTypeName(baseDataType BaseDataType) string {
 		return "tag"
 	case BaseDataTypeMessageID:
 		return "message-id"
-	case BaseDataTypeHomeLocation:
-		return "homeloc"
 	}
 	return "unknown"
 }

@@ -14,24 +14,48 @@ import (
 func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
 
 	for _, cle := range ce.SelectElements("cluster") {
-		code, ok := xml.ReadSimpleElement(cle, "code")
-		if !ok {
-			slog.Warn("missing code element in cluster", slog.String("path", configurator.Doc.Path))
-			continue
-		}
-		clusterID := matter.ParseNumber(code)
-		if !clusterID.Valid() {
-			slog.Warn("invalid code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
-			continue
-		}
-
 		var cluster *matter.Cluster
 		var skip bool
-		for c, handled := range configurator.Clusters {
-			if c.ID.Equals(clusterID) {
-				cluster = c
-				skip = handled
-				configurator.Clusters[c] = true
+
+		code, ok := xml.ReadSimpleElement(cle, "code")
+		if ok {
+			clusterID := matter.ParseNumber(code)
+			if !clusterID.Valid() {
+				slog.Warn("invalid code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
+			} else {
+				for c, handled := range configurator.Clusters {
+					if c.ID.Equals(clusterID) {
+						cluster = c
+						skip = handled
+						configurator.Clusters[c] = true
+					}
+				}
+
+				if cluster == nil {
+					// We don't have this cluster in the spec; leave it here for now
+					slog.Warn("unknown code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
+					continue
+				}
+			}
+
+		}
+		if cluster == nil {
+			name, ok := xml.ReadSimpleElement(cle, "name")
+			if !ok {
+				slog.Warn("invalid code ID in cluster and no name backup", slog.String("path", configurator.Doc.Path))
+				continue
+			}
+			for c, handled := range configurator.Clusters {
+				if c.Name == name {
+					cluster = c
+					skip = handled
+					configurator.Clusters[c] = true
+				}
+			}
+			if cluster == nil {
+				// We don't have this cluster in the spec; leave it here for now
+				slog.Warn("unknown name in cluster", slog.String("path", configurator.Doc.Path), slog.String("name", name))
+				continue
 			}
 		}
 
@@ -39,11 +63,6 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 			continue
 		}
 
-		if cluster == nil {
-			// We don't have this cluster in the spec; leave it here for now
-			slog.Warn("unknown code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
-			continue
-		}
 		err = tg.populateCluster(configurator, cle, cluster, errata)
 		if err != nil {
 			return
@@ -87,7 +106,7 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 
 	attributes := make(map[*matter.Field]struct{})
 	events := make(map[*matter.Event]struct{})
-	commands := make(map[*matter.Command]struct{})
+	commands := make(map[*matter.Command][]*matter.Number)
 
 	for _, a := range cluster.Attributes {
 		attributes[a] = struct{}{}
@@ -98,7 +117,10 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 	}
 
 	for _, c := range cluster.Commands {
-		commands[c] = struct{}{}
+		if conformance.IsZigbee(cluster.Commands, c.Conformance) || conformance.IsDisallowed(c.Conformance) {
+			continue
+		}
+		commands[c] = []*matter.Number{}
 	}
 
 	xml.SetOrCreateSimpleElement(cle, "domain", matter.DomainNames[configurator.Doc.Domain])
@@ -136,7 +158,7 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 	if err != nil {
 		return
 	}
-	err = generateCommands(configurator, cle, cluster, commands, errata)
+	err = generateCommands(commands, configurator.Doc.Path, cle, errata)
 	if err != nil {
 		return
 	}

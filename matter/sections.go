@@ -36,6 +36,7 @@ const (
 	SectionBit
 	SectionDerivedClusterNamespace
 	SectionModeTags
+	SectionGlobalElements
 )
 
 var TopLevelSectionOrders = map[DocType][]Section{
@@ -87,6 +88,7 @@ var sectionTypeStrings = map[Section]string{
 	SectionAttributes:              "Attributes",
 	SectionAttribute:               "Attribute",
 	SectionCommands:                "Commands",
+	SectionCommand:                 "Command",
 	SectionEvents:                  "Events",
 	SectionEvent:                   "Event",
 	SectionConditions:              "Conditions",
@@ -95,8 +97,11 @@ var sectionTypeStrings = map[Section]string{
 	SectionElementRequirements:     "ElementRequirements",
 	SectionEndpointComposition:     "EndpointComposition",
 	SectionField:                   "Field",
-	SectionDerivedClusterNamespace: "Derived Cluster Namespace",
-	SectionModeTags:                "Mode Tags",
+	SectionValue:                   "Value",
+	SectionBit:                     "Bit",
+	SectionDerivedClusterNamespace: "DerivedClusterNamespace",
+	SectionModeTags:                "ModeTags",
+	SectionGlobalElements:          "GlobalElements",
 }
 
 func (st Section) String() string {

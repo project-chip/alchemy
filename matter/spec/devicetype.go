@@ -98,37 +98,38 @@ func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
 }
 
 func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) {
-	for _, e := range d.Elements() {
-		switch e := e.(type) {
-		case *Section:
-			var baseClusterRequirements, elementRequirements *Section
-			parse.Traverse(e, e.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
-				switch sec.SecType {
-				case matter.SectionClusterRequirements:
-					baseClusterRequirements = sec
-				case matter.SectionElementRequirements:
-					elementRequirements = sec
-				}
-				return parse.SearchShouldContinue
-			})
-			if baseClusterRequirements == nil && elementRequirements == nil {
-				continue
-			}
-			baseDeviceType = matter.NewDeviceType(newSource(d, e.Base))
-			if baseClusterRequirements != nil {
-				baseDeviceType.ClusterRequirements, err = baseClusterRequirements.toClusterRequirements(d)
-				if err != nil {
-					return
-				}
-			}
-			if elementRequirements != nil {
-				baseDeviceType.ElementRequirements, err = elementRequirements.toElementRequirements(d)
-				if err != nil {
-					return
-				}
-			}
+	for _, top := range parse.Skim[*Section](d.Elements()) {
+		err = AssignSectionTypes(d, top)
+		if err != nil {
 			return
 		}
+		var baseClusterRequirements, elementRequirements *Section
+		parse.Traverse(top, top.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
+			switch sec.SecType {
+			case matter.SectionClusterRequirements:
+				baseClusterRequirements = sec
+			case matter.SectionElementRequirements:
+				elementRequirements = sec
+			}
+			return parse.SearchShouldContinue
+		})
+		if baseClusterRequirements == nil && elementRequirements == nil {
+			continue
+		}
+		baseDeviceType = matter.NewDeviceType(newSource(d, top.Base))
+		if baseClusterRequirements != nil {
+			baseDeviceType.ClusterRequirements, err = baseClusterRequirements.toClusterRequirements(d)
+			if err != nil {
+				return
+			}
+		}
+		if elementRequirements != nil {
+			baseDeviceType.ElementRequirements, err = elementRequirements.toElementRequirements(d)
+			if err != nil {
+				return
+			}
+		}
+		return
 	}
 	return nil, fmt.Errorf("failed to find base device type")
 }
