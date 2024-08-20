@@ -7,6 +7,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -17,9 +18,9 @@ func (s *Section) mapFields(fieldMap map[string]*matter.Field, entityMap map[asc
 		var name string
 		switch s.SecType {
 		case matter.SectionAttribute:
-			name = strings.TrimSuffix(s.Name, " Attribute")
+			name = text.TrimCaseInsensitiveSuffix(s.Name, " Attribute")
 		case matter.SectionField:
-			name = strings.TrimSuffix(s.Name, " Field")
+			name = text.TrimCaseInsensitiveSuffix(s.Name, " Field")
 		}
 		if len(name) == 0 {
 			continue

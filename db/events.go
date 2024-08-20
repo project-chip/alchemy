@@ -3,9 +3,9 @@ package db
 import (
 	"context"
 	"log/slog"
-	"strings"
 
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -54,7 +54,7 @@ func (h *Host) indexEvents(cxt context.Context, doc *spec.Doc, ci *sectionInfo, 
 	for _, s := range parse.Skim[*spec.Section](es.Elements()) {
 		switch s.SecType {
 		case matter.SectionEvent:
-			name := strings.TrimSuffix(s.Name, " Event")
+			name := text.TrimCaseInsensitiveSuffix(s.Name, " Event")
 			p, ok := em[name]
 			if !ok {
 				slog.Error("no matching event", "name", s.Name)

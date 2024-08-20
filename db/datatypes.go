@@ -3,9 +3,9 @@ package db
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -103,7 +103,7 @@ func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInf
 			case matter.SectionDataTypeStruct:
 				t = "struct"
 			}
-			name := strings.TrimSuffix(s.Name, " Type")
+			name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
 			name = matter.StripDataTypeSuffixes(name)
 			ci := &sectionInfo{
 				parent: ds,

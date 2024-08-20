@@ -11,6 +11,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -72,7 +73,7 @@ func getTestPlanPath(testplanRoot string, name string) string {
 func testPlanName(path string, entities []types.Entity) string {
 
 	path = filepath.Base(path)
-	name := strings.TrimSuffix(path, filepath.Ext(path))
+	name := text.TrimCaseInsensitiveSuffix(path, filepath.Ext(path))
 
 	var suffix string
 	for _, m := range entities {

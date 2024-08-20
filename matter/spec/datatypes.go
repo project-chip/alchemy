@@ -9,6 +9,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -173,7 +174,7 @@ func (d *Doc) ReadRowDataType(row *asciidoc.TableRow, columnMap ColumnIndex, col
 	if commaIndex >= 0 {
 		name = name[:commaIndex]
 	}
-	name = strings.TrimSuffix(name, " Type")
+	name = text.TrimCaseInsensitiveSuffix(name, " Type")
 	dt := types.ParseDataType(name, isArray)
 	return dt, nil
 }

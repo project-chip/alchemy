@@ -9,6 +9,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -66,7 +67,7 @@ func (s *Section) buildCommands(d *Doc, t *asciidoc.Table) (commands matter.Comm
 		if err != nil {
 			return
 		}
-		cmd.Name = strings.TrimSuffix(cmd.Name, " Command")
+		cmd.Name = text.TrimCaseInsensitiveSuffix(cmd.Name, " Command")
 		var dir string
 		dir, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDirection)
 		if err != nil {
@@ -99,7 +100,7 @@ func (s *Section) buildCommands(d *Doc, t *asciidoc.Table) (commands matter.Comm
 }
 
 func (s *Section) toCommand(d *Doc, commandMap map[string]*matter.Command, entityMap map[asciidoc.Attributable][]types.Entity) (*matter.Command, error) {
-	name := strings.TrimSuffix(strings.ToLower(s.Name), " command")
+	name := strings.ToLower(text.TrimCaseInsensitiveSuffix(s.Name, " Command"))
 	c, ok := commandMap[name]
 	if !ok {
 		// Command sometimes have an parenthetical abbreviation after their name

@@ -11,6 +11,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -220,7 +221,7 @@ func normalizeAnchorLabel(name string, element any) (label asciidoc.Set) {
 	case *asciidoc.Table:
 		label = asciidoc.Set{asciidoc.NewString(strings.TrimSpace(name))}
 	default:
-		name = strings.TrimSuffix(name, " Type")
+		name = text.TrimCaseInsensitiveSuffix(name, " Type")
 		label = asciidoc.Set{asciidoc.NewString(strings.TrimSpace(matter.StripReferenceSuffixes(name)))}
 	}
 	return

@@ -3,9 +3,9 @@ package db
 import (
 	"context"
 	"log/slog"
-	"strings"
 
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -63,7 +63,7 @@ func (h *Host) indexCommands(cxt context.Context, doc *spec.Doc, ci *sectionInfo
 	for _, s := range parse.Skim[*spec.Section](es.Elements()) {
 		switch s.SecType {
 		case matter.SectionCommand:
-			name := strings.TrimSuffix(s.Name, " Command")
+			name := text.TrimCaseInsensitiveSuffix(s.Name, " Command")
 			p, ok := em[name]
 			if !ok {
 				slog.Debug("no matching command", "name", s.Name)
