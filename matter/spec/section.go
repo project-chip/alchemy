@@ -309,7 +309,7 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 	if parent != nil {
 		switch parent.SecType {
 		case matter.SectionDataTypes:
-			guessedType := guessDataTypeFromTable(section, parent)
+			guessedType := guessDataTypeFromTable(section)
 			if guessedType != matter.SectionUnknown {
 				return guessedType
 			}
@@ -338,10 +338,10 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 		}
 	}
 	slog.Debug("unknown section type", "path", section.Doc.Path, "name", name)
-	return matter.SectionUnknown
+	return guessDataTypeFromTable(section)
 }
 
-func guessDataTypeFromTable(section *Section, parent *Section) (sectionType matter.Section) {
+func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
 	firstTable := FindFirstTable(section)
 	if firstTable == nil {
 		return
@@ -357,20 +357,22 @@ func guessDataTypeFromTable(section *Section, parent *Section) (sectionType matt
 	}
 	_, hasID := columnMap[matter.TableColumnID]
 	_, hasType := columnMap[matter.TableColumnType]
-	if hasID && hasType {
+	_, hasBit := columnMap[matter.TableColumnBit]
+	_, hasValue := columnMap[matter.TableColumnValue]
+	_, hasSummary := columnMap[matter.TableColumnSummary]
+	_, hasDescription := columnMap[matter.TableColumnDescription]
+	_, hasStatusCode := columnMap[matter.TableColumnStatusCode]
+	if hasID && hasType && !hasBit && !hasValue {
 		sectionType = matter.SectionDataTypeStruct
 		return
 	}
-	_, hasSummary := columnMap[matter.TableColumnSummary]
-	if !hasSummary {
+	if !hasSummary && !hasDescription {
 		return
 	}
-	_, hasBit := columnMap[matter.TableColumnBit]
-	_, hasValue := columnMap[matter.TableColumnValue]
 	if hasBit {
 		sectionType = matter.SectionDataTypeBitmap
 	}
-	if hasValue {
+	if hasValue || hasStatusCode {
 		sectionType = matter.SectionDataTypeEnum
 	}
 	return
