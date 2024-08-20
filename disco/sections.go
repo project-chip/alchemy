@@ -7,6 +7,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -113,7 +114,7 @@ func (b *Ball) appendSubsectionTypes(section *spec.Section, columnMap spec.Colum
 		subSections := parse.FindAll[*spec.Section](section.Elements())
 		suffix := " " + subsectionSuffix
 		for _, ss := range subSections {
-			name := strings.TrimSuffix(ss.Name, suffix)
+			name := text.TrimCaseInsensitiveSuffix(ss.Name, suffix)
 			if _, ok := subSectionNames[name]; !ok {
 				continue
 			}

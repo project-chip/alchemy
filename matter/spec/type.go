@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 )
 
@@ -56,7 +57,7 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 		case "common_protocol":
 			return matter.DocTypeCommonProtocol, nil
 		case "data_model":
-			name := strings.TrimSuffix(path, filepath.Ext(path))
+			name := text.TrimCaseInsensitiveSuffix(path, filepath.Ext(path))
 			if strings.Contains(strings.ToLower(name), "cluster") {
 				return matter.DocTypeCluster, nil
 			}
@@ -82,7 +83,7 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 		case "secure_channel":
 			return matter.DocTypeSecureChannel, nil
 		case "service_device_management":
-			name := strings.TrimSuffix(path, filepath.Ext(path))
+			name := text.TrimCaseInsensitiveSuffix(path, filepath.Ext(path))
 			if strings.Contains(strings.ToLower(name), "cluster") {
 				return matter.DocTypeCluster, nil
 			}

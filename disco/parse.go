@@ -3,11 +3,11 @@ package disco
 import (
 	"fmt"
 	"log/slog"
-	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -233,7 +233,7 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 		subSectionNames[subSectionName] = i
 	}
 	for i, ss := range parse.Skim[*spec.Section](parent.section.Elements()) {
-		name := strings.TrimSuffix(ss.Name, childPattern.suffix)
+		name := text.TrimCaseInsensitiveSuffix(ss.Name, childPattern.suffix)
 		var ok bool
 		if _, ok = subSectionNames[name]; !ok {
 			continue

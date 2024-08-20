@@ -3,10 +3,10 @@ package spec
 import (
 	"fmt"
 	"log/slog"
-	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -70,7 +70,7 @@ func (s *Section) toFeatures(d *Doc, entityMap map[asciidoc.Attributable][]types
 		switch s.SecType {
 		case matter.SectionFeature:
 
-			name := strings.TrimSuffix(s.Name, " Feature")
+			name := text.TrimCaseInsensitiveSuffix(s.Name, " Feature")
 			a, ok := featureMap[name]
 			if !ok {
 				slog.Debug("unknown feature", "feature", name)

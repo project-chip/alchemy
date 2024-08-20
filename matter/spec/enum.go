@@ -8,6 +8,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -15,7 +16,7 @@ import (
 
 func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (e *matter.Enum, err error) {
 
-	name := strings.TrimSuffix(s.Name, " Type")
+	name := specName(text.TrimCaseInsensitiveSuffix(s.Name, " Type"))
 	e = &matter.Enum{
 		Name: name,
 	}

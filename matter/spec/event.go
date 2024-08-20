@@ -7,6 +7,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -57,7 +58,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 		switch s.SecType {
 		case matter.SectionEvent:
 
-			name := strings.TrimSuffix(s.Name, " Event")
+			name := text.TrimCaseInsensitiveSuffix(s.Name, " Event")
 			e, ok := eventMap[name]
 			if !ok {
 				slog.Debug("unknown event", "event", name)
