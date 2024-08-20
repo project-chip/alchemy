@@ -421,23 +421,35 @@ func ConvertZapToDataTypeName(s string) string {
 	return s
 }
 
+func maxOver255Bytes(fs matter.FieldSet, f *matter.Field) bool {
+	if f.Constraint == nil {
+		return false
+	}
+	max := f.Constraint.Max(&matter.ConstraintContext{Field: f, Fields: fs})
+	switch max.Type {
+	case types.DataTypeExtremeTypeInt64:
+		if max.Int64 > 255 {
+			return true
+		}
+	case types.DataTypeExtremeTypeUInt64:
+		if max.UInt64 > 255 {
+			return true
+		}
+	}
+	return false
+}
+
 func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	if f.Type == nil {
 		return ""
 	}
-	if f.Type.BaseType == types.BaseDataTypeString && f.Constraint != nil {
+	if f.Type.BaseType == types.BaseDataTypeString && maxOver255Bytes(fs, f) {
 		// Special case; needs to be long_char_string if over 255
-		max := f.Constraint.Max(&matter.ConstraintContext{Field: f, Fields: fs})
-		switch max.Type {
-		case types.DataTypeExtremeTypeInt64:
-			if max.Int64 > 255 {
-				return "long_char_string"
-			}
-		case types.DataTypeExtremeTypeUInt64:
-			if max.UInt64 > 255 {
-				return "long_char_string"
-			}
-		}
+		return "long_char_string"
+	}
+	if f.Type.BaseType == types.BaseDataTypeOctStr && maxOver255Bytes(fs, f) {
+		// Special case; needs to be long_octet_string if over 255
+		return "long_octet_string"
 	}
 	if f.Type.IsArray() {
 		return DataTypeName(f.Type.EntryType)
