@@ -140,6 +140,10 @@ var Erratas = map[string]*Errata{
 	},
 	"Label-Cluster.adoc": {
 		TemplatePath: "user-label-cluster",
+		ClusterSplit: map[string]string{
+			"0x0040": "fixed-label-cluster",
+			"0x0041": "user-label-cluster",
+		},
 	},
 	"LaundryWasherControls.adoc": {
 		TemplatePath: "washer-controls-cluster",
