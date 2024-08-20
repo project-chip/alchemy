@@ -2,6 +2,7 @@ package zap
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -82,6 +83,13 @@ func (c *Configurator) addCluster(v *matter.Cluster) {
 
 	if v.ID.Valid() {
 		c.ClusterIDs = append(c.ClusterIDs, v.ID.HexString())
+	}
+
+	// Special case for status code enums, which typically do not get referenced
+	for _, e := range v.Enums {
+		if strings.EqualFold(e.Name, "StatusCode") || strings.EqualFold(e.Name, "StatusCodeEnum") {
+			c.Enums[e] = append(c.Enums[e], v.ID)
+		}
 	}
 	c.Clusters[v] = false
 }

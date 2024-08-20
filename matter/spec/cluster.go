@@ -41,7 +41,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 	var structs matter.StructSet
 	for _, s := range elements {
 		switch s.SecType {
-		case matter.SectionDataTypes:
+		case matter.SectionDataTypes, matter.SectionStatusCodes:
 			var bs matter.BitmapSet
 			var es matter.EnumSet
 			var ss matter.StructSet
@@ -95,7 +95,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 			case matter.SectionDerivedClusterNamespace:
 				err = parseDerivedCluster(d, s, c)
 			case matter.SectionClusterID:
-			case matter.SectionDataTypes, matter.SectionFeatures: // Handled above
+			case matter.SectionDataTypes, matter.SectionFeatures, matter.SectionStatusCodes: // Handled above
 			default:
 				var looseEntities []types.Entity
 				looseEntities, err = findLooseEntities(d, s, entityMap)
