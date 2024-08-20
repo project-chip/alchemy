@@ -138,6 +138,9 @@ func populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Nu
 }
 
 func setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Field) {
+	// Remove incorrect attributes from legacy XML
+	e.RemoveAttr("code")
+	e.RemoveAttr("id")
 	xml.PrependAttribute(e, "fieldId", v.ID.IntString())
 	e.CreateAttr("name", v.Name)
 	writeDataType(e, s.Fields, v)
