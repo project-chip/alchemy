@@ -2,8 +2,6 @@ package conformance
 
 import (
 	"testing"
-
-	"github.com/project-chip/alchemy/matter/types"
 )
 
 func TestOptional(t *testing.T) {
@@ -59,10 +57,6 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 type conformanceTest struct {
 	Context  Context
 	Expected State
-}
-
-type referenceStore struct {
-	references map[string]types.Entity
 }
 
 var otherwiseTests = []conformanceTestSuite{
@@ -299,6 +293,36 @@ var otherwiseTests = []conformanceTestSuite{
 			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateProvisional},
 			{Context: Context{Values: map[string]any{"WATTS": false}}, Expected: StateProvisional},
 			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateProvisional},
+		},
+	},
+	{
+		Conformance:    "M, D",
+		ASCIIDocString: "M, D", // Preserve the deprecated after mandatory
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"WATTS": false}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateMandatory},
+		},
+	},
+	{
+		Conformance:    "O, D",
+		ASCIIDocString: "O, D", // Preserve the deprecated after optional
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"WATTS": false}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateMandatory},
+		},
+	},
+	{
+		Conformance:    "M, [AA], D",
+		ASCIIDocString: "M, D", // Remove the nonsensical optional conformance after mandatory, but preserve the deprecated
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"WATTS": false}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateMandatory},
 		},
 	},
 }
