@@ -8,6 +8,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -37,6 +38,8 @@ type Doc struct {
 
 	spec  *Specification
 	group *DocGroup
+
+	errata *errata.Spec
 }
 
 func NewDoc(d *asciidoc.Document, path string) (*Doc, error) {
@@ -46,6 +49,7 @@ func NewDoc(d *asciidoc.Document, path string) (*Doc, error) {
 		attributes:     make(map[asciidoc.AttributeName]any),
 		referenceIndex: newReferenceIndex(),
 	}
+	doc.errata = errata.GetSpec(path)
 	for _, e := range d.Elements() {
 		switch el := e.(type) {
 		case *asciidoc.AttributeEntry:
@@ -71,6 +75,10 @@ func firstLetterIsLower(s string) bool {
 
 func (doc *Doc) Footnotes() []*asciidoc.Footnote {
 	return nil
+}
+
+func (doc *Doc) Errata() *errata.Spec {
+	return doc.errata
 }
 
 func (doc *Doc) Parents() []*Doc {

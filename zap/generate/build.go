@@ -3,6 +3,7 @@ package generate
 import (
 	"log/slog"
 
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -22,7 +23,7 @@ func getDocDomain(doc *spec.Doc) matter.Domain {
 	return matter.DomainUnknown
 }
 
-func ZAPTemplateDestinations(sdkRoot string, docPath string, entities []types.Entity, errata *zap.Errata) (destinations map[string][]types.Entity) {
+func ZAPTemplateDestinations(sdkRoot string, docPath string, entities []types.Entity, errata *errata.ZAP) (destinations map[string][]types.Entity) {
 	destinations = make(map[string][]types.Entity)
 	if len(errata.ClusterSplit) == 0 {
 		newFile := zap.ClusterName(docPath, errata, entities)

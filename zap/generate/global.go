@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
@@ -16,7 +17,6 @@ import (
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/zap"
 )
 
 func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFiles pipeline.Map[string, *pipeline.Data[string]], err error) {
@@ -146,7 +146,7 @@ func getGlobalEntities[T comparable](spec *spec.Specification) map[T][]*matter.N
 	return ge
 }
 
-type globalEntityGenerator[T comparable] func(entities map[T][]*matter.Number, sourcePath string, parent *etree.Element, errata *zap.Errata) (err error)
+type globalEntityGenerator[T comparable] func(entities map[T][]*matter.Number, sourcePath string, parent *etree.Element, errata *errata.ZAP) (err error)
 
 func saveGlobalEntities[T comparable](cxt context.Context, tg *TemplateGenerator, path string, entities map[T][]*matter.Number, generator globalEntityGenerator[T], globalFiles pipeline.Map[string, *pipeline.Data[string]]) (err error) {
 	var bitmapDoc *etree.Document

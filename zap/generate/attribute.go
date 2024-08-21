@@ -7,13 +7,14 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateAttributes(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, attributes map[*matter.Field]struct{}, clusterPrefix string, errata *zap.Errata) (err error) {
+func generateAttributes(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, attributes map[*matter.Field]struct{}, clusterPrefix string, errata *errata.ZAP) (err error) {
 
 	for _, ae := range cle.SelectElements("attribute") {
 		ce := ae.SelectAttr("code")
@@ -73,7 +74,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 	return
 }
 
-func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matter.Cluster, clusterPrefix string, errata *zap.Errata) (err error) {
+func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matter.Cluster, clusterPrefix string, errata *errata.ZAP) (err error) {
 	patchNumberAttribute(ae, attribute.ID, "code")
 	ae.CreateAttr("side", "server")
 	define := getDefine(attribute.Name, clusterPrefix, errata)
@@ -177,7 +178,7 @@ func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Fiel
 	}
 }
 
-func getDefine(name string, prefix string, errata *zap.Errata) string {
+func getDefine(name string, prefix string, errata *errata.ZAP) string {
 	define := strcase.ToScreamingDelimited(cleanAcronyms(name), '_', "", true)
 	if !strings.HasPrefix(define, prefix) {
 		define = prefix + define

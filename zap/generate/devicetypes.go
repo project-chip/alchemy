@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/xml"
@@ -230,10 +231,7 @@ func setIncludeAttributes(clustersElement *etree.Element, include *etree.Element
 		slog.Warn("unknown doc path on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name))
 
 	}
-	errata, ok := zap.Erratas[filepath.Base(path)]
-	if !ok {
-		errata = zap.DefaultErrata
-	}
+	errata := errata.GetZAP(path)
 	cxt := conformance.Context{
 		Values: map[string]any{"Matter": true},
 	}

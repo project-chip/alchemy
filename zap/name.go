@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -16,7 +17,7 @@ func CleanName(name string) string {
 	return strcase.ToCamel(name)
 }
 
-func ClusterName(path string, errata *Errata, entities []types.Entity) string {
+func ClusterName(path string, errata *errata.ZAP, entities []types.Entity) string {
 
 	if errata.TemplatePath != "" {
 		return errata.TemplatePath

@@ -5,13 +5,14 @@ import (
 	"strconv"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *zap.Errata) (err error) {
+func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *errata.ZAP) (err error) {
 
 	for _, cle := range ce.SelectElements("cluster") {
 		var cluster *matter.Cluster
@@ -86,7 +87,7 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 	return
 }
 
-func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, errata *zap.Errata) (err error) {
+func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
 
 	var define string
 	var clusterPrefix string

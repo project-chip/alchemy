@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -13,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateBitmaps(bitmaps map[*matter.Bitmap][]*matter.Number, sourcePath string, parent *etree.Element, errata *zap.Errata) (err error) {
+func generateBitmaps(bitmaps map[*matter.Bitmap][]*matter.Number, sourcePath string, parent *etree.Element, errata *errata.ZAP) (err error) {
 
 	for _, eve := range parent.SelectElements("bitmap") {
 
@@ -68,7 +69,7 @@ func generateBitmaps(bitmaps map[*matter.Bitmap][]*matter.Number, sourcePath str
 	return
 }
 
-func populateBitmap(ee *etree.Element, bm *matter.Bitmap, clusterIds []*matter.Number, errata *zap.Errata) (err error) {
+func populateBitmap(ee *etree.Element, bm *matter.Bitmap, clusterIds []*matter.Number, errata *errata.ZAP) (err error) {
 
 	var valFormat string
 	if bm.Name == "Feature" {

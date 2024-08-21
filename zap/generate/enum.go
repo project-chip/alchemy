@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -13,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateEnums(enums map[*matter.Enum][]*matter.Number, sourcePath string, ce *etree.Element, errata *zap.Errata) (err error) {
+func generateEnums(enums map[*matter.Enum][]*matter.Number, sourcePath string, ce *etree.Element, errata *errata.ZAP) (err error) {
 
 	for _, eve := range ce.SelectElements("enum") {
 
@@ -76,7 +77,7 @@ func generateEnums(enums map[*matter.Enum][]*matter.Number, sourcePath string, c
 	return
 }
 
-func populateEnum(ee *etree.Element, en *matter.Enum, clusterIds []*matter.Number, errata *zap.Errata) (err error) {
+func populateEnum(ee *etree.Element, en *matter.Enum, clusterIds []*matter.Number, errata *errata.ZAP) (err error) {
 
 	var valFormat string
 	switch en.Type.BaseType {
