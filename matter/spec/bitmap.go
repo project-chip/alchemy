@@ -71,9 +71,10 @@ func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 		if len(name) == 0 && len(summary) > 0 {
 			name = matter.Case(summary)
 		}
-		bv := matter.NewBitmapBit(bit, name, summary, conf)
+		bv := matter.NewBitmapBit(bit, specName(name), summary, conf)
 		bm.Bits = append(bm.Bits, bv)
 	}
 	entityMap[s.Base] = append(entityMap[s.Base], bm)
+	bm.Name = specName(bm.Name)
 	return
 }

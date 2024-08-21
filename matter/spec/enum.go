@@ -59,6 +59,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Ent
 	}
 	e.Values = subSectionValues
 	entityMap[s.Base] = append(entityMap[s.Base], e)
+	e.Name = specName(e.Name)
 	return
 }
 
@@ -100,6 +101,7 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 					continue
 				}
 			}
+			ev.Name = specName(ev.Name)
 			ev.Summary, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 			if err != nil {
 				return nil, err
