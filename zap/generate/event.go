@@ -6,13 +6,14 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	axml "github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, events map[*matter.Event]struct{}, errata *zap.Errata) (err error) {
+func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, events map[*matter.Event]struct{}, errata *errata.ZAP) (err error) {
 
 	for _, eve := range ce.SelectElements("event") {
 
@@ -55,7 +56,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 	return
 }
 
-func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, errata *zap.Errata) {
+func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, errata *errata.ZAP) {
 	needsAccess := e.Access.Read != matter.PrivilegeUnknown && e.Access.Read != matter.PrivilegeView
 
 	patchNumberAttribute(ee, e.ID, "code")
@@ -170,7 +171,7 @@ func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field) {
 	}
 }
 
-func setAccessAttributes(el *etree.Element, op string, p matter.Privilege, errata *zap.Errata) {
+func setAccessAttributes(el *etree.Element, op string, p matter.Privilege, errata *errata.ZAP) {
 	el.CreateAttr("op", op)
 	role := el.SelectAttr("role")
 	var name string

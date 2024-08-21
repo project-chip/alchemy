@@ -8,12 +8,12 @@ import (
 
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/compare"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/zap"
 	"github.com/project-chip/alchemy/zap/generate"
 	"github.com/project-chip/alchemy/zap/parse"
 	"github.com/spf13/cobra"
@@ -96,10 +96,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	specEntityMap := make(map[string][]types.Entity, specEntities.Size())
 	specEntities.Range(func(path string, entities *pipeline.Data[[]types.Entity]) bool {
 
-		errata, ok := zap.Erratas[filepath.Base(path)]
-		if !ok {
-			errata = zap.DefaultErrata
-		}
+		errata := errata.GetZAP(path)
 
 		destinations := generate.ZAPTemplateDestinations(sdkRoot, path, entities.Content, errata)
 		for templatePath, entities := range destinations {

@@ -6,13 +6,13 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/zap"
 )
 
-func generateStructs(structs map[*matter.Struct][]*matter.Number, docPath string, configuratorElement *etree.Element, errata *zap.Errata) (err error) {
+func generateStructs(structs map[*matter.Struct][]*matter.Number, docPath string, configuratorElement *etree.Element, errata *errata.ZAP) (err error) {
 
 	for _, se := range configuratorElement.SelectElements("struct") {
 

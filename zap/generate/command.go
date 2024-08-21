@@ -6,13 +6,14 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateCommands(commands map[*matter.Command][]*matter.Number, docPath string, parent *etree.Element, errata *zap.Errata) (err error) {
+func generateCommands(commands map[*matter.Command][]*matter.Number, docPath string, parent *etree.Element, errata *errata.ZAP) (err error) {
 
 	for _, cmde := range parent.SelectElements("command") {
 
@@ -72,7 +73,7 @@ func generateCommands(commands map[*matter.Command][]*matter.Number, docPath str
 	return
 }
 
-func populateCommand(ce *etree.Element, c *matter.Command, errata *zap.Errata) {
+func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 	mandatory := conformance.IsMandatory(c.Conformance)
 
 	var serverSource bool

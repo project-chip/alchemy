@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -71,10 +72,7 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*s
 		return
 	}
 
-	errata, ok := zap.Erratas[filepath.Base(input.Content.Path)]
-	if !ok {
-		errata = zap.DefaultErrata
-	}
+	errata := errata.GetZAP(input.Content.Path)
 
 	destinations := ZAPTemplateDestinations(tg.sdkRoot, input.Content.Path, entities, errata)
 

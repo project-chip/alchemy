@@ -10,6 +10,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/dm"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -24,7 +25,7 @@ func newZapTemplate() (x *etree.Document) {
 	return
 }
 
-func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata *zap.Errata) (result string, err error) {
+func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x *etree.Document, errata *errata.ZAP) (result string, err error) {
 
 	var exampleCluster *matter.Cluster
 	for c := range configurator.Clusters {
@@ -97,7 +98,7 @@ func postProcessTemplate(s string) string {
 	return s
 }
 
-func (tg *TemplateGenerator) generateFeatures(configurator *zap.Configurator, configuratorElement *etree.Element, features *matter.Features, errata *zap.Errata) (err error) {
+func (tg *TemplateGenerator) generateFeatures(configurator *zap.Configurator, configuratorElement *etree.Element, features *matter.Features, errata *errata.ZAP) (err error) {
 
 	needFeatures := features != nil && len(features.Bits) > 0
 
