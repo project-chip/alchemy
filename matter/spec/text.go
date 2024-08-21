@@ -2,6 +2,7 @@ package spec
 
 import (
 	"fmt"
+	"log/slog"
 	"regexp"
 	"strconv"
 	"strings"
@@ -119,4 +120,16 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 		}
 	}
 	return nil
+}
+
+func specName(name string) string {
+	if !strings.ContainsRune(name, ' ') {
+		return name
+	}
+	casedName := matter.Case(name)
+	if casedName != name {
+		slog.Warn("correcting name", slog.String("from", name), slog.String("to", casedName))
+		return casedName
+	}
+	return name
 }

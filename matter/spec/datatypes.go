@@ -135,6 +135,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 
 			}
 		}
+		f.Name = specName(f.Name)
 		fields = append(fields, f)
 	}
 	return
