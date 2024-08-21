@@ -13,7 +13,14 @@ func (cs Set) Type() Type {
 
 func (cs Set) ASCIIDocString() string {
 	var s strings.Builder
+	hitNonQualified := false
 	for _, c := range cs {
+		if hitNonQualified {
+			// Once we've hit an unqualified optional or mandatory conformance, only deprecated conformance is allowed
+			if _, ok := c.(*Deprecated); !ok {
+				continue
+			}
+		}
 		if s.Len() > 0 {
 			s.WriteString(", ")
 		}
@@ -23,11 +30,11 @@ func (cs Set) ASCIIDocString() string {
 			return s.String()
 		case *Optional:
 			if c.Expression == nil {
-				return s.String()
+				hitNonQualified = true
 			}
 		case *Mandatory:
 			if c.Expression == nil {
-				return s.String()
+				hitNonQualified = true
 			}
 		}
 	}
