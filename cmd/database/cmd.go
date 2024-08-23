@@ -9,6 +9,7 @@ import (
 	"github.com/dolthub/go-mysql-server/sql"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/db"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/spf13/cobra"
@@ -26,6 +27,8 @@ var Command = &cobra.Command{
 		address, _ := cmd.Flags().GetString("address")
 		port, _ := cmd.Flags().GetInt("port")
 		raw, _ := cmd.Flags().GetBool("raw")
+
+		errata.OverlayErrataConfig(specRoot)
 
 		pipelineOptions := pipeline.Flags(cmd)
 

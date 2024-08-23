@@ -6,6 +6,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/cmd/common"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -40,6 +41,8 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 
+	errata.OverlayErrataConfig(specRoot)
+
 	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
@@ -51,7 +54,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	var specBuilder spec.Builder
+	specBuilder := spec.NewBuilder()
 	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err

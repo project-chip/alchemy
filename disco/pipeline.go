@@ -29,7 +29,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 			return err
 		}
 
-		var specBuilder spec.Builder
+		specBuilder := spec.NewBuilder()
 		docs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, docs)
 		if err != nil {
 			return err

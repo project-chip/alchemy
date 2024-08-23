@@ -39,6 +39,8 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
 	text, _ := cmd.Flags().GetBool("text")
 
+	errata.OverlayErrataConfig(specRoot)
+
 	asciiSettings := common.ASCIIDocAttributes(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
@@ -54,7 +56,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	var specBuilder spec.Builder
+	specBuilder := spec.NewBuilder()
 	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
