@@ -140,7 +140,7 @@ func (s *Section) toCommand(d *Doc, commandMap map[string]*matter.Command, entit
 	if err != nil {
 		return nil, err
 	}
-	c.Name = specName(c.Name)
+	c.Name = CanonicalName(c.Name)
 	return c, nil
 }
 

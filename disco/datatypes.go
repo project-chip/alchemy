@@ -7,6 +7,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -296,7 +297,9 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 			}
 		}
 
-		title := asciidoc.NewString(dt.name + suffix + " Type")
+		dataTypeName := spec.CanonicalName(dt.name + suffix)
+
+		title := asciidoc.NewString(dataTypeName + " Type")
 
 		if dataTypesSection == nil {
 			dataTypesSection, err = ensureDataTypesSection(top)
@@ -453,4 +456,61 @@ func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
 		info.ref = dataTypeRefs[i]
 	}
 	return nil
+}
+
+func (b *Ball) canonicalizeDataTypeSectionName(dp *docParse, s *spec.Section, dataTypeName string) {
+	name := s.Name
+	if text.HasCaseInsensitiveSuffix(name, dataTypeName+" type") {
+		return
+	}
+	var newName = name
+	if text.HasCaseInsensitiveSuffix(name, dataTypeName) {
+		newName = spec.CanonicalName(name) + " Type"
+	} else if text.HasCaseInsensitiveSuffix(name, " type") {
+		newName = spec.CanonicalName(name[:len(name)-len(" type")])
+		newName += dataTypeName + " Type"
+	} else {
+		newName = spec.CanonicalName(name) + dataTypeName + " Type"
+	}
+	if name == newName {
+		return
+	}
+	setSectionTitle(s, newName)
+	oldName := text.TrimCaseInsensitiveSuffix(name, " type")
+	newName = text.TrimCaseInsensitiveSuffix(newName, " type")
+	if oldName == newName {
+		return
+	}
+	renameDataType(dp.attributes, oldName, newName)
+	renameDataType(dp.commands, oldName, newName)
+	renameDataType(dp.events, oldName, newName)
+}
+
+func renameDataType(subSections []*subSection, oldName string, newName string) {
+	slog.Warn("renaming", "old", oldName, "new", newName)
+	for _, ss := range subSections {
+		renameDataType(ss.children, oldName, newName)
+		if ss.table.element == nil {
+			continue
+		}
+		typeIndex, ok := ss.table.columnMap[matter.TableColumnType]
+		if !ok {
+			continue
+		}
+		for i, row := range ss.table.rows {
+			if i == ss.table.headerRow {
+				continue
+			}
+			typeCell := row.Cell(typeIndex)
+			vc, e := spec.RenderTableCell(typeCell)
+			if e != nil {
+				continue
+			}
+			slog.Warn("renaming cell", "replacement", newName, "old", vc, "looking for", oldName)
+
+			if strings.EqualFold(oldName, strings.TrimSpace(vc)) {
+				setCellString(typeCell, newName)
+			}
+		}
+	}
 }

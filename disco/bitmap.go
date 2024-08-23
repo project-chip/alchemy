@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -23,10 +24,10 @@ func (b *Ball) organizeBitmapSections(cxt *discoContext, dp *docParse) (err erro
 }
 
 func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSection) (err error) {
-	name := strings.TrimSpace(bms.section.Name)
-	if strings.HasSuffix(strings.ToLower(name), "bitmap") {
-		setSectionTitle(bms.section, name+" Type")
+	if b.doc.Errata().IgnoreSection(bms.section.Name, errata.PurposeDataTypesBitmap) {
+		return
 	}
+	b.canonicalizeDataTypeSectionName(dp, bms.section, "Bitmap")
 	bitsTable := bms.table
 	if bitsTable.element == nil {
 		return

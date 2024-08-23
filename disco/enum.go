@@ -3,8 +3,8 @@ package disco
 import (
 	"fmt"
 	"log/slog"
-	"strings"
 
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -21,10 +21,12 @@ func (b *Ball) organizeEnumSections(cxt *discoContext, dp *docParse) (err error)
 }
 
 func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSection) (err error) {
-	name := strings.TrimSpace(es.section.Name)
-	if strings.HasSuffix(strings.ToLower(name), "enum") {
-		setSectionTitle(es.section, name+" Type")
+	if b.doc.Errata().IgnoreSection(es.section.Name, errata.PurposeDataTypesEnum) {
+		return
 	}
+
+	b.canonicalizeDataTypeSectionName(dp, es.section, "Enum")
+
 	enumTable := es.table
 	if enumTable.element == nil {
 		return
