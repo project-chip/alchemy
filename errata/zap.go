@@ -1,31 +1,26 @@
 package errata
 
 import (
-	"path/filepath"
-
 	"github.com/project-chip/alchemy/matter"
 )
 
 type ZAP struct {
-	SuppressAttributePermissions bool
-	ClusterDefinePrefix          string
-	SuppressClusterDefinePrefix  bool
-	DefineOverrides              map[string]string
+	SuppressAttributePermissions bool              `yaml:"suppress-attribute-permissions,omitempty"`
+	ClusterDefinePrefix          string            `yaml:"cluster-define-prefix,omitempty"`
+	SuppressClusterDefinePrefix  bool              `yaml:"suppress-cluster-define-prefix,omitempty"`
+	DefineOverrides              map[string]string `yaml:"override-defines,omitempty"`
 
-	WritePrivilegeAsRole bool
-	SeparateStructs      map[string]struct{}
+	WritePrivilegeAsRole bool                `yaml:"write-privilege-as-role,omitempty"`
+	SeparateStructs      map[string]struct{} `yaml:"separate-structs,omitempty"`
 
-	TemplatePath string
+	TemplatePath string `yaml:"template-path,omitempty"`
 
-	ClusterSplit map[string]string
+	ClusterSplit map[string]string `yaml:"cluster-split,omitempty"`
 
-	Domain matter.Domain
+	Domain matter.Domain `yaml:"domain,omitempty"`
 }
 
 func GetZAP(path string) *ZAP {
-	errata, ok := Erratas[filepath.Base(path)]
-	if !ok {
-		return &DefaultErrata.ZAP
-	}
-	return &errata.ZAP
+	e := GetErrata(path)
+	return &e.ZAP
 }

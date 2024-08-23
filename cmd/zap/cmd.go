@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/cmd/common"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -34,6 +35,8 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
 
+	errata.OverlayErrataConfig(specRoot)
+
 	asciiSettings := common.ASCIIDocAttributes(cmd)
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
@@ -49,7 +52,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	var specBuilder spec.Builder
+	specBuilder := spec.NewBuilder()
 	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err

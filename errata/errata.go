@@ -1,13 +1,25 @@
 package errata
 
-import "github.com/project-chip/alchemy/matter"
+import (
+	"path/filepath"
+
+	"github.com/project-chip/alchemy/matter"
+)
 
 type Errata struct {
-	Spec Spec
-	ZAP  ZAP
+	Spec Spec `yaml:"spec,omitempty"`
+	ZAP  ZAP  `yaml:"zap,omitempty"`
 }
 
 var DefaultErrata = &Errata{}
+
+func GetErrata(path string) *Errata {
+	errata, ok := Erratas[filepath.Base(path)]
+	if ok {
+		return errata
+	}
+	return DefaultErrata
+}
 
 var Erratas = map[string]*Errata{
 	"ACL-Cluster.adoc": {
@@ -64,6 +76,11 @@ var Erratas = map[string]*Errata{
 		ZAP: ZAP{TemplatePath: "content-launch-cluster",
 			ClusterDefinePrefix: "CONTENT_LAUNCHER_"},
 	},
+	"DeviceCommissioningFlows.adoc": {
+		Spec: Spec{
+			IgnoreSections: map[string]Purpose{"Enhanced Setup Flow (ESF)": PurposeDataTypes},
+		},
+	},
 	"DemandResponseLoadControl.adoc": {
 		ZAP: ZAP{TemplatePath: "drlc-cluster",
 			DefineOverrides: map[string]string{
@@ -72,6 +89,9 @@ var Erratas = map[string]*Errata{
 			}},
 	},
 	"DiagnosticsGeneral.adoc": {
+		Spec: Spec{
+			IgnoreSections: map[string]Purpose{"NetworkInterface Type": PurposeDataTypes},
+		},
 		ZAP: ZAP{TemplatePath: "general-diagnostics-cluster"},
 	},
 	"DiagnosticsEthernet.adoc": {
@@ -84,11 +104,22 @@ var Erratas = map[string]*Errata{
 		ZAP: ZAP{TemplatePath: "software-diagnostics-cluster"},
 	},
 	"DiagnosticsThread.adoc": {
+		Spec: Spec{
+			IgnoreSections: map[string]Purpose{"SecurityPolicy Type": PurposeDataTypes},
+		},
 		ZAP: ZAP{TemplatePath: "thread-network-diagnostics-cluster",
 			SuppressClusterDefinePrefix: true},
 	},
 	"DiagnosticsWiFi.adoc": {
 		ZAP: ZAP{TemplatePath: "wifi-network-diagnostics-cluster"},
+	},
+	"Discovery.adoc": {
+		Spec: Spec{
+			IgnoreSections: map[string]Purpose{
+				"Common TXT Key/Value Pairs":      PurposeDataTypes,
+				"TXT key for pairing hint (`PH`)": PurposeDataTypes,
+			},
+		},
 	},
 	"DoorLock.adoc": {
 		ZAP: ZAP{DefineOverrides: map[string]string{
@@ -104,6 +135,14 @@ var Erratas = map[string]*Errata{
 			"REQUIRE_PI_NFOR_REMOTE_OPERATION":                "REQUIRE_PIN_FOR_REMOTE_OPERATION",
 		}},
 	},
+	"Encoding-Specification.adoc": {
+		Spec: Spec{
+			IgnoreSections: map[string]Purpose{
+				"Discrete - Bitmap":   PurposeDataTypes,
+				"Collection - Struct": PurposeDataTypes,
+			},
+		},
+	},
 	"EVSE.adoc": {
 		ZAP: ZAP{TemplatePath: "energy-evse-cluster",
 			SuppressClusterDefinePrefix: true},
@@ -114,6 +153,11 @@ var Erratas = map[string]*Errata{
 	},
 	"FlowMeasurement.adoc": {
 		ZAP: ZAP{ClusterDefinePrefix: "FLOW_"},
+	},
+	"GeneralCommissioningCluster.adoc": {
+		Spec: Spec{
+			IgnoreSections: map[string]Purpose{"BasicCommissioningInfo Type": PurposeDataTypes},
+		},
 	},
 	"Group-Key-Management-Cluster.adoc": {
 		ZAP: ZAP{TemplatePath: "group-key-mgmt-cluster"},
@@ -200,6 +244,12 @@ var Erratas = map[string]*Errata{
 	"OperationalState_RVC": {
 		ZAP: ZAP{TemplatePath: "operational-state-rvc-cluster"},
 	},
+	"OTARequestor.adoc": {
+		Spec: Spec{
+			IgnoreSections: map[string]Purpose{"ProviderLocation Type": PurposeDataTypes},
+		},
+	},
+
 	"PowerSourceConfigurationCluster.adoc": {
 		ZAP: ZAP{Domain: matter.DomainCHIP},
 	},
@@ -220,7 +270,10 @@ var Erratas = map[string]*Errata{
 	},
 	"Scenes.adoc": {
 		Spec: Spec{
-			IgnoreSections: map[string]struct{}{"Logical Scene Table": {}},
+			IgnoreSections: map[string]Purpose{
+				"Form of ExtensionFieldSetStruct": PurposeDataTypesStruct,
+				"Logical Scene Table":             PurposeDataTypesStruct,
+			},
 		},
 		ZAP: ZAP{TemplatePath: "scene"},
 	},

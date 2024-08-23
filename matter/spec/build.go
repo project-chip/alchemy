@@ -18,6 +18,10 @@ type Builder struct {
 	IgnoreHierarchy bool
 }
 
+func NewBuilder() Builder {
+	return Builder{}
+}
+
 func (sp Builder) Name() string {
 	return "Building spec"
 }

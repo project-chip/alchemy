@@ -5,6 +5,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/disco"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/spf13/cobra"
@@ -22,6 +23,8 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 	cxt := context.Background()
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
+
+	errata.OverlayErrataConfig(specRoot)
 
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
