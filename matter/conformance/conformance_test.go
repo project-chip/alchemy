@@ -309,10 +309,10 @@ var otherwiseTests = []conformanceTestSuite{
 		Conformance:    "O, D",
 		ASCIIDocString: "O, D", // Preserve the deprecated after optional
 		Tests: []conformanceTest{
-			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateMandatory},
-			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateMandatory},
-			{Context: Context{Values: map[string]any{"WATTS": false}}, Expected: StateMandatory},
-			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"AA": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Wi-Fi": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"WATTS": false}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateOptional},
 		},
 	},
 	{
