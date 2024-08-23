@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
@@ -338,7 +339,15 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 		}
 	}
 	slog.Debug("unknown section type", "path", section.Doc.Path, "name", name)
-	return guessDataTypeFromTable(section)
+	guessedType := guessDataTypeFromTable(section)
+	switch guessedType {
+	case matter.SectionDataTypeEnum:
+		if text.HasCaseInsensitiveSuffix(name, "Range") {
+			// These sections look like enums, but are actually ranges of values
+			return matter.SectionUnknown
+		}
+	}
+	return guessedType
 }
 
 func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
@@ -462,7 +471,7 @@ func (s *Section) GetDataType() *types.DataType {
 }
 
 func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attributable][]types.Entity) (entities []types.Entity, err error) {
-	parse.Traverse(doc, section.Elements(), func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
+	traverse(doc, section, errata.PurposeDataTypes, func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
@@ -505,6 +514,26 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attrib
 			return parse.SearchShouldStop
 		}
 		return parse.SearchShouldContinue
+	})
+	return
+}
+
+func skim(doc *Doc, parent asciidoc.HasElements, purpose errata.Purpose) (sections []*Section) {
+	for _, s := range parse.Skim[*Section](parent.Elements()) {
+		if doc.errata.IgnoreSection(s.Name, purpose) {
+			continue
+		}
+		sections = append(sections, s)
+	}
+	return
+}
+
+func traverse(doc *Doc, parent asciidoc.HasElements, purpose errata.Purpose, callback parse.TraverseCallback[*Section]) (sections []*Section) {
+	parse.Traverse(doc, parent.Elements(), func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
+		if doc.errata.IgnoreSection(s.Name, purpose) {
+			return parse.SearchShouldContinue
+		}
+		return callback(s, parent, index)
 	})
 	return
 }

@@ -16,7 +16,7 @@ import (
 
 func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (e *matter.Enum, err error) {
 
-	name := specName(text.TrimCaseInsensitiveSuffix(s.Name, " Type"))
+	name := CanonicalName(text.TrimCaseInsensitiveSuffix(s.Name, " Type"))
 	e = &matter.Enum{
 		Name: name,
 	}
@@ -59,7 +59,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Ent
 	}
 	e.Values = subSectionValues
 	entityMap[s.Base] = append(entityMap[s.Base], e)
-	e.Name = specName(e.Name)
+	e.Name = CanonicalName(e.Name)
 	return
 }
 
@@ -101,7 +101,7 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 					continue
 				}
 			}
-			ev.Name = specName(ev.Name)
+			ev.Name = CanonicalName(ev.Name)
 			ev.Summary, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
 			if err != nil {
 				return nil, err

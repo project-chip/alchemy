@@ -137,11 +137,13 @@ func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit 
 	return
 }
 
-func Traverse[T any](parent HasElements, els asciidoc.Set, callback func(el T, parent HasElements, index int) SearchShould) {
+type TraverseCallback[T any] func(el T, parent HasElements, index int) SearchShould
+
+func Traverse[T any](parent HasElements, els asciidoc.Set, callback TraverseCallback[T]) {
 	traverse(parent, els, callback)
 }
 
-func traverse[T any](parent HasElements, els asciidoc.Set, callback func(el T, parent HasElements, index int) SearchShould) SearchShould {
+func traverse[T any](parent HasElements, els asciidoc.Set, callback TraverseCallback[T]) SearchShould {
 
 	for i, e := range els {
 		var shortCircuit SearchShould

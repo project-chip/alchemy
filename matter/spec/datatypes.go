@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
@@ -18,7 +19,7 @@ import (
 
 func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, err error) {
 
-	parse.Traverse(s, s.Elements(), func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
+	traverse(d, s, errata.PurposeDataTypes, func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap:
 			var mb *matter.Bitmap
@@ -135,7 +136,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 
 			}
 		}
-		f.Name = specName(f.Name)
+		f.Name = CanonicalName(f.Name)
 		fields = append(fields, f)
 	}
 	return

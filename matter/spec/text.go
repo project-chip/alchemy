@@ -122,7 +122,7 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 	return nil
 }
 
-func specName(name string) string {
+func CanonicalName(name string) string {
 	if !strings.ContainsRune(name, ' ') {
 		return name
 	}

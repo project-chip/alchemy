@@ -3,8 +3,8 @@ package disco
 import (
 	"fmt"
 	"log/slog"
-	"strings"
 
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -20,18 +20,11 @@ func (b *Ball) organizeStructSections(cxt *discoContext, dp *docParse) (err erro
 }
 
 func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSection) (err error) {
-	name := strings.TrimSpace(ss.section.Name)
-	lower := strings.ToLower(name)
-	if !strings.HasSuffix(lower, "struct type") {
-		if strings.HasSuffix(lower, "struct") {
-			setSectionTitle(ss.section, name+" Type")
-		} else if strings.HasSuffix(lower, " type") {
-			name = name[:len(name)-5]
-			setSectionTitle(ss.section, name+"Struct Type")
-		} else {
-			setSectionTitle(ss.section, name+"Struct Type")
-		}
+	if b.doc.Errata().IgnoreSection(ss.section.Name, errata.PurposeDataTypesStruct) {
+		return
 	}
+	b.canonicalizeDataTypeSectionName(dp, ss.section, "Struct")
+
 	fieldsTable := &ss.table
 	if fieldsTable.element == nil {
 		slog.Debug("no struct table found")

@@ -52,7 +52,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 		events = append(events, e)
 
 		eventMap[e.Name] = e
-		e.Name = specName(e.Name)
+		e.Name = CanonicalName(e.Name)
 	}
 
 	for _, s := range parse.Skim[*Section](s.Elements()) {
@@ -105,7 +105,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 				return
 			}
 			for _, f := range e.Fields {
-				f.Name = specName(f.Name)
+				f.Name = CanonicalName(f.Name)
 			}
 		}
 	}
