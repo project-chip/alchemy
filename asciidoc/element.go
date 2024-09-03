@@ -33,6 +33,11 @@ type HasChild interface {
 	Child() Element
 }
 
+type HasParent interface {
+	Parent() Element
+	SetParent(e Element)
+}
+
 func ValueToString(e any) string {
 	var sb strings.Builder
 	elementToString(&sb, e)

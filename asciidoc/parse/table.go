@@ -56,14 +56,16 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 		case []*asciidoc.TableCell:
 			for _, cell := range el {
 				if currentTableRow == nil || cellIndex >= table.ColumnCount {
-					currentTableRow = &asciidoc.TableRow{}
+					currentTableRow = &asciidoc.TableRow{Parent: table}
 					currentTableRow.SetPosition(cell.Position())
+					currentTableRow.SetPath(cell.Path())
 					err = table.Append(currentTableRow)
 					if err != nil {
 						return
 					}
 					cellIndex = 0
 				}
+				cell.Parent = currentTableRow
 				for cellIndex < table.ColumnCount {
 					skip, ok := colSkip[cellIndex]
 					if !ok || skip == 0 {
@@ -79,6 +81,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 				if cellIndex >= table.ColumnCount {
 					currentTableRow = &asciidoc.TableRow{}
 					currentTableRow.SetPosition(cell.Position())
+					currentTableRow.SetPath(cell.Path())
 					err = table.Append(currentTableRow)
 					if err != nil {
 						return

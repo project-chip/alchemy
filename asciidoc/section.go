@@ -7,14 +7,13 @@ import (
 type Section struct {
 	position
 	raw
+	child
 
 	AttributeList
 	Set
 
 	Title Set
 	Level int
-
-	parent *Section
 }
 
 func NewSection(title Set, level int) *Section {
@@ -25,11 +24,14 @@ func (Section) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (s *Section) Parent() *Section {
-	return s.parent
+func (s *Section) ParentSection() *Section {
+	if ps, ok := s.parent.(*Section); ok {
+		return ps
+	}
+	return nil
 }
 
-func (s *Section) AddChild(c *Section) {
+func (s *Section) AddChildSection(c *Section) {
 	c.parent = s
 }
 
