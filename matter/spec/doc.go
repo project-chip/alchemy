@@ -39,7 +39,7 @@ type Doc struct {
 	spec  *Specification
 	group *DocGroup
 
-	errata *errata.Spec
+	errata *errata.Errata
 }
 
 func NewDoc(d *asciidoc.Document, path Path) (*Doc, error) {
@@ -49,7 +49,7 @@ func NewDoc(d *asciidoc.Document, path Path) (*Doc, error) {
 		attributes:     make(map[asciidoc.AttributeName]any),
 		referenceIndex: newReferenceIndex(),
 	}
-	doc.errata = errata.GetSpec(path)
+	doc.errata = errata.GetErrata(path.Relative)
 	for _, e := range d.Elements() {
 		switch el := e.(type) {
 		case *asciidoc.AttributeEntry:
@@ -77,7 +77,7 @@ func (doc *Doc) Footnotes() []*asciidoc.Footnote {
 	return nil
 }
 
-func (doc *Doc) Errata() *errata.Spec {
+func (doc *Doc) Errata() *errata.Errata {
 	return doc.errata
 }
 

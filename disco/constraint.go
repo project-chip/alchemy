@@ -3,6 +3,7 @@ package disco
 import (
 	"log/slog"
 
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -11,6 +12,9 @@ import (
 
 func (b *Ball) fixConstraintCells(section *spec.Section, ti *tableInfo) (err error) {
 	if len(ti.rows) < 2 {
+		return
+	}
+	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableConstraint) {
 		return
 	}
 	constraintIndex, ok := ti.getColumnIndex(matter.TableColumnConstraint)

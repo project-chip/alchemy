@@ -4,15 +4,19 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func fixConformanceCells(docParse *docParse, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
+func (b *Ball) fixConformanceCells(docParse *docParse, section *subSection, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
+	}
+	if b.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableConformance) {
+		return nil
 	}
 	conformanceIndex, ok := columnMap[matter.TableColumnConformance]
 	if !ok {

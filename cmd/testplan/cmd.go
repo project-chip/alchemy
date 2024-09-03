@@ -41,7 +41,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 
-	errata.OverlayErrataConfig(specRoot)
+	errata.LoadErrataConfig(specRoot)
 
 	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
 	if err != nil {

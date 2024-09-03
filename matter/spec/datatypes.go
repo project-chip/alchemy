@@ -19,7 +19,7 @@ import (
 
 func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, err error) {
 
-	traverse(d, s, errata.PurposeDataTypes, func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
+	traverse(d, s, errata.SpecPurposeDataTypes, func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap:
 			var mb *matter.Bitmap

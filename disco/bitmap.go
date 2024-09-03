@@ -24,9 +24,6 @@ func (b *Ball) organizeBitmapSections(cxt *discoContext, dp *docParse) (err erro
 }
 
 func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSection) (err error) {
-	if b.doc.Errata().IgnoreSection(bms.section.Name, errata.PurposeDataTypesBitmap) {
-		return
-	}
 	b.canonicalizeDataTypeSectionName(dp, bms.section, "Bitmap")
 	bitsTable := bms.table
 	if bitsTable.element == nil {
@@ -66,6 +63,9 @@ func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSe
 var bitRangePattern = regexp.MustCompile(`^(?P<From>[0-9]+)(?<Separator>\.{2,}|\s*\-\s*)(?P<To>[0-9]+)$`)
 
 func (b *Ball) fixBitmapRange(bms *subSection) {
+	if b.errata.IgnoreSection(bms.section.Name, errata.DiscoPurposeDataTypeBitmapFixRange) {
+		return
+	}
 	bitIndex, ok := bms.table.getColumnIndex(matter.TableColumnBit, matter.TableColumnValue)
 	if !ok {
 		return

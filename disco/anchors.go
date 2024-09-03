@@ -9,6 +9,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/render"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
@@ -53,6 +54,15 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 			if len(infos) == 1 {
 				infos[0].SyncToDoc(id)
 			} else if len(infos) > 1 { // We ended up with some duplicate anchors
+				var skip bool
+				for _, info := range infos {
+					if skipAnchor(info) {
+						skip = true
+					}
+				}
+				if skip {
+					continue
+				}
 				var disambiguatedIDs []string
 				disambiguatedIDs, err = disambiguateAnchorSet(infos, id, ag)
 				if err != nil {
@@ -63,6 +73,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 					}
 
 					slog.Warn("failed disambiguating anchor", args...)
+					err = nil
 					continue
 				}
 				for i, info := range infos {
@@ -145,13 +156,19 @@ func (AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (an
 			for _, a := range as {
 				id := a.ID
 				newID := normalizeAnchor(a)
+				if id == newID {
+					ag.updatedAnchors[id] = append(ag.updatedAnchors[id], a)
+					continue
+				}
+				if _, existingAnchor := da[newID]; existingAnchor {
+					slog.Warn("Attempting to rename anchor to existing anchor", slog.String("oldAnchor", id), slog.String("newAnchor", newID))
+					continue
+				}
 				ag.updatedAnchors[newID] = append(ag.updatedAnchors[newID], a)
-				if id != newID {
 					slog.Debug("rewrote anchor", "from", id, "to", newID)
 					ag.rewrittenAnchors[id] = append(ag.rewrittenAnchors[id], a)
 				}
 			}
-		}
 
 	}
 	return
@@ -159,6 +176,9 @@ func (AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (an
 
 func normalizeAnchor(info *spec.Anchor) (id string) {
 	id = info.ID
+	if skipAnchor(info) {
+		return
+	}
 	name := info.Name()
 	if properAnchorPattern.MatchString(info.ID) {
 		if len(info.LabelElements) == 0 || labelText(info.LabelElements) == name {
@@ -185,6 +205,17 @@ func normalizeAnchor(info *spec.Anchor) (id string) {
 		info.LabelElements = nil
 	}
 	return
+}
+
+func skipAnchor(info *spec.Anchor) bool {
+	section, ok := info.Element.(*asciidoc.Section)
+	if !ok {
+		return false
+	}
+	if info.Document.Errata().Disco.IgnoreSection(section.Name(), errata.DiscoPurposeNormalizeAnchor) {
+		return true
+	}
+	return false
 }
 
 var anchorInvalidCharacters = strings.NewReplacer(".", "", "(", "", ")", "")

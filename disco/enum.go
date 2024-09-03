@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -21,9 +20,6 @@ func (b *Ball) organizeEnumSections(cxt *discoContext, dp *docParse) (err error)
 }
 
 func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSection) (err error) {
-	if b.doc.Errata().IgnoreSection(es.section.Name, errata.PurposeDataTypesEnum) {
-		return
-	}
 
 	b.canonicalizeDataTypeSectionName(dp, es.section, "Enum")
 

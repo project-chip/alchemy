@@ -128,17 +128,19 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 	if err != nil {
 		return err
 	}
+	var secType matter.Section
 	switch docType {
 	case matter.DocTypeCluster:
-		top.SecType = matter.SectionCluster
+		secType = matter.SectionCluster
 	case matter.DocTypeDeviceType:
-		top.SecType = matter.SectionDeviceType
+		secType = matter.SectionDeviceType
 	default:
-		top.SecType = matter.SectionTop
+		secType = matter.SectionTop
 		if strings.HasSuffix(top.Name, " Cluster") {
-			top.SecType = matter.SectionCluster
+			secType = matter.SectionCluster
 		}
 	}
+	assignSectionType(doc, top, secType)
 
 	parse.Traverse(top, top.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
 		section, ok := el.(*Section)
@@ -150,7 +152,7 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 			return parse.SearchShouldContinue
 		}
 
-		section.SecType = getSectionType(ps, section)
+		assignSectionType(doc, section, getSectionType(ps, section))
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct:
 			if section.Base.Level > 2 {
@@ -162,6 +164,26 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 	})
 	top.sectionTypesAssigned = true
 	return nil
+}
+
+func assignSectionType(doc *Doc, s *Section, sectionType matter.Section) {
+	var ignore bool
+	switch sectionType {
+	case matter.SectionDataTypeBitmap:
+		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeDataTypesBitmap)
+	case matter.SectionDataTypeEnum:
+		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeDataTypesEnum)
+	case matter.SectionDataTypeStruct:
+		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeDataTypesStruct)
+	case matter.SectionCluster:
+		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCluster)
+	case matter.SectionDeviceType:
+		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeDeviceType)
+	}
+	if ignore {
+		return
+	}
+	s.SecType = sectionType
 }
 
 func FindSectionByType(top *Section, sectionType matter.Section) *Section {
@@ -339,15 +361,7 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 		}
 	}
 	slog.Debug("unknown section type", "path", section.Doc.Path, "name", name)
-	guessedType := guessDataTypeFromTable(section)
-	switch guessedType {
-	case matter.SectionDataTypeEnum:
-		if text.HasCaseInsensitiveSuffix(name, "Range") {
-			// These sections look like enums, but are actually ranges of values
-			return matter.SectionUnknown
-		}
-	}
-	return guessedType
+	return guessDataTypeFromTable(section)
 }
 
 func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
@@ -471,7 +485,7 @@ func (s *Section) GetDataType() *types.DataType {
 }
 
 func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attributable][]types.Entity) (entities []types.Entity, err error) {
-	traverse(doc, section, errata.PurposeDataTypes, func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
+	traverse(doc, section, errata.SpecPurposeDataTypes, func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
@@ -518,9 +532,9 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attrib
 	return
 }
 
-func skim(doc *Doc, parent asciidoc.HasElements, purpose errata.Purpose) (sections []*Section) {
+func skim(doc *Doc, parent asciidoc.HasElements, purpose errata.SpecPurpose) (sections []*Section) {
 	for _, s := range parse.Skim[*Section](parent.Elements()) {
-		if doc.errata.IgnoreSection(s.Name, purpose) {
+		if doc.errata.Spec.IgnoreSection(s.Name, purpose) {
 			continue
 		}
 		sections = append(sections, s)
@@ -528,9 +542,9 @@ func skim(doc *Doc, parent asciidoc.HasElements, purpose errata.Purpose) (sectio
 	return
 }
 
-func traverse(doc *Doc, parent asciidoc.HasElements, purpose errata.Purpose, callback parse.TraverseCallback[*Section]) (sections []*Section) {
+func traverse(doc *Doc, parent asciidoc.HasElements, purpose errata.SpecPurpose, callback parse.TraverseCallback[*Section]) (sections []*Section) {
 	parse.Traverse(doc, parent.Elements(), func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
-		if doc.errata.IgnoreSection(s.Name, purpose) {
+		if doc.errata.Spec.IgnoreSection(s.Name, purpose) {
 			return parse.SearchShouldContinue
 		}
 		return callback(s, parent, index)
