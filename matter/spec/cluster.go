@@ -127,7 +127,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 	if len(clusters) == 1 {
 		entities = append(entities, clusters[0])
 	} else if len(clusters) > 1 {
-		entities = append(entities, &matter.ClusterGroup{Clusters: clusters})
+		entities = append(entities, matter.NewClusterGroup(s.Base, clusters))
 	}
 	entityMap[s.Base] = append(entityMap[s.Base], entities...)
 	return entities, nil
@@ -223,7 +223,7 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 	var clusters []*matter.Cluster
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		c := &matter.Cluster{}
+		c := matter.NewCluster(s.Base)
 		c.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return nil, err

@@ -3,12 +3,21 @@ package matter
 import (
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 type ClusterGroup struct {
+	entity
 	Clusters []*Cluster
+}
+
+func NewClusterGroup(source asciidoc.Element, clusters []*Cluster) *ClusterGroup {
+	return &ClusterGroup{
+		entity:   entity{source: source},
+		Clusters: clusters,
+	}
 }
 
 func (c ClusterGroup) EntityType() types.EntityType {
@@ -20,6 +29,7 @@ func (c ClusterGroup) Explode() []*Cluster {
 }
 
 type Cluster struct {
+	entity
 	ID          *Number         `json:"id,omitempty"`
 	Name        string          `json:"name,omitempty"`
 	Description string          `json:"description,omitempty"`
@@ -39,6 +49,12 @@ type Cluster struct {
 	Attributes FieldSet   `json:"attributes,omitempty"`
 	Events     EventSet   `json:"events,omitempty"`
 	Commands   CommandSet `json:"commands,omitempty"`
+}
+
+func NewCluster(source asciidoc.Element) *Cluster {
+	return &Cluster{
+		entity: entity{source: source},
+	}
 }
 
 func (c *Cluster) EntityType() types.EntityType {

@@ -188,7 +188,7 @@ func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err erro
 	}
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		c := &matter.Condition{}
+		c := matter.NewCondition(s.Base)
 		c.Feature, err = readRowCellASCIIDocString(row, featureIndex)
 		if err != nil {
 			return

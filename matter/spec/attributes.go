@@ -24,7 +24,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 	attributeMap := make(map[string]*matter.Field)
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		attr := matter.NewAttribute()
+		attr := matter.NewAttribute(row)
 		attr.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return

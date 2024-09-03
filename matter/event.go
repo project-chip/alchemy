@@ -1,11 +1,13 @@
 package matter
 
 import (
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 type Event struct {
+	entity
 	ID          *Number         `json:"id,omitempty"`
 	Name        string          `json:"name,omitempty"`
 	Description string          `json:"description,omitempty"`
@@ -14,6 +16,12 @@ type Event struct {
 	Access      Access          `json:"access,omitempty"`
 
 	Fields FieldSet `json:"fields,omitempty"`
+}
+
+func NewEvent(source asciidoc.Element) *Event {
+	return &Event{
+		entity: entity{source: source},
+	}
 }
 
 func (e *Event) GetConformance() conformance.Set {
@@ -25,7 +33,7 @@ func (e *Event) EntityType() types.EntityType {
 }
 
 func (e *Event) Clone() *Event {
-	ne := &Event{ID: e.ID.Clone(), Name: e.Name, Description: e.Description, Priority: e.Priority, Access: e.Access}
+	ne := &Event{entity: entity{source: e.source}, ID: e.ID.Clone(), Name: e.Name, Description: e.Description, Priority: e.Priority, Access: e.Access}
 	if len(e.Conformance) > 0 {
 		ne.Conformance = e.Conformance.CloneSet()
 	}

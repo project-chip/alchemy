@@ -24,7 +24,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 	eventMap := make(map[string]*matter.Event)
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		e := &matter.Event{}
+		e := matter.NewEvent(s.Base)
 		e.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return

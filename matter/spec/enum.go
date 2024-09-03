@@ -17,9 +17,8 @@ import (
 func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (e *matter.Enum, err error) {
 
 	name := CanonicalName(text.TrimCaseInsensitiveSuffix(s.Name, " Type"))
-	e = &matter.Enum{
-		Name: name,
-	}
+	e = matter.NewEnum(s.Base)
+	e.Name = name
 	dt := s.GetDataType()
 	if dt == nil {
 		dt = types.ParseDataType("enum8", false)
@@ -84,7 +83,7 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 		var values matter.EnumValueSet
 		for i := headerRowIndex + 1; i < len(rows); i++ {
 			row := rows[i]
-			ev := &matter.EnumValue{}
+			ev := matter.NewEnumValue(s.Base)
 			ev.Name, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnName)
 			if err != nil {
 				return nil, err
@@ -144,16 +143,13 @@ func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed reading mode tags: %w", err)
 	}
-	e = &matter.Enum{
-		Name: "ModeTag",
-		Type: types.ParseDataType("enum16", false),
-	}
-
-	e.Type = types.ParseDataType("enum16", false)
+	e = matter.NewEnum(s.Base)
+	e.Name = "ModeTag"
+	e.Type = types.NewDataType(types.BaseDataTypeEnum16, false)
 
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		ev := &matter.EnumValue{}
+		ev := matter.NewEnumValue(s.Base)
 		ev.Name, err = readRowASCIIDocString(row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return
