@@ -21,11 +21,6 @@ func getAppClusterPath(dmRoot string, path spec.Path, clusterName string) string
 	return filepath.Join(dmRoot, fmt.Sprintf("/clusters/%s.xml", file))
 }
 
-type clusterID struct {
-	id   *matter.Number
-	name string
-}
-
 func (p *Renderer) renderAppCluster(doc *spec.Doc, clusters ...*matter.Cluster) (output string, err error) {
 	x := etree.NewDocument()
 
@@ -33,11 +28,6 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, clusters ...*matter.Cluster) 
 	x.CreateComment(getLicense())
 
 	root := &x.Element
-
-	var clusterIDs []clusterID
-	for _, cluster := range clusters {
-		clusterIDs = append(clusterIDs, clusterID{id: cluster.ID, name: cluster.Name})
-	}
 
 	cluster := clusters[0]
 
@@ -67,12 +57,16 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, clusters ...*matter.Cluster) 
 		}
 	}
 	ids := c.CreateElement("clusterIds")
-	for _, cid := range clusterIDs {
+	for _, cluster := range clusters {
 		clusterID := ids.CreateElement("clusterId")
-		if cid.id.Valid() {
-			clusterID.CreateAttr("id", cid.id.HexString())
+		if cluster.ID.Valid() {
+			clusterID.CreateAttr("id", cluster.ID.HexString())
 		}
-		clusterID.CreateAttr("name", cid.name)
+		clusterID.CreateAttr("name", cluster.Name)
+		err = renderConformanceString(doc, cluster, cluster.Conformance, clusterID)
+		if err != nil {
+			return
+		}
 	}
 	c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
 	class := c.CreateElement("classification")
