@@ -29,6 +29,7 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				bitmaps = append(bitmaps, mb)
+				entityMap[s.Base] = append(entityMap[s.Base], mb)
 			}
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
@@ -38,6 +39,7 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				enums = append(enums, me)
+				entityMap[s.Base] = append(entityMap[s.Base], me)
 			}
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
@@ -47,6 +49,7 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				structs = append(structs, me)
+				entityMap[s.Base] = append(entityMap[s.Base], me)
 			}
 		default:
 		}
@@ -57,7 +60,7 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 }
 
 func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMap ColumnIndex, entityType types.EntityType) (fields []*matter.Field, err error) {
-	ids := make(map[uint64]struct{})
+	ids := make(map[uint64]*matter.Field)
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
 		f := matter.NewField(row)
@@ -100,12 +103,12 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 		}
 		if f.ID.Valid() {
 			id := f.ID.Value()
-			_, ok := ids[id]
+			existing, ok := ids[id]
 			if ok {
 				slog.Warn("duplicate field ID", log.Path("source", f), slog.String("name", f.Name), slog.Uint64("id", id), log.Path("original", existing))
 				continue
 			}
-			ids[id] = struct{}{}
+			ids[id] = f
 		}
 
 		if f.Type != nil {
@@ -162,7 +165,7 @@ func (d *Doc) ReadRowDataType(row *asciidoc.TableRow, columnMap ColumnIndex, col
 	var isArray bool
 
 	var sb strings.Builder
-	d.buildDataTypeString(cellElements, &sb)
+	source := d.buildDataTypeString(cellElements, &sb)
 	var name string
 	var content = asteriskPattern.ReplaceAllString(sb.String(), "")
 	match := listDataTypeDefinitionPattern.FindStringSubmatch(content)
@@ -178,10 +181,13 @@ func (d *Doc) ReadRowDataType(row *asciidoc.TableRow, columnMap ColumnIndex, col
 	}
 	name = text.TrimCaseInsensitiveSuffix(name, " Type")
 	dt := types.ParseDataType(name, isArray)
+	if dt != nil {
+		dt.Source = source
+	}
 	return dt, nil
 }
 
-func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder) {
+func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {
 	for _, el := range cellElements {
 		switch v := el.(type) {
 		case *asciidoc.String:
@@ -199,20 +205,22 @@ func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder
 						name = asciidoc.AttributeAsciiDocString(anchor.LabelElements)
 					}
 				} else {
-					slog.Warn("data type references unknown or ambiguous anchor", slog.String("name", v.ID), log.Path("source", newSource(d, v)))
+					slog.Warn("data type references unknown or ambiguous anchor", slog.String("name", v.ID), log.Path("source", NewSource(d, v)))
 				}
 				if len(name) == 0 {
 					name = strings.TrimPrefix(v.ID, "_")
 				}
 				sb.WriteString(name)
 			}
+			source = el
 		case *asciidoc.SpecialCharacter:
 		case *asciidoc.Paragraph:
-			d.buildDataTypeString(v.Elements(), sb)
+			source = d.buildDataTypeString(v.Elements(), sb)
 		default:
 			slog.Warn("unknown data type value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", v))
 		}
 	}
+	return
 }
 
 func (d *Doc) getRowConstraint(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn) constraint.Constraint {

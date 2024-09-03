@@ -235,3 +235,26 @@ func (d *Doc) FindAnchor(id string) *Anchor {
 
 	return nil
 }
+
+func (d *Doc) FindAnchors(id string) []*Anchor {
+	a := d.findAnchorsByID(id)
+	if a != nil {
+		return a
+	}
+	a = d.findAnchorsByLabel(id)
+	if a != nil {
+		return a
+	}
+	if d.group != nil {
+		a = d.group.findAnchorsByID(id)
+		if a != nil {
+			return a
+		}
+		a = d.group.findAnchorsByLabel(id)
+		if a != nil {
+			return a
+		}
+	}
+
+	return nil
+}
