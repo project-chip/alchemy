@@ -8,6 +8,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -228,10 +229,13 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Name, err = ReadRowValue(doc, row, columnMap, matter.TableColumnName)
+		var name string
+		name, err = ReadRowValue(doc, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return nil, err
 		}
+		name = text.TrimCaseInsensitiveSuffix(name, " Cluster")
+		c.Name = name
 		c.Conformance = doc.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		clusters = append(clusters, c)
 	}
