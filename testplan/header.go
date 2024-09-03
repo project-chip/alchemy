@@ -3,7 +3,6 @@ package testplan
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/project-chip/alchemy/matter"
 )
@@ -48,11 +47,7 @@ This section covers the {clustername} Cluster Test Plan related PICS items that 
 
 func renderHeader(cluster *matter.Cluster, b *strings.Builder) (err error) {
 
-	now := time.Now()
-	longDate := now.Format("02-Jan-2006")
-	shortDate := now.Format("2006-01-02")
-	header := fmt.Sprintf(header, cluster.Name, longDate, cluster.PICS, cluster.Name, shortDate)
+	header := fmt.Sprintf(header, cluster.Name, cluster.PICS, cluster.Name)
 	_, err = b.WriteString(header)
-
 	return
 }
