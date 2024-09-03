@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -267,17 +268,12 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 		sp.resolveDataType(spec, cluster, field, dataType.EntryType)
 	case types.BaseDataTypeCustom:
 		if dataType.Entity == nil {
-			entities := spec.entities[dataType.Name]
-			if len(entities) == 0 {
-				slog.Warn("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field.Source))
-			} else if len(entities) == 1 {
-				for m := range entities {
-					dataType.Entity = m
-					break
-				}
-			} else {
-				dataType.Entity = disambiguateDataType(entities, cluster, field)
+			dataType.Entity = getCustomDataType(spec, dataType.Name, cluster, field)
+			if dataType.Entity == nil {
+
+				slog.Warn("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field))
 			}
+
 		}
 		if cluster == nil || dataType.Entity == nil {
 			return
@@ -291,6 +287,50 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 		for _, f := range s.Fields {
 			sp.resolveDataType(spec, cluster, f, f.Type)
 		}
+	}
+}
+
+func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
+	entities := spec.entities[dataTypeName]
+	if len(entities) == 0 {
+		canonicalName := CanonicalName(dataTypeName)
+		if canonicalName != dataTypeName {
+			e = getCustomDataType(spec, canonicalName, cluster, field)
+		} else {
+			e = getCustomDataTypeFromReference(spec, dataTypeName, cluster, field)
+		}
+	} else if len(entities) == 1 {
+		for m := range entities {
+			e = m
+		}
+	} else {
+		e = disambiguateDataType(entities, cluster, field)
+	}
+	return
+}
+
+func getCustomDataTypeFromReference(spec *Specification, dataTypeName string, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
+	switch source := field.Type.Source.(type) {
+	case *asciidoc.CrossReference:
+		doc, ok := spec.DocRefs[cluster]
+		if !ok {
+			return
+		}
+		anchor := doc.FindAnchor(source.ID)
+		if anchor == nil {
+			return
+		}
+		switch el := anchor.Element.(type) {
+		case *asciidoc.Section:
+			entities := doc.entitiesBySection[el]
+			if len(entities) == 1 {
+				e = entities[0]
+				return
+			}
+		}
+		return nil
+	default:
+		return
 	}
 }
 

@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"fmt"
 	"log/slog"
 	"slices"
 
@@ -56,34 +57,47 @@ func (ri *referenceIndex) changeCrossReference(reference *CrossReference, id str
 	ri.crossReferences[id] = append(ri.crossReferences[id], reference)
 }
 
-func (ri *referenceIndex) findAnchor(path string, id string) *Anchor {
-	a, ok := ri.anchors[id]
-	if !ok || len(a) == 0 {
+func (ri *referenceIndex) findAnchor(path fmt.Stringer, id string) *Anchor {
+
+	anchors := ri.findAnchorsByID(id)
+	switch len(anchors) {
+	case 0:
+		return nil
+	case 1:
+		return anchors[0]
+	default:
+		args := []any{slog.String("anchorId", id), slog.String("source", path.String())}
+		for _, an := range anchors {
+			args = append(args, log.Path("target", an.Source))
+		}
+		slog.Warn("ambiguous anchor id reference", args...)
 		return nil
 	}
-	if len(a) == 1 {
-		return a[0]
-	}
-	args := []any{slog.String("anchorId", id), slog.String("source", path)}
-	for _, an := range a {
-		args = append(args, log.Path("target", an.Source))
-	}
-	slog.Warn("ambiguous anchor id reference", args...)
-	return nil
 }
 
-func (ri *referenceIndex) findAnchorByLabel(path string, id string) *Anchor {
-	a, ok := ri.anchorsByLabel[id]
-	if !ok {
+func (ri *referenceIndex) findAnchorsByID(id string) []*Anchor {
+	return ri.anchors[id]
+}
+
+func (ri *referenceIndex) findAnchorByLabel(path fmt.Stringer, label string) *Anchor {
+	anchors := ri.findAnchorsByLabel(label)
+	switch len(anchors) {
+	case 0:
+		return nil
+	case 1:
+		return anchors[0]
+	default:
+		args := []any{slog.String("label", label), slog.String("source", path.String())}
+		for _, an := range anchors {
+			args = append(args, log.Path("target", an.Source))
+		}
+		slog.Warn("ambiguous anchor label reference", args...)
 		return nil
 	}
-	if len(a) == 1 {
-		return a[0]
-	}
-	args := []any{slog.String("anchorId", id), slog.String("source", path)}
-	for _, an := range a {
-		args = append(args, log.Path("target", an.Source))
-	}
-	slog.Warn("ambiguous anchor label reference", args...)
-	return nil
+
+}
+
+func (ri *referenceIndex) findAnchorsByLabel(label string) (anchors []*Anchor) {
+	anchors = ri.anchorsByLabel[label]
+	return
 }
