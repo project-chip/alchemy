@@ -1,0 +1,62 @@
+{
+package conformance
+
+import (
+    "fmt"
+    "strconv"
+
+    "github.com/project-chip/alchemy/matter"
+)
+
+func debug(format string, a ...any) (n int, err error) {
+	return
+	//return fmt.Fprintf(os.Stdout, format, a...)
+}
+
+}
+
+Input <- conf:Conformance+ EOF {
+    cs := conf.([]interface{})
+
+    var set Set
+    for _, i := range cs {
+        con := i.(Conformance)
+        set = append(set, con)
+    }
+    return set, nil
+}
+
+ConformanceSeparator <- (_ Comma _) / &EOF
+
+Conformance <- '[' i:Equality ']' choice:Choice? ConformanceSeparator {
+    exp := i.(Expression)
+    o := &Optional{Expression:exp}
+    if choice != nil {
+        o.Choice = choice.(*Choice)
+    }
+    return o, nil   
+}  / 'M'  ConformanceSeparator {
+    return &Mandatory{}, nil
+} / 'O' choice:Choice?  ConformanceSeparator {
+    o := &Optional{}
+    if choice != nil {
+        o.Choice = choice.(*Choice)
+    }
+    return o, nil
+} / 'P'  ConformanceSeparator {
+    debug("matched provisional %s\n", string(c.text))
+    return &Provisional{}, nil
+} / 'D'  ConformanceSeparator {
+    return &Deprecated{}, nil
+} / 'X'  ConformanceSeparator {
+    return &Disallowed{}, nil
+} / "desc"  ConformanceSeparator { 
+     return &Described{}, nil
+} / eq:Equality ConformanceSeparator {
+    exp := eq.(Expression)
+    return &Mandatory{Expression:exp}, nil
+}
+
+
+
+

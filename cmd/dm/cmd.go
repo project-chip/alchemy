@@ -22,7 +22,7 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	cxt := context.Background()
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
-	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
+	dmRoot, _ := cmd.Flags().GetString("dmRoot")
 
 	asciiSettings := common.ASCIIDocAttributes(cmd)
 	fileOptions := files.Flags(cmd)
@@ -53,7 +53,7 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	renderer := dm.NewRenderer(sdkRoot)
+	renderer := dm.NewRenderer(dmRoot)
 	dataModelDocs, err := pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, renderer, specDocs)
 	if err != nil {
 		return err
@@ -75,5 +75,5 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 
 func init() {
 	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
+	Command.Flags().String("dmRoot", "connectedhomeip/data_model/master", "where to place the data model files")
 }

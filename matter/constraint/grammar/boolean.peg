@@ -1,0 +1,8 @@
+BooleanLimit <- ("true"i / "false"i) {
+	debug("found boolean %s\n", string(c.text))
+    b, err := strconv.ParseBool(string(c.text))
+    if err != nil {
+        return nil, err
+    }
+	return &BooleanLimit{Value:b}, nil
+}

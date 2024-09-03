@@ -9,7 +9,7 @@ InlineElements = content:(InlineElement)+ eol:EndOfLine {
     return els, nil
 }
 
-InlineElement = element:(
+InlineElement = (
     Admonition /
     InlinePassthrough /
     FormattedText /
@@ -22,12 +22,9 @@ InlineElement = element:(
     LineBreak /
     NakedInlineText /
     CharacterClassInline 
-    )  {
-    debugPosition(c, "inline element: \"%s\" (%T)\n", string(c.text), element)
-    return element, nil
-}
+    )  
 
-NakedInlineText = (!URLScheme !InlineImageDelimiter [A-Za-z ])+ { 
+NakedInlineText = (!URLScheme !LinkMacro !InlineImageDelimiter [A-Za-z ])+ { 
     debugPosition(c, "matched naked inline text: %s\n", string(c.text))
     return asciidoc.NewString(string(c.text)), nil
 }

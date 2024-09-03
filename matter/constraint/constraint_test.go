@@ -243,7 +243,7 @@ var constraintTests = []constraintTest{
 		constraint: "0 to 0x001F",
 		dataType:   &types.DataType{BaseType: types.BaseDataTypeMap16},
 		asciiDoc:   "0 to 0x001F",
-		min:        types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		min:        types.NewUintDataTypeExtreme(0, types.NumberFormatInt),
 		max:        types.NewUintDataTypeExtreme(31, types.NumberFormatHex),
 		zapMin:     "0",
 		zapMax:     "0x001F",

@@ -35,6 +35,28 @@ func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.E
 		switch v := m.(type) {
 		case *matter.ClusterGroup:
 			for _, cl := range v.Clusters {
+				if hasAtomicAttributes(cl) {
+					c.Spec.ClusterRefs.Add(cl, atomicRequest)
+					c.Spec.ClusterRefs.Add(cl, atomicResponse)
+					cl.Commands = append(cl.Commands, atomicRequest)
+					cl.Commands = append(cl.Commands, atomicResponse)
+				}
+			}
+		case *matter.Cluster:
+			if hasAtomicAttributes(v) {
+				c.Spec.ClusterRefs.Add(v, atomicRequest)
+				c.Spec.ClusterRefs.Add(v, atomicResponse)
+				v.Commands = append(v.Commands, atomicRequest)
+				v.Commands = append(v.Commands, atomicResponse)
+			}
+		}
+
+	}
+
+	for _, m := range entities {
+		switch v := m.(type) {
+		case *matter.ClusterGroup:
+			for _, cl := range v.Clusters {
 				c.addCluster(cl)
 			}
 		case *matter.Cluster:
@@ -50,15 +72,6 @@ func (c *Configurator) addCluster(v *matter.Cluster) {
 	c.addTypes(v.Attributes)
 	if v.Features != nil {
 		c.addEntityType(v.Features)
-	}
-	for _, s := range v.Bitmaps {
-		c.addEntityType(s)
-	}
-	for _, s := range v.Enums {
-		c.addEntityType(s)
-	}
-	for _, s := range v.Structs {
-		c.addEntityType(s)
 	}
 	for _, cmd := range v.Commands {
 		c.addTypes(cmd.Fields)

@@ -1,0 +1,7 @@
+
+[options="header",valign="middle",cols="1,1,3,3,3"]
+|===
+      | Stage 2+s| Action                          | Action Flow      | Description
+.2+^.^| 2   .2+.^| Repeated s| Read/Write Request  | Client => Server | Reads or writes to attributes
+                            s| Read/Write Response | Client <= Server | Acknowledges write or errors
+|===

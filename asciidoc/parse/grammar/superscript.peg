@@ -10,10 +10,7 @@ SuperscriptTextValue = !_ value:(!_ value:(SuperscriptTextElement)+ { return val
     return compose(c, asciidoc.NewSuperscript(), setElements[*asciidoc.Superscript](flat(value.([]any))))
 }
 
-SuperscriptTextElement = !("^") element:(FormattedTextElement) {
-    debugPosition(c, "match superscript text element %s\n", string(c.text))
-    return element, nil
-}
+SuperscriptTextElement = !("^") (FormattedTextElement) 
 
 EscapedSuperscript = (Escape "^" SuperscriptTextValue "^") {
     return asciidoc.NewString(string(c.text)), nil

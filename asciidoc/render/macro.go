@@ -2,7 +2,8 @@ package render
 
 import "github.com/project-chip/alchemy/asciidoc"
 
-func renderFileInclude(cxt *Context, el *asciidoc.FileInclude) {
+func renderFileInclude(cxt Target, el *asciidoc.FileInclude) {
+	cxt.StartBlock()
 	cxt.WriteString("include::")
 	Elements(cxt, "", el.Elements()...)
 	attributes := el.Attributes()
@@ -12,9 +13,11 @@ func renderFileInclude(cxt *Context, el *asciidoc.FileInclude) {
 		renderAttributes(cxt, el.Attributes(), true)
 		cxt.WriteRune('\n')
 	}
+	cxt.EndBlock()
 }
 
-func renderCounter(cxt *Context, el *asciidoc.Counter) {
+func renderCounter(cxt Target, el *asciidoc.Counter) {
+	cxt.StartBlock()
 	cxt.WriteString("{counter")
 	if !el.Display {
 		cxt.WriteRune('2')
@@ -26,4 +29,5 @@ func renderCounter(cxt *Context, el *asciidoc.Counter) {
 		cxt.WriteString(el.InitialValue)
 	}
 	cxt.WriteString("}")
+	cxt.EndBlock()
 }

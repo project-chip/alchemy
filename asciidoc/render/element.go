@@ -12,7 +12,7 @@ type Section interface {
 	GetASCIISection() *asciidoc.Section
 }
 
-func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err error) {
+func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err error) {
 	for _, e := range elementList {
 		if he, ok := e.(Section); ok {
 			e = he.GetASCIISection()
@@ -57,6 +57,8 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 			err = renderImageBlock(cxt, el)
 		case *asciidoc.Link:
 			err = renderLink(cxt, el)
+		case *asciidoc.LinkMacro:
+			err = renderLinkMacro(cxt, el)
 		case asciidoc.SpecialCharacter:
 			err = renderSpecialCharacter(cxt, el)
 		case *asciidoc.Bold:
@@ -80,9 +82,13 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		case *asciidoc.DoubleMarked:
 			err = renderFormattedText(cxt, el, "##")
 		case *asciidoc.LineContinuation:
+			cxt.DisableWrap()
 			cxt.WriteString(" +")
+			cxt.EnableWrap()
 		case asciidoc.AttributeReference:
+			cxt.StartBlock()
 			cxt.WriteString(fmt.Sprintf("{%s}", el.Name()))
+			cxt.EndBlock()
 		case *asciidoc.InlineImage:
 			err = renderInlineImage(cxt, el)
 		case *asciidoc.InlinePassthrough:
@@ -102,6 +108,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 		case *asciidoc.ListContinuation:
 			cxt.EnsureNewLine()
 			cxt.WriteString("+\n")
+			cxt.FlushWrap()
 			err = Elements(cxt, "", el.Child())
 		case *asciidoc.IfDef:
 			renderConditional(cxt, "ifdef::", el.Attributes, el.Union)
@@ -138,6 +145,7 @@ func Elements(cxt *Context, prefix string, elementList ...asciidoc.Element) (err
 			err = Elements(cxt, "", el.Child())
 		case *asciidoc.LineBreak:
 			cxt.WriteString("+")
+			cxt.FlushWrap()
 		case *asciidoc.Counter:
 			renderCounter(cxt, el)
 		case *asciidoc.ThematicBreak:

@@ -6,7 +6,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 )
 
-func renderDelimiter(cxt *Context, delimiter asciidoc.Delimiter) {
+func renderDelimiter(cxt Target, delimiter asciidoc.Delimiter) {
 	var char string
 	switch delimiter.Type {
 	case asciidoc.DelimitedBlockTypeComment:

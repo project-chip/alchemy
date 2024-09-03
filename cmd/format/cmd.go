@@ -42,7 +42,8 @@ func format(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	renderer := render.NewRenderer()
+	wrap, _ := cmd.Flags().GetInt("wrap")
+	renderer := render.NewRenderer(render.Wrap(wrap))
 	var renders pipeline.Map[string, *pipeline.Data[string]]
 	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, ids)
 	if err != nil {
@@ -52,4 +53,8 @@ func format(cmd *cobra.Command, args []string) (err error) {
 	writer := files.NewWriter[string]("Formatting docs", fileOptions)
 	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, renders)
 	return
+}
+
+func init() {
+	Command.Flags().Int("wrap", 0, "the maximum length of a line")
 }

@@ -67,6 +67,14 @@ type referenceStore struct {
 
 var otherwiseTests = []conformanceTestSuite{
 	{
+		Conformance: "TwoDCART",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"TwoDCART": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"SFR": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
+		},
+	},
+	{
 		Conformance: "(STA|PAU|FA|CON)&!SFR,!PA&!SFR,O.a-",
 		Tests: []conformanceTest{
 			{Context: Context{Values: map[string]any{"STA": true}}, Expected: StateMandatory},

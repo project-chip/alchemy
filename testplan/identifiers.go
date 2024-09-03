@@ -32,6 +32,8 @@ func entityIdentifier(entity types.Entity) string {
 		return fmt.Sprintf("F_%s", entity.Code)
 	case *matter.Event:
 		return fmt.Sprintf("E_%s", strings.ToUpper(strcase.ToCamel(entity.Name)))
+	case *matter.Command:
+		return fmt.Sprintf("C_%s", strings.ToUpper(strcase.ToCamel(entity.Name)))
 	}
 	return fmt.Sprintf("UNKNOWN_TYPE_%T", entity)
 }

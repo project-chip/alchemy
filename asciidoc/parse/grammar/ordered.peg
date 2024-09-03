@@ -12,7 +12,7 @@ OrderedListMarker = indent:(AnySpaces) marker:(ordinal:(("."+) {
     return string(c.text), nil
 }) &{
        debugPosition(c, "checking ordered list ordinal marker:%T\n", ordinal)
-    return len(ordinal.(string)) <= 5, nil 
+    return len(ordinal.(string)) <= 10, nil 
 } {
        debugPosition(c, "returning ordered list ordinal marker:%T\n", ordinal)
 

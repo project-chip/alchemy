@@ -16,7 +16,7 @@ func (c *IntLimit) ASCIIDocString(dataType *types.DataType) string {
 }
 
 func (c *IntLimit) DataModelString(dataType *types.DataType) string {
-	e := c.value()
+	e := c.value(dataType)
 	return e.DataModelString(dataType)
 }
 
@@ -27,7 +27,14 @@ func (c *IntLimit) Equal(o Limit) bool {
 	return false
 }
 
-func (c *IntLimit) value() types.DataTypeExtreme {
+func (c *IntLimit) value(dataType *types.DataType) types.DataTypeExtreme {
+	if dataType != nil && dataType.BaseType.IsUnsigned() {
+		return types.DataTypeExtreme{
+			Type:   types.DataTypeExtremeTypeUInt64,
+			Format: types.NumberFormatInt,
+			UInt64: uint64(c.Value),
+		}
+	}
 	return types.DataTypeExtreme{
 		Type:   types.DataTypeExtremeTypeInt64,
 		Format: types.NumberFormatInt,
@@ -36,15 +43,15 @@ func (c *IntLimit) value() types.DataTypeExtreme {
 }
 
 func (c *IntLimit) Min(cc Context) (min types.DataTypeExtreme) {
-	return c.value()
+	return c.value(cc.DataType())
 }
 
 func (c *IntLimit) Max(cc Context) (max types.DataTypeExtreme) {
-	return c.value()
+	return c.value(cc.DataType())
 }
 
 func (c *IntLimit) Default(cc Context) (max types.DataTypeExtreme) {
-	return c.value()
+	return c.value(cc.DataType())
 }
 
 func (c *IntLimit) Clone() Limit {

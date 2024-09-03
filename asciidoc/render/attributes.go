@@ -3,7 +3,6 @@ package render
 import (
 	"fmt"
 	"math"
-	"strconv"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -35,7 +34,7 @@ func shouldRenderAttributeType(at AttributeFilter, include AttributeFilter, excl
 	return ((at & include) == at) && ((at & exclude) != at)
 }
 
-func renderAttributes(cxt *Context, attributes []asciidoc.Attribute, inline bool) error {
+func renderAttributes(cxt Target, attributes []asciidoc.Attribute, inline bool) error {
 	_, err := renderSelectAttributes(cxt, attributes, AttributeFilterAll, AttributeFilterNone, inline)
 	return err
 }
@@ -68,7 +67,7 @@ func getAttributeType(name asciidoc.AttributeName) AttributeFilter {
 	return AttributeFilterNone
 }
 
-func renderSelectAttributes(cxt *Context, attributes []asciidoc.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (n int, err error) {
+func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include AttributeFilter, exclude AttributeFilter, inline bool) (n int, err error) {
 	if len(attributes) == 0 {
 		return
 	}
@@ -174,6 +173,8 @@ func renderSelectAttributes(cxt *Context, attributes []asciidoc.Attribute, inclu
 			if !inline {
 				cxt.EnsureNewLine()
 			}
+			cxt.FlushWrap()
+			cxt.StartBlock()
 			cxt.WriteString("[")
 			for i, ia := range filtered {
 				if i > 0 {
@@ -218,6 +219,7 @@ func renderSelectAttributes(cxt *Context, attributes []asciidoc.Attribute, inclu
 			if !inline {
 				cxt.WriteString("\n")
 			}
+			cxt.EndBlock()
 		default:
 			err = fmt.Errorf("unexpected attribute list element: %T", al)
 			return
@@ -227,16 +229,18 @@ func renderSelectAttributes(cxt *Context, attributes []asciidoc.Attribute, inclu
 	return
 }
 
-func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
+func renderAttributeAnchor(cxt Target, anchor *asciidoc.AnchorAttribute, include AttributeFilter, exclude AttributeFilter, inline bool) (err error) {
 	id := anchor.ID
 	if id != nil && len(id.Value) > 0 && shouldRenderAttributeType(AttributeFilterID, include, exclude) {
 		if !inline {
 			cxt.EnsureNewLine()
 		}
+		cxt.FlushWrap()
+		cxt.StartBlock()
 		cxt.WriteString("[[")
 		cxt.WriteString(id.Value)
 		if len(anchor.Label) > 0 {
-			label := NewContext(cxt, nil)
+			label := cxt.Subtarget()
 			err = Elements(label, "", anchor.Label...)
 			if err != nil {
 				return
@@ -251,36 +255,24 @@ func renderAttributeAnchor(cxt *Context, anchor *asciidoc.AnchorAttribute, inclu
 		if !inline {
 			cxt.WriteRune('\n')
 		}
+		cxt.EndBlock()
 	}
 	return
 }
 
-func renderAttributeTitle(cxt *Context, title asciidoc.Set, include AttributeFilter, exclude AttributeFilter) (err error) {
+func renderAttributeTitle(cxt Target, title asciidoc.Set, include AttributeFilter, exclude AttributeFilter) (err error) {
 	if len(title) > 0 && shouldRenderAttributeType(AttributeFilterTitle, include, exclude) {
 		cxt.EnsureNewLine()
+		cxt.FlushWrap()
+		cxt.StartBlock()
 		cxt.WriteRune('.')
 		err = Elements(cxt, "", title...)
 		if err != nil {
 			return
 		}
 		cxt.EnsureNewLine()
+		cxt.EndBlock()
 	}
-	return
-}
-
-func renderQuotedAttributeValue(cxt *Context, val any) (err error) {
-	var s string
-	s, err = quoteAttributeValue(val)
-	if err != nil {
-		return
-	}
-	if _, err := strconv.Atoi(strings.TrimSuffix(s, "%")); err == nil {
-		cxt.WriteString(s)
-		return nil
-	}
-	cxt.WriteRune('"')
-	cxt.WriteString(s)
-	cxt.WriteRune('"')
 	return
 }
 
@@ -307,7 +299,7 @@ func quoteAttributeValue(val any) (string, error) {
 	}
 }
 
-func renderNakedAttributeValue(cxt *Context, val any) (err error) {
+func renderNakedAttributeValue(cxt Target, val any) (err error) {
 	switch val := val.(type) {
 	case *asciidoc.String:
 		cxt.WriteString(escapeQuotes(val.Value))
@@ -332,7 +324,9 @@ func escapeQuotes(s string) string {
 	return strings.ReplaceAll(s, "\"", "\\\"")
 }
 
-func renderAttributeEntry(cxt *Context, ad *asciidoc.AttributeEntry) (err error) {
+func renderAttributeEntry(cxt Target, ad *asciidoc.AttributeEntry) (err error) {
+	cxt.FlushWrap()
+	cxt.DisableWrap()
 	switch ad.Name {
 	case "authors":
 		/*if authors, ok := ad.Value().(asciidoc.DocumentAuthors); ok {
@@ -355,29 +349,15 @@ func renderAttributeEntry(cxt *Context, ad *asciidoc.AttributeEntry) (err error)
 
 		cxt.WriteRune('\n')
 	}
+	cxt.EnableWrap()
 	return
 }
 
-func renderAttributeReset(cxt *Context, ar *asciidoc.AttributeReset) {
+func renderAttributeReset(cxt Target, ar *asciidoc.AttributeReset) {
+	cxt.FlushWrap()
+	cxt.DisableWrap()
 	cxt.WriteRune(':')
 	cxt.WriteString(string(ar.Name))
 	cxt.WriteString("!:\n")
-}
-
-func getAttributeStringValue(cxt *Context, val any) (string, error) {
-	switch s := val.(type) {
-	case string:
-		return s, nil
-	case *asciidoc.String:
-		return s.Value, nil
-	case asciidoc.Set:
-		renderContext := NewContext(cxt, cxt.Doc)
-		err := Elements(renderContext, "", s...)
-		if err != nil {
-			return "", err
-		}
-		return renderContext.String(), nil
-	default:
-		return "", fmt.Errorf("unknown text attribute value type: %T", val)
-	}
+	cxt.EnableWrap()
 }

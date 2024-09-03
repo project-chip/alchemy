@@ -14,14 +14,16 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder) {
-	if len(cluster.Attributes) == 0 {
+func renderAttributes(doc *spec.Doc, cut *clusterUnderTest, b *strings.Builder) {
+
+	b.WriteString("==== Attributes\n\n\n")
+
+	if len(cut.attributes) == 0 {
 		return
 	}
-	b.WriteString("==== Attributes\n\n\n")
-	names := make([]string, 0, len(cluster.Attributes))
+	names := make([]string, 0, len(cut.attributes))
 	var longest int
-	for _, a := range cluster.Attributes {
+	for _, a := range cut.attributes {
 		name := entityIdentifier(a)
 		if len(name) > longest {
 			longest = len(name)
@@ -32,12 +34,12 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder
 		b.WriteString(":")
 		b.WriteString(fmt.Sprintf("%-*s", longest, name))
 		b.WriteString(" : ")
-		b.WriteString(cluster.Attributes[i].Name)
+		b.WriteString(cut.attributes[i].Name)
 		b.WriteRune('\n')
 	}
 	b.WriteString("\n\n")
 	for i, name := range names {
-		b.WriteString(fmt.Sprintf(":PICS_S%-*s : {PICS_S}.A%04x({%s})\n", longest, name, i, name))
+		b.WriteString(fmt.Sprintf(":PICS_S%-*s : {PICS_S}.A%04X({%s})\n", longest, name, cut.attributes[i].ID.Value(), name))
 	}
 	b.WriteRune('\n')
 	for i, name := range names {
@@ -45,11 +47,11 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, b *strings.Builder
 	}
 	b.WriteString("\n\n|===\n")
 	b.WriteString("| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*\n")
-	for i, a := range cluster.Attributes {
+	for i, a := range cut.attributes {
 		name := names[i]
 		b.WriteString(fmt.Sprintf("| {PICS_S%s} | {devimp} the _{%s}_ attribute?| ", name, name))
 		if len(a.Conformance) > 0 {
-			renderPicsConformance(b, doc, cluster, a.Conformance)
+			renderPicsConformance(b, doc, cut.cluster, a.Conformance)
 		}
 		b.WriteString(" |\n")
 	}

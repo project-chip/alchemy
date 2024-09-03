@@ -10,10 +10,7 @@ SubscriptTextValue = !_ value:(!_ value:(SubscriptTextElement)+ { return value, 
     return compose(c, asciidoc.NewSubscript(), setElements[*asciidoc.Subscript](flat(value.([]any))))
 }
 
-SubscriptTextElement = !("~") element:(FormattedTextElement) {
-    debugPosition(c, "match subscript text element %s\n", string(c.text))
-    return element, nil
-}
+SubscriptTextElement = !("~") (FormattedTextElement) 
 
 EscapedSubscript = (Escape "~" SubscriptTextValue "~") {
     return asciidoc.NewString(string(c.text)), nil

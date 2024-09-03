@@ -1,0 +1,65 @@
+
+
+IdentifierOp <- not:'!'? identifier:Identifier {
+    //debug("matched identifier op %s\n", string(c.text))
+    id := identifier.(string)
+    ic := &IdentifierExpression{ID:id}
+    if not != nil {
+        ic.Not = true
+    }
+    return ic, nil
+}
+
+
+Identifier <- PascalCase ('-' PascalCase)* {
+    //debug("matched identifier %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+ReferenceOp <- not:'!'? "<<" reference:ReferenceId label:(ReferenceLabel )? ">>" {
+    //debug("matched reference op ref %s\n", reference)
+    ic := &ReferenceExpression{Reference:reference.(string)}
+    if label != nil {
+        //debug("matched reference label ref %v\n", label)
+        ic.Label = label.(string)
+    }
+    if not != nil {
+        ic.Not = true
+    }
+    return ic, nil
+}
+
+
+ReferenceLabel <- _ Comma _ label:ReferenceText  &">>" {
+    //debug("matched reference label %T\n", label)
+    return label.(string), nil
+}
+
+ReferenceText <- (!">>" .)+  {
+    //debug("matched reference label text %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+ReferenceId <- "ref_" PascalCase {
+    //debug("matched reference %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+FeatureOp <- not:'!'? feature:Feature {
+    id := feature.(string)
+    switch id {
+        case "O", "M", "P":
+            return nil, fmt.Errorf("invalid optional conformance value: %s", id)
+    }
+    ic := &FeatureExpression{Feature:id}
+    if not != nil {
+        ic.Not = true
+    }
+    return ic, nil
+}
+
+
+Feature <- [A-Z][A-Z0-9_]+ &(![A-Za-z0-9_] / EOF) {
+    return string(c.text), nil
+}
+

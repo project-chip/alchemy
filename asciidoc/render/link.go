@@ -4,24 +4,36 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 )
 
-func renderLink(cxt *Context, il *asciidoc.Link) (err error) {
-	if len(il.URL.Scheme) > 0 {
-		cxt.WriteString(il.URL.Scheme)
-	} else {
-		cxt.WriteString("link:")
-	}
+func renderLink(cxt Target, il *asciidoc.Link) (err error) {
+	cxt.StartBlock()
+	cxt.WriteString(il.URL.Scheme)
 	Elements(cxt, "", il.URL.Path...)
 
-	return renderAttributes(cxt, il.Attributes(), true)
+	err = renderAttributes(cxt, il.Attributes(), true)
+	cxt.EndBlock()
+	return
 }
 
-func renderImageBlock(cxt *Context, ib *asciidoc.BlockImage) (err error) {
+func renderLinkMacro(cxt Target, il *asciidoc.LinkMacro) (err error) {
+	cxt.StartBlock()
+	cxt.WriteString("link:")
+	cxt.WriteString(il.URL.Scheme)
+	Elements(cxt, "", il.URL.Path...)
+
+	err = renderAttributes(cxt, il.Attributes(), true)
+	cxt.EndBlock()
+	return
+}
+
+func renderImageBlock(cxt Target, ib *asciidoc.BlockImage) (err error) {
+	cxt.FlushWrap()
 	cxt.EnsureNewLine()
 	_, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
 		return
 	}
 	cxt.EnsureNewLine()
+	cxt.DisableWrap()
 	cxt.WriteString("image::")
 	Elements(cxt, "", ib.Path...)
 	var count int
@@ -33,16 +45,19 @@ func renderImageBlock(cxt *Context, ib *asciidoc.BlockImage) (err error) {
 		cxt.WriteString("[]")
 	}
 	cxt.EnsureNewLine()
+	cxt.EnableWrap()
 	return
 }
 
-func renderInlineImage(cxt *Context, ib *asciidoc.InlineImage) (err error) {
+func renderInlineImage(cxt Target, ib *asciidoc.InlineImage) (err error) {
+	cxt.FlushWrap()
 	cxt.EnsureNewLine()
 	_, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterID|AttributeFilterTitle, AttributeFilterNone, false)
 	if err != nil {
 		return
 	}
 	cxt.EnsureNewLine()
+	cxt.DisableWrap()
 	cxt.WriteString("image:")
 	Elements(cxt, "", ib.Path...)
 	var count int
@@ -53,5 +68,6 @@ func renderInlineImage(cxt *Context, ib *asciidoc.InlineImage) (err error) {
 	if count == 0 {
 		cxt.WriteString("[]")
 	}
+	cxt.EnableWrap()
 	return
 }

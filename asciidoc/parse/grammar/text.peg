@@ -27,9 +27,9 @@ LineBreak = "+" AnySpaces &(EndOfLine) &{
 
 CurvedQuote = (SingleCurvedQuote / DoubleCurvedQuote)
 
-DoubleCurvedQuote = ("\"`" / "`\"") { return string(c.text), nil}
+DoubleCurvedQuote = ("\"`" / "`\"") 
 
-SingleCurvedQuote = ("'`" / "`'") { return string(c.text), nil}
+SingleCurvedQuote = ("'`" / "`'") 
 
 EmptyLine = BeginningOfLine AnySpaces NewLine {
         debugPosition(c, "matched empty line %d chars \"%s\"\n", len(string(c.text)), string(c.text))
@@ -61,10 +61,7 @@ Alpha = [\p{L}]
 
 Alphanumeric = [\p{L}\p{N}]
 
-EndOfFile = !. {
-    debugPosition(c, "endoffile\n")
-    return string(c.text), nil
-}
+EndOfFile = !. 
 
 NotEndOfFile = &(.)
 
@@ -92,10 +89,7 @@ UnbrokenText = CharacterClassInline+ {
     return string(c.text), nil
 }
 
-AnyText = CharacterClassInline* {
-    debugPosition(c, "any: %s\n", string(c.text))
-    return string(c.text), nil
-}
+AnyText = [^\n]* 
 
 AnySpaces = [ \t]* 
 
@@ -106,10 +100,7 @@ CharacterClassAll = (. / NewLine) {
 
 CharacterClassInline = [^\n] 
 
-CharacterGroupWord = [\p{M}\p{Nd}\p{Pc}\p{Join_Control}\p{L}] {
-    debugPosition(c, "matched CharacterGroupWord: \"%s\"\n", string(c.text))
-    return asciidoc.NewString(string(c.text)), nil
-}
+CharacterGroupWord = [\p{M}\p{Nd}\p{Pc}\p{Join_Control}\p{L}] 
 
 __ = [ \t]+ {
     debugPosition(c, "matched spaces: \"%s\"\n", string(c.text))
@@ -121,6 +112,6 @@ _ = [ \t] {
     return string(c.text), nil
 }
 
-Escape = "\\" { return string(c.text), nil }
+Escape = "\\" 
 
-DoubleEscape = "\\\\" { return string(c.text), nil }
+DoubleEscape = "\\\\" 

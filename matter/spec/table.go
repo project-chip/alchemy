@@ -127,6 +127,9 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 		case *asciidoc.Link:
 			value.WriteString(el.URL.Scheme)
 			readRowCellValueElements(doc, el.URL.Path, value)
+		case *asciidoc.LinkMacro:
+			value.WriteString(el.URL.Scheme)
+			readRowCellValueElements(doc, el.URL.Path, value)
 		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
@@ -185,7 +188,7 @@ func RenderTableCell(cell *asciidoc.TableCell) (string, error) {
 	if len(cellElements) == 0 {
 		return "", nil
 	}
-	out := render.NewContext(context.Background(), nil)
+	out := render.NewUnwrappedTarget(context.Background())
 	err := render.Elements(out, "", cellElements...)
 	if err != nil {
 		return "", err

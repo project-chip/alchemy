@@ -1,0 +1,17 @@
+Range <- from:Limit " to " to:Limit {
+	debug("found range %s\n", string(c.text))
+	return &RangeConstraint  {
+		Minimum:from.(Limit),
+		Maximum:to.(Limit),
+	}, nil
+}
+
+Min <- [Mm] "in " _ limit:Limit {
+	debug("found min limit %s\n", string(c.text))
+	return &MinConstraint{Minimum:limit.(Limit)}, nil
+}
+
+Max <- [Mm] "ax " _ limit:Limit (_ "chars")? {
+	debug("found max limit %s\n", string(c.text))
+	return &MaxConstraint{Maximum:limit.(Limit)}, nil
+}

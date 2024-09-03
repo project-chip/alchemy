@@ -18,13 +18,9 @@ CrossReferenceID <- (Alpha / [:_]) [\p{L}\p{N} _:.-]* {
 }
 
 CrossReferenceLabel = (
-    ([^<>{[\]]+ {
-        return asciidoc.NewString(string(c.text)), nil
-    })
-    / arv:AttributeReference {
-        return arv, nil
-    }
-    / ("{" { return string(c.text), nil})
+    ([^<>{[\]]+)
+    / AttributeReference 
+    / "{" 
 )+
 
 DocumentCrossReference = "xref:" path:(Path) attributes:(InlineAttributes) {

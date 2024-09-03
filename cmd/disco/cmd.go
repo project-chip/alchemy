@@ -3,6 +3,7 @@ package disco
 import (
 	"context"
 
+	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/disco"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -24,11 +25,10 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
-	discoOptions := getDiscoOptions(cmd)
 
 	writer := files.NewWriter[string]("Writing disco-balled docs", fileOptions)
 
-	err = disco.Pipeline(cxt, specRoot, args, pipelineOptions, discoOptions, writer)
+	err = disco.Pipeline(cxt, specRoot, args, pipelineOptions, getDiscoOptions(cmd), getRenderOptions(cmd), writer)
 
 	return
 }
@@ -50,6 +50,7 @@ func init() {
 	Command.Flags().Bool("addSpaceAfterPunctuation", true, "add missing space after punctuation")
 	Command.Flags().Bool("removeExtraSpaces", true, "remove extraneous spaces")
 	Command.Flags().Bool("disambiguateConformanceChoice", false, "ensure conformance choices are only used once per document")
+	Command.Flags().Int("wrap", 0, "the maximum length of a line")
 }
 
 type discoOption func(bool) disco.Option
@@ -81,4 +82,13 @@ func getDiscoOptions(cmd *cobra.Command) []disco.Option {
 		discoOptions = append(discoOptions, o(on))
 	}
 	return discoOptions
+}
+
+func getRenderOptions(cmd *cobra.Command) []render.Option {
+	var renderOptions []render.Option
+	wrap, err := cmd.Flags().GetInt("wrap")
+	if err == nil {
+		renderOptions = append(renderOptions, render.Wrap(wrap))
+	}
+	return renderOptions
 }

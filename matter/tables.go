@@ -213,6 +213,7 @@ var Tables = map[TableType]Table{
 		ColumnNames: map[TableColumn]string{
 			TableColumnDescription: "Summary", // Rename Description to Summary
 			TableColumnStatusCode:  "Value",   // Rename Status Code in enums to Value
+			TableColumnID:          "Value",   // Rename Status Code in enums to Value
 		},
 	},
 	TableTypeBitmap: {

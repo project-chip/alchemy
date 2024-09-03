@@ -8,19 +8,15 @@ BlockElement = BeginningOfLine element:(BlockElements) EndOfLine
     return compose(c, element.(asciidoc.Element))
 }
 
-BlockElements = blockElement: (
+BlockElements = (
     BlockEmptyLine /
     AttributableBlocks /
     Table /
-    // AttachedBlock /
     NakedBlocks /
     NakedBlockAttributes
-) {
-    debugPosition(c, "matched block element: %T\n", blockElement)
-    return blockElement, nil
-}
+) 
 
-NakedBlocks = block: (
+NakedBlocks = (
     MultiLineComment / 
     SingleLineComment /
     AttributeEntry / 
@@ -33,10 +29,7 @@ NakedBlocks = block: (
     DescriptionListItem /
     ListContinuation /
     NewLine
-) {
-    debugPosition(c, "matched naked block element: %T %s\n", block, string(c.text))
-    return block, nil
-}
+) 
 
 AttributableBlocks = attributes:(BlockElementAttributes)? element:( 
     Listing / 
@@ -68,23 +61,8 @@ AttributableBlocks = attributes:(BlockElementAttributes)? element:(
         return compose(c, element.(asciidoc.AttributableElement), setAttributes[asciidoc.AttributableElement](attributes))
     }
 
-BlockAttributes = attribute:(
-    (anchor:(AnchorAttribute) {
-        return anchor, nil
-    }) 
-    / (title:(BlockTitle) {
-        return title, nil
-    }) 
-    / (attributes:(Attributes)  {
-        return attributes, nil
-    }) 
-    / (attributes:(ShorthandAttributes) {
-        return attributes, nil
-    })
-    ) {
-    debugPosition(c, "matched block attribute: %v\n", attribute)
-    return attribute, nil
-}
+
+BlockAttributes = AnchorAttribute / BlockTitle / Attributes / ShorthandAttributes
 
 BlockTitle = BeginningOfLine "." ![ .] content:(BlockTitleContent) {
     debugPosition(c, "matched block title!: %s\n", string(c.text))
@@ -138,7 +116,7 @@ NakedBlockAttributes = attribute:(BlockElementAttribute) additionalAttributes:(B
 
 BlockDelimiters <-
     !Alphanumeric
-    delimiter:(
+   (    
         MultiLineCommentForwardSlashes
         / ExampleEquals
         / FencedBackticks
@@ -146,6 +124,5 @@ BlockDelimiters <-
         / LiteralDots
         / StemPluses
         / QuoteUnderlines
-        / SidebarAsterisks) {
-            return delimiter, nil
-        }
+        / SidebarAsterisks
+    )

@@ -77,7 +77,7 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, els ...asciidoc.Element
 			default:
 				err = fmt.Errorf("unexpected section title attribute value type: %T", attr)
 			}
-		case *asciidoc.Link:
+		case *asciidoc.Link, *asciidoc.LinkMacro:
 		case *asciidoc.Bold:
 			err = buildSectionTitle(doc, title, e.Elements()...)
 		default:

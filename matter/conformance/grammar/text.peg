@@ -1,0 +1,38 @@
+
+
+
+Integer <- ([0-9]+) {
+        return strconv.Atoi(string(c.text))
+    }
+
+PascalCase <- Capitalized+ Capitalized* {
+    //debug("matched pascal %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+
+Capitalized <- Uppercase+ Lowercase* {
+    //debug("matched capitalized %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Uppercase <- [A-Z] {
+    //debug("matched uppercase %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Lowercase <- [a-z] {
+    //debug("matched lowercase %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+SameLineString <- [^\n]+ {
+    //debug("matched same line string %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+_ "whitespace" <- [ \t\r\n]*
+
+Comma <- ',' 
+
+EOF <- !.
