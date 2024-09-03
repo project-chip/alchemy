@@ -21,7 +21,7 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Ent
 	e.Name = name
 	dt := s.GetDataType()
 	if dt == nil {
-		dt = types.ParseDataType("enum8", false)
+		dt = types.NewDataType(types.BaseDataTypeEnum8, false)
 	}
 
 	if !dt.IsEnum() {
