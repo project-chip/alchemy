@@ -214,6 +214,7 @@ func (tcf *TableCellFormat) AsciiDocString() string {
 type TableCell struct {
 	position
 	Format *TableCellFormat
+	Parent *TableRow
 
 	Set
 
@@ -291,6 +292,7 @@ func (trs *TableCells) SetElements(els Set) error {
 
 type TableRow struct {
 	position
+	Parent *Table
 
 	Set
 }

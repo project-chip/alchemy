@@ -14,10 +14,10 @@ func buildDoc(els asciidoc.Set) (d *asciidoc.Document, err error) {
 		case *asciidoc.Section:
 			if lastSection != nil {
 				if el.Level > lastSection.Level {
-					lastSection.AddChild(el)
+					lastSection.AddChildSection(el)
 					err = current.Append(el)
 				} else if el.Level <= lastSection.Level {
-					parent := lastSection.Parent()
+					parent := lastSection.ParentSection()
 					var found bool
 					for parent != nil {
 						if el.Level > parent.Level {
@@ -25,11 +25,11 @@ func buildDoc(els asciidoc.Set) (d *asciidoc.Document, err error) {
 							if err != nil {
 								return
 							}
-							parent.AddChild(el)
+							parent.AddChildSection(el)
 							found = true
 							break
 						}
-						parent = parent.Parent()
+						parent = parent.ParentSection()
 					}
 					if !found { // No parent smaller
 						err = d.Append(el)
