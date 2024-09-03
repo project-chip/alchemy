@@ -35,7 +35,7 @@ func (doc *Doc) CrossReferences() map[string][]*CrossReference {
 	}
 	parse.Traverse(nil, doc.Base.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
 		if icr, ok := el.(*asciidoc.CrossReference); ok {
-			doc.crossReferences[icr.ID] = append(doc.crossReferences[icr.ID], &CrossReference{Document: doc, Reference: icr, Parent: parent, Source: newSource(doc, icr)})
+			doc.crossReferences[icr.ID] = append(doc.crossReferences[icr.ID], &CrossReference{Document: doc, Reference: icr, Parent: parent, Source: NewSource(doc, icr)})
 		}
 		return parse.SearchShouldContinue
 	})

@@ -7,16 +7,24 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 type Bitmap struct {
+	entity
 	Name        string          `json:"name,omitempty"`
 	Description string          `json:"description,omitempty"`
 	Type        *types.DataType `json:"type,omitempty"`
 	Bits        BitSet          `json:"bits,omitempty"`
+}
+
+func NewBitmap(source asciidoc.Element) *Bitmap {
+	return &Bitmap{
+		entity: entity{source: source},
+	}
 }
 
 func (bm *Bitmap) EntityType() types.EntityType {
@@ -48,7 +56,7 @@ func (bm *Bitmap) Size() int {
 }
 
 func (bm *Bitmap) Clone() *Bitmap {
-	nbm := &Bitmap{Name: bm.Name, Description: bm.Description}
+	nbm := &Bitmap{entity: bm.entity, Name: bm.Name, Description: bm.Description}
 	if bm.Type != nil {
 		nbm.Type = bm.Type.Clone()
 	}
@@ -138,14 +146,15 @@ type Bit interface {
 }
 
 type BitmapBit struct {
+	entity
 	bit         string
 	name        string
 	summary     string
 	conformance conformance.Set
 }
 
-func NewBitmapBit(bit string, name string, summary string, conformance conformance.Set) *BitmapBit {
-	return &BitmapBit{bit: bit, name: name, summary: summary, conformance: conformance}
+func NewBitmapBit(source asciidoc.Element, bit string, name string, summary string, conformance conformance.Set) *BitmapBit {
+	return &BitmapBit{entity: entity{source: source}, bit: bit, name: name, summary: summary, conformance: conformance}
 }
 
 func (bmb *BitmapBit) EntityType() types.EntityType {

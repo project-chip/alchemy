@@ -185,7 +185,7 @@ func applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.Devic
 			name := strings.ToLower(er.ClusterName)
 			crr, ok := clusterRequirementsByName[name]
 			if !ok {
-				slog.Warn("element requirement with missing cluster requirement", log.Path("source", deviceType.Source), slog.String("deviceType", deviceType.Name), slog.String("cluster", er.ClusterName))
+				slog.Warn("element requirement with missing cluster requirement", log.Path("source", deviceType), slog.String("deviceType", deviceType.Name), slog.String("cluster", er.ClusterName))
 				continue
 			}
 			crr.elementRequirements = append(crr.elementRequirements, er)

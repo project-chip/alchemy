@@ -58,7 +58,7 @@ func (s *Section) buildCommands(d *Doc, t *asciidoc.Table) (commands matter.Comm
 	commandMap = make(map[string]*matter.Command)
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		cmd := &matter.Command{}
+		cmd := matter.NewCommand(s.Base)
 		cmd.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return

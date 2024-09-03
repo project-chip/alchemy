@@ -70,7 +70,7 @@ func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
 	var deviceTypes []*matter.DeviceType
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		c := matter.NewDeviceType(newSource(doc, row))
+		c := matter.NewDeviceType(row)
 		c.ID, err = readRowID(row, columnMap, matter.TableColumnID)
 		if err != nil {
 			return nil, err
@@ -116,7 +116,7 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 		if baseClusterRequirements == nil && elementRequirements == nil {
 			continue
 		}
-		baseDeviceType = matter.NewDeviceType(newSource(d, top.Base))
+		baseDeviceType = matter.NewDeviceType(top.Base)
 		if baseClusterRequirements != nil {
 			baseDeviceType.ClusterRequirements, err = baseClusterRequirements.toClusterRequirements(d)
 			if err != nil {

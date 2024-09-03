@@ -1,11 +1,16 @@
 package types
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/project-chip/alchemy/asciidoc"
+)
 
 type DataType struct {
-	BaseType BaseDataType `json:"baseType"`
-	Name     string       `json:"name"`
-	Entity   Entity       `json:"-"`
+	BaseType BaseDataType     `json:"baseType"`
+	Name     string           `json:"name"`
+	Entity   Entity           `json:"-"`
+	Source   asciidoc.Element `json:"-"`
 
 	EntryType *DataType `json:"entryType,omitempty"`
 }

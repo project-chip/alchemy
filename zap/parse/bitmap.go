@@ -132,7 +132,7 @@ func readBitmapField(bitmap *matter.Bitmap, d *xml.Decoder, e xml.StartElement) 
 			return nil, fmt.Errorf("unexpected bitmap field attribute: %s", a.Name.Local)
 		}
 	}
-	bv = matter.NewBitmapBit(bit, name, "", conf)
+	bv = matter.NewBitmapBit(nil, bit, name, "", conf)
 	for {
 		var tok xml.Token
 		tok, err = d.Token()

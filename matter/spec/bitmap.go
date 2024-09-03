@@ -24,10 +24,9 @@ func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 		return nil, fmt.Errorf("unknown bitmap data type: %s", dt.Name)
 	}
 
-	bm = &matter.Bitmap{
-		Name: name,
-		Type: dt,
-	}
+	bm = matter.NewBitmap(s.Base)
+	bm.Name = name
+	bm.Type = dt
 	var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
@@ -71,7 +70,7 @@ func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 		if len(name) == 0 && len(summary) > 0 {
 			name = matter.Case(summary)
 		}
-		bv := matter.NewBitmapBit(bit, CanonicalName(name), summary, conf)
+		bv := matter.NewBitmapBit(s.Base, bit, CanonicalName(name), summary, conf)
 		bm.Bits = append(bm.Bits, bv)
 	}
 	entityMap[s.Base] = append(entityMap[s.Base], bm)

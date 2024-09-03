@@ -22,7 +22,7 @@ type Anchor struct {
 func NewAnchor(doc *Doc, id string, element asciidoc.Element, parent parse.HasElements, label ...asciidoc.Element) *Anchor {
 	return &Anchor{
 		Document:      doc,
-		Source:        newSource(doc, element),
+		Source:        NewSource(doc, element),
 		ID:            id,
 		Element:       element,
 		Parent:        parent,

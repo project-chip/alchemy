@@ -1,6 +1,7 @@
 package matter
 
 import (
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -8,6 +9,7 @@ import (
 type CommandDirection uint8
 
 type Command struct {
+	entity
 	ID          *Number         `json:"id,omitempty"`
 	Name        string          `json:"name,omitempty"`
 	Description string          `json:"description,omitempty"`
@@ -19,6 +21,12 @@ type Command struct {
 	Fields FieldSet `json:"fields,omitempty"`
 }
 
+func NewCommand(source asciidoc.Element) *Command {
+	return &Command{
+		entity: entity{source: source},
+	}
+}
+
 func (c *Command) EntityType() types.EntityType {
 	return types.EntityTypeCommand
 }
@@ -28,7 +36,7 @@ func (c *Command) GetConformance() conformance.Set {
 }
 
 func (c *Command) Clone() *Command {
-	nc := &Command{ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Access: c.Access}
+	nc := &Command{entity: entity{source: c.source}, ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Access: c.Access}
 	if len(c.Conformance) > 0 {
 		nc.Conformance = c.Conformance.CloneSet()
 	}

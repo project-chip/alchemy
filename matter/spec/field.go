@@ -66,9 +66,8 @@ func findAnonymousEnum(s *Section, field *matter.Field) error {
 		if i == headerRowIndex {
 			continue
 		}
-		ev := &matter.EnumValue{
-			Conformance: conformance.Set{&conformance.Mandatory{}},
-		}
+		ev := matter.NewEnumValue(s.Base)
+		ev.Conformance = conformance.Set{&conformance.Mandatory{}}
 		ev.Value, err = readRowID(row, columnMap, matter.TableColumnValue)
 		if err != nil {
 			return err
@@ -150,7 +149,7 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 			name = matter.Case(summary)
 		}
 
-		bv := matter.NewBitmapBit(bit, name, summary, conf)
+		bv := matter.NewBitmapBit(s.Base, bit, name, summary, conf)
 
 		bvs = append(bvs, bv)
 	}

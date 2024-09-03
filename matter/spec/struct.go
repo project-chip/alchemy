@@ -19,9 +19,8 @@ func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 	if err != nil {
 		return nil, fmt.Errorf("failed reading struct %s: %w", name, err)
 	}
-	ms = &matter.Struct{
-		Name: name,
-	}
+	ms = matter.NewStruct(s.Base)
+	ms.Name = name
 
 	if headerRowIndex > 0 {
 		firstRow := rows[0]

@@ -51,8 +51,8 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 			Name: "TestGlobalBitmap",
 			Type: types.NewDataType(types.BaseDataTypeMap32, false),
 			Bits: matter.BitSet{
-				matter.NewBitmapBit("0x01", "FirstBit", "", nil),
-				matter.NewBitmapBit("0x02", "SecondBit", "", nil),
+				matter.NewBitmapBit(nil, "0x01", "FirstBit", "", nil),
+				matter.NewBitmapBit(nil, "0x02", "SecondBit", "", nil),
 			},
 		}
 		globalBitmaps[testBitmap] = []*matter.Number{matter.InvalidID}

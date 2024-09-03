@@ -9,7 +9,7 @@ type source struct {
 	element asciidoc.Element
 }
 
-func newSource(d *Doc, e asciidoc.Element) *source {
+func NewSource(d *Doc, e asciidoc.Element) *source {
 	return &source{doc: d, element: e}
 }
 

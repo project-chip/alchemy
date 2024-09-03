@@ -1,12 +1,14 @@
 package matter
 
 import (
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 type DeviceType struct {
+	entity
 	ID          *Number     `json:"id,omitempty"`
 	Name        string      `json:"name,omitempty"`
 	Description string      `json:"description,omitempty"`
@@ -20,12 +22,10 @@ type DeviceType struct {
 
 	ClusterRequirements []*ClusterRequirement `json:"clusterRequirements,omitempty"`
 	ElementRequirements []*ElementRequirement `json:"elementRequirements,omitempty"`
-
-	Source Source
 }
 
-func NewDeviceType(source Source) *DeviceType {
-	return &DeviceType{Source: source}
+func NewDeviceType(source asciidoc.Element) *DeviceType {
+	return &DeviceType{entity: entity{source: source}}
 }
 
 func (dt *DeviceType) EntityType() types.EntityType {
@@ -67,8 +67,13 @@ type ElementRequirement struct {
 }
 
 type Condition struct {
+	entity
 	Feature     string
 	Description string
+}
+
+func NewCondition(source asciidoc.Element) *Condition {
+	return &Condition{entity: entity{source: source}}
 }
 
 func (c *Condition) EntityType() types.EntityType {

@@ -11,7 +11,7 @@ import (
 )
 
 func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err error) {
-	attr = matter.NewAttribute()
+	attr = matter.NewAttribute(nil)
 	attr.Access = matter.DefaultAccess(types.EntityTypeAttribute)
 	err = readFieldAttributes(e, attr, "attribute")
 	if err != nil {

@@ -2,6 +2,8 @@ package types
 
 import (
 	"encoding/json"
+
+	"github.com/project-chip/alchemy/asciidoc"
 )
 
 type EntityType uint8
@@ -29,6 +31,7 @@ const (
 
 type Entity interface {
 	EntityType() EntityType
+	Source() asciidoc.Element
 }
 
 func (et EntityType) String() string {

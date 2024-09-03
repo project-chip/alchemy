@@ -3,15 +3,23 @@ package matter
 import (
 	"slices"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 type Enum struct {
+	entity
 	Name        string          `json:"name,omitempty"`
 	Description string          `json:"description,omitempty"`
 	Type        *types.DataType `json:"type,omitempty"`
 	Values      EnumValueSet    `json:"values,omitempty"`
+}
+
+func NewEnum(source asciidoc.Element) *Enum {
+	return &Enum{
+		entity: entity{source: source},
+	}
 }
 
 func (*Enum) EntityType() types.EntityType {
@@ -27,7 +35,7 @@ func (e *Enum) NullValue() uint64 {
 }
 
 func (e *Enum) Clone() *Enum {
-	ne := &Enum{Name: e.Name, Description: e.Description}
+	ne := &Enum{entity: entity{source: e.source}, Name: e.Name, Description: e.Description}
 	if e.Type != nil {
 		ne.Type = e.Type.Clone()
 	}
@@ -87,10 +95,17 @@ func (es EnumSet) Identifier(name string) (types.Entity, bool) {
 }
 
 type EnumValue struct {
+	entity
 	Value       *Number         `json:"value,omitempty"`
 	Name        string          `json:"name,omitempty"`
 	Summary     string          `json:"summary,omitempty"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
+}
+
+func NewEnumValue(source asciidoc.Element) *EnumValue {
+	return &EnumValue{
+		entity: entity{source: source},
+	}
 }
 
 func (ev *EnumValue) EntityType() types.EntityType {
@@ -98,7 +113,7 @@ func (ev *EnumValue) EntityType() types.EntityType {
 }
 
 func (ev *EnumValue) Clone() *EnumValue {
-	nev := &EnumValue{Name: ev.Name, Value: ev.Value.Clone(), Summary: ev.Summary}
+	nev := &EnumValue{entity: entity{source: ev.source}, Name: ev.Name, Value: ev.Value.Clone(), Summary: ev.Summary}
 	if len(ev.Conformance) > 0 {
 		nev.Conformance = ev.Conformance.CloneSet()
 	}

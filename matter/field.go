@@ -3,12 +3,14 @@ package matter
 import (
 	"log/slog"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 type Field struct {
+	entity
 	ID   *Number         `json:"id,omitempty"`
 	Name string          `json:"name,omitempty"`
 	Type *types.DataType `json:"type,omitempty"`
@@ -22,17 +24,15 @@ type Field struct {
 	// Hopefully this will go away as we continue disco-balling the spec
 	AnonymousType any `json:"anonymousType,omitempty"`
 
-	entity types.EntityType
-
-	Source Source `json:"source,omitempty"`
+	entityType types.EntityType
 }
 
-func NewField(source Source) *Field {
-	return &Field{entity: types.EntityTypeField, Source: source}
+func NewField(source asciidoc.Element) *Field {
+	return &Field{entity: entity{source: source}, entityType: types.EntityTypeStructField}
 }
 
-func NewAttribute() *Field {
-	return &Field{entity: types.EntityTypeAttribute}
+func NewAttribute(source asciidoc.Element) *Field {
+	return &Field{entity: entity{source: source}, entityType: types.EntityTypeAttribute}
 }
 
 func (f *Field) GetConformance() conformance.Set {
@@ -40,7 +40,7 @@ func (f *Field) GetConformance() conformance.Set {
 }
 
 func (f *Field) EntityType() types.EntityType {
-	return f.entity
+	return f.entityType
 }
 
 func (f *Field) Inherit(parent *Field) {
@@ -64,14 +64,14 @@ func (f *Field) Inherit(parent *Field) {
 	if len(f.Default) == 0 {
 		f.Default = parent.Default
 	}
-	if f.entity == types.EntityTypeUnknown && parent.entity != types.EntityTypeUnknown {
-		f.entity = parent.entity
+	if f.entityType == types.EntityTypeUnknown && parent.entityType != types.EntityTypeUnknown {
+		f.entityType = parent.entityType
 	}
 	f.Access.Inherit(parent.Access)
 }
 
 func (f *Field) Clone() *Field {
-	nf := &Field{ID: f.ID.Clone(), Name: f.Name, Quality: f.Quality, Access: f.Access, Default: f.Default, entity: f.entity, Source: f.Source}
+	nf := &Field{entity: entity{source: f.source}, ID: f.ID.Clone(), Name: f.Name, Quality: f.Quality, Access: f.Access, Default: f.Default, entityType: f.entityType}
 	if f.Type != nil {
 		nf.Type = f.Type.Clone()
 	}

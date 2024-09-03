@@ -15,6 +15,10 @@ func (p *position) SetPath(path string) {
 	p.path = path
 }
 
+func (p position) Origin() (path string, line int) {
+	return p.path, p.line
+}
+
 func (p position) Position() (line int, column int, offset int) {
 	line = p.line
 	column = p.column

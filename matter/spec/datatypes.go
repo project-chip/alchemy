@@ -60,7 +60,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 	ids := make(map[uint64]struct{})
 	for i := headerRowIndex + 1; i < len(rows); i++ {
 		row := rows[i]
-		f := matter.NewField(newSource(d, row))
+		f := matter.NewField(row)
 		f.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
 		if err != nil {
 			return

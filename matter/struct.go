@@ -1,12 +1,22 @@
 package matter
 
-import "github.com/project-chip/alchemy/matter/types"
+import (
+	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/matter/types"
+)
 
 type Struct struct {
+	entity
 	Name          string        `json:"name,omitempty"`
 	Description   string        `json:"description,omitempty"`
 	Fields        FieldSet      `json:"fields,omitempty"`
 	FabricScoping FabricScoping `json:"fabricScoped,omitempty"`
+}
+
+func NewStruct(source asciidoc.Element) *Struct {
+	return &Struct{
+		entity: entity{source: source},
+	}
 }
 
 func (*Struct) EntityType() types.EntityType {
