@@ -2,6 +2,7 @@ package parse
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -9,23 +10,18 @@ import (
 
 func join[T any](els []T) (out asciidoc.Set) {
 	var s strings.Builder
-	//fmt.Printf("joining %d elements\n", len(els))
 	for _, e := range els {
-		//fmt.Printf("join; %T %v\n", e, e)
 		switch e := any(e).(type) {
 		case string:
 			s.WriteString(e)
 		case []byte:
 			s.WriteString(string(e))
 		case *asciidoc.String:
-			//fmt.Printf("writing string: %s\n", string(e))
 			s.WriteString(e.Value)
 		case *asciidoc.LineContinuation:
-			//fmt.Printf("writing continuation\n")
 			s.WriteString(" +\n")
 		case asciidoc.Element:
 			if s.Len() > 0 {
-				//fmt.Printf("flushing string: %s\n", s.String())
 				out = append(out, asciidoc.NewString(s.String()))
 				s.Reset()
 			}
@@ -39,11 +35,10 @@ func join[T any](els []T) (out asciidoc.Set) {
 		case nil:
 			continue
 		default:
-			fmt.Printf("unknown type in join: %T\n", e)
+			slog.Warn("unexpected type in join", slog.String("type", fmt.Sprintf("%T", e)))
 		}
 	}
 	if s.Len() > 0 {
-		//fmt.Printf("flushing string: %s\n", s.String())
 		out = append(out, asciidoc.NewString(s.String()))
 	}
 	return

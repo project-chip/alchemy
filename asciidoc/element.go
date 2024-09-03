@@ -2,6 +2,7 @@ package asciidoc
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 )
 
@@ -78,7 +79,7 @@ func MergeStrings(els []any) (out Set) {
 			}
 			out = append(out, e)
 		default:
-			fmt.Printf("unexpected type in string merge: %T\n", e)
+			slog.Warn("unexpected type in string merge", slog.String("type", fmt.Sprintf("%T", e)))
 		}
 	}
 	if s.Len() > 0 {

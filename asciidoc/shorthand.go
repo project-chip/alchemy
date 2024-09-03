@@ -119,11 +119,9 @@ func (ta *ShorthandAttribute) Equals(oa Attribute) bool {
 		return false
 	}
 	if !ta.Style.Equals(ota.Style) {
-		fmt.Printf("styles not equal\n")
 		return false
 	}
 	if !ta.ID.Equals(ota.ID) {
-		fmt.Printf("ids not equal\n")
 		return false
 	}
 	if len(ta.Roles) != len(ota.Roles) {
@@ -132,8 +130,6 @@ func (ta *ShorthandAttribute) Equals(oa Attribute) bool {
 	for i, r := range ta.Roles {
 		or := ota.Roles[i]
 		if !r.Equals(or) {
-			fmt.Printf("role not equal\n")
-
 			return false
 		}
 	}
@@ -143,8 +139,6 @@ func (ta *ShorthandAttribute) Equals(oa Attribute) bool {
 	for i, r := range ta.Options {
 		or := ota.Options[i]
 		if !r.Equals(or) {
-			fmt.Printf("option not equal\n")
-
 			return false
 		}
 	}

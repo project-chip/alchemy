@@ -3,6 +3,7 @@ package parse
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"time"
 
@@ -10,12 +11,9 @@ import (
 )
 
 func File(path string) (*asciidoc.Document, error) {
-	fmt.Printf("path: %s\n", path)
-	//v, err := os.ReadFile(path)
-	//	fmt.Printf("file: %s\n", string(v))
 	file, err := os.Open(path)
 	if err != nil {
-		fmt.Printf("error reading: %v\n", err)
+		slog.Error("error reading file for parse", slog.String("path", path), slog.Any("error", err))
 		return nil, err
 	}
 	return Reader(path, file)
@@ -33,7 +31,7 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 	start := time.Now()
 	vals, err := Parse(path, b)
 	if err != nil {
-		fmt.Printf("error parsing: %v\n", err)
+		slog.Error("error parsing file", slog.String("path", path), slog.Any("error", err))
 		return nil, err
 	}
 	elapsed := time.Since(start)
@@ -53,7 +51,7 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 		}
 		d, err = buildDoc(els)
 		if err != nil {
-			fmt.Printf("error building doc: %v\n", err)
+			slog.Error("error building doc", slog.String("path", path), slog.Any("error", err))
 			return nil, err
 		}
 		if debugParser {
