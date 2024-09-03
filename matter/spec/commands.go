@@ -128,7 +128,7 @@ func (s *Section) toCommand(d *Doc, commandMap map[string]*matter.Command, entit
 		}
 		return nil, nil
 	}
-	c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeCommand)
+	c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeCommandField)
 	if err != nil {
 		return nil, err
 	}

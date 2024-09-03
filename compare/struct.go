@@ -19,7 +19,7 @@ func compareStruct(specStruct *matter.Struct, zapStruct *matter.Struct) (diffs [
 		}
 	}
 
-	fieldDiffs, err := compareFields(types.EntityTypeField, specStruct.Fields, zapStruct.Fields)
+	fieldDiffs, err := compareFields(types.EntityTypeStructField, specStruct.Fields, zapStruct.Fields)
 	if err == nil && len(fieldDiffs) > 0 {
 		diffs = append(diffs, fieldDiffs...)
 	}

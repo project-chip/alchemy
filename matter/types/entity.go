@@ -19,10 +19,11 @@ const (
 	EntityTypeCommand
 	EntityTypeCommandField
 	EntityTypeEvent
+	EntityTypeEventField
 	EntityTypeFeature
 	EntityTypeDeviceType
 	EntityTypeCondition
-	EntityTypeField
+	EntityTypeStructField
 	EntityTypeElementRequirement
 )
 
@@ -46,11 +47,12 @@ var (
 		EntityTypeAttribute:          "attribute",
 		EntityTypeCommand:            "command",
 		EntityTypeCommandField:       "commandField",
+		EntityTypeEventField:         "eventField",
 		EntityTypeEvent:              "event",
 		EntityTypeFeature:            "feature",
 		EntityTypeDeviceType:         "deviceType",
 		EntityTypeCondition:          "condition",
-		EntityTypeField:              "field",
+		EntityTypeStructField:        "structField",
 		EntityTypeElementRequirement: "elementRequirement",
 	}
 )

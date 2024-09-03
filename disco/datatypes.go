@@ -232,7 +232,7 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 	case matter.DataTypeCategoryEnum:
 		entityType = types.EntityTypeEnumValue
 	case matter.DataTypeCategoryStruct:
-		entityType = types.EntityTypeField
+		entityType = types.EntityTypeStructField
 	}
 	for _, dt := range dataTypeFields {
 		if dt.existing {
