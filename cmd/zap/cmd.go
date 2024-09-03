@@ -99,6 +99,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	var zapTemplateDocs pipeline.Map[string, *pipeline.Data[string]]
 	var globalObjectFiles pipeline.Map[string, *pipeline.Data[string]]
 	var provisionalZclFiles pipeline.Map[string, *pipeline.Data[struct{}]]
+	var clusterAliases pipeline.Map[string, []string]
 	if clusters.Size() > 0 {
 		templateGenerator := generate.NewTemplateGenerator(specBuilder.Spec, fileOptions, pipelineOptions, sdkRoot, templateOptions...)
 		zapTemplateDocs, err = pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, templateGenerator, clusters)
@@ -106,16 +107,19 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 			return err
 		}
 		provisionalZclFiles = templateGenerator.ProvisionalZclFiles
+		clusterAliases = templateGenerator.ClusterAliases
 
 		globalObjectFiles, err = templateGenerator.RenderGlobalObjecs(cxt)
 		if err != nil {
 			return err
 		}
+	} else {
+		clusterAliases = pipeline.NewConcurrentMap[string, []string]()
 	}
 
 	var patchedDeviceTypes pipeline.Map[string, *pipeline.Data[[]byte]]
 	if deviceTypes.Size() > 0 {
-		deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specBuilder.Spec)
+		deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specBuilder.Spec, clusterAliases)
 		patchedDeviceTypes, err = pipeline.Process[[]*matter.DeviceType, []byte](cxt, pipelineOptions, deviceTypePatcher, deviceTypes)
 		if err != nil {
 			return err

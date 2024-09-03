@@ -30,8 +30,15 @@ func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x
 	var exampleCluster *matter.Cluster
 	for c := range configurator.Clusters {
 		if c != nil {
-			exampleCluster = c
-			break
+			if exampleCluster == nil {
+				exampleCluster = c
+			}
+
+			if len(errata.ClusterAliases) > 0 {
+				if aliases, ok := errata.ClusterAliases[c.Name]; ok {
+					tg.ClusterAliases.Store(c.Name, aliases)
+				}
+			}
 		}
 	}
 

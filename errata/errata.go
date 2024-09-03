@@ -40,7 +40,11 @@ var Erratas = map[string]*Errata{
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
 	"src/app_clusters/DemandResponseLoadControl.adoc": {
-		ZAP: ZAP{TemplatePath: "drlc-cluster",
+		ZAP: ZAP{
+			TemplatePath: "drlc-cluster",
+			ClusterAliases: map[string][]string{
+				"Demand Response Load Control": {"Demand Response and Load Control"},
+			},
 			DefineOverrides: map[string]string{
 				"EVENTS":        "LOAD_CONTROL_EVENTS",
 				"ACTIVE_EVENTS": "LOAD_CONTROL_ACTIVE_EVENTS",
@@ -113,7 +117,12 @@ var Erratas = map[string]*Errata{
 		ZAP: ZAP{TemplatePath: "oven-mode-cluster"},
 	},
 	"src/app_clusters/Mode_Refrigerator.adoc": {
-		ZAP: ZAP{TemplatePath: "refrigerator-and-temperature-controlled-cabinet-mode-cluster"},
+		ZAP: ZAP{
+			TemplatePath: "refrigerator-and-temperature-controlled-cabinet-mode-cluster",
+			ClusterAliases: map[string][]string{
+				"Refrigerator And Temperature Controlled Cabinet Mode": {"Refrigerator and Temperature Controlled Cabinet Mode"},
+			},
+		},
 	},
 	"src/app_clusters/Mode_RVCClean.adoc": {
 		ZAP: ZAP{TemplatePath: "rvc-clean-mode-cluster"},
@@ -122,7 +131,12 @@ var Erratas = map[string]*Errata{
 		ZAP: ZAP{TemplatePath: "rvc-run-mode-cluster"},
 	},
 	"src/app_clusters/OnOff.adoc": {
-		ZAP: ZAP{TemplatePath: "onoff-cluster"},
+		ZAP: ZAP{
+			TemplatePath: "onoff-cluster",
+			ClusterAliases: map[string][]string{
+				"On/Off": {"OnOff"},
+			},
+		},
 	},
 	"src/app_clusters/OperationalState.adoc": {
 		Spec: Spec{
@@ -248,12 +262,22 @@ var Erratas = map[string]*Errata{
 			}},
 	},
 	"src/app_clusters/media/WakeOnLAN.adoc": {
-		ZAP: ZAP{DefineOverrides: map[string]string{
-			"MAC_ADDRESS": "WAKE_ON_LAN_MAC_ADDRESS",
-		}},
+		ZAP: ZAP{
+			DefineOverrides: map[string]string{
+				"MAC_ADDRESS": "WAKE_ON_LAN_MAC_ADDRESS",
+			},
+			ClusterAliases: map[string][]string{
+				"Wake on LAN": {"WakeOnLAN"},
+			},
+		},
 	},
 	"src/data_model/ACL-Cluster.adoc": {
-		ZAP: ZAP{TemplatePath: "access-control-cluster"},
+		ZAP: ZAP{
+			TemplatePath: "access-control-cluster",
+			ClusterAliases: map[string][]string{
+				"AccessControl": {"Access Control"},
+			},
+		},
 	},
 	"src/data_model/bridge-clusters.adoc": {
 		ZAP: ZAP{ClusterSplit: map[string]string{
@@ -280,7 +304,19 @@ var Erratas = map[string]*Errata{
 		},
 	},
 	"src/data_model/Group-Key-Management-Cluster.adoc": {
-		ZAP: ZAP{TemplatePath: "group-key-mgmt-cluster"},
+		ZAP: ZAP{
+			TemplatePath: "group-key-mgmt-cluster",
+			ClusterAliases: map[string][]string{
+				"GroupKeyManagement": {"Group Key Management"},
+			},
+		},
+	},
+	"src/data_model/ICDManagement.adoc": {
+		ZAP: ZAP{
+			ClusterAliases: map[string][]string{
+				"ICDManagement": {"ICD Management"},
+			},
+		},
 	},
 	"src/data_model/Label-Cluster.adoc": {
 		ZAP: ZAP{TemplatePath: "user-label-cluster",
@@ -361,7 +397,12 @@ var Erratas = map[string]*Errata{
 			TemplatePath: "unit-localization-cluster"},
 	},
 	"src/service_device_management/OperationalCredentialCluster.adoc": {
-		ZAP: ZAP{TemplatePath: "operational-credentials-cluster"},
+		ZAP: ZAP{
+			TemplatePath: "operational-credentials-cluster",
+			ClusterAliases: map[string][]string{
+				"Operational Credentials": {"Node Operational Credentials"},
+			},
+		},
 	},
 	"src/service_device_management/PowerSourceConfigurationCluster.adoc": {
 		ZAP: ZAP{Domain: matter.DomainCHIP},

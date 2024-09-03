@@ -6,10 +6,11 @@ import (
 )
 
 type ZAP struct {
-	SuppressAttributePermissions bool              `yaml:"suppress-attribute-permissions,omitempty"`
-	ClusterDefinePrefix          string            `yaml:"cluster-define-prefix,omitempty"`
-	SuppressClusterDefinePrefix  bool              `yaml:"suppress-cluster-define-prefix,omitempty"`
-	DefineOverrides              map[string]string `yaml:"override-defines,omitempty"`
+	SuppressAttributePermissions bool                `yaml:"suppress-attribute-permissions,omitempty"`
+	ClusterDefinePrefix          string              `yaml:"cluster-define-prefix,omitempty"`
+	SuppressClusterDefinePrefix  bool                `yaml:"suppress-cluster-define-prefix,omitempty"`
+	DefineOverrides              map[string]string   `yaml:"override-defines,omitempty"`
+	ClusterAliases               map[string][]string `yaml:"cluster-aliases,omitempty"`
 
 	WritePrivilegeAsRole bool            `yaml:"write-privilege-as-role,omitempty"`
 	SeparateStructs      SeparateStructs `yaml:"separate-structs,omitempty"`

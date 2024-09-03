@@ -310,7 +310,7 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnDescription
 	case "summary":
 		return matter.TableColumnSummary
-	case "cluster":
+	case "cluster", "cluster name", "clustername":
 		return matter.TableColumnCluster
 	case "client/server":
 		return matter.TableColumnClientServer
