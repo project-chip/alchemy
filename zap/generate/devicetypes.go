@@ -115,23 +115,24 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	}
 
 	for _, dt := range deviceTypesByID {
-		slog.Info("missing device type", slog.String("name", dt.Name))
+		slog.Info("Adding new device type", slog.String("name", dt.Name))
 		applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
 	}
 
 	for _, dt := range deviceTypesByName {
-		slog.Info("missing device type", slog.String("name", dt.Name))
+		slog.Info("Adding new device type", slog.String("name", dt.Name))
 		applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
 	}
 
-	var out []byte
+	var out string
 	xml.Indent(4)
 	xml.WriteSettings.CanonicalEndTags = true
-	out, err = xml.WriteToBytes()
+	out, err = xml.WriteToString()
 	if err != nil {
 		return
 	}
-	outputs = append(outputs, pipeline.NewData[[]byte](deviceTypesXMLPath, out))
+	out = postProcessTemplate(out)
+	outputs = append(outputs, pipeline.NewData[[]byte](deviceTypesXMLPath, []byte(out)))
 	return
 }
 

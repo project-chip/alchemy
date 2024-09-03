@@ -128,7 +128,7 @@ func CanonicalName(name string) string {
 	}
 	casedName := matter.Case(name)
 	if casedName != name {
-		slog.Warn("correcting name", slog.String("from", name), slog.String("to", casedName))
+		slog.Debug("Canonlicalizing name", slog.String("from", name), slog.String("to", casedName))
 		return casedName
 	}
 	return name
