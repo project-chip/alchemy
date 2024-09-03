@@ -36,6 +36,13 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		}
 	}
 
+	if len(clusters) == 1 {
+		sectionClusterName := toClusterName(s.Name)
+		if sectionClusterName != clusters[0].Name {
+			slog.Warn("Mismatch between cluster name in Cluster ID table and section name", slog.String("sectionName", sectionClusterName), slog.String("clusterName", clusters[0].Name), log.Path("path", s.Base))
+		}
+	}
+
 	var features *matter.Features
 	var bitmaps matter.BitmapSet
 	var enums matter.EnumSet
@@ -234,13 +241,16 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 		if err != nil {
 			return nil, err
 		}
-		name = text.TrimCaseInsensitiveSuffix(name, " Cluster")
-		c.Name = name
+		c.Name = toClusterName(name)
 		c.Conformance = doc.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		clusters = append(clusters, c)
 	}
 
 	return clusters, nil
+}
+
+func toClusterName(name string) string {
+	return text.TrimCaseInsensitiveSuffix(name, " Cluster")
 }
 
 func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {

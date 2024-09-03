@@ -24,12 +24,20 @@ import (
 var utilityDevicesMask uint64 = 0xFF000000
 
 type DeviceTypesPatcher struct {
-	sdkRoot string
-	spec    *spec.Specification
+	sdkRoot        string
+	spec           *spec.Specification
+	clusterAliases map[string]string
 }
 
-func NewDeviceTypesPatcher(sdkRoot string, spec *spec.Specification) *DeviceTypesPatcher {
-	return &DeviceTypesPatcher{sdkRoot: sdkRoot, spec: spec}
+func NewDeviceTypesPatcher(sdkRoot string, spec *spec.Specification, clusterAliases pipeline.Map[string, []string]) *DeviceTypesPatcher {
+	dtp := &DeviceTypesPatcher{sdkRoot: sdkRoot, spec: spec, clusterAliases: make(map[string]string)}
+	clusterAliases.Range(func(cluster string, aliases []string) bool {
+		for _, alias := range aliases {
+			dtp.clusterAliases[alias] = cluster
+		}
+		return true
+	})
+	return dtp
 }
 
 func (p DeviceTypesPatcher) Name() string {
@@ -90,7 +98,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 				if deviceType != nil {
 					delete(deviceTypesByID, deviceTypeID.Value())
 				}
-			} else {
+			} else if deviceTypeIDText != "ID-TBD" {
 				slog.Warn("invalid deviceId", "text", deviceTypeID.Text())
 			}
 
@@ -108,7 +116,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			}
 		}
 		if deviceType != nil {
-			applyDeviceTypeToElement(p.spec, deviceType, deviceTypeElement)
+			p.applyDeviceTypeToElement(p.spec, deviceType, deviceTypeElement)
 		} else {
 			configurator.RemoveChild(deviceTypeElement)
 		}
@@ -116,12 +124,12 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 
 	for _, dt := range deviceTypesByID {
 		slog.Info("Adding new device type", slog.String("name", dt.Name))
-		applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
+		p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
 	}
 
 	for _, dt := range deviceTypesByName {
 		slog.Info("Adding new device type", slog.String("name", dt.Name))
-		applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
+		p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
 	}
 
 	var out string
@@ -143,7 +151,7 @@ type clusterRequirements struct {
 	elementRequirements     []*matter.ElementRequirement
 }
 
-func applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
+func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
 	xml.SetOrCreateSimpleElement(dte, "name", zap.DeviceTypeName(deviceType))
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP")
 	xml.SetOrCreateSimpleElement(dte, "typeName", matterDeviceTypeName(deviceType))
@@ -206,25 +214,36 @@ func applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.Devic
 			clustersElement.RemoveChild(include)
 			continue
 		}
-		setIncludeAttributes(clustersElement, include, spec, deviceType, crs)
+		p.setIncludeAttributes(clustersElement, include, spec, deviceType, crs)
 		delete(clusterRequirementsByName, strings.ToLower(ca.Value))
 	}
 	for _, crs := range [][]*matter.ClusterRequirement{spec.BaseDeviceType.ClusterRequirements, deviceType.ClusterRequirements} {
 		for _, cr := range crs {
 			crr, ok := clusterRequirementsByName[strings.ToLower(cr.ClusterName)]
 			if ok {
-				setIncludeAttributes(clustersElement, nil, spec, deviceType, crr)
+				p.setIncludeAttributes(clustersElement, nil, spec, deviceType, crr)
+				delete(clusterRequirementsByName, strings.ToLower(cr.ClusterName))
 			}
 		}
 	}
 	return
 }
 
-func setIncludeAttributes(clustersElement *etree.Element, include *etree.Element, spec *spec.Specification, deviceType *matter.DeviceType, cr *clusterRequirements) {
+func (p DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element, include *etree.Element, spec *spec.Specification, deviceType *matter.DeviceType, cr *clusterRequirements) {
 	cluster, ok := spec.ClustersByName[cr.name]
 	if !ok {
-		slog.Debug("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
-		return
+		var alias string
+		alias, ok = p.clusterAliases[cr.name]
+		if ok {
+			cluster, ok = spec.ClustersByName[alias]
+			if !ok {
+				slog.Warn("unknown cluster alias on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name), slog.String("alias", alias))
+				return
+			}
+		} else {
+			slog.Warn("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
+			return
+		}
 	}
 
 	clusterDoc, ok := spec.DocRefs[cluster]

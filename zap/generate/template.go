@@ -28,6 +28,8 @@ type TemplateGenerator struct {
 
 	ProvisionalZclFiles      pipeline.Map[string, *pipeline.Data[struct{}]]
 	globalObjectDependencies pipeline.Map[types.Entity, struct{}]
+
+	ClusterAliases pipeline.Map[string, []string]
 }
 
 type TemplateOption func(tg *TemplateGenerator)
@@ -46,6 +48,7 @@ func NewTemplateGenerator(spec *spec.Specification, fileOptions files.Options, p
 		sdkRoot:                  sdkRoot,
 		ProvisionalZclFiles:      pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]](),
 		globalObjectDependencies: pipeline.NewConcurrentMap[types.Entity, struct{}](),
+		ClusterAliases:           pipeline.NewConcurrentMap[string, []string](),
 	}
 	for _, o := range options {
 		o(tg)
