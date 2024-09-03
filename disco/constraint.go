@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func fixConstraintCells(doc *spec.Doc, ti *tableInfo) (err error) {
+func (b *Ball) fixConstraintCells(section *spec.Section, ti *tableInfo) (err error) {
 	if len(ti.rows) < 2 {
 		return
 	}
@@ -25,9 +25,9 @@ func fixConstraintCells(doc *spec.Doc, ti *tableInfo) (err error) {
 			continue
 		}
 
-		dataType, e := doc.ReadRowDataType(row, ti.columnMap, matter.TableColumnType)
+		dataType, e := b.doc.ReadRowDataType(row, ti.columnMap, matter.TableColumnType)
 		if e != nil {
-			slog.Debug("error reading data type for constraint", slog.String("path", doc.Path), slog.Any("error", e))
+			slog.Debug("error reading data type for constraint", slog.String("path", b.doc.Path.String()), slog.Any("error", e))
 			continue
 		}
 		if dataType == nil {

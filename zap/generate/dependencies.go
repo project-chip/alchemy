@@ -58,14 +58,14 @@ func (tg *TemplateGenerator) findDataTypeDependencies(spec *spec.Specification, 
 			tg.globalObjectDependencies.Store(dt.Entity, struct{}{})
 			return
 		}
-		path, ok := spec.DocRefs[dt.Entity]
+		entityDoc, ok := spec.DocRefs[dt.Entity]
 		if !ok {
 			slog.Warn("missing document for data type", "name", dt.Name, "entity", dt.Entity, "pointer", fmt.Sprintf("%p", dt.Entity))
 			return
 		}
-		_, loaded := dependencies.LoadOrStore(path, false)
+		_, loaded := dependencies.LoadOrStore(entityDoc.Path.Relative, false)
 		if !loaded {
-			slog.Debug("dependency found", "name", dt.Name, "path", path)
+			slog.Debug("dependency found", "name", dt.Name, "path", entityDoc.Path.Relative)
 		}
 	}
 }

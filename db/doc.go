@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"path/filepath"
 
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
@@ -13,8 +12,8 @@ func (h *Host) indexDoc(ctx context.Context, doc *spec.Doc, raw bool) (*sectionI
 	ds := &sectionInfo{id: h.nextID(documentTable), values: &dbRow{}, children: make(map[string][]*sectionInfo)}
 	dt, _ := doc.DocType()
 	dts := matter.DocTypeNames[dt]
-	ds.values.values = map[matter.TableColumn]any{matter.TableColumnName: filepath.Base(doc.Path), matter.TableColumnType: dts}
-	ds.values.extras = map[string]any{"path": doc.Path}
+	ds.values.values = map[matter.TableColumn]any{matter.TableColumnName: doc.Path.Base(), matter.TableColumnType: dts}
+	ds.values.extras = map[string]any{"path": doc.Path.Absolute}
 	if raw {
 		for _, top := range parse.Skim[*spec.Section](doc.Elements()) {
 			err := spec.AssignSectionTypes(doc, top)

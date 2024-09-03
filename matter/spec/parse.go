@@ -38,7 +38,13 @@ func parseReader(r io.Reader, path string, attributes ...asciidoc.AttributeName)
 		return nil, fmt.Errorf("parse error in %s: %w", path, err)
 	}
 
-	doc, err = NewDoc(d, path)
+	var p Path
+	p, err = NewPath(path)
+	if err != nil {
+		return nil, err
+	}
+
+	doc, err = NewDoc(d, p)
 	if err != nil {
 		return nil, err
 	}

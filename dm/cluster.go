@@ -12,9 +12,9 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func getAppClusterPath(dmRoot string, path string, clusterName string) string {
-	path = filepath.Base(path)
-	file := strings.TrimSuffix(path, filepath.Ext(path))
+func getAppClusterPath(dmRoot string, path spec.Path, clusterName string) string {
+	p := path.Base()
+	file := strings.TrimSuffix(p, path.Ext())
 	if len(clusterName) > 0 {
 		file += "-" + clusterName
 	}

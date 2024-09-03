@@ -69,7 +69,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
 		f.Type, err = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
 		if err != nil {
-			slog.Debug("error reading field data type", slog.String("path", d.Path), slog.String("name", f.Name), slog.Any("error", err))
+			slog.Debug("error reading field data type", slog.String("path", d.Path.String()), slog.String("name", f.Name), slog.Any("error", err))
 			err = nil
 		}
 
@@ -102,7 +102,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 			id := f.ID.Value()
 			_, ok := ids[id]
 			if ok {
-				slog.Warn("duplicate field ID", log.Path("source", f.Source), slog.String("name", f.Name), slog.Uint64("id", id))
+				slog.Warn("duplicate field ID", log.Path("source", f), slog.String("name", f.Name), slog.Uint64("id", id), log.Path("original", existing))
 				continue
 			}
 			ids[id] = struct{}{}

@@ -15,10 +15,10 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 		return err
 	}
 	for _, m := range globalEntities {
-		spec.DocRefs[m] = doc.Path
+		spec.DocRefs[m] = doc
 		switch m := m.(type) {
 		case *matter.Bitmap:
-			slog.Info("global bitmap", "name", m.Name, "path", doc.Path)
+			slog.Debug("Found global bitmap", "name", m.Name, "path", doc.Path)
 			_, ok := spec.bitmapIndex[m.Name]
 			if ok {
 				slog.Warn("multiple global bitmaps with same name", "name", m.Name)
@@ -27,7 +27,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			}
 			spec.addEntity(m.Name, m, nil)
 		case *matter.Enum:
-			slog.Info("global enum", "name", m.Name, "path", doc.Path)
+			slog.Debug("Found global enum", "name", m.Name, "path", doc.Path)
 			_, ok := spec.enumIndex[m.Name]
 			if ok {
 				slog.Warn("multiple global enums with same name", "name", m.Name)
@@ -36,7 +36,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			}
 			spec.addEntity(m.Name, m, nil)
 		case *matter.Struct:
-			slog.Info("global struct", "name", m.Name, "path", doc.Path)
+			slog.Debug("Found global struct", "name", m.Name, "path", doc.Path)
 			_, ok := spec.structIndex[m.Name]
 			if ok {
 				slog.Warn("multiple global structs with same name", "name", m.Name)

@@ -6,6 +6,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -22,7 +23,7 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 		if ok {
 			clusterID := matter.ParseNumber(code)
 			if !clusterID.Valid() {
-				slog.Warn("invalid code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
+				slog.Warn("invalid code ID in cluster", log.Path("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
 			} else {
 				for c, handled := range configurator.Clusters {
 					if c.ID.Equals(clusterID) {
@@ -34,7 +35,7 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 
 				if cluster == nil {
 					// We don't have this cluster in the spec; leave it here for now
-					slog.Warn("unknown code ID in cluster", slog.String("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
+					slog.Warn("unknown code ID in cluster", log.Path("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
 					continue
 				}
 			}
@@ -43,7 +44,7 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 		if cluster == nil {
 			name, ok := xml.ReadSimpleElement(cle, "name")
 			if !ok {
-				slog.Warn("invalid code ID in cluster and no name backup", slog.String("path", configurator.Doc.Path))
+				slog.Warn("invalid code ID in cluster and no name backup", log.Path("path", configurator.Doc.Path))
 				continue
 			}
 			for c, handled := range configurator.Clusters {
@@ -55,7 +56,7 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 			}
 			if cluster == nil {
 				// We don't have this cluster in the spec; leave it here for now
-				slog.Warn("unknown name in cluster", slog.String("path", configurator.Doc.Path), slog.String("name", name))
+				slog.Warn("unknown name in cluster", log.Path("path", configurator.Doc.Path), slog.String("name", name))
 				continue
 			}
 		}
@@ -159,7 +160,7 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 	if err != nil {
 		return
 	}
-	err = generateCommands(commands, configurator.Doc.Path, cle, errata)
+	err = generateCommands(commands, configurator.Doc.Path.Relative, cle, errata)
 	if err != nil {
 		return
 	}
@@ -176,12 +177,12 @@ func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.
 	for _, globalAttribute := range globalAttributes {
 		code := globalAttribute.SelectAttr("code")
 		if code == nil {
-			slog.Warn("globalAttribute element with no code attribute", slog.String("path", configurator.Doc.Path))
+			slog.Warn("globalAttribute element with no code attribute", log.Path("path", configurator.Doc.Path))
 			continue
 		}
 		id := matter.ParseNumber(code.Value)
 		if !id.Valid() {
-			slog.Warn("globalAttribute element with invalid code attribute", slog.String("path", configurator.Doc.Path), slog.String("code", code.Value))
+			slog.Warn("globalAttribute element with invalid code attribute", log.Path("path", configurator.Doc.Path), slog.String("code", code.Value))
 			continue
 		}
 		setClusterGlobalAttribute(globalAttribute, cluster, id)

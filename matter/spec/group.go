@@ -2,7 +2,6 @@ package spec
 
 import (
 	"log/slog"
-	"path/filepath"
 
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -22,8 +21,8 @@ func NewDocGroup(root string) *DocGroup {
 
 func setSpec(d *Doc, si *Specification, docGroup *DocGroup) {
 	if d.group != nil {
-		if d.group.Root != docGroup.Root && filepath.Base(d.Path) != "matter-defines.adoc" {
-			slog.Warn("multiple doc group roots", "path", d.Path, "root", d.group.Root, "newRoot", docGroup.Root)
+		if d.group.Root != docGroup.Root && d.Path.Base() != "matter-defines.adoc" {
+			slog.Warn("multiple doc group roots", "path", d.Path.String(), "root", d.group.Root, "newRoot", docGroup.Root)
 		}
 		return
 	}

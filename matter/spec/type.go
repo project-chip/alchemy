@@ -24,11 +24,11 @@ func (doc *Doc) DocType() (matter.DocType, error) {
 }
 
 func (doc *Doc) determineDocType() (matter.DocType, error) {
-	if len(doc.Path) == 0 {
+	if len(doc.Path.Absolute) == 0 {
 		return matter.DocTypeUnknown, fmt.Errorf("missing path")
 	}
 
-	switch filepath.Base(doc.Path) {
+	switch doc.Path.Base() {
 	case "appclusters.adoc":
 		return matter.DocTypeAppClusters, nil
 	case "standard_namespaces.adoc":
@@ -39,10 +39,7 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 		return matter.DocTypeBaseDeviceType, nil
 	}
 
-	path, err := filepath.Abs(doc.Path)
-	if err != nil {
-		return matter.DocTypeUnknown, err
-	}
+	path := doc.Path.Absolute
 	dir, file := filepath.Split(path)
 	pathParts := strings.Split(dir, string(os.PathSeparator))
 

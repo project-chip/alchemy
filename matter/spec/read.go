@@ -34,7 +34,13 @@ func read(b []byte, path string) (doc *Doc, err error) {
 		return nil, fmt.Errorf("read error in %s: %w", path, err)
 	}
 
-	doc, err = NewDoc(d, path)
+	var p Path
+	p, err = NewPath(path)
+	if err != nil {
+		return nil, err
+	}
+
+	doc, err = NewDoc(d, p)
 	if err != nil {
 		return nil, err
 	}
