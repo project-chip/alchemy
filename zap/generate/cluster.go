@@ -75,9 +75,7 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 		if handled {
 			continue
 		}
-		if !cluster.ID.Valid() {
-			continue
-		}
+
 		cle := etree.NewElement("cluster")
 		xml.AppendElement(ce, cle, "struct", "enum", "bitmap", "domain")
 		err = tg.populateCluster(configurator, cle, cluster, errata)
