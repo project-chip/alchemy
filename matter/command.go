@@ -16,6 +16,7 @@ type Command struct {
 	Direction   Interface       `json:"direction,omitempty"`
 	Response    string          `json:"response,omitempty"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
+	Quality     Quality         `json:"quality,omitempty"`
 	Access      Access          `json:"access,omitempty"`
 
 	Fields FieldSet `json:"fields,omitempty"`
@@ -36,7 +37,7 @@ func (c *Command) GetConformance() conformance.Set {
 }
 
 func (c *Command) Clone() *Command {
-	nc := &Command{entity: entity{source: c.source}, ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Access: c.Access}
+	nc := &Command{entity: entity{source: c.source}, ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Quality: c.Quality, Access: c.Access}
 	if len(c.Conformance) > 0 {
 		nc.Conformance = c.Conformance.CloneSet()
 	}

@@ -82,7 +82,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 		if err != nil {
 			return
 		}
-		f.Quality = matter.ParseQuality(q)
+		f.Quality = parseQuality(q, entityType, d, row)
 		f.Default, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDefault)
 		if err != nil {
 			return

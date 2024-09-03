@@ -52,7 +52,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 		if err != nil {
 			return
 		}
-		attr.Quality = matter.ParseQuality(q)
+		attr.Quality = parseQuality(q, types.EntityTypeAttribute, d, row)
 		attr.Default, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDefault)
 		if err != nil {
 			return
