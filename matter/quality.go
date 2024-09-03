@@ -1,6 +1,10 @@
 package matter
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/project-chip/alchemy/matter/types"
+)
 
 type Quality uint32
 
@@ -17,8 +21,9 @@ const (
 	QualityLargeMessage              = 1 << (iota - 1)
 	QualitySourceAttribution         = 1 << (iota - 1)
 	QualityAtomicWrite               = 1 << (iota - 1)
+	QualityQuieterReporting          = 1 << (iota - 1)
 
-	QualityAll = QualityNullable | QualityNonVolatile | QualityFixed | QualityScene | QualityReportable | QualityChangedOmitted | QualityDiagnostics | QualitySingleton | QualityLargeMessage | QualitySourceAttribution | QualityAtomicWrite
+	QualityAll = QualityNullable | QualityNonVolatile | QualityFixed | QualityScene | QualityReportable | QualityChangedOmitted | QualityDiagnostics | QualitySingleton | QualityLargeMessage | QualitySourceAttribution | QualityAtomicWrite | QualityQuieterReporting
 )
 
 var identifierQualities = map[rune]Quality{
@@ -33,6 +38,15 @@ var identifierQualities = map[rune]Quality{
 	'L': QualityLargeMessage,
 	'A': QualitySourceAttribution,
 	'T': QualityAtomicWrite,
+}
+
+var AllowedQualities = map[types.EntityType]Quality{
+	types.EntityTypeAttribute:    QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
+	types.EntityTypeCommand:      QualityLargeMessage,
+	types.EntityTypeCommandField: QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
+	types.EntityTypeStructField:  QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
+	types.EntityTypeEvent:        QualitySourceAttribution,
+	types.EntityTypeCluster:      QualitySingleton | QualityDiagnostics,
 }
 
 var qualityIdentifiers map[Quality]rune

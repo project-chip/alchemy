@@ -44,6 +44,9 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 		switch cmd.Direction {
 		case matter.InterfaceClient:
 			cx.CreateAttr("direction", "responseFromServer")
+			if cmd.Quality.Has(matter.QualityLargeMessage) {
+				cx.CreateElement("quality").CreateAttr("largeMessage", "true")
+			}
 			if cmd.Access.IsFabricScoped() {
 				a := cx.CreateElement("access")
 				if cmd.Access.IsFabricScoped() {
@@ -57,6 +60,9 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 			cx.CreateAttr("direction", "commandToServer")
 			if cmd.Response != "" {
 				cx.CreateAttr("response", cmd.Response)
+			}
+			if cmd.Quality.Has(matter.QualityLargeMessage) {
+				cx.CreateElement("quality").CreateAttr("largeMessage", "true")
 			}
 			if cmd.Access.Invoke != matter.PrivilegeUnknown || cmd.Access.IsFabricScoped() || cmd.Access.IsTimed() {
 				a := cx.CreateElement("access")

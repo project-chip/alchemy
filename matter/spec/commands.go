@@ -84,6 +84,12 @@ func (s *Section) buildCommands(d *Doc, t *asciidoc.Table) (commands matter.Comm
 		if err != nil {
 			return
 		}
+		var q string
+		q, err = readRowASCIIDocString(row, columnMap, matter.TableColumnQuality)
+		if err != nil {
+			return
+		}
+		cmd.Quality = parseQuality(q, types.EntityTypeCommand, d, row)
 		cmd.Access, _ = ParseAccess(a, types.EntityTypeCommand)
 		commands = append(commands, cmd)
 		commandMap[strings.ToLower(cmd.Name)] = cmd

@@ -132,7 +132,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.Quality = matter.ParseQuality(q)
+		cr.Quality = parseQuality(q, cr.Element, d, row)
 		var c string
 		c, err = readRowASCIIDocString(row, columnMap, matter.TableColumnConstraint)
 		if err != nil {
