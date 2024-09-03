@@ -30,7 +30,7 @@ type AnchorNormalizer struct {
 	discoOptions []Option
 }
 
-func newAnchorNormalizer(discoOptions []Option, pipelineOptions pipeline.Options) AnchorNormalizer {
+func newAnchorNormalizer(discoOptions []Option) AnchorNormalizer {
 	return AnchorNormalizer{discoOptions: discoOptions}
 }
 
@@ -165,10 +165,10 @@ func (AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (an
 					continue
 				}
 				ag.updatedAnchors[newID] = append(ag.updatedAnchors[newID], a)
-					slog.Debug("rewrote anchor", "from", id, "to", newID)
-					ag.rewrittenAnchors[id] = append(ag.rewrittenAnchors[id], a)
-				}
+				slog.Debug("rewrote anchor", "from", id, "to", newID)
+				ag.rewrittenAnchors[id] = append(ag.rewrittenAnchors[id], a)
 			}
+		}
 
 	}
 	return

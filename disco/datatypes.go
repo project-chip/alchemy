@@ -494,7 +494,7 @@ func (b *Ball) canonicalizeDataTypeSectionName(dp *docParse, s *spec.Section, da
 }
 
 func renameDataType(subSections []*subSection, oldName string, newName string) {
-	slog.Warn("renaming", "old", oldName, "new", newName)
+	slog.Debug("renaming data type", "oldName", oldName, "newName", newName)
 	for _, ss := range subSections {
 		renameDataType(ss.children, oldName, newName)
 		if ss.table.element == nil {
@@ -513,8 +513,6 @@ func renameDataType(subSections []*subSection, oldName string, newName string) {
 			if e != nil {
 				continue
 			}
-			slog.Warn("renaming cell", "replacement", newName, "old", vc, "looking for", oldName)
-
 			if strings.EqualFold(oldName, strings.TrimSpace(vc)) {
 				setCellString(typeCell, newName)
 			}

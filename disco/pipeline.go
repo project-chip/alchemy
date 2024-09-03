@@ -82,7 +82,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 		return err
 	}
 
-	anchorNormalizer := newAnchorNormalizer(discoOptions, pipelineOptions)
+	anchorNormalizer := newAnchorNormalizer(discoOptions)
 	var normalizedDocs pipeline.Map[string, *pipeline.Data[render.InputDocument]]
 	normalizedDocs, err = pipeline.Process[*spec.Doc, render.InputDocument](cxt, pipelineOptions, anchorNormalizer, balledDocs)
 	if err != nil {
