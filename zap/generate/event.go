@@ -7,6 +7,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal/log"
 	axml "github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -19,12 +20,12 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 
 		code := eve.SelectAttr("code")
 		if code == nil {
-			slog.Warn("missing code attribute in event", slog.String("path", configurator.Doc.Path))
+			slog.Warn("missing code attribute in event", log.Path("path", configurator.Doc.Path))
 			continue
 		}
 		eventID := matter.ParseNumber(code.Value)
 		if !eventID.Valid() {
-			slog.Warn("invalid code ID in event", slog.String("path", configurator.Doc.Path), slog.String("commandId", eventID.Text()))
+			slog.Warn("invalid code ID in event", log.Path("path", configurator.Doc.Path), slog.String("commandId", eventID.Text()))
 			continue
 		}
 
@@ -41,7 +42,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 		}
 
 		if matchingEvent == nil {
-			slog.Warn("unknown event ID", slog.String("path", configurator.Doc.Path), slog.String("eventId", eventID.Text()))
+			slog.Warn("unknown event ID", log.Path("path", configurator.Doc.Path), slog.String("eventId", eventID.Text()))
 			ce.RemoveChild(eve)
 			continue
 		}

@@ -17,7 +17,7 @@ import (
 type Doc struct {
 	sync.RWMutex
 
-	Path string
+	Path Path
 
 	Base *asciidoc.Document
 	asciidoc.Set
@@ -42,7 +42,7 @@ type Doc struct {
 	errata *errata.Spec
 }
 
-func NewDoc(d *asciidoc.Document, path string) (*Doc, error) {
+func NewDoc(d *asciidoc.Document, path Path) (*Doc, error) {
 	doc := &Doc{
 		Base:           d,
 		Path:           path,
@@ -162,30 +162,30 @@ func (doc *Doc) Reference(ref string) (types.Entity, bool) {
 	a := doc.FindAnchor(ref)
 
 	if a == nil {
-		slog.Warn("unknown reference", slog.String("path", doc.Path), slog.String("reference", ref))
+		slog.Warn("unknown reference", slog.String("path", doc.Path.String()), slog.String("reference", ref))
 		return nil, false
 	}
 	wa, ok := a.Element.(asciidoc.Attributable)
 	if !ok {
-		slog.Warn("reference to non-entity", slog.String("path", doc.Path), slog.String("reference", ref))
+		slog.Warn("reference to non-entity", slog.String("path", doc.Path.String()), slog.String("reference", ref))
 		return nil, false
 	}
 	entities, ok := doc.entitiesBySection[wa]
 	if !ok {
-		slog.Warn("unknown reference entity", slog.String("path", doc.Path), slog.String("reference", ref), slog.Any("count", len(doc.entitiesBySection)))
+		slog.Warn("unknown reference entity", slog.String("path", doc.Path.String()), slog.String("reference", ref), slog.Any("count", len(doc.entitiesBySection)))
 		for sec, e := range doc.entitiesBySection {
-			slog.Warn("reference", slog.String("path", doc.Path), slog.String("reference", ref), slog.Any("sec", sec), slog.Any("entity", e))
+			slog.Warn("reference", slog.String("path", doc.Path.String()), slog.String("reference", ref), slog.Any("sec", sec), slog.Any("entity", e))
 
 		}
 	}
 	if len(entities) == 0 {
-		slog.Warn("unknown reference entity", slog.String("path", doc.Path), slog.String("reference", ref))
+		slog.Warn("unknown reference entity", slog.String("path", doc.Path.String()), slog.String("reference", ref))
 		return nil, false
 	}
 	if len(entities) > 1 {
-		slog.Warn("ambiguous reference", slog.String("path", doc.Path), slog.String("reference", ref))
+		slog.Warn("ambiguous reference", slog.String("path", doc.Path.String()), slog.String("reference", ref))
 		for _, e := range entities {
-			slog.Warn("reference", slog.String("path", doc.Path), slog.String("reference", ref), slog.Any("entity", e))
+			slog.Warn("reference", slog.String("path", doc.Path.String()), slog.String("reference", ref), slog.Any("entity", e))
 
 		}
 		return nil, false

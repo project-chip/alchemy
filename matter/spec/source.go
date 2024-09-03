@@ -19,6 +19,6 @@ func (s *source) Origin() (path string, line int) {
 	} else {
 		line = -1
 	}
-	path = s.doc.Path
+	path = s.doc.Path.String()
 	return
 }

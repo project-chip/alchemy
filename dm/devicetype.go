@@ -14,9 +14,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func getDeviceTypePath(dmRoot string, path string) string {
-	path = filepath.Base(path)
-	return filepath.Join(dmRoot, fmt.Sprintf("/device_types/%s.xml", strings.TrimSuffix(path, filepath.Ext(path))))
+func getDeviceTypePath(dmRoot string, path spec.Path) string {
+	p := path.Base()
+	return filepath.Join(dmRoot, fmt.Sprintf("/device_types/%s.xml", strings.TrimSuffix(p, path.Ext())))
 }
 
 func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output string, err error) {

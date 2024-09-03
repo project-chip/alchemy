@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -23,9 +24,9 @@ func Path(name string, source matter.Source) slog.Attr {
 	return slog.String(name, path.String())
 }
 
-func Element(name string, path string, element asciidoc.Element) slog.Attr {
+func Element(name string, path fmt.Stringer, element asciidoc.Element) slog.Attr {
 	var arg strings.Builder
-	arg.WriteString(path)
+	arg.WriteString(path.String())
 	if hp, ok := element.(asciidoc.HasPosition); ok {
 		l, _, _ := hp.Position()
 		if l >= 0 {

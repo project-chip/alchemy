@@ -109,7 +109,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 		outputs = append(outputs, pipeline.NewData[render.InputDocument](input.Path, input.Content))
 	}
 	for doc := range extraDocs {
-		outputs = append(outputs, pipeline.NewData[render.InputDocument](doc.Path, doc))
+		outputs = append(outputs, pipeline.NewData[render.InputDocument](doc.Path.Relative, doc))
 	}
 	return
 }

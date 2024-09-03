@@ -72,13 +72,13 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*s
 		return
 	}
 
-	errata := errata.GetZAP(input.Content.Path)
+	errata := errata.GetZAP(input.Content.Path.Relative)
 
-	destinations := ZAPTemplateDestinations(tg.sdkRoot, input.Content.Path, entities, errata)
+	destinations := ZAPTemplateDestinations(tg.sdkRoot, input.Content.Path.Relative, entities, errata)
 
 	dependencies := pipeline.NewConcurrentMap[string, bool]()
 
-	dependencies.Store(input.Content.Path, true)
+	dependencies.Store(input.Content.Path.Relative, true)
 
 	for newPath, entities := range destinations {
 

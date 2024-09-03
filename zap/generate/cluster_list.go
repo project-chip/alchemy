@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/iancoleman/orderedmap"
@@ -50,7 +49,7 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	for _, input := range inputs {
 		doc := input.Content
 		path := doc.Path
-		name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)) + " Cluster"
+		name := strings.TrimSuffix(path.Base(), path.Ext()) + " Cluster"
 		name = strcase.ToScreamingSnake(name)
 		names = append(names, name)
 	}

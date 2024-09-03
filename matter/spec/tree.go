@@ -19,7 +19,7 @@ func buildTree(docs []*Doc) {
 	for _, doc := range docs {
 
 		path := doc.Path
-		docPaths[path] = doc
+		docPaths[path.Absolute] = doc
 
 		parse.Search(doc.Elements(), func(link *asciidoc.FileInclude) parse.SearchShould {
 			tree[doc] = append(tree[doc], link)
@@ -31,21 +31,21 @@ func buildTree(docs []*Doc) {
 		for _, link := range children {
 			var p strings.Builder
 			doc.buildDataTypeString(link.Set, &p)
-			linkPath := filepath.Join(filepath.Dir(doc.Path), p.String())
+			linkPath := filepath.Join(doc.Path.Dir(), p.String())
+			slog.Debug("Link path", log.Path("from", doc.Path), slog.String("to", p.String()), slog.String("linkPath", linkPath))
 			if cd, ok := docPaths[linkPath]; ok {
 				cd.addParent(doc)
 				doc.addChild(cd)
 			} else {
-				slog.Warn("unknown child path", log.Element("parent", doc.Path, link), "child", linkPath)
+				slog.Debug("unknown child path", log.Element("parent", doc.Path, link), "child", linkPath)
 			}
 		}
 	}
-
 }
 
 func dumpTree(r *Doc, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
-	fmt.Printf("%s\n", r.Path)
+	fmt.Printf("%s (%s)\n", r.Path.Absolute, r.Path.Relative)
 	for _, c := range r.children {
 		dumpTree(c, indent+1)
 	}

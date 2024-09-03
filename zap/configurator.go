@@ -121,8 +121,8 @@ func (c *Configurator) addType(dt *types.DataType) {
 		slog.Debug("skipping data type with no entity", "name", dt.Name)
 		return
 	}
-	path := c.Spec.DocRefs[entity]
-	if path != c.Doc.Path {
+	entityDoc := c.Spec.DocRefs[entity]
+	if entityDoc.Path.Relative != c.Doc.Path.Relative {
 		// This entity came from a different document, and will thus end up in its xml file, so should not be repeated here
 
 		slog.Debug("skipping data type from another document", "name", dt.Name, "path", c.Doc.Path)
@@ -149,7 +149,7 @@ func (c *Configurator) addEntityType(entity types.Entity) {
 func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []*matter.Number) {
 	refs, ok := c.Spec.ClusterRefs[entity]
 	if !ok {
-		slog.Warn("unknown cluster ref when searching for cluster codes", slog.String("path", c.Doc.Path), matter.LogEntity(entity))
+		slog.Warn("unknown cluster ref when searching for cluster codes", slog.String("path", c.Doc.Path.String()), matter.LogEntity(entity))
 		return
 	}
 	for ref := range refs {

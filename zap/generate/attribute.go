@@ -8,6 +8,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -19,12 +20,12 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 	for _, ae := range cle.SelectElements("attribute") {
 		ce := ae.SelectAttr("code")
 		if ce == nil {
-			slog.Warn("missing code attribute in cluster", slog.String("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name))
+			slog.Warn("missing code attribute in cluster", log.Path("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name))
 			continue
 		}
 		attributeID := matter.ParseNumber(ce.Value)
 		if !attributeID.Valid() {
-			slog.Warn("invalid code attribute value in cluster", slog.String("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("id", attributeID.Text()))
+			slog.Warn("invalid code attribute value in cluster", log.Path("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("id", attributeID.Text()))
 			continue
 		}
 		var attribute *matter.Field
@@ -41,7 +42,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			delete(attributes, a)
 		}
 		if attribute == nil {
-			slog.Warn("unrecognized code value in cluster", slog.String("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("code", attributeID.Text()))
+			slog.Warn("unrecognized code value in cluster", log.Path("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("code", attributeID.Text()))
 			cle.RemoveChild(ae)
 			continue
 		}

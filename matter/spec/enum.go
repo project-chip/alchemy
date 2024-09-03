@@ -97,7 +97,7 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 				}
 				ev.Name = matter.StripTypeSuffixes(ev.Name)
 				if len(ev.Name) == 0 {
-					slog.Debug("skipping enum with no name", slog.String("path", s.Doc.Path), slog.String("section", s.Name))
+					slog.Debug("skipping enum with no name", slog.String("path", s.Doc.Path.String()), slog.String("section", s.Name))
 					continue
 				}
 			}

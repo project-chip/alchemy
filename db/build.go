@@ -36,7 +36,7 @@ func (h *Host) createTables(sc *sql.Context, bs *sectionInfo) error {
 		sis := findSectionInfos(bs, tableName)
 		err := h.createTable(sc, tableName, ts.parent, sis, ts.columns)
 		if err != nil {
-			return fmt.Errorf("error creating table %s: %w", tableName, err)
+			return fmt.Errorf("error creating table \"%s\": %w", tableName, err)
 		}
 	}
 	return nil

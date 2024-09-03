@@ -226,12 +226,12 @@ func setIncludeAttributes(clustersElement *etree.Element, include *etree.Element
 		return
 	}
 
-	path, ok := spec.DocRefs[cluster]
+	clusterDoc, ok := spec.DocRefs[cluster]
 	if !ok {
 		slog.Warn("unknown doc path on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name))
 
 	}
-	errata := errata.GetZAP(path)
+	errata := errata.GetZAP(clusterDoc.Path.Relative)
 	cxt := conformance.Context{
 		Values: map[string]any{"Matter": true},
 	}

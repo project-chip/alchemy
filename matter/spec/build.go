@@ -51,7 +51,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 			continue
 		}
 
-		dg := NewDocGroup(d.Path)
+		dg := NewDocGroup(d.Path.Relative)
 		setSpec(d, spec, dg)
 	}
 
@@ -122,10 +122,10 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 			switch m := m.(type) {
 			case *matter.ClusterGroup:
 				for _, c := range m.Clusters {
-					spec.DocRefs[c] = d.Path
+					spec.DocRefs[c] = d
 				}
 			default:
-				spec.DocRefs[m] = d.Path
+				spec.DocRefs[m] = d
 			}
 		}
 
@@ -195,7 +195,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 		} else {
 			spec.bitmapIndex[en.Name] = en
 		}
-		spec.DocRefs[en] = d.Path
+		spec.DocRefs[en] = d
 		specIndex.addEntity(en.Name, en, m)
 	}
 	for _, en := range m.Enums {
@@ -205,7 +205,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 		} else {
 			spec.enumIndex[en.Name] = en
 		}
-		spec.DocRefs[en] = d.Path
+		spec.DocRefs[en] = d
 		specIndex.addEntity(en.Name, en, m)
 	}
 	for _, en := range m.Structs {
@@ -215,7 +215,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 		} else {
 			spec.structIndex[en.Name] = en
 		}
-		spec.DocRefs[en] = d.Path
+		spec.DocRefs[en] = d
 		specIndex.addEntity(en.Name, en, m)
 	}
 }
@@ -257,7 +257,7 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 				clusterName = cluster.Name
 			}
 			if !sp.IgnoreHierarchy {
-				slog.Warn("missing type on field", log.Path("path", field.Source), slog.String("name", field.Name), slog.String("cluster", clusterName))
+				slog.Warn("missing type on field", log.Path("path", field), slog.String("id", field.ID.HexString()), slog.String("name", field.Name), slog.String("cluster", clusterName))
 			}
 		}
 		return
@@ -312,7 +312,7 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 	}
 	// Can't disambiguate out this data model
 
-	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name, log.Path("source", field.Source))
+	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name, log.Path("source", field))
 	for m, c := range entities {
 		var clusterName string
 		if c != nil {
