@@ -45,38 +45,16 @@ func NewPath(path string) (Path, error) {
 	} else {
 		p.Absolute = path
 	}
-	dir := filepath.Dir(p.Absolute)
-	parts := strings.Split(dir, string(filepath.Separator))
-
-	rootIndex := -1
-	for i := len(parts) - 1; i >= 0; i-- {
-		part := parts[i]
-		if strings.EqualFold(part, "connectedhomeip-spec") {
-			rootIndex = i
-			break
-		}
-	}
-	if rootIndex == -1 {
-		for i := len(parts) - 1; i >= 0; i-- {
-			alchemyYmlPath := filepath.Join(strings.Join(append(parts[i+1:], ".github", "workflows"), string(filepath.Separator)), "alchemy.yml")
-			alchemyYmlPathExists, err := files.Exists(alchemyYmlPath)
-			if err == nil && alchemyYmlPathExists {
-				rootIndex = i
-				break
-			}
-		}
-	}
-	if rootIndex >= 0 {
-		p.Relative = filepath.Join(strings.Join(parts[rootIndex+1:], string(filepath.Separator)), filepath.Base(path))
-	} else {
+	specPath := DeriveSpecPath(p.Absolute)
+	if specPath == "" {
 		return p, fmt.Errorf("unable to determine spec root for path %s", p.Absolute)
 	}
-
-	return p, nil
+	var err error
+	p.Relative, err = filepath.Rel(specPath, p.Absolute)
+	return p, err
 }
 
 func DeriveSpecPath(path string) string {
-	slog.Info("deriving spec path", slog.String("path", path))
 	if !filepath.IsAbs(path) {
 		var err error
 		path, err = filepath.Abs(path)
@@ -84,11 +62,26 @@ func DeriveSpecPath(path string) string {
 			return ""
 		}
 	}
-	slog.Info("deriving spec path", slog.String("abs path", path))
 	dir := filepath.Dir(path)
+	for {
+		alchemyConfigExists, err := files.Exists(filepath.Join(dir, ".github/workflows/alchemy.yml"))
+		if err != nil {
+			slog.Warn("error checking for alchemy config file", slog.Any("error", err))
+			break
+		}
+		if alchemyConfigExists {
+			return dir
+		}
+		lastSeparator := strings.LastIndex(dir, string(filepath.Separator))
+		if lastSeparator == -1 {
+			break
+		}
+		dir = dir[:lastSeparator]
+	}
+
+	// Fallback if we can't find the alchemy.yml file
 	parts := strings.Split(dir, string(filepath.Separator))
 	for i, part := range parts {
-		slog.Info("spec path part", slog.String("part", part))
 		if strings.EqualFold(part, "connectedhomeip-spec") {
 			return strings.Join(parts[0:i+1], string(filepath.Separator))
 		}
@@ -100,7 +93,6 @@ func DeriveSpecPathFromPaths(paths []string) string {
 	for _, path := range paths {
 		specPath := DeriveSpecPath(path)
 		if specPath != "" {
-			slog.Info("derived spec path", slog.String("path", path))
 			return specPath
 		}
 	}
