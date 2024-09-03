@@ -2,6 +2,7 @@ package parse
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
 )
@@ -12,7 +13,7 @@ func cast[F any, T any](in []F) (out []T) {
 		if t, ok := any(f).(T); ok {
 			out = append(out, t)
 		} else {
-			fmt.Printf("unexpected value in cast: %T\n", f)
+			slog.Warn("unexpected type in cast", slog.String("type", fmt.Sprintf("%T", f)))
 		}
 	}
 	return
@@ -47,7 +48,7 @@ func flatAppend(e any, list asciidoc.Set) asciidoc.Set {
 	case nil:
 
 	default:
-		fmt.Printf("unknown type in flat: %T\n", e)
+		slog.Warn("unexpected type in flat", slog.String("type", fmt.Sprintf("%T", e)))
 	}
 	return list
 }

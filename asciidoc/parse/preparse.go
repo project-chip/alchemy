@@ -3,6 +3,7 @@ package parse
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"strconv"
 	"strings"
@@ -12,12 +13,9 @@ import (
 )
 
 func PreParseFile(context *AttributeContext, path string) (string, error) {
-	fmt.Printf("path: %s\n", path)
-	//v, err := os.ReadFile(path)
-	//	fmt.Printf("file: %s\n", string(v))
 	file, err := os.Open(path)
 	if err != nil {
-		fmt.Printf("error reading: %v\n", err)
+		slog.Error("error reading file for preparse", slog.String("path", path), slog.Any("error", err))
 		return "", err
 	}
 	return PreParseReader(context, path, file)
@@ -27,7 +25,7 @@ func PreParseReader(context *AttributeContext, path string, reader io.Reader) (s
 	start := time.Now()
 	vals, err := ParseReader(path, reader, Entrypoint("PreParse"))
 	if err != nil {
-		fmt.Printf("error parsing: %v\n", err)
+		slog.Error("error preparsing file", slog.String("path", path), slog.Any("error", err))
 		return "", err
 	}
 	elapsed := time.Since(start)

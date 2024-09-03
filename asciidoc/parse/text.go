@@ -2,6 +2,7 @@ package parse
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 	"unicode"
 
@@ -60,7 +61,7 @@ func mergeStringsInternal[T any](els []T, s *strings.Builder) (out asciidoc.Set)
 			out = append(out, mergeStringsInternal(e, s)...)
 		case nil:
 		default:
-			fmt.Printf("unexpected type in string merge: %T\n", e)
+			slog.Warn("unexpected type in string merge", slog.String("type", fmt.Sprintf("%T", e)))
 		}
 	}
 	return
