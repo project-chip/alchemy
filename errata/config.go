@@ -28,7 +28,6 @@ func LoadErrataConfig(specRoot string) {
 				slog.Warn("errata points to non-existent file", "path", p)
 			}
 		}
-		dumpConfig(errataPath)
 	} else {
 		b, err := os.ReadFile(errataPath)
 		if err != nil {
@@ -43,7 +42,6 @@ func LoadErrataConfig(specRoot string) {
 		}
 		slog.Warn("Using errata overlay", slog.Any("path", errataPath), slog.Any("count", len(errataOverlay.Errata)))
 		Erratas = errataOverlay.Errata
-		dumpConfig(errataPath)
 	}
 
 }
