@@ -24,6 +24,7 @@ const (
 	TableColumnContext
 	TableColumnScope
 	TableColumnPICS
+	TableColumnPICSCode
 	TableColumnValue
 	TableColumnBit
 	TableColumnCode
@@ -60,6 +61,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnContext:      "Context",
 	TableColumnScope:        "Scope",
 	TableColumnPICS:         "PICS",
+	TableColumnPICSCode:     "PICS Code",
 	TableColumnValue:        "Value",
 	TableColumnBit:          "Bit",
 	TableColumnCode:         "Code",
@@ -96,10 +98,11 @@ var AllowedTableAttributes = map[asciidoc.AttributeName]asciidoc.Set{
 }
 var BannedTableAttributes = [...]string{"cols", "frame", "width"}
 
-func GetColumnName(column TableColumn, overrides map[TableColumn]string) (name string, ok bool) {
+func GetColumnName(column TableColumn, overrides map[TableColumn]TableColumn) (name string, ok bool) {
 	if overrides != nil {
-		if name, ok = overrides[column]; ok {
-			return name, true
+		if overrideColumn, hasOverride := overrides[column]; hasOverride {
+			name, ok = TableColumnNames[overrideColumn]
+			return
 		}
 	}
 	name, ok = TableColumnNames[column]
@@ -129,7 +132,7 @@ type Table struct {
 	RequiredColumns []TableColumn
 	BannedColumns   []TableColumn
 	ColumnOrder     []TableColumn
-	ColumnNames     map[TableColumn]string
+	ColumnNames     map[TableColumn]TableColumn
 }
 
 var Tables = map[TableType]Table{
@@ -164,9 +167,9 @@ var Tables = map[TableType]Table{
 		},
 	},
 	TableTypeClassification: {
-		ColumnNames: map[TableColumn]string{
-			TableColumnContext: "Scope", // Rename Context to Scope
-			TableColumnPICS:    "PICS Code",
+		ColumnNames: map[TableColumn]TableColumn{
+			TableColumnContext: TableColumnScope, // Rename Context to Scope
+			TableColumnPICS:    TableColumnPICSCode,
 		},
 	},
 	TableTypeClusterID: {
@@ -188,6 +191,7 @@ var Tables = map[TableType]Table{
 			TableColumnDirection,
 			TableColumnResponse,
 			TableColumnAccess,
+			TableColumnQuality,
 			TableColumnConformance,
 		},
 	},
@@ -210,10 +214,10 @@ var Tables = map[TableType]Table{
 			TableColumnSummary,
 			TableColumnConformance,
 		},
-		ColumnNames: map[TableColumn]string{
-			TableColumnDescription: "Summary", // Rename Description to Summary
-			TableColumnStatusCode:  "Value",   // Rename Status Code in enums to Value
-			TableColumnID:          "Value",   // Rename Status Code in enums to Value
+		ColumnNames: map[TableColumn]TableColumn{
+			TableColumnDescription: TableColumnSummary, // Rename Description to Summary
+			TableColumnStatusCode:  TableColumnValue,   // Rename Status Code in enums to Value
+			TableColumnID:          TableColumnValue,   // Rename Status Code in enums to Value
 		},
 	},
 	TableTypeBitmap: {
@@ -253,8 +257,8 @@ var Tables = map[TableType]Table{
 			TableColumnConformance,
 			TableColumnSummary,
 		},
-		ColumnNames: map[TableColumn]string{
-			TableColumnID: "Bit", // Rename ID to Bit
+		ColumnNames: map[TableColumn]TableColumn{
+			TableColumnID: TableColumnBit, // Rename ID to Bit
 		},
 	},
 }

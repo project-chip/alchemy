@@ -42,12 +42,12 @@ func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSe
 		return nil
 	}
 
-	err = b.renameTableHeaderCells(b.doc, &bitsTable, nil)
+	err = b.renameTableHeaderCells(b.doc, bms.section, &bitsTable, nil)
 	if err != nil {
 		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}
 
-	err = b.addMissingColumns(&bitsTable, matter.Tables[matter.TableTypeBitmap], nil, types.EntityTypeBitmapValue)
+	err = b.addMissingColumns(bms.section, &bitsTable, matter.Tables[matter.TableTypeBitmap], types.EntityTypeBitmapValue)
 	if err != nil {
 		return fmt.Errorf("error adding missing table columns in bitmap section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}
