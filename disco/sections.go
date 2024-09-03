@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -86,6 +87,9 @@ func setSectionTitle(sec *spec.Section, title string) {
 }
 
 func (b *Ball) appendSubsectionTypes(section *spec.Section, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow) {
+	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeDataTypeAppendSuffix) {
+		return
+	}
 	var subsectionSuffix string
 	var subsectionType matter.Section
 	switch section.SecType {
@@ -118,11 +122,11 @@ func (b *Ball) appendSubsectionTypes(section *spec.Section, columnMap spec.Colum
 			if _, ok := subSectionNames[name]; !ok {
 				continue
 			}
-			if ss.SecType == matter.SectionUnknown {
-				ss.SecType = subsectionType
-			}
 			if !b.options.appendSubsectionTypes {
 				continue
+			}
+			if ss.SecType == matter.SectionUnknown {
+				ss.SecType = subsectionType
 			}
 			if !strings.HasSuffix(strings.ToLower(ss.Name), strings.ToLower(suffix)) {
 				setSectionTitle(ss, ss.Name+suffix)

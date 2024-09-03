@@ -1,20 +1,19 @@
 package errata
 
 import (
-	"path/filepath"
-
 	"github.com/project-chip/alchemy/matter"
 )
 
 type Errata struct {
-	Spec Spec `yaml:"spec,omitempty"`
-	ZAP  ZAP  `yaml:"zap,omitempty"`
+	Disco Disco `yaml:"disco,omitempty"`
+	Spec  Spec  `yaml:"spec,omitempty"`
+	ZAP   ZAP   `yaml:"zap,omitempty"`
 }
 
 var DefaultErrata = &Errata{}
 
 func GetErrata(path string) *Errata {
-	errata, ok := Erratas[filepath.Base(path)]
+	errata, ok := Erratas[path]
 	if ok {
 		return errata
 	}
@@ -22,106 +21,32 @@ func GetErrata(path string) *Errata {
 }
 
 var Erratas = map[string]*Errata{
-	"ACL-Cluster.adoc": {
-		ZAP: ZAP{TemplatePath: "access-control-cluster"},
-	},
-	"AdminCommissioningCluster.adoc": {
-		ZAP: ZAP{TemplatePath: "administrator-commissioning-cluster"},
-	},
-	"AirQuality.adoc": {
+	"src/app_clusters/AirQuality.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
-	"ApplicationBasic.adoc": {
-		ZAP: ZAP{ClusterDefinePrefix: "APPLICATION_",
-			DefineOverrides: map[string]string{"APPLICATION_APPLICATION": "APPLICATION_APP"}},
-	},
-	"ApplicationLauncher.adoc": {
-		ZAP: ZAP{ClusterDefinePrefix: "APPLICATION_LAUNCHER_",
-			DefineOverrides: map[string]string{
-				"APPLICATION_LAUNCHER_CATALOG_LIST": "APPLICATION_LAUNCHER_LIST",
-			}},
-	},
-	"AudioOutput.adoc": {
-		ZAP: ZAP{ClusterDefinePrefix: "AUDIO_OUTPUT_",
-			DefineOverrides: map[string]string{
-				"AUDIO_OUTPUT_OUTPUT_LIST": "AUDIO_OUTPUT_LIST",
-			}},
-	},
-	"BallastConfiguration.adoc": {
+	"src/app_clusters/BallastConfiguration.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
-	"BasicInformationCluster.adoc": {
+	"src/service_device_management/BasicInformationCluster.adoc": {
 		ZAP: ZAP{Domain: matter.DomainCHIP},
 	},
-	"BooleanState.adoc": {
+	"src/app_clusters/BooleanState.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
-	"bridge-clusters.adoc": {
-		ZAP: ZAP{ClusterSplit: map[string]string{
-			"0x0025": "actions-cluster",
-			"0x0039": "bridged-device-basic-information",
-		}},
-	},
-
-	"Channel.adoc": {
-		ZAP: ZAP{ClusterDefinePrefix: "CHANNEL_"},
-	},
-	"ColorControl.adoc": {
+	"src/app_clusters/ColorControl.adoc": {
 		ZAP: ZAP{ClusterDefinePrefix: "COLOR_CONTROL_"},
 	},
-	"ConcentrationMeasurement.adoc": {
+	"src/app_clusters/ConcentrationMeasurement.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
-	"ContentLauncher.adoc": {
-		ZAP: ZAP{TemplatePath: "content-launch-cluster",
-			ClusterDefinePrefix: "CONTENT_LAUNCHER_"},
-	},
-	"DeviceCommissioningFlows.adoc": {
-		Spec: Spec{
-			IgnoreSections: map[string]Purpose{"Enhanced Setup Flow (ESF)": PurposeDataTypes},
-		},
-	},
-	"DemandResponseLoadControl.adoc": {
+	"src/app_clusters/DemandResponseLoadControl.adoc": {
 		ZAP: ZAP{TemplatePath: "drlc-cluster",
 			DefineOverrides: map[string]string{
 				"EVENTS":        "LOAD_CONTROL_EVENTS",
 				"ACTIVE_EVENTS": "LOAD_CONTROL_ACTIVE_EVENTS",
 			}},
 	},
-	"DiagnosticsGeneral.adoc": {
-		Spec: Spec{
-			IgnoreSections: map[string]Purpose{"NetworkInterface Type": PurposeDataTypes},
-		},
-		ZAP: ZAP{TemplatePath: "general-diagnostics-cluster"},
-	},
-	"DiagnosticsEthernet.adoc": {
-		ZAP: ZAP{TemplatePath: "ethernet-network-diagnostics-cluster"},
-	},
-	"DiagnosticLogsCluster.adoc": {
-		ZAP: ZAP{Domain: matter.DomainCHIP},
-	},
-	"DiagnosticsSoftware.adoc": {
-		ZAP: ZAP{TemplatePath: "software-diagnostics-cluster"},
-	},
-	"DiagnosticsThread.adoc": {
-		Spec: Spec{
-			IgnoreSections: map[string]Purpose{"SecurityPolicy Type": PurposeDataTypes},
-		},
-		ZAP: ZAP{TemplatePath: "thread-network-diagnostics-cluster",
-			SuppressClusterDefinePrefix: true},
-	},
-	"DiagnosticsWiFi.adoc": {
-		ZAP: ZAP{TemplatePath: "wifi-network-diagnostics-cluster"},
-	},
-	"Discovery.adoc": {
-		Spec: Spec{
-			IgnoreSections: map[string]Purpose{
-				"Common TXT Key/Value Pairs":      PurposeDataTypes,
-				"TXT key for pairing hint (`PH`)": PurposeDataTypes,
-			},
-		},
-	},
-	"DoorLock.adoc": {
+	"src/app_clusters/DoorLock.adoc": {
 		ZAP: ZAP{DefineOverrides: map[string]string{
 			"NUMBER_OF_TOTAL_USERS_SUPPORTED":                 "NUM_TOTAL_USERS_SUPPORTED",
 			"NUMBER_OF_PIN_USERS_SUPPORTED":                   "NUM_PIN_USERS_SUPPORTED",
@@ -135,165 +60,112 @@ var Erratas = map[string]*Errata{
 			"REQUIRE_PI_NFOR_REMOTE_OPERATION":                "REQUIRE_PIN_FOR_REMOTE_OPERATION",
 		}},
 	},
-	"Encoding-Specification.adoc": {
-		Spec: Spec{
-			IgnoreSections: map[string]Purpose{
-				"Discrete - Bitmap":   PurposeDataTypes,
-				"Collection - Struct": PurposeDataTypes,
-			},
-		},
-	},
-	"EVSE.adoc": {
+	"src/app_clusters/EnergyEVSE.adoc": {
 		ZAP: ZAP{TemplatePath: "energy-evse-cluster",
 			SuppressClusterDefinePrefix: true},
 	},
-	"FanControl.adoc": {
+	"src/app_clusters/FanControl.adoc": {
 		ZAP: ZAP{SuppressAttributePermissions: true,
 			SuppressClusterDefinePrefix: true},
 	},
-	"FlowMeasurement.adoc": {
+	"src/app_clusters/FlowMeasurement.adoc": {
 		ZAP: ZAP{ClusterDefinePrefix: "FLOW_"},
 	},
-	"GeneralCommissioningCluster.adoc": {
-		Spec: Spec{
-			IgnoreSections: map[string]Purpose{"BasicCommissioningInfo Type": PurposeDataTypes},
-		},
-	},
-	"Group-Key-Management-Cluster.adoc": {
-		ZAP: ZAP{TemplatePath: "group-key-mgmt-cluster"},
-	},
-	"Groups.adoc": {
+	"src/app_clusters/Groups.adoc": {
 		ZAP: ZAP{ClusterDefinePrefix: "GROUP_"},
 	},
-	"IlluminanceMeasurement.adoc": {
+	"src/app_clusters/IlluminanceMeasurement.adoc": {
 		ZAP: ZAP{ClusterDefinePrefix: "ILLUM_"},
 	},
-	"KeypadInput.adoc": {
-		ZAP: ZAP{ClusterDefinePrefix: "ILLUM_"},
-	},
-	"Label-Cluster.adoc": {
-		ZAP: ZAP{TemplatePath: "user-label-cluster",
-			ClusterSplit: map[string]string{
-				"0x0040": "fixed-label-cluster",
-				"0x0041": "user-label-cluster",
-			}},
-	},
-	"LaundryWasherControls.adoc": {
+	"src/app_clusters/LaundryWasherControls.adoc": {
 		ZAP: ZAP{TemplatePath: "washer-controls-cluster"},
 	},
-	"LevelControl.adoc": {
+	"src/app_clusters/LevelControl.adoc": {
 		ZAP: ZAP{DefineOverrides: map[string]string{"REMAINING_TIME": "LEVEL_CONTROL_REMAINING_TIME"},
 			SuppressClusterDefinePrefix: true},
 	},
-	"LocalizationTimeFormat.adoc": {
-		ZAP: ZAP{TemplatePath: "time-format-localization-cluster"},
-	},
-	"LocalizationUnit.adoc": {
-		ZAP: ZAP{Domain: matter.DomainCHIP,
-			TemplatePath: "unit-localization-cluster"},
-	},
-	"meas_and_sense.adoc": {
+	"src/app_clusters/meas_and_sense.adoc": {
 		ZAP: ZAP{TemplatePath: "measurement-and-sensing"},
 	},
-	"MediaInput.adoc": {
-		ZAP: ZAP{ClusterDefinePrefix: "MEDIA_INPUT_",
-			DefineOverrides: map[string]string{"MEDIA_INPUT_INPUT_LIST": "MEDIA_INPUT_LIST"}},
-	},
-	"MediaPlayback.adoc": {
-		ZAP: ZAP{ClusterDefinePrefix: "MEDIA_PLAYBACK_",
-			DefineOverrides: map[string]string{
-				"MEDIA_PLAYBACK_CURRENT_STATE":    "MEDIA_PLAYBACK_STATE",
-				"MEDIA_PLAYBACK_SAMPLED_POSITION": "MEDIA_PLAYBACK_PLAYBACK_POSITION",
-				"MEDIA_PLAYBACK_SEEK_RANGE_END":   "MEDIA_PLAYBACK_PLAYBACK_SEEK_RANGE_END",
-				"MEDIA_PLAYBACK_SEEK_RANGE_START": "MEDIA_PLAYBACK_PLAYBACK_SEEK_RANGE_START",
-			}},
-	},
-	"MicrowaveOvenControl.adoc": {
+	"src/app_clusters/MicrowaveOvenControl.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
-	"ModeSelect.adoc": {
-		ZAP: ZAP{DefineOverrides: map[string]string{"DESCRIPTION": "MODE_DESCRIPTION"}},
-	},
-	"Mode_Dishwasher.adoc": {
-		ZAP: ZAP{TemplatePath: "dishwasher-mode-cluster"},
-	},
-	"Mode_LaundryWasher.adoc": {
-		ZAP: ZAP{TemplatePath: "laundry-washer-mode-cluster"},
-	},
-	"Mode_MicrowaveOven.adoc": {
-		ZAP: ZAP{TemplatePath: "microwave-oven-mode-cluster"},
-	},
-	"Mode_Oven.adoc": {
-		ZAP: ZAP{TemplatePath: "oven-mode-cluster"},
-	},
-	"Mode_Refrigerator.adoc": {
-		ZAP: ZAP{TemplatePath: "refrigerator-and-temperature-controlled-cabinet-mode-cluster"},
-	},
-	"Mode_RVCClean.adoc": {
-		ZAP: ZAP{TemplatePath: "rvc-clean-mode-cluster"},
-	},
-	"Mode_RVCRun.adoc": {
-		ZAP: ZAP{TemplatePath: "rvc-run-mode-cluster"},
-	},
-	"OnOff.adoc": {
-		ZAP: ZAP{TemplatePath: "onoff-cluster"},
-	},
-	"OperationalCredentialCluster.adoc": {
-		ZAP: ZAP{TemplatePath: "operational-credentials-cluster"},
-	},
-	"OperationalState_RVC": {
-		ZAP: ZAP{TemplatePath: "operational-state-rvc-cluster"},
-	},
-	"OTARequestor.adoc": {
+	"src/app_clusters/ModeBase.adoc": {
 		Spec: Spec{
-			IgnoreSections: map[string]Purpose{"ProviderLocation Type": PurposeDataTypes},
+			Sections: map[string]SpecSection{
+				"Mode Base Status CommonCodes Range": {Skip: SpecPurposeDataTypesEnum},
+			},
 		},
 	},
-
-	"PowerSourceConfigurationCluster.adoc": {
-		ZAP: ZAP{Domain: matter.DomainCHIP},
+	"src/app_clusters/ModeSelect.adoc": {
+		ZAP: ZAP{DefineOverrides: map[string]string{"DESCRIPTION": "MODE_DESCRIPTION"}},
 	},
-	"PowerSourceCluster.adoc": {
-		ZAP: ZAP{Domain: matter.DomainCHIP},
+	"src/app_clusters/Mode_Dishwasher.adoc": {
+		ZAP: ZAP{TemplatePath: "dishwasher-mode-cluster"},
 	},
-	"PressureMeasurement.adoc": {
+	"src/app_clusters/Mode_LaundryWasher.adoc": {
+		ZAP: ZAP{TemplatePath: "laundry-washer-mode-cluster"},
+	},
+	"src/app_clusters/Mode_MicrowaveOven.adoc": {
+		ZAP: ZAP{TemplatePath: "microwave-oven-mode-cluster"},
+	},
+	"src/app_clusters/Mode_Oven.adoc": {
+		ZAP: ZAP{TemplatePath: "oven-mode-cluster"},
+	},
+	"src/app_clusters/Mode_Refrigerator.adoc": {
+		ZAP: ZAP{TemplatePath: "refrigerator-and-temperature-controlled-cabinet-mode-cluster"},
+	},
+	"src/app_clusters/Mode_RVCClean.adoc": {
+		ZAP: ZAP{TemplatePath: "rvc-clean-mode-cluster"},
+	},
+	"src/app_clusters/Mode_RVCRun.adoc": {
+		ZAP: ZAP{TemplatePath: "rvc-run-mode-cluster"},
+	},
+	"src/app_clusters/OnOff.adoc": {
+		ZAP: ZAP{TemplatePath: "onoff-cluster"},
+	},
+	"src/app_clusters/OperationalState.adoc": {
+		Spec: Spec{
+			Sections: map[string]SpecSection{
+				"ErrorStateEnum GeneralErrors Range": {Skip: SpecPurposeDataTypesEnum},
+			},
+		},
+	},
+	"src/app_clusters/OperationalState_RVC.adoc": {
+		ZAP: ZAP{TemplatePath: "operational-state-rvc-cluster"},
+	},
+	"src/app_clusters/PressureMeasurement.adoc": {
 		ZAP: ZAP{ClusterDefinePrefix: "PRESSURE_"},
 	},
-	"PumpConfigurationControl.adoc": {
+	"src/app_clusters/PumpConfigurationControl.adoc": {
 		ZAP: ZAP{TemplatePath: "pump-configuration-and-control-cluster"},
 	},
-	"RefrigeratorAlarm.adoc": {
+	"src/app_clusters/RefrigeratorAlarm.adoc": {
 		ZAP: ZAP{TemplatePath: "refrigerator-alarm"},
 	},
-	"ResourceMonitoring.adoc": {
+	"src/app_clusters/ResourceMonitoring.adoc": {
 		ZAP: ZAP{SeparateStructs: map[string]struct{}{"ReplacementProductStruct": {}}},
 	},
-	"Scenes.adoc": {
+	"src/app_clusters/Scenes.adoc": {
 		Spec: Spec{
-			IgnoreSections: map[string]Purpose{
-				"Form of ExtensionFieldSetStruct": PurposeDataTypesStruct,
-				"Logical Scene Table":             PurposeDataTypesStruct,
+			Sections: map[string]SpecSection{
+				"Form of ExtensionFieldSetStruct": {Skip: SpecPurposeDataTypes},
+				"Logical Scene Table":             {Skip: SpecPurposeDataTypes},
 			},
 		},
 		ZAP: ZAP{TemplatePath: "scene"},
 	},
-	"SmokeCOAlarm.adoc": {
+	"src/app_clusters/SmokeCOAlarm.adoc": {
 		ZAP: ZAP{DefineOverrides: map[string]string{
 			"HARDWARE_FAULT_ALERT":    "HARDWARE_FAULTALERT",
 			"END_OF_SERVICE_ALERT":    "END_OF_SERVICEALERT",
 			"SMOKE_SENSITIVITY_LEVEL": "SENSITIVITY_LEVEL",
 		}},
 	},
-	"Switch.adoc": {
+	"src/app_clusters/Switch.adoc": {
 		ZAP: ZAP{Domain: matter.DomainCHIP}, // wth?
 	},
-	"TargetNavigator.adoc": {
-		ZAP: ZAP{ClusterDefinePrefix: "TARGET_NAVIGATOR_",
-			DefineOverrides: map[string]string{
-				"TARGET_NAVIGATOR_TARGET_LIST": "TARGET_NAVIGATOR_LIST",
-			}},
-	},
-	"TemperatureControl.adoc": {
+	"src/app_clusters/TemperatureControl.adoc": {
 		ZAP: ZAP{DefineOverrides: map[string]string{
 			"TEMPERATURE_SETPOINT":         "TEMP_SETPOINT",
 			"MIN_TEMPERATURE":              "MIN_TEMP",
@@ -302,39 +174,25 @@ var Erratas = map[string]*Errata{
 			"SUPPORTED_TEMPERATURE_LEVELS": "SUPPORTED_TEMP_LEVELS",
 		}},
 	},
-	"TemperatureMeasurement.adoc": {
+	"src/app_clusters/TemperatureMeasurement.adoc": {
 		ZAP: ZAP{ClusterDefinePrefix: "TEMP_"},
 	},
-	"Thermostat.adoc": {
+	"src/app_clusters/Thermostat.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true,
 			DefineOverrides: map[string]string{
 				"OCCUPANCY": "THERMOSTAT_OCCUPANCY",
 			}},
 	},
-	"ThermostatUserInterfaceConfiguration.adoc": {
+	"src/app_clusters/ThermostatUserInterfaceConfiguration.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
-	"TimeSync.adoc": {
-		ZAP: ZAP{TemplatePath: "time-synchronization-cluster"},
-	},
-	"ValidProxies-Cluster.adoc": {
-		ZAP: ZAP{TemplatePath: "proxy-valid-cluster"},
-	},
-	"ValveConfigurationControl.adoc": {
+	"src/app_clusters/ValveConfigurationControl.adoc": {
 		ZAP: ZAP{TemplatePath: "valve-configuration-and-control-cluster"},
 	},
-	"WakeOnLAN.adoc": {
-		ZAP: ZAP{DefineOverrides: map[string]string{
-			"MAC_ADDRESS": "WAKE_ON_LAN_MAC_ADDRESS",
-		}},
-	},
-	"WaterContentMeasurement.adoc": {
+	"src/app_clusters/WaterContentMeasurement.adoc": {
 		ZAP: ZAP{TemplatePath: "relative-humidity-measurement-cluster"},
 	},
-	"WaterControls.adoc": {
-		ZAP: ZAP{SuppressClusterDefinePrefix: true},
-	},
-	"WindowCovering.adoc": {
+	"src/app_clusters/WindowCovering.adoc": {
 		ZAP: ZAP{TemplatePath: "window-covering",
 			ClusterDefinePrefix: "WC_",
 			DefineOverrides: map[string]string{
@@ -343,5 +201,175 @@ var Erratas = map[string]*Errata{
 				"WC_CURRENT_POSITION_LIFT_PERCENT_100_THS": "WC_CURRENT_POSITION_LIFT_PERCENT100THS",
 				"WC_CURRENT_POSITION_TILT_PERCENT_100_THS": "WC_CURRENT_POSITION_TILT_PERCENT100THS",
 			}},
+	},
+	"src/app_clusters/media/ApplicationBasic.adoc": {
+		ZAP: ZAP{ClusterDefinePrefix: "APPLICATION_",
+			DefineOverrides: map[string]string{"APPLICATION_APPLICATION": "APPLICATION_APP"}},
+	},
+	"src/app_clusters/media/ApplicationLauncher.adoc": {
+		ZAP: ZAP{ClusterDefinePrefix: "APPLICATION_LAUNCHER_",
+			DefineOverrides: map[string]string{
+				"APPLICATION_LAUNCHER_CATALOG_LIST": "APPLICATION_LAUNCHER_LIST",
+			}},
+	},
+	"src/app_clusters/media/AudioOutput.adoc": {
+		ZAP: ZAP{ClusterDefinePrefix: "AUDIO_OUTPUT_",
+			DefineOverrides: map[string]string{
+				"AUDIO_OUTPUT_OUTPUT_LIST": "AUDIO_OUTPUT_LIST",
+			}},
+	},
+	"src/app_clusters/media/Channel.adoc": {
+		ZAP: ZAP{ClusterDefinePrefix: "CHANNEL_"},
+	},
+	"src/app_clusters/media/ContentLauncher.adoc": {
+		ZAP: ZAP{TemplatePath: "content-launch-cluster",
+			ClusterDefinePrefix: "CONTENT_LAUNCHER_"},
+	},
+	"src/app_clusters/media/KeypadInput.adoc": {
+		ZAP: ZAP{ClusterDefinePrefix: "ILLUM_"},
+	},
+	"src/app_clusters/media/MediaInput.adoc": {
+		ZAP: ZAP{ClusterDefinePrefix: "MEDIA_INPUT_",
+			DefineOverrides: map[string]string{"MEDIA_INPUT_INPUT_LIST": "MEDIA_INPUT_LIST"}},
+	},
+	"src/app_clusters/media/MediaPlayback.adoc": {
+		ZAP: ZAP{ClusterDefinePrefix: "MEDIA_PLAYBACK_",
+			DefineOverrides: map[string]string{
+				"MEDIA_PLAYBACK_CURRENT_STATE":    "MEDIA_PLAYBACK_STATE",
+				"MEDIA_PLAYBACK_SAMPLED_POSITION": "MEDIA_PLAYBACK_PLAYBACK_POSITION",
+				"MEDIA_PLAYBACK_SEEK_RANGE_END":   "MEDIA_PLAYBACK_PLAYBACK_SEEK_RANGE_END",
+				"MEDIA_PLAYBACK_SEEK_RANGE_START": "MEDIA_PLAYBACK_PLAYBACK_SEEK_RANGE_START",
+			}},
+	},
+	"src/app_clusters/media/TargetNavigator.adoc": {
+		ZAP: ZAP{ClusterDefinePrefix: "TARGET_NAVIGATOR_",
+			DefineOverrides: map[string]string{
+				"TARGET_NAVIGATOR_TARGET_LIST": "TARGET_NAVIGATOR_LIST",
+			}},
+	},
+	"src/app_clusters/media/WakeOnLAN.adoc": {
+		ZAP: ZAP{DefineOverrides: map[string]string{
+			"MAC_ADDRESS": "WAKE_ON_LAN_MAC_ADDRESS",
+		}},
+	},
+	"src/data_model/ACL-Cluster.adoc": {
+		ZAP: ZAP{TemplatePath: "access-control-cluster"},
+	},
+	"src/data_model/bridge-clusters.adoc": {
+		ZAP: ZAP{ClusterSplit: map[string]string{
+			"0x0025": "actions-cluster",
+			"0x0039": "bridged-device-basic-information",
+		}},
+	},
+	"src/data_model/Data-Model.adoc": {
+		Spec: Spec{
+			Sections: map[string]SpecSection{
+				"Struct Type":          {Skip: SpecPurposeDataTypesStruct},
+				"Quality Conformance":  {Skip: SpecPurposeDataTypesStruct},
+				"Choice Conformance":   {Skip: SpecPurposeDataTypesStruct},
+				"Fabric-Scoped Struct": {Skip: SpecPurposeDataTypesStruct},
+			},
+		},
+	},
+	"src/data_model/Encoding-Specification.adoc": {
+		Spec: Spec{
+			Sections: map[string]SpecSection{
+				"Discrete - Bitmap":   {Skip: SpecPurposeDataTypes},
+				"Collection - Struct": {Skip: SpecPurposeDataTypes},
+			},
+		},
+	},
+	"src/data_model/Group-Key-Management-Cluster.adoc": {
+		ZAP: ZAP{TemplatePath: "group-key-mgmt-cluster"},
+	},
+	"src/data_model/Label-Cluster.adoc": {
+		ZAP: ZAP{TemplatePath: "user-label-cluster",
+			ClusterSplit: map[string]string{
+				"0x0040": "fixed-label-cluster",
+				"0x0041": "user-label-cluster",
+			}},
+	},
+	"src/data_model/ValidProxies-Cluster.adoc": {
+		ZAP: ZAP{TemplatePath: "proxy-valid-cluster"},
+	},
+	"src/device_types/OtaRequestor.adoc": {
+		Spec: Spec{
+			Sections: map[string]SpecSection{"ProviderLocation Type": {Skip: SpecPurposeDataTypes}},
+		},
+	},
+	"src/secure_channel/Discovery.adoc": {
+		Spec: Spec{
+			Sections: map[string]SpecSection{
+				"Common TXT Key/Value Pairs":      {Skip: SpecPurposeDataTypes},
+				"TXT key for pairing hint (`PH`)": {Skip: SpecPurposeDataTypes},
+			},
+		},
+	},
+	"src/service_device_management/AdminAssistedCommissioningFlows.adoc": {
+		Disco: Disco{
+			Sections: map[string]DiscoSection{
+				"Basic Commissioning Method (BCM)":           {Skip: DiscoPurposeNormalizeAnchor},
+				"Enhanced Commissioning Method (ECM)":        {Skip: DiscoPurposeNormalizeAnchor},
+				"Presentation of Onboarding Payload for ECM": {Skip: DiscoPurposeNormalizeAnchor},
+				"Open Commissioning Window":                  {Skip: DiscoPurposeNormalizeAnchor},
+			},
+		},
+	},
+	"src/service_device_management/AdminCommissioningCluster.adoc": {
+		ZAP: ZAP{TemplatePath: "administrator-commissioning-cluster"},
+	},
+	"src/service_device_management/DeviceCommissioningFlows.adoc": {
+		Spec: Spec{
+			Sections: map[string]SpecSection{"Enhanced Setup Flow (ESF)": {Skip: SpecPurposeDataTypes}},
+		},
+	},
+	"src/service_device_management/DiagnosticsGeneral.adoc": {
+		Disco: Disco{
+			Sections: map[string]DiscoSection{"NetworkInterface Type": {Skip: DiscoPurposeDataTypeRename}},
+		},
+		ZAP: ZAP{TemplatePath: "general-diagnostics-cluster"},
+	},
+	"src/service_device_management/DiagnosticsEthernet.adoc": {
+		ZAP: ZAP{TemplatePath: "ethernet-network-diagnostics-cluster"},
+	},
+	"src/service_device_management/DiagnosticLogsCluster.adoc": {
+		ZAP: ZAP{Domain: matter.DomainCHIP},
+	},
+	"src/service_device_management/DiagnosticsSoftware.adoc": {
+		ZAP: ZAP{TemplatePath: "software-diagnostics-cluster"},
+	},
+	"src/service_device_management/DiagnosticsThread.adoc": {
+		Disco: Disco{
+			Sections: map[string]DiscoSection{"SecurityPolicy Type": {Skip: DiscoPurposeDataTypeRename}},
+		},
+		ZAP: ZAP{TemplatePath: "thread-network-diagnostics-cluster",
+			SuppressClusterDefinePrefix: true},
+	},
+	"src/service_device_management/DiagnosticsWiFi.adoc": {
+		ZAP: ZAP{TemplatePath: "wifi-network-diagnostics-cluster"},
+	},
+	"src/service_device_management/GeneralCommissioningCluster.adoc": {
+		Disco: Disco{
+			Sections: map[string]DiscoSection{"BasicCommissioningInfo Type": {Skip: DiscoPurposeDataTypeRename}},
+		},
+	},
+	"src/service_device_management/LocalizationTimeFormat.adoc": {
+		ZAP: ZAP{TemplatePath: "time-format-localization-cluster"},
+	},
+	"src/service_device_management/LocalizationUnit.adoc": {
+		ZAP: ZAP{Domain: matter.DomainCHIP,
+			TemplatePath: "unit-localization-cluster"},
+	},
+	"src/service_device_management/OperationalCredentialCluster.adoc": {
+		ZAP: ZAP{TemplatePath: "operational-credentials-cluster"},
+	},
+	"src/service_device_management/PowerSourceConfigurationCluster.adoc": {
+		ZAP: ZAP{Domain: matter.DomainCHIP},
+	},
+	"src/service_device_management/PowerSourceCluster.adoc": {
+		ZAP: ZAP{Domain: matter.DomainCHIP},
+	},
+	"src/service_device_management/TimeSync.adoc": {
+		ZAP: ZAP{TemplatePath: "time-synchronization-cluster"},
 	},
 }

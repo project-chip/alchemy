@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -70,6 +71,9 @@ func (b *Ball) getPotentialDataTypes(dc *discoContext, dp *docParse) (err error)
 func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, ss *subSection) error {
 	if ss.table.element == nil {
 		slog.Debug("no data type table found", "sectionName", ss.section.Name)
+		return nil
+	}
+	if b.errata.IgnoreSection(ss.section.Name, errata.DiscoPurposeDataTypePromoteInline) {
 		return nil
 	}
 	sectionDataMap, err := b.getDataTypes(ss.table.columnMap, ss.table.rows, ss.section)
@@ -459,6 +463,9 @@ func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
 }
 
 func (b *Ball) canonicalizeDataTypeSectionName(dp *docParse, s *spec.Section, dataTypeName string) {
+	if b.errata.IgnoreSection(s.Name, errata.DiscoPurposeDataTypeRename) {
+		return
+	}
 	name := s.Name
 	if text.HasCaseInsensitiveSuffix(name, dataTypeName+" type") {
 		return

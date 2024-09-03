@@ -14,7 +14,7 @@ type Specification struct {
 	BaseDeviceType *matter.DeviceType
 
 	ClusterRefs ClusterRefs
-	DocRefs     map[types.Entity]string
+	DocRefs     map[types.Entity]*Doc
 
 	bitmapIndex  map[string]*matter.Bitmap
 	enumIndex    map[string]*matter.Enum
@@ -35,7 +35,7 @@ func newSpec() *Specification {
 		ClustersByID:   make(map[uint64]*matter.Cluster),
 		ClustersByName: make(map[string]*matter.Cluster),
 		ClusterRefs:    make(map[types.Entity]map[*matter.Cluster]struct{}),
-		DocRefs:        make(map[types.Entity]string),
+		DocRefs:        make(map[types.Entity]*Doc),
 
 		bitmapIndex:  make(map[string]*matter.Bitmap),
 		enumIndex:    make(map[string]*matter.Enum),

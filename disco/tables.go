@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -42,6 +43,9 @@ func (b *Ball) ensureTableOptions(els asciidoc.Set) {
 
 func (b *Ball) addMissingColumns(section *spec.Section, ti *tableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {
 	if !b.options.addMissingColumns {
+		return
+	}
+	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableAddMissingColumns) {
 		return
 	}
 	ti.element.DeleteAttribute(asciidoc.AttributeNameColumns)
@@ -149,6 +153,9 @@ func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.
 
 func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *tableInfo, tableType matter.TableType) (err error) {
 	if !b.options.reorderColumns {
+		return
+	}
+	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableReorderColumns) {
 		return
 	}
 	rows := ti.rows
@@ -297,6 +304,9 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 
 func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, table *tableInfo, overrides map[matter.TableColumn]matter.TableColumn) (err error) {
 	if !b.options.renameTableHeaders {
+		return
+	}
+	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableRenameHeaders) {
 		return
 	}
 	headerRow := table.rows[table.headerRow]

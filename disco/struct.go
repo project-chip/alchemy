@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -20,9 +19,7 @@ func (b *Ball) organizeStructSections(cxt *discoContext, dp *docParse) (err erro
 }
 
 func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSection) (err error) {
-	if b.doc.Errata().IgnoreSection(ss.section.Name, errata.PurposeDataTypesStruct) {
-		return
-	}
+
 	b.canonicalizeDataTypeSectionName(dp, ss.section, "Struct")
 
 	fieldsTable := &ss.table
@@ -45,7 +42,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return fmt.Errorf("error fixing access cells in struct table in %s: %w", dp.doc.Path, err)
 	}
 
-	err = fixConstraintCells(dp.doc, fieldsTable)
+	err = b.fixConstraintCells(ss.section, fieldsTable)
 	if err != nil {
 		return err
 	}

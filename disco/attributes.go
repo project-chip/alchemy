@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -31,12 +32,12 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return err
 		}
 
-		err = fixConstraintCells(dp.doc, attributesTable)
+		err = b.fixConstraintCells(attributes.section, attributesTable)
 		if err != nil {
 			return err
 		}
 
-		err = fixConformanceCells(dp, attributesTable.rows, attributesTable.columnMap)
+		err = b.fixConformanceCells(dp, attributes, attributesTable.rows, attributesTable.columnMap)
 		if err != nil {
 			return err
 		}
@@ -56,6 +57,9 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 
 func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 	if !b.options.linkIndexTables {
+		return nil
+	}
+	if b.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableLinkIndexes) {
 		return nil
 	}
 	if section.table.element == nil {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/project-chip/alchemy/asciidoc/render"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -13,6 +14,17 @@ import (
 func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineOptions pipeline.Options, discoOptions []Option, renderOptions []render.Option, writer files.Writer[string]) (err error) {
 
 	var docs pipeline.Map[string, *pipeline.Data[*spec.Doc]]
+
+	if specRoot == "" {
+		allPaths, e := files.PathsTargeter(docPaths...)(cxt)
+		if e == nil {
+			specRoot = spec.DeriveSpecPathFromPaths(allPaths)
+
+		}
+	}
+
+	errata.LoadErrataConfig(specRoot)
+
 	if specRoot != "" {
 
 		specTargeter := spec.Targeter(specRoot)

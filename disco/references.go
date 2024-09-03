@@ -11,11 +11,29 @@ func rewriteCrossReferences(doc *spec.Doc) {
 	for id, xrefs := range doc.CrossReferences() {
 		anchor := doc.FindAnchor(id)
 		if anchor == nil {
-			sources := []any{slog.String("name", id)}
+			sources := []any{slog.String("id", id)}
 			for _, xref := range xrefs {
 				sources = append(sources, log.Path("source", xref.Source))
 			}
-			slog.Warn("cross reference points to non-existent or ambiguous anchor", sources...)
+			anchors := doc.FindAnchors(id)
+			allAnchorsSkippable := true
+			for _, a := range anchors {
+				if !allAnchorsSkippable || !skipAnchor(a) {
+					allAnchorsSkippable = false
+				}
+			}
+			if allAnchorsSkippable {
+				continue
+			}
+			switch len(anchors) {
+			case 0:
+				slog.Warn("cross reference points to non-existent anchor", sources...)
+			default:
+				for _, a := range anchors {
+					sources = append(sources, log.Path("target", a.Source))
+				}
+				slog.Warn("cross reference points to ambiguous anchor", sources...)
+			}
 			continue
 		}
 		anchorLabel := labelText(anchor.LabelElements)

@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type Ball struct {
-	doc *spec.Doc
+	doc    *spec.Doc
+	errata *errata.Disco
 
 	options options
 }
@@ -20,6 +22,7 @@ func NewBall(doc *spec.Doc) *Ball {
 	return &Ball{
 		doc:     doc,
 		options: defaultOptions,
+		errata:  errata.GetDisco(doc.Path.Relative),
 	}
 }
 

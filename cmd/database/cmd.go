@@ -28,7 +28,7 @@ var Command = &cobra.Command{
 		port, _ := cmd.Flags().GetInt("port")
 		raw, _ := cmd.Flags().GetBool("raw")
 
-		errata.OverlayErrataConfig(specRoot)
+		errata.LoadErrataConfig(specRoot)
 
 		pipelineOptions := pipeline.Flags(cmd)
 

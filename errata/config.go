@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 )
 
-func OverlayErrataConfig(specRoot string) {
+func LoadErrataConfig(specRoot string) {
 	if specRoot == "" {
 		return
 	}
@@ -21,6 +21,14 @@ func OverlayErrataConfig(specRoot string) {
 	}
 	if !exists {
 		slog.Warn("errata file does not exist", slog.Any("path", errataPath))
+		for p := range Erratas {
+			path := filepath.Join(specRoot, p)
+			exists, _ := files.Exists(path)
+			if !exists {
+				slog.Warn("errata points to non-existent file", "path", p)
+			}
+		}
+		dumpConfig(errataPath)
 	} else {
 		b, err := os.ReadFile(errataPath)
 		if err != nil {
@@ -35,9 +43,18 @@ func OverlayErrataConfig(specRoot string) {
 		}
 		slog.Warn("Using errata overlay", slog.Any("path", errataPath), slog.Any("count", len(errataOverlay.Errata)))
 		Erratas = errataOverlay.Errata
+		dumpConfig(errataPath)
 	}
-	/*eo := errataOverlay{Errata: Erratas}
-	d, err := yaml.Marshal(&eo)
+
+}
+
+type errataOverlay struct {
+	Errata map[string]*Errata `yaml:"errata"`
+}
+
+func dumpConfig(errataPath string) {
+	errataOverlay := errataOverlay{Errata: Erratas}
+	d, err := yaml.Marshal(&errataOverlay)
 	if err != nil {
 		slog.Warn("error marshalling yaml", slog.Any("error", err))
 	}
@@ -52,10 +69,5 @@ func OverlayErrataConfig(specRoot string) {
 	if err != nil {
 		slog.Warn("error writing errata", slog.Any("error", err))
 		return
-	}*/
-
-}
-
-type errataOverlay struct {
-	Errata map[string]*Errata `yaml:"errata"`
+	}
 }

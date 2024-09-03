@@ -3,6 +3,7 @@ package disco
 import (
 	"strings"
 
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -10,6 +11,9 @@ import (
 
 func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType types.EntityType) (err error) {
 	if !b.options.formatAccess {
+		return nil
+	}
+	if b.errata.IgnoreSection(subSection.section.Name, errata.DiscoPurposeTableAccess) {
 		return nil
 	}
 	table := &subSection.table
