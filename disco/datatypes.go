@@ -264,7 +264,7 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 				delete(ti.columnMap, matter.TableColumnDescription)
 				ti.columnMap[matter.TableColumnSummary] = descriptionIndex
 				summaryIndex = descriptionIndex
-				err = b.renameTableHeaderCells(top.Doc, &ti, nil)
+				err = b.renameTableHeaderCells(top.Doc, dt.section, &ti, nil)
 				if err != nil {
 					return
 				}
@@ -273,12 +273,12 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 				// Take the first extra column and rename it
 				summaryIndex = ti.extraColumns[0].Offset
 				ti.columnMap[matter.TableColumnSummary] = summaryIndex
-				err = b.renameTableHeaderCells(top.Doc, &ti, nil)
+				err = b.renameTableHeaderCells(top.Doc, dt.section, &ti, nil)
 				if err != nil {
 					return
 				}
 			} else {
-				summaryIndex, err = b.appendColumn(table, ti.columnMap, ti.headerRow, matter.TableColumnSummary, nil, entityType)
+				summaryIndex, err = b.appendColumn(table, ti.columnMap, ti.headerRow, matter.TableColumnSummary, entityType)
 				if err != nil {
 					return
 				}
@@ -287,7 +287,7 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 		_, hasNameColumn := ti.columnMap[matter.TableColumnName]
 		if !hasNameColumn {
 			var nameIndex int
-			nameIndex, err = b.appendColumn(table, ti.columnMap, ti.headerRow, matter.TableColumnName, nil, entityType)
+			nameIndex, err = b.appendColumn(table, ti.columnMap, ti.headerRow, matter.TableColumnName, entityType)
 			if err != nil {
 				return
 			}

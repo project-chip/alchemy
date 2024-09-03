@@ -40,7 +40,7 @@ func (b *Ball) ensureTableOptions(els asciidoc.Set) {
 
 }
 
-func (b *Ball) addMissingColumns(ti *tableInfo, tableTemplate matter.Table, overrides map[matter.TableColumn]string, entityType types.EntityType) (err error) {
+func (b *Ball) addMissingColumns(section *spec.Section, ti *tableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
@@ -53,7 +53,7 @@ func (b *Ball) addMissingColumns(ti *tableInfo, tableTemplate matter.Table, over
 	}
 	for _, column := range order {
 		if _, ok := ti.columnMap[column]; !ok {
-			_, err = b.appendColumn(ti.element, ti.columnMap, ti.headerRow, column, overrides, entityType)
+			_, err = b.appendColumn(ti.element, ti.columnMap, ti.headerRow, column, entityType)
 			if err != nil {
 				return
 			}
@@ -62,7 +62,7 @@ func (b *Ball) addMissingColumns(ti *tableInfo, tableTemplate matter.Table, over
 	return
 }
 
-func (b *Ball) appendColumn(table *asciidoc.Table, columnMap spec.ColumnIndex, headerRowIndex int, column matter.TableColumn, overrides map[matter.TableColumn]string, entityType types.EntityType) (appendedIndex int, err error) {
+func (b *Ball) appendColumn(table *asciidoc.Table, columnMap spec.ColumnIndex, headerRowIndex int, column matter.TableColumn, entityType types.EntityType) (appendedIndex int, err error) {
 	rows := table.TableRows()
 	if len(rows) == 0 {
 		appendedIndex = -1
@@ -91,7 +91,7 @@ func (b *Ball) appendColumn(table *asciidoc.Table, columnMap spec.ColumnIndex, h
 				cell.Format.VerticalAlign = last.Format.VerticalAlign
 				cell.Format.Style = last.Format.Style
 			}
-			name, ok := matter.GetColumnName(column, overrides)
+			name, ok := matter.TableColumnNames[column]
 			if !ok {
 				err = fmt.Errorf("unknown column name: %s", column.String())
 				return
@@ -295,7 +295,7 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 	return
 }
 
-func (b *Ball) renameTableHeaderCells(doc *spec.Doc, table *tableInfo, overrides map[matter.TableColumn]string) (err error) {
+func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, table *tableInfo, overrides map[matter.TableColumn]matter.TableColumn) (err error) {
 	if !b.options.renameTableHeaders {
 		return
 	}
@@ -308,6 +308,15 @@ func (b *Ball) renameTableHeaderCells(doc *spec.Doc, table *tableInfo, overrides
 		tc, ok := reverseMap[i]
 		if !ok {
 			continue
+		}
+		overrideColumn, hasOverride := overrides[tc]
+		if hasOverride {
+			existingIndex, overrideAlreadyExists := table.columnMap[overrideColumn]
+			if overrideAlreadyExists && existingIndex != i {
+				slog.Warn("Can not renamed column %s to %s; column with same name already exists at column %i", tc.String(), overrideColumn.String(), existingIndex)
+				continue
+			}
+			tc = overrideColumn
 		}
 		name, ok := matter.GetColumnName(tc, overrides)
 		if ok {

@@ -282,7 +282,9 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnRole
 	case "context":
 		return matter.TableColumnContext
-	case "pics code", "pics":
+	case "pics code":
+		return matter.TableColumnPICSCode
+	case "pics":
 		return matter.TableColumnPICS
 	case "scope":
 		return matter.TableColumnScope

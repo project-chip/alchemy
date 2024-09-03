@@ -20,7 +20,7 @@ func (b *Ball) organizeFeaturesSection(cxt *discoContext, dp *docParse) (err err
 			return fmt.Errorf("can't rearrange features table without header row in %s", dp.doc.Path)
 		}
 
-		err = b.renameTableHeaderCells(dp.doc, &featuresTable, matter.Tables[matter.TableTypeFeatures].ColumnNames)
+		err = b.renameTableHeaderCells(dp.doc, features.section, &featuresTable, matter.Tables[matter.TableTypeFeatures].ColumnNames)
 		if err != nil {
 			return fmt.Errorf("error renaming table header cells in features table in %s: %w", dp.doc.Path, err)
 		}

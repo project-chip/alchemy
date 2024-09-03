@@ -38,7 +38,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 			return fmt.Errorf("error fixing command direction in commands table in %s: %w", dp.doc.Path, err)
 		}
 
-		err = b.renameTableHeaderCells(dp.doc, &commands.table, nil)
+		err = b.renameTableHeaderCells(dp.doc, commands.section, &commands.table, nil)
 		if err != nil {
 			return fmt.Errorf("error table header cells in commands table in %s: %w", dp.doc.Path, err)
 		}

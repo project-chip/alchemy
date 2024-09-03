@@ -258,7 +258,7 @@ func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 		return fmt.Errorf("error reading scope column on cluster %s: %w", c.Name, err)
 	}
 
-	c.PICS, err = readRowASCIIDocString(row, columnMap, matter.TableColumnPICS)
+	c.PICS, err = readRowASCIIDocString(row, columnMap, matter.TableColumnPICS, matter.TableColumnPICSCode)
 	if err != nil {
 		return fmt.Errorf("error reading PICS column on cluster %s: %w", c.Name, err)
 	}
