@@ -14,7 +14,7 @@ func compareAccess(entityType types.EntityType, spec matter.Access, zap matter.A
 	case types.EntityTypeAttribute:
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyReadAccess, spec.Read, zap.Read, defaultAccess.Read)...)
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyWriteAccess, spec.Write, zap.Write, defaultAccess.Write)...)
-	case types.EntityTypeField, types.EntityTypeCommandField:
+	case types.EntityTypeStructField, types.EntityTypeCommandField:
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyReadAccess, spec.Read, zap.Read, defaultAccess.Read)...)
 		diffs = append(diffs, comparePrivilege(entityType, DiffPropertyWriteAccess, spec.Write, zap.Write, defaultAccess.Write)...)
 		diffs = append(diffs, compareScoping(DiffPropertyFabricScoping, spec.FabricScoping, zap.FabricScoping, defaultAccess.FabricScoping)...)
@@ -35,7 +35,7 @@ func compareAccess(entityType types.EntityType, spec matter.Access, zap matter.A
 }
 
 func comparePrivilege(entityType types.EntityType, prop DiffProperty, spec matter.Privilege, zap matter.Privilege, defaultSpec matter.Privilege) (diffs []Diff) {
-	if zap == matter.PrivilegeUnknown && (spec == defaultSpec || (entityType == types.EntityTypeField && spec == matter.PrivilegeView)) {
+	if zap == matter.PrivilegeUnknown && (spec == defaultSpec || (entityType == types.EntityTypeStructField && spec == matter.PrivilegeView)) {
 		return
 	}
 	if spec == matter.PrivilegeUnknown && zap != matter.PrivilegeUnknown {

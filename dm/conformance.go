@@ -118,7 +118,7 @@ func renderConformanceExpression(doc *spec.Doc, identifierStore conformance.Iden
 					parent.CreateElement("attribute").CreateAttr("name", e.ID)
 				case types.EntityTypeCommand:
 					parent.CreateElement("command").CreateAttr("name", e.ID)
-				case types.EntityTypeField:
+				case types.EntityTypeStructField:
 					parent.CreateElement("field").CreateAttr("name", e.ID)
 				default:
 					parent.CreateElement("condition").CreateAttr("name", e.ID)
@@ -170,7 +170,7 @@ func renderConformanceExpression(doc *spec.Doc, identifierStore conformance.Iden
 					switch entity.EntityType() {
 					case types.EntityTypeAttribute:
 						parent.CreateElement("attribute").CreateAttr("name", entity.Name)
-					case types.EntityTypeField:
+					case types.EntityTypeStructField:
 						parent.CreateElement("field").CreateAttr("name", entity.Name)
 					}
 				case *matter.Command:

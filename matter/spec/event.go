@@ -91,7 +91,7 @@ func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 				err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
 				return
 			}
-			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeEvent)
+			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeEventField)
 			if err != nil {
 				return
 			}

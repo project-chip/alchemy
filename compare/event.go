@@ -16,7 +16,7 @@ func compareEvent(specEvent *matter.Event, zapEvent *matter.Event) (diffs []Diff
 	}
 	diffs = append(diffs, compareAccess(types.EntityTypeEvent, specEvent.Access, zapEvent.Access)...)
 	diffs = append(diffs, compareConformance(types.EntityTypeEvent, specEvent.Conformance, zapEvent.Conformance)...)
-	fieldDiffs, err := compareFields(types.EntityTypeField, specEvent.Fields, zapEvent.Fields)
+	fieldDiffs, err := compareFields(types.EntityTypeStructField, specEvent.Fields, zapEvent.Fields)
 	if err == nil && len(fieldDiffs) > 0 {
 		diffs = append(diffs, fieldDiffs...)
 	}

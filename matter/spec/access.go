@@ -117,7 +117,7 @@ func ParseAccess(vc string, entityType types.EntityType) (a matter.Access, parse
 	switch entityType {
 	case types.EntityTypeCommand:
 		a.Invoke = invoke
-	case types.EntityTypeStruct: // Structs no longer get R/W access
+	case types.EntityTypeStructField: // Structs no longer get R/W access
 	default:
 		a.Read = read
 		a.Write = write

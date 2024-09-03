@@ -36,7 +36,7 @@ func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 			}
 		}
 	}
-	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeStruct)
+	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeStructField)
 	entityMap[s.Base] = append(entityMap[s.Base], ms)
 	ms.Name = CanonicalName(ms.Name)
 	return

@@ -343,7 +343,7 @@ func DefaultAccess(entityType types.EntityType) Access {
 
 func DefaultReadPrivilege(entityType types.EntityType) Privilege {
 	switch entityType {
-	case types.EntityTypeAttribute, types.EntityTypeEvent: // Structs don't get R/W access
+	case types.EntityTypeAttribute, types.EntityTypeEventField: // Structs don't get R/W access
 		return PrivilegeView
 	default:
 		return PrivilegeUnknown
@@ -352,7 +352,7 @@ func DefaultReadPrivilege(entityType types.EntityType) Privilege {
 
 func DefaultWritePrivilege(entityType types.EntityType) Privilege {
 	switch entityType {
-	case types.EntityTypeAttribute, types.EntityTypeEvent: // Structs don't get R/W access
+	case types.EntityTypeAttribute, types.EntityTypeEventField: // Structs don't get R/W access
 		return PrivilegeOperate
 	default:
 		return PrivilegeUnknown

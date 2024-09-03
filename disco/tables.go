@@ -139,7 +139,7 @@ func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.
 		switch entityType {
 		case types.EntityTypeEvent, types.EntityTypeAttribute:
 			return "R V"
-		case types.EntityTypeField:
+		case types.EntityTypeStructField:
 			return ""
 		}
 	}

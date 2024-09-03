@@ -29,7 +29,7 @@ func getAccessSchemaColumnValues(tableName string, access any) []any {
 		case commandTable:
 			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeCommand)
 		case structField:
-			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeStruct)
+			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeStructField)
 		default:
 			a, _ = spec.ParseAccess(s, mattertypes.EntityTypeUnknown)
 		}
