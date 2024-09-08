@@ -95,6 +95,8 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	if featureXML {
 		templateOptions = append(templateOptions, generate.GenerateFeatureXML(true))
 	}
+	templateOptions = append(templateOptions, generate.AsciiAttributes(asciiSettings))
+	templateOptions = append(templateOptions, generate.SpecRoot(specRoot))
 
 	var zapTemplateDocs pipeline.Map[string, *pipeline.Data[string]]
 	var globalObjectFiles pipeline.Map[string, *pipeline.Data[string]]

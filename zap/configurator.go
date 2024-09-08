@@ -11,8 +11,9 @@ import (
 )
 
 type Configurator struct {
-	Spec *spec.Specification
-	Doc  *spec.Doc
+	Spec    *spec.Specification
+	Doc     *spec.Doc
+	OutPath string
 
 	Features []*matter.Number
 	Bitmaps  map[*matter.Bitmap][]*matter.Number
@@ -23,10 +24,12 @@ type Configurator struct {
 	ClusterIDs []string
 }
 
-func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.Entity) (*Configurator, error) {
+func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.Entity, outPath string) (*Configurator, error) {
 	c := &Configurator{
-		Spec:     spec,
-		Doc:      doc,
+		Spec:    spec,
+		Doc:     doc,
+		OutPath: outPath,
+
 		Bitmaps:  make(map[*matter.Bitmap][]*matter.Number),
 		Enums:    make(map[*matter.Enum][]*matter.Number),
 		Clusters: make(map[*matter.Cluster]bool),

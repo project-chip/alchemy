@@ -42,6 +42,8 @@ func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x
 		}
 	}
 
+	tg.patchComments(configurator, x)
+
 	ce := x.SelectElement("configurator")
 	if ce == nil {
 		ce = x.CreateElement("configurator")
