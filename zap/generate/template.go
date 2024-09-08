@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -19,10 +20,13 @@ import (
 )
 
 type TemplateGenerator struct {
-	spec     *spec.Specification
-	file     files.Options
-	pipeline pipeline.Options
-	sdkRoot  string
+	spec        *spec.Specification
+	file        files.Options
+	pipeline    pipeline.Options
+	attributes  []asciidoc.AttributeName
+	sdkRoot     string
+	specRoot    string
+	specVersion string
 
 	generateFeaturesXML bool
 
@@ -40,6 +44,18 @@ func GenerateFeatureXML(generate bool) TemplateOption {
 	}
 }
 
+func AsciiAttributes(attributes []asciidoc.AttributeName) TemplateOption {
+	return func(tg *TemplateGenerator) {
+		tg.attributes = attributes
+	}
+}
+
+func SpecRoot(specRoot string) TemplateOption {
+	return func(tg *TemplateGenerator) {
+		tg.specRoot = specRoot
+	}
+}
+
 func NewTemplateGenerator(spec *spec.Specification, fileOptions files.Options, pipelineOptions pipeline.Options, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
 	tg := &TemplateGenerator{
 		spec:                     spec,
@@ -52,6 +68,13 @@ func NewTemplateGenerator(spec *spec.Specification, fileOptions files.Options, p
 	}
 	for _, o := range options {
 		o(tg)
+	}
+	if tg.specRoot != "" {
+		var err error
+		tg.specVersion, err = gitDescribe(tg.specRoot)
+		if err != nil {
+			slog.Warn("Unable to determine spec git tag", slog.Any("error", err))
+		}
 	}
 	return tg
 }
@@ -107,7 +130,7 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*s
 		}
 
 		var configurator *zap.Configurator
-		configurator, err = zap.NewConfigurator(tg.spec, input.Content, entities)
+		configurator, err = zap.NewConfigurator(tg.spec, input.Content, entities, newPath)
 		if err != nil {
 			return
 		}
@@ -119,7 +142,7 @@ func (tg *TemplateGenerator) render(cxt context.Context, input *pipeline.Data[*s
 
 		var existing []byte
 		existing, err = os.ReadFile(newPath)
-		if errors.Is(err, os.ErrNotExist) || tg.file.DryRun {
+		if errors.Is(err, os.ErrNotExist) {
 			if tg.pipeline.Serial {
 				slog.InfoContext(cxt, "Rendering new ZAP template", "from", input.Content.Path, "to", newPath)
 			}
