@@ -29,7 +29,7 @@ There are two builds for each architecture: plain and db. The db build includes 
 
 Alchemy is written in pure Go, so to build from source:
 
-1. Install Go 1.22 or greater
+1. Install Go 1.23.1 or greater
 2. Clone the alchemy repo
 3. In the root of the alchemy repo, run ```go build```
 
