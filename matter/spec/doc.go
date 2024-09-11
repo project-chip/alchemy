@@ -42,7 +42,7 @@ type Doc struct {
 	errata *errata.Errata
 }
 
-func NewDoc(d *asciidoc.Document, path Path) (*Doc, error) {
+func newDoc(d *asciidoc.Document, path Path) (*Doc, error) {
 	doc := &Doc{
 		Base:           d,
 		Path:           path,
@@ -191,8 +191,4 @@ func (doc *Doc) Reference(ref string) (types.Entity, bool) {
 		return nil, false
 	}
 	return entities[0], true
-}
-
-func GithubSettings() []asciidoc.AttributeName {
-	return []asciidoc.AttributeName{asciidoc.AttributeName("env-github")}
 }

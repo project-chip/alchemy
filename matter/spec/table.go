@@ -76,6 +76,33 @@ func readRowID(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.Tabl
 	return matter.ParseNumber(id), nil
 }
 
+func readRowName(doc *Doc, row *asciidoc.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (name string, xref *asciidoc.CrossReference, err error) {
+	for _, column := range columns {
+		offset, ok := columnMap[column]
+		if !ok {
+			continue
+		}
+		cell := row.Cell(offset)
+		cellElements := cell.Elements()
+		for _, el := range cellElements {
+			switch el := el.(type) {
+			case *asciidoc.CrossReference:
+				xref = el
+			}
+			if xref != nil {
+				break
+			}
+		}
+		var value strings.Builder
+		err = readRowCellValueElements(doc, cellElements, &value)
+		if err != nil {
+			return "", nil, err
+		}
+		return strings.TrimSpace(value.String()), xref, nil
+	}
+	return "", nil, nil
+}
+
 func ReadRowValue(doc *Doc, row *asciidoc.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := columnMap[column]

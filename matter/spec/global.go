@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"iter"
 	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -67,6 +68,24 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 	return nil
 }
 
+type globalCommandFactory struct {
+	commandFactory
+}
+
+func (cf *globalCommandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
+	return func(yield func(*Section) bool) {
+		parse.Traverse(d, d.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
+			if s.SecType != matter.SectionCommand {
+				return parse.SearchShouldContinue
+			}
+			if !yield(s) {
+				return parse.SearchShouldStop
+			}
+			return parse.SearchShouldContinue
+		})
+	}
+}
+
 func (s *Section) toGlobalElements(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (entities []types.Entity, err error) {
 	var commandsTable *asciidoc.Table
 	parse.SkimFunc(s.Elements(), func(t *asciidoc.Table) bool {
@@ -84,8 +103,16 @@ func (s *Section) toGlobalElements(d *Doc, entityMap map[asciidoc.Attributable][
 	if commandsTable == nil {
 		return
 	}
+
+	var cf globalCommandFactory
 	var commands matter.CommandSet
-	var commandMap map[string]*matter.Command
+	commands, err = buildList(d, s, commandsTable, entityMap, commands, &cf)
+
+	for _, c := range commands {
+		entities = append(entities, c)
+	}
+
+	/*var commandMap map[string]*matter.Command
 	commands, _, err = s.buildCommands(d, commandsTable)
 	parse.Traverse(d, d.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch s.SecType {
@@ -103,7 +130,7 @@ func (s *Section) toGlobalElements(d *Doc, entityMap map[asciidoc.Attributable][
 	})
 	for _, c := range commands {
 		entities = append(entities, c)
-	}
+	}*/
 
 	return
 }
