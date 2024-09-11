@@ -48,7 +48,10 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	docParser := spec.NewParser(asciiSettings)
+	docParser, err := spec.NewParser(specRoot, asciiSettings)
+	if err != nil {
+		return err
+	}
 	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err
@@ -95,7 +98,10 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	docReader := spec.NewStringReader("Reading test plans")
+	docReader, err := spec.NewStringReader("Reading test plans", testRoot)
+	if err != nil {
+		return err
+	}
 	testplanDocs, err := pipeline.Process[string, *spec.Doc](cxt, pipelineOptions, docReader, testplans)
 	if err != nil {
 		return err

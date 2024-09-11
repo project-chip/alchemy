@@ -30,7 +30,10 @@ func format(cmd *cobra.Command, args []string) (err error) {
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
 
-	docReader := spec.NewReader("Reading docs")
+	docReader, err := spec.NewReader("Reading docs", "")
+	if err != nil {
+		return err
+	}
 	docs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
 	if err != nil {
 		return err

@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-func ReadFile(path string) (*Doc, error) {
+func ReadFile(path string, rootPath string) (*Doc, error) {
 
 	contents, err := os.Open(path)
 	if err != nil {
@@ -21,26 +22,26 @@ func ReadFile(path string) (*Doc, error) {
 	if err != nil {
 		return nil, err
 	}
-	return read(b, path)
+	return read(b, path, rootPath)
 }
 
-func Read(contents string, path string) (doc *Doc, err error) {
-	return read([]byte(contents), path)
+func readString(contents string, path string, rootPath string) (doc *Doc, err error) {
+	return read([]byte(contents), path, rootPath)
 }
 
-func read(b []byte, path string) (doc *Doc, err error) {
+func read(b []byte, path string, rootPath string) (doc *Doc, err error) {
 	d, err := parse.Bytes(path, b)
 	if err != nil {
 		return nil, fmt.Errorf("read error in %s: %w", path, err)
 	}
 
 	var p Path
-	p, err = NewPath(path)
+	p, err = NewDocPath(path, rootPath)
 	if err != nil {
 		return nil, err
 	}
 
-	doc, err = NewDoc(d, p)
+	doc, err = newDoc(d, p)
 	if err != nil {
 		return nil, err
 	}
@@ -48,11 +49,19 @@ func read(b []byte, path string) (doc *Doc, err error) {
 }
 
 type Reader struct {
-	name string
+	name     string
+	rootPath string
 }
 
-func NewReader(name string) Reader {
-	return Reader{name: name}
+func NewReader(name string, rootPath string) (Reader, error) {
+	if !filepath.IsAbs(rootPath) {
+		var err error
+		rootPath, err = filepath.Abs(rootPath)
+		if err != nil {
+			return Reader{}, err
+		}
+	}
+	return Reader{name: name, rootPath: rootPath}, nil
 }
 
 func (r Reader) Name() string {
@@ -65,7 +74,7 @@ func (r Reader) Type() pipeline.ProcessorType {
 
 func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
 	var doc *Doc
-	doc, err = ReadFile(input.Path)
+	doc, err = ReadFile(input.Path, r.rootPath)
 	if err != nil {
 		return
 	}
@@ -74,11 +83,19 @@ func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 }
 
 type StringReader struct {
-	name string
+	name     string
+	rootPath string
 }
 
-func NewStringReader(name string) StringReader {
-	return StringReader{name: name}
+func NewStringReader(name string, rootPath string) (StringReader, error) {
+	if !filepath.IsAbs(rootPath) {
+		var err error
+		rootPath, err = filepath.Abs(rootPath)
+		if err != nil {
+			return StringReader{}, err
+		}
+	}
+	return StringReader{name: name, rootPath: rootPath}, nil
 }
 
 func (r StringReader) Name() string {
@@ -91,7 +108,7 @@ func (r StringReader) Type() pipeline.ProcessorType {
 
 func (r StringReader) Process(cxt context.Context, input *pipeline.Data[string], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[string], err error) {
 	var doc *Doc
-	doc, err = Read(input.Content, input.Path)
+	doc, err = readString(input.Content, input.Path, r.rootPath)
 	if err != nil {
 		return
 	}

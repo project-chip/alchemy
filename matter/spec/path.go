@@ -34,7 +34,7 @@ func (p Path) Origin() (path string, line int) {
 	return p.Relative, -1
 }
 
-func NewPath(path string) (Path, error) {
+func NewSpecPath(path string, rootPath string) (Path, error) {
 	var p Path
 	if !filepath.IsAbs(path) {
 		var err error
@@ -45,16 +45,34 @@ func NewPath(path string) (Path, error) {
 	} else {
 		p.Absolute = path
 	}
-	specPath := DeriveSpecPath(p.Absolute)
-	if specPath == "" {
-		return p, fmt.Errorf("unable to determine spec root for path %s", p.Absolute)
+	if rootPath == "" {
+		rootPath := deriveSpecPath(p.Absolute)
+		if rootPath == "" {
+			return p, fmt.Errorf("unable to determine root for path %s", p.Absolute)
+		}
 	}
 	var err error
-	p.Relative, err = filepath.Rel(specPath, p.Absolute)
+	p.Relative, err = filepath.Rel(rootPath, p.Absolute)
 	return p, err
 }
 
-func DeriveSpecPath(path string) string {
+func NewDocPath(path string, rootPath string) (Path, error) {
+	var p Path
+	if !filepath.IsAbs(path) {
+		var err error
+		p.Absolute, err = filepath.Abs(path)
+		if err != nil {
+			return p, err
+		}
+	} else {
+		p.Absolute = path
+	}
+	var err error
+	p.Relative, err = filepath.Rel(rootPath, p.Absolute)
+	return p, err
+}
+
+func deriveSpecPath(path string) string {
 	if !filepath.IsAbs(path) {
 		var err error
 		path, err = filepath.Abs(path)
@@ -91,7 +109,7 @@ func DeriveSpecPath(path string) string {
 
 func DeriveSpecPathFromPaths(paths []string) string {
 	for _, path := range paths {
-		specPath := DeriveSpecPath(path)
+		specPath := deriveSpecPath(path)
 		if specPath != "" {
 			return specPath
 		}

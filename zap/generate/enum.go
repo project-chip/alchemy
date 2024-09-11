@@ -20,7 +20,7 @@ func generateEnums(enums map[*matter.Enum][]*matter.Number, sourcePath string, c
 
 		nameAttr := eve.SelectAttr("name")
 		if nameAttr == nil {
-			slog.Warn("missing name attribute in enum", slog.String("path", sourcePath))
+			slog.Warn("ZAP: missing name attribute in enum", slog.String("path", sourcePath))
 			continue
 		}
 		name := nameAttr.Value
@@ -43,7 +43,7 @@ func generateEnums(enums map[*matter.Enum][]*matter.Number, sourcePath string, c
 		}
 
 		if matchingEnum == nil {
-			slog.Warn("unknown enum name", slog.String("path", sourcePath), slog.String("enumName", name))
+			slog.Warn("ZAP: unknown enum name", slog.String("path", sourcePath), slog.String("enumName", name))
 			ce.RemoveChild(eve)
 			continue
 		}

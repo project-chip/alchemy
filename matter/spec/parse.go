@@ -7,16 +7,15 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-func ParseFile(path string, attributes ...asciidoc.AttributeName) (*Doc, error) {
+func ParseFile(path Path, attributes ...asciidoc.AttributeName) (*Doc, error) {
 
-	contents, err := os.Open(path)
+	contents, err := os.Open(path.Absolute)
 	if err != nil {
 		return nil, err
 	}
@@ -24,27 +23,16 @@ func ParseFile(path string, attributes ...asciidoc.AttributeName) (*Doc, error) 
 	return parseReader(contents, path, attributes...)
 }
 
-func Parse(contents string, path string, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
-	return parseReader(strings.NewReader(contents), path, attributes...)
-
-}
-
-func parseReader(r io.Reader, path string, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
+func parseReader(r io.Reader, path Path, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
 	var d *asciidoc.Document
 
-	d, err = ParseDocument(r, path, attributes...)
+	d, err = parseDocument(r, path, attributes...)
 
 	if err != nil {
 		return nil, fmt.Errorf("parse error in %s: %w", path, err)
 	}
 
-	var p Path
-	p, err = NewPath(path)
-	if err != nil {
-		return nil, err
-	}
-
-	doc, err = NewDoc(d, p)
+	doc, err = newDoc(d, path)
 	if err != nil {
 		return nil, err
 	}
@@ -52,14 +40,14 @@ func parseReader(r io.Reader, path string, attributes ...asciidoc.AttributeName)
 	return doc, nil
 }
 
-func ParseDocument(r io.Reader, path string, attributes ...asciidoc.AttributeName) (*asciidoc.Document, error) {
+func parseDocument(r io.Reader, path Path, attributes ...asciidoc.AttributeName) (*asciidoc.Document, error) {
 	ac := &parse.AttributeContext{}
 
 	for _, a := range attributes {
 		ac.Set(string(a), nil)
 	}
 
-	parsed, err := parse.PreParseReader(ac, path, r)
+	parsed, err := parse.PreParseReader(ac, path.Relative, r)
 	if err != nil {
 		return nil, err
 	}
@@ -68,20 +56,30 @@ func ParseDocument(r io.Reader, path string, attributes ...asciidoc.AttributeNam
 		return &asciidoc.Document{}, nil
 	}
 
-	if filepath.Base(path) == "DoorLock.adoc" { // Craptastic workaround for very weird table cell
+	if filepath.Base(path.Absolute) == "DoorLock.adoc" { // Craptastic workaround for very weird table cell
 		var doorLockPattern = regexp.MustCompile(`\n+\s*[^&\n]+&#8224;\s+`)
 		parsed = doorLockPattern.ReplaceAllString(parsed, "\n")
 	}
 
-	return parse.String(path, parsed)
+	return parse.String(path.Relative, parsed)
 }
 
+type parseOption func(p *Parser)
+
 type Parser struct {
+	rootPath   string
 	attributes []asciidoc.AttributeName
 }
 
-func NewParser(attributes []asciidoc.AttributeName) Parser {
-	return Parser{attributes: attributes}
+func NewParser(rootPath string, attributes []asciidoc.AttributeName) (Parser, error) {
+	if !filepath.IsAbs(rootPath) {
+		var err error
+		rootPath, err = filepath.Abs(rootPath)
+		if err != nil {
+			return Parser{}, err
+		}
+	}
+	return Parser{rootPath: rootPath, attributes: attributes}, nil
 }
 
 func (p Parser) Name() string {
@@ -93,8 +91,14 @@ func (p Parser) Type() pipeline.ProcessorType {
 }
 
 func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
+
+	var path Path
+	path, err = NewSpecPath(input.Path, p.rootPath)
+	if err != nil {
+		return
+	}
 	var doc *Doc
-	doc, err = ParseFile(input.Path, p.attributes...)
+	doc, err = ParseFile(path, p.attributes...)
 	if err != nil {
 		return
 	}
