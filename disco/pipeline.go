@@ -19,7 +19,6 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 		allPaths, e := files.PathsTargeter(docPaths...)(cxt)
 		if e == nil {
 			specRoot = spec.DeriveSpecPathFromPaths(allPaths)
-
 		}
 	}
 
@@ -35,7 +34,10 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 			return err
 		}
 
-		docReader := spec.NewReader("Reading spec docs")
+		docReader, err := spec.NewReader("Reading spec docs", specRoot)
+		if err != nil {
+			return err
+		}
 		docs, err = pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
 		if err != nil {
 			return err
@@ -60,7 +62,10 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 			return err
 		}
 
-		docReader := spec.NewReader("Reading docs")
+		docReader, err := spec.NewReader("Reading docs", specRoot)
+		if err != nil {
+			return err
+		}
 		docs, err = pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
 		if err != nil {
 			return err

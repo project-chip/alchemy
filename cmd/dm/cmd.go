@@ -36,7 +36,10 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	docParser := spec.NewParser(asciiSettings)
+	docParser, err := spec.NewParser(specRoot, asciiSettings)
+	if err != nil {
+		return err
+	}
 	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err

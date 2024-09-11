@@ -30,7 +30,7 @@ var Command = &cobra.Command{
 				fmt.Fprintf(os.Stderr, "Dumping %s (%d of %d)...\n", f, (i + 1), len(files))
 			}
 			if asciiOut {
-				doc, err := spec.ReadFile(f)
+				doc, err := spec.ReadFile(f, ".")
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
@@ -43,7 +43,12 @@ var Command = &cobra.Command{
 				}
 				dumpElements(doc, doc.Elements(), 0)
 			} else if jsonOut {
-				doc, err := spec.ParseFile(f, asciiSettings...)
+				path, err := spec.NewDocPath(f, ".")
+				if err != nil {
+					return fmt.Errorf("error resolving doc path %s: %w", f, err)
+				}
+
+				doc, err := spec.ParseFile(path, asciiSettings...)
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
@@ -55,7 +60,7 @@ var Command = &cobra.Command{
 				//encoder.SetIndent("", "\t")
 				return encoder.Encode(entities)
 			} else {
-				doc, err := spec.ReadFile(f)
+				doc, err := spec.ReadFile(f, ".")
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
