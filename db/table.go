@@ -15,7 +15,7 @@ import (
 
 func (h *Host) createTable(cxt *mms.Context, tableName string, parentTable string, sections []*sectionInfo, columns []matter.TableColumn) error {
 	schema, extra := buildTableSchema(sections, tableName, parentTable, columns)
-	t := memory.NewTable(tableName, mms.NewPrimaryKeySchema(schema), h.db.GetForeignKeyCollection())
+	t := memory.NewTable(h.db, tableName, mms.NewPrimaryKeySchema(schema), h.db.GetForeignKeyCollection())
 	h.tables[tableName] = t
 	h.db.AddTable(tableName, t)
 	err := populateTable(cxt, t, tableName, parentTable, sections, schema, columns, extra)
