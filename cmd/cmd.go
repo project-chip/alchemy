@@ -3,8 +3,9 @@ package cmd
 import (
 	"log/slog"
 	"os"
+	"time"
 
-	"github.com/sirupsen/logrus"
+	"github.com/lmittmann/tint"
 	"github.com/spf13/cobra"
 )
 
@@ -35,11 +36,13 @@ func init() {
 	rootCmd.PersistentFlags().Bool("verbose", false, "display verbose information")
 	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 		verbose, _ := rootCmd.Flags().GetBool("verbose")
-		logrus.SetLevel(logrus.ErrorLevel)
+		level := slog.LevelInfo
 		if verbose {
-			slog.SetLogLoggerLevel(slog.LevelDebug)
-		} else {
-			slog.SetLogLoggerLevel(slog.LevelInfo)
+			level = slog.LevelDebug
 		}
+		slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{
+			Level:      level,
+			TimeFormat: time.StampMilli,
+		})))
 	}
 }

@@ -10,6 +10,9 @@ import (
 )
 
 func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, cluster *matter.Cluster) error {
+	if !cluster.ID.Valid() {
+		return nil
+	}
 	clusterRow := newDBRow()
 	clusterRow.values[matter.TableColumnID] = cluster.ID.IntString()
 	clusterRow.values[matter.TableColumnName] = cluster.Name

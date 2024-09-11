@@ -53,11 +53,11 @@ func (h *Host) Run(address string, port int) error {
 		Protocol: "tcp",
 		Address:  fmt.Sprintf("%s:%d", address, port),
 	}
-	engine := sqle.NewDefault(
-		memory.NewDBProvider(
-			h.db,
-		))
-	s, err := server.NewDefaultServer(config, engine)
+	pro := memory.NewDBProvider(h.db)
+
+	engine := sqle.NewDefault(pro)
+
+	s, err := server.NewServer(config, engine, memory.NewSessionBuilder(pro), nil)
 	if err != nil {
 		return err
 	}

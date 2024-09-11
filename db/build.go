@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/dolthub/go-mysql-server/memory"
 	"github.com/dolthub/go-mysql-server/sql"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func (h *Host) Build(sc *sql.Context, spec *spec.Specification, docs []*spec.Doc, raw bool) error {
+
+	pro := memory.NewDBProvider(h.db)
+	session := memory.NewSession(sql.NewBaseSession(), pro)
+	ctx := sql.NewContext(sc, sql.WithSession(session))
+
 	h.base = &sectionInfo{children: make(map[string][]*sectionInfo)}
 	var sis []*sectionInfo
 	for _, d := range docs {
@@ -22,7 +28,7 @@ func (h *Host) Build(sc *sql.Context, spec *spec.Specification, docs []*spec.Doc
 
 	}
 	h.base.children[documentTable] = sis
-	return h.createTables(sc, h.base)
+	return h.createTables(ctx, h.base)
 }
 
 func (h *Host) createTables(sc *sql.Context, bs *sectionInfo) error {
