@@ -2,7 +2,7 @@ package spec
 
 import (
 	"fmt"
-	"log/slog"
+	"iter"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -12,8 +12,106 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (events matter.EventSet, err error) {
+type eventFactory struct{}
+
+func (cf *eventFactory) New(d *Doc, s *Section, row *asciidoc.TableRow, columnMap ColumnIndex, name string) (e *matter.Event, err error) {
+
+	e = matter.NewEvent(s.Base)
+	e.Name = matter.StripTypeSuffixes(name)
+	e.ID, err = readRowID(row, columnMap, matter.TableColumnID)
+	if err != nil {
+		return
+	}
+	e.Priority, err = readRowASCIIDocString(row, columnMap, matter.TableColumnPriority)
+	if err != nil {
+		return
+	}
+	e.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+	var a string
+	a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
+	if err != nil {
+		return
+	}
+	e.Access, _ = ParseAccess(a, types.EntityTypeEvent)
+	if e.Access.Read == matter.PrivilegeUnknown {
+		// Sometimes the invoke access is omitted; we assume it's view
+		e.Access.Read = matter.PrivilegeView
+	}
+	e.Name = CanonicalName(e.Name)
+	return
+}
+
+func (cf *eventFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Attributable][]types.Entity, e *matter.Event) (err error) {
+	e.Description = getDescription(d, s.Set)
 	var rows []*asciidoc.TableRow
+	var headerRowIndex int
+	var columnMap ColumnIndex
+	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+	if headerRowIndex > 0 {
+		firstRow := rows[0]
+		tableCells := firstRow.TableCells()
+		if len(tableCells) > 0 {
+			cv, rowErr := RenderTableCell(tableCells[0])
+			if rowErr == nil {
+				cv = strings.ToLower(cv)
+				if strings.Contains(cv, "fabric sensitive") || strings.Contains(cv, "fabric-sensitive") {
+					e.Access.FabricSensitivity = matter.FabricSensitivitySensitive
+				}
+			}
+		}
+	}
+	if err != nil {
+		if err == ErrNoTableFound {
+			err = nil
+			return
+		}
+		err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
+		return
+	}
+	e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeEventField)
+	if err != nil {
+		return
+	}
+	entityMap[s.Base] = append(entityMap[s.Base], e)
+	fieldMap := make(map[string]*matter.Field, len(e.Fields))
+	for _, f := range e.Fields {
+		fieldMap[f.Name] = f
+	}
+	err = s.mapFields(fieldMap, entityMap)
+	if err != nil {
+		return
+	}
+	for _, f := range e.Fields {
+		f.Name = CanonicalName(f.Name)
+	}
+	return
+}
+
+func (cf *eventFactory) EntityName(s *Section) string {
+	return strings.ToLower(text.TrimCaseInsensitiveSuffix(s.Name, " Event"))
+}
+
+func (cf *eventFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
+	return func(yield func(*Section) bool) {
+		parse.SkimFunc(s.Elements(), func(s *Section) bool {
+			if s.SecType != matter.SectionEvent {
+				return false
+			}
+			return !yield(s)
+		})
+	}
+}
+
+func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (events matter.EventSet, err error) {
+	t := FindFirstTable(s)
+	if t == nil {
+		return nil, nil
+	}
+
+	var ef eventFactory
+	events, err = buildList(d, s, t, entityMap, events, &ef)
+
+	/*var rows []*asciidoc.TableRow
 	var headerRowIndex int
 	var columnMap ColumnIndex
 	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
@@ -65,49 +163,8 @@ func (s *Section) toEvents(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 				slog.Debug("unknown event", "event", name)
 				continue
 			}
-			e.Description = getDescription(d, s.Set)
-			var rows []*asciidoc.TableRow
-			var headerRowIndex int
-			var columnMap ColumnIndex
-			rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
-			if headerRowIndex > 0 {
-				firstRow := rows[0]
-				tableCells := firstRow.TableCells()
-				if len(tableCells) > 0 {
-					cv, rowErr := RenderTableCell(tableCells[0])
-					if rowErr == nil {
-						cv = strings.ToLower(cv)
-						if strings.Contains(cv, "fabric sensitive") || strings.Contains(cv, "fabric-sensitive") {
-							e.Access.FabricSensitivity = matter.FabricSensitivitySensitive
-						}
-					}
-				}
-			}
-			if err != nil {
-				if err == ErrNoTableFound {
-					err = nil
-					continue
-				}
-				err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
-				return
-			}
-			e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeEventField)
-			if err != nil {
-				return
-			}
-			entityMap[s.Base] = append(entityMap[s.Base], e)
-			fieldMap := make(map[string]*matter.Field, len(e.Fields))
-			for _, f := range e.Fields {
-				fieldMap[f.Name] = f
-			}
-			err = s.mapFields(fieldMap, entityMap)
-			if err != nil {
-				return
-			}
-			for _, f := range e.Fields {
-				f.Name = CanonicalName(f.Name)
-			}
+
 		}
-	}
+	}*/
 	return
 }
