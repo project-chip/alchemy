@@ -40,7 +40,7 @@ func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc
 		return
 	}
 
-	destinations := buildDestinations(sp.testPlanRoot, entities)
+	destinations := buildDestinations(sp.testPlanRoot, entities, doc.Errata().TestPlan)
 
 	for newPath, cluster := range destinations {
 
