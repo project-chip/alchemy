@@ -98,7 +98,7 @@ func (b *Ball) discoBallTopLevelSection(doc *spec.Doc, top *spec.Section, docTyp
 	if b.options.reorderSections {
 		sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 		if !ok {
-			slog.Debug("could not determine section order", "docType", docType)
+			slog.Debug("could not determine section order", slog.String("path", doc.Path.Relative), slog.String("docType", docType.String()))
 
 		} else {
 			err := reorderSection(top, sectionOrder)

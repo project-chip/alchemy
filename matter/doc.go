@@ -45,3 +45,10 @@ var DocTypeNames = map[DocType]string{
 	DocTypeSoftAP:                  "SoftAP",
 	DocTypeBaseDeviceType:          "BaseDeviceType",
 }
+
+func (dt DocType) String() string {
+	if name, ok := DocTypeNames[dt]; ok {
+		return name
+	}
+	return "Unknown"
+}

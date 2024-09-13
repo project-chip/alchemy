@@ -36,7 +36,6 @@ func getExistingDataTypes(cxt *discoContext, dp *docParse) {
 		nameKey := strings.ToLower(name)
 		dataType := ss.GetDataType()
 		if dataType == nil {
-			slog.Debug("failed to find data type", "sectionName", ss.Name)
 			continue
 		}
 		dataTypeCategory := getDataTypeCategory(dataType.Name)
@@ -70,7 +69,7 @@ func (b *Ball) getPotentialDataTypes(dc *discoContext, dp *docParse) (err error)
 
 func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, ss *subSection) error {
 	if ss.table.element == nil {
-		slog.Debug("no data type table found", "sectionName", ss.section.Name)
+		slog.Debug("section has no table; skipping attempt to find data type", "sectionName", ss.section.Name)
 		return nil
 	}
 	if b.errata.IgnoreSection(ss.section.Name, errata.DiscoPurposeDataTypePromoteInline) {
@@ -494,7 +493,6 @@ func (b *Ball) canonicalizeDataTypeSectionName(dp *docParse, s *spec.Section, da
 }
 
 func renameDataType(subSections []*subSection, oldName string, newName string) {
-	slog.Debug("renaming data type", "oldName", oldName, "newName", newName)
 	for _, ss := range subSections {
 		renameDataType(ss.children, oldName, newName)
 		if ss.table.element == nil {
@@ -514,6 +512,7 @@ func renameDataType(subSections []*subSection, oldName string, newName string) {
 				continue
 			}
 			if strings.EqualFold(oldName, strings.TrimSpace(vc)) {
+				slog.Debug("renaming data type", "oldName", oldName, "newName", newName)
 				setCellString(typeCell, newName)
 			}
 		}

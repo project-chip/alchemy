@@ -454,8 +454,12 @@ var Erratas = map[string]*Errata{
 		ZAP: ZAP{TemplatePath: "proxy-valid-cluster"},
 	},
 	"src/device_types/OtaRequestor.adoc": {
-		Spec: Spec{
-			Sections: map[string]SpecSection{"ProviderLocation Type": {Skip: SpecPurposeDataTypes}},
+		Disco: Disco{
+			Sections: map[string]DiscoSection{
+				"ProviderLocation Type": {
+					Skip: DiscoPurposeDataTypeRename,
+				},
+			},
 		},
 	},
 	"src/secure_channel/Discovery.adoc": {
@@ -513,7 +517,14 @@ var Erratas = map[string]*Errata{
 	},
 	"src/service_device_management/DiagnosticsThread.adoc": {
 		Disco: Disco{
-			Sections: map[string]DiscoSection{"SecurityPolicy Type": {Skip: DiscoPurposeDataTypeRename}},
+			Sections: map[string]DiscoSection{
+				"SecurityPolicy Type": {
+					Skip: DiscoPurposeDataTypeRename,
+				},
+				"OperationalDatasetComponents Type": {
+					Skip: DiscoPurposeDataTypeRename,
+				},
+			},
 		},
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/thread_nw_diagnostics.adoc",
