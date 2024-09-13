@@ -40,7 +40,7 @@ func LoadErrataConfig(specRoot string) {
 			slog.Warn("error parsing errata file", slog.Any("error", err))
 			return
 		}
-		slog.Warn("Using errata overlay", slog.Any("path", errataPath), slog.Any("count", len(errataOverlay.Errata)))
+		slog.Debug("Using errata overlay", slog.Any("path", errataPath), slog.Any("count", len(errataOverlay.Errata)))
 		Erratas = errataOverlay.Errata
 	}
 
