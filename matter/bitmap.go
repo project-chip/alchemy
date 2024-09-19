@@ -112,7 +112,7 @@ func (bm *Bitmap) Inherit(parent *Bitmap) error {
 	if len(bm.Description) == 0 {
 		bm.Description = parent.Description
 	}
-	slices.SortFunc(mergedBits, func(a, b Bit) int {
+	slices.SortStableFunc(mergedBits, func(a, b Bit) int {
 		return strings.Compare(a.Bit(), b.Bit())
 	})
 	bm.Bits = mergedBits

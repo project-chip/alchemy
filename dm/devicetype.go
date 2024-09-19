@@ -64,7 +64,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 			cx := c.CreateElement("clusters")
 			reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
 			copy(reqs, deviceType.ClusterRequirements)
-			slices.SortFunc(reqs, func(a, b *matter.ClusterRequirement) int {
+			slices.SortStableFunc(reqs, func(a, b *matter.ClusterRequirement) int {
 				cmp := a.ID.Compare(b.ID)
 				if cmp != 0 {
 					return cmp

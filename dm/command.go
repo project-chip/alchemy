@@ -23,7 +23,7 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 		cmds = append(cmds, c)
 	}
 
-	slices.SortFunc(cmds, func(a, b *matter.Command) int {
+	slices.SortStableFunc(cmds, func(a, b *matter.Command) int {
 		if a.ID.Equals(b.ID) {
 			if a.Direction == b.Direction {
 				return 0
