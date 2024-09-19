@@ -14,7 +14,7 @@ import (
 func renderEnums(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
 	enums := make([]*matter.Enum, len(cluster.Enums))
 	copy(enums, cluster.Enums)
-	slices.SortFunc(enums, func(a, b *matter.Enum) int {
+	slices.SortStableFunc(enums, func(a, b *matter.Enum) int {
 		return strings.Compare(a.Name, b.Name)
 	})
 	for _, e := range enums {

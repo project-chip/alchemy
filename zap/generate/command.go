@@ -61,7 +61,7 @@ func generateCommands(commands map[*matter.Command][]*matter.Number, docPath str
 	for command := range commands {
 		remainingCommands = append(remainingCommands, command)
 	}
-	slices.SortFunc(remainingCommands, func(a, b *matter.Command) int { return strings.Compare(a.Name, b.Name) })
+	slices.SortStableFunc(remainingCommands, func(a, b *matter.Command) int { return strings.Compare(a.Name, b.Name) })
 
 	for _, command := range remainingCommands {
 

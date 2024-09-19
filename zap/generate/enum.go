@@ -62,7 +62,7 @@ func generateEnums(enums map[*matter.Enum][]*matter.Number, sourcePath string, c
 		return
 	}
 
-	slices.SortFunc(remainingEnums, func(a, b *matter.Enum) int { return strings.Compare(a.Name, b.Name) })
+	slices.SortStableFunc(remainingEnums, func(a, b *matter.Enum) int { return strings.Compare(a.Name, b.Name) })
 
 	for _, en := range remainingEnums {
 		bme := etree.NewElement("enum")

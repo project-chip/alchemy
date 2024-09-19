@@ -66,7 +66,7 @@ func generateStructs(structs map[*matter.Struct][]*matter.Number, docPath string
 		remainingStructs = append(remainingStructs, s)
 	}
 
-	slices.SortFunc(remainingStructs, func(a, b *matter.Struct) int {
+	slices.SortStableFunc(remainingStructs, func(a, b *matter.Struct) int {
 		return strings.Compare(a.Name, b.Name)
 	})
 
