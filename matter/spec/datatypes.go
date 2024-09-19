@@ -241,7 +241,7 @@ func (d *Doc) getRowConstraint(row *asciidoc.TableRow, columnMap ColumnIndex, co
 	var c constraint.Constraint
 	c, err := constraint.ParseString(val)
 	if err != nil {
-		slog.Warn("failed parsing constraint cell", log.Element("path", d.Path, cell), slog.String("constraint", val))
+		slog.Error("failed parsing constraint cell", log.Element("path", d.Path, cell), slog.String("constraint", val))
 		return &constraint.GenericConstraint{Value: val}
 	}
 	return c

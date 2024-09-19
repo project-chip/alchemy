@@ -270,10 +270,8 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 		if dataType.Entity == nil {
 			dataType.Entity = getCustomDataType(spec, dataType.Name, cluster, field)
 			if dataType.Entity == nil {
-
-				slog.Warn("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field))
+				slog.Error("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field))
 			}
-
 		}
 		if cluster == nil || dataType.Entity == nil {
 			return
@@ -370,7 +368,7 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 		} else {
 			clusterName = "naked"
 		}
-		slog.Warn("ambiguous data type", "model", m, "cluster", clusterName)
+		slog.Warn("ambiguous data type", "model", m.Source(), "cluster", clusterName)
 	}
 	return nil
 }
