@@ -350,8 +350,18 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 			}
 		}
 	}
-	// Can't disambiguate out this data model
 
+	var nakedEntities []types.Entity
+	for m, c := range entities {
+		if c == nil {
+			nakedEntities = append(nakedEntities, m)
+		}
+	}
+	if len(nakedEntities) == 1 {
+		return nakedEntities[0]
+	}
+
+	// Can't disambiguate out this data model
 	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name, log.Path("source", field))
 	for m, c := range entities {
 		var clusterName string
