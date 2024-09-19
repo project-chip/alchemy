@@ -5,7 +5,13 @@ type SpecSection struct {
 }
 
 type Spec struct {
-	Sections map[string]SpecSection `yaml:"sections,omitempty"`
+	UtilityInclude bool                   `yaml:"utility-include,omitempty"`
+	Sections       map[string]SpecSection `yaml:"sections,omitempty"`
+}
+
+func GetSpec(path string) *Spec {
+	e := GetErrata(path)
+	return &e.Spec
 }
 
 func (spec *Spec) IgnoreSection(sectionName string, purpose SpecPurpose) bool {

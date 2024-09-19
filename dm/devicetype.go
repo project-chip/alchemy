@@ -9,12 +9,13 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func getDeviceTypePath(dmRoot string, path spec.Path) string {
+func getDeviceTypePath(dmRoot string, path asciidoc.Path) string {
 	p := path.Base()
 	return filepath.Join(dmRoot, fmt.Sprintf("/device_types/%s.xml", strings.TrimSuffix(p, path.Ext())))
 }

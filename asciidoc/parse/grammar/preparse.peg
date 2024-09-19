@@ -4,7 +4,7 @@ PreParse = content:(PreParseElement)+ EndOfFile {
     return flat(content.([]any)), nil
 }
 
-PreParseElement = !EndOfFile BeginningOfLine element:(IfDefBlock / IfNDefBlock / IfEvalBlock / AttributeEntry / AttributeReset / PreParseLine) EndOfLine {
+PreParseElement = !EndOfFile BeginningOfLine element:(IfDefBlock / IfNDefBlock / IfEvalBlock / AttributeEntry / AttributeReset / FileInclude / PreParseLine) EndOfLine {
     return element, nil
 }
 
