@@ -201,6 +201,8 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeMessageID
 	case "tag":
 		dt.BaseType = BaseDataTypeTag
+	case "namespace":
+		dt.BaseType = BaseDataTypeNamespaceID
 	case "locationdesc":
 		dt.BaseType = BaseDataTypeCustom
 		dt.Name = "LocationDescriptorStruct"
