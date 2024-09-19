@@ -8,11 +8,12 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func getAppClusterPath(dmRoot string, path spec.Path, clusterName string) string {
+func getAppClusterPath(dmRoot string, path asciidoc.Path, clusterName string) string {
 	p := path.Base()
 	file := strings.TrimSuffix(p, path.Ext())
 	if len(clusterName) > 0 {

@@ -7,3 +7,20 @@ FileInclude = !"\\" "include::" path:(FileIncludePath) attributes:(InlineAttribu
 FileIncludePath = !_ path:Path {
     return path, nil
 }
+
+
+IncludeParse = content:(IncludeParseElement)+ EndOfFile {
+    debugPosition(c, "include preparse: %T\n", flat(content.([]any)))
+    return flat(content.([]any)), nil
+}
+
+IncludeParseElement = !EndOfFile BeginningOfLine element:(FileInclude / IncludeParseLine) EndOfLine {
+    return element, nil
+}
+
+IncludeParseLine = content:[^\r\n]* &EndOfLine {
+     debugPosition(c, "matched include parse line: \"%s\"\n", string(c.text))
+    return flat(append(content.([]any), &asciidoc.NewLine{})), nil
+}
+
+IncludeParseLineElement = ([^\r\n]+ )

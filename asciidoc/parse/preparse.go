@@ -7,12 +7,34 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/project-chip/alchemy/asciidoc"
 )
 
-func PreParseFile(context *AttributeContext, path string) (string, error) {
+type PreParseContext interface {
+	IsSet(name string) bool
+	Get(name string) any
+	Set(name string, value any)
+	Unset(name string)
+	GetCounterState(name string, initialValue string) (*CounterState, error)
+	ResolvePath(path string) (asciidoc.Path, error)
+	ShouldIncludeFile(path asciidoc.Path) bool
+}
+
+type CounterType uint8
+
+const (
+	CounterTypeInteger CounterType = iota
+	CounterTypeUpperCase
+	CounterTypeLowerCase
+)
+
+type CounterState struct {
+	CounterType CounterType
+	Value       int
+}
+
+func PreParseFile(context PreParseContext, path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		slog.Error("error reading file for preparse", slog.String("path", path), slog.Any("error", err))
@@ -21,37 +43,33 @@ func PreParseFile(context *AttributeContext, path string) (string, error) {
 	return PreParseReader(context, path, file)
 }
 
-func PreParseReader(context *AttributeContext, path string, reader io.Reader) (string, error) {
-	start := time.Now()
+func PreParseReader(context PreParseContext, path string, reader io.Reader) (string, error) {
+	vals, err := preParseReaderToSet(context, path, reader)
+	if err != nil {
+		return "", err
+	}
+	return renderPreParsedDoc(vals)
+}
+
+func preParseReaderToSet(context PreParseContext, path string, reader io.Reader) (asciidoc.Set, error) {
 	vals, err := ParseReader(path, reader, Entrypoint("PreParse"))
 	if err != nil {
 		slog.Error("error preparsing file", slog.String("path", path), slog.Any("error", err))
-		return "", err
+		return nil, err
 	}
-	elapsed := time.Since(start)
-
-	switch vals := vals.(type) {
-	case asciidoc.Set:
-		//		fmt.Printf("coalescing asciidoc...\n")
-
+	set, ok := vals.(asciidoc.Set)
+	if ok {
 		result := asciidoc.NewWriter(nil)
-		err = preparse(context, asciidoc.NewReader(vals), result)
+		err = preparseElements(context, asciidoc.NewReader(set), result)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-		if debugParser {
-			fmt.Printf("\n\n\n\n\n\n")
-			dump(0, result.Set()...)
-			fmt.Printf("elapsed: %s\n", elapsed.String())
-		}
-		return renderPreParsedDoc(result.Set())
-	default:
-		return "", fmt.Errorf("unexpected type in PreParseReader: %T", vals)
+		return result.Set(), nil
 	}
+	return nil, fmt.Errorf("unexpected type in PreParseReader: %T", vals)
 }
 
-func preparse(context *AttributeContext, r *asciidoc.Reader, w *asciidoc.Writer) (err error) {
-
+func preparseElements(context PreParseContext, r *asciidoc.Reader, w *asciidoc.Writer) (err error) {
 	for {
 		el := r.Read()
 		if el == nil {
@@ -66,20 +84,42 @@ func preparse(context *AttributeContext, r *asciidoc.Reader, w *asciidoc.Writer)
 			err = renderReference(context, asciidoc.AttributeName(el.Name()), w)
 		case *asciidoc.IfDefBlock:
 			if el.Eval(context) {
-				err = preparse(context, asciidoc.NewReader(el.Set), w)
+				err = preparseElements(context, asciidoc.NewReader(el.Set), w)
 			}
 		case *asciidoc.IfNDefBlock:
 			if el.Eval(context) {
-				err = preparse(context, asciidoc.NewReader(el.Set), w)
+				err = preparseElements(context, asciidoc.NewReader(el.Set), w)
 			}
 		case *asciidoc.IfEvalBlock:
 			var include bool
 			include, err = el.Eval(context)
 			if err == nil && include {
-				err = preparse(context, asciidoc.NewReader(el.Set), w)
+				err = preparseElements(context, asciidoc.NewReader(el.Set), w)
 			}
 		case *asciidoc.Counter:
 			err = renderCounter(context, el, w)
+		case *asciidoc.FileInclude:
+			rawPathWriter := asciidoc.NewWriter(nil)
+			err = preparseElements(context, asciidoc.NewReader(el.Set), rawPathWriter)
+
+			if err != nil {
+				return
+			}
+			var rawPath string
+			rawPath, err = renderPreParsedDoc(rawPathWriter.Set())
+			if err != nil {
+				return
+			}
+			var path asciidoc.Path
+			path, err = context.ResolvePath(rawPath)
+			if err != nil {
+				return
+			}
+			if context.ShouldIncludeFile(path) {
+				includeFile(context, path.Absolute, w)
+			} else {
+				w.Write(el)
+			}
 		default:
 			w.Write(el)
 		}
@@ -89,7 +129,20 @@ func preparse(context *AttributeContext, r *asciidoc.Reader, w *asciidoc.Writer)
 	}
 }
 
-func renderReference(context *AttributeContext, name asciidoc.AttributeName, w *asciidoc.Writer) error {
+func includeFile(context PreParseContext, path string, w *asciidoc.Writer) error {
+	file, err := os.Open(path)
+	if err != nil {
+		slog.Error("error reading file for preparse", slog.String("path", path), slog.Any("error", err))
+		return err
+	}
+	set, err := preParseReaderToSet(context, path, file)
+	if err != nil {
+		return err
+	}
+	return preparseElements(context, asciidoc.NewReader(set), w)
+}
+
+func renderReference(context PreParseContext, name asciidoc.AttributeName, w *asciidoc.Writer) error {
 	a := context.Get(string(name))
 	if a == nil {
 		w.Write(asciidoc.NewString(fmt.Sprintf("{%s}", name)))
@@ -101,7 +154,7 @@ func renderReference(context *AttributeContext, name asciidoc.AttributeName, w *
 	case *asciidoc.String:
 		w.Write(a)
 	case asciidoc.Set:
-		return preparse(context, asciidoc.NewReader(a), w)
+		return preparseElements(context, asciidoc.NewReader(a), w)
 	default:
 		return fmt.Errorf("unknown type rendering reference: %T", a)
 	}
@@ -120,6 +173,9 @@ func renderPreParsedDoc(els asciidoc.Set) (string, error) {
 			sb.WriteRune('\n')
 		case *asciidoc.CharacterReplacementReference:
 			sb.WriteString(el.ReplacementValue())
+		case *asciidoc.FileInclude:
+			sb.WriteString(el.Raw())
+			sb.WriteRune('\n')
 		default:
 			return "", fmt.Errorf("unexpected type rendering preparsed doc: %T", el)
 		}
@@ -127,66 +183,35 @@ func renderPreParsedDoc(els asciidoc.Set) (string, error) {
 	return sb.String(), nil
 }
 
-func renderCounter(context *AttributeContext, c *asciidoc.Counter, w *asciidoc.Writer) error {
+func renderCounter(context PreParseContext, c *asciidoc.Counter, w *asciidoc.Writer) error {
 
-	cc, ok := context.counters[c.Name]
-	if !ok {
-		if context.counters == nil {
-			context.counters = make(map[string]*counter)
-		}
-		cc = &counter{}
-		context.counters[c.Name] = cc
-		switch len(c.InitialValue) {
-		case 0:
-			cc.value = 1
-			cc.counterType = counterTypeInteger
-		case 1:
-			r := c.InitialValue[0]
-			if r >= 'a' && r <= 'z' {
-				cc.value = int(r) - int('a')
-				cc.counterType = counterTypeLowerCase
-			} else if r >= 'A' && r <= 'Z' {
-				cc.value = int(r) - int('A')
-				cc.counterType = counterTypeUpperCase
-			} else {
-				var err error
-				cc.value, err = strconv.Atoi(c.InitialValue)
-				if err != nil {
-					return err
-				}
-				cc.counterType = counterTypeInteger
-			}
-		default:
-			var err error
-			cc.value, err = strconv.Atoi(c.InitialValue)
-			if err != nil {
-				return err
-			}
-			cc.counterType = counterTypeInteger
-		}
+	cc, err := context.GetCounterState(c.Name, c.InitialValue)
+	if err != nil {
+		return err
 	}
+
 	if c.Display {
-		switch cc.counterType {
-		case counterTypeInteger:
-			w.Write(asciidoc.NewString(strconv.Itoa(cc.value)))
-		case counterTypeLowerCase:
-			r := rune(int('a') + cc.value)
+		switch cc.CounterType {
+		case CounterTypeInteger:
+			w.Write(asciidoc.NewString(strconv.Itoa(cc.Value)))
+		case CounterTypeLowerCase:
+			r := rune(int('a') + cc.Value)
 			w.Write(asciidoc.NewString(string(r)))
-		case counterTypeUpperCase:
-			r := rune(int('A') + cc.value)
+		case CounterTypeUpperCase:
+			r := rune(int('A') + cc.Value)
 			w.Write(asciidoc.NewString(string(r)))
 		}
 	}
-	switch cc.counterType {
-	case counterTypeInteger:
-		cc.value += 1
-	case counterTypeUpperCase:
-		if cc.value < 'Z' {
-			cc.value += 1
+	switch cc.CounterType {
+	case CounterTypeInteger:
+		cc.Value += 1
+	case CounterTypeUpperCase:
+		if cc.Value < 'Z' {
+			cc.Value += 1
 		}
-	case counterTypeLowerCase:
-		if cc.value < 'z' {
-			cc.value += 1
+	case CounterTypeLowerCase:
+		if cc.Value < 'z' {
+			cc.Value += 1
 		}
 	}
 	return nil

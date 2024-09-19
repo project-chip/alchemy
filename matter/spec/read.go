@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
@@ -35,7 +36,7 @@ func read(b []byte, path string, rootPath string) (doc *Doc, err error) {
 		return nil, fmt.Errorf("read error in %s: %w", path, err)
 	}
 
-	var p Path
+	var p asciidoc.Path
 	p, err = NewDocPath(path, rootPath)
 	if err != nil {
 		return nil, err

@@ -48,7 +48,7 @@ var Command = &cobra.Command{
 					return fmt.Errorf("error resolving doc path %s: %w", f, err)
 				}
 
-				doc, err := spec.ParseFile(path, asciiSettings...)
+				doc, err := spec.ParseFile(path, ".", asciiSettings...)
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
