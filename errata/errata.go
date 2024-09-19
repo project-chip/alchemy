@@ -225,6 +225,8 @@ var Erratas = map[string]*Errata{
 		Spec: Spec{
 			Sections: map[string]SpecSection{
 				"ErrorStateEnum GeneralErrors Range": {Skip: SpecPurposeDataTypesEnum},
+				"Resume Command":                     {Skip: SpecPurposeCommandArguments},
+				"Pause Command":                      {Skip: SpecPurposeCommandArguments},
 			},
 		},
 	},
