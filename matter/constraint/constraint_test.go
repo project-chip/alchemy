@@ -71,6 +71,13 @@ type constraintTest struct {
 
 var constraintTests = []constraintTest{
 	{
+		constraint: "max 128{32}",
+		asciiDoc:   "max 128{32}",
+		dataType:   &types.DataType{BaseType: types.BaseDataTypeString},
+		max:        types.NewIntDataTypeExtreme(128, types.NumberFormatInt),
+		zapMax:     "128",
+	},
+	{
 		constraint: "True",
 		asciiDoc:   "true",
 		dataType:   &types.DataType{BaseType: types.BaseDataTypeBoolean},

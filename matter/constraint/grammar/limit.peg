@@ -1,5 +1,5 @@
 
-Limit <- limit:(MSLimit / NullLimit / EmptyLimit / StringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / IntLimit / Term / LengthLimit / ReferenceLimit / UnspecifiedLimit ) {
+Limit <- limit:(MSLimit / NullLimit / EmptyLimit / StringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / CharacterLimit / IntLimit / Term / LengthLimit / ReferenceLimit / UnspecifiedLimit ) {
 	debug("found limit %s\n", string(c.text))
 	return limit.(Limit), nil
 }
