@@ -1,0 +1,41 @@
+{
+package pics
+
+import (
+    "fmt"
+    "strconv"
+)
+
+func debug(format string, a ...any) (n int, err error) {
+	//return
+	return fmt.Fprintf(os.Stdout, format, a...)
+}
+
+}
+
+
+PICS <- pics:( Logical ) EOF {
+    return pics, nil
+}
+
+
+PICSOp <- not:'!'? pics:PICSIdentifier &PICSSeparator {
+    debug("matched pics op %s\n", string(c.text))
+    p := pics.(string)
+    pe := &PICSExpression{PICS:p}
+    if not != nil {
+        pe.Not = true
+    }
+    return pe, nil
+}
+
+PICSIdentifier <- [a-z]i ([a-z0-9]i / '.' / '-' / '_')* {
+    debug("matched pics %s\n", string(c.text))
+    return string(c.text), nil
+}
+
+EOF <- !.
+
+_ "whitespace" <- [ \t\r\n]*
+
+PICSSeparator <- _ / &EOF
