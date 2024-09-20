@@ -123,7 +123,9 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 		commands[c] = []*matter.Number{}
 	}
 
-	xml.SetOrCreateSimpleElement(cle, "domain", matter.DomainNames[configurator.Doc.Domain])
+	de := xml.SetOrCreateSimpleElement(cle, "domain", "")
+	de.CreateAttr("name", matter.DomainNames[configurator.Doc.Domain])
+	de.SetText("")
 	xml.SetOrCreateSimpleElement(cle, "name", cluster.Name, "domain")
 	patchNumberElement(xml.SetOrCreateSimpleElement(cle, "code", "", "name", "domain"), cluster.ID)
 	xml.CreateSimpleElementIfNotExists(cle, "define", define, "code", "name", "domain")
