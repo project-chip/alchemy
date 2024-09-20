@@ -72,6 +72,7 @@ const (
 	BaseDataTypeSubjectID
 	BaseDataTypeTransactionID
 	BaseDataTypeNodeID
+	BaseDataTypeNamespaceID
 	BaseDataTypeIeeeAddress
 	BaseDataTypeEntryIndex
 	BaseDataTypeDataVersion
@@ -85,7 +86,6 @@ const (
 	BaseDataTypeHardwareAddress
 
 	BaseDataTypeSemanticTag
-	BaseDataTypeNamespace
 	BaseDataTypeTag
 
 	BaseDataTypeMessageID
@@ -275,7 +275,7 @@ func BaseDataTypeName(baseDataType BaseDataType) string {
 		return "hwadr"
 	case BaseDataTypeSemanticTag:
 		return "semtag"
-	case BaseDataTypeNamespace:
+	case BaseDataTypeNamespaceID:
 		return "namespace"
 	case BaseDataTypeTag:
 		return "tag"

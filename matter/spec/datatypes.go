@@ -241,7 +241,7 @@ func (d *Doc) getRowConstraint(row *asciidoc.TableRow, columnMap ColumnIndex, co
 	var c constraint.Constraint
 	c, err := constraint.ParseString(val)
 	if err != nil {
-		slog.Warn("failed parsing constraint cell", log.Element("path", d.Path, cell), slog.String("constraint", val))
+		slog.Error("failed parsing constraint cell", log.Element("path", d.Path, cell), slog.String("constraint", val))
 		return &constraint.GenericConstraint{Value: val}
 	}
 	return c
@@ -276,6 +276,8 @@ func (d *Doc) buildConstraintValue(els asciidoc.Set, sb *strings.Builder) {
 			sb.WriteRune(' ')
 		case asciidoc.HasElements:
 			d.buildConstraintValue(v.Elements(), sb)
+		case asciidoc.AttributeReference:
+			sb.WriteString(fmt.Sprintf("{%s}", v.Name()))
 		default:
 			slog.Warn("unknown constraint value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", el))
 		}

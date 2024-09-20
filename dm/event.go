@@ -22,7 +22,7 @@ func renderEvents(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err
 		evs = append(evs, e)
 	}
 
-	slices.SortFunc(evs, func(a, b *matter.Event) int {
+	slices.SortStableFunc(evs, func(a, b *matter.Event) int {
 		return a.ID.Compare(b.ID)
 	})
 	events := c.CreateElement("events")

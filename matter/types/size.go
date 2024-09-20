@@ -53,7 +53,7 @@ func (dt *DataType) Size() int {
 		return 16
 	case BaseDataTypeSemanticTag:
 		return 4
-	case BaseDataTypeNamespace:
+	case BaseDataTypeNamespaceID:
 		return 1
 	case BaseDataTypeTag:
 		return 1

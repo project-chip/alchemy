@@ -6,36 +6,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/files"
 )
 
-type Path struct {
-	Absolute string
-	Relative string
-}
-
-func (p Path) String() string {
-	return p.Absolute
-}
-
-func (p Path) Base() string {
-	return filepath.Base(p.Absolute)
-}
-
-func (p Path) Ext() string {
-	return filepath.Ext(p.Absolute)
-}
-
-func (p Path) Dir() string {
-	return filepath.Dir(p.Absolute)
-}
-
-func (p Path) Origin() (path string, line int) {
-	return p.Relative, -1
-}
-
-func NewSpecPath(path string, rootPath string) (Path, error) {
-	var p Path
+func NewSpecPath(path string, rootPath string) (asciidoc.Path, error) {
+	var p asciidoc.Path
 	if !filepath.IsAbs(path) {
 		var err error
 		p.Absolute, err = filepath.Abs(path)
@@ -56,8 +32,8 @@ func NewSpecPath(path string, rootPath string) (Path, error) {
 	return p, err
 }
 
-func NewDocPath(path string, rootPath string) (Path, error) {
-	var p Path
+func NewDocPath(path string, rootPath string) (asciidoc.Path, error) {
+	var p asciidoc.Path
 	if !filepath.IsAbs(path) {
 		var err error
 		p.Absolute, err = filepath.Abs(path)

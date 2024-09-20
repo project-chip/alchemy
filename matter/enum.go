@@ -76,7 +76,7 @@ func (e *Enum) Inherit(parent *Enum) error {
 	if len(e.Description) == 0 {
 		e.Description = parent.Description
 	}
-	slices.SortFunc(mergedValues, func(a, b *EnumValue) int {
+	slices.SortStableFunc(mergedValues, func(a, b *EnumValue) int {
 		return a.Value.Compare(b.Value)
 	})
 	e.Values = mergedValues

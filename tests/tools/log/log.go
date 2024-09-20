@@ -52,7 +52,7 @@ func main() {
 		cc.elapsed += count.elapsed
 	}
 
-	slices.SortFunc(rcs, func(a, b *ruleCollection) int {
+	slices.SortStableFunc(rcs, func(a, b *ruleCollection) int {
 		if a.elapsed < b.elapsed {
 			return -1
 		} else if a.elapsed > b.elapsed {
@@ -73,7 +73,7 @@ func main() {
 
 		}
 		fmt.Printf("\tPaths: %d: Count: %d Elapsed: %s (avg. %s\n", len(rc.calls), totalCount, totalElapsed.String(), (totalElapsed / time.Duration(totalCount)).String())
-		slices.SortFunc(calls, func(a, b *callCount) int {
+		slices.SortStableFunc(calls, func(a, b *callCount) int {
 			if a.elapsed < b.elapsed {
 				return 1
 			} else if a.elapsed > b.elapsed {

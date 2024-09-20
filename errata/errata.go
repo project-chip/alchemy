@@ -22,6 +22,9 @@ func GetErrata(path string) *Errata {
 }
 
 var Erratas = map[string]*Errata{
+	"src/matter-defines.adoc": {
+		Spec: Spec{UtilityInclude: true},
+	},
 	"src/app_clusters/AirQuality.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
@@ -128,6 +131,9 @@ var Erratas = map[string]*Errata{
 			},
 		},
 	},
+	"src/app_clusters/ModeBase_ModeTag_BaseValues.adoc": {
+		Spec: Spec{UtilityInclude: true},
+	},
 	"src/app_clusters/ModeSelect.adoc": {
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/modeselect.adoc",
@@ -219,8 +225,16 @@ var Erratas = map[string]*Errata{
 		Spec: Spec{
 			Sections: map[string]SpecSection{
 				"ErrorStateEnum GeneralErrors Range": {Skip: SpecPurposeDataTypesEnum},
+				"Resume Command":                     {Skip: SpecPurposeCommandArguments},
+				"Pause Command":                      {Skip: SpecPurposeCommandArguments},
 			},
 		},
+	},
+	"src/app_clusters/OperationalState_ErrorStateEnum_BaseValues.adoc": {
+		Spec: Spec{UtilityInclude: true},
+	},
+	"src/app_clusters/OperationalState_OperationalStateEnum_BaseValues.adoc": {
+		Spec: Spec{UtilityInclude: true},
 	},
 	"src/app_clusters/OperationalState_Oven.adoc": {
 		TestPlan: TestPlan{
@@ -454,8 +468,12 @@ var Erratas = map[string]*Errata{
 		ZAP: ZAP{TemplatePath: "proxy-valid-cluster"},
 	},
 	"src/device_types/OtaRequestor.adoc": {
-		Spec: Spec{
-			Sections: map[string]SpecSection{"ProviderLocation Type": {Skip: SpecPurposeDataTypes}},
+		Disco: Disco{
+			Sections: map[string]DiscoSection{
+				"ProviderLocation Type": {
+					Skip: DiscoPurposeDataTypeRename,
+				},
+			},
 		},
 	},
 	"src/secure_channel/Discovery.adoc": {
@@ -513,7 +531,14 @@ var Erratas = map[string]*Errata{
 	},
 	"src/service_device_management/DiagnosticsThread.adoc": {
 		Disco: Disco{
-			Sections: map[string]DiscoSection{"SecurityPolicy Type": {Skip: DiscoPurposeDataTypeRename}},
+			Sections: map[string]DiscoSection{
+				"SecurityPolicy Type": {
+					Skip: DiscoPurposeDataTypeRename,
+				},
+				"OperationalDatasetComponents Type": {
+					Skip: DiscoPurposeDataTypeRename,
+				},
+			},
 		},
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/thread_nw_diagnostics.adoc",

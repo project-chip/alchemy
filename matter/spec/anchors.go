@@ -162,6 +162,7 @@ func (doc *Doc) makeAnchor(parent parse.HasElements, element asciidoc.Element, c
 	if id == "" {
 		return nil
 	}
+	slog.Debug("Creating anchor for section with cross reference", slog.String("id", id), slog.String("path", doc.Path.Relative))
 	a := NewAnchor(doc, id, element, parent, labelSet...)
 	return a
 }
