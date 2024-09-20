@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
@@ -56,31 +57,34 @@ func (cf *commandFactory) New(d *Doc, s *Section, row *asciidoc.TableRow, column
 func (cf *commandFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Attributable][]types.Entity, c *matter.Command) (err error) {
 	c.Description = getDescription(d, s.Elements())
 
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
-	if err != nil {
-		if err == ErrNoTableFound {
-			err = nil
-		} else {
-			slog.Warn("No valid command parameter table found", log.Element("path", d.Path, s.Base), "command", c.Name)
-			err = nil
+	if !d.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCommandArguments) {
+		var rows []*asciidoc.TableRow
+		var headerRowIndex int
+		var columnMap ColumnIndex
+		rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+		if err != nil {
+			if err == ErrNoTableFound {
+				err = nil
+			} else {
+				slog.Warn("No valid command parameter table found", log.Element("path", d.Path, s.Base), "command", c.Name)
+				err = nil
+			}
+			return
 		}
-		return
+		c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeCommandField)
+		if err != nil {
+			return
+		}
+		fieldMap := make(map[string]*matter.Field, len(c.Fields))
+		for _, f := range c.Fields {
+			fieldMap[f.Name] = f
+		}
+		err = s.mapFields(fieldMap, entityMap)
+		if err != nil {
+			return
+		}
 	}
-	c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeCommandField)
-	if err != nil {
-		return
-	}
-	fieldMap := make(map[string]*matter.Field, len(c.Fields))
-	for _, f := range c.Fields {
-		fieldMap[f.Name] = f
-	}
-	err = s.mapFields(fieldMap, entityMap)
-	if err != nil {
-		return
-	}
+
 	c.Name = CanonicalName(c.Name)
 	return
 }

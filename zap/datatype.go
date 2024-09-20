@@ -255,7 +255,7 @@ func DataTypeName(dataType *types.DataType) string {
 		return "octet_string"
 	case types.BaseDataTypeSemanticTag:
 		return "semtag"
-	case types.BaseDataTypeNamespace:
+	case types.BaseDataTypeNamespaceID:
 		return "namespace"
 	case types.BaseDataTypeTag:
 		return "tag"
@@ -402,7 +402,7 @@ func ToBaseDataType(s string) types.BaseDataType {
 	case "semtag":
 		return types.BaseDataTypeSemanticTag
 	case "namespace":
-		return types.BaseDataTypeNamespace
+		return types.BaseDataTypeNamespaceID
 	case "tag":
 		return types.BaseDataTypeTag
 	case "array":

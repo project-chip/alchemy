@@ -270,10 +270,8 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 		if dataType.Entity == nil {
 			dataType.Entity = getCustomDataType(spec, dataType.Name, cluster, field)
 			if dataType.Entity == nil {
-
-				slog.Warn("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field))
+				slog.Error("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field))
 			}
-
 		}
 		if cluster == nil || dataType.Entity == nil {
 			return
@@ -350,8 +348,18 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 			}
 		}
 	}
-	// Can't disambiguate out this data model
 
+	var nakedEntities []types.Entity
+	for m, c := range entities {
+		if c == nil {
+			nakedEntities = append(nakedEntities, m)
+		}
+	}
+	if len(nakedEntities) == 1 {
+		return nakedEntities[0]
+	}
+
+	// Can't disambiguate out this data model
 	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name, log.Path("source", field))
 	for m, c := range entities {
 		var clusterName string
@@ -360,7 +368,7 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 		} else {
 			clusterName = "naked"
 		}
-		slog.Warn("ambiguous data type", "model", m, "cluster", clusterName)
+		slog.Warn("ambiguous data type", "model", m.Source(), "cluster", clusterName)
 	}
 	return nil
 }

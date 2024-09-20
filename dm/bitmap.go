@@ -13,7 +13,7 @@ import (
 func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
 	bitmaps := make([]*matter.Bitmap, len(cluster.Bitmaps))
 	copy(bitmaps, cluster.Bitmaps)
-	slices.SortFunc(bitmaps, func(a, b *matter.Bitmap) int {
+	slices.SortStableFunc(bitmaps, func(a, b *matter.Bitmap) int {
 		return strings.Compare(a.Name, b.Name)
 	})
 	for _, bm := range bitmaps {

@@ -17,7 +17,7 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 	}
 	as := make([]*matter.Field, len(cluster.Attributes))
 	copy(as, cluster.Attributes)
-	slices.SortFunc(as, func(a, b *matter.Field) int {
+	slices.SortStableFunc(as, func(a, b *matter.Field) int {
 		return a.ID.Compare(b.ID)
 	})
 	attributes := c.CreateElement("attributes")

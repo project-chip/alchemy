@@ -72,7 +72,7 @@ func Entities(spec *spec.Specification, specEntities map[string][]types.Entity, 
 	for _, path := range missingZapEntities {
 		slog.Warn("missing from spec entities", slog.String("path", path))
 	}
-	slices.SortFunc(diffs, func(a, b *ClusterDifferences) int {
+	slices.SortStableFunc(diffs, func(a, b *ClusterDifferences) int {
 		return strings.Compare(a.Name, b.Name)
 	})
 	return

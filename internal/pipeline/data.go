@@ -16,7 +16,7 @@ func NewData[T any](path string, content T) *Data[T] {
 }
 
 func SortData[T any](data []*Data[T]) {
-	slices.SortFunc[[]*Data[T], *Data[T]](data, func(a *Data[T], b *Data[T]) int {
+	slices.SortStableFunc[[]*Data[T], *Data[T]](data, func(a *Data[T], b *Data[T]) int {
 		return strings.Compare(a.Path, b.Path)
 	})
 }

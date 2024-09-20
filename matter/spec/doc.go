@@ -17,7 +17,7 @@ import (
 type Doc struct {
 	sync.RWMutex
 
-	Path Path
+	Path asciidoc.Path
 
 	Base *asciidoc.Document
 	asciidoc.Set
@@ -42,7 +42,7 @@ type Doc struct {
 	errata *errata.Errata
 }
 
-func newDoc(d *asciidoc.Document, path Path) (*Doc, error) {
+func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {
 	doc := &Doc{
 		Base:           d,
 		Path:           path,

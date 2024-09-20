@@ -64,6 +64,11 @@ func renderConstraintElement(name string, con constraint.Constraint, dataType *t
 			cx.CreateAttr("type", "max")
 		}
 		cx.CreateAttr("value", renderConstraintLimit(con.Maximum, dataType))
+		if characterLimit, ok := con.Maximum.(*constraint.CharacterLimit); ok {
+			cx = parent.CreateElement(name)
+			cx.CreateAttr("type", "maxCodePoints")
+			cx.CreateAttr("value", renderConstraintLimit(characterLimit.CodepointCount, dataType))
+		}
 	case *constraint.ListConstraint:
 		if mc, ok := con.Constraint.(*constraint.MaxConstraint); ok {
 			cx = parent.CreateElement(name)

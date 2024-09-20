@@ -13,20 +13,20 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-func ParseFile(path Path, attributes ...asciidoc.AttributeName) (*Doc, error) {
+func ParseFile(path asciidoc.Path, specRoot string, attributes ...asciidoc.AttributeName) (*Doc, error) {
 
 	contents, err := os.Open(path.Absolute)
 	if err != nil {
 		return nil, err
 	}
 	defer contents.Close()
-	return parseReader(contents, path, attributes...)
+	return parseReader(contents, path, specRoot, attributes...)
 }
 
-func parseReader(r io.Reader, path Path, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
+func parseReader(r io.Reader, path asciidoc.Path, specRoot string, attributes ...asciidoc.AttributeName) (doc *Doc, err error) {
 	var d *asciidoc.Document
 
-	d, err = parseDocument(r, path, attributes...)
+	d, err = parseDocument(r, path, specRoot, attributes...)
 
 	if err != nil {
 		return nil, fmt.Errorf("parse error in %s: %w", path, err)
@@ -40,8 +40,11 @@ func parseReader(r io.Reader, path Path, attributes ...asciidoc.AttributeName) (
 	return doc, nil
 }
 
-func parseDocument(r io.Reader, path Path, attributes ...asciidoc.AttributeName) (*asciidoc.Document, error) {
-	ac := &parse.AttributeContext{}
+func parseDocument(r io.Reader, path asciidoc.Path, specRoot string, attributes ...asciidoc.AttributeName) (*asciidoc.Document, error) {
+	ac := &preparseContext{
+		docPath:  path,
+		rootPath: specRoot,
+	}
 
 	for _, a := range attributes {
 		ac.Set(string(a), nil)
@@ -63,8 +66,6 @@ func parseDocument(r io.Reader, path Path, attributes ...asciidoc.AttributeName)
 
 	return parse.String(path.Relative, parsed)
 }
-
-type parseOption func(p *Parser)
 
 type Parser struct {
 	rootPath   string
@@ -92,13 +93,13 @@ func (p Parser) Type() pipeline.ProcessorType {
 
 func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
 
-	var path Path
+	var path asciidoc.Path
 	path, err = NewSpecPath(input.Path, p.rootPath)
 	if err != nil {
 		return
 	}
 	var doc *Doc
-	doc, err = ParseFile(path, p.attributes...)
+	doc, err = ParseFile(path, p.rootPath, p.attributes...)
 	if err != nil {
 		return
 	}

@@ -12,7 +12,7 @@ import (
 func renderStructs(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
 	structs := make([]*matter.Struct, len(cluster.Structs))
 	copy(structs, cluster.Structs)
-	slices.SortFunc(structs, func(a, b *matter.Struct) int {
+	slices.SortStableFunc(structs, func(a, b *matter.Struct) int {
 		return strings.Compare(a.Name, b.Name)
 	})
 	for _, s := range structs {

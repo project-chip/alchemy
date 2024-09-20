@@ -9,6 +9,12 @@ LengthLimit <- "len("i _ ref:PascalCase _ ')' {
 	return &LengthLimit{Value:r}, nil
 }
 
+CharacterLimit <- maxBytes:IntLimit "{" maxCodepoints:IntLimit "}" {
+	mb := maxBytes.(Limit)
+	mcp := maxCodepoints.(Limit)
+	return &CharacterLimit{ByteCount:mb, CodepointCount:mcp}, nil
+}
+
 TempLimit <- f:( Float / Integer ) "°C" {
 	debug("found temp %s\n", string(c.text))
 	switch f := f.(type) {
@@ -41,7 +47,6 @@ IntLimit <- i:Integer e:Exp? {
 	debug("found int limit %s\n", string(c.text))
 	return &IntLimit{Value:i.(int64)}, nil
 }
-
 
 HexLimit <- h:Hex {
 	debug("found hex limit %s\n", string(c.text))

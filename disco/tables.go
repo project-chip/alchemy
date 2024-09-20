@@ -323,7 +323,7 @@ func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, tabl
 		if hasOverride {
 			existingIndex, overrideAlreadyExists := table.columnMap[overrideColumn]
 			if overrideAlreadyExists && existingIndex != i {
-				slog.Warn("Can not renamed column; column with same name already exists", slog.String("from", tc.String()), slog.String("to", overrideColumn.String()), slog.Int("existingColumnIndex", existingIndex))
+				slog.Warn("Can not rename column; column with same name already exists", slog.String("from", tc.String()), slog.String("to", overrideColumn.String()), slog.Int("existingColumnIndex", existingIndex))
 				continue
 			}
 			tc = overrideColumn
