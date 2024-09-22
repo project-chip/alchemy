@@ -151,11 +151,14 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	}
 
-	stringWriter := files.NewWriter[string]("Writing ZAP templates", fileOptions)
+	stringWriter := files.NewWriter[string]("", fileOptions)
+	if zapTemplateDocs != nil && zapTemplateDocs.Size() > 0 {
+		stringWriter.SetName("Writing ZAP templates")
+		_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, stringWriter, zapTemplateDocs)
+		if err != nil {
+			return err
+		}
 
-	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, stringWriter, zapTemplateDocs)
-	if err != nil {
-		return err
 	}
 
 	byteWriter := files.NewWriter[[]byte]("", fileOptions)
@@ -183,10 +186,12 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	byteWriter.SetName("Writing cluster list")
-	_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, clusterList)
-	if err != nil {
-		return err
+	if clusterList != nil && clusterList.Size() > 0 {
+		byteWriter.SetName("Writing cluster list")
+		_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, clusterList)
+		if err != nil {
+			return err
+		}
 	}
 	return
 

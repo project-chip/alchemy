@@ -77,5 +77,8 @@ func ProcessParallelFunc[I, O any](cxt context.Context, options Options, input M
 
 		}
 	})
+	if err != nil {
+		return
+	}
 	return processParallel[I, O](cxt, name, f, queue, total, !options.NoProgress)
 }
