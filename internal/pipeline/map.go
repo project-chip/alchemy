@@ -70,5 +70,5 @@ func NewConcurrentMap[K comparable, V any]() Map[K, V] {
 }
 
 func NewConcurrentMapPresized[K comparable, V any](size int) Map[K, V] {
-	return xsync.NewMapOfPresized[K, V](size)
+	return xsync.NewMapOf[K, V](xsync.WithPresize(size))
 }
