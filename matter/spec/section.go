@@ -134,6 +134,8 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 		secType = matter.SectionCluster
 	case matter.DocTypeDeviceType:
 		secType = matter.SectionDeviceType
+	case matter.DocTypeNamespace:
+		secType = matter.SectionNamespace
 	default:
 		secType = matter.SectionTop
 		if strings.HasSuffix(top.Name, " Cluster") {
@@ -422,7 +424,12 @@ func (s *Section) toEntities(d *Doc, entityMap map[asciidoc.Attributable][]types
 			return nil, err
 		}
 		entities = append(entities, deviceTypes...)
-
+	case matter.SectionNamespace:
+		ns, err := s.toNamespace(d, entityMap)
+		if err != nil {
+			return nil, err
+		}
+		entities = append(entities, ns...)
 	}
 	return entities, nil
 }

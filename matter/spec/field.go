@@ -6,6 +6,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -30,6 +31,9 @@ func (s *Section) mapFields(fieldMap map[string]*matter.Field, entityMap map[asc
 			continue
 		}
 		findAnonymousType(s, a)
+		if a.Type != nil && a.Type.BaseType == types.BaseDataTypeTag {
+			findTagNamespace(s, a)
+		}
 		entityMap[s.Base] = append(entityMap[s.Base], a)
 	}
 	return nil
@@ -152,6 +156,26 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 			Type: field.Type,
 			Bits: bvs,
 		}
+	}
+	return nil
+}
+
+func findTagNamespace(s *Section, field *matter.Field) error {
+	var found bool
+	parse.Traverse(s, s.Set, func(ref *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
+		if ref.ID == "ref_StandardNamespaces" {
+			label := buildReferenceName(ref.Set)
+			name := strings.TrimSpace(text.TrimCaseInsensitiveSuffix(label, " Namespace"))
+			if len(name) > 0 {
+				field.Type.Name = name
+				found = true
+				return parse.SearchShouldStop
+			}
+		}
+		return parse.SearchShouldContinue
+	})
+	if !found {
+		slog.Warn("Tag field does not specify namespace", slog.String("field", field.Name), log.Path("origin", field))
 	}
 	return nil
 }

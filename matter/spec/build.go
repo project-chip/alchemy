@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
@@ -117,6 +118,8 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				addClusterToSpec(spec, d, m, d.spec)
 			case *matter.DeviceType:
 				spec.DeviceTypes = append(spec.DeviceTypes, m)
+			case *matter.Namespace:
+				spec.Namespaces = append(spec.Namespaces, m)
 			default:
 				slog.Warn("unknown entity type", "path", d.Path, "type", fmt.Sprintf("%T", m))
 			}
@@ -264,6 +267,8 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 		return
 	}
 	switch dataType.BaseType {
+	case types.BaseDataTypeTag:
+		getTagNamespace(spec, field)
 	case types.BaseDataTypeList:
 		sp.resolveDataType(spec, cluster, field, dataType.EntryType)
 	case types.BaseDataTypeCustom:
@@ -330,6 +335,16 @@ func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster
 	default:
 		return
 	}
+}
+
+func getTagNamespace(spec *Specification, field *matter.Field) {
+	for _, ns := range spec.Namespaces {
+		if strings.EqualFold(ns.Name, field.Type.Name) {
+			field.Type.Entity = ns
+			return
+		}
+	}
+	slog.Warn("failed to match tag name space", slog.String("name", field.Name), log.Path("field", field), slog.String("namespace", field.Type.Name))
 }
 
 func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, field *matter.Field) types.Entity {

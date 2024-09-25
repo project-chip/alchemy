@@ -26,6 +26,7 @@ const (
 	SectionCommand
 	SectionEvents
 	SectionEvent
+	SectionNamespace
 	SectionConditions
 	SectionClusterRequirements
 	SectionClusterRestrictions
@@ -92,6 +93,7 @@ var sectionTypeStrings = map[Section]string{
 	SectionCommand:                        "Command",
 	SectionEvents:                         "Events",
 	SectionEvent:                          "Event",
+	SectionNamespace:                      "Namespace",
 	SectionConditions:                     "Conditions",
 	SectionClusterRequirements:            "ClusterRequirements",
 	SectionClusterRestrictions:            "ClusterRestrictions",
@@ -135,6 +137,7 @@ var sectionTypeNames = map[Section]string{
 	SectionCommands:                       "Commands",
 	SectionCommand:                        "Command",
 	SectionEvents:                         "Events",
+	SectionNamespace:                      "Namespace",
 	SectionConditions:                     "Conditions",
 	SectionClusterRequirements:            "Cluster Requirements",
 	SectionClusterRestrictions:            "Cluster Restrictions",

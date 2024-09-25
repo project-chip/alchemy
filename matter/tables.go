@@ -45,6 +45,7 @@ const (
 	TableColumnClientServer
 	TableColumnCondition
 	TableColumnModeTagValue
+	TableColumnNamespace
 )
 
 var TableColumnNames = map[TableColumn]string{
@@ -84,6 +85,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnClientServer: "Client/Server",
 	TableColumnCondition:    "Condition",
 	TableColumnModeTagValue: "Mode Tag Value",
+	TableColumnNamespace:    "Namespace",
 }
 
 func (tc TableColumn) String() string {
