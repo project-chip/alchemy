@@ -10,26 +10,26 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Ball) fixConstraintCells(section *spec.Section, ti *tableInfo) (err error) {
-	if len(ti.rows) < 2 {
+func (b *Ball) fixConstraintCells(section *spec.Section, ti *spec.TableInfo) (err error) {
+	if len(ti.Rows) < 2 {
 		return
 	}
 	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableConstraint) {
 		return
 	}
-	constraintIndex, ok := ti.getColumnIndex(matter.TableColumnConstraint)
+	constraintIndex, ok := ti.ColumnIndex(matter.TableColumnConstraint)
 	if !ok {
 		return
 	}
-	qualityIndex, hasQuality := ti.getColumnIndex(matter.TableColumnQuality)
-	for _, row := range ti.rows[1:] {
+	qualityIndex, hasQuality := ti.ColumnIndex(matter.TableColumnQuality)
+	for _, row := range ti.Rows[1:] {
 		cell := row.Cell(constraintIndex)
 		vc, e := spec.RenderTableCell(cell)
 		if e != nil {
 			continue
 		}
 
-		dataType, e := b.doc.ReadRowDataType(row, ti.columnMap, matter.TableColumnType)
+		dataType, e := b.doc.ReadRowDataType(row, ti.ColumnMap, matter.TableColumnType)
 		if e != nil {
 			slog.Debug("error reading data type for constraint", slog.String("path", b.doc.Path.String()), slog.Any("error", e))
 			continue

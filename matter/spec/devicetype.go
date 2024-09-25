@@ -63,31 +63,30 @@ func (s *Section) toDeviceTypes(d *Doc) (entities []types.Entity, err error) {
 }
 
 func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
-	rows, headerRowIndex, columnMap, _, err := parseFirstTable(doc, s)
+	ti, err := parseFirstTable(doc, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading device type ID: %w", err)
 	}
 	var deviceTypes []*matter.DeviceType
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
+	for row := range ti.Body() {
 		c := matter.NewDeviceType(row)
-		c.ID, err = readRowID(row, columnMap, matter.TableColumnID)
+		c.ID, err = ti.ReadID(row, matter.TableColumnID)
 		if err != nil {
 			return nil, err
 		}
-		c.Name, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDeviceName)
+		c.Name, err = ti.ReadString(row, matter.TableColumnDeviceName)
 		if err != nil {
 			return nil, err
 		}
-		c.Superset, err = readRowASCIIDocString(row, columnMap, matter.TableColumnSuperset)
+		c.Superset, err = ti.ReadString(row, matter.TableColumnSuperset)
 		if err != nil {
 			return nil, err
 		}
-		c.Class, err = readRowASCIIDocString(row, columnMap, matter.TableColumnClass)
+		c.Class, err = ti.ReadString(row, matter.TableColumnClass)
 		if err != nil {
 			return nil, err
 		}
-		c.Scope, err = readRowASCIIDocString(row, columnMap, matter.TableColumnScope)
+		c.Scope, err = ti.ReadString(row, matter.TableColumnScope)
 		if err != nil {
 			return nil, err
 		}

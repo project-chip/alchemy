@@ -14,21 +14,21 @@ import (
 
 type eventFactory struct{}
 
-func (cf *eventFactory) New(d *Doc, s *Section, row *asciidoc.TableRow, columnMap ColumnIndex, name string) (e *matter.Event, err error) {
+func (cf *eventFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string) (e *matter.Event, err error) {
 
 	e = matter.NewEvent(s.Base)
 	e.Name = matter.StripTypeSuffixes(name)
-	e.ID, err = readRowID(row, columnMap, matter.TableColumnID)
+	e.ID, err = ti.ReadID(row, matter.TableColumnID)
 	if err != nil {
 		return
 	}
-	e.Priority, err = readRowASCIIDocString(row, columnMap, matter.TableColumnPriority)
+	e.Priority, err = ti.ReadString(row, matter.TableColumnPriority)
 	if err != nil {
 		return
 	}
-	e.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+	e.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
 	var a string
-	a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
+	a, err = ti.ReadString(row, matter.TableColumnAccess)
 	if err != nil {
 		return
 	}
@@ -43,12 +43,17 @@ func (cf *eventFactory) New(d *Doc, s *Section, row *asciidoc.TableRow, columnMa
 
 func (cf *eventFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Attributable][]types.Entity, e *matter.Event) (err error) {
 	e.Description = getDescription(d, s.Set)
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
-	if headerRowIndex > 0 {
-		firstRow := rows[0]
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
+	if err != nil {
+		if err == ErrNoTableFound {
+			err = nil
+			return
+		}
+		return
+	}
+	if ti.HeaderRowIndex > 0 {
+		firstRow := ti.Rows[0]
 		tableCells := firstRow.TableCells()
 		if len(tableCells) > 0 {
 			cv, rowErr := RenderTableCell(tableCells[0])
@@ -68,7 +73,7 @@ func (cf *eventFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Attri
 		err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
 		return
 	}
-	e.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeEventField)
+	e.Fields, err = d.readFields(ti, types.EntityTypeEventField)
 	if err != nil {
 		return
 	}

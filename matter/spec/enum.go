@@ -72,25 +72,20 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 		return nil, fmt.Errorf("no enum field tables found")
 	}
 	for _, t := range tables {
-		var rows []*asciidoc.TableRow
-		var headerRowIndex int
-		var columnMap ColumnIndex
-		var err error
-		rows, headerRowIndex, columnMap, _, err = parseTable(s.Doc, s, t)
+		ti, err := parseTable(s.Doc, s, t)
 		if err != nil {
 			return nil, err
 		}
 		var values matter.EnumValueSet
-		for i := headerRowIndex + 1; i < len(rows); i++ {
-			row := rows[i]
+		for row := range ti.Body() {
 			ev := matter.NewEnumValue(s.Base)
-			ev.Name, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnName)
+			ev.Name, err = ti.ReadValue(row, matter.TableColumnName)
 			if err != nil {
 				return nil, err
 			}
 			ev.Name = matter.StripTypeSuffixes(ev.Name)
 			if len(ev.Name) == 0 {
-				ev.Name, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnSummary)
+				ev.Name, err = ti.ReadValue(row, matter.TableColumnSummary)
 				if err != nil {
 					return nil, err
 				}
@@ -101,21 +96,21 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 				}
 			}
 			ev.Name = CanonicalName(ev.Name)
-			ev.Summary, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+			ev.Summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
 			if err != nil {
 				return nil, err
 			}
-			ev.Conformance = s.Doc.getRowConformance(row, columnMap, matter.TableColumnConformance)
+			ev.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
 			if ev.Conformance == nil {
 
 				ev.Conformance = conformance.Set{&conformance.Mandatory{}}
 			}
-			ev.Value, err = readRowID(row, columnMap, matter.TableColumnValue)
+			ev.Value, err = ti.ReadID(row, matter.TableColumnValue)
 			if err != nil {
 				return nil, err
 			}
 			if !ev.Value.Valid() {
-				ev.Value, err = readRowID(row, columnMap, matter.TableColumnStatusCode)
+				ev.Value, err = ti.ReadID(row, matter.TableColumnStatusCode)
 				if err != nil {
 					return nil, err
 				}
@@ -136,25 +131,21 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 }
 
 func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading mode tags: %w", err)
 	}
 	e = matter.NewEnum(s.Base)
 	e.Name = "ModeTag"
 	e.Type = types.NewDataType(types.BaseDataTypeEnum16, false)
-
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
+	for row := range ti.Body() {
 		ev := matter.NewEnumValue(s.Base)
-		ev.Name, err = readRowASCIIDocString(row, columnMap, matter.TableColumnName)
+		ev.Name, err = ti.ReadString(row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		ev.Value, err = readRowID(row, columnMap, matter.TableColumnModeTagValue)
+		ev.Value, err = ti.ReadID(row, matter.TableColumnModeTagValue)
 		if err != nil {
 			return
 		}

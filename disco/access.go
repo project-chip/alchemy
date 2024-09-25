@@ -16,23 +16,23 @@ func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType t
 	if b.errata.IgnoreSection(subSection.section.Name, errata.DiscoPurposeTableAccess) {
 		return nil
 	}
-	table := &subSection.table
-	if len(table.rows) < 2 {
+	table := subSection.table
+	if len(table.Rows) < 2 {
 		return
 	}
-	accessIndex, ok := table.columnMap[matter.TableColumnAccess]
+	accessIndex, ok := table.ColumnMap[matter.TableColumnAccess]
 	if !ok {
 		return
 	}
 	var directionIndex int
 	directionIndex = -1
 	if entityType == types.EntityTypeCommand {
-		directionIndex, ok = table.columnMap[matter.TableColumnDirection]
+		directionIndex, ok = table.ColumnMap[matter.TableColumnDirection]
 		if !ok {
 			directionIndex = -1
 		}
 	}
-	for _, row := range table.rows[1:] {
+	for _, row := range table.Rows[1:] {
 		accessCell := row.Cell(accessIndex)
 		vc, e := spec.RenderTableCell(accessCell)
 		if e != nil {
@@ -48,7 +48,7 @@ func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType t
 		} else {
 			c := getSubsectionCluster(dp, subSection.section)
 			if c != nil {
-				ci := getClassificationInfo(&c.classification.table)
+				ci := getClassificationInfo(c.classification.table)
 				if ci.hierarchy != "Base" {
 					continue
 				}

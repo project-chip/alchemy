@@ -22,17 +22,17 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 
 	b.canonicalizeDataTypeSectionName(dp, ss.section, "Struct")
 
-	fieldsTable := &ss.table
-	if fieldsTable.element == nil {
+	fieldsTable := ss.table
+	if fieldsTable.Element == nil {
 		slog.Debug("no struct table found")
 		return nil
 	}
-	if fieldsTable.columnMap == nil {
+	if fieldsTable.ColumnMap == nil {
 		slog.Debug("can't rearrange struct table without header row")
 		return nil
 	}
 
-	if len(fieldsTable.columnMap) < 2 {
+	if len(fieldsTable.ColumnMap) < 2 {
 		slog.Debug("can't rearrange struct table with so few matches")
 		return nil
 	}
@@ -62,7 +62,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return err
 	}
 
-	b.appendSubsectionTypes(ss.section, fieldsTable.columnMap, fieldsTable.rows)
+	b.appendSubsectionTypes(ss.section, fieldsTable.ColumnMap, fieldsTable.Rows)
 
 	err = b.linkIndexTables(cxt, ss)
 	if err != nil {

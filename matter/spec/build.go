@@ -165,17 +165,17 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 
 	for _, dt := range spec.DeviceTypes {
 		for _, cr := range dt.ClusterRequirements {
-			if c, ok := spec.ClustersByID[cr.ID.Value()]; ok {
+			if c, ok := spec.ClustersByID[cr.ClusterID.Value()]; ok {
 				cr.Cluster = c
 			} else {
-				slog.Warn("unknown cluster ID for cluster requirement on device type", "clusterId", cr.ID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
+				slog.Warn("unknown cluster ID for cluster requirement on device type", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
 			}
 		}
 		for _, er := range dt.ElementRequirements {
-			if c, ok := spec.ClustersByID[er.ID.Value()]; ok {
+			if c, ok := spec.ClustersByID[er.ClusterID.Value()]; ok {
 				er.Cluster = c
 			} else {
-				slog.Warn("unknown cluster ID for element requirement on device type", "clusterId", er.ID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
+				slog.Warn("unknown cluster ID for element requirement on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
 
 			}
 		}
@@ -295,7 +295,7 @@ func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter
 		if canonicalName != dataTypeName {
 			e = getCustomDataType(spec, canonicalName, cluster, field)
 		} else {
-			e = getCustomDataTypeFromReference(spec, dataTypeName, cluster, field)
+			e = getCustomDataTypeFromReference(spec, cluster, field)
 		}
 	} else if len(entities) == 1 {
 		for m := range entities {
@@ -307,7 +307,7 @@ func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter
 	return
 }
 
-func getCustomDataTypeFromReference(spec *Specification, dataTypeName string, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
+func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
 	switch source := field.Type.Source.(type) {
 	case *asciidoc.CrossReference:
 		doc, ok := spec.DocRefs[cluster]

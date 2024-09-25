@@ -17,7 +17,7 @@ type listIndex[T types.Entity] struct {
 }
 
 type entityFactory[T types.Entity] interface {
-	New(d *Doc, s *Section, row *asciidoc.TableRow, columnMap ColumnIndex, name string) (T, error)
+	New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string) (T, error)
 	Details(d *Doc, s *Section, entityMap map[asciidoc.Attributable][]types.Entity, e T) error
 	EntityName(s *Section) string
 	Children(d *Doc, s *Section) iter.Seq[*Section]
@@ -29,26 +29,23 @@ func buildList[T types.Entity, L ~[]T](d *Doc, s *Section, t *asciidoc.Table, en
 		byName:      make(map[string]T),
 		byReference: make(map[asciidoc.Element]T),
 	}
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
 	var err error
-	rows, headerRowIndex, columnMap, _, err = parseTable(d, s, t)
+	var ti *TableInfo
+	ti, err = ReadTable(d, t)
 	if err != nil {
 		return nil, err
 	}
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
+	for row := range ti.Body() {
 
 		var name string
 		var xref *asciidoc.CrossReference
-		name, xref, err = readRowName(d, row, columnMap, matter.TableColumnName)
+		name, xref, err = ti.ReadName(row, matter.TableColumnName)
 		if err != nil {
 			return nil, err
 		}
 
 		var entity T
-		entity, err = factory.New(d, s, row, columnMap, name)
+		entity, err = factory.New(d, s, ti, row, name)
 		if err != nil {
 			return nil, err
 		}

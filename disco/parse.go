@@ -32,13 +32,13 @@ type docParse struct {
 	commands []*subSection
 	events   []*subSection
 
-	tableCache       map[*asciidoc.Table]*tableInfo
+	tableCache       map[*asciidoc.Table]*spec.TableInfo
 	conformanceCache map[asciidoc.Element]conformance.Set
 }
 
 type subSection struct {
 	section     *spec.Section
-	table       tableInfo
+	table       *spec.TableInfo
 	parent      *subSection
 	parentIndex int
 	children    []*subSection
@@ -46,24 +46,6 @@ type subSection struct {
 
 type clusterInfo struct {
 	classification *subSection
-}
-
-type tableInfo struct {
-	element      *asciidoc.Table
-	rows         []*asciidoc.TableRow
-	headerRow    int
-	columnMap    spec.ColumnIndex
-	extraColumns []spec.ExtraColumn
-}
-
-func (ti *tableInfo) getColumnIndex(columns ...matter.TableColumn) (index int, ok bool) {
-	for _, column := range columns {
-		index, ok = ti.columnMap[column]
-		if ok {
-			return
-		}
-	}
-	return
 }
 
 type subSectionChildPattern struct {
@@ -81,7 +63,7 @@ func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *
 		docType:          docType,
 		clusters:         make(map[*spec.Section]*clusterInfo),
 		conformanceCache: make(map[asciidoc.Element]conformance.Set),
-		tableCache:       make(map[*asciidoc.Table]*tableInfo),
+		tableCache:       make(map[*asciidoc.Table]*spec.TableInfo),
 	}
 	for _, section := range parse.FindAll[*spec.Section](topLevelSection.Elements()) {
 		switch section.SecType {
@@ -179,7 +161,7 @@ func newParentSubSection(dp *docParse, section *spec.Section, childPatterns ...s
 	if err != nil {
 		return
 	}
-	if ss.table.element == nil {
+	if ss.table.Element == nil {
 		return
 	}
 	if len(childPatterns) > 0 {
@@ -188,21 +170,21 @@ func newParentSubSection(dp *docParse, section *spec.Section, childPatterns ...s
 	return
 }
 
-func firstTableInfo(dp *docParse, section *spec.Section) (ti tableInfo, err error) {
-	ti.element = spec.FindFirstTable(section)
-	if ti.element != nil {
-		ti.rows = ti.element.TableRows()
-		ti.headerRow, ti.columnMap, ti.extraColumns, err = spec.MapTableColumns(dp.doc, ti.rows)
+func firstTableInfo(dp *docParse, section *spec.Section) (ti *spec.TableInfo, err error) {
+
+	table := spec.FindFirstTable(section)
+	if table != nil {
+		ti, err = spec.ReadTable(dp.doc, table)
 		if err != nil {
 			return
 		}
-		dp.tableCache[ti.element] = &ti
+		dp.tableCache[ti.Element] = ti
 	}
 	return
 }
 
 func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSectionChildPattern) (subSections []*subSection, err error) {
-	if parent.table.element == nil {
+	if parent.table.Element == nil {
 		return
 	}
 	var index int
@@ -210,12 +192,12 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 	var childPattern subSectionChildPattern
 	childPattern, childPatterns = childPatterns[0], childPatterns[1:]
 	for i, ic := range childPattern.indexColumns {
-		index, ok = parent.table.columnMap[ic]
+		index, ok = parent.table.ColumnMap[ic]
 		if ok {
 			if i > 0 {
 				// The first element of indexColumns should be the expected column name, so we'll switch out
-				delete(parent.table.columnMap, matter.TableColumnID)
-				parent.table.columnMap[childPattern.indexColumns[0]] = index
+				delete(parent.table.ColumnMap, matter.TableColumnID)
+				parent.table.ColumnMap[childPattern.indexColumns[0]] = index
 			}
 			break
 		}
@@ -223,8 +205,8 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 	if !ok {
 		return
 	}
-	subSectionNames := make(map[string]int, len(parent.table.rows))
-	for i, row := range parent.table.rows {
+	subSectionNames := make(map[string]int, len(parent.table.Rows))
+	for i, row := range parent.table.Rows {
 		subSectionName, err := spec.RenderTableCell(row.Cell(index))
 		if err != nil {
 			slog.Debug("could not get cell value for entity index", "err", err)

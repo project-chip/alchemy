@@ -369,22 +369,21 @@ func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
 	if firstTable == nil {
 		return
 	}
-	rows := firstTable.TableRows()
-	_, columnMap, _, err := MapTableColumns(section.Doc, rows)
+	ti, err := ReadTable(section.Doc, firstTable)
 	if err != nil {
 		return
 	}
-	_, hasName := columnMap[matter.TableColumnName]
+	_, hasName := ti.ColumnIndex(matter.TableColumnName)
 	if !hasName {
 		return
 	}
-	_, hasID := columnMap[matter.TableColumnID]
-	_, hasType := columnMap[matter.TableColumnType]
-	_, hasBit := columnMap[matter.TableColumnBit]
-	_, hasValue := columnMap[matter.TableColumnValue]
-	_, hasSummary := columnMap[matter.TableColumnSummary]
-	_, hasDescription := columnMap[matter.TableColumnDescription]
-	_, hasStatusCode := columnMap[matter.TableColumnStatusCode]
+	_, hasID := ti.ColumnIndex(matter.TableColumnID)
+	_, hasType := ti.ColumnIndex(matter.TableColumnType)
+	_, hasBit := ti.ColumnIndex(matter.TableColumnBit)
+	_, hasValue := ti.ColumnIndex(matter.TableColumnValue)
+	_, hasSummary := ti.ColumnIndex(matter.TableColumnSummary)
+	_, hasDescription := ti.ColumnIndex(matter.TableColumnDescription)
+	_, hasStatusCode := ti.ColumnIndex(matter.TableColumnStatusCode)
 	if hasID && hasType && !hasBit && !hasValue {
 		sectionType = matter.SectionDataTypeStruct
 		return
