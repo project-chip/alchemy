@@ -61,18 +61,29 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/door_lock_Cluster.adoc",
 		},
-		ZAP: ZAP{DefineOverrides: map[string]string{
-			"NUMBER_OF_TOTAL_USERS_SUPPORTED":                 "NUM_TOTAL_USERS_SUPPORTED",
-			"NUMBER_OF_PIN_USERS_SUPPORTED":                   "NUM_PIN_USERS_SUPPORTED",
-			"NUMBER_OF_RFID_USERS_SUPPORTED":                  "NUM_RFID_USERS_SUPPORTED",
-			"NUMBER_OF_WEEK_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_WEEKDAY_SCHEDULES_SUPPORTED_PER_USER",
-			"NUMBER_OF_YEAR_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_YEARDAY_SCHEDULES_SUPPORTED_PER_USER",
-			"NUMBER_OF_HOLIDAY_SCHEDULES_SUPPORTED":           "NUM_HOLIDAY_SCHEDULES_SUPPORTED",
-			"MAX_PIN_CODE_LENGTH":                             "MAX_PIN_LENGTH",
-			"MIN_PIN_CODE_LENGTH":                             "MIN_PIN_LENGTH",
-			"NUMBER_OF_CREDENTIALS_SUPPORTED_PER_USER":        "NUM_CREDENTIALS_SUPPORTED_PER_USER",
-			"REQUIRE_PI_NFOR_REMOTE_OPERATION":                "REQUIRE_PIN_FOR_REMOTE_OPERATION",
-		}},
+		ZAP: ZAP{
+			DefineOverrides: map[string]string{
+				"NUMBER_OF_TOTAL_USERS_SUPPORTED":                 "NUM_TOTAL_USERS_SUPPORTED",
+				"NUMBER_OF_PIN_USERS_SUPPORTED":                   "NUM_PIN_USERS_SUPPORTED",
+				"NUMBER_OF_RFID_USERS_SUPPORTED":                  "NUM_RFID_USERS_SUPPORTED",
+				"NUMBER_OF_WEEK_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_WEEKDAY_SCHEDULES_SUPPORTED_PER_USER",
+				"NUMBER_OF_YEAR_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_YEARDAY_SCHEDULES_SUPPORTED_PER_USER",
+				"NUMBER_OF_HOLIDAY_SCHEDULES_SUPPORTED":           "NUM_HOLIDAY_SCHEDULES_SUPPORTED",
+				"MAX_PIN_CODE_LENGTH":                             "MAX_PIN_LENGTH",
+				"MIN_PIN_CODE_LENGTH":                             "MIN_PIN_LENGTH",
+				"NUMBER_OF_CREDENTIALS_SUPPORTED_PER_USER":        "NUM_CREDENTIALS_SUPPORTED_PER_USER",
+				"REQUIRE_PI_NFOR_REMOTE_OPERATION":                "REQUIRE_PIN_FOR_REMOTE_OPERATION",
+			},
+			TypeNames: map[string]string{
+				"CredentialRulesBitmap":          "DlCredentialRuleMask",
+				"DaysMaskBitmap":                 "DaysMaskMap",
+				"OperatingModesBitmap":           "DlSupportedOperatingModes",
+				"ConfigurationRegisterBitmap":    "DlDefaultConfigurationRegister",
+				"LocalProgrammingFeaturesBitmap": "DlLocalProgrammingFeatures",
+				"LockStateEnum":                  "DlLockState",
+				"LockTypeEnum":                   "DlLockType",
+			},
+		},
 	},
 	"src/app_clusters/EnergyEVSE.adoc": {
 		ZAP: ZAP{TemplatePath: "energy-evse-cluster",
@@ -581,6 +592,7 @@ var Erratas = map[string]*Errata{
 		},
 		ZAP: ZAP{
 			TemplatePath: "operational-credentials-cluster",
+			ClusterName:  "Operational Credentials",
 			ClusterAliases: map[string][]string{
 				"Operational Credentials": {"Node Operational Credentials"},
 			},

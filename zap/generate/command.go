@@ -155,7 +155,7 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 				continue
 			}
 			xml.PrependAttribute(fe, "id", f.ID.IntString())
-			setFieldAttributes(fe, f, c.Fields)
+			setFieldAttributes(fe, f, c.Fields, errata)
 			break
 		}
 	}
@@ -167,7 +167,7 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 		}
 		fe := ce.CreateElement("arg")
 		fe.CreateAttr("id", f.ID.IntString())
-		setFieldAttributes(fe, f, c.Fields)
+		setFieldAttributes(fe, f, c.Fields, errata)
 		xml.AppendElement(ce, fe)
 	}
 }

@@ -99,7 +99,7 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 				continue
 			}
 			fe.CreateAttr("id", f.ID.IntString())
-			setFieldAttributes(fe, f, e.Fields)
+			setFieldAttributes(fe, f, e.Fields, errata)
 			break
 		}
 	}
@@ -111,7 +111,7 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 		}
 		fe := etree.NewElement("field")
 		fe.CreateAttr("id", f.ID.IntString())
-		setFieldAttributes(fe, f, e.Fields)
+		setFieldAttributes(fe, f, e.Fields, errata)
 		axml.AppendElement(ee, fe)
 	}
 	if needsAccess {
@@ -135,10 +135,10 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 	}
 }
 
-func setFieldAttributes(e *etree.Element, f *matter.Field, fs matter.FieldSet) {
+func setFieldAttributes(e *etree.Element, f *matter.Field, fs matter.FieldSet, errata *errata.ZAP) {
 	mandatory := conformance.IsMandatory(f.Conformance)
 	e.CreateAttr("name", f.Name)
-	writeDataType(e, fs, f)
+	writeDataType(e, fs, f, errata)
 	if !mandatory {
 		e.CreateAttr("optional", "true")
 	} else {
@@ -158,11 +158,12 @@ func setFieldAttributes(e *etree.Element, f *matter.Field, fs matter.FieldSet) {
 	renderConstraint(e, fs, f)
 }
 
-func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field) {
+func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field, errata *errata.ZAP) {
 	if f.Type == nil {
 		return
 	}
 	dts := zap.FieldToZapDataType(fs, f)
+	dts = errata.TypeName(dts)
 	if f.Type.IsArray() {
 		e.CreateAttr("array", "true")
 		e.CreateAttr("type", dts)

@@ -10,6 +10,7 @@ type ZAP struct {
 	ClusterDefinePrefix          string              `yaml:"cluster-define-prefix,omitempty"`
 	SuppressClusterDefinePrefix  bool                `yaml:"suppress-cluster-define-prefix,omitempty"`
 	DefineOverrides              map[string]string   `yaml:"override-defines,omitempty"`
+	ClusterName                  string              `yaml:"cluster-name,omitempty"`
 	ClusterAliases               map[string][]string `yaml:"cluster-aliases,omitempty"`
 
 	WritePrivilegeAsRole bool            `yaml:"write-privilege-as-role,omitempty"`
@@ -20,11 +21,24 @@ type ZAP struct {
 	ClusterSplit map[string]string `yaml:"cluster-split,omitempty"`
 
 	Domain matter.Domain `yaml:"domain,omitempty"`
+
+	TypeNames map[string]string `yaml:"type-names,omitempty"`
 }
 
 func GetZAP(path string) *ZAP {
 	e := GetErrata(path)
 	return &e.ZAP
+}
+
+func (zap *ZAP) TypeName(typeName string) string {
+	if zap == nil || zap.TypeNames == nil {
+		return typeName
+	}
+	tn, ok := zap.TypeNames[typeName]
+	if ok {
+		return tn
+	}
+	return typeName
 }
 
 type SeparateStructs map[string]struct{}

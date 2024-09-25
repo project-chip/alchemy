@@ -29,7 +29,7 @@ func generateEnums(enums map[*matter.Enum][]*matter.Number, sourcePath string, c
 		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range enums {
-			if bm.Name == name || strings.TrimSuffix(bm.Name, "Enum") == name {
+			if errata.TypeName(bm.Name) == name || errata.TypeName(strings.TrimSuffix(bm.Name, "Enum")) == name {
 				matchingEnum = bm
 				skip = len(handled) == 0
 				clusterIds = handled
@@ -87,7 +87,7 @@ func populateEnum(ee *etree.Element, en *matter.Enum, clusterIds []*matter.Numbe
 		valFormat = "0x%02X"
 	}
 
-	ee.CreateAttr("name", en.Name)
+	ee.CreateAttr("name", errata.TypeName(en.Name))
 	ee.CreateAttr("type", zap.DataTypeName(en.Type))
 
 	_, remainingClusterIds := amendExistingClusterCodes(ee, en, clusterIds)
