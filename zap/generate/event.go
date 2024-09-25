@@ -162,7 +162,7 @@ func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field, errata
 	if f.Type == nil {
 		return
 	}
-	dts := zap.FieldToZapDataType(fs, f)
+	dts := getDataTypeString(fs, f)
 	dts = errata.TypeName(dts)
 	if f.Type.IsArray() {
 		e.CreateAttr("array", "true")
@@ -171,6 +171,22 @@ func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field, errata
 		e.CreateAttr("type", dts)
 		e.RemoveAttr("array")
 	}
+}
+
+func getDataTypeString(fs matter.FieldSet, f *matter.Field) string {
+	switch f.Type.BaseType {
+	case types.BaseDataTypeTag:
+		if f.Type.Entity != nil {
+			if namespace, ok := f.Type.Entity.(*matter.Namespace); ok {
+				return matterNamespaceName(namespace)
+			}
+		} else {
+			return "enum8"
+		}
+	case types.BaseDataTypeNamespaceID:
+		return "enum8"
+	}
+	return zap.FieldToZapDataType(fs, f)
 }
 
 func setAccessAttributes(el *etree.Element, op string, p matter.Privilege, errata *errata.ZAP) {

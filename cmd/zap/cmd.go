@@ -88,7 +88,8 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	var clusters pipeline.Map[string, *pipeline.Data[*spec.Doc]]
 	var deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
-	clusters, deviceTypes, err = generate.SplitZAPDocs(cxt, specDocs)
+	var namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]]
+	clusters, deviceTypes, namespaces, err = generate.SplitZAPDocs(cxt, specDocs)
 	if err != nil {
 		return err
 	}
@@ -129,7 +130,15 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		if err != nil {
 			return err
 		}
+	}
 
+	var patchedNamespaces pipeline.Map[string, *pipeline.Data[[]byte]]
+	if namespaces.Size() > 0 {
+		namespacePatcher := generate.NewNamespacePatcher(sdkRoot, specBuilder.Spec)
+		patchedNamespaces, err = pipeline.Process[[]*matter.Namespace, []byte](cxt, pipelineOptions, namespacePatcher, namespaces)
+		if err != nil {
+			return err
+		}
 	}
 
 	var clusterList pipeline.Map[string, *pipeline.Data[[]byte]]
@@ -173,6 +182,14 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	if patchedDeviceTypes != nil && patchedDeviceTypes.Size() > 0 {
 		byteWriter.SetName("Writing deviceTypes")
 		_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, patchedDeviceTypes)
+		if err != nil {
+			return err
+		}
+	}
+
+	if patchedNamespaces != nil && patchedNamespaces.Size() > 0 {
+		byteWriter.SetName("Writing namespaces")
+		_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, patchedNamespaces)
 		if err != nil {
 			return err
 		}

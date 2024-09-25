@@ -18,6 +18,8 @@ type Specification struct {
 	DeviceTypes    []*matter.DeviceType
 	BaseDeviceType *matter.DeviceType
 
+	Namespaces []*matter.Namespace
+
 	ClusterRefs ClusterRefs
 	DocRefs     map[types.Entity]*Doc
 
