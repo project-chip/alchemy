@@ -16,7 +16,6 @@ import (
 )
 
 func generateAttributes(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, attributes map[*matter.Field]struct{}, clusterPrefix string, errata *errata.ZAP) (err error) {
-
 	for _, ae := range cle.SelectElements("attribute") {
 		ce := ae.SelectAttr("code")
 		if ce == nil {
@@ -42,7 +41,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			delete(attributes, a)
 		}
 		if attribute == nil {
-			slog.Warn("unrecognized code value in cluster", log.Path("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("code", attributeID.Text()))
+			slog.Warn("unrecognized attribute in cluster", log.Path("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("code", attributeID.Text()))
 			cle.RemoveChild(ae)
 			continue
 		}
@@ -52,6 +51,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			return
 		}
 	}
+
 	for a := range attributes {
 		if conformance.IsZigbee(cluster, a.Conformance) {
 			continue
@@ -80,7 +80,7 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 	ae.CreateAttr("side", "server")
 	define := getDefine(attribute.Name, clusterPrefix, errata)
 	xml.SetNonexistentAttr(ae, "define", define)
-	writeAttributeDataType(ae, cluster.Attributes, attribute)
+	writeAttributeDataType(ae, cluster.Attributes, attribute, errata)
 	if attribute.Quality.Has(matter.QualityNullable) {
 		ae.CreateAttr("isNullable", "true")
 	} else {
@@ -165,11 +165,12 @@ func setFieldDefault(e *etree.Element, field *matter.Field, fieldSet matter.Fiel
 	}
 }
 
-func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Field) {
+func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Field, errata *errata.ZAP) {
 	if f.Type == nil {
 		return
 	}
 	dts := zap.FieldToZapDataType(fs, f)
+	dts = errata.TypeName(dts)
 	if f.Type.IsArray() {
 		x.CreateAttr("type", "array")
 		x.CreateAttr("entryType", dts)

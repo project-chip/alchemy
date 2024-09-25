@@ -34,7 +34,7 @@ func generateBitmaps(bitmaps map[*matter.Bitmap][]*matter.Number, sourcePath str
 		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range bitmaps {
-			if bm.Name == name || strings.TrimSuffix(bm.Name, "Bitmap") == name {
+			if errata.TypeName(bm.Name) == name || errata.TypeName(strings.TrimSuffix(bm.Name, "Bitmap")) == name {
 				matchingBitmap = bm
 				clusterIds = handled
 				skip = len(handled) == 0
@@ -88,7 +88,7 @@ func populateBitmap(ee *etree.Element, bm *matter.Bitmap, clusterIds []*matter.N
 
 	}
 
-	ee.CreateAttr("name", bm.Name)
+	ee.CreateAttr("name", errata.TypeName(bm.Name))
 	if bm.Type != nil {
 		ee.CreateAttr("type", zap.DataTypeName(bm.Type))
 	} else {
