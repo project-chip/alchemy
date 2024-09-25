@@ -10,11 +10,14 @@ import (
 
 type ClusterGroup struct {
 	entity
-	Clusters []*Cluster
+	Name     string     `json:"name,omitempty"`
+	Clusters []*Cluster `json:"clusters"`
+	AssociatedDataTypes
 }
 
-func NewClusterGroup(source asciidoc.Element, clusters []*Cluster) *ClusterGroup {
+func NewClusterGroup(name string, source asciidoc.Element, clusters []*Cluster) *ClusterGroup {
 	return &ClusterGroup{
+		Name:     name,
 		entity:   entity{source: source},
 		Clusters: clusters,
 	}
@@ -26,6 +29,39 @@ func (c ClusterGroup) EntityType() types.EntityType {
 
 func (c ClusterGroup) Explode() []*Cluster {
 	return c.Clusters
+}
+
+func (c *ClusterGroup) AddBitmaps(bitmaps ...*Bitmap) {
+	for _, bm := range bitmaps {
+		if bm.ParentEntity != nil {
+			slog.Warn("Bitmap belongs to multiple clusters", slog.String("name", bm.Name), log.Path("source", bm))
+			continue
+		}
+		bm.ParentEntity = c
+	}
+	c.Bitmaps = append(c.Bitmaps, bitmaps...)
+}
+
+func (c *ClusterGroup) AddEnums(enums ...*Enum) {
+	for _, e := range enums {
+		if e.ParentEntity != nil {
+			slog.Warn("Enum belongs to multiple clusters", slog.String("name", e.Name), log.Path("source", e))
+			continue
+		}
+		e.ParentEntity = c
+	}
+	c.Enums = append(c.Enums, enums...)
+}
+
+func (c *ClusterGroup) AddStructs(structs ...*Struct) {
+	for _, s := range structs {
+		if s.ParentEntity != nil {
+			slog.Warn("Struct belongs to multiple clusters", slog.String("name", s.Name), log.Path("source", s))
+			continue
+		}
+		s.ParentEntity = c
+	}
+	c.Structs = append(c.Structs, structs...)
 }
 
 type Cluster struct {
@@ -42,10 +78,8 @@ type Cluster struct {
 	Scope     string `json:"scope,omitempty"`
 	PICS      string `json:"pics,omitempty"`
 
-	Features   *Features  `json:"features,omitempty"`
-	Bitmaps    BitmapSet  `json:"bitmaps,omitempty"`
-	Enums      EnumSet    `json:"enums,omitempty"`
-	Structs    StructSet  `json:"structs,omitempty"`
+	Features *Features `json:"features,omitempty"`
+	AssociatedDataTypes
 	Attributes FieldSet   `json:"attributes,omitempty"`
 	Events     EventSet   `json:"events,omitempty"`
 	Commands   CommandSet `json:"commands,omitempty"`
@@ -185,4 +219,37 @@ func (c *Cluster) Identifier(name string) (types.Entity, bool) {
 		}
 	}
 	return nil, false
+}
+
+func (c *Cluster) AddBitmaps(bitmaps ...*Bitmap) {
+	for _, bm := range bitmaps {
+		if bm.ParentEntity != nil {
+			slog.Warn("Bitmap belongs to multiple clusters", slog.String("name", bm.Name), log.Path("source", bm), slog.String("cluster", c.Name))
+			continue
+		}
+		bm.ParentEntity = c
+	}
+	c.Bitmaps = append(c.Bitmaps, bitmaps...)
+}
+
+func (c *Cluster) AddEnums(enums ...*Enum) {
+	for _, e := range enums {
+		if e.ParentEntity != nil {
+			slog.Warn("Enum belongs to multiple clusters", slog.String("name", e.Name), log.Path("source", e), slog.String("cluster", c.Name))
+			continue
+		}
+		e.ParentEntity = c
+	}
+	c.Enums = append(c.Enums, enums...)
+}
+
+func (c *Cluster) AddStructs(structs ...*Struct) {
+	for _, s := range structs {
+		if s.ParentEntity != nil {
+			slog.Warn("Struct belongs to multiple clusters", slog.String("name", s.Name), log.Path("source", s), slog.String("cluster", c.Name))
+			continue
+		}
+		s.ParentEntity = c
+	}
+	c.Structs = append(c.Structs, structs...)
 }

@@ -190,7 +190,7 @@ func SplitZAPDocs(cxt context.Context, inputs pipeline.Map[string, *pipeline.Dat
 		}
 		for _, e := range entities {
 			switch e := e.(type) {
-			case *matter.Cluster, matter.ClusterGroup:
+			case *matter.Cluster, *matter.ClusterGroup:
 				hasCluster = true
 			case *matter.DeviceType:
 				dts = append(dts, e)

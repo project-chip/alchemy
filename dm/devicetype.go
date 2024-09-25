@@ -65,7 +65,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 			reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
 			copy(reqs, deviceType.ClusterRequirements)
 			slices.SortStableFunc(reqs, func(a, b *matter.ClusterRequirement) int {
-				cmp := a.ID.Compare(b.ID)
+				cmp := a.ClusterID.Compare(b.ClusterID)
 				if cmp != 0 {
 					return cmp
 				}
@@ -73,7 +73,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 			})
 			for _, cr := range reqs {
 				clx := cx.CreateElement("cluster")
-				clx.CreateAttr("id", cr.ID.HexString())
+				clx.CreateAttr("id", cr.ClusterID.HexString())
 				clx.CreateAttr("name", cr.ClusterName)
 				switch cr.Interface {
 				case matter.InterfaceClient:
@@ -105,7 +105,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
 	erMap := make(map[types.EntityType][]*matter.ElementRequirement)
 	for _, er := range deviceType.ElementRequirements {
-		if er.ID.Equals(cr.ID) {
+		if er.ClusterID.Equals(cr.ClusterID) {
 			erMap[er.Element] = append(erMap[er.Element], er)
 		}
 	}
@@ -114,7 +114,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 	var commandRequirements map[string][]*matter.ElementRequirement
 	var eventRequirements []*matter.ElementRequirement
 	for _, er := range deviceType.ElementRequirements {
-		if er.ID.Equals(cr.ID) {
+		if er.ClusterID.Equals(cr.ClusterID) {
 			switch er.Element {
 			case types.EntityTypeFeature:
 				featureRequirements = append(featureRequirements, er)

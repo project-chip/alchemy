@@ -20,8 +20,9 @@ type DeviceType struct {
 
 	Conditions []*Condition `json:"conditions,omitempty"`
 
-	ClusterRequirements []*ClusterRequirement `json:"clusterRequirements,omitempty"`
-	ElementRequirements []*ElementRequirement `json:"elementRequirements,omitempty"`
+	ClusterRequirements            []*ClusterRequirement            `json:"clusterRequirements,omitempty"`
+	ElementRequirements            []*ElementRequirement            `json:"elementRequirements,omitempty"`
+	ComposedDeviceTypeRequirements []*ComposedDeviceTypeRequirement `json:"composedDeviceTypeRequirements,omitempty"`
 }
 
 func NewDeviceType(source asciidoc.Element) *DeviceType {
@@ -42,7 +43,7 @@ func (dt *DeviceType) Identifier(name string) (types.Entity, bool) {
 }
 
 type ClusterRequirement struct {
-	ID          *Number         `json:"id,omitempty"`
+	ClusterID   *Number         `json:"clusterId,omitempty"`
 	ClusterName string          `json:"clusterName,omitempty"`
 	Quality     Quality         `json:"quality,omitempty"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
@@ -52,7 +53,7 @@ type ClusterRequirement struct {
 }
 
 type ElementRequirement struct {
-	ID          *Number          `json:"id,omitempty"`
+	ClusterID   *Number          `json:"clusterId,omitempty"`
 	ClusterName string           `json:"clusterName,omitempty"`
 	Element     types.EntityType `json:"element,omitempty"`
 	Name        string           `json:"name,omitempty"`
@@ -64,6 +65,12 @@ type ElementRequirement struct {
 	Conformance conformance.Set       `json:"conformance,omitempty"`
 
 	Cluster *Cluster `json:"cluster,omitempty"`
+}
+
+type ComposedDeviceTypeRequirement struct {
+	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
+	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
+	ElementRequirement
 }
 
 type Condition struct {
