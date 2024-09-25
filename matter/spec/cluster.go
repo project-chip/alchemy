@@ -68,11 +68,21 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		}
 	}
 
+	if len(clusters) == 1 {
+		entities = append(entities, clusters[0])
+	} else if len(clusters) > 1 {
+		cg := matter.NewClusterGroup(s.Name, s.Base, clusters)
+		entities = append(entities, cg)
+		cg.AddBitmaps(bitmaps...)
+		cg.AddEnums(enums...)
+		cg.AddStructs(structs...)
+	}
+
 	for _, c := range clusters {
 		c.Description = description
-		c.Bitmaps = append(c.Bitmaps, bitmaps...)
-		c.Enums = append(c.Enums, enums...)
-		c.Structs = append(c.Structs, structs...)
+		c.AddBitmaps(bitmaps...)
+		c.AddEnums(enums...)
+		c.AddStructs(structs...)
 		c.Features = features
 
 		for _, s := range elements {
@@ -116,11 +126,11 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 					for _, le := range looseEntities {
 						switch le := le.(type) {
 						case *matter.Bitmap:
-							c.Bitmaps = append(c.Bitmaps, le)
+							c.AddBitmaps(le)
 						case *matter.Enum:
-							c.Enums = append(c.Enums, le)
+							c.AddEnums(le)
 						case *matter.Struct:
-							c.Structs = append(c.Structs, le)
+							c.AddStructs(le)
 						default:
 							slog.Warn("unexpected loose entity", log.Element("path", d.Path, s.Base), "entity", le)
 						}

@@ -537,6 +537,10 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnCode
 	case "feature":
 		return matter.TableColumnFeature
+	case "cluster id":
+		return matter.TableColumnClusterID
+	case "device id", "device type id":
+		return matter.TableColumnDeviceID
 	case "device name":
 		return matter.TableColumnDeviceName
 	case "superset":

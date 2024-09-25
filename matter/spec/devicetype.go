@@ -45,6 +45,8 @@ func (s *Section) toDeviceTypes(d *Doc) (entities []types.Entity, err error) {
 				}
 			case matter.SectionElementRequirements:
 				c.ElementRequirements, err = s.toElementRequirements(d)
+			case matter.SectionComposedDeviceTypeRequirements:
+				c.ComposedDeviceTypeRequirements, err = s.toComposedDeviceTypeRequirements(d)
 			case matter.SectionConditions:
 				c.Conditions, err = s.toConditions(d)
 			case matter.SectionRevisionHistory:

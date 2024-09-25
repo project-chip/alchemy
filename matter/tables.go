@@ -30,6 +30,8 @@ const (
 	TableColumnCode
 	TableColumnStatusCode
 	TableColumnFeature
+	TableColumnClusterID
+	TableColumnDeviceID
 	TableColumnDeviceName
 	TableColumnSuperset
 	TableColumnClass
@@ -67,6 +69,8 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnCode:         "Code",
 	TableColumnStatusCode:   "Status Code",
 	TableColumnFeature:      "Feature",
+	TableColumnClusterID:    "Cluster ID",
+	TableColumnDeviceID:     "Device ID",
 	TableColumnDeviceName:   "Device Name",
 	TableColumnSuperset:     "Superset",
 	TableColumnClass:        "Class",

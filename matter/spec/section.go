@@ -384,6 +384,13 @@ func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
 	_, hasSummary := ti.ColumnIndex(matter.TableColumnSummary)
 	_, hasDescription := ti.ColumnIndex(matter.TableColumnDescription)
 	_, hasStatusCode := ti.ColumnIndex(matter.TableColumnStatusCode)
+	_, hasDeviceId := ti.ColumnIndex(matter.TableColumnDeviceID)
+	_, hasClusterId := ti.ColumnIndex(matter.TableColumnClusterID)
+	_, hasElement := ti.ColumnIndex(matter.TableColumnElement)
+	if hasDeviceId && hasClusterId && hasElement {
+		sectionType = matter.SectionComposedDeviceTypeRequirements
+		return
+	}
 	if hasID && hasType && !hasBit && !hasValue {
 		sectionType = matter.SectionDataTypeStruct
 		return
