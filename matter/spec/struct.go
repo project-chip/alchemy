@@ -12,18 +12,16 @@ import (
 
 func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (ms *matter.Struct, err error) {
 	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading struct %s: %w", name, err)
 	}
 	ms = matter.NewStruct(s.Base)
 	ms.Name = name
 
-	if headerRowIndex > 0 {
-		firstRow := rows[0]
+	if ti.HeaderRowIndex > 0 {
+		firstRow := ti.Rows[0]
 		tableCells := firstRow.TableCells()
 		if len(tableCells) > 0 {
 			cv, rowErr := RenderTableCell(tableCells[0])
@@ -35,8 +33,19 @@ func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 			}
 		}
 	}
-	ms.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeStructField)
+	ms.Fields, err = d.readFields(ti, types.EntityTypeStructField)
+	if err != nil {
+		return
+	}
 	entityMap[s.Base] = append(entityMap[s.Base], ms)
+	fieldMap := make(map[string]*matter.Field, len(ms.Fields))
+	for _, f := range ms.Fields {
+		fieldMap[f.Name] = f
+	}
+	err = s.mapFields(fieldMap, entityMap)
+	if err != nil {
+		return
+	}
 	ms.Name = CanonicalName(ms.Name)
 	return
 }

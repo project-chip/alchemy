@@ -12,28 +12,28 @@ import (
 func (b *Ball) organizeFeaturesSection(cxt *discoContext, dp *docParse) (err error) {
 	for _, features := range dp.features {
 		featuresTable := features.table
-		if featuresTable.element == nil {
+		if featuresTable.Element == nil {
 			return fmt.Errorf("no features section found")
 		}
 
-		if featuresTable.columnMap == nil {
+		if featuresTable.ColumnMap == nil {
 			return fmt.Errorf("can't rearrange features table without header row in %s", dp.doc.Path)
 		}
 
-		err = b.renameTableHeaderCells(dp.doc, features.section, &featuresTable, matter.Tables[matter.TableTypeFeatures].ColumnNames)
+		err = b.renameTableHeaderCells(dp.doc, features.section, featuresTable, matter.Tables[matter.TableTypeFeatures].ColumnNames)
 		if err != nil {
 			return fmt.Errorf("error renaming table header cells in features table in %s: %w", dp.doc.Path, err)
 		}
 
-		err = b.reorderColumns(dp.doc, features.section, &featuresTable, matter.TableTypeFeatures)
+		err = b.reorderColumns(dp.doc, features.section, featuresTable, matter.TableTypeFeatures)
 		if err != nil {
 			return err
 		}
 
-		featureIndex, ok := featuresTable.columnMap[matter.TableColumnFeature]
+		featureIndex, ok := featuresTable.ColumnMap[matter.TableColumnFeature]
 		if ok {
-			for i, row := range featuresTable.rows {
-				if i == featuresTable.headerRow {
+			for i, row := range featuresTable.Rows {
+				if i == featuresTable.HeaderRowIndex {
 					continue
 				}
 				featureCell := row.Cell(featureIndex)
@@ -54,10 +54,10 @@ func (b *Ball) organizeFeaturesSection(cxt *discoContext, dp *docParse) (err err
 			}
 		}
 
-		codeIndex, ok := featuresTable.getColumnIndex(matter.TableColumnCode)
+		codeIndex, ok := featuresTable.ColumnIndex(matter.TableColumnCode)
 		if ok {
-			for i, row := range featuresTable.rows {
-				if i == featuresTable.headerRow {
+			for i, row := range featuresTable.Rows {
+				if i == featuresTable.HeaderRowIndex {
 					continue
 				}
 				codeCell := row.Cell(codeIndex)

@@ -14,17 +14,17 @@ import (
 func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err error) {
 
 	for _, attributes := range dp.attributes {
-		attributesTable := &attributes.table
-		if attributesTable.element == nil {
+		attributesTable := attributes.table
+		if attributesTable.Element == nil {
 			return
 		}
 
-		if attributesTable.columnMap == nil {
+		if attributesTable.ColumnMap == nil {
 			return fmt.Errorf("can't rearrange attributes table without header row")
 		}
 
-		if len(attributesTable.columnMap) < 3 {
-			return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(attributesTable.columnMap))
+		if len(attributesTable.ColumnMap) < 3 {
+			return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(attributesTable.ColumnMap))
 		}
 
 		err = b.fixAccessCells(dp, attributes, types.EntityTypeAttribute)
@@ -37,7 +37,7 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return err
 		}
 
-		err = b.fixConformanceCells(dp, attributes, attributesTable.rows, attributesTable.columnMap)
+		err = b.fixConformanceCells(dp, attributes, attributesTable.Rows, attributesTable.ColumnMap)
 		if err != nil {
 			return err
 		}
@@ -62,16 +62,16 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 	if b.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableLinkIndexes) {
 		return nil
 	}
-	if section.table.element == nil {
+	if section.table.Element == nil {
 		return nil
 	}
 	attributeCells := make(map[string]*asciidoc.TableCell)
-	nameIndex, ok := section.table.columnMap[matter.TableColumnName]
+	nameIndex, ok := section.table.ColumnMap[matter.TableColumnName]
 	if !ok {
 		return nil
 	}
 
-	for _, row := range section.table.rows {
+	for _, row := range section.table.Rows {
 		cell := row.Cell(nameIndex)
 		cv, err := spec.RenderTableCell(cell)
 		if err != nil {

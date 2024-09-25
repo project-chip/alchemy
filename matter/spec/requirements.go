@@ -69,10 +69,8 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 }
 
 func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.ElementRequirement, err error) {
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -81,19 +79,27 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		}
 		return
 	}
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
-		cr := &matter.ElementRequirement{}
-		cr.ID, err = readRowID(row, columnMap, matter.TableColumnID)
+	for row := range ti.Body() {
+		var cr matter.ElementRequirement
+		cr, err = s.toElementRequirement(d, ti, row)
 		if err != nil {
 			return
 		}
-		cr.ClusterName, err = readRowASCIIDocString(row, columnMap, matter.TableColumnCluster)
+		elementRequirements = append(elementRequirements, &cr)
+	}
+	return
+}
+func (*Section) toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableRow) (cr matter.ElementRequirement, err error) {
+	cr.ClusterID, err = ti.ReadID(row, matter.TableColumnClusterID, matter.TableColumnID)
+	if err != nil {
+		return
+	}
+	cr.ClusterName, err = ti.ReadString(row, matter.TableColumnCluster)
 		if err != nil {
 			return
 		}
 		var e string
-		e, err = readRowASCIIDocString(row, columnMap, matter.TableColumnElement)
+	e, err = ti.ReadString(row, matter.TableColumnElement)
 		if err != nil {
 			return
 		}
@@ -116,7 +122,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err != nil {
 			return
 		}
-		cr.Name, err = readRowASCIIDocString(row, columnMap, matter.TableColumnName)
+	cr.Name, err = ti.ReadString(row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
@@ -128,13 +134,13 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 			}
 		}
 		var q string
-		q, err = readRowASCIIDocString(row, columnMap, matter.TableColumnQuality)
+	q, err = ti.ReadString(row, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
 		cr.Quality = parseQuality(q, cr.Element, d, row)
 		var c string
-		c, err = readRowASCIIDocString(row, columnMap, matter.TableColumnConstraint)
+	c, err = ti.ReadString(row, matter.TableColumnConstraint)
 		if err != nil {
 			return
 		}
@@ -144,23 +150,18 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 			cr.Constraint = &constraint.GenericConstraint{Value: c}
 		}
 		var a string
-		a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
+	a, err = ti.ReadString(row, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}
 		cr.Access, _ = ParseAccess(a, types.EntityTypeElementRequirement)
-		cr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
-		elementRequirements = append(elementRequirements, cr)
-	}
+	cr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
 	return
 }
 
 func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err error) {
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	var extraColumns []ExtraColumn
-	rows, headerRowIndex, columnMap, extraColumns, err = parseFirstTable(d, s)
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -169,12 +170,12 @@ func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err erro
 		}
 		return
 	}
-	featureIndex, ok := columnMap[matter.TableColumnFeature]
+	featureIndex, ok := ti.ColumnMap[matter.TableColumnFeature]
 	if !ok {
-		featureIndex, ok = columnMap[matter.TableColumnCondition]
+		featureIndex, ok = ti.ColumnMap[matter.TableColumnCondition]
 		if !ok {
 			featureIndex = -1
-			for _, col := range extraColumns {
+			for _, col := range ti.ExtraColumns {
 				if strings.HasSuffix(col.Name, "Tag") {
 					featureIndex = col.Offset
 					break
@@ -186,14 +187,13 @@ func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err erro
 			}
 		}
 	}
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
+	for row := range ti.Body() {
 		c := matter.NewCondition(s.Base)
-		c.Feature, err = readRowCellASCIIDocString(row, featureIndex)
+		c.Feature, err = ti.ReadStringAtOffset(row, featureIndex)
 		if err != nil {
 			return
 		}
-		c.Description, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDescription)
+		c.Description, err = ti.ReadString(row, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}

@@ -25,22 +25,21 @@ func appendSectionToRow(cxt context.Context, doc *spec.Doc, section *spec.Sectio
 	if t == nil {
 		return fmt.Errorf("no table found")
 	}
-	rows := t.TableRows()
-	if len(rows) < 2 {
-		return fmt.Errorf("not enough rows in table")
-	}
-	headerRowIndex, columnMap, extraColumns, err := spec.MapTableColumns(doc, rows)
+	ti, err := spec.ReadTable(doc, t)
 	if err != nil {
 		return fmt.Errorf("failed mapping table columns for section %s: %w", section.Name, err)
 	}
-	if len(rows) < headerRowIndex+2 {
+	if len(ti.Rows) < 2 {
+		return fmt.Errorf("not enough rows in table")
+	}
+	if len(ti.Rows) < ti.HeaderRowIndex+2 {
 		return fmt.Errorf("not enough value rows in table")
 	}
-	if columnMap == nil {
+	if ti.ColumnMap == nil {
 		return fmt.Errorf("can't read table without columns")
 	}
-	valueRow := rows[headerRowIndex+1]
-	err = readTableRow(valueRow, columnMap, extraColumns, row)
+	valueRow := ti.Rows[ti.HeaderRowIndex+1]
+	err = readTableRow(valueRow, ti.ColumnMap, ti.ExtraColumns, row)
 	if err != nil {
 		return err
 	}
@@ -70,23 +69,23 @@ func readTable(cxt context.Context, doc *spec.Doc, section *spec.Section) (rs []
 	if t == nil {
 		return nil, errMissingTable
 	}
-	rows := t.TableRows()
-	if len(rows) < 2 {
-		return nil, fmt.Errorf("not enough rows in table")
-	}
-	headerRowIndex, columnMap, extraColumns, err := spec.MapTableColumns(doc, rows)
+
+	ti, err := spec.ReadTable(doc, t)
 	if err != nil {
 		return nil, err
 	}
-	if len(rows) < headerRowIndex+2 {
+	if len(ti.Rows) < 2 {
+		return nil, fmt.Errorf("not enough rows in table")
+	}
+	if len(ti.Rows) < ti.HeaderRowIndex+2 {
 		return nil, fmt.Errorf("not enough value rows in table")
 	}
-	if columnMap == nil {
+	if ti.ColumnMap == nil {
 		return nil, fmt.Errorf("can't read table without columns")
 	}
-	for _, valueRow := range rows[headerRowIndex+1:] {
+	for _, valueRow := range ti.Rows[ti.HeaderRowIndex+1:] {
 		row := &dbRow{}
-		err = readTableRow(valueRow, columnMap, extraColumns, row)
+		err = readTableRow(valueRow, ti.ColumnMap, ti.ExtraColumns, row)
 		if err != nil {
 			return
 		}

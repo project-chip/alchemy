@@ -9,16 +9,16 @@ import (
 
 func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error) {
 	for _, events := range dp.events {
-		eventsTable := &events.table
-		if eventsTable.element == nil {
+		eventsTable := events.table
+		if eventsTable.Element == nil {
 			err = fmt.Errorf("no events table found")
 			return
 		}
-		if eventsTable.columnMap == nil {
+		if eventsTable.ColumnMap == nil {
 			return fmt.Errorf("can't rearrange events table without header row in section %s in %s", events.section.Name, dp.doc.Path)
 		}
 
-		if len(eventsTable.columnMap) < 2 {
+		if len(eventsTable.ColumnMap) < 2 {
 			return fmt.Errorf("can't rearrange events table with so few matches in section %s in %s", events.section.Name, dp.doc.Path)
 		}
 
@@ -27,7 +27,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			return fmt.Errorf("error fixing access cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
 
-		err = b.fixConformanceCells(dp, events, eventsTable.rows, eventsTable.columnMap)
+		err = b.fixConformanceCells(dp, events, eventsTable.Rows, eventsTable.ColumnMap)
 		if err != nil {
 			return fmt.Errorf("error fixing conformance cells for event table in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
@@ -51,35 +51,35 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 
 		for _, event := range events.children {
 			eventTable := event.table
-			if eventTable.element == nil {
+			if eventTable.Element == nil {
 				continue
 			}
-			err = b.fixConstraintCells(event.section, &eventTable)
+			err = b.fixConstraintCells(event.section, eventTable)
 			if err != nil {
 				return fmt.Errorf("error fixing constraint cells for event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.fixConformanceCells(dp, event, eventTable.rows, eventTable.columnMap)
+			err = b.fixConformanceCells(dp, event, eventTable.Rows, eventTable.ColumnMap)
 			if err != nil {
 				return fmt.Errorf("error fixing conformance cells for event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.renameTableHeaderCells(dp.doc, event.section, &eventTable, nil)
+			err = b.renameTableHeaderCells(dp.doc, event.section, eventTable, nil)
 			if err != nil {
 				return fmt.Errorf("error renaming table header cells in event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.addMissingColumns(event.section, &eventTable, matter.Tables[matter.TableTypeEvent], types.EntityTypeStructField)
+			err = b.addMissingColumns(event.section, eventTable, matter.Tables[matter.TableTypeEvent], types.EntityTypeStructField)
 			if err != nil {
 				return fmt.Errorf("error adding missing columns to event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.reorderColumns(dp.doc, event.section, &eventTable, matter.TableTypeEvent)
+			err = b.reorderColumns(dp.doc, event.section, eventTable, matter.TableTypeEvent)
 			if err != nil {
 				return fmt.Errorf("error reordering columns in event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			b.appendSubsectionTypes(event.section, eventTable.columnMap, eventTable.rows)
+			b.appendSubsectionTypes(event.section, eventTable.ColumnMap, eventTable.Rows)
 
 			err = b.linkIndexTables(cxt, event)
 			if err != nil {

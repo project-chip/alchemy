@@ -27,10 +27,8 @@ func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 	bm = matter.NewBitmap(s.Base)
 	bm.Name = name
 	bm.Type = dt
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
 
 	if err != nil {
 		if err == ErrNoTableFound {
@@ -40,29 +38,28 @@ func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 		return nil, fmt.Errorf("failed reading bitmap %s: %w", name, err)
 	}
 
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
+	for row := range ti.Body() {
 		var bit, name, summary string
 		var conf conformance.Set
-		name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
+		name, err = ti.ReadValue(row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
 		name = matter.StripTypeSuffixes(name)
-		summary, err = ReadRowValue(d, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
-		conf = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+		conf = ti.ReadConformance(row, matter.TableColumnConformance)
 		if conf == nil {
 			conf = conformance.Set{&conformance.Mandatory{}}
 		}
-		bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnBit)
+		bit, err = ti.ReadString(row, matter.TableColumnBit)
 		if err != nil {
 			return
 		}
 		if len(bit) == 0 {
-			bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnValue)
+			bit, err = ti.ReadString(row, matter.TableColumnValue)
 			if err != nil {
 				return
 			}
