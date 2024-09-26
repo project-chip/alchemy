@@ -154,7 +154,7 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 
 		assignSectionType(doc, section, getSectionType(ps, section))
 		switch section.SecType {
-		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct:
+		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct, matter.SectionDataTypeDef:
 			if section.Base.Level > 2 {
 				slog.Debug("Unusual depth for section type", slog.String("name", section.Name), slog.String("type", section.SecType.String()), slog.String("path", doc.Path.String()))
 			}
@@ -175,6 +175,8 @@ func assignSectionType(doc *Doc, s *Section, sectionType matter.Section) {
 		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeDataTypesEnum)
 	case matter.SectionDataTypeStruct:
 		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeDataTypesStruct)
+	case matter.SectionDataTypeDef:
+		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeDataTypesDef)
 	case matter.SectionCluster:
 		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCluster)
 	case matter.SectionDeviceType:
@@ -358,6 +360,8 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 			return matter.SectionDataTypeBitmap
 		} else if dataType.BaseType == types.BaseDataTypeCustom {
 			return matter.SectionDataTypeStruct
+		} else if dataType.BaseType.IsSimple() {
+			return matter.SectionDataTypeDef
 		}
 	}
 	slog.Debug("unknown section type", "path", section.Doc.Path, "name", name)
@@ -440,7 +444,7 @@ func (s *Section) toGlobalObjects(d *Doc, entityMap map[asciidoc.Attributable][]
 	return entities, nil
 }
 
-var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32)(?:\s*>>)?`)
+var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32|uint8|uint16|uint24|uint32|uint40|uint48|uint56|uint64|int8|int16|int24|int32|int40|int48|int56|int64|string)(?:\s*>>)?`)
 
 func (s *Section) GetDataType() *types.DataType {
 	var dts string
@@ -513,6 +517,15 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attrib
 				err = nil
 			} else {
 				entities = append(entities, s)
+			}
+		case matter.SectionDataTypeDef:
+			var t *matter.TypeDef
+			t, err = section.toTypeDef(doc, entityMap)
+			if err != nil {
+				slog.Warn("Error converting loose section to typedef", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				err = nil
+			} else {
+				entities = append(entities, t)
 			}
 		case matter.SectionGlobalElements:
 			var ges []types.Entity

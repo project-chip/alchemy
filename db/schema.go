@@ -22,6 +22,7 @@ var (
 	deviceTypeRevisionTable           = "device_type_revision"
 	deviceTypeConditionTable          = "device_type_condition"
 	deviceTypeClusterRequirementTable = "device_type_cluster_requirement"
+	typedefTable                      = "typedef"
 )
 
 type tableSchemaDef struct {
@@ -113,6 +114,14 @@ var tableSchema = map[string]tableSchemaDef{
 			matter.TableColumnDefault,
 			matter.TableColumnAccess,
 			matter.TableColumnConformance,
+		},
+	},
+	typedefTable: {
+		parent: clusterTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnName,
+			matter.TableColumnDescription,
+			matter.TableColumnType,
 		},
 	},
 	attributeTable: {

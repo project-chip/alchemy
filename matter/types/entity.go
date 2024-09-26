@@ -27,6 +27,7 @@ const (
 	EntityTypeCondition
 	EntityTypeStructField
 	EntityTypeElementRequirement
+	EntityTypeDef
 )
 
 type Entity interface {

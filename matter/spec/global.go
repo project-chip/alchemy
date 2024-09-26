@@ -45,6 +45,15 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 				spec.structIndex[m.Name] = m
 			}
 			spec.addEntity(m.Name, m, nil)
+		case *matter.TypeDef:
+			slog.Debug("Found global typedef", "name", m.Name, "path", doc.Path)
+			_, ok := spec.typeDefIndex[m.Name]
+			if ok {
+				slog.Warn("multiple global typedefs with same name", "name", m.Name)
+			} else {
+				spec.typeDefIndex[m.Name] = m
+			}
+			spec.addEntity(m.Name, m, nil)
 		case *matter.Command:
 			_, ok := spec.commandIndex[m.Name]
 			if ok {
