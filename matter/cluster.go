@@ -46,6 +46,7 @@ type Cluster struct {
 	Bitmaps    BitmapSet  `json:"bitmaps,omitempty"`
 	Enums      EnumSet    `json:"enums,omitempty"`
 	Structs    StructSet  `json:"structs,omitempty"`
+	TypeDefs   TypeDefSet `json:"typedefs,omitempty"`
 	Attributes FieldSet   `json:"attributes,omitempty"`
 	Events     EventSet   `json:"events,omitempty"`
 	Commands   CommandSet `json:"commands,omitempty"`

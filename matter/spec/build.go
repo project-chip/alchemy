@@ -219,6 +219,16 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 		spec.DocRefs[en] = d
 		specIndex.addEntity(en.Name, en, m)
 	}
+	for _, en := range m.TypeDefs {
+		_, ok := spec.typeDefIndex[en.Name]
+		if ok {
+			slog.Debug("multiple structs with same name", "name", en.Name)
+		} else {
+			spec.typeDefIndex[en.Name] = en
+		}
+		spec.DocRefs[en] = d
+		specIndex.addEntity(en.Name, en, m)
+	}
 }
 
 func (sp *Builder) resolveDataTypeReferences(spec *Specification) {

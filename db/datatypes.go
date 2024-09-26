@@ -15,6 +15,7 @@ func (h *Host) indexDataTypeModels(cxt context.Context, parent *sectionInfo, clu
 	h.indexBitmaps(cluster, parent)
 	h.indexEnums(cluster, parent)
 	h.indexStructs(cluster, parent)
+	h.indexTypeDefs(cluster, parent)
 	return nil
 }
 
@@ -55,6 +56,16 @@ func (h *Host) indexEnums(cluster *matter.Cluster, parent *sectionInfo) {
 		}
 	}
 }
+func (h *Host) indexTypeDefs(cluster *matter.Cluster, parent *sectionInfo) {
+	for _, t := range cluster.TypeDefs {
+		row := newDBRow()
+		row.values[matter.TableColumnName] = t.Name
+		row.values[matter.TableColumnType] = t.Type.Name
+		row.values[matter.TableColumnDescription] = t.Description
+		ei := &sectionInfo{id: h.nextID(typedefTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
+		parent.children[typedefTable] = append(parent.children[typedefTable], ei)
+	}
+}
 
 func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string, entityType types.EntityType) {
 	sr := newDBRow()
@@ -93,7 +104,7 @@ func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInf
 	}
 	for _, s := range parse.Skim[*spec.Section](dts.Elements()) {
 		switch s.SecType {
-		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct:
+		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct, matter.SectionDataTypeDef:
 			var t string
 			switch s.SecType {
 			case matter.SectionDataTypeBitmap:
@@ -102,6 +113,8 @@ func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInf
 				t = "enum"
 			case matter.SectionDataTypeStruct:
 				t = "struct"
+			case matter.SectionDataTypeDef:
+				t = "typedef"
 			}
 			name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
 			name = matter.StripDataTypeSuffixes(name)
@@ -128,6 +141,9 @@ func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInf
 				ci.id = h.nextID(structTable)
 				err = h.readTableSection(cxt, doc, ci, s, structField)
 				ds.children[structTable] = append(ds.children[structTable], ci)
+			case matter.SectionDataTypeDef:
+				ci.id = h.nextID(typedefTable)
+				ds.children[typedefTable] = append(ds.children[typedefTable], ci)
 			}
 			if err != nil {
 				return
