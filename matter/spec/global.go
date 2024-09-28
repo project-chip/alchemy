@@ -22,7 +22,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			slog.Debug("Found global bitmap", "name", m.Name, "path", doc.Path)
 			_, ok := spec.bitmapIndex[m.Name]
 			if ok {
-				slog.Warn("multiple global bitmaps with same name", "name", m.Name)
+				slog.Error("multiple bitmaps with same name", "name", m.Name)
 			} else {
 				spec.bitmapIndex[m.Name] = m
 			}
@@ -31,7 +31,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			slog.Debug("Found global enum", "name", m.Name, "path", doc.Path)
 			_, ok := spec.enumIndex[m.Name]
 			if ok {
-				slog.Warn("multiple global enums with same name", "name", m.Name)
+				slog.Error("multiple enums with same name", "name", m.Name)
 			} else {
 				spec.enumIndex[m.Name] = m
 			}
@@ -40,7 +40,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			slog.Debug("Found global struct", "name", m.Name, "path", doc.Path)
 			_, ok := spec.structIndex[m.Name]
 			if ok {
-				slog.Warn("multiple global structs with same name", "name", m.Name)
+				slog.Error("multiple structs with same name", "name", m.Name)
 			} else {
 				spec.structIndex[m.Name] = m
 			}
@@ -48,7 +48,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 		case *matter.Command:
 			_, ok := spec.commandIndex[m.Name]
 			if ok {
-				slog.Warn("multiple global commands with same name", "name", m.Name)
+				slog.Error("multiple commands with same name", "name", m.Name)
 			} else {
 				spec.commandIndex[m.Name] = m
 			}
@@ -56,7 +56,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 		case *matter.Event:
 			_, ok := spec.eventIndex[m.Name]
 			if ok {
-				slog.Warn("multiple global events with same name", "name", m.Name)
+				slog.Error("multiple events with same name", "name", m.Name)
 			} else {
 				spec.eventIndex[m.Name] = m
 			}

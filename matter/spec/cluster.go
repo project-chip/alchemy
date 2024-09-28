@@ -206,7 +206,7 @@ func assignCustomDataType(c *matter.Cluster, dt *types.DataType) {
 			return
 		}
 	}
-	slog.Warn("unable to find data type for field", slog.String("dataType", name), log.Type("source", dt.Source))
+	slog.Debug("unable to find data type for field", slog.String("dataType", name), log.Type("source", dt.Source))
 }
 
 func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, err error) {
