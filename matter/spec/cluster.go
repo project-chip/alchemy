@@ -36,14 +36,6 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		}
 	}
 
-	if len(clusters) == 1 {
-		sectionClusterName := toClusterName(s.Name)
-		if sectionClusterName != clusters[0].Name {
-			slog.Warn("Mismatch between cluster name in Cluster ID table and section name", slog.String("sectionName", sectionClusterName), slog.String("clusterName", clusters[0].Name), log.Path("path", s.Base))
-			clusters[0].Name = sectionClusterName
-		}
-	}
-
 	var features *matter.Features
 	var bitmaps matter.BitmapSet
 	var enums matter.EnumSet
@@ -68,14 +60,29 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		}
 	}
 
-	if len(clusters) == 1 {
-		entities = append(entities, clusters[0])
-	} else if len(clusters) > 1 {
+	var isClusterGroup bool
+	if len(clusters) != 1 {
+		isClusterGroup = true
+	} else {
+		cluster := clusters[0]
+		sectionClusterName := toClusterName(s.Name)
+		if cluster.Name != sectionClusterName {
+			if clusterNamesEquivalent(cluster.Name, s.Name) {
+				cluster.Name = sectionClusterName
+			} else {
+				isClusterGroup = true
+			}
+		}
+	}
+
+	if isClusterGroup {
 		cg := matter.NewClusterGroup(s.Name, s.Base, clusters)
 		entities = append(entities, cg)
 		cg.AddBitmaps(bitmaps...)
 		cg.AddEnums(enums...)
 		cg.AddStructs(structs...)
+	} else {
+		entities = append(entities, clusters[0])
 	}
 
 	for _, c := range clusters {
@@ -112,7 +119,6 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:
-				slog.Info("SectionDerivedClusterNamespace", slog.String("path", s.Doc.Path.Relative))
 				err = parseDerivedCluster(d, s, c)
 			case matter.SectionClusterID:
 			case matter.SectionDataTypes, matter.SectionFeatures, matter.SectionStatusCodes: // Handled above
@@ -200,6 +206,7 @@ func assignCustomDataType(c *matter.Cluster, dt *types.DataType) {
 			return
 		}
 	}
+	slog.Warn("unable to find data type for field", slog.String("dataType", name), log.Type("source", dt.Source))
 }
 
 func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, err error) {
@@ -256,6 +263,14 @@ func toClusterName(name string) string {
 	return text.TrimCaseInsensitiveSuffix(name, " Cluster")
 }
 
+func clusterNamesEquivalent(name1 string, name2 string) bool {
+	name1 = toClusterName(name1)
+	name2 = toClusterName(name2)
+	name1 = strings.ReplaceAll(name1, " ", "")
+	name2 = strings.ReplaceAll(name2, " ", "")
+	return strings.EqualFold(name1, name2)
+}
+
 func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 	ti, err := parseFirstTable(doc, s)
 	if err != nil {
@@ -309,8 +324,6 @@ func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
 func parseDerivedCluster(d *Doc, s *Section, c *matter.Cluster) error {
 	elements := parse.Skim[*Section](s.Elements())
 	for _, s := range elements {
-		slog.Info("parseDerivedCluster", slog.String("path", s.Doc.Path.Relative), slog.String("secType", s.SecType.String()))
-
 		switch s.SecType {
 		case matter.SectionModeTags:
 			en, err := s.toModeTags(d)

@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -34,7 +35,9 @@ func (c ClusterGroup) Explode() []*Cluster {
 func (c *ClusterGroup) AddBitmaps(bitmaps ...*Bitmap) {
 	for _, bm := range bitmaps {
 		if bm.ParentEntity != nil {
-			slog.Warn("Bitmap belongs to multiple clusters", slog.String("name", bm.Name), log.Path("source", bm))
+			if _, ok := bm.ParentEntity.(*ClusterGroup); !ok {
+				slog.Warn("Bitmap belongs to multiple clusters", slog.String("name", bm.Name), log.Path("source", bm))
+			}
 			continue
 		}
 		bm.ParentEntity = c
@@ -45,7 +48,9 @@ func (c *ClusterGroup) AddBitmaps(bitmaps ...*Bitmap) {
 func (c *ClusterGroup) AddEnums(enums ...*Enum) {
 	for _, e := range enums {
 		if e.ParentEntity != nil {
-			slog.Warn("Enum belongs to multiple clusters", slog.String("name", e.Name), log.Path("source", e))
+			if _, ok := e.ParentEntity.(*ClusterGroup); !ok {
+				slog.Warn("Enum belongs to multiple clusters", slog.String("name", e.Name), log.Path("source", e))
+			}
 			continue
 		}
 		e.ParentEntity = c
@@ -56,7 +61,9 @@ func (c *ClusterGroup) AddEnums(enums ...*Enum) {
 func (c *ClusterGroup) AddStructs(structs ...*Struct) {
 	for _, s := range structs {
 		if s.ParentEntity != nil {
-			slog.Warn("Struct belongs to multiple clusters", slog.String("name", s.Name), log.Path("source", s))
+			if _, ok := s.ParentEntity.(*ClusterGroup); !ok {
+				slog.Warn("Struct belongs to multiple clusters", slog.String("name", s.Name), log.Path("source", s))
+			}
 			continue
 		}
 		s.ParentEntity = c
@@ -70,7 +77,7 @@ type Cluster struct {
 	Name        string          `json:"name,omitempty"`
 	Description string          `json:"description,omitempty"`
 	Revisions   []*Revision     `json:"revisions,omitempty"`
-	Base        bool            `json:"baseCluster,omitempty"`
+	Parent      *Cluster        `json:"-"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
 
 	Hierarchy string `json:"hierarchy,omitempty"`
@@ -96,7 +103,7 @@ func (c *Cluster) EntityType() types.EntityType {
 }
 
 func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err error) {
-	slog.Debug("Inheriting cluster", "parent", parent.Name, "child", c.Name)
+	c.Parent = parent
 	if parent.Features != nil {
 		if c.Features == nil || len(c.Features.Bits) == 0 {
 			c.Features = parent.Features.Clone()
@@ -123,6 +130,7 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
+			c.Bitmaps = append(c.Bitmaps, pbm)
 			linkedEntities = append(linkedEntities, pbm)
 			continue
 		}
@@ -141,6 +149,7 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
+			c.Enums = append(c.Enums, pe)
 			linkedEntities = append(linkedEntities, pe)
 			continue
 		}
@@ -159,6 +168,7 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
+			c.Structs = append(c.Structs, ps)
 			linkedEntities = append(linkedEntities, ps)
 			continue
 		}
@@ -224,7 +234,9 @@ func (c *Cluster) Identifier(name string) (types.Entity, bool) {
 func (c *Cluster) AddBitmaps(bitmaps ...*Bitmap) {
 	for _, bm := range bitmaps {
 		if bm.ParentEntity != nil {
-			slog.Warn("Bitmap belongs to multiple clusters", slog.String("name", bm.Name), log.Path("source", bm), slog.String("cluster", c.Name))
+			if _, ok := bm.ParentEntity.(*ClusterGroup); !ok {
+				slog.Warn("Bitmap belongs to multiple clusters", slog.String("name", bm.Name), log.Path("source", bm), slog.String("cluster", c.Name))
+			}
 			continue
 		}
 		bm.ParentEntity = c
@@ -235,7 +247,9 @@ func (c *Cluster) AddBitmaps(bitmaps ...*Bitmap) {
 func (c *Cluster) AddEnums(enums ...*Enum) {
 	for _, e := range enums {
 		if e.ParentEntity != nil {
-			slog.Warn("Enum belongs to multiple clusters", slog.String("name", e.Name), log.Path("source", e), slog.String("cluster", c.Name))
+			if _, ok := e.ParentEntity.(*ClusterGroup); !ok {
+				slog.Warn("Enum belongs to multiple clusters", slog.String("name", e.Name), log.Path("source", e))
+			}
 			continue
 		}
 		e.ParentEntity = c
@@ -246,7 +260,9 @@ func (c *Cluster) AddEnums(enums ...*Enum) {
 func (c *Cluster) AddStructs(structs ...*Struct) {
 	for _, s := range structs {
 		if s.ParentEntity != nil {
-			slog.Warn("Struct belongs to multiple clusters", slog.String("name", s.Name), log.Path("source", s), slog.String("cluster", c.Name))
+			if _, ok := s.ParentEntity.(*ClusterGroup); !ok {
+				slog.Warn("Struct belongs to multiple clusters", slog.String("name", s.Name), log.Path("source", s), slog.String("cluster", c.Name))
+			}
 			continue
 		}
 		s.ParentEntity = c
