@@ -9,7 +9,7 @@ import (
 func (b *Ball) organizeClusterIDSection(cxt *discoContext, dp *docParse) (err error) {
 	for _, clusterIDs := range dp.clusterIDs {
 		clusterIDsTable := clusterIDs.table
-		if clusterIDsTable.Element == nil {
+		if clusterIDsTable == nil || clusterIDsTable.Element == nil {
 			return fmt.Errorf("no cluster ID section found")
 		}
 		if len(clusterIDsTable.Element.TableRows()) > 2 {

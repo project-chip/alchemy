@@ -26,7 +26,7 @@ func (b *Ball) organizeBitmapSections(cxt *discoContext, dp *docParse) (err erro
 func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSection) (err error) {
 	b.canonicalizeDataTypeSectionName(dp, bms.section, "Bitmap")
 	bitsTable := bms.table
-	if bitsTable.Element == nil {
+	if bitsTable == nil || bitsTable.Element == nil {
 		return
 	}
 	if bitsTable.ColumnMap == nil {

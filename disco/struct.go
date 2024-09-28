@@ -23,7 +23,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 	b.canonicalizeDataTypeSectionName(dp, ss.section, "Struct")
 
 	fieldsTable := ss.table
-	if fieldsTable.Element == nil {
+	if fieldsTable == nil || fieldsTable.Element == nil {
 		slog.Debug("no struct table found")
 		return nil
 	}

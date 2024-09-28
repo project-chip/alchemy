@@ -23,7 +23,7 @@ func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSecti
 	b.canonicalizeDataTypeSectionName(dp, es.section, "Enum")
 
 	enumTable := es.table
-	if enumTable.Element == nil {
+	if enumTable == nil || enumTable.Element == nil {
 		return
 	}
 	if enumTable.ColumnMap == nil {

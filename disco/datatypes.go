@@ -68,7 +68,7 @@ func (b *Ball) getPotentialDataTypes(dc *discoContext, dp *docParse) (err error)
 }
 
 func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, ss *subSection) error {
-	if ss.table.Element == nil {
+	if ss.table == nil || ss.table.Element == nil {
 		slog.Debug("section has no table; skipping attempt to find data type", "sectionName", ss.section.Name)
 		return nil
 	}
@@ -495,7 +495,7 @@ func (b *Ball) canonicalizeDataTypeSectionName(dp *docParse, s *spec.Section, da
 func renameDataType(subSections []*subSection, oldName string, newName string) {
 	for _, ss := range subSections {
 		renameDataType(ss.children, oldName, newName)
-		if ss.table.Element == nil {
+		if ss.table == nil || ss.table.Element == nil {
 			continue
 		}
 		typeIndex, ok := ss.table.ColumnMap[matter.TableColumnType]

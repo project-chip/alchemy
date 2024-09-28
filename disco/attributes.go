@@ -15,7 +15,7 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 
 	for _, attributes := range dp.attributes {
 		attributesTable := attributes.table
-		if attributesTable.Element == nil {
+		if attributesTable == nil || attributesTable.Element == nil {
 			return
 		}
 
@@ -62,7 +62,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 	if b.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableLinkIndexes) {
 		return nil
 	}
-	if section.table.Element == nil {
+	if section.table == nil || section.table.Element == nil {
 		return nil
 	}
 	attributeCells := make(map[string]*asciidoc.TableCell)
