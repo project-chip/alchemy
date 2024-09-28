@@ -98,9 +98,9 @@ func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster, 
 		c.ClusterIDs = append(c.ClusterIDs, v.ID.HexString())
 	}
 
-	// Special case for status code enums, which typically do not get referenced
+	// Special case for status code and mode tag enums, which typically do not get referenced
 	for _, e := range v.Enums {
-		if strings.EqualFold(e.Name, "StatusCode") || strings.EqualFold(e.Name, "StatusCodeEnum") {
+		if strings.EqualFold(e.Name, "StatusCode") || strings.EqualFold(e.Name, "StatusCodeEnum") || strings.EqualFold(e.Name, "ModeTag") {
 			c.Enums[e] = append(c.Enums[e], v.ID)
 		}
 	}
