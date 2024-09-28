@@ -214,7 +214,7 @@ func DataTypeName(dataType *types.DataType) string {
 	case types.BaseDataTypeGroupID:
 		return "group_id"
 	case types.BaseDataTypeEndpointID:
-		return "endpoint_id"
+		return "endpoint_no"
 	case types.BaseDataTypeEndpointNumber:
 		return "endpoint_no"
 	case types.BaseDataTypeVendorID:
