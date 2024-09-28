@@ -53,7 +53,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 	for event := range events {
 		ee := etree.NewElement("event")
 		populateEvent(ee, event, cluster, errata)
-		axml.InsertElementByAttribute(ce, ee, "code", "command", "attribute")
+		axml.InsertElementByAttribute(ce, ee, "code", "command", "attribute", "globalAttribute")
 	}
 	return
 }

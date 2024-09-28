@@ -74,7 +74,7 @@ func generateCommands(commands map[*matter.Command][]*matter.Number, docPath str
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
 		populateCommand(cme, command, errata)
-		xml.InsertElementByAttribute(parent, cme, "code", "attribute")
+		xml.InsertElementByAttribute(parent, cme, "code", "attribute", "globalAttribute")
 	}
 	return
 }
