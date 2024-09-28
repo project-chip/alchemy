@@ -141,6 +141,9 @@ var Erratas = map[string]*Errata{
 				"Mode Base Status CommonCodes Range": {Skip: SpecPurposeDataTypesEnum},
 			},
 		},
+		ZAP: ZAP{
+			ClusterSkip: []string{"Mode Base"},
+		},
 	},
 	"src/app_clusters/ModeBase_ModeTag_BaseValues.adoc": {
 		Spec: Spec{UtilityInclude: true},
