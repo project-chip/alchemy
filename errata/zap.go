@@ -6,6 +6,7 @@ import (
 )
 
 type ZAP struct {
+	SkipFile                     bool                `yaml:"skip-file,omitempty"`
 	SuppressAttributePermissions bool                `yaml:"suppress-attribute-permissions,omitempty"`
 	ClusterDefinePrefix          string              `yaml:"cluster-define-prefix,omitempty"`
 	SuppressClusterDefinePrefix  bool                `yaml:"suppress-cluster-define-prefix,omitempty"`
