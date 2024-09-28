@@ -79,7 +79,7 @@ func filterCluster(doc *spec.Doc, cluster *matter.Cluster) *clusterUnderTest {
 		switch command.Direction {
 		case matter.InterfaceClient:
 			for _, c := range cut.commandsAccepted {
-				if c.Response == command.Name {
+				if c.Response != nil && c.Response.Name == command.Name {
 					cut.commandsGenerated = append(cut.commandsGenerated, command)
 					break
 				}

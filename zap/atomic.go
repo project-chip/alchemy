@@ -48,37 +48,6 @@ var atomicAttributeStatusStruct = &matter.Struct{
 	},
 }
 
-var atomicRequest = &matter.Command{
-
-	ID:          matter.AtomicRequestCommandID,
-	Name:        "AtomicRequest",
-	Description: "Begins, Commits or Cancels an atomic write",
-	Direction:   matter.InterfaceServer,
-	Response:    "AtomicResponse",
-	Conformance: conformance.Set{&conformance.Optional{}},
-	Access:      matter.Access{Invoke: matter.PrivilegeManage},
-	Fields: matter.FieldSet{
-		&matter.Field{
-			ID:          matter.NewNumber(0),
-			Name:        "RequestType",
-			Type:        types.NewCustomDataType("AtomicRequestTypeEnum", false),
-			Conformance: conformance.Set{&conformance.Mandatory{}},
-		},
-		&matter.Field{
-			ID:          matter.NewNumber(0),
-			Name:        "AttributeRequests",
-			Type:        types.NewDataType(types.BaseDataTypeAttributeID, true),
-			Conformance: conformance.Set{&conformance.Mandatory{}},
-		},
-		&matter.Field{
-			ID:          matter.NewNumber(0),
-			Name:        "Timeout",
-			Type:        types.NewDataType(types.BaseDataTypeUInt16, false),
-			Conformance: conformance.Set{&conformance.Optional{}},
-		},
-	},
-}
-
 var atomicResponse = &matter.Command{
 	ID:          matter.AtomicResponseCommandID,
 	Name:        "AtomicResponse",
@@ -97,6 +66,41 @@ var atomicResponse = &matter.Command{
 			ID:          matter.NewNumber(0),
 			Name:        "AttributeStatus",
 			Type:        types.NewCustomDataType("AtomicAttributeStatusStruct", true),
+			Conformance: conformance.Set{&conformance.Mandatory{}},
+		},
+		&matter.Field{
+			ID:          matter.NewNumber(0),
+			Name:        "Timeout",
+			Type:        types.NewDataType(types.BaseDataTypeUInt16, false),
+			Conformance: conformance.Set{&conformance.Optional{}},
+		},
+	},
+}
+
+var atomicRequest = &matter.Command{
+
+	ID:          matter.AtomicRequestCommandID,
+	Name:        "AtomicRequest",
+	Description: "Begins, Commits or Cancels an atomic write",
+	Direction:   matter.InterfaceServer,
+	Response: &types.DataType{
+		Name:     "AtomicResponse",
+		BaseType: types.BaseDataTypeCustom,
+		Entity:   atomicResponse,
+	},
+	Conformance: conformance.Set{&conformance.Optional{}},
+	Access:      matter.Access{Invoke: matter.PrivilegeManage},
+	Fields: matter.FieldSet{
+		&matter.Field{
+			ID:          matter.NewNumber(0),
+			Name:        "RequestType",
+			Type:        types.NewCustomDataType("AtomicRequestTypeEnum", false),
+			Conformance: conformance.Set{&conformance.Mandatory{}},
+		},
+		&matter.Field{
+			ID:          matter.NewNumber(0),
+			Name:        "AttributeRequests",
+			Type:        types.NewDataType(types.BaseDataTypeAttributeID, true),
 			Conformance: conformance.Set{&conformance.Mandatory{}},
 		},
 		&matter.Field{

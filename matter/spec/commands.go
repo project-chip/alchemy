@@ -34,9 +34,9 @@ func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.T
 		return nil, err
 	}
 	cmd.Direction = ParseCommandDirection(dir)
-	cmd.Response, err = ti.ReadString(row, matter.TableColumnResponse)
-	if err != nil {
-		return nil, err
+	cmd.Response, _ = d.ReadRowDataType(row, ti.ColumnMap, matter.TableColumnResponse)
+	if cmd.Response != nil {
+		cmd.Response.Name = text.TrimCaseInsensitiveSuffix(cmd.Response.Name, " Command")
 	}
 	cmd.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
 	var a string
@@ -114,9 +114,9 @@ func (s *Section) toCommands(d *Doc, entityMap map[asciidoc.Attributable][]types
 	commands, err = buildList(d, s, t, entityMap, commands, &cf)
 
 	for _, cmd := range commands {
-		if cmd.Response != "" {
+		if cmd.Response != nil {
 			for _, rc := range commands {
-				if strings.EqualFold(cmd.Response, rc.Name) {
+				if strings.EqualFold(cmd.Response.Name, rc.Name) {
 					rc.Access.Invoke = cmd.Access.Invoke
 					break
 				}
