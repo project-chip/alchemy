@@ -104,6 +104,11 @@ func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster, 
 			c.Enums[e] = append(c.Enums[e], v.ID)
 		}
 	}
+	for _, name := range errata.ClusterSkip {
+		if name == v.Name {
+			return
+		}
+	}
 	c.Clusters[v] = false
 }
 

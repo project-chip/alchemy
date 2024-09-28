@@ -19,6 +19,7 @@ type ZAP struct {
 	TemplatePath string `yaml:"template-path,omitempty"`
 
 	ClusterSplit map[string]string `yaml:"cluster-split,omitempty"`
+	ClusterSkip  []string          `yaml:"cluster-skip,omitempty"`
 
 	Domain matter.Domain `yaml:"domain,omitempty"`
 
