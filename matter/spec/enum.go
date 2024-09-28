@@ -36,27 +36,25 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Ent
 		return
 	}
 
-	if len(e.Values) > 0 {
-		return
-	}
-
-	var subSectionValues matter.EnumValueSet
-	for _, el := range s.Elements() {
-		switch el := el.(type) {
-		case *Section:
-			if strings.HasSuffix(el.Name, " Range") {
-				var ssv matter.EnumValueSet
-				ssv, err = el.findEnumValues()
-				if err != nil {
-					continue
-				}
-				if len(ssv) > 0 {
-					subSectionValues = append(subSectionValues, ssv...)
+	if len(e.Values) == 0 {
+		var subSectionValues matter.EnumValueSet
+		for _, el := range s.Elements() {
+			switch el := el.(type) {
+			case *Section:
+				if strings.HasSuffix(el.Name, " Range") {
+					var ssv matter.EnumValueSet
+					ssv, err = el.findEnumValues()
+					if err != nil {
+						continue
+					}
+					if len(ssv) > 0 {
+						subSectionValues = append(subSectionValues, ssv...)
+					}
 				}
 			}
 		}
+		e.Values = subSectionValues
 	}
-	e.Values = subSectionValues
 	entityMap[s.Base] = append(entityMap[s.Base], e)
 	e.Name = CanonicalName(e.Name)
 	return
