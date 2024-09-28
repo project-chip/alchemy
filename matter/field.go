@@ -1,8 +1,6 @@
 package matter
 
 import (
-	"log/slog"
-
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
