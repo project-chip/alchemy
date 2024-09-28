@@ -149,24 +149,24 @@ func getGlobalEntities[T comparable](spec *spec.Specification) map[T][]*matter.N
 type globalEntityGenerator[T comparable] func(entities map[T][]*matter.Number, sourcePath string, parent *etree.Element, errata *errata.ZAP) (err error)
 
 func saveGlobalEntities[T comparable](cxt context.Context, tg *TemplateGenerator, path string, entities map[T][]*matter.Number, generator globalEntityGenerator[T], globalFiles pipeline.Map[string, *pipeline.Data[string]]) (err error) {
-	var bitmapDoc *etree.Document
-	var bitmapRoot *etree.Element
-	bitmapPath := getZapPath(tg.sdkRoot, path)
-	bitmapDoc, bitmapRoot, err = tg.createGlobalXMLFile(cxt, bitmapPath)
+	var doc *etree.Document
+	var root *etree.Element
+	zapPath := getZapPath(tg.sdkRoot, path)
+	doc, root, err = tg.createGlobalXMLFile(cxt, zapPath)
 	if err != nil {
 		return
 	}
 
-	err = generator(entities, bitmapPath, bitmapRoot, nil)
+	err = generator(entities, zapPath, root, nil)
 	if err != nil {
 		return
 	}
 	var s string
-	s, err = xmlToString(bitmapDoc)
+	s, err = xmlToString(doc)
 	if err != nil {
 		return
 	}
-	globalFiles.Store(filepath.Base(bitmapPath), pipeline.NewData[string](bitmapPath, s))
+	globalFiles.Store(filepath.Base(zapPath), pipeline.NewData[string](zapPath, s))
 	return
 }
 
