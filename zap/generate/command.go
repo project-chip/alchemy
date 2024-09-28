@@ -95,12 +95,12 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 	} else {
 		ce.CreateAttr("optional", "false")
 	}
-	if len(c.Response) > 0 && c.Response != "Y" && c.Response != "N" {
-		ce.CreateAttr("response", c.Response)
+	if c.Response != nil && c.Response.Name != "Y" && c.Response.Name != "N" {
+		ce.CreateAttr("response", c.Response.Name)
 	} else {
 		ce.RemoveAttr("response")
 	}
-	if c.Response == "N" && serverSource {
+	if c.Response != nil && c.Response.Name == "N" && serverSource {
 		ce.CreateAttr("disableDefaultResponse", "true")
 	} else {
 		ce.RemoveAttr("disableDefaultResponse")

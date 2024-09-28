@@ -14,7 +14,7 @@ type Command struct {
 	Name        string          `json:"name,omitempty"`
 	Description string          `json:"description,omitempty"`
 	Direction   Interface       `json:"direction,omitempty"`
-	Response    string          `json:"response,omitempty"`
+	Response    *types.DataType `json:"response,omitempty"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
 	Quality     Quality         `json:"quality,omitempty"`
 	Access      Access          `json:"access,omitempty"`
@@ -55,9 +55,7 @@ func (c *Command) Inherit(parent *Command) {
 	if c.Direction == InterfaceUnknown {
 		c.Direction = parent.Direction
 	}
-	if len(c.Response) == 0 {
-		c.Response = parent.Response
-	}
+	c.Response = parent.Response
 	if len(c.Conformance) == 0 {
 		c.Conformance = parent.Conformance.CloneSet()
 	}
