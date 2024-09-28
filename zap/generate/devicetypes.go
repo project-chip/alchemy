@@ -115,7 +115,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 				delete(deviceTypesByName, deviceTypeIDText)
 			}
 		}
-		if deviceType != nil {
+		if deviceType != nil && !matter.NonGlobalIDInvalidForEntity(deviceType.ID, types.EntityTypeDeviceType) {
 			p.applyDeviceTypeToElement(p.spec, deviceType, deviceTypeElement)
 		} else {
 			configurator.RemoveChild(deviceTypeElement)
@@ -124,6 +124,9 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 
 	for _, dt := range deviceTypesByID {
 		slog.Info("Adding new device type", slog.String("name", dt.Name))
+		if matter.NonGlobalIDInvalidForEntity(dt.ID, types.EntityTypeDeviceType) {
+			continue
+		}
 		p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
 	}
 

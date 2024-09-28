@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func generateStructs(structs map[*matter.Struct][]*matter.Number, docPath string, configuratorElement *etree.Element, errata *errata.ZAP) (err error) {
@@ -119,6 +120,9 @@ func populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Nu
 			if conformance.IsZigbee(s.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
+			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeStructField) {
+				continue
+			}
 			setStructFieldAttributes(fe, s, f, errata)
 			break
 		}
@@ -127,6 +131,9 @@ func populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Nu
 		field := s.Fields[fieldIndex]
 		fieldIndex++
 		if conformance.IsZigbee(s.Fields, field.Conformance) || conformance.IsDisallowed(field.Conformance) {
+			continue
+		}
+		if matter.NonGlobalIDInvalidForEntity(field.ID, types.EntityTypeStructField) {
 			continue
 		}
 		fe := etree.NewElement("item")

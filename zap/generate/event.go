@@ -11,6 +11,7 @@ import (
 	axml "github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -98,6 +99,9 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 			if conformance.IsZigbee(e.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
+			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
+				continue
+			}
 			fe.CreateAttr("id", f.ID.IntString())
 			setFieldAttributes(fe, f, e.Fields, errata)
 			break
@@ -107,6 +111,9 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 		f := e.Fields[fieldIndex]
 		fieldIndex++
 		if conformance.IsZigbee(e.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+			continue
+		}
+		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
 			continue
 		}
 		fe := etree.NewElement("field")

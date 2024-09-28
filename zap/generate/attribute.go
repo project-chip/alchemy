@@ -12,6 +12,7 @@ import (
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -34,6 +35,10 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			}
 
 			if conformance.IsZigbee(cluster, a.Conformance) || conformance.IsDisallowed(a.Conformance) {
+				continue
+			}
+
+			if matter.NonGlobalIDInvalidForEntity(a.ID, types.EntityTypeAttribute) {
 				continue
 			}
 
@@ -65,6 +70,10 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 		if !a.ID.Valid() {
 			continue
 		}
+		if matter.NonGlobalIDInvalidForEntity(a.ID, types.EntityTypeAttribute) {
+			continue
+		}
+
 		ae := etree.NewElement("attribute")
 		err = populateAttribute(ae, a, cluster, clusterPrefix, errata)
 		if err != nil {
