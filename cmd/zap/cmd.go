@@ -154,7 +154,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	var provisionalDocs pipeline.Map[string, *pipeline.Data[[]byte]]
 	if provisionalZclFiles != nil && provisionalZclFiles.Size() > 0 {
-		provisionalSaver := generate.NewProvisionalPatcher(sdkRoot)
+		provisionalSaver := generate.NewProvisionalPatcher(sdkRoot, specBuilder.Spec)
 		provisionalDocs, err = pipeline.Process[struct{}, []byte](cxt, pipelineOptions, provisionalSaver, provisionalZclFiles)
 		if err != nil {
 			return err

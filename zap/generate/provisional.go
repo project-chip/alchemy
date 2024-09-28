@@ -5,14 +5,16 @@ import (
 	"path/filepath"
 
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type ProvisionalPatcher struct {
+	spec    *spec.Specification
 	sdkRoot string
 }
 
-func NewProvisionalPatcher(sdkRoot string) *ProvisionalPatcher {
-	return &ProvisionalPatcher{sdkRoot: sdkRoot}
+func NewProvisionalPatcher(sdkRoot string, spec *spec.Specification) *ProvisionalPatcher {
+	return &ProvisionalPatcher{sdkRoot: sdkRoot, spec: spec}
 }
 
 func (p ProvisionalPatcher) Name() string {
@@ -32,12 +34,12 @@ func (p ProvisionalPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 
 	var path string
 	var value []byte
-	path, value, err = patchZapJSONFile(p.sdkRoot, "src/app/zap-templates/zcl/zcl.json", files)
+	path, value, err = p.patchZapJSONFile(p.sdkRoot, "src/app/zap-templates/zcl/zcl.json", files)
 	if err != nil {
 		return
 	}
 	outputs = append(outputs, pipeline.NewData[[]byte](path, value))
-	path, value, err = patchZapJSONFile(p.sdkRoot, "src/app/zap-templates/zcl/zcl-with-test-extensions.json", files)
+	path, value, err = p.patchZapJSONFile(p.sdkRoot, "src/app/zap-templates/zcl/zcl-with-test-extensions.json", files)
 	if err != nil {
 		return
 	}
