@@ -106,7 +106,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 			switch m := m.(type) {
 			case *matter.ClusterGroup:
 				for _, c := range m.Clusters {
-					addClusterToSpec(spec, d, c, d.spec)
+					addClusterToSpec(spec, d, c)
 				}
 			case *matter.Cluster:
 				switch m.Name {
@@ -115,7 +115,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				case "Bridged Device Basic Information":
 					bridgedBasicInformationCluster = m
 				}
-				addClusterToSpec(spec, d, m, d.spec)
+				addClusterToSpec(spec, d, m)
 			case *matter.DeviceType:
 				spec.DeviceTypes = append(spec.DeviceTypes, m)
 			case *matter.Namespace:
@@ -186,9 +186,18 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 	return
 }
 
-func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex *Specification) {
+func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster) {
+	spec.Clusters[m] = struct{}{}
 	if m.ID.Valid() {
+		existing, ok := spec.ClustersByID[m.ID.Value()]
+		if ok {
+			slog.Warn("Duplicate cluster ID", slog.String("clusterId", m.ID.HexString()), slog.String("clusterName", m.Name), slog.String("existingClusterName", existing.Name))
+		}
 		spec.ClustersByID[m.ID.Value()] = m
+	}
+	existing, ok := spec.ClustersByName[m.Name]
+	if ok {
+		slog.Warn("Duplicate cluster Name", slog.String("clusterId", m.ID.HexString()), slog.String("clusterName", m.Name), slog.String("existingClusterId", existing.ID.HexString()))
 	}
 	spec.ClustersByName[m.Name] = m
 
@@ -200,7 +209,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 			spec.bitmapIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d
-		specIndex.addEntity(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, m)
 	}
 	for _, en := range m.Enums {
 		_, ok := spec.enumIndex[en.Name]
@@ -210,7 +219,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 			spec.enumIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d
-		specIndex.addEntity(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, m)
 	}
 	for _, en := range m.Structs {
 		_, ok := spec.structIndex[en.Name]
@@ -220,7 +229,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 			spec.structIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d
-		specIndex.addEntity(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, m)
 	}
 }
 
@@ -282,7 +291,6 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 			return
 		}
 		spec.ClusterRefs.Add(cluster, dataType.Entity)
-		slog.Debug("setting cluster", "name", cluster.Name, "type", dataType.Name)
 		s, ok := dataType.Entity.(*matter.Struct)
 		if !ok {
 			return
@@ -356,9 +364,9 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 	}
 
 	// OK, if the data type is defined on the direct parent of this cluster, take that one
-	if cluster.Hierarchy != "Base" {
+	if cluster.Parent != nil {
 		for m, c := range entities {
-			if c != nil && c.Name == cluster.Hierarchy {
+			if c != nil && c == cluster.Parent {
 				return m
 			}
 		}
@@ -405,13 +413,14 @@ func resolveHierarchy(spec *Specification) {
 			slog.Warn("Failed to find base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy)
 			continue
 		}
-		base.Base = true
-		linkedEntites, err := c.Inherit(base)
+		linkedEntities, err := c.Inherit(base)
 		if err != nil {
 			slog.Warn("Failed to inherit from base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy, "error", err)
 		}
-		for _, linkedEntity := range linkedEntites {
+		// These entities were inherited from a base cluster, but not modified
+		for _, linkedEntity := range linkedEntities {
 			spec.ClusterRefs.Add(c, linkedEntity)
+			spec.addEntity(linkedEntity, c)
 		}
 		assignCustomDataTypes(c)
 	}

@@ -26,7 +26,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			} else {
 				spec.bitmapIndex[m.Name] = m
 			}
-			spec.addEntity(m.Name, m, nil)
+			spec.addEntityByName(m.Name, m, nil)
 		case *matter.Enum:
 			slog.Debug("Found global enum", "name", m.Name, "path", doc.Path)
 			_, ok := spec.enumIndex[m.Name]
@@ -35,7 +35,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			} else {
 				spec.enumIndex[m.Name] = m
 			}
-			spec.addEntity(m.Name, m, nil)
+			spec.addEntityByName(m.Name, m, nil)
 		case *matter.Struct:
 			slog.Debug("Found global struct", "name", m.Name, "path", doc.Path)
 			_, ok := spec.structIndex[m.Name]
@@ -44,7 +44,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			} else {
 				spec.structIndex[m.Name] = m
 			}
-			spec.addEntity(m.Name, m, nil)
+			spec.addEntityByName(m.Name, m, nil)
 		case *matter.Command:
 			_, ok := spec.commandIndex[m.Name]
 			if ok {
@@ -52,7 +52,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			} else {
 				spec.commandIndex[m.Name] = m
 			}
-			spec.addEntity(m.Name, m, nil)
+			spec.addEntityByName(m.Name, m, nil)
 		case *matter.Event:
 			_, ok := spec.eventIndex[m.Name]
 			if ok {
@@ -60,7 +60,7 @@ func addGlobalEntities(spec *Specification, doc *Doc) error {
 			} else {
 				spec.eventIndex[m.Name] = m
 			}
-			spec.addEntity(m.Name, m, nil)
+			spec.addEntityByName(m.Name, m, nil)
 		}
 		spec.GlobalObjects[m] = struct{}{}
 

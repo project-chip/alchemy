@@ -120,13 +120,8 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 			}
 		}
 
-		if len(entities) == 0 {
-			slog.WarnContext(cxt, "Skipped spec file with no entities", "from", input.Content.Path, "to", newPath)
-			return
-		}
-
 		var configurator *zap.Configurator
-		configurator, err = zap.NewConfigurator(tg.spec, input.Content, entities, newPath)
+		configurator, err = zap.NewConfigurator(tg.spec, input.Content, entities, newPath, errata)
 		if err != nil {
 			return
 		}

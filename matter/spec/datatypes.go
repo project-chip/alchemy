@@ -28,7 +28,6 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				bitmaps = append(bitmaps, mb)
-				entityMap[s.Base] = append(entityMap[s.Base], mb)
 			}
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
@@ -38,7 +37,6 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				enums = append(enums, me)
-				entityMap[s.Base] = append(entityMap[s.Base], me)
 			}
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
@@ -48,7 +46,6 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				structs = append(structs, me)
-				entityMap[s.Base] = append(entityMap[s.Base], me)
 			}
 		default:
 		}

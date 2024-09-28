@@ -44,9 +44,8 @@ func (f *Field) EntityType() types.EntityType {
 }
 
 func (f *Field) Inherit(parent *Field) {
-	slog.Debug("inheriting field", "parent", parent.Name, "parentType", parent.Type, "childType", f.Type)
 	if (f.Type == nil || f.Type.BaseType == types.BaseDataTypeUnknown) && parent.Type != nil {
-		f.Type = parent.Type.Clone()
+		f.Type = parent.Type
 	}
 	if !constraint.IsBlank(parent.Constraint) {
 		if constraint.IsBlank(f.Constraint) {

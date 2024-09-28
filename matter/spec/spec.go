@@ -13,6 +13,7 @@ type ClusterRefs struct {
 }
 
 type Specification struct {
+	Clusters       map[*matter.Cluster]struct{}
 	ClustersByID   map[uint64]*matter.Cluster
 	ClustersByName map[string]*matter.Cluster
 	DeviceTypes    []*matter.DeviceType
@@ -38,7 +39,7 @@ type Specification struct {
 
 func newSpec() *Specification {
 	return &Specification{
-
+		Clusters:       make(map[*matter.Cluster]struct{}),
 		ClustersByID:   make(map[uint64]*matter.Cluster),
 		ClustersByName: make(map[string]*matter.Cluster),
 		ClusterRefs:    ClusterRefs{refs: make(map[types.Entity]map[*matter.Cluster]struct{})},
