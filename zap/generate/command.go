@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -54,6 +55,9 @@ func generateCommands(commands map[*matter.Command][]*matter.Number, docPath str
 			parent.RemoveChild(cmde)
 			continue
 		}
+		if matter.NonGlobalIDInvalidForEntity(matchingCommand.ID, types.EntityTypeCommand) {
+			continue
+		}
 		populateCommand(cmde, matchingCommand, errata)
 	}
 
@@ -64,7 +68,9 @@ func generateCommands(commands map[*matter.Command][]*matter.Number, docPath str
 	slices.SortStableFunc(remainingCommands, func(a, b *matter.Command) int { return strings.Compare(a.Name, b.Name) })
 
 	for _, command := range remainingCommands {
-
+		if matter.NonGlobalIDInvalidForEntity(command.ID, types.EntityTypeCommand) {
+			continue
+		}
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
 		populateCommand(cme, command, errata)
@@ -154,6 +160,9 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 			if conformance.IsZigbee(c.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
+			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeCommandField) {
+				continue
+			}
 			xml.PrependAttribute(fe, "id", f.ID.IntString())
 			setFieldAttributes(fe, f, c.Fields, errata)
 			break
@@ -163,6 +172,9 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 		f := c.Fields[argIndex]
 		argIndex++
 		if conformance.IsZigbee(c.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+			continue
+		}
+		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeCommandField) {
 			continue
 		}
 		fe := ce.CreateElement("arg")
