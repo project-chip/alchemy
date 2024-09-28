@@ -100,7 +100,7 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType) (fields []*
 			id := f.ID.Value()
 			existing, ok := ids[id]
 			if ok {
-				slog.Warn("duplicate field ID", log.Path("source", f), slog.String("name", f.Name), slog.Uint64("id", id), log.Path("original", existing))
+				slog.Error("duplicate field ID", log.Path("source", f), slog.String("name", f.Name), slog.Uint64("id", id), log.Path("original", existing))
 				continue
 			}
 			ids[id] = f

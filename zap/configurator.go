@@ -141,7 +141,7 @@ func (c *Configurator) addType(parentEntity types.Entity, dt *types.DataType) {
 	}
 	if parentEntity != nil {
 		if typeBelongsToOtherCluster(entity, parentEntity) {
-			slog.Warn("skipping data type for different entity", "name", dt.Name, "parent", entity, "context", parentEntity)
+			slog.Debug("skipping data type for different entity", "name", dt.Name, "parent", entity, "context", parentEntity)
 			return
 		}
 	}

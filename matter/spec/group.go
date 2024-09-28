@@ -64,7 +64,8 @@ func (si *Specification) addEntityByName(name string, entity types.Entity, clust
 	}
 	existing, ok := m[entity]
 	if ok {
-		slog.Warn("Registering same entity twice", "cluster", cluster.Name, "name", name, "address", fmt.Sprintf("%p", entity), "existing", fmt.Sprintf("%p", existing))
+		slog.Debug("Registering same entity twice", "cluster", cluster.Name, "name", name, "address", fmt.Sprintf("%p", entity), "existing", fmt.Sprintf("%p", existing))
+		return
 	}
 	m[entity] = cluster
 }
