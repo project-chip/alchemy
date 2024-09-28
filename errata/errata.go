@@ -161,6 +161,7 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/mode_device_energy_management.adoc",
 		},
+		ZAP: ZAP{TemplatePath: "device-energy-management-mode-cluster"},
 	},
 	"src/app_clusters/Mode_Dishwasher.adoc": {
 		TestPlan: TestPlan{
@@ -172,6 +173,7 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/mode_energy_EVSE.adoc",
 		},
+		ZAP: ZAP{TemplatePath: "energy-evse-mode-cluster"},
 	},
 	"src/app_clusters/Mode_LaundryWasher.adoc": {
 		TestPlan: TestPlan{
@@ -218,6 +220,7 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/mode_WaterHeater.adoc",
 		},
+		ZAP: ZAP{TemplatePath: "water-heater-mode-cluster"},
 	},
 	"src/app_clusters/OccupancySensing.adoc": {
 		TestPlan: TestPlan{
@@ -352,6 +355,9 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/wifi_network_management.adoc",
 		},
+		ZAP: ZAP{
+			TemplatePath: "wifi-network-management-cluster",
+		},
 	},
 	"src/app_clusters/WindowCovering.adoc": {
 		ZAP: ZAP{TemplatePath: "window-covering",
@@ -415,6 +421,13 @@ var Erratas = map[string]*Errata{
 			},
 			ClusterAliases: map[string][]string{
 				"Wake on LAN": {"WakeOnLAN"},
+			},
+		},
+	},
+	"src/app_clusters/media/VideoPlayerArchitecture.adoc": {
+		Spec: Spec{
+			Sections: map[string]SpecSection{
+				"Video Player Architecture": {Skip: SpecPurposeCluster},
 			},
 		},
 	},
