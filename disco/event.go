@@ -10,7 +10,7 @@ import (
 func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error) {
 	for _, events := range dp.events {
 		eventsTable := events.table
-		if eventsTable.Element == nil {
+		if eventsTable == nil || eventsTable.Element == nil {
 			err = fmt.Errorf("no events table found")
 			return
 		}
@@ -51,7 +51,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 
 		for _, event := range events.children {
 			eventTable := event.table
-			if eventTable.Element == nil {
+			if eventTable == nil || eventTable.Element == nil {
 				continue
 			}
 			err = b.fixConstraintCells(event.section, eventTable)

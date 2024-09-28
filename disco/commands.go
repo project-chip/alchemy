@@ -13,7 +13,7 @@ import (
 
 func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err error) {
 	for _, commands := range dp.commands {
-		if commands.table.Element == nil {
+		if commands.table == nil || commands.table.Element == nil {
 			err = fmt.Errorf("no commands table found")
 			return
 		}
@@ -50,7 +50,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 		}
 
 		for _, command := range commands.children {
-			if command.table.Element == nil {
+			if command.table == nil || command.table.Element == nil {
 				continue
 			}
 			err = b.fixConstraintCells(command.section, command.table)

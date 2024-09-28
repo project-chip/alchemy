@@ -12,7 +12,7 @@ import (
 func (b *Ball) organizeFeaturesSection(cxt *discoContext, dp *docParse) (err error) {
 	for _, features := range dp.features {
 		featuresTable := features.table
-		if featuresTable.Element == nil {
+		if featuresTable == nil || featuresTable.Element == nil {
 			return fmt.Errorf("no features section found")
 		}
 

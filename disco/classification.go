@@ -11,7 +11,7 @@ import (
 func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (err error) {
 	for _, classification := range dp.classification {
 		classificationTable := classification.table
-		if classificationTable.Element == nil {
+		if classificationTable == nil || classificationTable.Element == nil {
 			return fmt.Errorf("no classification table found")
 		}
 		if classificationTable.ColumnMap == nil {

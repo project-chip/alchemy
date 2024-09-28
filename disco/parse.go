@@ -161,7 +161,7 @@ func newParentSubSection(dp *docParse, section *spec.Section, childPatterns ...s
 	if err != nil {
 		return
 	}
-	if ss.table.Element == nil {
+	if ss.table == nil || ss.table.Element == nil {
 		return
 	}
 	if len(childPatterns) > 0 {
@@ -184,7 +184,7 @@ func firstTableInfo(dp *docParse, section *spec.Section) (ti *spec.TableInfo, er
 }
 
 func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSectionChildPattern) (subSections []*subSection, err error) {
-	if parent.table.Element == nil {
+	if parent.table == nil || parent.table.Element == nil {
 		return
 	}
 	var index int

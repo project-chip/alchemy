@@ -75,7 +75,6 @@ func (p *ProvisionalPatcher) patchAttributeAccessInterfaceAttributes(o *orderedm
 		return
 	}
 	for _, clusterName := range om.Keys() {
-		slog.Info("clusterName", "name", clusterName)
 		iav, ok := om.Get(clusterName)
 		if !ok {
 			slog.Warn("attributeAccessInterfaceAttributes has missing cluster name", slog.String("clusterName", clusterName))
