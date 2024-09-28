@@ -112,6 +112,16 @@ func init() {
 }
 
 func DataTypeName(dataType *types.DataType) string {
+	if dataType.Entity != nil {
+		switch e := dataType.Entity.(type) {
+		case *matter.Bitmap:
+			return e.Name
+		case *matter.Enum:
+			return e.Name
+		case *matter.Struct:
+			return e.Name
+		}
+	}
 	switch dataType.BaseType {
 	case types.BaseDataTypeBoolean:
 		return "boolean"
