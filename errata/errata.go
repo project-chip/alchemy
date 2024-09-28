@@ -28,6 +28,9 @@ var Erratas = map[string]*Errata{
 	"src/app_clusters/AirQuality.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
+	"src/app_clusters/AlarmBase.adoc": {
+		ZAP: ZAP{SkipFile: true},
+	},
 	"src/app_clusters/BallastConfiguration.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
@@ -600,6 +603,12 @@ var Erratas = map[string]*Errata{
 				"Operational Credentials": {"Node Operational Credentials"},
 			},
 		},
+	},
+	"src/service_device_management/OTAProvider.adoc": {
+		ZAP: ZAP{SkipFile: true},
+	},
+	"src/service_device_management/OTARequestor.adoc": {
+		ZAP: ZAP{SkipFile: true},
 	},
 	"src/service_device_management/PowerSourceConfigurationCluster.adoc": {
 		TestPlan: TestPlan{

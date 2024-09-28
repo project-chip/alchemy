@@ -96,6 +96,10 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 
 	errata := errata.GetZAP(input.Content.Path.Relative)
 
+	if errata.SkipFile {
+		return
+	}
+
 	destinations := ZAPTemplateDestinations(tg.sdkRoot, input.Content.Path.Relative, entities, errata)
 
 	dependencies := pipeline.NewConcurrentMap[string, bool]()
