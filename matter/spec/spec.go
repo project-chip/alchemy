@@ -27,6 +27,7 @@ type Specification struct {
 	bitmapIndex  map[string]*matter.Bitmap
 	enumIndex    map[string]*matter.Enum
 	structIndex  map[string]*matter.Struct
+	typeDefIndex map[string]*matter.TypeDef
 	commandIndex map[string]*matter.Command
 	eventIndex   map[string]*matter.Event
 
@@ -48,6 +49,7 @@ func newSpec() *Specification {
 		bitmapIndex:  make(map[string]*matter.Bitmap),
 		enumIndex:    make(map[string]*matter.Enum),
 		structIndex:  make(map[string]*matter.Struct),
+		typeDefIndex: make(map[string]*matter.TypeDef),
 		commandIndex: make(map[string]*matter.Command),
 		eventIndex:   make(map[string]*matter.Event),
 

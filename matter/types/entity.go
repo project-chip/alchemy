@@ -27,6 +27,7 @@ const (
 	EntityTypeCondition
 	EntityTypeStructField
 	EntityTypeElementRequirement
+	EntityTypeDef
 	EntityTypeNamespace
 )
 
@@ -58,6 +59,7 @@ var (
 		EntityTypeCondition:          "condition",
 		EntityTypeStructField:        "structField",
 		EntityTypeElementRequirement: "elementRequirement",
+		EntityTypeDef:                "typeDef",
 		EntityTypeNamespace:          "namespace",
 	}
 )

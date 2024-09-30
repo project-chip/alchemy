@@ -37,9 +37,10 @@ const (
 	SpecPurposeCluster                      = 1 << (iota - 1)
 	SpecPurposeDeviceType                   = 1 << (iota - 1)
 	SpecPurposeCommandArguments             = 1 << (iota - 1)
+	SpecPurposeDataTypesDef                 = 1 << (iota - 1)
 
-	SpecPurposeDataTypes SpecPurpose = SpecPurposeDataTypesBitmap | SpecPurposeDataTypesEnum | SpecPurposeDataTypesStruct
-	SpecPurposeAll       SpecPurpose = SpecPurposeDataTypesBitmap | SpecPurposeDataTypesEnum | SpecPurposeDataTypesStruct | SpecPurposeCluster | SpecPurposeDeviceType | SpecPurposeCommandArguments
+	SpecPurposeDataTypes SpecPurpose = SpecPurposeDataTypesBitmap | SpecPurposeDataTypesEnum | SpecPurposeDataTypesStruct | SpecPurposeDataTypesDef
+	SpecPurposeAll       SpecPurpose = SpecPurposeDataTypes | SpecPurposeCluster | SpecPurposeDeviceType | SpecPurposeCommandArguments
 )
 
 var specPurposes = map[string]SpecPurpose{

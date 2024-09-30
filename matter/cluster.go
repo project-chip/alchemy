@@ -87,6 +87,7 @@ type Cluster struct {
 
 	Features *Features `json:"features,omitempty"`
 	AssociatedDataTypes
+	TypeDefs   TypeDefSet `json:"typedefs,omitempty"`
 	Attributes FieldSet   `json:"attributes,omitempty"`
 	Events     EventSet   `json:"events,omitempty"`
 	Commands   CommandSet `json:"commands,omitempty"`

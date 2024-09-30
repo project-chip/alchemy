@@ -423,14 +423,6 @@ func ToBaseDataType(s string) types.BaseDataType {
 	}
 	return types.BaseDataTypeUnknown
 }
-
-func ConvertZapToDataTypeName(s string) string {
-	if z, ok := zapToMatterMap[strings.ToLower(s)]; ok {
-		return z
-	}
-	return s
-}
-
 func maxOver255Bytes(fs matter.FieldSet, f *matter.Field) bool {
 	if f.Constraint == nil {
 		return false
@@ -464,6 +456,10 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	if f.Type.IsArray() {
 		return DataTypeName(f.Type.EntryType)
 	}
+	if t, isTypeDef := f.Type.Entity.(*matter.TypeDef); isTypeDef {
+		return DataTypeName(t.Type)
+	}
+
 	return DataTypeName(f.Type)
 }
 

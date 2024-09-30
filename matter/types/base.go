@@ -89,7 +89,6 @@ const (
 	BaseDataTypeTag
 
 	BaseDataTypeMessageID
-	BaseDataTypeDeviceType
 )
 
 type HasBaseDataType interface {
@@ -119,6 +118,18 @@ func (bdt BaseDataType) IsUnsigned() bool {
 
 func (bdt BaseDataType) String() string {
 	return BaseDataTypeName(bdt)
+}
+
+func (bdt BaseDataType) IsSimple() bool {
+	switch bdt {
+	case BaseDataTypeUInt8, BaseDataTypeUInt16, BaseDataTypeUInt24, BaseDataTypeUInt32,
+		BaseDataTypeUInt40, BaseDataTypeUInt48, BaseDataTypeUInt56, BaseDataTypeUInt64,
+		BaseDataTypeInt8, BaseDataTypeInt16, BaseDataTypeInt24, BaseDataTypeInt32,
+		BaseDataTypeInt40, BaseDataTypeInt48, BaseDataTypeInt56, BaseDataTypeInt64,
+		BaseDataTypeString:
+		return true
+	}
+	return false
 }
 
 func BaseDataTypeName(baseDataType BaseDataType) string {
