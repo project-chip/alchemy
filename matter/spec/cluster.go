@@ -40,17 +40,20 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 	var bitmaps matter.BitmapSet
 	var enums matter.EnumSet
 	var structs matter.StructSet
+	var typedefs matter.TypeDefSet
 	for _, s := range elements {
 		switch s.SecType {
 		case matter.SectionDataTypes, matter.SectionStatusCodes:
 			var bs matter.BitmapSet
 			var es matter.EnumSet
 			var ss matter.StructSet
-			bs, es, ss, err = s.toDataTypes(d, entityMap)
+			var ts matter.TypeDefSet
+			bs, es, ss, ts, err = s.toDataTypes(d, entityMap)
 			if err == nil {
 				bitmaps = append(bitmaps, bs...)
 				enums = append(enums, es...)
 				structs = append(structs, ss...)
+				typedefs = append(typedefs, ts...)
 			}
 		case matter.SectionFeatures:
 			features, err = s.toFeatures(d, entityMap)
@@ -90,6 +93,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		c.AddBitmaps(bitmaps...)
 		c.AddEnums(enums...)
 		c.AddStructs(structs...)
+		c.TypeDefs = append(c.TypeDefs, typedefs...)
 		c.Features = features
 
 		for _, s := range elements {
@@ -137,6 +141,8 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 							c.AddEnums(le)
 						case *matter.Struct:
 							c.AddStructs(le)
+						case *matter.TypeDef:
+							c.TypeDefs = append(c.TypeDefs, le)
 						default:
 							slog.Warn("unexpected loose entity", log.Element("path", d.Path, s.Base), "entity", le)
 						}
@@ -203,6 +209,12 @@ func assignCustomDataType(c *matter.Cluster, dt *types.DataType) {
 	for _, s := range c.Structs {
 		if name == s.Name {
 			dt.Entity = s
+			return
+		}
+	}
+	for _, t := range c.TypeDefs {
+		if name == t.Name {
+			dt.Entity = t
 			return
 		}
 	}

@@ -39,6 +39,7 @@ const (
 	SectionDerivedClusterNamespace
 	SectionModeTags
 	SectionGlobalElements
+	SectionDataTypeDef
 )
 
 var TopLevelSectionOrders = map[DocType][]Section{
@@ -67,7 +68,7 @@ var TopLevelSectionOrders = map[DocType][]Section{
 	},
 }
 
-var DataTypeSectionOrder = []Section{SectionPrefix, SectionDataTypeBitmap, SectionDataTypeEnum, SectionDataTypeStruct}
+var DataTypeSectionOrder = []Section{SectionPrefix, SectionDataTypeBitmap, SectionDataTypeEnum, SectionDataTypeStruct, SectionDataTypeDef}
 
 var sectionTypeStrings = map[Section]string{
 	SectionPrefix:                         "Prefix",
@@ -85,6 +86,7 @@ var sectionTypeStrings = map[Section]string{
 	SectionDataTypeBitmap:                 "Bitmap",
 	SectionDataTypeEnum:                   "Enum",
 	SectionDataTypeStruct:                 "Struct",
+	SectionDataTypeDef:                    "TypeDef",
 	SectionDeviceType:                     "DeviceType",
 	SectionStatusCodes:                    "StatusCodes",
 	SectionAttributes:                     "Attributes",
@@ -130,6 +132,7 @@ var sectionTypeNames = map[Section]string{
 	SectionDataTypeBitmap:                 "Bitmap",
 	SectionDataTypeEnum:                   "Enum",
 	SectionDataTypeStruct:                 "Struct",
+	SectionDataTypeDef:                    "Type Definition",
 	SectionDeviceType:                     "Device Type",
 	SectionStatusCodes:                    "Status Codes",
 	SectionAttributes:                     "Attributes",

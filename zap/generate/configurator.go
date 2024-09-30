@@ -48,6 +48,8 @@ func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x
 	if ce == nil {
 		ce = x.CreateElement("configurator")
 	}
+	ce.CreateAttr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+	ce.CreateAttr("xsi:noNamespaceSchemaLocation", "../../zcl.xsd")
 
 	de := ce.SelectElement("domain")
 	if de == nil {

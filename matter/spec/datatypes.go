@@ -16,7 +16,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, err error) {
+func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, typedefs matter.TypeDefSet, err error) {
 
 	traverse(d, s, errata.SpecPurposeDataTypes, func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch s.SecType {
@@ -46,6 +46,16 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				structs = append(structs, me)
+			}
+		case matter.SectionDataTypeDef:
+			var me *matter.TypeDef
+			me, err = s.toTypeDef(d, entityMap)
+			if err != nil {
+				slog.Warn("Error converting section to typedef", log.Element("path", d.Path, s.Base), slog.Any("error", err))
+				err = nil
+			} else {
+				typedefs = append(typedefs, me)
+				entityMap[s.Base] = append(entityMap[s.Base], me)
 			}
 		default:
 		}
@@ -140,7 +150,7 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType) (fields []*
 	return
 }
 
-var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeList)\[([^\]]+)\]`)
+var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeList)\[([^]]+)]`)
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
 func (d *Doc) ReadRowDataType(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*types.DataType, error) {
