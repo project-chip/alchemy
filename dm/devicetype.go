@@ -3,6 +3,7 @@ package dm
 import (
 	"bytes"
 	"fmt"
+	"log/slog"
 	"path/filepath"
 	"slices"
 	"strconv"
@@ -65,7 +66,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 			reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
 			copy(reqs, deviceType.ClusterRequirements)
 			slices.SortStableFunc(reqs, func(a, b *matter.ClusterRequirement) int {
-				cmp := a.ID.Compare(b.ID)
+				cmp := a.ClusterID.Compare(b.ClusterID)
 				if cmp != 0 {
 					return cmp
 				}
@@ -73,7 +74,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 			})
 			for _, cr := range reqs {
 				clx := cx.CreateElement("cluster")
-				clx.CreateAttr("id", cr.ID.HexString())
+				clx.CreateAttr("id", cr.ClusterID.HexString())
 				clx.CreateAttr("name", cr.ClusterName)
 				switch cr.Interface {
 				case matter.InterfaceClient:
@@ -102,19 +103,25 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 	return
 }
 
+type commandRequirement struct {
+	command     *matter.Command
+	requirement *matter.ElementRequirement
+	fields      []*matter.ElementRequirement
+}
+
 func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
 	erMap := make(map[types.EntityType][]*matter.ElementRequirement)
 	for _, er := range deviceType.ElementRequirements {
-		if er.ID.Equals(cr.ID) {
+		if er.ClusterID.Equals(cr.ClusterID) {
 			erMap[er.Element] = append(erMap[er.Element], er)
 		}
 	}
 	var featureRequirements []*matter.ElementRequirement
 	var attributeRequirements []*matter.ElementRequirement
-	var commandRequirements map[string][]*matter.ElementRequirement
+	var commandRequirements []*commandRequirement
 	var eventRequirements []*matter.ElementRequirement
 	for _, er := range deviceType.ElementRequirements {
-		if er.ID.Equals(cr.ID) {
+		if er.ClusterID.Equals(cr.ClusterID) {
 			switch er.Element {
 			case types.EntityTypeFeature:
 				featureRequirements = append(featureRequirements, er)
@@ -123,10 +130,34 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			case types.EntityTypeEvent:
 				eventRequirements = append(eventRequirements, er)
 			case types.EntityTypeCommand, types.EntityTypeCommandField:
-				if commandRequirements == nil {
-					commandRequirements = make(map[string][]*matter.ElementRequirement)
+				var cmd *matter.Command
+				for _, c := range cr.Cluster.Commands {
+					if c.Name == er.Name {
+						cmd = c
+						break
+					}
 				}
-				commandRequirements[er.Name] = append(commandRequirements[er.Name], er)
+				if cmd == nil {
+					slog.Warn("Unknown command element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.Name))
+					break
+				}
+				var cr *commandRequirement
+				for _, c := range commandRequirements {
+					if c.command == cmd {
+						cr = c
+						break
+					}
+				}
+				if cr == nil {
+					cr = &commandRequirement{command: cmd}
+					commandRequirements = append(commandRequirements, cr)
+				}
+				switch er.Element {
+				case types.EntityTypeCommand:
+					cr.requirement = er
+				case types.EntityTypeCommandField:
+					cr.fields = append(cr.fields, er)
+				}
 			}
 		}
 	}
@@ -170,39 +201,27 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 	if len(commandRequirements) > 0 {
 		erx := clx.CreateElement("commands")
 
-		for name, crs := range commandRequirements {
-			var commandRequirement *matter.ElementRequirement
-			var fieldRequirements []*matter.ElementRequirement
-			for _, cr := range crs {
-				switch cr.Element {
-				case types.EntityTypeCommand:
-					commandRequirement = cr
-				case types.EntityTypeCommandField:
-					fieldRequirements = append(fieldRequirements, cr)
-				}
+		slices.SortStableFunc(commandRequirements, func(a, b *commandRequirement) int {
+			cmp := a.command.Direction.Compare(b.command.Direction)
+			if cmp != 0 {
+				return cmp
 			}
-			ex := erx.CreateElement("command")
-			var code string
-			if cr.Cluster != nil {
-				for _, cmd := range cr.Cluster.Commands {
-					if cmd.Name == name {
-						code = cmd.ID.HexString()
-						break
-					}
-				}
-			}
+			return a.command.ID.Compare(b.command.ID)
+		})
+		for _, cr := range commandRequirements {
 
-			if code != "" {
-				ex.CreateAttr("id", code)
-			}
-			ex.CreateAttr("name", name)
-			if commandRequirement != nil {
-				err = renderConformanceString(doc, deviceType, commandRequirement.Conformance, ex)
+			ex := erx.CreateElement("command")
+
+			ex.CreateAttr("id", cr.command.ID.HexString())
+
+			ex.CreateAttr("name", cr.command.Name)
+			if cr.command != nil {
+				err = renderConformanceString(doc, deviceType, cr.command.Conformance, ex)
 				if err != nil {
 					return
 				}
 			}
-			for _, fr := range fieldRequirements {
+			for _, fr := range cr.fields {
 				fx := ex.CreateElement("field")
 				fx.CreateAttr("name", fr.Field)
 				err = renderConformanceString(doc, deviceType, fr.Conformance, fx)

@@ -28,6 +28,7 @@ const (
 	EntityTypeStructField
 	EntityTypeElementRequirement
 	EntityTypeDef
+	EntityTypeNamespace
 )
 
 type Entity interface {
@@ -58,6 +59,8 @@ var (
 		EntityTypeCondition:          "condition",
 		EntityTypeStructField:        "structField",
 		EntityTypeElementRequirement: "elementRequirement",
+		EntityTypeDef:                "typeDef",
+		EntityTypeNamespace:          "namespace",
 	}
 )
 

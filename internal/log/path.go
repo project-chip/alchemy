@@ -7,10 +7,13 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/matter"
 )
 
-func Path(name string, source matter.Source) slog.Attr {
+type Source interface {
+	Origin() (path string, line int)
+}
+
+func Path(name string, source Source) slog.Attr {
 	if source == nil {
 		return slog.String(name, "unknown")
 	}

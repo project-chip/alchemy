@@ -51,22 +51,21 @@ func disambiguateConformance(docParse *docParse) (err error) {
 	parse.Traverse(docParse.doc, docParse.doc.Elements(), func(table *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
 		ti, ok := docParse.tableCache[table]
 		if !ok {
-			ti = &tableInfo{element: table}
-			ti.rows = ti.element.TableRows()
+
 			var err error
-			ti.headerRow, ti.columnMap, ti.extraColumns, err = spec.MapTableColumns(docParse.doc, ti.rows)
+			ti, err = spec.ReadTable(docParse.doc, table)
 			if err != nil {
 				return parse.SearchShouldContinue
 			}
 		}
-		conformanceIndex, ok := ti.columnMap[matter.TableColumnConformance]
+		conformanceIndex, ok := ti.ColumnMap[matter.TableColumnConformance]
 		if !ok {
 			return parse.SearchShouldContinue
 		}
 		conformanceCounter := 1
 		localChoices := make(map[string]string)
-		for i, row := range ti.rows {
-			if i == ti.headerRow {
+		for i, row := range ti.Rows {
+			if i == ti.HeaderRowIndex {
 				continue
 			}
 			cell := row.Cell(conformanceIndex)

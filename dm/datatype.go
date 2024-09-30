@@ -11,6 +11,18 @@ import (
 )
 
 func dataModelName(dataType *types.DataType) string {
+	if dataType.Entity != nil {
+		switch e := dataType.Entity.(type) {
+		case *matter.Bitmap:
+			return e.Name
+		case *matter.Enum:
+			return e.Name
+		case *matter.Struct:
+			return e.Name
+		case *matter.Command:
+			return e.Name
+		}
+	}
 	if dataType.IsEnum() || dataType.IsMap() {
 		return dataType.Name
 	}

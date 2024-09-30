@@ -2,6 +2,7 @@ package matter
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 	"slices"
 	"strconv"
@@ -195,4 +196,43 @@ func SortNumbers(s []*Number) {
 		}
 		return 0
 	})
+}
+
+func NonGlobalIDInvalidForEntity(n *Number, entityType types.EntityType) bool {
+	if !n.Valid() {
+		// If the number isn't valid, just let it pass through
+		return false
+	}
+	val := n.Value()
+	if val > math.MaxUint32 {
+		// Matter IDs are 32-bits, max
+		return true
+	}
+	prefix := (val & 0xFFFF0000) >> 16
+	var manufacturerCode bool
+	if prefix > 0 {
+		manufacturerCode = true
+	}
+
+	switch entityType {
+	case types.EntityTypeDeviceType:
+		return val > 0xBFFF
+	case types.EntityTypeCluster:
+		if manufacturerCode {
+			return val < 0xFC00 && val > 0xFFFE
+		}
+		return val > 0x7FFF
+	case types.EntityTypeAttribute:
+		return val > 0x4FFF
+	case types.EntityTypeCommand:
+		if manufacturerCode {
+			return val > 0xFF
+		}
+		return val > 0xDF
+	case types.EntityTypeEvent:
+		return val > 0xFF
+	case types.EntityTypeCommandField, types.EntityTypeEventField, types.EntityTypeStructField:
+		return val > 0xDF
+	}
+	return false
 }

@@ -35,7 +35,7 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 
 	for _, c := range deviceType.ClusterRequirements {
 		row := newDBRow()
-		row.values[matter.TableColumnID] = c.ID.IntString()
+		row.values[matter.TableColumnID] = c.ClusterID.IntString()
 		row.values[matter.TableColumnName] = c.ClusterName
 		row.values[matter.TableColumnQuality] = c.Quality.String()
 		if c.Conformance != nil {

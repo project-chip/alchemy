@@ -58,8 +58,8 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 			}
 		case matter.InterfaceServer:
 			cx.CreateAttr("direction", "commandToServer")
-			if cmd.Response != "" {
-				cx.CreateAttr("response", cmd.Response)
+			if cmd.Response != nil {
+				cx.CreateAttr("response", cmd.Response.Name)
 			}
 			if cmd.Quality.Has(matter.QualityLargeMessage) {
 				cx.CreateElement("quality").CreateAttr("largeMessage", "true")

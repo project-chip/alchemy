@@ -68,14 +68,14 @@ func (b *Ball) getPotentialDataTypes(dc *discoContext, dp *docParse) (err error)
 }
 
 func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, ss *subSection) error {
-	if ss.table.element == nil {
+	if ss.table == nil || ss.table.Element == nil {
 		slog.Debug("section has no table; skipping attempt to find data type", "sectionName", ss.section.Name)
 		return nil
 	}
 	if b.errata.IgnoreSection(ss.section.Name, errata.DiscoPurposeDataTypePromoteInline) {
 		return nil
 	}
-	sectionDataMap, err := b.getDataTypes(ss.table.columnMap, ss.table.rows, ss.section)
+	sectionDataMap, err := b.getDataTypes(ss.table.ColumnMap, ss.table.Rows, ss.section)
 	if err != nil {
 		return err
 	}
@@ -144,13 +144,13 @@ func (b *Ball) getDataTypes(columnMap spec.ColumnIndex, rows []*asciidoc.TableRo
 			if table == nil {
 				continue
 			}
-			_, columnMap, _, err := spec.MapTableColumns(b.doc, table.TableRows())
+			ti, err := spec.ReadTable(b.doc, table)
 			if err != nil {
 				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", s.Name, err)
 			}
 			dataType.indexColumn = getIndexColumnType(dataType.dataTypeCategory)
 
-			if valueIndex, ok := columnMap[dataType.indexColumn]; !ok || valueIndex > 0 {
+			if valueIndex, ok := ti.ColumnMap[dataType.indexColumn]; !ok || valueIndex > 0 {
 				continue
 			}
 			dataType.section = s
@@ -249,52 +249,52 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 		if table == nil {
 			continue
 		}
-		ti := tableInfo{element: table, rows: table.TableRows()}
-		ti.headerRow, ti.columnMap, ti.extraColumns, err = spec.MapTableColumns(b.doc, ti.rows)
+		var ti *spec.TableInfo
+		ti, err = spec.ReadTable(b.doc, table)
 		if err != nil {
 			err = fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", dt.section.Name, err)
 			return
 		}
-		if valueIndex, ok := ti.columnMap[firstColumnType]; !ok || valueIndex > 0 {
+		if valueIndex, ok := ti.ColumnMap[firstColumnType]; !ok || valueIndex > 0 {
 			continue
 		}
 
-		summaryIndex, hasSummaryColumn := ti.columnMap[matter.TableColumnSummary]
+		summaryIndex, hasSummaryColumn := ti.ColumnMap[matter.TableColumnSummary]
 		if !hasSummaryColumn {
-			descriptionIndex, hasDescriptionColumn := ti.columnMap[matter.TableColumnDescription]
+			descriptionIndex, hasDescriptionColumn := ti.ColumnMap[matter.TableColumnDescription]
 			if hasDescriptionColumn {
 				// Use the description column as the summary
-				delete(ti.columnMap, matter.TableColumnDescription)
-				ti.columnMap[matter.TableColumnSummary] = descriptionIndex
+				delete(ti.ColumnMap, matter.TableColumnDescription)
+				ti.ColumnMap[matter.TableColumnSummary] = descriptionIndex
 				summaryIndex = descriptionIndex
-				err = b.renameTableHeaderCells(top.Doc, dt.section, &ti, nil)
+				err = b.renameTableHeaderCells(top.Doc, dt.section, ti, nil)
 				if err != nil {
 					return
 				}
-			} else if len(ti.extraColumns) > 0 {
+			} else if len(ti.ExtraColumns) > 0 {
 				// Hrm, no summary or description on this promoted data type table
 				// Take the first extra column and rename it
-				summaryIndex = ti.extraColumns[0].Offset
-				ti.columnMap[matter.TableColumnSummary] = summaryIndex
-				err = b.renameTableHeaderCells(top.Doc, dt.section, &ti, nil)
+				summaryIndex = ti.ExtraColumns[0].Offset
+				ti.ColumnMap[matter.TableColumnSummary] = summaryIndex
+				err = b.renameTableHeaderCells(top.Doc, dt.section, ti, nil)
 				if err != nil {
 					return
 				}
 			} else {
-				summaryIndex, err = b.appendColumn(table, ti.columnMap, ti.headerRow, matter.TableColumnSummary, entityType)
+				summaryIndex, err = b.appendColumn(ti, matter.TableColumnSummary, entityType)
 				if err != nil {
 					return
 				}
 			}
 		}
-		_, hasNameColumn := ti.columnMap[matter.TableColumnName]
+		_, hasNameColumn := ti.ColumnMap[matter.TableColumnName]
 		if !hasNameColumn {
 			var nameIndex int
-			nameIndex, err = b.appendColumn(table, ti.columnMap, ti.headerRow, matter.TableColumnName, entityType)
+			nameIndex, err = b.appendColumn(ti, matter.TableColumnName, entityType)
 			if err != nil {
 				return
 			}
-			err = copyCells(ti.rows, ti.headerRow, summaryIndex, nameIndex, matter.Case)
+			err = copyCells(ti.Rows, ti.HeaderRowIndex, summaryIndex, nameIndex, matter.Case)
 			if err != nil {
 				return
 			}
@@ -495,15 +495,15 @@ func (b *Ball) canonicalizeDataTypeSectionName(dp *docParse, s *spec.Section, da
 func renameDataType(subSections []*subSection, oldName string, newName string) {
 	for _, ss := range subSections {
 		renameDataType(ss.children, oldName, newName)
-		if ss.table.element == nil {
+		if ss.table == nil || ss.table.Element == nil {
 			continue
 		}
-		typeIndex, ok := ss.table.columnMap[matter.TableColumnType]
+		typeIndex, ok := ss.table.ColumnMap[matter.TableColumnType]
 		if !ok {
 			continue
 		}
-		for i, row := range ss.table.rows {
-			if i == ss.table.headerRow {
+		for i, row := range ss.table.Rows {
+			if i == ss.table.HeaderRowIndex {
 				continue
 			}
 			typeCell := row.Cell(typeIndex)

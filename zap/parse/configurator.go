@@ -78,7 +78,7 @@ func (sp *ZapParser) readConfigurator(path string, d *xml.Decoder) (entities []t
 			case "configurator":
 				for cid, b := range bitmaps {
 					if c, ok := clusters[cid]; ok {
-						c.Bitmaps = append(c.Bitmaps, b...)
+						c.AddBitmaps(b...)
 					} else {
 						slog.Debug("orphan bitmaps", "clusterId", cid)
 						sp.lock.Lock()
@@ -88,7 +88,7 @@ func (sp *ZapParser) readConfigurator(path string, d *xml.Decoder) (entities []t
 				}
 				for cid, e := range enums {
 					if c, ok := clusters[cid]; ok {
-						c.Enums = append(c.Enums, e...)
+						c.AddEnums(e...)
 					} else {
 						slog.Debug("orphan enums", "clusterId", cid)
 						sp.lock.Lock()
@@ -98,7 +98,7 @@ func (sp *ZapParser) readConfigurator(path string, d *xml.Decoder) (entities []t
 				}
 				for cid, s := range structs {
 					if c, ok := clusters[cid]; ok {
-						c.Structs = append(c.Structs, s...)
+						c.AddStructs(s...)
 					} else {
 						slog.Debug("orphan structs", "clusterId", cid)
 						sp.lock.Lock()

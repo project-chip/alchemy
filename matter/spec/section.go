@@ -134,6 +134,8 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 		secType = matter.SectionCluster
 	case matter.DocTypeDeviceType:
 		secType = matter.SectionDeviceType
+	case matter.DocTypeNamespace:
+		secType = matter.SectionNamespace
 	default:
 		secType = matter.SectionTop
 		if strings.HasSuffix(top.Name, " Cluster") {
@@ -373,22 +375,28 @@ func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
 	if firstTable == nil {
 		return
 	}
-	rows := firstTable.TableRows()
-	_, columnMap, _, err := MapTableColumns(section.Doc, rows)
+	ti, err := ReadTable(section.Doc, firstTable)
 	if err != nil {
 		return
 	}
-	_, hasName := columnMap[matter.TableColumnName]
+	_, hasName := ti.ColumnIndex(matter.TableColumnName)
 	if !hasName {
 		return
 	}
-	_, hasID := columnMap[matter.TableColumnID]
-	_, hasType := columnMap[matter.TableColumnType]
-	_, hasBit := columnMap[matter.TableColumnBit]
-	_, hasValue := columnMap[matter.TableColumnValue]
-	_, hasSummary := columnMap[matter.TableColumnSummary]
-	_, hasDescription := columnMap[matter.TableColumnDescription]
-	_, hasStatusCode := columnMap[matter.TableColumnStatusCode]
+	_, hasID := ti.ColumnIndex(matter.TableColumnID)
+	_, hasType := ti.ColumnIndex(matter.TableColumnType)
+	_, hasBit := ti.ColumnIndex(matter.TableColumnBit)
+	_, hasValue := ti.ColumnIndex(matter.TableColumnValue)
+	_, hasSummary := ti.ColumnIndex(matter.TableColumnSummary)
+	_, hasDescription := ti.ColumnIndex(matter.TableColumnDescription)
+	_, hasStatusCode := ti.ColumnIndex(matter.TableColumnStatusCode)
+	_, hasDeviceId := ti.ColumnIndex(matter.TableColumnDeviceID)
+	_, hasClusterId := ti.ColumnIndex(matter.TableColumnClusterID)
+	_, hasElement := ti.ColumnIndex(matter.TableColumnElement)
+	if hasDeviceId && hasClusterId && hasElement {
+		sectionType = matter.SectionComposedDeviceTypeRequirements
+		return
+	}
 	if hasID && hasType && !hasBit && !hasValue {
 		sectionType = matter.SectionDataTypeStruct
 		return
@@ -420,7 +428,12 @@ func (s *Section) toEntities(d *Doc, entityMap map[asciidoc.Attributable][]types
 			return nil, err
 		}
 		entities = append(entities, deviceTypes...)
-
+	case matter.SectionNamespace:
+		ns, err := s.toNamespace(d, entityMap)
+		if err != nil {
+			return nil, err
+		}
+		entities = append(entities, ns...)
 	}
 	return entities, nil
 }

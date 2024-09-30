@@ -11,20 +11,20 @@ import (
 func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (err error) {
 	for _, classification := range dp.classification {
 		classificationTable := classification.table
-		if classificationTable.element == nil {
+		if classificationTable == nil || classificationTable.Element == nil {
 			return fmt.Errorf("no classification table found")
 		}
-		if classificationTable.columnMap == nil {
+		if classificationTable.ColumnMap == nil {
 			slog.Debug("can't rearrange classification table without header row")
 			return nil
 		}
 
-		if len(classificationTable.columnMap) < 3 {
+		if len(classificationTable.ColumnMap) < 3 {
 			slog.Debug("can't rearrange classification table with so few matches")
 			return nil
 		}
 
-		err = b.renameTableHeaderCells(b.doc, classification.section, &classificationTable, matter.Tables[matter.TableTypeClassification].ColumnNames)
+		err = b.renameTableHeaderCells(b.doc, classification.section, classificationTable, matter.Tables[matter.TableTypeClassification].ColumnNames)
 		if err != nil {
 			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", classification.section.Name, dp.doc.Path, err)
 		}
@@ -39,7 +39,7 @@ func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (e
 		}
 
 		if tableType != matter.TableTypeUnknown {
-			err = b.reorderColumns(dp.doc, classification.section, &classificationTable, tableType)
+			err = b.reorderColumns(dp.doc, classification.section, classificationTable, tableType)
 			if err != nil {
 				return err
 			}
@@ -52,11 +52,11 @@ type classificationInfo struct {
 	hierarchy string
 }
 
-func getClassificationInfo(classificationTable *tableInfo) (ci *classificationInfo) {
+func getClassificationInfo(classificationTable *spec.TableInfo) (ci *classificationInfo) {
 	ci = &classificationInfo{}
-	hierarchyIndex, hasHierarchy := classificationTable.columnMap[matter.TableColumnHierarchy]
-	for i, row := range classificationTable.rows {
-		if i == classificationTable.headerRow {
+	hierarchyIndex, hasHierarchy := classificationTable.ColumnMap[matter.TableColumnHierarchy]
+	for i, row := range classificationTable.Rows {
+		if i == classificationTable.HeaderRowIndex {
 			continue
 		}
 		if hasHierarchy {

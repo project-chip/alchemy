@@ -3,20 +3,62 @@ package spec
 import (
 	"context"
 	"fmt"
+	"iter"
+	"log/slog"
 	"strconv"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/render"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
 )
 
 type ColumnIndex map[matter.TableColumn]int
 
+func (ci ColumnIndex) HasAny(columns ...matter.TableColumn) bool {
+	for _, col := range columns {
+		_, ok := ci[col]
+		if ok {
+			return true
+		}
+	}
+	return false
+}
+
+func (ci ColumnIndex) HasAll(columns ...matter.TableColumn) bool {
+	if len(columns) == 0 {
+		return false
+	}
+	for _, col := range columns {
+		_, ok := ci[col]
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
+type ExtraColumn struct {
+	Name   string
+	Offset int
+}
+
+type TableInfo struct {
+	Doc            *Doc
+	Element        *asciidoc.Table
+	Rows           []*asciidoc.TableRow
+	HeaderRowIndex int
+	ColumnMap      ColumnIndex
+	ExtraColumns   []ExtraColumn
+}
+
 var ErrNoTableFound = fmt.Errorf("no table found")
 
-func parseFirstTable(doc *Doc, section *Section) (rows []*asciidoc.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
+func parseFirstTable(doc *Doc, section *Section) (ti *TableInfo, err error) {
 	t := FindFirstTable(section)
 	if t == nil {
 		err = ErrNoTableFound
@@ -25,40 +67,41 @@ func parseFirstTable(doc *Doc, section *Section) (rows []*asciidoc.TableRow, hea
 	return parseTable(doc, section, t)
 }
 
-func parseTable(doc *Doc, section *Section, t *asciidoc.Table) (rows []*asciidoc.TableRow, headerRowIndex int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
+func parseTable(doc *Doc, section *Section, t *asciidoc.Table) (ti *TableInfo, err error) {
 
-	rows = t.TableRows()
-	if len(rows) < 2 {
-		err = fmt.Errorf("not enough rows in table")
-		return
-	}
-	headerRowIndex, columnMap, extraColumns, err = MapTableColumns(doc, rows)
+	ti, err = ReadTable(doc, t)
 	if err != nil {
 		err = fmt.Errorf("failed mapping table columns for first table in section %s: %w", section.Name, err)
 		return
 	}
-	if len(rows) < headerRowIndex+2 {
+	if len(ti.Rows) < ti.HeaderRowIndex+2 {
 		err = fmt.Errorf("not enough value rows in table")
 		return
 	}
-	if columnMap == nil {
+	if ti.ColumnMap == nil {
 		err = fmt.Errorf("can't read table without columns")
 	}
 	return
 }
 
-func readRowASCIIDocString(row *asciidoc.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
+func (ti *TableInfo) ReadString(row *asciidoc.TableRow, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
-		offset, ok := columnMap[column]
+		offset, ok := ti.ColumnMap[column]
 		if !ok {
 			continue
 		}
-		return readRowCellASCIIDocString(row, offset)
+		cell := row.Cell(offset)
+		val, err := RenderTableCell(cell)
+		if err != nil {
+			return "", err
+		}
+		val = asteriskPattern.ReplaceAllString(val, "")
+		return val, nil
 	}
 	return "", nil
 }
 
-func readRowCellASCIIDocString(row *asciidoc.TableRow, offset int) (string, error) {
+func (ti *TableInfo) ReadStringAtOffset(row *asciidoc.TableRow, offset int) (string, error) {
 	cell := row.Cell(offset)
 	val, err := RenderTableCell(cell)
 	if err != nil {
@@ -68,17 +111,17 @@ func readRowCellASCIIDocString(row *asciidoc.TableRow, offset int) (string, erro
 	return val, nil
 }
 
-func readRowID(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*matter.Number, error) {
-	id, err := readRowASCIIDocString(row, columnMap, column)
+func (ti *TableInfo) ReadID(row *asciidoc.TableRow, columns ...matter.TableColumn) (*matter.Number, error) {
+	id, err := ti.ReadString(row, columns...)
 	if err != nil {
 		return matter.InvalidID, err
 	}
 	return matter.ParseNumber(id), nil
 }
 
-func readRowName(doc *Doc, row *asciidoc.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (name string, xref *asciidoc.CrossReference, err error) {
+func (ti *TableInfo) ReadName(row *asciidoc.TableRow, columns ...matter.TableColumn) (name string, xref *asciidoc.CrossReference, err error) {
 	for _, column := range columns {
-		offset, ok := columnMap[column]
+		offset, ok := ti.ColumnMap[column]
 		if !ok {
 			continue
 		}
@@ -94,7 +137,7 @@ func readRowName(doc *Doc, row *asciidoc.TableRow, columnMap ColumnIndex, column
 			}
 		}
 		var value strings.Builder
-		err = readRowCellValueElements(doc, cellElements, &value)
+		err = readRowCellValueElements(ti.Doc, cellElements, &value)
 		if err != nil {
 			return "", nil, err
 		}
@@ -103,29 +146,173 @@ func readRowName(doc *Doc, row *asciidoc.TableRow, columnMap ColumnIndex, column
 	return "", nil, nil
 }
 
-func ReadRowValue(doc *Doc, row *asciidoc.TableRow, columnMap ColumnIndex, columns ...matter.TableColumn) (string, error) {
+func (ti *TableInfo) ReadValue(row *asciidoc.TableRow, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
-		offset, ok := columnMap[column]
+		offset, ok := ti.ColumnMap[column]
 		if !ok {
 			continue
 		}
-		return readRowCellValue(doc, row, offset)
+		return ti.ReadValueByIndex(row, offset)
 	}
 	return "", nil
 }
 
-func readRowCellValue(doc *Doc, row *asciidoc.TableRow, offset int) (string, error) {
+func (ti *TableInfo) ReadValueByIndex(row *asciidoc.TableRow, offset int) (string, error) {
 	cell := row.Cell(offset)
 	cellElements := cell.Elements()
 	if len(cellElements) == 0 {
 		return "", nil
 	}
 	var value strings.Builder
-	err := readRowCellValueElements(doc, cellElements, &value)
+	err := readRowCellValueElements(ti.Doc, cellElements, &value)
 	if err != nil {
 		return "", err
 	}
 	return strings.TrimSpace(value.String()), nil
+}
+
+type CellRenderer func(cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element)
+
+func (ti *TableInfo) RenderColumn(row *asciidoc.TableRow, renderer CellRenderer, columns ...matter.TableColumn) (value string, source asciidoc.Element, ok bool) {
+	for _, column := range columns {
+		var offset int
+		offset, ok = ti.ColumnMap[column]
+		if !ok {
+			continue
+		}
+		cell := row.Cell(offset)
+		cellElements := cell.Elements()
+		if len(cellElements) == 0 {
+			ok = false
+			return
+		}
+		source = cell
+		var sb strings.Builder
+		sourceOverride := renderer(cellElements, &sb)
+		if sourceOverride != nil {
+			source = sourceOverride
+		}
+		value = sb.String()
+		return
+	}
+	return
+}
+
+var newLineReplacer = strings.NewReplacer("\r\n", "", "\r", "", "\n", "")
+
+func (ti *TableInfo) ReadConformance(row *asciidoc.TableRow, column matter.TableColumn) conformance.Set {
+	val, _, ok := ti.RenderColumn(row, ti.buildRowConformance, column)
+	if !ok {
+		return nil
+	}
+
+	s := strings.TrimSpace(val)
+	if len(s) == 0 {
+		return conformance.Set{&conformance.Mandatory{}}
+	}
+	s = newLineReplacer.Replace(s)
+	return conformance.ParseConformance(matter.StripTypeSuffixes(s))
+}
+
+func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {
+	for _, el := range cellElements {
+		switch v := el.(type) {
+		case *asciidoc.String:
+			sb.WriteString(v.Value)
+		case *asciidoc.CrossReference:
+			id := v.ID
+			if strings.HasPrefix(id, "ref_") {
+				// This is a proper reference; allow the conformance parser to recognize it
+				sb.WriteString(fmt.Sprintf("<<%s>>", id))
+			} else {
+				anchor := ti.Doc.FindAnchor(v.ID)
+				var name string
+				if anchor != nil {
+					name = ReferenceName(anchor.Element)
+				} else {
+					name = strings.TrimPrefix(v.ID, "_")
+				}
+				sb.WriteString(name)
+			}
+		case *asciidoc.SpecialCharacter:
+			sb.WriteString(v.Character)
+		case *asciidoc.Superscript:
+			// This is usually an asterisk, and should be ignored
+		case *asciidoc.Link:
+			sb.WriteString(v.URL.Scheme)
+			ti.buildRowConformance(v.URL.Path, sb)
+		case *asciidoc.LinkMacro:
+			sb.WriteString("link:")
+			sb.WriteString(v.URL.Scheme)
+			ti.buildRowConformance(v.URL.Path, sb)
+		case *asciidoc.CharacterReplacementReference:
+			switch v.Name() {
+			case "nbsp":
+				sb.WriteRune(' ')
+			default:
+				slog.Warn("unknown predefined attribute", log.Element("path", ti.Doc.Path, el), "name", v.Name)
+			}
+		case *asciidoc.NewLine:
+			sb.WriteRune(' ')
+		case asciidoc.HasElements:
+			ti.buildRowConformance(v.Elements(), sb)
+		default:
+			slog.Warn("unknown conformance value element", log.Element("path", ti.Doc.Path, el), "type", fmt.Sprintf("%T", el))
+		}
+	}
+	return
+}
+
+func (ti *TableInfo) ReadConstraint(row *asciidoc.TableRow, column matter.TableColumn) constraint.Constraint {
+
+	val, source, _ := ti.RenderColumn(row, ti.buildConstraintValue, column)
+	s := strings.TrimSpace(val)
+	s = strings.ReplaceAll(s, "\n", " ")
+	var c constraint.Constraint
+	c, err := constraint.ParseString(s)
+	if err != nil {
+		slog.Error("failed parsing constraint cell", log.Element("path", ti.Doc.Path, source), slog.String("constraint", val))
+		return &constraint.GenericConstraint{Value: val}
+	}
+	return c
+}
+
+func (ti *TableInfo) buildConstraintValue(els asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {
+	for _, el := range els {
+		switch v := el.(type) {
+		case *asciidoc.String:
+			sb.WriteString(v.Value)
+		case *asciidoc.CrossReference:
+			anchor := ti.Doc.FindAnchor(v.ID)
+			var name string
+			if anchor != nil {
+				name = matter.StripReferenceSuffixes(ReferenceName(anchor.Element))
+			} else {
+				name = strings.TrimPrefix(v.ID, "_")
+			}
+			sb.WriteString(name)
+		case *asciidoc.Superscript:
+			var qt strings.Builder
+			ti.buildConstraintValue(v.Elements(), &qt)
+			val := qt.String()
+			if val == "*" { // We ignore asterisks here
+				continue
+			}
+			sb.WriteString("^")
+			sb.WriteString(val)
+			sb.WriteString("^")
+		case *asciidoc.Bold: // This is usually an asterisk, and should be ignored
+		case *asciidoc.NewLine, *asciidoc.LineBreak:
+			sb.WriteRune(' ')
+		case asciidoc.HasElements:
+			ti.buildConstraintValue(v.Elements(), sb)
+		case asciidoc.AttributeReference:
+			sb.WriteString(fmt.Sprintf("{%s}", v.Name()))
+		default:
+			slog.Warn("unknown constraint value element", log.Element("path", ti.Doc.Path, el), "type", fmt.Sprintf("%T", el))
+		}
+	}
+	return
 }
 
 func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder) (err error) {
@@ -236,12 +423,39 @@ func (d *Doc) GetHeaderCellString(cell *asciidoc.TableCell) (string, error) {
 	return v.String(), nil
 }
 
-type ExtraColumn struct {
-	Name   string
-	Offset int
+func (ti *TableInfo) ColumnIndex(columns ...matter.TableColumn) (index int, ok bool) {
+	for _, column := range columns {
+		index, ok = ti.ColumnMap[column]
+		if ok {
+			return
+		}
+	}
+	return
 }
 
-func MapTableColumns(doc *Doc, rows []*asciidoc.TableRow) (headerRow int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
+func (ti *TableInfo) Rescan(doc *Doc) (err error) {
+	ti.HeaderRowIndex, ti.ColumnMap, ti.ExtraColumns, err = mapTableColumns(doc, ti.Rows)
+	return
+}
+
+func (ti *TableInfo) Body() iter.Seq[*asciidoc.TableRow] {
+	return func(yield func(*asciidoc.TableRow) bool) {
+		for i := ti.HeaderRowIndex + 1; i < len(ti.Rows); i++ {
+			if !yield(ti.Rows[i]) {
+				return
+			}
+		}
+
+	}
+}
+
+func ReadTable(doc *Doc, table *asciidoc.Table) (ti *TableInfo, err error) {
+	ti = &TableInfo{Doc: doc, Element: table, Rows: table.TableRows()}
+	ti.HeaderRowIndex, ti.ColumnMap, ti.ExtraColumns, err = mapTableColumns(doc, ti.Rows)
+	return
+}
+
+func mapTableColumns(doc *Doc, rows []*asciidoc.TableRow) (headerRow int, columnMap ColumnIndex, extraColumns []ExtraColumn, err error) {
 	var cellCount = -1
 	headerRow = -1
 	for i, row := range rows {
@@ -323,6 +537,10 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnCode
 	case "feature":
 		return matter.TableColumnFeature
+	case "cluster id":
+		return matter.TableColumnClusterID
+	case "device id", "device type id":
+		return matter.TableColumnDeviceID
 	case "device name":
 		return matter.TableColumnDeviceName
 	case "superset":
@@ -347,6 +565,8 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnElement
 	case "condition":
 		return matter.TableColumnCondition
+	case "namespace":
+		return matter.TableColumnNamespace
 	case "mode tag value":
 		return matter.TableColumnModeTagValue
 	case "status code":

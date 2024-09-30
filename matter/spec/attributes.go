@@ -11,10 +11,8 @@ import (
 )
 
 func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[asciidoc.Attributable][]types.Entity) (attributes matter.FieldSet, err error) {
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			err = nil
@@ -22,20 +20,19 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 		return
 	}
 	attributeMap := make(map[string]*matter.Field)
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
+	for row := range ti.Body() {
 		attr := matter.NewAttribute(row)
-		attr.ID, err = readRowID(row, columnMap, matter.TableColumnID)
+		attr.ID, err = ti.ReadID(row, matter.TableColumnID)
 		if err != nil {
 			return
 		}
-		attr.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
+		attr.Name, err = ti.ReadValue(row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
 		attr.Name = matter.StripTypeSuffixes(attr.Name)
-		attr.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
-		attr.Type, err = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		attr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+		attr.Type, err = d.ReadRowDataType(row, ti.ColumnMap, matter.TableColumnType)
 		if err != nil {
 			if cluster.Hierarchy == "Base" && !conformance.IsDeprecated(attr.Conformance) && !conformance.IsDisallowed(attr.Conformance) {
 				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated or disallowed
@@ -43,22 +40,22 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 			}
 			err = nil
 		}
-		attr.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint)
+		attr.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
 		if err != nil {
 			return
 		}
 		var q string
-		q, err = readRowASCIIDocString(row, columnMap, matter.TableColumnQuality)
+		q, err = ti.ReadString(row, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
 		attr.Quality = parseQuality(q, types.EntityTypeAttribute, d, row)
-		attr.Default, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDefault)
+		attr.Default, err = ti.ReadString(row, matter.TableColumnDefault)
 		if err != nil {
 			return
 		}
 		var a string
-		a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
+		a, err = ti.ReadString(row, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}

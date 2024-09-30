@@ -41,14 +41,14 @@ func (b *Ball) ensureTableOptions(els asciidoc.Set) {
 
 }
 
-func (b *Ball) addMissingColumns(section *spec.Section, ti *tableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {
+func (b *Ball) addMissingColumns(section *spec.Section, ti *spec.TableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
 	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableAddMissingColumns) {
 		return
 	}
-	ti.element.DeleteAttribute(asciidoc.AttributeNameColumns)
+	ti.Element.DeleteAttribute(asciidoc.AttributeNameColumns)
 	var order []matter.TableColumn
 	if len(tableTemplate.RequiredColumns) > 0 {
 		order = tableTemplate.RequiredColumns
@@ -56,8 +56,8 @@ func (b *Ball) addMissingColumns(section *spec.Section, ti *tableInfo, tableTemp
 		order = tableTemplate.ColumnOrder
 	}
 	for _, column := range order {
-		if _, ok := ti.columnMap[column]; !ok {
-			_, err = b.appendColumn(ti.element, ti.columnMap, ti.headerRow, column, entityType)
+		if _, ok := ti.ColumnMap[column]; !ok {
+			_, err = b.appendColumn(ti, column, entityType)
 			if err != nil {
 				return
 			}
@@ -66,16 +66,16 @@ func (b *Ball) addMissingColumns(section *spec.Section, ti *tableInfo, tableTemp
 	return
 }
 
-func (b *Ball) appendColumn(table *asciidoc.Table, columnMap spec.ColumnIndex, headerRowIndex int, column matter.TableColumn, entityType types.EntityType) (appendedIndex int, err error) {
-	rows := table.TableRows()
+func (b *Ball) appendColumn(ti *spec.TableInfo, column matter.TableColumn, entityType types.EntityType) (appendedIndex int, err error) {
+	rows := ti.Rows
 	if len(rows) == 0 {
 		appendedIndex = -1
 		return
 	}
-	table.ColumnCount += 1
+	ti.Element.ColumnCount += 1
 	var cols *asciidoc.TableColumnsAttribute
 	var ok bool
-	for _, a := range table.Attributes() {
+	for _, a := range ti.Element.Attributes() {
 		cols, ok = a.(*asciidoc.TableColumnsAttribute)
 		if ok {
 			break
@@ -88,7 +88,7 @@ func (b *Ball) appendColumn(table *asciidoc.Table, columnMap spec.ColumnIndex, h
 	for i, row := range rows {
 		cell := &asciidoc.TableCell{}
 		last := row.Cell(len(row.Set) - 1)
-		if i == headerRowIndex {
+		if i == ti.HeaderRowIndex {
 			if last.Format != nil {
 				cell.Format = asciidoc.NewTableCellFormat()
 				cell.Format.HorizontalAlign = last.Format.HorizontalAlign
@@ -107,16 +107,16 @@ func (b *Ball) appendColumn(table *asciidoc.Table, columnMap spec.ColumnIndex, h
 		} else {
 			cell.Blank = last.Blank
 			if !cell.Blank {
-				err = setCellString(cell, b.getDefaultColumnValue(entityType, column, row, columnMap))
+				err = setCellString(cell, b.getDefaultColumnValue(ti, row, column, entityType))
 			}
 		}
 		row.Append(cell)
 	}
-	columnMap[column] = appendedIndex
+	ti.ColumnMap[column] = appendedIndex
 	return
 }
 
-func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.TableColumn, row *asciidoc.TableRow, columnMap spec.ColumnIndex) string {
+func (b *Ball) getDefaultColumnValue(ti *spec.TableInfo, row *asciidoc.TableRow, column matter.TableColumn, entityType types.EntityType) string {
 	switch column {
 	case matter.TableColumnConformance:
 		switch entityType {
@@ -126,7 +126,7 @@ func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.
 	case matter.TableColumnName:
 		switch entityType {
 		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			val, _ := spec.ReadRowValue(b.doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+			val, _ := ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
 			if val != "" {
 				return matter.Case(val)
 			}
@@ -134,7 +134,7 @@ func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.
 	case matter.TableColumnSummary:
 		switch entityType {
 		case types.EntityTypeBitmapValue, types.EntityTypeEnumValue:
-			val, _ := spec.ReadRowValue(b.doc, row, columnMap, matter.TableColumnName)
+			val, _ := ti.ReadValue(row, matter.TableColumnName)
 			if val != "" {
 				return matter.Uncase(val)
 			}
@@ -151,16 +151,16 @@ func (b *Ball) getDefaultColumnValue(entityType types.EntityType, column matter.
 	return ""
 }
 
-func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *tableInfo, tableType matter.TableType) (err error) {
+func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *spec.TableInfo, tableType matter.TableType) (err error) {
 	if !b.options.reorderColumns {
 		return
 	}
 	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableReorderColumns) {
 		return
 	}
-	rows := ti.rows
-	columnMap := ti.columnMap
-	extraColumns := ti.extraColumns
+	rows := ti.Rows
+	columnMap := ti.ColumnMap
+	extraColumns := ti.ExtraColumns
 	tableTemplate, ok := matter.Tables[tableType]
 	if !ok {
 		err = fmt.Errorf("missing table template for table type: %v", tableType)
@@ -249,7 +249,7 @@ func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *tableInf
 		row.Set = newCells
 	}
 	var cols *asciidoc.TableColumnsAttribute
-	for _, a := range ti.element.Attributes() {
+	for _, a := range ti.Element.Attributes() {
 		cols, ok = a.(*asciidoc.TableColumnsAttribute)
 		if ok {
 			break
@@ -266,7 +266,7 @@ func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *tableInf
 		}
 		cols.Columns = newColumns
 	}
-	ti.headerRow, ti.columnMap, ti.extraColumns, err = spec.MapTableColumns(doc, ti.rows)
+	err = ti.Rescan(doc)
 	return
 }
 
@@ -302,16 +302,16 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 	return
 }
 
-func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, table *tableInfo, overrides map[matter.TableColumn]matter.TableColumn) (err error) {
+func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, table *spec.TableInfo, overrides map[matter.TableColumn]matter.TableColumn) (err error) {
 	if !b.options.renameTableHeaders {
 		return
 	}
 	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableRenameHeaders) {
 		return
 	}
-	headerRow := table.rows[table.headerRow]
+	headerRow := table.Rows[table.HeaderRowIndex]
 	reverseMap := make(map[int]matter.TableColumn)
-	for k, v := range table.columnMap {
+	for k, v := range table.ColumnMap {
 		reverseMap[v] = k
 	}
 	for i, cell := range headerRow.TableCells() {
@@ -321,7 +321,7 @@ func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, tabl
 		}
 		overrideColumn, hasOverride := overrides[tc]
 		if hasOverride {
-			existingIndex, overrideAlreadyExists := table.columnMap[overrideColumn]
+			existingIndex, overrideAlreadyExists := table.ColumnMap[overrideColumn]
 			if overrideAlreadyExists && existingIndex != i {
 				slog.Warn("Can not rename column; column with same name already exists", slog.String("from", tc.String()), slog.String("to", overrideColumn.String()), slog.Int("existingColumnIndex", existingIndex))
 				continue
@@ -336,6 +336,6 @@ func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, tabl
 			}
 		}
 	}
-	table.headerRow, table.columnMap, table.extraColumns, err = spec.MapTableColumns(doc, table.rows)
+	err = table.Rescan(doc)
 	return
 }

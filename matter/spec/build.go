@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
@@ -105,7 +106,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 			switch m := m.(type) {
 			case *matter.ClusterGroup:
 				for _, c := range m.Clusters {
-					addClusterToSpec(spec, d, c, d.spec)
+					addClusterToSpec(spec, d, c)
 				}
 			case *matter.Cluster:
 				switch m.Name {
@@ -114,9 +115,11 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				case "Bridged Device Basic Information":
 					bridgedBasicInformationCluster = m
 				}
-				addClusterToSpec(spec, d, m, d.spec)
+				addClusterToSpec(spec, d, m)
 			case *matter.DeviceType:
 				spec.DeviceTypes = append(spec.DeviceTypes, m)
+			case *matter.Namespace:
+				spec.Namespaces = append(spec.Namespaces, m)
 			default:
 				slog.Warn("unknown entity type", "path", d.Path, "type", fmt.Sprintf("%T", m))
 			}
@@ -165,17 +168,17 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 
 	for _, dt := range spec.DeviceTypes {
 		for _, cr := range dt.ClusterRequirements {
-			if c, ok := spec.ClustersByID[cr.ID.Value()]; ok {
+			if c, ok := spec.ClustersByID[cr.ClusterID.Value()]; ok {
 				cr.Cluster = c
 			} else {
-				slog.Warn("unknown cluster ID for cluster requirement on device type", "clusterId", cr.ID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
+				slog.Warn("unknown cluster ID for cluster requirement on device type", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
 			}
 		}
 		for _, er := range dt.ElementRequirements {
-			if c, ok := spec.ClustersByID[er.ID.Value()]; ok {
+			if c, ok := spec.ClustersByID[er.ClusterID.Value()]; ok {
 				er.Cluster = c
 			} else {
-				slog.Warn("unknown cluster ID for element requirement on device type", "clusterId", er.ID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
+				slog.Warn("unknown cluster ID for element requirement on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
 
 			}
 		}
@@ -183,9 +186,18 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 	return
 }
 
-func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex *Specification) {
+func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster) {
+	spec.Clusters[m] = struct{}{}
 	if m.ID.Valid() {
+		existing, ok := spec.ClustersByID[m.ID.Value()]
+		if ok {
+			slog.Warn("Duplicate cluster ID", slog.String("clusterId", m.ID.HexString()), slog.String("clusterName", m.Name), slog.String("existingClusterName", existing.Name))
+		}
 		spec.ClustersByID[m.ID.Value()] = m
+	}
+	existing, ok := spec.ClustersByName[m.Name]
+	if ok {
+		slog.Warn("Duplicate cluster Name", slog.String("clusterId", m.ID.HexString()), slog.String("clusterName", m.Name), slog.String("existingClusterId", existing.ID.HexString()))
 	}
 	spec.ClustersByName[m.Name] = m
 
@@ -197,7 +209,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 			spec.bitmapIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d
-		specIndex.addEntity(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, m)
 	}
 	for _, en := range m.Enums {
 		_, ok := spec.enumIndex[en.Name]
@@ -207,7 +219,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 			spec.enumIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d
-		specIndex.addEntity(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, m)
 	}
 	for _, en := range m.Structs {
 		_, ok := spec.structIndex[en.Name]
@@ -217,7 +229,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster, specIndex 
 			spec.structIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d
-		specIndex.addEntity(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, m)
 	}
 	for _, en := range m.TypeDefs {
 		_, ok := spec.typeDefIndex[en.Name]
@@ -274,6 +286,8 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 		return
 	}
 	switch dataType.BaseType {
+	case types.BaseDataTypeTag:
+		getTagNamespace(spec, field)
 	case types.BaseDataTypeList:
 		sp.resolveDataType(spec, cluster, field, dataType.EntryType)
 	case types.BaseDataTypeCustom:
@@ -287,7 +301,6 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 			return
 		}
 		spec.ClusterRefs.Add(cluster, dataType.Entity)
-		slog.Debug("setting cluster", "name", cluster.Name, "type", dataType.Name)
 		s, ok := dataType.Entity.(*matter.Struct)
 		if !ok {
 			return
@@ -305,7 +318,7 @@ func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter
 		if canonicalName != dataTypeName {
 			e = getCustomDataType(spec, canonicalName, cluster, field)
 		} else {
-			e = getCustomDataTypeFromReference(spec, dataTypeName, cluster, field)
+			e = getCustomDataTypeFromReference(spec, cluster, field)
 		}
 	} else if len(entities) == 1 {
 		for m := range entities {
@@ -317,7 +330,7 @@ func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter
 	return
 }
 
-func getCustomDataTypeFromReference(spec *Specification, dataTypeName string, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
+func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
 	switch source := field.Type.Source.(type) {
 	case *asciidoc.CrossReference:
 		doc, ok := spec.DocRefs[cluster]
@@ -342,6 +355,16 @@ func getCustomDataTypeFromReference(spec *Specification, dataTypeName string, cl
 	}
 }
 
+func getTagNamespace(spec *Specification, field *matter.Field) {
+	for _, ns := range spec.Namespaces {
+		if strings.EqualFold(ns.Name, field.Type.Name) {
+			field.Type.Entity = ns
+			return
+		}
+	}
+	slog.Warn("failed to match tag name space", slog.String("name", field.Name), log.Path("field", field), slog.String("namespace", field.Type.Name))
+}
+
 func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, field *matter.Field) types.Entity {
 	// If there are multiple entities with the same name, prefer the one on the current cluster
 	for m, c := range entities {
@@ -351,9 +374,9 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 	}
 
 	// OK, if the data type is defined on the direct parent of this cluster, take that one
-	if cluster.Hierarchy != "Base" {
+	if cluster.Parent != nil {
 		for m, c := range entities {
-			if c != nil && c.Name == cluster.Hierarchy {
+			if c != nil && c == cluster.Parent {
 				return m
 			}
 		}
@@ -400,13 +423,14 @@ func resolveHierarchy(spec *Specification) {
 			slog.Warn("Failed to find base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy)
 			continue
 		}
-		base.Base = true
-		linkedEntites, err := c.Inherit(base)
+		linkedEntities, err := c.Inherit(base)
 		if err != nil {
 			slog.Warn("Failed to inherit from base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy, "error", err)
 		}
-		for _, linkedEntity := range linkedEntites {
+		// These entities were inherited from a base cluster, but not modified
+		for _, linkedEntity := range linkedEntities {
 			spec.ClusterRefs.Add(c, linkedEntity)
+			spec.addEntity(linkedEntity, c)
 		}
 		assignCustomDataTypes(c)
 	}

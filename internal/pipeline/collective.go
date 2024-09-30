@@ -18,6 +18,7 @@ func processCollective[I, O any](cxt context.Context, processor CollectiveProces
 	}
 
 	total := int32(input.Size())
+	output = NewMapPresized[string, *Data[O]](input.Size())
 	inputs := make([]*Data[I], 0, total)
 	input.Range(func(key string, value *Data[I]) bool {
 		inputs = append(inputs, value)
@@ -28,7 +29,6 @@ func processCollective[I, O any](cxt context.Context, processor CollectiveProces
 	if err != nil {
 		return
 	}
-	output = NewMapPresized[string, *Data[O]](len(outputs))
 	for _, o := range outputs {
 		_, loaded := output.LoadAndStore(o.Path, o)
 		if loaded {

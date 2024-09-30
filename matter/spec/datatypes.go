@@ -12,7 +12,6 @@ import (
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -29,7 +28,6 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				bitmaps = append(bitmaps, mb)
-				entityMap[s.Base] = append(entityMap[s.Base], mb)
 			}
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
@@ -39,7 +37,6 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				enums = append(enums, me)
-				entityMap[s.Base] = append(entityMap[s.Base], me)
 			}
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
@@ -49,7 +46,6 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 				err = nil
 			} else {
 				structs = append(structs, me)
-				entityMap[s.Base] = append(entityMap[s.Base], me)
 			}
 		case matter.SectionDataTypeDef:
 			var me *matter.TypeDef
@@ -69,45 +65,44 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 	return
 }
 
-func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMap ColumnIndex, entityType types.EntityType) (fields []*matter.Field, err error) {
+func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType) (fields []*matter.Field, err error) {
 	ids := make(map[uint64]*matter.Field)
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
+	for row := range ti.Body() {
 		f := matter.NewField(row)
-		f.Name, err = ReadRowValue(d, row, columnMap, matter.TableColumnName)
+		f.Name, err = ti.ReadValue(row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
 		f.Name = matter.StripTypeSuffixes(f.Name)
-		f.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
-		f.Type, err = d.ReadRowDataType(row, columnMap, matter.TableColumnType)
+		f.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+		f.Type, err = d.ReadRowDataType(row, ti.ColumnMap, matter.TableColumnType)
 		if err != nil {
 			slog.Debug("error reading field data type", slog.String("path", d.Path.String()), slog.String("name", f.Name), slog.Any("error", err))
 			err = nil
 		}
 
-		f.Constraint = d.getRowConstraint(row, columnMap, matter.TableColumnConstraint)
+		f.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
 		if err != nil {
 			return
 		}
 		var q string
-		q, err = readRowASCIIDocString(row, columnMap, matter.TableColumnQuality)
+		q, err = ti.ReadString(row, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
 		f.Quality = parseQuality(q, entityType, d, row)
-		f.Default, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDefault)
+		f.Default, err = ti.ReadString(row, matter.TableColumnDefault)
 		if err != nil {
 			return
 		}
 
 		var a string
-		a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
+		a, err = ti.ReadString(row, matter.TableColumnAccess)
 		if err != nil {
 			return
 		}
 		f.Access, _ = ParseAccess(a, entityType)
-		f.ID, err = readRowID(row, columnMap, matter.TableColumnID)
+		f.ID, err = ti.ReadID(row, matter.TableColumnID)
 		if err != nil {
 			return
 		}
@@ -115,7 +110,7 @@ func (d *Doc) readFields(headerRowIndex int, rows []*asciidoc.TableRow, columnMa
 			id := f.ID.Value()
 			existing, ok := ids[id]
 			if ok {
-				slog.Warn("duplicate field ID", log.Path("source", f), slog.String("name", f.Name), slog.Uint64("id", id), log.Path("original", existing))
+				slog.Error("duplicate field ID", log.Path("source", f), slog.String("name", f.Name), slog.Uint64("id", id), log.Path("original", existing))
 				continue
 			}
 			ids[id] = f
@@ -232,135 +227,3 @@ func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder
 	}
 	return
 }
-
-func (d *Doc) getRowConstraint(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn) constraint.Constraint {
-	var val string
-	var cell *asciidoc.TableCell
-	offset, ok := columnMap[column]
-	if ok {
-		cell = row.Cell(offset)
-		cellElements := cell.Elements()
-		if len(cellElements) > 0 {
-			var sb strings.Builder
-			d.buildConstraintValue(cellElements, &sb)
-			val = strings.TrimSpace(sb.String())
-
-		}
-	}
-	val = strings.ReplaceAll(val, "\n", " ")
-	var c constraint.Constraint
-	c, err := constraint.ParseString(val)
-	if err != nil {
-		slog.Error("failed parsing constraint cell", log.Element("path", d.Path, cell), slog.String("constraint", val))
-		return &constraint.GenericConstraint{Value: val}
-	}
-	return c
-}
-
-func (d *Doc) buildConstraintValue(els asciidoc.Set, sb *strings.Builder) {
-	for _, el := range els {
-		switch v := el.(type) {
-		case *asciidoc.String:
-			sb.WriteString(v.Value)
-		case *asciidoc.CrossReference:
-			anchor := d.FindAnchor(v.ID)
-			var name string
-			if anchor != nil {
-				name = matter.StripReferenceSuffixes(ReferenceName(anchor.Element))
-			} else {
-				name = strings.TrimPrefix(v.ID, "_")
-			}
-			sb.WriteString(name)
-		case *asciidoc.Superscript:
-			var qt strings.Builder
-			d.buildConstraintValue(v.Elements(), &qt)
-			val := qt.String()
-			if val == "*" { // We ignore asterisks here
-				continue
-			}
-			sb.WriteString("^")
-			sb.WriteString(val)
-			sb.WriteString("^")
-		case *asciidoc.Bold: // This is usually an asterisk, and should be ignored
-		case *asciidoc.NewLine, *asciidoc.LineBreak:
-			sb.WriteRune(' ')
-		case asciidoc.HasElements:
-			d.buildConstraintValue(v.Elements(), sb)
-		case asciidoc.AttributeReference:
-			sb.WriteString(fmt.Sprintf("{%s}", v.Name()))
-		default:
-			slog.Warn("unknown constraint value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", el))
-		}
-	}
-}
-
-func (d *Doc) getRowConformance(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn) conformance.Set {
-	i, ok := columnMap[column]
-	if !ok {
-		return nil
-	}
-	cell := row.Cell(i)
-	cellElements := cell.Elements()
-	if len(cellElements) == 0 {
-		return nil
-	}
-	var sb strings.Builder
-	d.buildRowConformance(cellElements, &sb)
-
-	s := strings.TrimSpace(sb.String())
-	if len(s) == 0 {
-		return conformance.Set{&conformance.Mandatory{}}
-	}
-	s = newLineReplacer.Replace(s)
-	return conformance.ParseConformance(matter.StripTypeSuffixes(s))
-}
-
-func (d *Doc) buildRowConformance(cellElements asciidoc.Set, sb *strings.Builder) {
-	for _, el := range cellElements {
-		switch v := el.(type) {
-		case *asciidoc.String:
-			sb.WriteString(v.Value)
-		case *asciidoc.CrossReference:
-			id := v.ID
-			if strings.HasPrefix(id, "ref_") {
-				// This is a proper reference; allow the conformance parser to recognize it
-				sb.WriteString(fmt.Sprintf("<<%s>>", id))
-			} else {
-				anchor := d.FindAnchor(v.ID)
-				var name string
-				if anchor != nil {
-					name = ReferenceName(anchor.Element)
-				} else {
-					name = strings.TrimPrefix(v.ID, "_")
-				}
-				sb.WriteString(name)
-			}
-		case *asciidoc.SpecialCharacter:
-			sb.WriteString(v.Character)
-		case *asciidoc.Superscript:
-			// This is usually an asterisk, and should be ignored
-		case *asciidoc.Link:
-			sb.WriteString(v.URL.Scheme)
-			d.buildRowConformance(v.URL.Path, sb)
-		case *asciidoc.LinkMacro:
-			sb.WriteString("link:")
-			sb.WriteString(v.URL.Scheme)
-			d.buildRowConformance(v.URL.Path, sb)
-		case *asciidoc.CharacterReplacementReference:
-			switch v.Name() {
-			case "nbsp":
-				sb.WriteRune(' ')
-			default:
-				slog.Warn("unknown predefined attribute", log.Element("path", d.Path, el), "name", v.Name)
-			}
-		case *asciidoc.NewLine:
-			sb.WriteRune(' ')
-		case asciidoc.HasElements:
-			d.buildRowConformance(v.Elements(), sb)
-		default:
-			slog.Warn("unknown conformance value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", el))
-		}
-	}
-}
-
-var newLineReplacer = strings.NewReplacer("\r\n", "", "\r", "", "\n", "")

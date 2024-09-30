@@ -79,8 +79,8 @@ func readCluster(path string, d *xml.Decoder, e xml.StartElement) (cluster *matt
 			switch t.Name.Local {
 			case "cluster":
 				for _, cmd := range cluster.Commands {
-					if cmd.Response != "" {
-						respName := strings.ToLower(cmd.Response)
+					if cmd.Response != nil {
+						respName := strings.ToLower(cmd.Response.Name)
 						for _, resp := range cluster.Commands {
 							if strings.ToLower(resp.Name) != respName {
 								continue

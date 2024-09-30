@@ -9,6 +9,7 @@ import (
 	"github.com/project-chip/alchemy/cmd/dump"
 	"github.com/project-chip/alchemy/cmd/format"
 	"github.com/project-chip/alchemy/cmd/testplan"
+	"github.com/project-chip/alchemy/cmd/validate"
 	"github.com/project-chip/alchemy/cmd/zap"
 )
 
@@ -26,4 +27,5 @@ func init() {
 	rootCmd.AddCommand(dump.Command)
 	rootCmd.AddCommand(dm.Command)
 	rootCmd.AddCommand(testplan.Command)
+	rootCmd.AddCommand(validate.Command)
 }

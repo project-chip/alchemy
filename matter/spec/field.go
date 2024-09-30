@@ -6,6 +6,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -30,6 +31,9 @@ func (s *Section) mapFields(fieldMap map[string]*matter.Field, entityMap map[asc
 			continue
 		}
 		findAnonymousType(s, a)
+		if a.Type != nil && a.Type.BaseType == types.BaseDataTypeTag {
+			findTagNamespace(s, a)
+		}
 		entityMap[s.Base] = append(entityMap[s.Base], a)
 	}
 	return nil
@@ -50,35 +54,32 @@ func findAnonymousType(s *Section, field *matter.Field) error {
 
 func findAnonymousEnum(s *Section, field *matter.Field) error {
 	slog.Debug("possible anonymous enum", "name", field.Name, "type", field.Type)
-	rows, headerRowIndex, columnMap, _, err := parseFirstTable(s.Doc, s)
+	ti, err := parseFirstTable(s.Doc, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			return nil
 		}
 	}
-	valueIndex, ok := columnMap[matter.TableColumnValue]
+	valueIndex, ok := ti.ColumnMap[matter.TableColumnValue]
 	if !ok {
 		slog.Debug("no value", "name", field.Name, "type", field.Type)
 		return nil
 	}
 	var evs matter.EnumValueSet
-	for i, row := range rows {
-		if i == headerRowIndex {
-			continue
-		}
+	for row := range ti.Body() {
 		ev := matter.NewEnumValue(s.Base)
 		ev.Conformance = conformance.Set{&conformance.Mandatory{}}
-		ev.Value, err = readRowID(row, columnMap, matter.TableColumnValue)
+		ev.Value, err = ti.ReadID(row, matter.TableColumnValue)
 		if err != nil {
 			return err
 		}
-		ev.Summary, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		ev.Summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return err
 		}
 		if len(ev.Summary) == 0 {
-			if len(rows) > valueIndex+1 {
-				ev.Summary, err = readRowCellValue(s.Doc, row, valueIndex+1)
+			if len(row.TableCells()) > valueIndex+1 {
+				ev.Summary, err = ti.ReadValueByIndex(row, valueIndex+1)
 				if err != nil {
 					return err
 				}
@@ -102,40 +103,37 @@ func findAnonymousEnum(s *Section, field *matter.Field) error {
 
 func findAnonymousBitmap(s *Section, field *matter.Field) error {
 	slog.Debug("possible anonymous enum", "name", field.Name, "type", field.Type)
-	rows, headerRowIndex, columnMap, _, err := parseFirstTable(s.Doc, s)
+	ti, err := parseFirstTable(s.Doc, s)
 	if err != nil {
 		if err == ErrNoTableFound {
 			return nil
 		}
 	}
-	_, ok := columnMap[matter.TableColumnBit]
+	_, ok := ti.ColumnMap[matter.TableColumnBit]
 	if !ok {
 		slog.Debug("no bit", "name", field.Name, "type", field.Type)
 		return nil
 	}
 	var bvs matter.BitSet
-	for i, row := range rows {
-		if i == headerRowIndex {
-			continue
-		}
+	for row := range ti.Body() {
 		var bit, name, summary string
 		conf := conformance.Set{&conformance.Mandatory{}}
-		name, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnName)
+		name, err = ti.ReadValue(row, matter.TableColumnName)
 		if err != nil {
 			return err
 		}
 		name = matter.StripTypeSuffixes(name)
-		summary, err = ReadRowValue(s.Doc, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return err
 		}
 
-		bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnBit)
+		bit, err = ti.ReadString(row, matter.TableColumnBit)
 		if err != nil {
 			return err
 		}
 		if len(bit) == 0 {
-			bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnValue)
+			bit, err = ti.ReadString(row, matter.TableColumnValue)
 			if err != nil {
 				return err
 			}
@@ -158,6 +156,26 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 			Type: field.Type,
 			Bits: bvs,
 		}
+	}
+	return nil
+}
+
+func findTagNamespace(s *Section, field *matter.Field) error {
+	var found bool
+	parse.Traverse(s, s.Set, func(ref *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
+		if ref.ID == "ref_StandardNamespaces" {
+			label := buildReferenceName(ref.Set)
+			name := strings.TrimSpace(text.TrimCaseInsensitiveSuffix(label, " Namespace"))
+			if len(name) > 0 {
+				field.Type.Name = name
+				found = true
+				return parse.SearchShouldStop
+			}
+		}
+		return parse.SearchShouldContinue
+	})
+	if !found {
+		slog.Warn("Tag field does not specify namespace", slog.String("field", field.Name), log.Path("origin", field))
 	}
 	return nil
 }

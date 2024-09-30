@@ -30,6 +30,8 @@ const (
 	TableColumnCode
 	TableColumnStatusCode
 	TableColumnFeature
+	TableColumnClusterID
+	TableColumnDeviceID
 	TableColumnDeviceName
 	TableColumnSuperset
 	TableColumnClass
@@ -43,6 +45,7 @@ const (
 	TableColumnClientServer
 	TableColumnCondition
 	TableColumnModeTagValue
+	TableColumnNamespace
 )
 
 var TableColumnNames = map[TableColumn]string{
@@ -67,6 +70,8 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnCode:         "Code",
 	TableColumnStatusCode:   "Status Code",
 	TableColumnFeature:      "Feature",
+	TableColumnClusterID:    "Cluster ID",
+	TableColumnDeviceID:     "Device ID",
 	TableColumnDeviceName:   "Device Name",
 	TableColumnSuperset:     "Superset",
 	TableColumnClass:        "Class",
@@ -80,6 +85,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnClientServer: "Client/Server",
 	TableColumnCondition:    "Condition",
 	TableColumnModeTagValue: "Mode Tag Value",
+	TableColumnNamespace:    "Namespace",
 }
 
 func (tc TableColumn) String() string {

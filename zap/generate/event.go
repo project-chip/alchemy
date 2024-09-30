@@ -11,6 +11,7 @@ import (
 	axml "github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -52,7 +53,7 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 	for event := range events {
 		ee := etree.NewElement("event")
 		populateEvent(ee, event, cluster, errata)
-		axml.InsertElementByAttribute(ce, ee, "code", "command", "attribute")
+		axml.InsertElementByAttribute(ce, ee, "code", "command", "attribute", "globalAttribute")
 	}
 	return
 }
@@ -98,8 +99,11 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 			if conformance.IsZigbee(e.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
+			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
+				continue
+			}
 			fe.CreateAttr("id", f.ID.IntString())
-			setFieldAttributes(fe, f, e.Fields)
+			setFieldAttributes(fe, f, e.Fields, errata)
 			break
 		}
 	}
@@ -109,9 +113,12 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 		if conformance.IsZigbee(e.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
+		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
+			continue
+		}
 		fe := etree.NewElement("field")
 		fe.CreateAttr("id", f.ID.IntString())
-		setFieldAttributes(fe, f, e.Fields)
+		setFieldAttributes(fe, f, e.Fields, errata)
 		axml.AppendElement(ee, fe)
 	}
 	if needsAccess {
@@ -135,10 +142,10 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 	}
 }
 
-func setFieldAttributes(e *etree.Element, f *matter.Field, fs matter.FieldSet) {
+func setFieldAttributes(e *etree.Element, f *matter.Field, fs matter.FieldSet, errata *errata.ZAP) {
 	mandatory := conformance.IsMandatory(f.Conformance)
 	e.CreateAttr("name", f.Name)
-	writeDataType(e, fs, f)
+	writeDataType(e, fs, f, errata)
 	if !mandatory {
 		e.CreateAttr("optional", "true")
 	} else {
@@ -158,11 +165,12 @@ func setFieldAttributes(e *etree.Element, f *matter.Field, fs matter.FieldSet) {
 	renderConstraint(e, fs, f)
 }
 
-func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field) {
+func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field, errata *errata.ZAP) {
 	if f.Type == nil {
 		return
 	}
-	dts := zap.FieldToZapDataType(fs, f)
+	dts := getDataTypeString(fs, f)
+	dts = errata.TypeName(dts)
 	if f.Type.IsArray() {
 		e.CreateAttr("array", "true")
 		e.CreateAttr("type", dts)
@@ -170,6 +178,22 @@ func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field) {
 		e.CreateAttr("type", dts)
 		e.RemoveAttr("array")
 	}
+}
+
+func getDataTypeString(fs matter.FieldSet, f *matter.Field) string {
+	switch f.Type.BaseType {
+	case types.BaseDataTypeTag:
+		if f.Type.Entity != nil {
+			if namespace, ok := f.Type.Entity.(*matter.Namespace); ok {
+				return matterNamespaceName(namespace)
+			}
+		} else {
+			return "enum8"
+		}
+	case types.BaseDataTypeNamespaceID:
+		return "enum8"
+	}
+	return zap.FieldToZapDataType(fs, f)
 }
 
 func setAccessAttributes(el *etree.Element, op string, p matter.Privilege, errata *errata.ZAP) {
