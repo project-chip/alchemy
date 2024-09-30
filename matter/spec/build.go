@@ -239,7 +239,7 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster) {
 			spec.typeDefIndex[en.Name] = en
 		}
 		spec.DocRefs[en] = d
-		specIndex.addEntity(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, m)
 	}
 }
 
