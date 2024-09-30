@@ -13,10 +13,8 @@ import (
 )
 
 func (s *Section) toFeatures(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (features *matter.Features, err error) {
-	var rows []*asciidoc.TableRow
-	var headerRowIndex int
-	var columnMap ColumnIndex
-	rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading features: %w", err)
 
@@ -28,36 +26,35 @@ func (s *Section) toFeatures(d *Doc, entityMap map[asciidoc.Attributable][]types
 		},
 	}
 	featureMap := make(map[string]*matter.Feature)
-	for i := headerRowIndex + 1; i < len(rows); i++ {
-		row := rows[i]
+	for row := range ti.Body() {
 		var bit, code, name, summary string
 		var conf conformance.Set
-		bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnBit)
+		bit, err = ti.ReadString(row, matter.TableColumnBit)
 		if err != nil {
 			return
 		}
 		if len(bit) == 0 {
-			bit, err = readRowASCIIDocString(row, columnMap, matter.TableColumnID)
+			bit, err = ti.ReadString(row, matter.TableColumnID)
 			if err != nil {
 				return
 			}
 		}
 
-		name, err = ReadRowValue(d, row, columnMap, matter.TableColumnFeature, matter.TableColumnName)
+		name, err = ti.ReadValue(row, matter.TableColumnFeature, matter.TableColumnName)
 		if err != nil {
 			return
 		}
 		name = matter.StripTypeSuffixes(name)
 
-		code, err = readRowASCIIDocString(row, columnMap, matter.TableColumnCode)
+		code, err = ti.ReadString(row, matter.TableColumnCode)
 		if err != nil {
 			return
 		}
-		summary, err = ReadRowValue(d, row, columnMap, matter.TableColumnSummary, matter.TableColumnDescription)
+		summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
 		if err != nil {
 			return
 		}
-		conf = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+		conf = ti.ReadConformance(row, matter.TableColumnConformance)
 		if conf == nil {
 			conf = conformance.Set{&conformance.Optional{}}
 		}

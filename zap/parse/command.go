@@ -32,7 +32,7 @@ func readCommand(path string, d *xml.Decoder, e xml.StartElement) (c *matter.Com
 		case "optional":
 			optional = a.Value
 		case "response":
-			c.Response = a.Value
+			c.Response = types.NewCustomDataType(a.Value, false)
 		case "mustUseTimedInvoke":
 			if a.Value == "true" {
 				c.Access.Timing = matter.TimingTimed
@@ -62,9 +62,9 @@ func readCommand(path string, d *xml.Decoder, e xml.StartElement) (c *matter.Com
 		c.Access.FabricScoping = matter.FabricScopingUnscoped
 	}
 	if disableDefaultResponse == "true" || c.Direction == matter.InterfaceClient {
-		c.Response = "N"
-	} else if c.Response == "" {
-		c.Response = "Y"
+		c.Response = types.NewCustomDataType("N", false)
+	} else if c.Response == nil {
+		c.Response = types.NewCustomDataType("Y", false)
 	}
 
 	for {

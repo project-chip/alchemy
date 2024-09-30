@@ -1,17 +1,25 @@
 package spec
 
 import (
+	"sync"
+
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-type ClusterRefs map[types.Entity]map[*matter.Cluster]struct{}
+type ClusterRefs struct {
+	sync.RWMutex
+	refs map[types.Entity]map[*matter.Cluster]struct{}
+}
 
 type Specification struct {
+	Clusters       map[*matter.Cluster]struct{}
 	ClustersByID   map[uint64]*matter.Cluster
 	ClustersByName map[string]*matter.Cluster
 	DeviceTypes    []*matter.DeviceType
 	BaseDeviceType *matter.DeviceType
+
+	Namespaces []*matter.Namespace
 
 	ClusterRefs ClusterRefs
 	DocRefs     map[types.Entity]*Doc
@@ -32,10 +40,10 @@ type Specification struct {
 
 func newSpec() *Specification {
 	return &Specification{
-
+		Clusters:       make(map[*matter.Cluster]struct{}),
 		ClustersByID:   make(map[uint64]*matter.Cluster),
 		ClustersByName: make(map[string]*matter.Cluster),
-		ClusterRefs:    make(map[types.Entity]map[*matter.Cluster]struct{}),
+		ClusterRefs:    ClusterRefs{refs: make(map[types.Entity]map[*matter.Cluster]struct{})},
 		DocRefs:        make(map[types.Entity]*Doc),
 
 		bitmapIndex:  make(map[string]*matter.Bitmap),
@@ -51,11 +59,20 @@ func newSpec() *Specification {
 	}
 }
 
-func (cr ClusterRefs) Add(c *matter.Cluster, m types.Entity) {
-	cm, ok := cr[m]
+func (cr *ClusterRefs) Add(c *matter.Cluster, m types.Entity) {
+	cr.Lock()
+	cm, ok := cr.refs[m]
 	if !ok {
 		cm = make(map[*matter.Cluster]struct{})
-		cr[m] = cm
+		cr.refs[m] = cm
 	}
+	cr.Unlock()
 	cm[c] = struct{}{}
+}
+
+func (cr *ClusterRefs) Get(m types.Entity) (map[*matter.Cluster]struct{}, bool) {
+	cr.RLock()
+	cm, ok := cr.refs[m]
+	cr.RUnlock()
+	return cm, ok
 }

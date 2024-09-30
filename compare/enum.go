@@ -74,7 +74,7 @@ func compareEnums(spec *spec.Specification, specCluster *matter.Cluster, zapEnum
 		}
 	}
 	for _, f := range specEnumMap {
-		clusters, ok := spec.ClusterRefs[f]
+		clusters, ok := spec.ClusterRefs.Get(f)
 		if ok {
 			var externalReference bool
 			for c := range clusters {

@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -24,7 +25,7 @@ type Configurator struct {
 	ClusterIDs []string
 }
 
-func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.Entity, outPath string) (*Configurator, error) {
+func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.Entity, outPath string, errata *errata.ZAP) (*Configurator, error) {
 	c := &Configurator{
 		Spec:    spec,
 		Doc:     doc,
@@ -61,43 +62,57 @@ func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.E
 		switch v := m.(type) {
 		case *matter.ClusterGroup:
 			for _, cl := range v.Clusters {
-				c.addCluster(cl)
+				c.addCluster(v, cl, errata)
+			}
+			for _, bm := range v.Bitmaps {
+				c.addEntityType(v, bm)
+			}
+			for _, e := range v.Enums {
+				c.addEntityType(v, e)
+			}
+			for _, s := range v.Structs {
+				c.addEntityType(v, s)
 			}
 		case *matter.Cluster:
-			c.addCluster(v)
+			c.addCluster(v, v, errata)
 		case *matter.Bitmap, *matter.Enum, *matter.Struct:
-			c.addEntityType(v)
+			c.addEntityType(nil, v)
 		}
 	}
 	return c, nil
 }
 
-func (c *Configurator) addCluster(v *matter.Cluster) {
-	c.addTypes(v.Attributes)
+func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster, errata *errata.ZAP) {
+	c.addTypes(parentEntity, v.Attributes)
 	if v.Features != nil {
-		c.addEntityType(v.Features)
+		c.addEntityType(parentEntity, v.Features)
 	}
 	for _, cmd := range v.Commands {
-		c.addTypes(cmd.Fields)
+		c.addTypes(parentEntity, cmd.Fields)
 	}
 	for _, e := range v.Events {
-		c.addTypes(e.Fields)
+		c.addTypes(parentEntity, e.Fields)
 	}
 
 	if v.ID.Valid() {
 		c.ClusterIDs = append(c.ClusterIDs, v.ID.HexString())
 	}
 
-	// Special case for status code enums, which typically do not get referenced
+	// Special case for status code and mode tag enums, which typically do not get referenced
 	for _, e := range v.Enums {
-		if strings.EqualFold(e.Name, "StatusCode") || strings.EqualFold(e.Name, "StatusCodeEnum") {
+		if strings.EqualFold(e.Name, "StatusCode") || strings.EqualFold(e.Name, "StatusCodeEnum") || strings.EqualFold(e.Name, "ModeTag") {
 			c.Enums[e] = append(c.Enums[e], v.ID)
+		}
+	}
+	for _, name := range errata.ClusterSkip {
+		if name == v.Name {
+			return
 		}
 	}
 	c.Clusters[v] = false
 }
 
-func (c *Configurator) addTypes(fs matter.FieldSet) {
+func (c *Configurator) addTypes(parentEntity types.Entity, fs matter.FieldSet) {
 	for _, f := range fs {
 		if f.Type == nil {
 			continue
@@ -105,17 +120,17 @@ func (c *Configurator) addTypes(fs matter.FieldSet) {
 		if conformance.IsZigbee(fs, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
-		c.addType(f.Type)
+		c.addType(parentEntity, f.Type)
 	}
 }
 
-func (c *Configurator) addType(dt *types.DataType) {
+func (c *Configurator) addType(parentEntity types.Entity, dt *types.DataType) {
 	if dt == nil {
 		return
 	}
 
 	if dt.IsArray() {
-		c.addType(dt.EntryType)
+		c.addType(parentEntity, dt.EntryType)
 		return
 	}
 
@@ -124,17 +139,32 @@ func (c *Configurator) addType(dt *types.DataType) {
 		slog.Debug("skipping data type with no entity", "name", dt.Name)
 		return
 	}
-	entityDoc := c.Spec.DocRefs[entity]
-	if entityDoc.Path.Relative != c.Doc.Path.Relative {
-		// This entity came from a different document, and will thus end up in its xml file, so should not be repeated here
-
-		slog.Debug("skipping data type from another document", "name", dt.Name, "path", c.Doc.Path)
-		return
+	if parentEntity != nil {
+		if typeBelongsToOtherCluster(entity, parentEntity) {
+			slog.Debug("skipping data type for different entity", "name", dt.Name, "parent", entity, "context", parentEntity)
+			return
+		}
 	}
-	c.addEntityType(entity)
+	c.addEntityType(parentEntity, entity)
 }
 
-func (c *Configurator) addEntityType(entity types.Entity) {
+func typeBelongsToOtherCluster(entity types.Entity, parentEntity types.Entity) bool {
+	var typeParent types.Entity
+	switch entity := entity.(type) {
+	case *matter.Bitmap:
+		typeParent = entity.ParentEntity
+	case *matter.Enum:
+		typeParent = entity.ParentEntity
+	case *matter.Struct:
+		typeParent = entity.ParentEntity
+	}
+	if typeParent == nil { // This is a global type, and doesn't belong to any cluster
+		return true
+	}
+	return typeParent != parentEntity
+}
+
+func (c *Configurator) addEntityType(parentEntity types.Entity, entity types.Entity) {
 
 	switch entity := entity.(type) {
 	case *matter.Features:
@@ -145,12 +175,12 @@ func (c *Configurator) addEntityType(entity types.Entity) {
 		c.Enums[entity] = c.getClusterCodes(entity)
 	case *matter.Struct:
 		c.Structs[entity] = c.getClusterCodes(entity)
-		c.addTypes(entity.Fields)
+		c.addTypes(parentEntity, entity.Fields)
 	}
 }
 
 func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []*matter.Number) {
-	refs, ok := c.Spec.ClusterRefs[entity]
+	refs, ok := c.Spec.ClusterRefs.Get(entity)
 	if !ok {
 		slog.Warn("unknown cluster ref when searching for cluster codes", slog.String("path", c.Doc.Path.String()), matter.LogEntity(entity))
 		return

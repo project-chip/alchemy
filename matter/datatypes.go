@@ -52,3 +52,9 @@ func StripTypeSuffixes(dataType string) string {
 	}
 	return dataType
 }
+
+type AssociatedDataTypes struct {
+	Bitmaps BitmapSet `json:"bitmaps,omitempty"`
+	Enums   EnumSet   `json:"enums,omitempty"`
+	Structs StructSet `json:"structs,omitempty"`
+}

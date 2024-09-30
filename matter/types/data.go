@@ -213,11 +213,10 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 }
 
 func (dt *DataType) Clone() *DataType {
-	ndt := &DataType{Name: dt.Name, BaseType: dt.BaseType, Entity: dt.Entity}
+	ndt := &DataType{Name: dt.Name, BaseType: dt.BaseType}
 	if dt.EntryType != nil {
 		ndt.EntryType = dt.EntryType.Clone()
 	}
-	ndt.Entity = dt.Entity
 	return ndt
 }
 

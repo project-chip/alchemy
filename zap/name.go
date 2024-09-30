@@ -29,7 +29,7 @@ func ClusterName(path string, errata *errata.ZAP, entities []types.Entity) strin
 	var suffix string
 	for _, m := range entities {
 		switch m.(type) {
-		case *matter.Cluster, matter.ClusterGroup:
+		case *matter.Cluster, *matter.ClusterGroup:
 			suffix = "Cluster"
 		}
 	}

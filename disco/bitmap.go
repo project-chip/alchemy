@@ -26,35 +26,35 @@ func (b *Ball) organizeBitmapSections(cxt *discoContext, dp *docParse) (err erro
 func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSection) (err error) {
 	b.canonicalizeDataTypeSectionName(dp, bms.section, "Bitmap")
 	bitsTable := bms.table
-	if bitsTable.element == nil {
+	if bitsTable == nil || bitsTable.Element == nil {
 		return
 	}
-	if bitsTable.columnMap == nil {
+	if bitsTable.ColumnMap == nil {
 		slog.Debug("can't rearrange bitmap table without header row")
 		return nil
 	}
 
-	if len(bitsTable.columnMap) < 2 {
+	if len(bitsTable.ColumnMap) < 2 {
 		slog.Debug("can't rearrange bitmap table with so few matches")
 		return nil
 	}
 
-	err = b.renameTableHeaderCells(b.doc, bms.section, &bitsTable, nil)
+	err = b.renameTableHeaderCells(b.doc, bms.section, bitsTable, nil)
 	if err != nil {
 		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}
 
-	err = b.addMissingColumns(bms.section, &bitsTable, matter.Tables[matter.TableTypeBitmap], types.EntityTypeBitmapValue)
+	err = b.addMissingColumns(bms.section, bitsTable, matter.Tables[matter.TableTypeBitmap], types.EntityTypeBitmapValue)
 	if err != nil {
 		return fmt.Errorf("error adding missing table columns in bitmap section %s in %s: %w", bms.section.Name, dp.doc.Path, err)
 	}
 
-	err = b.reorderColumns(dp.doc, bms.section, &bitsTable, matter.TableTypeBitmap)
+	err = b.reorderColumns(dp.doc, bms.section, bitsTable, matter.TableTypeBitmap)
 	if err != nil {
 		return err
 	}
 
-	b.appendSubsectionTypes(bms.section, bitsTable.columnMap, bitsTable.rows)
+	b.appendSubsectionTypes(bms.section, bitsTable.ColumnMap, bitsTable.Rows)
 
 	b.fixBitmapRange(bms)
 	return
@@ -66,12 +66,12 @@ func (b *Ball) fixBitmapRange(bms *subSection) {
 	if b.errata.IgnoreSection(bms.section.Name, errata.DiscoPurposeDataTypeBitmapFixRange) {
 		return
 	}
-	bitIndex, ok := bms.table.getColumnIndex(matter.TableColumnBit, matter.TableColumnValue)
+	bitIndex, ok := bms.table.ColumnIndex(matter.TableColumnBit, matter.TableColumnValue)
 	if !ok {
 		return
 	}
-	for i, row := range bms.table.rows {
-		if i == bms.table.headerRow {
+	for i, row := range bms.table.Rows {
+		if i == bms.table.HeaderRowIndex {
 			continue
 		}
 		cell := row.Cell(bitIndex)

@@ -61,6 +61,8 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
+	patchSpec(specBuilder.Spec)
+
 	var appClusterIndexes pipeline.Map[string, *pipeline.Data[*spec.Doc]]
 	appClusterIndexes, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
 
@@ -88,7 +90,8 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	var clusters pipeline.Map[string, *pipeline.Data[*spec.Doc]]
 	var deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
-	clusters, deviceTypes, err = generate.SplitZAPDocs(cxt, specDocs)
+	var namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]]
+	clusters, deviceTypes, namespaces, err = generate.SplitZAPDocs(cxt, specDocs)
 	if err != nil {
 		return err
 	}
@@ -129,7 +132,15 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		if err != nil {
 			return err
 		}
+	}
 
+	var patchedNamespaces pipeline.Map[string, *pipeline.Data[[]byte]]
+	if namespaces.Size() > 0 {
+		namespacePatcher := generate.NewNamespacePatcher(sdkRoot, specBuilder.Spec)
+		patchedNamespaces, err = pipeline.Process[[]*matter.Namespace, []byte](cxt, pipelineOptions, namespacePatcher, namespaces)
+		if err != nil {
+			return err
+		}
 	}
 
 	var clusterList pipeline.Map[string, *pipeline.Data[[]byte]]
@@ -143,7 +154,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	var provisionalDocs pipeline.Map[string, *pipeline.Data[[]byte]]
 	if provisionalZclFiles != nil && provisionalZclFiles.Size() > 0 {
-		provisionalSaver := generate.NewProvisionalPatcher(sdkRoot)
+		provisionalSaver := generate.NewProvisionalPatcher(sdkRoot, specBuilder.Spec)
 		provisionalDocs, err = pipeline.Process[struct{}, []byte](cxt, pipelineOptions, provisionalSaver, provisionalZclFiles)
 		if err != nil {
 			return err
@@ -151,11 +162,14 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	}
 
-	stringWriter := files.NewWriter[string]("Writing ZAP templates", fileOptions)
+	stringWriter := files.NewWriter[string]("", fileOptions)
+	if zapTemplateDocs != nil && zapTemplateDocs.Size() > 0 {
+		stringWriter.SetName("Writing ZAP templates")
+		_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, stringWriter, zapTemplateDocs)
+		if err != nil {
+			return err
+		}
 
-	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, stringWriter, zapTemplateDocs)
-	if err != nil {
-		return err
 	}
 
 	byteWriter := files.NewWriter[[]byte]("", fileOptions)
@@ -175,6 +189,14 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
+	if patchedNamespaces != nil && patchedNamespaces.Size() > 0 {
+		byteWriter.SetName("Writing namespaces")
+		_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, patchedNamespaces)
+		if err != nil {
+			return err
+		}
+	}
+
 	if globalObjectFiles != nil && globalObjectFiles.Size() > 0 {
 		stringWriter.SetName("Writing global objects")
 		_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, stringWriter, globalObjectFiles)
@@ -183,11 +205,59 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	byteWriter.SetName("Writing cluster list")
-	_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, clusterList)
-	if err != nil {
-		return err
+	if clusterList != nil && clusterList.Size() > 0 {
+		byteWriter.SetName("Writing cluster list")
+		_, err = pipeline.Process[[]byte, struct{}](cxt, pipelineOptions, byteWriter, clusterList)
+		if err != nil {
+			return err
+		}
 	}
 	return
 
+}
+
+func patchSpec(spec *spec.Specification) {
+	/* This is a hacky workaround for a spec problem: SemanticTagStruct is defined twice, in two different ways.
+	The first is a global struct that's used by the Descriptor cluster
+	The second is a cluster-level struct on Mode Select
+	Inserting one as a global object, and the other as a struct on Mode Select breaks zap
+	*/
+	desc, ok := spec.ClustersByName["Descriptor"]
+	if !ok {
+		slog.Warn("Could not find Descriptor cluster")
+		return
+	}
+	for o := range spec.GlobalObjects {
+		s, ok := o.(*matter.Struct)
+		if !ok {
+			continue
+		}
+
+		if s.Name == "SemanticTagStruct" {
+			desc.AddStructs(s)
+			delete(spec.GlobalObjects, s)
+			break
+		}
+	}
+	/*
+		Another hacky workaround: the spec defines LabelStruct under a base cluster called Label Cluster, but the
+		ZAP XML has this struct under Fixed Label
+	*/
+	fixedLabel, ok := spec.ClustersByName["Fixed Label"]
+	if !ok {
+		slog.Warn("Could not find Fixed Label cluster")
+		return
+	}
+	label, ok := spec.ClustersByName["Label"]
+	if !ok {
+		slog.Warn("Could not find Label cluster")
+		return
+	}
+	for _, s := range label.Structs {
+		if s.Name == "LabelStruct" {
+			s.ParentEntity = fixedLabel
+			fixedLabel.Structs = append(fixedLabel.Structs, s)
+			break
+		}
+	}
 }

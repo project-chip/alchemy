@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -54,6 +55,9 @@ func generateCommands(commands map[*matter.Command][]*matter.Number, docPath str
 			parent.RemoveChild(cmde)
 			continue
 		}
+		if matter.NonGlobalIDInvalidForEntity(matchingCommand.ID, types.EntityTypeCommand) {
+			continue
+		}
 		populateCommand(cmde, matchingCommand, errata)
 	}
 
@@ -64,11 +68,13 @@ func generateCommands(commands map[*matter.Command][]*matter.Number, docPath str
 	slices.SortStableFunc(remainingCommands, func(a, b *matter.Command) int { return strings.Compare(a.Name, b.Name) })
 
 	for _, command := range remainingCommands {
-
+		if matter.NonGlobalIDInvalidForEntity(command.ID, types.EntityTypeCommand) {
+			continue
+		}
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
 		populateCommand(cme, command, errata)
-		xml.InsertElementByAttribute(parent, cme, "code", "attribute")
+		xml.InsertElementByAttribute(parent, cme, "code", "attribute", "globalAttribute")
 	}
 	return
 }
@@ -95,12 +101,12 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 	} else {
 		ce.CreateAttr("optional", "false")
 	}
-	if len(c.Response) > 0 && c.Response != "Y" && c.Response != "N" {
-		ce.CreateAttr("response", c.Response)
+	if c.Response != nil && c.Response.Name != "Y" && c.Response.Name != "N" {
+		ce.CreateAttr("response", c.Response.Name)
 	} else {
 		ce.RemoveAttr("response")
 	}
-	if c.Response == "N" && serverSource {
+	if c.Response != nil && c.Response.Name == "N" && serverSource {
 		ce.CreateAttr("disableDefaultResponse", "true")
 	} else {
 		ce.RemoveAttr("disableDefaultResponse")
@@ -154,8 +160,11 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 			if conformance.IsZigbee(c.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
+			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeCommandField) {
+				continue
+			}
 			xml.PrependAttribute(fe, "id", f.ID.IntString())
-			setFieldAttributes(fe, f, c.Fields)
+			setFieldAttributes(fe, f, c.Fields, errata)
 			break
 		}
 	}
@@ -165,9 +174,12 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 		if conformance.IsZigbee(c.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
+		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeCommandField) {
+			continue
+		}
 		fe := ce.CreateElement("arg")
 		fe.CreateAttr("id", f.ID.IntString())
-		setFieldAttributes(fe, f, c.Fields)
+		setFieldAttributes(fe, f, c.Fields, errata)
 		xml.AppendElement(ce, fe)
 	}
 }

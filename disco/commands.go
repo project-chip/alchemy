@@ -13,15 +13,15 @@ import (
 
 func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err error) {
 	for _, commands := range dp.commands {
-		if commands.table.element == nil {
+		if commands.table == nil || commands.table.Element == nil {
 			err = fmt.Errorf("no commands table found")
 			return
 		}
-		if commands.table.columnMap == nil {
+		if commands.table.ColumnMap == nil {
 			return fmt.Errorf("can't rearrange commands table without header row")
 		}
 
-		if len(commands.table.columnMap) < 2 {
+		if len(commands.table.ColumnMap) < 2 {
 			return fmt.Errorf("can't rearrange commands table with so few matches")
 		}
 		err = b.fixAccessCells(dp, commands, types.EntityTypeCommand)
@@ -29,17 +29,17 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 			return fmt.Errorf("error fixing access cells in commands table in %s: %w", dp.doc.Path, err)
 		}
 
-		err = b.fixConformanceCells(dp, commands, commands.table.rows, commands.table.columnMap)
+		err = b.fixConformanceCells(dp, commands, commands.table.Rows, commands.table.ColumnMap)
 		if err != nil {
 			return fmt.Errorf("error fixing conformance cells in commands table in %s: %w", dp.doc.Path, err)
 		}
 
-		err = b.fixCommandDirection(commands.section, commands.table.rows, commands.table.columnMap)
+		err = b.fixCommandDirection(commands.section, commands.table.Rows, commands.table.ColumnMap)
 		if err != nil {
 			return fmt.Errorf("error fixing command direction in commands table in %s: %w", dp.doc.Path, err)
 		}
 
-		err = b.renameTableHeaderCells(dp.doc, commands.section, &commands.table, nil)
+		err = b.renameTableHeaderCells(dp.doc, commands.section, commands.table, nil)
 		if err != nil {
 			return fmt.Errorf("error table header cells in commands table in %s: %w", dp.doc.Path, err)
 		}
@@ -50,18 +50,18 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 		}
 
 		for _, command := range commands.children {
-			if command.table.element == nil {
+			if command.table == nil || command.table.Element == nil {
 				continue
 			}
-			err = b.fixConstraintCells(command.section, &command.table)
+			err = b.fixConstraintCells(command.section, command.table)
 			if err != nil {
 				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
 			}
-			err = b.fixConformanceCells(dp, command, command.table.rows, command.table.columnMap)
+			err = b.fixConformanceCells(dp, command, command.table.Rows, command.table.ColumnMap)
 			if err != nil {
 				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
 			}
-			b.appendSubsectionTypes(command.section, command.table.columnMap, command.table.rows)
+			b.appendSubsectionTypes(command.section, command.table.ColumnMap, command.table.Rows)
 			err = b.linkIndexTables(cxt, command)
 			if err != nil {
 				return err

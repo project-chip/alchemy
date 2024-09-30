@@ -19,33 +19,33 @@ var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
 type commandFactory struct{}
 
-func (cf *commandFactory) New(d *Doc, s *Section, row *asciidoc.TableRow, columnMap ColumnIndex, name string) (*matter.Command, error) {
+func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string) (*matter.Command, error) {
 	cmd := matter.NewCommand(s.Base)
 	var err error
-	cmd.ID, err = readRowID(row, columnMap, matter.TableColumnID)
+	cmd.ID, err = ti.ReadID(row, matter.TableColumnID)
 	if err != nil {
 		return nil, err
 	}
 
 	cmd.Name = text.TrimCaseInsensitiveSuffix(name, " Command")
 	var dir string
-	dir, err = readRowASCIIDocString(row, columnMap, matter.TableColumnDirection)
+	dir, err = ti.ReadString(row, matter.TableColumnDirection)
 	if err != nil {
 		return nil, err
 	}
 	cmd.Direction = ParseCommandDirection(dir)
-	cmd.Response, err = readRowASCIIDocString(row, columnMap, matter.TableColumnResponse)
-	if err != nil {
-		return nil, err
+	cmd.Response, _ = d.ReadRowDataType(row, ti.ColumnMap, matter.TableColumnResponse)
+	if cmd.Response != nil {
+		cmd.Response.Name = text.TrimCaseInsensitiveSuffix(cmd.Response.Name, " Command")
 	}
-	cmd.Conformance = d.getRowConformance(row, columnMap, matter.TableColumnConformance)
+	cmd.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
 	var a string
-	a, err = readRowASCIIDocString(row, columnMap, matter.TableColumnAccess)
+	a, err = ti.ReadString(row, matter.TableColumnAccess)
 	if err != nil {
 		return nil, err
 	}
 	var q string
-	q, err = readRowASCIIDocString(row, columnMap, matter.TableColumnQuality)
+	q, err = ti.ReadString(row, matter.TableColumnQuality)
 	if err != nil {
 		return nil, err
 	}
@@ -58,10 +58,8 @@ func (cf *commandFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Att
 	c.Description = getDescription(d, s.Elements())
 
 	if !d.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCommandArguments) {
-		var rows []*asciidoc.TableRow
-		var headerRowIndex int
-		var columnMap ColumnIndex
-		rows, headerRowIndex, columnMap, _, err = parseFirstTable(d, s)
+		var ti *TableInfo
+		ti, err = parseFirstTable(d, s)
 		if err != nil {
 			if err == ErrNoTableFound {
 				err = nil
@@ -71,7 +69,7 @@ func (cf *commandFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Att
 			}
 			return
 		}
-		c.Fields, err = d.readFields(headerRowIndex, rows, columnMap, types.EntityTypeCommandField)
+		c.Fields, err = d.readFields(ti, types.EntityTypeCommandField)
 		if err != nil {
 			return
 		}
@@ -116,9 +114,9 @@ func (s *Section) toCommands(d *Doc, entityMap map[asciidoc.Attributable][]types
 	commands, err = buildList(d, s, t, entityMap, commands, &cf)
 
 	for _, cmd := range commands {
-		if cmd.Response != "" {
+		if cmd.Response != nil {
 			for _, rc := range commands {
-				if strings.EqualFold(cmd.Response, rc.Name) {
+				if strings.EqualFold(cmd.Response.Name, rc.Name) {
 					rc.Access.Invoke = cmd.Access.Invoke
 					break
 				}

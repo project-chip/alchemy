@@ -28,6 +28,9 @@ var Erratas = map[string]*Errata{
 	"src/app_clusters/AirQuality.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
+	"src/app_clusters/AlarmBase.adoc": {
+		ZAP: ZAP{SkipFile: true},
+	},
 	"src/app_clusters/BallastConfiguration.adoc": {
 		ZAP: ZAP{SuppressClusterDefinePrefix: true},
 	},
@@ -61,18 +64,29 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/door_lock_Cluster.adoc",
 		},
-		ZAP: ZAP{DefineOverrides: map[string]string{
-			"NUMBER_OF_TOTAL_USERS_SUPPORTED":                 "NUM_TOTAL_USERS_SUPPORTED",
-			"NUMBER_OF_PIN_USERS_SUPPORTED":                   "NUM_PIN_USERS_SUPPORTED",
-			"NUMBER_OF_RFID_USERS_SUPPORTED":                  "NUM_RFID_USERS_SUPPORTED",
-			"NUMBER_OF_WEEK_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_WEEKDAY_SCHEDULES_SUPPORTED_PER_USER",
-			"NUMBER_OF_YEAR_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_YEARDAY_SCHEDULES_SUPPORTED_PER_USER",
-			"NUMBER_OF_HOLIDAY_SCHEDULES_SUPPORTED":           "NUM_HOLIDAY_SCHEDULES_SUPPORTED",
-			"MAX_PIN_CODE_LENGTH":                             "MAX_PIN_LENGTH",
-			"MIN_PIN_CODE_LENGTH":                             "MIN_PIN_LENGTH",
-			"NUMBER_OF_CREDENTIALS_SUPPORTED_PER_USER":        "NUM_CREDENTIALS_SUPPORTED_PER_USER",
-			"REQUIRE_PI_NFOR_REMOTE_OPERATION":                "REQUIRE_PIN_FOR_REMOTE_OPERATION",
-		}},
+		ZAP: ZAP{
+			DefineOverrides: map[string]string{
+				"NUMBER_OF_TOTAL_USERS_SUPPORTED":                 "NUM_TOTAL_USERS_SUPPORTED",
+				"NUMBER_OF_PIN_USERS_SUPPORTED":                   "NUM_PIN_USERS_SUPPORTED",
+				"NUMBER_OF_RFID_USERS_SUPPORTED":                  "NUM_RFID_USERS_SUPPORTED",
+				"NUMBER_OF_WEEK_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_WEEKDAY_SCHEDULES_SUPPORTED_PER_USER",
+				"NUMBER_OF_YEAR_DAY_SCHEDULES_SUPPORTED_PER_USER": "NUM_YEARDAY_SCHEDULES_SUPPORTED_PER_USER",
+				"NUMBER_OF_HOLIDAY_SCHEDULES_SUPPORTED":           "NUM_HOLIDAY_SCHEDULES_SUPPORTED",
+				"MAX_PIN_CODE_LENGTH":                             "MAX_PIN_LENGTH",
+				"MIN_PIN_CODE_LENGTH":                             "MIN_PIN_LENGTH",
+				"NUMBER_OF_CREDENTIALS_SUPPORTED_PER_USER":        "NUM_CREDENTIALS_SUPPORTED_PER_USER",
+				"REQUIRE_PI_NFOR_REMOTE_OPERATION":                "REQUIRE_PIN_FOR_REMOTE_OPERATION",
+			},
+			TypeNames: map[string]string{
+				"CredentialRulesBitmap":          "DlCredentialRuleMask",
+				"DaysMaskBitmap":                 "DaysMaskMap",
+				"OperatingModesBitmap":           "DlSupportedOperatingModes",
+				"ConfigurationRegisterBitmap":    "DlDefaultConfigurationRegister",
+				"LocalProgrammingFeaturesBitmap": "DlLocalProgrammingFeatures",
+				"LockStateEnum":                  "DlLockState",
+				"LockTypeEnum":                   "DlLockType",
+			},
+		},
 	},
 	"src/app_clusters/EnergyEVSE.adoc": {
 		ZAP: ZAP{TemplatePath: "energy-evse-cluster",
@@ -130,6 +144,9 @@ var Erratas = map[string]*Errata{
 				"Mode Base Status CommonCodes Range": {Skip: SpecPurposeDataTypesEnum},
 			},
 		},
+		ZAP: ZAP{
+			ClusterSkip: []string{"Mode Base"},
+		},
 	},
 	"src/app_clusters/ModeBase_ModeTag_BaseValues.adoc": {
 		Spec: Spec{UtilityInclude: true},
@@ -144,6 +161,7 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/mode_device_energy_management.adoc",
 		},
+		ZAP: ZAP{TemplatePath: "device-energy-management-mode-cluster"},
 	},
 	"src/app_clusters/Mode_Dishwasher.adoc": {
 		TestPlan: TestPlan{
@@ -155,6 +173,7 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/mode_energy_EVSE.adoc",
 		},
+		ZAP: ZAP{TemplatePath: "energy-evse-mode-cluster"},
 	},
 	"src/app_clusters/Mode_LaundryWasher.adoc": {
 		TestPlan: TestPlan{
@@ -201,6 +220,7 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/mode_WaterHeater.adoc",
 		},
+		ZAP: ZAP{TemplatePath: "water-heater-mode-cluster"},
 	},
 	"src/app_clusters/OccupancySensing.adoc": {
 		TestPlan: TestPlan{
@@ -335,6 +355,9 @@ var Erratas = map[string]*Errata{
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/wifi_network_management.adoc",
 		},
+		ZAP: ZAP{
+			TemplatePath: "wifi-network-management-cluster",
+		},
 	},
 	"src/app_clusters/WindowCovering.adoc": {
 		ZAP: ZAP{TemplatePath: "window-covering",
@@ -398,6 +421,13 @@ var Erratas = map[string]*Errata{
 			},
 			ClusterAliases: map[string][]string{
 				"Wake on LAN": {"WakeOnLAN"},
+			},
+		},
+	},
+	"src/app_clusters/media/VideoPlayerArchitecture.adoc": {
+		Spec: Spec{
+			Sections: map[string]SpecSection{
+				"Video Player Architecture": {Skip: SpecPurposeCluster},
 			},
 		},
 	},
@@ -581,10 +611,17 @@ var Erratas = map[string]*Errata{
 		},
 		ZAP: ZAP{
 			TemplatePath: "operational-credentials-cluster",
+			ClusterName:  "Operational Credentials",
 			ClusterAliases: map[string][]string{
 				"Operational Credentials": {"Node Operational Credentials"},
 			},
 		},
+	},
+	"src/service_device_management/OTAProvider.adoc": {
+		ZAP: ZAP{SkipFile: true},
+	},
+	"src/service_device_management/OTARequestor.adoc": {
+		ZAP: ZAP{SkipFile: true},
 	},
 	"src/service_device_management/PowerSourceConfigurationCluster.adoc": {
 		TestPlan: TestPlan{
