@@ -1,18 +1,14 @@
 package spec
 
 import (
-	"fmt"
 	"log/slog"
-	"regexp"
-	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/constraint"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -65,165 +61,155 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 	return
 }
 
-func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType) (fields []*matter.Field, err error) {
-	ids := make(map[uint64]*matter.Field)
-	for row := range ti.Body() {
-		f := matter.NewField(row)
-		f.Name, err = ti.ReadValue(row, matter.TableColumnName)
-		if err != nil {
-			return
+func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
+	for _, s := range spec.structIndex {
+		for _, f := range s.Fields {
+			sp.resolveDataType(spec, nil, f, f.Type)
 		}
-		f.Name = matter.StripTypeSuffixes(f.Name)
-		f.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
-		f.Type, err = d.ReadRowDataType(row, ti.ColumnMap, matter.TableColumnType)
-		if err != nil {
-			slog.Debug("error reading field data type", slog.String("path", d.Path.String()), slog.String("name", f.Name), slog.Any("error", err))
-			err = nil
-		}
-
-		f.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
-		if err != nil {
-			return
-		}
-		var q string
-		q, err = ti.ReadString(row, matter.TableColumnQuality)
-		if err != nil {
-			return
-		}
-		f.Quality = parseQuality(q, entityType, d, row)
-		f.Default, err = ti.ReadString(row, matter.TableColumnDefault)
-		if err != nil {
-			return
-		}
-
-		var a string
-		a, err = ti.ReadString(row, matter.TableColumnAccess)
-		if err != nil {
-			return
-		}
-		f.Access, _ = ParseAccess(a, entityType)
-		f.ID, err = ti.ReadID(row, matter.TableColumnID)
-		if err != nil {
-			return
-		}
-		if f.ID.Valid() {
-			id := f.ID.Value()
-			existing, ok := ids[id]
-			if ok {
-				slog.Error("duplicate field ID", log.Path("source", f), slog.String("name", f.Name), slog.Uint64("id", id), log.Path("original", existing))
-				continue
-			}
-			ids[id] = f
-		}
-
-		if f.Type != nil {
-			var cs constraint.Set
-			switch f.Type.BaseType {
-			case types.BaseDataTypeMessageID:
-				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
-			case types.BaseDataTypeIPAddress:
-				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 4}}, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
-			case types.BaseDataTypeIPv4Address:
-				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 4}}}
-			case types.BaseDataTypeIPv6Address:
-				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
-			case types.BaseDataTypeIPv6Prefix:
-				cs = []constraint.Constraint{&constraint.RangeConstraint{Minimum: &constraint.IntLimit{Value: 1}, Maximum: &constraint.IntLimit{Value: 17}}}
-			case types.BaseDataTypeHardwareAddress:
-				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 6}}, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 8}}}
-			}
-			if cs != nil {
-				if f.Type.IsArray() {
-					lc, ok := f.Constraint.(*constraint.ListConstraint)
-					if ok {
-						lc.EntryConstraint = constraint.AppendConstraint(lc.EntryConstraint, cs...)
-					}
-				} else {
-					f.Constraint = constraint.AppendConstraint(f.Constraint, cs...)
-				}
-
-			}
-		}
-		f.Name = CanonicalName(f.Name)
-		fields = append(fields, f)
 	}
-	return
+	for cluster := range spec.Clusters {
+		for _, a := range cluster.Attributes {
+			sp.resolveDataType(spec, cluster, a, a.Type)
+		}
+		for _, s := range cluster.Structs {
+			for _, f := range s.Fields {
+				sp.resolveDataType(spec, cluster, f, f.Type)
+			}
+		}
+		for _, s := range cluster.Events {
+			for _, f := range s.Fields {
+				sp.resolveDataType(spec, cluster, f, f.Type)
+			}
+		}
+		for _, s := range cluster.Commands {
+			for _, f := range s.Fields {
+				sp.resolveDataType(spec, cluster, f, f.Type)
+			}
+		}
+	}
+
 }
 
-var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeList)\[([^]]+)]`)
-var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
-
-func (d *Doc) ReadRowDataType(row *asciidoc.TableRow, columnMap ColumnIndex, column matter.TableColumn) (*types.DataType, error) {
-	if !d.anchorsParsed {
-		d.findAnchors()
+func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
+	if dataType == nil {
+		if !conformance.IsDeprecated(field.Conformance) && (cluster == nil || cluster.Hierarchy == "Base") {
+			var clusterName string
+			if cluster != nil {
+				clusterName = cluster.Name
+			}
+			if !sp.IgnoreHierarchy {
+				slog.Warn("missing type on field", log.Path("path", field), slog.String("id", field.ID.HexString()), slog.String("name", field.Name), slog.String("cluster", clusterName))
+			}
+		}
+		return
 	}
-	i, ok := columnMap[column]
-	if !ok {
-		return nil, fmt.Errorf("missing %s column for data type", column)
+	switch dataType.BaseType {
+	case types.BaseDataTypeTag:
+		getTagNamespace(spec, field)
+	case types.BaseDataTypeList:
+		sp.resolveDataType(spec, cluster, field, dataType.EntryType)
+	case types.BaseDataTypeCustom:
+		if dataType.Entity == nil {
+			dataType.Entity = getCustomDataType(spec, dataType.Name, cluster, field)
+			if dataType.Entity == nil {
+				slog.Error("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field))
+			}
+		}
+		if cluster == nil || dataType.Entity == nil {
+			return
+		}
+		spec.ClusterRefs.Add(cluster, dataType.Entity)
+		s, ok := dataType.Entity.(*matter.Struct)
+		if !ok {
+			return
+		}
+		for _, f := range s.Fields {
+			sp.resolveDataType(spec, cluster, f, f.Type)
+		}
 	}
-	cell := row.Cell(i)
-	cellElements := cell.Elements()
-	if len(cellElements) == 0 {
-		return nil, fmt.Errorf("empty %s cell for data type", column)
-	}
+}
 
-	var isArray bool
-
-	var sb strings.Builder
-	source := d.buildDataTypeString(cellElements, &sb)
-	var name string
-	var content = asteriskPattern.ReplaceAllString(sb.String(), "")
-	match := listDataTypeDefinitionPattern.FindStringSubmatch(content)
-	if match != nil {
-		name = match[1]
-		isArray = true
+func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
+	entities := spec.entities[dataTypeName]
+	if len(entities) == 0 {
+		canonicalName := CanonicalName(dataTypeName)
+		if canonicalName != dataTypeName {
+			e = getCustomDataType(spec, canonicalName, cluster, field)
+		} else {
+			e = getCustomDataTypeFromReference(spec, cluster, field)
+		}
+	} else if len(entities) == 1 {
+		for m := range entities {
+			e = m
+		}
 	} else {
-		name = content
-	}
-	commaIndex := strings.IndexRune(name, ',')
-	if commaIndex >= 0 {
-		name = name[:commaIndex]
-	}
-	name = text.TrimCaseInsensitiveSuffix(name, " Type")
-	dt := types.ParseDataType(name, isArray)
-	if dt != nil {
-		dt.Source = source
-	}
-	return dt, nil
-}
-
-func (d *Doc) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {
-	for _, el := range cellElements {
-		switch v := el.(type) {
-		case *asciidoc.String:
-			sb.WriteString(v.Value)
-		case *asciidoc.CrossReference:
-			if len(v.Set) > 0 {
-				d.buildDataTypeString(v.Set, sb)
-
-			} else {
-				var name string
-				anchor := d.FindAnchor(v.ID)
-				if anchor != nil {
-					name = ReferenceName(anchor.Element)
-					if len(name) == 0 {
-						name = asciidoc.AttributeAsciiDocString(anchor.LabelElements)
-					}
-				} else {
-					slog.Warn("data type references unknown or ambiguous anchor", slog.String("name", v.ID), log.Path("source", NewSource(d, v)))
-				}
-				if len(name) == 0 {
-					name = strings.TrimPrefix(v.ID, "_")
-				}
-				sb.WriteString(name)
-			}
-			source = el
-		case *asciidoc.SpecialCharacter:
-		case *asciidoc.Paragraph:
-			source = d.buildDataTypeString(v.Elements(), sb)
-		default:
-			slog.Warn("unknown data type value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", v))
-		}
+		e = disambiguateDataType(entities, cluster, field)
 	}
 	return
+}
+
+func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
+	switch source := field.Type.Source.(type) {
+	case *asciidoc.CrossReference:
+		doc, ok := spec.DocRefs[cluster]
+		if !ok {
+			return
+		}
+		anchor := doc.FindAnchor(source.ID)
+		if anchor == nil {
+			return
+		}
+		switch el := anchor.Element.(type) {
+		case *asciidoc.Section:
+			entities := doc.entitiesBySection[el]
+			if len(entities) == 1 {
+				e = entities[0]
+				return
+			}
+		}
+		return nil
+	default:
+		return
+	}
+}
+
+func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, field *matter.Field) types.Entity {
+	// If there are multiple entities with the same name, prefer the one on the current cluster
+	for m, c := range entities {
+		if c == cluster {
+			return m
+		}
+	}
+
+	// OK, if the data type is defined on the direct parent of this cluster, take that one
+	if cluster.Parent != nil {
+		for m, c := range entities {
+			if c != nil && c == cluster.Parent {
+				return m
+			}
+		}
+	}
+
+	var nakedEntities []types.Entity
+	for m, c := range entities {
+		if c == nil {
+			nakedEntities = append(nakedEntities, m)
+		}
+	}
+	if len(nakedEntities) == 1 {
+		return nakedEntities[0]
+	}
+
+	// Can't disambiguate out this data model
+	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name, log.Path("source", field))
+	for m, c := range entities {
+		var clusterName string
+		if c != nil {
+			clusterName = c.Name
+		} else {
+			clusterName = "naked"
+		}
+		slog.Warn("ambiguous data type", "model", m.Source(), "cluster", clusterName)
+	}
+	return nil
 }

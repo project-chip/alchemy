@@ -34,7 +34,7 @@ func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.T
 		return nil, err
 	}
 	cmd.Direction = ParseCommandDirection(dir)
-	cmd.Response, _ = d.ReadRowDataType(row, ti.ColumnMap, matter.TableColumnResponse)
+	cmd.Response, _ = ti.ReadDataType(row, matter.TableColumnResponse)
 	if cmd.Response != nil {
 		cmd.Response.Name = text.TrimCaseInsensitiveSuffix(cmd.Response.Name, " Command")
 	}

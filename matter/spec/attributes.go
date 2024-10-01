@@ -32,7 +32,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 		}
 		attr.Name = matter.StripTypeSuffixes(attr.Name)
 		attr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
-		attr.Type, err = d.ReadRowDataType(row, ti.ColumnMap, matter.TableColumnType)
+		attr.Type, err = ti.ReadDataType(row, matter.TableColumnType)
 		if err != nil {
 			if cluster.Hierarchy == "Base" && !conformance.IsDeprecated(attr.Conformance) && !conformance.IsDisallowed(attr.Conformance) {
 				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated or disallowed
