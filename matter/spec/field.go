@@ -11,8 +11,94 @@ import (
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
+
+func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType) (fields []*matter.Field, err error) {
+	ids := make(map[uint64]*matter.Field)
+	for row := range ti.Body() {
+		f := matter.NewField(row)
+		f.Name, err = ti.ReadValue(row, matter.TableColumnName)
+		if err != nil {
+			return
+		}
+		f.Name = matter.StripTypeSuffixes(f.Name)
+		f.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+		f.Type, err = ti.ReadDataType(row, matter.TableColumnType)
+		if err != nil {
+			slog.Debug("error reading field data type", slog.String("path", d.Path.String()), slog.String("name", f.Name), slog.Any("error", err))
+			err = nil
+		}
+
+		f.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
+		if err != nil {
+			return
+		}
+		var q string
+		q, err = ti.ReadString(row, matter.TableColumnQuality)
+		if err != nil {
+			return
+		}
+		f.Quality = parseQuality(q, entityType, d, row)
+		f.Default, err = ti.ReadString(row, matter.TableColumnDefault)
+		if err != nil {
+			return
+		}
+
+		var a string
+		a, err = ti.ReadString(row, matter.TableColumnAccess)
+		if err != nil {
+			return
+		}
+		f.Access, _ = ParseAccess(a, entityType)
+		f.ID, err = ti.ReadID(row, matter.TableColumnID)
+		if err != nil {
+			return
+		}
+		if f.ID.Valid() {
+			id := f.ID.Value()
+			existing, ok := ids[id]
+			if ok {
+				slog.Error("duplicate field ID", log.Path("source", f), slog.String("name", f.Name), slog.Uint64("id", id), log.Path("original", existing))
+				continue
+			}
+			ids[id] = f
+		}
+
+		if f.Type != nil {
+			var cs constraint.Set
+			switch f.Type.BaseType {
+			case types.BaseDataTypeMessageID:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
+			case types.BaseDataTypeIPAddress:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 4}}, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
+			case types.BaseDataTypeIPv4Address:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 4}}}
+			case types.BaseDataTypeIPv6Address:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 16}}}
+			case types.BaseDataTypeIPv6Prefix:
+				cs = []constraint.Constraint{&constraint.RangeConstraint{Minimum: &constraint.IntLimit{Value: 1}, Maximum: &constraint.IntLimit{Value: 17}}}
+			case types.BaseDataTypeHardwareAddress:
+				cs = []constraint.Constraint{&constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 6}}, &constraint.ExactConstraint{Value: &constraint.IntLimit{Value: 8}}}
+			}
+			if cs != nil {
+				if f.Type.IsArray() {
+					lc, ok := f.Constraint.(*constraint.ListConstraint)
+					if ok {
+						lc.EntryConstraint = constraint.AppendConstraint(lc.EntryConstraint, cs...)
+					}
+				} else {
+					f.Constraint = constraint.AppendConstraint(f.Constraint, cs...)
+				}
+
+			}
+		}
+		f.Name = CanonicalName(f.Name)
+		fields = append(fields, f)
+	}
+	return
+}
 
 func (s *Section) mapFields(fieldMap map[string]*matter.Field, entityMap map[asciidoc.Attributable][]types.Entity) error {
 	for _, s := range parse.Skim[*Section](s.Elements()) {

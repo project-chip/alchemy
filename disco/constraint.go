@@ -29,7 +29,7 @@ func (b *Ball) fixConstraintCells(section *spec.Section, ti *spec.TableInfo) (er
 			continue
 		}
 
-		dataType, e := b.doc.ReadRowDataType(row, ti.ColumnMap, matter.TableColumnType)
+		dataType, e := ti.ReadDataType(row, matter.TableColumnType)
 		if e != nil {
 			slog.Debug("error reading data type for constraint", slog.String("path", b.doc.Path.String()), slog.Any("error", e))
 			continue

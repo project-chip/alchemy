@@ -84,6 +84,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		cg.AddBitmaps(bitmaps...)
 		cg.AddEnums(enums...)
 		cg.AddStructs(structs...)
+		cg.AddTypeDefs(typedefs...)
 	} else {
 		entities = append(entities, clusters[0])
 	}
@@ -93,7 +94,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		c.AddBitmaps(bitmaps...)
 		c.AddEnums(enums...)
 		c.AddStructs(structs...)
-		c.TypeDefs = append(c.TypeDefs, typedefs...)
+		c.AddTypeDefs(typedefs...)
 		c.Features = features
 
 		for _, s := range elements {
