@@ -64,7 +64,7 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, clusters ...*matter.Cluster) 
 			clusterID.CreateAttr("id", cluster.ID.HexString())
 		}
 		clusterID.CreateAttr("name", cluster.Name)
-		err = renderConformanceString(doc, cluster, cluster.Conformance, clusterID)
+		err = renderConformanceElement(doc, cluster, cluster.Conformance, clusterID)
 		if err != nil {
 			return
 		}
