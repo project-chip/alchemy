@@ -36,6 +36,21 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		}
 	}
 
+	var clusterGroup *matter.ClusterGroup
+	if len(clusters) != 1 {
+		clusterGroup = matter.NewClusterGroup(s.Name, s.Base, clusters)
+	} else {
+		cluster := clusters[0]
+		sectionClusterName := toClusterName(s.Name)
+		if cluster.Name != sectionClusterName {
+			if clusterNamesEquivalent(cluster.Name, s.Name) {
+				cluster.Name = sectionClusterName
+			} else {
+				clusterGroup = matter.NewClusterGroup(s.Name, s.Base, clusters)
+			}
+		}
+	}
+
 	var features *matter.Features
 	var bitmaps matter.BitmapSet
 	var enums matter.EnumSet
@@ -63,28 +78,22 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		}
 	}
 
-	var isClusterGroup bool
-	if len(clusters) != 1 {
-		isClusterGroup = true
-	} else {
-		cluster := clusters[0]
-		sectionClusterName := toClusterName(s.Name)
-		if cluster.Name != sectionClusterName {
-			if clusterNamesEquivalent(cluster.Name, s.Name) {
-				cluster.Name = sectionClusterName
-			} else {
-				isClusterGroup = true
+	if clusterGroup != nil {
+		entities = append(entities, clusterGroup)
+		clusterGroup.AddBitmaps(bitmaps...)
+		clusterGroup.AddEnums(enums...)
+		clusterGroup.AddStructs(structs...)
+		clusterGroup.AddTypeDefs(typedefs...)
+
+		for _, s := range elements {
+			switch s.SecType {
+			case matter.SectionClassification:
+				err = readClusterClassification(d, clusterGroup.Name, &clusterGroup.ClusterClassification, s)
+			}
+			if err != nil {
+				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
 			}
 		}
-	}
-
-	if isClusterGroup {
-		cg := matter.NewClusterGroup(s.Name, s.Base, clusters)
-		entities = append(entities, cg)
-		cg.AddBitmaps(bitmaps...)
-		cg.AddEnums(enums...)
-		cg.AddStructs(structs...)
-		cg.AddTypeDefs(typedefs...)
 	} else {
 		entities = append(entities, clusters[0])
 	}
@@ -100,8 +109,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 		for _, s := range elements {
 			switch s.SecType {
 			case matter.SectionClassification:
-				err = readClusterClassification(d, c, s)
-
+				err = readClusterClassification(d, c.Name, &c.ClusterClassification, s)
 			}
 			if err != nil {
 				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
@@ -115,8 +123,6 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 				if err == nil {
 					c.Attributes = append(c.Attributes, attr...)
 				}
-			case matter.SectionClassification:
-				err = readClusterClassification(d, c, s)
 			case matter.SectionEvents:
 				c.Events, err = s.toEvents(d, entityMap)
 			case matter.SectionCommands:
@@ -265,6 +271,11 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 			return nil, err
 		}
 		c.Name = toClusterName(name)
+		c.PICS, err = ti.ReadString(row, matter.TableColumnPICS, matter.TableColumnPICSCode)
+		if err != nil {
+			return nil, err
+		}
+
 		c.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
 		clusters = append(clusters, c)
 	}
@@ -284,49 +295,54 @@ func clusterNamesEquivalent(name1 string, name2 string) bool {
 	return strings.EqualFold(name1, name2)
 }
 
-func readClusterClassification(doc *Doc, c *matter.Cluster, s *Section) error {
+func readClusterClassification(doc *Doc, name string, classification *matter.ClusterClassification, s *Section) error {
 	ti, err := parseFirstTable(doc, s)
 	if err != nil {
 		return fmt.Errorf("failed reading classification: %w", err)
 	}
 	for row := range ti.Body() {
-		c.Hierarchy, err = ti.ReadString(row, matter.TableColumnHierarchy)
+		classification.Hierarchy, err = ti.ReadString(row, matter.TableColumnHierarchy)
 		if err != nil {
-			return fmt.Errorf("error reading hierarchy column on cluster %s: %w", c.Name, err)
+			return fmt.Errorf("error reading hierarchy column on cluster %s: %w", name, err)
 		}
-		c.Role, err = ti.ReadString(row, matter.TableColumnRole)
+		classification.Role, err = ti.ReadString(row, matter.TableColumnRole)
 		if err != nil {
-			return fmt.Errorf("error reading role column on cluster %s: %w", c.Name, err)
+			return fmt.Errorf("error reading role column on cluster %s: %w", name, err)
 		}
-		c.Scope, err = ti.ReadString(row, matter.TableColumnScope, matter.TableColumnContext)
+		classification.Scope, err = ti.ReadString(row, matter.TableColumnScope, matter.TableColumnContext)
 		if err != nil {
-			return fmt.Errorf("error reading scope column on cluster %s: %w", c.Name, err)
+			return fmt.Errorf("error reading scope column on cluster %s: %w", name, err)
 		}
-
-		c.PICS, err = ti.ReadString(row, matter.TableColumnPICS, matter.TableColumnPICSCode)
+		if len(classification.PICS) == 0 {
+			classification.PICS, err = ti.ReadString(row, matter.TableColumnPICS, matter.TableColumnPICSCode)
+			if err != nil {
+				return fmt.Errorf("error reading PICS column on cluster %s: %w", name, err)
+			}
+		}
+		classification.Quality, err = ti.ReadQuality(row, types.EntityTypeCluster, matter.TableColumnQuality)
 		if err != nil {
-			return fmt.Errorf("error reading PICS column on cluster %s: %w", c.Name, err)
+			return fmt.Errorf("error reading Quality column on cluster %s: %w", name, err)
 		}
 		tableCells := row.TableCells()
 		for _, ec := range ti.ExtraColumns {
 			switch ec.Name {
 			case "Context":
-				if len(c.Scope) == 0 {
-					c.Scope, err = RenderTableCell(tableCells[ec.Offset])
+				if len(classification.Scope) == 0 {
+					classification.Scope, err = RenderTableCell(tableCells[ec.Offset])
 				}
 			case "Primary Transaction":
-				if len(c.Scope) == 0 {
+				if len(classification.Scope) == 0 {
 					var pt string
 					pt, err = RenderTableCell(tableCells[ec.Offset])
 					if err == nil {
 						if strings.HasPrefix(pt, "Type 1") {
-							c.Scope = "Endpoint"
+							classification.Scope = "Endpoint"
 						}
 					}
 				}
 			}
 			if err != nil {
-				return fmt.Errorf("error reading extra columns on cluster %s: %w", c.Name, err)
+				return fmt.Errorf("error reading extra columns on cluster %s: %w", name, err)
 			}
 		}
 		return nil

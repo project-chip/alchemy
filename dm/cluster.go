@@ -11,6 +11,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func getAppClusterPath(dmRoot string, path asciidoc.Path, clusterName string) string {
@@ -22,7 +23,7 @@ func getAppClusterPath(dmRoot string, path asciidoc.Path, clusterName string) st
 	return filepath.Join(dmRoot, fmt.Sprintf("/clusters/%s.xml", file))
 }
 
-func (p *Renderer) renderAppCluster(doc *spec.Doc, clusters ...*matter.Cluster) (output string, err error) {
+func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output string, clusterName string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
@@ -30,19 +31,43 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, clusters ...*matter.Cluster) 
 
 	root := &x.Element
 
-	cluster := clusters[0]
+	var cluster *matter.Cluster
+	var clusters []*matter.Cluster
+	var clusterID *matter.Number
+	var clusterClassification *matter.ClusterClassification
+	var isClusterGroup bool
+	switch entity := entity.(type) {
+	case *matter.Cluster:
+		cluster = entity
+		clusterClassification = &cluster.ClusterClassification
+		clusters = []*matter.Cluster{cluster}
+		clusterName = cluster.Name
+		if !strings.HasSuffix(clusterName, " Cluster") {
+			clusterName += " Cluster"
+		}
+		clusterID = cluster.ID
+	case *matter.ClusterGroup:
+		cluster = entity.Clusters[0]
+		clusterClassification = &entity.ClusterClassification
+		clusters = entity.Clusters
+		clusterName = entity.Name
+		if !strings.HasSuffix(clusterName, " Clusters") {
+			clusterName += " Clusters"
+		}
+		isClusterGroup = true
+	default:
+		err = fmt.Errorf("unexpected app cluster type: %T", entity)
+		return
+	}
 
 	c := root.CreateElement("cluster")
 	c.CreateAttr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 	c.CreateAttr("xsi:schemaLocation", "types types.xsd cluster cluster.xsd")
-	if cluster.ID.Valid() {
+	if clusterID.Valid() {
 		c.CreateAttr("id", cluster.ID.HexString())
 	}
-	name := cluster.Name
-	if !strings.HasSuffix(name, " Cluster") {
-		name += " Cluster"
-	}
-	c.CreateAttr("name", name)
+
+	c.CreateAttr("name", clusterName)
 
 	revs := c.CreateElement("revisionHistory")
 	var latestRev uint64 = 0
@@ -64,6 +89,9 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, clusters ...*matter.Cluster) 
 			clusterID.CreateAttr("id", cluster.ID.HexString())
 		}
 		clusterID.CreateAttr("name", cluster.Name)
+		if isClusterGroup && len(cluster.PICS) > 0 {
+			clusterID.CreateAttr("picsCode", cluster.PICS)
+		}
 		err = renderConformanceElement(doc, cluster, cluster.Conformance, clusterID)
 		if err != nil {
 			return
@@ -71,16 +99,17 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, clusters ...*matter.Cluster) 
 	}
 	c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
 	class := c.CreateElement("classification")
-	switch cluster.Hierarchy {
+	switch clusterClassification.Hierarchy {
 	case "Base":
-		class.CreateAttr("hierarchy", strings.ToLower(cluster.Hierarchy))
+		class.CreateAttr("hierarchy", strings.ToLower(clusterClassification.Hierarchy))
 	default:
 		class.CreateAttr("hierarchy", "derived")
-		class.CreateAttr("baseCluster", cluster.Hierarchy)
+		class.CreateAttr("baseCluster", clusterClassification.Hierarchy)
 	}
-	class.CreateAttr("role", strings.ToLower(cluster.Role))
-	class.CreateAttr("picsCode", cluster.PICS)
-	class.CreateAttr("scope", cluster.Scope)
+	class.CreateAttr("role", strings.ToLower(clusterClassification.Role))
+	class.CreateAttr("picsCode", clusterClassification.PICS)
+	class.CreateAttr("scope", clusterClassification.Scope)
+	renderQuality(class, clusterClassification.Quality)
 
 	err = renderFeatures(doc, cluster, c)
 	if err != nil {

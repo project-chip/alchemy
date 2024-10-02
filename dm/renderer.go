@@ -15,6 +15,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -60,16 +61,7 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 
 	if len(appClusters) == 1 {
 		var s string
-		switch e := appClusters[0].(type) {
-		case *matter.ClusterGroup:
-			if len(e.Clusters) == 0 {
-				err = fmt.Errorf("empty cluster group %s", doc.Path)
-				return
-			}
-			s, err = p.renderAppCluster(doc, e.Clusters...)
-		case *matter.Cluster:
-			s, err = p.renderAppCluster(doc, e)
-		}
+		s, _, err = p.renderAppCluster(doc, appClusters[0])
 		if err != nil {
 			err = fmt.Errorf("failed rendering app clusters %s: %w", doc.Path, err)
 			return
@@ -79,19 +71,16 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 		for _, e := range appClusters {
 			var s string
 			var clusterName string
-			switch e := e.(type) {
-			case *matter.ClusterGroup:
-				s, err = p.renderAppCluster(doc, e.Clusters...)
-				clusterName = e.Clusters[0].Name
-			case *matter.Cluster:
-				s, err = p.renderAppCluster(doc, e)
-				clusterName = e.Name
-			}
+			s, clusterName, err = p.renderAppCluster(doc, e)
+
 			if err != nil {
 				err = fmt.Errorf("failed rendering app clusters %s: %w", doc.Path, err)
 				return
 			}
-			clusterName = strcase.ToCamel(clusterName + " Cluster")
+			if !text.HasCaseInsensitiveSuffix(clusterName, " Cluster") {
+				clusterName += " Cluster"
+			}
+			clusterName = strcase.ToCamel(clusterName)
 			outputs = append(outputs, &pipeline.Data[string]{Path: getAppClusterPath(p.dmRoot, doc.Path, clusterName), Content: s})
 		}
 	}
