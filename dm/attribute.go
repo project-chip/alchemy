@@ -127,7 +127,11 @@ func renderQuality(parent *etree.Element, q matter.Quality) {
 	reportable := q.Has(matter.QualityReportable)
 	singleton := q.Has(matter.QualitySingleton)
 	atomicWrite := q.Has(matter.QualityAtomicWrite)
-	if !changeOmitted && !nullable && !scene && !fixed && !nonvolatile && !reportable && !singleton && !atomicWrite {
+	diagnostics := q.Has(matter.QualityDiagnostics)
+	quieterReporting := q.Has(matter.QualityQuieterReporting)
+	sourceAttribution := q.Has(matter.QualitySourceAttribution)
+	largeMessage := q.Has(matter.QualityLargeMessage)
+	if !changeOmitted && !nullable && !scene && !fixed && !nonvolatile && !reportable && !singleton && !atomicWrite && !diagnostics && !quieterReporting && !sourceAttribution && !largeMessage {
 		return
 	}
 	qx := parent.CreateElement("quality")
@@ -157,5 +161,17 @@ func renderQuality(parent *etree.Element, q matter.Quality) {
 	}
 	if atomicWrite {
 		qx.CreateAttr("atomicWrite", strconv.FormatBool(atomicWrite))
+	}
+	if diagnostics {
+		qx.CreateAttr("diagnostics", strconv.FormatBool(diagnostics))
+	}
+	if quieterReporting {
+		qx.CreateAttr("quieterReporting", strconv.FormatBool(quieterReporting))
+	}
+	if sourceAttribution {
+		qx.CreateAttr("sourceAttribution", strconv.FormatBool(sourceAttribution))
+	}
+	if largeMessage {
+		qx.CreateAttr("largeMessage", strconv.FormatBool(largeMessage))
 	}
 }
