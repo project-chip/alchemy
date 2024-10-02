@@ -120,6 +120,8 @@ func DataTypeName(dataType *types.DataType) string {
 			return e.Name
 		case *matter.Struct:
 			return e.Name
+		case *matter.TypeDef:
+			dataType = e.Type
 		}
 	}
 	switch dataType.BaseType {
@@ -455,9 +457,6 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	}
 	if f.Type.IsArray() {
 		return DataTypeName(f.Type.EntryType)
-	}
-	if t, isTypeDef := f.Type.Entity.(*matter.TypeDef); isTypeDef {
-		return DataTypeName(t.Type)
 	}
 
 	return DataTypeName(f.Type)
