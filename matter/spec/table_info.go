@@ -313,6 +313,23 @@ func (ti *TableInfo) buildConstraintValue(els asciidoc.Set, sb *strings.Builder)
 	return
 }
 
+func (ti *TableInfo) ReadQuality(row *asciidoc.TableRow, entityType types.EntityType, columns ...matter.TableColumn) (quality matter.Quality, err error) {
+	for _, column := range columns {
+		offset, ok := ti.ColumnMap[column]
+		if !ok {
+			continue
+		}
+		var q string
+		q, err = ti.ReadStringAtOffset(row, offset)
+		if err != nil {
+			return
+		}
+		quality = parseQuality(q, entityType, ti.Doc, row)
+		return
+	}
+	return
+}
+
 func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder) (err error) {
 	for _, el := range els {
 		switch el := el.(type) {
@@ -406,7 +423,7 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 	var isArray bool
 
 	var sb strings.Builder
-	source := ti.buildDataTypeString(cellElements, &sb)
+	source := buildDataTypeString(ti.Doc, cellElements, &sb)
 	var name string
 	var content = asteriskPattern.ReplaceAllString(sb.String(), "")
 	match := listDataTypeDefinitionPattern.FindStringSubmatch(content)
@@ -428,25 +445,25 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 	return dt, nil
 }
 
-func (ti *TableInfo) buildDataTypeString(cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {
+func buildDataTypeString(d *Doc, cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {
 	for _, el := range cellElements {
 		switch v := el.(type) {
 		case *asciidoc.String:
 			sb.WriteString(v.Value)
 		case *asciidoc.CrossReference:
 			if len(v.Set) > 0 {
-				ti.buildDataTypeString(v.Set, sb)
+				buildDataTypeString(d, v.Set, sb)
 
 			} else {
 				var name string
-				anchor := ti.Doc.FindAnchor(v.ID)
+				anchor := d.FindAnchor(v.ID)
 				if anchor != nil {
 					name = ReferenceName(anchor.Element)
 					if len(name) == 0 {
 						name = asciidoc.AttributeAsciiDocString(anchor.LabelElements)
 					}
 				} else {
-					slog.Warn("data type references unknown or ambiguous anchor", slog.String("name", v.ID), log.Path("source", NewSource(ti.Doc, v)))
+					slog.Warn("data type references unknown or ambiguous anchor", slog.String("name", v.ID), log.Path("source", NewSource(d, v)))
 				}
 				if len(name) == 0 {
 					name = strings.TrimPrefix(v.ID, "_")
@@ -456,9 +473,9 @@ func (ti *TableInfo) buildDataTypeString(cellElements asciidoc.Set, sb *strings.
 			source = el
 		case *asciidoc.SpecialCharacter:
 		case *asciidoc.Paragraph:
-			source = ti.buildDataTypeString(v.Elements(), sb)
+			source = buildDataTypeString(d, v.Elements(), sb)
 		default:
-			slog.Warn("unknown data type value element", log.Element("path", ti.Doc.Path, el), "type", fmt.Sprintf("%T", v))
+			slog.Warn("unknown data type value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", v))
 		}
 	}
 	return

@@ -44,12 +44,10 @@ func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.T
 	if err != nil {
 		return nil, err
 	}
-	var q string
-	q, err = ti.ReadString(row, matter.TableColumnQuality)
+	cmd.Quality, err = ti.ReadQuality(row, types.EntityTypeCommand, matter.TableColumnQuality)
 	if err != nil {
 		return nil, err
 	}
-	cmd.Quality = parseQuality(q, types.EntityTypeCommand, d, row)
 	cmd.Access, _ = ParseAccess(a, types.EntityTypeCommand)
 	return cmd, nil
 }

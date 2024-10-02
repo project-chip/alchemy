@@ -161,12 +161,10 @@ func (*Section) toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableR
 			cr.Field = parts[1]
 		}
 	}
-	var q string
-	q, err = ti.ReadString(row, matter.TableColumnQuality)
+	cr.Quality, err = ti.ReadQuality(row, cr.Element, matter.TableColumnQuality)
 	if err != nil {
 		return
 	}
-	cr.Quality = parseQuality(q, cr.Element, d, row)
 	var c string
 	c, err = ti.ReadString(row, matter.TableColumnConstraint)
 	if err != nil {
