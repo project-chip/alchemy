@@ -10,6 +10,10 @@ IdentifierOp <- not:'!'? identifier:Identifier {
     return ic, nil
 }
 
+IdentifierValue <- identifier:Identifier { 
+    id := identifier.(string)
+    return &IdentifierValue{ID:id}, nil
+}
 
 Identifier <- PascalCase ('-' PascalCase)* {
     //debug("matched identifier %s\n", string(c.text))
@@ -29,6 +33,15 @@ ReferenceOp <- not:'!'? "<<" reference:ReferenceId label:(ReferenceLabel )? ">>"
     return ic, nil
 }
 
+ReferenceValue <- "<<" reference:ReferenceId label:(ReferenceLabel )? ">>" {
+    //debug("matched reference op ref %s\n", reference)
+    ic := &ReferenceValue{Reference:reference.(string)}
+    if label != nil {
+        //debug("matched reference label ref %v\n", label)
+        ic.Label = label.(string)
+    }
+    return ic, nil
+}
 
 ReferenceLabel <- _ Comma _ label:ReferenceText  &">>" {
     //debug("matched reference label %T\n", label)
@@ -55,6 +68,16 @@ FeatureOp <- not:'!'? feature:Feature {
     if not != nil {
         ic.Not = true
     }
+    return ic, nil
+}
+
+FeatureValue <- feature:Feature {
+    id := feature.(string)
+    switch id {
+        case "O", "M", "P":
+            return nil, fmt.Errorf("invalid optional conformance value: %s", id)
+    }
+    ic := &FeatureValue{Feature:id}
     return ic, nil
 }
 

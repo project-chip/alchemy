@@ -1,0 +1,48 @@
+
+
+Equality <- _ left:Logical right:EqualsOp* _ {
+    //debug("matched equality %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    equalityOps := right.([]interface{}) 
+    if len(equalityOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(Expression)
+    var ee *EqualityExpression
+    for _, equalityOp := range equalityOps {
+        ee = equalityOp.(*EqualityExpression) 
+        ee.Left = leftCE
+        leftCE = ee
+    }
+    return ee, nil
+}
+
+EqualsOp <- _ equals:("=="/"!=") _ f:Logical {
+    //debug("matched Equals Op %s\n", string(c.text))
+    fc := f.(Expression)
+    return &EqualityExpression{
+        Not: (string(equals.([]uint8)) == "!="),
+        Right:fc,
+    }, nil
+}
+
+LogicalTerm <- not:'!'? '(' _  eq:Equality _ ')' {
+    //debug("matched feature term %s\n", string(c.text))
+    if not != nil {
+        switch eq := eq.(type) {
+            case *EqualityExpression:
+                eq.Not = true
+            case *LogicalExpression:
+                eq.Not = true
+        }
+    }
+    return eq, nil
+} / feature:FeatureOp {
+    return feature, nil 
+} / reference:ReferenceOp {
+    return reference, nil 
+} / identifier:IdentifierOp {
+    return identifier, nil 
+} 

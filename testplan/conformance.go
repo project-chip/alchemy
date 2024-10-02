@@ -85,6 +85,14 @@ func renderExpression(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster
 			renderExpression(b, doc, cluster, e, formatter)
 		}
 		b.WriteRune(')')
+	case *conformance.ComparisonExpression:
+		b.WriteRune('(')
+		b.WriteString(exp.Left.ASCIIDocString())
+		b.WriteString(" ")
+		b.WriteString(exp.Op.String())
+		b.WriteString(" ")
+		b.WriteString(exp.Right.ASCIIDocString())
+		b.WriteRune(')')
 	default:
 		b.WriteString(fmt.Sprintf("ERROR: unknown expression type: %T", exp))
 	}

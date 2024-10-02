@@ -1,0 +1,22 @@
+
+
+Float <- Integer ("." [0-9]+) {
+	return decimal.NewFromString(string(c.text))
+}
+
+Integer <- sign:('-'/'+')? digits:Digits  {
+	return strconv.ParseInt(string(c.text), 10, 64)
+}
+
+Hex <- "0x"i hex:[0-9A-Fa-f]+ {
+	var val []uint8
+	for _, d := range hex.([]interface{}) {
+		val = append(val, d.([]uint8)...)
+	}
+	return strconv.ParseUint(string(val), 16, 64)
+}
+
+Digits <- [0-9]+ {
+	return strconv.ParseInt(string(c.text), 10, 64)
+}
+

@@ -1,0 +1,37 @@
+
+
+Operator <-
+     
+     ("<"  { return ComparisonOperatorLessThan, nil })
+    / ("<=" { return ComparisonOperatorLessThanOrEqual, nil })
+    / (">"  { return ComparisonOperatorGreaterThan, nil })
+    / (">=" { return ComparisonOperatorGreaterThanOrEqual, nil })
+
+ComparisonTerm <- feature:FeatureValue {
+    return feature, nil 
+} / reference:ReferenceValue {
+    return reference, nil 
+} / identifier:IdentifierValue {
+    return identifier, nil 
+} / number:NumberValue {
+    return number, nil 
+}
+
+Comparison <- _ left:ComparisonTerm _ op:Operator _ right:ComparisonTerm _ {
+    //debug("matched equality %s\n", string(c.text))
+
+    leftVal := left.(ComparisonValue)
+    rightVal := right.(ComparisonValue)
+    return &ComparisonExpression{Left:leftVal, Right:rightVal, Op:op.(ComparisonOperator)}, nil
+}
+
+NumberValue <- (val: Hex {
+        return NewHexValue(val.(uint64), string(c.text)), nil
+    }
+    / val:Float {
+        return NewFloatValue(val.(decimal.Decimal), string(c.text)), nil
+        }
+        / val:Integer {
+        return NewIntValue(val.(int64), string(c.text)), nil
+
+        })
