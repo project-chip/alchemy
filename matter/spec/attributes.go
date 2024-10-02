@@ -44,12 +44,10 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 		if err != nil {
 			return
 		}
-		var q string
-		q, err = ti.ReadString(row, matter.TableColumnQuality)
+		attr.Quality, err = ti.ReadQuality(row, types.EntityTypeAttribute, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
-		attr.Quality = parseQuality(q, types.EntityTypeAttribute, d, row)
 		attr.Default, err = ti.ReadString(row, matter.TableColumnDefault)
 		if err != nil {
 			return

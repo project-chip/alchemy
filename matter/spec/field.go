@@ -35,12 +35,10 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType) (fields []*
 		if err != nil {
 			return
 		}
-		var q string
-		q, err = ti.ReadString(row, matter.TableColumnQuality)
+		f.Quality, err = ti.ReadQuality(row, entityType, matter.TableColumnQuality)
 		if err != nil {
 			return
 		}
-		f.Quality = parseQuality(q, entityType, d, row)
 		f.Default, err = ti.ReadString(row, matter.TableColumnDefault)
 		if err != nil {
 			return

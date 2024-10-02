@@ -126,7 +126,7 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 	de := xml.SetOrCreateSimpleElement(cle, "domain", "")
 	de.CreateAttr("name", matter.DomainNames[configurator.Doc.Domain])
 	de.SetText("")
-  clusterName := cluster.Name
+	clusterName := cluster.Name
 	if errata.ClusterName != "" {
 		clusterName = errata.ClusterName
 	}
