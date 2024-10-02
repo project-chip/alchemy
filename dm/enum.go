@@ -73,6 +73,6 @@ func renderEnumValue(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, 
 	if len(v.Summary) > 0 {
 		i.CreateAttr("summary", v.Summary)
 	}
-	err = renderConformanceString(doc, cluster, v.Conformance, i)
+	err = renderConformanceElement(doc, cluster, v.Conformance, i)
 	return
 }

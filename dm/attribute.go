@@ -38,7 +38,7 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		}
 		renderAttributeAccess(ax, a.Access)
 		renderQuality(ax, a.Quality)
-		err = renderConformanceString(doc, cluster, a.Conformance, ax)
+		err = renderConformanceElement(doc, cluster, a.Conformance, ax)
 		if err != nil {
 			return
 		}
