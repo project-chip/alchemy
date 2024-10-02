@@ -2,6 +2,8 @@ package dm
 
 import (
 	"log/slog"
+	"slices"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
@@ -156,6 +158,10 @@ func renderDataTypes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (
 		return
 	}
 	dt := c.CreateElement("dataTypes")
+	err = renderTypeDefs(doc, cluster, dt)
+	if err != nil {
+		return
+	}
 	err = renderEnums(doc, cluster, dt)
 	if err != nil {
 		return
@@ -209,4 +215,18 @@ func renderDefault(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
 		return
 	}
 	e.CreateAttr("default", def.DataModelString(f.Type))
+}
+
+func renderTypeDefs(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
+	typeDefs := make([]*matter.TypeDef, len(cluster.TypeDefs))
+	copy(typeDefs, cluster.TypeDefs)
+	slices.SortStableFunc(typeDefs, func(a, b *matter.TypeDef) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+	for _, e := range typeDefs {
+		en := dt.CreateElement("number")
+		en.CreateAttr("name", e.Name)
+		en.CreateAttr("type", dataModelName(e.Type))
+	}
+	return
 }
