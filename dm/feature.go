@@ -35,7 +35,7 @@ func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etr
 		if len(f.Summary()) > 0 {
 			feature.CreateAttr("summary", scrubDescription(f.Summary()))
 		}
-		err = renderConformanceElement(doc, cluster, f.Conformance(), feature)
+		err = RenderConformanceElement(doc, cluster, f.Conformance(), feature)
 		if err != nil {
 			return
 		}

@@ -11,9 +11,10 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
-func generateStructs(structs map[*matter.Struct][]*matter.Number, docPath string, configuratorElement *etree.Element, errata *errata.ZAP) (err error) {
+func generateStructs(configurator *zap.Configurator, structs map[*matter.Struct][]*matter.Number, docPath string, configuratorElement *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
 
 	for _, se := range configuratorElement.SelectElements("struct") {
 

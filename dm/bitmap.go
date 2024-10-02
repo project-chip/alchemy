@@ -51,6 +51,6 @@ func renderBit(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, v matt
 		i.CreateAttr("to", fmt.Sprintf("0x%0*X", size, to))
 	}
 	i.CreateAttr("summary", scrubDescription(v.Summary()))
-	err = renderConformanceElement(doc, cluster, v.Conformance(), i)
+	err = RenderConformanceElement(doc, cluster, v.Conformance(), i)
 	return
 }

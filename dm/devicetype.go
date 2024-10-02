@@ -83,7 +83,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 					clx.CreateAttr("side", "server")
 				}
 				renderQuality(clx, cr.Quality)
-				err = renderConformanceElement(doc, deviceType, cr.Conformance, clx)
+				err = RenderConformanceElement(doc, deviceType, cr.Conformance, clx)
 				if err != nil {
 					return
 				}
@@ -183,7 +183,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			}
 			ex.CreateAttr("code", code)
 			ex.CreateAttr("name", fr.Name)
-			err = renderConformanceElement(doc, deviceType, fr.Conformance, ex)
+			err = RenderConformanceElement(doc, deviceType, fr.Conformance, ex)
 			if err != nil {
 				return
 			}
@@ -216,7 +216,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 
 			ex.CreateAttr("name", cr.command.Name)
 			if cr.command != nil {
-				err = renderConformanceElement(doc, deviceType, cr.requirement.Conformance, ex)
+				err = RenderConformanceElement(doc, deviceType, cr.requirement.Conformance, ex)
 				if err != nil {
 					return
 				}
@@ -224,7 +224,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			for _, fr := range cr.fields {
 				fx := ex.CreateElement("field")
 				fx.CreateAttr("name", fr.Field)
-				err = renderConformanceElement(doc, deviceType, fr.Conformance, fx)
+				err = RenderConformanceElement(doc, deviceType, fr.Conformance, fx)
 				if err != nil {
 					return
 				}
@@ -249,7 +249,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 				ex.CreateAttr("id", code)
 			}
 			ex.CreateAttr("name", er.Name)
-			err = renderConformanceElement(doc, deviceType, er.Conformance, ex)
+			err = RenderConformanceElement(doc, deviceType, er.Conformance, ex)
 			if err != nil {
 				return
 			}
@@ -281,7 +281,7 @@ func renderAttributeRequirement(doc *spec.Doc, deviceType *matter.DeviceType, er
 
 	renderAttributeAccess(ex, er.Access)
 	renderQuality(ex, er.Quality)
-	err = renderConformanceElement(doc, deviceType, er.Conformance, ex)
+	err = RenderConformanceElement(doc, deviceType, er.Conformance, ex)
 	if err != nil {
 		return
 	}
