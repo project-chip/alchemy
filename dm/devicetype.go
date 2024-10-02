@@ -40,7 +40,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 			if id.Valid() {
 				rev := revs.CreateElement("revision")
 				rev.CreateAttr("revision", id.IntString())
-				rev.CreateAttr("summary", r.Description)
+				rev.CreateAttr("summary", scrubDescription(r.Description))
 				latestRev = max(id.Value(), latestRev)
 			}
 		}
@@ -57,7 +57,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 			for _, condition := range deviceType.Conditions {
 				cx := conditions.CreateElement("condition")
 				cx.CreateAttr("name", condition.Feature)
-				cx.CreateAttr("summary", condition.Description)
+				cx.CreateAttr("summary", scrubDescription(condition.Description))
 			}
 		}
 

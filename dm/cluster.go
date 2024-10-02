@@ -77,7 +77,7 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output 
 			rev := revs.CreateElement("revision")
 			rev.CreateAttr("revision", id.IntString())
 			if len(r.Description) > 0 {
-				rev.CreateAttr("summary", r.Description)
+				rev.CreateAttr("summary", scrubDescription(r.Description))
 			}
 			latestRev = max(id.Value(), latestRev)
 		}
