@@ -11,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func renderConformanceElement(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
+func RenderConformanceElement(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
 	if c == nil {
 		return nil
 	}

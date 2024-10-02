@@ -17,6 +17,7 @@ import (
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFiles pipeline.Map[string, *pipeline.Data[string]], err error) {
@@ -90,7 +91,7 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 	}
 
 	if hasCommands {
-		err = saveGlobalEntities(cxt, tg, "global-commands", getGlobalEntities[*matter.Command](tg.spec), generateCommands, globalFiles)
+		err = saveGlobalEntities(cxt, tg, "global-commands", getGlobalEntities[*matter.Command](tg.spec), tg.generateCommands, globalFiles)
 		if err != nil {
 			return
 		}
@@ -146,7 +147,7 @@ func getGlobalEntities[T comparable](spec *spec.Specification) map[T][]*matter.N
 	return ge
 }
 
-type globalEntityGenerator[T comparable] func(entities map[T][]*matter.Number, sourcePath string, parent *etree.Element, errata *errata.ZAP) (err error)
+type globalEntityGenerator[T comparable] func(configurator *zap.Configurator, entities map[T][]*matter.Number, sourcePath string, parent *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error)
 
 func saveGlobalEntities[T comparable](cxt context.Context, tg *TemplateGenerator, path string, entities map[T][]*matter.Number, generator globalEntityGenerator[T], globalFiles pipeline.Map[string, *pipeline.Data[string]]) (err error) {
 	var doc *etree.Document
@@ -157,7 +158,7 @@ func saveGlobalEntities[T comparable](cxt context.Context, tg *TemplateGenerator
 		return
 	}
 
-	err = generator(entities, zapPath, root, nil)
+	err = generator(nil, entities, zapPath, root, nil, nil)
 	if err != nil {
 		return
 	}

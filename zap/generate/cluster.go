@@ -160,15 +160,15 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 	if err != nil {
 		return
 	}
-	err = generateAttributes(configurator, cle, cluster, attributes, clusterPrefix, errata)
+	err = tg.generateAttributes(configurator, cle, cluster, attributes, clusterPrefix, errata)
 	if err != nil {
 		return
 	}
-	err = generateCommands(commands, configurator.Doc.Path.Relative, cle, errata)
+	err = tg.generateCommands(configurator, commands, configurator.Doc.Path.Relative, cle, cluster, errata)
 	if err != nil {
 		return
 	}
-	err = generateEvents(configurator, cle, cluster, events, errata)
+	err = tg.generateEvents(configurator, cle, cluster, events, errata)
 	if err != nil {
 		return
 	}

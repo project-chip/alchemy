@@ -16,7 +16,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateAttributes(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, attributes map[*matter.Field]struct{}, clusterPrefix string, errata *errata.ZAP) (err error) {
+func (tg *TemplateGenerator) generateAttributes(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, attributes map[*matter.Field]struct{}, clusterPrefix string, errata *errata.ZAP) (err error) {
 	for _, ae := range cle.SelectElements("attribute") {
 		ce := ae.SelectAttr("code")
 		if ce == nil {
@@ -51,7 +51,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 			continue
 		}
 		delete(attributes, attribute)
-		err = populateAttribute(ae, attribute, cluster, clusterPrefix, errata)
+		err = tg.populateAttribute(configurator, ae, attribute, cluster, clusterPrefix, errata)
 		if err != nil {
 			return
 		}
@@ -75,7 +75,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 		}
 
 		ae := etree.NewElement("attribute")
-		err = populateAttribute(ae, a, cluster, clusterPrefix, errata)
+		err = tg.populateAttribute(configurator, ae, a, cluster, clusterPrefix, errata)
 		if err != nil {
 			return
 		}
@@ -84,7 +84,7 @@ func generateAttributes(configurator *zap.Configurator, cle *etree.Element, clus
 	return
 }
 
-func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matter.Cluster, clusterPrefix string, errata *errata.ZAP) (err error) {
+func (tg *TemplateGenerator) populateAttribute(configurator *zap.Configurator, ae *etree.Element, attribute *matter.Field, cluster *matter.Cluster, clusterPrefix string, errata *errata.ZAP) (err error) {
 	patchNumberAttribute(ae, attribute.ID, "code")
 	ae.CreateAttr("side", "server")
 	define := getDefine(attribute.Name, clusterPrefix, errata)
@@ -107,7 +107,8 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 	}
 	renderConstraint(ae, cluster.Attributes, attribute)
 	setFieldDefault(ae, attribute, cluster.Attributes)
-	if ((attribute.Access.Read == matter.PrivilegeUnknown || attribute.Access.Read == matter.PrivilegeView) && (attribute.Access.Write == matter.PrivilegeUnknown || attribute.Access.Write == matter.PrivilegeOperate)) || errata.SuppressAttributePermissions {
+	requiresPermissions := !errata.SuppressAttributePermissions && ((tg.generateConformanceXML && !conformance.IsBlank(attribute.Conformance)) || (attribute.Access.Read != matter.PrivilegeView && attribute.Access.Read != matter.PrivilegeUnknown) || (attribute.Access.Write != matter.PrivilegeUnknown && attribute.Access.Write != matter.PrivilegeOperate))
+	if !requiresPermissions {
 		if attribute.Access.Write != matter.PrivilegeUnknown {
 			ae.CreateAttr("writable", "true")
 		} else {
@@ -155,6 +156,11 @@ func populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matt
 		if needsWrite {
 			ax := ae.CreateElement("access")
 			setAccessAttributes(ax, "write", attribute.Access.Write, errata)
+		}
+		if tg.generateConformanceXML {
+			renderConformance(configurator.Doc, cluster, attribute.Conformance, ae)
+		} else {
+			removeConformance(ae)
 		}
 	}
 	if !conformance.IsMandatory(attribute.Conformance) {

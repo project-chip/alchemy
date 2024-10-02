@@ -345,7 +345,7 @@ func (p DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element,
 		if !required {
 			conf, err := attr.Conformance.Eval(cxt)
 			if err != nil {
-				slog.Warn("Error evaluating conformance of attribute", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
+				slog.Debug("Error evaluating conformance of attribute", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
 				continue
 
 			}

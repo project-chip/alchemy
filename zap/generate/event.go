@@ -15,7 +15,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, events map[*matter.Event]struct{}, errata *errata.ZAP) (err error) {
+func (tg *TemplateGenerator) generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, events map[*matter.Event]struct{}, errata *errata.ZAP) (err error) {
 
 	for _, eve := range ce.SelectElements("event") {
 
@@ -47,18 +47,18 @@ func generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *
 			ce.RemoveChild(eve)
 			continue
 		}
-		populateEvent(eve, matchingEvent, cluster, errata)
+		tg.populateEvent(configurator, eve, matchingEvent, cluster, errata)
 	}
 
 	for event := range events {
 		ee := etree.NewElement("event")
-		populateEvent(ee, event, cluster, errata)
+		tg.populateEvent(configurator, ee, event, cluster, errata)
 		axml.InsertElementByAttribute(ce, ee, "code", "command", "attribute", "globalAttribute")
 	}
 	return
 }
 
-func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, errata *errata.ZAP) {
+func (tg *TemplateGenerator) populateEvent(configurator *zap.Configurator, ee *etree.Element, e *matter.Event, cluster *matter.Cluster, errata *errata.ZAP) {
 	needsAccess := e.Access.Read != matter.PrivilegeUnknown && e.Access.Read != matter.PrivilegeView
 
 	patchNumberAttribute(ee, e.ID, "code")
@@ -84,6 +84,14 @@ func populateEvent(ee *etree.Element, e *matter.Event, cluster *matter.Cluster, 
 	}
 	if len(e.Description) > 0 {
 		de.SetText(e.Description)
+	}
+
+	if cluster != nil && configurator != nil {
+		if tg.generateConformanceXML {
+			renderConformance(configurator.Doc, cluster, e.Conformance, ee)
+		} else {
+			removeConformance(ee)
+		}
 	}
 
 	fieldIndex := 0
