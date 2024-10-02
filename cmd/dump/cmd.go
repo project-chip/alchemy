@@ -20,6 +20,7 @@ var Command = &cobra.Command{
 		asciiSettings := common.ASCIIDocAttributes(cmd)
 		asciiOut, _ := cmd.Flags().GetBool("ascii")
 		jsonOut, _ := cmd.Flags().GetBool("json")
+		specRoot, _ := cmd.Flags().GetString("specRoot")
 
 		files, err := files.Paths(args)
 		if err != nil {
@@ -43,7 +44,7 @@ var Command = &cobra.Command{
 				}
 				dumpElements(doc, doc.Elements(), 0)
 			} else if jsonOut {
-				path, err := spec.NewDocPath(f, ".")
+				path, err := spec.NewDocPath(f, specRoot)
 				if err != nil {
 					return fmt.Errorf("error resolving doc path %s: %w", f, err)
 				}
@@ -74,4 +75,6 @@ var Command = &cobra.Command{
 func init() {
 	Command.Flags().Bool("ascii", false, "dump asciidoc object model")
 	Command.Flags().Bool("json", false, "dump json object model")
+	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+
 }
