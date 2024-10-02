@@ -6,6 +6,7 @@ import (
     "strconv"
 
     "github.com/project-chip/alchemy/matter"
+    "github.com/shopspring/decimal"
 )
 
 func debug(format string, a ...any) (n int, err error) {
@@ -28,7 +29,9 @@ Input <- conf:Conformance+ EOF {
 
 ConformanceSeparator <- (_ Comma _) / &EOF
 
-Conformance <- '[' i:Equality ']' choice:Choice? ConformanceSeparator {
+Expression <- (Equality )
+
+Conformance <-  '[' i:Expression ']' choice:Choice? ConformanceSeparator {
     exp := i.(Expression)
     o := &Optional{Expression:exp}
     if choice != nil {
@@ -52,10 +55,14 @@ Conformance <- '[' i:Equality ']' choice:Choice? ConformanceSeparator {
     return &Disallowed{}, nil
 } / "desc"  ConformanceSeparator { 
      return &Described{}, nil
-} / eq:Equality ConformanceSeparator {
+} / eq:Comparison ConformanceSeparator {
+    exp := eq.(Expression)
+    return &Mandatory{Expression:exp}, nil
+} / eq:Expression ConformanceSeparator {
     exp := eq.(Expression)
     return &Mandatory{Expression:exp}, nil
 }
+
 
 
 
