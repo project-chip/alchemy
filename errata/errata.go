@@ -351,6 +351,22 @@ var Erratas = map[string]*Errata{
 			TestPlanPath: "src/cluster/WaterHeaterManagement.adoc",
 		},
 	},
+	"src/app_clusters/WebRTC_Provider.adoc": {
+		ZAP: ZAP{
+			TemplatePath: "webrtc-provider-cluster",
+			DefineOverrides: map[string]string{
+				"WEB_RTC_TRANSPORT_PROVIDER_CLUSTER": "WEBRTC_TRANSPORT_PROVIDER_CLUSTER",
+			},
+		},
+	},
+	"src/app_clusters/WebRTC_Requestor.adoc": {
+		ZAP: ZAP{
+			TemplatePath: "webrtc-requestor-cluster",
+			DefineOverrides: map[string]string{
+				"WEB_RTC_TRANSPORT_REQUESTOR_CLUSTER": "WEBRTC_TRANSPORT_REQUESTOR_CLUSTER",
+			},
+		},
+	},
 	"src/app_clusters/WiFiNetworkManagement.adoc": {
 		TestPlan: TestPlan{
 			TestPlanPath: "src/cluster/wifi_network_management.adoc",
