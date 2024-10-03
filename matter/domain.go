@@ -21,6 +21,7 @@ const (
 	DomainRobots
 	DomainHomeAutomation
 	DomainEnergyManagement
+	DomainCameras
 )
 
 var DomainNames = map[Domain]string{
@@ -36,6 +37,7 @@ var DomainNames = map[Domain]string{
 	DomainRobots:                "Robots",
 	DomainHomeAutomation:        "Home Automation",
 	DomainEnergyManagement:      "Energy Management",
+	DomainCameras:               "Cameras",
 }
 
 func DomainFromDocType(docType DocType) Domain {
