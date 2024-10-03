@@ -11,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func renderConformanceString(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
+func RenderConformanceElement(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
 	if c == nil {
 		return nil
 	}
@@ -106,25 +106,7 @@ func renderConformanceExpression(doc *spec.Doc, identifierStore conformance.Iden
 		if e.Not {
 			parent = parent.CreateElement("notTerm")
 		}
-		if identifierStore == nil {
-			parent.CreateElement("condition").CreateAttr("name", e.ID)
-		} else {
-			entity, ok := identifierStore.Identifier(e.ID)
-			if !ok {
-				parent.CreateElement("condition").CreateAttr("name", e.ID)
-			} else {
-				switch entity.EntityType() {
-				case types.EntityTypeAttribute, types.EntityTypeCondition:
-					parent.CreateElement("attribute").CreateAttr("name", e.ID)
-				case types.EntityTypeCommand:
-					parent.CreateElement("command").CreateAttr("name", e.ID)
-				case types.EntityTypeStructField:
-					parent.CreateElement("field").CreateAttr("name", e.ID)
-				default:
-					parent.CreateElement("condition").CreateAttr("name", e.ID)
-				}
-			}
-		}
+		renderIdentifier(identifierStore, parent, e.ID)
 	case *conformance.EqualityExpression:
 		return renderConformanceEqualityExpression(doc, identifierStore, e, parent)
 	case *conformance.LogicalExpression:
@@ -185,8 +167,69 @@ func renderConformanceExpression(doc *spec.Doc, identifierStore conformance.Iden
 				}
 			}
 		}
+	case *conformance.ComparisonExpression:
+		switch e.Op {
+		case conformance.ComparisonOperatorGreaterThan:
+			parent = parent.CreateElement("greaterTerm")
+		case conformance.ComparisonOperatorGreaterThanOrEqual:
+			parent = parent.CreateElement("greaterOrEqualTerm")
+		case conformance.ComparisonOperatorLessThan:
+			parent = parent.CreateElement("lessTerm")
+		case conformance.ComparisonOperatorLessThanOrEqual:
+			parent = parent.CreateElement("lessOrEqualTerm")
+		default:
+			return fmt.Errorf("unexpected comparison expression operator: %s", e.Op.String())
+		}
+		err := renderComparisonValue(identifierStore, e.Left, parent)
+		if err != nil {
+			return err
+		}
+		err = renderComparisonValue(identifierStore, e.Right, parent)
+		if err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("unimplemented conformance expression type: %T", exp)
+	}
+	return nil
+}
+
+func renderIdentifier(identifierStore conformance.IdentifierStore, parent *etree.Element, name string) {
+	if identifierStore == nil {
+		parent.CreateElement("condition").CreateAttr("name", name)
+	} else {
+		entity, ok := identifierStore.Identifier(name)
+		if !ok {
+			parent.CreateElement("condition").CreateAttr("name", name)
+		} else {
+			switch entity.EntityType() {
+			case types.EntityTypeAttribute, types.EntityTypeCondition:
+				parent.CreateElement("attribute").CreateAttr("name", name)
+			case types.EntityTypeCommand:
+				parent.CreateElement("command").CreateAttr("name", name)
+			case types.EntityTypeStructField:
+				parent.CreateElement("field").CreateAttr("name", name)
+			default:
+				parent.CreateElement("condition").CreateAttr("name", name)
+			}
+		}
+	}
+}
+
+func renderComparisonValue(identifierStore conformance.IdentifierStore, value conformance.ComparisonValue, parent *etree.Element) (err error) {
+	switch value := value.(type) {
+	case *conformance.FeatureValue:
+		parent.CreateElement("feature").CreateAttr("name", value.Feature)
+	case *conformance.IdentifierValue:
+		renderIdentifier(identifierStore, parent, value.ID)
+	case *conformance.IntValue:
+		parent.CreateElement("literal").CreateAttr("value", strconv.FormatInt(value.Int, 10))
+	case *conformance.FloatValue:
+		parent.CreateElement("literal").CreateAttr("value", value.Float.String())
+	case *conformance.HexValue:
+		parent.CreateElement("literal").CreateAttr("value", value.ASCIIDocString())
+	default:
+		return fmt.Errorf("unexpected type in comparison value: %T", value)
 	}
 	return nil
 }

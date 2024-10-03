@@ -78,7 +78,7 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 			}
 		}
 
-		err = renderConformanceString(doc, cluster, cmd.Conformance, cx)
+		err = RenderConformanceElement(doc, cluster, cmd.Conformance, cx)
 		if err != nil {
 			return
 		}
@@ -98,7 +98,7 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 				return
 			}
 			renderQuality(i, f.Quality)
-			err = renderConformanceString(doc, cmd.Fields, f.Conformance, i)
+			err = RenderConformanceElement(doc, cmd.Fields, f.Conformance, i)
 			if err != nil {
 				return
 			}

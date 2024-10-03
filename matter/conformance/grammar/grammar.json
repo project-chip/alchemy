@@ -4,7 +4,10 @@
       "path": "parser.go",
       "files": [
         "conformance.peg",
-        "math.peg",
+        "equality.peg",
+        "logical.peg",
+        "number.peg",
+        "comparison.peg",
         "reference.peg",
         "choice.peg",
         "text.peg"

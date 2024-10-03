@@ -126,7 +126,7 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 	de := xml.SetOrCreateSimpleElement(cle, "domain", "")
 	de.CreateAttr("name", matter.DomainNames[configurator.Doc.Domain])
 	de.SetText("")
-  clusterName := cluster.Name
+	clusterName := cluster.Name
 	if errata.ClusterName != "" {
 		clusterName = errata.ClusterName
 	}
@@ -160,15 +160,15 @@ func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle
 	if err != nil {
 		return
 	}
-	err = generateAttributes(configurator, cle, cluster, attributes, clusterPrefix, errata)
+	err = tg.generateAttributes(configurator, cle, cluster, attributes, clusterPrefix, errata)
 	if err != nil {
 		return
 	}
-	err = generateCommands(commands, configurator.Doc.Path.Relative, cle, errata)
+	err = tg.generateCommands(configurator, commands, configurator.Doc.Path.Relative, cle, cluster, errata)
 	if err != nil {
 		return
 	}
-	err = generateEvents(configurator, cle, cluster, events, errata)
+	err = tg.generateEvents(configurator, cle, cluster, events, errata)
 	if err != nil {
 		return
 	}

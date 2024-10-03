@@ -26,6 +26,7 @@ func init() {
 	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
 	Command.Flags().Bool("featureXML", true, "write new style feature XML")
+	Command.Flags().Bool("conformanceXML", false, "write new style conformance XML")
 }
 
 func zapTemplates(cmd *cobra.Command, args []string) (err error) {
@@ -98,9 +99,9 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	var templateOptions []generate.TemplateOption
 	featureXML, _ := cmd.Flags().GetBool("featureXML")
-	if featureXML {
-		templateOptions = append(templateOptions, generate.GenerateFeatureXML(true))
-	}
+	templateOptions = append(templateOptions, generate.GenerateFeatureXML(featureXML))
+	conformanceXML, _ := cmd.Flags().GetBool("conformanceXML")
+	templateOptions = append(templateOptions, generate.GenerateConformanceXML(conformanceXML))
 	templateOptions = append(templateOptions, generate.AsciiAttributes(asciiSettings))
 	templateOptions = append(templateOptions, generate.SpecRoot(specRoot))
 

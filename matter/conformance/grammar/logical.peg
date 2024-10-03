@@ -1,0 +1,58 @@
+Logical <- Or
+
+Or <- _ left:Xor _ right:OrOp* _ {
+    //debug("matched OR %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    orOps := right.([]any)
+    if len(orOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(Expression)
+    return NewLogicalExpression("|", leftCE, orOps)
+}
+
+OrOp <- _ "|" _ f:Xor {
+    //debug("matched OR op %s\n", string(c.text))
+    fc := f.(Expression)
+    return fc, nil
+}
+
+Xor <- _ left:And _ right:XorOp* _ {
+    //debug("matched XOR %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    xorOps := right.([]any)
+    if len(xorOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(Expression)
+    return NewLogicalExpression("^", leftCE, xorOps)
+}
+
+XorOp <- _ "^" _ f:And {
+   // debug("matched XOR op %s\n", string(c.text))
+    fc := f.(Expression)
+    return fc, nil
+}
+
+And <- _ left:LogicalTerm _ right:AndOp* _ {
+   // debug("matched AND %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    addOps := right.([]any)
+    if len(addOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(Expression)
+    return NewLogicalExpression("&", leftCE, addOps)
+}
+
+AndOp <- _ "&" _ f:LogicalTerm {
+    //debug("matched AND op %s\n", string(c.text))
+    fc := f.(Expression)
+    return fc, nil
+}

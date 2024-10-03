@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateBitmaps(bitmaps map[*matter.Bitmap][]*matter.Number, sourcePath string, parent *etree.Element, errata *errata.ZAP) (err error) {
+func generateBitmaps(configurator *zap.Configurator, bitmaps map[*matter.Bitmap][]*matter.Number, sourcePath string, parent *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
 
 	for _, eve := range parent.SelectElements("bitmap") {
 

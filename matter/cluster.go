@@ -6,9 +6,20 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
+type ClusterClassification struct {
+	Hierarchy string  `json:"hierarchy,omitempty"`
+	Role      string  `json:"role,omitempty"`
+	Scope     string  `json:"scope,omitempty"`
+	PICS      string  `json:"pics,omitempty"`
+	Quality   Quality `json:"quality,omitempty"`
+}
+
 type ClusterGroup struct {
 	entity
-	Name     string     `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
+
+	ClusterClassification
+
 	Clusters []*Cluster `json:"clusters"`
 	AssociatedDataTypes
 }
@@ -40,10 +51,7 @@ type Cluster struct {
 	Parent      *Cluster        `json:"-"`
 	Conformance conformance.Set `json:"conformance,omitempty"`
 
-	Hierarchy string `json:"hierarchy,omitempty"`
-	Role      string `json:"role,omitempty"`
-	Scope     string `json:"scope,omitempty"`
-	PICS      string `json:"pics,omitempty"`
+	ClusterClassification
 
 	Features *Features `json:"features,omitempty"`
 	AssociatedDataTypes

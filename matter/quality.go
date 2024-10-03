@@ -38,6 +38,7 @@ var identifierQualities = map[rune]Quality{
 	'L': QualityLargeMessage,
 	'A': QualitySourceAttribution,
 	'T': QualityAtomicWrite,
+	'Q': QualityQuieterReporting,
 }
 
 var AllowedQualities = map[types.EntityType]Quality{
@@ -46,6 +47,7 @@ var AllowedQualities = map[types.EntityType]Quality{
 	types.EntityTypeCommandField: QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
 	types.EntityTypeStructField:  QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
 	types.EntityTypeEvent:        QualitySourceAttribution,
+	types.EntityTypeEventField:   QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
 	types.EntityTypeCluster:      QualitySingleton | QualityDiagnostics,
 }
 
