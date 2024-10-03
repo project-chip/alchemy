@@ -65,17 +65,17 @@ func (tg *TemplateGenerator) renderZapTemplate(configurator *zap.Configurator, x
 		}
 	}
 
-	err = generateBitmaps(configurator.Bitmaps, configurator.Doc.Path.Relative, ce, errata)
+	err = generateBitmaps(configurator, configurator.Bitmaps, configurator.Doc.Path.Relative, ce, exampleCluster, errata)
 	if err != nil {
 		return
 	}
 
-	err = generateEnums(configurator.Enums, configurator.Doc.Path.Relative, ce, errata)
+	err = generateEnums(configurator, configurator.Enums, configurator.Doc.Path.Relative, ce, exampleCluster, errata)
 	if err != nil {
 		return
 	}
 
-	err = generateStructs(configurator.Structs, configurator.Doc.Path.Relative, ce, errata)
+	err = generateStructs(configurator, configurator.Structs, configurator.Doc.Path.Relative, ce, exampleCluster, errata)
 	if err != nil {
 		return
 	}

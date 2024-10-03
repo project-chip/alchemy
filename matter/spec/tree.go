@@ -30,7 +30,7 @@ func buildTree(docs []*Doc) {
 	for doc, children := range tree {
 		for _, link := range children {
 			var p strings.Builder
-			doc.buildDataTypeString(link.Set, &p)
+			buildDataTypeString(doc, link.Set, &p)
 			linkPath := filepath.Join(doc.Path.Dir(), p.String())
 			slog.Debug("Link path", log.Path("from", doc.Path), slog.String("to", p.String()), slog.String("linkPath", linkPath))
 			if cd, ok := docPaths[linkPath]; ok {

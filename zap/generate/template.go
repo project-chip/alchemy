@@ -28,7 +28,8 @@ type TemplateGenerator struct {
 	specRoot    string
 	specVersion string
 
-	generateFeaturesXML bool
+	generateFeaturesXML    bool
+	generateConformanceXML bool
 
 	ProvisionalZclFiles      pipeline.Map[string, *pipeline.Data[struct{}]]
 	globalObjectDependencies pipeline.Map[types.Entity, struct{}]
@@ -41,6 +42,12 @@ type TemplateOption func(tg *TemplateGenerator)
 func GenerateFeatureXML(generate bool) TemplateOption {
 	return func(tg *TemplateGenerator) {
 		tg.generateFeaturesXML = generate
+	}
+}
+
+func GenerateConformanceXML(generate bool) TemplateOption {
+	return func(tg *TemplateGenerator) {
+		tg.generateConformanceXML = generate
 	}
 }
 

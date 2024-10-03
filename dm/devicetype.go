@@ -40,7 +40,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 			if id.Valid() {
 				rev := revs.CreateElement("revision")
 				rev.CreateAttr("revision", id.IntString())
-				rev.CreateAttr("summary", r.Description)
+				rev.CreateAttr("summary", scrubDescription(r.Description))
 				latestRev = max(id.Value(), latestRev)
 			}
 		}
@@ -57,7 +57,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 			for _, condition := range deviceType.Conditions {
 				cx := conditions.CreateElement("condition")
 				cx.CreateAttr("name", condition.Feature)
-				cx.CreateAttr("summary", condition.Description)
+				cx.CreateAttr("summary", scrubDescription(condition.Description))
 			}
 		}
 
@@ -83,7 +83,7 @@ func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output s
 					clx.CreateAttr("side", "server")
 				}
 				renderQuality(clx, cr.Quality)
-				err = renderConformanceString(doc, deviceType, cr.Conformance, clx)
+				err = RenderConformanceElement(doc, deviceType, cr.Conformance, clx)
 				if err != nil {
 					return
 				}
@@ -183,7 +183,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			}
 			ex.CreateAttr("code", code)
 			ex.CreateAttr("name", fr.Name)
-			err = renderConformanceString(doc, deviceType, fr.Conformance, ex)
+			err = RenderConformanceElement(doc, deviceType, fr.Conformance, ex)
 			if err != nil {
 				return
 			}
@@ -216,7 +216,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 
 			ex.CreateAttr("name", cr.command.Name)
 			if cr.command != nil {
-				err = renderConformanceString(doc, deviceType, cr.command.Conformance, ex)
+				err = RenderConformanceElement(doc, deviceType, cr.requirement.Conformance, ex)
 				if err != nil {
 					return
 				}
@@ -224,7 +224,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			for _, fr := range cr.fields {
 				fx := ex.CreateElement("field")
 				fx.CreateAttr("name", fr.Field)
-				err = renderConformanceString(doc, deviceType, fr.Conformance, fx)
+				err = RenderConformanceElement(doc, deviceType, fr.Conformance, fx)
 				if err != nil {
 					return
 				}
@@ -249,7 +249,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 				ex.CreateAttr("id", code)
 			}
 			ex.CreateAttr("name", er.Name)
-			err = renderConformanceString(doc, deviceType, er.Conformance, ex)
+			err = RenderConformanceElement(doc, deviceType, er.Conformance, ex)
 			if err != nil {
 				return
 			}
@@ -281,7 +281,7 @@ func renderAttributeRequirement(doc *spec.Doc, deviceType *matter.DeviceType, er
 
 	renderAttributeAccess(ex, er.Access)
 	renderQuality(ex, er.Quality)
-	err = renderConformanceString(doc, deviceType, er.Conformance, ex)
+	err = RenderConformanceElement(doc, deviceType, er.Conformance, ex)
 	if err != nil {
 		return
 	}

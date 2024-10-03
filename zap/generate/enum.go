@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateEnums(enums map[*matter.Enum][]*matter.Number, sourcePath string, ce *etree.Element, errata *errata.ZAP) (err error) {
+func generateEnums(configurator *zap.Configurator, enums map[*matter.Enum][]*matter.Number, sourcePath string, ce *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
 
 	for _, eve := range ce.SelectElements("enum") {
 

@@ -98,3 +98,53 @@ func (re *ReferenceExpression) MarshalJSON() ([]byte, error) {
 func (re *ReferenceExpression) Clone() Expression {
 	return &ReferenceExpression{Not: re.Not, Reference: re.Reference}
 }
+
+type ReferenceValue struct {
+	Reference string `json:"ref"`
+	Label     string `json:"label,omitempty"`
+}
+
+func (re *ReferenceValue) ASCIIDocString() string {
+	var s strings.Builder
+	s.WriteString("<<")
+	s.WriteString(re.Reference)
+	if len(re.Label) > 0 {
+		s.WriteString(", ")
+		s.WriteString(re.Label)
+	}
+	s.WriteString(">>")
+	return s.String()
+}
+
+func (ie *ReferenceValue) Description() string {
+
+	return fmt.Sprintf("the value of %s", ie.Reference)
+}
+
+func (ie *ReferenceValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+	return compare(context, op, ie, other)
+}
+
+func (re *ReferenceValue) Equal(e ComparisonValue) bool {
+	if re == nil {
+		return e == nil
+	} else if e == nil {
+		return false
+	}
+	ore, ok := e.(*ReferenceValue)
+	if !ok {
+		return false
+	}
+	if re.Reference != ore.Reference {
+		return false
+	}
+	return true
+}
+
+func (ie *ReferenceValue) Clone() ComparisonValue {
+	return &ReferenceValue{Reference: ie.Reference, Label: ie.Label}
+}
+
+func (ie *ReferenceValue) Value(context Context) (any, error) {
+	return identifierValue(context, ie.Reference)
+}

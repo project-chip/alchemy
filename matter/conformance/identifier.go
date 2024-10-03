@@ -95,3 +95,54 @@ func (ie *IdentifierExpression) MarshalJSON() ([]byte, error) {
 func (ie *IdentifierExpression) Clone() Expression {
 	return &IdentifierExpression{Not: ie.Not, ID: ie.ID}
 }
+
+type IdentifierValue struct {
+	ID string `json:"id"`
+}
+
+func (ie *IdentifierValue) ASCIIDocString() string {
+	return ie.ID
+}
+
+func (ie *IdentifierValue) Description() string {
+
+	return fmt.Sprintf("the value of %s", ie.ID)
+}
+
+func (ie *IdentifierValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+	return compare(context, op, ie, other)
+}
+
+func (ie *IdentifierValue) Equal(e ComparisonValue) bool {
+	if ie == nil {
+		return e == nil
+	} else if e == nil {
+		return false
+	}
+	oie, ok := e.(*IdentifierValue)
+	if !ok {
+		return false
+	}
+	if ie.ID != oie.ID {
+		return false
+	}
+	return true
+}
+
+func (ie *IdentifierValue) Clone() ComparisonValue {
+	return &IdentifierValue{ID: ie.ID}
+}
+
+func (ie *IdentifierValue) Value(context Context) (any, error) {
+	return identifierValue(context, ie.ID)
+}
+
+func identifierValue(context Context, id string) (any, error) {
+	if context.Values != nil {
+		v, ok := context.Values[id]
+		if ok {
+			return v, nil
+		}
+	}
+	return nil, fmt.Errorf("unrecognized identifier: %s", id)
+}

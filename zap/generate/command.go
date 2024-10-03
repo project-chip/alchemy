@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateCommands(commands map[*matter.Command][]*matter.Number, docPath string, parent *etree.Element, errata *errata.ZAP) (err error) {
+func (tg *TemplateGenerator) generateCommands(configurator *zap.Configurator, commands map[*matter.Command][]*matter.Number, docPath string, parent *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
 
 	for _, cmde := range parent.SelectElements("command") {
 
@@ -58,7 +58,7 @@ func generateCommands(commands map[*matter.Command][]*matter.Number, docPath str
 		if matter.NonGlobalIDInvalidForEntity(matchingCommand.ID, types.EntityTypeCommand) {
 			continue
 		}
-		populateCommand(cmde, matchingCommand, errata)
+		tg.populateCommand(configurator, cmde, cluster, matchingCommand, errata)
 	}
 
 	var remainingCommands []*matter.Command
@@ -73,13 +73,13 @@ func generateCommands(commands map[*matter.Command][]*matter.Number, docPath str
 		}
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
-		populateCommand(cme, command, errata)
+		tg.populateCommand(configurator, cme, cluster, command, errata)
 		xml.InsertElementByAttribute(parent, cme, "code", "attribute", "globalAttribute")
 	}
 	return
 }
 
-func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
+func (tg *TemplateGenerator) populateCommand(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, c *matter.Command, errata *errata.ZAP) {
 	mandatory := conformance.IsMandatory(c.Conformance)
 
 	var serverSource bool
@@ -144,6 +144,14 @@ func populateCommand(ce *etree.Element, c *matter.Command, errata *errata.ZAP) {
 	} else {
 		for _, el := range ce.SelectElements("access") {
 			ce.RemoveChild(el)
+		}
+	}
+
+	if cluster != nil && configurator != nil {
+		if tg.generateConformanceXML {
+			renderConformance(configurator.Doc, cluster, c.Conformance, ce)
+		} else {
+			removeConformance(ce)
 		}
 	}
 
