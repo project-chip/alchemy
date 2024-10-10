@@ -95,11 +95,8 @@ func (tg *TemplateGenerator) populateAttribute(configurator *zap.Configurator, a
 	} else {
 		ae.RemoveAttr("isNullable")
 	}
-	if attribute.Quality.Has(matter.QualityReportable) {
-		ae.CreateAttr("reportable", "true")
-	} else {
-		ae.RemoveAttr("reportable")
-	}
+	// This is a deprecated quality, so remove it if it exists
+	ae.RemoveAttr("reportable")
 	if attribute.Quality.Has(matter.QualityAtomicWrite) {
 		ae.CreateAttr("mustUseAtomicWrite", "true")
 	} else {
