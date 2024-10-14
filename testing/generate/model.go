@@ -2,33 +2,55 @@ package generate
 
 import (
 	"regexp"
+	"strings"
 
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testing/parse"
 	"github.com/project-chip/alchemy/testing/pics"
 )
 
 type test struct {
-	name    string
-	id      string
-	cluster string
-	pics    []pics.Expression
-	steps   []*testStep
+	parse.Test
+	//Name    string
+	ID string
+	//Cluster string
+	PICSList []pics.Expression
+	Groups   []*testGroup
+
+	Variables     []string
+	PICSAliases   map[string]string
+	PICSAliasList [][]*picsAlias
+}
+
+type testGroup struct {
+	Step        string
+	Description string
+	Steps       []*testStep
 }
 
 type testStep struct {
 	parse.TestStep
-	label       string
-	description string
-	pics        pics.Expression
+	Description      []string
+	UserVerification []string
+	PICSSet          pics.Expression
 }
 
-var stepPattern = regexp.MustCompile(`^\s*[s|S]tep\s+([0-9a-zA-Z]+):\s*(.*)`)
+type stepType int
 
-func convert(tst *parse.Test, path string) (t *test, err error) {
+const (
+	stepTypeUnknown stepType = iota
+	stepTypeReadAttribute
+	stepTypeWriteAttribute
+	stepTypeCommand
+	stepTypeDelay
+)
+
+var stepPattern = regexp.MustCompile(`(?s)^\s*[s|S]tep\s+([0-9a-zA-Z]+):\s*(.*)`)
+
+func (sp *PythonTestGenerator) convert(tst *parse.Test, path string) (t *test, err error) {
 	t = &test{
-		id:      getTestName(path),
-		name:    tst.Name,
-		cluster: tst.Config.Cluster,
+		ID:   getTestName(path),
+		Test: *tst,
 	}
 	for _, tp := range tst.PICS {
 		var pe pics.Expression
@@ -36,24 +58,61 @@ func convert(tst *parse.Test, path string) (t *test, err error) {
 		if err != nil {
 			return
 		}
-		t.pics = append(t.pics, pe)
+		t.PICSList = append(t.PICSList, pe)
 	}
+	var currentGroup *testGroup
 	for _, s := range tst.Tests {
 		ts := &testStep{
 			TestStep: *s,
 		}
-		label := stepPattern.FindStringSubmatch(s.Label)
-		if len(label) > 0 {
-			ts.label = label[1]
-			ts.description = label[2]
+		labelParts := stepPattern.FindStringSubmatch(s.Label)
+		var label, description string
+		if len(labelParts) > 0 {
+			label = labelParts[1]
+			description = labelParts[2]
 		} else {
-			ts.description = s.Label
+			description = s.Label
 		}
-		ts.pics, err = pics.ParseString(s.PICS)
+		if len(label) > 0 {
+			if currentGroup == nil || label != currentGroup.Step {
+				currentGroup = &testGroup{Step: label, Description: description}
+				t.Groups = append(t.Groups, currentGroup)
+			}
+		} else if currentGroup == nil {
+			currentGroup = &testGroup{Step: label, Description: description}
+		}
+		if len(description) > 0 {
+
+			ts.Description = strings.Split(description, "\n")
+		}
+		if len(s.Verification) > 0 {
+			ts.UserVerification = strings.Split(s.Verification, "\n")
+		}
+		ts.PICSSet, err = pics.ParseString(s.PICS)
 		if err != nil {
 			return
 		}
-		t.steps = append(t.steps, ts)
+		currentGroup.Steps = append(currentGroup.Steps, ts)
+	}
+	t.Variables = getVariables(t)
+	t.PICSAliases = sp.buildPicsMap(t)
+	picsAliases := buildPicsAliasList(t.PICSAliases)
+	var lastEntityType = types.EntityTypeUnknown
+	var entityAliases []*picsAlias
+	for _, pa := range picsAliases {
+		if pa.entityType != lastEntityType && len(entityAliases) > 0 {
+			t.PICSAliasList = append(t.PICSAliasList, entityAliases)
+			entityAliases = nil
+		}
+		entityAliases = append(entityAliases, pa)
+		label, ok := sp.labels[pa.Pics]
+		if ok {
+			pa.Comments = strings.Split(label, "\n")
+		}
+		lastEntityType = pa.entityType
+	}
+	if len(entityAliases) > 0 {
+		t.PICSAliasList = append(t.PICSAliasList, entityAliases)
 	}
 	return
 }

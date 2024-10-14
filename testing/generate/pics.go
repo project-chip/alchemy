@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testing/pics"
@@ -16,11 +17,13 @@ import (
 func (sp *PythonTestGenerator) buildPicsMap(t *test) (aliases map[string]string) {
 	aliases = make(map[string]string)
 	clusters := make(map[string]*matter.Cluster)
-	for _, tp := range t.pics {
+	for _, tp := range t.PICSList {
 		sp.buildMapForPics(tp, clusters, aliases)
 	}
-	for _, ts := range t.steps {
-		sp.buildMapForPics(ts.pics, clusters, aliases)
+	for _, ts := range t.Groups {
+		for _, ts := range ts.Steps {
+			sp.buildMapForPics(ts.PICSSet, clusters, aliases)
+		}
 	}
 	return
 }
@@ -63,7 +66,9 @@ func (sp *PythonTestGenerator) makePicsAlias(clusters map[string]*matter.Cluster
 				break
 			}
 		}
-	} else if cluster == nil {
+	}
+	if cluster == nil {
+		slog.Warn("Unable to find matching cluster for PICS", slog.String("pics", clusterPics))
 		return ""
 	}
 	entityType := parts[3]
@@ -74,6 +79,10 @@ func (sp *PythonTestGenerator) makePicsAlias(clusters map[string]*matter.Cluster
 	}
 	switch entityType {
 	case "F":
+		if cluster.Features == nil {
+			slog.Warn("Cluster missing features", slog.String("clusterName", cluster.Name), slog.Uint64("Feature Bit", id))
+			return ""
+		}
 		for _, b := range cluster.Features.Bits {
 			f := b.(*matter.Feature)
 			from, to, err := f.Bits()
@@ -88,6 +97,7 @@ func (sp *PythonTestGenerator) makePicsAlias(clusters map[string]*matter.Cluster
 				return fmt.Sprintf("has%sFeature", matter.Case(f.Name()))
 			}
 		}
+		slog.Warn("Unable to find matching feature for PICS", slog.String("clusterName", cluster.Name), slog.String("pics", p))
 	case "A":
 		for _, a := range cluster.Attributes {
 			if !a.ID.Valid() {
@@ -97,6 +107,7 @@ func (sp *PythonTestGenerator) makePicsAlias(clusters map[string]*matter.Cluster
 				return fmt.Sprintf("has%sAttribute", matter.Case(a.Name))
 			}
 		}
+		slog.Warn("Unable to find matching attribute for PICS", slog.String("clusterName", cluster.Name), slog.String("pics", p))
 	case "C":
 		var direction matter.Interface
 		switch parts[5] {
@@ -115,6 +126,7 @@ func (sp *PythonTestGenerator) makePicsAlias(clusters map[string]*matter.Cluster
 				return fmt.Sprintf("has%sCommand", matter.Case(c.Name))
 			}
 		}
+		slog.Warn("Unable to find matching command for PICS", slog.String("clusterName", cluster.Name), slog.String("pics", p), slog.Uint64("id", id), slog.String("direction", direction.String()))
 	case "E":
 		for _, e := range cluster.Events {
 			if !e.ID.Valid() {
@@ -124,6 +136,7 @@ func (sp *PythonTestGenerator) makePicsAlias(clusters map[string]*matter.Cluster
 				return fmt.Sprintf("has%sEvent", matter.Case(e.Name))
 			}
 		}
+		slog.Warn("Unable to find matching event for PICS", slog.String("clusterName", cluster.Name), slog.String("pics", p))
 	default:
 		slog.Warn("Unknown entity type while building aliases", slog.String("entityType", entityType))
 	}
@@ -131,20 +144,19 @@ func (sp *PythonTestGenerator) makePicsAlias(clusters map[string]*matter.Cluster
 	return ""
 }
 
-func (sp *PythonTestGenerator) writePicsAliases(picsAliases map[string]string, script *strings.Builder) {
+type picsAlias struct {
+	entityType types.EntityType
+	Pics       string
+	Alias      string
+	Comments   []string
+}
 
-	type picsAlias struct {
-		entityType types.EntityType
-		pics       string
-		alias      string
-	}
-
-	var aliases []*picsAlias
+func buildPicsAliasList(picsAliases map[string]string) (aliases []*picsAlias) {
 	for pics, alias := range picsAliases {
 		if alias == "" {
 			continue
 		}
-		pa := &picsAlias{pics: pics, alias: alias}
+		pa := &picsAlias{Pics: pics, Alias: alias}
 		if strings.HasSuffix(alias, "Feature") {
 			pa.entityType = types.EntityTypeFeature
 		} else if strings.HasSuffix(alias, "Command") {
@@ -161,7 +173,7 @@ func (sp *PythonTestGenerator) writePicsAliases(picsAliases map[string]string, s
 	}
 	slices.SortStableFunc(aliases, func(a, b *picsAlias) int {
 		if a.entityType == b.entityType {
-			return strings.Compare(a.alias, b.alias)
+			return strings.Compare(a.Alias, b.Alias)
 		}
 		switch a.entityType {
 		case types.EntityTypeFeature:
@@ -188,27 +200,19 @@ func (sp *PythonTestGenerator) writePicsAliases(picsAliases map[string]string, s
 		}
 		return 1
 	})
-	var lastEntityType = types.EntityTypeUnknown
-	for _, pa := range aliases {
-		if pa.entityType != lastEntityType {
-			if lastEntityType != types.EntityTypeUnknown {
-				script.WriteRune('\n')
-			}
-			lastEntityType = pa.entityType
-		}
-		label, ok := sp.labels[pa.pics]
-		if ok {
-			script.WriteString("        # ")
-			script.WriteString(strings.ReplaceAll(label, "\n", " "))
-			script.WriteString("\n")
-		}
-		script.WriteString(fmt.Sprintf("        %s = self.check_pics(%s)\n", pa.alias, strconv.Quote(pa.pics)))
-	}
-	script.WriteRune('\n')
+	return
 }
 
-func (*PythonTestGenerator) writePicsGuard(step *testStep, aliases map[string]string, script *strings.Builder) {
-	script.WriteString("        if self.pics_guard(")
-	step.pics.PythonBuilder(aliases, script)
-	script.WriteString("):\n")
+func picsHelper(pics []pics.Expression) raymond.SafeString {
+	ps := make([]string, 0, len(pics))
+	for _, r := range pics {
+		ps = append(ps, r.PythonString())
+	}
+	return raymond.SafeString(strings.Join(ps, ","))
+}
+
+func picsGuardHelper(exp pics.Expression, aliases map[string]string) raymond.SafeString {
+	var sb strings.Builder
+	exp.PythonBuilder(aliases, &sb)
+	return raymond.SafeString(sb.String())
 }

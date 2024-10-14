@@ -1,0 +1,3 @@
+{{#ifSet step.Response.Constraints.AnyOf}}
+asserts.assert_in({{> response_value step=step}}, {{comparisonValue step.Response.Constraints.AnyOf}})
+{{/ifSet}}

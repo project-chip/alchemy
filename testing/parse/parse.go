@@ -2,7 +2,7 @@ package parse
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -41,11 +41,12 @@ func (p TestYamlParser) Process(cxt context.Context, input *pipeline.Data[struct
 	if err != nil {
 		return
 	}
-	var t Test
+	t := Test{Path: input.Path}
 	cm := yaml.CommentMap{}
 	err = yaml.UnmarshalWithOptions(r, &t, yaml.DisallowUnknownField(), yaml.CommentToMap(cm))
 	if err != nil {
-		err = fmt.Errorf("error parsing %s: %w", input.Path, err)
+		slog.WarnContext(cxt, "Failed parsing test YAML", slog.String("path", input.Path), slog.Any("error", err))
+		err = nil
 		return
 	}
 	commentPattern := regexp.MustCompile(`\$\.tests\[([0-9]+)\]\.label`)
