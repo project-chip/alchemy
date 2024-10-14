@@ -1,0 +1,3 @@
+{{#ifSet step.Response.Constraints.MaxValue}}
+asserts.assert_less_equal({{> response_value step=step}}, {{comparisonValue step.Response.Constraints.MaxValue}})
+{{/ifSet}}

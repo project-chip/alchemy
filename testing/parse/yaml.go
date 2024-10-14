@@ -68,16 +68,21 @@ func extractArray[T any](val map[string]any, key string) (value []T) {
 		return
 	}
 	switch v := v.(type) {
+	case T:
+		value = append(value, v)
+		delete(val, key)
+		return
 	case []T:
 		value = v
 		delete(val, key)
 		return
 	case []any:
 		for _, v := range v {
-			if v, ok := v.(T); ok {
-				value = append(value, v)
+			el, ok := v.(T)
+			if ok {
+				value = append(value, el)
 			} else {
-				slog.Info("unable to cast YAML array value element", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
+				slog.Info("unable to cast YAML array value element", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", el)), slog.String("got", fmt.Sprintf("%T", v)))
 
 			}
 		}
@@ -85,5 +90,21 @@ func extractArray[T any](val map[string]any, key string) (value []T) {
 		return
 	}
 	slog.Info("unable to cast YAML array value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
+	return
+}
+
+func extractArrayAny(val map[string]any, key string) (value []any) {
+	var v any
+	var ok bool
+	if v, ok = val[key]; !ok {
+		return
+	}
+	switch v := v.(type) {
+	case []any:
+		value = v
+		delete(val, key)
+		return
+	}
+	slog.Info("unable to cast YAML any array value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
 	return
 }

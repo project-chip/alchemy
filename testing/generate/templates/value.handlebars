@@ -1,0 +1,3 @@
+{{#ifSet step.Response.Value}}
+asserts.assert_equal({{> response_value step=step}}, {{comparisonValue step.Response.Value}})
+{{/ifSet}}

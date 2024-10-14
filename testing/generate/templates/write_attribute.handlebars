@@ -1,0 +1,3 @@
+{{#if step.Response.Error}}status = {{/if}}await self.write_single_attribute(attribute_value=cluster.Attributes.{{step.Attribute}}({{comparisonValue step.arguments.value}}), endpoint_id=endpoint{{#if step.Response.Error}}, expect_success=False{{/if}})
+{{#if step.Response.Error}}asserts.assert_equal(status, {{statusError step.Response.Error}})
+{{/if}}

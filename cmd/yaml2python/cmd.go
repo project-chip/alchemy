@@ -1,4 +1,4 @@
-package python
+package yaml2python
 
 import (
 	"context"
@@ -14,8 +14,8 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:   "python",
-	Short: "create a shell python script from a test plan",
+	Use:   "yaml2python",
+	Short: "create a shell python script from a test YAML",
 	RunE:  tp,
 }
 

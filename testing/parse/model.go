@@ -6,6 +6,8 @@ import (
 )
 
 type Test struct {
+	Path string `yaml:"-"`
+
 	Name string   `yaml:"name,omitempty"`
 	PICS []string `yaml:"PICS,omitempty"`
 
@@ -31,11 +33,14 @@ func (t *Test) UnmarshalYAML(unmarshal func(interface{}) error) (err error) {
 			return
 		}
 	}
+	if t.Name == "19.10.1. [TC-TGTNAV-8.1] Navigate Target Verification" {
+		slog.Info(" config map", slog.Any("config", t.Config))
+	}
 	tests := extractValue[[]any](yt, "tests")
 	for _, test := range tests {
 		switch test := test.(type) {
 		case map[string]any:
-			var ts TestStep
+			ts := TestStep{Parent: t}
 			err = ts.UnmarshalMap(test)
 			if err != nil {
 				return
@@ -49,7 +54,7 @@ func (t *Test) UnmarshalYAML(unmarshal func(interface{}) error) (err error) {
 		t.Extras = make(map[string]any)
 		for key, val := range yt {
 			t.Extras[key] = val
-			slog.Info("unmarshalled unknown!", slog.String("key", key), slog.String("val", fmt.Sprintf("%T", val)))
+			slog.Warn("YAML test has unknown key", slog.String("path", t.Path), slog.String("key", key), slog.String("val", fmt.Sprintf("%T", val)))
 		}
 	}
 
@@ -85,7 +90,7 @@ func (tc *TestConfig) UnmarshalMap(c map[string]any) error {
 		tc.Extras = make(map[string]any)
 		for key, val := range c {
 			tc.Extras[key] = val
-			slog.Info("unmarshalled config unknown!", slog.String(key, key), slog.String("val", fmt.Sprintf("%T", val)))
+			slog.Warn("YAML test config has unknown key; using as variable", slog.String(key, key), slog.String("val", fmt.Sprintf("%T", val)))
 		}
 	}
 	return nil
@@ -103,7 +108,8 @@ func (tc *TestConfigValue) UnmarshalMap(c map[string]any) error {
 }
 
 type TestStep struct {
-	Step                      string        `yaml:"-"`
+	Parent *Test `yaml:"-"`
+
 	Label                     string        `yaml:"label,omitempty"`
 	Comments                  []string      `yaml:"-"`
 	PICS                      string        `yaml:"PICS,omitempty"`
@@ -147,7 +153,7 @@ func (ts *TestStep) UnmarshalMap(c map[string]any) error {
 		ts.Extras = make(map[string]any)
 		for key, val := range c {
 			ts.Extras[key] = val
-			slog.Info("unmarshalled test step unknown!", slog.String("key", key), slog.String("type", fmt.Sprintf("%T", val)), slog.Any("val", val))
+			slog.Info("YAML test step has unknown key", slog.String("path", ts.Parent.Path), slog.String("key", key), slog.String("type", fmt.Sprintf("%T", val)), slog.Any("val", val))
 		}
 	}
 	return nil
@@ -160,7 +166,7 @@ type TestArguments struct {
 
 func (ta *TestArguments) UnmarshalMap(c map[string]any) error {
 	ta.Value = extractValue[any](c, "value")
-	ta.Values = extractArray[any](c, "values")
+	ta.Values = extractArrayAny(c, "values")
 	return nil
 }
 
@@ -180,12 +186,10 @@ type StepResponse struct {
 }
 
 func (sr *StepResponse) UnmarshalMap(c map[string]any) error {
-	slog.Info("unmarshalling response")
 	sr.SaveAs = extractValue[string](c, "saveAs")
 	sr.Error = extractValue[string](c, "error")
 	sr.Value = extractValue[any](c, "value")
-	slog.Info("unmarshalled response value", slog.Any("val", sr.Value))
-	sr.Values = extractArray[any](c, "values")
+	sr.Values = extractArrayAny(c, "values")
 
 	sr.Constraints = extractObject[StepResponseConstraints](c, "constraints")
 
@@ -193,14 +197,14 @@ func (sr *StepResponse) UnmarshalMap(c map[string]any) error {
 		sr.Extras = make(map[string]any)
 		for key, val := range c {
 			sr.Extras[key] = val
-			slog.Info("unmarshalled test step response unknown!", slog.String(key, key), slog.String("val", fmt.Sprintf("%T", val)), slog.Any("val", val))
+			slog.Warn("YAML test step response has unknown key", slog.String(key, key), slog.String("val", fmt.Sprintf("%T", val)), slog.Any("val", val))
 		}
 	}
 	return nil
 }
 
 type StepResponseConstraints struct {
-	//	Type          string   `yaml:"type,omitempty"`
+	Type string `yaml:"type,omitempty"`
 	//	MinLength     any      `yaml:"minLength,omitempty"`
 	//	MaxLength     any      `yaml:"maxLength,omitempty"`
 	MinValue any `yaml:"minValue,omitempty"`
@@ -213,11 +217,11 @@ type StepResponseConstraints struct {
 	AnyOf any `yaml:"anyOf,omitempty"`
 	//Excludes      []uint64 `yaml:"excludes,omitempty"`
 
-	//Extras map[string]any
+	Extras map[string]any
 }
 
 func (src *StepResponseConstraints) UnmarshalMap(c map[string]any) error {
-	//src.Type = extractValue[string](c, "type")
+	src.Type = extractValue[string](c, "type")
 	//src.MinLength = extractValue[any](c, "minLength")
 	//src.MaxLength = extractValue[any](c, "maxLength")
 	src.MinValue = extractValue[any](c, "minValue")
@@ -230,12 +234,13 @@ func (src *StepResponseConstraints) UnmarshalMap(c map[string]any) error {
 	src.AnyOf = extractValue[any](c, "anyOf")
 	//src.Excludes = extractArray[uint64](c, "excludes")
 	//
-	//if len(c) > 0 {
-	//	src.Extras = make(map[string]any)
-	//	for key, val := range c {
-	//		src.Extras[key] = val
-	//		slog.Info("unmarshalled test step response constraints unknown!", slog.String(key, key), slog.String("val", fmt.Sprintf("%T", val)), slog.Any("val", val))
-	//	}
-	//}
+	if len(c) > 0 {
+		src.Extras = make(map[string]any)
+		for key, val := range c {
+			src.Extras[key] = val
+			slog.Warn("YAML test step response constraints has unknown key", slog.String(key, key), slog.String("val", fmt.Sprintf("%T", val)), slog.Any("val", val))
+		}
+	}
+
 	return nil
 }
