@@ -28,7 +28,7 @@ Or <- _ left:And _ right:OrOp* {
     return NewLogicalExpression(LogicalOperatorOr, leftCE, orOps)
 }
 
-OrOp <- _ "||" _ f:And {
+OrOp <- _ ("||" / "|") _ f:And {
     debug("matched OR op %s\n", string(c.text))
     fc := f.(Expression)
     return fc, nil
@@ -49,7 +49,7 @@ And <- _ left:LogicalTerm _ right:AndOp*  {
     return NewLogicalExpression(LogicalOperatorAnd, leftCE, addOps)
 }
 
-AndOp <- _ "&&" _ f:LogicalTerm {
+AndOp <- _ ("&&" / "&") _ f:LogicalTerm {
     debug("matched AND op %s\n", string(c.text))
     fc := f.(Expression)
     return fc, nil
