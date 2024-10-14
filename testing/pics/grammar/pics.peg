@@ -19,7 +19,7 @@ PICS <- pics:( Logical ) EOF {
 }
 
 
-PICSOp <- not:'!'? pics:PICSIdentifier &PICSSeparator {
+PICSOp <- not:'!'? pics:PICSIdentifier parens:('(' PICSIdentifier ')')? &PICSSeparator {
     debug("matched pics op %s\n", string(c.text))
     p := pics.(string)
     pe := &PICSExpression{PICS:p}
