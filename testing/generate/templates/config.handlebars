@@ -1,3 +1,3 @@
 {{#each test.Config.Extras}}
-{{@key}} = {{#ifSet this.defaultValue}}{{this.defaultValue}}{{else}}None{{/ifSet}}
+{{this.key}} = {{> config_value value=this.value}}
 {{/each}}

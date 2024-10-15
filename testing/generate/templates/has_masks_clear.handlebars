@@ -1,0 +1,3 @@
+{{#if step.Response.Constraints.HasMasksClear}}
+asserts.assert_true(all([({{> response_value step=step}} & mask) == 0 for mask in {{pythonValue step.Response.Constraints.HasMasksClear}}])
+{{/if}}

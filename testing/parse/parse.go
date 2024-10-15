@@ -43,7 +43,7 @@ func (p TestYamlParser) Process(cxt context.Context, input *pipeline.Data[struct
 	}
 	t := Test{Path: input.Path}
 	cm := yaml.CommentMap{}
-	err = yaml.UnmarshalWithOptions(r, &t, yaml.DisallowUnknownField(), yaml.CommentToMap(cm))
+	err = yaml.UnmarshalWithOptions(r, &t, yaml.DisallowUnknownField(), yaml.CommentToMap(cm), yaml.UseOrderedMap())
 	if err != nil {
 		slog.WarnContext(cxt, "Failed parsing test YAML", slog.String("path", input.Path), slog.Any("error", err))
 		err = nil
@@ -59,7 +59,7 @@ func (p TestYamlParser) Process(cxt context.Context, input *pipeline.Data[struct
 		if err != nil {
 			continue
 		}
-		if len(t.Tests) < index {
+		if len(t.Tests) <= index {
 			continue
 		}
 		step := t.Tests[index]
@@ -69,4 +69,8 @@ func (p TestYamlParser) Process(cxt context.Context, input *pipeline.Data[struct
 	}
 	outputs = append(outputs, pipeline.NewData(input.Path, &t))
 	return
+}
+
+func stringUnmarshaller(s *string, b []byte) error {
+	return nil
 }

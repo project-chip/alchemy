@@ -1,0 +1,10 @@
+{{#ifSet value.defaultValue ~}}
+{{#ifEqual value.type "octet_string" ~}}
+{{octetString value.defaultValue ~}}
+{{else ifEqual value.type "char_string" ~}}
+{{pythonString value.defaultValue ~}}
+{{else ~}}
+{{pythonValue value.defaultValue ~}}
+{{/ifEqual ~}}
+{{else ~}}
+None{{/ifSet}}

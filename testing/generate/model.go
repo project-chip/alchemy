@@ -35,16 +35,6 @@ type testStep struct {
 	PICSSet          pics.Expression
 }
 
-type stepType int
-
-const (
-	stepTypeUnknown stepType = iota
-	stepTypeReadAttribute
-	stepTypeWriteAttribute
-	stepTypeCommand
-	stepTypeDelay
-)
-
 var stepPattern = regexp.MustCompile(`(?s)^\s*[s|S]tep\s+([0-9a-zA-Z]+):\s*(.*)`)
 
 func (sp *PythonTestGenerator) convert(tst *parse.Test, path string) (t *test, err error) {
