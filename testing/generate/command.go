@@ -5,12 +5,14 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/goccy/go-yaml"
 	"github.com/iancoleman/strcase"
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/testing/parse"
 )
 
 func getArg(arg any) (name string, value any, ok bool) {
@@ -77,7 +79,26 @@ func wrapValue(name string, field *matter.Field, value any) string {
 			default:
 				slog.Info("unknown arg type", log.Type("type", value))
 			}
+		case *matter.Bitmap:
+			parentEntity = entity.ParentEntity
+			objectGroup = "Bitmaps"
+			objectName = entity.Name
+			switch value := value.(type) {
+			case uint64:
+				for _, val := range entity.Bits {
+					from, to, err := val.Bits()
+					if err != nil || from != to {
+						continue
+					}
+					if from == value {
+						valName = "k" + val.Name()
+						break
+					}
+				}
 
+			default:
+				slog.Info("unknown arg type", log.Type("type", value))
+			}
 		default:
 			slog.Warn("unsupported argument entity", log.Type("type", entity))
 		}
@@ -90,12 +111,18 @@ func wrapValue(name string, field *matter.Field, value any) string {
 		var sb strings.Builder
 		sb.WriteString(strcase.ToLowerCamel(name))
 		sb.WriteRune('=')
-		sb.WriteString(namespace)
-		sb.WriteRune('.')
-		sb.WriteString(objectGroup)
-		sb.WriteRune('.')
-		sb.WriteString(objectName)
-		sb.WriteRune('.')
+		if namespace != "" {
+			sb.WriteString(namespace)
+			sb.WriteRune('.')
+		}
+		if objectGroup != "" {
+			sb.WriteString(objectGroup)
+			sb.WriteRune('.')
+		}
+		if objectName != "" {
+			sb.WriteString(objectName)
+			sb.WriteRune('.')
+		}
 		if valName != "" {
 			sb.WriteString(valName)
 		} else {
@@ -116,7 +143,7 @@ func commandArgHelper(test test, step testStep, name string) raymond.SafeString 
 			continue
 		}
 		if strings.EqualFold(name, argName) {
-			return comparisonValueHelper(value)
+			return pythonValueHelper(value)
 		}
 	}
 	return raymond.SafeString(fmt.Sprintf("unknown argument: %s", name))
@@ -141,23 +168,44 @@ func commandArgsHelper(spec *spec.Specification) func(test test, step testStep) 
 		var args []string
 		if len(step.Arguments.Values) > 0 {
 			for _, v := range step.Arguments.Values {
-				if v, ok := v.(map[string]any); ok {
-					name, value, ok := getArg(v)
+				var name string
+				var value any
+				switch v := v.(type) {
+				case map[string]any:
+					var ok bool
+					name, value, ok = getArg(v)
 					if !ok {
 						continue
 					}
-					var field *matter.Field
-					for _, f := range command.Fields {
-						if strings.EqualFold(name, f.Name) {
-							field = f
-							break
-						}
+
+				case yaml.MapSlice:
+					n, ok := parse.ValueFromMapSlice(v, "name")
+					if !ok {
+						continue
 					}
-					if field == nil {
-						slog.Warn("Unknown command field in test", slog.String("fieldName", name))
+					name, ok = n.(string)
+					if !ok {
+						continue
 					}
-					args = append(args, wrapValue(name, field, value))
+					value, ok = parse.ValueFromMapSlice(v, "value")
+					if !ok {
+						continue
+					}
 				}
+				if name == "" {
+					continue
+				}
+				var field *matter.Field
+				for _, f := range command.Fields {
+					if strings.EqualFold(name, f.Name) {
+						field = f
+						break
+					}
+				}
+				if field == nil {
+					slog.Warn("Unknown command field in test", slog.String("fieldName", name))
+				}
+				args = append(args, wrapValue(name, field, value))
 			}
 		}
 

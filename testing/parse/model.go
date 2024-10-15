@@ -3,6 +3,8 @@ package parse
 import (
 	"fmt"
 	"log/slog"
+
+	"github.com/goccy/go-yaml"
 )
 
 type Test struct {
@@ -14,32 +16,31 @@ type Test struct {
 	Config TestConfig  `yaml:"config,omitempty"`
 	Tests  []*TestStep `yaml:"tests,omitempty"`
 
-	Extras map[string]any
+	Extras yaml.MapSlice
 }
 
 func (t *Test) UnmarshalYAML(unmarshal func(interface{}) error) (err error) {
 	slog.Info("Unmarshalling!")
-	var yt map[string]any
+	var yt yaml.MapSlice
 	if err = unmarshal(&yt); err != nil {
 		return err
 	}
-	t.Name = extractValue[string](yt, "name")
-	t.PICS = extractArray[string](yt, "PICS")
+	t.Name, yt = extractValue[string](yt, "name")
+	t.PICS, yt = extractArray[string](yt, "PICS")
 
-	config := extractValue[map[string]any](yt, "config")
+	var config yaml.MapSlice
+	config, yt = extractValue[yaml.MapSlice](yt, "config")
 	if config != nil {
 		err = t.Config.UnmarshalMap(config)
 		if err != nil {
 			return
 		}
 	}
-	if t.Name == "19.10.1. [TC-TGTNAV-8.1] Navigate Target Verification" {
-		slog.Info(" config map", slog.Any("config", t.Config))
-	}
-	tests := extractValue[[]any](yt, "tests")
+	var tests []any
+	tests, yt = extractValue[[]any](yt, "tests")
 	for _, test := range tests {
 		switch test := test.(type) {
-		case map[string]any:
+		case yaml.MapSlice:
 			ts := TestStep{Parent: t}
 			err = ts.UnmarshalMap(test)
 			if err != nil {
@@ -51,11 +52,8 @@ func (t *Test) UnmarshalYAML(unmarshal func(interface{}) error) (err error) {
 		}
 	}
 	if len(yt) > 0 {
-		t.Extras = make(map[string]any)
-		for key, val := range yt {
-			t.Extras[key] = val
-			slog.Warn("YAML test has unknown key", slog.String("path", t.Path), slog.String("key", key), slog.String("val", fmt.Sprintf("%T", val)))
-		}
+		t.Extras = make(yaml.MapSlice, len(yt))
+		copy(t.Extras, yt)
 	}
 
 	return nil
@@ -73,24 +71,30 @@ type TestConfig struct {
 	WaitAfterCommissioning TestConfigValue `yaml:"waitAfterCommissioning,omitempty"`
 	PakeVerifier           TestConfigValue `yaml:"PakeVerifier,omitempty"`
 
-	Extras map[string]any
+	Extras yaml.MapSlice
 }
 
-func (tc *TestConfig) UnmarshalMap(c map[string]any) error {
-	tc.NodeID = extractValue[uint64](c, "nodeId")
-	tc.Cluster = extractValue[string](c, "cluster")
-	tc.Endpoint = extractValue[uint64](c, "endpoint")
-	tc.Timeout = extractValue[uint64](c, "timeout")
-	tc.CatalogVendorId = extractValue[TestConfigValue](c, "catalogVendorId")
-	tc.ApplicationId = extractValue[TestConfigValue](c, "applicationId")
-	tc.Discriminator = extractValue[TestConfigValue](c, "discriminator")
-	tc.WaitAfterCommissioning = extractValue[TestConfigValue](c, "waitAfterCommissioning")
+func (tc *TestConfig) UnmarshalMap(c yaml.MapSlice) error {
+	tc.NodeID, c = extractValue[uint64](c, "nodeId")
+	tc.Cluster, c = extractValue[string](c, "cluster")
+	tc.Endpoint, c = extractValue[uint64](c, "endpoint")
+	tc.Timeout, c = extractValue[uint64](c, "timeout")
+	tc.CatalogVendorId, c = extractValue[TestConfigValue](c, "catalogVendorId")
+	tc.ApplicationId, c = extractValue[TestConfigValue](c, "applicationId")
+	tc.Discriminator, c = extractValue[TestConfigValue](c, "discriminator")
+	tc.WaitAfterCommissioning, c = extractValue[TestConfigValue](c, "waitAfterCommissioning")
 
 	if len(c) > 0 {
-		tc.Extras = make(map[string]any)
-		for key, val := range c {
-			tc.Extras[key] = val
-			slog.Warn("YAML test config has unknown key; using as variable", slog.String(key, key), slog.String("val", fmt.Sprintf("%T", val)))
+		tc.Extras = make(yaml.MapSlice, 0, len(c))
+		for _, v := range c {
+			if ms, ok := v.Value.(yaml.MapSlice); ok {
+				var tcv TestConfigValue
+				err := tcv.UnmarshalMap(ms)
+				if err != nil {
+					return err
+				}
+				tc.Extras = append(tc.Extras, yaml.MapItem{Key: v.Key, Value: tcv})
+			}
 		}
 	}
 	return nil
@@ -101,9 +105,9 @@ type TestConfigValue struct {
 	DefaultValue any    `yaml:"defaultValue,omitempty"`
 }
 
-func (tc *TestConfigValue) UnmarshalMap(c map[string]any) error {
-	tc.Type = extractValue[string](c, "type")
-	tc.DefaultValue = extractValue[any](c, "defaultValue")
+func (tc *TestConfigValue) UnmarshalMap(c yaml.MapSlice) error {
+	tc.Type, c = extractValue[string](c, "type")
+	tc.DefaultValue, _ = extractValue[any](c, "defaultValue")
 	return nil
 }
 
@@ -128,33 +132,30 @@ type TestStep struct {
 	MaxInterval               uint64        `yaml:"maxInterval,omitempty"`
 	MinInterval               uint64        `yaml:"minInterval,omitempty"`
 
-	Extras map[string]any
+	Extras yaml.MapSlice
 }
 
-func (ts *TestStep) UnmarshalMap(c map[string]any) error {
-	ts.Label = extractValue[string](c, "label")
-	ts.PICS = extractValue[string](c, "PICS")
-	ts.Cluster = extractValue[string](c, "cluster")
-	ts.Endpoint = extractValue[int64](c, "endpoint", -1)
-	ts.Command = extractValue[string](c, "command")
-	ts.Attribute = extractValue[string](c, "attribute")
-	ts.Verification = extractValue[string](c, "verification")
-	ts.Arguments = extractValue[TestArguments](c, "arguments")
-	ts.Disabled = extractValue[bool](c, "disabled")
-	ts.FabricFiltered = extractValue[bool](c, "fabricFiltered")
-	ts.Response = extractValue[StepResponse](c, "response")
-	ts.TimedInteractionTimeoutMs = extractValue[uint64](c, "timedInteractionTimeoutMs")
-	ts.Event = extractValue[string](c, "event")
-	ts.EventNumber = extractValue[string](c, "eventNumber")
-	ts.MaxInterval = extractValue[uint64](c, "maxInterval")
-	ts.MinInterval = extractValue[uint64](c, "minInterval")
+func (ts *TestStep) UnmarshalMap(c yaml.MapSlice) error {
+	ts.Label, c = extractValue[string](c, "label")
+	ts.PICS, c = extractValue[string](c, "PICS")
+	ts.Cluster, c = extractValue[string](c, "cluster")
+	ts.Endpoint, c = extractValue[int64](c, "endpoint", -1)
+	ts.Command, c = extractValue[string](c, "command")
+	ts.Attribute, c = extractValue[string](c, "attribute")
+	ts.Verification, c = extractValue[string](c, "verification")
+	ts.Arguments, c = extractValue[TestArguments](c, "arguments")
+	ts.Disabled, c = extractValue[bool](c, "disabled")
+	ts.FabricFiltered, c = extractValue[bool](c, "fabricFiltered")
+	ts.Response, c = extractValue[StepResponse](c, "response")
+	ts.TimedInteractionTimeoutMs, c = extractValue[uint64](c, "timedInteractionTimeoutMs")
+	ts.Event, c = extractValue[string](c, "event")
+	ts.EventNumber, c = extractValue[string](c, "eventNumber")
+	ts.MaxInterval, c = extractValue[uint64](c, "maxInterval")
+	ts.MinInterval, c = extractValue[uint64](c, "minInterval")
 
 	if len(c) > 0 {
-		ts.Extras = make(map[string]any)
-		for key, val := range c {
-			ts.Extras[key] = val
-			slog.Info("YAML test step has unknown key", slog.String("path", ts.Parent.Path), slog.String("key", key), slog.String("type", fmt.Sprintf("%T", val)), slog.Any("val", val))
-		}
+		ts.Extras = make(yaml.MapSlice, len(c))
+		copy(ts.Extras, c)
 	}
 	return nil
 }
@@ -164,9 +165,9 @@ type TestArguments struct {
 	Values []any `yaml:"values,omitempty"`
 }
 
-func (ta *TestArguments) UnmarshalMap(c map[string]any) error {
-	ta.Value = extractValue[any](c, "value")
-	ta.Values = extractArrayAny(c, "values")
+func (ta *TestArguments) UnmarshalMap(c yaml.MapSlice) error {
+	ta.Value, c = extractValue[any](c, "value")
+	ta.Values, _ = extractArrayAny(c, "values")
 	return nil
 }
 
@@ -182,23 +183,20 @@ type StepResponse struct {
 	Values      []any                    `yaml:"values,omitempty"`
 	Constraints *StepResponseConstraints `yaml:"constraints,omitempty"`
 
-	Extras map[string]any
+	Extras yaml.MapSlice
 }
 
-func (sr *StepResponse) UnmarshalMap(c map[string]any) error {
-	sr.SaveAs = extractValue[string](c, "saveAs")
-	sr.Error = extractValue[string](c, "error")
-	sr.Value = extractValue[any](c, "value")
-	sr.Values = extractArrayAny(c, "values")
+func (sr *StepResponse) UnmarshalMap(c yaml.MapSlice) error {
+	sr.SaveAs, c = extractValue[string](c, "saveAs")
+	sr.Error, c = extractValue[string](c, "error")
+	sr.Value, c = extractValue[any](c, "value")
+	sr.Values, c = extractArrayAny(c, "values")
 
-	sr.Constraints = extractObject[StepResponseConstraints](c, "constraints")
+	sr.Constraints, c = extractObject[StepResponseConstraints](c, "constraints")
 
 	if len(c) > 0 {
-		sr.Extras = make(map[string]any)
-		for key, val := range c {
-			sr.Extras[key] = val
-			slog.Warn("YAML test step response has unknown key", slog.String(key, key), slog.String("val", fmt.Sprintf("%T", val)), slog.Any("val", val))
-		}
+		sr.Extras = make(yaml.MapSlice, len(c))
+		copy(sr.Extras, c)
 	}
 	return nil
 }
@@ -212,34 +210,31 @@ type StepResponseConstraints struct {
 	//	NotValue      any      `yaml:"notValue,omitempty"`
 	//	HasValue      bool     `yaml:"hasValue,omitempty"`
 	//HasMasksSet   []uint64 `yaml:"hasMasksSet,omitempty"`
-	//HasMasksClear []uint64 `yaml:"hasMasksClear,omitempty"`
+	HasMasksClear []uint64 `yaml:"hasMasksClear,omitempty"`
 	//Contains      any      `yaml:"contains,omitempty"`
 	AnyOf any `yaml:"anyOf,omitempty"`
 	//Excludes      []uint64 `yaml:"excludes,omitempty"`
 
-	Extras map[string]any
+	Extras yaml.MapSlice
 }
 
-func (src *StepResponseConstraints) UnmarshalMap(c map[string]any) error {
-	src.Type = extractValue[string](c, "type")
+func (src *StepResponseConstraints) UnmarshalMap(c yaml.MapSlice) error {
+	src.Type, c = extractValue[string](c, "type")
 	//src.MinLength = extractValue[any](c, "minLength")
 	//src.MaxLength = extractValue[any](c, "maxLength")
-	src.MinValue = extractValue[any](c, "minValue")
-	src.MaxValue = extractValue[any](c, "maxValue")
+	src.MinValue, c = extractValue[any](c, "minValue")
+	src.MaxValue, c = extractValue[any](c, "maxValue")
 	//src.NotValue = extractValue[any](c, "notValue")
 	//src.HasValue = extractValue[bool](c, "hasValue")
 	//src.HasMasksSet = extractArray[uint64](c, "hasMasksSet")
-	//src.HasMasksClear = extractArray[uint64](c, "hasMasksClear")
+	src.HasMasksClear, c = extractArray[uint64](c, "hasMasksClear")
 	//src.Contains = extractValue[any](c, "contains")
-	src.AnyOf = extractValue[any](c, "anyOf")
+	src.AnyOf, c = extractValue[any](c, "anyOf")
 	//src.Excludes = extractArray[uint64](c, "excludes")
 	//
 	if len(c) > 0 {
-		src.Extras = make(map[string]any)
-		for key, val := range c {
-			src.Extras[key] = val
-			slog.Warn("YAML test step response constraints has unknown key", slog.String(key, key), slog.String("val", fmt.Sprintf("%T", val)), slog.Any("val", val))
-		}
+		src.Extras = make(yaml.MapSlice, len(c))
+		copy(src.Extras, c)
 	}
 
 	return nil
