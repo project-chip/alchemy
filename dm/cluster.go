@@ -10,6 +10,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -92,9 +93,11 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output 
 		if isClusterGroup && len(cluster.PICS) > 0 {
 			clusterID.CreateAttr("picsCode", cluster.PICS)
 		}
-		err = RenderConformanceElement(doc, cluster, cluster.Conformance, clusterID)
-		if err != nil {
-			return
+		if cluster.Conformance != nil && !conformance.IsMandatory(cluster.Conformance) {
+			err = RenderConformanceElement(doc, cluster, cluster.Conformance, clusterID)
+			if err != nil {
+				return
+			}
 		}
 	}
 	c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
