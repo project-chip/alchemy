@@ -8,7 +8,7 @@ import (
 	"github.com/sethvargo/go-githubactions"
 )
 
-func getPRChangedFiles(cxt context.Context, githubContext *githubactions.GitHubContext, action *githubactions.Action, pr *github.PullRequest) (changedFiles []string, err error) {
+func GetPRChangedFiles(cxt context.Context, githubContext *githubactions.GitHubContext, action *githubactions.Action, pr *github.PullRequest) (changedFiles []string, err error) {
 
 	token := action.Getenv("GITHUB_AUTH_TOKEN")
 	if token == "" {
