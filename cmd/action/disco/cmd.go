@@ -1,4 +1,4 @@
-package github
+package disco
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/project-chip/alchemy/cmd/action/github"
 	"github.com/project-chip/alchemy/config"
 	"github.com/project-chip/alchemy/disco"
 	"github.com/project-chip/alchemy/internal/files"
@@ -15,7 +16,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func Action(cmd *cobra.Command, args []string) error {
+func Ball(cmd *cobra.Command, args []string) error {
 	cxt := context.Background()
 
 	action := githubactions.New()
@@ -27,7 +28,7 @@ func Action(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed on getting GitHub context: %w", err)
 
 	}
-	pr, err := readPullRequest(cxt, githubContext, action)
+	pr, err := github.ReadPullRequest(cxt, githubContext, action)
 	if err != nil {
 		return fmt.Errorf("failed on reading pull request: %w", err)
 	}
@@ -35,7 +36,7 @@ func Action(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 	var changedFiles []string
-	changedFiles, err = getPRChangedFiles(cxt, githubContext, action, pr)
+	changedFiles, err = github.GetPRChangedFiles(cxt, githubContext, action, pr)
 	if err != nil {
 		return fmt.Errorf("failed on getting pull request changes: %w", err)
 	}

@@ -10,7 +10,7 @@ import (
 	"github.com/sethvargo/go-githubactions"
 )
 
-func readPullRequest(cxt context.Context, githubContext *githubactions.GitHubContext, action *githubactions.Action) (*github.PullRequest, error) {
+func ReadPullRequest(cxt context.Context, githubContext *githubactions.GitHubContext, action *githubactions.Action) (*github.PullRequest, error) {
 	name := action.Getenv("GITHUB_EVENT_NAME")
 	path := action.Getenv("GITHUB_EVENT_PATH")
 	if len(path) == 0 || len(name) == 0 {

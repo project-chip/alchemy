@@ -8,8 +8,9 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(github.Command)
-	defaultCommand = "github"
+	rootCmd.AddCommand(github.Disco)
+	rootCmd.AddCommand(github.ZAP)
+	defaultCommand = "disco"
 }
 
 func handleError(err error) {
