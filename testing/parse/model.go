@@ -3,8 +3,10 @@ package parse
 import (
 	"fmt"
 	"log/slog"
+	"math"
 
 	"github.com/goccy/go-yaml"
+	"github.com/project-chip/alchemy/internal/log"
 )
 
 type Test struct {
@@ -20,18 +22,21 @@ type Test struct {
 }
 
 func (t *Test) UnmarshalYAML(unmarshal func(interface{}) error) (err error) {
-	slog.Info("Unmarshalling!")
 	var yt yaml.MapSlice
 	if err = unmarshal(&yt); err != nil {
 		return err
 	}
 	t.Name, yt = extractValue[string](yt, "name")
-	t.PICS, yt = extractArray[string](yt, "PICS")
+	var ok bool
+	t.PICS, yt, ok = tryExtractArray[string](yt, "PICS")
+	if !ok {
+		slog.Warn("unable to parse pics array", slog.String("path", t.Path))
+	}
 
 	var config yaml.MapSlice
 	config, yt = extractValue[yaml.MapSlice](yt, "config")
 	if config != nil {
-		err = t.Config.UnmarshalMap(config)
+		err = t.Config.UnmarshalMapSlice(config)
 		if err != nil {
 			return
 		}
@@ -42,7 +47,7 @@ func (t *Test) UnmarshalYAML(unmarshal func(interface{}) error) (err error) {
 		switch test := test.(type) {
 		case yaml.MapSlice:
 			ts := TestStep{Parent: t}
-			err = ts.UnmarshalMap(test)
+			err = ts.UnmarshalMapSlice(test)
 			if err != nil {
 				return
 			}
@@ -74,7 +79,7 @@ type TestConfig struct {
 	Extras yaml.MapSlice
 }
 
-func (tc *TestConfig) UnmarshalMap(c yaml.MapSlice) error {
+func (tc *TestConfig) UnmarshalMapSlice(c yaml.MapSlice) error {
 	tc.NodeID, c = extractValue[uint64](c, "nodeId")
 	tc.Cluster, c = extractValue[string](c, "cluster")
 	tc.Endpoint, c = extractValue[uint64](c, "endpoint")
@@ -89,7 +94,7 @@ func (tc *TestConfig) UnmarshalMap(c yaml.MapSlice) error {
 		for _, v := range c {
 			if ms, ok := v.Value.(yaml.MapSlice); ok {
 				var tcv TestConfigValue
-				err := tcv.UnmarshalMap(ms)
+				err := tcv.UnmarshalMapSlice(ms)
 				if err != nil {
 					return err
 				}
@@ -105,7 +110,7 @@ type TestConfigValue struct {
 	DefaultValue any    `yaml:"defaultValue,omitempty"`
 }
 
-func (tc *TestConfigValue) UnmarshalMap(c yaml.MapSlice) error {
+func (tc *TestConfigValue) UnmarshalMapSlice(c yaml.MapSlice) error {
 	tc.Type, c = extractValue[string](c, "type")
 	tc.DefaultValue, _ = extractValue[any](c, "defaultValue")
 	return nil
@@ -118,7 +123,7 @@ type TestStep struct {
 	Comments                  []string      `yaml:"-"`
 	PICS                      string        `yaml:"PICS,omitempty"`
 	Cluster                   string        `yaml:"cluster,omitempty"`
-	Endpoint                  int64         `yaml:"endpoint,omitempty"`
+	Endpoint                  uint64        `yaml:"endpoint,omitempty"`
 	Command                   string        `yaml:"command,omitempty"`
 	Attribute                 string        `yaml:"attribute,omitempty"`    // handled
 	Verification              string        `yaml:"verification,omitempty"` // handled
@@ -135,18 +140,28 @@ type TestStep struct {
 	Extras yaml.MapSlice
 }
 
-func (ts *TestStep) UnmarshalMap(c yaml.MapSlice) error {
+func (ts *TestStep) UnmarshalMapSlice(c yaml.MapSlice) error {
 	ts.Label, c = extractValue[string](c, "label")
 	ts.PICS, c = extractValue[string](c, "PICS")
 	ts.Cluster, c = extractValue[string](c, "cluster")
-	ts.Endpoint, c = extractValue[int64](c, "endpoint", -1)
+	ts.Endpoint, c = extractValue[uint64](c, "endpoint", math.MaxUint64)
 	ts.Command, c = extractValue[string](c, "command")
 	ts.Attribute, c = extractValue[string](c, "attribute")
 	ts.Verification, c = extractValue[string](c, "verification")
 	ts.Arguments, c = extractValue[TestArguments](c, "arguments")
 	ts.Disabled, c = extractValue[bool](c, "disabled")
 	ts.FabricFiltered, c = extractValue[bool](c, "fabricFiltered")
-	ts.Response, c = extractValue[StepResponse](c, "response")
+	var ok bool
+	ts.Response, c, ok = tryExtractValue[StepResponse](c, "response")
+	if !ok {
+		var response []any
+		response, c, ok = tryExtractArrayAny(c, "response")
+		if ok {
+			for _, r := range response {
+				slog.Info("Response value", slog.String("path", ts.Parent.Path), log.Type("type", r))
+			}
+		}
+	}
 	ts.TimedInteractionTimeoutMs, c = extractValue[uint64](c, "timedInteractionTimeoutMs")
 	ts.Event, c = extractValue[string](c, "event")
 	ts.EventNumber, c = extractValue[string](c, "eventNumber")
@@ -156,6 +171,9 @@ func (ts *TestStep) UnmarshalMap(c yaml.MapSlice) error {
 	if len(c) > 0 {
 		ts.Extras = make(yaml.MapSlice, len(c))
 		copy(ts.Extras, c)
+		for _, extra := range c {
+			slog.Info("Test step has extra value", slog.Any("key", extra.Key), slog.Any("value", extra.Value))
+		}
 	}
 	return nil
 }
@@ -165,7 +183,7 @@ type TestArguments struct {
 	Values []any `yaml:"values,omitempty"`
 }
 
-func (ta *TestArguments) UnmarshalMap(c yaml.MapSlice) error {
+func (ta *TestArguments) UnmarshalMapSlice(c yaml.MapSlice) error {
 	ta.Value, c = extractValue[any](c, "value")
 	ta.Values, _ = extractArrayAny(c, "values")
 	return nil
@@ -186,7 +204,7 @@ type StepResponse struct {
 	Extras yaml.MapSlice
 }
 
-func (sr *StepResponse) UnmarshalMap(c yaml.MapSlice) error {
+func (sr *StepResponse) UnmarshalMapSlice(c yaml.MapSlice) error {
 	sr.SaveAs, c = extractValue[string](c, "saveAs")
 	sr.Error, c = extractValue[string](c, "error")
 	sr.Value, c = extractValue[any](c, "value")
@@ -197,6 +215,9 @@ func (sr *StepResponse) UnmarshalMap(c yaml.MapSlice) error {
 	if len(c) > 0 {
 		sr.Extras = make(yaml.MapSlice, len(c))
 		copy(sr.Extras, c)
+		for _, extra := range c {
+			slog.Info("Test step response has extra value", slog.Any("key", extra.Key), slog.Any("value", extra.Value))
+		}
 	}
 	return nil
 }
@@ -209,16 +230,16 @@ type StepResponseConstraints struct {
 	MaxValue any `yaml:"maxValue,omitempty"`
 	//	NotValue      any      `yaml:"notValue,omitempty"`
 	//	HasValue      bool     `yaml:"hasValue,omitempty"`
-	//HasMasksSet   []uint64 `yaml:"hasMasksSet,omitempty"`
+	HasMasksSet   []uint64 `yaml:"hasMasksSet,omitempty"`
 	HasMasksClear []uint64 `yaml:"hasMasksClear,omitempty"`
-	//Contains      any      `yaml:"contains,omitempty"`
-	AnyOf any `yaml:"anyOf,omitempty"`
+	Contains      any      `yaml:"contains,omitempty"`
+	AnyOf         any      `yaml:"anyOf,omitempty"`
 	//Excludes      []uint64 `yaml:"excludes,omitempty"`
 
 	Extras yaml.MapSlice
 }
 
-func (src *StepResponseConstraints) UnmarshalMap(c yaml.MapSlice) error {
+func (src *StepResponseConstraints) UnmarshalMapSlice(c yaml.MapSlice) error {
 	src.Type, c = extractValue[string](c, "type")
 	//src.MinLength = extractValue[any](c, "minLength")
 	//src.MaxLength = extractValue[any](c, "maxLength")
@@ -226,15 +247,19 @@ func (src *StepResponseConstraints) UnmarshalMap(c yaml.MapSlice) error {
 	src.MaxValue, c = extractValue[any](c, "maxValue")
 	//src.NotValue = extractValue[any](c, "notValue")
 	//src.HasValue = extractValue[bool](c, "hasValue")
-	//src.HasMasksSet = extractArray[uint64](c, "hasMasksSet")
+	src.HasMasksSet, c = extractArray[uint64](c, "hasMasksSet")
 	src.HasMasksClear, c = extractArray[uint64](c, "hasMasksClear")
-	//src.Contains = extractValue[any](c, "contains")
+	src.Contains, c = extractValue[any](c, "contains")
 	src.AnyOf, c = extractValue[any](c, "anyOf")
 	//src.Excludes = extractArray[uint64](c, "excludes")
 	//
 	if len(c) > 0 {
 		src.Extras = make(yaml.MapSlice, len(c))
 		copy(src.Extras, c)
+		for _, extra := range c {
+			slog.Info("Test step response constraints has extra value", slog.Any("key", extra.Key), slog.Any("value", extra.Value))
+		}
+
 	}
 
 	return nil

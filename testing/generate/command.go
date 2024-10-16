@@ -16,23 +16,29 @@ import (
 )
 
 func getArg(arg any) (name string, value any, ok bool) {
-	var m map[string]any
-	m, ok = arg.(map[string]any)
-	if !ok {
-		return
-	}
 	var n any
-	n, ok = m["name"]
-	if !ok {
-		return
-	}
-	name, ok = n.(string)
-	if !ok {
-		return
-	}
-	value, ok = m["value"]
-	if !ok {
-		return
+	switch v := arg.(type) {
+	case map[string]any:
+
+		n, ok = v["name"]
+		if !ok {
+			return
+		}
+		name, ok = n.(string)
+		if !ok {
+			return
+		}
+	case yaml.MapSlice:
+		n, ok = parse.ValueFromMapSlice(v, "name")
+		if !ok {
+			return
+		}
+		name, ok = n.(string)
+		if !ok {
+			return
+		}
+		value, ok = parse.ValueFromMapSlice(v, "value")
+
 	}
 	return
 }
@@ -55,62 +61,68 @@ func wrapValue(name string, field *matter.Field, value any) string {
 		return fmt.Sprintf("unknown field: %s", name)
 	}
 	if field.Type == nil {
-		return fmt.Sprintf("%v=%v", strcase.ToLowerCamel(name), value)
+		return fmt.Sprintf("%v=%s", strcase.ToLowerCamel(name), string(pythonValueHelper(value)))
 	}
-	if field.Type.Entity != nil {
-		var parentEntity types.Entity
-		var namespace string
-		var objectGroup string
-		var valName string
-		var objectName string
-		switch entity := field.Type.Entity.(type) {
-		case *matter.Enum:
-			parentEntity = entity.ParentEntity
-			objectGroup = "Enums"
-			objectName = entity.Name
-			switch value := value.(type) {
-			case uint64:
-				for _, val := range entity.Values {
-					if val.Value.Valid() && val.Value.Value() == value {
-						valName = "k" + val.Name
-						break
-					}
-				}
-			default:
-				slog.Info("unknown arg type", log.Type("type", value))
-			}
-		case *matter.Bitmap:
-			parentEntity = entity.ParentEntity
-			objectGroup = "Bitmaps"
-			objectName = entity.Name
-			switch value := value.(type) {
-			case uint64:
-				for _, val := range entity.Bits {
-					from, to, err := val.Bits()
-					if err != nil || from != to {
-						continue
-					}
-					if from == value {
-						valName = "k" + val.Name()
-						break
-					}
-				}
+	if field.Type.Entity == nil {
+		return fmt.Sprintf("%v=%s", strcase.ToLowerCamel(name), string(pythonValueHelper(value)))
 
-			default:
-				slog.Info("unknown arg type", log.Type("type", value))
+	}
+	var parentEntity types.Entity
+	var namespace string
+	var objectGroup string
+	var valName string
+	var objectName string
+	switch entity := field.Type.Entity.(type) {
+	case *matter.Enum:
+		parentEntity = entity.ParentEntity
+		objectGroup = "Enums"
+		objectName = entity.Name
+		switch value := value.(type) {
+		case uint64:
+			for _, val := range entity.Values {
+				if val.Value.Valid() && val.Value.Value() == value {
+					valName = "k" + val.Name
+					break
+				}
 			}
 		default:
-			slog.Warn("unsupported argument entity", log.Type("type", entity))
+			slog.Info("unknown arg type", slog.String("name", name), log.Type("type", value))
 		}
-		if parentEntity != nil {
-			switch parentEntity := parentEntity.(type) {
-			case *matter.Cluster:
-				namespace = fmt.Sprintf("Clusters.Objects.%s", spec.CanonicalName(parentEntity.Name))
+	case *matter.Bitmap:
+		parentEntity = entity.ParentEntity
+		objectGroup = "Bitmaps"
+		objectName = entity.Name
+		switch value := value.(type) {
+		case uint64:
+			for _, val := range entity.Bits {
+				from, to, err := val.Bits()
+				if err != nil || from != to {
+					continue
+				}
+				if from == value {
+					valName = "k" + val.Name()
+					break
+				}
 			}
+
+		default:
+			slog.Info("unknown arg type", slog.String("name", name), log.Type("type", value))
 		}
-		var sb strings.Builder
-		sb.WriteString(strcase.ToLowerCamel(name))
-		sb.WriteRune('=')
+	case *matter.Struct:
+		slog.Warn("struct argument entity", log.Type("type", value))
+	default:
+		slog.Warn("unsupported argument entity", log.Type("type", entity))
+	}
+	if parentEntity != nil {
+		switch parentEntity := parentEntity.(type) {
+		case *matter.Cluster:
+			namespace = fmt.Sprintf("Clusters.Objects.%s", spec.CanonicalName(parentEntity.Name))
+		}
+	}
+	var sb strings.Builder
+	sb.WriteString(strcase.ToLowerCamel(name))
+	sb.WriteRune('=')
+	if namespace != "" || objectGroup != "" || objectName != "" {
 		if namespace != "" {
 			sb.WriteString(namespace)
 			sb.WriteRune('.')
@@ -127,12 +139,14 @@ func wrapValue(name string, field *matter.Field, value any) string {
 			sb.WriteString(valName)
 		} else {
 			sb.WriteRune('(')
-			sb.WriteString(fmt.Sprintf("%v", value))
+			sb.WriteString(string(pythonValueHelper(value)))
 			sb.WriteRune(')')
 		}
 		return sb.String()
 	}
-	return fmt.Sprintf("%v=%v", strcase.ToLowerCamel(name), value)
+	sb.WriteString(string(pythonValueHelper(value)))
+	return sb.String()
+
 }
 
 func commandArgHelper(test test, step testStep, name string) raymond.SafeString {

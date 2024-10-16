@@ -54,7 +54,10 @@ func (sp *PythonTestGenerator) Process(cxt context.Context, input *pipeline.Data
 	if err != nil {
 		return
 	}
-	tc := map[string]interface{}{
+	variables := make(map[string]struct{})
+	t.RegisterHelper("variable", variableHelper(variables))
+	t.RegisterHelper("value", valueHelper(variables))
+	tc := map[string]any{
 		"test": test,
 	}
 	var out string

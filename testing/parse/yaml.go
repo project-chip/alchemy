@@ -6,11 +6,10 @@ import (
 	"slices"
 
 	"github.com/goccy/go-yaml"
-	"github.com/project-chip/alchemy/internal/log"
 )
 
-type unmarshaller interface {
-	UnmarshalMap(c yaml.MapSlice) error
+type mapSliceUnmarshaller interface {
+	UnmarshalMapSlice(c yaml.MapSlice) error
 }
 
 func deleteMapItem(val yaml.MapSlice, key string) yaml.MapSlice {
@@ -23,36 +22,42 @@ func deleteMapItem(val yaml.MapSlice, key string) yaml.MapSlice {
 }
 
 func extractValue[T any](val yaml.MapSlice, key string, defaultValue ...T) (value T, out yaml.MapSlice) {
+	value, out, _ = tryExtractValue(val, key, defaultValue...)
+	return
+}
+
+func tryExtractValue[T any](val yaml.MapSlice, key string, defaultValue ...T) (value T, out yaml.MapSlice, ok bool) {
 	out = val
-	if key == "defaultValue" {
-		slog.Info("getting default value")
-	}
-	v, ok := ValueFromMapSlice(val, key)
+	var v any
+	v, ok = ValueFromMapSlice(val, key)
 	if !ok {
 		if len(defaultValue) > 0 {
 			value = defaultValue[0]
+			ok = true
 		}
 		return
 	}
-	if key == "defaultValue" {
-		slog.Info("got default value", log.Type("type", v))
-	}
-
 	switch v := v.(type) {
 	case T:
 		value = v
 		out = deleteMapItem(val, key)
 		return
 	case yaml.MapSlice:
-		if u, ok := any(&value).(unmarshaller); ok {
-			err := u.UnmarshalMap(v)
+		var u mapSliceUnmarshaller
+		if u, ok = any(&value).(mapSliceUnmarshaller); ok {
+			err := u.UnmarshalMapSlice(v)
 			if err == nil {
 				out = deleteMapItem(val, key)
 				return
 			}
+			ok = false
 		}
+	default:
+		ok = false
 	}
-	slog.Info("unable to cast YAML value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
+	if !ok {
+		slog.Info("unable to cast YAML value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
+	}
 	return
 }
 
@@ -83,8 +88,8 @@ func extractObject[T any](val yaml.MapSlice, key string) (value *T, out yaml.Map
 		return
 	case yaml.MapSlice:
 		value = new(T)
-		if u, ok := any(value).(unmarshaller); ok {
-			err := u.UnmarshalMap(v)
+		if u, ok := any(value).(mapSliceUnmarshaller); ok {
+			err := u.UnmarshalMapSlice(v)
 			if err == nil {
 				out = deleteMapItem(val, key)
 				return
@@ -96,8 +101,15 @@ func extractObject[T any](val yaml.MapSlice, key string) (value *T, out yaml.Map
 }
 
 func extractArray[T any](val yaml.MapSlice, key string) (value []T, out yaml.MapSlice) {
+	value, out, _ = tryExtractArray[T](val, key)
+	return
+}
+
+func tryExtractArray[T any](val yaml.MapSlice, key string) (value []T, out yaml.MapSlice, ok bool) {
 	out = val
-	v, ok := ValueFromMapSlice(val, key)
+
+	var v any
+	v, ok = ValueFromMapSlice(val, key)
 	if !ok {
 		return
 	}
@@ -112,24 +124,33 @@ func extractArray[T any](val yaml.MapSlice, key string) (value []T, out yaml.Map
 		return
 	case []any:
 		for _, v := range v {
-			el, ok := v.(T)
+			var el T
+			el, ok = v.(T)
 			if ok {
 				value = append(value, el)
 			} else {
 				slog.Info("unable to cast YAML array value element", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", el)), slog.String("got", fmt.Sprintf("%T", v)))
-
+				return
 			}
 		}
 		out = deleteMapItem(val, key)
 		return
+	default:
+		ok = false
+		slog.Info("unable to cast YAML array value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
+		return
 	}
-	slog.Info("unable to cast YAML array value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
-	return
 }
 
 func extractArrayAny(val yaml.MapSlice, key string) (value []any, out yaml.MapSlice) {
+	value, out, _ = tryExtractArrayAny(val, key)
+	return
+}
+
+func tryExtractArrayAny(val yaml.MapSlice, key string) (value []any, out yaml.MapSlice, ok bool) {
 	out = val
-	v, ok := ValueFromMapSlice(val, key)
+	var v any
+	v, ok = ValueFromMapSlice(val, key)
 	if !ok {
 		return
 	}
@@ -140,5 +161,6 @@ func extractArrayAny(val yaml.MapSlice, key string) (value []any, out yaml.MapSl
 		return
 	}
 	slog.Info("unable to cast YAML any array value", slog.String("key", key), slog.String("expected", fmt.Sprintf("%T", value)), slog.String("got", fmt.Sprintf("%T", v)))
+	ok = false
 	return
 }
