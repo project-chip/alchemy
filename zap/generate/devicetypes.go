@@ -50,15 +50,26 @@ func (p DeviceTypesPatcher) Type() pipeline.ProcessorType {
 
 func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data[[]*matter.DeviceType]) (outputs []*pipeline.Data[[]byte], err error) {
 
-	deviceTypesByID := make(map[uint64]*matter.DeviceType)
-	deviceTypesByName := make(map[string]*matter.DeviceType)
+	deviceTypesToUpdateByID := make(map[uint64]*matter.DeviceType)
+	deviceTypesToUpdateByName := make(map[string]*matter.DeviceType)
 	for _, input := range inputs {
 		for _, dt := range input.Content {
 			if dt.ID.Valid() {
-				deviceTypesByID[dt.ID.Value()] = dt
+				deviceTypesToUpdateByID[dt.ID.Value()] = dt
 			} else {
-				deviceTypesByName[matterDeviceTypeName(dt)] = dt
+				deviceTypesToUpdateByName[matterDeviceTypeName(dt)] = dt
 			}
+		}
+	}
+
+	allDeviceTypesByID := make(map[uint64]*matter.DeviceType)
+	allDeviceTypesByName := make(map[string]*matter.DeviceType)
+
+	for _, deviceType := range p.spec.DeviceTypes {
+		if deviceType.ID.Valid() {
+			allDeviceTypesByID[deviceType.ID.Value()] = deviceType
+		} else {
+			allDeviceTypesByName[matterDeviceTypeName(deviceType)] = deviceType
 		}
 	}
 
@@ -85,6 +96,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	deviceTypeElements := configurator.SelectElements("deviceType")
 	for _, deviceTypeElement := range deviceTypeElements {
 		var deviceType *matter.DeviceType
+		var deviceTypeToUpdate *matter.DeviceType
 		deviceIDElement := deviceTypeElement.SelectElement("deviceId")
 		if deviceIDElement != nil {
 			deviceTypeIDText := deviceIDElement.Text()
@@ -94,35 +106,43 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 					// Exception for the all clusters app, etc
 					continue
 				}
-				deviceType = deviceTypesByID[deviceTypeID.Value()]
-				if deviceType != nil {
-					delete(deviceTypesByID, deviceTypeID.Value())
+				deviceTypeToUpdate = deviceTypesToUpdateByID[deviceTypeID.Value()]
+				if deviceTypeToUpdate != nil {
+					delete(deviceTypesToUpdateByID, deviceTypeID.Value())
+				} else {
+					deviceType = allDeviceTypesByID[deviceTypeID.Value()]
 				}
 			} else if deviceTypeIDText != "ID-TBD" {
 				slog.Warn("invalid deviceId", "text", deviceTypeID.Text())
 			}
 
 		}
-		if deviceType == nil {
+		if deviceTypeToUpdate == nil {
 			deviceTypeElement := deviceTypeElement.SelectElement("typeName")
 			if deviceTypeElement == nil {
 				slog.Warn("missing deviceId and typeName elements")
 				continue
 			}
-			deviceTypeIDText := deviceTypeElement.Text()
-			deviceType = deviceTypesByName[deviceTypeIDText]
-			if deviceType != nil {
-				delete(deviceTypesByName, deviceTypeIDText)
+			deviceTypeNameText := deviceTypeElement.Text()
+			deviceTypeToUpdate = deviceTypesToUpdateByName[deviceTypeNameText]
+			if deviceTypeToUpdate != nil {
+				delete(deviceTypesToUpdateByName, deviceTypeNameText)
+			} else if deviceType == nil {
+				deviceType = allDeviceTypesByName[deviceTypeNameText]
 			}
 		}
-		if deviceType != nil && !matter.NonGlobalIDInvalidForEntity(deviceType.ID, types.EntityTypeDeviceType) {
-			p.applyDeviceTypeToElement(p.spec, deviceType, deviceTypeElement)
-		} else {
+		if deviceTypeToUpdate != nil {
+			if !matter.NonGlobalIDInvalidForEntity(deviceTypeToUpdate.ID, types.EntityTypeDeviceType) {
+				p.applyDeviceTypeToElement(p.spec, deviceTypeToUpdate, deviceTypeElement)
+			} else {
+				configurator.RemoveChild(deviceTypeElement)
+			}
+		} else if deviceType == nil {
 			configurator.RemoveChild(deviceTypeElement)
 		}
 	}
 
-	for _, dt := range deviceTypesByID {
+	for _, dt := range deviceTypesToUpdateByID {
 		slog.Info("Adding new device type", slog.String("name", dt.Name))
 		if matter.NonGlobalIDInvalidForEntity(dt.ID, types.EntityTypeDeviceType) {
 			continue
@@ -130,7 +150,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
 	}
 
-	for _, dt := range deviceTypesByName {
+	for _, dt := range deviceTypesToUpdateByName {
 		slog.Info("Adding new device type", slog.String("name", dt.Name))
 		p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
 	}
