@@ -17,7 +17,7 @@ var templateFiles embed.FS
 var template pipeline.Once[*raymond.Template]
 
 func loadTemplate(spec *spec.Specification) (*raymond.Template, error) {
-	return template.Do(func() (*raymond.Template, error) {
+	t, err := template.Do(func() (*raymond.Template, error) {
 		files, err := templateFiles.ReadDir("templates")
 		if err != nil {
 			return nil, err
@@ -42,4 +42,8 @@ func loadTemplate(spec *spec.Specification) (*raymond.Template, error) {
 		}
 		return t, nil
 	})
+	if err != nil {
+		return nil, err
+	}
+	return t.Clone(), nil
 }

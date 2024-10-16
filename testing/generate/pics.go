@@ -112,9 +112,9 @@ func (sp *PythonTestGenerator) makePicsAlias(clusters map[string]*matter.Cluster
 		var direction matter.Interface
 		switch parts[5] {
 		case "Rsp":
-			direction = matter.InterfaceClient
-		case "Tx":
 			direction = matter.InterfaceServer
+		case "Tx":
+			direction = matter.InterfaceClient
 		default:
 			slog.Warn("Unknown command direction while building aliases", slog.String("direction", parts[5]))
 		}
@@ -126,7 +126,12 @@ func (sp *PythonTestGenerator) makePicsAlias(clusters map[string]*matter.Cluster
 				return fmt.Sprintf("has%sCommand", matter.Case(c.Name))
 			}
 		}
-		slog.Warn("Unable to find matching command for PICS", slog.String("clusterName", cluster.Name), slog.String("pics", p), slog.Uint64("id", id), slog.String("direction", direction.String()))
+		var commands []any
+		for _, c := range cluster.Commands {
+			commands = append(commands, slog.Group("command", slog.Uint64("id", c.ID.Value()), slog.String("direction", c.Direction.String())))
+		}
+		slog.Warn("Unable to find matching command for PICS", slog.String("clusterName", cluster.Name), slog.String("pics", p), slog.Uint64("id", id), slog.String("direction", direction.String()), slog.Group("checked", commands...))
+
 	case "E":
 		for _, e := range cluster.Events {
 			if !e.ID.Valid() {

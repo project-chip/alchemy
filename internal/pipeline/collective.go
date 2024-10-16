@@ -11,8 +11,9 @@ type CollectiveProcessor[I, O any] interface {
 	Process(cxt context.Context, inputs []*Data[I]) (outputs []*Data[O], err error)
 }
 
-func processCollective[I, O any](cxt context.Context, processor CollectiveProcessor[I, O], input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
-	name := processor.Name()
+type CollectiveProcess[I, O any] func(cxt context.Context, inputs []*Data[I]) (outputs []*Data[O], err error)
+
+func ProcessCollectiveFunc[I, O any](cxt context.Context, input Map[string, *Data[I]], name string, processor CollectiveProcess[I, O]) (output Map[string, *Data[O]], err error) {
 	if len(name) > 0 {
 		cyan.Fprintf(os.Stderr, "%s...\n", name)
 	}
@@ -25,7 +26,7 @@ func processCollective[I, O any](cxt context.Context, processor CollectiveProces
 		return true
 	})
 	var outputs []*Data[O]
-	outputs, err = processor.Process(cxt, inputs)
+	outputs, err = processor(cxt, inputs)
 	if err != nil {
 		return
 	}

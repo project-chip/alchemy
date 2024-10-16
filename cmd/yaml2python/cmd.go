@@ -2,6 +2,7 @@ package yaml2python
 
 import (
 	"context"
+	"path/filepath"
 
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/errata"
@@ -38,6 +39,20 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 
 	var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
 	inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(args...))
+	if err != nil {
+		return err
+	}
+
+	inputs, err = pipeline.ProcessCollectiveFunc(cxt, inputs, "Filtering YAML tests", func(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[struct{}], err error) {
+		for _, input := range inputs {
+			switch filepath.Base(input.Path) {
+			case "PICS.yaml":
+			default:
+				outputs = append(outputs, input)
+			}
+		}
+		return
+	})
 	if err != nil {
 		return err
 	}
