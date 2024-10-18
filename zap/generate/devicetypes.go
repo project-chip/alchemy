@@ -57,7 +57,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			if dt.ID.Valid() {
 				deviceTypesToUpdateByID[dt.ID.Value()] = dt
 			} else {
-				deviceTypesToUpdateByName[matterDeviceTypeName(dt)] = dt
+				deviceTypesToUpdateByName[dt.Name] = dt
 			}
 		}
 	}
@@ -69,7 +69,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		if deviceType.ID.Valid() {
 			allDeviceTypesByID[deviceType.ID.Value()] = deviceType
 		} else {
-			allDeviceTypesByName[matterDeviceTypeName(deviceType)] = deviceType
+			allDeviceTypesByName[deviceType.Name] = deviceType
 		}
 	}
 
@@ -177,7 +177,7 @@ type clusterRequirements struct {
 func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
 	xml.SetOrCreateSimpleElement(dte, "name", zap.DeviceTypeName(deviceType))
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP")
-	xml.SetOrCreateSimpleElement(dte, "typeName", matterDeviceTypeName(deviceType))
+	xml.SetOrCreateSimpleElement(dte, "typeName", deviceType.Name)
 	xml.SetOrCreateSimpleElement(dte, "profileId", "0x0103").CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString()).CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class)
@@ -485,8 +485,4 @@ func (p DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element,
 		rae.SetText(ra)
 		xml.InsertElementByName(include, rae, "requireAttribute", "requireCommand", "requireCommandField")
 	}
-}
-
-func matterDeviceTypeName(deviceType *matter.DeviceType) string {
-	return fmt.Sprintf("Matter %s", deviceType.Name)
 }
