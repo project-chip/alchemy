@@ -10,9 +10,12 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
+	"github.com/mailgun/raymond/v2"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -42,6 +45,12 @@ func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc
 
 	destinations := buildDestinations(sp.testPlanRoot, entities, doc.Errata().TestPlan)
 
+	var t *raymond.Template
+	t, err = loadTemplate()
+	if err != nil {
+		return
+	}
+
 	for newPath, cluster := range destinations {
 
 		_, err = os.ReadFile(newPath)
@@ -50,8 +59,37 @@ func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc
 			continue
 		}
 
+		var cut *clusterUnderTest
+		cut, err = filterCluster(doc, cluster)
+		if err != nil {
+			err = fmt.Errorf("failed filtering %s: %w", path, err)
+			return
+		}
+
+		tc := templateContext{ReferenceStore: conformance.ReferenceStore(doc)}
+
+		args := map[string]any{
+			"cluster":           cluster,
+			"context":           tc,
+			"doc":               doc,
+			"features":          cut.features,
+			"attributes":        cut.attributes,
+			"commandsAccepted":  cut.commandsAccepted,
+			"commandsGenerated": cut.commandsGenerated,
+			"events":            cut.events,
+		}
+
+		if len(cluster.Revisions) > 0 {
+			args["lastRevision"] = cluster.Revisions[len(cluster.Revisions)-1]
+		}
+		args["attributeOptions"] = getOptionality(cut.attributes, func(a *matter.Field) string { return a.Name }, func(a *matter.Field) conformance.Set { return a.Conformance })
+		args["eventOptions"] = getOptionality(cut.events, func(a *matter.Event) string { return a.Name }, func(a *matter.Event) conformance.Set { return a.Conformance })
+		args["commandsAcceptedOptions"] = getOptionality(cut.commandsAccepted, func(a *matter.Command) string { return a.Name }, func(a *matter.Command) conformance.Set { return a.Conformance })
+		args["commandsGeneratedOptions"] = getOptionality(cut.commandsGenerated, func(a *matter.Command) string { return a.Name }, func(a *matter.Command) conformance.Set { return a.Conformance })
+
 		var result string
-		result, err = renderClusterTestPlan(doc, cluster)
+		result, err = t.Exec(args)
+		//result, err = renderClusterTestPlan(doc, cluster)
 		if err != nil {
 			err = fmt.Errorf("failed rendering %s: %w", path, err)
 			return
@@ -86,4 +124,29 @@ func testPlanName(path string, entities []types.Entity) string {
 		name += " " + suffix
 	}
 	return strcase.ToKebab(name)
+}
+
+func buildDestinations(testplanRoot string, entities []types.Entity, errata errata.TestPlan) (destinations map[string]*matter.Cluster) {
+	destinations = make(map[string]*matter.Cluster)
+
+	for _, e := range entities {
+		switch e := e.(type) {
+		case *matter.ClusterGroup:
+			for _, c := range e.Clusters {
+				fileName := strings.ToLower(strcase.ToSnake(c.Name))
+				newPath := getTestPlanPath(testplanRoot, fileName)
+				destinations[newPath] = c
+			}
+		case *matter.Cluster:
+			var newPath string
+			if errata.TestPlanPath != "" {
+				newPath = filepath.Join(testplanRoot, errata.TestPlanPath)
+			} else {
+				newPath = getTestPlanPath(testplanRoot, strings.ToLower(strcase.ToSnake(e.Name)))
+			}
+			destinations[newPath] = e
+		}
+	}
+	return
+
 }

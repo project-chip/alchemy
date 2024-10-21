@@ -1,0 +1,21 @@
+{{#if list}}
+{{#if optionality.mandatory}}
+{mandatoryEntries} + 
+- {{#each optionality.mandatory}}{{#if @first}}0x{{id this.ID format=idFormat}}{{else}}, 0x{{id this.ID format=idFormat}}{{/if}}{{/each}} 
+{attsGlobalNumbers}.
+{{/if}}
+{{#if optionality.optional}}
+{optionalEntries} +
+{{#each optionality.optional}}
+- 0x{{id this.ID format=idFormat}}: {shallIncludeIff} {{#brace}}PICS_S{{entityId this}}{{/brace}}
+{{/each}}
+{{/if}}
+{{#if optionality.features}}
+{featureEntries} +
+{{#each optionality.features}}
+- 0x{{id this.entity.ID format=idFormat}}: {shallIncludeIf} {{picsConformance context.referenceStore cluster this.conformance}} and {shallNotInclude}.
+{{/each}}
+{{/if}}
+{{else}}
+{noEntryStdRgn} +
+{{/if}}

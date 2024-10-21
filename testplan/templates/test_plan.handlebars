@@ -1,13 +1,4 @@
-package testplan
-
-import (
-	"fmt"
-	"strings"
-
-	"github.com/project-chip/alchemy/matter"
-)
-
-var header = `= *%s Cluster Test Plan*
+= *{{cluster.Name}} Cluster Test Plan*
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -26,8 +17,8 @@ endif::[]
 :doctype: book
 :author: Matter CSG Test Plans Tiger Team
 :sectnums:
-:picsCode: %s
-:clustername: %s
+:picsCode: {{cluster.PICS}}
+:clustername: {{cluster.Name}}
 
 // Common AsciiDocAttributes
 include::../common/cluster_common.adoc[]
@@ -43,11 +34,22 @@ This section covers the {clustername} Cluster Test Plan related PICS items that 
 | {PICS_S}   | {devimp} the {clustername} cluster as a server? | O                    |
 |===
 
-`
+=== Server
 
-func renderHeader(cluster *matter.Cluster, b *strings.Builder) (err error) {
+{{> features }}
+{{> attributes }}
+{{> commands }}
+{{> events }}
+== Test Case List
 
-	header := fmt.Sprintf(header, cluster.Name, cluster.PICS, cluster.Name)
-	_, err = b.WriteString(header)
-	return
-}
+|===
+| *TC UUID*         | *Test Case Name*
+| TC-{picsCode}-1.1 | Global Attributes with {DUT_Server}
+| TC-{picsCode}-2.1 | Attributes with Server as DUT
+| TC-{picsCode}-2.2 | Primary Functionality with Server as DUT
+|===
+
+
+
+{{> global_attributes}}
+{{> attributes_test}}
