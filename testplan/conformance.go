@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -27,7 +28,19 @@ func renderFeatureConformance(b *strings.Builder, doc *spec.Doc, cluster *matter
 	renderConformance(cs, b, doc, cluster, entityVariable)
 }
 
-func renderConformance(cs conformance.Set, b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, formatter conformanceEntityFormatter) {
+func picsConformanceHelper(doc conformance.ReferenceStore, cluster matter.Cluster, cs conformance.Set) raymond.SafeString {
+	var b strings.Builder
+	renderConformance(cs, &b, doc, &cluster, entityPICS)
+	return raymond.SafeString(b.String())
+}
+
+func conformanceHelper(doc conformance.ReferenceStore, cluster matter.Cluster, cs conformance.Set) raymond.SafeString {
+	var b strings.Builder
+	renderConformance(cs, &b, doc, &cluster, entityVariable)
+	return raymond.SafeString(b.String())
+}
+
+func renderConformance(cs conformance.Set, b *strings.Builder, doc conformance.ReferenceStore, cluster *matter.Cluster, formatter conformanceEntityFormatter) {
 	for _, c := range cs {
 		switch c := c.(type) {
 		case *conformance.Mandatory:
@@ -58,7 +71,7 @@ func renderConformance(cs conformance.Set, b *strings.Builder, doc *spec.Doc, cl
 	}
 }
 
-func renderExpression(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, exp conformance.Expression, formatter conformanceEntityFormatter) {
+func renderExpression(b *strings.Builder, doc conformance.ReferenceStore, cluster *matter.Cluster, exp conformance.Expression, formatter conformanceEntityFormatter) {
 	switch exp := exp.(type) {
 	case *conformance.EqualityExpression:
 		b.WriteRune('(')

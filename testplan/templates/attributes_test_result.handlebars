@@ -1,0 +1,12 @@
+{{#ifDataTypeIsArray attribute.type}}
+ - {DUTreply} a list of {{dataType attribute.type.entryType}} entries
+{{#ifIsConstraint attribute.constraint "range"}}
+ - Verify that the list has between {{minLimit context.cluster attribute.constraint}} and {{maxLimit context.cluster attribute.constraint}} entries 
+{{else ifIsConstraint attribute.constraint "min"}}
+ - Verify that the list has {{minLimit context.cluster attribute.constraint}} or more entries
+{{else ifIsConstraint attribute.constraint "max"}}
+ - Verify that the list has no more than {{maxLimit context.cluster attribute.constraint}} entries
+{{/ifIsConstraint}}
+{{else}}
+ {DUTreply} {{#ifHasQuality attribute.quality "nullable"}}either null or {{/ifHasQuality}}{{dataTypeArticle attribute.type}} {{dataType attribute.type}} value. {{constraint attribute.constraint attribute.type}}
+{{/ifDataTypeIsArray}}

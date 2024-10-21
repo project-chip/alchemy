@@ -1,0 +1,22 @@
+{{#if features}}
+==== Features
+
+// FeatureMap defined macros
+{{#each features}}
+:F_{{raw this.Code}}: {{raw this.Code}}
+{{/each}}
+
+{{#each features}}
+:PICS_SF_{{raw this.Code}}: {PICS_S}.F{{format @index "%02d"}}({{#brace}}F_{{raw this.Code}}{{/brace}})
+{{/each}}
+
+|===
+| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*
+{{#each features}}
+| {PICS_SF_{{raw this.Code ~}}
+} | {devsup} | {{raw this.Summary}} | {{#if this.Conformance}}{PICS_S}: {{conformance context.referenceStore cluster this.Conformance}}{{/if}}
+{{/each}}
+|===
+
+
+{{/if}}

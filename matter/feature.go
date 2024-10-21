@@ -2,6 +2,7 @@ package matter
 
 import (
 	"encoding/json"
+	"iter"
 
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -29,6 +30,17 @@ func (fs *Features) Identifier(id string) (types.Entity, bool) {
 		}
 	}
 	return fs.Bitmap.Identifier(id)
+}
+
+func (fs *Features) FeatureBits() iter.Seq[*Feature] {
+	return func(yield func(*Feature) bool) {
+		for _, b := range fs.Bits {
+			f, ok := b.(*Feature)
+			if ok && !yield(f) {
+				return
+			}
+		}
+	}
 }
 
 type Feature struct {

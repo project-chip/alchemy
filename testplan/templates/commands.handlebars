@@ -1,0 +1,42 @@
+{{#if commandsAccepted}}
+==== Commands received
+
+
+{{#each commandsAccepted}}
+:{{entityIdPadded commandsAccepted this}} : {{raw this.Name}}
+{{/each}}
+
+{{#each commandsAccepted}}
+:PICS_S{{entityIdPadded commandsAccepted this}} : {PICS_S}.C{{shortId this.ID}}.Rsp({{#brace}}{{entityId this}}{{/brace}})
+{{/each}}
+
+
+|===
+| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*
+{{#each commandsAccepted}}
+| {{#brace}}PICS_S{{entityId this}}{{/brace}} | {devimp} the _{{#brace}}{{entityId this}}{{/brace}}_ command?| {{#if this.conformance}}{PICS_S}: {{picsConformance context.referenceStore cluster this.conformance}}{{/if}} |
+{{/each}}
+|===
+
+{{/if}}
+{{#if commandsGenerated}}
+==== Commands generated
+
+
+{{#each commandsGenerated}}
+:{{entityIdPadded commandsGenerated this}} : {{raw this.Name}}
+{{/each}}
+
+{{#each commandsGenerated}}
+:PICS_S{{entityIdPadded commandsGenerated this}} : {PICS_S}.C{{shortId this.ID}}.Tx({{#brace}}{{entityId this}}{{/brace}})
+{{/each}}
+
+
+|===
+| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*
+{{#each commandsGenerated}}
+| {{#brace}}PICS_S{{entityId this}}{{/brace}} | {devimp} sending the _{{#brace}}{{entityId this}}{{/brace}}_ command?| {{#if this.conformance}}{PICS_S}: {{picsConformance context.referenceStore cluster this.conformance}}{{/if}} |
+{{/each}}
+|===
+
+{{/if}}

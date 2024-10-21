@@ -1,8 +1,6 @@
 package testplan
 
 import (
-	"strings"
-
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -10,36 +8,15 @@ import (
 
 type clusterUnderTest struct {
 	cluster           *matter.Cluster
-	features          []*matter.Feature
+	features          []*feature
 	attributes        []*matter.Field
 	commandsAccepted  []*matter.Command
 	commandsGenerated []*matter.Command
 	events            []*matter.Event
 }
 
-func renderClusterTestPlan(doc *spec.Doc, cluster *matter.Cluster) (output string, err error) {
-	cut := filterCluster(doc, cluster)
-	var out strings.Builder
-	err = renderHeader(cluster, &out)
-	if err != nil {
-		return
-	}
-	err = renderServer(doc, cut, &out)
-	if err != nil {
-		return
-	}
-	out.WriteString(testCases)
-	err = renderGlobalAttributesTestCase(doc, cut, &out)
-	if err != nil {
-		return
-	}
-	renderAttributesTest(cluster, &out)
-	output = out.String()
-	return
-}
-
-func filterCluster(doc *spec.Doc, cluster *matter.Cluster) *clusterUnderTest {
-	cut := &clusterUnderTest{
+func filterCluster(doc *spec.Doc, cluster *matter.Cluster) (cut *clusterUnderTest, err error) {
+	cut = &clusterUnderTest{
 		cluster:    cluster,
 		attributes: make([]*matter.Field, 0, len(cluster.Attributes)),
 	}
@@ -50,7 +27,17 @@ func filterCluster(doc *spec.Doc, cluster *matter.Cluster) *clusterUnderTest {
 				continue
 			}
 
-			f := bit.(*matter.Feature)
+			feat := bit.(*matter.Feature)
+			f := &feature{Code: feat.Code, Summary: feat.Summary(), Conformance: feat.Conformance()}
+			f.From, f.To, err = feat.Bits()
+			if err != nil {
+				return
+			}
+			if f.From <= f.To {
+				for i := f.From; i <= f.To; i++ {
+					f.Bits = append(f.Bits, i)
+				}
+			}
 			cut.features = append(cut.features, f)
 		}
 	}
@@ -93,21 +80,9 @@ func filterCluster(doc *spec.Doc, cluster *matter.Cluster) *clusterUnderTest {
 		}
 		cut.events = append(cut.events, event)
 	}
-	return cut
+	return
 }
 
 func checkConformance(c conformance.Set, store conformance.IdentifierStore) bool {
 	return !(conformance.IsZigbee(store, c) || conformance.IsDisallowed(c) || conformance.IsDeprecated(c))
 }
-
-var testCases = `== Test Case List
-
-|===
-| *TC UUID*         | *Test Case Name*
-| TC-{picsCode}-1.1 | Global Attributes with {DUT_Server}
-| TC-{picsCode}-2.1 | Attributes with Server as DUT
-| TC-{picsCode}-2.2 | Primary Functionality with Server as DUT
-|===
-
-
-`

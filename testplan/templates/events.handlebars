@@ -1,0 +1,20 @@
+{{#if events}}
+==== Events
+
+
+{{#each events}}
+:{{entityIdPadded events this}}: {{raw this.Name}}
+{{/each}}
+
+{{#each events}}
+:PICS_S{{entityIdPadded events this}} : {PICS_S}.E{{id this.ID}}({{#brace}}{{entityId this}}{{/brace}})
+{{/each}}
+
+|===
+| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*
+{{#each events}}
+| {{#brace}}PICS_S{{entityId this}}{{/brace}} | {devimp} sending the _{{#brace}}{{entityId this}}{{/brace}}_ event?| {{#if this.conformance}}{PICS_S}: {{picsConformance context.referenceStore cluster this.conformance}}{{/if}} |
+{{/each}}
+|===
+
+{{/if}}
