@@ -11,21 +11,23 @@ import (
 	"github.com/goccy/go-yaml"
 	"github.com/iancoleman/strcase"
 	"github.com/mailgun/raymond/v2"
+	"github.com/project-chip/alchemy/internal/handlebars"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func registerHelpers(t *raymond.Template, spec *spec.Specification) {
-	t.RegisterHelper("quote", quoteHelper)
+	t.RegisterHelper("raw", handlebars.RawHelper)
+	t.RegisterHelper("ifSet", handlebars.IfSetHelper)
+	t.RegisterHelper("ifEqual", handlebars.IfEqualHelper)
+	t.RegisterHelper("quote", handlebars.QuoteHelper)
+
 	t.RegisterHelper("pics", picsHelper)
 	t.RegisterHelper("picsGuard", picsGuardHelper)
 	t.RegisterHelper("clusterIs", clusterIsHelper)
 	t.RegisterHelper("commandIs", commandIsHelper)
 	t.RegisterHelper("pythonValue", pythonValueHelper)
 	t.RegisterHelper("asUpperCamelCase", asUpperCamelCaseHelper)
-	t.RegisterHelper("raw", rawHelper)
-	t.RegisterHelper("ifSet", ifSetHelper)
-	t.RegisterHelper("ifEqual", ifEqualHelper)
 	t.RegisterHelper("clusterName", clusterNameHelper(spec))
 	t.RegisterHelper("clusterVariable", clusterVariableHelper(spec))
 	t.RegisterHelper("endpointVariable", endpointVariableHelper)
@@ -35,10 +37,6 @@ func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("statusError", statusErrorHelper)
 	t.RegisterHelper("octetString", octetStringHelper)
 	t.RegisterHelper("pythonString", pythonStringHelper)
-}
-
-func quoteHelper(s string) raymond.SafeString {
-	return raymond.SafeString(strconv.Quote(s))
 }
 
 func clusterIsHelper(step testStep, is string, options *raymond.Options) string {
@@ -163,26 +161,6 @@ func numberArray[T any](value []T, formatter func(T, int) string) raymond.SafeSt
 	}
 	sb.WriteRune(']')
 	return raymond.SafeString(sb.String())
-}
-
-func rawHelper(value string) raymond.SafeString {
-	return raymond.SafeString(value)
-}
-
-func ifSetHelper(value any, options *raymond.Options) string {
-	switch value.(type) {
-	case nil:
-		return options.Inverse()
-	default:
-		return options.Fn()
-	}
-}
-
-func ifEqualHelper(a, b any, options *raymond.Options) string {
-	if raymond.Str(a) == raymond.Str(b) {
-		return options.Fn()
-	}
-	return options.Inverse()
 }
 
 func statusErrorHelper(value string) raymond.SafeString {
