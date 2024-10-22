@@ -128,3 +128,18 @@ func IsBlank(conformance Conformance) bool {
 	}
 	return false
 }
+
+func IsGeneric(conformance Conformance) bool {
+	switch conformance := conformance.(type) {
+	case *Generic:
+		return conformance.raw != ""
+	case Set:
+		if len(conformance) == 1 {
+			mc, ok := conformance[0].(*Generic)
+			if ok {
+				return mc.raw != ""
+			}
+		}
+	}
+	return false
+}
