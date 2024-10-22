@@ -18,6 +18,14 @@ func isSeparator(r rune) bool {
 }
 
 func Case(s string) string {
+	return caseify(s, 0)
+}
+
+func CaseWithSeparator(s string, separator rune) string {
+	return caseify(s, separator)
+}
+
+func caseify(s string, separator rune) string {
 	runes := []rune(s)
 	b := make([]byte, 0, len(runes))
 	var index int
@@ -25,6 +33,9 @@ func Case(s string) string {
 	for index < len(runes) {
 		r := runes[index]
 		if unicode.IsUpper(r) {
+			if nextUpper && separator != 0 && len(b) > 0 {
+				b = utf8.AppendRune(b, separator)
+			}
 			var end int
 			var endedBySeparator bool
 			for end = index + 1; end < len(runes); end++ {
@@ -65,6 +76,9 @@ func Case(s string) string {
 			continue
 		} else if unicode.IsLower(r) {
 			if nextUpper {
+				if separator != 0 {
+					b = utf8.AppendRune(b, separator)
+				}
 				b = utf8.AppendRune(b, unicode.ToUpper(r))
 				nextUpper = false
 			} else {
@@ -79,7 +93,6 @@ func Case(s string) string {
 		index++
 	}
 	return string(b)
-
 }
 
 type charClass uint8
