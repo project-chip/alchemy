@@ -40,6 +40,6 @@ func ClusterName(path string, errata *errata.ZAP, entities []types.Entity) strin
 }
 
 func DeviceTypeName(deviceType *matter.DeviceType) string {
-	name := matter.Case(deviceType.Name)
+	name := matter.CaseWithSeparator(deviceType.Name, '-')
 	return "MA-" + strings.ToLower(name)
 }
