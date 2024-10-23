@@ -10,6 +10,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
+	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -42,13 +43,13 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[[
 		return
 	}
 
-	xml := etree.NewDocument()
-	err = xml.ReadFromBytes(namespaceXML)
+	doc := etree.NewDocument()
+	err = doc.ReadFromBytes(namespaceXML)
 	if err != nil {
 		return
 	}
 
-	configurator := xml.SelectElement("configurator")
+	configurator := doc.SelectElement("configurator")
 	if configurator == nil {
 		err = fmt.Errorf("missing configurator element in %s", namespaceXMLPath)
 		return
@@ -78,7 +79,7 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[[
 	}
 
 	for name, ns := range namespacesByName {
-		nse := configurator.CreateElement("enum")
+		nse := etree.NewElement("enum")
 		nse.CreateAttr("name", name)
 		nse.CreateAttr("type", "enum8")
 		for _, val := range ns.SemanticTags {
@@ -86,11 +87,12 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[[
 			ve.CreateAttr("value", val.ID.ShortHexString())
 			ve.CreateAttr("name", val.Name)
 		}
+		xml.InsertElementByAttribute(configurator, nse, "name")
 	}
 
 	var out string
-	xml.Indent(2)
-	out, err = xml.WriteToString()
+	doc.Indent(2)
+	out, err = doc.WriteToString()
 	if err != nil {
 		return
 	}
