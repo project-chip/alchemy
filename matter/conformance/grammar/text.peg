@@ -21,7 +21,7 @@ Lowercase <- [a-z] {
 	return string(c.text), nil
 }
 
-SameLineString <- [^\n]+ {
+SameLineString <- [^\r\n]+ {
     //debug("matched same line string %s\n", string(c.text))
     return string(c.text), nil
 }

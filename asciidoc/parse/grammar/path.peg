@@ -4,7 +4,7 @@ Path = !"[" elements:( PathElement+) {
     return mergeStrings(elements.([]any)), nil
 } 
 
-PathElement = (([^\r\n{.<>!?,;[\] ])+ 
+PathElement = (([^\n{.<>!?,;[\] ])+ 
  / ([.?!;,] &(!_ !EndOfFile))
  / AttributeReference) 
 
