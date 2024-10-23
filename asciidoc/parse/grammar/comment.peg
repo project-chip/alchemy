@@ -8,7 +8,7 @@ SingleLineCommentDelimiter = "//" {
     return string(c.text), nil
 }
 
-SingleLineCommentContent = [^\n]* {
+SingleLineCommentContent = [^\r\n]* {
     debugPosition(c, "matched comment content\n")
     return string(c.text), nil
 }
