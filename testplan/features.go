@@ -21,6 +21,10 @@ func renderFeatures(doc *spec.Doc, cut *clusterUnderTest, b *strings.Builder) {
 		b.WriteString(fmt.Sprintf(":PICS_SF_%s: {PICS_S}.F%02d({F_%s})\n", f.Code, i, f.Code))
 	}
 	b.WriteRune('\n')
+  for i, f := range cut.features {
+			b.WriteString(fmt.Sprintf(":PICS_SF_%s_CONFORMANCE: {PICS_S}.F%02d\n", f.Code, i))
+  }
+  b.WriteRune('\n')
 	b.WriteString("|===\n")
 	b.WriteString("| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*\n")
 	for _, f := range cut.features {
@@ -29,7 +33,7 @@ func renderFeatures(doc *spec.Doc, cut *clusterUnderTest, b *strings.Builder) {
 		b.WriteString("} | {devsup} ")
 		b.WriteString(f.Summary())
 		b.WriteString(" | ")
-		renderFeatureConformance(b, doc, cut.cluster, f.Conformance())
+		renderPicsConformance(b, doc, cut.cluster, f.Conformance())
 		b.WriteString(" | \n")
 	}
 	b.WriteString("|===\n\n\n")

@@ -41,6 +41,7 @@ This section covers the {clustername} Cluster Test Plan related PICS items that 
 |===
 | *Variable* | *Description*                                   | *Mandatory/Optional* | *Notes/Additional Constraints*
 | {PICS_S}   | {devimp} the {clustername} cluster as a server? | O                    |
+| {PICS_C}   | {devimp} the {clustername} cluster as a client? | O                    |
 |===
 
 `

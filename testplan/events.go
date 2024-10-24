@@ -30,7 +30,11 @@ func renderEvents(doc *spec.Doc, cut *clusterUnderTest, b *strings.Builder) {
 	}
 	b.WriteRune('\n')
 	for i, name := range names {
-		b.WriteString(fmt.Sprintf(":PICS_S%-*s : {PICS_S}.A%s({%s})\n", longest, name, cut.events[i].ID.HexString(), name))
+		b.WriteString(fmt.Sprintf(":PICS_S%-*s : {PICS_S}.E%s({%s})\n", longest, name, cut.events[i].ID.ShortHexString(), name))
+	}
+	b.WriteRune('\n')
+	for i, name := range names {
+		b.WriteString(fmt.Sprintf(":PICS_S%-*s_CONFORMANCE : {PICS_S}.E%s\n", longest, name, cut.events[i].ID.ShortHexString()))
 	}
 	b.WriteString("\n\n|===\n")
 	b.WriteString("| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*\n")
@@ -38,7 +42,6 @@ func renderEvents(doc *spec.Doc, cut *clusterUnderTest, b *strings.Builder) {
 		name := names[i]
 		b.WriteString(fmt.Sprintf("| {PICS_S%s} | {devimp} sending the _{%s}_ event?| ", name, name))
 		if len(event.Conformance) > 0 {
-			b.WriteString("{PICS_S}: ")
 			renderPicsConformance(b, doc, cut.cluster, event.Conformance)
 		}
 		b.WriteString(" |\n")
