@@ -222,6 +222,16 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster) {
 			slog.Warn("Duplicate cluster ID", slog.String("clusterId", m.ID.HexString()), slog.String("clusterName", m.Name), slog.String("existingClusterName", existing.Name))
 		}
 		spec.ClustersByID[m.ID.Value()] = m
+	} else {
+		idText := m.ID.Text()
+		if !strings.EqualFold(idText, "n/a") {
+			if strings.EqualFold(idText, "ID-TBD") {
+				slog.Warn("Cluster has not yet been assigned an ID; this may cause issues with generated code", slog.String("clusterName", m.Name))
+			} else {
+				slog.Warn("Cluster has invalid ID", slog.String("clusterId", idText), slog.String("clusterName", m.Name))
+
+			}
+		}
 	}
 	existing, ok := spec.ClustersByName[m.Name]
 	if ok {
