@@ -93,6 +93,14 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				addClusterToSpec(spec, d, m)
 			case *matter.DeviceType:
 				spec.DeviceTypes = append(spec.DeviceTypes, m)
+				if m.ID.Valid() {
+					if existing, ok := spec.DeviceTypesByID[m.ID.Value()]; ok {
+						slog.Error("duplicate device type ID", slog.String("deviceTypeId", m.ID.HexString()), log.Path("previousSource", existing), log.Path("newSource", m))
+					} else {
+						spec.DeviceTypesByID[m.ID.Value()] = m
+					}
+
+				}
 			case *matter.Namespace:
 				spec.Namespaces = append(spec.Namespaces, m)
 			default:
