@@ -21,6 +21,28 @@ errata:
   src/app_clusters/ConcentrationMeasurement.adoc:
     zap:
       suppress-cluster-define-prefix: true
+    test-plan:
+      testplan-paths:
+        Carbon Dioxide Concentration Measurement: 
+          path: src/cluster/concentration-measurement/carbon_dioxide_concentration_measurement_cluster.adoc
+        Carbon Monoxide Concentration Measurement: 
+          path: src/cluster/concentration-measurement/carbon_monoxide_concentration_measurement_cluster.adoc
+        Formaldehyde Concentration Measurement: 
+          path: src/cluster/concentration-measurement/formaldehyde_concentration_measurement_cluster.adoc
+        Nitrogen Dioxide Concentration Measurement: 
+          path: src/cluster/concentration-measurement/nitrogen_dioxide_concentration_measurement_cluster.adoc
+        Ozone Concentration Measurement: 
+          path: src/cluster/concentration-measurement/ozone_concentration_measurement_cluster.adoc
+        PM10 Concentration Measurement: 
+          path: src/cluster/concentration-measurement/pm10_concentration_measurement_cluster.adoc
+        PM1 Concentration Measurement: 
+          path: src/cluster/concentration-measurement/pm1_concentration_measurement_cluster.adoc
+        PM2.5 Concentration Measurement: 
+          path: src/cluster/concentration-measurement/pm2_5_concentration_measurement_cluster.adoc
+        Radon Concentration Measurement: 
+          path: src/cluster/concentration-measurement/radon_concentration_measurement_cluster.adoc
+        Total Volatile Organic Compounds Concentration Measurement: 
+          path: src/cluster/concentration-measurement/total_volatile_organic_compounds_concentration_measurement_cluster.adoc
   src/app_clusters/DemandResponseLoadControl.adoc:
     zap:
       override-defines:
@@ -219,6 +241,14 @@ errata:
     zap:
       separate-structs:
       - ReplacementProductStruct
+    test-plan:
+      testplan-paths:
+        Activated Carbon Filter Monitoring: 
+          path: src/cluster/resource-monitoring/activated_carbon_filter_monitoring.adoc
+        HEPA Filter Monitoring:
+          path: src/cluster/resource-monitoring/hepa_filter_monitoring.adoc
+        Water Tank Level Monitoring:
+          path: src/cluster/resource-monitoring/water_tank_level_monitoring.adoc
   src/app_clusters/Scenes.adoc:
     spec:
       sections:
