@@ -212,7 +212,7 @@ func (ti *TableInfo) ReadConformance(row *asciidoc.TableRow, column matter.Table
 	s = matter.StripTypeSuffixes(s)
 	conf := conformance.ParseConformance(s)
 	if conformance.IsGeneric(conf) {
-		slog.Warn("failed parsing conformance cell", slog.String("value", s))
+		slog.Error("failed parsing conformance cell", slog.String("value", s))
 	}
 	return conf
 }
