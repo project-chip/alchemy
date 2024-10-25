@@ -1,0 +1,581 @@
+errata:
+  src/app_clusters/AirQuality.adoc:
+    zap:
+      suppress-cluster-define-prefix: true
+  src/app_clusters/AlarmBase.adoc:
+    zap:
+      skip-file: true
+  src/app_clusters/BallastConfiguration.adoc:
+    zap:
+      suppress-cluster-define-prefix: true
+  src/app_clusters/BooleanState.adoc:
+    test-plan:
+      testplan-path: src/cluster/booleanstate.adoc
+    zap:
+      suppress-cluster-define-prefix: true
+  src/app_clusters/ColorControl.adoc:
+    test-plan:
+      testplan-path: src/cluster/colorcontrol.adoc
+    zap:
+      cluster-define-prefix: COLOR_CONTROL_
+  src/app_clusters/ConcentrationMeasurement.adoc:
+    zap:
+      suppress-cluster-define-prefix: true
+  src/app_clusters/DemandResponseLoadControl.adoc:
+    zap:
+      override-defines:
+        ACTIVE_EVENTS: LOAD_CONTROL_ACTIVE_EVENTS
+        EVENTS: LOAD_CONTROL_EVENTS
+      cluster-aliases:
+        Demand Response Load Control:
+        - Demand Response and Load Control
+      template-path: drlc-cluster
+  src/app_clusters/DoorLock.adoc:
+    test-plan:
+      testplan-path: src/cluster/door_lock_Cluster.adoc
+    zap:
+      override-defines:
+        MAX_PIN_CODE_LENGTH: MAX_PIN_LENGTH
+        MIN_PIN_CODE_LENGTH: MIN_PIN_LENGTH
+        NUMBER_OF_CREDENTIALS_SUPPORTED_PER_USER: NUM_CREDENTIALS_SUPPORTED_PER_USER
+        NUMBER_OF_HOLIDAY_SCHEDULES_SUPPORTED: NUM_HOLIDAY_SCHEDULES_SUPPORTED
+        NUMBER_OF_PIN_USERS_SUPPORTED: NUM_PIN_USERS_SUPPORTED
+        NUMBER_OF_RFID_USERS_SUPPORTED: NUM_RFID_USERS_SUPPORTED
+        NUMBER_OF_TOTAL_USERS_SUPPORTED: NUM_TOTAL_USERS_SUPPORTED
+        NUMBER_OF_WEEK_DAY_SCHEDULES_SUPPORTED_PER_USER: NUM_WEEKDAY_SCHEDULES_SUPPORTED_PER_USER
+        NUMBER_OF_YEAR_DAY_SCHEDULES_SUPPORTED_PER_USER: NUM_YEARDAY_SCHEDULES_SUPPORTED_PER_USER
+        REQUIRE_PI_NFOR_REMOTE_OPERATION: REQUIRE_PIN_FOR_REMOTE_OPERATION
+      type-names:
+        ConfigurationRegisterBitmap: DlDefaultConfigurationRegister
+        CredentialRulesBitmap: DlCredentialRuleMask
+        DaysMaskBitmap: DaysMaskMap
+        LocalProgrammingFeaturesBitmap: DlLocalProgrammingFeatures
+        LockStateEnum: DlLockState
+        LockTypeEnum: DlLockType
+        OperatingModesBitmap: DlSupportedOperatingModes
+  src/app_clusters/EnergyEVSE.adoc:
+    zap:
+      suppress-cluster-define-prefix: true
+      template-path: energy-evse-cluster
+  src/app_clusters/FanControl.adoc:
+    test-plan:
+      testplan-path: src/cluster/FanControl.adoc
+    zap:
+      suppress-attribute-permissions: true
+      suppress-cluster-define-prefix: true
+  src/app_clusters/FlowMeasurement.adoc:
+    test-plan:
+      testplan-path: src/cluster/flowmeasurement.adoc
+    zap:
+      cluster-define-prefix: FLOW_
+  src/app_clusters/Groups.adoc:
+    zap:
+      cluster-define-prefix: GROUP_
+  src/app_clusters/IlluminanceMeasurement.adoc:
+    zap:
+      cluster-define-prefix: ILLUM_
+  src/app_clusters/LaundryDryerControls.adoc:
+    test-plan:
+      testplan-path: src/cluster/LaundryDryerControls.adoc
+  src/app_clusters/LaundryWasherControls.adoc:
+    test-plan:
+      testplan-path: src/cluster/LaundryWasherControls.adoc
+    zap:
+      template-path: washer-controls-cluster
+  src/app_clusters/LevelControl.adoc:
+    test-plan:
+      testplan-path: src/cluster/levelcontrol.adoc
+    zap:
+      suppress-cluster-define-prefix: true
+      override-defines:
+        REMAINING_TIME: LEVEL_CONTROL_REMAINING_TIME
+  src/app_clusters/MicrowaveOvenControl.adoc:
+    test-plan:
+      testplan-path: src/cluster/MicrowaveOvenControl.adoc
+    zap:
+      suppress-cluster-define-prefix: true
+  src/app_clusters/ModeBase.adoc:
+    spec:
+      sections:
+        Mode Base Status CommonCodes Range:
+          skip:
+          - data-types-enum
+    zap:
+      cluster-skip:
+      - Mode Base
+  src/app_clusters/ModeBase_ModeTag_BaseValues.adoc:
+    spec:
+      utility-include: true
+  src/app_clusters/ModeSelect.adoc:
+    test-plan:
+      testplan-path: src/cluster/modeselect.adoc
+    zap:
+      override-defines:
+        DESCRIPTION: MODE_DESCRIPTION
+  src/app_clusters/Mode_DeviceEnergyManagement.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_device_energy_management.adoc
+    zap:
+      template-path: device-energy-management-mode-cluster
+  src/app_clusters/Mode_Dishwasher.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_dishwasher.adoc
+    zap:
+      template-path: dishwasher-mode-cluster
+  src/app_clusters/Mode_EVSE.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_energy_EVSE.adoc
+    zap:
+      template-path: energy-evse-mode-cluster
+  src/app_clusters/Mode_LaundryWasher.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_laundry_washer.adoc
+    zap:
+      template-path: laundry-washer-mode-cluster
+  src/app_clusters/Mode_MicrowaveOven.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_MicrowaveOven.adoc
+    zap:
+      template-path: microwave-oven-mode-cluster
+  src/app_clusters/Mode_Oven.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_oven.adoc
+    zap:
+      template-path: oven-mode-cluster
+  src/app_clusters/Mode_RVCClean.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_rvc_clean.adoc
+    zap:
+      template-path: rvc-clean-mode-cluster
+  src/app_clusters/Mode_RVCRun.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_rvc_run.adoc
+    zap:
+      template-path: rvc-run-mode-cluster
+  src/app_clusters/Mode_Refrigerator.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_ref_tcc.adoc
+    zap:
+      cluster-aliases:
+        Refrigerator And Temperature Controlled Cabinet Mode:
+        - Refrigerator and Temperature Controlled Cabinet Mode
+      template-path: refrigerator-and-temperature-controlled-cabinet-mode-cluster
+  src/app_clusters/Mode_WaterHeater.adoc:
+    test-plan:
+      testplan-path: src/cluster/mode_WaterHeater.adoc
+    zap:
+      template-path: water-heater-mode-cluster
+  src/app_clusters/OccupancySensing.adoc:
+    test-plan:
+      testplan-path: src/cluster/occupancysensing.adoc
+  src/app_clusters/OnOff.adoc:
+    test-plan:
+      testplan-path: src/cluster/onoff.adoc
+    zap:
+      cluster-aliases:
+        On/Off:
+        - OnOff
+      template-path: onoff-cluster
+  src/app_clusters/OperationalState.adoc:
+    spec:
+      sections:
+        ErrorStateEnum GeneralErrors Range:
+          skip:
+          - data-types-enum
+        Pause Command:
+          skip:
+          - command-arguments
+        Resume Command:
+          skip:
+          - command-arguments
+    test-plan:
+      testplan-path: src/cluster/operationalstate.adoc
+  src/app_clusters/OperationalState_ErrorStateEnum_BaseValues.adoc:
+    spec:
+      utility-include: true
+  src/app_clusters/OperationalState_OperationalStateEnum_BaseValues.adoc:
+    spec:
+      utility-include: true
+  src/app_clusters/OperationalState_Oven.adoc:
+    test-plan:
+      testplan-path: src/cluster/ovenoperationalstate.adoc
+  src/app_clusters/OperationalState_RVC.adoc:
+    test-plan:
+      testplan-path: src/cluster/rvcoperationalstate.adoc
+    zap:
+      template-path: operational-state-rvc-cluster
+  src/app_clusters/PressureMeasurement.adoc:
+    test-plan:
+      testplan-path: src/cluster/pressuremeasurement.adoc
+    zap:
+      cluster-define-prefix: PRESSURE_
+  src/app_clusters/PumpConfigurationControl.adoc:
+    zap:
+      template-path: pump-configuration-and-control-cluster
+  src/app_clusters/RefrigeratorAlarm.adoc:
+    zap:
+      template-path: refrigerator-alarm
+  src/app_clusters/ResourceMonitoring.adoc:
+    zap:
+      separate-structs:
+      - ReplacementProductStruct
+  src/app_clusters/Scenes.adoc:
+    spec:
+      sections:
+        Form of ExtensionFieldSetStruct:
+          skip:
+          - data-types
+          - data-types-bitmap
+          - data-types-enum
+          - data-types-struct
+        Logical Scene Table:
+          skip:
+          - data-types
+          - data-types-bitmap
+          - data-types-enum
+          - data-types-struct
+    test-plan:
+      testplan-path: src/cluster/scenes.adoc
+    zap:
+      template-path: scene
+  src/app_clusters/SmokeCOAlarm.adoc:
+    test-plan:
+      testplan-path: src/cluster/smco.adoc
+    zap:
+      override-defines:
+        END_OF_SERVICE_ALERT: END_OF_SERVICEALERT
+        HARDWARE_FAULT_ALERT: HARDWARE_FAULTALERT
+        SMOKE_SENSITIVITY_LEVEL: SENSITIVITY_LEVEL
+  src/app_clusters/Switch.adoc:
+    zap:
+      domain: CHIP
+  src/app_clusters/TemperatureControl.adoc:
+    test-plan:
+      testplan-path: src/cluster/temperaturecontrol.adoc
+    zap:
+      override-defines:
+        MAX_TEMPERATURE: MAX_TEMP
+        MIN_TEMPERATURE: MIN_TEMP
+        SELECTED_TEMPERATURE_LEVEL: SELECTED_TEMP_LEVEL
+        SUPPORTED_TEMPERATURE_LEVELS: SUPPORTED_TEMP_LEVELS
+        TEMPERATURE_SETPOINT: TEMP_SETPOINT
+  src/app_clusters/TemperatureMeasurement.adoc:
+    test-plan:
+      testplan-path: src/cluster/temperaturemeasurement.adoc
+    zap:
+      cluster-define-prefix: TEMP_
+  src/app_clusters/Thermostat.adoc:
+    zap:
+      suppress-cluster-define-prefix: true
+      override-defines:
+        OCCUPANCY: THERMOSTAT_OCCUPANCY
+  src/app_clusters/ThermostatUserInterfaceConfiguration.adoc:
+    test-plan:
+      testplan-path: src/cluster/thermostatuserconfiguration.adoc
+    zap:
+      suppress-cluster-define-prefix: true
+  src/app_clusters/ValveConfigurationControl.adoc:
+    zap:
+      template-path: valve-configuration-and-control-cluster
+  src/app_clusters/WaterContentMeasurement.adoc:
+    test-plan:
+      testplan-path: src/cluster/relativehumiditymeasurement.adoc
+    zap:
+      template-path: relative-humidity-measurement-cluster
+  src/app_clusters/WaterHeaterManagement.adoc:
+    test-plan:
+      testplan-path: src/cluster/WaterHeaterManagement.adoc
+  src/app_clusters/WebRTC_Provider.adoc:
+    zap:
+      override-defines:
+        WEB_RTC_TRANSPORT_PROVIDER_CLUSTER: WEBRTC_TRANSPORT_PROVIDER_CLUSTER
+      template-path: webrtc-provider-cluster
+  src/app_clusters/WebRTC_Requestor.adoc:
+    zap:
+      override-defines:
+        WEB_RTC_TRANSPORT_REQUESTOR_CLUSTER: WEBRTC_TRANSPORT_REQUESTOR_CLUSTER
+      template-path: webrtc-requestor-cluster
+  src/app_clusters/WiFiNetworkManagement.adoc:
+    test-plan:
+      testplan-path: src/cluster/wifi_network_management.adoc
+    zap:
+      template-path: wifi-network-management-cluster
+  src/app_clusters/WindowCovering.adoc:
+    zap:
+      cluster-define-prefix: WC_
+      override-defines:
+        WC_CURRENT_POSITION_LIFT_PERCENT_100_THS: WC_CURRENT_POSITION_LIFT_PERCENT100THS
+        WC_CURRENT_POSITION_TILT_PERCENT_100_THS: WC_CURRENT_POSITION_TILT_PERCENT100THS
+        WC_TARGET_POSITION_LIFT_PERCENT_100_THS: WC_TARGET_POSITION_LIFT_PERCENT100THS
+        WC_TARGET_POSITION_TILT_PERCENT_100_THS: WC_TARGET_POSITION_TILT_PERCENT100THS
+      template-path: window-covering
+  src/app_clusters/meas_and_sense.adoc:
+    zap:
+      template-path: measurement-and-sensing
+  src/app_clusters/media/ApplicationBasic.adoc:
+    zap:
+      cluster-define-prefix: APPLICATION_
+      override-defines:
+        APPLICATION_APPLICATION: APPLICATION_APP
+  src/app_clusters/media/ApplicationLauncher.adoc:
+    zap:
+      cluster-define-prefix: APPLICATION_LAUNCHER_
+      override-defines:
+        APPLICATION_LAUNCHER_CATALOG_LIST: APPLICATION_LAUNCHER_LIST
+  src/app_clusters/media/AudioOutput.adoc:
+    zap:
+      cluster-define-prefix: AUDIO_OUTPUT_
+      override-defines:
+        AUDIO_OUTPUT_OUTPUT_LIST: AUDIO_OUTPUT_LIST
+  src/app_clusters/media/Channel.adoc:
+    zap:
+      cluster-define-prefix: CHANNEL_
+  src/app_clusters/media/ContentLauncher.adoc:
+    zap:
+      cluster-define-prefix: CONTENT_LAUNCHER_
+      template-path: content-launch-cluster
+  src/app_clusters/media/KeypadInput.adoc:
+    zap:
+      cluster-define-prefix: ILLUM_
+  src/app_clusters/media/MediaInput.adoc:
+    zap:
+      cluster-define-prefix: MEDIA_INPUT_
+      override-defines:
+        MEDIA_INPUT_INPUT_LIST: MEDIA_INPUT_LIST
+  src/app_clusters/media/MediaPlayback.adoc:
+    zap:
+      cluster-define-prefix: MEDIA_PLAYBACK_
+      override-defines:
+        MEDIA_PLAYBACK_CURRENT_STATE: MEDIA_PLAYBACK_STATE
+        MEDIA_PLAYBACK_SAMPLED_POSITION: MEDIA_PLAYBACK_PLAYBACK_POSITION
+        MEDIA_PLAYBACK_SEEK_RANGE_END: MEDIA_PLAYBACK_PLAYBACK_SEEK_RANGE_END
+        MEDIA_PLAYBACK_SEEK_RANGE_START: MEDIA_PLAYBACK_PLAYBACK_SEEK_RANGE_START
+  src/app_clusters/media/TargetNavigator.adoc:
+    zap:
+      cluster-define-prefix: TARGET_NAVIGATOR_
+      override-defines:
+        TARGET_NAVIGATOR_TARGET_LIST: TARGET_NAVIGATOR_LIST
+  src/app_clusters/media/VideoPlayerArchitecture.adoc:
+    spec:
+      sections:
+        Video Player Architecture:
+          skip:
+          - cluster
+  src/app_clusters/media/WakeOnLAN.adoc:
+    zap:
+      override-defines:
+        MAC_ADDRESS: WAKE_ON_LAN_MAC_ADDRESS
+      cluster-aliases:
+        Wake on LAN:
+        - WakeOnLAN
+  src/data_model/ACL-Cluster.adoc:
+    test-plan:
+      testplan-path: src/cluster/AccessControl.adoc
+    zap:
+      cluster-aliases:
+        AccessControl:
+        - Access Control
+      template-path: access-control-cluster
+  src/data_model/Data-Model.adoc:
+    spec:
+      sections:
+        Choice Conformance:
+          skip:
+          - data-types-struct
+        Fabric-Scoped Struct:
+          skip:
+          - data-types-struct
+        Quality Conformance:
+          skip:
+          - data-types-struct
+        Struct Type:
+          skip:
+          - data-types-struct
+  src/data_model/Encoding-Specification.adoc:
+    spec:
+      sections:
+        Collection - Struct:
+          skip:
+          - data-types
+          - data-types-bitmap
+          - data-types-enum
+          - data-types-struct
+        Discrete - Bitmap:
+          skip:
+          - data-types
+          - data-types-bitmap
+          - data-types-enum
+          - data-types-struct
+  src/data_model/Group-Key-Management-Cluster.adoc:
+    test-plan:
+      testplan-path: src/group_communication.adoc
+    zap:
+      cluster-aliases:
+        GroupKeyManagement:
+        - Group Key Management
+      template-path: group-key-mgmt-cluster
+  src/data_model/ICDManagement.adoc:
+    test-plan:
+      testplan-path: src/cluster/icdmanagement.adoc
+    zap:
+      cluster-aliases:
+        ICDManagement:
+        - ICD Management
+  src/data_model/Label-Cluster.adoc:
+    zap:
+      template-path: user-label-cluster
+      cluster-split:
+        "0x0040": fixed-label-cluster
+        "0x0041": user-label-cluster
+  src/data_model/ValidProxies-Cluster.adoc:
+    zap:
+      template-path: proxy-valid-cluster
+  src/data_model/bridge-clusters.adoc:
+    zap:
+      cluster-split:
+        "0x0025": actions-cluster
+        "0x0039": bridged-device-basic-information
+  src/device_types/OtaRequestor.adoc:
+    disco:
+      sections:
+        ProviderLocation Type:
+          skip:
+          - data-type-rename
+  src/matter-defines.adoc:
+    spec:
+      utility-include: true
+  src/secure_channel/Discovery.adoc:
+    spec:
+      sections:
+        Common TXT Key/Value Pairs:
+          skip:
+          - data-types
+          - data-types-bitmap
+          - data-types-enum
+          - data-types-struct
+        TXT key for pairing hint (`PH`):
+          skip:
+          - data-types
+          - data-types-bitmap
+          - data-types-enum
+          - data-types-struct
+  src/service_device_management/AdminAssistedCommissioningFlows.adoc:
+    disco:
+      sections:
+        Basic Commissioning Method (BCM):
+          skip:
+          - normalize-anchor
+        Enhanced Commissioning Method (ECM):
+          skip:
+          - normalize-anchor
+        Open Commissioning Window:
+          skip:
+          - normalize-anchor
+        Presentation of Onboarding Payload for ECM:
+          skip:
+          - normalize-anchor
+  src/service_device_management/AdminCommissioningCluster.adoc:
+    test-plan:
+      testplan-path: src/multiplefabrics.adoc
+    zap:
+      template-path: administrator-commissioning-cluster
+  src/service_device_management/BasicInformationCluster.adoc:
+    zap:
+      domain: CHIP
+  src/service_device_management/DeviceCommissioningFlows.adoc:
+    spec:
+      sections:
+        Enhanced Setup Flow (ESF):
+          skip:
+          - data-types
+          - data-types-bitmap
+          - data-types-enum
+          - data-types-struct
+  src/service_device_management/DiagnosticLogsCluster.adoc:
+    test-plan:
+      testplan-path: src/cluster/logs_diagnostics.adoc
+    zap:
+      domain: CHIP
+  src/service_device_management/DiagnosticsEthernet.adoc:
+    test-plan:
+      testplan-path: src/cluster/ethernet_diagnostics.adoc
+    zap:
+      template-path: ethernet-network-diagnostics-cluster
+  src/service_device_management/DiagnosticsGeneral.adoc:
+    disco:
+      sections:
+        NetworkInterface Type:
+          skip:
+          - data-type-rename
+    zap:
+      template-path: general-diagnostics-cluster
+  src/service_device_management/DiagnosticsSoftware.adoc:
+    zap:
+      template-path: software-diagnostics-cluster
+  src/service_device_management/DiagnosticsThread.adoc:
+    disco:
+      sections:
+        OperationalDatasetComponents Type:
+          skip:
+          - data-type-rename
+        SecurityPolicy Type:
+          skip:
+          - data-type-rename
+    test-plan:
+      testplan-path: src/cluster/thread_nw_diagnostics.adoc
+    zap:
+      suppress-cluster-define-prefix: true
+      template-path: thread-network-diagnostics-cluster
+  src/service_device_management/DiagnosticsWiFi.adoc:
+    test-plan:
+      testplan-path: src/cluster/wifi_diagnostics.adoc
+    zap:
+      template-path: wifi-network-diagnostics-cluster
+  src/service_device_management/GeneralCommissioningCluster.adoc:
+    disco:
+      sections:
+        BasicCommissioningInfo Type:
+          skip:
+          - data-type-rename
+  src/service_device_management/LocalizationConfiguration.adoc:
+    test-plan:
+      testplan-path: src/cluster/Localization.adoc
+  src/service_device_management/LocalizationTimeFormat.adoc:
+    test-plan:
+      testplan-path: src/cluster/timeformatlocalization.adoc
+    zap:
+      template-path: time-format-localization-cluster
+  src/service_device_management/LocalizationUnit.adoc:
+    test-plan:
+      testplan-path: src/cluster/unitlocalization.adoc
+    zap:
+      template-path: unit-localization-cluster
+      domain: CHIP
+  src/service_device_management/OTAProvider.adoc:
+    zap:
+      skip-file: true
+  src/service_device_management/OTARequestor.adoc:
+    zap:
+      skip-file: true
+  src/service_device_management/OperationalCredentialCluster.adoc:
+    test-plan:
+      testplan-path: src/cluster/node_operational_credentials.adoc
+    zap:
+      cluster-name: Operational Credentials
+      cluster-aliases:
+        Operational Credentials:
+        - Node Operational Credentials
+      template-path: operational-credentials-cluster
+  src/service_device_management/PowerSourceCluster.adoc:
+    test-plan:
+      testplan-path: src/cluster/powersource.adoc
+    zap:
+      domain: CHIP
+  src/service_device_management/PowerSourceConfigurationCluster.adoc:
+    test-plan:
+      testplan-path: src/cluster/powersourceconfiguration.adoc
+    zap:
+      domain: CHIP
+  src/service_device_management/TimeSync.adoc:
+    zap:
+      template-path: time-synchronization-cluster
