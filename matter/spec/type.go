@@ -92,14 +92,15 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 			return matter.DocTypeSoftAP, nil
 		}
 	}
-	slog.Debug("could not determine doc type", "path", doc.Path)
-	return matter.DocTypeUnknown, nil
+	guess := doc.guessDocType()
+	slog.Debug("could not determine doc type", "path", doc.Path, slog.String("guessing", guess.String()))
+	return guess, nil
 }
 
 func (doc *Doc) guessDocType() matter.DocType {
 	firstSection := parse.FindFirst[*Section](doc.Elements())
 	if firstSection != nil {
-		if strings.HasSuffix(strings.ToLower(firstSection.Name), " cluster") {
+		if text.HasCaseInsensitiveSuffix(firstSection.Name, " cluster") {
 			return matter.DocTypeCluster
 		}
 	}
