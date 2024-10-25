@@ -28,6 +28,7 @@ const (
 	SectionEvent
 	SectionNamespace
 	SectionConditions
+	SectionDeviceTypeRequirements
 	SectionClusterRequirements
 	SectionClusterRestrictions
 	SectionElementRequirements
@@ -61,6 +62,7 @@ var TopLevelSectionOrders = map[DocType][]Section{
 		SectionRevisionHistory,
 		SectionClassification,
 		SectionConditions,
+		SectionDeviceTypeRequirements,
 		SectionClusterRequirements,
 		SectionClusterRestrictions,
 		SectionElementRequirements,
@@ -97,6 +99,7 @@ var sectionTypeStrings = map[Section]string{
 	SectionEvent:                          "Event",
 	SectionNamespace:                      "Namespace",
 	SectionConditions:                     "Conditions",
+	SectionDeviceTypeRequirements:         "DeviceTypeRequirements",
 	SectionClusterRequirements:            "ClusterRequirements",
 	SectionClusterRestrictions:            "ClusterRestrictions",
 	SectionElementRequirements:            "ElementRequirements",
@@ -142,6 +145,7 @@ var sectionTypeNames = map[Section]string{
 	SectionEvents:                         "Events",
 	SectionNamespace:                      "Namespace",
 	SectionConditions:                     "Conditions",
+	SectionDeviceTypeRequirements:         "Device Type Requirements",
 	SectionClusterRequirements:            "Cluster Requirements",
 	SectionClusterRestrictions:            "Cluster Restrictions",
 	SectionElementRequirements:            "Element Requirements",

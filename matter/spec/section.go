@@ -224,6 +224,8 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		return matter.SectionDerivedClusterNamespace
 	case "global elements":
 		return matter.SectionGlobalElements
+	case "device type requirements":
+		return matter.SectionDeviceTypeRequirements
 	}
 	switch parent.SecType {
 	case matter.SectionTop, matter.SectionCluster, matter.SectionDeviceType:

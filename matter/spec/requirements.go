@@ -87,6 +87,34 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 	return
 }
 
+func (s *Section) toDeviceTypeRequirements(d *Doc) (deviceTypeRequirements []*matter.DeviceTypeRequirement, err error) {
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
+	if err != nil {
+		if err == ErrNoTableFound {
+			err = nil
+		} else {
+			err = fmt.Errorf("error reading element requirements table: %w", err)
+		}
+		return
+	}
+	for row := range ti.Body() {
+		var cr matter.DeviceTypeRequirement
+		cr.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
+		if err != nil {
+			return
+		}
+		cr.DeviceTypeName, err = ti.ReadString(row, matter.TableColumnName)
+		if err != nil {
+			return
+		}
+		cr.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
+		cr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+		deviceTypeRequirements = append(deviceTypeRequirements, &cr)
+	}
+	return
+}
+
 func (s *Section) toComposedDeviceTypeRequirements(d *Doc) (composedRequirements []*matter.ComposedDeviceTypeRequirement, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
