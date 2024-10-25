@@ -1,6 +1,7 @@
 package errata
 
 import (
+	_ "embed"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -8,6 +9,9 @@ import (
 	"github.com/goccy/go-yaml"
 	"github.com/project-chip/alchemy/internal/files"
 )
+
+//go:embed default.yaml
+var defaultErrata []byte
 
 func LoadErrataConfig(specRoot string) {
 	if specRoot == "" {
@@ -19,31 +23,33 @@ func LoadErrataConfig(specRoot string) {
 		slog.Warn("error checking for errata path", slog.Any("error", err))
 		return
 	}
+	var b []byte
 	if !exists {
-		slog.Warn("errata file does not exist", slog.Any("path", errataPath))
-		for p := range Erratas {
-			path := filepath.Join(specRoot, p)
-			exists, _ := files.Exists(path)
-			if !exists {
-				slog.Warn("errata points to non-existent file", "path", p)
-			}
-		}
+		slog.Warn("errata file does not exist; using embedded errata", slog.Any("path", errataPath))
+		b = defaultErrata
 	} else {
-		b, err := os.ReadFile(errataPath)
+		var err error
+		b, err = os.ReadFile(errataPath)
+		slog.Debug("Using errata overlay", slog.Any("path", errataPath))
 		if err != nil {
 			slog.Warn("error reading errata file", slog.Any("error", err))
 			return
 		}
-		var errataOverlay errataOverlay
-		err = yaml.Unmarshal(b, &errataOverlay)
-		if err != nil {
-			slog.Warn("error parsing errata file", slog.Any("error", err))
-			return
-		}
-		slog.Debug("Using errata overlay", slog.Any("path", errataPath), slog.Any("count", len(errataOverlay.Errata)))
-		Erratas = errataOverlay.Errata
 	}
-
+	var errataOverlay errataOverlay
+	err = yaml.Unmarshal(b, &errataOverlay)
+	if err != nil {
+		slog.Warn("error parsing errata file", slog.Any("error", err))
+		return
+	}
+	Erratas = errataOverlay.Errata
+	for p := range Erratas {
+		path := filepath.Join(specRoot, p)
+		exists, _ := files.Exists(path)
+		if !exists {
+			slog.Warn("errata points to non-existent file", "path", p)
+		}
+	}
 }
 
 type errataOverlay struct {
