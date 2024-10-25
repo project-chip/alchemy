@@ -285,16 +285,6 @@ errata:
   src/app_clusters/WaterHeaterManagement.adoc:
     test-plan:
       testplan-path: src/cluster/WaterHeaterManagement.adoc
-  src/app_clusters/WebRTC_Provider.adoc:
-    zap:
-      override-defines:
-        WEB_RTC_TRANSPORT_PROVIDER_CLUSTER: WEBRTC_TRANSPORT_PROVIDER_CLUSTER
-      template-path: webrtc-provider-cluster
-  src/app_clusters/WebRTC_Requestor.adoc:
-    zap:
-      override-defines:
-        WEB_RTC_TRANSPORT_REQUESTOR_CLUSTER: WEBRTC_TRANSPORT_REQUESTOR_CLUSTER
-      template-path: webrtc-requestor-cluster
   src/app_clusters/WiFiNetworkManagement.adoc:
     test-plan:
       testplan-path: src/cluster/wifi_network_management.adoc
