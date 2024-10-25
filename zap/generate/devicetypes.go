@@ -6,19 +6,12 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strconv"
-	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/zap"
 )
 
 var utilityDevicesMask uint64 = 0xFF000000
@@ -27,9 +20,19 @@ type DeviceTypesPatcher struct {
 	sdkRoot        string
 	spec           *spec.Specification
 	clusterAliases map[string]string
+
+	generateFeatureXML bool
 }
 
-func NewDeviceTypesPatcher(sdkRoot string, spec *spec.Specification, clusterAliases pipeline.Map[string, []string]) *DeviceTypesPatcher {
+type DeviceTypePatcherOption func(dtp *DeviceTypesPatcher)
+
+func DeviceTypePatcherGenerateFeatureXML(generate bool) DeviceTypePatcherOption {
+	return func(dtp *DeviceTypesPatcher) {
+		dtp.generateFeatureXML = generate
+	}
+}
+
+func NewDeviceTypesPatcher(sdkRoot string, spec *spec.Specification, clusterAliases pipeline.Map[string, []string], options ...DeviceTypePatcherOption) *DeviceTypesPatcher {
 	dtp := &DeviceTypesPatcher{sdkRoot: sdkRoot, spec: spec, clusterAliases: make(map[string]string)}
 	clusterAliases.Range(func(cluster string, aliases []string) bool {
 		for _, alias := range aliases {
@@ -37,6 +40,9 @@ func NewDeviceTypesPatcher(sdkRoot string, spec *spec.Specification, clusterAlia
 		}
 		return true
 	})
+	for _, opt := range options {
+		opt(dtp)
+	}
 	return dtp
 }
 
@@ -165,324 +171,4 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	out = postProcessTemplate(out)
 	outputs = append(outputs, pipeline.NewData[[]byte](deviceTypesXMLPath, []byte(out)))
 	return
-}
-
-type clusterRequirements struct {
-	name                    string
-	clusterRequirements     []*matter.ClusterRequirement
-	baseClusterRequirements []*matter.ClusterRequirement
-	elementRequirements     []*matter.ElementRequirement
-}
-
-func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
-	xml.SetOrCreateSimpleElement(dte, "name", zap.DeviceTypeName(deviceType))
-	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP")
-	xml.SetOrCreateSimpleElement(dte, "typeName", deviceType.Name)
-	xml.SetOrCreateSimpleElement(dte, "profileId", "0x0103").CreateAttr("editable", "false")
-	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString()).CreateAttr("editable", "false")
-	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class)
-	xml.SetOrCreateSimpleElement(dte, "scope", deviceType.Scope)
-	clustersElement := dte.SelectElement("clusters")
-	if len(deviceType.ClusterRequirements) == 0 {
-		if clustersElement != nil {
-			dte.RemoveChild(clustersElement)
-		}
-		return
-	}
-	if clustersElement == nil {
-		clustersElement = dte.CreateElement("clusters")
-	}
-	clusterRequirementsByName := make(map[string]*clusterRequirements)
-	for _, cr := range deviceType.ClusterRequirements {
-		name := strings.ToLower(cr.ClusterName)
-		crr, ok := clusterRequirementsByName[name]
-		if !ok {
-			crr = &clusterRequirements{name: cr.ClusterName}
-			clusterRequirementsByName[name] = crr
-		}
-		crr.clusterRequirements = append(crr.clusterRequirements, cr)
-	}
-	for _, cr := range spec.BaseDeviceType.ClusterRequirements {
-		name := strings.ToLower(cr.ClusterName)
-		crr, ok := clusterRequirementsByName[name]
-		if !ok {
-			crr = &clusterRequirements{name: cr.ClusterName}
-			clusterRequirementsByName[name] = crr
-		}
-		crr.baseClusterRequirements = append(crr.baseClusterRequirements, cr)
-		slog.Debug("adding base device type cluster requirement", slog.String("cluster", cr.ClusterName))
-	}
-	for _, ers := range [][]*matter.ElementRequirement{deviceType.ElementRequirements, spec.BaseDeviceType.ElementRequirements} {
-		for _, er := range ers {
-			name := strings.ToLower(er.ClusterName)
-			crr, ok := clusterRequirementsByName[name]
-			if !ok {
-				slog.Warn("element requirement with missing cluster requirement", log.Path("source", deviceType), slog.String("deviceType", deviceType.Name), slog.String("cluster", er.ClusterName))
-				continue
-			}
-			crr.elementRequirements = append(crr.elementRequirements, er)
-		}
-
-	}
-	for _, include := range clustersElement.SelectElements("include") {
-		ca := include.SelectAttr("cluster")
-		if ca == nil {
-			slog.Warn("missing cluster attribute on include", slog.String("deviceTypeId", deviceType.ID.HexString()))
-			clustersElement.RemoveChild(include)
-			continue
-		}
-		crs, ok := clusterRequirementsByName[strings.ToLower(ca.Value)]
-		if !ok {
-			slog.Debug("unknown cluster attribute on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", ca.Value))
-			clustersElement.RemoveChild(include)
-			continue
-		}
-		p.setIncludeAttributes(clustersElement, include, spec, deviceType, crs)
-		delete(clusterRequirementsByName, strings.ToLower(ca.Value))
-	}
-	for _, crs := range [][]*matter.ClusterRequirement{spec.BaseDeviceType.ClusterRequirements, deviceType.ClusterRequirements} {
-		for _, cr := range crs {
-			crr, ok := clusterRequirementsByName[strings.ToLower(cr.ClusterName)]
-			if ok {
-				p.setIncludeAttributes(clustersElement, nil, spec, deviceType, crr)
-				delete(clusterRequirementsByName, strings.ToLower(cr.ClusterName))
-			}
-		}
-	}
-	return
-}
-
-func (p DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element, include *etree.Element, spec *spec.Specification, deviceType *matter.DeviceType, cr *clusterRequirements) {
-	cluster, ok := spec.ClustersByName[cr.name]
-	if !ok {
-		var alias string
-		alias, ok = p.clusterAliases[cr.name]
-		if ok {
-			cluster, ok = spec.ClustersByName[alias]
-			if !ok {
-				slog.Warn("unknown cluster alias on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name), slog.String("alias", alias))
-				return
-			}
-		} else {
-			slog.Warn("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
-			return
-		}
-	}
-
-	clusterDoc, ok := spec.DocRefs[cluster]
-	if !ok {
-		slog.Warn("unknown doc path on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name))
-
-	}
-	errata := errata.GetZAP(clusterDoc.Path.Relative)
-	cxt := conformance.Context{
-		Values: map[string]any{"Matter": true},
-	}
-
-	var server, client, clientLocked, serverLocked bool
-	clientLocked = true
-	serverLocked = true
-	for i, crs := range [][]*matter.ClusterRequirement{cr.baseClusterRequirements, cr.clusterRequirements} {
-		for _, cr := range crs {
-			conf, err := cr.Conformance.Eval(cxt)
-			if err != nil {
-				slog.Warn("Error evaluating conformance of cluster requirement", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
-				continue
-			}
-
-			switch conf {
-			case conformance.StateOptional, conformance.StateProvisional:
-				if i == 0 { // Base cluster requirements only get written when mandatory, apparently?
-					return
-				}
-			case conformance.StateMandatory:
-			default:
-				return
-			}
-
-			switch cr.Interface {
-			case matter.InterfaceServer:
-				server = true
-				serverLocked = conf == conformance.StateMandatory || conf == conformance.StateProvisional
-			case matter.InterfaceClient:
-				client = true
-				clientLocked = conf == conformance.StateMandatory || conf == conformance.StateProvisional
-			}
-		}
-	}
-
-	if include == nil {
-		include = clustersElement.CreateElement("include")
-	}
-	include.CreateAttr("cluster", cr.name)
-
-	xml.SetNonexistentAttr(include, "client", strconv.FormatBool(client))
-	xml.SetNonexistentAttr(include, "server", strconv.FormatBool(server))
-	xml.SetNonexistentAttr(include, "clientLocked", strconv.FormatBool(clientLocked))
-	xml.SetNonexistentAttr(include, "serverLocked", strconv.FormatBool(serverLocked))
-
-	requiredAttributes := make(map[string]struct{})
-	requiredAttributeDefines := make(map[string]struct{})
-	requiredCommands := make(map[string]struct{})
-	requiredCommandFields := make(map[string]map[string]struct{})
-	requiredEvents := make(map[string]struct{})
-
-	for _, er := range cr.elementRequirements {
-		conf, err := er.Conformance.Eval(cxt)
-		if err != nil {
-			slog.Warn("Error evaluating conformance of element requirement", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
-			continue
-		}
-		if conf == conformance.StateMandatory || conf == conformance.StateProvisional {
-			switch er.Element {
-			case types.EntityTypeFeature:
-				cxt.Values[er.Name] = true
-			case types.EntityTypeAttribute:
-				requiredAttributes[er.Name] = struct{}{}
-				cxt.Values[er.Name] = true
-			case types.EntityTypeCommand:
-				requiredCommands[er.Name] = struct{}{}
-				cxt.Values[er.Name] = true
-			case types.EntityTypeEvent:
-				requiredEvents[er.Name] = struct{}{}
-				cxt.Values[er.Name] = true
-			case types.EntityTypeCommandField:
-				cf, ok := requiredCommandFields[er.Name]
-				if !ok {
-					cf = make(map[string]struct{})
-					requiredCommandFields[er.Name] = cf
-					cxt.Values[er.Name] = true
-				}
-				cf[er.Field] = struct{}{}
-			default:
-				slog.Warn("Element requirement with unrecognized element type", slog.String("deviceType", deviceType.Name), slog.String("entityType", er.Element.String()))
-			}
-		}
-	}
-
-	for _, attr := range cluster.Attributes {
-		_, required := requiredAttributes[attr.Name]
-		if !required {
-			conf, err := attr.Conformance.Eval(cxt)
-			if err != nil {
-				slog.Debug("Error evaluating conformance of attribute", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
-				continue
-
-			}
-			if conf == conformance.StateMandatory || conf == conformance.StateProvisional {
-				required = true
-			}
-
-		}
-		if required {
-			requiredAttributeDefines[getDefine(attr.Name, errata.ClusterDefinePrefix, errata)] = struct{}{}
-		}
-	}
-	for _, cmd := range cluster.Commands {
-		conf, err := cmd.Conformance.Eval(cxt)
-		if err != nil {
-			slog.Warn("Error evaluating conformance of command", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
-			continue
-
-		}
-		if conf == conformance.StateMandatory || conf == conformance.StateProvisional {
-			requiredCommands[cmd.Name] = struct{}{}
-		}
-	}
-	for _, ev := range cluster.Events {
-		conf, err := ev.Conformance.Eval(cxt)
-		if err != nil {
-			slog.Warn("Error evaluating conformance of event", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
-			continue
-
-		}
-		if conf == conformance.StateMandatory || conf == conformance.StateProvisional {
-			requiredEvents[ev.Name] = struct{}{}
-		}
-	}
-	ras := include.SelectElements("requireAttribute")
-	for _, ra := range ras {
-		rat := ra.Text()
-		_, required := requiredAttributeDefines[rat]
-		if required {
-			delete(requiredAttributeDefines, rat)
-		} else {
-			include.RemoveChild(ra)
-		}
-	}
-	for ra := range requiredAttributeDefines {
-		rae := etree.NewElement("requireAttribute")
-		rae.SetText(ra)
-		xml.InsertElementByName(include, rae, "")
-	}
-	rcs := include.SelectElements("requireCommand")
-	for _, rc := range rcs {
-		rct := rc.Text()
-		_, required := requiredCommands[rct]
-		if required {
-			delete(requiredCommands, rct)
-		} else {
-			include.RemoveChild(rc)
-		}
-	}
-	for ra := range requiredCommands {
-		rae := etree.NewElement("requireCommand")
-		rae.SetText(ra)
-		xml.InsertElementByName(include, rae, "requireAttribute")
-	}
-	rcfs := include.SelectElements("requireCommandField")
-	for _, rc := range rcfs {
-		rcfc := rc.SelectElement("command")
-		if rcfc == nil {
-			include.RemoveChild(rc)
-			continue
-		}
-		rct := rcfc.Text()
-		fields, required := requiredCommandFields[rct]
-		if required {
-			delete(requiredCommandFields, rct)
-		} else {
-			include.RemoveChild(rc)
-			continue
-		}
-		rcffs := rc.SelectElements("field")
-		for _, rcff := range rcffs {
-			rcft := rc.Text()
-			_, required := fields[rcft]
-			if required {
-				delete(fields, rcft)
-			} else {
-				rc.RemoveChild(rcff)
-			}
-		}
-		for rcft := range fields {
-			rae := etree.NewElement("field")
-			rae.SetText(rcft)
-			xml.InsertElementByName(rc, rae, "command")
-		}
-	}
-	for rcfc, rcffs := range requiredCommandFields {
-		rcfe := etree.NewElement("requireCommandField")
-		rcfce := rcfe.CreateElement("command")
-		rcfce.SetText(rcfc)
-		for rcff := range rcffs {
-			rcfe.CreateElement("field").SetText(rcff)
-		}
-		xml.InsertElementByName(include, rcfe, "requireAttribute", "requireCommand")
-	}
-	res := include.SelectElements("requireEvent")
-	for _, re := range res {
-		ret := re.Text()
-		_, required := requiredEvents[ret]
-		if required {
-			delete(requiredEvents, ret)
-		} else {
-			include.RemoveChild(re)
-		}
-	}
-	for ra := range requiredEvents {
-		rae := etree.NewElement("requireEvent")
-		rae.SetText(ra)
-		xml.InsertElementByName(include, rae, "requireAttribute", "requireCommand", "requireCommandField")
-	}
 }

@@ -128,7 +128,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	var patchedDeviceTypes pipeline.Map[string, *pipeline.Data[[]byte]]
 	if deviceTypes.Size() > 0 {
-		deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specBuilder.Spec, clusterAliases)
+		deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specBuilder.Spec, clusterAliases, generate.DeviceTypePatcherGenerateFeatureXML(featureXML))
 		patchedDeviceTypes, err = pipeline.Process[[]*matter.DeviceType, []byte](cxt, pipelineOptions, deviceTypePatcher, deviceTypes)
 		if err != nil {
 			return err

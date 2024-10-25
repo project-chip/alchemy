@@ -9,6 +9,9 @@ import (
 
 func renderConformance(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
 	removeConformance(parent)
+	if conformance.IsMandatory(c) {
+		return nil
+	}
 	return dm.RenderConformanceElement(doc, identifierStore, c, parent)
 }
 
@@ -18,7 +21,7 @@ func removeConformance(parent *etree.Element) {
 		switch child := child.(type) {
 		case *etree.Element:
 			switch child.Tag {
-			case "mandatoryConform", "optionalConform", "disableConform", "provisionalConform", "deprecateConform", "otherwiseConform":
+			case "mandatoryConform", "optionalConform", "disableConform", "disallowConform", "provisionalConform", "deprecateConform", "otherwiseConform":
 				trash = append(trash, child)
 			}
 		}
