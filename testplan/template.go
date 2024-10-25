@@ -3,6 +3,7 @@ package testplan
 import (
 	"embed"
 	"fmt"
+	"io/fs"
 	"path/filepath"
 	"strings"
 
@@ -21,9 +22,12 @@ type templateContext struct {
 	ReferenceStore conformance.ReferenceStore
 }
 
-func loadTemplate() (*raymond.Template, error) {
+func (sp *Generator) loadTemplate() (*raymond.Template, error) {
 	t, err := template.Do(func() (*raymond.Template, error) {
-		files, err := templateFiles.ReadDir("templates")
+
+		ov := handlebars.NewOverlay(sp.templateRoot, templateFiles)
+
+		files, err := ov.ReadDir("templates")
 		if err != nil {
 			return nil, err
 		}
@@ -43,6 +47,7 @@ func loadTemplate() (*raymond.Template, error) {
 		t.RegisterHelper("shortId", shortIdHelper)
 		t.RegisterHelper("entityId", entityIdentifierHelper)
 		t.RegisterHelper("entityIdPadded", entityIdentifierPaddedHelper)
+		t.RegisterHelper("entityIdPadding", entityIdentifierPaddingHelper)
 		t.RegisterHelper("dataType", dataTypeHelper)
 		t.RegisterHelper("dataTypeArticle", dataTypeArticleHelper)
 		t.RegisterHelper("ifHasQuality", ifHasQualityHelper)
@@ -57,7 +62,7 @@ func loadTemplate() (*raymond.Template, error) {
 				continue
 			}
 			name := file.Name()
-			val, err := templateFiles.ReadFile(filepath.Join("templates/", name))
+			val, err := fs.ReadFile(ov, filepath.Join("templates/", name))
 			if err != nil {
 				return nil, fmt.Errorf("error reading template file %s: %w", name, err)
 			}

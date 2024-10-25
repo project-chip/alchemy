@@ -20,9 +20,18 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
+type GeneratorOption func(g *Generator)
+
 type Generator struct {
 	testPlanRoot string
+	templateRoot string
 	overwrite    bool
+}
+
+func TemplateRoot(templateRoot string) func(*Generator) {
+	return func(g *Generator) {
+		g.templateRoot = templateRoot
+	}
 }
 
 func (sp Generator) Name() string {
@@ -46,7 +55,7 @@ func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc
 	destinations := buildDestinations(sp.testPlanRoot, entities, doc.Errata().TestPlan)
 
 	var t *raymond.Template
-	t, err = loadTemplate()
+	t, err = sp.loadTemplate()
 	if err != nil {
 		return
 	}
@@ -100,8 +109,12 @@ func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc
 	return
 }
 
-func NewGenerator(testPlanRoot string, overwrite bool) *Generator {
-	return &Generator{testPlanRoot: testPlanRoot, overwrite: overwrite}
+func NewGenerator(testPlanRoot string, overwrite bool, options ...GeneratorOption) *Generator {
+	g := &Generator{testPlanRoot: testPlanRoot, overwrite: overwrite}
+	for _, o := range options {
+		o(g)
+	}
+	return g
 }
 
 func getTestPlanPath(testplanRoot string, name string) string {
@@ -133,20 +146,25 @@ func buildDestinations(testplanRoot string, entities []types.Entity, errata erra
 		switch e := e.(type) {
 		case *matter.ClusterGroup:
 			for _, c := range e.Clusters {
-				fileName := strings.ToLower(strcase.ToSnake(c.Name))
-				newPath := getTestPlanPath(testplanRoot, fileName)
-				destinations[newPath] = c
+				destinations[getTestPlanPathForCluster(testplanRoot, c, errata)] = c
 			}
 		case *matter.Cluster:
-			var newPath string
-			if errata.TestPlanPath != "" {
-				newPath = filepath.Join(testplanRoot, errata.TestPlanPath)
-			} else {
-				newPath = getTestPlanPath(testplanRoot, strings.ToLower(strcase.ToSnake(e.Name)))
-			}
-			destinations[newPath] = e
+			destinations[getTestPlanPathForCluster(testplanRoot, e, errata)] = e
 		}
 	}
 	return
 
+}
+
+func getTestPlanPathForCluster(testplanRoot string, cluster *matter.Cluster, errata errata.TestPlan) string {
+	if len(errata.TestPlanPaths) > 0 {
+		tpp, ok := errata.TestPlanPaths[cluster.Name]
+		if ok {
+			return filepath.Join(testplanRoot, tpp.Path)
+		}
+	}
+	if errata.TestPlanPath != "" {
+		return filepath.Join(testplanRoot, errata.TestPlanPath)
+	}
+	return getTestPlanPath(testplanRoot, strings.ToLower(strcase.ToSnake(cluster.Name)))
 }
