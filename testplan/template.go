@@ -2,10 +2,7 @@ package testplan
 
 import (
 	"embed"
-	"fmt"
-	"io/fs"
-	"path/filepath"
-	"strings"
+	"log/slog"
 
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/internal/handlebars"
@@ -13,7 +10,7 @@ import (
 	"github.com/project-chip/alchemy/matter/conformance"
 )
 
-//go:embed templates/*.handlebars
+//go:embed templates
 var templateFiles embed.FS
 
 var template pipeline.Once[*raymond.Template]
@@ -25,20 +22,17 @@ type templateContext struct {
 func (sp *Generator) loadTemplate() (*raymond.Template, error) {
 	t, err := template.Do(func() (*raymond.Template, error) {
 
-		ov := handlebars.NewOverlay(sp.templateRoot, templateFiles)
-
-		files, err := ov.ReadDir("templates")
+		ov := handlebars.NewOverlay(sp.templateRoot, templateFiles, "templates")
+		err := ov.Flush()
+		if err != nil {
+			slog.Error("Error flushing embedded templates", slog.Any("error", err))
+		}
+		t, err := handlebars.LoadTemplate("{{> test_plan}}", ov)
 		if err != nil {
 			return nil, err
 		}
-		t := raymond.MustParse("{{> test_plan}}")
-		t.RegisterHelper("raw", handlebars.RawHelper)
-		t.RegisterHelper("ifSet", handlebars.IfSetHelper)
-		t.RegisterHelper("ifEqual", handlebars.IfEqualHelper)
-		t.RegisterHelper("quote", handlebars.QuoteHelper)
-		t.RegisterHelper("add", handlebars.AddHelper)
-		t.RegisterHelper("brace", handlebars.BraceHelper)
-		t.RegisterHelper("format", handlebars.FormatHelper)
+
+		handlebars.RegisterCommonHelpers(t)
 
 		t.RegisterHelper("conformance", conformanceHelper)
 		t.RegisterHelper("picsConformance", picsConformanceHelper)
@@ -56,22 +50,6 @@ func (sp *Generator) loadTemplate() (*raymond.Template, error) {
 		t.RegisterHelper("ifDataTypeIsArray", ifDataTypeIsArrayHelper)
 		t.RegisterHelper("minLimit", minimumHelper)
 		t.RegisterHelper("maxLimit", maximumHelper)
-
-		for _, file := range files {
-			if file.IsDir() {
-				continue
-			}
-			name := file.Name()
-			val, err := fs.ReadFile(ov, filepath.Join("templates/", name))
-			if err != nil {
-				return nil, fmt.Errorf("error reading template file %s: %w", name, err)
-			}
-			p, err := raymond.Parse(string(val))
-			if err != nil {
-				return nil, fmt.Errorf("error parsing template file %s: %w", name, err)
-			}
-			t.RegisterPartialTemplate(strings.TrimSuffix(filepath.Base(name), filepath.Ext(name)), p)
-		}
 		return t, nil
 	})
 	if err != nil {

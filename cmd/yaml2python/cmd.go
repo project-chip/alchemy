@@ -23,7 +23,8 @@ var Command = &cobra.Command{
 func init() {
 	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
-	Command.Flags().Bool("overwrite", false, "overwrite existing test plans")
+	Command.Flags().String("templateRoot", "", "the root of your local template files; if not specified, Alchemy will use an internal copy")
+	Command.Flags().Bool("overwrite", true, "overwrite existing test scripts")
 }
 
 func tp(cmd *cobra.Command, args []string) (err error) {
@@ -32,10 +33,17 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
-	//overwrite, _ := cmd.Flags().GetBool("overwrite")
+
+	asciiSettings := common.ASCIIDocAttributes(cmd)
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
-	asciiSettings := common.ASCIIDocAttributes(cmd)
+
+	overwrite, _ := cmd.Flags().GetBool("overwrite")
+	templateRoot, _ := cmd.Flags().GetString("templateRoot")
+	generatorOptions := []generate.GeneratorOption{
+		generate.Overwrite(overwrite),
+		generate.TemplateRoot(templateRoot),
+	}
 
 	var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
 	inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(args...))
@@ -92,12 +100,12 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	labels, err := parse.LoadPICSLabels(sdkRoot)
+	picsLabels, err := parse.LoadPICSLabels(sdkRoot)
 	if err != nil {
 		return err
 	}
 
-	generator := generate.NewPythonTestGenerator(specBuilder.Spec, sdkRoot, true, labels)
+	generator := generate.NewPythonTestGenerator(specBuilder.Spec, sdkRoot, picsLabels, generatorOptions...)
 	var scripts pipeline.Map[string, *pipeline.Data[string]]
 	scripts, err = pipeline.Process[*parse.Test, string](cxt, pipelineOptions, generator, tests)
 	if err != nil {

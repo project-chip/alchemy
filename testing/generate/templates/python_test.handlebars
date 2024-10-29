@@ -67,7 +67,7 @@ class {{test.ID}}(MatterBaseTest):
     async def test_{{test.ID}}(self):
         endpoint = self.matter_test_config.endpoint if self.matter_test_config.endpoint is not None else 1
 
-        {{> config test=test}}
+        {{> test/config/list test=test}}
 
 {{#each test.Variables}}
         {{variable this}} = None
@@ -88,10 +88,10 @@ class {{test.ID}}(MatterBaseTest):
 {{#each this.Steps}}
 {{#if this.PICSSet}}
         if self.pics_guard({{picsGuard this.PICSSet test.PICSAliases}}):
-            {{> test_step test=test step=this}}
+            {{> test/step test=test step=this}}
 
 {{else}}
-        {{> test_step test=test step=this}}
+        {{> test/step test=test step=this}}
 
 {{/if}}
 {{/each}}

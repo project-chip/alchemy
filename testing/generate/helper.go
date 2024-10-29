@@ -11,17 +11,11 @@ import (
 	"github.com/goccy/go-yaml"
 	"github.com/iancoleman/strcase"
 	"github.com/mailgun/raymond/v2"
-	"github.com/project-chip/alchemy/internal/handlebars"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
 func registerHelpers(t *raymond.Template, spec *spec.Specification) {
-	t.RegisterHelper("raw", handlebars.RawHelper)
-	t.RegisterHelper("ifSet", handlebars.IfSetHelper)
-	t.RegisterHelper("ifEqual", handlebars.IfEqualHelper)
-	t.RegisterHelper("quote", handlebars.QuoteHelper)
-
 	t.RegisterHelper("pics", picsHelper)
 	t.RegisterHelper("picsGuard", picsGuardHelper)
 	t.RegisterHelper("clusterIs", clusterIsHelper)

@@ -28,7 +28,7 @@ TH and DUT are on the same fabric.
 | **#** | *Ref* | *PICS* | *Test Step* | *Expected Outcome*
 | 1 | | | {comDutTH}. |
 {{#each attributes}}
-| {{add @index 2}}  | {{#brace}}REF_{{cluster.PICS}}_S{{entityId this}}{{/brace}} | {{#brace}}PICS_S{{entityId this}}{{/brace}} | {THread} _{{#brace}}{{entityId this}}{{/brace}}_ attribute. | {{> attributes_test_result attribute=this ~}}
+| {{add @index 2}}  | {{#brace}}REF_{{cluster.PICS}}_S{{entityId this}}{{/brace}} | {{#brace}}PICS_S{{entityId this}}{{/brace}} | {THread} _{{#brace}}{{entityId this}}{{/brace}}_ attribute. | {{> attributes/test_result attribute=this ~}}
 {{/each}}
 |===
 

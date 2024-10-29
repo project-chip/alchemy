@@ -1,3 +1,0 @@
-{{#ifSet step.Response.Constraints.MinValue}}
-asserts.assert_greater_equal({{> response_value step=step}}, {{pythonValue step.Response.Constraints.MinValue}})
-{{/ifSet}}

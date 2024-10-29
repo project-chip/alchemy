@@ -12,16 +12,34 @@ import (
 	"github.com/project-chip/alchemy/testing/parse"
 )
 
+type GeneratorOption func(g *PythonTestGenerator)
 type PythonTestGenerator struct {
-	sdkRoot   string
-	overwrite bool
+	sdkRoot      string
+	templateRoot string
+	overwrite    bool
 
-	spec   *spec.Specification
-	labels map[string]string
+	spec       *spec.Specification
+	picsLabels map[string]string
 }
 
-func NewPythonTestGenerator(spec *spec.Specification, sdkRoot string, overwrite bool, labels map[string]string) *PythonTestGenerator {
-	return &PythonTestGenerator{spec: spec, sdkRoot: sdkRoot, overwrite: overwrite, labels: labels}
+func TemplateRoot(templateRoot string) func(*PythonTestGenerator) {
+	return func(g *PythonTestGenerator) {
+		g.templateRoot = templateRoot
+	}
+}
+
+func Overwrite(overwrite bool) func(*PythonTestGenerator) {
+	return func(g *PythonTestGenerator) {
+		g.overwrite = overwrite
+	}
+}
+
+func NewPythonTestGenerator(spec *spec.Specification, sdkRoot string, picsLabels map[string]string, options ...GeneratorOption) *PythonTestGenerator {
+	ptg := &PythonTestGenerator{spec: spec, sdkRoot: sdkRoot, picsLabels: picsLabels}
+	for _, o := range options {
+		o(ptg)
+	}
+	return ptg
 }
 
 func (sp PythonTestGenerator) Name() string {
@@ -50,7 +68,7 @@ func (sp *PythonTestGenerator) Process(cxt context.Context, input *pipeline.Data
 	}
 
 	var t *raymond.Template
-	t, err = loadTemplate(sp.spec)
+	t, err = sp.loadTemplate(sp.spec)
 	if err != nil {
 		return
 	}
