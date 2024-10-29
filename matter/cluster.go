@@ -30,6 +30,9 @@ func NewClusterGroup(name string, source asciidoc.Element, clusters []*Cluster) 
 		entity:   entity{source: source},
 		Clusters: clusters,
 	}
+	for _, cluster := range clusters {
+		cluster.parentEntity = cg
+	}
 	cg.AssociatedDataTypes.parentEntity = cg
 	return cg
 }
@@ -44,12 +47,12 @@ func (c ClusterGroup) Explode() []*Cluster {
 
 type Cluster struct {
 	entity
-	ID          *Number         `json:"id,omitempty"`
-	Name        string          `json:"name,omitempty"`
-	Description string          `json:"description,omitempty"`
-	Revisions   []*Revision     `json:"revisions,omitempty"`
-	Parent      *Cluster        `json:"-"`
-	Conformance conformance.Set `json:"conformance,omitempty"`
+	ID            *Number         `json:"id,omitempty"`
+	Name          string          `json:"name,omitempty"`
+	Description   string          `json:"description,omitempty"`
+	Revisions     []*Revision     `json:"revisions,omitempty"`
+	ParentCluster *Cluster        `json:"-"`
+	Conformance   conformance.Set `json:"conformance,omitempty"`
 
 	ClusterClassification
 
@@ -73,7 +76,7 @@ func (c *Cluster) EntityType() types.EntityType {
 }
 
 func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err error) {
-	c.Parent = parent
+	c.ParentCluster = parent
 	if parent.Features != nil {
 		if c.Features == nil || len(c.Features.Bits) == 0 {
 			c.Features = parent.Features.Clone()

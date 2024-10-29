@@ -10,8 +10,8 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func readAttribute(d *xml.Decoder, e xml.StartElement) (attr *matter.Field, err error) {
-	attr = matter.NewAttribute(nil)
+func readAttribute(d *xml.Decoder, e xml.StartElement, c *matter.Cluster) (attr *matter.Field, err error) {
+	attr = matter.NewAttribute(nil, c)
 	attr.Access = matter.DefaultAccess(types.EntityTypeAttribute)
 	err = readFieldAttributes(e, attr, "attribute")
 	if err != nil {

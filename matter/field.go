@@ -25,12 +25,12 @@ type Field struct {
 	entityType types.EntityType
 }
 
-func NewField(source asciidoc.Element) *Field {
-	return &Field{entity: entity{source: source}, entityType: types.EntityTypeStructField}
+func NewField(source asciidoc.Element, parent types.Entity) *Field {
+	return &Field{entity: entity{source: source, parent: parent}, entityType: types.EntityTypeStructField}
 }
 
-func NewAttribute(source asciidoc.Element) *Field {
-	return &Field{entity: entity{source: source}, entityType: types.EntityTypeAttribute}
+func NewAttribute(source asciidoc.Element, parent types.Entity) *Field {
+	return &Field{entity: entity{source: source, parent: parent}, entityType: types.EntityTypeAttribute}
 }
 
 func (f *Field) GetConformance() conformance.Set {

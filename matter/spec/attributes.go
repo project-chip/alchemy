@@ -21,7 +21,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 	}
 	attributeMap := make(map[string]*matter.Field)
 	for row := range ti.Body() {
-		attr := matter.NewAttribute(row)
+		attr := matter.NewAttribute(row, cluster)
 		attr.ID, err = ti.ReadID(row, matter.TableColumnID)
 		if err != nil {
 			return

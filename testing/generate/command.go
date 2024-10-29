@@ -74,7 +74,7 @@ func wrapValue(name string, field *matter.Field, value any) string {
 	var objectName string
 	switch entity := field.Type.Entity.(type) {
 	case *matter.Enum:
-		parentEntity = entity.ParentEntity
+		parentEntity = entity.Parent()
 		objectGroup = "Enums"
 		objectName = entity.Name
 		switch value := value.(type) {
@@ -89,7 +89,7 @@ func wrapValue(name string, field *matter.Field, value any) string {
 			slog.Info("unknown arg type", slog.String("name", name), log.Type("type", value))
 		}
 	case *matter.Bitmap:
-		parentEntity = entity.ParentEntity
+		parentEntity = entity.Parent()
 		objectGroup = "Bitmaps"
 		objectName = entity.Name
 		switch value := value.(type) {
