@@ -23,7 +23,7 @@ func (c *EmptyLimit) Equal(o Limit) bool {
 }
 
 func (c *EmptyLimit) Min(cc Context) (min types.DataTypeExtreme) {
-	return types.DataTypeExtreme{Type: types.DataTypeExtremeTypeEmpty, Format: types.NumberFormatHex}
+	return types.DataTypeExtreme{Type: types.DataTypeExtremeTypeEmptyList, Format: types.NumberFormatHex}
 }
 
 func (c *EmptyLimit) Max(cc Context) (max types.DataTypeExtreme) {
