@@ -1,0 +1,11 @@
+{
+  "grammars": [
+    {
+      "path": "parser.go",
+      "files": [
+        "pics.peg",
+        "logical.peg"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{{#if attributes}}
+==== Attributes
+
+
+{{#each attributes}}
+:{{entityIdPadded attributes this}} : {{raw this.Name}}
+{{/each}}
+
+
+{{#each attributes}}
+:PICS_S{{id this.ID}}{{entityIdPadding attributes this}} : {PICS_S}.A{{id this.ID}}({{#brace}}{{entityId this}}{{/brace}})
+{{/each}}
+
+
+{{#each attributes}}
+:PICS_S{{id this.ID}}_CONFORMANCE{{entityIdPadding attributes this}} : {PICS_S}.A{{id this.ID}}({{#brace}}{{entityId this}}{{/brace}})
+{{/each}}
+
+
+|===
+| *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*
+{{#each attributes}}
+| {{#brace}}PICS_S{{entityId this}}{{/brace}}| {devimp} the _{{#brace}}{{entityId this}}{{/brace}}_ attribute?| {{#if this.conformance}}{{picsConformance context.referenceStore cluster this.conformance}}{{/if}} |
+{{/each}}
+|===
+
+{{/if}}

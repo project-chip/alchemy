@@ -18,9 +18,8 @@ func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 	dt := s.GetDataType()
 	if dt == nil {
 		dt = types.NewDataType(types.BaseDataTypeMap8, false)
-	}
-
-	if !dt.IsMap() {
+		slog.Warn("Bitmap does not declare its derived data type; assuming map8", log.Element("path", d.Path, s.Base), slog.String("bitmap", name))
+	} else if !dt.IsMap() {
 		return nil, fmt.Errorf("unknown bitmap data type: %s", dt.Name)
 	}
 

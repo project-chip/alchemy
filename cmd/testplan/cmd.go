@@ -26,6 +26,7 @@ var Command = &cobra.Command{
 func init() {
 	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().String("testRoot", "chip-test-plans", "the root of your clone of CHIP-Specifications/chip-test-plans")
+	Command.Flags().String("templateRoot", "", "the root of your local template files; if not specified, Alchemy will use an internal copy")
 	Command.Flags().Bool("overwrite", false, "overwrite existing test plans")
 }
 
@@ -36,10 +37,16 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	testRoot, _ := cmd.Flags().GetString("testRoot")
 	overwrite, _ := cmd.Flags().GetBool("overwrite")
+	templateRoot, _ := cmd.Flags().GetString("templateRoot")
 
 	asciiSettings := common.ASCIIDocAttributes(cmd)
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
+	var testplanGeneratorOptions []testplan.GeneratorOption
+
+	if templateRoot != "" {
+		testplanGeneratorOptions = append(testplanGeneratorOptions, testplan.TemplateRoot(templateRoot))
+	}
 
 	errata.LoadErrataConfig(specRoot)
 
@@ -91,7 +98,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	generator := testplan.NewGenerator(testRoot, overwrite)
+	generator := testplan.NewGenerator(testRoot, overwrite, testplanGeneratorOptions...)
 	var testplans pipeline.Map[string, *pipeline.Data[string]]
 	testplans, err = pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, generator, specDocs)
 	if err != nil {

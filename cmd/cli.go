@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/cmd/format"
 	"github.com/project-chip/alchemy/cmd/testplan"
 	"github.com/project-chip/alchemy/cmd/validate"
+	"github.com/project-chip/alchemy/cmd/yaml2python"
 	"github.com/project-chip/alchemy/cmd/zap"
 )
 
@@ -28,4 +29,5 @@ func init() {
 	rootCmd.AddCommand(dm.Command)
 	rootCmd.AddCommand(testplan.Command)
 	rootCmd.AddCommand(validate.Command)
+	rootCmd.AddCommand(yaml2python.Command)
 }

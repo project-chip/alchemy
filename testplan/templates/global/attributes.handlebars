@@ -1,0 +1,70 @@
+== Test Cases
+// ################# TEST CASE TEMPLATE: START #################
+'''
+=== Generic Test Cases
+'''
+// ################# GLOBAL ATTRIBUTES TEST CASE: START #################
+==== [TC-{picsCode}-1.1] Global Attributes with {DUT_Server}
+
+===== Category
+Functional conformance.
+
+===== Purpose
+This test case verifies the behavior of the global attributes of the cluster server.
+
+===== PICS
+
+* {PICS_S}
+
+===== Required Devices
+:reqDevices: reqDevices_C_TH_and_S_DUT
+include::../common/required_devices.adoc[]
+
+===== Test Procedure
+[cols="5%,5%,10%,40%,40%"]
+|===
+| **#** | *Ref* | *PICS* | *Test Step* | *Expected Outcome*
+| 1     |       |        | {comDutTH}. |
+{{#if lastRevision}}
+| 2 | {REF_CLUSTERREVISION} | | {THread} _ClusterRevision_ attribute. | {DUTreply} the _ClusterRevision_ attribute and has the value {{lastRevision.number}}.
+{{/if}}
+{{#if features}}
+| 3 | {REF_FEATUREMAP} | | {THread} _FeatureMap_ attribute. | {DUTreply} the _FeatureMap_ attribute and have the following bits set:
+{{#each features}}
+{{> global/feature_codes feature=this}}
+{{/each}}
++
+{remainingBitsZero}
+{{/if}}
+| 4 | {REF_ATTRIBUTELIST} |  | {THread} _AttributeList_ attribute.  | {DUTreply} the _AttributeList_ attribute and have the list of supported attributes
+{{#if attributes}}
+{{> global/attribute list=attributes optionality=attributeOptions idFormat="%04X"}}
+{{else}}
+{noEntryStdRgn} +
+{{/if}}
+| 5^*^ | {REF_EVENTLIST} | | {THread} _EventList_ attribute. | {DUTreply} the _EventList_ attribute and have the list of supported events:
+{{#if events}}
+{{> global/attribute list=events optionality=eventOptions}}
+{{else}}
+{noEntryStdRgn} +
+{{/if}}
+| 6     | {REF_ACCEPTEDCOMMANDLIST}  |       | {THread} _AcceptedCommandList_ attribute.  | {DUTreply} the _AcceptedCommandList_ attribute and have the list of Accepted Command:
+{{#if commandsAccepted}}
+{{> global/attribute list=commandsAccepted optionality=commandsAcceptedOptions idFormat="%02X"}}
+{{else}}
+{noEntryStdRgn} +
+{{/if}}
+| 7     | {REF_GENERATEDCOMMANDLIST} |       | {THread} _GeneratedCommandList_ attribute. | {DUTreply} the _GeneratedCommandList_ attribute and have the list of Generated Command:
+{{#if commandsGenerated}}
+{{> global/attribute list=commandsGenerated optionality=commandsGeneratedOptions idFormat="%02X"}}
+{{else}}
+{noEntryStdRgn} +
+{{/if}}
+|===
+
+===== Notes/Testing Considerations
+^*^ Step 5 is currently not supported and SHALL be skipped.
+// ################# GLOBAL ATTRIBUTES TEST CASE: END #################
+
+// ################# TEST CASE TEMPLATE: END #################
+

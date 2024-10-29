@@ -17,17 +17,33 @@ func isSeparator(r rune) bool {
 	return r == '.' || r == ' ' || r == '-' || r == '_' || r == '(' || r == ')'
 }
 
+// Case turns a string with spaces into a valid Matter identifier in Pascal Case
+// It is Unicode-aware, and preserves acronyms
+// e.g. "Level control" becomes "LevelControl", "TV set" becomes "TVSet"
 func Case(s string) string {
+	return caseify(s, 0)
+}
+
+// Case turns a string with spaces into a valid Matter identifier, with a custom separator rune
+// e.g. "Level control" becomes "Level-Control", "TV set" becomes "TV-Set"
+func CaseWithSeparator(s string, separator rune) string {
+	return caseify(s, separator)
+}
+
+func caseify(s string, separator rune) string {
 	runes := []rune(s)
 	b := make([]byte, 0, len(runes))
 	var index int
-	nextUpper := true
+	upperCaseNextRune := true // We'll always start with a capital
 	for index < len(runes) {
 		r := runes[index]
 		if unicode.IsUpper(r) {
+			if upperCaseNextRune && separator != 0 && len(b) > 0 { // If there's a supplied separator, append it, unless the string is empty
+				b = utf8.AppendRune(b, separator)
+			}
 			var end int
 			var endedBySeparator bool
-			for end = index + 1; end < len(runes); end++ {
+			for end = index + 1; end < len(runes); end++ { // Look for a run of upper-case letters
 				if unicode.IsUpper(runes[end]) {
 					if end == len(runes)-1 { // Last rune
 						endedBySeparator = true
@@ -41,13 +57,17 @@ func Case(s string) string {
 				break
 			}
 			if end-index > 1 {
+
 				_, isAcronym := acronyms.Load(string(runes[index:end]))
 				if isAcronym || endedBySeparator {
+					// If this run of upper-case letters is a known acronym, or
+					// it ends the string, preserve it
 					for index < end {
 						b = utf8.AppendRune(b, runes[index])
 						index++
 					}
 				} else {
+					// Otherwise, lower-case the remainder of the block of upper-case letters
 					b = utf8.AppendRune(b, runes[index])
 					index++
 					for index < end-1 {
@@ -58,28 +78,31 @@ func Case(s string) string {
 				}
 				index = end
 			} else {
+				// It's just the one upper-case letter
 				b = utf8.AppendRune(b, runes[index])
 				index++
 			}
-			nextUpper = false
+			upperCaseNextRune = false
 			continue
 		} else if unicode.IsLower(r) {
-			if nextUpper {
+			if upperCaseNextRune {
+				if separator != 0 {
+					b = utf8.AppendRune(b, separator)
+				}
 				b = utf8.AppendRune(b, unicode.ToUpper(r))
-				nextUpper = false
+				upperCaseNextRune = false
 			} else {
 				b = utf8.AppendRune(b, r)
 			}
 		} else if unicode.IsNumber(r) {
 			b = utf8.AppendRune(b, r)
-			nextUpper = true
+			upperCaseNextRune = true
 		} else {
-			nextUpper = isSeparator(r)
+			upperCaseNextRune = isSeparator(r)
 		}
 		index++
 	}
 	return string(b)
-
 }
 
 type charClass uint8

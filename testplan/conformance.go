@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -27,38 +28,71 @@ func renderFeatureConformance(b *strings.Builder, doc *spec.Doc, cluster *matter
 	renderConformance(cs, b, doc, cluster, entityVariable)
 }
 
-func renderConformance(cs conformance.Set, b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, formatter conformanceEntityFormatter) {
-	for _, c := range cs {
-		switch c := c.(type) {
-		case *conformance.Mandatory:
-			if c.Expression == nil {
-				b.WriteString("M")
-				continue
-			}
-			renderExpression(b, doc, cluster, c.Expression, formatter)
-		case *conformance.Optional:
-			if c.Expression == nil {
-				b.WriteString("O")
-				if c.Choice != nil {
-					b.WriteRune('.')
-					b.WriteString(c.Choice.ASCIIDocString())
-				}
-				continue
-			}
-			b.WriteRune('[')
-			renderExpression(b, doc, cluster, c.Expression, formatter)
-			b.WriteRune(']')
-			if c.Choice != nil {
-				b.WriteRune('.')
-				b.WriteString(c.Choice.ASCIIDocString())
-			}
-		default:
-			b.WriteString(fmt.Sprintf("unknown conformance: %T", c))
-		}
+func picsConformanceHelper(doc conformance.ReferenceStore, cluster matter.Cluster, cs conformance.Set) raymond.SafeString {
+	var b strings.Builder
+	renderConformance(cs, &b, doc, &cluster, entityPICS)
+	return raymond.SafeString(b.String())
+}
+
+func conformanceHelper(doc conformance.ReferenceStore, cluster matter.Cluster, cs conformance.Set) raymond.SafeString {
+	var b strings.Builder
+	renderConformance(cs, &b, doc, &cluster, entityVariable)
+	return raymond.SafeString(b.String())
+}
+
+func renderChoice(c *conformance.Optional, b *strings.Builder) {
+	// PICS tool does not support + style conformances, so unless this is a "pick one" choice,
+	//render as fully optional, we'll check the choice conformance properly in the tests.
+	o := conformance.ChoiceExactLimit{Limit: 1}
+	if c.Choice != nil && o.Equal(c.Choice.Limit) {
+		b.WriteRune('.')
+		b.WriteString(c.Choice.ASCIIDocString())
 	}
 }
 
-func renderExpression(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, exp conformance.Expression, formatter conformanceEntityFormatter) {
+func renderConformance(cs conformance.Set, b *strings.Builder, doc conformance.ReferenceStore, cluster *matter.Cluster, formatter conformanceEntityFormatter) {
+	// PICS tool can't handle otherwise conformances, so render anything with an otherwise conformance as optional for the purposes of the
+	// test plan PICS. This can be fully evaluated in the tests.
+	// The only exception is if it is provisional, which should be rendered as X.
+	if len(cs) != 1 {
+		switch cs[0].(type) {
+		case *conformance.Provisional:
+			b.WriteRune('X')
+		default:
+			b.WriteString("{PICS_S}: O")
+		}
+		return
+	}
+	switch c := cs[0].(type) {
+	case *conformance.Mandatory:
+		if c.Expression == nil {
+			b.WriteString("{PICS_S}: M")
+			return
+		}
+		renderExpression(b, doc, cluster, c.Expression, formatter)
+	case *conformance.Optional:
+		if c.Expression == nil {
+			b.WriteString("{PICS_S}: O")
+			renderChoice(c, b)
+			return
+		}
+		renderExpression(b, doc, cluster, c.Expression, formatter)
+		b.WriteString(": O")
+		renderChoice(c, b)
+	case *conformance.Provisional:
+		b.WriteRune('X')
+	case *conformance.Disallowed:
+		b.WriteRune('X')
+	case *conformance.Deprecated:
+		b.WriteRune('X')
+	case *conformance.Described:
+		b.WriteString("{PICS_S}: O")
+	default:
+		b.WriteString(fmt.Sprintf("unknown conformance: %T", c))
+	}
+}
+
+func renderExpression(b *strings.Builder, doc conformance.ReferenceStore, cluster *matter.Cluster, exp conformance.Expression, formatter conformanceEntityFormatter) {
 	switch exp := exp.(type) {
 	case *conformance.EqualityExpression:
 		b.WriteRune('(')
@@ -74,7 +108,7 @@ func renderExpression(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster
 		b.WriteString(renderReference(doc, exp.Reference, formatter))
 	case *conformance.LogicalExpression:
 		if exp.Not {
-			b.WriteRune('!')
+			b.WriteString("NOT")
 		}
 		b.WriteRune('(')
 		renderExpression(b, doc, cluster, exp.Left, formatter)

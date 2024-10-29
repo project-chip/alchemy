@@ -1,0 +1,3 @@
+{{#if step.Command ~}}
+await self.send_single_cmd(cmd=Clusters.Objects.{{stepClusterName test step}}.Commands.{{step.Command}}({{commandArgs test step}}))
+{{/if}}

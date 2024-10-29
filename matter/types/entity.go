@@ -34,6 +34,7 @@ const (
 type Entity interface {
 	EntityType() EntityType
 	Source() asciidoc.Element
+	Parent() Entity
 }
 
 func (et EntityType) String() string {

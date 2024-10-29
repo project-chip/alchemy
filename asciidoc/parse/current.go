@@ -30,10 +30,6 @@ func (c *current) previousRuneIsWhitespace() bool {
 	return unicode.IsSpace(r)
 }
 
-func (c *current) currentColumn() int {
-	return c.pos.col
-}
-
 func (c *current) currentPosition() (line, col, offset int) {
 	line = c.parser.offset.line + c.pos.line
 	col = c.pos.col

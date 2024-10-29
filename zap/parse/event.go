@@ -63,7 +63,7 @@ func readEvent(path string, d *xml.Decoder, e xml.StartElement) (event *matter.E
 				event.Description, err = readSimpleElement(d, t.Name.Local)
 			case "field":
 				var field *matter.Field
-				field, err = readField(path, d, t, types.EntityTypeEvent, "field")
+				field, err = readField(path, d, t, types.EntityTypeEvent, "field", event)
 				if err != nil {
 					slog.Warn("error reading event field", slog.Any("error", err))
 				} else {
