@@ -34,11 +34,11 @@ func caseify(s string, separator rune) string {
 	runes := []rune(s)
 	b := make([]byte, 0, len(runes))
 	var index int
-	nextUpper := true // We'll always start with a capital
+	upperCaseNextRune := true // We'll always start with a capital
 	for index < len(runes) {
 		r := runes[index]
 		if unicode.IsUpper(r) {
-			if nextUpper && separator != 0 && len(b) > 0 { // If there's a supplied separator, append it, unless the string is empty
+			if upperCaseNextRune && separator != 0 && len(b) > 0 { // If there's a supplied separator, append it, unless the string is empty
 				b = utf8.AppendRune(b, separator)
 			}
 			var end int
@@ -82,23 +82,23 @@ func caseify(s string, separator rune) string {
 				b = utf8.AppendRune(b, runes[index])
 				index++
 			}
-			nextUpper = false
+			upperCaseNextRune = false
 			continue
 		} else if unicode.IsLower(r) {
-			if nextUpper {
+			if upperCaseNextRune {
 				if separator != 0 {
 					b = utf8.AppendRune(b, separator)
 				}
 				b = utf8.AppendRune(b, unicode.ToUpper(r))
-				nextUpper = false
+				upperCaseNextRune = false
 			} else {
 				b = utf8.AppendRune(b, r)
 			}
 		} else if unicode.IsNumber(r) {
 			b = utf8.AppendRune(b, r)
-			nextUpper = true
+			upperCaseNextRune = true
 		} else {
-			nextUpper = isSeparator(r)
+			upperCaseNextRune = isSeparator(r)
 		}
 		index++
 	}
