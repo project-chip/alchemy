@@ -56,7 +56,7 @@ func getCluster(spec *spec.Specification, t *test, ts *testStep) (clusterName st
 	return
 }
 
-func wrapValue(name string, field *matter.Field, value any) string {
+func commandArgValue(name string, cluster *matter.Cluster, field *matter.Field, value any) string {
 	if field == nil {
 		return fmt.Sprintf("unknown field: %s", name)
 	}
@@ -109,14 +109,24 @@ func wrapValue(name string, field *matter.Field, value any) string {
 			slog.Info("unknown arg type", slog.String("name", name), log.Type("type", value))
 		}
 	case *matter.Struct:
-		slog.Warn("struct argument entity", log.Type("type", value))
+		//Clusters.Objects.ApplicationLauncher.Structs.ApplicationStruct.({CatalogVendorID: catalogVendorId, ApplicationID: NonAvailableApp}))
+		/// preset = cluster.Structs.PresetStruct(presetHandle=presetHandle, presetScenario=presetScenario, builtIn=builtIn)
+		parentEntity = entity.Parent()
+		objectGroup = "Structs"
+		objectName = entity.Name
+		slog.Warn("struct argument entity", slog.String("name", name), log.Type("type", value))
+
 	default:
 		slog.Warn("unsupported argument entity", log.Type("type", entity))
 	}
 	if parentEntity != nil {
 		switch parentEntity := parentEntity.(type) {
 		case *matter.Cluster:
-			namespace = fmt.Sprintf("Clusters.Objects.%s", spec.CanonicalName(parentEntity.Name))
+			if parentEntity == cluster {
+				namespace = "cluster"
+			} else {
+				namespace = fmt.Sprintf("Clusters.Objects.%s", spec.CanonicalName(parentEntity.Name))
+			}
 		}
 	}
 	var sb strings.Builder
@@ -133,13 +143,31 @@ func wrapValue(name string, field *matter.Field, value any) string {
 		}
 		if objectName != "" {
 			sb.WriteString(objectName)
-			sb.WriteRune('.')
 		}
 		if valName != "" {
+			sb.WriteRune('.')
 			sb.WriteString(valName)
 		} else {
 			sb.WriteRune('(')
-			sb.WriteString(string(pythonValueHelper(value)))
+			switch value := value.(type) {
+			case yaml.MapSlice:
+				var count int
+				for _, val := range value {
+					key, ok := val.Key.(string)
+					if !ok {
+						continue
+					}
+					if count > 0 {
+						sb.WriteString(", ")
+					}
+					sb.WriteString(key)
+					sb.WriteString("=")
+					sb.WriteString(string(pythonValueHelper(val.Value)))
+					count++
+				}
+			default:
+				sb.WriteString(string(pythonValueHelper(value)))
+			}
 			sb.WriteRune(')')
 		}
 		return sb.String()
@@ -219,7 +247,7 @@ func commandArgsHelper(spec *spec.Specification) func(test test, step testStep) 
 				if field == nil {
 					slog.Warn("Unknown command field in test", slog.String("fieldName", name))
 				}
-				args = append(args, wrapValue(name, field, value))
+				args = append(args, commandArgValue(name, cluster, field, value))
 			}
 		}
 
