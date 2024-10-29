@@ -16,8 +16,10 @@ type Specification struct {
 	Clusters       map[*matter.Cluster]struct{}
 	ClustersByID   map[uint64]*matter.Cluster
 	ClustersByName map[string]*matter.Cluster
-	DeviceTypes    []*matter.DeviceType
-	BaseDeviceType *matter.DeviceType
+
+	DeviceTypes     []*matter.DeviceType
+	DeviceTypesByID map[uint64]*matter.DeviceType
+	BaseDeviceType  *matter.DeviceType
 
 	Namespaces []*matter.Namespace
 
@@ -40,11 +42,12 @@ type Specification struct {
 
 func newSpec() *Specification {
 	return &Specification{
-		Clusters:       make(map[*matter.Cluster]struct{}),
-		ClustersByID:   make(map[uint64]*matter.Cluster),
-		ClustersByName: make(map[string]*matter.Cluster),
-		ClusterRefs:    ClusterRefs{refs: make(map[types.Entity]map[*matter.Cluster]struct{})},
-		DocRefs:        make(map[types.Entity]*Doc),
+		Clusters:        make(map[*matter.Cluster]struct{}),
+		ClustersByID:    make(map[uint64]*matter.Cluster),
+		ClustersByName:  make(map[string]*matter.Cluster),
+		ClusterRefs:     ClusterRefs{refs: make(map[types.Entity]map[*matter.Cluster]struct{})},
+		DeviceTypesByID: make(map[uint64]*matter.DeviceType),
+		DocRefs:         make(map[types.Entity]*Doc),
 
 		bitmapIndex:  make(map[string]*matter.Bitmap),
 		enumIndex:    make(map[string]*matter.Enum),

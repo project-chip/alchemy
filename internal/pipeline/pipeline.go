@@ -31,7 +31,7 @@ func Process[I, O any](cxt context.Context, options Options, processor Processor
 			err = fmt.Errorf("processor \"%s\" claimed to be collective, but does not implement CollectiveProcessor interface: %v", processor.Name(), proc)
 			return
 		}
-		return processCollective[I, O](cxt, proc, input)
+		return ProcessCollectiveFunc[I, O](cxt, input, proc.Name(), proc.Process)
 	case ProcessorTypeIndividual:
 		proc, ok := processor.(IndividualProcessor[I, O])
 		if !ok {
@@ -77,8 +77,5 @@ func ProcessParallelFunc[I, O any](cxt context.Context, options Options, input M
 
 		}
 	})
-	if err != nil {
-		return
-	}
 	return processParallel[I, O](cxt, name, f, queue, total, !options.NoProgress)
 }

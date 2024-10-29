@@ -1,0 +1,38 @@
+// ################# TEST CASE TEMPLATE: START #################
+==== [TC-{picsCode}-2.1] Attributes with Server as DUT
+===== Category
+Functional conformance
+
+===== Purpose
+This test case verifies the non-global attributes of the {clustername} cluster server.
+
+===== PICS
+
+* {PICS_S}
+
+===== Required Devices
+:reqDevices: reqDevices_C_TH_and_S_DUT
+include::../common/required_devices.adoc[]
+
+===== Device Topology
+
+TH and DUT are on the same fabric.
+
+===== Test Setup
+
+{comDutTH}.
+
+===== Test Procedure
+[cols="5%,5%,10%,40%,40%"]
+|===
+| **#** | *Ref* | *PICS* | *Test Step* | *Expected Outcome*
+| 1 | | | {comDutTH}. |
+{{#each attributes}}
+| {{add @index 2}}  | {{#brace}}REF_{{cluster.PICS}}_S{{entityId this}}{{/brace}} | {{#brace}}PICS_S{{entityId this}}{{/brace}} | {THread} _{{#brace}}{{entityId this}}{{/brace}}_ attribute. | {{> attributes/test_result attribute=this ~}}
+{{/each}}
+|===
+
+===== Notes/Testing Considerations
+
+
+// ################# TEST CASE TEMPLATE: END #################

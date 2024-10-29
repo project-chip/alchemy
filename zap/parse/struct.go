@@ -51,7 +51,7 @@ func (sp *ZapParser) readStruct(path string, d *xml.Decoder, e xml.StartElement)
 				s.Description, err = readSimpleElement(d, t.Name.Local)
 			case "item":
 				var f *matter.Field
-				f, err = readField(path, d, t, types.EntityTypeStruct, "item")
+				f, err = readField(path, d, t, types.EntityTypeStruct, "item", s)
 				if err != nil {
 					slog.Warn("error reading struct field", slog.Any("error", err))
 				} else {

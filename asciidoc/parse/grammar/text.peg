@@ -38,7 +38,7 @@ EmptyLine = BeginningOfLine AnySpaces NewLine {
 
 SoftNewLine = !"\\" NewLine
 
-NewLine = ("\n" / "\r" / "\r\n"  ) {
+NewLine = ("\n" / "\r\n") {
     debugPosition(c, "newline\n")
     return compose(c, &asciidoc.NewLine{})
 }
@@ -89,7 +89,7 @@ UnbrokenText = CharacterClassInline+ {
     return string(c.text), nil
 }
 
-AnyText = [^\n]* 
+AnyText = [^\r\n]* 
 
 AnySpaces = [ \t]* 
 
@@ -98,7 +98,7 @@ CharacterClassAll = (. / NewLine) {
     return string(c.text), nil
 }
 
-CharacterClassInline = [^\n] 
+CharacterClassInline = [^\r\n] 
 
 CharacterGroupWord = [\p{M}\p{Nd}\p{Pc}\p{Join_Control}\p{L}] 
 

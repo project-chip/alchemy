@@ -1759,8 +1759,8 @@ var g = &grammar{
 					pos: position{line: 398, col: 19, offset: 8742},
 					expr: &charClassMatcher{
 						pos:        position{line: 398, col: 19, offset: 8742},
-						val:        "[^\\n]",
-						chars:      []rune{'\n'},
+						val:        "[^\\r\\n]",
+						chars:      []rune{'\r', '\n'},
 						ignoreCase: false,
 						inverted:   true,
 					},
@@ -1770,11 +1770,11 @@ var g = &grammar{
 		{
 			name:        "_",
 			displayName: "\"whitespace\"",
-			pos:         position{line: 402, col: 1, offset: 8789},
+			pos:         position{line: 402, col: 1, offset: 8791},
 			expr: &zeroOrMoreExpr{
-				pos: position{line: 402, col: 19, offset: 8807},
+				pos: position{line: 402, col: 19, offset: 8809},
 				expr: &charClassMatcher{
-					pos:        position{line: 402, col: 19, offset: 8807},
+					pos:        position{line: 402, col: 19, offset: 8809},
 					val:        "[ \\t\\r\\n]",
 					chars:      []rune{' ', '\t', '\r', '\n'},
 					ignoreCase: false,
@@ -1784,9 +1784,9 @@ var g = &grammar{
 		},
 		{
 			name: "Comma",
-			pos:  position{line: 404, col: 1, offset: 8819},
+			pos:  position{line: 404, col: 1, offset: 8821},
 			expr: &litMatcher{
-				pos:        position{line: 404, col: 10, offset: 8828},
+				pos:        position{line: 404, col: 10, offset: 8830},
 				val:        ",",
 				ignoreCase: false,
 				want:       "\",\"",
@@ -1794,11 +1794,11 @@ var g = &grammar{
 		},
 		{
 			name: "EOF",
-			pos:  position{line: 406, col: 1, offset: 8834},
+			pos:  position{line: 406, col: 1, offset: 8836},
 			expr: &notExpr{
-				pos: position{line: 406, col: 8, offset: 8841},
+				pos: position{line: 406, col: 8, offset: 8843},
 				expr: &anyMatcher{
-					line: 406, col: 9, offset: 8842,
+					line: 406, col: 9, offset: 8844,
 				},
 			},
 		},

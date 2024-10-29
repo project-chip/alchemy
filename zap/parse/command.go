@@ -85,7 +85,7 @@ func readCommand(path string, d *xml.Decoder, e xml.StartElement) (c *matter.Com
 				_, err = readSimpleElement(d, t.Name.Local)
 			case "arg":
 				var f *matter.Field
-				f, err = readField(path, d, t, types.EntityTypeCommand, "arg")
+				f, err = readField(path, d, t, types.EntityTypeCommand, "arg", c)
 				if err != nil {
 					slog.Warn("error reading command field", slog.Any("error", err))
 				} else {

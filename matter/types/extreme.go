@@ -13,7 +13,7 @@ const (
 	DataTypeExtremeTypeInt64
 	DataTypeExtremeTypeUInt64
 	DataTypeExtremeTypeNull
-	DataTypeExtremeTypeEmpty
+	DataTypeExtremeTypeEmptyList
 )
 
 type DataTypeExtreme struct {
@@ -87,7 +87,7 @@ func (ce *DataTypeExtreme) ZapString(dataType *DataType) string {
 		}
 	case DataTypeExtremeTypeUInt64:
 		return ce.formatUint64(dataType, ce.UInt64)
-	case DataTypeExtremeTypeNull, DataTypeExtremeTypeEmpty:
+	case DataTypeExtremeTypeNull, DataTypeExtremeTypeEmptyList:
 		return ""
 	}
 	return ""
@@ -139,7 +139,7 @@ func (ce *DataTypeExtreme) DataModelString(dataType *DataType) string {
 		return ce.formatUint64(dataType, ce.UInt64)
 	case DataTypeExtremeTypeNull:
 		return "null"
-	case DataTypeExtremeTypeEmpty:
+	case DataTypeExtremeTypeEmptyList:
 		return "empty"
 	}
 	return ""

@@ -93,6 +93,14 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				addClusterToSpec(spec, d, m)
 			case *matter.DeviceType:
 				spec.DeviceTypes = append(spec.DeviceTypes, m)
+				if m.ID.Valid() {
+					if existing, ok := spec.DeviceTypesByID[m.ID.Value()]; ok {
+						slog.Error("duplicate device type ID", slog.String("deviceTypeId", m.ID.HexString()), log.Path("previousSource", existing), log.Path("newSource", m))
+					} else {
+						spec.DeviceTypesByID[m.ID.Value()] = m
+					}
+
+				}
 			case *matter.Namespace:
 				spec.Namespaces = append(spec.Namespaces, m)
 			default:
@@ -214,6 +222,16 @@ func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster) {
 			slog.Warn("Duplicate cluster ID", slog.String("clusterId", m.ID.HexString()), slog.String("clusterName", m.Name), slog.String("existingClusterName", existing.Name))
 		}
 		spec.ClustersByID[m.ID.Value()] = m
+	} else {
+		idText := m.ID.Text()
+		if !strings.EqualFold(idText, "n/a") {
+			if strings.EqualFold(idText, "ID-TBD") {
+				slog.Warn("Cluster has not yet been assigned an ID; this may cause issues with generated code", slog.String("clusterName", m.Name))
+			} else {
+				slog.Warn("Cluster has invalid ID", slog.String("clusterId", idText), slog.String("clusterName", m.Name))
+
+			}
+		}
 	}
 	existing, ok := spec.ClustersByName[m.Name]
 	if ok {

@@ -73,7 +73,7 @@ func (cf *eventFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Attri
 		err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
 		return
 	}
-	e.Fields, err = d.readFields(ti, types.EntityTypeEventField)
+	e.Fields, err = d.readFields(ti, types.EntityTypeEventField, e)
 	if err != nil {
 		return
 	}

@@ -67,7 +67,7 @@ func (cf *commandFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Att
 			}
 			return
 		}
-		c.Fields, err = d.readFields(ti, types.EntityTypeCommandField)
+		c.Fields, err = d.readFields(ti, types.EntityTypeCommandField, c)
 		if err != nil {
 			return
 		}

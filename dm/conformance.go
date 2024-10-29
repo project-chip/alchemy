@@ -53,25 +53,7 @@ func renderConformance(doc *spec.Doc, identifierStore conformance.IdentifierStor
 		parent.CreateElement("provisionalConform")
 	case *conformance.Optional:
 		oc := parent.CreateElement("optionalConform")
-		if con.Choice != nil {
-			oc.CreateAttr("choice", con.Choice.Set)
-			if con.Choice.Limit != nil {
-				switch l := con.Choice.Limit.(type) {
-				case *conformance.ChoiceExactLimit:
-					oc.CreateAttr("min", strconv.Itoa(l.Limit))
-					oc.CreateAttr("max", strconv.Itoa(l.Limit))
-				case *conformance.ChoiceMinLimit:
-					oc.CreateAttr("more", "true") // Existing data model does this for some reason
-					oc.CreateAttr("min", strconv.Itoa(l.Min))
-				case *conformance.ChoiceMaxLimit:
-					oc.CreateAttr("max", strconv.Itoa(l.Max))
-				case *conformance.ChoiceRangeLimit:
-					oc.CreateAttr("more", "true") // Existing data model does this for some reason
-					oc.CreateAttr("min", strconv.Itoa(l.Min))
-					oc.CreateAttr("max", strconv.Itoa(l.Max))
-				}
-			}
-		}
+		renderChoice(con.Choice, oc)
 		return renderConformanceExpression(doc, identifierStore, con.Expression, oc)
 	case *conformance.Disallowed:
 		parent.CreateElement("disallowConform")
@@ -90,6 +72,30 @@ func renderConformance(doc *spec.Doc, identifierStore conformance.IdentifierStor
 		return fmt.Errorf("unknown conformance type: %T", con)
 	}
 	return nil
+}
+
+func renderChoice(choice *conformance.Choice, parent *etree.Element) {
+	if choice == nil {
+		return
+	}
+	parent.CreateAttr("choice", choice.Set)
+	if choice.Limit == nil {
+		return
+	}
+	switch l := choice.Limit.(type) {
+	case *conformance.ChoiceExactLimit:
+		parent.CreateAttr("min", strconv.Itoa(l.Limit))
+		parent.CreateAttr("max", strconv.Itoa(l.Limit))
+	case *conformance.ChoiceMinLimit:
+		parent.CreateAttr("more", "true") // Existing data model does this for some reason
+		parent.CreateAttr("min", strconv.Itoa(l.Min))
+	case *conformance.ChoiceMaxLimit:
+		parent.CreateAttr("max", strconv.Itoa(l.Max))
+	case *conformance.ChoiceRangeLimit:
+		parent.CreateAttr("more", "true") // Existing data model does this for some reason
+		parent.CreateAttr("min", strconv.Itoa(l.Min))
+		parent.CreateAttr("max", strconv.Itoa(l.Max))
+	}
 }
 
 func renderConformanceExpression(doc *spec.Doc, identifierStore conformance.IdentifierStore, exp conformance.Expression, parent *etree.Element) error {

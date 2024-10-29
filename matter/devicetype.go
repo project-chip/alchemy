@@ -18,7 +18,8 @@ type DeviceType struct {
 	Class    string `json:"class,omitempty"`
 	Scope    string `json:"scope,omitempty"`
 
-	Conditions []*Condition `json:"conditions,omitempty"`
+	Conditions             []*Condition             `json:"conditions,omitempty"`
+	DeviceTypeRequirements []*DeviceTypeRequirement `json:"deviceTypeRequirements,omitempty"`
 
 	ClusterRequirements            []*ClusterRequirement            `json:"clusterRequirements,omitempty"`
 	ElementRequirements            []*ElementRequirement            `json:"elementRequirements,omitempty"`
@@ -65,6 +66,13 @@ type ElementRequirement struct {
 	Conformance conformance.Set       `json:"conformance,omitempty"`
 
 	Cluster *Cluster `json:"cluster,omitempty"`
+}
+
+type DeviceTypeRequirement struct {
+	DeviceTypeID   *Number               `json:"deviceTypeId,omitempty"`
+	DeviceTypeName string                `json:"deviceTypeName,omitempty"`
+	Constraint     constraint.Constraint `json:"constraint,omitempty"`
+	Conformance    conformance.Set       `json:"conformance,omitempty"`
 }
 
 type ComposedDeviceTypeRequirement struct {

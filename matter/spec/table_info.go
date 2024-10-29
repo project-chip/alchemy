@@ -209,7 +209,12 @@ func (ti *TableInfo) ReadConformance(row *asciidoc.TableRow, column matter.Table
 		return conformance.Set{&conformance.Mandatory{}}
 	}
 	s = newLineReplacer.Replace(s)
-	return conformance.ParseConformance(matter.StripTypeSuffixes(s))
+	s = matter.StripTypeSuffixes(s)
+	conf := conformance.ParseConformance(s)
+	if conformance.IsGeneric(conf) {
+		slog.Error("failed parsing conformance cell", slog.String("value", s))
+	}
+	return conf
 }
 
 func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {

@@ -15,10 +15,10 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType) (fields []*matter.Field, err error) {
+func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent types.Entity) (fields []*matter.Field, err error) {
 	ids := make(map[uint64]*matter.Field)
 	for row := range ti.Body() {
-		f := matter.NewField(row)
+		f := matter.NewField(row, parent)
 		f.Name, err = ti.ReadValue(row, matter.TableColumnName)
 		if err != nil {
 			return

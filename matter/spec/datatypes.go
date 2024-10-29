@@ -182,9 +182,9 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 	}
 
 	// OK, if the data type is defined on the direct parent of this cluster, take that one
-	if cluster.Parent != nil {
+	if cluster.ParentCluster != nil {
 		for m, c := range entities {
-			if c != nil && c == cluster.Parent {
+			if c != nil && c == cluster.ParentCluster {
 				return m
 			}
 		}

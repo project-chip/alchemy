@@ -152,11 +152,11 @@ func typeBelongsToOtherCluster(entity types.Entity, parentEntity types.Entity) b
 	var typeParent types.Entity
 	switch entity := entity.(type) {
 	case *matter.Bitmap:
-		typeParent = entity.ParentEntity
+		typeParent = entity.Parent()
 	case *matter.Enum:
-		typeParent = entity.ParentEntity
+		typeParent = entity.Parent()
 	case *matter.Struct:
-		typeParent = entity.ParentEntity
+		typeParent = entity.Parent()
 	}
 	if typeParent == nil { // This is a global type, and doesn't belong to any cluster
 		return true

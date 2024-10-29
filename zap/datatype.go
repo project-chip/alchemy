@@ -550,7 +550,7 @@ func GetDefaultValue(cc *matter.ConstraintContext) (defaultValue types.DataTypeE
 	}
 	defaultValue = c.Default(cc)
 	switch defaultValue.Type {
-	case types.DataTypeExtremeTypeEmpty:
+	case types.DataTypeExtremeTypeEmptyList:
 		if !cc.Field.Type.HasLength() {
 			defaultValue = types.DataTypeExtreme{}
 		}
