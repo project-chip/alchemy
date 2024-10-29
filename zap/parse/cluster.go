@@ -34,7 +34,7 @@ func readCluster(path string, d *xml.Decoder, e xml.StartElement) (cluster *matt
 			switch t.Name.Local {
 			case "attribute":
 				var attribute *matter.Field
-				attribute, err = readAttribute(d, t)
+				attribute, err = readAttribute(d, t, cluster)
 				if err == nil {
 					cluster.Attributes = append(cluster.Attributes, attribute)
 				}

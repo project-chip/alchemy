@@ -7,7 +7,6 @@ import (
 
 type Struct struct {
 	entity
-	ParentEntity types.Entity `json:"-"`
 
 	Name          string        `json:"name,omitempty"`
 	Description   string        `json:"description,omitempty"`

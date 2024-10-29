@@ -33,7 +33,7 @@ func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 			}
 		}
 	}
-	ms.Fields, err = d.readFields(ti, types.EntityTypeStructField)
+	ms.Fields, err = d.readFields(ti, types.EntityTypeStructField, ms)
 	if err != nil {
 		return
 	}

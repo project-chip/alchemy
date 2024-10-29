@@ -256,8 +256,7 @@ func patchSpec(spec *spec.Specification) {
 	}
 	for _, s := range label.Structs {
 		if s.Name == "LabelStruct" {
-			s.ParentEntity = fixedLabel
-			fixedLabel.Structs = append(fixedLabel.Structs, s)
+			fixedLabel.MoveStruct(s)
 			break
 		}
 	}

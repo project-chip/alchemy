@@ -68,52 +68,59 @@ type AssociatedDataTypes struct {
 
 func (adt *AssociatedDataTypes) AddBitmaps(bitmaps ...*Bitmap) {
 	for _, bm := range bitmaps {
-		if bm.ParentEntity != nil {
-			if _, ok := bm.ParentEntity.(*ClusterGroup); !ok {
+		parentEntity := bm.Parent()
+		if parentEntity != nil {
+			if _, ok := parentEntity.(*ClusterGroup); !ok {
 				slog.Warn("Bitmap belongs to multiple parents", slog.String("name", bm.Name), log.Path("source", bm), LogEntity(adt.parentEntity))
 			}
 			continue
 		}
-		bm.ParentEntity = adt.parentEntity
+		bm.parent = adt.parentEntity
 	}
 	adt.Bitmaps = append(adt.Bitmaps, bitmaps...)
 }
 
 func (adt *AssociatedDataTypes) AddEnums(enums ...*Enum) {
 	for _, e := range enums {
-		if e.ParentEntity != nil {
-			if _, ok := e.ParentEntity.(*ClusterGroup); !ok {
+		if e.parent != nil {
+			if _, ok := e.parent.(*ClusterGroup); !ok {
 				slog.Warn("Enum belongs to multiple parents", slog.String("name", e.Name), log.Path("source", e), LogEntity(adt.parentEntity))
 			}
 			continue
 		}
-		e.ParentEntity = adt.parentEntity
+		e.parent = adt.parentEntity
 	}
 	adt.Enums = append(adt.Enums, enums...)
 }
 
 func (adt *AssociatedDataTypes) AddStructs(structs ...*Struct) {
 	for _, s := range structs {
-		if s.ParentEntity != nil {
-			if _, ok := s.ParentEntity.(*ClusterGroup); !ok {
+		if s.parent != nil {
+			if _, ok := s.parent.(*ClusterGroup); !ok {
 				slog.Warn("Struct belongs to multiple parents", slog.String("name", s.Name), log.Path("source", s), LogEntity(adt.parentEntity))
 			}
 			continue
 		}
-		s.ParentEntity = adt.parentEntity
+		s.parent = adt.parentEntity
 	}
 	adt.Structs = append(adt.Structs, structs...)
 }
 
 func (adt *AssociatedDataTypes) AddTypeDefs(typeDefs ...*TypeDef) {
 	for _, td := range typeDefs {
-		if td.ParentEntity != nil {
-			if _, ok := td.ParentEntity.(*ClusterGroup); !ok {
+		if td.parent != nil {
+			if _, ok := td.parent.(*ClusterGroup); !ok {
 				slog.Warn("TypeDef belongs to multiple parents", slog.String("name", td.Name), log.Path("source", td), LogEntity(adt.parentEntity))
 			}
 			continue
 		}
-		td.ParentEntity = adt.parentEntity
+		td.parent = adt.parentEntity
 	}
 	adt.TypeDefs = append(adt.TypeDefs, typeDefs...)
+}
+
+// This really exists to allow patching ZAP
+func (adt *AssociatedDataTypes) MoveStruct(s *Struct) {
+	adt.Structs = append(adt.Structs, s)
+	s.parent = adt.parentEntity
 }
