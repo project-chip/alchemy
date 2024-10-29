@@ -22,9 +22,8 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Ent
 	dt := s.GetDataType()
 	if dt == nil {
 		dt = types.NewDataType(types.BaseDataTypeEnum8, false)
-	}
-
-	if !dt.IsEnum() {
+		slog.Warn("Enum does not declare its derived data type; assuming enum8", log.Element("path", d.Path, s.Base), slog.String("enum", name))
+	} else if !dt.IsEnum() {
 		return nil, fmt.Errorf("unknown enum data type: %s", dt.Name)
 	}
 
