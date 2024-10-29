@@ -31,32 +31,32 @@ include::../common/required_devices.adoc[]
 {{#if features}}
 | 3 | {REF_FEATUREMAP} | | {THread} _FeatureMap_ attribute. | {DUTreply} the _FeatureMap_ attribute and have the following bits set:
 {{#each features}}
-{{> global_feature_codes feature=this}}
+{{> global/feature_codes feature=this}}
 {{/each}}
 +
 {remainingBitsZero}
 {{/if}}
 | 4 | {REF_ATTRIBUTELIST} |  | {THread} _AttributeList_ attribute.  | {DUTreply} the _AttributeList_ attribute and have the list of supported attributes
 {{#if attributes}}
-{{> global_attribute list=attributes optionality=attributeOptions idFormat="%04X"}}
+{{> global/attribute list=attributes optionality=attributeOptions idFormat="%04X"}}
 {{else}}
 {noEntryStdRgn} +
 {{/if}}
 | 5^*^ | {REF_EVENTLIST} | | {THread} _EventList_ attribute. | {DUTreply} the _EventList_ attribute and have the list of supported events:
 {{#if events}}
-{{> global_attribute list=events optionality=eventOptions}}
+{{> global/attribute list=events optionality=eventOptions}}
 {{else}}
 {noEntryStdRgn} +
 {{/if}}
 | 6     | {REF_ACCEPTEDCOMMANDLIST}  |       | {THread} _AcceptedCommandList_ attribute.  | {DUTreply} the _AcceptedCommandList_ attribute and have the list of Accepted Command:
 {{#if commandsAccepted}}
-{{> global_attribute list=commandsAccepted optionality=commandsAcceptedOptions idFormat="%02X"}}
+{{> global/attribute list=commandsAccepted optionality=commandsAcceptedOptions idFormat="%02X"}}
 {{else}}
 {noEntryStdRgn} +
 {{/if}}
 | 7     | {REF_GENERATEDCOMMANDLIST} |       | {THread} _GeneratedCommandList_ attribute. | {DUTreply} the _GeneratedCommandList_ attribute and have the list of Generated Command:
 {{#if commandsGenerated}}
-{{> global_attribute list=commandsGenerated optionality=commandsGeneratedOptions idFormat="%02X"}}
+{{> global/attribute list=commandsGenerated optionality=commandsGeneratedOptions idFormat="%02X"}}
 {{else}}
 {noEntryStdRgn} +
 {{/if}}

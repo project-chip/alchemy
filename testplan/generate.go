@@ -28,6 +28,14 @@ type Generator struct {
 	overwrite    bool
 }
 
+func NewGenerator(testPlanRoot string, overwrite bool, options ...GeneratorOption) *Generator {
+	g := &Generator{testPlanRoot: testPlanRoot, overwrite: overwrite}
+	for _, o := range options {
+		o(g)
+	}
+	return g
+}
+
 func TemplateRoot(templateRoot string) func(*Generator) {
 	return func(g *Generator) {
 		g.templateRoot = templateRoot
@@ -107,14 +115,6 @@ func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc
 		outputs = append(outputs, pipeline.NewData[string](newPath, result))
 	}
 	return
-}
-
-func NewGenerator(testPlanRoot string, overwrite bool, options ...GeneratorOption) *Generator {
-	g := &Generator{testPlanRoot: testPlanRoot, overwrite: overwrite}
-	for _, o := range options {
-		o(g)
-	}
-	return g
 }
 
 func getTestPlanPath(testplanRoot string, name string) string {

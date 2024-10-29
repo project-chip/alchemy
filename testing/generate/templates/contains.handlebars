@@ -1,3 +1,0 @@
-{{#if step.Response.Constraints.Contains}}
-asserts.assert_true(set({{pythonValue step.Response.Constraints.Contains}}).issubset(set({{> response_value step=step}})))
-{{/if}}

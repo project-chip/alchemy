@@ -95,7 +95,7 @@ func (sp *PythonTestGenerator) convert(tst *parse.Test, path string) (t *test, e
 			entityAliases = nil
 		}
 		entityAliases = append(entityAliases, pa)
-		label, ok := sp.labels[pa.Pics]
+		label, ok := sp.picsLabels[pa.Pics]
 		if ok {
 			pa.Comments = strings.Split(label, "\n")
 		}

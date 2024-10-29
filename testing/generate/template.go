@@ -2,44 +2,36 @@ package generate
 
 import (
 	"embed"
-	"fmt"
-	"path/filepath"
-	"strings"
+	"log/slog"
 
 	"github.com/mailgun/raymond/v2"
+	"github.com/project-chip/alchemy/internal/handlebars"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-//go:embed templates/*.handlebars
+//go:embed templates
 var templateFiles embed.FS
 
 var template pipeline.Once[*raymond.Template]
 
-func loadTemplate(spec *spec.Specification) (*raymond.Template, error) {
+func (sp *PythonTestGenerator) loadTemplate(spec *spec.Specification) (*raymond.Template, error) {
 	t, err := template.Do(func() (*raymond.Template, error) {
-		files, err := templateFiles.ReadDir("templates")
+
+		ov := handlebars.NewOverlay(sp.templateRoot, templateFiles, "templates")
+		err := ov.Flush()
+		if err != nil {
+			slog.Error("Error flushing embedded templates", slog.Any("error", err))
+		}
+		t, err := handlebars.LoadTemplate("{{> python_test}}", ov)
 		if err != nil {
 			return nil, err
 		}
-		t := raymond.MustParse("{{> python_test}}")
+
+		handlebars.RegisterCommonHelpers(t)
+
 		registerHelpers(t, spec)
 
-		for _, file := range files {
-			if file.IsDir() {
-				continue
-			}
-			name := file.Name()
-			val, err := templateFiles.ReadFile(filepath.Join("templates/", name))
-			if err != nil {
-				return nil, fmt.Errorf("error reading template file %s: %w", name, err)
-			}
-			p, err := raymond.Parse(string(val))
-			if err != nil {
-				return nil, fmt.Errorf("error parsing template file %s: %w", name, err)
-			}
-			t.RegisterPartialTemplate(strings.TrimSuffix(filepath.Base(name), filepath.Ext(name)), p)
-		}
 		return t, nil
 	})
 	if err != nil {
