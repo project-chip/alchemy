@@ -1,5 +1,7 @@
 package errata
 
+import "path/filepath"
+
 type Errata struct {
 	Disco    Disco    `yaml:"disco,omitempty"`
 	Spec     Spec     `yaml:"spec,omitempty"`
@@ -10,6 +12,7 @@ type Errata struct {
 var DefaultErrata = &Errata{}
 
 func GetErrata(path string) *Errata {
+	path = filepath.ToSlash(path)
 	errata, ok := Erratas[path]
 	if ok {
 		return errata
