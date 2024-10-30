@@ -14,30 +14,12 @@ import (
 var defaultErrata []byte
 
 func LoadErrataConfig(specRoot string) {
-	if specRoot == "" {
-		return
-	}
-	errataPath := filepath.Join(specRoot, ".github/alchemy/errata.yaml")
-	exists, err := files.Exists(errataPath)
-	if err != nil {
-		slog.Warn("error checking for errata path", slog.Any("error", err))
-		return
-	}
-	var b []byte
-	if !exists {
-		slog.Warn("errata file does not exist; using embedded errata", slog.Any("path", errataPath))
+	b := loadConfig(specRoot)
+	if b == nil {
 		b = defaultErrata
-	} else {
-		var err error
-		b, err = os.ReadFile(errataPath)
-		slog.Debug("Using errata overlay", slog.Any("path", errataPath))
-		if err != nil {
-			slog.Warn("error reading errata file", slog.Any("error", err))
-			return
-		}
 	}
 	var errataOverlay errataOverlay
-	err = yaml.Unmarshal(b, &errataOverlay)
+	err := yaml.Unmarshal(b, &errataOverlay)
 	if err != nil {
 		slog.Warn("error parsing errata file", slog.Any("error", err))
 		return
@@ -54,6 +36,28 @@ func LoadErrataConfig(specRoot string) {
 
 type errataOverlay struct {
 	Errata map[string]*Errata `yaml:"errata"`
+}
+
+func loadConfig(specRoot string) []byte {
+	if specRoot == "" {
+		return nil
+	}
+	errataPath := filepath.Join(specRoot, ".github/alchemy/errata.yaml")
+	exists, err := files.Exists(errataPath)
+	if err != nil {
+		slog.Warn("error checking for errata path", slog.Any("error", err))
+		return nil
+	}
+	if !exists {
+		return nil
+	}
+	b, err := os.ReadFile(errataPath)
+	slog.Debug("Using errata overlay", slog.Any("path", errataPath))
+	if err != nil {
+		slog.Warn("error reading errata file", slog.Any("error", err))
+		return nil
+	}
+	return b
 }
 
 func dumpConfig(errataPath string) {

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/project-chip/alchemy/cmd/common"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -44,12 +45,13 @@ var Command = &cobra.Command{
 				}
 				dumpElements(doc, doc.Elements(), 0)
 			} else if jsonOut {
+				errata.LoadErrataConfig(specRoot)
 				path, err := spec.NewDocPath(f, specRoot)
 				if err != nil {
 					return fmt.Errorf("error resolving doc path %s: %w", f, err)
 				}
 
-				doc, err := spec.ParseFile(path, ".", asciiSettings...)
+				doc, err := spec.ParseFile(path, specRoot, asciiSettings...)
 				if err != nil {
 					return fmt.Errorf("error opening doc %s: %w", f, err)
 				}
@@ -76,5 +78,4 @@ func init() {
 	Command.Flags().Bool("ascii", false, "dump asciidoc object model")
 	Command.Flags().Bool("json", false, "dump json object model")
 	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-
 }
