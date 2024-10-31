@@ -39,6 +39,8 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 		h.readField(a, ci, attributeTable, types.EntityTypeAttribute)
 	}
 
+	h.indexClusterRevisionsModel(cluster, ci)
+
 	err := h.indexDataTypeModels(cxt, ci, cluster)
 	if err != nil {
 		return err
@@ -57,6 +59,16 @@ func (h *Host) indexClusterModel(cxt context.Context, parent *sectionInfo, clust
 	return nil
 }
 
+func (h *Host) indexClusterRevisionsModel(cluster *matter.Cluster, parent *sectionInfo) {
+	for _, rev := range cluster.Revisions {
+		row := newDBRow()
+		row.values[matter.TableColumnID] = rev.Number
+		row.values[matter.TableColumnDescription] = rev.Description
+		bi := &sectionInfo{id: h.nextID(clusterRevisionTable), parent: parent, values: row}
+		parent.children[clusterRevisionTable] = append(parent.children[clusterRevisionTable], bi)
+	}
+}
+
 func (h *Host) indexCluster(cxt context.Context, doc *spec.Doc, ds *sectionInfo, top *spec.Section) error {
 	ci := &sectionInfo{id: h.nextID(clusterTable), parent: ds, values: &dbRow{}}
 	for _, s := range parse.Skim[*spec.Section](top.Elements()) {
@@ -64,6 +76,8 @@ func (h *Host) indexCluster(cxt context.Context, doc *spec.Doc, ds *sectionInfo,
 		switch s.SecType {
 		case matter.SectionClusterID:
 			err = appendSectionToRow(cxt, doc, s, ci.values)
+		case matter.SectionRevisionHistory:
+			err = h.readTableSection(cxt, doc, ci, s, clusterRevisionTable)
 		case matter.SectionClassification:
 			err = appendSectionToRow(cxt, doc, s, ci.values)
 		case matter.SectionFeatures:
