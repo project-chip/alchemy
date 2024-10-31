@@ -37,9 +37,10 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 	}
 
 	var clusterGroup *matter.ClusterGroup
-	if len(clusters) != 1 {
-		clusterGroup = matter.NewClusterGroup(s.Name, s.Base, clusters)
-	} else {
+	switch len(clusters) {
+	case 0:
+		return
+	case 1:
 		cluster := clusters[0]
 		sectionClusterName := toClusterName(s.Name)
 		if cluster.Name != sectionClusterName {
@@ -49,6 +50,8 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 				clusterGroup = matter.NewClusterGroup(s.Name, s.Base, clusters)
 			}
 		}
+	default:
+		clusterGroup = matter.NewClusterGroup(s.Name, s.Base, clusters)
 	}
 
 	var features *matter.Features
