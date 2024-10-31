@@ -25,7 +25,9 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 			row.values[matter.TableColumnDirection] = "unknown"
 
 		}
-		row.values[matter.TableColumnResponse] = c.Response
+		if c.Response != nil {
+			row.values[matter.TableColumnResponse] = c.Response.Name
+		}
 		row.values[matter.TableColumnAccess] = spec.AccessToASCIIDocString(c.Access, types.EntityTypeCommand)
 		if c.Conformance != nil {
 			row.values[matter.TableColumnConformance] = c.Conformance.ASCIIDocString()
