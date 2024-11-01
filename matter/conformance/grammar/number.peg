@@ -1,5 +1,16 @@
 
 
+NumberValue <- (val: Hex {
+        return NewHexValue(val.(uint64), string(c.text)), nil
+    }
+    / val:Float {
+        return NewFloatValue(val.(decimal.Decimal), string(c.text)), nil
+    }
+    / val:Integer {
+        return NewIntValue(val.(int64), string(c.text)), nil
+    })
+
+
 Float <- Integer ("." [0-9]+) {
 	return decimal.NewFromString(string(c.text))
 }

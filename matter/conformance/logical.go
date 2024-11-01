@@ -54,7 +54,6 @@ func (le *LogicalExpression) ASCIIDocString() string {
 		s.WriteString(le.Left.ASCIIDocString())
 		for _, r := range le.Right {
 			if le.Not {
-
 				s.WriteString(" \\| ")
 			} else {
 				s.WriteString(" & ")
@@ -67,7 +66,6 @@ func (le *LogicalExpression) ASCIIDocString() string {
 	case "^":
 		var s strings.Builder
 		if le.Not {
-
 			s.WriteString("!")
 		}
 		s.WriteRune('(')

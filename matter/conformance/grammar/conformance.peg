@@ -29,8 +29,6 @@ Input <- conf:Conformance+ EOF {
 
 ConformanceSeparator <- (_ Comma _) / &EOF
 
-Expression <- (Equality )
-
 Conformance <-  '[' i:Expression ']' choice:Choice? ConformanceSeparator {
     exp := i.(Expression)
     o := &Optional{Expression:exp}
@@ -55,15 +53,12 @@ Conformance <-  '[' i:Expression ']' choice:Choice? ConformanceSeparator {
     return &Disallowed{}, nil
 } / "desc"  ConformanceSeparator { 
      return &Described{}, nil
-} / eq:Comparison ConformanceSeparator {
-    exp := eq.(Expression)
-    return &Mandatory{Expression:exp}, nil
 } / eq:Expression ConformanceSeparator {
     exp := eq.(Expression)
     return &Mandatory{Expression:exp}, nil
 }
 
-
+Expression <- ComparisonExpression / LogicalExpression 
 
 
 

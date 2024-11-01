@@ -49,12 +49,12 @@ ReferenceLabel <- _ Comma _ label:ReferenceText  &">>" {
 }
 
 ReferenceText <- (!">>" .)+  {
-    //debug("matched reference label text %s\n", string(c.text))
+    debug("matched reference label text %s\n", string(c.text))
     return string(c.text), nil
 }
 
 ReferenceId <- "ref_" PascalCase {
-    //debug("matched reference %s\n", string(c.text))
+    debug("matched reference %s\n", string(c.text))
     return string(c.text), nil
 }
 
