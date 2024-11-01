@@ -1,0 +1,63 @@
+
+
+EquationTerm = (FeatureValue / ReferenceValue / IdentifierValue / NumberValue / '(' _ eq:EquationValue _ ')' { return eq, nil})
+
+EquationValue <- _ left:EquationMultiply  rest:( AddOp )* _ {
+    if rest == nil {
+        return left, nil
+    }
+    multOps := rest.([]interface{}) 
+    if len(multOps) == 0 {
+        return left, nil
+    }
+    cv := left.(ComparisonValue)
+    var mo *MathOperation
+    for _, multOp := range multOps {
+        mo = multOp.(*MathOperation) 
+        mo.Left = cv
+        cv = mo
+    }
+    return cv, nil
+}
+
+EquationMultiply <- _ left:EquationTerm  rest:( MultOp )* _ {
+    if rest == nil {
+        return left, nil
+    }
+    multOps := rest.([]interface{}) 
+    if len(multOps) == 0 {
+        return left, nil
+    }
+    cv := left.(ComparisonValue)
+    var mo *MathOperation
+    for _, multOp := range multOps {
+        mo = multOp.(*MathOperation) 
+        mo.Left = cv
+        cv = mo
+    }
+    return cv, nil
+}
+
+Add <- '+' { return MathOperandAdd, nil}
+
+Subtract <- '-' { return MathOperandSubtract, nil}
+
+Multiply <- '*' { return MathOperandMultiply, nil}
+
+Divide <- '/' { return MathOperandDivide, nil}
+
+AddOp <- _ operand:(Add/Subtract) _ right:EquationValue {
+    debug("matched Add Op %s\n", string(c.text))
+    return &MathOperation{
+       Operand: operand.(MathOperand),
+       Right:right.(ComparisonValue),
+    }, nil
+}
+
+MultOp <- _ operand:(Multiply/Divide) _ right:EquationTerm {
+    debug("matched Mult Op %s\n", string(c.text))
+    return &MathOperation{
+        Operand: operand.(MathOperand),
+        Right:right.(ComparisonValue),
+    }, nil
+}

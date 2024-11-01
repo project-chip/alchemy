@@ -175,6 +175,10 @@ func renderConformanceExpression(doc *spec.Doc, identifierStore conformance.Iden
 		}
 	case *conformance.ComparisonExpression:
 		switch e.Op {
+		case conformance.ComparisonOperatorEqual:
+			parent = parent.CreateElement("equalTerm")
+		case conformance.ComparisonOperatorNotEqual:
+			parent = parent.CreateElement("notEqualTerm")
 		case conformance.ComparisonOperatorGreaterThan:
 			parent = parent.CreateElement("greaterTerm")
 		case conformance.ComparisonOperatorGreaterThanOrEqual:

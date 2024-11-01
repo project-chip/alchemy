@@ -9,6 +9,8 @@ type ComparisonOperator uint8
 
 const (
 	ComparisonOperatorNone ComparisonOperator = iota
+	ComparisonOperatorEqual
+	ComparisonOperatorNotEqual
 	ComparisonOperatorLessThan
 	ComparisonOperatorLessThanOrEqual
 	ComparisonOperatorGreaterThan
@@ -17,6 +19,10 @@ const (
 
 func (co ComparisonOperator) String() string {
 	switch co {
+	case ComparisonOperatorEqual:
+		return "=="
+	case ComparisonOperatorNotEqual:
+		return "!="
 	case ComparisonOperatorLessThan:
 		return "<"
 	case ComparisonOperatorLessThanOrEqual:
@@ -107,6 +113,10 @@ func compare(context Context, op ComparisonOperator, a ComparisonValue, b Compar
 		switch bv := bv.(type) {
 		case int64:
 			switch op {
+			case ComparisonOperatorEqual:
+				return av == bv, nil
+			case ComparisonOperatorNotEqual:
+				return av != bv, nil
 			case ComparisonOperatorGreaterThan:
 				return av > bv, nil
 			case ComparisonOperatorGreaterThanOrEqual:
@@ -125,6 +135,10 @@ func compare(context Context, op ComparisonOperator, a ComparisonValue, b Compar
 		switch bv := bv.(type) {
 		case float64:
 			switch op {
+			case ComparisonOperatorEqual:
+				return av == bv, nil
+			case ComparisonOperatorNotEqual:
+				return av != bv, nil
 			case ComparisonOperatorGreaterThan:
 				return av > bv, nil
 			case ComparisonOperatorGreaterThanOrEqual:

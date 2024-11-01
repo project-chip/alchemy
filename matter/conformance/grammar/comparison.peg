@@ -1,23 +1,14 @@
 
 
-Operator <-
-     
-     ("<"  { return ComparisonOperatorLessThan, nil })
+ComparisonOperator <-
+     ("=="  { return ComparisonOperatorEqual, nil })
+    / ("!=" { return ComparisonOperatorNotEqual, nil })
+    / ("<"  { return ComparisonOperatorLessThan, nil })
     / ("<=" { return ComparisonOperatorLessThanOrEqual, nil })
     / (">"  { return ComparisonOperatorGreaterThan, nil })
     / (">=" { return ComparisonOperatorGreaterThanOrEqual, nil })
 
-ComparisonTerm <- feature:FeatureValue {
-    return feature, nil 
-} / reference:ReferenceValue {
-    return reference, nil 
-} / identifier:IdentifierValue {
-    return identifier, nil 
-} / number:NumberValue {
-    return number, nil 
-}
-
-Comparison <- _ left:ComparisonTerm _ op:Operator _ right:ComparisonTerm _ {
+ComparisonExpression <- _ left:EquationValue _ op:ComparisonOperator _ right:EquationValue _ {
     //debug("matched equality %s\n", string(c.text))
 
     leftVal := left.(ComparisonValue)
@@ -25,13 +16,3 @@ Comparison <- _ left:ComparisonTerm _ op:Operator _ right:ComparisonTerm _ {
     return &ComparisonExpression{Left:leftVal, Right:rightVal, Op:op.(ComparisonOperator)}, nil
 }
 
-NumberValue <- (val: Hex {
-        return NewHexValue(val.(uint64), string(c.text)), nil
-    }
-    / val:Float {
-        return NewFloatValue(val.(decimal.Decimal), string(c.text)), nil
-        }
-        / val:Integer {
-        return NewIntValue(val.(int64), string(c.text)), nil
-
-        })

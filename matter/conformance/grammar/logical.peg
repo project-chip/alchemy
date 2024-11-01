@@ -1,4 +1,5 @@
-Logical <- Or
+
+LogicalExpression = Or
 
 Or <- _ left:Xor _ right:OrOp* _ {
     //debug("matched OR %s\n", string(c.text))
@@ -56,3 +57,22 @@ AndOp <- _ "&" _ f:LogicalTerm {
     fc := f.(Expression)
     return fc, nil
 }
+
+LogicalTerm <- not:'!'? '(' _  eq:Expression _ ')' {
+    //debug("matched feature term %s\n", string(c.text))
+    if not != nil {
+        switch eq := eq.(type) {
+            case *EqualityExpression:
+                eq.Not = true
+            case *LogicalExpression:
+                eq.Not = true
+        }
+    }
+    return eq, nil
+} / feature:FeatureOp {
+    return feature, nil 
+} / reference:ReferenceOp {
+    return reference, nil 
+} / identifier:IdentifierOp {
+    return identifier, nil 
+} 
