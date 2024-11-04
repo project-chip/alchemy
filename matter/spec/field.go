@@ -102,7 +102,7 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 	return
 }
 
-func (s *Section) mapFields(fieldMap map[string]*matter.Field, entityMap map[asciidoc.Attributable][]types.Entity) error {
+func (s *Section) mapFields(fieldMap map[string]*matter.Field, pc *parseContext) error {
 	for _, s := range parse.Skim[*Section](s.Elements()) {
 		var name string
 		switch s.SecType {
@@ -122,7 +122,7 @@ func (s *Section) mapFields(fieldMap map[string]*matter.Field, entityMap map[asc
 		if a.Type != nil && a.Type.BaseType == types.BaseDataTypeTag {
 			findTagNamespace(s, a)
 		}
-		entityMap[s.Base] = append(entityMap[s.Base], a)
+		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], a)
 	}
 	return nil
 }

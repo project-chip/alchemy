@@ -13,7 +13,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (entities []types.Entity, err error) {
+func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 	var clusters []*matter.Cluster
 	var description string
 	p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
@@ -32,7 +32,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 			clusters, err = readClusterIDs(d, s)
 		}
 		if err != nil {
-			return nil, err
+			return
 		}
 	}
 
@@ -66,7 +66,7 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 			var es matter.EnumSet
 			var ss matter.StructSet
 			var ts matter.TypeDefSet
-			bs, es, ss, ts, err = s.toDataTypes(d, entityMap)
+			bs, es, ss, ts, err = s.toDataTypes(d, pc)
 			if err == nil {
 				bitmaps = append(bitmaps, bs...)
 				enums = append(enums, es...)
@@ -74,7 +74,10 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 				typedefs = append(typedefs, ts...)
 			}
 		case matter.SectionFeatures:
-			features, err = s.toFeatures(d, entityMap)
+			features, err = s.toFeatures(d, pc)
+			if err != nil {
+				return
+			}
 		}
 		if err != nil {
 			return
@@ -82,7 +85,10 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 	}
 
 	if clusterGroup != nil {
-		entities = append(entities, clusterGroup)
+		pc.entities = append(pc.entities, clusterGroup)
+		pc.orderedEntities = append(pc.orderedEntities, clusterGroup)
+		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], clusterGroup)
+
 		clusterGroup.AddBitmaps(bitmaps...)
 		clusterGroup.AddEnums(enums...)
 		clusterGroup.AddStructs(structs...)
@@ -94,11 +100,14 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 				err = readClusterClassification(d, clusterGroup.Name, &clusterGroup.ClusterClassification, s)
 			}
 			if err != nil {
-				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
+				err = fmt.Errorf("error reading section in %s: %w", d.Path, err)
+				return
 			}
 		}
 	} else {
-		entities = append(entities, clusters[0])
+		pc.entities = append(pc.entities, clusters[0])
+		pc.orderedEntities = append(pc.orderedEntities, clusters[0])
+		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], clusters[0])
 	}
 
 	for _, c := range clusters {
@@ -115,21 +124,22 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 				err = readClusterClassification(d, c.Name, &c.ClusterClassification, s)
 			}
 			if err != nil {
-				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
+				err = fmt.Errorf("error reading section in %s: %w", d.Path, err)
+				return
 			}
 		}
 		for _, s := range elements {
 			switch s.SecType {
 			case matter.SectionAttributes:
 				var attr []*matter.Field
-				attr, err = s.toAttributes(d, c, entityMap)
+				attr, err = s.toAttributes(d, c, pc)
 				if err == nil {
 					c.Attributes = append(c.Attributes, attr...)
 				}
 			case matter.SectionEvents:
-				c.Events, err = s.toEvents(d, entityMap)
+				c.Events, err = s.toEvents(d, pc)
 			case matter.SectionCommands:
-				c.Commands, err = s.toCommands(d, entityMap)
+				c.Commands, err = s.toCommands(d, pc)
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:
@@ -138,9 +148,10 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 			case matter.SectionDataTypes, matter.SectionFeatures, matter.SectionStatusCodes: // Handled above
 			default:
 				var looseEntities []types.Entity
-				looseEntities, err = findLooseEntities(d, s, entityMap)
+				looseEntities, err = findLooseEntities(d, s, pc)
 				if err != nil {
-					return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
+					err = fmt.Errorf("error reading section %s: %w", s.Name, err)
+					return
 				}
 				if len(looseEntities) > 0 {
 					for _, le := range looseEntities {
@@ -160,14 +171,14 @@ func (s *Section) toClusters(d *Doc, entityMap map[asciidoc.Attributable][]types
 				}
 			}
 			if err != nil {
-				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
+				err = fmt.Errorf("error reading section in %s: %w", d.Path, err)
+				return
 			}
 		}
 		assignCustomDataTypes(c)
 	}
 
-	entityMap[s.Base] = append(entityMap[s.Base], entities...)
-	return entities, nil
+	return
 }
 
 func assignCustomDataTypes(c *matter.Cluster) {

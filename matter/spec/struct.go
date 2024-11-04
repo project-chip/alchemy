@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (ms *matter.Struct, err error) {
+func (s *Section) toStruct(d *Doc, pc *parseContext) (ms *matter.Struct, err error) {
 	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
@@ -37,12 +36,13 @@ func (s *Section) toStruct(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 	if err != nil {
 		return
 	}
-	entityMap[s.Base] = append(entityMap[s.Base], ms)
+	pc.orderedEntities = append(pc.orderedEntities, ms)
+	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], ms)
 	fieldMap := make(map[string]*matter.Field, len(ms.Fields))
 	for _, f := range ms.Fields {
 		fieldMap[f.Name] = f
 	}
-	err = s.mapFields(fieldMap, entityMap)
+	err = s.mapFields(fieldMap, pc)
 	if err != nil {
 		return
 	}

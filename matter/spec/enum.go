@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (e *matter.Enum, err error) {
+func (s *Section) toEnum(d *Doc, pc *parseContext) (e *matter.Enum, err error) {
 
 	name := CanonicalName(text.TrimCaseInsensitiveSuffix(s.Name, " Type"))
 	e = matter.NewEnum(s.Base)
@@ -54,7 +54,8 @@ func (s *Section) toEnum(d *Doc, entityMap map[asciidoc.Attributable][]types.Ent
 		}
 		e.Values = subSectionValues
 	}
-	entityMap[s.Base] = append(entityMap[s.Base], e)
+	pc.orderedEntities = append(pc.orderedEntities, e)
+	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], e)
 	e.Name = CanonicalName(e.Name)
 	return
 }

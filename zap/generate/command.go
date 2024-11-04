@@ -79,6 +79,7 @@ func (cr *configuratorRenderer) generateCommands(commands map[*matter.Command]st
 }
 
 func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matter.Cluster, c *matter.Command) {
+	cr.elementMap[ce] = c
 	mandatory := conformance.IsMandatory(c.Conformance)
 
 	var serverSource bool

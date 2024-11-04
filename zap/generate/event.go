@@ -55,6 +55,7 @@ func (cr *configuratorRenderer) generateEvents(ce *etree.Element, cluster *matte
 }
 
 func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event *matter.Event, cluster *matter.Cluster) {
+	cr.elementMap[eventElement] = event
 	needsAccess := event.Access.Read != matter.PrivilegeUnknown && event.Access.Read != matter.PrivilegeView
 
 	patchNumberAttribute(eventElement, event.ID, "code")

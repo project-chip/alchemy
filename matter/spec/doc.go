@@ -32,6 +32,7 @@ type Doc struct {
 	attributes map[asciidoc.AttributeName]any
 
 	entities          []types.Entity
+	orderedEntities   []types.Entity
 	globalObjects     []types.Entity
 	entitiesBySection map[asciidoc.Attributable][]types.Entity
 	entitiesParsed    bool
@@ -115,34 +116,33 @@ func (doc *Doc) Entities() (entities []types.Entity, err error) {
 	return doc.entities, nil
 }
 
+type parseContext struct {
+	entities          []types.Entity
+	orderedEntities   []types.Entity
+	globalObjects     []types.Entity
+	entitiesByElement map[asciidoc.Attributable][]types.Entity
+}
+
 func (doc *Doc) parseEntities() error {
-	var entities []types.Entity
-	var globalObjects []types.Entity
-	var entitiesBySection = make(map[asciidoc.Attributable][]types.Entity)
+	pc := &parseContext{
+		entitiesByElement: make(map[asciidoc.Attributable][]types.Entity),
+	}
 	for _, top := range parse.Skim[*Section](doc.Elements()) {
 		err := AssignSectionTypes(doc, top)
 		if err != nil {
 			return err
 		}
 
-		var sectionEntities []types.Entity
-		sectionEntities, err = top.toEntities(doc, entitiesBySection)
+		err = top.toEntities(doc, pc)
 		if err != nil {
 			return fmt.Errorf("failed converting doc %s to entities: %w", doc.Path, err)
 		}
-		entities = append(entities, sectionEntities...)
-
-		var sectionGlobalObjects []types.Entity
-		sectionGlobalObjects, err = top.toGlobalObjects(doc, entitiesBySection)
-		if err != nil {
-			return fmt.Errorf("failed converting doc %s to global objects: %w", doc.Path, err)
-		}
-		globalObjects = append(globalObjects, sectionGlobalObjects...)
 
 	}
-	doc.entities = entities
-	doc.entitiesBySection = entitiesBySection
-	doc.globalObjects = globalObjects
+	doc.entities = pc.entities
+	doc.orderedEntities = pc.orderedEntities
+	doc.entitiesBySection = pc.entitiesByElement
+	doc.globalObjects = pc.globalObjects
 	doc.entitiesParsed = true
 	return nil
 }
@@ -155,6 +155,16 @@ func (doc *Doc) GlobalObjects() (entities []types.Entity, err error) {
 		}
 	}
 	return doc.globalObjects, nil
+}
+
+func (doc *Doc) OrderedEntities() (entities []types.Entity, err error) {
+	if !doc.entitiesParsed {
+		err = doc.parseEntities()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return doc.orderedEntities, nil
 }
 
 func (doc *Doc) Reference(ref string) (types.Entity, bool) {

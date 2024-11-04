@@ -52,7 +52,7 @@ func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.T
 	return cmd, nil
 }
 
-func (cf *commandFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Attributable][]types.Entity, c *matter.Command) (err error) {
+func (cf *commandFactory) Details(d *Doc, s *Section, pc *parseContext, c *matter.Command) (err error) {
 	c.Description = getDescription(d, s.Elements())
 
 	if !d.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCommandArguments) {
@@ -75,7 +75,7 @@ func (cf *commandFactory) Details(d *Doc, s *Section, entityMap map[asciidoc.Att
 		for _, f := range c.Fields {
 			fieldMap[f.Name] = f
 		}
-		err = s.mapFields(fieldMap, entityMap)
+		err = s.mapFields(fieldMap, pc)
 		if err != nil {
 			return
 		}
@@ -101,7 +101,7 @@ func (cf *commandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	}
 }
 
-func (s *Section) toCommands(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (commands matter.CommandSet, err error) {
+func (s *Section) toCommands(d *Doc, pc *parseContext) (commands matter.CommandSet, err error) {
 
 	t := FindFirstTable(s)
 	if t == nil {
@@ -109,7 +109,7 @@ func (s *Section) toCommands(d *Doc, entityMap map[asciidoc.Attributable][]types
 	}
 
 	var cf commandFactory
-	commands, err = buildList(d, s, t, entityMap, commands, &cf)
+	commands, err = buildList(d, s, t, pc, commands, &cf)
 
 	for _, cmd := range commands {
 		if cmd.Response != nil {

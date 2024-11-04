@@ -4,14 +4,13 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[asciidoc.Attributable][]types.Entity) (attributes matter.FieldSet, err error) {
+func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, pc *parseContext) (attributes matter.FieldSet, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
@@ -65,6 +64,6 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 		attributes = append(attributes, attr)
 		attributeMap[attr.Name] = attr
 	}
-	err = s.mapFields(attributeMap, entityMap)
+	err = s.mapFields(attributeMap, pc)
 	return
 }

@@ -86,7 +86,7 @@ func (cr *configuratorRenderer) renderClusters(ce *etree.Element) (err error) {
 }
 
 func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, cluster *matter.Cluster) (err error) {
-
+	cr.elementMap[clusterElement] = cluster
 	var define string
 	var clusterPrefix string
 

@@ -7,10 +7,9 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toDeviceTypes(d *Doc) (entities []types.Entity, err error) {
+func (s *Section) toDeviceTypes(d *Doc, pc *parseContext) (err error) {
 	var deviceTypes []*matter.DeviceType
 	var description string
 	p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
@@ -27,7 +26,7 @@ func (s *Section) toDeviceTypes(d *Doc) (entities []types.Entity, err error) {
 			deviceTypes, err = readDeviceTypeIDs(d, s)
 		}
 		if err != nil {
-			return nil, err
+			return
 		}
 	}
 
@@ -56,14 +55,17 @@ func (s *Section) toDeviceTypes(d *Doc) (entities []types.Entity, err error) {
 			default:
 			}
 			if err != nil {
-				return nil, fmt.Errorf("error reading section in %s: %w", d.Path, err)
+				err = fmt.Errorf("error reading section in %s: %w", d.Path, err)
+				return
 			}
 		}
 	}
 	for _, c := range deviceTypes {
-		entities = append(entities, c)
+		pc.entities = append(pc.entities, c)
+		pc.orderedEntities = append(pc.orderedEntities, c)
+		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], c)
 	}
-	return entities, nil
+	return
 }
 
 func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {

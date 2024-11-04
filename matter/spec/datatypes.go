@@ -12,13 +12,13 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, typedefs matter.TypeDefSet, err error) {
+func (s *Section) toDataTypes(d *Doc, pc *parseContext) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, typedefs matter.TypeDefSet, err error) {
 
 	traverse(d, s, errata.SpecPurposeDataTypes, func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap:
 			var mb *matter.Bitmap
-			mb, err = s.toBitmap(d, entityMap)
+			mb, err = s.toBitmap(d, pc)
 			if err != nil {
 				slog.Warn("Error converting section to bitmap", log.Element("path", d.Path, s.Base), slog.Any("error", err))
 				err = nil
@@ -27,7 +27,7 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 			}
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
-			me, err = s.toEnum(d, entityMap)
+			me, err = s.toEnum(d, pc)
 			if err != nil {
 				slog.Warn("Error converting section to enum", log.Element("path", d.Path, s.Base), slog.Any("error", err))
 				err = nil
@@ -36,7 +36,7 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 			}
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
-			me, err = s.toStruct(d, entityMap)
+			me, err = s.toStruct(d, pc)
 			if err != nil {
 				slog.Warn("Error converting section to struct", log.Element("path", d.Path, s.Base), slog.Any("error", err))
 				err = nil
@@ -45,13 +45,12 @@ func (s *Section) toDataTypes(d *Doc, entityMap map[asciidoc.Attributable][]type
 			}
 		case matter.SectionDataTypeDef:
 			var me *matter.TypeDef
-			me, err = s.toTypeDef(d, entityMap)
+			me, err = s.toTypeDef(d, pc)
 			if err != nil {
 				slog.Warn("Error converting section to typedef", log.Element("path", d.Path, s.Base), slog.Any("error", err))
 				err = nil
 			} else {
 				typedefs = append(typedefs, me)
-				entityMap[s.Base] = append(entityMap[s.Base], me)
 			}
 		default:
 		}
