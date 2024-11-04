@@ -5,25 +5,24 @@ import (
 	"strconv"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/find"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *etree.Element, errata *errata.ZAP) (err error) {
-
-	for _, cle := range ce.SelectElements("cluster") {
+func (cr *configuratorRenderer) renderClusters(ce *etree.Element) (err error) {
+	configurator := cr.configurator
+	for _, clusterElement := range ce.SelectElements("cluster") {
 		var cluster *matter.Cluster
 		var skip bool
 
-		code, ok := xml.ReadSimpleElement(cle, "code")
+		code, ok := xml.ReadSimpleElement(clusterElement, "code")
 		if ok {
 			clusterID := matter.ParseNumber(code)
 			if !clusterID.Valid() {
-				slog.Warn("invalid code ID in cluster", log.Path("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
+				slog.Warn("invalid code ID in cluster", slog.String("path", configurator.OutPath), slog.String("id", clusterID.Text()))
 			} else {
 				for c, handled := range configurator.Clusters {
 					if c.ID.Equals(clusterID) {
@@ -35,16 +34,16 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 
 				if cluster == nil {
 					// We don't have this cluster in the spec; leave it here for now
-					slog.Warn("unknown code ID in cluster", log.Path("path", configurator.Doc.Path), slog.String("id", clusterID.Text()))
+					slog.Warn("unknown code ID in cluster", slog.String("path", configurator.OutPath), slog.String("id", clusterID.Text()))
 					continue
 				}
 			}
 
 		}
 		if cluster == nil {
-			name, ok := xml.ReadSimpleElement(cle, "name")
+			name, ok := xml.ReadSimpleElement(clusterElement, "name")
 			if !ok {
-				slog.Warn("invalid code ID in cluster and no name backup", log.Path("path", configurator.Doc.Path))
+				slog.Warn("invalid code ID in cluster and no name backup", slog.String("path", configurator.OutPath))
 				continue
 			}
 			for c, handled := range configurator.Clusters {
@@ -56,7 +55,7 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 			}
 			if cluster == nil {
 				// We don't have this cluster in the spec; leave it here for now
-				slog.Warn("unknown name in cluster", log.Path("path", configurator.Doc.Path), slog.String("name", name))
+				slog.Warn("unknown name in cluster", slog.String("path", configurator.OutPath), slog.String("name", name))
 				continue
 			}
 		}
@@ -65,7 +64,7 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 			continue
 		}
 
-		err = tg.populateCluster(configurator, cle, cluster, errata)
+		err = cr.populateCluster(clusterElement, cluster)
 		if err != nil {
 			return
 		}
@@ -78,7 +77,7 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 
 		cle := etree.NewElement("cluster")
 		xml.AppendElement(ce, cle, "struct", "enum", "bitmap", "domain")
-		err = tg.populateCluster(configurator, cle, cluster, errata)
+		err = cr.populateCluster(cle, cluster)
 		if err != nil {
 			return
 		}
@@ -86,87 +85,74 @@ func (tg *TemplateGenerator) renderClusters(configurator *zap.Configurator, ce *
 	return
 }
 
-func (tg *TemplateGenerator) populateCluster(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
+func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, cluster *matter.Cluster) (err error) {
 
 	var define string
 	var clusterPrefix string
 
-	define = getDefine(cluster.Name+" Cluster", "", errata)
-	if len(errata.ClusterDefinePrefix) > 0 {
-		clusterPrefix = errata.ClusterDefinePrefix
+	define = getDefine(cluster.Name+" Cluster", "", cr.configurator.Errata)
+	if len(cr.configurator.Errata.ClusterDefinePrefix) > 0 {
+		clusterPrefix = cr.configurator.Errata.ClusterDefinePrefix
 	}
 
 	if cluster.Conformance != nil {
 		if conformance.IsProvisional(cluster.Conformance) {
-			cle.CreateAttr("apiMaturity", "provisional")
+			clusterElement.CreateAttr("apiMaturity", "provisional")
 		} else {
-			cle.RemoveAttr("apiMaturity")
+			clusterElement.RemoveAttr("apiMaturity")
 		}
 	}
 
-	attributes := make(map[*matter.Field]struct{})
-	events := make(map[*matter.Event]struct{})
-	commands := make(map[*matter.Command][]*matter.Number)
+	attributes := find.ToMap(cluster.Attributes)
+	events := find.ToMap(cluster.Events)
+	commands := find.ToMap(find.ToList(find.Filter(cluster.Commands, func(c *matter.Command) bool {
+		return !conformance.IsZigbee(cluster.Commands, c.Conformance) && !conformance.IsDisallowed(c.Conformance)
+	})))
 
-	for _, a := range cluster.Attributes {
-		attributes[a] = struct{}{}
-	}
-
-	for _, e := range cluster.Events {
-		events[e] = struct{}{}
-	}
-
-	for _, c := range cluster.Commands {
-		if conformance.IsZigbee(cluster.Commands, c.Conformance) || conformance.IsDisallowed(c.Conformance) {
-			continue
-		}
-		commands[c] = []*matter.Number{}
-	}
-
-	xml.SetOrCreateSimpleElement(cle, "domain", matter.DomainNames[configurator.Doc.Domain])
+	xml.SetOrCreateSimpleElement(clusterElement, "domain", cr.configurator.Domain)
 	clusterName := cluster.Name
-	if errata.ClusterName != "" {
-		clusterName = errata.ClusterName
+	if cr.configurator.Errata.ClusterName != "" {
+		clusterName = cr.configurator.Errata.ClusterName
 	}
-	xml.SetOrCreateSimpleElement(cle, "name", clusterName, "domain")
-	patchNumberElement(xml.SetOrCreateSimpleElement(cle, "code", "", "name", "domain"), cluster.ID)
-	xml.CreateSimpleElementIfNotExists(cle, "define", define, "code", "name", "domain")
+	xml.SetOrCreateSimpleElement(clusterElement, "name", clusterName, "domain")
+	patchNumberElement(xml.SetOrCreateSimpleElement(clusterElement, "code", "", "name", "domain"), cluster.ID)
+	xml.CreateSimpleElementIfNotExists(clusterElement, "define", define, "code", "name", "domain")
 
-	if cle.SelectElement("description") == nil {
-		xml.SetOrCreateSimpleElement(cle, "description", cluster.Description, "define", "code", "name", "domain")
+	if clusterElement.SelectElement("description") == nil {
+		xml.SetOrCreateSimpleElement(clusterElement, "description", cluster.Description, "define", "code", "name", "domain")
 	}
 
-	if client := cle.SelectElement("client"); client == nil {
-		client = xml.SetOrCreateSimpleElement(cle, "client", "true", "description", "define", "code", "name", "domain")
+	if client := clusterElement.SelectElement("client"); client == nil {
+		client = xml.SetOrCreateSimpleElement(clusterElement, "client", "true", "description", "define", "code", "name", "domain")
 		client.CreateAttr("init", "false")
 		client.CreateAttr("tick", "false")
 		client.SetText("true")
 	}
-	if server := cle.SelectElement("server"); server == nil {
-		server = xml.SetOrCreateSimpleElement(cle, "server", "true", "client", "description", "define", "code", "name", "domain")
+	if server := clusterElement.SelectElement("server"); server == nil {
+		server = xml.SetOrCreateSimpleElement(clusterElement, "server", "true", "client", "description", "define", "code", "name", "domain")
 		server.CreateAttr("init", "false")
 		server.CreateAttr("tick", "false")
 		server.SetText("true")
 	}
-	if tg.generateFeaturesXML {
-		err = generateFeaturesXML(configurator, cle, cluster)
+	if cr.generator.generateFeaturesXML {
+		err = cr.generateFeaturesXML(clusterElement, cluster)
 		if err != nil {
 			return
 		}
 	}
-	err = generateClusterGlobalAttributes(configurator, cle, cluster)
+	err = generateClusterGlobalAttributes(cr.configurator, clusterElement, cluster)
 	if err != nil {
 		return
 	}
-	err = tg.generateAttributes(configurator, cle, cluster, attributes, clusterPrefix, errata)
+	err = cr.generateAttributes(clusterElement, cluster, attributes, clusterPrefix)
 	if err != nil {
 		return
 	}
-	err = tg.generateCommands(configurator, commands, configurator.Doc.Path.Relative, cle, cluster, errata)
+	err = cr.generateCommands(commands, clusterElement, cluster)
 	if err != nil {
 		return
 	}
-	err = tg.generateEvents(configurator, cle, cluster, events, errata)
+	err = cr.generateEvents(clusterElement, cluster, events)
 	if err != nil {
 		return
 	}
@@ -179,12 +165,12 @@ func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.
 	for _, globalAttribute := range globalAttributes {
 		code := globalAttribute.SelectAttr("code")
 		if code == nil {
-			slog.Warn("globalAttribute element with no code attribute", log.Path("path", configurator.Doc.Path))
+			slog.Warn("globalAttribute element with no code attribute", slog.String("path", configurator.OutPath))
 			continue
 		}
 		id := matter.ParseNumber(code.Value)
 		if !id.Valid() {
-			slog.Warn("globalAttribute element with invalid code attribute", log.Path("path", configurator.Doc.Path), slog.String("code", code.Value))
+			slog.Warn("globalAttribute element with invalid code attribute", slog.String("path", configurator.OutPath), slog.String("code", code.Value))
 			continue
 		}
 		setClusterGlobalAttribute(globalAttribute, cluster, id)
@@ -214,5 +200,18 @@ func setClusterGlobalAttribute(globalAttribute *etree.Element, cluster *matter.C
 		}
 		globalAttribute.CreateAttr("side", "either")
 		globalAttribute.CreateAttr("value", strconv.FormatUint(lastRevision, 10))
+	}
+}
+
+func (tg *TemplateGenerator) buildClusterAliases(configurator *zap.Configurator) {
+	for c := range configurator.Clusters {
+		if c != nil {
+
+			if len(configurator.Errata.ClusterAliases) > 0 {
+				if aliases, ok := configurator.Errata.ClusterAliases[c.Name]; ok {
+					tg.ClusterAliases.Store(c.Name, aliases)
+				}
+			}
+		}
 	}
 }

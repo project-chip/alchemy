@@ -395,7 +395,7 @@ func (p *DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element
 			fe.CreateAttr("code", feature.Code)
 			fe.CreateAttr("name", feature.Name())
 			if p.generateFeatureXML {
-				renderConformance(clusterDoc, cluster, er.Conformance, fe)
+				renderConformance(p.spec, deviceType, cluster, er.Conformance, fe)
 			} else {
 				removeConformance(fe)
 			}
@@ -406,7 +406,7 @@ func (p *DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element
 			fe.CreateAttr("code", feature.Code)
 			fe.CreateAttr("name", feature.Name())
 			if p.generateFeatureXML {
-				renderConformance(clusterDoc, cluster, er.Conformance, fe)
+				renderConformance(p.spec, deviceType, cluster, er.Conformance, fe)
 			}
 			xml.InsertElementByAttribute(fse, fe, "code")
 		}

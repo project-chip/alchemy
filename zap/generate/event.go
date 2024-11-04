@@ -1,32 +1,28 @@
 package generate
 
 import (
-	"encoding/xml"
 	"log/slog"
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/log"
-	axml "github.com/project-chip/alchemy/internal/xml"
+	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/zap"
 )
 
-func (tg *TemplateGenerator) generateEvents(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, events map[*matter.Event]struct{}, errata *errata.ZAP) (err error) {
+func (cr *configuratorRenderer) generateEvents(ce *etree.Element, cluster *matter.Cluster, events map[*matter.Event]struct{}) (err error) {
 
 	for _, eve := range ce.SelectElements("event") {
 
 		code := eve.SelectAttr("code")
 		if code == nil {
-			slog.Warn("missing code attribute in event", log.Path("path", configurator.Doc.Path))
+			slog.Warn("missing code attribute in event", slog.String("path", cr.configurator.OutPath))
 			continue
 		}
 		eventID := matter.ParseNumber(code.Value)
 		if !eventID.Valid() {
-			slog.Warn("invalid code ID in event", log.Path("path", configurator.Doc.Path), slog.String("commandId", eventID.Text()))
+			slog.Warn("invalid code ID in event", slog.String("path", cr.configurator.OutPath), slog.String("commandId", eventID.Text()))
 			continue
 		}
 
@@ -43,82 +39,82 @@ func (tg *TemplateGenerator) generateEvents(configurator *zap.Configurator, ce *
 		}
 
 		if matchingEvent == nil {
-			slog.Warn("unknown event ID", log.Path("path", configurator.Doc.Path), slog.String("eventId", eventID.Text()))
+			slog.Warn("unknown event ID", slog.String("path", cr.configurator.OutPath), slog.String("eventId", eventID.Text()))
 			ce.RemoveChild(eve)
 			continue
 		}
-		tg.populateEvent(configurator, eve, matchingEvent, cluster, errata)
+		cr.populateEvent(eve, matchingEvent, cluster)
 	}
 
 	for event := range events {
 		ee := etree.NewElement("event")
-		tg.populateEvent(configurator, ee, event, cluster, errata)
-		axml.InsertElementByAttribute(ce, ee, "code", "command", "attribute", "globalAttribute")
+		cr.populateEvent(ee, event, cluster)
+		xml.InsertElementByAttribute(ce, ee, "code", "command", "attribute", "globalAttribute")
 	}
 	return
 }
 
-func (tg *TemplateGenerator) populateEvent(configurator *zap.Configurator, ee *etree.Element, e *matter.Event, cluster *matter.Cluster, errata *errata.ZAP) {
-	needsAccess := e.Access.Read != matter.PrivilegeUnknown && e.Access.Read != matter.PrivilegeView
+func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event *matter.Event, cluster *matter.Cluster) {
+	needsAccess := event.Access.Read != matter.PrivilegeUnknown && event.Access.Read != matter.PrivilegeView
 
-	patchNumberAttribute(ee, e.ID, "code")
-	ee.CreateAttr("name", e.Name)
-	ee.CreateAttr("priority", strings.ToLower(e.Priority))
-	ee.CreateAttr("side", "server")
+	patchNumberAttribute(eventElement, event.ID, "code")
+	eventElement.CreateAttr("name", event.Name)
+	eventElement.CreateAttr("priority", strings.ToLower(event.Priority))
+	eventElement.CreateAttr("side", "server")
 
-	if e.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
-		ee.CreateAttr("isFabricSensitive", "true")
+	if event.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
+		eventElement.CreateAttr("isFabricSensitive", "true")
 	} else {
-		ee.RemoveAttr("isFabricSensitive")
+		eventElement.RemoveAttr("isFabricSensitive")
 	}
-	if !conformance.IsMandatory(e.Conformance) {
-		ee.CreateAttr("optional", "true")
+	if !conformance.IsMandatory(event.Conformance) {
+		eventElement.CreateAttr("optional", "true")
 	} else {
-		ee.RemoveAttr("optional")
+		eventElement.RemoveAttr("optional")
 	}
 
-	de := ee.SelectElement("description")
-	if de == nil {
-		de = etree.NewElement("description")
-		ee.Child = append([]etree.Token{de}, ee.Child...)
+	descriptionElement := eventElement.SelectElement("description")
+	if descriptionElement == nil {
+		descriptionElement = etree.NewElement("description")
+		eventElement.Child = append([]etree.Token{descriptionElement}, eventElement.Child...)
 	}
-	if len(e.Description) > 0 {
-		de.SetText(e.Description)
+	if len(event.Description) > 0 {
+		descriptionElement.SetText(event.Description)
 	}
 
-	if cluster != nil && configurator != nil {
-		if tg.generateConformanceXML {
-			renderConformance(configurator.Doc, cluster, e.Conformance, ee)
+	if cluster != nil && cr.configurator != nil {
+		if cr.generator.generateConformanceXML {
+			renderConformance(cr.generator.spec, event, cluster, event.Conformance, eventElement)
 		} else {
-			removeConformance(ee)
+			removeConformance(eventElement)
 		}
 	}
 
 	fieldIndex := 0
-	fieldElements := ee.SelectElements("field")
+	fieldElements := eventElement.SelectElements("field")
 	for _, fe := range fieldElements {
 		for {
-			if fieldIndex >= len(e.Fields) {
-				ee.RemoveChild(fe)
+			if fieldIndex >= len(event.Fields) {
+				eventElement.RemoveChild(fe)
 				break
 			}
-			f := e.Fields[fieldIndex]
+			f := event.Fields[fieldIndex]
 			fieldIndex++
-			if conformance.IsZigbee(e.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+			if conformance.IsZigbee(event.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
 				continue
 			}
 			fe.CreateAttr("id", f.ID.IntString())
-			setFieldAttributes(fe, f, e.Fields, errata)
+			cr.setFieldAttributes(fe, f, event.Fields)
 			break
 		}
 	}
-	for fieldIndex < len(e.Fields) {
-		f := e.Fields[fieldIndex]
+	for fieldIndex < len(event.Fields) {
+		f := event.Fields[fieldIndex]
 		fieldIndex++
-		if conformance.IsZigbee(e.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+		if conformance.IsZigbee(event.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
 		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
@@ -126,97 +122,25 @@ func (tg *TemplateGenerator) populateEvent(configurator *zap.Configurator, ee *e
 		}
 		fe := etree.NewElement("field")
 		fe.CreateAttr("id", f.ID.IntString())
-		setFieldAttributes(fe, f, e.Fields, errata)
-		axml.AppendElement(ee, fe)
+		cr.setFieldAttributes(fe, f, event.Fields)
+		xml.AppendElement(eventElement, fe)
 	}
 	if needsAccess {
-		for _, el := range ee.SelectElements("access") {
+		for _, el := range eventElement.SelectElements("access") {
 			if needsAccess {
-				setAccessAttributes(el, "read", e.Access.Read, errata)
+				cr.setAccessAttributes(el, "read", event.Access.Read)
 				needsAccess = false
 			} else {
-				ee.RemoveChild(el)
+				eventElement.RemoveChild(el)
 			}
 		}
 		if needsAccess {
-			el := ee.CreateElement("access")
-			setAccessAttributes(el, "read", e.Access.Read, errata)
+			cr.setAccessAttributes(eventElement.CreateElement("access"), "read", event.Access.Read)
 		}
 
 	} else {
-		for _, el := range ee.SelectElements("access") {
-			ee.RemoveChild(el)
+		for _, el := range eventElement.SelectElements("access") {
+			eventElement.RemoveChild(el)
 		}
 	}
-}
-
-func setFieldAttributes(e *etree.Element, f *matter.Field, fs matter.FieldSet, errata *errata.ZAP) {
-	mandatory := conformance.IsMandatory(f.Conformance)
-	e.CreateAttr("name", f.Name)
-	writeDataType(e, fs, f, errata)
-	if !mandatory {
-		e.CreateAttr("optional", "true")
-	} else {
-		e.RemoveAttr("optional")
-	}
-	if f.Quality.Has(matter.QualityNullable) {
-		e.CreateAttr("isNullable", "true")
-	} else {
-		e.RemoveAttr("isNullable")
-	}
-	if f.Access.IsFabricSensitive() {
-		e.CreateAttr("isFabricSensitive", "true")
-	} else {
-		e.RemoveAttr("isFabricSensitive")
-	}
-	setFieldDefault(e, f, fs)
-	renderConstraint(e, fs, f)
-}
-
-func writeDataType(e *etree.Element, fs matter.FieldSet, f *matter.Field, errata *errata.ZAP) {
-	if f.Type == nil {
-		return
-	}
-	dts := getDataTypeString(fs, f)
-	dts = errata.TypeName(dts)
-	if f.Type.IsArray() {
-		e.CreateAttr("array", "true")
-		e.CreateAttr("type", dts)
-	} else {
-		e.CreateAttr("type", dts)
-		e.RemoveAttr("array")
-	}
-}
-
-func getDataTypeString(fs matter.FieldSet, f *matter.Field) string {
-	switch f.Type.BaseType {
-	case types.BaseDataTypeTag:
-		if f.Type.Entity != nil {
-			if namespace, ok := f.Type.Entity.(*matter.Namespace); ok {
-				return matterNamespaceName(namespace)
-			}
-		} else {
-			return "enum8"
-		}
-	case types.BaseDataTypeNamespaceID:
-		return "enum8"
-	}
-	return zap.FieldToZapDataType(fs, f)
-}
-
-func setAccessAttributes(el *etree.Element, op string, p matter.Privilege, errata *errata.ZAP) {
-	el.CreateAttr("op", op)
-	role := el.SelectAttr("role")
-	var name string
-	if role != nil {
-		name = "role"
-	} else if errata.WritePrivilegeAsRole {
-		name = "role"
-		el.RemoveAttr("privilege")
-	} else {
-		name = "privilege"
-		el.RemoveAttr("role")
-	}
-	px, _ := p.MarshalXMLAttr(xml.Name{Local: name})
-	el.CreateAttr(name, px.Value)
 }

@@ -17,7 +17,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (tg *TemplateGenerator) patchComments(configurator *zap.Configurator, x *etree.Document) {
+func (tg *configuratorRenderer) patchComments(configurator *zap.Configurator, x *etree.Document) {
 	var alchemyComment *etree.Comment
 	var copyrightComment *etree.Comment
 	var lastProcInst *etree.ProcInst
@@ -45,7 +45,7 @@ var licenseDatePatternStartYearEndIndex = 5
 var licenseDatePatternEndYearStartIndex = 6
 var licenseDatePatternEndYearEndIndex = 7
 
-func (tg *TemplateGenerator) patchCopyright(configurator *zap.Configurator, x *etree.Document, lastProcInst *etree.ProcInst, copyrightComment *etree.Comment) *etree.Comment {
+func (tg *configuratorRenderer) patchCopyright(configurator *zap.Configurator, x *etree.Document, lastProcInst *etree.ProcInst, copyrightComment *etree.Comment) *etree.Comment {
 	if copyrightComment == nil {
 		copyrightComment = etree.NewComment(fmt.Sprintf(license, time.Now().Year()))
 		if lastProcInst != nil {
@@ -103,17 +103,21 @@ var initAlchemyTemplate = sync.OnceFunc(func() {
 	alchemyCommentTemplate = template.Must(template.New("alchemyComment").Parse(alchemyComment))
 })
 
-func (tg *TemplateGenerator) patchAlchemyComment(configurator *zap.Configurator, x *etree.Document, alchemyComment *etree.Comment, copyrightComment *etree.Comment) {
+func (tg *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurator, x *etree.Document, alchemyComment *etree.Comment, copyrightComment *etree.Comment) {
 	initAlchemyTemplate()
 	var alchemyCommentText bytes.Buffer
+	var paths []string
+	for _, d := range configurator.Docs {
+		paths = append(paths, d.Path.Relative)
+	}
 	alchemyCommentTemplate.Execute(&alchemyCommentText, struct {
 		Path       string
 		Parameters []asciidoc.AttributeName
 		Git        string
 	}{
-		Path:       configurator.Doc.Path.Relative,
-		Parameters: tg.attributes,
-		Git:        tg.specVersion})
+		Path:       strings.Join(paths, " "),
+		Parameters: tg.generator.attributes,
+		Git:        tg.generator.specVersion})
 	if alchemyComment != nil {
 		alchemyComment.Data = alchemyCommentText.String()
 	} else {

@@ -1,16 +1,23 @@
 package generate
 
 import (
+	"log/slog"
+
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
-func renderConformance(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
+func renderConformance(spec *spec.Specification, entity types.Entity, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
 	removeConformance(parent)
 	if conformance.IsMandatory(c) {
 		return nil
+	}
+	doc, ok := spec.DocRefs[entity]
+	if !ok {
+		slog.Warn("missing doc ref for entity", slog.String("entityType", entity.EntityType().String()))
 	}
 	return dm.RenderConformanceElement(doc, identifierStore, c, parent)
 }

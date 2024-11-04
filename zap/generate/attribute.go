@@ -8,7 +8,6 @@ import (
 	"github.com/beevik/etree"
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -16,16 +15,16 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (tg *TemplateGenerator) generateAttributes(configurator *zap.Configurator, cle *etree.Element, cluster *matter.Cluster, attributes map[*matter.Field]struct{}, clusterPrefix string, errata *errata.ZAP) (err error) {
+func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *matter.Cluster, attributes map[*matter.Field]struct{}, clusterPrefix string) (err error) {
 	for _, ae := range cle.SelectElements("attribute") {
 		ce := ae.SelectAttr("code")
 		if ce == nil {
-			slog.Warn("missing code attribute in cluster", log.Path("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name))
+			slog.Warn("missing code attribute in cluster", slog.String("path", cr.configurator.OutPath), slog.String("clusterName", cluster.Name))
 			continue
 		}
 		attributeID := matter.ParseNumber(ce.Value)
 		if !attributeID.Valid() {
-			slog.Warn("invalid code attribute value in cluster", log.Path("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("id", attributeID.Text()))
+			slog.Warn("invalid code attribute value in cluster", slog.String("path", cr.configurator.OutPath), slog.String("clusterName", cluster.Name), slog.String("id", attributeID.Text()))
 			continue
 		}
 		var attribute *matter.Field
@@ -46,12 +45,12 @@ func (tg *TemplateGenerator) generateAttributes(configurator *zap.Configurator, 
 			delete(attributes, a)
 		}
 		if attribute == nil {
-			slog.Warn("unrecognized attribute in cluster", log.Path("path", configurator.Doc.Path), slog.String("clusterName", cluster.Name), slog.String("code", attributeID.Text()))
+			slog.Warn("unrecognized attribute in cluster", slog.String("path", cr.configurator.OutPath), slog.String("clusterName", cluster.Name), slog.String("code", attributeID.Text()))
 			cle.RemoveChild(ae)
 			continue
 		}
 		delete(attributes, attribute)
-		err = tg.populateAttribute(configurator, ae, attribute, cluster, clusterPrefix, errata)
+		err = cr.populateAttribute(ae, attribute, cluster, clusterPrefix)
 		if err != nil {
 			return
 		}
@@ -75,7 +74,7 @@ func (tg *TemplateGenerator) generateAttributes(configurator *zap.Configurator, 
 		}
 
 		ae := etree.NewElement("attribute")
-		err = tg.populateAttribute(configurator, ae, a, cluster, clusterPrefix, errata)
+		err = cr.populateAttribute(ae, a, cluster, clusterPrefix)
 		if err != nil {
 			return
 		}
@@ -84,12 +83,12 @@ func (tg *TemplateGenerator) generateAttributes(configurator *zap.Configurator, 
 	return
 }
 
-func (tg *TemplateGenerator) populateAttribute(configurator *zap.Configurator, ae *etree.Element, attribute *matter.Field, cluster *matter.Cluster, clusterPrefix string, errata *errata.ZAP) (err error) {
+func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matter.Cluster, clusterPrefix string) (err error) {
 	patchNumberAttribute(ae, attribute.ID, "code")
 	ae.CreateAttr("side", "server")
-	define := getDefine(attribute.Name, clusterPrefix, errata)
+	define := getDefine(attribute.Name, clusterPrefix, cr.configurator.Errata)
 	xml.SetNonexistentAttr(ae, "define", define)
-	writeAttributeDataType(ae, cluster.Attributes, attribute, errata)
+	cr.writeAttributeDataType(ae, cluster.Attributes, attribute)
 	if attribute.Quality.Has(matter.QualityNullable) {
 		ae.CreateAttr("isNullable", "true")
 	} else {
@@ -104,7 +103,7 @@ func (tg *TemplateGenerator) populateAttribute(configurator *zap.Configurator, a
 	}
 	renderConstraint(ae, cluster.Attributes, attribute)
 	setFieldDefault(ae, attribute, cluster.Attributes)
-	requiresPermissions := !errata.SuppressAttributePermissions && ((tg.generateConformanceXML && !conformance.IsBlank(attribute.Conformance)) || (attribute.Access.Read != matter.PrivilegeView && attribute.Access.Read != matter.PrivilegeUnknown) || (attribute.Access.Write != matter.PrivilegeUnknown && attribute.Access.Write != matter.PrivilegeOperate))
+	requiresPermissions := !cr.configurator.Errata.SuppressAttributePermissions && ((cr.generator.generateConformanceXML && !conformance.IsBlank(attribute.Conformance)) || (attribute.Access.Read != matter.PrivilegeView && attribute.Access.Read != matter.PrivilegeUnknown) || (attribute.Access.Write != matter.PrivilegeUnknown && attribute.Access.Write != matter.PrivilegeOperate))
 	if !requiresPermissions {
 		if attribute.Access.Write != matter.PrivilegeUnknown {
 			ae.CreateAttr("writable", "true")
@@ -137,10 +136,10 @@ func (tg *TemplateGenerator) populateAttribute(configurator *zap.Configurator, a
 		accessElements := ae.SelectElements("access")
 		for _, ax := range accessElements {
 			if needsRead {
-				setAccessAttributes(ax, "read", attribute.Access.Read, errata)
+				cr.setAccessAttributes(ax, "read", attribute.Access.Read)
 				needsRead = false
 			} else if needsWrite {
-				setAccessAttributes(ax, "write", attribute.Access.Write, errata)
+				cr.setAccessAttributes(ax, "write", attribute.Access.Write)
 				needsWrite = false
 			} else {
 				ae.RemoveChild(ax)
@@ -148,14 +147,14 @@ func (tg *TemplateGenerator) populateAttribute(configurator *zap.Configurator, a
 		}
 		if needsRead {
 			ax := ae.CreateElement("access")
-			setAccessAttributes(ax, "read", attribute.Access.Read, errata)
+			cr.setAccessAttributes(ax, "read", attribute.Access.Read)
 		}
 		if needsWrite {
 			ax := ae.CreateElement("access")
-			setAccessAttributes(ax, "write", attribute.Access.Write, errata)
+			cr.setAccessAttributes(ax, "write", attribute.Access.Write)
 		}
-		if tg.generateConformanceXML {
-			renderConformance(configurator.Doc, cluster, attribute.Conformance, ae)
+		if cr.generator.generateConformanceXML {
+			renderConformance(cr.generator.spec, attribute, cluster, attribute.Conformance, ae)
 		} else {
 			removeConformance(ae)
 		}
@@ -177,12 +176,12 @@ func setFieldDefault(e *etree.Element, field *matter.Field, fieldSet matter.Fiel
 	}
 }
 
-func writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Field, errata *errata.ZAP) {
+func (cr *configuratorRenderer) writeAttributeDataType(x *etree.Element, fs matter.FieldSet, f *matter.Field) {
 	if f.Type == nil {
 		return
 	}
 	dts := zap.FieldToZapDataType(fs, f)
-	dts = errata.TypeName(dts)
+	dts = cr.configurator.Errata.TypeName(dts)
 	if f.Type.IsArray() {
 		x.CreateAttr("type", "array")
 		x.CreateAttr("entryType", dts)
