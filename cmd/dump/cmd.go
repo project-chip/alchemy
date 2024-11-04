@@ -59,6 +59,11 @@ var Command = &cobra.Command{
 				if err != nil {
 					return fmt.Errorf("error parsing entities %s: %w", f, err)
 				}
+				globalObjects, err := doc.GlobalObjects()
+				if err != nil {
+					return fmt.Errorf("error parsing global objects %s: %w", f, err)
+				}
+				entities = append(entities, globalObjects...)
 				encoder := json.NewEncoder(os.Stdout)
 				//encoder.SetIndent("", "\t")
 				return encoder.Encode(entities)
