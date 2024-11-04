@@ -2,6 +2,7 @@ package spec
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
@@ -29,6 +30,9 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, entityMap map[as
 		attr.Name, err = ti.ReadValue(row, matter.TableColumnName)
 		if err != nil {
 			return
+		}
+		if strings.EqualFold(attr.Name, "DoNotUse") {
+			continue
 		}
 		attr.Name = matter.StripTypeSuffixes(attr.Name)
 		attr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
