@@ -14,10 +14,10 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toEnum(d *Doc, pc *parseContext) (e *matter.Enum, err error) {
+func (s *Section) toEnum(d *Doc, pc *parseContext, parent types.Entity) (e *matter.Enum, err error) {
 
 	name := CanonicalName(text.TrimCaseInsensitiveSuffix(s.Name, " Type"))
-	e = matter.NewEnum(s.Base)
+	e = matter.NewEnum(s.Base, parent)
 	e.Name = name
 	dt := s.GetDataType()
 	if dt == nil {
@@ -29,7 +29,7 @@ func (s *Section) toEnum(d *Doc, pc *parseContext) (e *matter.Enum, err error) {
 
 	e.Type = dt
 
-	e.Values, err = s.findEnumValues()
+	e.Values, err = s.findEnumValues(e)
 	if err != nil {
 		slog.Warn("error finding enum values", log.Element("path", d.Path, s.Base), slog.Any("err", err))
 		return
@@ -42,7 +42,7 @@ func (s *Section) toEnum(d *Doc, pc *parseContext) (e *matter.Enum, err error) {
 			case *Section:
 				if strings.HasSuffix(el.Name, " Range") {
 					var ssv matter.EnumValueSet
-					ssv, err = el.findEnumValues()
+					ssv, err = el.findEnumValues(e)
 					if err != nil {
 						continue
 					}
@@ -60,7 +60,7 @@ func (s *Section) toEnum(d *Doc, pc *parseContext) (e *matter.Enum, err error) {
 	return
 }
 
-func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
+func (s *Section) findEnumValues(e *matter.Enum) (matter.EnumValueSet, error) {
 	var tables []*asciidoc.Table
 	parse.SkimFunc(s.Elements(), func(t *asciidoc.Table) bool {
 		tables = append(tables, t)
@@ -76,7 +76,7 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 		}
 		var values matter.EnumValueSet
 		for row := range ti.Body() {
-			ev := matter.NewEnumValue(s.Base)
+			ev := matter.NewEnumValue(s.Base, e)
 			ev.Name, err = ti.ReadValue(row, matter.TableColumnName)
 			if err != nil {
 				return nil, err
@@ -128,17 +128,17 @@ func (s *Section) findEnumValues() (matter.EnumValueSet, error) {
 	return nil, nil
 }
 
-func (s *Section) toModeTags(d *Doc) (e *matter.Enum, err error) {
+func (s *Section) toModeTags(d *Doc, parent types.Entity) (e *matter.Enum, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading mode tags: %w", err)
 	}
-	e = matter.NewEnum(s.Base)
+	e = matter.NewEnum(s.Base, parent)
 	e.Name = "ModeTag"
 	e.Type = types.NewDataType(types.BaseDataTypeEnum16, false)
 	for row := range ti.Body() {
-		ev := matter.NewEnumValue(s.Base)
+		ev := matter.NewEnumValue(s.Base, e)
 		ev.Name, err = ti.ReadString(row, matter.TableColumnName)
 		if err != nil {
 			return

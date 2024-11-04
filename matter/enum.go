@@ -17,9 +17,9 @@ type Enum struct {
 	Values      EnumValueSet    `json:"values,omitempty"`
 }
 
-func NewEnum(source asciidoc.Element) *Enum {
+func NewEnum(source asciidoc.Element, parent types.Entity) *Enum {
 	return &Enum{
-		entity: entity{source: source},
+		entity: entity{source: source, parent: parent},
 	}
 }
 
@@ -36,7 +36,7 @@ func (e *Enum) NullValue() uint64 {
 }
 
 func (e *Enum) Clone() *Enum {
-	ne := &Enum{entity: entity{source: e.source}, Name: e.Name, Description: e.Description}
+	ne := &Enum{entity: entity{source: e.source, parent: e.parent}, Name: e.Name, Description: e.Description}
 	if e.Type != nil {
 		ne.Type = e.Type.Clone()
 	}
@@ -103,9 +103,9 @@ type EnumValue struct {
 	Conformance conformance.Set `json:"conformance,omitempty"`
 }
 
-func NewEnumValue(source asciidoc.Element) *EnumValue {
+func NewEnumValue(source asciidoc.Element, parent types.Entity) *EnumValue {
 	return &EnumValue{
-		entity: entity{source: source},
+		entity: entity{source: source, parent: parent},
 	}
 }
 
@@ -136,7 +136,18 @@ func (es EnumValueSet) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
+func NewAnonymousEnum(source asciidoc.Element, parent types.Entity) *AnonymousEnum {
+	return &AnonymousEnum{
+		entity: entity{source: source, parent: parent},
+	}
+}
+
 type AnonymousEnum struct {
+	entity
 	Type   *types.DataType `json:"type,omitempty"`
 	Values EnumValueSet    `json:"values,omitempty"`
+}
+
+func (AnonymousEnum) EntityType() types.EntityType {
+	return types.EntityTypeEnum
 }

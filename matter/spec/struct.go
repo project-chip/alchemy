@@ -9,14 +9,14 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toStruct(d *Doc, pc *parseContext) (ms *matter.Struct, err error) {
+func (s *Section) toStruct(d *Doc, pc *parseContext, parent types.Entity) (ms *matter.Struct, err error) {
 	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
 		return nil, fmt.Errorf("failed reading struct %s: %w", name, err)
 	}
-	ms = matter.NewStruct(s.Base)
+	ms = matter.NewStruct(s.Base, parent)
 	ms.Name = name
 
 	if ti.HeaderRowIndex > 0 {

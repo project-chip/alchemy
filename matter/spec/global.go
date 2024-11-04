@@ -27,7 +27,7 @@ func (cf *globalCommandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] 
 	}
 }
 
-func (s *Section) toGlobalElements(d *Doc, pc *parseContext) (entities []types.Entity, err error) {
+func (s *Section) toGlobalElements(d *Doc, pc *parseContext, parent types.Entity) (entities []types.Entity, err error) {
 	var commandsTable *asciidoc.Table
 	parse.SkimFunc(s.Elements(), func(t *asciidoc.Table) bool {
 		for _, a := range t.AttributeList.Attributes() {
@@ -47,7 +47,7 @@ func (s *Section) toGlobalElements(d *Doc, pc *parseContext) (entities []types.E
 
 	var cf globalCommandFactory
 	var commands matter.CommandSet
-	commands, err = buildList(d, s, commandsTable, pc, commands, &cf)
+	commands, err = buildList(d, s, commandsTable, pc, commands, &cf, parent)
 
 	for _, c := range commands {
 		entities = append(entities, c)

@@ -70,8 +70,8 @@ func (adt *AssociatedDataTypes) AddBitmaps(bitmaps ...*Bitmap) {
 	for _, bm := range bitmaps {
 		parentEntity := bm.Parent()
 		if parentEntity != nil {
-			if _, ok := parentEntity.(*ClusterGroup); !ok {
-				slog.Warn("Bitmap belongs to multiple parents", slog.String("name", bm.Name), log.Path("source", bm), LogEntity(adt.parentEntity))
+			if _, ok := parentEntity.(*ClusterGroup); !ok && bm.parent != adt.parentEntity {
+				slog.Warn("Bitmap belongs to multiple parents", slog.String("name", bm.Name), log.Path("source", bm), LogEntity("parent", adt.parentEntity))
 			}
 			continue
 		}
@@ -83,8 +83,8 @@ func (adt *AssociatedDataTypes) AddBitmaps(bitmaps ...*Bitmap) {
 func (adt *AssociatedDataTypes) AddEnums(enums ...*Enum) {
 	for _, e := range enums {
 		if e.parent != nil {
-			if _, ok := e.parent.(*ClusterGroup); !ok {
-				slog.Warn("Enum belongs to multiple parents", slog.String("name", e.Name), log.Path("source", e), LogEntity(adt.parentEntity))
+			if _, ok := e.parent.(*ClusterGroup); !ok && e.parent != adt.parentEntity {
+				slog.Warn("Enum belongs to multiple parents", slog.String("name", e.Name), log.Path("source", e), LogEntity("parent", adt.parentEntity))
 			}
 			continue
 		}
@@ -96,8 +96,8 @@ func (adt *AssociatedDataTypes) AddEnums(enums ...*Enum) {
 func (adt *AssociatedDataTypes) AddStructs(structs ...*Struct) {
 	for _, s := range structs {
 		if s.parent != nil {
-			if _, ok := s.parent.(*ClusterGroup); !ok {
-				slog.Warn("Struct belongs to multiple parents", slog.String("name", s.Name), log.Path("source", s), LogEntity(adt.parentEntity))
+			if _, ok := s.parent.(*ClusterGroup); !ok && s.parent != adt.parentEntity {
+				slog.Warn("Struct belongs to multiple parents", slog.String("name", s.Name), log.Path("source", s), LogEntity("parent", adt.parentEntity))
 			}
 			continue
 		}
@@ -109,8 +109,8 @@ func (adt *AssociatedDataTypes) AddStructs(structs ...*Struct) {
 func (adt *AssociatedDataTypes) AddTypeDefs(typeDefs ...*TypeDef) {
 	for _, td := range typeDefs {
 		if td.parent != nil {
-			if _, ok := td.parent.(*ClusterGroup); !ok {
-				slog.Warn("TypeDef belongs to multiple parents", slog.String("name", td.Name), log.Path("source", td), LogEntity(adt.parentEntity))
+			if _, ok := td.parent.(*ClusterGroup); !ok && td.parent != adt.parentEntity {
+				slog.Warn("TypeDef belongs to multiple parents", slog.String("name", td.Name), log.Path("source", td), LogEntity("parent", adt.parentEntity))
 			}
 			continue
 		}

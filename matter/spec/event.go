@@ -14,9 +14,9 @@ import (
 
 type eventFactory struct{}
 
-func (cf *eventFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string) (e *matter.Event, err error) {
+func (cf *eventFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (e *matter.Event, err error) {
 
-	e = matter.NewEvent(s.Base)
+	e = matter.NewEvent(s.Base, parent)
 	e.Name = matter.StripTypeSuffixes(name)
 	e.ID, err = ti.ReadID(row, matter.TableColumnID)
 	if err != nil {
@@ -106,14 +106,14 @@ func (cf *eventFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	}
 }
 
-func (s *Section) toEvents(d *Doc, pc *parseContext) (events matter.EventSet, err error) {
+func (s *Section) toEvents(d *Doc, pc *parseContext, parent types.Entity) (events matter.EventSet, err error) {
 	t := FindFirstTable(s)
 	if t == nil {
 		return nil, nil
 	}
 
 	var ef eventFactory
-	events, err = buildList(d, s, t, pc, events, &ef)
+	events, err = buildList(d, s, t, pc, events, &ef, parent)
 
 	return
 }

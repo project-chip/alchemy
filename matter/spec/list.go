@@ -17,13 +17,13 @@ type listIndex[T types.Entity] struct {
 }
 
 type entityFactory[T types.Entity] interface {
-	New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string) (T, error)
+	New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (T, error)
 	Details(d *Doc, s *Section, pc *parseContext, e T) error
 	EntityName(s *Section) string
 	Children(d *Doc, s *Section) iter.Seq[*Section]
 }
 
-func buildList[T types.Entity, L ~[]T](d *Doc, s *Section, t *asciidoc.Table, pc *parseContext, list L, factory entityFactory[T]) (L, error) {
+func buildList[T types.Entity, L ~[]T](d *Doc, s *Section, t *asciidoc.Table, pc *parseContext, list L, factory entityFactory[T], parent types.Entity) (L, error) {
 
 	index := listIndex[T]{
 		byName:      make(map[string]T),
@@ -45,7 +45,7 @@ func buildList[T types.Entity, L ~[]T](d *Doc, s *Section, t *asciidoc.Table, pc
 		}
 
 		var entity T
-		entity, err = factory.New(d, s, ti, row, name)
+		entity, err = factory.New(d, s, ti, row, name, parent)
 		if err != nil {
 			return nil, err
 		}

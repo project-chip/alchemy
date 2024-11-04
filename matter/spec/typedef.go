@@ -5,11 +5,12 @@ import (
 
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toTypeDef(d *Doc, pc *parseContext) (ms *matter.TypeDef, err error) {
+func (s *Section) toTypeDef(d *Doc, pc *parseContext, parent types.Entity) (ms *matter.TypeDef, err error) {
 	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
-	ms = matter.NewTypeDef(s.Base)
+	ms = matter.NewTypeDef(s.Base, parent)
 	ms.Name = name
 
 	dt := s.GetDataType()

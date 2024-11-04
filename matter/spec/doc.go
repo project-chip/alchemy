@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"log/slog"
 	"sync"
 	"unicode"
@@ -9,7 +8,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -114,37 +112,6 @@ func (doc *Doc) Entities() (entities []types.Entity, err error) {
 		}
 	}
 	return doc.entities, nil
-}
-
-type parseContext struct {
-	entities          []types.Entity
-	orderedEntities   []types.Entity
-	globalObjects     []types.Entity
-	entitiesByElement map[asciidoc.Attributable][]types.Entity
-}
-
-func (doc *Doc) parseEntities() error {
-	pc := &parseContext{
-		entitiesByElement: make(map[asciidoc.Attributable][]types.Entity),
-	}
-	for _, top := range parse.Skim[*Section](doc.Elements()) {
-		err := AssignSectionTypes(doc, top)
-		if err != nil {
-			return err
-		}
-
-		err = top.toEntities(doc, pc)
-		if err != nil {
-			return fmt.Errorf("failed converting doc %s to entities: %w", doc.Path, err)
-		}
-
-	}
-	doc.entities = pc.entities
-	doc.orderedEntities = pc.orderedEntities
-	doc.entitiesBySection = pc.entitiesByElement
-	doc.globalObjects = pc.globalObjects
-	doc.entitiesParsed = true
-	return nil
 }
 
 func (doc *Doc) GlobalObjects() (entities []types.Entity, err error) {

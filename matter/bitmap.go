@@ -22,10 +22,14 @@ type Bitmap struct {
 	Bits        BitSet          `json:"bits,omitempty"`
 }
 
-func NewBitmap(source asciidoc.Element) *Bitmap {
-	return &Bitmap{
-		entity: entity{source: source},
+func NewBitmap(source asciidoc.Element, parent types.Entity, bits ...*BitmapBit) *Bitmap {
+	bm := &Bitmap{
+		entity: entity{source: source, parent: parent},
 	}
+	for _, b := range bits {
+		bm.AddBit(b)
+	}
+	return bm
 }
 
 func (bm *Bitmap) EntityType() types.EntityType {
@@ -54,6 +58,11 @@ func (bm *Bitmap) Size() int {
 	default:
 		return 8
 	}
+}
+
+func (bm *Bitmap) AddBit(b *BitmapBit) {
+	b.parent = bm
+	bm.Bits = append(bm.Bits, b)
 }
 
 func (bm *Bitmap) Clone() *Bitmap {
@@ -179,7 +188,7 @@ func (bmb *BitmapBit) Conformance() conformance.Set {
 }
 
 func (bmb *BitmapBit) Clone() Bit {
-	nb := &BitmapBit{bit: bmb.bit, name: bmb.name, summary: bmb.summary}
+	nb := &BitmapBit{entity: entity{source: bmb.source, parent: bmb.parent}, bit: bmb.bit, name: bmb.name, summary: bmb.summary}
 	if len(bmb.conformance) > 0 {
 		nb.conformance = bmb.conformance.CloneSet()
 	}
@@ -271,6 +280,7 @@ func (bs BitSet) Identifier(name string) (types.Entity, bool) {
 }
 
 type AnonymousBitmap struct {
+	entity
 	Type *types.DataType `json:"type,omitempty"`
 	Bits BitSet          `json:"bits,omitempty"`
 }
@@ -289,4 +299,14 @@ func (bm *AnonymousBitmap) Size() int {
 	default:
 		return 8
 	}
+}
+
+func NewAnonymousBitmap(source asciidoc.Element, parent types.Entity) *AnonymousBitmap {
+	return &AnonymousBitmap{
+		entity: entity{source: source, parent: parent},
+	}
+}
+
+func (AnonymousBitmap) EntityType() types.EntityType {
+	return types.EntityTypeBitmap
 }

@@ -20,7 +20,7 @@ type Field struct {
 	Conformance conformance.Set       `json:"conformance,omitempty"`
 
 	// Hopefully this will go away as we continue disco-balling the spec
-	AnonymousType any `json:"anonymousType,omitempty"`
+	AnonymousType types.Entity `json:"anonymousType,omitempty"`
 
 	entityType types.EntityType
 }
@@ -68,7 +68,7 @@ func (f *Field) Inherit(parent *Field) {
 }
 
 func (f *Field) Clone() *Field {
-	nf := &Field{entity: entity{source: f.source}, ID: f.ID.Clone(), Name: f.Name, Quality: f.Quality, Access: f.Access, Default: f.Default, entityType: f.entityType}
+	nf := &Field{entity: entity{source: f.source, parent: f.parent}, ID: f.ID.Clone(), Name: f.Name, Quality: f.Quality, Access: f.Access, Default: f.Default, entityType: f.entityType}
 	if f.Type != nil {
 		nf.Type = f.Type.Clone()
 	}

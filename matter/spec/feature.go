@@ -58,7 +58,7 @@ func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Feature
 			conf = conformance.Set{&conformance.Optional{}}
 		}
 		f := matter.NewFeature(bit, name, code, summary, conf)
-		features.Bits = append(features.Bits, f)
+		features.AddFeatureBit(f)
 		featureMap[name] = f
 	}
 

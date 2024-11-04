@@ -11,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toBitmap(d *Doc, pc *parseContext) (bm *matter.Bitmap, err error) {
+func (s *Section) toBitmap(d *Doc, pc *parseContext, parent types.Entity) (bm *matter.Bitmap, err error) {
 	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
 
 	dt := s.GetDataType()
@@ -22,7 +22,7 @@ func (s *Section) toBitmap(d *Doc, pc *parseContext) (bm *matter.Bitmap, err err
 		return nil, fmt.Errorf("unknown bitmap data type: %s", dt.Name)
 	}
 
-	bm = matter.NewBitmap(s.Base)
+	bm = matter.NewBitmap(s.Base, parent)
 	bm.Name = name
 	bm.Type = dt
 	var ti *TableInfo
@@ -66,10 +66,9 @@ func (s *Section) toBitmap(d *Doc, pc *parseContext) (bm *matter.Bitmap, err err
 			name = matter.Case(summary)
 		}
 		bv := matter.NewBitmapBit(s.Base, bit, CanonicalName(name), summary, conf)
-		bm.Bits = append(bm.Bits, bv)
+		bm.AddBit(bv)
 	}
-	pc.orderedEntities = append(pc.orderedEntities, bm)
-	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], bm)
 	bm.Name = CanonicalName(bm.Name)
+	pc.addEntity(bm, s.Base)
 	return
 }

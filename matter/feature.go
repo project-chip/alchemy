@@ -32,6 +32,11 @@ func (fs *Features) Identifier(id string) (types.Entity, bool) {
 	return fs.Bitmap.Identifier(id)
 }
 
+func (fs *Features) AddFeatureBit(b *Feature) {
+	b.parent = fs
+	fs.Bits = append(fs.Bits, b)
+}
+
 func (fs *Features) FeatureBits() iter.Seq[*Feature] {
 	return func(yield func(*Feature) bool) {
 		for _, b := range fs.Bits {

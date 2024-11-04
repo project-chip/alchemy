@@ -22,9 +22,9 @@ type Command struct {
 	Fields FieldSet `json:"fields,omitempty"`
 }
 
-func NewCommand(source asciidoc.Element) *Command {
+func NewCommand(source asciidoc.Element, parent types.Entity) *Command {
 	return &Command{
-		entity: entity{source: source},
+		entity: entity{source: source, parent: parent},
 	}
 }
 
