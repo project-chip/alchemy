@@ -23,6 +23,10 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 		if err != nil {
 			return
 		}
+		if strings.EqualFold(f.Name, "DoNotUse") {
+			slog.Info("skipping field")
+			continue
+		}
 		f.Name = matter.StripTypeSuffixes(f.Name)
 		f.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
 		f.Type, err = ti.ReadDataType(row, matter.TableColumnType)
