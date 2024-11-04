@@ -27,3 +27,18 @@ func DeleteFunc[K comparable, V any](m map[K]V, filter func(K) bool) {
 		}
 	}
 }
+
+func ToMap[T comparable](list []T) (m map[T]struct{}) {
+	m = make(map[T]struct{})
+	for _, item := range list {
+		m[item] = struct{}{}
+	}
+	return
+}
+
+func Keys[K comparable, V any](m map[K]V) (keys []K) {
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return
+}

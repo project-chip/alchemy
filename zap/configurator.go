@@ -13,7 +13,8 @@ import (
 
 type Configurator struct {
 	Spec    *spec.Specification
-	Doc     *spec.Doc
+	Docs    []*spec.Doc
+	Domain  string
 	OutPath string
 
 	Features []*matter.Number
@@ -23,19 +24,28 @@ type Configurator struct {
 	Structs  map[*matter.Struct][]*matter.Number
 
 	ClusterIDs []string
+	Errata     *errata.ZAP
+	Global     bool
 }
 
-func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.Entity, outPath string, errata *errata.ZAP) (*Configurator, error) {
+func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []types.Entity, outPath string, errata *errata.ZAP, global bool) (*Configurator, error) {
 	c := &Configurator{
 		Spec:    spec,
-		Doc:     doc,
+		Docs:    docs,
 		OutPath: outPath,
 
 		Bitmaps:  make(map[*matter.Bitmap][]*matter.Number),
 		Enums:    make(map[*matter.Enum][]*matter.Number),
 		Clusters: make(map[*matter.Cluster]bool),
 		Structs:  make(map[*matter.Struct][]*matter.Number),
+
+		Errata: errata,
+		Global: global,
 	}
+	if len(docs) > 0 {
+		c.Domain = matter.DomainNames[docs[0].Domain]
+	}
+
 	for _, m := range entities {
 		switch v := m.(type) {
 		case *matter.ClusterGroup:
@@ -62,7 +72,7 @@ func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.E
 		switch v := m.(type) {
 		case *matter.ClusterGroup:
 			for _, cl := range v.Clusters {
-				c.addCluster(v, cl, errata)
+				c.addCluster(v, cl)
 			}
 			for _, bm := range v.Bitmaps {
 				c.addEntityType(v, bm)
@@ -74,7 +84,7 @@ func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.E
 				c.addEntityType(v, s)
 			}
 		case *matter.Cluster:
-			c.addCluster(v, v, errata)
+			c.addCluster(v, v)
 		case *matter.Bitmap, *matter.Enum, *matter.Struct:
 			c.addEntityType(nil, v)
 		}
@@ -82,7 +92,7 @@ func NewConfigurator(spec *spec.Specification, doc *spec.Doc, entities []types.E
 	return c, nil
 }
 
-func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster, errata *errata.ZAP) {
+func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster) {
 	c.addTypes(parentEntity, v.Attributes)
 	if v.Features != nil {
 		c.addEntityType(parentEntity, v.Features)
@@ -104,7 +114,7 @@ func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster, 
 			c.Enums[e] = append(c.Enums[e], v.ID)
 		}
 	}
-	for _, name := range errata.ClusterSkip {
+	for _, name := range c.Errata.ClusterSkip {
 		if name == v.Name {
 			return
 		}
@@ -144,24 +154,23 @@ func (c *Configurator) addType(parentEntity types.Entity, dt *types.DataType) {
 			slog.Debug("skipping data type for different entity", "name", dt.Name, "parent", entity, "context", parentEntity)
 			return
 		}
+	} else if c.Global {
+
 	}
 	c.addEntityType(parentEntity, entity)
 }
 
 func typeBelongsToOtherCluster(entity types.Entity, parentEntity types.Entity) bool {
-	var typeParent types.Entity
-	switch entity := entity.(type) {
-	case *matter.Bitmap:
-		typeParent = entity.Parent()
-	case *matter.Enum:
-		typeParent = entity.Parent()
-	case *matter.Struct:
-		typeParent = entity.Parent()
+	typeParent := entity.Parent()
+	for {
+		if typeParent == nil { // This is a global type, and doesn't belong to any cluster
+			return true
+		}
+		if typeParent == parentEntity {
+			return false
+		}
+		typeParent = typeParent.Parent()
 	}
-	if typeParent == nil { // This is a global type, and doesn't belong to any cluster
-		return true
-	}
-	return typeParent != parentEntity
 }
 
 func (c *Configurator) addEntityType(parentEntity types.Entity, entity types.Entity) {
@@ -175,14 +184,20 @@ func (c *Configurator) addEntityType(parentEntity types.Entity, entity types.Ent
 		c.Enums[entity] = c.getClusterCodes(entity)
 	case *matter.Struct:
 		c.Structs[entity] = c.getClusterCodes(entity)
-		c.addTypes(parentEntity, entity.Fields)
+		if !c.Global {
+			c.addTypes(parentEntity, entity.Fields)
+		}
 	}
 }
 
 func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []*matter.Number) {
+	if c.Global {
+		// If these are global objects, we don't care what their associated cluster IDs are
+		return []*matter.Number{matter.InvalidID}
+	}
 	refs, ok := c.Spec.ClusterRefs.Get(entity)
 	if !ok {
-		slog.Warn("unknown cluster ref when searching for cluster codes", slog.String("path", c.Doc.Path.String()), matter.LogEntity(entity))
+		slog.Warn("unknown cluster ref when searching for cluster codes", c.DocLogs(), matter.LogEntity(entity))
 		return
 	}
 	for ref := range refs {
@@ -190,4 +205,12 @@ func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []*matte
 	}
 	matter.SortNumbers(clusterIDs)
 	return
+}
+
+func (c *Configurator) DocLogs() slog.Attr {
+	var paths []any
+	for _, d := range c.Docs {
+		paths = append(paths, slog.String("path", d.Path.Relative))
+	}
+	return slog.Group("paths", paths...)
 }

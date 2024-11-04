@@ -133,7 +133,7 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 		}
 
 		var configurator *zap.Configurator
-		configurator, err = zap.NewConfigurator(tg.spec, input.Content, entities, newPath, errata)
+		configurator, err = zap.NewConfigurator(tg.spec, []*spec.Doc{input.Content}, entities, newPath, errata, false)
 		if err != nil {
 			return
 		}
@@ -142,30 +142,14 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 
 		var doc *etree.Document
 		var provisional bool
-
-		var existing []byte
-		existing, err = os.ReadFile(newPath)
-		if errors.Is(err, os.ErrNotExist) {
-			if tg.pipeline.Serial {
-				slog.InfoContext(cxt, "Rendering new ZAP template", "from", input.Content.Path, "to", newPath)
-			}
-			provisional = true
-			doc = newZapTemplate()
-		} else if err != nil {
+		doc, provisional, err = tg.openConfigurator(configurator)
+		if err != nil {
 			return
-		} else {
-			if tg.pipeline.Serial {
-				slog.InfoContext(cxt, "Rendering existing ZAP template", "from", input.Content.Path, "to", newPath)
-			}
-			doc = etree.NewDocument()
-			err = doc.ReadFromBytes(existing)
-			if err != nil {
-				err = fmt.Errorf("failed reading ZAP template %s: %w", input.Content.Path, err)
-				return
-			}
-
 		}
-		result, err = tg.renderZapTemplate(configurator, doc, errata)
+
+		tg.buildClusterAliases(configurator)
+
+		result, err = tg.renderZapTemplate(configurator, doc)
 		if err != nil {
 			err = fmt.Errorf("failed rendering %s: %w", input.Content.Path, err)
 			return
@@ -173,6 +157,32 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 		outputs = append(outputs, &pipeline.Data[string]{Path: newPath, Content: result})
 		if provisional {
 			tg.ProvisionalZclFiles.Store(filepath.Base(newPath), pipeline.NewData[struct{}](newPath, struct{}{}))
+		}
+	}
+	return
+}
+
+func (tg *TemplateGenerator) openConfigurator(configurator *zap.Configurator) (doc *etree.Document, provisional bool, err error) {
+	var existing []byte
+	existing, err = os.ReadFile(configurator.OutPath)
+	if errors.Is(err, os.ErrNotExist) {
+		if tg.pipeline.Serial {
+			slog.Info("Rendering new ZAP template", configurator.DocLogs(), "to", configurator.OutPath)
+		}
+		provisional = true
+		doc = newZapTemplate()
+		err = nil
+	} else if err != nil {
+		return
+	} else {
+		if tg.pipeline.Serial {
+			slog.Info("Rendering existing ZAP template", configurator.DocLogs(), "to", configurator.OutPath)
+		}
+		doc = etree.NewDocument()
+		err = doc.ReadFromBytes(existing)
+		if err != nil {
+			err = fmt.Errorf("failed reading ZAP template %v: %w", configurator.Docs, err)
+			return
 		}
 	}
 	return
@@ -215,4 +225,17 @@ func SplitZAPDocs(cxt context.Context, inputs pipeline.Map[string, *pipeline.Dat
 		return true
 	})
 	return
+}
+
+func getDocDomain(doc *spec.Doc) matter.Domain {
+	if doc.Domain != matter.DomainUnknown {
+		return doc.Domain
+	}
+	for _, p := range doc.Parents() {
+		d := getDocDomain(p)
+		if d != matter.DomainUnknown {
+			return d
+		}
+	}
+	return matter.DomainUnknown
 }

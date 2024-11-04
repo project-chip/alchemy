@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -14,13 +13,13 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateBitmaps(configurator *zap.Configurator, bitmaps map[*matter.Bitmap][]*matter.Number, sourcePath string, parent *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
+func (cr *configuratorRenderer) generateBitmaps(bitmaps map[*matter.Bitmap][]*matter.Number, parent *etree.Element) (err error) {
 
 	for _, eve := range parent.SelectElements("bitmap") {
 
 		nameAttr := eve.SelectAttr("name")
 		if nameAttr == nil {
-			slog.Warn("missing name attribute in bitmap", slog.String("path", sourcePath))
+			slog.Warn("missing name attribute in bitmap", slog.String("path", cr.configurator.OutPath))
 			continue
 		}
 		name := nameAttr.Value
@@ -34,7 +33,7 @@ func generateBitmaps(configurator *zap.Configurator, bitmaps map[*matter.Bitmap]
 		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range bitmaps {
-			if errata.TypeName(bm.Name) == name || errata.TypeName(strings.TrimSuffix(bm.Name, "Bitmap")) == name {
+			if cr.configurator.Errata.TypeName(bm.Name) == name || cr.configurator.Errata.TypeName(strings.TrimSuffix(bm.Name, "Bitmap")) == name {
 				matchingBitmap = bm
 				clusterIds = handled
 				skip = len(handled) == 0
@@ -48,11 +47,11 @@ func generateBitmaps(configurator *zap.Configurator, bitmaps map[*matter.Bitmap]
 		}
 
 		if matchingBitmap == nil {
-			slog.Warn("unknown bitmap name", slog.String("path", sourcePath), slog.String("bitmapName", name))
+			slog.Warn("unknown bitmap name", slog.String("path", cr.configurator.OutPath), slog.String("bitmapName", name))
 			parent.RemoveChild(eve)
 			continue
 		}
-		err = populateBitmap(eve, matchingBitmap, clusterIds, errata)
+		err = cr.populateBitmap(eve, matchingBitmap, clusterIds)
 		if err != nil {
 			return
 		}
@@ -63,14 +62,14 @@ func generateBitmaps(configurator *zap.Configurator, bitmaps map[*matter.Bitmap]
 			continue
 		}
 		bme := etree.NewElement("bitmap")
-		populateBitmap(bme, bm, clusterIds, errata)
+		cr.populateBitmap(bme, bm, clusterIds)
 		xml.InsertElementByAttribute(parent, bme, "name", "domain")
 	}
 	return
 }
 
-func populateBitmap(ee *etree.Element, bm *matter.Bitmap, clusterIds []*matter.Number, errata *errata.ZAP) (err error) {
-
+func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bitmap, clusterIds []*matter.Number) (err error) {
+	cr.elementMap[ee] = bm
 	var valFormat string
 	if bm.Name == "Feature" {
 		valFormat = "0x%02X"
@@ -88,15 +87,17 @@ func populateBitmap(ee *etree.Element, bm *matter.Bitmap, clusterIds []*matter.N
 
 	}
 
-	ee.CreateAttr("name", errata.TypeName(bm.Name))
+	ee.CreateAttr("name", cr.configurator.Errata.TypeName(bm.Name))
 	if bm.Type != nil {
 		ee.CreateAttr("type", zap.DataTypeName(bm.Type))
 	} else {
 		ee.CreateAttr("type", "bitmap8")
 	}
 
-	_, remainingClusterIds := amendExistingClusterCodes(ee, bm, clusterIds)
-	flushClusterCodes(ee, remainingClusterIds)
+	if !cr.configurator.Global {
+		_, remainingClusterIds := amendExistingClusterCodes(ee, bm, clusterIds)
+		flushClusterCodes(ee, remainingClusterIds)
+	}
 
 	bitIndex := 0
 	bitElements := ee.SelectElements("field")

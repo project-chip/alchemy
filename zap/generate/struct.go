@@ -6,21 +6,19 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/zap"
 )
 
-func generateStructs(configurator *zap.Configurator, structs map[*matter.Struct][]*matter.Number, docPath string, configuratorElement *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
-
+func (cr *configuratorRenderer) generateStructs(structs map[*matter.Struct][]*matter.Number, configuratorElement *etree.Element) (err error) {
+	errata := cr.configurator.Errata
 	for _, se := range configuratorElement.SelectElements("struct") {
 
 		nameAttr := se.SelectAttr("name")
 		if nameAttr == nil {
-			slog.Warn("missing name attribute in struct", slog.String("path", docPath))
+			slog.Warn("missing name attribute in struct", slog.String("path", cr.configurator.OutPath))
 			continue
 		}
 		name := nameAttr.Value
@@ -42,7 +40,7 @@ func generateStructs(configurator *zap.Configurator, structs map[*matter.Struct]
 		}
 
 		if matchingStruct == nil {
-			slog.Warn("unknown struct name", slog.String("path", docPath), slog.String("structName", name))
+			slog.Warn("unknown struct name", slog.String("path", cr.configurator.OutPath), slog.String("structName", name))
 			configuratorElement.RemoveChild(se)
 			continue
 		}
@@ -51,12 +49,12 @@ func generateStructs(configurator *zap.Configurator, structs map[*matter.Struct]
 
 				amendedClusterCodes, remainingClusterIds := amendExistingClusterCodes(se, matchingStruct, clusterIds)
 
-				populateStruct(se, matchingStruct, amendedClusterCodes, false, errata)
+				cr.populateStruct(se, matchingStruct, amendedClusterCodes, false)
 				structs[matchingStruct] = remainingClusterIds
 				continue
 			}
 		}
-		populateStruct(se, matchingStruct, clusterIds, false, errata)
+		cr.populateStruct(se, matchingStruct, clusterIds, false)
 		structs[matchingStruct] = nil
 	}
 
@@ -79,23 +77,23 @@ func generateStructs(configurator *zap.Configurator, structs map[*matter.Struct]
 
 				for _, clusterID := range clusterIds {
 					bme := etree.NewElement("struct")
-					populateStruct(bme, s, []*matter.Number{clusterID}, false, errata)
+					cr.populateStruct(bme, s, []*matter.Number{clusterID}, false)
 					xml.AppendElement(configuratorElement, bme, "enum", "bitmap")
 				}
 				continue
 			}
 		}
 		bme := etree.NewElement("struct")
-		populateStruct(bme, s, clusterIds, true, errata)
+		cr.populateStruct(bme, s, clusterIds, true)
 		xml.InsertElementByAttribute(configuratorElement, bme, "name", "enum", "bitmap", "domain")
 	}
 
 	return
 }
 
-func populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Number, provisional bool, errata *errata.ZAP) (remainingClusterIDs []*matter.Number) {
+func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Number, provisional bool) (remainingClusterIDs []*matter.Number) {
 
-	ee.CreateAttr("name", errata.TypeName(s.Name))
+	ee.CreateAttr("name", cr.configurator.Errata.TypeName(s.Name))
 	if provisional {
 		ee.CreateAttr("apiMaturity", "provisional")
 	}
@@ -105,8 +103,10 @@ func populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Nu
 		ee.RemoveAttr("isFabricScoped")
 	}
 
-	_, remainingClusterIDs = amendExistingClusterCodes(ee, s, clusterIDs)
-	flushClusterCodes(ee, remainingClusterIDs)
+	if !cr.configurator.Global {
+		_, remainingClusterIDs = amendExistingClusterCodes(ee, s, clusterIDs)
+		flushClusterCodes(ee, remainingClusterIDs)
+	}
 
 	fieldIndex := 0
 	fieldElements := ee.SelectElements("item")
@@ -124,7 +124,7 @@ func populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Nu
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeStructField) {
 				continue
 			}
-			setStructFieldAttributes(fe, s, f, errata)
+			cr.setStructFieldAttributes(fe, s, f)
 			break
 		}
 	}
@@ -138,20 +138,20 @@ func populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Nu
 			continue
 		}
 		fe := etree.NewElement("item")
-		setStructFieldAttributes(fe, s, field, errata)
+		cr.setStructFieldAttributes(fe, s, field)
 		xml.AppendElement(ee, fe, "cluster")
 	}
 
 	return
 }
 
-func setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Field, errata *errata.ZAP) {
+func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Field) {
 	// Remove incorrect attributes from legacy XML
 	e.RemoveAttr("code")
 	e.RemoveAttr("id")
 	xml.PrependAttribute(e, "fieldId", v.ID.IntString())
 	e.CreateAttr("name", v.Name)
-	writeDataType(e, s.Fields, v, errata)
+	cr.writeDataType(e, s.Fields, v)
 	if v.Quality.Has(matter.QualityNullable) {
 		e.CreateAttr("isNullable", "true")
 	} else {

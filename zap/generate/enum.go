@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -14,13 +13,13 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func generateEnums(configurator *zap.Configurator, enums map[*matter.Enum][]*matter.Number, sourcePath string, ce *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
+func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.Number, ce *etree.Element) (err error) {
 
 	for _, eve := range ce.SelectElements("enum") {
 
 		nameAttr := eve.SelectAttr("name")
 		if nameAttr == nil {
-			slog.Warn("ZAP: missing name attribute in enum", slog.String("path", sourcePath))
+			slog.Warn("ZAP: missing name attribute in enum", slog.String("path", cr.configurator.OutPath))
 			continue
 		}
 		name := nameAttr.Value
@@ -29,7 +28,7 @@ func generateEnums(configurator *zap.Configurator, enums map[*matter.Enum][]*mat
 		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range enums {
-			if errata.TypeName(bm.Name) == name || errata.TypeName(strings.TrimSuffix(bm.Name, "Enum")) == name {
+			if cr.configurator.Errata.TypeName(bm.Name) == name || cr.configurator.Errata.TypeName(strings.TrimSuffix(bm.Name, "Enum")) == name {
 				matchingEnum = bm
 				skip = len(handled) == 0
 				clusterIds = handled
@@ -43,11 +42,11 @@ func generateEnums(configurator *zap.Configurator, enums map[*matter.Enum][]*mat
 		}
 
 		if matchingEnum == nil {
-			slog.Warn("ZAP: unknown enum name", slog.String("path", sourcePath), slog.String("enumName", name))
+			slog.Warn("ZAP: unknown enum name", slog.String("path", cr.configurator.OutPath), slog.String("enumName", name))
 			ce.RemoveChild(eve)
 			continue
 		}
-		populateEnum(eve, matchingEnum, clusterIds, errata)
+		cr.populateEnum(eve, matchingEnum, clusterIds)
 	}
 
 	var remainingEnums []*matter.Enum
@@ -70,14 +69,14 @@ func generateEnums(configurator *zap.Configurator, enums map[*matter.Enum][]*mat
 		if len(clusterIds) == 0 {
 			continue
 		}
-		populateEnum(bme, en, clusterIds, errata)
+		cr.populateEnum(bme, en, clusterIds)
 		xml.InsertElementByAttribute(ce, bme, "name", "bitmap", "domain")
 	}
 
 	return
 }
 
-func populateEnum(ee *etree.Element, en *matter.Enum, clusterIds []*matter.Number, errata *errata.ZAP) (err error) {
+func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum, clusterIds []*matter.Number) (err error) {
 
 	var valFormat string
 	switch en.Type.BaseType {
@@ -87,11 +86,13 @@ func populateEnum(ee *etree.Element, en *matter.Enum, clusterIds []*matter.Numbe
 		valFormat = "0x%02X"
 	}
 
-	ee.CreateAttr("name", errata.TypeName(en.Name))
+	ee.CreateAttr("name", cr.configurator.Errata.TypeName(en.Name))
 	ee.CreateAttr("type", zap.DataTypeName(en.Type))
 
-	_, remainingClusterIds := amendExistingClusterCodes(ee, en, clusterIds)
-	flushClusterCodes(ee, remainingClusterIds)
+	if !cr.configurator.Global {
+		_, remainingClusterIds := amendExistingClusterCodes(ee, en, clusterIds)
+		flushClusterCodes(ee, remainingClusterIds)
+	}
 
 	itemIndex := 0
 	itemElements := ee.SelectElements("item")

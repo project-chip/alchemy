@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -14,23 +13,23 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (tg *TemplateGenerator) generateCommands(configurator *zap.Configurator, commands map[*matter.Command][]*matter.Number, docPath string, parent *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error) {
+func (cr *configuratorRenderer) generateCommands(commands map[*matter.Command]struct{}, parent *etree.Element, cluster *matter.Cluster) (err error) {
 
 	for _, cmde := range parent.SelectElements("command") {
 
 		code := cmde.SelectAttr("code")
 		if code == nil {
-			slog.Warn("missing code attribute in command", slog.String("path", docPath))
+			slog.Warn("missing code attribute in command", slog.String("path", cr.configurator.OutPath))
 			continue
 		}
 		source := cmde.SelectAttr("source")
 		if code == nil {
-			slog.Warn("missing source attribute in command", slog.String("path", docPath))
+			slog.Warn("missing source attribute in command", slog.String("path", cr.configurator.OutPath))
 			continue
 		}
 		commandID := matter.ParseNumber(code.Value)
 		if !commandID.Valid() {
-			slog.Warn("invalid code ID in command", slog.String("path", docPath), slog.String("commandId", commandID.Text()))
+			slog.Warn("invalid code ID in command", slog.String("path", cr.configurator.OutPath), slog.String("commandId", commandID.Text()))
 			continue
 		}
 
@@ -51,14 +50,14 @@ func (tg *TemplateGenerator) generateCommands(configurator *zap.Configurator, co
 		}
 
 		if matchingCommand == nil {
-			slog.Warn("unknown command ID", slog.String("path", docPath), slog.String("commandId", commandID.Text()))
+			slog.Warn("unknown command ID", slog.String("path", cr.configurator.OutPath), slog.String("commandId", commandID.Text()))
 			parent.RemoveChild(cmde)
 			continue
 		}
 		if matter.NonGlobalIDInvalidForEntity(matchingCommand.ID, types.EntityTypeCommand) {
 			continue
 		}
-		tg.populateCommand(configurator, cmde, cluster, matchingCommand, errata)
+		cr.populateCommand(cmde, cluster, matchingCommand)
 	}
 
 	var remainingCommands []*matter.Command
@@ -73,13 +72,13 @@ func (tg *TemplateGenerator) generateCommands(configurator *zap.Configurator, co
 		}
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
-		tg.populateCommand(configurator, cme, cluster, command, errata)
+		cr.populateCommand(cme, cluster, command)
 		xml.InsertElementByAttribute(parent, cme, "code", "attribute", "globalAttribute")
 	}
 	return
 }
 
-func (tg *TemplateGenerator) populateCommand(configurator *zap.Configurator, ce *etree.Element, cluster *matter.Cluster, c *matter.Command, errata *errata.ZAP) {
+func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matter.Cluster, c *matter.Command) {
 	mandatory := conformance.IsMandatory(c.Conformance)
 
 	var serverSource bool
@@ -130,7 +129,7 @@ func (tg *TemplateGenerator) populateCommand(configurator *zap.Configurator, ce 
 	if needsAccess {
 		for _, el := range ce.SelectElements("access") {
 			if needsAccess {
-				setAccessAttributes(el, "invoke", c.Access.Invoke, errata)
+				cr.setAccessAttributes(el, "invoke", c.Access.Invoke)
 				needsAccess = false
 			} else {
 				ce.RemoveChild(el)
@@ -139,7 +138,7 @@ func (tg *TemplateGenerator) populateCommand(configurator *zap.Configurator, ce 
 		if needsAccess {
 			el := etree.NewElement("access")
 			xml.AppendElement(ce, el, "description")
-			setAccessAttributes(el, "invoke", c.Access.Invoke, errata)
+			cr.setAccessAttributes(el, "invoke", c.Access.Invoke)
 		}
 	} else {
 		for _, el := range ce.SelectElements("access") {
@@ -147,9 +146,9 @@ func (tg *TemplateGenerator) populateCommand(configurator *zap.Configurator, ce 
 		}
 	}
 
-	if cluster != nil && configurator != nil {
-		if tg.generateConformanceXML {
-			renderConformance(configurator.Doc, cluster, c.Conformance, ce)
+	if cluster != nil && cr.generator != nil {
+		if cr.generator.generateConformanceXML {
+			renderConformance(cr.generator.spec, c, cluster, c.Conformance, ce)
 		} else {
 			removeConformance(ce)
 		}
@@ -172,7 +171,7 @@ func (tg *TemplateGenerator) populateCommand(configurator *zap.Configurator, ce 
 				continue
 			}
 			xml.PrependAttribute(fe, "id", f.ID.IntString())
-			setFieldAttributes(fe, f, c.Fields, errata)
+			cr.setFieldAttributes(fe, f, c.Fields)
 			break
 		}
 	}
@@ -187,7 +186,7 @@ func (tg *TemplateGenerator) populateCommand(configurator *zap.Configurator, ce 
 		}
 		fe := ce.CreateElement("arg")
 		fe.CreateAttr("id", f.ID.IntString())
-		setFieldAttributes(fe, f, c.Fields, errata)
+		cr.setFieldAttributes(fe, f, c.Fields)
 		xml.AppendElement(ce, fe)
 	}
 }

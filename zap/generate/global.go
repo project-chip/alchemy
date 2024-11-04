@@ -2,16 +2,14 @@ package generate
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
-	"os"
 	"path/filepath"
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal/find"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -22,50 +20,91 @@ import (
 
 func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFiles pipeline.Map[string, *pipeline.Data[string]], err error) {
 	globalFiles = pipeline.NewMap[string, *pipeline.Data[string]]()
-	var globalEntities []types.Entity
+	globalEntities := make(map[types.EntityType][]types.Entity)
 	tg.globalObjectDependencies.Range(func(entity types.Entity, _ struct{}) bool {
-		globalEntities = append(globalEntities, entity)
+		globalEntities[entity.EntityType()] = append(globalEntities[entity.EntityType()], entity)
 		return true
 	})
 	if len(globalEntities) == 0 {
 		return
 	}
 
-	var hasBitmaps, hasEnums, hasCommands, hasStructs bool
-
-	for _, e := range globalEntities {
-		switch e.(type) {
-		case *matter.Bitmap:
-			hasBitmaps = true
-		case *matter.Command:
-			hasCommands = true
-		case *matter.Enum:
-			hasEnums = true
-		case *matter.Struct:
-			hasStructs = true
+	for entityType := range globalEntities {
+		var outPath string
+		outPath, err = tg.getGlobalPath(entityType)
+		if err != nil {
+			return
 		}
-	}
+		allEntities := find.ToList(find.Filter(find.Keys(tg.spec.GlobalObjects), func(e types.Entity) bool { return e.EntityType() == entityType }))
+		docs := make(map[*spec.Doc]struct{})
+		for _, e := range allEntities {
+			doc, ok := tg.spec.DocRefs[e]
+			if !ok {
+				slog.Warn("missing doc ref for global entity", slog.String("entityType", entityType.String()))
+			} else {
+				docs[doc] = struct{}{}
+			}
+		}
+		allEntities = append(allEntities, getGlobalTestEntites(entityType)...)
+		var configurator *zap.Configurator
+		configurator, err = zap.NewConfigurator(tg.spec, find.Keys(docs), allEntities, outPath, &errata.DefaultErrata.ZAP, true)
+		if err != nil {
+			return
+		}
+		configurator.Domain = "CHIP"
 
-	if hasBitmaps {
-		globalBitmaps := getGlobalEntities[*matter.Bitmap](tg.spec)
-		testBitmap := &matter.Bitmap{
+		var doc *etree.Document
+		var provisional bool
+		doc, provisional, err = tg.openConfigurator(configurator)
+		if err != nil {
+			return
+		}
+
+		cr := newConfiguratorRenderer(tg, configurator)
+		var out string
+		out, err = cr.render(doc, nil)
+		globalFiles.Store(filepath.Base(configurator.OutPath), pipeline.NewData[string](configurator.OutPath, out))
+		if provisional {
+			tg.ProvisionalZclFiles.Store(filepath.Base(configurator.OutPath), pipeline.NewData[struct{}](configurator.OutPath, struct{}{}))
+		}
+
+	}
+	return
+}
+
+func (tg *TemplateGenerator) getGlobalPath(entityType types.EntityType) (path string, err error) {
+	switch entityType {
+	case types.EntityTypeBitmap:
+		path = "global-bitmaps"
+	case types.EntityTypeEnum:
+		path = "global-enums"
+	case types.EntityTypeStruct:
+		path = "global-structs"
+	case types.EntityTypeCommand:
+		path = "global-commands"
+	case types.EntityTypeEvent:
+		path = "global-events"
+	default:
+		err = fmt.Errorf("unexpected global entity type: %s", entityType.String())
+		return
+	}
+	path = getZapPath(tg.sdkRoot, path)
+	return
+}
+
+func getGlobalTestEntites(entityType types.EntityType) (testEntities []types.Entity) {
+	switch entityType {
+	case types.EntityTypeBitmap:
+		testEntities = append(testEntities, &matter.Bitmap{
 			Name: "TestGlobalBitmap",
 			Type: types.NewDataType(types.BaseDataTypeMap32, false),
 			Bits: matter.BitSet{
 				matter.NewBitmapBit(nil, "0x01", "FirstBit", "", nil),
 				matter.NewBitmapBit(nil, "0x02", "SecondBit", "", nil),
 			},
-		}
-		globalBitmaps[testBitmap] = []*matter.Number{matter.InvalidID}
-		err = saveGlobalEntities(cxt, tg, "global-bitmaps", globalBitmaps, generateBitmaps, globalFiles)
-		if err != nil {
-			return
-		}
-	}
-
-	if hasEnums {
-		globalEnums := getGlobalEntities[*matter.Enum](tg.spec)
-		testEnum := &matter.Enum{
+		})
+	case types.EntityTypeEnum:
+		testEntities = append(testEntities, &matter.Enum{
 			Name: "TestGlobalEnum",
 			Type: types.NewDataType(types.BaseDataTypeEnum8, false),
 			Values: matter.EnumValueSet{
@@ -82,24 +121,9 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 					Name:  "FinalValue",
 				},
 			},
-		}
-		globalEnums[testEnum] = []*matter.Number{matter.InvalidID}
-		err = saveGlobalEntities(cxt, tg, "global-enums", globalEnums, generateEnums, globalFiles)
-		if err != nil {
-			return
-		}
-	}
-
-	if hasCommands {
-		err = saveGlobalEntities(cxt, tg, "global-commands", getGlobalEntities[*matter.Command](tg.spec), tg.generateCommands, globalFiles)
-		if err != nil {
-			return
-		}
-	}
-
-	if hasStructs {
-		globalStructs := getGlobalEntities[*matter.Struct](tg.spec)
-		testStruct := &matter.Struct{
+		})
+	case types.EntityTypeStruct:
+		testEntities = append(testEntities, &matter.Struct{
 			Name: "TestGlobalStruct",
 			Fields: matter.FieldSet{
 				&matter.Field{
@@ -126,85 +150,7 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 					Conformance: conformance.Set{&conformance.Optional{}},
 				},
 			},
-		}
-		globalStructs[testStruct] = []*matter.Number{matter.InvalidID}
-		err = saveGlobalEntities(cxt, tg, "global-structs", globalStructs, generateStructs, globalFiles)
-		if err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func getGlobalEntities[T comparable](spec *spec.Specification) map[T][]*matter.Number {
-	ge := make(map[T][]*matter.Number)
-	for globalObject := range spec.GlobalObjects {
-		if globalObject, ok := globalObject.(T); ok {
-			ge[globalObject] = []*matter.Number{matter.InvalidID}
-		}
-	}
-	return ge
-}
-
-type globalEntityGenerator[T comparable] func(configurator *zap.Configurator, entities map[T][]*matter.Number, sourcePath string, parent *etree.Element, cluster *matter.Cluster, errata *errata.ZAP) (err error)
-
-func saveGlobalEntities[T comparable](cxt context.Context, tg *TemplateGenerator, path string, entities map[T][]*matter.Number, generator globalEntityGenerator[T], globalFiles pipeline.Map[string, *pipeline.Data[string]]) (err error) {
-	var doc *etree.Document
-	var root *etree.Element
-	zapPath := getZapPath(tg.sdkRoot, path)
-	doc, root, err = tg.createGlobalXMLFile(cxt, zapPath)
-	if err != nil {
-		return
-	}
-
-	err = generator(nil, entities, zapPath, root, nil, nil)
-	if err != nil {
-		return
-	}
-	var s string
-	s, err = xmlToString(doc)
-	if err != nil {
-		return
-	}
-	globalFiles.Store(filepath.Base(zapPath), pipeline.NewData[string](zapPath, s))
-	return
-}
-
-func (tg *TemplateGenerator) createGlobalXMLFile(cxt context.Context, path string) (doc *etree.Document, root *etree.Element, err error) {
-
-	var existing []byte
-	existing, err = os.ReadFile(path)
-	if errors.Is(err, os.ErrNotExist) || tg.file.DryRun {
-		if tg.pipeline.Serial {
-			slog.InfoContext(cxt, "Rendering new Global ZAP template", "to", path)
-		}
-		doc = newZapTemplate()
-	} else if err != nil {
-		return
-	} else {
-		if tg.pipeline.Serial {
-			slog.InfoContext(cxt, "Rendering existing Global ZAP template", "path", path)
-		}
-		doc = etree.NewDocument()
-		err = doc.ReadFromBytes(existing)
-		if err != nil {
-			err = fmt.Errorf("failed reading ZAP template %s: %w", path, err)
-			return
-		}
-
-	}
-
-	root = doc.SelectElement("configurator")
-	if root == nil {
-		root = doc.CreateElement("configurator")
-	}
-
-	de := root.SelectElement("domain")
-	if de == nil {
-		de = etree.NewElement("domain")
-		xml.AppendElement(root, de)
-		de.CreateAttr("name", "CHIP")
+		})
 	}
 	return
 }
