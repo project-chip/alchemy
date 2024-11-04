@@ -19,20 +19,20 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 	ids := make(map[uint64]*matter.Field)
 	for row := range ti.Body() {
 		f := matter.NewField(row, parent)
-		f.Name, err = ti.ReadValue(row, matter.TableColumnName)
+		var name string
+		name, err = ti.ReadValue(row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		if strings.EqualFold(f.Name, "DoNotUse") {
-			slog.Info("skipping field")
-			continue
-		}
-		f.Name = matter.StripTypeSuffixes(f.Name)
+		f.Name = matter.StripTypeSuffixes(name)
 		f.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
 		f.Type, err = ti.ReadDataType(row, matter.TableColumnType)
 		if err != nil {
-			slog.Debug("error reading field data type", slog.String("path", d.Path.String()), slog.String("name", f.Name), slog.Any("error", err))
-			err = nil
+			if !conformance.IsDeprecated(f.Conformance) && !conformance.IsDisallowed(f.Conformance) {
+				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated or disallowed
+				slog.Debug("error reading field data type", slog.String("path", d.Path.String()), slog.String("name", name), slog.Any("error", err))
+				err = nil
+			}
 		}
 
 		f.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
@@ -62,7 +62,7 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 			id := f.ID.Value()
 			existing, ok := ids[id]
 			if ok {
-				slog.Error("duplicate field ID", log.Path("source", f), slog.String("name", f.Name), slog.Uint64("id", id), log.Path("original", existing))
+				slog.Error("duplicate field ID", log.Path("source", f), slog.String("name", name), slog.Uint64("id", id), log.Path("original", existing))
 				continue
 			}
 			ids[id] = f
@@ -97,6 +97,7 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 			}
 		}
 		f.Name = CanonicalName(f.Name)
+
 		fields = append(fields, f)
 	}
 	return
