@@ -18,9 +18,9 @@ type Event struct {
 	Fields FieldSet `json:"fields,omitempty"`
 }
 
-func NewEvent(source asciidoc.Element) *Event {
+func NewEvent(source asciidoc.Element, parent types.Entity) *Event {
 	return &Event{
-		entity: entity{source: source},
+		entity: entity{source: source, parent: parent},
 	}
 }
 

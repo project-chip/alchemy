@@ -13,9 +13,9 @@ type TypeDef struct {
 	Type        *types.DataType `json:"type,omitempty"`
 }
 
-func NewTypeDef(source asciidoc.Element) *TypeDef {
+func NewTypeDef(source asciidoc.Element, parent types.Entity) *TypeDef {
 	return &TypeDef{
-		entity: entity{source: source},
+		entity: entity{source: source, parent: parent},
 	}
 }
 

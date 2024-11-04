@@ -14,9 +14,9 @@ type Struct struct {
 	FabricScoping FabricScoping `json:"fabricScoped,omitempty"`
 }
 
-func NewStruct(source asciidoc.Element) *Struct {
+func NewStruct(source asciidoc.Element, parent types.Entity) *Struct {
 	return &Struct{
-		entity: entity{source: source},
+		entity: entity{source: source, parent: parent},
 	}
 }
 

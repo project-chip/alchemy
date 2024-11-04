@@ -154,9 +154,10 @@ func findAnonymousEnum(s *Section, field *matter.Field) error {
 		slog.Debug("no value", "name", field.Name, "type", field.Type)
 		return nil
 	}
-	var evs matter.EnumValueSet
+	ae := matter.NewAnonymousEnum(s.Base, field)
+	ae.Type = field.Type
 	for row := range ti.Body() {
-		ev := matter.NewEnumValue(s.Base)
+		ev := matter.NewEnumValue(s.Base, ae)
 		ev.Conformance = conformance.Set{&conformance.Mandatory{}}
 		ev.Value, err = ti.ReadID(row, matter.TableColumnValue)
 		if err != nil {
@@ -179,13 +180,10 @@ func findAnonymousEnum(s *Section, field *matter.Field) error {
 		} else {
 			ev.Name = ev.Summary
 		}
-		evs = append(evs, ev)
+		ae.Values = append(ae.Values, ev)
 	}
-	if len(evs) > 0 {
-		field.AnonymousType = &matter.AnonymousEnum{
-			Type:   field.Type,
-			Values: evs,
-		}
+	if len(ae.Values) > 0 {
+		field.AnonymousType = ae
 	}
 	return nil
 }
@@ -203,7 +201,8 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 		slog.Debug("no bit", "name", field.Name, "type", field.Type)
 		return nil
 	}
-	var bvs matter.BitSet
+	bm := matter.NewAnonymousBitmap(s.Base, field)
+	bm.Type = field.Type
 	for row := range ti.Body() {
 		var bit, name, summary string
 		conf := conformance.Set{&conformance.Mandatory{}}
@@ -237,14 +236,10 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 		}
 
 		bv := matter.NewBitmapBit(s.Base, bit, name, summary, conf)
-
-		bvs = append(bvs, bv)
+		bm.Bits = append(bm.Bits, bv)
 	}
-	if len(bvs) > 0 {
-		field.AnonymousType = &matter.AnonymousBitmap{
-			Type: field.Type,
-			Bits: bvs,
-		}
+	if len(bm.Bits) > 0 {
+		field.AnonymousType = bm
 	}
 	return nil
 }

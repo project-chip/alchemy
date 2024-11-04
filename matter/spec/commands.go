@@ -19,8 +19,8 @@ var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
 type commandFactory struct{}
 
-func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string) (*matter.Command, error) {
-	cmd := matter.NewCommand(s.Base)
+func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
+	cmd := matter.NewCommand(s.Base, parent)
 	var err error
 	cmd.ID, err = ti.ReadID(row, matter.TableColumnID)
 	if err != nil {
@@ -101,7 +101,7 @@ func (cf *commandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	}
 }
 
-func (s *Section) toCommands(d *Doc, pc *parseContext) (commands matter.CommandSet, err error) {
+func (s *Section) toCommands(d *Doc, pc *parseContext, parent types.Entity) (commands matter.CommandSet, err error) {
 
 	t := FindFirstTable(s)
 	if t == nil {
@@ -109,7 +109,7 @@ func (s *Section) toCommands(d *Doc, pc *parseContext) (commands matter.CommandS
 	}
 
 	var cf commandFactory
-	commands, err = buildList(d, s, t, pc, commands, &cf)
+	commands, err = buildList(d, s, t, pc, commands, &cf, parent)
 
 	for _, cmd := range commands {
 		if cmd.Response != nil {

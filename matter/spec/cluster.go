@@ -36,22 +36,28 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 		}
 	}
 
+	var parentEntity types.Entity
 	var clusterGroup *matter.ClusterGroup
 	switch len(clusters) {
 	case 0:
 		return
 	case 1:
+		// There's just the one cluster ID
 		cluster := clusters[0]
+		parentEntity = cluster
 		sectionClusterName := toClusterName(s.Name)
 		if cluster.Name != sectionClusterName {
 			if clusterNamesEquivalent(cluster.Name, s.Name) {
 				cluster.Name = sectionClusterName
 			} else {
 				clusterGroup = matter.NewClusterGroup(s.Name, s.Base, clusters)
+				parentEntity = clusterGroup
 			}
 		}
 	default:
+		// There's more than one cluster ID, so this is a group of similar clusters
 		clusterGroup = matter.NewClusterGroup(s.Name, s.Base, clusters)
+		parentEntity = clusterGroup
 	}
 
 	var features *matter.Features
@@ -66,7 +72,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 			var es matter.EnumSet
 			var ss matter.StructSet
 			var ts matter.TypeDefSet
-			bs, es, ss, ts, err = s.toDataTypes(d, pc)
+			bs, es, ss, ts, err = s.toDataTypes(d, pc, parentEntity)
 			if err == nil {
 				bitmaps = append(bitmaps, bs...)
 				enums = append(enums, es...)
@@ -85,9 +91,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 	}
 
 	if clusterGroup != nil {
-		pc.entities = append(pc.entities, clusterGroup)
-		pc.orderedEntities = append(pc.orderedEntities, clusterGroup)
-		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], clusterGroup)
+		pc.addRootEntity(clusterGroup, s.Base)
 
 		clusterGroup.AddBitmaps(bitmaps...)
 		clusterGroup.AddEnums(enums...)
@@ -105,9 +109,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 			}
 		}
 	} else {
-		pc.entities = append(pc.entities, clusters[0])
-		pc.orderedEntities = append(pc.orderedEntities, clusters[0])
-		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], clusters[0])
+		pc.addRootEntity(clusters[0], s.Base)
 	}
 
 	for _, c := range clusters {
@@ -137,9 +139,9 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 					c.Attributes = append(c.Attributes, attr...)
 				}
 			case matter.SectionEvents:
-				c.Events, err = s.toEvents(d, pc)
+				c.Events, err = s.toEvents(d, pc, parentEntity)
 			case matter.SectionCommands:
-				c.Commands, err = s.toCommands(d, pc)
+				c.Commands, err = s.toCommands(d, pc, parentEntity)
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:
@@ -148,7 +150,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 			case matter.SectionDataTypes, matter.SectionFeatures, matter.SectionStatusCodes: // Handled above
 			default:
 				var looseEntities []types.Entity
-				looseEntities, err = findLooseEntities(d, s, pc)
+				looseEntities, err = findLooseEntities(d, s, pc, parentEntity)
 				if err != nil {
 					err = fmt.Errorf("error reading section %s: %w", s.Name, err)
 					return
@@ -369,7 +371,7 @@ func parseDerivedCluster(d *Doc, s *Section, c *matter.Cluster) error {
 	for _, s := range elements {
 		switch s.SecType {
 		case matter.SectionModeTags:
-			en, err := s.toModeTags(d)
+			en, err := s.toModeTags(d, c)
 			if err != nil {
 				return err
 			}

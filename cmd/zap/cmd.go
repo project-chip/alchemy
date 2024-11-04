@@ -26,7 +26,7 @@ func init() {
 	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
 	Command.Flags().Bool("featureXML", true, "write new style feature XML")
-	Command.Flags().Bool("conformanceXML", false, "write new style conformance XML")
+	Command.Flags().Bool("conformanceXML", true, "write new style conformance XML")
 	Command.Flags().Bool("specOrder", false, "write ZAP template XML in spec order")
 }
 

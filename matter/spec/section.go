@@ -434,7 +434,7 @@ func (s *Section) toEntities(d *Doc, pc *parseContext) (err error) {
 		}
 	default:
 		var looseEntities []types.Entity
-		looseEntities, err = findLooseEntities(d, s, pc)
+		looseEntities, err = findLooseEntities(d, s, pc, nil)
 		if err != nil {
 			err = fmt.Errorf("error reading section %s: %w", s.Name, err)
 			return
@@ -490,12 +490,12 @@ func (s *Section) GetDataType() *types.DataType {
 	return nil
 }
 
-func findLooseEntities(doc *Doc, section *Section, pc *parseContext) (entities []types.Entity, err error) {
+func findLooseEntities(doc *Doc, section *Section, pc *parseContext, parentEntity types.Entity) (entities []types.Entity, err error) {
 	traverse(doc, section, errata.SpecPurposeDataTypes, func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
-			bm, err = section.toBitmap(doc, pc)
+			bm, err = section.toBitmap(doc, pc, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to bitmap", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
@@ -504,7 +504,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext) (entities [
 			}
 		case matter.SectionDataTypeEnum:
 			var e *matter.Enum
-			e, err = section.toEnum(doc, pc)
+			e, err = section.toEnum(doc, pc, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to enum", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
@@ -513,7 +513,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext) (entities [
 			}
 		case matter.SectionDataTypeStruct:
 			var s *matter.Struct
-			s, err = section.toStruct(doc, pc)
+			s, err = section.toStruct(doc, pc, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to struct", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
@@ -522,7 +522,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext) (entities [
 			}
 		case matter.SectionDataTypeDef:
 			var t *matter.TypeDef
-			t, err = section.toTypeDef(doc, pc)
+			t, err = section.toTypeDef(doc, pc, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to typedef", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
@@ -531,7 +531,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext) (entities [
 			}
 		case matter.SectionGlobalElements:
 			var ges []types.Entity
-			ges, err = section.toGlobalElements(doc, pc)
+			ges, err = section.toGlobalElements(doc, pc, parentEntity)
 			if err != nil {
 				slog.Warn("Error converting loose section to global entities", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil

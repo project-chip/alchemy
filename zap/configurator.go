@@ -197,7 +197,7 @@ func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []*matte
 	}
 	refs, ok := c.Spec.ClusterRefs.Get(entity)
 	if !ok {
-		slog.Warn("unknown cluster ref when searching for cluster codes", c.DocLogs(), matter.LogEntity(entity))
+		slog.Warn("unknown cluster ref when searching for cluster codes", c.DocLogs(), matter.LogEntity("entity", entity))
 		return
 	}
 	for ref := range refs {
