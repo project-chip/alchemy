@@ -27,6 +27,7 @@ func init() {
 	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
 	Command.Flags().Bool("featureXML", true, "write new style feature XML")
 	Command.Flags().Bool("conformanceXML", false, "write new style conformance XML")
+	Command.Flags().Bool("specOrder", false, "write ZAP template XML in spec order")
 }
 
 func zapTemplates(cmd *cobra.Command, args []string) (err error) {
@@ -101,7 +102,9 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	featureXML, _ := cmd.Flags().GetBool("featureXML")
 	templateOptions = append(templateOptions, generate.GenerateFeatureXML(featureXML))
 	conformanceXML, _ := cmd.Flags().GetBool("conformanceXML")
+	specOrder, _ := cmd.Flags().GetBool("specOrder")
 	templateOptions = append(templateOptions, generate.GenerateConformanceXML(conformanceXML))
+	templateOptions = append(templateOptions, generate.SpecOrder(specOrder))
 	templateOptions = append(templateOptions, generate.AsciiAttributes(asciiSettings))
 	templateOptions = append(templateOptions, generate.SpecRoot(specRoot))
 
@@ -244,19 +247,19 @@ func patchSpec(spec *spec.Specification) {
 		Another hacky workaround: the spec defines LabelStruct under a base cluster called Label Cluster, but the
 		ZAP XML has this struct under Fixed Label
 	*/
-	fixedLabel, ok := spec.ClustersByName["Fixed Label"]
+	fixedLabelCluster, ok := spec.ClustersByName["Fixed Label"]
 	if !ok {
 		slog.Warn("Could not find Fixed Label cluster")
 		return
 	}
-	label, ok := spec.ClustersByName["Label"]
+	labelCluster, ok := spec.ClustersByName["Label"]
 	if !ok {
 		slog.Warn("Could not find Label cluster")
 		return
 	}
-	for _, s := range label.Structs {
+	for _, s := range labelCluster.Structs {
 		if s.Name == "LabelStruct" {
-			fixedLabel.MoveStruct(s)
+			fixedLabelCluster.MoveStruct(s)
 			break
 		}
 	}

@@ -18,12 +18,12 @@ type listIndex[T types.Entity] struct {
 
 type entityFactory[T types.Entity] interface {
 	New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string) (T, error)
-	Details(d *Doc, s *Section, entityMap map[asciidoc.Attributable][]types.Entity, e T) error
+	Details(d *Doc, s *Section, pc *parseContext, e T) error
 	EntityName(s *Section) string
 	Children(d *Doc, s *Section) iter.Seq[*Section]
 }
 
-func buildList[T types.Entity, L ~[]T](d *Doc, s *Section, t *asciidoc.Table, entityMap map[asciidoc.Attributable][]types.Entity, list L, factory entityFactory[T]) (L, error) {
+func buildList[T types.Entity, L ~[]T](d *Doc, s *Section, t *asciidoc.Table, pc *parseContext, list L, factory entityFactory[T]) (L, error) {
 
 	index := listIndex[T]{
 		byName:      make(map[string]T),
@@ -70,11 +70,12 @@ func buildList[T types.Entity, L ~[]T](d *Doc, s *Section, t *asciidoc.Table, en
 				continue
 			}
 		}
-		err = factory.Details(d, s, entityMap, e)
+		err = factory.Details(d, s, pc, e)
 		if err != nil {
 			return nil, err
 		}
-		entityMap[s.Base] = append(entityMap[s.Base], e)
+		pc.orderedEntities = append(pc.orderedEntities, e)
+		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], e)
 	}
 	return list, nil
 }

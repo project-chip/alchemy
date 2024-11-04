@@ -92,7 +92,7 @@ func (cr *configuratorRenderer) generateStructs(structs map[*matter.Struct][]*ma
 }
 
 func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Number, provisional bool) (remainingClusterIDs []*matter.Number) {
-
+	cr.elementMap[ee] = s
 	ee.CreateAttr("name", cr.configurator.Errata.TypeName(s.Name))
 	if provisional {
 		ee.CreateAttr("apiMaturity", "provisional")

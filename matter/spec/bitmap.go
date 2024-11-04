@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -12,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (bm *matter.Bitmap, err error) {
+func (s *Section) toBitmap(d *Doc, pc *parseContext) (bm *matter.Bitmap, err error) {
 	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
 
 	dt := s.GetDataType()
@@ -69,7 +68,8 @@ func (s *Section) toBitmap(d *Doc, entityMap map[asciidoc.Attributable][]types.E
 		bv := matter.NewBitmapBit(s.Base, bit, CanonicalName(name), summary, conf)
 		bm.Bits = append(bm.Bits, bv)
 	}
-	entityMap[s.Base] = append(entityMap[s.Base], bm)
+	pc.orderedEntities = append(pc.orderedEntities, bm)
+	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], bm)
 	bm.Name = CanonicalName(bm.Name)
 	return
 }

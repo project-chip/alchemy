@@ -71,6 +71,9 @@ func (cr *configuratorRenderer) render(x *etree.Document, exampleCluster *matter
 	if err != nil {
 		return
 	}
+	if cr.generator.specOrder && !cr.configurator.Global {
+		cr.reorderConfigurator(configuratorElement)
+	}
 	return xmlToString(x)
 }
 

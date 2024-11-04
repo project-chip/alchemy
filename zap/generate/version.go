@@ -17,7 +17,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (tg *configuratorRenderer) patchComments(configurator *zap.Configurator, x *etree.Document) {
+func (cr *configuratorRenderer) patchComments(configurator *zap.Configurator, x *etree.Document) {
 	var alchemyComment *etree.Comment
 	var copyrightComment *etree.Comment
 	var lastProcInst *etree.ProcInst
@@ -33,8 +33,8 @@ func (tg *configuratorRenderer) patchComments(configurator *zap.Configurator, x 
 			}
 		}
 	}
-	copyrightComment = tg.patchCopyright(configurator, x, lastProcInst, copyrightComment)
-	tg.patchAlchemyComment(configurator, x, alchemyComment, copyrightComment)
+	copyrightComment = cr.patchCopyright(configurator, x, lastProcInst, copyrightComment)
+	cr.patchAlchemyComment(configurator, x, alchemyComment, copyrightComment)
 }
 
 var licenseDatePattern = regexp.MustCompile(`Copyright(?:\s+\(c\))?\s+(?P<Date>(?P<Start>[0-9]+)(\s*-\s*(?P<End>[0-9]+))?)`)
@@ -45,7 +45,7 @@ var licenseDatePatternStartYearEndIndex = 5
 var licenseDatePatternEndYearStartIndex = 6
 var licenseDatePatternEndYearEndIndex = 7
 
-func (tg *configuratorRenderer) patchCopyright(configurator *zap.Configurator, x *etree.Document, lastProcInst *etree.ProcInst, copyrightComment *etree.Comment) *etree.Comment {
+func (cr *configuratorRenderer) patchCopyright(configurator *zap.Configurator, x *etree.Document, lastProcInst *etree.ProcInst, copyrightComment *etree.Comment) *etree.Comment {
 	if copyrightComment == nil {
 		copyrightComment = etree.NewComment(fmt.Sprintf(license, time.Now().Year()))
 		if lastProcInst != nil {
@@ -103,7 +103,7 @@ var initAlchemyTemplate = sync.OnceFunc(func() {
 	alchemyCommentTemplate = template.Must(template.New("alchemyComment").Parse(alchemyComment))
 })
 
-func (tg *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurator, x *etree.Document, alchemyComment *etree.Comment, copyrightComment *etree.Comment) {
+func (cr *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurator, x *etree.Document, alchemyComment *etree.Comment, copyrightComment *etree.Comment) {
 	initAlchemyTemplate()
 	var alchemyCommentText bytes.Buffer
 	var paths []string
@@ -116,8 +116,8 @@ func (tg *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurat
 		Git        string
 	}{
 		Path:       strings.Join(paths, " "),
-		Parameters: tg.generator.attributes,
-		Git:        tg.generator.specVersion})
+		Parameters: cr.generator.attributes,
+		Git:        cr.generator.specVersion})
 	if alchemyComment != nil {
 		alchemyComment.Data = alchemyCommentText.String()
 	} else {

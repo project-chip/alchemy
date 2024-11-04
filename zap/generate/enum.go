@@ -77,7 +77,7 @@ func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.N
 }
 
 func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum, clusterIds []*matter.Number) (err error) {
-
+	cr.elementMap[ee] = en
 	var valFormat string
 	switch en.Type.BaseType {
 	case types.BaseDataTypeEnum16:

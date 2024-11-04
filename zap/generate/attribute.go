@@ -84,6 +84,7 @@ func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *
 }
 
 func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *matter.Field, cluster *matter.Cluster, clusterPrefix string) (err error) {
+	cr.elementMap[ae] = attribute
 	patchNumberAttribute(ae, attribute.ID, "code")
 	ae.CreateAttr("side", "server")
 	define := getDefine(attribute.Name, clusterPrefix, cr.configurator.Errata)

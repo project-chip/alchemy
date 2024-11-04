@@ -415,48 +415,35 @@ func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
 	return
 }
 
-func (s *Section) toEntities(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) ([]types.Entity, error) {
-	var entities []types.Entity
+func (s *Section) toEntities(d *Doc, pc *parseContext) (err error) {
 	switch s.SecType {
 	case matter.SectionCluster:
-		clusters, err := s.toClusters(d, entityMap)
+		err = s.toClusters(d, pc)
 		if err != nil {
-			return nil, err
+			return
 		}
-		entities = append(entities, clusters...)
 	case matter.SectionDeviceType:
-		deviceTypes, err := s.toDeviceTypes(d)
+		err = s.toDeviceTypes(d, pc)
 		if err != nil {
-			return nil, err
+			return
 		}
-		entities = append(entities, deviceTypes...)
 	case matter.SectionNamespace:
-		ns, err := s.toNamespace(d, entityMap)
+		err = s.toNamespace(d, pc)
 		if err != nil {
-			return nil, err
+			return
 		}
-		entities = append(entities, ns...)
-	}
-	return entities, nil
-}
-
-func (s *Section) toGlobalObjects(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) ([]types.Entity, error) {
-	var entities []types.Entity
-	switch s.SecType {
-	case matter.SectionCluster, matter.SectionDeviceType:
-		return nil, nil
 	default:
-		var err error
 		var looseEntities []types.Entity
-		looseEntities, err = findLooseEntities(d, s, entityMap)
+		looseEntities, err = findLooseEntities(d, s, pc)
 		if err != nil {
-			return nil, fmt.Errorf("error reading section %s: %w", s.Name, err)
+			err = fmt.Errorf("error reading section %s: %w", s.Name, err)
+			return
 		}
 		if len(looseEntities) > 0 {
-			entities = append(entities, looseEntities...)
+			pc.entities = append(pc.entities, looseEntities...)
 		}
 	}
-	return entities, nil
+	return
 }
 
 var dataTypeDefinitionPattern = regexp.MustCompile(`is\s+derived\s+from\s+(?:<<enum-def\s*,\s*)?(enum8|enum16|enum32|map8|map16|map32|uint8|uint16|uint24|uint32|uint40|uint48|uint56|uint64|int8|int16|int24|int32|int40|int48|int56|int64|string)(?:\s*>>)?`)
@@ -503,12 +490,12 @@ func (s *Section) GetDataType() *types.DataType {
 	return nil
 }
 
-func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attributable][]types.Entity) (entities []types.Entity, err error) {
+func findLooseEntities(doc *Doc, section *Section, pc *parseContext) (entities []types.Entity, err error) {
 	traverse(doc, section, errata.SpecPurposeDataTypes, func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
-			bm, err = section.toBitmap(doc, entityMap)
+			bm, err = section.toBitmap(doc, pc)
 			if err != nil {
 				slog.Warn("Error converting loose section to bitmap", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
@@ -517,7 +504,7 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attrib
 			}
 		case matter.SectionDataTypeEnum:
 			var e *matter.Enum
-			e, err = section.toEnum(doc, entityMap)
+			e, err = section.toEnum(doc, pc)
 			if err != nil {
 				slog.Warn("Error converting loose section to enum", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
@@ -526,7 +513,7 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attrib
 			}
 		case matter.SectionDataTypeStruct:
 			var s *matter.Struct
-			s, err = section.toStruct(doc, entityMap)
+			s, err = section.toStruct(doc, pc)
 			if err != nil {
 				slog.Warn("Error converting loose section to struct", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
@@ -535,7 +522,7 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attrib
 			}
 		case matter.SectionDataTypeDef:
 			var t *matter.TypeDef
-			t, err = section.toTypeDef(doc, entityMap)
+			t, err = section.toTypeDef(doc, pc)
 			if err != nil {
 				slog.Warn("Error converting loose section to typedef", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
@@ -544,7 +531,7 @@ func findLooseEntities(doc *Doc, section *Section, entityMap map[asciidoc.Attrib
 			}
 		case matter.SectionGlobalElements:
 			var ges []types.Entity
-			ges, err = section.toGlobalElements(doc, entityMap)
+			ges, err = section.toGlobalElements(doc, pc)
 			if err != nil {
 				slog.Warn("Error converting loose section to global entities", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
 				err = nil

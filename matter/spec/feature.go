@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -12,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toFeatures(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (features *matter.Features, err error) {
+func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Features, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
@@ -74,7 +73,7 @@ func (s *Section) toFeatures(d *Doc, entityMap map[asciidoc.Attributable][]types
 				continue
 			}
 
-			entityMap[s.Base] = append(entityMap[s.Base], a)
+			pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], a)
 		}
 	}
 	return

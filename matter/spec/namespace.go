@@ -5,10 +5,9 @@ import (
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toNamespace(d *Doc, entityMap map[asciidoc.Attributable][]types.Entity) (entities []types.Entity, err error) {
+func (s *Section) toNamespace(d *Doc, pc *parseContext) (err error) {
 	var namespaceTable *TableInfo
 	var valuesTable *TableInfo
 	parse.SkimFunc(s.Elements(), func(t *asciidoc.Table) bool {
@@ -61,7 +60,8 @@ func (s *Section) toNamespace(d *Doc, entityMap map[asciidoc.Attributable][]type
 		st.Description, _ = valuesTable.ReadString(row, matter.TableColumnSummary)
 		ns.SemanticTags = append(ns.SemanticTags, st)
 	}
-	entities = append(entities, ns)
-	entityMap[s.Base] = append(entityMap[s.Base], ns)
+	pc.entities = append(pc.entities, ns)
+	pc.orderedEntities = append(pc.orderedEntities, ns)
+	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], ns)
 	return
 }
