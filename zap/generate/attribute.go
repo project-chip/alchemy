@@ -104,55 +104,74 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	}
 	renderConstraint(ae, cluster.Attributes, attribute)
 	setFieldDefault(ae, attribute, cluster.Attributes)
-	requiresPermissions := !cr.configurator.Errata.SuppressAttributePermissions && ((cr.generator.generateConformanceXML && !conformance.IsBlank(attribute.Conformance)) || (attribute.Access.Read != matter.PrivilegeView && attribute.Access.Read != matter.PrivilegeUnknown) || (attribute.Access.Write != matter.PrivilegeUnknown && attribute.Access.Write != matter.PrivilegeOperate))
-	if !requiresPermissions {
-		if attribute.Access.Write != matter.PrivilegeUnknown {
-			ae.CreateAttr("writable", "true")
-		} else {
-			ae.RemoveAttr("writable")
-		}
-		if attribute.Access.IsTimed() {
-			ae.CreateAttr("mustUseTimedWrite", "true")
-		} else {
-			ae.RemoveAttr("mustUseTimedWrite")
-		}
+	needsRead := attribute.Access.Read != matter.PrivilegeUnknown && attribute.Access.Read != matter.PrivilegeView
+	var needsWrite bool
+	if attribute.Access.Write != matter.PrivilegeUnknown {
+		needsWrite = attribute.Access.Write != matter.PrivilegeOperate
+		ae.CreateAttr("writable", "true")
+	} else {
+		ae.RemoveAttr("writable")
+	}
+	if attribute.Access.IsTimed() {
+		ae.CreateAttr("mustUseTimedWrite", "true")
+	} else {
+		ae.RemoveAttr("mustUseTimedWrite")
+	}
+	if !conformance.IsMandatory(attribute.Conformance) {
+		ae.CreateAttr("optional", "true")
+	} else {
+		ae.RemoveAttr("optional")
+	}
+	requiresConformance := cr.generator.generateConformanceXML && !conformance.IsBlank(attribute.Conformance) && !conformance.IsMandatory(attribute.Conformance)
+	requiresPermissions := !cr.configurator.Errata.SuppressAttributePermissions && (needsRead || needsWrite)
+	requiresQuality := attribute.Quality.Any(matter.QualityChangedOmitted)
+	if !requiresPermissions && !requiresQuality && !requiresConformance {
 		ae.Child = nil
 		ae.SetText(attribute.Name)
 	} else {
 		ae.SetText("")
 		xml.SetOrCreateSimpleElement(ae, "description", attribute.Name)
-		needsRead := attribute.Access.Read != matter.PrivilegeUnknown && attribute.Access.Read != matter.PrivilegeView
-		var needsWrite bool
-		if attribute.Access.Write != matter.PrivilegeUnknown {
-			needsWrite = attribute.Access.Write != matter.PrivilegeOperate
-			ae.CreateAttr("writable", "true")
-		} else {
-			ae.RemoveAttr("writable")
-		}
-		if attribute.Access.IsTimed() {
-			ae.CreateAttr("mustUseTimedWrite", "true")
-		} else {
-			ae.RemoveAttr("mustUseTimedWrite")
-		}
-		accessElements := ae.SelectElements("access")
-		for _, ax := range accessElements {
+		if requiresPermissions {
+			accessElements := ae.SelectElements("access")
+			for _, ax := range accessElements {
+				if needsRead {
+					cr.setAccessAttributes(ax, "read", attribute.Access.Read)
+					needsRead = false
+				} else if needsWrite {
+					cr.setAccessAttributes(ax, "write", attribute.Access.Write)
+					needsWrite = false
+				} else {
+					ae.RemoveChild(ax)
+				}
+			}
 			if needsRead {
+				ax := ae.CreateElement("access")
 				cr.setAccessAttributes(ax, "read", attribute.Access.Read)
-				needsRead = false
-			} else if needsWrite {
+			}
+			if needsWrite {
+				ax := ae.CreateElement("access")
 				cr.setAccessAttributes(ax, "write", attribute.Access.Write)
-				needsWrite = false
-			} else {
-				ae.RemoveChild(ax)
 			}
 		}
-		if needsRead {
-			ax := ae.CreateElement("access")
-			cr.setAccessAttributes(ax, "read", attribute.Access.Read)
-		}
-		if needsWrite {
-			ax := ae.CreateElement("access")
-			cr.setAccessAttributes(ax, "write", attribute.Access.Write)
+
+		if requiresQuality {
+			for _, el := range ae.SelectElements("quality") {
+				if requiresQuality {
+					cr.setQualityAttributes(el, attribute.Quality)
+					requiresQuality = false
+				} else {
+					ae.RemoveChild(el)
+				}
+			}
+			if requiresQuality {
+				el := etree.NewElement("quality")
+				xml.AppendElement(ae, el, "description", "access")
+				cr.setQualityAttributes(el, attribute.Quality)
+			}
+		} else {
+			for _, el := range ae.SelectElements("quality") {
+				ae.RemoveChild(el)
+			}
 		}
 		if cr.generator.generateConformanceXML {
 			renderConformance(cr.generator.spec, attribute, cluster, attribute.Conformance, ae)
@@ -160,11 +179,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 			removeConformance(ae)
 		}
 	}
-	if !conformance.IsMandatory(attribute.Conformance) {
-		ae.CreateAttr("optional", "true")
-	} else {
-		ae.RemoveAttr("optional")
-	}
+
 	return
 }
 
