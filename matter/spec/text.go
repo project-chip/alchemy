@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 )
 
@@ -17,13 +18,18 @@ func getDescription(doc *Doc, els asciidoc.Set) string {
 	var sb strings.Builder
 	readDescription(doc, els, &sb)
 	description := sb.String()
-	endOfSentence := endOfSentencePattern.FindStringIndex(description)
-	if endOfSentence != nil {
+	endOfSentences := endOfSentencePattern.FindAllStringIndex(description, -1)
+	for _, endOfSentence := range endOfSentences {
 		endOfSentenceIndex := endOfSentence[0]
 		if description[endOfSentenceIndex] == '.' {
 			endOfSentenceIndex++
 		}
-		description = description[:endOfSentenceIndex]
+		possible := description[:endOfSentenceIndex]
+		if text.HasCaseInsensitiveSuffix(possible, "i.e.") || text.HasCaseInsensitiveSuffix(possible, "e.g.") {
+			continue
+		}
+		description = possible
+		break
 	}
 	return description
 }
