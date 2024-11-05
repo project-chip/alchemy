@@ -7,26 +7,10 @@ import (
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 type conformanceEntityFormatter func(entity types.Entity) string
-
-func renderPicsConformance(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, cs conformance.Set) {
-	if len(cs) == 0 {
-		return
-	}
-	renderConformance(cs, b, doc, cluster, entityPICS)
-}
-
-func renderFeatureConformance(b *strings.Builder, doc *spec.Doc, cluster *matter.Cluster, cs conformance.Set) {
-	if len(cs) == 0 {
-		return
-	}
-	b.WriteString("{PICS_S}: ")
-	renderConformance(cs, b, doc, cluster, entityVariable)
-}
 
 func picsConformanceHelper(doc conformance.ReferenceStore, cluster matter.Cluster, cs conformance.Set) raymond.SafeString {
 	var b strings.Builder

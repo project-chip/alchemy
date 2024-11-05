@@ -169,7 +169,7 @@ func (b *Ball) promoteDataTypes(cxt *discoContext, top *spec.Section) (promoted 
 	fields := make(map[matter.DataTypeCategory]map[string]*DataTypeEntry)
 	for _, infos := range cxt.potentialDataTypes {
 		if len(infos) > 1 {
-			err = disambiguateDataTypes(cxt, infos)
+			err = disambiguateDataTypes(infos)
 			if err != nil {
 				return
 			}
@@ -330,23 +330,11 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 		se := asciidoc.NewString(fmt.Sprintf("This data type is derived from %s", dt.dataType))
 		p := asciidoc.NewParagraph()
 		p.SetElements(asciidoc.Set{se})
-		err = dataTypeSection.Append(p)
-		if err != nil {
-			return
-		}
+		dataTypeSection.Append(p)
 		bl := asciidoc.NewEmptyLine("")
-		err = dataTypeSection.Append(bl)
-		if err != nil {
-			return
-		}
-		err = dataTypeSection.Append(table)
-		if err != nil {
-			return
-		}
-		err = dataTypeSection.Append(bl)
-		if err != nil {
-			return
-		}
+		dataTypeSection.Append(bl)
+		dataTypeSection.Append(table)
+		dataTypeSection.Append(bl)
 
 		//newAttr := make(asciidoc.AttributeList)
 		tableIDAttribute := table.GetAttributeByName(asciidoc.AttributeNameID)
@@ -373,19 +361,13 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 			s.SecType = matter.SectionDataTypeEnum
 		}
 
-		err = dataTypesSection.AppendSection(s)
-		if err != nil {
-			return
-		}
+		dataTypesSection.AppendSection(s)
 
 		table.DeleteAttribute(asciidoc.AttributeNameID)
 		table.DeleteAttribute(asciidoc.AttributeNameTitle)
 
 		icr := asciidoc.NewCrossReference(newID)
-		err = setCellValue(dt.typeCell, asciidoc.Set{icr})
-		if err != nil {
-			return
-		}
+		dt.typeCell.SetElements(asciidoc.Set{icr})
 		promoted = true
 	}
 	return
@@ -399,23 +381,17 @@ func ensureDataTypesSection(top *spec.Section) (*spec.Section, error) {
 	title := asciidoc.NewString(matter.SectionTypeName(matter.SectionDataTypes))
 
 	ts := asciidoc.NewSection(asciidoc.Set{title}, top.Base.Level+1)
-	err := ts.Append(asciidoc.NewEmptyLine(""))
-	if err != nil {
-		return nil, err
-	}
-	dataTypesSection, err = spec.NewSection(top.Doc, top, ts)
+	ts.Append(asciidoc.NewEmptyLine(""))
+	dataTypesSection, err := spec.NewSection(top.Doc, top, ts)
 	if err != nil {
 		return nil, err
 	}
 	dataTypesSection.SecType = matter.SectionDataTypes
-	err = top.AppendSection(dataTypesSection)
-	if err != nil {
-		return nil, err
-	}
+	top.AppendSection(dataTypesSection)
 	return dataTypesSection, nil
 }
 
-func disambiguateDataTypes(cxt *discoContext, infos []*DataTypeEntry) error {
+func disambiguateDataTypes(infos []*DataTypeEntry) error {
 	parents := make([]any, len(infos))
 	dataTypeNames := make([]string, len(infos))
 	dataTypeRefs := make([]string, len(infos))
@@ -469,7 +445,7 @@ func (b *Ball) canonicalizeDataTypeSectionName(dp *docParse, s *spec.Section, da
 	if text.HasCaseInsensitiveSuffix(name, dataTypeName+" type") {
 		return
 	}
-	var newName = name
+	var newName string
 	if text.HasCaseInsensitiveSuffix(name, dataTypeName) {
 		newName = spec.CanonicalName(name) + " Type"
 	} else if text.HasCaseInsensitiveSuffix(name, " type") {

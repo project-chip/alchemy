@@ -153,12 +153,18 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		if matter.NonGlobalIDInvalidForEntity(dt.ID, types.EntityTypeDeviceType) {
 			continue
 		}
-		p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
+		err = p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
+		if err != nil {
+			return
+		}
 	}
 
 	for _, dt := range deviceTypesToUpdateByName {
 		slog.Info("Adding new device type", slog.String("name", dt.Name))
-		p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
+		err = p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
+		if err != nil {
+			return
+		}
 	}
 
 	var out string

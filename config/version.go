@@ -7,6 +7,7 @@ import (
 
 var version string
 
+// Set by build flag, most commonly in .github/workflows/main.yml
 var Tag string
 
 func Version() string {

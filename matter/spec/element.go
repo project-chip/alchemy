@@ -24,7 +24,8 @@ func (e *Element) GetElements() asciidoc.Set {
 
 func (e *Element) SetElements(els asciidoc.Set) error {
 	if we, ok := e.Base.(asciidoc.HasElements); ok {
-		return we.SetElements(els)
+		we.SetElements(els)
+		return nil
 	}
 	return fmt.Errorf("base element does not have elements: %T", e.Base)
 }

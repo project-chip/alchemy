@@ -89,11 +89,9 @@ func main() {
 }
 
 type callCount struct {
-	rule     string
-	count    int
-	elapsed  time.Duration
-	paths    map[string]*callCount
-	subCalls map[string]*callCount
+	rule    string
+	count   int
+	elapsed time.Duration
 }
 
 type ruleCollection struct {

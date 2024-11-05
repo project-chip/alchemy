@@ -59,10 +59,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 					currentTableRow = &asciidoc.TableRow{Parent: table}
 					currentTableRow.SetPosition(cell.Position())
 					currentTableRow.SetPath(cell.Path())
-					err = table.Append(currentTableRow)
-					if err != nil {
-						return
-					}
+					table.Append(currentTableRow)
 					cellIndex = 0
 				}
 				cell.Parent = currentTableRow
@@ -71,10 +68,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 					if !ok || skip == 0 {
 						break
 					}
-					err = currentTableRow.Append(&asciidoc.TableCell{Blank: true})
-					if err != nil {
-						return
-					}
+					currentTableRow.Append(&asciidoc.TableCell{Blank: true})
 					colSkip[cellIndex] = skip - 1
 					cellIndex++
 				}
@@ -82,16 +76,10 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 					currentTableRow = &asciidoc.TableRow{}
 					currentTableRow.SetPosition(cell.Position())
 					currentTableRow.SetPath(cell.Path())
-					err = table.Append(currentTableRow)
-					if err != nil {
-						return
-					}
+					table.Append(currentTableRow)
 					cellIndex = 0
 				}
-				err = currentTableRow.Append(cell)
-				if err != nil {
-					return
-				}
+				currentTableRow.Append(cell)
 				if cell.Format != nil {
 					rowSpan := cell.Format.Span.Row.Value
 					colSpan := cell.Format.Span.Column.Value
@@ -104,10 +92,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 					}
 					if colSpan > 1 {
 						for i := 0; i < colSpan-1; i++ {
-							err = currentTableRow.Append(&asciidoc.TableCell{Blank: true})
-							if err != nil {
-								return
-							}
+							currentTableRow.Append(&asciidoc.TableCell{Blank: true})
 							cellIndex++
 						}
 					}
@@ -116,10 +101,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 				}
 			}
 		case asciidoc.Element:
-			err = table.Append(el)
-			if err != nil {
-				return
-			}
+			table.Append(el)
 		default:
 			err = fmt.Errorf("unexpected type in table elements: %T", el)
 			return
@@ -129,10 +111,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 		return
 	}
 	for cellIndex < table.ColumnCount {
-		err = currentTableRow.Append(&asciidoc.TableCell{Blank: true})
-		if err != nil {
-			return
-		}
+		currentTableRow.Append(&asciidoc.TableCell{Blank: true})
 		cellIndex++
 	}
 	return
@@ -298,7 +277,8 @@ func parseInlineCell(tc *asciidoc.TableCell) error {
 		return err
 	}
 
-	return tc.SetElements(els)
+	tc.SetElements(els)
+	return nil
 }
 
 func parseBlockCell(tc *asciidoc.TableCell) error {
@@ -329,5 +309,6 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 	if err != nil {
 		return err
 	}
-	return tc.SetElements(els)
+	tc.SetElements(els)
+	return nil
 }

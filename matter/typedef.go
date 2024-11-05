@@ -32,7 +32,7 @@ func (s *TypeDef) Inherit(parent *TypeDef) {
 	if len(s.Description) == 0 {
 		s.Description = parent.Description
 	}
-	s.Type = s.Type
+	s.Type = parent.Type
 }
 
 type TypeDefSet []*TypeDef

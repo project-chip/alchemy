@@ -100,14 +100,11 @@ func (b *Ball) appendColumn(ti *spec.TableInfo, column matter.TableColumn, entit
 				err = fmt.Errorf("unknown column name: %s", column.String())
 				return
 			}
-			err = setCellString(cell, name)
-			if err != nil {
-				return
-			}
+			setCellString(cell, name)
 		} else {
 			cell.Blank = last.Blank
 			if !cell.Blank {
-				err = setCellString(cell, b.getDefaultColumnValue(ti, row, column, entityType))
+				setCellString(cell, b.getDefaultColumnValue(ti, row, column, entityType))
 			}
 		}
 		row.Append(cell)
@@ -270,14 +267,14 @@ func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *spec.Tab
 	return
 }
 
-func setCellString(cell *asciidoc.TableCell, v string) (err error) {
+func setCellString(cell *asciidoc.TableCell, v string) {
 	se := asciidoc.NewString(v)
-	err = cell.SetElements(asciidoc.Set{se})
+	cell.SetElements(asciidoc.Set{se})
 	return
 }
 
-func setCellValue(cell *asciidoc.TableCell, val asciidoc.Set) (err error) {
-	return cell.SetElements(val)
+func setCellValue(cell *asciidoc.TableCell, val asciidoc.Set) {
+	cell.SetElements(val)
 }
 
 func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {
@@ -294,10 +291,7 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 		if transformer != nil {
 			value = transformer(value)
 		}
-		err = setCellString(tableCells[toIndex], value)
-		if err != nil {
-			return
-		}
+		setCellString(tableCells[toIndex], value)
 	}
 	return
 }
@@ -330,10 +324,7 @@ func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, tabl
 		}
 		name, ok := matter.GetColumnName(tc, overrides)
 		if ok {
-			err = setCellString(cell, name)
-			if err != nil {
-				return
-			}
+			setCellString(cell, name)
 		}
 	}
 	err = table.Rescan(doc)

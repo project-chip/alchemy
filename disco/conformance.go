@@ -36,10 +36,7 @@ func (b *Ball) fixConformanceCells(docParse *docParse, section *subSection, rows
 		cs := conf.ASCIIDocString()
 
 		if cs != vc {
-			err = setCellString(cell, cs)
-			if err != nil {
-				return
-			}
+			setCellString(cell, cs)
 		}
 
 	}
@@ -111,10 +108,7 @@ func disambiguateConformance(docParse *docParse) (err error) {
 				}
 			}
 			if modified {
-				err = setCellString(cell, conf.ASCIIDocString())
-				if err != nil {
-					return parse.SearchShouldStop
-				}
+				setCellString(cell, conf.ASCIIDocString())
 			}
 		}
 		return parse.SearchShouldContinue

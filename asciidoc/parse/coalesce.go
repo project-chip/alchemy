@@ -50,10 +50,7 @@ func coalesce(els asciidoc.Set) (out asciidoc.Set, err error) {
 			if err != nil {
 				return
 			}
-			err = hasElements.SetElements(els)
-			if err != nil {
-				return
-			}
+			hasElements.SetElements(els)
 		}
 
 		if hasChild, ok := el.(asciidoc.HasChild); ok {
@@ -64,10 +61,7 @@ func coalesce(els asciidoc.Set) (out asciidoc.Set, err error) {
 				if err != nil {
 					return
 				}
-				err = hasElements.SetElements(els)
-				if err != nil {
-					return
-				}
+				hasElements.SetElements(els)
 			}
 		}
 
@@ -125,23 +119,17 @@ func (cs *coalesceState) flushInline(out asciidoc.Set) asciidoc.Set {
 		cs.inlineElements = nil
 		return out
 	}
-	var err error
 	p := copyPosition(out, asciidoc.NewParagraph())
 	if cs.blockAttributes != nil {
-		err = p.ReadAttributes(p, cs.blockAttributes.AttributeList...)
+		err := p.ReadAttributes(p, cs.blockAttributes.AttributeList...)
 		if err != nil {
 			slog.Warn("error reading attributes while flushing inline elements", slog.Any("error", err))
-			err = nil
 		}
 		bsIndex := slices.IndexFunc(cs.inlineElements, func(e asciidoc.Element) bool {
 			return e == cs.blockAttributes
 		})
 		if bsIndex >= 0 {
-			err = cs.inlineElements.SetElements(slices.Delete(cs.inlineElements, bsIndex, bsIndex+1))
-			if err != nil {
-				slog.Warn("error setting elements while flushing inline elements", slog.Any("error", err))
-				err = nil
-			}
+			cs.inlineElements.SetElements(slices.Delete(cs.inlineElements, bsIndex, bsIndex+1))
 		}
 		cs.blockAttributes = nil
 	}
@@ -149,10 +137,9 @@ func (cs *coalesceState) flushInline(out asciidoc.Set) asciidoc.Set {
 		p.Admonition = cs.admonition.AdmonitionType
 		attributes := cs.admonition.Attributes()
 		if len(attributes) > 0 {
-			err = p.ReadAttributes(p, attributes...)
+			err := p.ReadAttributes(p, attributes...)
 			if err != nil {
 				slog.Warn("error reading attributes while flushing inline elements", slog.Any("error", err))
-				err = nil
 			}
 		}
 		cs.admonition = nil

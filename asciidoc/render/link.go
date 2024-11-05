@@ -7,7 +7,10 @@ import (
 func renderLink(cxt Target, il *asciidoc.Link) (err error) {
 	cxt.StartBlock()
 	cxt.WriteString(il.URL.Scheme)
-	Elements(cxt, "", il.URL.Path...)
+	err = Elements(cxt, "", il.URL.Path...)
+	if err != nil {
+		return
+	}
 
 	err = renderAttributes(cxt, il.Attributes(), true)
 	cxt.EndBlock()
@@ -18,7 +21,10 @@ func renderLinkMacro(cxt Target, il *asciidoc.LinkMacro) (err error) {
 	cxt.StartBlock()
 	cxt.WriteString("link:")
 	cxt.WriteString(il.URL.Scheme)
-	Elements(cxt, "", il.URL.Path...)
+	err = Elements(cxt, "", il.URL.Path...)
+	if err != nil {
+		return
+	}
 
 	err = renderAttributes(cxt, il.Attributes(), true)
 	cxt.EndBlock()
@@ -35,7 +41,10 @@ func renderImageBlock(cxt Target, ib *asciidoc.BlockImage) (err error) {
 	cxt.EnsureNewLine()
 	cxt.DisableWrap()
 	cxt.WriteString("image::")
-	Elements(cxt, "", ib.Path...)
+	err = Elements(cxt, "", ib.Path...)
+	if err != nil {
+		return
+	}
 	var count int
 	count, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
 	if err != nil {
@@ -59,7 +68,10 @@ func renderInlineImage(cxt Target, ib *asciidoc.InlineImage) (err error) {
 	cxt.EnsureNewLine()
 	cxt.DisableWrap()
 	cxt.WriteString("image:")
-	Elements(cxt, "", ib.Path...)
+	err = Elements(cxt, "", ib.Path...)
+	if err != nil {
+		return
+	}
 	var count int
 	count, err = renderSelectAttributes(cxt, ib.Attributes(), AttributeFilterAll, AttributeFilterID|AttributeFilterTitle|AttributeFilterCols, true)
 	if err != nil {

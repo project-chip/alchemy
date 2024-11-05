@@ -72,7 +72,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	pipeline.ProcessSerialFunc[*spec.Doc, *spec.Doc](cxt, pipelineOptions, appClusterIndexes, "Assigning index domains", func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
+	_, err = pipeline.ProcessSerialFunc[*spec.Doc, *spec.Doc](cxt, pipelineOptions, appClusterIndexes, "Assigning index domains", func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
 		doc := input.Content
 		top := parse.FindFirst[*spec.Section](doc.Elements())
 		if top != nil {
@@ -81,6 +81,10 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		}
 		return
 	})
+
+	if err != nil {
+		return err
+	}
 
 	if len(args) > 0 { // Filter the spec by whatever extra args were passed
 		filter := files.NewPathFilter[*spec.Doc](args)

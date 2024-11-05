@@ -55,7 +55,8 @@ func reorderSection(sec *spec.Section, sectionOrder []matter.Section) error {
 		return fmt.Errorf("non-empty section list after reordering")
 	}
 
-	return sec.SetElements(newOrder)
+	sec.SetElements(newOrder)
+	return nil
 }
 
 func divyUpSection(sec *spec.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Set {

@@ -46,7 +46,10 @@ func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.N
 			ce.RemoveChild(eve)
 			continue
 		}
-		cr.populateEnum(eve, matchingEnum, clusterIds)
+		err = cr.populateEnum(eve, matchingEnum, clusterIds)
+		if err != nil {
+			return
+		}
 	}
 
 	var remainingEnums []*matter.Enum
@@ -69,7 +72,10 @@ func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.N
 		if len(clusterIds) == 0 {
 			continue
 		}
-		cr.populateEnum(bme, en, clusterIds)
+		err = cr.populateEnum(bme, en, clusterIds)
+		if err != nil {
+			return
+		}
 		xml.InsertElementByAttribute(ce, bme, "name", "bitmap", "domain")
 	}
 

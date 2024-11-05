@@ -29,7 +29,10 @@ func newConfiguratorRenderer(generator *TemplateGenerator, configurator *zap.Con
 
 func (cr *configuratorRenderer) render(x *etree.Document, exampleCluster *matter.Cluster) (out string, err error) {
 
-	cr.patchComments(cr.configurator, x)
+	err = cr.patchComments(cr.configurator, x)
+	if err != nil {
+		return
+	}
 
 	configuratorElement := x.SelectElement("configurator")
 	if configuratorElement == nil {
@@ -72,7 +75,10 @@ func (cr *configuratorRenderer) render(x *etree.Document, exampleCluster *matter
 		return
 	}
 	if cr.generator.specOrder && !cr.configurator.Global {
-		cr.reorderConfigurator(configuratorElement)
+		err = cr.reorderConfigurator(configuratorElement)
+		if err != nil {
+			return
+		}
 	}
 	return xmlToString(x)
 }

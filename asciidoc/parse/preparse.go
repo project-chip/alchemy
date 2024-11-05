@@ -116,7 +116,7 @@ func preparseElements(context PreParseContext, r *asciidoc.Reader, w *asciidoc.W
 				return
 			}
 			if context.ShouldIncludeFile(path) {
-				includeFile(context, path.Absolute, w)
+				err = includeFile(context, path.Absolute, w)
 			} else {
 				w.Write(el)
 			}

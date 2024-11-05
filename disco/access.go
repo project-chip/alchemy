@@ -68,10 +68,7 @@ func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType t
 		}
 		replacementAccess := spec.AccessToASCIIDocString(access, entityType)
 		if vc != replacementAccess {
-			err = setCellString(accessCell, replacementAccess)
-			if err != nil {
-				return
-			}
+			setCellString(accessCell, replacementAccess)
 
 		}
 	}

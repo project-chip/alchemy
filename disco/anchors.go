@@ -271,12 +271,11 @@ func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *a
 			parentSection := findRefSection(parents[i])
 			if parentSection == nil {
 				var errMsg strings.Builder
-				errMsg.WriteString(fmt.Sprintf("duplicate anchor: %s with invalid parent,", newIDs[i]))
 				for _, info := range conflictedAnchors {
 					origin, line := info.Source.Origin()
 					errMsg.WriteString(fmt.Sprintf(", %s:%d", origin, line))
 				}
-				err = fmt.Errorf(errMsg.String())
+				err = fmt.Errorf("duplicate anchor: %s with invalid parent%s", newIDs[i], errMsg.String())
 				return
 
 			}

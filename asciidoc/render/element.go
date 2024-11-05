@@ -115,25 +115,25 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 		case *asciidoc.IfNDef:
 			renderConditional(cxt, "ifndef::", el.Attributes, el.Union)
 		case *asciidoc.IfEval:
-			renderIfEval(cxt, el)
+			err = renderIfEval(cxt, el)
 		case *asciidoc.EndIf:
 			renderConditional(cxt, "endif::", el.Attributes, el.Union)
 		case *asciidoc.MultiLineComment:
-			renderDelimitedLines(cxt, el, el.Delimiter)
+			err = renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.DescriptionListItem:
-			renderDescriptionListItem(cxt, el)
+			err = renderDescriptionListItem(cxt, el)
 		case *asciidoc.LiteralBlock:
-			renderDelimitedLines(cxt, el, el.Delimiter)
+			err = renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.SidebarBlock:
-			renderDelimitedElements(cxt, el, el.Delimiter)
+			err = renderDelimitedElements(cxt, el, el.Delimiter)
 		case *asciidoc.Listing:
-			renderDelimitedLines(cxt, el, el.Delimiter)
+			err = renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.ExampleBlock:
-			renderDelimitedElements(cxt, el, el.Delimiter)
+			err = renderDelimitedElements(cxt, el, el.Delimiter)
 		case *asciidoc.StemBlock:
-			renderDelimitedLines(cxt, el, el.Delimiter)
+			err = renderDelimitedLines(cxt, el, el.Delimiter)
 		case *asciidoc.OpenBlock:
-			renderDelimitedElements(cxt, el, el.Delimiter)
+			err = renderDelimitedElements(cxt, el, el.Delimiter)
 		case *asciidoc.FileInclude:
 			renderFileInclude(cxt, el)
 		case *asciidoc.Anchor:
