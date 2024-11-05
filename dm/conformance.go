@@ -11,67 +11,81 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func RenderConformanceElement(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
+func renderConformanceElement(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element) error {
+	conformanceElement, err := CreateConformanceElement(doc, identifierStore, c)
+	if err != nil {
+		return err
+	}
+	if conformanceElement != nil {
+		parent.AddChild(conformanceElement)
+	}
+	return nil
+}
+
+func CreateConformanceElement(doc *spec.Doc, identifierStore conformance.IdentifierStore, c conformance.Conformance) (element *etree.Element, err error) {
 	if c == nil {
-		return nil
+		return
 	}
 	switch cs := c.(type) {
 	case conformance.Set:
 		if len(cs) > 1 {
-			oc := parent.CreateElement("otherwiseConform")
-			for _, c := range cs {
-				err := renderConformance(doc, identifierStore, c, oc)
-				if err != nil {
-					return fmt.Errorf("error rendering conformance %s: %w", c.ASCIIDocString(), err)
-				}
-			}
+			return renderConformanceSet(doc, identifierStore, cs)
 		} else if len(cs) == 1 {
-			return renderConformance(doc, identifierStore, cs[0], parent)
+			return renderConformance(doc, identifierStore, cs[0])
 		}
 	case *conformance.Generic:
-		return nil
+		return
 	default:
-		return renderConformance(doc, identifierStore, c, parent)
+		return renderConformance(doc, identifierStore, c)
 
 	}
-
-	return nil
+	return
 }
 
-func renderConformance(doc *spec.Doc, identifierStore conformance.IdentifierStore, con conformance.Conformance, parent *etree.Element) (err error) {
+func renderConformanceSet(doc *spec.Doc, identifierStore conformance.IdentifierStore, set conformance.Set) (element *etree.Element, err error) {
+	element = etree.NewElement("otherwiseConform")
+	for _, c := range set {
+		var ce *etree.Element
+		ce, err = renderConformance(doc, identifierStore, c)
+		if err != nil {
+			err = fmt.Errorf("error rendering conformance %s: %w", c.ASCIIDocString(), err)
+			return
+		}
+		element.AddChild(ce)
+	}
+	return
+}
+
+func renderConformance(doc *spec.Doc, identifierStore conformance.IdentifierStore, con conformance.Conformance) (element *etree.Element, err error) {
 	switch con := con.(type) {
 	case *conformance.Mandatory:
 		_, isEquality := con.Expression.(*conformance.EqualityExpression)
 		if !isEquality {
-			mc := parent.CreateElement("mandatoryConform")
-			err = renderConformanceExpression(doc, identifierStore, con.Expression, mc)
+			element = etree.NewElement("mandatoryConform")
+			err = renderConformanceExpression(doc, identifierStore, con.Expression, element)
 			if err != nil {
 				return
 			}
 		}
 	case *conformance.Provisional:
-		parent.CreateElement("provisionalConform")
+		element = etree.NewElement("provisionalConform")
 	case *conformance.Optional:
-		oc := parent.CreateElement("optionalConform")
-		renderChoice(con.Choice, oc)
-		return renderConformanceExpression(doc, identifierStore, con.Expression, oc)
+		element = etree.NewElement("optionalConform")
+		renderChoice(con.Choice, element)
+		err = renderConformanceExpression(doc, identifierStore, con.Expression, element)
+		return
 	case *conformance.Disallowed:
-		parent.CreateElement("disallowConform")
+		element = etree.NewElement("disallowConform")
 	case *conformance.Deprecated:
-		parent.CreateElement("deprecateConform")
+		element = etree.NewElement("deprecateConform")
 	case *conformance.Described:
 	case *conformance.Generic:
 	case conformance.Set:
-		for _, con := range con {
-			err = renderConformance(doc, identifierStore, con, parent)
-			if err != nil {
-				return err
-			}
-		}
+		return renderConformanceSet(doc, identifierStore, con)
 	default:
-		return fmt.Errorf("unknown conformance type: %T", con)
+		err = fmt.Errorf("unknown conformance type: %T", con)
 	}
-	return nil
+	return
 }
 
 func renderChoice(choice *conformance.Choice, parent *etree.Element) {

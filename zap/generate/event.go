@@ -83,11 +83,22 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 		descriptionElement.SetText(event.Description)
 	}
 
-	if cluster != nil && cr.configurator != nil {
-		if cr.generator.generateConformanceXML {
-			renderConformance(cr.generator.spec, event, cluster, event.Conformance, eventElement)
-		} else {
-			removeConformance(eventElement)
+	if needsAccess {
+		for _, el := range eventElement.SelectElements("access") {
+			if needsAccess {
+				cr.setAccessAttributes(el, "read", event.Access.Read)
+				needsAccess = false
+			} else {
+				eventElement.RemoveChild(el)
+			}
+		}
+		if needsAccess {
+			cr.setAccessAttributes(eventElement.CreateElement("access"), "read", event.Access.Read)
+		}
+
+	} else {
+		for _, el := range eventElement.SelectElements("access") {
+			eventElement.RemoveChild(el)
 		}
 	}
 
@@ -124,24 +135,14 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 		fe := etree.NewElement("field")
 		fe.CreateAttr("id", f.ID.IntString())
 		cr.setFieldAttributes(fe, f, event.Fields)
-		xml.AppendElement(eventElement, fe)
+		xml.AppendElement(eventElement, fe, "access")
 	}
-	if needsAccess {
-		for _, el := range eventElement.SelectElements("access") {
-			if needsAccess {
-				cr.setAccessAttributes(el, "read", event.Access.Read)
-				needsAccess = false
-			} else {
-				eventElement.RemoveChild(el)
-			}
-		}
-		if needsAccess {
-			cr.setAccessAttributes(eventElement.CreateElement("access"), "read", event.Access.Read)
-		}
 
-	} else {
-		for _, el := range eventElement.SelectElements("access") {
-			eventElement.RemoveChild(el)
+	if cluster != nil && cr.configurator != nil {
+		if cr.generator.generateConformanceXML {
+			renderConformance(cr.generator.spec, event, cluster, event.Conformance, eventElement, "field", "access", "description")
+		} else {
+			removeConformance(eventElement)
 		}
 	}
 }

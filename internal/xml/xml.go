@@ -23,10 +23,11 @@ func SetNonexistentAttr(el *etree.Element, name string, value string) *etree.Att
 	return a
 }
 
-func CreateSimpleElementIfNotExists(parent *etree.Element, name string, value string, afterElements ...string) *etree.Element {
-	el := parent.SelectElement(name)
+func CreateSimpleElementIfNotExists(parent *etree.Element, name string, value string, afterElements ...string) (el *etree.Element, exists bool) {
+	el = parent.SelectElement(name)
 	if el != nil {
-		return el
+		exists = true
+		return
 	}
 	if len(afterElements) == 0 {
 		el = parent.CreateElement(name)
@@ -37,7 +38,7 @@ func CreateSimpleElementIfNotExists(parent *etree.Element, name string, value st
 	if len(value) > 0 {
 		el.SetText(value)
 	}
-	return el
+	return
 }
 
 func SetOrCreateSimpleElement(parent *etree.Element, name string, value string, afterElements ...string) *etree.Element {
@@ -78,8 +79,9 @@ func AppendElement(parent *etree.Element, el *etree.Element, alternatives ...str
 	tags := append([]string{el.Tag}, alternatives...)
 
 	var lastSimilarElementIndex int = -1
-	for _, tag := range tags {
-		for i, e := range parent.Child {
+	for i := len(parent.Child) - 1; i >= 0; i-- {
+		e := parent.Child[i]
+		for _, tag := range tags {
 			el, ok := e.(*etree.Element)
 			if ok && el.Tag == tag {
 				lastSimilarElementIndex = i
@@ -165,4 +167,21 @@ func PrependAttribute(el *etree.Element, name string, value string) {
 	el.CreateAttr(name, value)
 	a := el.RemoveAttr(name)
 	el.Attr = append([]etree.Attr{*a}, el.Attr...)
+}
+
+func RemoveElements(parent *etree.Element, elementNames ...string) {
+	var trash []*etree.Element
+	for _, child := range parent.Child {
+		switch child := child.(type) {
+		case *etree.Element:
+			for _, n := range elementNames {
+				if child.Tag == n {
+					trash = append(trash, child)
+				}
+			}
+		}
+	}
+	for _, child := range trash {
+		parent.RemoveChild(child)
+	}
 }
