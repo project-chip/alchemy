@@ -16,6 +16,7 @@ import (
 func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 	var clusters []*matter.Cluster
 	var description string
+	// We take the first string in the first paragraph as the description of the cluster
 	p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
 	if p != nil {
 		se := parse.FindFirst[*asciidoc.String](p.Elements())
@@ -26,6 +27,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 
 	elements := parse.Skim[*Section](s.Elements())
 
+	// Find the cluster ID section and read the IDs from the table
 	for _, s := range elements {
 		switch s.SecType {
 		case matter.SectionClusterID:
@@ -299,10 +301,12 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 	return clusters, nil
 }
 
+// The canonical name of clusters doesn't have the "cluster" suffix, but is frequently included
 func toClusterName(name string) string {
 	return text.TrimCaseInsensitiveSuffix(name, " Cluster")
 }
 
+// Tests whether two cluster names are equivalent after cleaning
 func clusterNamesEquivalent(name1 string, name2 string) bool {
 	name1 = toClusterName(name1)
 	name2 = toClusterName(name2)

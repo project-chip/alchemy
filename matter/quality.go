@@ -74,6 +74,10 @@ func (q Quality) Has(o Quality) bool {
 	return (q & o) == o
 }
 
+func (q Quality) Any(o Quality) bool {
+	return (q & o) != QualityNone
+}
+
 func (q Quality) String() string {
 	var s strings.Builder
 	for tq, i := range qualityIdentifiers {

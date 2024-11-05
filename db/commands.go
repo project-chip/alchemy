@@ -32,6 +32,7 @@ func (h *Host) indexCommandModels(cxt context.Context, parent *sectionInfo, clus
 		if c.Conformance != nil {
 			row.values[matter.TableColumnConformance] = c.Conformance.ASCIIDocString()
 		}
+		row.values[matter.TableColumnQuality] = c.Quality
 		ci := &sectionInfo{id: h.nextID(commandTable), parent: parent, values: row, children: make(map[string][]*sectionInfo)}
 		parent.children[commandTable] = append(parent.children[commandTable], ci)
 		for _, ef := range c.Fields {

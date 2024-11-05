@@ -3,6 +3,7 @@ package db
 import (
 	mms "github.com/dolthub/go-mysql-server/sql"
 	"github.com/dolthub/go-mysql-server/sql/types"
+	"github.com/project-chip/alchemy/matter"
 )
 
 func getQualitySchemaColumns(tableName string) []*mms.Column {
@@ -15,14 +16,16 @@ func getQualitySchemaColumns(tableName string) []*mms.Column {
 		{Name: "changes_omitted", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "singleton", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 		{Name: "atomic_write", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
+		{Name: "large_message", Type: types.Boolean, Nullable: true, Source: tableName, PrimaryKey: false},
 	}
 }
 
 func getQualitySchemaColumnValues(access any) []any {
-	var nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton, atomic int8
-	if s, ok := access.(string); ok {
+	var nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton, atomic, largeMessage int8
+	switch access := access.(type) {
+	case string:
 		var val int8 = 1
-		for _, r := range s {
+		for _, r := range access {
 			switch r {
 			case 'X':
 				nullable = val
@@ -40,6 +43,8 @@ func getQualitySchemaColumnValues(access any) []any {
 				singleton = val
 			case 'T':
 				atomic = val
+			case 'L':
+				largeMessage = val
 			case '!':
 				val = -1
 				continue
@@ -48,6 +53,23 @@ func getQualitySchemaColumnValues(access any) []any {
 				val = 1
 			}
 		}
+	case matter.Quality:
+		nullable = getQualityValue(access, matter.QualityNullable)
+		nonVolatile = getQualityValue(access, matter.QualityNonVolatile)
+		fixed = getQualityValue(access, matter.QualityFixed)
+		scene = getQualityValue(access, matter.QualityScene)
+		reportable = getQualityValue(access, matter.QualityReportable)
+		changesOmitted = getQualityValue(access, matter.QualityChangedOmitted)
+		singleton = getQualityValue(access, matter.QualitySingleton)
+		atomic = getQualityValue(access, matter.QualityAtomicWrite)
+		largeMessage = getQualityValue(access, matter.QualityLargeMessage)
 	}
-	return []any{nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton, atomic}
+	return []any{nullable, nonVolatile, fixed, scene, reportable, changesOmitted, singleton, atomic, largeMessage}
+}
+
+func getQualityValue(q matter.Quality, desired matter.Quality) int8 {
+	if q.Has(desired) {
+		return 1
+	}
+	return 0
 }
