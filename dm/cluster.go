@@ -94,7 +94,7 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output 
 			clusterID.CreateAttr("picsCode", cluster.PICS)
 		}
 		if cluster.Conformance != nil && !conformance.IsMandatory(cluster.Conformance) {
-			err = RenderConformanceElement(doc, cluster, cluster.Conformance, clusterID)
+			err = renderConformanceElement(doc, cluster, cluster.Conformance, clusterID)
 			if err != nil {
 				return
 			}

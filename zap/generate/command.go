@@ -168,14 +168,6 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		}
 	}
 
-	if cluster != nil && cr.generator != nil {
-		if cr.generator.generateConformanceXML {
-			renderConformance(cr.generator.spec, c, cluster, c.Conformance, ce)
-		} else {
-			removeConformance(ce)
-		}
-	}
-
 	argIndex := 0
 	argElements := ce.SelectElements("arg")
 	for _, fe := range argElements {
@@ -211,4 +203,13 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		cr.setFieldAttributes(fe, f, c.Fields)
 		xml.AppendElement(ce, fe)
 	}
+
+	if cluster != nil && cr.generator != nil {
+		if cr.generator.generateConformanceXML {
+			renderConformance(cr.generator.spec, c, cluster, c.Conformance, ce, "access", "arg", "description")
+		} else {
+			removeConformance(ce)
+		}
+	}
+
 }

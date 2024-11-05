@@ -130,7 +130,10 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 		ae.SetText(attribute.Name)
 	} else {
 		ae.SetText("")
-		xml.SetOrCreateSimpleElement(ae, "description", attribute.Name)
+		de, exists := xml.CreateSimpleElementIfNotExists(ae, "description", attribute.Name)
+		if exists {
+			de.SetText(attribute.Name)
+		}
 		if requiresPermissions {
 			accessElements := ae.SelectElements("access")
 			for _, ax := range accessElements {
@@ -145,12 +148,14 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 				}
 			}
 			if needsRead {
-				ax := ae.CreateElement("access")
+				ax := etree.NewElement("access")
 				cr.setAccessAttributes(ax, "read", attribute.Access.Read)
+				xml.AppendElement(ae, ax, "description")
 			}
 			if needsWrite {
-				ax := ae.CreateElement("access")
+				ax := etree.NewElement("access")
 				cr.setAccessAttributes(ax, "write", attribute.Access.Write)
+				xml.AppendElement(ae, ax, "access", "description")
 			}
 		}
 
@@ -165,7 +170,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 			}
 			if requiresQuality {
 				el := etree.NewElement("quality")
-				xml.AppendElement(ae, el, "description", "access")
+				xml.AppendElement(ae, el, "access", "description")
 				cr.setQualityAttributes(el, attribute.Quality)
 			}
 		} else {
@@ -174,7 +179,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 			}
 		}
 		if cr.generator.generateConformanceXML {
-			renderConformance(cr.generator.spec, attribute, cluster, attribute.Conformance, ae)
+			renderConformance(cr.generator.spec, attribute, cluster, attribute.Conformance, ae, "quality", "access", "description")
 		} else {
 			removeConformance(ae)
 		}
