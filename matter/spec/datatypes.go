@@ -91,14 +91,12 @@ func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
 
 func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
 	if dataType == nil {
-		if !conformance.IsDeprecated(field.Conformance) && (cluster == nil || cluster.Hierarchy == "Base") {
+		if !conformance.IsDeprecated(field.Conformance) && !conformance.IsDisallowed(field.Conformance) && !sp.IgnoreHierarchy && (cluster == nil || cluster.Hierarchy == "Base") {
 			var clusterName string
 			if cluster != nil {
 				clusterName = cluster.Name
 			}
-			if !sp.IgnoreHierarchy {
-				slog.Warn("missing type on field", log.Path("path", field), slog.String("id", field.ID.HexString()), slog.String("name", field.Name), slog.String("cluster", clusterName))
-			}
+			slog.Warn("missing type on field", log.Path("path", field), slog.String("id", field.ID.HexString()), slog.String("name", field.Name), slog.String("cluster", clusterName))
 		}
 		return
 	}

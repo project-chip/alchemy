@@ -258,7 +258,7 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 			if c, ok := spec.ClustersByID[er.ClusterID.Value()]; ok {
 				er.Cluster = c
 			} else {
-				slog.Warn("unknown cluster ID for element requirement on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
+				slog.Error("unknown cluster ID for element requirement on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
 
 			}
 		}
@@ -360,7 +360,10 @@ func getTagNamespace(spec *Specification, field *matter.Field) {
 			return
 		}
 	}
-	slog.Warn("failed to match tag name space", slog.String("name", field.Name), log.Path("field", field), slog.String("namespace", field.Type.Name))
+	if field.Type.Name != "tag" {
+		// Warn on unknown tag namespace, except for the example namespace "tag"
+		slog.Warn("failed to match tag name space", slog.String("name", field.Name), log.Path("field", field), slog.String("namespace", field.Type.Name))
+	}
 }
 
 func clusterName(cluster *matter.Cluster) string {
