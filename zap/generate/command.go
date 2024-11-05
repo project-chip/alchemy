@@ -147,6 +147,27 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		}
 	}
 
+	needsQuality := c.Quality.Has(matter.QualityLargeMessage)
+	if needsQuality {
+		for _, el := range ce.SelectElements("quality") {
+			if needsQuality {
+				cr.setQualityAttributes(el, c.Quality)
+				needsQuality = false
+			} else {
+				ce.RemoveChild(el)
+			}
+		}
+		if needsQuality {
+			el := etree.NewElement("quality")
+			xml.AppendElement(ce, el, "description", "access")
+			cr.setQualityAttributes(el, c.Quality)
+		}
+	} else {
+		for _, el := range ce.SelectElements("quality") {
+			ce.RemoveChild(el)
+		}
+	}
+
 	if cluster != nil && cr.generator != nil {
 		if cr.generator.generateConformanceXML {
 			renderConformance(cr.generator.spec, c, cluster, c.Conformance, ce)

@@ -167,6 +167,7 @@ var tableSchema = map[string]tableSchemaDef{
 			matter.TableColumnDirection,
 			matter.TableColumnResponse,
 			matter.TableColumnAccess,
+			matter.TableColumnQuality,
 			matter.TableColumnConformance,
 		},
 	},
