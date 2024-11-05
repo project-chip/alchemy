@@ -54,10 +54,7 @@ func (b *Ball) fixConstraintCells(section *spec.Section, ti *spec.TableInfo) (er
 		c = simplifyConstraints(c, dataType, quality)
 		fixed := c.ASCIIDocString(dataType)
 		if fixed != vc {
-			err = setCellString(cell, fixed)
-			if err != nil {
-				return
-			}
+			setCellString(cell, fixed)
 		}
 
 	}

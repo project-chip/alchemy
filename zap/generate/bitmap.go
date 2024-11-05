@@ -62,7 +62,10 @@ func (cr *configuratorRenderer) generateBitmaps(bitmaps map[*matter.Bitmap][]*ma
 			continue
 		}
 		bme := etree.NewElement("bitmap")
-		cr.populateBitmap(bme, bm, clusterIds)
+		err = cr.populateBitmap(bme, bm, clusterIds)
+		if err != nil {
+			return
+		}
 		xml.InsertElementByAttribute(parent, bme, "name", "domain")
 	}
 	return

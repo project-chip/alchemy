@@ -132,7 +132,7 @@ func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit 
 		}
 	}
 	if removed {
-		_ = parent.SetElements(els)
+		parent.SetElements(els)
 	}
 	return
 }

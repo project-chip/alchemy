@@ -99,13 +99,13 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, els ...asciidoc.Element
 	return
 }
 
-func (s *Section) AppendSection(ns *Section) error {
-	return s.Set.Append(ns)
+func (s *Section) AppendSection(ns *Section) {
+	s.Set.Append(ns)
 }
 
-func (s *Section) SetElements(elements asciidoc.Set) error {
+func (s *Section) SetElements(elements asciidoc.Set) {
 	s.Set.SetElements(elements)
-	return s.Base.SetElements(elements)
+	s.Base.SetElements(elements)
 }
 
 func (s Section) Type() asciidoc.ElementType {
@@ -491,7 +491,7 @@ func (s *Section) GetDataType() *types.DataType {
 }
 
 func findLooseEntities(doc *Doc, section *Section, pc *parseContext, parentEntity types.Entity) (entities []types.Entity, err error) {
-	traverse(doc, section, errata.SpecPurposeDataTypes, func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
+	traverseSections(doc, section, errata.SpecPurposeDataTypes, func(section *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch section.SecType {
 		case matter.SectionDataTypeBitmap:
 			var bm *matter.Bitmap
@@ -547,17 +547,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext, parentEntit
 	return
 }
 
-func skim(doc *Doc, parent asciidoc.HasElements, purpose errata.SpecPurpose) (sections []*Section) {
-	for _, s := range parse.Skim[*Section](parent.Elements()) {
-		if doc.errata.Spec.IgnoreSection(s.Name, purpose) {
-			continue
-		}
-		sections = append(sections, s)
-	}
-	return
-}
-
-func traverse(doc *Doc, parent asciidoc.HasElements, purpose errata.SpecPurpose, callback parse.TraverseCallback[*Section]) (sections []*Section) {
+func traverseSections(doc *Doc, parent asciidoc.HasElements, purpose errata.SpecPurpose, callback parse.TraverseCallback[*Section]) (sections []*Section) {
 	parse.Traverse(doc, parent.Elements(), func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
 		if doc.errata.Spec.IgnoreSection(s.Name, purpose) {
 			return parse.SearchShouldContinue

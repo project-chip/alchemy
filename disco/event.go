@@ -37,7 +37,10 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
 		}
 
-		b.addMissingColumns(events.section, eventsTable, matter.Tables[matter.TableTypeEvents], types.EntityTypeEvent)
+		err = b.addMissingColumns(events.section, eventsTable, matter.Tables[matter.TableTypeEvents], types.EntityTypeEvent)
+		if err != nil {
+			return fmt.Errorf("error adding missing columns in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
+		}
 
 		err = b.reorderColumns(dp.doc, events.section, eventsTable, matter.TableTypeEvents)
 		if err != nil {

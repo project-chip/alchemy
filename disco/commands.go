@@ -89,10 +89,7 @@ func (b *Ball) fixCommandDirection(section *spec.Section, rows []*asciidoc.Table
 		if e != nil {
 			continue
 		}
-		err = setCellString(cell, strings.ToLower(vc))
-		if err != nil {
-			return
-		}
+		setCellString(cell, strings.ToLower(vc))
 	}
 	return
 }

@@ -119,9 +119,15 @@ func (s *Section) mapFields(fieldMap map[string]*matter.Field, pc *parseContext)
 		if !ok {
 			continue
 		}
-		findAnonymousType(s, a)
+		err := findAnonymousType(s, a)
+		if err != nil {
+			return err
+		}
 		if a.Type != nil && a.Type.BaseType == types.BaseDataTypeTag {
-			findTagNamespace(s, a)
+			err = findTagNamespace(s, a)
+			if err != nil {
+				return err
+			}
 		}
 		pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], a)
 	}

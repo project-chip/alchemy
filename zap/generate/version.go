@@ -18,7 +18,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (cr *configuratorRenderer) patchComments(configurator *zap.Configurator, x *etree.Document) {
+func (cr *configuratorRenderer) patchComments(configurator *zap.Configurator, x *etree.Document) error {
 	var alchemyComment *etree.Comment
 	var copyrightComment *etree.Comment
 	var lastProcInst *etree.ProcInst
@@ -35,7 +35,7 @@ func (cr *configuratorRenderer) patchComments(configurator *zap.Configurator, x 
 		}
 	}
 	copyrightComment = cr.patchCopyright(configurator, x, lastProcInst, copyrightComment)
-	cr.patchAlchemyComment(configurator, x, alchemyComment, copyrightComment)
+	return cr.patchAlchemyComment(configurator, x, alchemyComment, copyrightComment)
 }
 
 var licenseDatePattern = regexp.MustCompile(`Copyright(?:\s+\(c\))?\s+(?P<Date>(?P<Start>[0-9]+)(\s*-\s*(?P<End>[0-9]+))?)`)
@@ -104,7 +104,7 @@ var initAlchemyTemplate = sync.OnceFunc(func() {
 	alchemyCommentTemplate = template.Must(template.New("alchemyComment").Parse(alchemyComment))
 })
 
-func (cr *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurator, x *etree.Document, alchemyComment *etree.Comment, copyrightComment *etree.Comment) {
+func (cr *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurator, x *etree.Document, alchemyComment *etree.Comment, copyrightComment *etree.Comment) error {
 	initAlchemyTemplate()
 	var alchemyCommentText bytes.Buffer
 	var paths []string
@@ -112,7 +112,7 @@ func (cr *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurat
 		paths = append(paths, d.Path.Relative)
 	}
 	slices.Sort(paths)
-	alchemyCommentTemplate.Execute(&alchemyCommentText, struct {
+	err := alchemyCommentTemplate.Execute(&alchemyCommentText, struct {
 		Path       string
 		Parameters []asciidoc.AttributeName
 		Git        string
@@ -120,12 +120,16 @@ func (cr *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurat
 		Path:       strings.Join(paths, " "),
 		Parameters: cr.generator.attributes,
 		Git:        cr.generator.specVersion})
+	if err != nil {
+		return err
+	}
 	if alchemyComment != nil {
 		alchemyComment.Data = alchemyCommentText.String()
 	} else {
 		alchemyComment = etree.NewComment(alchemyCommentText.String())
 		x.InsertChildAt(copyrightComment.Index()+1, alchemyComment)
 	}
+	return nil
 }
 
 func gitDescribe(specRoot string) (string, error) {

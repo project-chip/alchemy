@@ -50,7 +50,8 @@ func setElements[T asciidoc.HasElements](els any) composeOption[T] {
 		if !ok {
 			return fmt.Errorf("non-element list passed to setElements: %T", els)
 		}
-		return t.SetElements(as)
+		t.SetElements(as)
+		return nil
 	}
 }
 

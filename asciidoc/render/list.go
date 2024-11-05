@@ -37,33 +37,21 @@ func renderUnorderedListElement(cxt Target, el *asciidoc.UnorderedListItem) (err
 	return
 }
 
-func renderLabeledListElement(cxt Target, el *asciidoc.DescriptionListItem) error {
-	cxt.EnsureNewLine()
-	err := renderAttributes(cxt, el.Attributes(), false)
-	if err != nil {
-		return err
-	}
-	err = Elements(cxt, "", el.Term...)
-	if err != nil {
-		return err
-	}
-	cxt.WriteString(string(el.Marker))
-	cxt.WriteRune(' ')
-	err = Elements(cxt, "", el.Elements()...)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func renderDescriptionListItem(cxt Target, el *asciidoc.DescriptionListItem) {
+func renderDescriptionListItem(cxt Target, el *asciidoc.DescriptionListItem) (err error) {
 	cxt.FlushWrap()
 	renderAttributes(cxt, el.Attributes(), false)
 	cxt.DisableWrap()
-	Elements(cxt, "", el.Term...)
+	err = Elements(cxt, "", el.Term...)
+	if err != nil {
+		return
+	}
 	cxt.WriteString(el.Marker)
 	cxt.WriteRune(' ')
 	cxt.EnableWrap()
-	Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Elements()...)
+	if err != nil {
+		return
+	}
 	cxt.EnsureNewLine()
+	return
 }

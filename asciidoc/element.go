@@ -26,8 +26,8 @@ type Element interface {
 type HasElements interface {
 	Element
 	Elements() Set
-	Append(e Element) error
-	SetElements(e Set) error
+	Append(e Element)
+	SetElements(e Set)
 }
 
 type HasChild interface {

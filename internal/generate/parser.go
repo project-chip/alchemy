@@ -106,7 +106,8 @@ func Parser(grammarFile string, debug bool, patcher ParserPatcher) (err error) {
 		var grammarFile = grammarOutput.Path + ".peg"
 		if err = pigeon.Wait(); err != nil {
 			err = fmt.Errorf("failed running pigeon: %w", err)
-			os.WriteFile(grammarFile, []byte(g), os.ModeAppend|0644)
+			// Dump the composed peg file for debugging
+			_ = os.WriteFile(grammarFile, []byte(g), os.ModeAppend|0644)
 			return
 		}
 		parser := out.String()

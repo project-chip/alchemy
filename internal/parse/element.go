@@ -8,7 +8,7 @@ import (
 )
 
 type HasElements interface {
-	SetElements(asciidoc.Set) error
+	SetElements(asciidoc.Set)
 	Elements() asciidoc.Set
 }
 

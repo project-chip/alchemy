@@ -106,7 +106,6 @@ func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc
 
 		var result string
 		result, err = t.Exec(args)
-		//result, err = renderClusterTestPlan(doc, cluster)
 		if err != nil {
 			err = fmt.Errorf("failed rendering %s: %w", path, err)
 			return

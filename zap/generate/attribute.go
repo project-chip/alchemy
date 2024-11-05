@@ -179,7 +179,10 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 			}
 		}
 		if cr.generator.generateConformanceXML {
-			renderConformance(cr.generator.spec, attribute, cluster, attribute.Conformance, ae, "quality", "access", "description")
+			err = renderConformance(cr.generator.spec, attribute, cluster, attribute.Conformance, ae, "quality", "access", "description")
+			if err != nil {
+				return err
+			}
 		} else {
 			removeConformance(ae)
 		}

@@ -23,7 +23,7 @@ func renderConditional(cxt Target, prefix string, attributes asciidoc.AttributeN
 	cxt.EnableWrap()
 }
 
-func renderIfEval(cxt Target, el *asciidoc.IfEval) {
+func renderIfEval(cxt Target, el *asciidoc.IfEval) (err error) {
 	cxt.FlushWrap()
 	cxt.DisableWrap()
 	cxt.WriteString("ifeval::[")
@@ -33,7 +33,10 @@ func renderIfEval(cxt Target, el *asciidoc.IfEval) {
 	case asciidoc.AttributeQuoteTypeSingle:
 		cxt.WriteRune('\'')
 	}
-	Elements(cxt, "", el.Left.Value...)
+	err = Elements(cxt, "", el.Left.Value...)
+	if err != nil {
+		return
+	}
 	switch el.Left.Quote {
 	case asciidoc.AttributeQuoteTypeDouble:
 		cxt.WriteRune('"')
@@ -49,7 +52,10 @@ func renderIfEval(cxt Target, el *asciidoc.IfEval) {
 	case asciidoc.AttributeQuoteTypeSingle:
 		cxt.WriteRune('\'')
 	}
-	Elements(cxt, "", el.Right.Value...)
+	err = Elements(cxt, "", el.Right.Value...)
+	if err != nil {
+		return
+	}
 	switch el.Right.Quote {
 	case asciidoc.AttributeQuoteTypeDouble:
 		cxt.WriteRune('"')
@@ -59,4 +65,5 @@ func renderIfEval(cxt Target, el *asciidoc.IfEval) {
 
 	cxt.WriteString("]\n")
 	cxt.EnableWrap()
+	return
 }

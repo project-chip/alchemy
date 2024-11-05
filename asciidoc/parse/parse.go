@@ -49,11 +49,7 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 		if err != nil {
 			return nil, err
 		}
-		d, err = buildDoc(els)
-		if err != nil {
-			slog.Error("error building doc", slog.String("path", path), slog.Any("error", err))
-			return nil, err
-		}
+		d = buildDoc(els)
 		if debugParser {
 			fmt.Printf("\n\n\n\n\n\n")
 			dump(0, d.Elements()...)

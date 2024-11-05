@@ -51,21 +51,14 @@ func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []type
 		case *matter.ClusterGroup:
 			for _, cl := range v.Clusters {
 				if hasAtomicAttributes(cl) {
-					c.Spec.ClusterRefs.Add(cl, atomicRequest)
-					c.Spec.ClusterRefs.Add(cl, atomicResponse)
-					cl.Commands = append(cl.Commands, atomicRequest)
-					cl.Commands = append(cl.Commands, atomicResponse)
+					addAtomicOperations(spec, cl)
 				}
 			}
 		case *matter.Cluster:
 			if hasAtomicAttributes(v) {
-				c.Spec.ClusterRefs.Add(v, atomicRequest)
-				c.Spec.ClusterRefs.Add(v, atomicResponse)
-				v.Commands = append(v.Commands, atomicRequest)
-				v.Commands = append(v.Commands, atomicResponse)
+				addAtomicOperations(spec, v)
 			}
 		}
-
 	}
 
 	for _, m := range entities {
@@ -154,8 +147,6 @@ func (c *Configurator) addType(parentEntity types.Entity, dt *types.DataType) {
 			slog.Debug("skipping data type for different entity", "name", dt.Name, "parent", entity, "context", parentEntity)
 			return
 		}
-	} else if c.Global {
-
 	}
 	c.addEntityType(parentEntity, entity)
 }

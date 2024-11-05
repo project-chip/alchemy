@@ -2,10 +2,13 @@ package render
 
 import "github.com/project-chip/alchemy/asciidoc"
 
-func renderDelimitedLines(cxt Target, el asciidoc.HasLines, delimiter asciidoc.Delimiter) {
+func renderDelimitedLines(cxt Target, el asciidoc.HasLines, delimiter asciidoc.Delimiter) (err error) {
 	cxt.FlushWrap()
 	if ae, ok := el.(asciidoc.Attributable); ok {
-		renderAttributes(cxt, ae.Attributes(), false)
+		err = renderAttributes(cxt, ae.Attributes(), false)
+		if err != nil {
+			return
+		}
 	}
 	cxt.DisableWrap()
 	renderDelimiter(cxt, delimiter)
@@ -15,18 +18,26 @@ func renderDelimitedLines(cxt Target, el asciidoc.HasLines, delimiter asciidoc.D
 	}
 	renderDelimiter(cxt, delimiter)
 	cxt.EnableWrap()
+	return
 }
 
-func renderDelimitedElements(cxt Target, el asciidoc.HasElements, delimiter asciidoc.Delimiter) {
+func renderDelimitedElements(cxt Target, el asciidoc.HasElements, delimiter asciidoc.Delimiter) (err error) {
 	cxt.FlushWrap()
 	if ae, ok := el.(asciidoc.Attributable); ok {
-		renderAttributes(cxt, ae.Attributes(), false)
+		err = renderAttributes(cxt, ae.Attributes(), false)
+		if err != nil {
+			return
+		}
 	}
 	cxt.DisableWrap()
 	renderDelimiter(cxt, delimiter)
 	cxt.EnableWrap()
-	Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Elements()...)
+	if err != nil {
+		return
+	}
 	cxt.DisableWrap()
 	renderDelimiter(cxt, delimiter)
 	cxt.EnableWrap()
+	return
 }

@@ -57,7 +57,10 @@ func (cr *configuratorRenderer) generateCommands(commands map[*matter.Command]st
 		if matter.NonGlobalIDInvalidForEntity(matchingCommand.ID, types.EntityTypeCommand) {
 			continue
 		}
-		cr.populateCommand(cmde, cluster, matchingCommand)
+		err = cr.populateCommand(cmde, cluster, matchingCommand)
+		if err != nil {
+			return err
+		}
 	}
 
 	var remainingCommands []*matter.Command
@@ -72,13 +75,16 @@ func (cr *configuratorRenderer) generateCommands(commands map[*matter.Command]st
 		}
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
-		cr.populateCommand(cme, cluster, command)
+		err = cr.populateCommand(cme, cluster, command)
+		if err != nil {
+			return err
+		}
 		xml.InsertElementByAttribute(parent, cme, "code", "attribute", "globalAttribute")
 	}
 	return
 }
 
-func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matter.Cluster, c *matter.Command) {
+func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matter.Cluster, c *matter.Command) (err error) {
 	cr.elementMap[ce] = c
 	mandatory := conformance.IsMandatory(c.Conformance)
 
@@ -206,10 +212,13 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 
 	if cluster != nil && cr.generator != nil {
 		if cr.generator.generateConformanceXML {
-			renderConformance(cr.generator.spec, c, cluster, c.Conformance, ce, "access", "arg", "description")
+			err = renderConformance(cr.generator.spec, c, cluster, c.Conformance, ce, "access", "arg", "description")
+			if err != nil {
+				return err
+			}
 		} else {
 			removeConformance(ce)
 		}
 	}
-
+	return
 }

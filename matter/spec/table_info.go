@@ -346,7 +346,10 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 			err = readRowCellValueElements(doc, el.Elements(), value)
 		case *asciidoc.CrossReference:
 			if len(el.Set) > 0 {
-				readRowCellValueElements(doc, el.Set, value)
+				err = readRowCellValueElements(doc, el.Set, value)
+				if err != nil {
+					return
+				}
 			} else {
 				var val string
 				anchor := doc.FindAnchor(el.ID)
@@ -360,10 +363,10 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 			}
 		case *asciidoc.Link:
 			value.WriteString(el.URL.Scheme)
-			readRowCellValueElements(doc, el.URL.Path, value)
+			err = readRowCellValueElements(doc, el.URL.Path, value)
 		case *asciidoc.LinkMacro:
 			value.WriteString(el.URL.Scheme)
-			readRowCellValueElements(doc, el.URL.Path, value)
+			err = readRowCellValueElements(doc, el.URL.Path, value)
 		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
@@ -372,7 +375,7 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 				return
 			}
 			qt := quotedText.String()
-			if qt == "*" { //
+			if qt == "*" { // It's an asterisk, so we'll ignore it
 				continue
 			}
 			_, parseErr := strconv.Atoi(qt)

@@ -8,14 +8,12 @@ func (s Set) Elements() Set {
 	return s
 }
 
-func (s *Set) Append(e Element) error {
+func (s *Set) Append(e Element) {
 	*s = append(*s, e)
-	return nil
 }
 
-func (s *Set) SetElements(els Set) error {
+func (s *Set) SetElements(els Set) {
 	*s = els
-	return nil
 }
 
 func (s Set) Equals(o Set) bool {
