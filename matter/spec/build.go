@@ -265,70 +265,91 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 	}
 }
 
-func addClusterToSpec(spec *Specification, d *Doc, m *matter.Cluster) {
-	spec.Clusters[m] = struct{}{}
-	if m.ID.Valid() {
-		existing, ok := spec.ClustersByID[m.ID.Value()]
+func addClusterToSpec(spec *Specification, doc *Doc, cluster *matter.Cluster) {
+	spec.Clusters[cluster] = struct{}{}
+	if cluster.ID.Valid() {
+		existing, ok := spec.ClustersByID[cluster.ID.Value()]
 		if ok {
-			slog.Warn("Duplicate cluster ID", slog.String("clusterId", m.ID.HexString()), slog.String("clusterName", m.Name), slog.String("existingClusterName", existing.Name))
+			slog.Warn("Duplicate cluster ID", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterName", existing.Name))
 		}
-		spec.ClustersByID[m.ID.Value()] = m
+		spec.ClustersByID[cluster.ID.Value()] = cluster
 	} else {
-		idText := m.ID.Text()
+		idText := cluster.ID.Text()
 		if !strings.EqualFold(idText, "n/a") {
 			if strings.EqualFold(idText, "ID-TBD") {
-				slog.Warn("Cluster has not yet been assigned an ID; this may cause issues with generated code", slog.String("clusterName", m.Name))
+				slog.Warn("Cluster has not yet been assigned an ID; this may cause issues with generated code", slog.String("clusterName", cluster.Name))
 			} else {
-				slog.Warn("Cluster has invalid ID", slog.String("clusterId", idText), slog.String("clusterName", m.Name))
+				slog.Warn("Cluster has invalid ID", slog.String("clusterId", idText), slog.String("clusterName", cluster.Name))
 
 			}
 		}
 	}
-	existing, ok := spec.ClustersByName[m.Name]
+	existing, ok := spec.ClustersByName[cluster.Name]
 	if ok {
-		slog.Warn("Duplicate cluster Name", slog.String("clusterId", m.ID.HexString()), slog.String("clusterName", m.Name), slog.String("existingClusterId", existing.ID.HexString()))
+		slog.Warn("Duplicate cluster Name", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterId", existing.ID.HexString()))
 	}
-	spec.ClustersByName[m.Name] = m
+	spec.ClustersByName[cluster.Name] = cluster
 
-	for _, en := range m.Bitmaps {
+	for _, en := range cluster.Bitmaps {
 		_, ok := spec.bitmapIndex[en.Name]
 		if ok {
 			slog.Debug("multiple bitmaps with same name", "name", en.Name)
 		} else {
 			spec.bitmapIndex[en.Name] = en
 		}
-		spec.DocRefs[en] = d
-		spec.addEntityByName(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, cluster)
 	}
-	for _, en := range m.Enums {
+	for _, en := range cluster.Enums {
 		_, ok := spec.enumIndex[en.Name]
 		if ok {
 			slog.Debug("multiple enums with same name", "name", en.Name)
 		} else {
 			spec.enumIndex[en.Name] = en
 		}
-		spec.DocRefs[en] = d
-		spec.addEntityByName(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, cluster)
 	}
-	for _, en := range m.Structs {
+	for _, en := range cluster.Structs {
 		_, ok := spec.structIndex[en.Name]
 		if ok {
 			slog.Debug("multiple structs with same name", "name", en.Name)
 		} else {
 			spec.structIndex[en.Name] = en
 		}
-		spec.DocRefs[en] = d
-		spec.addEntityByName(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, cluster)
 	}
-	for _, en := range m.TypeDefs {
+	for _, en := range cluster.TypeDefs {
 		_, ok := spec.typeDefIndex[en.Name]
 		if ok {
 			slog.Debug("multiple structs with same name", "name", en.Name)
 		} else {
 			spec.typeDefIndex[en.Name] = en
 		}
-		spec.DocRefs[en] = d
-		spec.addEntityByName(en.Name, en, m)
+		spec.addEntityByName(en.Name, en, cluster)
+	}
+	noteDocRefs(spec, doc, cluster)
+}
+
+func noteDocRefs(spec *Specification, doc *Doc, cluster *matter.Cluster) {
+	for _, bm := range cluster.Bitmaps {
+		spec.DocRefs[bm] = doc
+	}
+	for _, e := range cluster.Enums {
+		spec.DocRefs[e] = doc
+	}
+	for _, s := range cluster.Structs {
+		spec.DocRefs[s] = doc
+	}
+	for _, td := range cluster.TypeDefs {
+		spec.DocRefs[td] = doc
+	}
+	for _, a := range cluster.Attributes {
+		spec.DocRefs[a] = doc
+	}
+	for _, e := range cluster.Events {
+		spec.DocRefs[e] = doc
+	}
+	for _, cmd := range cluster.Commands {
+		spec.DocRefs[cmd] = doc
 	}
 }
 
@@ -367,6 +388,11 @@ func resolveHierarchy(spec *Specification) {
 		for _, linkedEntity := range linkedEntities {
 			spec.ClusterRefs.Add(c, linkedEntity)
 			spec.addEntity(linkedEntity, c)
+		}
+		doc, ok := spec.DocRefs[c]
+		if ok {
+			// We may have created some new entities during the inherit, so make sure their doc refs are set
+			noteDocRefs(spec, doc, c)
 		}
 		assignCustomDataTypes(c)
 	}
