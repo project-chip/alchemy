@@ -147,10 +147,8 @@ func renderQuality(parent *etree.Element, q matter.Quality) {
 	if fixed || nonvolatile {
 		if fixed {
 			qx.CreateAttr("persistence", "fixed")
-		} else if nonvolatile {
-			qx.CreateAttr("persistence", "nonVolatile")
 		} else {
-			qx.CreateAttr("persistence", "volatile")
+			qx.CreateAttr("persistence", "nonVolatile")
 		}
 	}
 	if reportable {
