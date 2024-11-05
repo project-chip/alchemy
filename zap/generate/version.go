@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os/exec"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -110,6 +111,7 @@ func (cr *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurat
 	for _, d := range configurator.Docs {
 		paths = append(paths, d.Path.Relative)
 	}
+	slices.Sort(paths)
 	alchemyCommentTemplate.Execute(&alchemyCommentText, struct {
 		Path       string
 		Parameters []asciidoc.AttributeName
