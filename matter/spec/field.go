@@ -265,7 +265,7 @@ func findTagNamespace(s *Section, field *matter.Field) error {
 		return parse.SearchShouldContinue
 	})
 	if !found {
-		slog.Warn("Tag field does not specify namespace", slog.String("field", field.Name), log.Path("origin", field))
+		slog.Warn("Tag field does not specify namespace", slog.String("field", field.Name), log.Element("source", s.Doc.Path, field.Source()))
 	}
 	return nil
 }

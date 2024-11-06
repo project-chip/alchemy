@@ -200,7 +200,7 @@ func (*Section) toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableR
 	}
 	cr.Constraint, err = constraint.ParseString(c)
 	if err != nil {
-		slog.Warn("failed parsing constraint", log.Element("path", d.Path, row), slog.String("constraint", c))
+		slog.Warn("failed parsing constraint", log.Element("source", d.Path, row), slog.String("constraint", c))
 		cr.Constraint = &constraint.GenericConstraint{Value: c}
 	}
 	var a string

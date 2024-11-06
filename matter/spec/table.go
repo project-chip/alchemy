@@ -12,6 +12,7 @@ import (
 )
 
 var ErrNoTableFound = fmt.Errorf("no table found")
+var ErrNotEnoughRowsInTable = fmt.Errorf("not enough value rows in table")
 
 func parseFirstTable(doc *Doc, section *Section) (ti *TableInfo, err error) {
 	t := FindFirstTable(section)
@@ -30,7 +31,7 @@ func parseTable(doc *Doc, section *Section, t *asciidoc.Table) (ti *TableInfo, e
 		return
 	}
 	if len(ti.Rows) < ti.HeaderRowIndex+2 {
-		err = fmt.Errorf("not enough value rows in table")
+		err = ErrNotEnoughRowsInTable
 		return
 	}
 	if ti.ColumnMap == nil {

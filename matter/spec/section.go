@@ -497,7 +497,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext, parentEntit
 			var bm *matter.Bitmap
 			bm, err = section.toBitmap(doc, pc, parentEntity)
 			if err != nil {
-				slog.Warn("Error converting loose section to bitmap", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				slog.Warn("Error converting loose section to bitmap", log.Element("source", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
 			} else {
 				entities = append(entities, bm)
@@ -506,7 +506,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext, parentEntit
 			var e *matter.Enum
 			e, err = section.toEnum(doc, pc, parentEntity)
 			if err != nil {
-				slog.Warn("Error converting loose section to enum", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				slog.Warn("Error converting loose section to enum", log.Element("source", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
 			} else {
 				entities = append(entities, e)
@@ -515,7 +515,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext, parentEntit
 			var s *matter.Struct
 			s, err = section.toStruct(doc, pc, parentEntity)
 			if err != nil {
-				slog.Warn("Error converting loose section to struct", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				slog.Warn("Error converting loose section to struct", log.Element("source", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
 			} else {
 				entities = append(entities, s)
@@ -524,7 +524,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext, parentEntit
 			var t *matter.TypeDef
 			t, err = section.toTypeDef(doc, pc, parentEntity)
 			if err != nil {
-				slog.Warn("Error converting loose section to typedef", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				slog.Warn("Error converting loose section to typedef", log.Element("source", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
 			} else {
 				entities = append(entities, t)
@@ -533,7 +533,7 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext, parentEntit
 			var ges []types.Entity
 			ges, err = section.toGlobalElements(doc, pc, parentEntity)
 			if err != nil {
-				slog.Warn("Error converting loose section to global entities", log.Element("path", doc.Path, section.Base), slog.Any("error", err))
+				slog.Warn("Error converting loose section to global entities", log.Element("source", doc.Path, section.Base), slog.Any("error", err))
 				err = nil
 			} else {
 				entities = append(entities, ges...)

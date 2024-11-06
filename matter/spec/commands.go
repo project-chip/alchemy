@@ -62,7 +62,7 @@ func (cf *commandFactory) Details(d *Doc, s *Section, pc *parseContext, c *matte
 			if err == ErrNoTableFound {
 				err = nil
 			} else {
-				slog.Warn("No valid command parameter table found", log.Element("path", d.Path, s.Base), "command", c.Name)
+				slog.Warn("No valid command parameter table found", log.Element("source", d.Path, s.Base), "command", c.Name)
 				err = nil
 			}
 			return
