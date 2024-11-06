@@ -27,7 +27,7 @@ TableEmptyLine = !TableEnd NewLine AnySpaces &(NewLine )  {
     return compose(c, asciidoc.NewEmptyLine(string(c.text)))
 }
 
-TableMacros = (TableIfDef / TableIfNDef / TableEndIfDef / TableComment / TableMultiLineComment)
+TableMacros = (TableIfDef / TableIfNDef / TableEndIfDef / TableComment / TableMultiLineComment / TableFileInclude)
 
 TableIfDef = !TableEnd NewLine AnySpaces ifdef:IfDef  {
     debugPosition(c, "TABLE: matched table ifdef %s\n", string(c.text))
@@ -52,6 +52,10 @@ TableComment = !TableEnd NewLine comment:(SingleLineComment)   {
 TableMultiLineComment = !TableEnd NewLine comment:(MultiLineComment)   {
     debugPosition(c, "TABLE: matched table multiline comment %s\n", string(c.text))
     return compose(c, comment.(*asciidoc.MultiLineComment))
+}
+
+TableFileInclude = !TableEnd NewLine !"\\" "include::" path:(FileIncludePath) attributes:(InlineAttributes) AnySpaces &EndOfLine {
+    return compose(c, asciidoc.NewFileInclude(), setElements[*asciidoc.FileInclude](path), setAttributes[*asciidoc.FileInclude](attributes))
 }
 
 TableEmptyLines = TableEmptyLine+
