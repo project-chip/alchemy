@@ -50,6 +50,7 @@ func init() {
 	Command.Flags().Bool("addSpaceAfterPunctuation", true, "add missing space after punctuation")
 	Command.Flags().Bool("removeExtraSpaces", true, "remove extraneous spaces")
 	Command.Flags().Bool("disambiguateConformanceChoice", false, "ensure conformance choices are only used once per document")
+	Command.Flags().Bool("normalizeAnchors", false, "rewrite anchors and references without labels")
 	Command.Flags().Int("wrap", 0, "the maximum length of a line")
 }
 
@@ -72,6 +73,7 @@ func getDiscoOptions(cmd *cobra.Command) []disco.Option {
 		"removeExtraSpaces":             disco.RemoveExtraSpaces,
 		"normalizeFeatureNames":         disco.NormalizeFeatureNames,
 		"disambiguateConformanceChoice": disco.DisambiguateConformanceChoice,
+		"normalizeAnchors":              disco.NormalizeAnchors,
 	}
 	var discoOptions []disco.Option
 	for name, o := range optionFuncs {

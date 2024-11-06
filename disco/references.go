@@ -2,12 +2,16 @@ package disco
 
 import (
 	"log/slog"
+	"strings"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func rewriteCrossReferences(doc *spec.Doc) {
+func (p AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 	for id, xrefs := range doc.CrossReferences() {
 		anchor := doc.FindAnchor(id)
 		if anchor == nil {
@@ -37,6 +41,12 @@ func rewriteCrossReferences(doc *spec.Doc) {
 			continue
 		}
 		anchorLabel := labelText(anchor.LabelElements)
+		if anchorLabel == "" {
+			section, isSection := anchor.Element.(*asciidoc.Section)
+			if isSection {
+				anchorLabel = section.Name()
+			}
+		}
 		// We're going to be modifying the underlying array, so we need to make a copy of the slice
 		xrefsToChange := make([]*spec.CrossReference, len(xrefs))
 		copy(xrefsToChange, xrefs)
@@ -52,6 +62,43 @@ func rewriteCrossReferences(doc *spec.Doc) {
 				}
 			}
 		}
+	}
+	if p.options.normalizeAnchors {
+		parse.Traverse(nil, doc.Base.Elements(), func(icr *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
+			if len(icr.Set) > 0 {
+				return parse.SearchShouldContinue
+			}
+			anchor := doc.FindAnchor(icr.ID)
+			if anchor == nil {
+				return parse.SearchShouldContinue
+			}
+			section, isSection := anchor.Element.(*asciidoc.Section)
+			if !isSection {
+				return parse.SearchShouldContinue
+			}
+			sectionName := section.Name()
+			elements := parent.Elements()
+			if index >= len(elements)-1 {
+				return parse.SearchShouldContinue
+			}
+			nextElement := elements[index+1]
+			nextString, ok := nextElement.(*asciidoc.String)
+			if !ok {
+				return parse.SearchShouldContinue
+			}
+			lastSpaceIndex := strings.LastIndex(sectionName, " ")
+			if lastSpaceIndex == -1 {
+				return parse.SearchShouldContinue
+			}
+			suffix := sectionName[lastSpaceIndex:]
+			if !text.HasCaseInsensitivePrefix(nextString.Value, suffix) {
+				return parse.SearchShouldContinue
+			}
+			replacement := text.TrimCaseInsensitivePrefix(nextString.Value, suffix)
+			nextString.Value = replacement
+			return parse.SearchShouldContinue
+		})
+
 	}
 }
 

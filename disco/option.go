@@ -1,6 +1,6 @@
 package disco
 
-type Option func(b *Ball)
+type Option func(options *options)
 
 type options struct {
 	linkIndexTables               bool
@@ -18,6 +18,7 @@ type options struct {
 	removeExtraSpaces             bool
 	normalizeFeatureNames         bool
 	disambiguateConformanceChoice bool
+	normalizeAnchors              bool
 }
 
 var defaultOptions = options{
@@ -36,94 +37,101 @@ var defaultOptions = options{
 	removeExtraSpaces:             true,
 	normalizeFeatureNames:         true,
 	disambiguateConformanceChoice: false,
+	normalizeAnchors:              false,
 }
 
 func LinkIndexTables(link bool) Option {
-	return func(b *Ball) {
-		b.options.linkIndexTables = link
+	return func(options *options) {
+		options.linkIndexTables = link
 	}
 }
 
 func AddMissingColumns(add bool) Option {
-	return func(b *Ball) {
-		b.options.addMissingColumns = add
+	return func(options *options) {
+		options.addMissingColumns = add
 	}
 }
 
 func ReorderColumns(reorder bool) Option {
-	return func(b *Ball) {
-		b.options.reorderColumns = reorder
+	return func(options *options) {
+		options.reorderColumns = reorder
 	}
 }
 
 func RenameTableHeaders(rename bool) Option {
-	return func(b *Ball) {
-		b.options.renameTableHeaders = rename
+	return func(options *options) {
+		options.renameTableHeaders = rename
 	}
 }
 
 func FormatAccess(format bool) Option {
-	return func(b *Ball) {
-		b.options.formatAccess = format
+	return func(options *options) {
+		options.formatAccess = format
 	}
 }
 
 func PromoteDataTypes(promote bool) Option {
-	return func(b *Ball) {
-		b.options.promoteDataTypes = promote
+	return func(options *options) {
+		options.promoteDataTypes = promote
 	}
 }
 
 func ReorderSections(reorder bool) Option {
-	return func(b *Ball) {
-		b.options.reorderSections = reorder
+	return func(options *options) {
+		options.reorderSections = reorder
 	}
 }
 
 func FixCommandDirection(add bool) Option {
-	return func(b *Ball) {
-		b.options.fixCommandDirection = add
+	return func(options *options) {
+		options.fixCommandDirection = add
 	}
 }
 
 func AppendSubsectionTypes(add bool) Option {
-	return func(b *Ball) {
-		b.options.appendSubsectionTypes = add
+	return func(options *options) {
+		options.appendSubsectionTypes = add
 	}
 }
 
 func UppercaseHex(add bool) Option {
-	return func(b *Ball) {
-		b.options.uppercaseHex = add
+	return func(options *options) {
+		options.uppercaseHex = add
 	}
 }
 
 func AddSpaceAfterPunctuation(add bool) Option {
-	return func(b *Ball) {
-		b.options.addSpaceAfterPunctuation = add
+	return func(options *options) {
+		options.addSpaceAfterPunctuation = add
 	}
 }
 
 func RemoveExtraSpaces(add bool) Option {
-	return func(b *Ball) {
-		b.options.removeExtraSpaces = add
+	return func(options *options) {
+		options.removeExtraSpaces = add
 	}
 }
 
 func NormalizeTableOptions(add bool) Option {
-	return func(b *Ball) {
-		b.options.normalizeTableOptions = add
+	return func(options *options) {
+		options.normalizeTableOptions = add
 	}
 }
 
 func NormalizeFeatureNames(add bool) Option {
-	return func(b *Ball) {
-		b.options.normalizeFeatureNames = add
+	return func(options *options) {
+		options.normalizeFeatureNames = add
 	}
 }
 
 func DisambiguateConformanceChoice(add bool) Option {
-	return func(b *Ball) {
-		b.options.disambiguateConformanceChoice = add
+	return func(options *options) {
+		options.disambiguateConformanceChoice = add
+	}
+}
+
+func NormalizeAnchors(add bool) Option {
+	return func(options *options) {
+		options.normalizeAnchors = add
 	}
 }
