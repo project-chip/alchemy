@@ -27,7 +27,7 @@ func (r Baller) Type() pipeline.ProcessorType {
 func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[*spec.Doc], extras []*pipeline.Data[*spec.Doc], err error) {
 	b := NewBall(input.Content)
 	for _, option := range r.discoOptions {
-		option(b)
+		option(&b.options)
 	}
 	err = b.disco(cxt)
 	if err != nil {

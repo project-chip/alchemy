@@ -27,11 +27,15 @@ type anchorGroup struct {
 }
 
 type AnchorNormalizer struct {
-	discoOptions []Option
+	options options
 }
 
 func newAnchorNormalizer(discoOptions []Option) AnchorNormalizer {
-	return AnchorNormalizer{discoOptions: discoOptions}
+	an := AnchorNormalizer{}
+	for _, o := range discoOptions {
+		o(&an.options)
+	}
+	return an
 }
 
 func (r AnchorNormalizer) Name() string {
@@ -115,7 +119,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 	}
 	for _, input := range inputs {
 		doc := input.Content
-		rewriteCrossReferences(doc)
+		p.rewriteCrossReferences(doc)
 		delete(extraDocs, doc)
 		outputs = append(outputs, pipeline.NewData[render.InputDocument](input.Path, input.Content))
 	}
@@ -125,7 +129,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 	return
 }
 
-func (AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (anchorGroups map[*spec.DocGroup]*anchorGroup, err error) {
+func (an AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (anchorGroups map[*spec.DocGroup]*anchorGroup, err error) {
 	anchorGroups = make(map[*spec.DocGroup]*anchorGroup)
 	unaffiliatedDocs := spec.NewDocGroup("")
 	for _, input := range inputs {
@@ -155,7 +159,7 @@ func (AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (an
 		for _, as := range da {
 			for _, a := range as {
 				id := a.ID
-				newID := normalizeAnchor(a)
+				newID := an.normalizeAnchor(a)
 				if id == newID {
 					ag.updatedAnchors[id] = append(ag.updatedAnchors[id], a)
 					continue
@@ -174,7 +178,7 @@ func (AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (an
 	return
 }
 
-func normalizeAnchor(info *spec.Anchor) (id string) {
+func (an AnchorNormalizer) normalizeAnchor(info *spec.Anchor) (id string) {
 	id = info.ID
 	if skipAnchor(info) {
 		return
@@ -203,6 +207,12 @@ func normalizeAnchor(info *spec.Anchor) (id string) {
 	}
 	if labelText(info.LabelElements) == name {
 		info.LabelElements = nil
+	}
+	if an.options.normalizeAnchors {
+		_, isSection := info.Element.(*asciidoc.Section)
+		if isSection {
+			info.LabelElements = nil
+		}
 	}
 	return
 }
