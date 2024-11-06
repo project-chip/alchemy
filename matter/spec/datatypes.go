@@ -20,7 +20,9 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 			var mb *matter.Bitmap
 			mb, err = s.toBitmap(d, pc, parentEntity)
 			if err != nil {
-				slog.Warn("Error converting section to bitmap", log.Element("path", d.Path, s.Base), slog.Any("error", err))
+				if err != ErrNotEnoughRowsInTable || d.parsed {
+					slog.Warn("Error converting section to bitmap", log.Element("source", d.Path, s.Base), slog.Any("error", err))
+				}
 				err = nil
 			} else {
 				bitmaps = append(bitmaps, mb)
@@ -29,7 +31,9 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 			var me *matter.Enum
 			me, err = s.toEnum(d, pc, parentEntity)
 			if err != nil {
-				slog.Warn("Error converting section to enum", log.Element("path", d.Path, s.Base), slog.Any("error", err))
+				if err != ErrNotEnoughRowsInTable || d.parsed {
+					slog.Warn("Error converting section to enum", log.Element("source", d.Path, s.Base), slog.Any("error", err))
+				}
 				err = nil
 			} else {
 				enums = append(enums, me)
@@ -38,7 +42,9 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 			var me *matter.Struct
 			me, err = s.toStruct(d, pc, parentEntity)
 			if err != nil {
-				slog.Warn("Error converting section to struct", log.Element("path", d.Path, s.Base), slog.Any("error", err))
+				if err != ErrNotEnoughRowsInTable || d.parsed {
+					slog.Warn("Error converting section to struct", log.Element("source", d.Path, s.Base), slog.Any("error", err))
+				}
 				err = nil
 			} else {
 				structs = append(structs, me)
@@ -47,7 +53,9 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 			var me *matter.TypeDef
 			me, err = s.toTypeDef(d, pc, parentEntity)
 			if err != nil {
-				slog.Warn("Error converting section to typedef", log.Element("path", d.Path, s.Base), slog.Any("error", err))
+				if err != ErrNotEnoughRowsInTable || d.parsed {
+					slog.Warn("Error converting section to typedef", log.Element("source", d.Path, s.Base), slog.Any("error", err))
+				}
 				err = nil
 			} else {
 				typedefs = append(typedefs, me)

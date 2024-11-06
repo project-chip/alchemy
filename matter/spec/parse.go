@@ -36,7 +36,7 @@ func parseReader(r io.Reader, path asciidoc.Path, specRoot string, attributes ..
 	if err != nil {
 		return nil, err
 	}
-
+	doc.parsed = true
 	return doc, nil
 }
 

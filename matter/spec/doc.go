@@ -29,6 +29,7 @@ type Doc struct {
 	referenceIndex
 	attributes map[asciidoc.AttributeName]any
 
+	parsed            bool // Tracks whether this doc was parsed vs. just read (i.e. were file substituions done)
 	entities          []types.Entity
 	orderedEntities   []types.Entity
 	globalObjects     []types.Entity
