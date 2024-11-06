@@ -8,7 +8,7 @@ type Path struct {
 }
 
 func (p Path) String() string {
-	return p.Absolute
+	return p.Relative
 }
 
 func (p Path) Base() string {

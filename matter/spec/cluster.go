@@ -169,7 +169,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 						case *matter.TypeDef:
 							c.TypeDefs = append(c.TypeDefs, le)
 						default:
-							slog.Warn("unexpected loose entity", log.Element("path", d.Path, s.Base), "entity", le)
+							slog.Warn("unexpected loose entity", log.Element("source", d.Path, s.Base), "entity", le)
 						}
 					}
 				}

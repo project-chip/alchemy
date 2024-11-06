@@ -17,7 +17,7 @@ func (s *Section) toBitmap(d *Doc, pc *parseContext, parent types.Entity) (bm *m
 	dt := s.GetDataType()
 	if dt == nil {
 		dt = types.NewDataType(types.BaseDataTypeMap8, false)
-		slog.Warn("Bitmap does not declare its derived data type; assuming map8", log.Element("path", d.Path, s.Base), slog.String("bitmap", name))
+		slog.Warn("Bitmap does not declare its derived data type; assuming map8", log.Element("source", d.Path, s.Base), slog.String("bitmap", name))
 	} else if !dt.IsMap() {
 		return nil, fmt.Errorf("unknown bitmap data type: %s", dt.Name)
 	}
@@ -30,7 +30,7 @@ func (s *Section) toBitmap(d *Doc, pc *parseContext, parent types.Entity) (bm *m
 
 	if err != nil {
 		if err == ErrNoTableFound {
-			slog.Warn("no table found for bitmap", log.Element("path", s.Doc.Path, s.Base), slog.String("name", bm.Name))
+			slog.Warn("no table found for bitmap", log.Element("source", s.Doc.Path, s.Base), slog.String("name", bm.Name))
 			return bm, nil
 		}
 		return nil, fmt.Errorf("failed reading bitmap %s: %w", name, err)

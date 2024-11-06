@@ -66,7 +66,7 @@ func buildList[T types.Entity, L ~[]T](d *Doc, s *Section, t *asciidoc.Table, pc
 			name := factory.EntityName(s)
 			e, ok = index.byName[strings.ToLower(name)]
 			if !ok {
-				slog.Warn("unknown entity", log.Element("path", d.Path, s.Base), "entityName", s.Name)
+				slog.Warn("unknown entity", log.Element("source", d.Path, s.Base), "entityName", s.Name)
 				continue
 			}
 		}

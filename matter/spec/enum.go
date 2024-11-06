@@ -22,7 +22,7 @@ func (s *Section) toEnum(d *Doc, pc *parseContext, parent types.Entity) (e *matt
 	dt := s.GetDataType()
 	if dt == nil {
 		dt = types.NewDataType(types.BaseDataTypeEnum8, false)
-		slog.Warn("Enum does not declare its derived data type; assuming enum8", log.Element("path", d.Path, s.Base), slog.String("enum", name))
+		slog.Warn("Enum does not declare its derived data type; assuming enum8", log.Element("source", d.Path, s.Base), slog.String("enum", name))
 	} else if !dt.IsEnum() {
 		return nil, fmt.Errorf("unknown enum data type: %s", dt.Name)
 	}
@@ -31,7 +31,6 @@ func (s *Section) toEnum(d *Doc, pc *parseContext, parent types.Entity) (e *matt
 
 	e.Values, err = s.findEnumValues(e)
 	if err != nil {
-		slog.Warn("error finding enum values", log.Element("path", d.Path, s.Base), slog.Any("err", err))
 		return
 	}
 

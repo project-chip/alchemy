@@ -69,7 +69,7 @@ func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*
 					var args []any
 					args = append(args, slog.String("id", id), slog.Any("error", err))
 					for _, info := range infos {
-						args = append(args, log.Element("path", info.Document.Path, info.Element))
+						args = append(args, log.Element("source", info.Document.Path, info.Element))
 					}
 
 					slog.Warn("failed disambiguating anchor", args...)
@@ -161,7 +161,7 @@ func (AnchorNormalizer) normalizeAnchors(inputs []*pipeline.Data[*spec.Doc]) (an
 					continue
 				}
 				if _, existingAnchor := da[newID]; existingAnchor {
-					slog.Warn("Attempting to rename anchor to existing anchor", slog.String("oldAnchor", id), slog.String("newAnchor", newID))
+					slog.Warn("Attempting to rename anchor to existing anchor", slog.String("oldAnchor", id), slog.String("newAnchor", newID), log.Element("source", doc.Path, a.Element))
 					continue
 				}
 				ag.updatedAnchors[newID] = append(ag.updatedAnchors[newID], a)

@@ -78,7 +78,7 @@ func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *
 					dp.attributes = append(dp.attributes, attributes)
 				}
 			default:
-				slog.Warn("attributes section in non-cluster doc", log.Element("path", doc.Path, section.Base))
+				slog.Warn("attributes section in non-cluster doc", log.Element("source", doc.Path, section.Base))
 			}
 		case matter.SectionFeatures:
 			switch docType {
@@ -89,7 +89,7 @@ func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *
 					dp.features = append(dp.features, features)
 				}
 			default:
-				slog.Warn("features section in non-cluster doc", log.Element("path", doc.Path, section.Base))
+				slog.Warn("features section in non-cluster doc", log.Element("source", doc.Path, section.Base))
 			}
 		case matter.SectionCommands:
 			var commands *subSection

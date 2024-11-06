@@ -36,7 +36,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, pc *parseContext
 		if err != nil {
 			if cluster.Hierarchy == "Base" && !conformance.IsDeprecated(attr.Conformance) && !conformance.IsDisallowed(attr.Conformance) {
 				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated or disallowed
-				slog.Warn("error reading attribute data type", log.Element("path", d.Path, row), slog.String("name", attr.Name), slog.Any("error", err))
+				slog.Warn("error reading attribute data type", log.Element("source", d.Path, row), slog.String("name", attr.Name), slog.Any("error", err))
 			}
 			err = nil
 		}

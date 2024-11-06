@@ -199,7 +199,7 @@ func (ti *TableInfo) RenderColumn(row *asciidoc.TableRow, renderer CellRenderer,
 var newLineReplacer = strings.NewReplacer("\r\n", "", "\r", "", "\n", "")
 
 func (ti *TableInfo) ReadConformance(row *asciidoc.TableRow, column matter.TableColumn) conformance.Set {
-	val, _, ok := ti.RenderColumn(row, ti.buildRowConformance, column)
+	val, source, ok := ti.RenderColumn(row, ti.buildRowConformance, column)
 	if !ok {
 		return nil
 	}
@@ -212,7 +212,7 @@ func (ti *TableInfo) ReadConformance(row *asciidoc.TableRow, column matter.Table
 	s = matter.StripTypeSuffixes(s)
 	conf := conformance.ParseConformance(s)
 	if conformance.IsGeneric(conf) {
-		slog.Error("failed parsing conformance cell", slog.String("value", s))
+		slog.Error("failed parsing conformance cell", log.Element("source", ti.Doc.Path, source), slog.String("value", s))
 	}
 	return conf
 }
@@ -253,14 +253,14 @@ func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Set, sb *strings.
 			case "nbsp":
 				sb.WriteRune(' ')
 			default:
-				slog.Warn("unknown predefined attribute", log.Element("path", ti.Doc.Path, el), "name", v.Name)
+				slog.Warn("unknown predefined attribute", log.Element("source", ti.Doc.Path, el), "name", v.Name)
 			}
 		case *asciidoc.NewLine:
 			sb.WriteRune(' ')
 		case asciidoc.HasElements:
 			ti.buildRowConformance(v.Elements(), sb)
 		default:
-			slog.Warn("unknown conformance value element", log.Element("path", ti.Doc.Path, el), "type", fmt.Sprintf("%T", el))
+			slog.Warn("unknown conformance value element", log.Element("source", ti.Doc.Path, el), "type", fmt.Sprintf("%T", el))
 		}
 	}
 	return
@@ -274,7 +274,7 @@ func (ti *TableInfo) ReadConstraint(row *asciidoc.TableRow, column matter.TableC
 	var c constraint.Constraint
 	c, err := constraint.ParseString(s)
 	if err != nil {
-		slog.Error("failed parsing constraint cell", log.Element("path", ti.Doc.Path, source), slog.String("constraint", val))
+		slog.Error("failed parsing constraint cell", log.Element("source", ti.Doc.Path, source), slog.String("constraint", val))
 		return &constraint.GenericConstraint{Value: val}
 	}
 	return c
