@@ -83,6 +83,7 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			}
 
 			b.appendSubsectionTypes(event.section, eventTable.ColumnMap, eventTable.Rows)
+			b.removeMandatoryDefaults(eventTable)
 
 			err = b.linkIndexTables(cxt, event)
 			if err != nil {

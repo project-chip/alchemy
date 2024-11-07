@@ -52,6 +52,7 @@ func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSecti
 
 	}
 	enumTable = es.table
+	b.removeMandatoryDefaults(enumTable)
 
 	err = b.reorderColumns(dp.doc, es.section, enumTable, matter.TableTypeEnum)
 	if err != nil {

@@ -63,6 +63,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 	}
 
 	b.appendSubsectionTypes(ss.section, fieldsTable.ColumnMap, fieldsTable.Rows)
+	b.removeMandatoryDefaults(fieldsTable)
 
 	err = b.linkIndexTables(cxt, ss)
 	if err != nil {

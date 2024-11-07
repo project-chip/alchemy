@@ -62,6 +62,8 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
 			}
 			b.appendSubsectionTypes(command.section, command.table.ColumnMap, command.table.Rows)
+			b.removeMandatoryDefaults(command.table)
+
 			err = b.linkIndexTables(cxt, command)
 			if err != nil {
 				return err

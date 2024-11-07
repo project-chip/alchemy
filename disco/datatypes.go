@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -491,6 +492,32 @@ func renameDataType(subSections []*subSection, oldName string, newName string) {
 				slog.Debug("renaming data type", "oldName", oldName, "newName", newName)
 				setCellString(typeCell, newName)
 			}
+		}
+	}
+}
+
+func (b *Ball) removeMandatoryDefaults(ti *spec.TableInfo) {
+	if !b.options.removeMandatoryDefaults {
+		return
+	}
+	defaultIndex, hasDefault := ti.ColumnMap[matter.TableColumnDefault]
+	_, hasConformance := ti.ColumnMap[matter.TableColumnConformance]
+	if !hasDefault || !hasConformance {
+		return
+	}
+	for row := range ti.Body() {
+		conf := ti.ReadConformance(row, matter.TableColumnConformance)
+		if !conformance.IsMandatory(conf) {
+			continue
+		}
+		defaultCell := row.Cell(defaultIndex)
+		def, err := ti.Doc.GetHeaderCellString(defaultCell)
+		if err != nil {
+			continue
+		}
+		def = strings.TrimSpace(def)
+		if def != "" {
+			setCellString(defaultCell, "")
 		}
 	}
 }
