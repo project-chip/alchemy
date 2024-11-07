@@ -19,6 +19,7 @@ type options struct {
 	normalizeFeatureNames         bool
 	disambiguateConformanceChoice bool
 	normalizeAnchors              bool
+	removeMandatoryDefaults       bool
 }
 
 var defaultOptions = options{
@@ -38,6 +39,7 @@ var defaultOptions = options{
 	normalizeFeatureNames:         true,
 	disambiguateConformanceChoice: false,
 	normalizeAnchors:              false,
+	removeMandatoryDefaults:       false,
 }
 
 func LinkIndexTables(link bool) Option {
@@ -133,5 +135,11 @@ func DisambiguateConformanceChoice(add bool) Option {
 func NormalizeAnchors(add bool) Option {
 	return func(options *options) {
 		options.normalizeAnchors = add
+	}
+}
+
+func RemoveMandatoryDefaults(add bool) Option {
+	return func(options *options) {
+		options.removeMandatoryDefaults = add
 	}
 }

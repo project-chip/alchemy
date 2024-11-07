@@ -51,6 +51,8 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 		if err != nil {
 			return err
 		}
+
+		b.removeMandatoryDefaults(attributesTable)
 	}
 	return nil
 }
