@@ -58,7 +58,7 @@ Conformance <-  '[' i:Expression ']' choice:Choice? ConformanceSeparator {
     return &Mandatory{Expression:exp}, nil
 }
 
-Expression <- ComparisonExpression / LogicalExpression 
+Expression <- LogicalExpression 
 
 
 
