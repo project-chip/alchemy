@@ -363,7 +363,7 @@ type Table struct {
 	Set
 }
 
-func (Table) Type() ElementType {
+func (*Table) Type() ElementType {
 	return ElementTypeBlock
 }
 
