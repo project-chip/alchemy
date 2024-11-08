@@ -1,0 +1,16 @@
+
+AlchemyEscape =
+    start:(AlchemyEscapeStart) 
+    AnySpaces value:(AttributeEntryElements) EndOfLine
+    lines:(AlchemyEscapeLine)*
+    AlchemyEscapeEnd {
+        return compose(c, asciidoc.NewAlchemyEscape(), setLines[*asciidoc.AlchemyEscape](cast[any, string](lines.([]any))), setElements[*asciidoc.AlchemyEscape](value))
+    }
+
+AlchemyEscapeStart = ":alchemy-escape:" 
+
+AlchemyEscapeLine = (!AlchemyEscapeEnd NotEndOfFile line:AnyText EndOfLine) {
+    return toString(line), nil
+}
+
+AlchemyEscapeEnd = ":!alchemy-escape:" &EndOfLine / EndOfFile

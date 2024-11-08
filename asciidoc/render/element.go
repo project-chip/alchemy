@@ -21,6 +21,8 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			e = hb.GetBase()
 		}
 		switch el := e.(type) {
+		case *asciidoc.AlchemyEscape:
+			err = renderEscape(cxt, el)
 		case asciidoc.EmptyLine:
 			cxt.EnsureNewLine()
 			cxt.WriteRune('\n')
