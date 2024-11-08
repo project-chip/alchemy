@@ -42,8 +42,8 @@ func (ll *LengthLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return rc.Max(cc)
 }
 
-func (ll *LengthLimit) Default(cc Context) (def types.DataTypeExtreme) {
-	return cc.Default(ll.Value)
+func (ll *LengthLimit) Fallback(cc Context) (def types.DataTypeExtreme) {
+	return cc.Fallback(ll.Value)
 }
 
 func (ll *LengthLimit) Clone() Limit {

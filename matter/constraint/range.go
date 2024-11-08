@@ -35,7 +35,7 @@ func (c *RangeConstraint) Max(cc Context) (to types.DataTypeExtreme) {
 	return c.Maximum.Max(cc)
 }
 
-func (c *RangeConstraint) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *RangeConstraint) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 

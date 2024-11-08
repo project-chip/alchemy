@@ -99,7 +99,7 @@ func (c *MathExpressionLimit) operate(left types.DataTypeExtreme, right types.Da
 	return
 }
 
-func (c *MathExpressionLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *MathExpressionLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 

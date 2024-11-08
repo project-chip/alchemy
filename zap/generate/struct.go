@@ -167,6 +167,6 @@ func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *ma
 	} else {
 		e.RemoveAttr("isFabricSensitive")
 	}
-	setFieldDefault(e, v, s.Fields)
+	setFieldFallback(e, v, s.Fields)
 	renderConstraint(e, s.Fields, v)
 }

@@ -24,6 +24,10 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 		if len(commands.table.ColumnMap) < 2 {
 			return fmt.Errorf("can't rearrange commands table with so few matches")
 		}
+		err = b.renameTableHeaderCells(b.doc, commands.section, commands.table, matter.Tables[matter.TableTypeCommands].ColumnRenames)
+		if err != nil {
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", commands.section.Name, dp.doc.Path, err)
+		}
 		err = b.fixAccessCells(dp, commands, types.EntityTypeCommand)
 		if err != nil {
 			return fmt.Errorf("error fixing access cells in commands table in %s: %w", dp.doc.Path, err)
@@ -53,6 +57,10 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 			if command.table == nil || command.table.Element == nil {
 				continue
 			}
+			err = b.renameTableHeaderCells(dp.doc, command.section, command.table, matter.Tables[matter.TableTypeCommandFields].ColumnRenames)
+			if err != nil {
+				return fmt.Errorf("error table header cells in commands table in %s: %w", dp.doc.Path, err)
+			}
 			err = b.fixConstraintCells(command.section, command.table)
 			if err != nil {
 				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
@@ -62,7 +70,7 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
 			}
 			b.appendSubsectionTypes(command.section, command.table.ColumnMap, command.table.Rows)
-			b.removeMandatoryDefaults(command.table)
+			b.removeMandatoryFallbacks(command.table)
 
 			err = b.linkIndexTables(cxt, command)
 			if err != nil {

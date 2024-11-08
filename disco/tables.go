@@ -64,6 +64,7 @@ func (b *Ball) addMissingColumns(section *spec.Section, ti *spec.TableInfo, tabl
 			}
 		}
 	}
+	err = ti.Rescan(section.Doc)
 	return
 }
 
@@ -302,6 +303,12 @@ func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, tabl
 		return
 	}
 	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableRenameHeaders) {
+		return
+	}
+	if len(overrides) == 0 {
+		return
+	}
+	if table.HeaderRowIndex == -1 {
 		return
 	}
 	headerRow := table.Rows[table.HeaderRowIndex]

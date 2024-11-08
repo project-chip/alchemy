@@ -48,7 +48,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, pc *parseContext
 		if err != nil {
 			return
 		}
-		attr.Default, err = ti.ReadString(row, matter.TableColumnDefault)
+		attr.Fallback, err = ti.ReadString(row, matter.TableColumnFallback, matter.TableColumnDefault)
 		if err != nil {
 			return
 		}

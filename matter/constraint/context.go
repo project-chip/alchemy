@@ -6,6 +6,6 @@ import (
 
 type Context interface {
 	DataType() *types.DataType
-	Default(name string) types.DataTypeExtreme
+	Fallback(name string) types.DataTypeExtreme
 	ReferenceConstraint(ref string) Constraint
 }

@@ -42,7 +42,7 @@ func (c *BooleanLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *BooleanLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *BooleanLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 

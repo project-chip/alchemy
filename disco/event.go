@@ -22,6 +22,11 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 			return fmt.Errorf("can't rearrange events table with so few matches in section %s in %s", events.section.Name, dp.doc.Path)
 		}
 
+		err = b.renameTableHeaderCells(b.doc, events.section, eventsTable, matter.Tables[matter.TableTypeEvents].ColumnRenames)
+		if err != nil {
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
+		}
+
 		err = b.fixAccessCells(dp, events, types.EntityTypeEvent)
 		if err != nil {
 			return fmt.Errorf("error fixing access cells in section %s in %s: %w", events.section.Name, dp.doc.Path, err)
@@ -67,23 +72,23 @@ func (b *Ball) organizeEventsSection(cxt *discoContext, dp *docParse) (err error
 				return fmt.Errorf("error fixing conformance cells for event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.renameTableHeaderCells(dp.doc, event.section, eventTable, nil)
+			err = b.renameTableHeaderCells(dp.doc, event.section, eventTable, matter.Tables[matter.TableTypeEventFields].ColumnRenames)
 			if err != nil {
 				return fmt.Errorf("error renaming table header cells in event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.addMissingColumns(event.section, eventTable, matter.Tables[matter.TableTypeEvent], types.EntityTypeStructField)
+			err = b.addMissingColumns(event.section, eventTable, matter.Tables[matter.TableTypeEventFields], types.EntityTypeStructField)
 			if err != nil {
 				return fmt.Errorf("error adding missing columns to event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
-			err = b.reorderColumns(dp.doc, event.section, eventTable, matter.TableTypeEvent)
+			err = b.reorderColumns(dp.doc, event.section, eventTable, matter.TableTypeEventFields)
 			if err != nil {
 				return fmt.Errorf("error reordering columns in event table in section %s in %s: %w", event.section.Name, dp.doc.Path, err)
 			}
 
 			b.appendSubsectionTypes(event.section, eventTable.ColumnMap, eventTable.Rows)
-			b.removeMandatoryDefaults(eventTable)
+			b.removeMandatoryFallbacks(eventTable)
 
 			err = b.linkIndexTables(cxt, event)
 			if err != nil {

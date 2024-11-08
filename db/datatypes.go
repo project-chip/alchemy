@@ -89,7 +89,7 @@ func (h *Host) readField(f *matter.Field, parent *sectionInfo, tableName string,
 		sr.values[matter.TableColumnConstraint] = ""
 	}
 	sr.values[matter.TableColumnQuality] = f.Quality.String()
-	sr.values[matter.TableColumnDefault] = f.Default
+	sr.values[matter.TableColumnFallback] = f.Fallback
 	sr.values[matter.TableColumnAccess] = spec.AccessToASCIIDocString(f.Access, entityType)
 	if f.Conformance != nil {
 		sr.values[matter.TableColumnConformance] = f.Conformance.ASCIIDocString()

@@ -33,7 +33,7 @@ func (c *ManufacturerLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
-func (c *ManufacturerLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *ManufacturerLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 

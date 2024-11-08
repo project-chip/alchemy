@@ -35,8 +35,8 @@ func (c *CharacterLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.ByteCount.Max(cc)
 }
 
-func (c *CharacterLimit) Default(cc Context) (max types.DataTypeExtreme) {
-	return c.ByteCount.Default(cc)
+func (c *CharacterLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
+	return c.ByteCount.Fallback(cc)
 }
 
 func (c *CharacterLimit) Clone() Limit {

@@ -55,7 +55,7 @@ func (b *Ball) organizeBitmapSection(cxt *discoContext, dp *docParse, bms *subSe
 	}
 
 	b.appendSubsectionTypes(bms.section, bitsTable.ColumnMap, bitsTable.Rows)
-	b.removeMandatoryDefaults(bitsTable)
+	b.removeMandatoryFallbacks(bitsTable)
 
 	b.fixBitmapRange(bms)
 	return

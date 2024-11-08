@@ -103,7 +103,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 		ae.RemoveAttr("mustUseAtomicWrite")
 	}
 	renderConstraint(ae, cluster.Attributes, attribute)
-	setFieldDefault(ae, attribute, cluster.Attributes)
+	setFieldFallback(ae, attribute, cluster.Attributes)
 	needsRead := attribute.Access.Read != matter.PrivilegeUnknown && attribute.Access.Read != matter.PrivilegeView
 	var needsWrite bool
 	if attribute.Access.Write != matter.PrivilegeUnknown {
@@ -191,10 +191,10 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	return
 }
 
-func setFieldDefault(e *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
-	if field.Default != "" {
-		defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: field, Fields: fieldSet})
-		patchDataExtremeAttribute(e, "default", &defaultValue, field)
+func setFieldFallback(e *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
+	if field.Fallback != "" {
+		fallbackValue := zap.GetFallbackValue(&matter.ConstraintContext{Field: field, Fields: fieldSet})
+		patchDataExtremeAttribute(e, "default", &fallbackValue, field)
 	} else {
 		e.RemoveAttr("default")
 	}

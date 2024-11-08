@@ -36,7 +36,7 @@ func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSecti
 		return nil
 	}
 
-	err = b.renameTableHeaderCells(dp.doc, es.section, enumTable, matter.Tables[matter.TableTypeEnum].ColumnNames)
+	err = b.renameTableHeaderCells(dp.doc, es.section, enumTable, matter.Tables[matter.TableTypeEnum].ColumnRenames)
 	if err != nil {
 		return fmt.Errorf("error renaming table header cells in enum table in section %s in %s: %w", es.section.Name, dp.doc.Path, err)
 	}
@@ -52,7 +52,7 @@ func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSecti
 
 	}
 	enumTable = es.table
-	b.removeMandatoryDefaults(enumTable)
+	b.removeMandatoryFallbacks(enumTable)
 
 	err = b.reorderColumns(dp.doc, es.section, enumTable, matter.TableTypeEnum)
 	if err != nil {

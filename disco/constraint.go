@@ -75,7 +75,7 @@ func (cc *constraintContext) ReferenceConstraint(ref string) constraint.Constrai
 	return nil
 }
 
-func (cc *constraintContext) Default(name string) (def types.DataTypeExtreme) {
+func (cc *constraintContext) Fallback(name string) (def types.DataTypeExtreme) {
 
 	return
 }

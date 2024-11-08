@@ -191,11 +191,11 @@ func renderDataType(f *matter.Field, i *etree.Element) {
 	}
 }
 
-func renderDefault(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
-	if f.Default == "" {
+func renderFallback(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
+	if f.Fallback == "" {
 		return
 	}
-	cons, err := constraint.ParseString(f.Default)
+	cons, err := constraint.ParseString(f.Fallback)
 	if err != nil {
 		return
 	}
@@ -210,7 +210,7 @@ func renderDefault(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
 			return
 		}
 	}
-	def := cons.Default(&matter.ConstraintContext{Fields: fs, Field: f})
+	def := cons.Fallback(&matter.ConstraintContext{Fields: fs, Field: f})
 	if !def.Defined() {
 		return
 	}

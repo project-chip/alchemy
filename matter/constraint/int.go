@@ -50,7 +50,7 @@ func (c *IntLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.value(cc.DataType())
 }
 
-func (c *IntLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *IntLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.value(cc.DataType())
 }
 

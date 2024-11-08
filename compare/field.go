@@ -59,29 +59,29 @@ func compareField(entityType types.EntityType, specFields matter.FieldSet, specF
 		}
 	}
 	diffs = append(diffs, compareAccess(entityType, specField.Access, zapField.Access)...)
-	defaultValue := zap.GetDefaultValue(&matter.ConstraintContext{Field: specField, Fields: specFields})
+	defaultValue := zap.GetFallbackValue(&matter.ConstraintContext{Field: specField, Fields: specFields})
 	if defaultValue.Defined() {
 		specDefault := defaultValue.ZapString(specField.Type)
-		if specDefault != zapField.Default && !(specField.Default == "null" && len(zapField.Default) == 0) { // ZAP frequently omits default null
+		if specDefault != zapField.Fallback && !(specField.Fallback == "null" && len(zapField.Fallback) == 0) { // ZAP frequently omits default null
 			specDefaultVal := matter.ParseNumber(specDefault)
-			zapDefault := matter.ParseNumber(zapField.Default)
+			zapDefault := matter.ParseNumber(zapField.Fallback)
 			if !specDefaultVal.Equals(zapDefault) {
-				diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specDefault, ZAP: zapField.Default})
+				diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specDefault, ZAP: zapField.Fallback})
 			}
 		}
 
-	} else if len(zapField.Default) > 0 {
+	} else if len(zapField.Fallback) > 0 {
 
-		if len(specField.Default) > 0 {
-			z := matter.ParseNumber(zapField.Default)
-			if specField.Default != "null" || !z.Equals(matter.NewNumber(specField.Type.NullValue())) {
-				s := matter.ParseNumber(specField.Default)
+		if len(specField.Fallback) > 0 {
+			z := matter.ParseNumber(zapField.Fallback)
+			if specField.Fallback != "null" || !z.Equals(matter.NewNumber(specField.Type.NullValue())) {
+				s := matter.ParseNumber(specField.Fallback)
 				if !z.Equals(s) {
-					diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specField.Default, ZAP: zapField.Default})
+					diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specField.Fallback, ZAP: zapField.Fallback})
 				}
 			}
 		} else {
-			z := matter.ParseNumber(zapField.Default)
+			z := matter.ParseNumber(zapField.Fallback)
 			if !z.Valid() || z.Value() != 0 {
 				diffs = append(diffs, newMissingDiff(specField.Name, DiffPropertyDefault, entityType, SourceSpec))
 			}

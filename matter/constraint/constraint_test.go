@@ -44,7 +44,7 @@ func (cc *constraintTestContext) ReferenceConstraint(ref string) Constraint {
 	return f.Constraint
 }
 
-func (cc *constraintTestContext) Default(name string) (def types.DataTypeExtreme) {
+func (cc *constraintTestContext) Fallback(name string) (def types.DataTypeExtreme) {
 
 	return
 }

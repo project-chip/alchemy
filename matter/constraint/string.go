@@ -32,7 +32,7 @@ func (c *StringLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *StringLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *StringLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 

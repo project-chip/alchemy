@@ -52,7 +52,7 @@ func (c *PercentLimit) Max(cc Context) (max types.DataTypeExtreme) {
 
 }
 
-func (c *PercentLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *PercentLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 

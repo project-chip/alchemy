@@ -38,14 +38,14 @@ func (cc *ConstraintContext) ReferenceConstraint(ref string) constraint.Constrai
 	return f.Constraint
 }
 
-func (cc *ConstraintContext) Default(name string) (def types.DataTypeExtreme) {
+func (cc *ConstraintContext) Fallback(name string) (def types.DataTypeExtreme) {
 	f := cc.getReference(name)
-	if f != nil && f.Default != "" {
-		cons, err := constraint.ParseString(f.Default)
+	if f != nil && f.Fallback != "" {
+		cons, err := constraint.ParseString(f.Fallback)
 		if err != nil {
-			cons = &constraint.GenericConstraint{Value: f.Default}
+			cons = &constraint.GenericConstraint{Value: f.Fallback}
 		}
-		return cons.Default(cc)
+		return cons.Fallback(cc)
 	}
 	// Couldn't find it as a reference; let's check other possibilities
 	def = cc.getEnumValue(name)

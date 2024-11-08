@@ -16,7 +16,7 @@ type Field struct {
 	Constraint  constraint.Constraint `json:"constraint,omitempty"`
 	Quality     Quality               `json:"quality,omitempty"`
 	Access      Access                `json:"access,omitempty"`
-	Default     string                `json:"default,omitempty"`
+	Fallback    string                `json:"fallback,omitempty"`
 	Conformance conformance.Set       `json:"conformance,omitempty"`
 
 	// Hopefully this will go away as we continue disco-balling the spec
@@ -58,8 +58,8 @@ func (f *Field) Inherit(parent *Field) {
 	if f.Quality == QualityNone {
 		f.Quality = parent.Quality
 	}
-	if len(f.Default) == 0 {
-		f.Default = parent.Default
+	if len(f.Fallback) == 0 {
+		f.Fallback = parent.Fallback
 	}
 	if f.entityType == types.EntityTypeUnknown && parent.entityType != types.EntityTypeUnknown {
 		f.entityType = parent.entityType
@@ -68,7 +68,7 @@ func (f *Field) Inherit(parent *Field) {
 }
 
 func (f *Field) Clone() *Field {
-	nf := &Field{entity: entity{source: f.source, parent: f.parent}, ID: f.ID.Clone(), Name: f.Name, Quality: f.Quality, Access: f.Access, Default: f.Default, entityType: f.entityType}
+	nf := &Field{entity: entity{source: f.source, parent: f.parent}, ID: f.ID.Clone(), Name: f.Name, Quality: f.Quality, Access: f.Access, Fallback: f.Fallback, entityType: f.entityType}
 	if f.Type != nil {
 		nf.Type = f.Type.Clone()
 	}

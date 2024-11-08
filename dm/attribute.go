@@ -29,8 +29,8 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		ax.CreateAttr("id", a.ID.HexString())
 		ax.CreateAttr("name", a.Name)
 		renderDataType(a, ax)
-		if len(a.Default) > 0 {
-			ax.CreateAttr("default", a.Default)
+		if len(a.Fallback) > 0 {
+			ax.CreateAttr("default", a.Fallback)
 		}
 		err = renderAnonymousType(doc, cluster, ax, a)
 		if err != nil {
@@ -46,7 +46,7 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		if err != nil {
 			return
 		}
-		renderDefault(cluster.Attributes, a, ax)
+		renderFallback(cluster.Attributes, a, ax)
 	}
 	return
 }

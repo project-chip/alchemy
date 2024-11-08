@@ -58,7 +58,7 @@ func renderField(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *
 	if err != nil {
 		return
 	}
-	renderDefault(fs, f, i)
+	renderFallback(fs, f, i)
 
 	return
 }

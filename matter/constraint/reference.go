@@ -41,8 +41,8 @@ func (c *ReferenceLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return rc.Max(cc)
 }
 
-func (c *ReferenceLimit) Default(cc Context) (def types.DataTypeExtreme) {
-	return cc.Default(c.Value)
+func (c *ReferenceLimit) Fallback(cc Context) (def types.DataTypeExtreme) {
+	return cc.Fallback(c.Value)
 }
 
 func (c *ReferenceLimit) Clone() Limit {

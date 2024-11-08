@@ -137,6 +137,8 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnQuality
 	case "default":
 		return matter.TableColumnDefault
+	case "fallback":
+		return matter.TableColumnFallback
 	case "access":
 		return matter.TableColumnAccess
 	case "conformance":
