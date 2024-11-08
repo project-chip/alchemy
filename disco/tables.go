@@ -183,6 +183,7 @@ func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *spec.Tab
 		}
 	}
 	// Recognized columns, but not in the column order
+	var recognizedColumnIndexes []int
 	for tc, i := range columnMap {
 		if newColumnIndexes[i] >= 0 {
 			continue
@@ -198,9 +199,12 @@ func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *spec.Tab
 			newColumnIndexes[i] = -2
 			continue
 		}
-		newColumnIndexes[i] = index
+		recognizedColumnIndexes = append(recognizedColumnIndexes, i)
+	}
+	slices.Sort(recognizedColumnIndexes)
+	for _, extraColumnIndex := range recognizedColumnIndexes {
+		newColumnIndexes[extraColumnIndex] = index
 		index++
-
 	}
 	// Unrecognized columns come last
 	for i, v := range newColumnIndexes {
