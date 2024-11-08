@@ -6,7 +6,7 @@ func (s LineList) Lines() []string {
 	return s
 }
 
-func (s *LineList) Append(e string) {
+func (s *LineList) AppendLine(e string) {
 	*s = append(*s, e)
 }
 
@@ -30,7 +30,7 @@ func (s LineList) Equals(oll LineList) bool {
 type HasLines interface {
 	Element
 	Lines() []string
-	Append(e string)
+	AppendLine(e string)
 	SetLines(e []string)
 }
 

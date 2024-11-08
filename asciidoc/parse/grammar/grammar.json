@@ -6,6 +6,7 @@
         "common.peg",
         "document.peg",
         "blocks.peg",
+        "escape.peg",
         "section.peg",
         "attribute.peg",
         "bold.peg",
