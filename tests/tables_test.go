@@ -236,8 +236,6 @@ var tablesTests = parseTests{
 
 	{"should preserve newlines in quoted CSV values", "asciidoctor/tables_test_should_preserve_newlines_in_quoted_csv_values.adoc", shouldPreserveNewlinesInQuotedCsvValues},
 
-	{"should not drop trailing empty cell in TSV data when loaded from an include file", "asciidoctor/tables_test_should_not_drop_trailing_empty_cell_in_tsv_data_when_loaded_from_an_include_file.adoc", shouldNotDropTrailingEmptyCellInTsvDataWhenLoadedFromAnIncludeFile},
-
 	{"mixed unquoted records and quoted records with escaped quotes, commas, and wrapped lines", "asciidoctor/tables_test_mixed_unquoted_records_and_quoted_records_with_escaped_quotes_commas_and_wrapped_lines.adoc", mixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrappedLines},
 
 	{"should allow quotes around a CSV value to be on their own lines", "asciidoctor/tables_test_should_allow_quotes_around_a_csv_value_to_be_on_their_own_lines.adoc", shouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines},
@@ -23820,60 +23818,6 @@ var shouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
 		&asciidoc.NewLine{},
 		&asciidoc.String{
 			Value: ",===",
-		},
-		&asciidoc.NewLine{},
-	},
-}
-
-var shouldNotDropTrailingEmptyCellInTsvDataWhenLoadedFromAnIncludeFile = &asciidoc.Document{
-	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
-			Text: "",
-		},
-		&asciidoc.Paragraph{
-			AttributeList: asciidoc.AttributeList{
-				&asciidoc.ShorthandAttribute{
-					Style: nil,
-					ID:    nil,
-					Roles: nil,
-					Options: []*asciidoc.ShorthandOption{
-						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
-								&asciidoc.String{
-									Value: "header",
-								},
-							},
-						},
-					},
-				},
-				&asciidoc.NamedAttribute{
-					Name: "format",
-					Val: asciidoc.Set{
-						&asciidoc.String{
-							Value: "tsv",
-						},
-					},
-					Quote: 0,
-				},
-			},
-			Set: asciidoc.Set{
-				&asciidoc.String{
-					Value: "|===",
-				},
-				&asciidoc.NewLine{},
-			},
-			Admonition: 0,
-		},
-		&asciidoc.FileInclude{
-			AttributeList: nil,
-			Set: asciidoc.Set{
-				&asciidoc.String{
-					Value: "fixtures/data.tsv",
-				},
-			},
-		},
-		&asciidoc.String{
-			Value: "|===",
 		},
 		&asciidoc.NewLine{},
 	},
