@@ -69,10 +69,7 @@ LogicalTerm <- not:'!'? '(' _  eq:Expression _ ')' {
         }
     }
     return eq, nil
-} / feature:FeatureOp {
-    return feature, nil 
-} / reference:ReferenceOp {
-    return reference, nil 
-} / identifier:IdentifierOp {
-    return identifier, nil 
-} 
+} / ComparisonExpression
+  / FeatureOp 
+  / ReferenceOp  
+  / IdentifierOp 
