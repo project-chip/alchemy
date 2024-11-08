@@ -312,7 +312,7 @@ func (ti *TableInfo) buildConstraintValue(els asciidoc.Set, sb *strings.Builder)
 		case asciidoc.AttributeReference:
 			sb.WriteString(fmt.Sprintf("{%s}", v.Name()))
 		default:
-			slog.Warn("unknown constraint value element", log.Element("path", ti.Doc.Path, el), "type", fmt.Sprintf("%T", el))
+			slog.Warn("unknown constraint value element", log.Element("source", ti.Doc.Path, el), "type", fmt.Sprintf("%T", el))
 		}
 	}
 	return
@@ -483,7 +483,7 @@ func buildDataTypeString(d *Doc, cellElements asciidoc.Set, sb *strings.Builder)
 		case *asciidoc.Paragraph:
 			source = buildDataTypeString(d, v.Elements(), sb)
 		default:
-			slog.Warn("unknown data type value element", log.Element("path", d.Path, el), "type", fmt.Sprintf("%T", v))
+			slog.Warn("unknown data type value element", log.Element("source", d.Path, el), "type", fmt.Sprintf("%T", v))
 		}
 	}
 	return

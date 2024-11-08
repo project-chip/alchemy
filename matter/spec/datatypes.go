@@ -166,7 +166,7 @@ func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster
 		}
 		switch el := anchor.Element.(type) {
 		case *asciidoc.Section:
-			entities := doc.entitiesBySection[el]
+			entities := anchor.Document.entitiesBySection[el]
 			if len(entities) == 1 {
 				e = entities[0]
 				return

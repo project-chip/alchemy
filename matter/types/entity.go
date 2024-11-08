@@ -72,3 +72,11 @@ func (et EntityType) MarshalJSON() ([]byte, error) {
 type EntityStore interface {
 	Entities() ([]Entity, error)
 }
+
+func IsDataTypeEntity(entityType EntityType) bool {
+	switch entityType {
+	case EntityTypeBitmap, EntityTypeEnum, EntityTypeStruct, EntityTypeCommand, EntityTypeEvent:
+		return true
+	}
+	return false
+}

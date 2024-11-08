@@ -8,10 +8,12 @@ import (
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
+	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (p AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
+func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 	for id, xrefs := range doc.CrossReferences() {
 		anchor := doc.FindAnchor(id)
 		if anchor == nil {
@@ -63,43 +65,93 @@ func (p AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 			}
 		}
 	}
-	if p.options.normalizeAnchors {
-		parse.Traverse(nil, doc.Base.Elements(), func(icr *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
-			if len(icr.Set) > 0 {
+	if an.options.normalizeAnchors {
+		parse.Traverse(nil, doc.Base.Elements(), func(el asciidoc.Element, parent parse.HasElements, index int) parse.SearchShould {
+			if se, ok := el.(*spec.Element); ok {
+				el = se.Base
+			}
+			switch el := el.(type) {
+			case *asciidoc.CrossReference:
+				removeCrossReferenceStutter(doc, el, parent, index)
+				return parse.SearchShouldContinue
+			case *asciidoc.Table:
+				an.normalizeTypeCrossReferencesInTable(doc, el)
+				return parse.SearchShouldSkip
+			default:
 				return parse.SearchShouldContinue
 			}
-			anchor := doc.FindAnchor(icr.ID)
-			if anchor == nil {
-				return parse.SearchShouldContinue
-			}
-			section, isSection := anchor.Element.(*asciidoc.Section)
-			if !isSection {
-				return parse.SearchShouldContinue
-			}
-			sectionName := section.Name()
-			elements := parent.Elements()
-			if index >= len(elements)-1 {
-				return parse.SearchShouldContinue
-			}
-			nextElement := elements[index+1]
-			nextString, ok := nextElement.(*asciidoc.String)
-			if !ok {
-				return parse.SearchShouldContinue
-			}
-			lastSpaceIndex := strings.LastIndex(sectionName, " ")
-			if lastSpaceIndex == -1 {
-				return parse.SearchShouldContinue
-			}
-			suffix := sectionName[lastSpaceIndex:]
-			if !text.HasCaseInsensitivePrefix(nextString.Value, suffix) {
-				return parse.SearchShouldContinue
-			}
-			replacement := text.TrimCaseInsensitivePrefix(nextString.Value, suffix)
-			nextString.Value = replacement
-			return parse.SearchShouldContinue
 		})
-
 	}
+}
+
+func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, parent parse.HasElements, index int) {
+	if len(icr.Set) > 0 {
+		return
+	}
+	anchor := doc.FindAnchor(icr.ID)
+	if anchor == nil {
+		return
+	}
+	section, isSection := anchor.Element.(*asciidoc.Section)
+	if !isSection {
+		return
+	}
+	sectionName := section.Name()
+	elements := parent.Elements()
+	if index >= len(elements)-1 {
+		return
+	}
+	nextElement := elements[index+1]
+	nextString, ok := nextElement.(*asciidoc.String)
+	if !ok {
+		return
+	}
+	lastSpaceIndex := strings.LastIndex(sectionName, " ")
+	if lastSpaceIndex == -1 {
+		return
+	}
+	suffix := sectionName[lastSpaceIndex:]
+	if !text.HasCaseInsensitivePrefix(nextString.Value, suffix) {
+		return
+	}
+	replacement := text.TrimCaseInsensitivePrefix(nextString.Value, suffix)
+	nextString.Value = replacement
+}
+
+func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *spec.Doc, table *asciidoc.Table) {
+	parse.Traverse(table, table.Set, func(icr *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
+		if len(icr.Set) > 0 {
+			// Don't touch existing labels
+			return parse.SearchShouldContinue
+		}
+		anchor := doc.FindAnchor(icr.ID)
+		if anchor == nil {
+			return parse.SearchShouldContinue
+		}
+		section, isSection := anchor.Element.(*asciidoc.Section)
+		if !isSection {
+			return parse.SearchShouldContinue
+		}
+		entities, ok := anchor.Document.EntitiesForSection(section)
+		if !ok {
+			return parse.SearchShouldContinue
+		}
+		if len(entities) != 1 {
+			return parse.SearchShouldContinue
+		}
+		entity := entities[0]
+		if !types.IsDataTypeEntity(entity.EntityType()) {
+			return parse.SearchShouldContinue
+		}
+		normalizedLabel := normalizeAnchorLabel(section.Name(), section)
+		if labelText(normalizedLabel) != section.Name() {
+			icr.Set = normalizedLabel
+			slog.Debug("Added label to type xref in table", matter.LogEntity("type", entity), "label", labelText(icr.Set))
+		}
+
+		return parse.SearchShouldContinue
+	})
+
 }
 
 func findRefSection(parent any) *spec.Section {

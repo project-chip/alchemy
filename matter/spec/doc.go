@@ -135,6 +135,11 @@ func (doc *Doc) OrderedEntities() (entities []types.Entity, err error) {
 	return doc.orderedEntities, nil
 }
 
+func (d *Doc) EntitiesForSection(section *asciidoc.Section) ([]types.Entity, bool) {
+	e, ok := d.entitiesBySection[section]
+	return e, ok
+}
+
 func (doc *Doc) Reference(ref string) (types.Entity, bool) {
 
 	a := doc.FindAnchor(ref)
