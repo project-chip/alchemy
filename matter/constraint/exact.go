@@ -33,8 +33,8 @@ func (c *ExactConstraint) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.Value.Max(cc)
 }
 
-func (c *ExactConstraint) Default(cc Context) (max types.DataTypeExtreme) {
-	return c.Value.Default(cc)
+func (c *ExactConstraint) Fallback(cc Context) (max types.DataTypeExtreme) {
+	return c.Value.Fallback(cc)
 }
 
 func (c *ExactConstraint) Clone() Constraint {

@@ -72,7 +72,7 @@ func (c *ExpLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.minmax()
 }
 
-func (c *ExpLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *ExpLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.minmax()
 }
 

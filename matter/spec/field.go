@@ -43,7 +43,7 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 		if err != nil {
 			return
 		}
-		f.Default, err = ti.ReadString(row, matter.TableColumnDefault)
+		f.Fallback, err = ti.ReadString(row, matter.TableColumnFallback, matter.TableColumnDefault)
 		if err != nil {
 			return
 		}

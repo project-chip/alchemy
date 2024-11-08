@@ -72,7 +72,7 @@ func (cs Set) Max(c Context) (max types.DataTypeExtreme) {
 	return to
 }
 
-func (cs Set) Default(cc Context) (max types.DataTypeExtreme) {
+func (cs Set) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 

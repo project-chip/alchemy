@@ -496,13 +496,13 @@ func renameDataType(subSections []*subSection, oldName string, newName string) {
 	}
 }
 
-func (b *Ball) removeMandatoryDefaults(ti *spec.TableInfo) {
-	if !b.options.removeMandatoryDefaults {
+func (b *Ball) removeMandatoryFallbacks(ti *spec.TableInfo) {
+	if !b.options.removeMandatoryFallbacks {
 		return
 	}
-	defaultIndex, hasDefault := ti.ColumnMap[matter.TableColumnDefault]
+	fallbackIndex, hasFallback := ti.ColumnMap[matter.TableColumnFallback]
 	_, hasConformance := ti.ColumnMap[matter.TableColumnConformance]
-	if !hasDefault || !hasConformance {
+	if !hasFallback || !hasConformance {
 		return
 	}
 	for row := range ti.Body() {
@@ -510,14 +510,14 @@ func (b *Ball) removeMandatoryDefaults(ti *spec.TableInfo) {
 		if !conformance.IsMandatory(conf) {
 			continue
 		}
-		defaultCell := row.Cell(defaultIndex)
-		def, err := ti.Doc.GetHeaderCellString(defaultCell)
+		fallbackCell := row.Cell(fallbackIndex)
+		def, err := ti.Doc.GetHeaderCellString(fallbackCell)
 		if err != nil {
 			continue
 		}
 		def = strings.TrimSpace(def)
 		if def != "" {
-			setCellString(defaultCell, "")
+			setCellString(fallbackCell, "")
 		}
 	}
 }

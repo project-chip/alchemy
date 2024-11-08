@@ -27,7 +27,7 @@ func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, 
 	} else {
 		fieldElement.RemoveAttr("isFabricSensitive")
 	}
-	setFieldDefault(fieldElement, field, fieldSet)
+	setFieldFallback(fieldElement, field, fieldSet)
 	renderConstraint(fieldElement, fieldSet, field)
 }
 

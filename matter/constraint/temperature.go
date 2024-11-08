@@ -54,7 +54,7 @@ func (c *TemperatureLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *TemperatureLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *TemperatureLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 

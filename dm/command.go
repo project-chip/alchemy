@@ -90,8 +90,8 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 			}
 			i.CreateAttr("name", f.Name)
 			renderDataType(f, i)
-			if len(f.Default) > 0 {
-				i.CreateAttr("default", f.Default)
+			if len(f.Fallback) > 0 {
+				i.CreateAttr("default", f.Fallback)
 			}
 			err = renderAnonymousType(doc, cluster, i, f)
 			if err != nil {

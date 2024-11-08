@@ -51,7 +51,7 @@ func init() {
 	Command.Flags().Bool("removeExtraSpaces", true, "remove extraneous spaces")
 	Command.Flags().Bool("disambiguateConformanceChoice", false, "ensure conformance choices are only used once per document")
 	Command.Flags().Bool("normalizeAnchors", false, "rewrite anchors and references without labels")
-	Command.Flags().Bool("removeMandatoryDefaults", false, "remove default values for mandatory fields")
+	Command.Flags().Bool("removeMandatoryFallbacks", false, "remove fallback values for mandatory fields")
 	Command.Flags().Int("wrap", 0, "the maximum length of a line")
 }
 
@@ -75,7 +75,7 @@ func getDiscoOptions(cmd *cobra.Command) []disco.Option {
 		"normalizeFeatureNames":         disco.NormalizeFeatureNames,
 		"disambiguateConformanceChoice": disco.DisambiguateConformanceChoice,
 		"normalizeAnchors":              disco.NormalizeAnchors,
-		"removeMandatoryDefaults":       disco.RemoveMandatoryDefaults,
+		"removeMandatoryFallbacks":      disco.RemoveMandatoryFallbacks,
 	}
 	var discoOptions []disco.Option
 	for name, o := range optionFuncs {

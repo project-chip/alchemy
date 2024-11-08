@@ -86,7 +86,7 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 				return err
 			}
 		case "default", "defaut": // Ugh
-			field.Default = a.Value
+			field.Fallback = a.Value
 		case "length", "lenght": // Sigh
 			length = a.Value
 		case "minLength":

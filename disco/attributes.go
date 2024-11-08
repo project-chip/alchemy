@@ -27,6 +27,11 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(attributesTable.ColumnMap))
 		}
 
+		err = b.renameTableHeaderCells(b.doc, attributes.section, attributesTable, matter.Tables[matter.TableTypeAttributes].ColumnRenames)
+		if err != nil {
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", attributes.section.Name, dp.doc.Path, err)
+		}
+
 		err = b.fixAccessCells(dp, attributes, types.EntityTypeAttribute)
 		if err != nil {
 			return err
@@ -52,7 +57,7 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return err
 		}
 
-		b.removeMandatoryDefaults(attributesTable)
+		b.removeMandatoryFallbacks(attributesTable)
 	}
 	return nil
 }

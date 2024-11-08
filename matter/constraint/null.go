@@ -30,7 +30,7 @@ func (c *NullLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
-func (c *NullLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *NullLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 

@@ -421,7 +421,7 @@ func updateBridgedBasicInformationCluster(basicInformationCluster *matter.Cluste
 		ba.Type = a.Type.Clone()
 		ba.Constraint = a.Constraint.Clone()
 		ba.Quality = a.Quality
-		ba.Default = a.Default
+		ba.Fallback = a.Fallback
 		ba.Access = a.Access
 	}
 	return nil

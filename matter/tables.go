@@ -16,6 +16,7 @@ const (
 	TableColumnConstraint
 	TableColumnQuality
 	TableColumnDefault
+	TableColumnFallback
 	TableColumnAccess
 	TableColumnConformance
 	TableColumnPriority
@@ -56,6 +57,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnConstraint:   "Constraint",
 	TableColumnQuality:      "Quality",
 	TableColumnDefault:      "Default",
+	TableColumnFallback:     "Fallback",
 	TableColumnAccess:       "Access",
 	TableColumnConformance:  "Conformance",
 	TableColumnPriority:     "Priority",
@@ -125,11 +127,12 @@ const (
 	TableTypeClassification
 	TableTypeClusterID
 	TableTypeCommands
+	TableTypeCommandFields
 	TableTypeStruct
 	TableTypeEnum
 	TableTypeBitmap
 	TableTypeEvents
-	TableTypeEvent
+	TableTypeEventFields
 	TableTypeFeatures
 )
 
@@ -138,7 +141,7 @@ type Table struct {
 	RequiredColumns []TableColumn
 	BannedColumns   []TableColumn
 	ColumnOrder     []TableColumn
-	ColumnNames     map[TableColumn]TableColumn
+	ColumnRenames   map[TableColumn]TableColumn
 }
 
 var Tables = map[TableType]Table{
@@ -149,9 +152,12 @@ var Tables = map[TableType]Table{
 			TableColumnType,
 			TableColumnConstraint,
 			TableColumnQuality,
-			TableColumnDefault,
+			TableColumnFallback,
 			TableColumnAccess,
 			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnDefault: TableColumnFallback,
 		},
 	},
 	TableTypeAppClusterClassification: {
@@ -173,7 +179,7 @@ var Tables = map[TableType]Table{
 		},
 	},
 	TableTypeClassification: {
-		ColumnNames: map[TableColumn]TableColumn{
+		ColumnRenames: map[TableColumn]TableColumn{
 			TableColumnContext: TableColumnScope, // Rename Context to Scope
 			TableColumnPICS:    TableColumnPICSCode,
 		},
@@ -201,6 +207,20 @@ var Tables = map[TableType]Table{
 			TableColumnConformance,
 		},
 	},
+	TableTypeCommandFields: {
+		ColumnOrder: []TableColumn{
+			TableColumnID,
+			TableColumnName,
+			TableColumnDirection,
+			TableColumnResponse,
+			TableColumnAccess,
+			TableColumnQuality,
+			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnDefault: TableColumnFallback,
+		},
+	},
 	TableTypeStruct: {
 		ColumnOrder: []TableColumn{
 			TableColumnID,
@@ -208,9 +228,12 @@ var Tables = map[TableType]Table{
 			TableColumnType,
 			TableColumnConstraint,
 			TableColumnQuality,
-			TableColumnDefault,
+			TableColumnFallback,
 			TableColumnAccess,
 			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnDefault: TableColumnFallback,
 		},
 	},
 	TableTypeEnum: {
@@ -220,7 +243,7 @@ var Tables = map[TableType]Table{
 			TableColumnSummary,
 			TableColumnConformance,
 		},
-		ColumnNames: map[TableColumn]TableColumn{
+		ColumnRenames: map[TableColumn]TableColumn{
 			TableColumnDescription: TableColumnSummary, // Rename Description to Summary
 			TableColumnStatusCode:  TableColumnValue,   // Rename Status Code in enums to Value
 			TableColumnID:          TableColumnValue,   // Rename Status Code in enums to Value
@@ -244,15 +267,18 @@ var Tables = map[TableType]Table{
 			TableColumnConformance,
 		},
 	},
-	TableTypeEvent: {
+	TableTypeEventFields: {
 		ColumnOrder: []TableColumn{
 			TableColumnID,
 			TableColumnName,
 			TableColumnType,
 			TableColumnConstraint,
 			TableColumnQuality,
-			TableColumnDefault,
+			TableColumnFallback,
 			TableColumnConformance,
+		},
+		ColumnRenames: map[TableColumn]TableColumn{
+			TableColumnDefault: TableColumnFallback,
 		},
 	},
 	TableTypeFeatures: {
@@ -263,7 +289,7 @@ var Tables = map[TableType]Table{
 			TableColumnConformance,
 			TableColumnSummary,
 		},
-		ColumnNames: map[TableColumn]TableColumn{
+		ColumnRenames: map[TableColumn]TableColumn{
 			TableColumnID: TableColumnBit, // Rename ID to Bit
 		},
 	},

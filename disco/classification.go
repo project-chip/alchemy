@@ -24,7 +24,7 @@ func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (e
 			return nil
 		}
 
-		err = b.renameTableHeaderCells(b.doc, classification.section, classificationTable, matter.Tables[matter.TableTypeClassification].ColumnNames)
+		err = b.renameTableHeaderCells(b.doc, classification.section, classificationTable, matter.Tables[matter.TableTypeClassification].ColumnRenames)
 		if err != nil {
 			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", classification.section.Name, dp.doc.Path, err)
 		}

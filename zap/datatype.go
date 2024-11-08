@@ -543,26 +543,26 @@ func minMaxFromConstraint(cc *matter.ConstraintContext, c constraint.Constraint)
 	return
 }
 
-func GetDefaultValue(cc *matter.ConstraintContext) (defaultValue types.DataTypeExtreme) {
-	c, err := constraint.ParseString(cc.Field.Default)
+func GetFallbackValue(cc *matter.ConstraintContext) (fallbackValue types.DataTypeExtreme) {
+	c, err := constraint.ParseString(cc.Field.Fallback)
 	if err != nil {
-		c = &constraint.GenericConstraint{Value: cc.Field.Default}
+		c = &constraint.GenericConstraint{Value: cc.Field.Fallback}
 	}
-	defaultValue = c.Default(cc)
-	switch defaultValue.Type {
+	fallbackValue = c.Fallback(cc)
+	switch fallbackValue.Type {
 	case types.DataTypeExtremeTypeEmptyList:
 		if !cc.Field.Type.HasLength() {
-			defaultValue = types.DataTypeExtreme{}
+			fallbackValue = types.DataTypeExtreme{}
 		}
 	case types.DataTypeExtremeTypeNull:
 		if cc.Field.Type.NullValue() == 0 {
-			defaultValue = types.DataTypeExtreme{}
+			fallbackValue = types.DataTypeExtreme{}
 		}
 	case types.DataTypeExtremeTypeInt64, types.DataTypeExtremeTypeUInt64:
 		if cc.Field.Type != nil {
 			switch cc.Field.Type.Entity.(type) {
 			case *matter.Bitmap, *matter.Enum:
-				defaultValue.Format = types.NumberFormatHex
+				fallbackValue.Format = types.NumberFormatHex
 			}
 		}
 	}

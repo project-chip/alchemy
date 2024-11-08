@@ -83,7 +83,7 @@ type Constraint interface {
 	Equal(o Constraint) bool
 	Min(c Context) (min types.DataTypeExtreme)
 	Max(c Context) (max types.DataTypeExtreme)
-	Default(c Context) (max types.DataTypeExtreme)
+	Fallback(c Context) (max types.DataTypeExtreme)
 	Clone() Constraint
 }
 
@@ -93,7 +93,7 @@ type Limit interface {
 	Equal(o Limit) bool
 	Min(c Context) (min types.DataTypeExtreme)
 	Max(c Context) (max types.DataTypeExtreme)
-	Default(c Context) (max types.DataTypeExtreme)
+	Fallback(c Context) (max types.DataTypeExtreme)
 	Clone() Limit
 }
 

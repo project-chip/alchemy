@@ -37,6 +37,11 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return nil
 	}
 
+	err = b.renameTableHeaderCells(b.doc, ss.section, fieldsTable, nil)
+	if err != nil {
+		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
+	}
+
 	err = b.fixAccessCells(dp, ss, types.EntityTypeStruct)
 	if err != nil {
 		return fmt.Errorf("error fixing access cells in struct table in %s: %w", dp.doc.Path, err)
@@ -47,7 +52,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return err
 	}
 
-	err = b.renameTableHeaderCells(dp.doc, ss.section, fieldsTable, nil)
+	err = b.renameTableHeaderCells(dp.doc, ss.section, fieldsTable, matter.Tables[matter.TableTypeStruct].ColumnRenames)
 	if err != nil {
 		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
 	}
@@ -63,7 +68,7 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 	}
 
 	b.appendSubsectionTypes(ss.section, fieldsTable.ColumnMap, fieldsTable.Rows)
-	b.removeMandatoryDefaults(fieldsTable)
+	b.removeMandatoryFallbacks(fieldsTable)
 
 	err = b.linkIndexTables(cxt, ss)
 	if err != nil {

@@ -56,7 +56,7 @@ func (c *HexLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	return c.value()
 }
 
-func (c *HexLimit) Default(cc Context) (max types.DataTypeExtreme) {
+func (c *HexLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.value()
 }
 
