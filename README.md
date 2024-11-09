@@ -1,5 +1,3 @@
-
-
 # Alchemy
 
 Alchemy is a command line tool for modifying and transforming Matter spec documents.
@@ -222,10 +220,10 @@ conformance: Disallowed
 
 Data Model generates the Data Model XML files from the spec.
 
-| Flag                       | Default                | Description   |	
-| :------------------------- |:----------------------:| :-------------|
-| --specRoot                 | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| --sdkRoot                  | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
+| Flag                       | Default                                  | Description   |	
+| :------------------------- |:----------------------------------------:| :-------------|
+| --specRoot                 | ./connectedhomeip-spec                   | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| --dmRoot                   | ./connectedhomeip/data_model/master      | The data model directory of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
 
 
 ### testplan
