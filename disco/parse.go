@@ -57,7 +57,7 @@ func newSubSectionChildPattern(suffix string, indexColumns ...matter.TableColumn
 	return subSectionChildPattern{suffix: suffix, indexColumns: indexColumns}
 }
 
-func (b *Ball) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *spec.Section) (dp *docParse, err error) {
+func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection *spec.Section) (dp *docParse, err error) {
 	dp = &docParse{
 		doc:              doc,
 		docType:          docType,
@@ -236,15 +236,15 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 	return
 }
 
-func getSubsectionCluster(ds *docParse, section *spec.Section) *clusterInfo {
+func getSubsectionCluster(docParse *docParse, section *spec.Section) *clusterInfo {
 	parent, ok := section.Parent.(*spec.Section)
 	if ok {
 		for parent != nil {
 			if parent.SecType == matter.SectionCluster {
-				ci, ok := ds.clusters[parent]
+				ci, ok := docParse.clusters[parent]
 				if !ok {
 					ci = &clusterInfo{}
-					ds.clusters[parent] = ci
+					docParse.clusters[parent] = ci
 				}
 				return ci
 			}

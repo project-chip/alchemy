@@ -9,23 +9,23 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func (b *Ball) organizeFeaturesSection(cxt *discoContext, dp *docParse) (err error) {
-	for _, features := range dp.features {
+func (b *Baller) organizeFeaturesSection(cxt *discoContext) (err error) {
+	for _, features := range cxt.parsed.features {
 		featuresTable := features.table
 		if featuresTable == nil || featuresTable.Element == nil {
 			return fmt.Errorf("no features section found")
 		}
 
 		if featuresTable.ColumnMap == nil {
-			return fmt.Errorf("can't rearrange features table without header row in %s", dp.doc.Path)
+			return fmt.Errorf("can't rearrange features table without header row in %s", cxt.doc.Path)
 		}
 
-		err = b.renameTableHeaderCells(dp.doc, features.section, featuresTable, matter.Tables[matter.TableTypeFeatures].ColumnRenames)
+		err = b.renameTableHeaderCells(cxt, features.section, featuresTable, matter.Tables[matter.TableTypeFeatures].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in features table in %s: %w", dp.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in features table in %s: %w", cxt.doc.Path, err)
 		}
 
-		err = b.reorderColumns(dp.doc, features.section, featuresTable, matter.TableTypeFeatures)
+		err = b.reorderColumns(cxt, features.section, featuresTable, matter.TableTypeFeatures)
 		if err != nil {
 			return err
 		}

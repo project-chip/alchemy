@@ -20,7 +20,7 @@ func precleanStrings(els asciidoc.Set) {
 	})
 }
 
-func (b *Ball) postCleanUpStrings(els asciidoc.Set) {
+func (b *Baller) postCleanUpStrings(els asciidoc.Set) {
 	parse.Search(els, func(t *asciidoc.String) parse.SearchShould {
 		if b.options.addSpaceAfterPunctuation {
 			t.Value = missingSpaceAfterPunctuationPattern.ReplaceAllString(t.Value, "$1$2 $3")
