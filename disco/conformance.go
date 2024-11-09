@@ -11,11 +11,11 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func (b *Ball) fixConformanceCells(docParse *docParse, section *subSection, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
+func (b *Baller) fixConformanceCells(cxt *discoContext, section *subSection, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}
-	if b.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableConformance) {
+	if cxt.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableConformance) {
 		return nil
 	}
 	conformanceIndex, ok := columnMap[matter.TableColumnConformance]
@@ -31,7 +31,7 @@ func (b *Ball) fixConformanceCells(docParse *docParse, section *subSection, rows
 
 		conf := conformance.ParseConformance(vc)
 
-		docParse.conformanceCache[cell] = conf
+		cxt.parsed.conformanceCache[cell] = conf
 
 		cs := conf.ASCIIDocString()
 
@@ -43,14 +43,14 @@ func (b *Ball) fixConformanceCells(docParse *docParse, section *subSection, rows
 	return
 }
 
-func disambiguateConformance(docParse *docParse) (err error) {
+func disambiguateConformance(cxt *discoContext) (err error) {
 	globalChoices := make(map[string]string)
-	parse.Traverse(docParse.doc, docParse.doc.Elements(), func(table *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
-		ti, ok := docParse.tableCache[table]
+	parse.Traverse(cxt.doc, cxt.doc.Elements(), func(table *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
+		ti, ok := cxt.parsed.tableCache[table]
 		if !ok {
 
 			var err error
-			ti, err = spec.ReadTable(docParse.doc, table)
+			ti, err = spec.ReadTable(cxt.doc, table)
 			if err != nil {
 				return parse.SearchShouldContinue
 			}
@@ -66,7 +66,7 @@ func disambiguateConformance(docParse *docParse) (err error) {
 				continue
 			}
 			cell := row.Cell(conformanceIndex)
-			conf, ok := docParse.conformanceCache[cell]
+			conf, ok := cxt.parsed.conformanceCache[cell]
 			if !ok {
 				vc, e := spec.RenderTableCell(cell)
 				if e != nil {

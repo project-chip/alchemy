@@ -11,8 +11,8 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err error) {
-	for _, commands := range dp.commands {
+func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
+	for _, commands := range cxt.parsed.commands {
 		if commands.table == nil || commands.table.Element == nil {
 			err = fmt.Errorf("no commands table found")
 			return
@@ -24,28 +24,28 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 		if len(commands.table.ColumnMap) < 2 {
 			return fmt.Errorf("can't rearrange commands table with so few matches")
 		}
-		err = b.renameTableHeaderCells(b.doc, commands.section, commands.table, matter.Tables[matter.TableTypeCommands].ColumnRenames)
+		err = b.renameTableHeaderCells(cxt, commands.section, commands.table, matter.Tables[matter.TableTypeCommands].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", commands.section.Name, dp.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", commands.section.Name, cxt.doc.Path, err)
 		}
-		err = b.fixAccessCells(dp, commands, types.EntityTypeCommand)
+		err = b.fixAccessCells(cxt, commands, types.EntityTypeCommand)
 		if err != nil {
-			return fmt.Errorf("error fixing access cells in commands table in %s: %w", dp.doc.Path, err)
-		}
-
-		err = b.fixConformanceCells(dp, commands, commands.table.Rows, commands.table.ColumnMap)
-		if err != nil {
-			return fmt.Errorf("error fixing conformance cells in commands table in %s: %w", dp.doc.Path, err)
+			return fmt.Errorf("error fixing access cells in commands table in %s: %w", cxt.doc.Path, err)
 		}
 
-		err = b.fixCommandDirection(commands.section, commands.table.Rows, commands.table.ColumnMap)
+		err = b.fixConformanceCells(cxt, commands, commands.table.Rows, commands.table.ColumnMap)
 		if err != nil {
-			return fmt.Errorf("error fixing command direction in commands table in %s: %w", dp.doc.Path, err)
+			return fmt.Errorf("error fixing conformance cells in commands table in %s: %w", cxt.doc.Path, err)
 		}
 
-		err = b.renameTableHeaderCells(dp.doc, commands.section, commands.table, nil)
+		err = b.fixCommandDirection(cxt, commands.section, commands.table.Rows, commands.table.ColumnMap)
 		if err != nil {
-			return fmt.Errorf("error table header cells in commands table in %s: %w", dp.doc.Path, err)
+			return fmt.Errorf("error fixing command direction in commands table in %s: %w", cxt.doc.Path, err)
+		}
+
+		err = b.renameTableHeaderCells(cxt, commands.section, commands.table, nil)
+		if err != nil {
+			return fmt.Errorf("error table header cells in commands table in %s: %w", cxt.doc.Path, err)
 		}
 
 		err = b.linkIndexTables(cxt, commands)
@@ -57,19 +57,19 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 			if command.table == nil || command.table.Element == nil {
 				continue
 			}
-			err = b.renameTableHeaderCells(dp.doc, command.section, command.table, matter.Tables[matter.TableTypeCommandFields].ColumnRenames)
+			err = b.renameTableHeaderCells(cxt, command.section, command.table, matter.Tables[matter.TableTypeCommandFields].ColumnRenames)
 			if err != nil {
-				return fmt.Errorf("error table header cells in commands table in %s: %w", dp.doc.Path, err)
+				return fmt.Errorf("error table header cells in commands table in %s: %w", cxt.doc.Path, err)
 			}
-			err = b.fixConstraintCells(command.section, command.table)
+			err = b.fixConstraintCells(cxt, command.section, command.table)
 			if err != nil {
-				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
+				return fmt.Errorf("error fixing command constraint cells in %s in %s: %w", command.section.Name, cxt.doc.Path, err)
 			}
-			err = b.fixConformanceCells(dp, command, command.table.Rows, command.table.ColumnMap)
+			err = b.fixConformanceCells(cxt, command, command.table.Rows, command.table.ColumnMap)
 			if err != nil {
-				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", command.section.Name, dp.doc.Path, err)
+				return fmt.Errorf("error fixing command conformance cells in %s in %s: %w", command.section.Name, cxt.doc.Path, err)
 			}
-			b.appendSubsectionTypes(command.section, command.table.ColumnMap, command.table.Rows)
+			b.appendSubsectionTypes(cxt, command.section, command.table.ColumnMap, command.table.Rows)
 			b.removeMandatoryFallbacks(command.table)
 
 			err = b.linkIndexTables(cxt, command)
@@ -81,11 +81,11 @@ func (b *Ball) organizeCommandsSection(cxt *discoContext, dp *docParse) (err err
 	return
 }
 
-func (b *Ball) fixCommandDirection(section *spec.Section, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
+func (b *Baller) fixCommandDirection(cxt *discoContext, section *spec.Section, rows []*asciidoc.TableRow, columnMap spec.ColumnIndex) (err error) {
 	if len(rows) < 2 {
 		return
 	}
-	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeDataTypeCommandFixDirection) {
+	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeDataTypeCommandFixDirection) {
 		return
 	}
 	accessIndex, ok := columnMap[matter.TableColumnDirection]

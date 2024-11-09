@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Ball) ensureTableOptions(els asciidoc.Set) {
+func (b *Baller) ensureTableOptions(els asciidoc.Set) {
 	if !b.options.normalizeTableOptions {
 		return
 	}
@@ -42,11 +42,11 @@ func (b *Ball) ensureTableOptions(els asciidoc.Set) {
 
 }
 
-func (b *Ball) addMissingColumns(section *spec.Section, ti *spec.TableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {
+func (b *Baller) addMissingColumns(cxt *discoContext, section *spec.Section, ti *spec.TableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {
 	if !b.options.addMissingColumns {
 		return
 	}
-	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableAddMissingColumns) {
+	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableAddMissingColumns) {
 		return
 	}
 	ti.Element.DeleteAttribute(asciidoc.AttributeNameColumns)
@@ -68,7 +68,7 @@ func (b *Ball) addMissingColumns(section *spec.Section, ti *spec.TableInfo, tabl
 	return
 }
 
-func (b *Ball) appendColumn(ti *spec.TableInfo, column matter.TableColumn, entityType types.EntityType) (appendedIndex int, err error) {
+func (b *Baller) appendColumn(ti *spec.TableInfo, column matter.TableColumn, entityType types.EntityType) (appendedIndex int, err error) {
 	rows := ti.Rows
 	if len(rows) == 0 {
 		appendedIndex = -1
@@ -115,7 +115,7 @@ func (b *Ball) appendColumn(ti *spec.TableInfo, column matter.TableColumn, entit
 	return
 }
 
-func (b *Ball) getDefaultColumnValue(ti *spec.TableInfo, row *asciidoc.TableRow, column matter.TableColumn, entityType types.EntityType) string {
+func (b *Baller) getDefaultColumnValue(ti *spec.TableInfo, row *asciidoc.TableRow, column matter.TableColumn, entityType types.EntityType) string {
 	switch column {
 	case matter.TableColumnConformance:
 		switch entityType {
@@ -150,11 +150,11 @@ func (b *Ball) getDefaultColumnValue(ti *spec.TableInfo, row *asciidoc.TableRow,
 	return ""
 }
 
-func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *spec.TableInfo, tableType matter.TableType) (err error) {
+func (b *Baller) reorderColumns(cxt *discoContext, section *spec.Section, ti *spec.TableInfo, tableType matter.TableType) (err error) {
 	if !b.options.reorderColumns {
 		return
 	}
-	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableReorderColumns) {
+	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableReorderColumns) {
 		return
 	}
 	rows := ti.Rows
@@ -269,7 +269,7 @@ func (b *Ball) reorderColumns(doc *spec.Doc, section *spec.Section, ti *spec.Tab
 		}
 		cols.Columns = newColumns
 	}
-	err = ti.Rescan(doc)
+	err = ti.Rescan(cxt.doc)
 	return
 }
 
@@ -302,11 +302,11 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 	return
 }
 
-func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, table *spec.TableInfo, overrides map[matter.TableColumn]matter.TableColumn) (err error) {
+func (b *Baller) renameTableHeaderCells(cxt *discoContext, section *spec.Section, table *spec.TableInfo, overrides map[matter.TableColumn]matter.TableColumn) (err error) {
 	if !b.options.renameTableHeaders {
 		return
 	}
-	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableRenameHeaders) {
+	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableRenameHeaders) {
 		return
 	}
 	if len(overrides) == 0 {
@@ -329,7 +329,7 @@ func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, tabl
 		if hasOverride {
 			existingIndex, overrideAlreadyExists := table.ColumnMap[overrideColumn]
 			if overrideAlreadyExists && existingIndex != i {
-				slog.Warn("Can not rename column; column with same name already exists", slog.String("from", tc.String()), slog.String("to", overrideColumn.String()), slog.Int("existingColumnIndex", existingIndex), log.Element("source", doc.Path, table.Element))
+				slog.Warn("Can not rename column; column with same name already exists", slog.String("from", tc.String()), slog.String("to", overrideColumn.String()), slog.Int("existingColumnIndex", existingIndex), log.Element("source", cxt.doc.Path, table.Element))
 				continue
 			}
 			tc = overrideColumn
@@ -339,6 +339,6 @@ func (b *Ball) renameTableHeaderCells(doc *spec.Doc, section *spec.Section, tabl
 			setCellString(cell, name)
 		}
 	}
-	err = table.Rescan(doc)
+	err = table.Rescan(cxt.doc)
 	return
 }

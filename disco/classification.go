@@ -8,8 +8,8 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (err error) {
-	for _, classification := range dp.classification {
+func (b *Baller) organizeClassificationSection(cxt *discoContext) (err error) {
+	for _, classification := range cxt.parsed.classification {
 		classificationTable := classification.table
 		if classificationTable == nil || classificationTable.Element == nil {
 			return fmt.Errorf("no classification table found")
@@ -24,14 +24,14 @@ func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (e
 			return nil
 		}
 
-		err = b.renameTableHeaderCells(b.doc, classification.section, classificationTable, matter.Tables[matter.TableTypeClassification].ColumnRenames)
+		err = b.renameTableHeaderCells(cxt, classification.section, classificationTable, matter.Tables[matter.TableTypeClassification].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", classification.section.Name, dp.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", classification.section.Name, cxt.doc.Path, err)
 		}
 
 		var tableType matter.TableType
 
-		switch dp.docType {
+		switch cxt.parsed.docType {
 		case matter.DocTypeCluster:
 			tableType = matter.TableTypeAppClusterClassification
 		case matter.DocTypeDeviceType:
@@ -39,7 +39,7 @@ func (b *Ball) organizeClassificationSection(cxt *discoContext, dp *docParse) (e
 		}
 
 		if tableType != matter.TableTypeUnknown {
-			err = b.reorderColumns(dp.doc, classification.section, classificationTable, tableType)
+			err = b.reorderColumns(cxt, classification.section, classificationTable, tableType)
 			if err != nil {
 				return err
 			}

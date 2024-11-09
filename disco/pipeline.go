@@ -79,7 +79,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 		return err
 	}
 
-	baller := NewBaller(discoOptions, pipelineOptions)
+	baller := NewBaller(discoOptions)
 
 	var balledDocs pipeline.Map[string, *pipeline.Data[*spec.Doc]]
 	balledDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, baller, docs)

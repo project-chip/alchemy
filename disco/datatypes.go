@@ -27,12 +27,12 @@ type DataTypeEntry struct {
 	existing         bool
 }
 
-func getExistingDataTypes(cxt *discoContext, dp *docParse) {
-	if dp.dataTypes == nil {
+func getExistingDataTypes(cxt *discoContext) {
+	if cxt.parsed.dataTypes == nil {
 		return
 	}
 
-	for _, ss := range parse.FindAll[*spec.Section](dp.dataTypes.section.Elements()) {
+	for _, ss := range parse.FindAll[*spec.Section](cxt.parsed.dataTypes.section.Elements()) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		dataType := ss.GetDataType()
@@ -52,15 +52,15 @@ func getExistingDataTypes(cxt *discoContext, dp *docParse) {
 	}
 }
 
-func (b *Ball) getPotentialDataTypes(dc *discoContext, dp *docParse) (err error) {
+func (b *Baller) getPotentialDataTypes(dc *discoContext) (err error) {
 	var subSections []*subSection
-	subSections = append(subSections, dp.attributes...)
-	subSections = append(subSections, dp.structs...)
-	subSections = append(subSections, dp.commands...)
-	subSections = append(subSections, dp.events...)
+	subSections = append(subSections, dc.parsed.attributes...)
+	subSections = append(subSections, dc.parsed.structs...)
+	subSections = append(subSections, dc.parsed.commands...)
+	subSections = append(subSections, dc.parsed.events...)
 
 	for _, ss := range subSections {
-		err = b.getPotentialDataTypesForSection(dc, dp, ss)
+		err = b.getPotentialDataTypesForSection(dc, ss)
 		if err != nil {
 			return
 		}
@@ -68,15 +68,15 @@ func (b *Ball) getPotentialDataTypes(dc *discoContext, dp *docParse) (err error)
 	return
 }
 
-func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, ss *subSection) error {
+func (b *Baller) getPotentialDataTypesForSection(cxt *discoContext, ss *subSection) error {
 	if ss.table == nil || ss.table.Element == nil {
 		slog.Debug("section has no table; skipping attempt to find data type", "sectionName", ss.section.Name)
 		return nil
 	}
-	if b.errata.IgnoreSection(ss.section.Name, errata.DiscoPurposeDataTypePromoteInline) {
+	if cxt.errata.IgnoreSection(ss.section.Name, errata.DiscoPurposeDataTypePromoteInline) {
 		return nil
 	}
-	sectionDataMap, err := b.getDataTypes(ss.table.ColumnMap, ss.table.Rows, ss.section)
+	sectionDataMap, err := b.getDataTypes(cxt, ss.table.ColumnMap, ss.table.Rows, ss.section)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, 
 		}
 	}
 	for _, child := range ss.children {
-		err = b.getPotentialDataTypesForSection(cxt, dp, child)
+		err = b.getPotentialDataTypesForSection(cxt, child)
 		if err != nil {
 			return err
 		}
@@ -94,7 +94,7 @@ func (b *Ball) getPotentialDataTypesForSection(cxt *discoContext, dp *docParse, 
 	return nil
 }
 
-func (b *Ball) getDataTypes(columnMap spec.ColumnIndex, rows []*asciidoc.TableRow, section *spec.Section) (map[string]*DataTypeEntry, error) {
+func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow, section *spec.Section) (map[string]*DataTypeEntry, error) {
 	sectionDataMap := make(map[string]*DataTypeEntry)
 	nameIndex, ok := columnMap[matter.TableColumnName]
 	if !ok {
@@ -145,7 +145,7 @@ func (b *Ball) getDataTypes(columnMap spec.ColumnIndex, rows []*asciidoc.TableRo
 			if table == nil {
 				continue
 			}
-			ti, err := spec.ReadTable(b.doc, table)
+			ti, err := spec.ReadTable(cxt.doc, table)
 			if err != nil {
 				return nil, fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", s.Name, err)
 			}
@@ -162,7 +162,7 @@ func (b *Ball) getDataTypes(columnMap spec.ColumnIndex, rows []*asciidoc.TableRo
 	return sectionDataMap, nil
 }
 
-func (b *Ball) promoteDataTypes(cxt *discoContext, top *spec.Section) (promoted bool, err error) {
+func (b *Baller) promoteDataTypes(cxt *discoContext, top *spec.Section) (promoted bool, err error) {
 	if !b.options.promoteDataTypes {
 		return
 	}
@@ -194,7 +194,7 @@ func (b *Ball) promoteDataTypes(cxt *discoContext, top *spec.Section) (promoted 
 			suffix := matter.DataTypeSuffixes[dtc]
 			idColumn := matter.DataTypeIdentityColumn[dtc]
 			var didPromotion bool
-			didPromotion, err = b.promoteDataType(top, suffix, f, idColumn, dtc)
+			didPromotion, err = b.promoteDataType(cxt, top, suffix, f, idColumn, dtc)
 			if err != nil {
 				return
 			}
@@ -224,7 +224,7 @@ func getDataTypeCategory(dataType string) matter.DataTypeCategory {
 	return matter.DataTypeCategoryUnknown
 }
 
-func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn, dtc matter.DataTypeCategory) (promoted bool, err error) {
+func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix string, dataTypeFields map[string]*DataTypeEntry, firstColumnType matter.TableColumn, dtc matter.DataTypeCategory) (promoted bool, err error) {
 	if dataTypeFields == nil {
 		return
 	}
@@ -251,7 +251,7 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 			continue
 		}
 		var ti *spec.TableInfo
-		ti, err = spec.ReadTable(b.doc, table)
+		ti, err = spec.ReadTable(cxt.doc, table)
 		if err != nil {
 			err = fmt.Errorf("failed mapping table columns for data type definition table in section %s: %w", dt.section.Name, err)
 			return
@@ -268,7 +268,7 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 				delete(ti.ColumnMap, matter.TableColumnDescription)
 				ti.ColumnMap[matter.TableColumnSummary] = descriptionIndex
 				summaryIndex = descriptionIndex
-				err = b.renameTableHeaderCells(top.Doc, dt.section, ti, nil)
+				err = b.renameTableHeaderCells(cxt, dt.section, ti, nil)
 				if err != nil {
 					return
 				}
@@ -277,7 +277,7 @@ func (b *Ball) promoteDataType(top *spec.Section, suffix string, dataTypeFields 
 				// Take the first extra column and rename it
 				summaryIndex = ti.ExtraColumns[0].Offset
 				ti.ColumnMap[matter.TableColumnSummary] = summaryIndex
-				err = b.renameTableHeaderCells(top.Doc, dt.section, ti, nil)
+				err = b.renameTableHeaderCells(cxt, dt.section, ti, nil)
 				if err != nil {
 					return
 				}
@@ -438,8 +438,8 @@ func disambiguateDataTypes(infos []*DataTypeEntry) error {
 	return nil
 }
 
-func (b *Ball) canonicalizeDataTypeSectionName(dp *docParse, s *spec.Section, dataTypeName string) {
-	if b.errata.IgnoreSection(s.Name, errata.DiscoPurposeDataTypeRename) {
+func (b *Baller) canonicalizeDataTypeSectionName(cxt *discoContext, s *spec.Section, dataTypeName string) {
+	if cxt.errata.IgnoreSection(s.Name, errata.DiscoPurposeDataTypeRename) {
 		return
 	}
 	name := s.Name
@@ -464,9 +464,9 @@ func (b *Ball) canonicalizeDataTypeSectionName(dp *docParse, s *spec.Section, da
 	if oldName == newName {
 		return
 	}
-	renameDataType(dp.attributes, oldName, newName)
-	renameDataType(dp.commands, oldName, newName)
-	renameDataType(dp.events, oldName, newName)
+	renameDataType(cxt.parsed.attributes, oldName, newName)
+	renameDataType(cxt.parsed.commands, oldName, newName)
+	renameDataType(cxt.parsed.events, oldName, newName)
 }
 
 func renameDataType(subSections []*subSection, oldName string, newName string) {
@@ -496,7 +496,7 @@ func renameDataType(subSections []*subSection, oldName string, newName string) {
 	}
 }
 
-func (b *Ball) removeMandatoryFallbacks(ti *spec.TableInfo) {
+func (b *Baller) removeMandatoryFallbacks(ti *spec.TableInfo) {
 	if !b.options.removeMandatoryFallbacks {
 		return
 	}

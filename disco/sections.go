@@ -13,10 +13,8 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-type sectionOrganizer func(dc *discoContext, dp *docParse) error
-
-func (b *Ball) organizeSubSections(dc *discoContext, dp *docParse) (err error) {
-	organizers := []sectionOrganizer{
+func (b *Baller) organizeSubSections(dc *discoContext) (err error) {
+	organizers := []func(dc *discoContext) error{
 		b.organizeAttributesSection,
 		b.organizeClassificationSection,
 		b.organizeClusterIDSection,
@@ -28,7 +26,7 @@ func (b *Ball) organizeSubSections(dc *discoContext, dp *docParse) (err error) {
 		b.organizeEventsSection,
 	}
 	for _, organizer := range organizers {
-		err = organizer(dc, dp)
+		err = organizer(dc)
 		if err != nil {
 			return
 		}
@@ -87,8 +85,8 @@ func setSectionTitle(sec *spec.Section, title string) {
 	}
 }
 
-func (b *Ball) appendSubsectionTypes(section *spec.Section, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow) {
-	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeDataTypeAppendSuffix) {
+func (b *Baller) appendSubsectionTypes(cxt *discoContext, section *spec.Section, columnMap spec.ColumnIndex, rows []*asciidoc.TableRow) {
+	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeDataTypeAppendSuffix) {
 		return
 	}
 	var subsectionSuffix string

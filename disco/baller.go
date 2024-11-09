@@ -2,18 +2,27 @@ package disco
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
 type Baller struct {
-	discoOptions []Option
+	options options
 }
 
-func NewBaller(discoOptions []Option, pipelineOptions pipeline.Options) Baller {
-	return Baller{discoOptions: discoOptions}
+func NewBaller(discoOptions []Option) *Baller {
+	b := &Baller{
+		options: defaultOptions,
+	}
+	for _, o := range discoOptions {
+		o(&b.options)
+	}
+	return b
 }
 
 func (r Baller) Name() string {
@@ -25,11 +34,7 @@ func (r Baller) Type() pipeline.ProcessorType {
 }
 
 func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[*spec.Doc], extras []*pipeline.Data[*spec.Doc], err error) {
-	b := NewBall(input.Content)
-	for _, option := range r.discoOptions {
-		option(&b.options)
-	}
-	err = b.disco(cxt)
+	err = r.disco(cxt, input.Content)
 	if err != nil {
 		if err == ErrEmptyDoc {
 			err = nil
@@ -41,4 +46,96 @@ func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], in
 	}
 	outputs = append(outputs, pipeline.NewData[*spec.Doc](input.Path, input.Content))
 	return
+}
+
+func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
+
+	dc := newContext(cxt, doc)
+
+	precleanStrings(doc.Elements())
+
+	for _, top := range parse.Skim[*spec.Section](doc.Elements()) {
+		err := spec.AssignSectionTypes(doc, top)
+		if err != nil {
+			return err
+		}
+	}
+
+	docType, err := doc.DocType()
+	if err != nil {
+		return fmt.Errorf("error assigning section types in %s: %w", doc.Path, err)
+	}
+
+	topLevelSection := parse.FindFirst[*spec.Section](doc.Elements())
+	if topLevelSection == nil {
+		return ErrEmptyDoc
+	}
+
+	dc.parsed, err = b.parseDoc(doc, docType, topLevelSection)
+	if err != nil {
+		return fmt.Errorf("error pre-parsing for disco ball in %s: %w", doc.Path, err)
+	}
+
+	getExistingDataTypes(dc)
+
+	err = b.getPotentialDataTypes(dc)
+	if err != nil {
+		return fmt.Errorf("error getting potential data types in %s: %w", doc.Path, err)
+	}
+
+	var promotedDataTypes bool
+	promotedDataTypes, err = b.promoteDataTypes(dc, topLevelSection)
+	if err != nil {
+		return fmt.Errorf("error promoting data types in %s: %w", doc.Path, err)
+	}
+	if promotedDataTypes {
+		dc.parsed, err = b.parseDoc(doc, docType, topLevelSection)
+		if err != nil {
+			return fmt.Errorf("error re-parsing for disco ball in %s: %w", doc.Path, err)
+		}
+	}
+
+	err = b.organizeSubSections(dc)
+	if err != nil {
+		return fmt.Errorf("error organizing subsections in %s: %w", doc.Path, err)
+	}
+
+	err = b.discoBallTopLevelSection(doc, topLevelSection, docType)
+
+	if err != nil {
+		return fmt.Errorf("error disco balling top level section in %s: %w", doc.Path, err)
+	}
+
+	if b.options.disambiguateConformanceChoice {
+		err = disambiguateConformance(dc)
+		if err != nil {
+			return fmt.Errorf("error disambiguating conformance in %s: %w", doc.Path, err)
+		}
+	}
+	return nil
+}
+
+func (b *Baller) discoBallTopLevelSection(doc *spec.Doc, top *spec.Section, docType matter.DocType) error {
+	if b.options.reorderSections {
+		sectionOrder, ok := matter.TopLevelSectionOrders[docType]
+		if !ok {
+			slog.Debug("could not determine section order", slog.String("path", doc.Path.Relative), slog.String("docType", docType.String()))
+
+		} else {
+			err := reorderSection(top, sectionOrder)
+			if err != nil {
+				return fmt.Errorf("error reordering sections in %s: %w", doc.Path, err)
+			}
+		}
+		dataTypesSection := spec.FindSectionByType(top, matter.SectionDataTypes)
+		if dataTypesSection != nil {
+			err := reorderSection(dataTypesSection, matter.DataTypeSectionOrder)
+			if err != nil {
+				return fmt.Errorf("error reordering data types section in %s: %w", doc.Path, err)
+			}
+		}
+	}
+	b.ensureTableOptions(top.Elements())
+	b.postCleanUpStrings(top.Elements())
+	return nil
 }

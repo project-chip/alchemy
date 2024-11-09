@@ -10,11 +10,11 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Ball) fixConstraintCells(section *spec.Section, ti *spec.TableInfo) (err error) {
+func (b *Baller) fixConstraintCells(cxt *discoContext, section *spec.Section, ti *spec.TableInfo) (err error) {
 	if len(ti.Rows) < 2 {
 		return
 	}
-	if b.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableConstraint) {
+	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableConstraint) {
 		return
 	}
 	constraintIndex, ok := ti.ColumnIndex(matter.TableColumnConstraint)
@@ -31,7 +31,7 @@ func (b *Ball) fixConstraintCells(section *spec.Section, ti *spec.TableInfo) (er
 
 		dataType, e := ti.ReadDataType(row, matter.TableColumnType)
 		if e != nil {
-			slog.Debug("error reading data type for constraint", slog.String("path", b.doc.Path.String()), slog.Any("error", e))
+			slog.Debug("error reading data type for constraint", slog.String("path", cxt.doc.Path.String()), slog.Any("error", e))
 			continue
 		}
 		if dataType == nil {

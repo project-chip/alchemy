@@ -11,9 +11,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err error) {
+func (b *Baller) organizeAttributesSection(cxt *discoContext) (err error) {
 
-	for _, attributes := range dp.attributes {
+	for _, attributes := range cxt.parsed.attributes {
 		attributesTable := attributes.table
 		if attributesTable == nil || attributesTable.Element == nil {
 			return
@@ -27,22 +27,22 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return fmt.Errorf("can't rearrange attributes table with so few matches: %d", len(attributesTable.ColumnMap))
 		}
 
-		err = b.renameTableHeaderCells(b.doc, attributes.section, attributesTable, matter.Tables[matter.TableTypeAttributes].ColumnRenames)
+		err = b.renameTableHeaderCells(cxt, attributes.section, attributesTable, matter.Tables[matter.TableTypeAttributes].ColumnRenames)
 		if err != nil {
-			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", attributes.section.Name, dp.doc.Path, err)
+			return fmt.Errorf("error renaming table header cells in section %s in %s: %w", attributes.section.Name, cxt.doc.Path, err)
 		}
 
-		err = b.fixAccessCells(dp, attributes, types.EntityTypeAttribute)
-		if err != nil {
-			return err
-		}
-
-		err = b.fixConstraintCells(attributes.section, attributesTable)
+		err = b.fixAccessCells(cxt, attributes, types.EntityTypeAttribute)
 		if err != nil {
 			return err
 		}
 
-		err = b.fixConformanceCells(dp, attributes, attributesTable.Rows, attributesTable.ColumnMap)
+		err = b.fixConstraintCells(cxt, attributes.section, attributesTable)
+		if err != nil {
+			return err
+		}
+
+		err = b.fixConformanceCells(cxt, attributes, attributesTable.Rows, attributesTable.ColumnMap)
 		if err != nil {
 			return err
 		}
@@ -52,7 +52,7 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 			return err
 		}
 
-		err = b.reorderColumns(dp.doc, attributes.section, attributesTable, matter.TableTypeAttributes)
+		err = b.reorderColumns(cxt, attributes.section, attributesTable, matter.TableTypeAttributes)
 		if err != nil {
 			return err
 		}
@@ -62,11 +62,11 @@ func (b *Ball) organizeAttributesSection(cxt *discoContext, dp *docParse) (err e
 	return nil
 }
 
-func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
+func (b *Baller) linkIndexTables(cxt *discoContext, section *subSection) error {
 	if !b.options.linkIndexTables {
 		return nil
 	}
-	if b.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableLinkIndexes) {
+	if cxt.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableLinkIndexes) {
 		return nil
 	}
 	if section.table == nil || section.table.Element == nil {
@@ -112,7 +112,7 @@ func (b *Ball) linkIndexTables(cxt *discoContext, section *subSection) error {
 		if !ok {
 			label := normalizeAnchorLabel(name, nil)
 			id = normalizeAnchorID(name, nil)
-			spec.NewAnchor(b.doc, id, s.Base, section.section, label...).SyncToDoc(id)
+			spec.NewAnchor(cxt.doc, id, s.Base, section.section, label...).SyncToDoc(id)
 		}
 		icr := asciidoc.NewCrossReference(id)
 		cell.SetElements(asciidoc.Set{icr})

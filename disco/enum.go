@@ -8,9 +8,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Ball) organizeEnumSections(cxt *discoContext, dp *docParse) (err error) {
-	for _, es := range dp.enums {
-		err = b.organizeEnumSection(cxt, dp, es)
+func (b *Baller) organizeEnumSections(cxt *discoContext) (err error) {
+	for _, es := range cxt.parsed.enums {
+		err = b.organizeEnumSection(cxt, es)
 		if err != nil {
 			return
 		}
@@ -18,9 +18,9 @@ func (b *Ball) organizeEnumSections(cxt *discoContext, dp *docParse) (err error)
 	return
 }
 
-func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSection) (err error) {
+func (b *Baller) organizeEnumSection(cxt *discoContext, es *subSection) (err error) {
 
-	b.canonicalizeDataTypeSectionName(dp, es.section, "Enum")
+	b.canonicalizeDataTypeSectionName(cxt, es.section, "Enum")
 
 	enumTable := es.table
 	if enumTable == nil || enumTable.Element == nil {
@@ -36,29 +36,29 @@ func (b *Ball) organizeEnumSection(cxt *discoContext, dp *docParse, es *subSecti
 		return nil
 	}
 
-	err = b.renameTableHeaderCells(dp.doc, es.section, enumTable, matter.Tables[matter.TableTypeEnum].ColumnRenames)
+	err = b.renameTableHeaderCells(cxt, es.section, enumTable, matter.Tables[matter.TableTypeEnum].ColumnRenames)
 	if err != nil {
-		return fmt.Errorf("error renaming table header cells in enum table in section %s in %s: %w", es.section.Name, dp.doc.Path, err)
+		return fmt.Errorf("error renaming table header cells in enum table in section %s in %s: %w", es.section.Name, cxt.doc.Path, err)
 	}
 
-	err = b.addMissingColumns(es.section, enumTable, matter.Tables[matter.TableTypeEnum], types.EntityTypeEnumValue)
+	err = b.addMissingColumns(cxt, es.section, enumTable, matter.Tables[matter.TableTypeEnum], types.EntityTypeEnumValue)
 	if err != nil {
-		return fmt.Errorf("error adding missing table columns in enum section %s in %s: %w", es.section.Name, dp.doc.Path, err)
+		return fmt.Errorf("error adding missing table columns in enum section %s in %s: %w", es.section.Name, cxt.doc.Path, err)
 	}
 
-	err = enumTable.Rescan(dp.doc)
+	err = enumTable.Rescan(cxt.doc)
 	if err != nil {
-		return fmt.Errorf("error reordering columns in enum table in section %s in %s: %w", es.section.Name, dp.doc.Path, err)
+		return fmt.Errorf("error reordering columns in enum table in section %s in %s: %w", es.section.Name, cxt.doc.Path, err)
 
 	}
 	enumTable = es.table
 	b.removeMandatoryFallbacks(enumTable)
 
-	err = b.reorderColumns(dp.doc, es.section, enumTable, matter.TableTypeEnum)
+	err = b.reorderColumns(cxt, es.section, enumTable, matter.TableTypeEnum)
 	if err != nil {
 		return err
 	}
 
-	b.appendSubsectionTypes(es.section, enumTable.ColumnMap, enumTable.Rows)
+	b.appendSubsectionTypes(cxt, es.section, enumTable.ColumnMap, enumTable.Rows)
 	return
 }

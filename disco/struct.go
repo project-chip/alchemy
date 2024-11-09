@@ -8,9 +8,9 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Ball) organizeStructSections(cxt *discoContext, dp *docParse) (err error) {
-	for _, ss := range dp.structs {
-		err = b.organizeStructSection(cxt, dp, ss)
+func (b *Baller) organizeStructSections(cxt *discoContext) (err error) {
+	for _, ss := range cxt.parsed.structs {
+		err = b.organizeStructSection(cxt, ss)
 		if err != nil {
 			return
 		}
@@ -18,9 +18,9 @@ func (b *Ball) organizeStructSections(cxt *discoContext, dp *docParse) (err erro
 	return
 }
 
-func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSection) (err error) {
+func (b *Baller) organizeStructSection(cxt *discoContext, ss *subSection) (err error) {
 
-	b.canonicalizeDataTypeSectionName(dp, ss.section, "Struct")
+	b.canonicalizeDataTypeSectionName(cxt, ss.section, "Struct")
 
 	fieldsTable := ss.table
 	if fieldsTable == nil || fieldsTable.Element == nil {
@@ -37,37 +37,37 @@ func (b *Ball) organizeStructSection(cxt *discoContext, dp *docParse, ss *subSec
 		return nil
 	}
 
-	err = b.renameTableHeaderCells(b.doc, ss.section, fieldsTable, nil)
+	err = b.renameTableHeaderCells(cxt, ss.section, fieldsTable, nil)
 	if err != nil {
-		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
+		return fmt.Errorf("error renaming table header cells in section %s in %s: %w", ss.section.Name, cxt.doc.Path, err)
 	}
 
-	err = b.fixAccessCells(dp, ss, types.EntityTypeStruct)
+	err = b.fixAccessCells(cxt, ss, types.EntityTypeStruct)
 	if err != nil {
-		return fmt.Errorf("error fixing access cells in struct table in %s: %w", dp.doc.Path, err)
+		return fmt.Errorf("error fixing access cells in struct table in %s: %w", cxt.doc.Path, err)
 	}
 
-	err = b.fixConstraintCells(ss.section, fieldsTable)
-	if err != nil {
-		return err
-	}
-
-	err = b.renameTableHeaderCells(dp.doc, ss.section, fieldsTable, matter.Tables[matter.TableTypeStruct].ColumnRenames)
-	if err != nil {
-		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
-	}
-
-	err = b.addMissingColumns(ss.section, fieldsTable, matter.Tables[matter.TableTypeStruct], types.EntityTypeStructField)
-	if err != nil {
-		return fmt.Errorf("error adding missing table columns in struct table in section %s in %s: %w", ss.section.Name, dp.doc.Path, err)
-	}
-
-	err = b.reorderColumns(dp.doc, ss.section, fieldsTable, matter.TableTypeStruct)
+	err = b.fixConstraintCells(cxt, ss.section, fieldsTable)
 	if err != nil {
 		return err
 	}
 
-	b.appendSubsectionTypes(ss.section, fieldsTable.ColumnMap, fieldsTable.Rows)
+	err = b.renameTableHeaderCells(cxt, ss.section, fieldsTable, matter.Tables[matter.TableTypeStruct].ColumnRenames)
+	if err != nil {
+		return fmt.Errorf("error renaming table header cells in struct table in section %s in %s: %w", ss.section.Name, cxt.doc.Path, err)
+	}
+
+	err = b.addMissingColumns(cxt, ss.section, fieldsTable, matter.Tables[matter.TableTypeStruct], types.EntityTypeStructField)
+	if err != nil {
+		return fmt.Errorf("error adding missing table columns in struct table in section %s in %s: %w", ss.section.Name, cxt.doc.Path, err)
+	}
+
+	err = b.reorderColumns(cxt, ss.section, fieldsTable, matter.TableTypeStruct)
+	if err != nil {
+		return err
+	}
+
+	b.appendSubsectionTypes(cxt, ss.section, fieldsTable.ColumnMap, fieldsTable.Rows)
 	b.removeMandatoryFallbacks(fieldsTable)
 
 	err = b.linkIndexTables(cxt, ss)

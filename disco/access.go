@@ -9,11 +9,11 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType types.EntityType) (err error) {
+func (b *Baller) fixAccessCells(cxt *discoContext, subSection *subSection, entityType types.EntityType) (err error) {
 	if !b.options.formatAccess {
 		return nil
 	}
-	if b.errata.IgnoreSection(subSection.section.Name, errata.DiscoPurposeTableAccess) {
+	if cxt.errata.IgnoreSection(subSection.section.Name, errata.DiscoPurposeTableAccess) {
 		return nil
 	}
 	table := subSection.table
@@ -46,7 +46,7 @@ func (b *Ball) fixAccessCells(dp *docParse, subSection *subSection, entityType t
 				continue
 			}
 		} else {
-			c := getSubsectionCluster(dp, subSection.section)
+			c := getSubsectionCluster(cxt.parsed, subSection.section)
 			if c != nil {
 				ci := getClassificationInfo(c.classification.table)
 				if ci.hierarchy != "Base" {
