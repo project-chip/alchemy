@@ -12,8 +12,9 @@ type DryRun[T string | []byte] struct {
 	writer
 }
 
-func (sp *DryRun[T]) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
+func (sp *DryRun[T]) Write(cxt context.Context, data pipeline.Map[string, *pipeline.Data[T]], pipelineOptions pipeline.Options) (err error) {
+	_, err = pipeline.Collective(cxt, pipelineOptions, sp, data)
+	return
 }
 
 func (sp *DryRun[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (outputs []*pipeline.Data[struct{}], err error) {

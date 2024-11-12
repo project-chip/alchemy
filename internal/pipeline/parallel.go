@@ -3,9 +3,11 @@ package pipeline
 import (
 	"context"
 	"fmt"
+	"iter"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"sync/atomic"
 	"unicode/utf8"
 
@@ -14,6 +16,34 @@ import (
 )
 
 var cyan = color.New(color.FgCyan).Add(color.Bold)
+
+func Parallel[I, O any](cxt context.Context, options Options, processor IndividualProcessor[I, O], input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
+	total := int32(input.Size())
+	queue := make(chan *Data[I], total)
+	var values iter.Seq[*Data[I]]
+	if options.Serial {
+		inputs := DataMapToSlice[I](input)
+		SortData[I](inputs)
+		values = slices.Values(inputs)
+	} else {
+		values = dataMapValues(input)
+	}
+	for value := range values {
+		select {
+		case queue <- value:
+		default:
+			err = fmt.Errorf("queue full")
+
+		}
+		if err != nil {
+			return
+		}
+	}
+	if options.Serial {
+		return processSerial[I, O](cxt, processor.Name(), processor.Process, queue, total)
+	}
+	return processParallel[I, O](cxt, processor.Name(), processor.Process, queue, total, !options.NoProgress)
+}
 
 func processParallel[I, O any](cxt context.Context, name string, processor IndividualProcess[I, O], queue chan *Data[I], total int32, showProgress bool) (output Map[string, *Data[O]], err error) {
 

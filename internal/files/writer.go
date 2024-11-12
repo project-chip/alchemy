@@ -11,6 +11,7 @@ import (
 type Writer[T string | []byte] interface {
 	pipeline.Processor
 	SetName(name string)
+	Write(cxt context.Context, data pipeline.Map[string, *pipeline.Data[T]], pipelineOptions pipeline.Options) (err error)
 }
 
 type writer struct {
@@ -43,8 +44,9 @@ func (sp *FileWriter[T]) Name() string {
 	return sp.name
 }
 
-func (sp *FileWriter[T]) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
+func (sp *FileWriter[T]) Write(cxt context.Context, data pipeline.Map[string, *pipeline.Data[T]], pipelineOptions pipeline.Options) (err error) {
+	_, err = pipeline.Parallel[T, struct{}](cxt, pipelineOptions, sp, data)
+	return
 }
 
 func (sp *FileWriter[T]) Process(cxt context.Context, input *pipeline.Data[T], index int32, total int32) (outputs []*pipeline.Data[struct{}], extras []*pipeline.Data[T], err error) {

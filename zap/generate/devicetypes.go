@@ -50,10 +50,6 @@ func (p DeviceTypesPatcher) Name() string {
 	return "Patching device types"
 }
 
-func (p DeviceTypesPatcher) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
-}
-
 func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data[[]*matter.DeviceType]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	deviceTypesToUpdateByID := make(map[uint64]*matter.DeviceType)

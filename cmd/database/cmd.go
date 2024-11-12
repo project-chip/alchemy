@@ -32,7 +32,7 @@ var Command = &cobra.Command{
 
 		pipelineOptions := pipeline.Flags(cmd)
 
-		specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
+		specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 		if err != nil {
 			return err
 		}
@@ -41,12 +41,12 @@ var Command = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
+		specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
 		if err != nil {
 			return err
 		}
 		var specBuilder spec.Builder
-		specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
+		specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 		if err != nil {
 			return err
 		}

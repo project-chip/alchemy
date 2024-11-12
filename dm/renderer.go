@@ -36,10 +36,6 @@ func (p *Renderer) Name() string {
 	return "Saving data model"
 }
 
-func (p *Renderer) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
-}
-
 func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*spec.Doc], err error) {
 	doc := input.Content
 	entites, err := doc.Entities()

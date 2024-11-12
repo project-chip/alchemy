@@ -21,10 +21,6 @@ func (p ProvisionalPatcher) Name() string {
 	return "Patching files with provisional clusters and device types"
 }
 
-func (p ProvisionalPatcher) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
-}
-
 func (p ProvisionalPatcher) Process(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	files := make([]string, 0, len(inputs))

@@ -22,8 +22,9 @@ func NewPatcher[T string | []byte](name string, out io.Writer) Writer[T] {
 	return &Patcher[T]{writer: writer{name: name}, out: out}
 }
 
-func (sp *Patcher[T]) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
+func (sp *Patcher[T]) Write(cxt context.Context, data pipeline.Map[string, *pipeline.Data[T]], pipelineOptions pipeline.Options) (err error) {
+	_, err = pipeline.Collective(cxt, pipelineOptions, sp, data)
+	return
 }
 
 func (sp *Patcher[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (outputs []*pipeline.Data[struct{}], err error) {

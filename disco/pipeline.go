@@ -13,7 +13,7 @@ import (
 
 func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineOptions pipeline.Options, discoOptions []Option, renderOptions []render.Option, writer files.Writer[string]) (err error) {
 
-	var docs pipeline.Map[string, *pipeline.Data[*spec.Doc]]
+	var docs spec.DocSet
 
 	if specRoot == "" {
 		allPaths, e := files.PathsTargeter(docPaths...)(cxt)
@@ -28,8 +28,8 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 
 		specTargeter := spec.Targeter(specRoot)
 
-		var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
-		inputs, err = pipeline.Start[struct{}](cxt, specTargeter)
+		var inputs pipeline.Paths
+		inputs, err = pipeline.Start(cxt, specTargeter)
 		if err != nil {
 			return err
 		}
@@ -38,26 +38,26 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 		if err != nil {
 			return err
 		}
-		docs, err = pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
+		docs, err = pipeline.Parallel(cxt, pipelineOptions, docReader, inputs)
 		if err != nil {
 			return err
 		}
 
 		specBuilder := spec.NewBuilder()
-		docs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, docs)
+		docs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, docs)
 		if err != nil {
 			return err
 		}
 		if len(docPaths) > 0 {
 			filter := files.NewPathFilter[*spec.Doc](docPaths)
-			docs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, filter, docs)
+			docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
 			if err != nil {
 				return err
 			}
 		}
 	} else if len(docPaths) > 0 {
-		var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
-		inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(docPaths...))
+		var inputs pipeline.Paths
+		inputs, err = pipeline.Start(cxt, files.PathsTargeter(docPaths...))
 		if err != nil {
 			return err
 		}
@@ -66,7 +66,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 		if err != nil {
 			return err
 		}
-		docs, err = pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
+		docs, err = pipeline.Parallel(cxt, pipelineOptions, docReader, inputs)
 		if err != nil {
 			return err
 		}
@@ -81,26 +81,26 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 
 	baller := NewBaller(discoOptions)
 
-	var balledDocs pipeline.Map[string, *pipeline.Data[*spec.Doc]]
-	balledDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, baller, docs)
+	var balledDocs spec.DocSet
+	balledDocs, err = pipeline.Parallel(cxt, pipelineOptions, baller, docs)
 	if err != nil {
 		return err
 	}
 
 	anchorNormalizer := newAnchorNormalizer(discoOptions)
 	var normalizedDocs pipeline.Map[string, *pipeline.Data[render.InputDocument]]
-	normalizedDocs, err = pipeline.Process[*spec.Doc, render.InputDocument](cxt, pipelineOptions, anchorNormalizer, balledDocs)
+	normalizedDocs, err = pipeline.Collective(cxt, pipelineOptions, anchorNormalizer, balledDocs)
 	if err != nil {
 		return err
 	}
 
 	renderer := render.NewRenderer(renderOptions...)
-	var renders pipeline.Map[string, *pipeline.Data[string]]
-	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, normalizedDocs)
+	var renders pipeline.StringSet
+	renders, err = pipeline.Parallel(cxt, pipelineOptions, renderer, normalizedDocs)
 	if err != nil {
 		return err
 	}
 
-	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, renders)
+	err = writer.Write(cxt, renders, pipelineOptions)
 	return
 }

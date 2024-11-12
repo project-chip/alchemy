@@ -87,10 +87,6 @@ func (p Parser) Name() string {
 	return "Parsing documents"
 }
 
-func (p Parser) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
-}
-
 func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
 
 	var path asciidoc.Path

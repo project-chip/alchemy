@@ -8,6 +8,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -40,6 +41,12 @@ type Doc struct {
 	group *DocGroup
 
 	errata *errata.Errata
+}
+
+type DocSet pipeline.Map[string, *pipeline.Data[*Doc]]
+
+func NewDocSet() DocSet {
+	return pipeline.NewMap[string, *pipeline.Data[*Doc]]()
 }
 
 func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {

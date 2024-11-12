@@ -46,10 +46,6 @@ func (sp PythonTestGenerator) Name() string {
 	return "Generating test plans"
 }
 
-func (sp PythonTestGenerator) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
-}
-
 func (sp *PythonTestGenerator) Process(cxt context.Context, input *pipeline.Data[*parse.Test], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*parse.Test], err error) {
 
 	outPath := sp.getPath(input.Path)

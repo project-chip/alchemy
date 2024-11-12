@@ -31,10 +31,6 @@ func (p TestYamlParser) Name() string {
 	return "Parsing YAML tests"
 }
 
-func (p TestYamlParser) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
-}
-
 func (p TestYamlParser) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Test], extras []*pipeline.Data[struct{}], err error) {
 	var r []byte
 	r, err = os.ReadFile(input.Path)

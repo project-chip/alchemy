@@ -11,10 +11,3 @@ func Flags(cmd *cobra.Command) (options Options) {
 	options.Serial, _ = cmd.Flags().GetBool("serial")
 	return
 }
-
-func (o Options) DefaultProcessorType() ProcessorType {
-	if o.Serial {
-		return ProcessorTypeCollective
-	}
-	return ProcessorTypeIndividual
-}

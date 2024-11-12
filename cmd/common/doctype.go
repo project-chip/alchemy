@@ -16,10 +16,6 @@ func (sp *DocTypeFilter) Name() string {
 	return ""
 }
 
-func (sp *DocTypeFilter) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
-}
-
 func (sp *DocTypeFilter) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[*spec.Doc], err error) {
 	for _, i := range inputs {
 		var docType matter.DocType

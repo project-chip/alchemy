@@ -15,10 +15,6 @@ func (sp *EntityFilter[I, O]) Name() string {
 	return ""
 }
 
-func (sp *EntityFilter[I, O]) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
-}
-
 func (sp *EntityFilter[I, O]) Process(cxt context.Context, inputs []*pipeline.Data[I]) (outputs []*pipeline.Data[[]O], err error) {
 	type explodable interface {
 		Explode() []O

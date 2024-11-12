@@ -26,10 +26,6 @@ func (sp Builder) Name() string {
 	return "Building spec"
 }
 
-func (sp Builder) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
-}
-
 func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (outputs []*pipeline.Data[*Doc], err error) {
 	docs := make([]*Doc, 0, len(inputs))
 	for _, i := range inputs {

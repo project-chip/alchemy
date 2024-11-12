@@ -36,10 +36,6 @@ func (sp *ZapParser) Name() string {
 	return "Parsing ZAP templates"
 }
 
-func (sp *ZapParser) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
-}
-
 func (sp *ZapParser) Process(cxt context.Context, input *pipeline.Data[[]byte], index int32, total int32) (outputs []*pipeline.Data[[]types.Entity], extras []*pipeline.Data[[]byte], err error) {
 	d := xml.NewDecoder(bytes.NewReader(input.Content))
 	var entities []types.Entity

@@ -45,13 +45,13 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		generate.TemplateRoot(templateRoot),
 	}
 
-	var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
-	inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(args...))
+	var inputs pipeline.Paths
+	inputs, err = pipeline.Start(cxt, files.PathsTargeter(args...))
 	if err != nil {
 		return err
 	}
 
-	inputs, err = pipeline.ProcessCollectiveFunc(cxt, inputs, "Filtering YAML tests", func(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[struct{}], err error) {
+	picsYamlFilter := func(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[struct{}], err error) {
 		for _, input := range inputs {
 			switch filepath.Base(input.Path) {
 			case "PICS.yaml":
@@ -60,7 +60,9 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 			}
 		}
 		return
-	})
+	}
+
+	inputs, err = pipeline.Collective(cxt, pipelineOptions, pipeline.CollectiveFunc("Filtering YAML tests", picsYamlFilter), inputs)
 	if err != nil {
 		return err
 	}
@@ -74,7 +76,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	var tests pipeline.Map[string, *pipeline.Data[*parse.Test]]
-	tests, err = pipeline.Process[struct{}, *parse.Test](cxt, pipelineOptions, parser, inputs)
+	tests, err = pipeline.Parallel(cxt, pipelineOptions, parser, inputs)
 	if err != nil {
 		return err
 	}
@@ -84,18 +86,18 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
+	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
 	}
 
-	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err
 	}
 
 	specBuilder := spec.NewBuilder()
-	_, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
+	_, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
@@ -106,17 +108,14 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	generator := generate.NewPythonTestGenerator(specBuilder.Spec, sdkRoot, picsLabels, generatorOptions...)
-	var scripts pipeline.Map[string, *pipeline.Data[string]]
-	scripts, err = pipeline.Process[*parse.Test, string](cxt, pipelineOptions, generator, tests)
+	var scripts pipeline.StringSet
+	scripts, err = pipeline.Parallel(cxt, pipelineOptions, generator, tests)
 	if err != nil {
 		return err
 	}
 
 	writer := files.NewWriter[string]("Writing test scripts", fileOptions)
-	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, scripts)
-	if err != nil {
-		return err
-	}
+	err = writer.Write(cxt, scripts, pipelineOptions)
 
 	return
 }

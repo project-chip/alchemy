@@ -42,10 +42,6 @@ func (r AnchorNormalizer) Name() string {
 	return "Normalizing anchors"
 }
 
-func (p AnchorNormalizer) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
-}
-
 func (p AnchorNormalizer) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[render.InputDocument], err error) {
 	var anchorGroups map[*spec.DocGroup]*anchorGroup
 	anchorGroups, err = p.normalizeAnchors(inputs)

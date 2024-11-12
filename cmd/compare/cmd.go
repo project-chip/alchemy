@@ -45,7 +45,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
 
-	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
+	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
 	}
@@ -54,24 +54,24 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return err
 	}
-	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err
 	}
 
 	specBuilder := spec.NewBuilder()
-	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
+	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
 
-	xmlPaths, err := pipeline.Start[struct{}](cxt, files.PathsTargeter(filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")))
+	xmlPaths, err := pipeline.Start(cxt, files.PathsTargeter(filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")))
 	if err != nil {
 		return err
 	}
 
-	var xmlFiles pipeline.Map[string, *pipeline.Data[[]byte]]
-	xmlFiles, err = pipeline.Process[struct{}, []byte](cxt, pipelineOptions, files.NewReader("Reading ZAP templates"), xmlPaths)
+	var xmlFiles pipeline.FileSet
+	xmlFiles, err = pipeline.Parallel(cxt, pipelineOptions, files.NewReader("Reading ZAP templates"), xmlPaths)
 
 	if err != nil {
 		return
@@ -79,14 +79,14 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 
 	var zapEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
 	zapParser := parse.NewZapParser()
-	zapEntities, err = pipeline.Process[[]byte, []types.Entity](cxt, pipelineOptions, zapParser, xmlFiles)
+	zapEntities, err = pipeline.Parallel(cxt, pipelineOptions, zapParser, xmlFiles)
 	if err != nil {
 		return
 	}
 	zapParser.ResolveReferences()
 
 	var specEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
-	specEntities, err = pipeline.Process[*spec.Doc, []types.Entity](cxt, pipelineOptions, &common.EntityFilter[*spec.Doc, types.Entity]{}, specDocs)
+	specEntities, err = pipeline.Collective(cxt, pipelineOptions, &common.EntityFilter[*spec.Doc, types.Entity]{}, specDocs)
 
 	if err != nil {
 		return
