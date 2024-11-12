@@ -31,48 +31,51 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 
-	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
-	if err != nil {
-		return err
-	}
-
 	docParser, err := spec.NewParser(specRoot, asciiSettings)
 	if err != nil {
 		return err
 	}
-	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
+
+	specBuilder := spec.NewBuilder()
+	specBuilder.IgnoreHierarchy = true
+
+	dataModelRenderer := dm.NewRenderer(dmRoot)
+
+	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
 	}
-	specBuilder := spec.NewBuilder()
-	specBuilder.IgnoreHierarchy = true
-	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
+
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
+	if err != nil {
+		return err
+	}
+	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
 
 	if len(args) > 0 {
 		filter := files.NewPathFilter[*spec.Doc](args)
-		specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, filter, specDocs)
+		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return err
 		}
 	}
 
-	renderer := dm.NewRenderer(dmRoot)
-	dataModelDocs, err := pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, renderer, specDocs)
+	dataModelDocs, err := pipeline.Parallel(cxt, pipelineOptions, dataModelRenderer, specDocs)
 	if err != nil {
 		return err
 	}
 
-	clusterIDJSON, err := renderer.GenerateClusterIDsJson()
+	clusterIDJSON, err := dataModelRenderer.GenerateClusterIDsJson()
 	if err != nil {
 		return err
 	}
 	dataModelDocs.Store(clusterIDJSON.Path, clusterIDJSON)
 
 	writer := files.NewWriter[string]("Writing data model", fileOptions)
-	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, dataModelDocs)
+	err = writer.Write(cxt, dataModelDocs, pipelineOptions)
 	if err != nil {
 		return err
 	}

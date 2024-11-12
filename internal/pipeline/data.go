@@ -2,6 +2,7 @@ package pipeline
 
 import (
 	"fmt"
+	"iter"
 	"slices"
 	"strings"
 )
@@ -22,11 +23,19 @@ func SortData[T any](data []*Data[T]) {
 }
 
 func DataMapToSlice[T any](data Map[string, *Data[T]]) (slice []*Data[T]) {
-	data.Range(func(key string, value *Data[T]) bool {
+	slice = make([]*Data[T], 0, int32(data.Size()))
+	for value := range dataMapValues(data) {
 		slice = append(slice, value)
-		return true
-	})
+	}
 	return
+}
+
+func dataMapValues[T any](data Map[string, *Data[T]]) iter.Seq[*Data[T]] {
+	return func(yield func(*Data[T]) bool) {
+		data.Range(func(key string, value *Data[T]) bool {
+			return yield(value)
+		})
+	}
 }
 
 func Cast[T any, U any](from Map[string, *Data[T]], to Map[string, *Data[U]]) (err error) {

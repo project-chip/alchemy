@@ -29,10 +29,6 @@ func (r Baller) Name() string {
 	return "Disco balling"
 }
 
-func (r Baller) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
-}
-
 func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[*spec.Doc], extras []*pipeline.Data[*spec.Doc], err error) {
 	err = r.disco(cxt, input.Content)
 	if err != nil {

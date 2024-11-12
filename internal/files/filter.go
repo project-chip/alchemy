@@ -20,10 +20,6 @@ func (p PathFilter[T]) Name() string {
 	return ""
 }
 
-func (p PathFilter[T]) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
-}
-
 func (p PathFilter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (outputs []*pipeline.Data[T], err error) {
 	if len(p.paths) == 0 {
 		return inputs, nil

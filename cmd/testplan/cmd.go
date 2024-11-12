@@ -50,7 +50,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 
 	errata.LoadErrataConfig(specRoot)
 
-	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
+	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
 	}
@@ -59,25 +59,25 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return err
 	}
-	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err
 	}
 
 	specBuilder := spec.NewBuilder()
-	specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
+	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
 
-	var appClusterIndexes pipeline.Map[string, *pipeline.Data[*spec.Doc]]
-	appClusterIndexes, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
+	var appClusterIndexes spec.DocSet
+	appClusterIndexes, err = pipeline.Collective(cxt, pipelineOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
 
 	if err != nil {
 		return err
 	}
 
-	_, err = pipeline.ProcessSerialFunc[*spec.Doc, *spec.Doc](cxt, pipelineOptions, appClusterIndexes, "Assigning index domains", func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
+	domainIndexer := func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
 		doc := input.Content
 		top := parse.FindFirst[*spec.Section](doc.Elements())
 		if top != nil {
@@ -85,22 +85,24 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 			slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
 		}
 		return
-	})
+	}
+
+	_, err = pipeline.Parallel(cxt, pipelineOptions, pipeline.ParallelFunc("Assigning index domains", domainIndexer), appClusterIndexes)
 	if err != nil {
 		return err
 	}
 
 	if len(args) > 0 { // Filter the spec by whatever extra args were passed
 		filter := files.NewPathFilter[*spec.Doc](args)
-		specDocs, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, filter, specDocs)
+		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return err
 		}
 	}
 
 	generator := testplan.NewGenerator(testRoot, overwrite, testplanGeneratorOptions...)
-	var testplans pipeline.Map[string, *pipeline.Data[string]]
-	testplans, err = pipeline.Process[*spec.Doc, string](cxt, pipelineOptions, generator, specDocs)
+	var testplans pipeline.StringSet
+	testplans, err = pipeline.Parallel(cxt, pipelineOptions, generator, specDocs)
 	if err != nil {
 		return err
 	}
@@ -109,7 +111,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return err
 	}
-	testplanDocs, err := pipeline.Process[string, *spec.Doc](cxt, pipelineOptions, docReader, testplans)
+	testplanDocs, err := pipeline.Parallel(cxt, pipelineOptions, docReader, testplans)
 	if err != nil {
 		return err
 	}
@@ -121,17 +123,14 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	renderer := render.NewRenderer()
-	var renders pipeline.Map[string, *pipeline.Data[string]]
-	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, ids)
+	var renders pipeline.StringSet
+	renders, err = pipeline.Parallel(cxt, pipelineOptions, renderer, ids)
 	if err != nil {
 		return err
 	}
 
 	writer := files.NewWriter[string]("Writing test plans", fileOptions)
-	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, renders)
-	if err != nil {
-		return err
-	}
+	err = writer.Write(cxt, renders, pipelineOptions)
 
 	return
 }

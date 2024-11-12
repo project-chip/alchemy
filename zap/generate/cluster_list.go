@@ -26,10 +26,6 @@ func (p ClusterListPatcher) Name() string {
 	return "Patching files with cluster list"
 }
 
-func (p ClusterListPatcher) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
-}
-
 func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	clusterListPath := path.Join(p.sdkRoot, "/src/app/zap_cluster_list.json")

@@ -6,8 +6,11 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 )
+
+type DeviceTypeSet pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
 
 func (s *Section) toDeviceTypes(d *Doc, pc *parseContext) (err error) {
 	var deviceTypes []*matter.DeviceType

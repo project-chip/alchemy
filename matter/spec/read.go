@@ -69,10 +69,6 @@ func (r Reader) Name() string {
 	return r.name
 }
 
-func (r Reader) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
-}
-
 func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
 	var doc *Doc
 	doc, err = ReadFile(input.Path, r.rootPath)
@@ -101,10 +97,6 @@ func NewStringReader(name string, rootPath string) (StringReader, error) {
 
 func (r StringReader) Name() string {
 	return r.name
-}
-
-func (r StringReader) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
 }
 
 func (r StringReader) Process(cxt context.Context, input *pipeline.Data[string], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[string], err error) {

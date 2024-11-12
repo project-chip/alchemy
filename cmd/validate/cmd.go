@@ -32,7 +32,7 @@ func validateSpec(cmd *cobra.Command, args []string) (err error) {
 	asciiSettings := common.ASCIIDocAttributes(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 
-	specFiles, err := pipeline.Start[struct{}](cxt, spec.Targeter(specRoot))
+	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
 	}
@@ -41,13 +41,13 @@ func validateSpec(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return err
 	}
-	specDocs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docParser, specFiles)
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
 	if err != nil {
 		return err
 	}
 
 	specBuilder := spec.NewBuilder()
-	_, err = pipeline.Process[*spec.Doc, *spec.Doc](cxt, pipelineOptions, &specBuilder, specDocs)
+	_, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}

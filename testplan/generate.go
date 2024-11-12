@@ -46,10 +46,6 @@ func (sp Generator) Name() string {
 	return "Generating test plans"
 }
 
-func (sp Generator) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
-}
-
 func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*spec.Doc], err error) {
 	doc := input.Content
 	path := doc.Path

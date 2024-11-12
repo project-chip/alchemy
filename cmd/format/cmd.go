@@ -19,9 +19,9 @@ var Command = &cobra.Command{
 func format(cmd *cobra.Command, args []string) (err error) {
 	cxt := context.Background()
 
-	var inputs pipeline.Map[string, *pipeline.Data[struct{}]]
+	var inputs pipeline.Paths
 
-	inputs, err = pipeline.Start[struct{}](cxt, files.PathsTargeter(args...))
+	inputs, err = pipeline.Start(cxt, files.PathsTargeter(args...))
 
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func format(cmd *cobra.Command, args []string) (err error) {
 	if err != nil {
 		return err
 	}
-	docs, err := pipeline.Process[struct{}, *spec.Doc](cxt, pipelineOptions, docReader, inputs)
+	docs, err := pipeline.Parallel(cxt, pipelineOptions, docReader, inputs)
 	if err != nil {
 		return err
 	}
@@ -47,14 +47,14 @@ func format(cmd *cobra.Command, args []string) (err error) {
 
 	wrap, _ := cmd.Flags().GetInt("wrap")
 	renderer := render.NewRenderer(render.Wrap(wrap))
-	var renders pipeline.Map[string, *pipeline.Data[string]]
-	renders, err = pipeline.Process[render.InputDocument, string](cxt, pipelineOptions, renderer, ids)
+	var renders pipeline.StringSet
+	renders, err = pipeline.Parallel(cxt, pipelineOptions, renderer, ids)
 	if err != nil {
 		return err
 	}
 
 	writer := files.NewWriter[string]("Formatting docs", fileOptions)
-	_, err = pipeline.Process[string, struct{}](cxt, pipelineOptions, writer, renders)
+	err = writer.Write(cxt, renders, pipelineOptions)
 	return
 }
 

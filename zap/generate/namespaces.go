@@ -29,10 +29,6 @@ func (p NamespacePatcher) Name() string {
 	return "Patching namespaces"
 }
 
-func (p NamespacePatcher) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeCollective
-}
-
 func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[[]*matter.Namespace]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	namespaceXMLPath := filepath.Join(p.sdkRoot, "/src/app/zap-templates/zcl/data-model/chip/semantic-tag-namespace-enums.xml")

@@ -3,7 +3,6 @@ package pipeline
 import (
 	"context"
 	"fmt"
-	"os"
 )
 
 type CollectiveProcessor[I, O any] interface {
@@ -13,20 +12,11 @@ type CollectiveProcessor[I, O any] interface {
 
 type CollectiveProcess[I, O any] func(cxt context.Context, inputs []*Data[I]) (outputs []*Data[O], err error)
 
-func ProcessCollectiveFunc[I, O any](cxt context.Context, input Map[string, *Data[I]], name string, processor CollectiveProcess[I, O]) (output Map[string, *Data[O]], err error) {
-	if len(name) > 0 {
-		cyan.Fprintf(os.Stderr, "%s...\n", name)
-	}
-
-	total := int32(input.Size())
+func Collective[I, O any](cxt context.Context, options Options, processor CollectiveProcessor[I, O], input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
+	inputs := DataMapToSlice(input)
 	output = NewMapPresized[string, *Data[O]](input.Size())
-	inputs := make([]*Data[I], 0, total)
-	input.Range(func(key string, value *Data[I]) bool {
-		inputs = append(inputs, value)
-		return true
-	})
 	var outputs []*Data[O]
-	outputs, err = processor(cxt, inputs)
+	outputs, err = processor.Process(cxt, inputs)
 	if err != nil {
 		return
 	}
@@ -38,4 +28,21 @@ func ProcessCollectiveFunc[I, O any](cxt context.Context, input Map[string, *Dat
 		}
 	}
 	return
+}
+
+type anonymousCollectiveProcessor[I, O any] struct {
+	name    string
+	process CollectiveProcess[I, O]
+}
+
+func (acp *anonymousCollectiveProcessor[I, O]) Name() string {
+	return acp.name
+}
+
+func (acp *anonymousCollectiveProcessor[I, O]) Process(cxt context.Context, inputs []*Data[I]) (outputs []*Data[O], err error) {
+	return acp.process(cxt, inputs)
+}
+
+func CollectiveFunc[I, O any](name string, process CollectiveProcess[I, O]) CollectiveProcessor[I, O] {
+	return &anonymousCollectiveProcessor[I, O]{process: process}
 }

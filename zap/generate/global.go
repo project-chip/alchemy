@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"path/filepath"
+	"slices"
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/errata"
@@ -18,7 +19,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFiles pipeline.Map[string, *pipeline.Data[string]], err error) {
+func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFiles pipeline.StringSet, err error) {
 	globalFiles = pipeline.NewMap[string, *pipeline.Data[string]]()
 	globalEntities := make(map[types.EntityType][]types.Entity)
 	tg.globalObjectDependencies.Range(func(entity types.Entity, _ struct{}) bool {
@@ -35,7 +36,7 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 		if err != nil {
 			return
 		}
-		allEntities := find.ToList(find.Filter(find.Keys(tg.spec.GlobalObjects), func(e types.Entity) bool { return e.EntityType() == entityType }))
+		allEntities := slices.Collect(find.Filter(find.Keys(tg.spec.GlobalObjects), func(e types.Entity) bool { return e.EntityType() == entityType }))
 		docs := make(map[*spec.Doc]struct{})
 		for _, e := range allEntities {
 			doc, ok := tg.spec.DocRefs[e]

@@ -4,6 +4,9 @@ import (
 	"github.com/puzpuzpuz/xsync/v3"
 )
 
+type StringSet Map[string, *Data[string]]
+type FileSet Map[string, *Data[[]byte]]
+
 type Map[K comparable, V any] interface {
 	Load(key K) (value V, ok bool)
 	Store(key K, value V)

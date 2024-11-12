@@ -32,7 +32,7 @@ type TemplateGenerator struct {
 	generateConformanceXML bool
 	specOrder              bool
 
-	ProvisionalZclFiles      pipeline.Map[string, *pipeline.Data[struct{}]]
+	ProvisionalZclFiles      pipeline.Paths
 	globalObjectDependencies pipeline.Map[types.Entity, struct{}]
 
 	ClusterAliases pipeline.Map[string, []string]
@@ -95,10 +95,6 @@ func NewTemplateGenerator(spec *spec.Specification, fileOptions files.Options, p
 
 func (tg TemplateGenerator) Name() string {
 	return "Generating ZAP XML"
-}
-
-func (tg TemplateGenerator) Type() pipeline.ProcessorType {
-	return pipeline.ProcessorTypeIndividual
 }
 
 func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*spec.Doc], err error) {
@@ -195,8 +191,8 @@ func (tg *TemplateGenerator) openConfigurator(configurator *zap.Configurator) (d
 	return
 }
 
-func SplitZAPDocs(cxt context.Context, inputs pipeline.Map[string, *pipeline.Data[*spec.Doc]]) (clusters pipeline.Map[string, *pipeline.Data[*spec.Doc]], deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]], namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]], err error) {
-	clusters = pipeline.NewMap[string, *pipeline.Data[*spec.Doc]]()
+func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet, deviceTypes spec.DeviceTypeSet, namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]], err error) {
+	clusters = spec.NewDocSet()
 	deviceTypes = pipeline.NewMap[string, *pipeline.Data[[]*matter.DeviceType]]()
 	namespaces = pipeline.NewMap[string, *pipeline.Data[[]*matter.Namespace]]()
 	inputs.Range(func(path string, data *pipeline.Data[*spec.Doc]) bool {
