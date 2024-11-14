@@ -12,7 +12,7 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/testing/parse"
+	"github.com/project-chip/alchemy/yaml2python/parse"
 )
 
 func getArg(arg any) (name string, value any, ok bool) {
@@ -56,7 +56,7 @@ func getCluster(spec *spec.Specification, t *test, ts *testStep) (clusterName st
 	return
 }
 
-func commandArgValue(name string, cluster *matter.Cluster, field *matter.Field, value any) string {
+func commandArgValue(name string, cluster *matter.Cluster, command *matter.Command, field *matter.Field, value any) string {
 	if field == nil {
 		return fmt.Sprintf("unknown field: %s", name)
 	}
@@ -85,8 +85,11 @@ func commandArgValue(name string, cluster *matter.Cluster, field *matter.Field, 
 					break
 				}
 			}
+		case nil:
+			return fmt.Sprintf("%v=null", strcase.ToLowerCamel(name))
+
 		default:
-			slog.Info("unknown arg type", slog.String("name", name), log.Type("type", value))
+			slog.Info("unknown enum arg type", slog.String("cluster", cluster.Name), slog.String("command", command.Name), slog.String("field", name), log.Type("type", value), slog.Any("value", value))
 		}
 	case *matter.Bitmap:
 		parentEntity = entity.Parent()
@@ -104,9 +107,10 @@ func commandArgValue(name string, cluster *matter.Cluster, field *matter.Field, 
 					break
 				}
 			}
-
+		case nil:
+			return fmt.Sprintf("%v=null", strcase.ToLowerCamel(name))
 		default:
-			slog.Info("unknown arg type", slog.String("name", name), log.Type("type", value))
+			slog.Info("unknown bitmap arg type", slog.String("cluster", cluster.Name), slog.String("command", command.Name), slog.String("field", name), log.Type("type", value), slog.Any("value", value))
 		}
 	case *matter.Struct:
 		//Clusters.Objects.ApplicationLauncher.Structs.ApplicationStruct.({CatalogVendorID: catalogVendorId, ApplicationID: NonAvailableApp}))
@@ -205,7 +209,7 @@ func commandArgsHelper(spec *spec.Specification) func(test test, step testStep) 
 			}
 		}
 		if command == nil {
-			slog.Warn("Unknown command in test", slog.String("testId", test.ID), slog.String("step", step.Label), slog.String("commandName", step.Command))
+			slog.Warn("Unknown command in test", slog.String("testId", test.ID), slog.String("step", step.Label), slog.String("clusterName", clusterName), slog.String("commandName", step.Command))
 		}
 		var args []string
 		if len(step.Arguments.Values) > 0 {
@@ -245,9 +249,9 @@ func commandArgsHelper(spec *spec.Specification) func(test test, step testStep) 
 					}
 				}
 				if field == nil {
-					slog.Warn("Unknown command field in test", slog.String("fieldName", name))
+					slog.Warn("Unknown command field in test", slog.String("clusterName", clusterName), slog.String("commandName", command.Name), slog.String("fieldName", name))
 				}
-				args = append(args, commandArgValue(name, cluster, field, value))
+				args = append(args, commandArgValue(name, cluster, command, field, value))
 			}
 		}
 

@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/testing/parse"
+	"github.com/project-chip/alchemy/yaml2python/parse"
 )
 
 type GeneratorOption func(g *PythonTestGenerator)

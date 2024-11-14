@@ -9,8 +9,8 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/testing/generate"
-	"github.com/project-chip/alchemy/testing/parse"
+	"github.com/project-chip/alchemy/yaml2python/generate"
+	"github.com/project-chip/alchemy/yaml2python/parse"
 	"github.com/spf13/cobra"
 )
 

@@ -172,7 +172,7 @@ func (ts *TestStep) UnmarshalMapSlice(c yaml.MapSlice) error {
 		ts.Extras = make(yaml.MapSlice, len(c))
 		copy(ts.Extras, c)
 		for _, extra := range c {
-			slog.Info("Test step has extra value", slog.Any("key", extra.Key), slog.Any("value", extra.Value))
+			slog.Info("Test step has extra value", slog.String("path", ts.Parent.Path), slog.Any("key", extra.Key), slog.Any("value", extra.Value))
 		}
 	}
 	return nil
