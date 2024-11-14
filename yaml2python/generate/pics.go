@@ -11,7 +11,7 @@ import (
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/testing/pics"
+	"github.com/project-chip/alchemy/yaml2python/pics"
 )
 
 func (sp *PythonTestGenerator) buildPicsMap(t *test) (aliases map[string]string) {

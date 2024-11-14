@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/testing/parse"
-	"github.com/project-chip/alchemy/testing/pics"
+	"github.com/project-chip/alchemy/yaml2python/parse"
+	"github.com/project-chip/alchemy/yaml2python/pics"
 )
 
 type test struct {
