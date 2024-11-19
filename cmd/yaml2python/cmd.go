@@ -102,6 +102,11 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
+	err = spec.PatchSpecForSdk(specBuilder.Spec)
+	if err != nil {
+		return err
+	}
+
 	picsLabels, err := parse.LoadPICSLabels(sdkRoot)
 	if err != nil {
 		return err

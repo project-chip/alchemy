@@ -63,7 +63,10 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	patchSpec(specBuilder.Spec)
+	err = spec.PatchSpecForSdk(specBuilder.Spec)
+	if err != nil {
+		return err
+	}
 
 	var appClusterIndexes spec.DocSet
 	appClusterIndexes, err = pipeline.Collective(cxt, pipelineOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
@@ -217,49 +220,4 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	}
 	return
 
-}
-
-func patchSpec(spec *spec.Specification) {
-	/* This is a hacky workaround for a spec problem: SemanticTagStruct is defined twice, in two different ways.
-	The first is a global struct that's used by the Descriptor cluster
-	The second is a cluster-level struct on Mode Select
-	Inserting one as a global object, and the other as a struct on Mode Select breaks zap
-	*/
-	desc, ok := spec.ClustersByName["Descriptor"]
-	if !ok {
-		slog.Warn("Could not find Descriptor cluster")
-		return
-	}
-	for o := range spec.GlobalObjects {
-		s, ok := o.(*matter.Struct)
-		if !ok {
-			continue
-		}
-
-		if s.Name == "SemanticTagStruct" {
-			desc.AddStructs(s)
-			delete(spec.GlobalObjects, s)
-			break
-		}
-	}
-	/*
-		Another hacky workaround: the spec defines LabelStruct under a base cluster called Label Cluster, but the
-		ZAP XML has this struct under Fixed Label
-	*/
-	fixedLabelCluster, ok := spec.ClustersByName["Fixed Label"]
-	if !ok {
-		slog.Warn("Could not find Fixed Label cluster")
-		return
-	}
-	labelCluster, ok := spec.ClustersByName["Label"]
-	if !ok {
-		slog.Warn("Could not find Label cluster")
-		return
-	}
-	for _, s := range labelCluster.Structs {
-		if s.Name == "LabelStruct" {
-			fixedLabelCluster.MoveStruct(s)
-			break
-		}
-	}
 }

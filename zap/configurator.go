@@ -50,21 +50,6 @@ func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []type
 		switch v := m.(type) {
 		case *matter.ClusterGroup:
 			for _, cl := range v.Clusters {
-				if hasAtomicAttributes(cl) {
-					addAtomicOperations(spec, cl)
-				}
-			}
-		case *matter.Cluster:
-			if hasAtomicAttributes(v) {
-				addAtomicOperations(spec, v)
-			}
-		}
-	}
-
-	for _, m := range entities {
-		switch v := m.(type) {
-		case *matter.ClusterGroup:
-			for _, cl := range v.Clusters {
 				c.addCluster(v, cl)
 			}
 			for _, bm := range v.Bitmaps {
