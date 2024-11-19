@@ -1,3 +1,4 @@
+// Package parse provides readers for parsing Asciidoc
 package parse
 
 import (
