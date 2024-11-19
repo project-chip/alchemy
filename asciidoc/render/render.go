@@ -1,3 +1,4 @@
+// Package render provides a pipeline for rendering parsed Asciidoc back into text Asciidoc
 package render
 
 import (
