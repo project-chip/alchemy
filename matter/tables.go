@@ -75,7 +75,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnClusterID:    "Cluster ID",
 	TableColumnDeviceID:     "Device ID",
 	TableColumnDeviceName:   "Device Name",
-	TableColumnSuperset:     "Superset",
+	TableColumnSuperset:     "Superset Of",
 	TableColumnClass:        "Class",
 	TableColumnDirection:    "Direction",
 	TableColumnDescription:  "Description",
