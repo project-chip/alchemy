@@ -38,38 +38,6 @@ type TemplateGenerator struct {
 	ClusterAliases pipeline.Map[string, []string]
 }
 
-type TemplateOption func(tg *TemplateGenerator)
-
-func GenerateFeatureXML(generate bool) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.generateFeaturesXML = generate
-	}
-}
-
-func GenerateConformanceXML(generate bool) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.generateConformanceXML = generate
-	}
-}
-
-func SpecOrder(specOrder bool) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.specOrder = specOrder
-	}
-}
-
-func AsciiAttributes(attributes []asciidoc.AttributeName) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.attributes = attributes
-	}
-}
-
-func SpecRoot(specRoot string) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.specRoot = specRoot
-	}
-}
-
 func NewTemplateGenerator(spec *spec.Specification, fileOptions files.Options, pipelineOptions pipeline.Options, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
 	tg := &TemplateGenerator{
 		spec:                     spec,
