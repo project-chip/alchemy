@@ -244,6 +244,9 @@ func indexCrossReferences(docs []*Doc) {
 func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 	for _, dt := range spec.DeviceTypes {
 		for _, cr := range dt.ClusterRequirements {
+			if cr.Cluster != nil {
+				continue
+			}
 			if c, ok := spec.ClustersByID[cr.ClusterID.Value()]; ok {
 				cr.Cluster = c
 			} else {
@@ -251,6 +254,9 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 			}
 		}
 		for _, er := range dt.ElementRequirements {
+			if er.Cluster != nil {
+				continue
+			}
 			if c, ok := spec.ClustersByID[er.ClusterID.Value()]; ok {
 				er.Cluster = c
 			} else {
