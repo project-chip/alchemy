@@ -132,6 +132,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		}
 	} else {
 		clusterAliases = pipeline.NewConcurrentMap[string, []string]()
+		provisionalZclFiles = pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]]()
 	}
 
 	var patchedDeviceTypes pipeline.FileSet
@@ -162,13 +163,10 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	var provisionalDocs pipeline.FileSet
-	if provisionalZclFiles != nil && provisionalZclFiles.Size() > 0 {
-		provisionalSaver := generate.NewProvisionalPatcher(sdkRoot, specBuilder.Spec)
-		provisionalDocs, err = pipeline.Collective(cxt, pipelineOptions, provisionalSaver, provisionalZclFiles)
-		if err != nil {
-			return err
-		}
-
+	provisionalSaver := generate.NewProvisionalPatcher(sdkRoot, specBuilder.Spec)
+	provisionalDocs, err = pipeline.Collective(cxt, pipelineOptions, provisionalSaver, provisionalZclFiles)
+	if err != nil {
+		return err
 	}
 
 	stringWriter := files.NewWriter[string]("", fileOptions)
