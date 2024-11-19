@@ -171,7 +171,7 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnDeviceID
 	case "device name":
 		return matter.TableColumnDeviceName
-	case "superset":
+	case "superset", "superset of":
 		return matter.TableColumnSuperset
 	case "class":
 		return matter.TableColumnClass
