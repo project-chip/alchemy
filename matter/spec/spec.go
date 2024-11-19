@@ -69,8 +69,8 @@ func (cr *ClusterRefs) Add(c *matter.Cluster, m types.Entity) {
 		cm = make(map[*matter.Cluster]struct{})
 		cr.refs[m] = cm
 	}
-	cr.Unlock()
 	cm[c] = struct{}{}
+	cr.Unlock()
 }
 
 func (cr *ClusterRefs) Get(m types.Entity) (map[*matter.Cluster]struct{}, bool) {
