@@ -3,13 +3,13 @@
 package cmd
 
 import (
-	"github.com/project-chip/alchemy/cmd/github"
+	"github.com/project-chip/alchemy/cmd/action"
 	"github.com/sethvargo/go-githubactions"
 )
 
 func init() {
-	rootCmd.AddCommand(github.Disco)
-	rootCmd.AddCommand(github.ZAP)
+	rootCmd.AddCommand(action.Disco)
+	rootCmd.AddCommand(action.ZAP)
 	defaultCommand = "disco"
 }
 
