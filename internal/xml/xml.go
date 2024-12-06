@@ -95,19 +95,16 @@ func AppendElement(parent *etree.Element, el *etree.Element, alternatives ...str
 	parent.InsertChildAt(lastSimilarElementIndex, el)
 }
 
-func InsertElementByAttribute(parent *etree.Element, el *etree.Element, attribute string, alternatives ...string) {
-	name := el.SelectAttrValue(attribute, "")
-	tag := el.Tag
+func InsertElement(parent *etree.Element, el *etree.Element, indexCheck func(el *etree.Element) bool, alternatives ...string) {
 	var insertIndex int = -1
 	for i, e := range parent.Child {
 		el, ok := e.(*etree.Element)
-		if ok && el.Tag == tag {
-			elName := el.SelectAttrValue(attribute, "")
-			cmp := strings.Compare(elName, name)
-			if cmp > 0 {
-				insertIndex = i
-				break
-			}
+		if !ok {
+			continue
+		}
+		if indexCheck(el) {
+			insertIndex = i
+			break
 		}
 	}
 	if insertIndex == -1 {
@@ -117,50 +114,43 @@ func InsertElementByAttribute(parent *etree.Element, el *etree.Element, attribut
 	parent.InsertChildAt(insertIndex, el)
 }
 
+func InsertElementByAttribute(parent *etree.Element, el *etree.Element, attribute string, alternatives ...string) {
+	name := el.SelectAttrValue(attribute, "")
+	tag := el.Tag
+	InsertElement(parent, el, func(el *etree.Element) bool {
+		if el.Tag != tag {
+			return false
+		}
+		elName := el.SelectAttrValue(attribute, "")
+		return strings.Compare(elName, name) > 0
+	}, alternatives...)
+}
+
 func InsertElementByAttributeNumber(parent *etree.Element, el *etree.Element, attribute string, number *matter.Number, alternatives ...string) {
 	tag := el.Tag
-	var insertIndex int = -1
-	for i, e := range parent.Child {
-		el, ok := e.(*etree.Element)
-		if ok && el.Tag == tag {
-			elName := el.SelectAttrValue(attribute, "")
-			elNumber := matter.ParseNumber(elName)
-			if elNumber.Valid() {
-				cmp := elNumber.Compare(number)
-				if cmp > 0 {
-					insertIndex = i
-					break
-				}
-			}
+	InsertElement(parent, el, func(el *etree.Element) bool {
+		if el.Tag != tag {
+			return false
 		}
-	}
-	if insertIndex == -1 {
-		AppendElement(parent, el, alternatives...)
-		return
-	}
-	parent.InsertChildAt(insertIndex, el)
+		elName := el.SelectAttrValue(attribute, "")
+		elNumber := matter.ParseNumber(elName)
+		if !elNumber.Valid() {
+			return false
+		}
+		return elNumber.Compare(number) > 0
+	}, alternatives...)
 }
 
 func InsertElementByName(parent *etree.Element, el *etree.Element, alternatives ...string) {
 	text := el.Text()
 	tag := el.Tag
-	var insertIndex int = -1
-	for i, e := range parent.Child {
-		el, ok := e.(*etree.Element)
-		if ok && el.Tag == tag {
-			elText := el.Text()
-			cmp := strings.Compare(elText, text)
-			if cmp > 0 {
-				insertIndex = i
-				break
-			}
+	InsertElement(parent, el, func(el *etree.Element) bool {
+		if el.Tag != tag {
+			return false
 		}
-	}
-	if insertIndex == -1 {
-		AppendElement(parent, el, alternatives...)
-		return
-	}
-	parent.InsertChildAt(insertIndex, el)
+		elText := el.Text()
+		return strings.Compare(elText, text) > 0
+	}, alternatives...)
 }
 
 func PrependAttribute(el *etree.Element, name string, value string) {

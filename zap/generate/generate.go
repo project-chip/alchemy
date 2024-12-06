@@ -11,7 +11,6 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -21,7 +20,6 @@ import (
 
 type TemplateGenerator struct {
 	spec        *spec.Specification
-	file        files.Options
 	pipeline    pipeline.Options
 	attributes  []asciidoc.AttributeName
 	sdkRoot     string
@@ -38,10 +36,9 @@ type TemplateGenerator struct {
 	ClusterAliases pipeline.Map[string, []string]
 }
 
-func NewTemplateGenerator(spec *spec.Specification, fileOptions files.Options, pipelineOptions pipeline.Options, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
+func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.Options, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
 	tg := &TemplateGenerator{
 		spec:                     spec,
-		file:                     fileOptions,
 		pipeline:                 pipelineOptions,
 		sdkRoot:                  sdkRoot,
 		ProvisionalZclFiles:      pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]](),
