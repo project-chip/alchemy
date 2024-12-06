@@ -2,16 +2,10 @@ package zap
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/project-chip/alchemy/cmd/common"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
-	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/zap"
 	"github.com/project-chip/alchemy/zap/generate"
 	"github.com/spf13/cobra"
 )
@@ -37,187 +31,77 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
 
-	errata.LoadErrataConfig(specRoot)
+	var options generate.Options
 
-	asciiSettings := common.ASCIIDocAttributes(cmd)
 	fileOptions := files.Flags(cmd)
-	pipelineOptions := pipeline.Flags(cmd)
 
-	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
+	options.AsciiSettings = common.ASCIIDocAttributes(cmd)
+	options.Pipeline = pipeline.Flags(cmd)
+
+	featureXML, _ := cmd.Flags().GetBool("featureXML")
+	options.Template = append(options.Template, generate.GenerateFeatureXML(featureXML))
+	conformanceXML, _ := cmd.Flags().GetBool("conformanceXML")
+	specOrder, _ := cmd.Flags().GetBool("specOrder")
+	options.Template = append(options.Template, generate.GenerateConformanceXML(conformanceXML))
+	options.Template = append(options.Template, generate.SpecOrder(specOrder))
+	options.Template = append(options.Template, generate.AsciiAttributes(options.AsciiSettings))
+	options.Template = append(options.Template, generate.SpecRoot(specRoot))
+
+	options.DeviceTypes = append(options.DeviceTypes, generate.DeviceTypePatcherGenerateFeatureXML(featureXML))
+
+	var output generate.Output
+	output, err = generate.Pipeline(cxt, specRoot, sdkRoot, args, options)
 	if err != nil {
-		return err
-	}
-
-	docParser, err := spec.NewParser(specRoot, asciiSettings)
-	if err != nil {
-		return err
-	}
-	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
-	if err != nil {
-		return err
-	}
-
-	specBuilder := spec.NewBuilder()
-	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
-	if err != nil {
-		return err
-	}
-
-	err = spec.PatchSpecForSdk(specBuilder.Spec)
-	if err != nil {
-		return err
-	}
-
-	var appClusterIndexes spec.DocSet
-	appClusterIndexes, err = pipeline.Collective(cxt, pipelineOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
-
-	if err != nil {
-		return err
-	}
-
-	domainIndexer := func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
-		doc := input.Content
-		top := parse.FindFirst[*spec.Section](doc.Elements())
-		if top != nil {
-			doc.Domain = zap.StringToDomain(top.Name)
-			slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
-		}
 		return
 	}
 
-	_, err = pipeline.Parallel(cxt, pipelineOptions, pipeline.ParallelFunc("Assigning index domains", domainIndexer), appClusterIndexes)
-	if err != nil {
-		return err
-	}
-
-	if len(args) > 0 { // Filter the spec by whatever extra args were passed
-		filter := files.NewPathFilter[*spec.Doc](args)
-		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
-		if err != nil {
-			return err
-		}
-	}
-
-	var clusters spec.DocSet
-	var deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
-	var namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]]
-	clusters, deviceTypes, namespaces, err = generate.SplitZAPDocs(cxt, specDocs)
-	if err != nil {
-		return err
-	}
-
-	var templateOptions []generate.TemplateOption
-	featureXML, _ := cmd.Flags().GetBool("featureXML")
-	templateOptions = append(templateOptions, generate.GenerateFeatureXML(featureXML))
-	conformanceXML, _ := cmd.Flags().GetBool("conformanceXML")
-	specOrder, _ := cmd.Flags().GetBool("specOrder")
-	templateOptions = append(templateOptions, generate.GenerateConformanceXML(conformanceXML))
-	templateOptions = append(templateOptions, generate.SpecOrder(specOrder))
-	templateOptions = append(templateOptions, generate.AsciiAttributes(asciiSettings))
-	templateOptions = append(templateOptions, generate.SpecRoot(specRoot))
-
-	var zapTemplateDocs pipeline.StringSet
-	var globalObjectFiles pipeline.StringSet
-	var provisionalZclFiles pipeline.Paths
-	var clusterAliases pipeline.Map[string, []string]
-	if clusters.Size() > 0 {
-		templateGenerator := generate.NewTemplateGenerator(specBuilder.Spec, fileOptions, pipelineOptions, sdkRoot, templateOptions...)
-		zapTemplateDocs, err = pipeline.Parallel(cxt, pipelineOptions, templateGenerator, clusters)
-		if err != nil {
-			return err
-		}
-		provisionalZclFiles = templateGenerator.ProvisionalZclFiles
-		clusterAliases = templateGenerator.ClusterAliases
-
-		globalObjectFiles, err = templateGenerator.RenderGlobalObjecs(cxt)
-		if err != nil {
-			return err
-		}
-	} else {
-		clusterAliases = pipeline.NewConcurrentMap[string, []string]()
-		provisionalZclFiles = pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]]()
-	}
-
-	var patchedDeviceTypes pipeline.FileSet
-	if deviceTypes.Size() > 0 {
-		deviceTypePatcher := generate.NewDeviceTypesPatcher(sdkRoot, specBuilder.Spec, clusterAliases, generate.DeviceTypePatcherGenerateFeatureXML(featureXML))
-		patchedDeviceTypes, err = pipeline.Collective(cxt, pipelineOptions, deviceTypePatcher, deviceTypes)
-		if err != nil {
-			return err
-		}
-	}
-
-	var patchedNamespaces pipeline.FileSet
-	if namespaces.Size() > 0 {
-		namespacePatcher := generate.NewNamespacePatcher(sdkRoot, specBuilder.Spec)
-		patchedNamespaces, err = pipeline.Collective(cxt, pipelineOptions, namespacePatcher, namespaces)
-		if err != nil {
-			return err
-		}
-	}
-
-	var clusterList pipeline.FileSet
-	clusterListPatcher := generate.NewClusterListPatcher(sdkRoot)
-	if clusters.Size() > 0 {
-		clusterList, err = pipeline.Collective(cxt, pipelineOptions, clusterListPatcher, clusters)
-		if err != nil {
-			return
-		}
-	}
-
-	var provisionalDocs pipeline.FileSet
-	provisionalSaver := generate.NewProvisionalPatcher(sdkRoot, specBuilder.Spec)
-	provisionalDocs, err = pipeline.Collective(cxt, pipelineOptions, provisionalSaver, provisionalZclFiles)
-	if err != nil {
-		return err
-	}
-
 	stringWriter := files.NewWriter[string]("", fileOptions)
-	if zapTemplateDocs != nil && zapTemplateDocs.Size() > 0 {
+	if output.ZapTemplateDocs != nil && output.ZapTemplateDocs.Size() > 0 {
 		stringWriter.SetName("Writing ZAP templates")
-		err = stringWriter.Write(cxt, zapTemplateDocs, pipelineOptions)
+		err = stringWriter.Write(cxt, output.ZapTemplateDocs, options.Pipeline)
 		if err != nil {
 			return err
 		}
 	}
 
 	byteWriter := files.NewWriter[[]byte]("", fileOptions)
-	if provisionalDocs != nil && provisionalDocs.Size() > 0 {
+	if output.ProvisionalDocs != nil && output.ProvisionalDocs.Size() > 0 {
 		byteWriter.SetName("Writing provisional docs")
-		err = byteWriter.Write(cxt, provisionalDocs, pipelineOptions)
+		err = byteWriter.Write(cxt, output.ProvisionalDocs, options.Pipeline)
 		if err != nil {
 			return err
 		}
 	}
 
-	if patchedDeviceTypes != nil && patchedDeviceTypes.Size() > 0 {
+	if output.PatchedDeviceTypes != nil && output.PatchedDeviceTypes.Size() > 0 {
 		byteWriter.SetName("Writing deviceTypes")
-		err = byteWriter.Write(cxt, patchedDeviceTypes, pipelineOptions)
+		err = byteWriter.Write(cxt, output.PatchedDeviceTypes, options.Pipeline)
 		if err != nil {
 			return err
 		}
 	}
 
-	if patchedNamespaces != nil && patchedNamespaces.Size() > 0 {
+	if output.PatchedNamespaces != nil && output.PatchedNamespaces.Size() > 0 {
 		byteWriter.SetName("Writing namespaces")
-		err = byteWriter.Write(cxt, patchedNamespaces, pipelineOptions)
+		err = byteWriter.Write(cxt, output.PatchedNamespaces, options.Pipeline)
 		if err != nil {
 			return err
 		}
 	}
 
-	if globalObjectFiles != nil && globalObjectFiles.Size() > 0 {
+	if output.GlobalObjectFiles != nil && output.GlobalObjectFiles.Size() > 0 {
 		stringWriter.SetName("Writing global objects")
-		err = stringWriter.Write(cxt, globalObjectFiles, pipelineOptions)
+		err = stringWriter.Write(cxt, output.GlobalObjectFiles, options.Pipeline)
 		if err != nil {
 			return err
 		}
 	}
 
-	if clusterList != nil && clusterList.Size() > 0 {
+	if output.ClusterList != nil && output.ClusterList.Size() > 0 {
 		byteWriter.SetName("Writing cluster list")
-		err = byteWriter.Write(cxt, clusterList, pipelineOptions)
+		err = byteWriter.Write(cxt, output.ClusterList, options.Pipeline)
 	}
+
 	return
 
 }
