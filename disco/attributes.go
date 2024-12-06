@@ -2,10 +2,12 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -16,6 +18,7 @@ func (b *Baller) organizeAttributesSection(cxt *discoContext) (err error) {
 	for _, attributes := range cxt.parsed.attributes {
 		attributesTable := attributes.table
 		if attributesTable == nil || attributesTable.Element == nil {
+			slog.Warn("Could not organize Attributes section, as no table of attributes was found", log.Path("source", attributes.section.Base))
 			return
 		}
 

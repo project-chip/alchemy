@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -12,7 +13,8 @@ func (b *Baller) organizeClassificationSection(cxt *discoContext) (err error) {
 	for _, classification := range cxt.parsed.classification {
 		classificationTable := classification.table
 		if classificationTable == nil || classificationTable.Element == nil {
-			return fmt.Errorf("no classification table found")
+			slog.Warn("Could not organize classification section, as no table was found", log.Path("source", classification.section.Base))
+			return nil
 		}
 		if classificationTable.ColumnMap == nil {
 			slog.Debug("can't rearrange classification table without header row")

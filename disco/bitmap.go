@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -27,6 +28,7 @@ func (b *Baller) organizeBitmapSection(cxt *discoContext, bms *subSection) (err 
 	b.canonicalizeDataTypeSectionName(cxt, bms.section, "Bitmap")
 	bitsTable := bms.table
 	if bitsTable == nil || bitsTable.Element == nil {
+		slog.Warn("Could not organize bitmap section, as no table of bitmap values was found", log.Path("source", bms.section.Base))
 		return
 	}
 	if bitsTable.ColumnMap == nil {

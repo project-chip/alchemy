@@ -2,7 +2,9 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -11,7 +13,7 @@ func (b *Baller) organizeEventsSection(cxt *discoContext) (err error) {
 	for _, events := range cxt.parsed.events {
 		eventsTable := events.table
 		if eventsTable == nil || eventsTable.Element == nil {
-			err = fmt.Errorf("no events table found")
+			slog.Warn("Could not organize Events section, as no table of events was found", log.Path("source", events.section.Base))
 			return
 		}
 		if eventsTable.ColumnMap == nil {

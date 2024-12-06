@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -24,6 +25,7 @@ func (b *Baller) organizeEnumSection(cxt *discoContext, es *subSection) (err err
 
 	enumTable := es.table
 	if enumTable == nil || enumTable.Element == nil {
+		slog.Warn("Could not organize enum section, as no table of enum values was found", log.Path("source", es.section.Base))
 		return
 	}
 	if enumTable.ColumnMap == nil {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -24,7 +25,7 @@ func (b *Baller) organizeStructSection(cxt *discoContext, ss *subSection) (err e
 
 	fieldsTable := ss.table
 	if fieldsTable == nil || fieldsTable.Element == nil {
-		slog.Debug("no struct table found")
+		slog.Warn("Could not organize struct section, as no table of struct fields was found", log.Path("source", ss.section.Base))
 		return nil
 	}
 	if fieldsTable.ColumnMap == nil {
