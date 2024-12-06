@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -13,7 +14,8 @@ func (b *Baller) organizeFeaturesSection(cxt *discoContext) (err error) {
 	for _, features := range cxt.parsed.features {
 		featuresTable := features.table
 		if featuresTable == nil || featuresTable.Element == nil {
-			return fmt.Errorf("no features section found")
+			slog.Warn("Could not organize Features section, as no table of features was found", log.Path("source", features.section.Base))
+			return
 		}
 
 		if featuresTable.ColumnMap == nil {

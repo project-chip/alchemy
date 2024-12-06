@@ -2,10 +2,12 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -14,7 +16,7 @@ import (
 func (b *Baller) organizeCommandsSection(cxt *discoContext) (err error) {
 	for _, commands := range cxt.parsed.commands {
 		if commands.table == nil || commands.table.Element == nil {
-			err = fmt.Errorf("no commands table found")
+			slog.Warn("Could not organize Commands section, as no table of commands was found", log.Path("source", commands.section.Base))
 			return
 		}
 		if commands.table.ColumnMap == nil {

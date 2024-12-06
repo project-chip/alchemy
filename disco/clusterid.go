@@ -2,7 +2,9 @@ package disco
 
 import (
 	"fmt"
+	"log/slog"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 )
 
@@ -10,7 +12,8 @@ func (b *Baller) organizeClusterIDSection(cxt *discoContext) (err error) {
 	for _, clusterIDs := range cxt.parsed.clusterIDs {
 		clusterIDsTable := clusterIDs.table
 		if clusterIDsTable == nil || clusterIDsTable.Element == nil {
-			return fmt.Errorf("no cluster ID section found")
+			slog.Warn("Could not organize cluster ID section, as no table was found", log.Path("source", clusterIDs.section.Base))
+			return
 		}
 		if len(clusterIDsTable.Element.TableRows()) > 2 {
 			setSectionTitle(clusterIDs.section, matter.ClusterIDsSectionName)
