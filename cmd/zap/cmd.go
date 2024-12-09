@@ -21,6 +21,7 @@ func init() {
 	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
 	Command.Flags().Bool("featureXML", true, "write new style feature XML")
 	Command.Flags().Bool("conformanceXML", true, "write new style conformance XML")
+	Command.Flags().Bool("endpointCompositionXML", false, "write new style endpoint composition XML")
 	Command.Flags().Bool("specOrder", false, "write ZAP template XML in spec order")
 }
 
@@ -41,6 +42,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	featureXML, _ := cmd.Flags().GetBool("featureXML")
 	options.Template = append(options.Template, generate.GenerateFeatureXML(featureXML))
 	conformanceXML, _ := cmd.Flags().GetBool("conformanceXML")
+	endpointCompositionXML, _ := cmd.Flags().GetBool("endpointCompositionXML")
 	specOrder, _ := cmd.Flags().GetBool("specOrder")
 	options.Template = append(options.Template, generate.GenerateConformanceXML(conformanceXML))
 	options.Template = append(options.Template, generate.SpecOrder(specOrder))
@@ -48,6 +50,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	options.Template = append(options.Template, generate.SpecRoot(specRoot))
 
 	options.DeviceTypes = append(options.DeviceTypes, generate.DeviceTypePatcherGenerateFeatureXML(featureXML))
+	options.DeviceTypes = append(options.DeviceTypes, generate.DeviceTypePatcherFullEndpointComposition(endpointCompositionXML))
 
 	var output generate.Output
 	output, err = generate.Pipeline(cxt, specRoot, sdkRoot, args, options)

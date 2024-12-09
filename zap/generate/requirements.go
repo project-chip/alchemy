@@ -32,18 +32,6 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString(), "name", "domain", "typeName", "profileId").CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class, "name", "domain", "typeName", "profileId", "deviceId")
 	xml.SetOrCreateSimpleElement(dte, "scope", deviceType.Scope, "name", "domain", "typeName", "profileId", "deviceId", "class")
-	clustersElement := dte.SelectElement("clusters")
-	if len(deviceType.ClusterRequirements) == 0 {
-		if clustersElement != nil {
-			dte.RemoveChild(clustersElement)
-		}
-		return
-	}
-	if clustersElement == nil {
-		clustersElement = dte.CreateElement("clusters")
-	}
-	clusterRequirementsByID := make(map[uint64]*clusterRequirements)
-
 	var hasClient, hasServer bool
 
 	for _, cr := range deviceType.ClusterRequirements {
@@ -70,7 +58,18 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 			"Server":         hasServer,
 		},
 	}
-	for _, cr := range deviceType.ClusterRequirements {
+
+	if p.fullEndpointComposition {
+		p.setEndpointCompositionElement(spec, cxt, deviceType, dte)
+	}
+	clusterRequirementsByID := p.buildClusterRequirements(spec, cxt, deviceType.ClusterRequirements, deviceType.ElementRequirements)
+	p.setClustersElement(spec, cxt, deviceType, clusterRequirementsByID, dte)
+	return
+}
+
+func (p *DeviceTypesPatcher) buildClusterRequirements(spec *spec.Specification, conformanceContext conformance.Context, clusterReqs []*matter.ClusterRequirement, elementReqs []*matter.ElementRequirement) (clusterRequirementsByID map[uint64]*clusterRequirements) {
+	clusterRequirementsByID = make(map[uint64]*clusterRequirements)
+	for _, cr := range clusterReqs {
 		if !cr.ClusterID.Valid() {
 			continue
 		}
@@ -82,7 +81,7 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 
 		crr.requirementsFromDeviceType = append(crr.requirementsFromDeviceType, cr)
 	}
-	for _, er := range deviceType.ElementRequirements {
+	for _, er := range elementReqs {
 		if !er.ClusterID.Valid() {
 			continue
 		}
@@ -116,9 +115,9 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 			crr.requirementsFromBaseDeviceType = append(crr.requirementsFromBaseDeviceType, cr)
 			slog.Debug("adding base device type cluster requirement", slog.String("cluster", cr.ClusterName))
 		} else if !conformance.IsMandatory(cr.Conformance) {
-			conf, confErr := cr.Conformance.Eval(cxt)
+			conf, confErr := cr.Conformance.Eval(conformanceContext)
 			if confErr != nil {
-				slog.Warn("Error evaluating conformance of cluster requirement", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.ClusterName), slog.Any("error", confErr))
+				slog.Warn("Error evaluating conformance of cluster requirement", slog.String("clusterName", cr.ClusterName), slog.Any("error", confErr))
 			} else if conf == conformance.StateMandatory {
 				// If the Base Device Type has a requirement that is not plain Mandatory ("M"), but it returns Mandatory when evaulated, then include it
 				crr = &clusterRequirements{id: cr.ClusterID, name: cr.ClusterName}
@@ -126,6 +125,20 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 				clusterRequirementsByID[cr.ClusterID.Value()] = crr
 			}
 		}
+	}
+	return
+}
+
+func (p DeviceTypesPatcher) setClustersElement(spec *spec.Specification, cxt conformance.Context, deviceType *matter.DeviceType, clusterRequirementsByID map[uint64]*clusterRequirements, parent *etree.Element) {
+	clustersElement := parent.SelectElement("clusters")
+	if len(deviceType.ClusterRequirements) == 0 {
+		if clustersElement != nil {
+			parent.RemoveChild(clustersElement)
+		}
+		return
+	}
+	if clustersElement == nil {
+		clustersElement = parent.CreateElement("clusters")
 	}
 
 	for _, include := range clustersElement.SelectElements("include") {
@@ -163,7 +176,6 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 			}
 		}
 	}
-	return
 }
 
 func (p *DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element, include *etree.Element, spec *spec.Specification, deviceType *matter.DeviceType, cr *clusterRequirements, cxt conformance.Context) {

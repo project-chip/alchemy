@@ -24,6 +24,7 @@ type DeviceTypesPatcher struct {
 	clusterAliases map[string]string
 
 	generateFeatureXml      bool
+	fullEndpointComposition bool
 }
 
 type DeviceTypePatcherOption func(dtp *DeviceTypesPatcher)
@@ -31,6 +32,12 @@ type DeviceTypePatcherOption func(dtp *DeviceTypesPatcher)
 func DeviceTypePatcherGenerateFeatureXML(generate bool) DeviceTypePatcherOption {
 	return func(dtp *DeviceTypesPatcher) {
 		dtp.generateFeatureXml = generate
+	}
+}
+
+func DeviceTypePatcherFullEndpointComposition(generate bool) DeviceTypePatcherOption {
+	return func(dtp *DeviceTypesPatcher) {
+		dtp.fullEndpointComposition = generate
 	}
 }
 
