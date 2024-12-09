@@ -29,12 +29,12 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 		if err != nil {
 			return
 		}
-		cr.ClusterName, err = ti.ReadString(row, matter.TableColumnCluster)
+		cr.ClusterName, err = ti.ReadValue(row, matter.TableColumnCluster)
 		if err != nil {
 			return
 		}
 		if cr.ClusterName == "" {
-			cr.ClusterName, err = ti.ReadString(row, matter.TableColumnName)
+			cr.ClusterName, _, err = ti.ReadName(row, matter.TableColumnName)
 			if err != nil {
 				return
 			}
@@ -104,7 +104,7 @@ func (s *Section) toDeviceTypeRequirements(d *Doc) (deviceTypeRequirements []*ma
 		if err != nil {
 			return
 		}
-		cr.DeviceTypeName, err = ti.ReadString(row, matter.TableColumnName)
+		cr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
@@ -132,7 +132,7 @@ func (s *Section) toComposedDeviceTypeRequirements(d *Doc) (composedRequirements
 		if err != nil {
 			return
 		}
-		cr.DeviceTypeName, err = ti.ReadString(row, matter.TableColumnDeviceName)
+		cr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnDeviceName)
 		if err != nil {
 			return
 		}
@@ -150,7 +150,7 @@ func (*Section) toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableR
 	if err != nil {
 		return
 	}
-	cr.ClusterName, err = ti.ReadString(row, matter.TableColumnCluster)
+	cr.ClusterName, _, err = ti.ReadName(row, matter.TableColumnCluster)
 	if err != nil {
 		return
 	}

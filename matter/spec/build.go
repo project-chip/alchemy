@@ -255,7 +255,12 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 			if c, ok := spec.ClustersByID[cr.ClusterID.Value()]; ok {
 				cr.Cluster = c
 			} else {
-				slog.Warn("unknown cluster ID for cluster requirement on device type", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
+				if c, ok := spec.ClustersByName[cr.ClusterName]; ok {
+					cr.Cluster = c
+					slog.Warn("linking cluster requirement by name on device type", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
+				} else {
+					slog.Error("unknown cluster ID for cluster requirement on device type", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
+				}
 			}
 		}
 		for _, er := range dt.ElementRequirements {
@@ -265,8 +270,12 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 			if c, ok := spec.ClustersByID[er.ClusterID.Value()]; ok {
 				er.Cluster = c
 			} else {
-				slog.Error("unknown cluster ID for element requirement on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
-
+				if c, ok := spec.ClustersByName[er.ClusterName]; ok {
+					er.Cluster = c
+					slog.Warn("linking element requirement by cluster name on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
+				} else {
+					slog.Error("unknown cluster ID for element requirement on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
+				}
 			}
 		}
 	}

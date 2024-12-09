@@ -231,6 +231,16 @@ type Access struct {
 	Timing Timing `json:"timed,omitempty"`
 }
 
+func (a Access) IsEmpty() bool {
+	if a.Read != PrivilegeUnknown || a.Write != PrivilegeUnknown || a.Invoke != PrivilegeUnknown {
+		return false
+	}
+	if a.OptionalWrite || a.FabricScoping != FabricScopingUnknown || a.FabricSensitivity != FabricSensitivityUnknown {
+		return false
+	}
+	return a.Timing == TimingUnknown
+}
+
 func (a Access) String() string {
 	var sb strings.Builder
 	if a.Read != PrivilegeUnknown {

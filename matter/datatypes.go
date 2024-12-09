@@ -45,7 +45,7 @@ func StripDataTypeSuffixes(dataType string) string {
 	return dataType
 }
 
-var typeSuffixes = []string{" Attribute", " Type", " Field", " Command", " Attribute", " Event"}
+var typeSuffixes = []string{" Attribute", " Device Type", " Type", " Field", " Command", " Attribute", " Event"}
 
 func StripTypeSuffixes(dataType string) string {
 	for _, suffix := range typeSuffixes {
