@@ -69,11 +69,6 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 }
 
 func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
-	for _, s := range spec.structIndex {
-		for _, f := range s.Fields {
-			sp.resolveDataType(spec, nil, f, f.Type)
-		}
-	}
 	for cluster := range spec.Clusters {
 		for _, a := range cluster.Attributes {
 			sp.resolveDataType(spec, cluster, a, a.Type)
@@ -94,7 +89,11 @@ func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
 			}
 		}
 	}
-
+	for _, s := range spec.structIndex {
+		for _, f := range s.Fields {
+			sp.resolveDataType(spec, nil, f, f.Type)
+		}
+	}
 }
 
 func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
@@ -106,6 +105,10 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 			}
 			slog.Warn("missing type on field", log.Path("path", field), slog.String("id", field.ID.HexString()), slog.String("name", field.Name), slog.String("cluster", clusterName))
 		}
+		return
+	}
+	if dataType.Entity != nil {
+		// This has already been resolved by some other process
 		return
 	}
 	switch dataType.BaseType {
@@ -128,6 +131,7 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 		if !ok {
 			return
 		}
+		// If this data type is a struct, we need to resolve all data types on its fields
 		for _, f := range s.Fields {
 			sp.resolveDataType(spec, cluster, f, f.Type)
 		}
@@ -135,13 +139,16 @@ func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster,
 }
 
 func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
+	e = getCustomDataTypeFromReference(spec, cluster, field)
+	if e != nil {
+		// We have a reference to a data type; use that
+		return
+	}
 	entities := spec.entities[dataTypeName]
 	if len(entities) == 0 {
 		canonicalName := CanonicalName(dataTypeName)
 		if canonicalName != dataTypeName {
 			e = getCustomDataType(spec, canonicalName, cluster, field)
-		} else {
-			e = getCustomDataTypeFromReference(spec, cluster, field)
 		}
 	} else if len(entities) == 1 {
 		for m := range entities {
@@ -187,7 +194,7 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 	}
 
 	// OK, if the data type is defined on the direct parent of this cluster, take that one
-	if cluster.ParentCluster != nil {
+	if cluster != nil && cluster.ParentCluster != nil {
 		for m, c := range entities {
 			if c != nil && c == cluster.ParentCluster {
 				return m
@@ -214,7 +221,7 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 		} else {
 			clusterName = "naked"
 		}
-		slog.Warn("ambiguous data type", "model", m.Source(), "cluster", clusterName)
+		slog.Warn("ambiguous data type", matter.LogEntity("source", m), "cluster", clusterName)
 	}
 	return nil
 }
