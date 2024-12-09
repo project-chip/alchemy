@@ -23,14 +23,14 @@ type DeviceTypesPatcher struct {
 	spec           *spec.Specification
 	clusterAliases map[string]string
 
-	generateFeatureXML bool
+	generateFeatureXml      bool
 }
 
 type DeviceTypePatcherOption func(dtp *DeviceTypesPatcher)
 
 func DeviceTypePatcherGenerateFeatureXML(generate bool) DeviceTypePatcherOption {
 	return func(dtp *DeviceTypesPatcher) {
-		dtp.generateFeatureXML = generate
+		dtp.generateFeatureXml = generate
 	}
 }
 
