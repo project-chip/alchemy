@@ -53,6 +53,20 @@ type ClusterRequirement struct {
 	Cluster *Cluster `json:"cluster,omitempty"`
 }
 
+func (cr *ClusterRequirement) Clone() *ClusterRequirement {
+	cer := &ClusterRequirement{
+		ClusterID:   cr.ClusterID.Clone(),
+		ClusterName: cr.ClusterName,
+		Interface:   cr.Interface,
+		Quality:     cr.Quality,
+		Cluster:     cr.Cluster,
+	}
+	if len(cr.Conformance) > 0 {
+		cer.Conformance = cr.Conformance.CloneSet()
+	}
+	return cer
+}
+
 type ElementRequirement struct {
 	ClusterID   *Number          `json:"clusterId,omitempty"`
 	ClusterName string           `json:"clusterName,omitempty"`
@@ -66,6 +80,26 @@ type ElementRequirement struct {
 	Conformance conformance.Set       `json:"conformance,omitempty"`
 
 	Cluster *Cluster `json:"cluster,omitempty"`
+}
+
+func (er *ElementRequirement) Clone() *ElementRequirement {
+	cer := &ElementRequirement{
+		ClusterID:   er.ClusterID.Clone(),
+		ClusterName: er.ClusterName,
+		Element:     er.Element,
+		Name:        er.Name,
+		Field:       er.Field,
+		Quality:     er.Quality,
+		Access:      er.Access,
+		Cluster:     er.Cluster,
+	}
+	if er.Constraint != nil {
+		cer.Constraint = er.Constraint.Clone()
+	}
+	if len(er.Conformance) > 0 {
+		cer.Conformance = er.Conformance.CloneSet()
+	}
+	return cer
 }
 
 type DeviceTypeRequirement struct {

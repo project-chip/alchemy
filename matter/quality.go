@@ -87,3 +87,7 @@ func (q Quality) String() string {
 	}
 	return s.String()
 }
+
+func (q *Quality) Inherit(oq Quality) {
+	*q = (*q | oq)
+}
