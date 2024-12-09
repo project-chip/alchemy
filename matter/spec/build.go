@@ -97,6 +97,11 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 					}
 
 				}
+				existing, ok := spec.DeviceTypesByName[m.Name]
+				if ok {
+					slog.Warn("Duplicate Device Type Name", slog.String("deviceTypeId", m.ID.HexString()), slog.String("deviceTypeName", m.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
+				}
+				spec.DeviceTypesByName[m.Name] = m
 			case *matter.Namespace:
 				spec.Namespaces = append(spec.Namespaces, m)
 			case *matter.Bitmap:

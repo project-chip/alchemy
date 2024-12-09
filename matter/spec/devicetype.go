@@ -36,7 +36,7 @@ func (s *Section) toDeviceTypes(d *Doc, pc *parseContext) (err error) {
 	for _, c := range deviceTypes {
 		c.Description = description
 
-		elements := parse.Skim[*Section](s.Elements())
+		elements := parse.FindAll[*Section](s.Elements())
 		for _, s := range elements {
 			switch s.SecType {
 			case matter.SectionClusterRequirements:

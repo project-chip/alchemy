@@ -128,7 +128,7 @@ func (s *Section) toComposedDeviceTypeRequirements(d *Doc) (composedRequirements
 	}
 	for row := range ti.Body() {
 		var cr matter.ComposedDeviceTypeRequirement
-		cr.ClusterID, err = ti.ReadID(row, matter.TableColumnDeviceID)
+		cr.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
 		if err != nil {
 			return
 		}

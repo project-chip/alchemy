@@ -6,9 +6,11 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -83,13 +85,13 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		return
 	}
 
-	xml := etree.NewDocument()
-	err = xml.ReadFromBytes(deviceTypesXML)
+	doc := etree.NewDocument()
+	err = doc.ReadFromBytes(deviceTypesXML)
 	if err != nil {
 		return
 	}
 
-	configurator := xml.SelectElement("configurator")
+	configurator := doc.SelectElement("configurator")
 	if configurator == nil {
 		err = fmt.Errorf("missing configurator element in %s", deviceTypesXMLPath)
 		return
@@ -149,7 +151,27 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		if matter.NonGlobalIDInvalidForEntity(dt.ID, types.EntityTypeDeviceType) {
 			continue
 		}
-		err = p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
+		dte := etree.NewElement("deviceType")
+		xml.InsertElement(configurator, dte, func(el *etree.Element) bool {
+			dide := el.SelectElement("deviceId")
+			if dide == nil {
+				return false
+			}
+			didt := dide.Text()
+			deviceTypeID := matter.ParseNumber(didt)
+			if !deviceTypeID.Valid() {
+				return false
+			}
+			if matter.NonGlobalIDInvalidForEntity(deviceTypeID, types.EntityTypeDeviceType) {
+				return false
+			}
+			ce := el.SelectElement("class")
+			if ce != nil && !strings.EqualFold(dt.Class, ce.Text()) {
+				return false
+			}
+			return deviceTypeID.Compare(dt.ID) > 0
+		})
+		err = p.applyDeviceTypeToElement(p.spec, dt, dte)
 		if err != nil {
 			return
 		}
@@ -157,16 +179,37 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 
 	for _, dt := range deviceTypesToUpdateByName {
 		slog.Info("Adding new device type", slog.String("name", dt.Name))
-		err = p.applyDeviceTypeToElement(p.spec, dt, configurator.CreateElement("deviceType"))
+		dte := etree.NewElement("deviceType")
+		xml.InsertElement(configurator, dte, func(el *etree.Element) bool {
+			dide := el.SelectElement("deviceId")
+			if dide == nil {
+				return false
+			}
+			didt := dide.Text()
+			deviceTypeID := matter.ParseNumber(didt)
+			if deviceTypeID.Valid() && matter.NonGlobalIDInvalidForEntity(deviceTypeID, types.EntityTypeDeviceType) {
+				return false
+			}
+			ce := el.SelectElement("class")
+			if ce != nil && !strings.EqualFold(dt.Class, ce.Text()) {
+				return false
+			}
+			tne := el.SelectElement("typeName")
+			if tne == nil {
+				return false
+			}
+			return strings.Compare(tne.Text(), dt.Name) > 0
+		})
+		err = p.applyDeviceTypeToElement(p.spec, dt, dte)
 		if err != nil {
 			return
 		}
 	}
 
 	var out string
-	xml.Indent(4)
-	xml.WriteSettings.CanonicalEndTags = true
-	out, err = xml.WriteToString()
+	doc.Indent(4)
+	doc.WriteSettings.CanonicalEndTags = true
+	out, err = doc.WriteToString()
 	if err != nil {
 		return
 	}

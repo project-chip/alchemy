@@ -226,6 +226,8 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		return matter.SectionGlobalElements
 	case "device type requirements":
 		return matter.SectionDeviceTypeRequirements
+	case "cluster requirements on composing device types":
+		return matter.SectionComposedDeviceTypeRequirements
 	}
 	switch parent.SecType {
 	case matter.SectionTop, matter.SectionCluster, matter.SectionDeviceType:
