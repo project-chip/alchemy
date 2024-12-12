@@ -53,7 +53,7 @@ type ChoiceLimit interface {
 }
 
 type ChoiceExactLimit struct {
-	Limit int `json:"limit"`
+	Limit int64 `json:"limit"`
 }
 
 func (c *ChoiceExactLimit) Description(set string) string {
@@ -64,7 +64,7 @@ func (c *ChoiceExactLimit) ASCIIDocString() string {
 	if c.Limit <= 1 {
 		return ""
 	}
-	return strconv.Itoa(c.Limit)
+	return strconv.FormatInt(c.Limit, 10)
 }
 
 func (c *ChoiceExactLimit) Equal(cl ChoiceLimit) bool {
@@ -96,7 +96,7 @@ func (c *ChoiceExactLimit) Clone() ChoiceLimit {
 }
 
 type ChoiceMinLimit struct {
-	Min int `json:"min"`
+	Min int64 `json:"min"`
 }
 
 func (c *ChoiceMinLimit) Description(set string) string {
@@ -139,7 +139,7 @@ func (c *ChoiceMinLimit) Clone() ChoiceLimit {
 }
 
 type ChoiceMaxLimit struct {
-	Max int `json:"max"`
+	Max int64 `json:"max"`
 }
 
 func (c *ChoiceMaxLimit) Description(set string) string {
@@ -182,8 +182,8 @@ func (c *ChoiceMaxLimit) Clone() ChoiceLimit {
 }
 
 type ChoiceRangeLimit struct {
-	Min int `json:"min"`
-	Max int `json:"max"`
+	Min int64 `json:"min"`
+	Max int64 `json:"max"`
 }
 
 func (c *ChoiceRangeLimit) Description(set string) string {

@@ -61,6 +61,27 @@ type conformanceTest struct {
 
 var otherwiseTests = []conformanceTestSuite{
 	{
+		Conformance: "[AB & CM].a2",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AB": true}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"AB": true, "CM": true}}, Expected: StateOptional},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateDisallowed},
+		},
+	},
+	{
+		Conformance: "AB, O.a1+",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"AB": true}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateOptional},
+		},
+	},
+	{
+		Conformance: "O.a1+",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"Matter": true}}, Expected: StateOptional},
+		},
+	},
+	{
 		Conformance: "NumberOfPrimaries > 0, O",
 		Tests: []conformanceTest{
 			{Context: Context{Values: map[string]any{"NumberOfPrimaries": int64(1)}}, Expected: StateMandatory},

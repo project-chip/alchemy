@@ -98,17 +98,17 @@ func renderChoice(choice *conformance.Choice, parent *etree.Element) {
 	}
 	switch l := choice.Limit.(type) {
 	case *conformance.ChoiceExactLimit:
-		parent.CreateAttr("min", strconv.Itoa(l.Limit))
-		parent.CreateAttr("max", strconv.Itoa(l.Limit))
+		parent.CreateAttr("min", strconv.FormatInt(l.Limit, 10))
+		parent.CreateAttr("max", strconv.FormatInt(l.Limit, 10))
 	case *conformance.ChoiceMinLimit:
 		parent.CreateAttr("more", "true") // Existing data model does this for some reason
-		parent.CreateAttr("min", strconv.Itoa(l.Min))
+		parent.CreateAttr("min", strconv.FormatInt(l.Min, 10))
 	case *conformance.ChoiceMaxLimit:
-		parent.CreateAttr("max", strconv.Itoa(l.Max))
+		parent.CreateAttr("max", strconv.FormatInt(l.Max, 10))
 	case *conformance.ChoiceRangeLimit:
 		parent.CreateAttr("more", "true") // Existing data model does this for some reason
-		parent.CreateAttr("min", strconv.Itoa(l.Min))
-		parent.CreateAttr("max", strconv.Itoa(l.Max))
+		parent.CreateAttr("min", strconv.FormatInt(l.Min, 10))
+		parent.CreateAttr("max", strconv.FormatInt(l.Max, 10))
 	}
 }
 
