@@ -1,11 +1,11 @@
 
 
 ChoiceRange <- lower:Integer '-' upper:Integer {
-    minVal := lower.(int)
+    minVal := lower.(int64)
     if minVal <= 0 {
         return nil, fmt.Errorf("invalid minimum: %d", minVal)
     } 
-    maxVal := upper.(int)
+    maxVal := upper.(int64)
     if maxVal <= 0  && minVal > maxVal {
         return nil, fmt.Errorf("invalid maximum: %d", maxVal)
     } 
@@ -16,7 +16,7 @@ ChoiceMin <- limit:Integer? '+' {
     if limit == nil {
         return &ChoiceMinLimit{Min:1}, nil
     }
-    minVal := limit.(int)
+    minVal := limit.(int64)
     if minVal <= 0 {
         return nil, fmt.Errorf("invalid minimum: %d", minVal)
     }    
@@ -27,7 +27,7 @@ ChoiceMax <- limit:Integer? '-' {
      if limit == nil {
         return &ChoiceMaxLimit{Max:1}, nil
     }
-    maxVal := limit.(int)
+    maxVal := limit.(int64)
     if maxVal <= 0 {
         return nil, fmt.Errorf("invalid maximum: %d", maxVal)
     } 
@@ -35,7 +35,7 @@ ChoiceMax <- limit:Integer? '-' {
 }
 
 ChoiceExact <- limit:Integer {
-    exact := limit.(int)
+    exact := limit.(int64)
     if exact <= 0 {
         return nil, fmt.Errorf("invalid exact: %d", exact)
     } 
