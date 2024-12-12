@@ -37,7 +37,7 @@ func (c *Command) GetConformance() conformance.Set {
 }
 
 func (c *Command) Clone() *Command {
-	nc := &Command{entity: entity{source: c.source}, ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Quality: c.Quality, Access: c.Access}
+	nc := &Command{entity: entity{source: c.source, parent: c.parent}, ID: c.ID.Clone(), Name: c.Name, Description: c.Description, Direction: c.Direction, Response: c.Response, Quality: c.Quality, Access: c.Access}
 	if len(c.Conformance) > 0 {
 		nc.Conformance = c.Conformance.CloneSet()
 	}
