@@ -93,6 +93,14 @@ func dataModelName(dataType *types.DataType) string {
 		return "power-mW"
 	case types.BaseDataTypeEnergy:
 		return "energy-mWh"
+	case types.BaseDataTypeApparentPower:
+		return "power-mVA"
+	case types.BaseDataTypeApparentEnergy:
+		return "energy-mVAh"
+	case types.BaseDataTypeReactivePower:
+		return "power-mVAR"
+	case types.BaseDataTypeReactiveEnergy:
+		return "energy-mVARh"
 	case types.BaseDataTypeVendorID:
 		return "vendor-id"
 	case types.BaseDataTypeSubjectID:

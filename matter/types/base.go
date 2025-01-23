@@ -46,6 +46,10 @@ const (
 	BaseDataTypeVoltage
 	BaseDataTypePower
 	BaseDataTypeEnergy
+	BaseDataTypeApparentPower
+	BaseDataTypeApparentEnergy
+	BaseDataTypeReactivePower
+	BaseDataTypeReactiveEnergy
 
 	BaseDataTypeTemperatureDifference
 	BaseDataTypeUnsignedTemperature
@@ -218,6 +222,14 @@ func BaseDataTypeName(baseDataType BaseDataType) string {
 		return "power-mW"
 	case BaseDataTypeEnergy:
 		return "energy-mWh"
+	case BaseDataTypeApparentPower:
+		return "power-mVA"
+	case BaseDataTypeApparentEnergy:
+		return "energy-mVAh"
+	case BaseDataTypeReactivePower:
+		return "power-mVAR"
+	case BaseDataTypeReactiveEnergy:
+		return "energy-mVARh"
 	case BaseDataTypeTemperatureDifference:
 		return "tempdiff"
 	case BaseDataTypeUnsignedTemperature:

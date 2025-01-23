@@ -42,6 +42,10 @@ var fromRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeVoltage:               {Type: DataTypeExtremeTypeInt64, Int64: minInt62},
 	BaseDataTypePower:                 {Type: DataTypeExtremeTypeInt64, Int64: minInt62},
 	BaseDataTypeEnergy:                {Type: DataTypeExtremeTypeInt64, Int64: minInt62},
+	BaseDataTypeApparentPower:         {Type: DataTypeExtremeTypeInt64, Int64: minInt62},
+	BaseDataTypeApparentEnergy:        {Type: DataTypeExtremeTypeInt64, Int64: minInt62},
+	BaseDataTypeReactivePower:         {Type: DataTypeExtremeTypeInt64, Int64: minInt62},
+	BaseDataTypeReactiveEnergy:        {Type: DataTypeExtremeTypeInt64, Int64: minInt62},
 	BaseDataTypeTemperatureDifference: {Type: DataTypeExtremeTypeInt64, Int64: math.MinInt16},
 	BaseDataTypeSignedTemperature:     {Type: DataTypeExtremeTypeInt64, Int64: math.MinInt8 + 1}, // Spec doesn't allow for -12.8°C, even if not nullable
 	BaseDataTypeUnsignedTemperature:   {Type: DataTypeExtremeTypeUInt64, UInt64: 0},
