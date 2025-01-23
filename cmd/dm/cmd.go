@@ -36,8 +36,7 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	specBuilder := spec.NewBuilder()
-	specBuilder.IgnoreHierarchy = true
+	specBuilder := spec.NewBuilder(spec.IgnoreHierarchy(true))
 
 	dataModelRenderer := dm.NewRenderer(dmRoot)
 

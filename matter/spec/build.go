@@ -15,11 +15,15 @@ import (
 type Builder struct {
 	Spec *Specification
 
-	IgnoreHierarchy bool
+	ignoreHierarchy bool
 }
 
-func NewBuilder() Builder {
-	return Builder{}
+func NewBuilder(options ...BuilderOption) Builder {
+	b := Builder{}
+	for _, o := range options {
+		o(&b)
+	}
+	return b
 }
 
 func (sp Builder) Name() string {
@@ -177,7 +181,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 
 	}
 
-	if !sp.IgnoreHierarchy {
+	if !sp.ignoreHierarchy {
 		resolveHierarchy(spec)
 	}
 	sp.resolveDataTypeReferences(spec)

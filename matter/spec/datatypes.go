@@ -98,7 +98,7 @@ func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
 
 func (sp *Builder) resolveDataType(spec *Specification, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
 	if dataType == nil {
-		if !conformance.IsDeprecated(field.Conformance) && !conformance.IsDisallowed(field.Conformance) && !sp.IgnoreHierarchy && (cluster == nil || cluster.Hierarchy == "Base") {
+		if !conformance.IsDeprecated(field.Conformance) && !conformance.IsDisallowed(field.Conformance) && !sp.ignoreHierarchy && (cluster == nil || cluster.Hierarchy == "Base") {
 			var clusterName string
 			if cluster != nil {
 				clusterName = cluster.Name
