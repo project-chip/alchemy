@@ -25,7 +25,7 @@ func (dt *DataType) NullValue() uint64 {
 		return 0x800000000000
 	case BaseDataTypeInt56:
 		return 0x80000000000000
-	case BaseDataTypeInt64, BaseDataTypeAmperage, BaseDataTypeVoltage, BaseDataTypePower, BaseDataTypeEnergy, BaseDataTypeApparentEnergy, BaseDataTypeApparentPower, BaseDataTypeReactiveEnergy, BaseDataTypeReactivePower:
+	case BaseDataTypeInt64, BaseDataTypeAmperage, BaseDataTypeVoltage, BaseDataTypePower, BaseDataTypeEnergy, BaseDataTypeApparentEnergy, BaseDataTypeApparentPower, BaseDataTypeReactiveEnergy, BaseDataTypeReactivePower, BaseDataTypeMoney:
 		return 0x8000000000000000
 	case BaseDataTypeUInt8, BaseDataTypeBoolean, BaseDataTypeMap8, BaseDataTypeEnum8, BaseDataTypePercent, BaseDataTypePriority, BaseDataTypeStatus, BaseDataTypeUnsignedTemperature, BaseDataTypeActionID, BaseDataTypeNamespaceID, BaseDataTypeTag:
 		return math.MaxUint8
@@ -67,6 +67,8 @@ var fromRangesNullable = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeVoltage:  {Type: DataTypeExtremeTypeInt64, Int64: minInt62 + 1},
 	BaseDataTypePower:    {Type: DataTypeExtremeTypeInt64, Int64: minInt62 + 1},
 	BaseDataTypeEnergy:   {Type: DataTypeExtremeTypeInt64, Int64: minInt62 + 1},
+
+	BaseDataTypeMoney: {Type: DataTypeExtremeTypeInt64, Int64: math.MinInt64 + 1, Format: NumberFormatAuto},
 
 	BaseDataTypeTemperatureDifference: {Type: DataTypeExtremeTypeInt64, Int64: math.MinInt16 + 1, Format: NumberFormatInt},
 	BaseDataTypeSignedTemperature:     {Type: DataTypeExtremeTypeInt64, Int64: math.MinInt8 + 1, Format: NumberFormatInt},

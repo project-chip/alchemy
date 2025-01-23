@@ -129,6 +129,8 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypeReactivePower
 	case "energy-mvarh":
 		dt.BaseType = BaseDataTypeReactiveEnergy
+	case "money":
+		dt.BaseType = BaseDataTypeMoney
 	case "elapsed-s":
 		dt.BaseType = BaseDataTypeElapsedSeconds
 	case "epoch-s", "utc": // utc is deprecated
@@ -214,6 +216,12 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 	case "locationdesc":
 		dt.BaseType = BaseDataTypeCustom
 		dt.Name = "LocationDescriptorStruct"
+	case "currency":
+		dt.BaseType = BaseDataTypeCustom
+		dt.Name = "CurrencyStruct"
+	case "price":
+		dt.BaseType = BaseDataTypeCustom
+		dt.Name = "PriceStruct"
 	default:
 		dt.BaseType = BaseDataTypeCustom
 	}
