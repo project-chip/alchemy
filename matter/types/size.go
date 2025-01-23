@@ -29,7 +29,7 @@ func (dt *DataType) Size() int {
 		return 2
 	case BaseDataTypeSignedTemperature, BaseDataTypeUnsignedTemperature:
 		return 1
-	case BaseDataTypeAmperage, BaseDataTypeVoltage, BaseDataTypePower, BaseDataTypeEnergy:
+	case BaseDataTypeAmperage, BaseDataTypeVoltage, BaseDataTypePower, BaseDataTypeEnergy, BaseDataTypeApparentEnergy, BaseDataTypeApparentPower, BaseDataTypeReactiveEnergy, BaseDataTypeReactivePower:
 		return 8
 	case BaseDataTypeDeviceTypeID:
 		return 4

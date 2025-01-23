@@ -42,10 +42,14 @@ var toRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeEpochSeconds:      {Type: DataTypeExtremeTypeUInt64, UInt64: math.MaxUint32, Format: NumberFormatHex},
 	BaseDataTypePosixMilliseconds: {Type: DataTypeExtremeTypeUInt64, UInt64: math.MaxUint64, Format: NumberFormatHex},
 
-	BaseDataTypeAmperage: {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeVoltage:  {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypePower:    {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeEnergy:   {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeAmperage:       {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeVoltage:        {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypePower:          {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeEnergy:         {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeApparentPower:  {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeApparentEnergy: {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeReactivePower:  {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeReactiveEnergy: {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
 
 	BaseDataTypeTemperature:           {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt16, Format: NumberFormatInt},
 	BaseDataTypeTemperatureDifference: {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt16, Format: NumberFormatInt},

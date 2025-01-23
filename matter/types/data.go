@@ -121,6 +121,14 @@ func ParseDataType(typeName string, isArray bool) *DataType {
 		dt.BaseType = BaseDataTypePower
 	case "energy-mwh":
 		dt.BaseType = BaseDataTypeEnergy
+	case "power-mva", "energy-mva":
+		dt.BaseType = BaseDataTypeApparentPower
+	case "energy-mvah":
+		dt.BaseType = BaseDataTypeApparentEnergy
+	case "power-mvar", "energy-mvar":
+		dt.BaseType = BaseDataTypeReactivePower
+	case "energy-mvarh":
+		dt.BaseType = BaseDataTypeReactiveEnergy
 	case "elapsed-s":
 		dt.BaseType = BaseDataTypeElapsedSeconds
 	case "epoch-s", "utc": // utc is deprecated

@@ -203,6 +203,14 @@ func DataTypeName(dataType *types.DataType) string {
 		return "power_mw"
 	case types.BaseDataTypeEnergy:
 		return "energy_mwh"
+	case types.BaseDataTypeApparentPower:
+		return "power_mva"
+	case types.BaseDataTypeApparentEnergy:
+		return "energy_mvah"
+	case types.BaseDataTypeReactivePower:
+		return "power_mvar"
+	case types.BaseDataTypeReactiveEnergy:
+		return "energy_mvarh"
 	case types.BaseDataTypeTemperatureDifference:
 		return "int16s"
 	case types.BaseDataTypeUnsignedTemperature:
