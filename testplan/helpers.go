@@ -55,7 +55,7 @@ func dataTypeHelper(dt types.DataType) raymond.SafeString {
 			}
 		}
 		return raymond.SafeString(dt.Name)
-	case types.BaseDataTypeVoltage, types.BaseDataTypePower, types.BaseDataTypeEnergy, types.BaseDataTypeAmperage, types.BaseDataTypeApparentEnergy, types.BaseDataTypeApparentPower, types.BaseDataTypeReactiveEnergy, types.BaseDataTypeReactivePower:
+	case types.BaseDataTypeVoltage, types.BaseDataTypePower, types.BaseDataTypeEnergy, types.BaseDataTypeAmperage, types.BaseDataTypeApparentEnergy, types.BaseDataTypeApparentPower, types.BaseDataTypeReactiveEnergy, types.BaseDataTypeReactivePower, types.BaseDataTypeMoney:
 		return "int64"
 	default:
 		return raymond.SafeString(dt.Name)

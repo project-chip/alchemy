@@ -51,6 +51,8 @@ var toRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeReactivePower:  {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
 	BaseDataTypeReactiveEnergy: {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
 
+	BaseDataTypeMoney: {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt64, Format: NumberFormatInt},
+
 	BaseDataTypeTemperature:           {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt16, Format: NumberFormatInt},
 	BaseDataTypeTemperatureDifference: {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt16, Format: NumberFormatInt},
 	BaseDataTypeSignedTemperature:     {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt8, Format: NumberFormatInt},

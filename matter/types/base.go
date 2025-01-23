@@ -50,6 +50,7 @@ const (
 	BaseDataTypeApparentEnergy
 	BaseDataTypeReactivePower
 	BaseDataTypeReactiveEnergy
+	BaseDataTypeMoney
 
 	BaseDataTypeTemperatureDifference
 	BaseDataTypeUnsignedTemperature
@@ -230,6 +231,8 @@ func BaseDataTypeName(baseDataType BaseDataType) string {
 		return "power-mVAR"
 	case BaseDataTypeReactiveEnergy:
 		return "energy-mVARh"
+	case BaseDataTypeMoney:
+		return "money"
 	case BaseDataTypeTemperatureDifference:
 		return "tempdiff"
 	case BaseDataTypeUnsignedTemperature:

@@ -211,6 +211,8 @@ func DataTypeName(dataType *types.DataType) string {
 		return "power_mvar"
 	case types.BaseDataTypeReactiveEnergy:
 		return "energy_mvarh"
+	case types.BaseDataTypeMoney:
+		return "money"
 	case types.BaseDataTypeTemperatureDifference:
 		return "int16s"
 	case types.BaseDataTypeUnsignedTemperature:
@@ -365,6 +367,8 @@ func ToBaseDataType(s string) types.BaseDataType {
 		return types.BaseDataTypePower
 	case "energy_mwh":
 		return types.BaseDataTypeEnergy
+	case "money":
+		return types.BaseDataTypeMoney
 	case "enum8":
 		return types.BaseDataTypeEnum8
 	case "enum16":

@@ -252,6 +252,8 @@ func renderComparisonValue(identifierStore conformance.IdentifierStore, value co
 		parent.CreateElement("literal").CreateAttr("value", value.Float.String())
 	case *conformance.HexValue:
 		parent.CreateElement("literal").CreateAttr("value", value.ASCIIDocString())
+	case *conformance.ReferenceValue:
+		parent.CreateElement("reference").CreateAttr("name", value.Reference)
 	default:
 		return fmt.Errorf("unexpected type in comparison value: %T", value)
 	}
