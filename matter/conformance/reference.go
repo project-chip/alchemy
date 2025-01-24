@@ -8,6 +8,7 @@ import (
 
 type ReferenceExpression struct {
 	Reference string `json:"ref"`
+	Field     string `json:"field,omitempty"`
 	Label     string `json:"label,omitempty"`
 	Not       bool   `json:"not,omitempty"`
 }
@@ -24,6 +25,10 @@ func (re *ReferenceExpression) ASCIIDocString() string {
 		s.WriteString(re.Label)
 	}
 	s.WriteString(">>")
+	if re.Field != "" {
+		s.WriteRune('.')
+		s.WriteString(re.Field)
+	}
 	return s.String()
 }
 
@@ -101,6 +106,7 @@ func (re *ReferenceExpression) Clone() Expression {
 
 type ReferenceValue struct {
 	Reference string `json:"ref"`
+	Field     string `json:"field,omitempty"`
 	Label     string `json:"label,omitempty"`
 }
 
@@ -113,6 +119,10 @@ func (re *ReferenceValue) ASCIIDocString() string {
 		s.WriteString(re.Label)
 	}
 	s.WriteString(">>")
+	if re.Field != "" {
+		s.WriteRune('.')
+		s.WriteString(re.Field)
+	}
 	return s.String()
 }
 

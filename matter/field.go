@@ -16,7 +16,7 @@ type Field struct {
 	Constraint  constraint.Constraint `json:"constraint,omitempty"`
 	Quality     Quality               `json:"quality,omitempty"`
 	Access      Access                `json:"access,omitempty"`
-	Fallback    string                `json:"fallback,omitempty"`
+	Fallback    constraint.Limit      `json:"fallback,omitempty"`
 	Conformance conformance.Set       `json:"conformance,omitempty"`
 
 	// Hopefully this will go away as we continue disco-balling the spec
@@ -58,7 +58,7 @@ func (f *Field) Inherit(parent *Field) {
 	if f.Quality == QualityNone {
 		f.Quality = parent.Quality
 	}
-	if len(f.Fallback) == 0 {
+	if !constraint.IsBlankLimit(f.Fallback) {
 		f.Fallback = parent.Fallback
 	}
 	if f.entityType == types.EntityTypeUnknown && parent.entityType != types.EntityTypeUnknown {

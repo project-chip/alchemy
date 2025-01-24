@@ -1,6 +1,14 @@
 
-Limit <- limit:(MSLimit / NullLimit / EmptyLimit / StringLimit / BooleanLimit / Expression / HexLimit / TempLimit / PercentageLimit / CharacterLimit / IntLimit / Term / LengthLimit / ReferenceLimit / UnspecifiedLimit ) {
+Limit <- limit:( ParentheticalLimit / PlainLimit ) {
 	debug("found limit %s\n", string(c.text))
+	return limit.(Limit), nil
+}
+
+ParentheticalLimit <- "(" _ limit:PlainLimit _ ")" {
+	return limit.(Limit), nil
+}
+
+PlainLimit <- limit:(MSLimit / NullLimit / EmptyLimit / StringLimit / BooleanLimit / StatusCodeLimit / Expression / HexLimit / TempLimit / PercentageLimit / CharacterLimit / IntLimit / Term / LengthLimit / ReferenceLimit / IdentifierLimit / UnspecifiedLimit ) {
 	return limit.(Limit), nil
 }
 

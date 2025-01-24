@@ -8,6 +8,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
@@ -29,8 +30,8 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		ax.CreateAttr("id", a.ID.HexString())
 		ax.CreateAttr("name", a.Name)
 		renderDataType(a, ax)
-		if len(a.Fallback) > 0 {
-			ax.CreateAttr("default", a.Fallback)
+		if !constraint.IsBlankLimit(a.Fallback) {
+			renderConstraintLimit(ax, a.Fallback, a.Type, "default")
 		}
 		err = renderAnonymousType(doc, cluster, ax, a)
 		if err != nil {
@@ -46,7 +47,6 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		if err != nil {
 			return
 		}
-		renderFallback(cluster.Attributes, a, ax)
 	}
 	return
 }

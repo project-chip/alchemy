@@ -37,8 +37,9 @@ func (b *Baller) fixConstraintCells(cxt *discoContext, section *spec.Section, ti
 		if dataType == nil {
 			continue
 		}
-		c, e := constraint.ParseString(vc)
-		if e != nil {
+
+		c := constraint.ParseString(vc)
+		if constraint.IsGeneric(c) {
 			continue
 		}
 		var quality matter.Quality
@@ -70,12 +71,16 @@ func (cc *constraintContext) DataType() *types.DataType {
 	return cc.dataType
 }
 
-func (cc *constraintContext) ReferenceConstraint(ref string) constraint.Constraint {
+func (cc *constraintContext) IdentifierConstraint(entity types.Entity, field constraint.Limit) constraint.Constraint {
+	return nil
+}
+
+func (cc *constraintContext) ReferenceConstraint(entity types.Entity, field constraint.Limit) constraint.Constraint {
 
 	return nil
 }
 
-func (cc *constraintContext) Fallback(name string) (def types.DataTypeExtreme) {
+func (cc *constraintContext) Fallback(entity types.Entity, field constraint.Limit) (def types.DataTypeExtreme) {
 
 	return
 }

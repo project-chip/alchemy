@@ -6,6 +6,7 @@ import (
 
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
@@ -61,28 +62,27 @@ func compareField(entityType types.EntityType, specFields matter.FieldSet, specF
 	diffs = append(diffs, compareAccess(entityType, specField.Access, zapField.Access)...)
 	defaultValue := zap.GetFallbackValue(&matter.ConstraintContext{Field: specField, Fields: specFields})
 	if defaultValue.Defined() {
-		specDefault := defaultValue.ZapString(specField.Type)
-		if specDefault != zapField.Fallback && !(specField.Fallback == "null" && len(zapField.Fallback) == 0) { // ZAP frequently omits default null
-			specDefaultVal := matter.ParseNumber(specDefault)
-			zapDefault := matter.ParseNumber(zapField.Fallback)
-			if !specDefaultVal.Equals(zapDefault) {
-				diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specDefault, ZAP: zapField.Fallback})
+		specDefault := constraint.ParseLimit(defaultValue.ZapString(specField.Type))
+		if !specDefault.Equal(zapField.Fallback) && !(constraint.IsNullLimit(specField.Fallback) && constraint.IsBlankLimit(zapField.Fallback)) { // ZAP frequently omits default null
+			specFallback := specField.Fallback.Fallback(&matter.ConstraintContext{Fields: specFields, Field: specField})
+			zapFallback := zapField.Fallback.Fallback(&matter.ConstraintContext{Fields: zapFields, Field: zapField})
+			if !specFallback.ValueEquals(zapFallback) {
+				diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specFallback.ZapString(specField.Type), ZAP: zapFallback.ZapString(zapField.Type)})
 			}
 		}
 
-	} else if len(zapField.Fallback) > 0 {
+	} else if !constraint.IsBlankLimit(zapField.Fallback) {
 
-		if len(specField.Fallback) > 0 {
-			z := matter.ParseNumber(zapField.Fallback)
-			if specField.Fallback != "null" || !z.Equals(matter.NewNumber(specField.Type.NullValue())) {
-				s := matter.ParseNumber(specField.Fallback)
-				if !z.Equals(s) {
-					diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specField.Fallback, ZAP: zapField.Fallback})
+		if !constraint.IsBlankLimit(specField.Fallback) {
+			zapFallback := zapField.Fallback.Fallback(&matter.ConstraintContext{Fields: zapFields, Field: zapField})
+			if !constraint.IsNullLimit(specField.Fallback) || !zapFallback.IsNull() {
+				specFallback := specField.Fallback.Fallback(&matter.ConstraintContext{Fields: specFields, Field: specField})
+				if !specFallback.ValueEquals(zapFallback) {
+					diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specFallback.ZapString(specField.Type), ZAP: zapFallback.ZapString(zapField.Type)})
 				}
 			}
 		} else {
-			z := matter.ParseNumber(zapField.Fallback)
-			if !z.Valid() || z.Value() != 0 {
+			if !constraint.IsBlankLimit(zapField.Fallback) {
 				diffs = append(diffs, newMissingDiff(specField.Name, DiffPropertyDefault, entityType, SourceSpec))
 			}
 		}

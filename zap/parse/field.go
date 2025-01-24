@@ -86,7 +86,7 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 				return err
 			}
 		case "default", "defaut": // Ugh
-			field.Fallback = a.Value
+			field.Fallback = constraint.ParseLimit(a.Value)
 		case "length", "lenght": // Sigh
 			length = a.Value
 		case "minLength":
@@ -158,11 +158,7 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 		cons = fmt.Sprintf("min %s", minLength)
 	}
 	if cons != "" {
-		var err error
-		field.Constraint, err = constraint.ParseString(cons)
-		if err != nil {
-			field.Constraint = &constraint.GenericConstraint{Value: cons}
-		}
+		field.Constraint = constraint.ParseString(cons)
 	}
 	return nil
 }

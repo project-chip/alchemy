@@ -11,6 +11,7 @@ import (
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
@@ -192,7 +193,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 }
 
 func setFieldFallback(e *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
-	if field.Fallback != "" {
+	if !constraint.IsGenericLimit(field.Fallback) && !constraint.IsBlankLimit(field.Fallback) {
 		fallbackValue := zap.GetFallbackValue(&matter.ConstraintContext{Field: field, Fields: fieldSet})
 		patchDataExtremeAttribute(e, "default", &fallbackValue, field)
 	} else {
