@@ -160,32 +160,42 @@ func renderConformanceExpression(doc *spec.Doc, identifierStore conformance.Iden
 		if e.Not {
 			parent = parent.CreateElement("notTerm")
 		}
+		var el *etree.Element
 		if doc == nil {
-			parent.CreateElement("condition").CreateAttr("name", e.Reference)
+			el = parent.CreateElement("condition")
+			el.CreateAttr("name", e.Reference)
 		} else {
 			entity, ok := doc.Reference(e.Reference)
 			if !ok {
-				parent.CreateElement("condition").CreateAttr("name", e.Reference)
+				el = parent.CreateElement("condition")
+				el.CreateAttr("name", e.Reference)
 			} else {
 				switch entity := entity.(type) {
 				case *matter.Field:
 					switch entity.EntityType() {
 					case types.EntityTypeAttribute:
-						parent.CreateElement("attribute").CreateAttr("name", entity.Name)
+						el = parent.CreateElement("attribute")
+						el.CreateAttr("name", entity.Name)
 					case types.EntityTypeStructField:
-						parent.CreateElement("field").CreateAttr("name", entity.Name)
+						el = parent.CreateElement("field")
+						el.CreateAttr("name", entity.Name)
 					}
 				case *matter.Command:
-					parent.CreateElement("command").CreateAttr("name", entity.Name)
+					el = parent.CreateElement("command")
+					el.CreateAttr("name", entity.Name)
 				default:
 					switch entity.EntityType() {
 					case types.EntityTypeCondition:
-						parent.CreateElement("attribute").CreateAttr("name", e.Reference)
+						el = parent.CreateElement("attribute")
 					default:
-						parent.CreateElement("condition").CreateAttr("name", e.Reference)
+						parent.CreateElement("condition")
 					}
+					el.CreateAttr("name", e.Reference)
 				}
 			}
+		}
+		if e.Field != "" && el != nil {
+			el.CreateAttr("property", e.Field)
 		}
 	case *conformance.ComparisonExpression:
 		switch e.Op {

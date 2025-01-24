@@ -3,11 +3,20 @@ package constraint
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func ParseString(constraint string) (Constraint, error) {
+func ParseString(constraint string) Constraint {
+	c, err := TryParseString(constraint)
+	if err != nil {
+		return &GenericConstraint{Value: constraint}
+	}
+	return c
+}
+
+func TryParseString(constraint string) (Constraint, error) {
 	if len(constraint) == 0 {
 		return &GenericConstraint{Value: constraint}, nil
 	}
@@ -16,6 +25,29 @@ func ParseString(constraint string) (Constraint, error) {
 		return nil, err
 	}
 	return c.(Constraint), nil
+}
+
+func ParseLimit(limit string) Limit {
+	l, err := TryParseLimit(limit)
+	if err != nil {
+		return &GenericLimit{Value: limit}
+	}
+	return l
+
+}
+
+func TryParseLimit(limit string) (Limit, error) {
+	if len(limit) == 0 {
+		return nil, nil
+	}
+	if strings.EqualFold(limit, "desc") {
+		return &GenericLimit{Value: limit}, nil
+	}
+	l, err := Parse("", []byte(limit), Entrypoint("Limit"))
+	if err != nil {
+		return nil, err
+	}
+	return l.(Limit), nil
 }
 
 type Type uint8
@@ -83,7 +115,6 @@ type Constraint interface {
 	Equal(o Constraint) bool
 	Min(c Context) (min types.DataTypeExtreme)
 	Max(c Context) (max types.DataTypeExtreme)
-	Fallback(c Context) (max types.DataTypeExtreme)
 	Clone() Constraint
 }
 
@@ -132,4 +163,62 @@ func IsBlank(c Constraint) bool {
 
 	}
 	return false
+}
+
+func IsGeneric(c Constraint) bool {
+	switch c := c.(type) {
+	case *GenericConstraint:
+		return true
+	case Set:
+		if len(c) == 1 {
+			_, ok := c[0].(*GenericConstraint)
+			if ok {
+				return true
+			}
+		} else if len(c) == 0 {
+			return true
+		}
+
+	}
+	return false
+}
+
+func IsNull(c Constraint) bool {
+	switch c := c.(type) {
+	case *ExactConstraint:
+		_, isNull := c.Value.(*NullLimit)
+		return isNull
+	case Set:
+		if len(c) == 1 {
+			mc, ok := c[0].(*ExactConstraint)
+			if ok {
+				_, isNull := mc.Value.(*NullLimit)
+				return isNull
+			}
+		}
+	}
+	return false
+}
+
+func IsGenericLimit(c Limit) bool {
+	switch c.(type) {
+	case *GenericLimit:
+		return true
+	}
+	return false
+}
+
+func IsBlankLimit(l Limit) bool {
+	switch c := l.(type) {
+	case *GenericLimit:
+		return c.Value == ""
+	case nil:
+		return true
+	}
+	return false
+}
+
+func IsNullLimit(l Limit) bool {
+	_, isNull := l.(*NullLimit)
+	return isNull
 }

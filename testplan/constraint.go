@@ -78,15 +78,15 @@ func limitString(cluster *matter.Cluster, limit constraint.Limit) string {
 	case *constraint.TemperatureLimit:
 		return fmt.Sprintf("%s°C", limit.Value.String())
 	case *constraint.ReferenceLimit:
-		ref, ok := cluster.Identifier(limit.Value)
+		ref, ok := cluster.Identifier(limit.Reference)
 		if !ok {
-			return fmt.Sprintf("ERR: unknown reference %s", limit.Value)
+			return fmt.Sprintf("ERR: unknown reference %s", limit.Reference)
 		}
 		switch ref := ref.(type) {
 		case *matter.Field:
 			return fmt.Sprintf("{A_%s}", strcase.ToScreamingSnake(ref.Name))
 		default:
-			return fmt.Sprintf("ERR: unknown reference type %T (%s)", ref, limit.Value)
+			return fmt.Sprintf("ERR: unknown reference type %T (%s)", ref, limit.Reference)
 		}
 	default:
 		return fmt.Sprintf("unknown limit type: %T", limit)

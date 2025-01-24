@@ -20,7 +20,7 @@ Identifier <- PascalCase ('-' PascalCase)* {
     return string(c.text), nil
 }
 
-ReferenceOp <- not:'!'? "<<" reference:ReferenceId label:(ReferenceLabel )? ">>" {
+ReferenceOp <- not:'!'? "<<" reference:ReferenceId label:(ReferenceLabel )? ">>" field:(ReferenceField)? {
     //debug("matched reference op ref %s\n", reference)
     ic := &ReferenceExpression{Reference:reference.(string)}
     if label != nil {
@@ -30,15 +30,21 @@ ReferenceOp <- not:'!'? "<<" reference:ReferenceId label:(ReferenceLabel )? ">>"
     if not != nil {
         ic.Not = true
     }
+    if field != nil {
+        ic.Field = field.(string)
+    }
     return ic, nil
 }
 
-ReferenceValue <- "<<" reference:ReferenceId label:(ReferenceLabel )? ">>" {
+ReferenceValue <- "<<" reference:ReferenceId label:(ReferenceLabel )? ">>" field:(ReferenceField)?{
     //debug("matched reference op ref %s\n", reference)
     ic := &ReferenceValue{Reference:reference.(string)}
     if label != nil {
         //debug("matched reference label ref %v\n", label)
         ic.Label = label.(string)
+    }
+    if field != nil {
+        ic.Field = field.(string)
     }
     return ic, nil
 }
@@ -56,6 +62,10 @@ ReferenceText <- (!">>" .)+  {
 ReferenceId <- "ref_" PascalCase {
     debug("matched reference %s\n", string(c.text))
     return string(c.text), nil
+}
+
+ReferenceField <- "." fieldName:PascalCase {
+	return fieldName.(string), nil
 }
 
 FeatureOp <- not:'!'? feature:Feature {

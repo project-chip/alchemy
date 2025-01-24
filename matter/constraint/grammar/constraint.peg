@@ -7,7 +7,8 @@ import (
     "strconv"
 	"strings"
 
-	 "github.com/shopspring/decimal"
+	"github.com/project-chip/alchemy/matter/types"
+	"github.com/shopspring/decimal"
 )
 
 func debug(format string, a ...any) (n int, err error) {
@@ -31,7 +32,7 @@ Input <- conf:Cons+ EOF {
     return set, nil
 }
 
-Cons <- cons:Constraint entry:EntryConstraint? (_ Comma _)? {
+Cons <- cons:Constraint entry:EntryConstraint? Parenthetical? (_ Comma _)? {
 	if entry != nil {
 		return &ListConstraint {
 			Constraint:cons.(Constraint),
@@ -57,8 +58,7 @@ Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
 	}
 }
 
-
-
+Parenthetical <- _ "(" (!")" .)+ ")" 
 
 
 

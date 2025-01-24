@@ -266,18 +266,29 @@ func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Set, sb *strings.
 	return
 }
 
-func (ti *TableInfo) ReadConstraint(row *asciidoc.TableRow, column matter.TableColumn) constraint.Constraint {
-
-	val, source, _ := ti.RenderColumn(row, ti.buildConstraintValue, column)
+func (ti *TableInfo) ReadConstraint(row *asciidoc.TableRow, columns ...matter.TableColumn) constraint.Constraint {
+	val, source, _ := ti.RenderColumn(row, ti.buildConstraintValue, columns...)
 	s := strings.TrimSpace(val)
 	s = strings.ReplaceAll(s, "\n", " ")
 	var c constraint.Constraint
-	c, err := constraint.ParseString(s)
+	c, err := constraint.TryParseString(s)
 	if err != nil {
 		slog.Error("failed parsing constraint cell", log.Element("source", ti.Doc.Path, source), slog.String("constraint", val))
 		return &constraint.GenericConstraint{Value: val}
 	}
 	return c
+}
+
+func (ti *TableInfo) ReadLimit(row *asciidoc.TableRow, columns ...matter.TableColumn) constraint.Limit {
+	val, source, _ := ti.RenderColumn(row, ti.buildConstraintValue, columns...)
+	s := strings.TrimSpace(val)
+	s = strings.ReplaceAll(s, "\n", " ")
+	l, err := constraint.TryParseLimit(s)
+	if err != nil {
+		slog.Error("failed parsing constraint cell", log.Element("source", ti.Doc.Path, source), slog.String("constraint", val))
+		return &constraint.GenericLimit{Value: val}
+	}
+	return l
 }
 
 func (ti *TableInfo) buildConstraintValue(els asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {

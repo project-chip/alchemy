@@ -556,11 +556,7 @@ func minMaxFromConstraint(cc *matter.ConstraintContext, c constraint.Constraint)
 }
 
 func GetFallbackValue(cc *matter.ConstraintContext) (fallbackValue types.DataTypeExtreme) {
-	c, err := constraint.ParseString(cc.Field.Fallback)
-	if err != nil {
-		c = &constraint.GenericConstraint{Value: cc.Field.Fallback}
-	}
-	fallbackValue = c.Fallback(cc)
+	fallbackValue = cc.Field.Fallback.Fallback(cc)
 	switch fallbackValue.Type {
 	case types.DataTypeExtremeTypeEmptyList:
 		if !cc.Field.Type.HasLength() {

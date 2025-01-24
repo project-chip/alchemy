@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -202,25 +203,31 @@ func renderDataType(f *matter.Field, i *etree.Element) {
 }
 
 func renderFallback(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
-	if f.Fallback == "" {
+	if constraint.IsBlankLimit(f.Fallback) || constraint.IsGenericLimit(f.Fallback) {
 		return
 	}
-	cons, err := constraint.ParseString(f.Fallback)
-	if err != nil {
+	switch fb := f.Fallback.(type) {
+	case *constraint.ManufacturerLimit:
+		e.CreateAttr("default", "MS")
 		return
-	}
-	ec, ok := cons.(*constraint.ExactConstraint)
-	if ok {
-		switch limit := ec.Value.(type) {
-		case *constraint.ManufacturerLimit:
-			e.CreateAttr("default", "MS")
+	case *constraint.ReferenceLimit:
+		e.CreateAttr("default", fb.Reference)
+		return
+	case *constraint.StatusCodeLimit:
+		e.CreateAttr("default", fb.StatusCode.String())
+		return
+	case *constraint.IdentifierLimit:
+		switch entity := fb.Entity.(type) {
+		case *matter.EnumValue:
+			e.CreateAttr("default", entity.Name)
 			return
-		case *constraint.ReferenceLimit:
-			e.CreateAttr("default", limit.Value)
-			return
+		default:
+			if entity != nil {
+				slog.Warn("Identifier fallback with unexpected entity", log.Path("field", f), log.Type("type", entity))
+			}
 		}
 	}
-	def := cons.Fallback(&matter.ConstraintContext{Fields: fs, Field: f})
+	def := f.Fallback.Fallback(&matter.ConstraintContext{Fields: fs, Field: f})
 	if !def.Defined() {
 		return
 	}

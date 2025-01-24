@@ -21,6 +21,7 @@ type DataTypeExtreme struct {
 	Format NumberFormat
 	Int64  int64
 	UInt64 uint64
+	Entity Entity
 }
 
 func NewIntDataTypeExtreme(i int64, f NumberFormat) DataTypeExtreme {

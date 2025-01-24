@@ -1,6 +1,9 @@
 package matter
 
 import (
+	"log/slog"
+
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -30,69 +33,87 @@ func (cc *ConstraintContext) getReference(ref string) *Field {
 	return r
 }
 
-func (cc *ConstraintContext) ReferenceConstraint(ref string) constraint.Constraint {
+func (cc *ConstraintContext) getReferencedField(ref string, field constraint.Limit) *Field {
 	f := cc.getReference(ref)
 	if f == nil {
+		slog.Warn("Unknown reference when fetching constraint", slog.String("reference", ref))
 		return nil
 	}
-	return f.Constraint
+	if field == nil {
+		return f
+	}
+	if f.Type == nil {
+		slog.Warn("Referenced constraint field has no type information for child field", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field))
+		return nil
+	}
+	var fieldSet FieldSet
+	switch e := f.Type.Entity.(type) {
+	case *Struct:
+		fieldSet = e.Fields
+	case *Command:
+		fieldSet = e.Fields
+	case *Event:
+		fieldSet = e.Fields
+	default:
+		slog.Warn("referenced constraint field has a type without fields", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field), log.Type("type", e))
+		return nil
+	}
+	childField := fieldSet.GetField(ref)
+	ccc := &ConstraintContext{Field: childField, Fields: fieldSet}
+	switch f := field.(type) {
+	case *constraint.IdentifierLimit:
+		return ccc.getReferencedField(f.ID, f.Field)
+	case *constraint.ReferenceLimit:
+		return ccc.getReferencedField(f.Reference, f.Field)
+	}
+	slog.Warn("referenced constraint field has unrecognized type", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field), log.Type("type", field))
+	return nil
 }
 
-func (cc *ConstraintContext) Fallback(name string) (def types.DataTypeExtreme) {
-	f := cc.getReference(name)
-	if f != nil && f.Fallback != "" {
-		cons, err := constraint.ParseString(f.Fallback)
+func (cc *ConstraintContext) IdentifierConstraint(entity types.Entity, field constraint.Limit) constraint.Constraint {
+	switch entity := entity.(type) {
+	case *Field:
+		return entity.Constraint
+	default:
+		slog.Warn("Unexpected entity type on IdentifierConstraint", log.Type("entity", entity))
+	}
+	return nil
+}
+
+func (cc *ConstraintContext) ReferenceConstraint(entity types.Entity, field constraint.Limit) constraint.Constraint {
+	switch entity := entity.(type) {
+	case *Field:
+		return entity.Constraint
+	default:
+		slog.Warn("Unexpected entity type on ReferenceConstraint", log.Type("entity", entity))
+	}
+	return nil
+}
+
+func (cc *ConstraintContext) Fallback(entity types.Entity, field constraint.Limit) (def types.DataTypeExtreme) {
+	switch entity := entity.(type) {
+	case *Field:
+		if !constraint.IsGenericLimit(entity.Fallback) {
+			def = entity.Fallback.Fallback(cc)
+			return
+		}
+	case *EnumValue:
+		if entity.Value.Valid() {
+			def = types.NewUintDataTypeExtreme(entity.Value.Value(), types.NumberFormatInt)
+			def.Entity = entity
+			return
+		}
+	case Bit:
+		val, err := entity.Mask()
 		if err != nil {
-			cons = &constraint.GenericConstraint{Value: f.Fallback}
+			def = types.NewUintDataTypeExtreme(val, types.NumberFormatInt)
+			def.Entity = entity
+			return
 		}
-		return cons.Fallback(cc)
+	case nil:
+	default:
+		slog.Warn("Unexpected entity type on Fallback", log.Type("entity", entity))
 	}
-	// Couldn't find it as a reference; let's check other possibilities
-	def = cc.getEnumValue(name)
-	if def.Defined() {
-		return
-	}
-	def = cc.getBitmapValue(name)
-	if def.Defined() {
-		return
-	}
-	return
-}
 
-func (cc *ConstraintContext) getEnumValue(name string) (def types.DataTypeExtreme) {
-	if cc.Field.Type == nil || cc.Field.Type.Entity == nil {
-		return
-	}
-	en, ok := cc.Field.Type.Entity.(*Enum)
-	if !ok {
-		return
-	}
-	for _, v := range en.Values {
-		if v.Name == name {
-			if v.Value.Valid() {
-				def = types.NewUintDataTypeExtreme(v.Value.Value(), types.NumberFormatInt)
-			}
-		}
-	}
-	return
-}
-
-func (cc *ConstraintContext) getBitmapValue(name string) (def types.DataTypeExtreme) {
-	if cc.Field.Type == nil || cc.Field.Type.Entity == nil {
-		return
-	}
-	en, ok := cc.Field.Type.Entity.(*Bitmap)
-	if !ok {
-		return
-	}
-	for _, v := range en.Bits {
-		if v.Name() == name {
-			val, err := v.Mask()
-			if err == nil {
-				def = types.NewUintDataTypeExtreme(val, types.NumberFormatHex)
-				return
-			}
-		}
-	}
 	return
 }

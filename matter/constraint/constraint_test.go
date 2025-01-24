@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -13,7 +14,28 @@ type field struct {
 	Type       *types.DataType
 }
 
+func (f *field) EntityType() types.EntityType {
+	return types.EntityTypeAttribute
+}
+
+func (f *field) Source() asciidoc.Element {
+	return nil
+}
+
+func (f *field) Parent() types.Entity {
+	return nil
+}
+
 type fieldSet []*field
+
+func (fs fieldSet) getField(name string) *field {
+	for _, f := range fs {
+		if f.Name == name {
+			return f
+		}
+	}
+	return nil
+}
 
 type constraintTestContext struct {
 	field  *field
@@ -27,34 +49,85 @@ func (cc *constraintTestContext) DataType() *types.DataType {
 	return nil
 }
 
-func (cc *constraintTestContext) getReference(ref string) *field {
-	for _, f := range cc.fields {
-		if f.Name == ref {
-			return f
+func (cc *constraintTestContext) IdentifierConstraint(entity types.Entity, f Limit) Constraint {
+	switch entity := entity.(type) {
+	case *field:
+		if entity != nil {
+			return entity.Constraint
 		}
 	}
 	return nil
 }
 
-func (cc *constraintTestContext) ReferenceConstraint(ref string) Constraint {
-	f := cc.getReference(ref)
-	if f == nil {
-		return nil
+func (cc *constraintTestContext) ReferenceConstraint(entity types.Entity, f Limit) Constraint {
+	switch entity := entity.(type) {
+	case *field:
+		if entity != nil {
+			return entity.Constraint
+		}
 	}
-	return f.Constraint
+	return nil
 }
 
-func (cc *constraintTestContext) Fallback(name string) (def types.DataTypeExtreme) {
-
+func (cc *constraintTestContext) Fallback(entity types.Entity, field Limit) (def types.DataTypeExtreme) {
 	return
 }
 
 func mustParseConstraint(s string) Constraint {
-	constraint, err := ParseString(s)
+	constraint, err := TryParseString(s)
 	if err != nil {
 		panic(fmt.Errorf("failed parsing constraint \"%s\": %w", s, err))
 	}
 	return constraint
+}
+
+func stitchFieldSet(fs fieldSet) fieldSet {
+	for _, f := range fs {
+		stitchFieldConstraint(fs, f.Constraint)
+	}
+	return fs
+}
+
+func stitchFieldConstraint(fs fieldSet, cons Constraint) {
+	switch cons := cons.(type) {
+	case Set:
+		for _, c := range cons {
+			stitchFieldConstraint(fs, c)
+		}
+	case *ExactConstraint:
+		stitchFieldLimit(fs, cons.Value)
+	case *ListConstraint:
+		stitchFieldConstraint(fs, cons.Constraint)
+		stitchFieldConstraint(fs, cons.EntryConstraint)
+	case *MaxConstraint:
+		stitchFieldLimit(fs, cons.Maximum)
+	case *MinConstraint:
+		stitchFieldLimit(fs, cons.Minimum)
+	case *RangeConstraint:
+		stitchFieldLimit(fs, cons.Maximum)
+		stitchFieldLimit(fs, cons.Minimum)
+	default:
+		fmt.Printf("unknown field constraint type: %T\n", cons)
+	}
+}
+
+func stitchFieldLimit(fs fieldSet, l Limit) {
+	switch l := l.(type) {
+	case *CharacterLimit:
+		stitchFieldLimit(fs, l.ByteCount)
+		stitchFieldLimit(fs, l.CodepointCount)
+	case *LengthLimit:
+		stitchFieldLimit(fs, l.Reference)
+	case *ReferenceLimit:
+		l.Entity = fs.getField(l.Reference)
+	case *IdentifierLimit:
+		l.Entity = fs.getField(l.ID)
+	case *MathExpressionLimit:
+		stitchFieldLimit(fs, l.Left)
+		stitchFieldLimit(fs, l.Right)
+	default:
+		fmt.Printf("unknown field limit type: %T\n", l)
+	}
 }
 
 type constraintTest struct {
@@ -70,6 +143,17 @@ type constraintTest struct {
 }
 
 var constraintTests = []constraintTest{
+	{
+		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
+		fields: stitchFieldSet(fieldSet{
+			{Name: "MinMeasuredValue", Constraint: mustParseConstraint("1 to MaxMeasuredValue-1")},
+			{Name: "MaxMeasuredValue", Constraint: mustParseConstraint("MinMeasuredValue+1 to 65534")},
+		}),
+		min:    types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:    types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
+		zapMin: "0",
+		zapMax: "65534",
+	},
 	{
 		constraint: "max 128{32}",
 		asciiDoc:   "max 128{32}",
@@ -102,6 +186,7 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "max <<ref_RespMaxConstant,RESP_MAX>>",
+		asciiDoc:   "max <<ref_RespMaxConstant, RESP_MAX>>",
 	},
 	{
 		constraint: "1 to NumberOfPINUsersSupported, 0xFFFE",
@@ -126,23 +211,13 @@ var constraintTests = []constraintTest{
 		zapMin:     "-4611686018427387904",
 		zapMax:     "4611686018427387904",
 	},
-	{
-		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
-		fields: fieldSet{
-			{Name: "MinMeasuredValue", Constraint: mustParseConstraint("1 to MaxMeasuredValue-1")},
-			{Name: "MaxMeasuredValue", Constraint: mustParseConstraint("MinMeasuredValue+1 to 65534")},
-		},
-		min:    types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
-		max:    types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
-		zapMin: "0",
-		zapMax: "65534",
-	},
+
 	{
 		constraint: "1 to MaxMeasuredValue-1",
-		fields: fieldSet{
+		fields: stitchFieldSet(fieldSet{
 			{Name: "MinMeasuredValue", Constraint: mustParseConstraint("1 to MaxMeasuredValue-1")},
 			{Name: "MaxMeasuredValue", Constraint: mustParseConstraint("MinMeasuredValue+1 to 65534")},
-		},
+		}),
 		min:      types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
 		max:      types.NewIntDataTypeExtreme(65533, types.NumberFormatInt),
 		asciiDoc: "1 to (MaxMeasuredValue - 1)",
@@ -151,10 +226,10 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "MinMeasuredValue+1 to 65534",
-		fields: fieldSet{
+		fields: stitchFieldSet(fieldSet{
 			{Name: "MinMeasuredValue", Constraint: mustParseConstraint("1 to MaxMeasuredValue-1")},
 			{Name: "MaxMeasuredValue", Constraint: mustParseConstraint("MinMeasuredValue+1 to 65534")},
-		},
+		}),
 		min:      types.NewIntDataTypeExtreme(2, types.NumberFormatInt),
 		max:      types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
 		asciiDoc: "(MinMeasuredValue + 1) to 65534",
@@ -454,7 +529,7 @@ func TestSuite(t *testing.T) {
 	for _, ct := range constraintTests {
 		if ct.invalid {
 			var err error
-			_, err = ParseString(ct.constraint)
+			_, err = TryParseString(ct.constraint)
 			if err == nil {
 				t.Errorf("expected error parsing %s", ct.constraint)
 			}
@@ -466,6 +541,7 @@ func TestSuite(t *testing.T) {
 			t.Errorf("failed to parse constraint %s", ct.constraint)
 			continue
 		}
+		stitchFieldConstraint(ct.fields, c)
 		minField := &field{}
 		minField.Type = ct.dataType
 		min := c.Min(&constraintTestContext{fields: ct.fields, field: minField})

@@ -1,15 +1,39 @@
-ReferenceLimit <- (PascalCase / Reference) {
-	debug("found reference limit %s\n", string(c.text))
-	return &ReferenceLimit{Value:string(c.text)}, nil
+
+ReferenceLimit <- "<<" reference:ReferenceId label:(ReferenceLabel )? ">>" field:(ReferenceField)? {
+    //debug("matched reference op ref %s\n", reference)
+	rl := &ReferenceLimit{Reference:reference.(string)}
+    if label != nil {
+        //debug("matched reference label ref %v\n", label)
+        rl.Label = label.(string)
+    }
+    if field != nil {
+        rl.Field = field.(Limit)
+    }
+    return rl, nil
 }
 
-Reference <- "<<" "ref_"? ReferencePart+ (_ "," _ [^>]+)? ">>" {
-	debug("found reference %s\n", string(c.text))
-	return string(c.text), nil
+ReferenceId <- "ref_"? ReferencePart+ {
+    debug("matched reference %s\n", string(c.text))
+    return string(c.text), nil
 }
 
 ReferencePart <- PascalCase "_"? {
 	debug("found reference part %s\n", string(c.text))
 	return string(c.text), nil
 }
+
+ReferenceField <- "." field:(ReferenceLimit / IdentifierLimit) {
+	return field.(Limit), nil
+}
+
+ReferenceLabel <- _ Comma _ label:ReferenceText  &">>" {
+    //debug("matched reference label %T\n", label)
+    return label.(string), nil
+}
+
+ReferenceText <- (!">>" .)+  {
+    debug("matched reference label text %s\n", string(c.text))
+    return string(c.text), nil
+}
+
 

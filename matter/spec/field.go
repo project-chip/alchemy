@@ -43,10 +43,7 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 		if err != nil {
 			return
 		}
-		f.Fallback, err = ti.ReadString(row, matter.TableColumnFallback, matter.TableColumnDefault)
-		if err != nil {
-			return
-		}
+		f.Fallback = ti.ReadLimit(row, matter.TableColumnFallback, matter.TableColumnDefault)
 
 		var a string
 		a, err = ti.ReadString(row, matter.TableColumnAccess)

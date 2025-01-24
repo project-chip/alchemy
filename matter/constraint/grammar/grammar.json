@@ -10,10 +10,13 @@
         "boolean.peg",
         "expression.peg",
         "range.peg",
+        "identifier.peg",
         "reference.peg",
         "number.peg",
+        "status.peg",
         "text.peg"
-      ]
+      ],
+      "alternateEntryPoints" : ["Limit"]
     }
   ]
 }

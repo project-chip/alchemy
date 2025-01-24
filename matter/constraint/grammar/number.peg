@@ -3,10 +3,9 @@ IntConstraint <- i:IntLimit {
 	return &MaxConstraint{Maximum:i.(Limit)}, nil
 }
 
-LengthLimit <- "len("i _ ref:PascalCase _ ')' {
-	r := ref.(string)
-	debug("found length limit %s\n", r)
-	return &LengthLimit{Value:r}, nil
+LengthLimit <- "len("i _ ref:( IdentifierLimit / ReferenceLimit ) _ ')' {
+	debug("found length limit %v\n", ref)
+	return &LengthLimit{Reference:ref.(Limit)}, nil
 }
 
 CharacterLimit <- maxBytes:IntLimit "{" maxCodepoints:IntLimit "}" {
