@@ -27,7 +27,7 @@ func (spec *Spec) IgnoreSection(sectionName string, purpose SpecPurpose) bool {
 	return false
 }
 
-type SpecPurpose uint32
+type SpecPurpose uint64
 
 const (
 	SpecPurposeNone             SpecPurpose = 0
@@ -38,9 +38,10 @@ const (
 	SpecPurposeDeviceType                   = 1 << (iota - 1)
 	SpecPurposeCommandArguments             = 1 << (iota - 1)
 	SpecPurposeDataTypesDef                 = 1 << (iota - 1)
+	SpecPurposeFeatures                     = 1 << (iota - 1)
 
 	SpecPurposeDataTypes SpecPurpose = SpecPurposeDataTypesBitmap | SpecPurposeDataTypesEnum | SpecPurposeDataTypesStruct | SpecPurposeDataTypesDef
-	SpecPurposeAll       SpecPurpose = SpecPurposeDataTypes | SpecPurposeCluster | SpecPurposeDeviceType | SpecPurposeCommandArguments
+	SpecPurposeAll       SpecPurpose = SpecPurposeDataTypes | SpecPurposeCluster | SpecPurposeDeviceType | SpecPurposeCommandArguments | SpecPurposeFeatures
 )
 
 var specPurposes = map[string]SpecPurpose{
@@ -51,6 +52,7 @@ var specPurposes = map[string]SpecPurpose{
 	"cluster":           SpecPurposeCluster,
 	"device-type":       SpecPurposeDeviceType,
 	"command-arguments": SpecPurposeCommandArguments,
+	"features":          SpecPurposeFeatures,
 	"all":               SpecPurposeAll,
 }
 

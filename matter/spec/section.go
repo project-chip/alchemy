@@ -183,6 +183,8 @@ func assignSectionType(doc *Doc, s *Section, sectionType matter.Section) {
 		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCluster)
 	case matter.SectionDeviceType:
 		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeDeviceType)
+	case matter.SectionFeatures:
+		ignore = doc.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeFeatures)
 	}
 	if ignore {
 		return
