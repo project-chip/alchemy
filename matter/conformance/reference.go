@@ -4,13 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type ReferenceExpression struct {
-	Reference string `json:"ref"`
-	Field     string `json:"field,omitempty"`
-	Label     string `json:"label,omitempty"`
-	Not       bool   `json:"not,omitempty"`
+	Reference string          `json:"ref"`
+	Field     ComparisonValue `json:"field,omitempty"`
+	Label     string          `json:"label,omitempty"`
+	Not       bool            `json:"not,omitempty"`
+	Entity    types.Entity    `json:"-"`
 }
 
 func (re *ReferenceExpression) ASCIIDocString() string {
@@ -25,9 +28,9 @@ func (re *ReferenceExpression) ASCIIDocString() string {
 		s.WriteString(re.Label)
 	}
 	s.WriteString(">>")
-	if re.Field != "" {
+	if re.Field != nil {
 		s.WriteRune('.')
-		s.WriteString(re.Field)
+		s.WriteString(re.Field.ASCIIDocString())
 	}
 	return s.String()
 }
@@ -105,9 +108,10 @@ func (re *ReferenceExpression) Clone() Expression {
 }
 
 type ReferenceValue struct {
-	Reference string `json:"ref"`
-	Field     string `json:"field,omitempty"`
-	Label     string `json:"label,omitempty"`
+	Reference string          `json:"ref"`
+	Field     ComparisonValue `json:"field,omitempty"`
+	Label     string          `json:"label,omitempty"`
+	Entity    types.Entity    `json:"-"`
 }
 
 func (re *ReferenceValue) ASCIIDocString() string {
@@ -119,9 +123,9 @@ func (re *ReferenceValue) ASCIIDocString() string {
 		s.WriteString(re.Label)
 	}
 	s.WriteString(">>")
-	if re.Field != "" {
+	if re.Field != nil {
 		s.WriteRune('.')
-		s.WriteString(re.Field)
+		s.WriteString(re.Field.ASCIIDocString())
 	}
 	return s.String()
 }
