@@ -112,22 +112,21 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 			return
 		}
 		var baseClusterRequirements, elementRequirements *Section
-		var conditionSections []*Section
 		parse.Traverse(top, top.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
 			switch sec.SecType {
 			case matter.SectionClusterRequirements:
 				baseClusterRequirements = sec
 			case matter.SectionElementRequirements:
 				elementRequirements = sec
-			case matter.SectionConditions:
-				conditionSections = append(conditionSections, sec)
 			}
 			return parse.SearchShouldContinue
 		})
-		if baseClusterRequirements == nil && elementRequirements == nil && len(conditionSections) == 0 {
+		if baseClusterRequirements == nil && elementRequirements == nil {
 			continue
 		}
+
 		baseDeviceType = matter.NewDeviceType(top.Base)
+		baseDeviceType.Name = "Base Device Type"
 		if baseClusterRequirements != nil {
 			baseDeviceType.ClusterRequirements, err = baseClusterRequirements.toClusterRequirements(d)
 			if err != nil {
@@ -140,14 +139,23 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 				return
 			}
 		}
-		for _, conditionSection := range conditionSections {
-			var conditions []*matter.Condition
-			conditions, err = conditionSection.toBaseDeviceTypeConditions(d)
-			if err != nil {
-				return
+		parse.Traverse(top, top.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
+			switch sec.SecType {
+
+			case matter.SectionConditions:
+				var conditions []*matter.Condition
+				conditions, err = sec.toBaseDeviceTypeConditions(d)
+
+				baseDeviceType.Conditions = append(baseDeviceType.Conditions, conditions...)
+			case matter.SectionRevisionHistory:
+				baseDeviceType.Revisions, err = readRevisionHistory(d, sec)
 			}
-			baseDeviceType.Conditions = append(baseDeviceType.Conditions, conditions...)
-		}
+			if err != nil {
+				return parse.SearchShouldStop
+			}
+			return parse.SearchShouldContinue
+		})
+
 		return
 	}
 	return nil, fmt.Errorf("failed to find base device type")

@@ -33,7 +33,9 @@ func renderDeviceType(doc *spec.Doc, deviceType *matter.DeviceType) (output stri
 	c := x.CreateElement("deviceType")
 	c.CreateAttr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
 	c.CreateAttr("xsi:schemaLocation", "types types.xsd devicetype devicetype.xsd")
-	c.CreateAttr("id", deviceType.ID.HexString())
+	if deviceType.ID != nil {
+		c.CreateAttr("id", deviceType.ID.HexString())
+	}
 	c.CreateAttr("name", deviceType.Name)
 
 	revs := c.CreateElement("revisionHistory")
@@ -48,12 +50,18 @@ func renderDeviceType(doc *spec.Doc, deviceType *matter.DeviceType) (output stri
 		}
 	}
 	c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
-	class := c.CreateElement("classification")
-	if deviceType.Superset != "" {
-		class.CreateAttr("superset", deviceType.Superset)
+	if deviceType.Class != "" || deviceType.Scope != "" {
+		class := c.CreateElement("classification")
+		if deviceType.Superset != "" {
+			class.CreateAttr("superset", deviceType.Superset)
+		}
+		if deviceType.Class != "" {
+			class.CreateAttr("class", strings.ToLower(deviceType.Class))
+		}
+		if deviceType.Scope != "" {
+			class.CreateAttr("scope", strings.ToLower(deviceType.Scope))
+		}
 	}
-	class.CreateAttr("class", strings.ToLower(deviceType.Class))
-	class.CreateAttr("scope", strings.ToLower(deviceType.Scope))
 
 	if len(deviceType.Conditions) > 0 {
 		conditions := c.CreateElement("conditions")

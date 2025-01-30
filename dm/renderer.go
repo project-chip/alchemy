@@ -22,14 +22,15 @@ import (
 )
 
 type Renderer struct {
+	spec   *spec.Specification
 	dmRoot string
 
 	clusters     []*matter.Cluster
 	clustersLock sync.Mutex
 }
 
-func NewRenderer(dmRoot string) *Renderer {
-	return &Renderer{dmRoot: dmRoot}
+func NewRenderer(dmRoot string, spec *spec.Specification) *Renderer {
+	return &Renderer{dmRoot: dmRoot, spec: spec}
 }
 
 func (p *Renderer) Name() string {
@@ -53,6 +54,16 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 		case *matter.DeviceType:
 			deviceTypes = append(deviceTypes, e)
 		}
+	}
+
+	var dt matter.DocType
+	dt, err = doc.DocType()
+	if err != nil {
+		return
+	}
+	if dt == matter.DocTypeBaseDeviceType && p.spec.BaseDeviceType != nil {
+		// Special case, as this doesn't show up normally
+		deviceTypes = append(deviceTypes, p.spec.BaseDeviceType)
 	}
 
 	if len(appClusters) == 1 {
