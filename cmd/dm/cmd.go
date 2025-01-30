@@ -38,8 +38,6 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 
 	specBuilder := spec.NewBuilder(spec.IgnoreHierarchy(true))
 
-	dataModelRenderer := dm.NewRenderer(dmRoot)
-
 	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 	if err != nil {
 		return err
@@ -61,6 +59,8 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 			return err
 		}
 	}
+
+	dataModelRenderer := dm.NewRenderer(dmRoot, specBuilder.Spec)
 
 	dataModelDocs, err := pipeline.Parallel(cxt, pipelineOptions, dataModelRenderer, specDocs)
 	if err != nil {
