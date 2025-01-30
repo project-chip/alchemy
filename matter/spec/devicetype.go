@@ -112,16 +112,19 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 			return
 		}
 		var baseClusterRequirements, elementRequirements *Section
+		var conditionSections []*Section
 		parse.Traverse(top, top.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
 			switch sec.SecType {
 			case matter.SectionClusterRequirements:
 				baseClusterRequirements = sec
 			case matter.SectionElementRequirements:
 				elementRequirements = sec
+			case matter.SectionConditions:
+				conditionSections = append(conditionSections, sec)
 			}
 			return parse.SearchShouldContinue
 		})
-		if baseClusterRequirements == nil && elementRequirements == nil {
+		if baseClusterRequirements == nil && elementRequirements == nil && len(conditionSections) == 0 {
 			continue
 		}
 		baseDeviceType = matter.NewDeviceType(top.Base)
@@ -136,6 +139,14 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 			if err != nil {
 				return
 			}
+		}
+		for _, conditionSection := range conditionSections {
+			var conditions []*matter.Condition
+			conditions, err = conditionSection.toBaseDeviceTypeConditions(d)
+			if err != nil {
+				return
+			}
+			baseDeviceType.Conditions = append(baseDeviceType.Conditions, conditions...)
 		}
 		return
 	}

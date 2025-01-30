@@ -43,7 +43,12 @@ func (dt *DeviceType) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
+func NewClusterRequirement(source asciidoc.Element) *ClusterRequirement {
+	return &ClusterRequirement{entity: entity{source: source}}
+}
+
 type ClusterRequirement struct {
+	entity
 	ClusterID   *Number         `json:"clusterId,omitempty"`
 	ClusterName string          `json:"clusterName,omitempty"`
 	Quality     Quality         `json:"quality,omitempty"`
@@ -55,6 +60,7 @@ type ClusterRequirement struct {
 
 func (cr *ClusterRequirement) Clone() *ClusterRequirement {
 	cer := &ClusterRequirement{
+		entity:      entity{source: cr.source},
 		ClusterID:   cr.ClusterID.Clone(),
 		ClusterName: cr.ClusterName,
 		Interface:   cr.Interface,
@@ -67,7 +73,12 @@ func (cr *ClusterRequirement) Clone() *ClusterRequirement {
 	return cer
 }
 
+func NewElementRequirement(source asciidoc.Element) ElementRequirement {
+	return ElementRequirement{entity: entity{source: source}}
+}
+
 type ElementRequirement struct {
+	entity
 	ClusterID   *Number          `json:"clusterId,omitempty"`
 	ClusterName string           `json:"clusterName,omitempty"`
 	Element     types.EntityType `json:"element,omitempty"`
@@ -84,6 +95,7 @@ type ElementRequirement struct {
 
 func (er *ElementRequirement) Clone() *ElementRequirement {
 	cer := &ElementRequirement{
+		entity:      entity{source: er.source},
 		ClusterID:   er.ClusterID.Clone(),
 		ClusterName: er.ClusterName,
 		Element:     er.Element,
@@ -102,7 +114,12 @@ func (er *ElementRequirement) Clone() *ElementRequirement {
 	return cer
 }
 
+func NewDeviceTypeRequirement(source asciidoc.Element) *DeviceTypeRequirement {
+	return &DeviceTypeRequirement{entity: entity{source: source}}
+}
+
 type DeviceTypeRequirement struct {
+	entity
 	DeviceTypeID   *Number               `json:"deviceTypeId,omitempty"`
 	DeviceTypeName string                `json:"deviceTypeName,omitempty"`
 	Constraint     constraint.Constraint `json:"constraint,omitempty"`
