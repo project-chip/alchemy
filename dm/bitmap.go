@@ -8,6 +8,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
@@ -21,7 +22,7 @@ func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (e
 		en.CreateAttr("name", bm.Name)
 		size := bm.Size() / 4
 		for _, v := range bm.Bits {
-			err = renderBit(doc, cluster, en, v, size)
+			err = renderBit(doc, cluster, en, v, size, bm)
 			if err != nil {
 				return
 			}
@@ -30,7 +31,7 @@ func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (e
 	return
 }
 
-func renderBit(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, v matter.Bit, size int) (err error) {
+func renderBit(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, v matter.Bit, size int, parentEntity types.Entity) (err error) {
 	i := en.CreateElement("bitfield")
 	i.CreateAttr("name", v.Name())
 	val := matter.ParseNumber(v.Bit())
@@ -51,6 +52,6 @@ func renderBit(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, v matt
 		i.CreateAttr("to", fmt.Sprintf("0x%0*X", size, to))
 	}
 	i.CreateAttr("summary", scrubDescription(v.Summary()))
-	err = renderConformanceElement(doc, cluster, v.Conformance(), i)
+	err = renderConformanceElement(doc, v.Conformance(), i, parentEntity)
 	return
 }

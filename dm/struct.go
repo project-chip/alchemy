@@ -7,6 +7,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func renderStructs(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
@@ -18,7 +19,7 @@ func renderStructs(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (e
 	for _, s := range structs {
 		en := dt.CreateElement("struct")
 		en.CreateAttr("name", s.Name)
-		err = renderFields(doc, cluster, s.Fields, en)
+		err = renderFields(doc, cluster, s.Fields, en, s)
 		if err != nil {
 			return
 		}
@@ -29,14 +30,14 @@ func renderStructs(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (e
 	return
 }
 
-func renderFields(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, parent *etree.Element) (err error) {
+func renderFields(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, parent *etree.Element, parentEntity types.Entity) (err error) {
 	for _, f := range fs {
-		err = renderField(doc, cluster, fs, f, parent)
+		err = renderField(doc, cluster, fs, f, parent, parentEntity)
 	}
 	return
 }
 
-func renderField(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, parent *etree.Element) (err error) {
+func renderField(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, parent *etree.Element, parentEntity types.Entity) (err error) {
 	if !f.ID.Valid() {
 		return
 	}
@@ -50,11 +51,11 @@ func renderField(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *
 	}
 	renderAttributeAccess(i, f.Access)
 	renderQuality(i, f.Quality)
-	err = renderConformanceElement(doc, fs, f.Conformance, i)
+	err = renderConformanceElement(doc, f.Conformance, i, parentEntity)
 	if err != nil {
 		return
 	}
-	err = renderConstraint(f.Constraint, f.Type, i)
+	err = renderConstraint(f.Constraint, f.Type, i, parentEntity)
 	if err != nil {
 		return
 	}

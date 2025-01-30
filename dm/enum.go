@@ -21,7 +21,7 @@ func renderEnums(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err
 		en := dt.CreateElement("enum")
 		en.CreateAttr("name", e.Name)
 		for index, v := range e.Values {
-			err = renderEnumValue(doc, cluster, en, index, v)
+			err = renderEnumValue(doc, cluster, en, index, v, e)
 			if err != nil {
 				return
 			}
@@ -30,7 +30,7 @@ func renderEnums(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err
 	return
 }
 
-func renderEnumValue(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, index int, v *matter.EnumValue) (err error) {
+func renderEnumValue(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, index int, v *matter.EnumValue, parentEntity types.Entity) (err error) {
 	var val, from, to *matter.Number
 	var valFormat, fromFormat, toFormat types.NumberFormat
 	if v.Value.Valid() {
@@ -73,6 +73,6 @@ func renderEnumValue(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, 
 	if len(v.Summary) > 0 {
 		i.CreateAttr("summary", scrubDescription(v.Summary))
 	}
-	err = renderConformanceElement(doc, cluster, v.Conformance, i)
+	err = renderConformanceElement(doc, v.Conformance, i, parentEntity)
 	return
 }

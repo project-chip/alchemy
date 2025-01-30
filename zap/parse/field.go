@@ -14,7 +14,7 @@ import (
 )
 
 func readField(path string, d *xml.Decoder, e xml.StartElement, entityType types.EntityType, name string, parent types.Entity) (field *matter.Field, err error) {
-	field = matter.NewField(nil, parent)
+	field = matter.NewField(nil, parent, entityType)
 	field.Access = matter.DefaultAccess(entityType)
 	err = readFieldAttributes(e, field, name)
 	if err != nil {
