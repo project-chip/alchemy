@@ -81,14 +81,25 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 		}
 	}
 
-	if len(deviceTypes) > 0 {
+	if len(deviceTypes) == 1 {
 		var s string
-		s, err = renderDeviceType(doc, deviceTypes)
+		s, err = renderDeviceType(doc, deviceTypes[0])
 		if err != nil {
-			err = fmt.Errorf("failed rendering device types %s: %w", doc.Path, err)
+			err = fmt.Errorf("failed rendering device type %s: %w", doc.Path, err)
 			return
 		}
-		outputs = append(outputs, &pipeline.Data[string]{Path: getDeviceTypePath(p.dmRoot, doc.Path), Content: s})
+		outputs = append(outputs, &pipeline.Data[string]{Path: getDeviceTypePath(p.dmRoot, doc.Path, ""), Content: s})
+	} else if len(deviceTypes) > 1 {
+		for _, dt := range deviceTypes {
+			var s string
+			s, err = renderDeviceType(doc, dt)
+			if err != nil {
+				err = fmt.Errorf("failed rendering device types %s: %w", doc.Path, err)
+				return
+			}
+			outputs = append(outputs, &pipeline.Data[string]{Path: getDeviceTypePath(p.dmRoot, doc.Path, strcase.ToCamel(dt.Name)), Content: s})
+
+		}
 	}
 	for _, o := range outputs {
 		o.Content, err = patchLicense(o.Content, o.Path)
