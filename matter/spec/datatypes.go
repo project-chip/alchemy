@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entity) (bitmaps matter.BitmapSet, enums matter.EnumSet, structs matter.StructSet, typedefs matter.TypeDefSet, err error) {
+func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entity) (dataTypes []types.Entity, err error) {
 
 	traverseSections(d, s, errata.SpecPurposeDataTypes, func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch s.SecType {
@@ -27,7 +27,7 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 				}
 				err = nil
 			} else {
-				bitmaps = append(bitmaps, mb)
+				dataTypes = append(dataTypes, mb)
 			}
 		case matter.SectionDataTypeEnum:
 			var me *matter.Enum
@@ -38,7 +38,7 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 				}
 				err = nil
 			} else {
-				enums = append(enums, me)
+				dataTypes = append(dataTypes, me)
 			}
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
@@ -49,7 +49,7 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 				}
 				err = nil
 			} else {
-				structs = append(structs, me)
+				dataTypes = append(dataTypes, me)
 			}
 		case matter.SectionDataTypeDef:
 			var me *matter.TypeDef
@@ -60,7 +60,18 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 				}
 				err = nil
 			} else {
-				typedefs = append(typedefs, me)
+				dataTypes = append(dataTypes, me)
+			}
+		case matter.SectionDataTypeConstant:
+			id, _ := getAnchorElements(s.Base, nil)
+			switch id {
+			case "ref_RespMaxConstant":
+				c := matter.NewConstant(s)
+				c.Name = "RESP_MAX"
+				c.Value = 900
+				pc.orderedEntities = append(pc.orderedEntities, c)
+				pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], c)
+				dataTypes = append(dataTypes, c)
 			}
 		default:
 		}

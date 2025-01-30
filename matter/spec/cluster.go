@@ -63,23 +63,14 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 	}
 
 	var features *matter.Features
-	var bitmaps matter.BitmapSet
-	var enums matter.EnumSet
-	var structs matter.StructSet
-	var typedefs matter.TypeDefSet
+	var dataTypes []types.Entity
 	for _, s := range elements {
 		switch s.SecType {
 		case matter.SectionDataTypes, matter.SectionStatusCodes:
-			var bs matter.BitmapSet
-			var es matter.EnumSet
-			var ss matter.StructSet
-			var ts matter.TypeDefSet
-			bs, es, ss, ts, err = s.toDataTypes(d, pc, parentEntity)
+			var dts []types.Entity
+			dts, err = s.toDataTypes(d, pc, parentEntity)
 			if err == nil {
-				bitmaps = append(bitmaps, bs...)
-				enums = append(enums, es...)
-				structs = append(structs, ss...)
-				typedefs = append(typedefs, ts...)
+				dataTypes = append(dataTypes, dts...)
 			}
 		case matter.SectionFeatures:
 			features, err = s.toFeatures(d, pc)
@@ -95,10 +86,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 	if clusterGroup != nil {
 		pc.addRootEntity(clusterGroup, s.Base)
 
-		clusterGroup.AddBitmaps(bitmaps...)
-		clusterGroup.AddEnums(enums...)
-		clusterGroup.AddStructs(structs...)
-		clusterGroup.AddTypeDefs(typedefs...)
+		clusterGroup.AddDataTypes(dataTypes...)
 
 		for _, s := range elements {
 			switch s.SecType {
@@ -116,10 +104,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 
 	for _, c := range clusters {
 		c.Description = description
-		c.AddBitmaps(bitmaps...)
-		c.AddEnums(enums...)
-		c.AddStructs(structs...)
-		c.AddTypeDefs(typedefs...)
+		c.AddDataTypes(dataTypes...)
 		c.Features = features
 
 		for _, s := range elements {

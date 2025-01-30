@@ -29,6 +29,7 @@ const (
 	EntityTypeElementRequirement
 	EntityTypeDef
 	EntityTypeNamespace
+	EntityTypeConstant
 )
 
 type Entity interface {
@@ -62,6 +63,7 @@ var (
 		EntityTypeElementRequirement: "elementRequirement",
 		EntityTypeDef:                "typeDef",
 		EntityTypeNamespace:          "namespace",
+		EntityTypeConstant:           "constant",
 	}
 )
 
