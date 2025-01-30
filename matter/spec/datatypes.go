@@ -10,7 +10,6 @@ import (
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -84,38 +83,33 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
 	for cluster := range spec.Clusters {
 		for _, a := range cluster.Attributes {
-			sp.resolveDataTypes(spec, cluster, a, a.Type)
+			sp.resolveFieldDataTypes(spec, cluster, cluster.Attributes, a, a.Type)
 		}
 		for _, s := range cluster.Structs {
 			for _, f := range s.Fields {
-				sp.resolveDataTypes(spec, cluster, f, f.Type)
+				sp.resolveFieldDataTypes(spec, cluster, s.Fields, f, f.Type)
 			}
 		}
-		for _, s := range cluster.Events {
-			for _, f := range s.Fields {
-				sp.resolveDataTypes(spec, cluster, f, f.Type)
+		for _, event := range cluster.Events {
+			for _, f := range event.Fields {
+				sp.resolveFieldDataTypes(spec, cluster, event.Fields, f, f.Type)
 			}
 		}
-		for _, s := range cluster.Commands {
-			for _, f := range s.Fields {
-				sp.resolveDataTypes(spec, cluster, f, f.Type)
+		for _, command := range cluster.Commands {
+			for _, f := range command.Fields {
+				sp.resolveFieldDataTypes(spec, cluster, command.Fields, f, f.Type)
 			}
 		}
 	}
+
 	for _, s := range spec.structIndex {
 		for _, f := range s.Fields {
-			sp.resolveDataTypes(spec, nil, f, f.Type)
+			sp.resolveFieldDataTypes(spec, nil, s.Fields, f, f.Type)
 		}
 	}
 }
 
-func (sp *Builder) resolveDataTypes(spec *Specification, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
-	sp.resolveFieldDataType(spec, cluster, field, dataType)
-	sp.resolveFieldConstraintReferences(spec, cluster, field, field.Constraint)
-	sp.resolveFieldConstraintLimit(spec, cluster, field, field.Fallback)
-}
-
-func (sp *Builder) resolveFieldDataType(spec *Specification, cluster *matter.Cluster, field *matter.Field, dataType *types.DataType) {
+func (sp *Builder) resolveFieldDataTypes(spec *Specification, cluster *matter.Cluster, fieldSet matter.FieldSet, field *matter.Field, dataType *types.DataType) {
 	if dataType == nil {
 		if !conformance.IsDeprecated(field.Conformance) && !conformance.IsDisallowed(field.Conformance) && !sp.ignoreHierarchy && (cluster == nil || cluster.Hierarchy == "Base") {
 			var clusterName string
@@ -134,7 +128,7 @@ func (sp *Builder) resolveFieldDataType(spec *Specification, cluster *matter.Clu
 	case types.BaseDataTypeTag:
 		getTagNamespace(spec, field)
 	case types.BaseDataTypeList:
-		sp.resolveDataTypes(spec, cluster, field, dataType.EntryType)
+		sp.resolveFieldDataTypes(spec, cluster, fieldSet, field, dataType.EntryType)
 	case types.BaseDataTypeCustom:
 		if dataType.Entity == nil {
 			dataType.Entity = getCustomDataType(spec, dataType.Name, cluster, field)
@@ -152,114 +146,13 @@ func (sp *Builder) resolveFieldDataType(spec *Specification, cluster *matter.Clu
 		}
 		// If this data type is a struct, we need to resolve all data types on its fields
 		for _, f := range s.Fields {
-			sp.resolveDataTypes(spec, cluster, f, f.Type)
+			sp.resolveFieldDataTypes(spec, cluster, fieldSet, f, f.Type)
 		}
 	}
-}
-
-func (sp *Builder) resolveFieldConstraintReferences(spec *Specification, cluster *matter.Cluster, field *matter.Field, con constraint.Constraint) {
-	switch con := con.(type) {
-	case *constraint.ExactConstraint:
-		sp.resolveFieldConstraintLimit(spec, cluster, field, con.Value)
-	case *constraint.ListConstraint:
-		sp.resolveFieldConstraintReferences(spec, cluster, field, con.Constraint)
-		sp.resolveFieldConstraintReferences(spec, cluster, field, con.EntryConstraint)
-	case *constraint.MaxConstraint:
-		sp.resolveFieldConstraintLimit(spec, cluster, field, con.Maximum)
-	case *constraint.MinConstraint:
-		sp.resolveFieldConstraintLimit(spec, cluster, field, con.Minimum)
-	case *constraint.RangeConstraint:
-		sp.resolveFieldConstraintLimit(spec, cluster, field, con.Minimum)
-		sp.resolveFieldConstraintLimit(spec, cluster, field, con.Maximum)
-	case constraint.Set:
-		for _, c := range con {
-			sp.resolveFieldConstraintReferences(spec, cluster, field, c)
-		}
-	}
-}
-
-func (sp *Builder) resolveFieldConstraintLimit(spec *Specification, cluster *matter.Cluster, field *matter.Field, l constraint.Limit) {
-	switch l := l.(type) {
-	case *constraint.CharacterLimit:
-		sp.resolveFieldConstraintLimit(spec, cluster, field, l.ByteCount)
-		sp.resolveFieldConstraintLimit(spec, cluster, field, l.CodepointCount)
-	case *constraint.LengthLimit:
-		sp.resolveFieldConstraintLimit(spec, cluster, field, l.Reference)
-	case *constraint.IdentifierLimit:
-		sp.findEntityForIdentifierLimit(spec, cluster, field, l)
-		sp.resolveFieldConstraintLimit(spec, cluster, field, l.Field)
-	case *constraint.MathExpressionLimit:
-		sp.resolveFieldConstraintLimit(spec, cluster, field, l.Left)
-		sp.resolveFieldConstraintLimit(spec, cluster, field, l.Right)
-	case *constraint.ReferenceLimit:
-		if l.Entity == nil {
-			slog.Info("resolving reference", "ref", l.Reference, log.Path("path", field))
-			l.Entity = getCustomDataTypeFromReference(spec, cluster, l.Reference)
-		}
-		sp.resolveFieldConstraintLimit(spec, cluster, field, l.Field)
-	}
-}
-
-func (*Builder) findEntityForIdentifierLimit(spec *Specification, cluster *matter.Cluster, field *matter.Field, l *constraint.IdentifierLimit) {
-	if l.Entity != nil {
-		return
-	}
-	l.Entity = getCustomDataTypeFromIdentifier(spec, cluster, field, l.ID)
-	if l.Entity != nil {
-		return
-	}
-	if cluster != nil {
-		for _, a := range cluster.Attributes {
-			if strings.EqualFold(a.Name, l.ID) {
-				l.Entity = a
-				return
-			}
-		}
-	}
-	if field.Type != nil {
-		var fieldSet matter.FieldSet
-		switch e := field.Type.Entity.(type) {
-		case *matter.Struct:
-			fieldSet = e.Fields
-		case *matter.Command:
-			fieldSet = e.Fields
-		case *matter.Event:
-			fieldSet = e.Fields
-		case *matter.Enum:
-			for _, v := range e.Values {
-				if strings.EqualFold(v.Name, l.ID) {
-					l.Entity = v
-					return
-				}
-			}
-			slog.Warn("Unable to find matching enum for identifier limit", log.Path("source", field), slog.String("identifier", l.ID), slog.String("enum", e.Name), log.Path("enumSource", e))
-
-		case *matter.Bitmap:
-			for _, v := range e.Bits {
-				if strings.EqualFold(v.Name(), l.ID) {
-					l.Entity = v
-					return
-				}
-			}
-			slog.Warn("Unable to find matching bit for identifier limit", log.Path("source", field), slog.String("identifier", l.ID), log.Type("bitmap", e.Name))
-
-		case nil:
-		default:
-			slog.Warn("referenced constraint field has a type without fields", log.Path("source", field), slog.String("identifier", l.ID), log.Type("type", e))
-		}
-		if len(fieldSet) > 0 {
-			childField := fieldSet.GetField(l.ID)
-			if childField != nil {
-				l.Entity = childField
-				return
-			}
-		}
-	}
-
 }
 
 func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
-	e = getCustomDataTypeFromFieldReference(spec, cluster, field)
+	e = getCustomDataTypeFromFieldReference(spec, cluster, field.Type.Source)
 	if e != nil {
 		// We have a reference to a data type; use that
 		return
@@ -268,33 +161,33 @@ func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter
 	return
 }
 
-func getCustomDataTypeFromIdentifier(spec *Specification, cluster *matter.Cluster, field *matter.Field, identifier string) types.Entity {
+func getCustomDataTypeFromIdentifier(spec *Specification, cluster *matter.Cluster, source log.Source, identifier string) types.Entity {
 	entities := spec.entities[identifier]
 	if len(entities) == 0 {
 		canonicalName := CanonicalName(identifier)
 		if canonicalName != identifier {
-			return getCustomDataTypeFromIdentifier(spec, cluster, field, canonicalName)
+			return getCustomDataTypeFromIdentifier(spec, cluster, source, canonicalName)
 		}
 	} else if len(entities) == 1 {
 		for m := range entities {
 			return m
 		}
 	} else {
-		return disambiguateDataType(entities, cluster, field)
+		return disambiguateDataType(entities, cluster, identifier, source)
 	}
 	return nil
 }
 
-func getCustomDataTypeFromFieldReference(spec *Specification, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
-	switch source := field.Type.Source.(type) {
+func getCustomDataTypeFromFieldReference(spec *Specification, cluster *matter.Cluster, source asciidoc.Element) (e types.Entity) {
+	switch source := source.(type) {
 	case *asciidoc.CrossReference:
-		return getCustomDataTypeFromReference(spec, cluster, source.ID)
+		return getCustomDataTypeFromReference(spec, cluster, source.ID, asciidoc.ValueToString(source.Elements()))
 	default:
 		return
 	}
 }
 
-func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster, reference string) (e types.Entity) {
+func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster, reference string, label string) (e types.Entity) {
 	doc, ok := spec.DocRefs[cluster]
 	if !ok {
 		return
@@ -308,13 +201,59 @@ func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster
 		entities := anchor.Document.entitiesBySection[el]
 		if len(entities) == 1 {
 			e = entities[0]
-			return
+
 		}
 	}
-	return nil
+	if e != nil && label != "" {
+		switch entity := e.(type) {
+		case *matter.Enum:
+			if strings.EqualFold(entity.Name, label) {
+				return
+			}
+			for _, ev := range entity.Values {
+				if strings.EqualFold(label, ev.Name) {
+					e = ev
+					return
+				}
+			}
+		case *matter.Struct:
+			if strings.EqualFold(entity.Name, label) {
+				return
+			}
+			for _, f := range entity.Fields {
+				if strings.EqualFold(label, f.Name) {
+					e = f
+					return
+				}
+			}
+		case *matter.Command:
+			if strings.EqualFold(entity.Name, label) {
+				return
+			}
+			for _, f := range entity.Fields {
+				if strings.EqualFold(label, f.Name) {
+					e = f
+					return
+				}
+			}
+		case *matter.Field:
+			if strings.EqualFold(entity.Name, label) {
+				return
+			}
+			slog.Warn("Unhandled reference field with label", slog.String("clusterName", cluster.Name), slog.String("field", entity.Name))
+		case *matter.Constant:
+			if strings.EqualFold(entity.Name, label) {
+				return
+			}
+			slog.Warn("Unhandled reference constant with label", slog.String("clusterName", cluster.Name), slog.String("constant", entity.Name))
+		default:
+			slog.Warn("Unhandled reference type with label", slog.String("clusterName", cluster.Name), log.Type("entityType", e))
+		}
+	}
+	return
 }
 
-func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, field *matter.Field) types.Entity {
+func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, identifier string, source log.Source) types.Entity {
 	// If there are multiple entities with the same name, prefer the one on the current cluster
 	for m, c := range entities {
 		if c == cluster {
@@ -342,7 +281,7 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 	}
 
 	// Can't disambiguate out this data model
-	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "field", field.Name, log.Path("source", field))
+	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "identifier", identifier, log.Path("source", source))
 	for m, c := range entities {
 		var clusterName string
 		if c != nil {

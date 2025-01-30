@@ -223,20 +223,13 @@ func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Set, sb *strings.
 		case *asciidoc.String:
 			sb.WriteString(v.Value)
 		case *asciidoc.CrossReference:
-			id := v.ID
-			if strings.HasPrefix(id, "ref_") {
-				// This is a proper reference; allow the conformance parser to recognize it
-				sb.WriteString(fmt.Sprintf("<<%s>>", id))
-			} else {
-				anchor := ti.Doc.FindAnchor(v.ID)
-				var name string
-				if anchor != nil {
-					name = ReferenceName(anchor.Element)
-				} else {
-					name = strings.TrimPrefix(v.ID, "_")
-				}
-				sb.WriteString(name)
+			sb.WriteString("<<")
+			sb.WriteString(v.ID)
+			if !v.Set.IsWhitespace() {
+				sb.WriteString(",")
+				ti.buildRowConformance(v.Set, sb)
 			}
+			sb.WriteString(">>")
 		case *asciidoc.SpecialCharacter:
 			sb.WriteString(v.Character)
 		case *asciidoc.Superscript:
@@ -297,14 +290,13 @@ func (ti *TableInfo) buildConstraintValue(els asciidoc.Set, sb *strings.Builder)
 		case *asciidoc.String:
 			sb.WriteString(v.Value)
 		case *asciidoc.CrossReference:
-			anchor := ti.Doc.FindAnchor(v.ID)
-			var name string
-			if anchor != nil {
-				name = matter.StripReferenceSuffixes(ReferenceName(anchor.Element))
-			} else {
-				name = strings.TrimPrefix(v.ID, "_")
+			sb.WriteString("<<")
+			sb.WriteString(v.ID)
+			if !v.Set.IsWhitespace() {
+				sb.WriteString(",")
+				ti.buildConstraintValue(v.Set, sb)
 			}
-			sb.WriteString(name)
+			sb.WriteString(">>")
 		case *asciidoc.Superscript:
 			var qt strings.Builder
 			ti.buildConstraintValue(v.Elements(), &qt)
