@@ -25,8 +25,8 @@ type Field struct {
 	entityType types.EntityType
 }
 
-func NewField(source asciidoc.Element, parent types.Entity) *Field {
-	return &Field{entity: entity{source: source, parent: parent}, entityType: types.EntityTypeStructField}
+func NewField(source asciidoc.Element, parent types.Entity, entityType types.EntityType) *Field {
+	return &Field{entity: entity{source: source, parent: parent}, entityType: entityType}
 }
 
 func NewAttribute(source asciidoc.Element, parent types.Entity) *Field {
@@ -83,7 +83,7 @@ func (f *Field) Clone() *Field {
 
 type FieldSet []*Field
 
-func (fs FieldSet) GetField(name string) *Field {
+func (fs FieldSet) Get(name string) *Field {
 	for _, f := range fs {
 		if f.Name == name {
 			return f
@@ -93,7 +93,7 @@ func (fs FieldSet) GetField(name string) *Field {
 }
 
 func (fs FieldSet) Identifier(name string) (types.Entity, bool) {
-	f := fs.GetField(name)
+	f := fs.Get(name)
 	if f != nil {
 		return f, true
 	}

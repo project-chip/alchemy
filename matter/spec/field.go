@@ -18,7 +18,7 @@ import (
 func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent types.Entity) (fields []*matter.Field, err error) {
 	ids := make(map[uint64]*matter.Field)
 	for row := range ti.Body() {
-		f := matter.NewField(row, parent)
+		f := matter.NewField(row, parent, entityType)
 		var name string
 		name, err = ti.ReadValue(row, matter.TableColumnName)
 		if err != nil {

@@ -185,6 +185,8 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 		resolveHierarchy(spec)
 	}
 	sp.resolveDataTypeReferences(spec)
+	sp.resolveConformances(spec)
+	sp.resolveConstraints(spec)
 	err = updateBridgedBasicInformationCluster(basicInformationCluster, bridgedBasicInformationCluster)
 	if err != nil {
 		return

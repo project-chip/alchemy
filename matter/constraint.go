@@ -23,7 +23,7 @@ func (cc *ConstraintContext) DataType() *types.DataType {
 }
 
 func (cc *ConstraintContext) getReference(ref string) *Field {
-	r := cc.Fields.GetField(ref)
+	r := cc.Fields.Get(ref)
 	if cc.visitedReferences == nil {
 		cc.visitedReferences = make(map[string]struct{})
 	} else if _, ok := cc.visitedReferences[ref]; ok {
@@ -58,7 +58,7 @@ func (cc *ConstraintContext) getReferencedField(ref string, field constraint.Lim
 		slog.Warn("referenced constraint field has a type without fields", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field), log.Type("type", e))
 		return nil
 	}
-	childField := fieldSet.GetField(ref)
+	childField := fieldSet.Get(ref)
 	ccc := &ConstraintContext{Field: childField, Fields: fieldSet}
 	switch f := field.(type) {
 	case *constraint.IdentifierLimit:

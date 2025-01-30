@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -142,6 +143,7 @@ func (bs BitmapSet) Identifier(name string) (types.Entity, bool) {
 
 type Bit interface {
 	types.Entity
+	log.Source
 
 	Bit() string
 	Name() string
