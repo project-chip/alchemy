@@ -125,6 +125,7 @@ func stitchFieldLimit(fs fieldSet, l Limit) {
 	case *MathExpressionLimit:
 		stitchFieldLimit(fs, l.Left)
 		stitchFieldLimit(fs, l.Right)
+	case *IntLimit:
 	default:
 		fmt.Printf("unknown field limit type: %T\n", l)
 	}
@@ -143,6 +144,14 @@ type constraintTest struct {
 }
 
 var constraintTests = []constraintTest{
+	{
+		constraint: "min <<ref_NumberOfScheduleTransitions>>",
+	},
+	{
+		constraint: "1 to <<ref_NumberOfScheduleTransitions>>",
+		min:        types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
+		zapMin:     "1",
+	},
 	{
 		constraint: "0, MinMeasuredValue to MaxMeasuredValue",
 		fields: stitchFieldSet(fieldSet{

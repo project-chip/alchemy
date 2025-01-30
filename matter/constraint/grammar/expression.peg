@@ -6,7 +6,7 @@ Term <- '(' _ exp:Expression _ ')' {
     return exp, nil
 }
 
-Expression <- left:(IntLimit / LengthLimit / ReferenceLimit / IdentifierLimit / HexLimit) _ operand:('+'/'-'/'*'/'-') _ right:Limit {
+Expression <- left:(ExpressionLimit) _ operand:('+'/'-'/'*'/'-') _ right:Limit {
 	debug("found expression %s\n", string(c.text))
 	var val []uint8
 	for _, d := range operand.([]uint8) {
@@ -18,3 +18,5 @@ Expression <- left:(IntLimit / LengthLimit / ReferenceLimit / IdentifierLimit / 
 		Right:right.(Limit),
 	}, nil
 }
+
+ExpressionLimit <- ( NullLimit / EmptyLimit / StringLimit / BooleanLimit / StatusCodeLimit / HexLimit / TempLimit / IntLimit /  ReferenceLimit / IdentifierLimit)
