@@ -84,6 +84,8 @@ func (cc *ConstraintContext) ReferenceConstraint(entity types.Entity, field cons
 	switch entity := entity.(type) {
 	case *Field:
 		return entity.Constraint
+	case *Constant, *EnumValue:
+		return nil
 	default:
 		slog.Warn("Unexpected entity type on ReferenceConstraint", log.Type("entity", entity))
 	}
