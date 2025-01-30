@@ -60,10 +60,28 @@ func StripTypeSuffixes(dataType string) string {
 type AssociatedDataTypes struct {
 	parentEntity types.Entity
 
-	Bitmaps  BitmapSet  `json:"bitmaps,omitempty"`
-	Enums    EnumSet    `json:"enums,omitempty"`
-	Structs  StructSet  `json:"structs,omitempty"`
-	TypeDefs TypeDefSet `json:"typedefs,omitempty"`
+	Bitmaps   BitmapSet   `json:"bitmaps,omitempty"`
+	Enums     EnumSet     `json:"enums,omitempty"`
+	Structs   StructSet   `json:"structs,omitempty"`
+	TypeDefs  TypeDefSet  `json:"typedefs,omitempty"`
+	Constants ConstantSet `json:"typedefs,omitempty"`
+}
+
+func (adt *AssociatedDataTypes) AddDataTypes(entities ...types.Entity) {
+	for _, entity := range entities {
+		switch entity := entity.(type) {
+		case *Bitmap:
+			adt.AddBitmaps(entity)
+		case *Enum:
+			adt.AddEnums(entity)
+		case *Struct:
+			adt.AddStructs(entity)
+		case *TypeDef:
+			adt.AddTypeDefs(entity)
+		case *Constant:
+			adt.AddConstants(entity)
+		}
+	}
 }
 
 func (adt *AssociatedDataTypes) AddBitmaps(bitmaps ...*Bitmap) {
@@ -117,6 +135,19 @@ func (adt *AssociatedDataTypes) AddTypeDefs(typeDefs ...*TypeDef) {
 		td.parent = adt.parentEntity
 	}
 	adt.TypeDefs = append(adt.TypeDefs, typeDefs...)
+}
+
+func (adt *AssociatedDataTypes) AddConstants(constants ...*Constant) {
+	for _, c := range constants {
+		if c.parent != nil {
+			if _, ok := c.parent.(*ClusterGroup); !ok && c.parent != adt.parentEntity {
+				slog.Warn("Constant belongs to multiple parents", slog.String("name", c.Name), log.Path("source", c), LogEntity("parent", adt.parentEntity))
+			}
+			continue
+		}
+		c.parent = adt.parentEntity
+	}
+	adt.Constants = append(adt.Constants, constants...)
 }
 
 // This really exists to allow patching ZAP

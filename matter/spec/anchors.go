@@ -191,7 +191,7 @@ func getAnchorElements(element asciidoc.Element, crossReferences map[string][]*C
 	}
 
 	if idAttr == nil {
-		if s, ok := element.(*asciidoc.Section); ok {
+		if s, ok := element.(*asciidoc.Section); ok && crossReferences != nil {
 			id = s.Name()
 			if _, ok := crossReferences[id]; ok {
 				return

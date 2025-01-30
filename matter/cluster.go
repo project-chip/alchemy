@@ -178,6 +178,21 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 		matching.Inherit(pc)
 	}
 
+	for _, pc := range parent.Constants {
+		var matching *Constant
+		for _, c := range c.Constants {
+			if c.Name == pc.Name {
+				matching = c
+				break
+			}
+		}
+		if matching == nil {
+			c.Constants = append(c.Constants, pc.Clone())
+			continue
+		}
+		matching.Inherit(pc)
+	}
+
 	return
 }
 

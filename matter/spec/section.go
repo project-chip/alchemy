@@ -336,6 +336,9 @@ func deriveSectionType(section *Section, parent *Section) matter.Section {
 	if strings.HasSuffix(name, "Struct Type") || strings.HasSuffix(name, "Struct") {
 		return matter.SectionDataTypeStruct
 	}
+	if text.HasCaseInsensitiveSuffix(name, " Constant Type") {
+		return matter.SectionDataTypeConstant
+	}
 	if strings.HasSuffix(name, " Conditions") {
 		return matter.SectionConditions
 	}

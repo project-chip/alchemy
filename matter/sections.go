@@ -41,6 +41,7 @@ const (
 	SectionModeTags
 	SectionGlobalElements
 	SectionDataTypeDef
+	SectionDataTypeConstant
 )
 
 var TopLevelSectionOrders = map[DocType][]Section{
@@ -70,7 +71,7 @@ var TopLevelSectionOrders = map[DocType][]Section{
 	},
 }
 
-var DataTypeSectionOrder = []Section{SectionPrefix, SectionDataTypeBitmap, SectionDataTypeEnum, SectionDataTypeStruct, SectionDataTypeDef}
+var DataTypeSectionOrder = []Section{SectionPrefix, SectionDataTypeConstant, SectionDataTypeBitmap, SectionDataTypeEnum, SectionDataTypeStruct, SectionDataTypeDef}
 
 var sectionTypeStrings = map[Section]string{
 	SectionPrefix:                         "Prefix",
@@ -89,6 +90,7 @@ var sectionTypeStrings = map[Section]string{
 	SectionDataTypeEnum:                   "Enum",
 	SectionDataTypeStruct:                 "Struct",
 	SectionDataTypeDef:                    "TypeDef",
+	SectionDataTypeConstant:               "Constant",
 	SectionDeviceType:                     "DeviceType",
 	SectionStatusCodes:                    "StatusCodes",
 	SectionAttributes:                     "Attributes",
@@ -136,6 +138,7 @@ var sectionTypeNames = map[Section]string{
 	SectionDataTypeEnum:                   "Enum",
 	SectionDataTypeStruct:                 "Struct",
 	SectionDataTypeDef:                    "Type Definition",
+	SectionDataTypeConstant:               "Constant",
 	SectionDeviceType:                     "Device Type",
 	SectionStatusCodes:                    "Status Codes",
 	SectionAttributes:                     "Attributes",
