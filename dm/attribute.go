@@ -31,7 +31,7 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		ax.CreateAttr("name", a.Name)
 		renderDataType(a, ax)
 		if !constraint.IsBlankLimit(a.Fallback) {
-			renderConstraintLimit(ax, a.Fallback, a.Type, "default")
+			renderConstraintLimit(ax, a.Fallback, a.Type, "default", nil)
 		}
 		err = renderAnonymousType(doc, cluster, ax, a)
 		if err != nil {
@@ -39,11 +39,11 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		}
 		renderAttributeAccess(ax, a.Access)
 		renderQuality(ax, a.Quality)
-		err = renderConformanceElement(doc, cluster, a.Conformance, ax)
+		err = renderConformanceElement(doc, a.Conformance, ax, nil)
 		if err != nil {
 			return
 		}
-		err = renderConstraint(a.Constraint, a.Type, ax)
+		err = renderConstraint(a.Constraint, a.Type, ax, nil)
 		if err != nil {
 			return
 		}
@@ -65,7 +65,7 @@ func renderAnonymousType(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Eleme
 func renderAnonymousEnum(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Element, an *matter.AnonymousEnum) (err error) {
 	en := ax.CreateElement("enum")
 	for index, v := range an.Values {
-		err = renderEnumValue(doc, cluster, en, index, v)
+		err = renderEnumValue(doc, cluster, en, index, v, an)
 		if err != nil {
 			return
 		}
@@ -77,7 +77,7 @@ func renderAnonymousBitmap(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Ele
 	en := ax.CreateElement("bitmap")
 	size := bm.Size()
 	for _, v := range bm.Bits {
-		err = renderBit(doc, cluster, en, v, size)
+		err = renderBit(doc, cluster, en, v, size, bm)
 		if err != nil {
 			return
 		}

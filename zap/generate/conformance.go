@@ -21,7 +21,7 @@ func renderConformance(spec *spec.Specification, entity types.Entity, identifier
 	if !ok {
 		slog.Warn("missing doc ref for entity", matter.LogEntity("entity", entity))
 	}
-	conformanceElement, err := dm.CreateConformanceElement(doc, identifierStore, c)
+	conformanceElement, err := dm.CreateConformanceElement(doc, c, nil)
 	if err != nil {
 		return err
 	}

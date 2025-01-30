@@ -16,85 +16,88 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func getDeviceTypePath(dmRoot string, path asciidoc.Path) string {
+func getDeviceTypePath(dmRoot string, path asciidoc.Path, deviceTypeName string) string {
 	p := path.Base()
-	return filepath.Join(dmRoot, fmt.Sprintf("/device_types/%s.xml", strings.TrimSuffix(p, path.Ext())))
+	file := strings.TrimSuffix(p, path.Ext())
+	if len(deviceTypeName) > 0 {
+		file += "-" + deviceTypeName
+	}
+	return filepath.Join(dmRoot, fmt.Sprintf("/device_types/%s.xml", file))
 }
 
-func renderDeviceType(doc *spec.Doc, deviceTypes []*matter.DeviceType) (output string, err error) {
+func renderDeviceType(doc *spec.Doc, deviceType *matter.DeviceType) (output string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
 	x.CreateComment(getLicense())
-	for _, deviceType := range deviceTypes {
-		c := x.CreateElement("deviceType")
-		c.CreateAttr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-		c.CreateAttr("xsi:schemaLocation", "types types.xsd devicetype devicetype.xsd")
-		c.CreateAttr("id", deviceType.ID.HexString())
-		c.CreateAttr("name", deviceType.Name)
+	c := x.CreateElement("deviceType")
+	c.CreateAttr("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+	c.CreateAttr("xsi:schemaLocation", "types types.xsd devicetype devicetype.xsd")
+	c.CreateAttr("id", deviceType.ID.HexString())
+	c.CreateAttr("name", deviceType.Name)
 
-		revs := c.CreateElement("revisionHistory")
-		var latestRev uint64 = 0
-		for _, r := range deviceType.Revisions {
-			id := matter.ParseNumber(r.Number)
-			if id.Valid() {
-				rev := revs.CreateElement("revision")
-				rev.CreateAttr("revision", id.IntString())
-				rev.CreateAttr("summary", scrubDescription(r.Description))
-				latestRev = max(id.Value(), latestRev)
-			}
-		}
-		c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
-		class := c.CreateElement("classification")
-		if deviceType.Superset != "" {
-			class.CreateAttr("superset", deviceType.Superset)
-		}
-		class.CreateAttr("class", strings.ToLower(deviceType.Class))
-		class.CreateAttr("scope", strings.ToLower(deviceType.Scope))
-
-		if len(deviceType.Conditions) > 0 {
-			conditions := c.CreateElement("conditions")
-			for _, condition := range deviceType.Conditions {
-				cx := conditions.CreateElement("condition")
-				cx.CreateAttr("name", condition.Feature)
-				cx.CreateAttr("summary", scrubDescription(condition.Description))
-			}
-		}
-
-		if len(deviceType.ClusterRequirements) > 0 {
-			cx := c.CreateElement("clusters")
-			reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
-			copy(reqs, deviceType.ClusterRequirements)
-			slices.SortStableFunc(reqs, func(a, b *matter.ClusterRequirement) int {
-				cmp := a.ClusterID.Compare(b.ClusterID)
-				if cmp != 0 {
-					return cmp
-				}
-				return a.Interface.Compare(b.Interface)
-			})
-			for _, cr := range reqs {
-				clx := cx.CreateElement("cluster")
-				clx.CreateAttr("id", cr.ClusterID.HexString())
-				clx.CreateAttr("name", cr.ClusterName)
-				switch cr.Interface {
-				case matter.InterfaceClient:
-					clx.CreateAttr("side", "client")
-				case matter.InterfaceServer:
-					clx.CreateAttr("side", "server")
-				}
-				renderQuality(clx, cr.Quality)
-				err = renderConformanceElement(doc, deviceType, cr.Conformance, clx)
-				if err != nil {
-					return
-				}
-				err = renderElementRequirements(doc, deviceType, cr, clx)
-				if err != nil {
-					return
-				}
-
-			}
+	revs := c.CreateElement("revisionHistory")
+	var latestRev uint64 = 0
+	for _, r := range deviceType.Revisions {
+		id := matter.ParseNumber(r.Number)
+		if id.Valid() {
+			rev := revs.CreateElement("revision")
+			rev.CreateAttr("revision", id.IntString())
+			rev.CreateAttr("summary", scrubDescription(r.Description))
+			latestRev = max(id.Value(), latestRev)
 		}
 	}
+	c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
+	class := c.CreateElement("classification")
+	if deviceType.Superset != "" {
+		class.CreateAttr("superset", deviceType.Superset)
+	}
+	class.CreateAttr("class", strings.ToLower(deviceType.Class))
+	class.CreateAttr("scope", strings.ToLower(deviceType.Scope))
+
+	if len(deviceType.Conditions) > 0 {
+		conditions := c.CreateElement("conditions")
+		for _, condition := range deviceType.Conditions {
+			cx := conditions.CreateElement("condition")
+			cx.CreateAttr("name", condition.Feature)
+			cx.CreateAttr("summary", scrubDescription(condition.Description))
+		}
+	}
+
+	if len(deviceType.ClusterRequirements) > 0 {
+		cx := c.CreateElement("clusters")
+		reqs := make([]*matter.ClusterRequirement, len(deviceType.ClusterRequirements))
+		copy(reqs, deviceType.ClusterRequirements)
+		slices.SortStableFunc(reqs, func(a, b *matter.ClusterRequirement) int {
+			cmp := a.ClusterID.Compare(b.ClusterID)
+			if cmp != 0 {
+				return cmp
+			}
+			return a.Interface.Compare(b.Interface)
+		})
+		for _, cr := range reqs {
+			clx := cx.CreateElement("cluster")
+			clx.CreateAttr("id", cr.ClusterID.HexString())
+			clx.CreateAttr("name", cr.ClusterName)
+			switch cr.Interface {
+			case matter.InterfaceClient:
+				clx.CreateAttr("side", "client")
+			case matter.InterfaceServer:
+				clx.CreateAttr("side", "server")
+			}
+			renderQuality(clx, cr.Quality)
+			err = renderConformanceElement(doc, cr.Conformance, clx, nil)
+			if err != nil {
+				return
+			}
+			err = renderElementRequirements(doc, deviceType, cr, clx)
+			if err != nil {
+				return
+			}
+
+		}
+	}
+
 	x.Indent(2)
 
 	var b bytes.Buffer
@@ -183,7 +186,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			}
 			ex.CreateAttr("code", code)
 			ex.CreateAttr("name", fr.Name)
-			err = renderConformanceElement(doc, deviceType, fr.Conformance, ex)
+			err = renderConformanceElement(doc, fr.Conformance, ex, nil)
 			if err != nil {
 				return
 			}
@@ -216,7 +219,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 
 			ex.CreateAttr("name", cr.command.Name)
 			if cr.command != nil {
-				err = renderConformanceElement(doc, deviceType, cr.requirement.Conformance, ex)
+				err = renderConformanceElement(doc, cr.requirement.Conformance, ex, nil)
 				if err != nil {
 					return
 				}
@@ -224,7 +227,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			for _, fr := range cr.fields {
 				fx := ex.CreateElement("field")
 				fx.CreateAttr("name", fr.Field)
-				err = renderConformanceElement(doc, deviceType, fr.Conformance, fx)
+				err = renderConformanceElement(doc, fr.Conformance, fx, nil)
 				if err != nil {
 					return
 				}
@@ -249,7 +252,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 				ex.CreateAttr("id", code)
 			}
 			ex.CreateAttr("name", er.Name)
-			err = renderConformanceElement(doc, deviceType, er.Conformance, ex)
+			err = renderConformanceElement(doc, er.Conformance, ex, nil)
 			if err != nil {
 				return
 			}
@@ -281,10 +284,10 @@ func renderAttributeRequirement(doc *spec.Doc, deviceType *matter.DeviceType, er
 
 	renderAttributeAccess(ex, er.Access)
 	renderQuality(ex, er.Quality)
-	err = renderConformanceElement(doc, deviceType, er.Conformance, ex)
+	err = renderConformanceElement(doc, er.Conformance, ex, nil)
 	if err != nil {
 		return
 	}
-	err = renderConstraint(er.Constraint, dataType, ex)
+	err = renderConstraint(er.Constraint, dataType, ex, nil)
 	return
 }

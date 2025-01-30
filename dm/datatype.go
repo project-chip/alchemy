@@ -198,7 +198,7 @@ func renderDataType(f *matter.Field, i *etree.Element) {
 	e := i.CreateElement("entry")
 	e.CreateAttr("type", dataModelName(f.Type.EntryType))
 	if lc, ok := f.Constraint.(*constraint.ListConstraint); ok {
-		renderConstraint(lc.EntryConstraint, f.Type.EntryType, e)
+		renderConstraint(lc.EntryConstraint, f.Type.EntryType, e, nil)
 	}
 }
 

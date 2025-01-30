@@ -42,12 +42,12 @@ func renderEvents(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err
 				a.CreateAttr("fabricSensitive", "true")
 			}
 		}
-		err = renderConformanceElement(doc, cluster, e.Conformance, cx)
+		err = renderConformanceElement(doc, e.Conformance, cx, e)
 		if err != nil {
 			return
 		}
 
-		err = renderFields(doc, cluster, e.Fields, cx)
+		err = renderFields(doc, cluster, e.Fields, cx, e)
 		if err != nil {
 			return
 		}
