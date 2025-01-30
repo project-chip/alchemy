@@ -15,7 +15,6 @@ import (
 var logPattern = regexp.MustCompile(`^(?P<Indent> *)(?P<Direction>>|<) [0-9]+:[0-9]+:[0-9]+: parseRule (?P<Function>[A-Za-z0-9_]+) \[U\+[0-9A-F]+(?: '.')?\] ?(?P<TS>[0-9]+)?`)
 
 func main() {
-	fmt.Println("Hello!")
 	file, err := os.Open(os.Args[1])
 	if err != nil {
 		log.Fatal(err)

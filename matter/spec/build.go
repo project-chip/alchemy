@@ -301,7 +301,7 @@ func addClusterToSpec(spec *Specification, doc *Doc, cluster *matter.Cluster) {
 			if strings.EqualFold(idText, "ID-TBD") {
 				slog.Warn("Cluster has not yet been assigned an ID; this may cause issues with generated code", slog.String("clusterName", cluster.Name))
 			} else {
-				slog.Warn("Cluster has invalid ID", slog.String("clusterId", idText), slog.String("clusterName", cluster.Name))
+				slog.Warn("Cluster has invalid ID; this may cause issues with generated code", slog.String("clusterId", idText), slog.String("clusterName", cluster.Name))
 
 			}
 		}
