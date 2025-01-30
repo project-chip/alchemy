@@ -3,18 +3,28 @@ package conformance
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type IdentifierExpression struct {
-	ID  string `json:"id"`
-	Not bool   `json:"not,omitempty"`
+	ID     string          `json:"id"`
+	Not    bool            `json:"not,omitempty"`
+	Field  ComparisonValue `json:"field,omitempty"`
+	Entity types.Entity    `json:"-"`
 }
 
 func (ie *IdentifierExpression) ASCIIDocString() string {
+	var sb strings.Builder
 	if ie.Not {
-		return fmt.Sprintf("!%s", ie.ID)
+		sb.WriteRune('!')
 	}
-	return ie.ID
+	sb.WriteString(ie.ID)
+	if ie.Field != nil {
+		sb.WriteString(ie.Field.ASCIIDocString())
+	}
+	return sb.String()
 }
 
 func (ie *IdentifierExpression) Description() string {
@@ -97,11 +107,18 @@ func (ie *IdentifierExpression) Clone() Expression {
 }
 
 type IdentifierValue struct {
-	ID string `json:"id"`
+	ID     string          `json:"id"`
+	Field  ComparisonValue `json:"field,omitempty"`
+	Entity types.Entity    `json:"-"`
 }
 
 func (ie *IdentifierValue) ASCIIDocString() string {
-	return ie.ID
+	var sb strings.Builder
+	sb.WriteString(ie.ID)
+	if ie.Field != nil {
+		sb.WriteString(ie.Field.ASCIIDocString())
+	}
+	return sb.String()
 }
 
 func (ie *IdentifierValue) Description() string {

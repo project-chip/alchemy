@@ -1,18 +1,24 @@
 
 
-IdentifierOp <- not:'!'? identifier:Identifier {
+IdentifierOp <- not:'!'? identifier:Identifier  field:(ReferenceField)?  {
     //debug("matched identifier op %s\n", string(c.text))
     id := identifier.(string)
     ic := &IdentifierExpression{ID:id}
     if not != nil {
         ic.Not = true
     }
+    if field != nil {
+        ic.Field = field.(ComparisonValue)
+    }
     return ic, nil
 }
 
-IdentifierValue <- identifier:Identifier { 
-    id := identifier.(string)
-    return &IdentifierValue{ID:id}, nil
+IdentifierValue <- identifier:Identifier  field:(ReferenceField)? { 
+    iv := &IdentifierValue{ID:identifier.(string)}
+    if field != nil {
+        iv.Field = field.(ComparisonValue)
+    }
+    return iv, nil
 }
 
 Identifier <- PascalCase ('-' PascalCase)* {
@@ -31,7 +37,7 @@ ReferenceOp <- not:'!'? "<<" reference:ReferenceId label:(ReferenceLabel )? ">>"
         ic.Not = true
     }
     if field != nil {
-        ic.Field = field.(string)
+        ic.Field = field.(ComparisonValue)
     }
     return ic, nil
 }
@@ -44,7 +50,7 @@ ReferenceValue <- "<<" reference:ReferenceId label:(ReferenceLabel )? ">>" field
         ic.Label = label.(string)
     }
     if field != nil {
-        ic.Field = field.(string)
+        ic.Field = field.(ComparisonValue)
     }
     return ic, nil
 }
@@ -64,8 +70,8 @@ ReferenceId <- "ref_" PascalCase {
     return string(c.text), nil
 }
 
-ReferenceField <- "." fieldName:PascalCase {
-	return fieldName.(string), nil
+ReferenceField <- "." field:(ReferenceValue / IdentifierValue) {
+	return field.(ComparisonValue), nil
 }
 
 FeatureOp <- not:'!'? feature:Feature {
