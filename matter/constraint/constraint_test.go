@@ -49,24 +49,24 @@ func (cc *constraintTestContext) DataType() *types.DataType {
 	return nil
 }
 
-func (cc *constraintTestContext) IdentifierConstraint(entity types.Entity, f Limit) Constraint {
+func (cc *constraintTestContext) MinEntityValue(entity types.Entity, f Limit) (min types.DataTypeExtreme) {
 	switch entity := entity.(type) {
 	case *field:
 		if entity != nil {
-			return entity.Constraint
+			min = entity.Constraint.Min(cc)
 		}
 	}
-	return nil
+	return
 }
 
-func (cc *constraintTestContext) ReferenceConstraint(entity types.Entity, f Limit) Constraint {
+func (cc *constraintTestContext) MaxEntityValue(entity types.Entity, f Limit) (max types.DataTypeExtreme) {
 	switch entity := entity.(type) {
 	case *field:
 		if entity != nil {
-			return entity.Constraint
+			max = entity.Constraint.Max(cc)
 		}
 	}
-	return nil
+	return
 }
 
 func (cc *constraintTestContext) Fallback(entity types.Entity, field Limit) (def types.DataTypeExtreme) {

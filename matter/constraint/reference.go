@@ -42,19 +42,13 @@ func (c *ReferenceLimit) Equal(o Limit) bool {
 }
 
 func (c *ReferenceLimit) Min(cc Context) (min types.DataTypeExtreme) {
-	rc := cc.ReferenceConstraint(c.Entity, c.Field)
-	if rc == nil {
-		return
-	}
-	return rc.Min(cc)
+	min = cc.MinEntityValue(c.Entity, c.Field)
+	return
 }
 
 func (c *ReferenceLimit) Max(cc Context) (max types.DataTypeExtreme) {
-	rc := cc.ReferenceConstraint(c.Entity, c.Field)
-	if rc == nil {
-		return
-	}
-	return rc.Max(cc)
+	max = cc.MaxEntityValue(c.Entity, c.Field)
+	return
 }
 
 func (c *ReferenceLimit) Fallback(cc Context) (def types.DataTypeExtreme) {

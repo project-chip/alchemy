@@ -67,21 +67,18 @@ type constraintContext struct {
 }
 
 func (cc *constraintContext) DataType() *types.DataType {
-
 	return cc.dataType
 }
 
-func (cc *constraintContext) IdentifierConstraint(entity types.Entity, field constraint.Limit) constraint.Constraint {
-	return nil
+func (cc *constraintContext) MinEntityValue(entity types.Entity, field constraint.Limit) (min types.DataTypeExtreme) {
+	return
 }
 
-func (cc *constraintContext) ReferenceConstraint(entity types.Entity, field constraint.Limit) constraint.Constraint {
-
-	return nil
+func (cc *constraintContext) MaxEntityValue(entity types.Entity, field constraint.Limit) (max types.DataTypeExtreme) {
+	return
 }
 
 func (cc *constraintContext) Fallback(entity types.Entity, field constraint.Limit) (def types.DataTypeExtreme) {
-
 	return
 }
 

@@ -35,20 +35,13 @@ func (c *IdentifierLimit) Equal(o Limit) bool {
 }
 
 func (c *IdentifierLimit) Min(cc Context) (min types.DataTypeExtreme) {
-	rc := cc.IdentifierConstraint(c.Entity, c.Field)
-	if rc == nil {
-		return
-	}
-
-	return rc.Min(cc)
+	min = cc.MinEntityValue(c.Entity, c.Field)
+	return
 }
 
 func (c *IdentifierLimit) Max(cc Context) (max types.DataTypeExtreme) {
-	rc := cc.IdentifierConstraint(c.Entity, c.Field)
-	if rc == nil {
-		return
-	}
-	return rc.Max(cc)
+	max = cc.MaxEntityValue(c.Entity, c.Field)
+	return
 }
 
 func (c *IdentifierLimit) Fallback(cc Context) (def types.DataTypeExtreme) {
