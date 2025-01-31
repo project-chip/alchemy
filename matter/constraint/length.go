@@ -29,36 +29,27 @@ func (ll *LengthLimit) Equal(o Limit) bool {
 }
 
 func (ll *LengthLimit) Min(cc Context) (min types.DataTypeExtreme) {
-	var rc Constraint
 	switch ref := ll.Reference.(type) {
 	case *ReferenceLimit:
-		rc = cc.ReferenceConstraint(ref.Entity, ref.Field)
+		min = cc.MinEntityValue(ref.Entity, ref.Field)
 	case *IdentifierLimit:
-		rc = cc.IdentifierConstraint(ref.Entity, ref.Field)
+		min = cc.MinEntityValue(ref.Entity, ref.Field)
 	default:
 		slog.Warn("Unknown limit type on length limit", log.Type("type", ref))
 	}
-	if rc == nil {
-		return
-	}
-	return rc.Min(cc)
+	return
 }
 
 func (ll *LengthLimit) Max(cc Context) (max types.DataTypeExtreme) {
-	var rc Constraint
 	switch ref := ll.Reference.(type) {
 	case *ReferenceLimit:
-		rc = cc.ReferenceConstraint(ref.Entity, ref.Field)
+		max = cc.MaxEntityValue(ref.Entity, ref.Field)
 	case *IdentifierLimit:
-		rc = cc.IdentifierConstraint(ref.Entity, ref.Field)
+		max = cc.MaxEntityValue(ref.Entity, ref.Field)
 	default:
 		slog.Warn("Unknown limit type on length limit", log.Type("type", ref))
 	}
-	if rc == nil {
-		return
-	}
-
-	return rc.Max(cc)
+	return
 }
 
 func (ll *LengthLimit) Fallback(cc Context) (def types.DataTypeExtreme) {

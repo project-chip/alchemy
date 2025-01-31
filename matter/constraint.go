@@ -70,26 +70,42 @@ func (cc *ConstraintContext) getReferencedField(ref string, field constraint.Lim
 	return nil
 }
 
-func (cc *ConstraintContext) IdentifierConstraint(entity types.Entity, field constraint.Limit) constraint.Constraint {
+func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constraint.Limit) (min types.DataTypeExtreme) {
 	switch entity := entity.(type) {
 	case *Field:
-		return entity.Constraint
+		min = entity.Constraint.Min(cc)
+	case Bit:
+		from, _, err := entity.Bits()
+		if err != nil {
+			slog.Warn("Error getting minimum value from bitmap bit", slog.String("name", entity.Name()), slog.Any("error", err))
+		} else {
+			min = types.NewUintDataTypeExtreme(from, types.NumberFormatHex)
+		}
+	case *EnumValue:
+		min = types.NewUintDataTypeExtreme(entity.Value.Value(), types.NumberFormatHex)
 	default:
-		slog.Warn("Unexpected entity type on IdentifierConstraint", log.Type("entity", entity))
+		slog.Warn("Unexpected entity type on MinEntityValue", log.Type("entity", entity))
 	}
-	return nil
+	return
 }
 
-func (cc *ConstraintContext) ReferenceConstraint(entity types.Entity, field constraint.Limit) constraint.Constraint {
+func (cc *ConstraintContext) MaxEntityValue(entity types.Entity, field constraint.Limit) (max types.DataTypeExtreme) {
 	switch entity := entity.(type) {
 	case *Field:
-		return entity.Constraint
-	case *Constant, *EnumValue:
-		return nil
+		max = entity.Constraint.Max(cc)
+	case Bit:
+		_, to, err := entity.Bits()
+		if err != nil {
+			slog.Warn("Error getting maximum value from bitmap bit", slog.String("name", entity.Name()), slog.Any("error", err))
+		} else {
+			max = types.NewUintDataTypeExtreme(to, types.NumberFormatHex)
+		}
+	case *EnumValue:
+		max = types.NewUintDataTypeExtreme(entity.Value.Value(), types.NumberFormatHex)
 	default:
-		slog.Warn("Unexpected entity type on ReferenceConstraint", log.Type("entity", entity))
+		slog.Warn("Unexpected entity type on MaxEntityValue", log.Type("entity", entity))
 	}
-	return nil
+	return
 }
 
 func (cc *ConstraintContext) Fallback(entity types.Entity, field constraint.Limit) (def types.DataTypeExtreme) {

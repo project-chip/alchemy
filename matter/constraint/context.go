@@ -7,6 +7,6 @@ import (
 type Context interface {
 	DataType() *types.DataType
 	Fallback(entity types.Entity, field Limit) types.DataTypeExtreme
-	IdentifierConstraint(entity types.Entity, field Limit) Constraint
-	ReferenceConstraint(entity types.Entity, field Limit) Constraint
+	MinEntityValue(entity types.Entity, field Limit) types.DataTypeExtreme
+	MaxEntityValue(entity types.Entity, field Limit) types.DataTypeExtreme
 }
