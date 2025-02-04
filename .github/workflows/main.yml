@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   alchemy:
-    name: Release Alchmey Binary
+    name: Release Alchemy Binary
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -38,7 +38,7 @@ jobs:
           extra_files: LICENSE README.md
           asset_name: "alchemy-${{ steps.tag.outputs.tag }}-${{ matrix.goos }}-${{ matrix.goarch }}"
   alchemy-db:
-    name: Release Alchmey DB Binary
+    name: Release Alchemy DB Binary
     runs-on: ubuntu-latest
     strategy:
       matrix:
