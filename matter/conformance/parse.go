@@ -56,6 +56,27 @@ func IsMandatory(conformance Conformance) bool {
 	return false
 }
 
+func IsRequired(conformance Conformance) bool {
+	if conformance == nil {
+		return false
+	}
+	switch conformance := conformance.(type) {
+	case *Mandatory:
+		return true
+	case Set:
+		if len(conformance) > 0 {
+			for _, c := range conformance {
+				_, ok := c.(*Mandatory)
+				if !ok {
+					return false
+				}
+			}
+			return true
+		}
+	}
+	return false
+}
+
 func IsDeprecated(conformance Conformance) bool {
 	if conformance == nil {
 		return false
