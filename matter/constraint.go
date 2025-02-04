@@ -83,6 +83,8 @@ func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constrain
 		}
 	case *EnumValue:
 		min = types.NewUintDataTypeExtreme(entity.Value.Value(), types.NumberFormatHex)
+	case *Constant:
+		min = getConstantValue(entity)
 	default:
 		slog.Warn("Unexpected entity type on MinEntityValue", log.Type("entity", entity))
 	}
@@ -102,8 +104,25 @@ func (cc *ConstraintContext) MaxEntityValue(entity types.Entity, field constrain
 		}
 	case *EnumValue:
 		max = types.NewUintDataTypeExtreme(entity.Value.Value(), types.NumberFormatHex)
+	case *Constant:
+		max = getConstantValue(entity)
 	default:
 		slog.Warn("Unexpected entity type on MaxEntityValue", log.Type("entity", entity))
+	}
+	return
+}
+
+func getConstantValue(c *Constant) (val types.DataTypeExtreme) {
+	switch v := c.Value.(type) {
+	case uint64:
+		val = types.NewUintDataTypeExtreme(v, types.NumberFormatHex)
+	case uint:
+		val = types.NewUintDataTypeExtreme(uint64(v), types.NumberFormatHex)
+	case int64:
+		val = types.NewIntDataTypeExtreme(v, types.NumberFormatHex)
+	case int:
+		val = types.NewIntDataTypeExtreme(int64(v), types.NumberFormatHex)
+	default:
 	}
 	return
 }
