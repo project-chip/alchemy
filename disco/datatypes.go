@@ -507,7 +507,7 @@ func (b *Baller) removeMandatoryFallbacks(ti *spec.TableInfo) {
 	}
 	for row := range ti.Body() {
 		conf := ti.ReadConformance(row, matter.TableColumnConformance)
-		if !conformance.IsMandatory(conf) {
+		if !conformance.IsRequired(conf) {
 			continue
 		}
 		fallbackCell := row.Cell(fallbackIndex)
