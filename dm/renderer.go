@@ -47,12 +47,15 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 	}
 	var appClusters []types.Entity
 	var deviceTypes []*matter.DeviceType
+	var namespaces []*matter.Namespace
 	for _, e := range entites {
 		switch e := e.(type) {
 		case *matter.ClusterGroup, *matter.Cluster:
 			appClusters = append(appClusters, e)
 		case *matter.DeviceType:
 			deviceTypes = append(deviceTypes, e)
+		case *matter.Namespace:
+			namespaces = append(namespaces, e)
 		}
 	}
 
@@ -112,6 +115,27 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 
 		}
 	}
+
+	if len(namespaces) == 1 {
+		var s string
+		s, err = renderNamespace(doc, namespaces[0])
+		if err != nil {
+			err = fmt.Errorf("failed rendering namespace %s: %w", doc.Path, err)
+			return
+		}
+		outputs = append(outputs, &pipeline.Data[string]{Path: getNamespacePath(p.dmRoot, doc.Path, ""), Content: s})
+	} else {
+		for _, ns := range namespaces {
+			var s string
+			s, err = renderNamespace(doc, ns)
+			if err != nil {
+				err = fmt.Errorf("failed rendering namespaces %s: %w", doc.Path, err)
+				return
+			}
+			outputs = append(outputs, &pipeline.Data[string]{Path: getNamespacePath(p.dmRoot, doc.Path, strcase.ToCamel(ns.Name)), Content: s})
+		}
+	}
+
 	for _, o := range outputs {
 		o.Content, err = patchLicense(o.Content, o.Path)
 		if err != nil {
