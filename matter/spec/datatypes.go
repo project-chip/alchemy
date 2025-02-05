@@ -122,6 +122,9 @@ func (sp *Builder) resolveFieldDataTypes(spec *Specification, cluster *matter.Cl
 	}
 	if dataType.Entity != nil {
 		// This has already been resolved by some other process
+		if cluster != nil {
+			spec.ClusterRefs.Add(cluster, dataType.Entity)
+		}
 		return
 	}
 	switch dataType.BaseType {
