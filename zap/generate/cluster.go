@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"slices"
 	"strconv"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/internal/find"
@@ -71,11 +72,25 @@ func (cr *configuratorRenderer) renderClusters(ce *etree.Element) (err error) {
 		}
 	}
 
+	var remainingClusters []*matter.Cluster
 	for cluster, handled := range configurator.Clusters {
 		if handled {
 			continue
 		}
+		remainingClusters = append(remainingClusters, cluster)
+	}
 
+	slices.SortStableFunc(remainingClusters, func(a, b *matter.Cluster) int {
+		if a.ID.Valid() && b.ID.Valid() {
+			cmp := a.ID.Compare(b.ID)
+			if cmp != 0 {
+				return cmp
+			}
+		}
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	for _, cluster := range remainingClusters {
 		cle := etree.NewElement("cluster")
 		xml.AppendElement(ce, cle, "struct", "enum", "bitmap", "domain")
 		err = cr.populateCluster(cle, cluster)
