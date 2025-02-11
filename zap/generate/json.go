@@ -13,7 +13,15 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/tidwall/pretty"
 )
+
+var prettyOptions = pretty.Options{
+	Width:    80,
+	Prefix:   "",
+	Indent:   "    ",
+	SortKeys: false,
+}
 
 func (p *ProvisionalPatcher) patchZapJSONFile(sdkRoot string, file string, files []string) (zclJSONPath string, zclJSONBytes []byte, err error) {
 	zclJSONPath = path.Join(sdkRoot, file)
@@ -61,6 +69,7 @@ func (p *ProvisionalPatcher) patchZapJSONFile(sdkRoot string, file string, files
 		err = fmt.Errorf("error marshaling %s: %w", zclJSONPath, err)
 		return
 	}
+	zclJSONBytes = pretty.PrettyOptions(zclJSONBytes, &prettyOptions)
 	return
 }
 

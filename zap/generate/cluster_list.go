@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"strings"
 
 	"github.com/iancoleman/orderedmap"
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/text"
+	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
+	"github.com/tidwall/pretty"
 )
 
 type ClusterListPatcher struct {
@@ -44,10 +47,21 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	var names []string
 	for _, input := range inputs {
 		doc := input.Content
-		path := doc.Path
-		name := strings.TrimSuffix(path.Base(), path.Ext()) + " Cluster"
-		name = strcase.ToScreamingSnake(name)
-		names = append(names, name)
+		var entities []types.Entity
+		entities, err = doc.Entities()
+		if err != nil {
+			return
+		}
+		for _, e := range entities {
+			switch e := e.(type) {
+			case *matter.Cluster:
+				name := e.Name
+				if !text.HasCaseInsensitiveSuffix(name, " cluster") {
+					name += " Cluster"
+				}
+				names = append(names, strcase.ToScreamingSnake(name))
+			}
+		}
 	}
 
 	err = insertClusterName(o, "ClientDirectories", names)
@@ -64,6 +78,7 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	if err != nil {
 		return
 	}
+	clusterListBytes = pretty.PrettyOptions(clusterListBytes, &prettyOptions)
 	outputs = append(outputs, pipeline.NewData[[]byte](clusterListPath, clusterListBytes))
 	return
 }
