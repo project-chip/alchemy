@@ -72,6 +72,7 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 			}
 			switch el := el.(type) {
 			case *asciidoc.CrossReference:
+				normalizeCrossReference(doc, el)
 				removeCrossReferenceStutter(doc, el, parent, index)
 				return parse.SearchShouldContinue
 			case *asciidoc.Table:
@@ -120,37 +121,41 @@ func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, pa
 
 func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *spec.Doc, table *asciidoc.Table) {
 	parse.Traverse(table, table.Set, func(icr *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
-		if len(icr.Set) > 0 {
-			// Don't touch existing labels
-			return parse.SearchShouldContinue
-		}
-		anchor := doc.FindAnchor(icr.ID)
-		if anchor == nil {
-			return parse.SearchShouldContinue
-		}
-		section, isSection := anchor.Element.(*asciidoc.Section)
-		if !isSection {
-			return parse.SearchShouldContinue
-		}
-		entities, ok := anchor.Document.EntitiesForSection(section)
-		if !ok {
-			return parse.SearchShouldContinue
-		}
-		if len(entities) != 1 {
-			return parse.SearchShouldContinue
-		}
-		entity := entities[0]
-		if !types.IsDataTypeEntity(entity.EntityType()) {
-			return parse.SearchShouldContinue
-		}
-		normalizedLabel := normalizeAnchorLabel(section.Name(), section)
-		if labelText(normalizedLabel) != section.Name() {
-			icr.Set = normalizedLabel
-			slog.Debug("Added label to type xref in table", matter.LogEntity("type", entity), "label", labelText(icr.Set))
-		}
-
+		normalizeCrossReference(doc, icr)
 		return parse.SearchShouldContinue
 	})
+
+}
+
+func normalizeCrossReference(doc *spec.Doc, icr *asciidoc.CrossReference) {
+	if len(icr.Set) > 0 {
+		// Don't touch existing labels
+		return
+	}
+	anchor := doc.FindAnchor(icr.ID)
+	if anchor == nil {
+		return
+	}
+	section, isSection := anchor.Element.(*asciidoc.Section)
+	if !isSection {
+		return
+	}
+	entities, ok := anchor.Document.EntitiesForSection(section)
+	if !ok {
+		return
+	}
+	if len(entities) != 1 {
+		return
+	}
+	entity := entities[0]
+	if !types.IsDataTypeEntity(entity.EntityType()) {
+		return
+	}
+	normalizedLabel := normalizeAnchorLabel(section.Name(), section)
+	if labelText(normalizedLabel) != section.Name() {
+		icr.Set = normalizedLabel
+		slog.Debug("Added label to type xref in table", matter.LogEntity("type", entity), "label", labelText(icr.Set))
+	}
 
 }
 

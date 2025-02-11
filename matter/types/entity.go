@@ -77,7 +77,7 @@ type EntityStore interface {
 
 func IsDataTypeEntity(entityType EntityType) bool {
 	switch entityType {
-	case EntityTypeBitmap, EntityTypeEnum, EntityTypeStruct, EntityTypeCommand, EntityTypeEvent:
+	case EntityTypeBitmap, EntityTypeEnum, EntityTypeStruct, EntityTypeCommand, EntityTypeEvent, EntityTypeBitmapValue, EntityTypeEnumValue, EntityTypeStructField, EntityTypeCommandField, EntityTypeEventField, EntityTypeAttribute:
 		return true
 	}
 	return false
