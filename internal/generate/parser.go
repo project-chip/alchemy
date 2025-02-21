@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/dave/dst"
 )
 
 type grammarConfig struct {
@@ -23,9 +25,9 @@ type grammarOutput struct {
 	AlternateEntryPoints []string `json:"alternateEntryPoints"`
 }
 
-type ParserPatcher func(s string) string
+type ParserPatcher func(file *dst.File) error
 
-func Parser(grammarFile string, debug bool, patcher ParserPatcher) (err error) {
+func Parser(grammarFile string, debug bool, customPatcher ParserPatcher) (err error) {
 	js, err := os.ReadFile(grammarFile)
 	if err != nil {
 		err = fmt.Errorf("failed reading grammar file %s: %w", grammarFile, err)
@@ -110,18 +112,13 @@ func Parser(grammarFile string, debug bool, patcher ParserPatcher) (err error) {
 			_ = os.WriteFile(grammarFile, []byte(g), os.ModeAppend|0644)
 			return
 		}
-		parser := out.String()
-		parser = strings.ReplaceAll(parser, "p.setOptions(opts)", "p.setOptions(opts)\n\tp.cur.parser = p")
-		parser = strings.ReplaceAll(parser, "recoveryStack []map[string]any", "recoveryStack []map[string]any\n\toffset position")
-		parser = strings.ReplaceAll(parser, "vals := make([]any, 0, len(seq.exprs))", "var vals []any")
-		parser = strings.ReplaceAll(parser, "basicLatinChars [128]bool", "//basicLatinChars [128]bool")
-		parser = strings.ReplaceAll(parser, "globalStore storeDict", "globalStore storeDict\n\tparser *parser")
-
-		if patcher != nil {
-			parser = patcher(parser)
+		var patched string
+		patched, err = optimizeParser(out.String(), customPatcher)
+		if err != nil {
+			return
 		}
 
-		err = os.WriteFile(grammarOutput.Path, []byte(parser), os.ModeAppend|0644)
+		err = os.WriteFile(grammarOutput.Path, []byte(patched), os.ModeAppend|0644)
 		if err != nil {
 			err = fmt.Errorf("failed saving parser to %s: %w", grammarOutput.Path, err)
 			return

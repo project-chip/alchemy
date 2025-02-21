@@ -3686,7 +3686,8 @@ type current struct {
 	// rolled back by the parser. It is always up to the user to keep this in a
 	// consistent state.
 	globalStore storeDict
-	parser *parser
+
+	parser *parser // Alchemy patch: we keep a reference to the parent parser here, so inline code can access it
 }
 
 type storeDict map[string]any
@@ -3775,14 +3776,15 @@ type litMatcher struct {
 }
 
 type charClassMatcher struct {
-	pos             position
-	val             string
+	pos position
+	val string
+	// Alchemy patch: we don't use this optimization, so don't allocate the array
 	//basicLatinChars [128]bool
-	chars           []rune
-	ranges          []rune
-	classes         []*unicode.RangeTable
-	ignoreCase      bool
-	inverted        bool
+	chars      []rune
+	ranges     []rune
+	classes    []*unicode.RangeTable
+	ignoreCase bool
+	inverted   bool
 }
 
 type anyMatcher position
@@ -3950,7 +3952,8 @@ type parser struct {
 	choiceNoMatch string
 	// recovery expression stack, keeps track of the currently available recovery expression, these are traversed in reverse
 	recoveryStack []map[string]any
-	offset position
+
+	offset position // Alchemy patch: we add an offset field to track element positions in the doc
 }
 
 // push a variable set on the vstack.
@@ -4458,7 +4461,7 @@ func (p *parser) parseRuleRefExpr(ref *ruleRefExpr) (any, bool) {
 }
 
 func (p *parser) parseSeqExpr(seq *seqExpr) (any, bool) {
-	var vals []any
+	var vals []any // Alchemy patch: we lazily allocate this array, as it's infrequently populated
 
 	pt := p.pt
 	for _, expr := range seq.exprs {
