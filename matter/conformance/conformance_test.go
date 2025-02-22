@@ -61,6 +61,15 @@ type conformanceTest struct {
 
 var otherwiseTests = []conformanceTestSuite{
 	{
+		Conformance: `OperationalStateID >= 0x80 & OperationalStateID \<= 0xBF`,
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"OperationalStateID": 0x7A}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"OperationalStateID": 0x80}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"OperationalStateID": 0xBF}}, Expected: StateMandatory},
+			{Context: Context{Values: map[string]any{"OperationalStateID": 0xC0}}, Expected: StateDisallowed},
+		},
+	},
+	{
 		Conformance: "OperationalStateID >= 0x80 & OperationalStateID <= 0xBF",
 		Tests: []conformanceTest{
 			{Context: Context{Values: map[string]any{"OperationalStateID": 0x7A}}, Expected: StateDisallowed},
