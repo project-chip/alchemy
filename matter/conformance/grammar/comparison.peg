@@ -3,7 +3,7 @@
 ComparisonOperator <-
      ("=="  { return ComparisonOperatorEqual, nil })
     / ("!=" { return ComparisonOperatorNotEqual, nil })
-    / ("<=" { return ComparisonOperatorLessThanOrEqual, nil })
+    / ("\\"? "<=" { return ComparisonOperatorLessThanOrEqual, nil })
     / ("<"  { return ComparisonOperatorLessThan, nil })
     / (">=" { return ComparisonOperatorGreaterThanOrEqual, nil })
     / (">"  { return ComparisonOperatorGreaterThan, nil })
