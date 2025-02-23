@@ -1,10 +1,11 @@
 module github.com/project-chip/alchemy
 
-go 1.23
+go 1.24
 
 require (
 	github.com/beevik/etree v1.4.1
 	github.com/bmatcuk/doublestar/v4 v4.6.1
+	github.com/dave/dst v0.27.3
 	github.com/dolthub/go-mysql-server v0.18.1
 	github.com/fatih/color v1.17.0
 	github.com/goccy/go-yaml v1.12.0
@@ -14,6 +15,7 @@ require (
 	github.com/iancoleman/strcase v0.3.0
 	github.com/lithammer/dedent v1.1.0
 	github.com/lmittmann/tint v1.0.5
+	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/puzpuzpuz/xsync/v3 v3.4.0
 	github.com/sanity-io/litter v1.5.5
 	github.com/schollz/progressbar/v3 v3.14.6
@@ -21,12 +23,12 @@ require (
 	github.com/shopspring/decimal v1.4.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
+	github.com/tidwall/pretty v1.2.1
 	golang.org/x/sync v0.8.0
 )
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/dave/dst v0.27.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dolthub/flatbuffers/v23 v23.3.3-dh.2 // indirect
 	github.com/dolthub/go-icu-regex v0.0.0-20230524105445-af7e7991c97e // indirect
@@ -40,7 +42,6 @@ require (
 	github.com/hashicorp/golang-lru v1.0.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lestrrat-go/strftime v1.1.0 // indirect
-	github.com/mailgun/raymond/v2 v2.0.48 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
@@ -49,7 +50,6 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tetratelabs/wazero v1.8.0 // indirect
-	github.com/tidwall/pretty v1.2.1 // indirect
 	go.opentelemetry.io/otel v1.30.0 // indirect
 	go.opentelemetry.io/otel/trace v1.30.0 // indirect
 	golang.org/x/crypto v0.16.0 // indirect
