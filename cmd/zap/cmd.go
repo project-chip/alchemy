@@ -105,6 +105,11 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 		err = byteWriter.Write(cxt, output.ClusterList, options.Pipeline)
 	}
 
+	if output.ZclJson != nil && output.ZclJson.Size() > 0 {
+		byteWriter.SetName("Writing ZCL JSON")
+		err = byteWriter.Write(cxt, output.ZclJson, options.Pipeline)
+	}
+
 	return
 
 }
