@@ -29,6 +29,7 @@ type Output struct {
 	PatchedNamespaces  pipeline.FileSet
 	ClusterList        pipeline.FileSet
 	ProvisionalDocs    pipeline.FileSet
+	ZclJson            pipeline.FileSet
 }
 
 func Pipeline(cxt context.Context, specRoot string, sdkRoot string, docPaths []string, options Options) (output Output, err error) {
@@ -136,18 +137,26 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, docPaths []s
 		}
 	}
 
-	clusterListPatcher := NewClusterListPatcher(sdkRoot)
 	if clusters.Size() > 0 {
+		clusterListPatcher := NewClusterListPatcher(sdkRoot)
 		output.ClusterList, err = pipeline.Collective(cxt, options.Pipeline, clusterListPatcher, clusters)
+		if err != nil {
+			return
+		}
+
+		zclPatcher := NewZclPatcher(sdkRoot, specBuilder.Spec, provisionalZclFiles)
+		output.ZclJson, err = pipeline.Collective(cxt, options.Pipeline, zclPatcher, clusters)
 		if err != nil {
 			return
 		}
 	}
 
-	provisionalSaver := NewProvisionalPatcher(sdkRoot, specBuilder.Spec)
-	output.ProvisionalDocs, err = pipeline.Collective(cxt, options.Pipeline, provisionalSaver, provisionalZclFiles)
-	if err != nil {
-		return
+	if provisionalZclFiles.Size() > 0 {
+		provisionalPatcher := NewProvisionalPatcher(sdkRoot, specBuilder.Spec)
+		output.ProvisionalDocs, err = pipeline.Collective(cxt, options.Pipeline, provisionalPatcher, provisionalZclFiles)
+		if err != nil {
+			return
+		}
 	}
 	return
 }
