@@ -49,7 +49,11 @@ func (c *IdentifierLimit) Fallback(cc Context) (def types.DataTypeExtreme) {
 }
 
 func (c *IdentifierLimit) Clone() Limit {
-	return &ReferenceLimit{Reference: c.ID}
+	il := &IdentifierLimit{ID: c.ID}
+	if c.Field != nil {
+		il.Field = c.Field.Clone()
+	}
+	return il
 }
 
 func (c *IdentifierLimit) MarshalJSON() ([]byte, error) {

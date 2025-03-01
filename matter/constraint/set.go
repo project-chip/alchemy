@@ -5,6 +5,7 @@ import (
 	"math"
 	"strings"
 
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -22,7 +23,7 @@ func (cs Set) ASCIIDocString(dataType *types.DataType) string {
 		}
 		b.WriteString(con.ASCIIDocString(dataType))
 	}
-	return b.String()
+	return text.TrimUnnecessaryParens(b.String())
 }
 
 func (cs Set) Equal(o Constraint) bool {

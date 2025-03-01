@@ -145,6 +145,35 @@ type constraintTest struct {
 
 var constraintTests = []constraintTest{
 	{
+		constraint: "Includes `Grid` and `Battery`",
+		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+	},
+	{
+		constraint: "1 to 3[20]",
+		min:        types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
+		max:        types.NewIntDataTypeExtreme(3, types.NumberFormatInt),
+		zapMin:     "1",
+		zapMax:     "3",
+	},
+	{
+		constraint: "Includes `Grid`",
+		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+	},
+	{
+		constraint: "kWh | kVAh",
+		asciiDoc:   `kWh \| kVAh`,
+		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+	},
+	{
+		constraint: `kWh \| kVAh`,
+		asciiDoc:   `kWh \| kVAh`,
+		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+	},
+	{
 		constraint: "min <<ref_NumberOfScheduleTransitions>>",
 	},
 	{
@@ -305,7 +334,7 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "MaxScaledValue-1",
-		asciiDoc:   "(MaxScaledValue - 1)",
+		asciiDoc:   "MaxScaledValue - 1",
 	},
 	{
 		constraint: "-10000 to +10000",
@@ -537,10 +566,14 @@ var constraintTests = []constraintTest{
 func TestSuite(t *testing.T) {
 	for _, ct := range constraintTests {
 		if ct.invalid {
-			var err error
-			_, err = TryParseString(ct.constraint)
+			c, err := TryParseString(ct.constraint)
 			if err == nil {
-				t.Errorf("expected error parsing %s", ct.constraint)
+				t.Errorf("expected error parsing %s; got %T", ct.constraint, c)
+				if c, ok := c.(Set); ok {
+					for _, c := range c {
+						t.Errorf("expected error parsing %s; got %T: %s", ct.constraint, c, c.ASCIIDocString(ct.dataType))
+					}
+				}
 			}
 			continue
 		}
@@ -574,6 +607,12 @@ func TestSuite(t *testing.T) {
 
 		if min.ZapString(ct.dataType) != ct.zapMin {
 			t.Errorf("incorrect ZAP min value for \"%s\": expected %s, got %s", ct.constraint, ct.zapMin, min.ZapString(ct.dataType))
+			t.Errorf("expected error parsing %s; got %T: %s", ct.constraint, c, c.ASCIIDocString(ct.dataType))
+			if c, ok := c.(*ListConstraint); ok {
+				t.Errorf("expected error parsing %s; got %T: %s", ct.constraint, c.Constraint, c.Constraint.ASCIIDocString(ct.dataType))
+				t.Errorf("expected error parsing %s; got %T: %s", ct.constraint, c.EntryConstraint, c.EntryConstraint.ASCIIDocString(ct.dataType))
+
+			}
 
 		}
 		if max.ZapString(ct.dataType) != ct.zapMax {

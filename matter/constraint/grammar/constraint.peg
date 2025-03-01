@@ -47,7 +47,7 @@ EntryConstraint <- _ "[" _ cons:Constraint _ "]" {
 	return cons.(Constraint), nil
 }
 
-Constraint <- cons:(Described / Any /  Range / Min / Max / Limit)  {
+Constraint <- cons:(Described / Any /  Range / Min / Max / Logical / TagList / Limit)  {
 	switch cons := cons.(type) {
 		case Constraint:
 			return cons, nil

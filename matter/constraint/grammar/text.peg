@@ -25,15 +25,28 @@ Hex <- "0x"i hex:[0-9A-Fa-f]+ {
 	return strconv.ParseUint(string(val), 16, 64)
 }
 
-PascalCase <- Capitalized+ Capitalized* {
+PascalCase <- PascalCapitalized Capitalized* {
 	debug("found pascal %s\n", string(c.text))
 	return string(c.text), nil
 }
 
-Capitalized <- Uppercase+ Lowercase+ {
+Capitalized <- Uppercase+ Lowercase* {
 	debug("found capitalized %s\n", string(c.text))
 	return string(c.text), nil
 }
+
+PascalCapitalized <- Uppercase+ Lowercase+ {
+	debug("found pascal capitalized %s\n", string(c.text))
+	return string(c.text), nil
+}
+
+Word <- Letter Text+ {
+	return string(c.text), nil
+}
+
+Text <- (Letter / Digits)
+
+Letter <- (Uppercase / Lowercase)
 
 Uppercase <- [A-Z] {
 	debug("found uppercase %s\n", string(c.text))

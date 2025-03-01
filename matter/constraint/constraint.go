@@ -63,6 +63,7 @@ const (
 	ConstraintTypeMin
 	ConstraintTypeRange
 	ConstraintTypeSet
+	ConstraintTypeTagList
 )
 
 var nameConstraintType map[string]Type
@@ -78,6 +79,7 @@ var constraintTypeNames = map[Type]string{
 	ConstraintTypeMin:       "min",
 	ConstraintTypeRange:     "range",
 	ConstraintTypeSet:       "set",
+	ConstraintTypeTagList:   "tagList",
 }
 
 func init() {
