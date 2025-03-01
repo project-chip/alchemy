@@ -2,7 +2,6 @@ package disco
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -17,7 +16,7 @@ import (
 )
 
 func Ball(cmd *cobra.Command, args []string) error {
-	cxt := context.Background()
+	cxt := cmd.Context()
 
 	action := githubactions.New()
 

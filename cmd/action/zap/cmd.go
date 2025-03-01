@@ -1,7 +1,6 @@
 package zap
 
 import (
-	"context"
 	"fmt"
 	"path/filepath"
 
@@ -13,7 +12,7 @@ import (
 )
 
 func CheckZAPXML(cmd *cobra.Command, args []string) error {
-	cxt := context.Background()
+	cxt := cmd.Context()
 
 	action := githubactions.New()
 

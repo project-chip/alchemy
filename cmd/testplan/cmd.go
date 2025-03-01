@@ -32,7 +32,7 @@ func init() {
 
 func tp(cmd *cobra.Command, args []string) (err error) {
 
-	cxt := context.Background()
+	cxt := cmd.Context()
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	testRoot, _ := cmd.Flags().GetString("testRoot")

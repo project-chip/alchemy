@@ -1,7 +1,6 @@
 package compare
 
 import (
-	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -33,7 +32,7 @@ func init() {
 
 func compareSpec(cmd *cobra.Command, args []string) (err error) {
 
-	cxt := context.Background()
+	cxt := cmd.Context()
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")

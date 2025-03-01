@@ -1,8 +1,6 @@
 package validate
 
 import (
-	"context"
-
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -23,7 +21,7 @@ func init() {
 
 func validateSpec(cmd *cobra.Command, args []string) (err error) {
 
-	cxt := context.Background()
+	cxt := cmd.Context()
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 
