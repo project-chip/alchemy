@@ -3,7 +3,6 @@
 package database
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/dolthub/go-mysql-server/sql"
@@ -19,7 +18,7 @@ var Command = &cobra.Command{
 	Use:   "db",
 	Short: "run a local MySQL DB containing the contents of the Matter spec or the ZAP templates",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		cxt := context.Background()
+		cxt := cmd.Context()
 		specRoot, _ := cmd.Flags().GetString("specRoot")
 
 		asciiSettings := common.ASCIIDocAttributes(cmd)

@@ -1,8 +1,6 @@
 package dm
 
 import (
-	"context"
-
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/errata"
@@ -20,7 +18,7 @@ var Command = &cobra.Command{
 }
 
 func dataModel(cmd *cobra.Command, args []string) (err error) {
-	cxt := context.Background()
+	cxt := cmd.Context()
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	dmRoot, _ := cmd.Flags().GetString("dmRoot")

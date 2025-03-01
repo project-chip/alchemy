@@ -1,8 +1,6 @@
 package format
 
 import (
-	"context"
-
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -17,7 +15,7 @@ var Command = &cobra.Command{
 }
 
 func format(cmd *cobra.Command, args []string) (err error) {
-	cxt := context.Background()
+	cxt := cmd.Context()
 
 	var inputs pipeline.Paths
 

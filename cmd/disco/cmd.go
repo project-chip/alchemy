@@ -1,8 +1,6 @@
 package disco
 
 import (
-	"context"
-
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/disco"
 	"github.com/project-chip/alchemy/internal/files"
@@ -19,7 +17,7 @@ var Command = &cobra.Command{
 }
 
 func discoBall(cmd *cobra.Command, args []string) (err error) {
-	cxt := context.Background()
+	cxt := cmd.Context()
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 
