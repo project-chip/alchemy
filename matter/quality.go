@@ -42,12 +42,12 @@ var identifierQualities = map[rune]Quality{
 }
 
 var AllowedQualities = map[types.EntityType]Quality{
-	types.EntityTypeAttribute:    QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
+	types.EntityTypeAttribute:    QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
 	types.EntityTypeCommand:      QualityLargeMessage,
-	types.EntityTypeCommandField: QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
-	types.EntityTypeStructField:  QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
+	types.EntityTypeCommandField: QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
+	types.EntityTypeStructField:  QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
 	types.EntityTypeEvent:        QualitySourceAttribution,
-	types.EntityTypeEventField:   QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityReportable | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
+	types.EntityTypeEventField:   QualitySourceAttribution | QualityChangedOmitted | QualityFixed | QualityNonVolatile | QualityQuieterReporting | QualityScene | QualityAtomicWrite | QualityNullable,
 	types.EntityTypeCluster:      QualitySingleton | QualityDiagnostics,
 }
 

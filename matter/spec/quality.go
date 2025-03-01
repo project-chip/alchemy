@@ -14,7 +14,11 @@ func parseQuality(s string, entityType types.EntityType, doc *Doc, element ascii
 	q := matter.ParseQuality(s)
 	if allowed, ok := matter.AllowedQualities[entityType]; ok {
 		if q&allowed != q {
-			slog.Warn("Invalid quality on entity", slog.String("quality", q.String()), log.Path("path", NewSource(doc, element)))
+			disallowed := q ^ (q & allowed)
+			if disallowed != matter.QualityReportable {
+				// This is still in use in a bunch of places to support Zigbee, so we'll ignore it for now
+				slog.Warn("Invalid quality on entity", slog.String("disallowed", disallowed.String()), slog.String("entityType", entityType.String()), log.Path("path", NewSource(doc, element)))
+			}
 		}
 	}
 	return q
