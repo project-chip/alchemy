@@ -281,6 +281,9 @@ func (ti *TableInfo) ReadLimit(row *asciidoc.TableRow, columns ...matter.TableCo
 		slog.Error("failed parsing constraint cell", log.Element("source", ti.Doc.Path, source), slog.String("constraint", val))
 		return &constraint.GenericLimit{Value: val}
 	}
+	if l == nil {
+		return &constraint.GenericLimit{Value: val}
+	}
 	return l
 }
 
