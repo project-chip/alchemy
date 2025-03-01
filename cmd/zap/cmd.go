@@ -21,6 +21,7 @@ func init() {
 	Command.Flags().Bool("conformanceXML", true, "write new style conformance XML")
 	Command.Flags().Bool("endpointCompositionXML", false, "write new style endpoint composition XML")
 	Command.Flags().Bool("specOrder", false, "write ZAP template XML in spec order")
+	Command.Flags().Bool("extendedQuality", false, "write quality element with all qualities, suppressing redundant attributes")
 }
 
 func zapTemplates(cmd *cobra.Command, args []string) (err error) {
@@ -40,9 +41,11 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	featureXML, _ := cmd.Flags().GetBool("featureXML")
 	options.Template = append(options.Template, generate.GenerateFeatureXML(featureXML))
 	conformanceXML, _ := cmd.Flags().GetBool("conformanceXML")
+	extendedQuality, _ := cmd.Flags().GetBool("extendedQuality")
 	endpointCompositionXML, _ := cmd.Flags().GetBool("endpointCompositionXML")
 	specOrder, _ := cmd.Flags().GetBool("specOrder")
 	options.Template = append(options.Template, generate.GenerateConformanceXML(conformanceXML))
+	options.Template = append(options.Template, generate.ExtendedQuality(extendedQuality))
 	options.Template = append(options.Template, generate.SpecOrder(specOrder))
 	options.Template = append(options.Template, generate.AsciiAttributes(options.AsciiSettings))
 	options.Template = append(options.Template, generate.SpecRoot(specRoot))
