@@ -24,3 +24,12 @@ func TrimCaseInsensitivePrefix(s, prefix string) string {
 	}
 	return s
 }
+
+func TrimUnnecessaryParens(as string) string {
+	if len(as) > 2 {
+		if as[0] == '(' && as[len(as)-1] == ')' {
+			as = as[1 : len(as)-1]
+		}
+	}
+	return as
+}

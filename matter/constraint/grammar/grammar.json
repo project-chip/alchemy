@@ -9,11 +9,13 @@
         "described.peg",
         "boolean.peg",
         "expression.peg",
+        "logical.peg",
         "range.peg",
         "identifier.peg",
         "reference.peg",
         "number.peg",
         "status.peg",
+        "tag.peg",
         "text.peg"
       ],
       "alternateEntryPoints" : ["Limit"]

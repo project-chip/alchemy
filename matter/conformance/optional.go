@@ -2,6 +2,8 @@ package conformance
 
 import (
 	"strings"
+
+	"github.com/project-chip/alchemy/internal/text"
 )
 
 type Optional struct {
@@ -17,7 +19,7 @@ func (o *Optional) ASCIIDocString() string {
 	var s strings.Builder
 	if o.Expression != nil {
 		s.WriteString("[")
-		s.WriteString(trimUnnecessaryParens(o.Expression.ASCIIDocString()))
+		s.WriteString(text.TrimUnnecessaryParens(o.Expression.ASCIIDocString()))
 		s.WriteString("]")
 	} else {
 		s.WriteString("O")

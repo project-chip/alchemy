@@ -3,6 +3,7 @@ package constraint
 import (
 	"encoding/json"
 
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -15,7 +16,7 @@ func (c *ExactConstraint) Type() Type {
 }
 
 func (c *ExactConstraint) ASCIIDocString(dataType *types.DataType) string {
-	return c.Value.ASCIIDocString(dataType)
+	return text.TrimUnnecessaryParens(c.Value.ASCIIDocString(dataType))
 }
 
 func (c *ExactConstraint) Equal(o Constraint) bool {

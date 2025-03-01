@@ -1,8 +1,13 @@
-IdentifierLimit <- ref:(PascalCase) field:(ReferenceField)? {
+IdentifierLimit <- ref:(Identifier) field:(ReferenceField)? {
 	debug("found identifier limit %s\n", string(c.text))
 	rl := &IdentifierLimit{ID:ref.(string)}
 	if field != nil {
 		rl.Field = field.(Limit)
 	}
 	return rl, nil
+}
+
+Identifier <- PascalCase {
+	debug("found identifier %s\n", string(c.text))
+	return string(c.text), nil
 }

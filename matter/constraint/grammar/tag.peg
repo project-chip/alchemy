@@ -1,0 +1,57 @@
+TagList <- _ "Includes" _ or:(TagOr) {
+	return &TagListConstraint{Tags:or.(Limit)}, nil
+}
+
+
+TagOr <- _ left:TagAnd _ right:TagOrOp* _ {
+    //debug("matched OR %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    orOps := right.([]any)
+    if len(orOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(Limit)
+    return NewLogicalLimit("or", leftCE, orOps)
+}
+
+TagOrOp <- _ ("or"i) _ f:TagAnd {
+    //debug("matched OR op %s\n", string(c.text))
+    fc := f.(Limit)
+    return fc, nil
+}
+
+
+TagAnd <- _ left:TagTerm _ right:TagAndOp* _ {
+   // debug("matched AND %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    addOps := right.([]any)
+    if len(addOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(Limit)
+    return NewLogicalLimit("and", leftCE, addOps)
+}
+
+TagAndOp <- _ ("and"i) _ f:TagTerm {
+    //debug("matched AND op %s\n", string(c.text))
+    fc := f.(Limit)
+    return fc, nil
+}
+
+TagTerm <- limit:( ParentheticalTagLimit / TagIdentifier ) {
+	debug("found limit %s\n", string(c.text))
+	return limit.(Limit), nil
+}
+
+ParentheticalTagLimit <- "(" _ limit:TagTerm _ ")" {
+	return limit.(Limit), nil
+}
+
+TagIdentifier <- "`" word:Word "`" {
+	debug("found logical identifier %s\n", string(c.text))
+	return &TagIdentifierLimit{Tag:word.(string)}, nil
+}

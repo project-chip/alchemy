@@ -310,6 +310,10 @@ func (ti *TableInfo) buildConstraintValue(els asciidoc.Set, sb *strings.Builder)
 		case *asciidoc.Bold: // This is usually an asterisk, and should be ignored
 		case *asciidoc.NewLine, *asciidoc.LineBreak:
 			sb.WriteRune(' ')
+		case *asciidoc.Monospace:
+			sb.WriteRune('`')
+			ti.buildConstraintValue(v.Elements(), sb)
+			sb.WriteRune('`')
 		case asciidoc.HasElements:
 			ti.buildConstraintValue(v.Elements(), sb)
 		case asciidoc.AttributeReference:

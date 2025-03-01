@@ -3,6 +3,8 @@ package conformance
 import (
 	"encoding/json"
 	"strings"
+
+	"github.com/project-chip/alchemy/internal/text"
 )
 
 type Set []Conformance
@@ -38,16 +40,7 @@ func (cs Set) ASCIIDocString() string {
 			}
 		}
 	}
-	return trimUnnecessaryParens(s.String())
-}
-
-func trimUnnecessaryParens(as string) string {
-	if len(as) > 2 {
-		if as[0] == '(' && as[len(as)-1] == ')' {
-			as = as[1 : len(as)-1]
-		}
-	}
-	return as
+	return text.TrimUnnecessaryParens(s.String())
 }
 
 func (cs Set) Description() string {
