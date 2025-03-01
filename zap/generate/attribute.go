@@ -91,7 +91,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	define := getDefine(attribute.Name, clusterPrefix, cr.configurator.Errata)
 	xml.SetNonexistentAttr(ae, "define", define)
 	cr.writeAttributeDataType(ae, cluster.Attributes, attribute)
-	if attribute.Quality.Has(matter.QualityNullable) {
+	if attribute.Quality.Has(matter.QualityNullable) && !cr.generator.generateExtendedQualityElement {
 		ae.CreateAttr("isNullable", "true")
 	} else {
 		ae.RemoveAttr("isNullable")
@@ -125,7 +125,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	}
 	requiresConformance := cr.generator.generateConformanceXML && !conformance.IsBlank(attribute.Conformance) && !conformance.IsMandatory(attribute.Conformance)
 	requiresPermissions := !cr.configurator.Errata.SuppressAttributePermissions && (needsRead || needsWrite)
-	requiresQuality := attribute.Quality.Any(matter.QualityChangedOmitted)
+	requiresQuality := cr.requiresQuality(types.EntityTypeAttribute, attribute.Quality)
 	if !requiresPermissions && !requiresQuality && !requiresConformance {
 		ae.Child = nil
 		ae.SetText(attribute.Name)
@@ -160,25 +160,8 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 			}
 		}
 
-		if requiresQuality {
-			for _, el := range ae.SelectElements("quality") {
-				if requiresQuality {
-					cr.setQualityAttributes(el, attribute.Quality)
-					requiresQuality = false
-				} else {
-					ae.RemoveChild(el)
-				}
-			}
-			if requiresQuality {
-				el := etree.NewElement("quality")
-				xml.AppendElement(ae, el, "access", "description")
-				cr.setQualityAttributes(el, attribute.Quality)
-			}
-		} else {
-			for _, el := range ae.SelectElements("quality") {
-				ae.RemoveChild(el)
-			}
-		}
+		cr.setQuality(ae, types.EntityTypeAttribute, attribute.Quality, "access", "description")
+
 		if cr.generator.generateConformanceXML {
 			err = renderConformance(cr.generator.spec, attribute, cluster, attribute.Conformance, ae, "quality", "access", "description")
 			if err != nil {

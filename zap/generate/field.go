@@ -17,7 +17,7 @@ func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, 
 	} else {
 		fieldElement.RemoveAttr("optional")
 	}
-	if field.Quality.Has(matter.QualityNullable) {
+	if field.Quality.Has(matter.QualityNullable) && !cr.generator.generateExtendedQualityElement {
 		fieldElement.CreateAttr("isNullable", "true")
 	} else {
 		fieldElement.RemoveAttr("isNullable")
@@ -28,6 +28,7 @@ func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, 
 		fieldElement.RemoveAttr("isFabricSensitive")
 	}
 	setFieldFallback(fieldElement, field, fieldSet)
+	cr.setQuality(fieldElement, field.EntityType(), field.Quality)
 	renderConstraint(fieldElement, fieldSet, field)
 }
 

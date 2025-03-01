@@ -33,3 +33,9 @@ func SpecRoot(specRoot string) TemplateOption {
 		tg.specRoot = specRoot
 	}
 }
+
+func ExtendedQuality(extendedQuality bool) TemplateOption {
+	return func(tg *TemplateGenerator) {
+		tg.generateExtendedQualityElement = extendedQuality
+	}
+}

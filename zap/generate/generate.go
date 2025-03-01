@@ -26,9 +26,10 @@ type TemplateGenerator struct {
 	specRoot    string
 	specVersion string
 
-	generateFeaturesXML    bool
-	generateConformanceXML bool
-	specOrder              bool
+	generateFeaturesXML            bool
+	generateConformanceXML         bool
+	specOrder                      bool
+	generateExtendedQualityElement bool
 
 	ProvisionalZclFiles      pipeline.Paths
 	globalObjectDependencies pipeline.Map[types.Entity, struct{}]

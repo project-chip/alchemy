@@ -152,7 +152,7 @@ func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *ma
 	xml.PrependAttribute(e, "fieldId", v.ID.IntString())
 	e.CreateAttr("name", v.Name)
 	cr.writeDataType(e, s.Fields, v)
-	if v.Quality.Has(matter.QualityNullable) {
+	if v.Quality.Has(matter.QualityNullable) && !cr.generator.generateExtendedQualityElement {
 		e.CreateAttr("isNullable", "true")
 	} else {
 		e.RemoveAttr("isNullable")
@@ -168,5 +168,6 @@ func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *ma
 		e.RemoveAttr("isFabricSensitive")
 	}
 	setFieldFallback(e, v, s.Fields)
+	cr.setQuality(e, v.EntityType(), v.Quality)
 	renderConstraint(e, s.Fields, v)
 }
