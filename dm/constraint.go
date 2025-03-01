@@ -157,6 +157,9 @@ func renderLogicalLimit(parent *etree.Element, limit *constraint.LogicalLimit, d
 }
 
 func renderConstraintReferenceLimit(parent *etree.Element, field constraint.Limit, limit constraint.Limit, dataType *types.DataType, name string, entity types.Entity, ref string, parentEntity types.Entity) bool {
+	if name != "value" {
+		parent = parent.CreateElement(name)
+	}
 	switch entity := entity.(type) {
 	case *matter.EnumValue:
 		el := parent.CreateElement("enum")
