@@ -1,4 +1,4 @@
-package render
+package testplan
 
 import (
 	"github.com/project-chip/alchemy/matter"
@@ -6,19 +6,19 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-type clusterUnderTest struct {
-	cluster           *matter.Cluster
-	features          []*feature
-	attributes        []*matter.Field
-	commandsAccepted  []*matter.Command
-	commandsGenerated []*matter.Command
-	events            []*matter.Event
+type Plan struct {
+	Cluster           *matter.Cluster
+	Features          []*Feature
+	Attributes        []*matter.Field
+	CommandsAccepted  []*matter.Command
+	CommandsGenerated []*matter.Command
+	Events            []*matter.Event
 }
 
-func filterCluster(doc *spec.Doc, cluster *matter.Cluster) (cut *clusterUnderTest, err error) {
-	cut = &clusterUnderTest{
-		cluster:    cluster,
-		attributes: make([]*matter.Field, 0, len(cluster.Attributes)),
+func NewPlan(doc *spec.Doc, cluster *matter.Cluster) (p *Plan, err error) {
+	p = &Plan{
+		Cluster:    cluster,
+		Attributes: make([]*matter.Field, 0, len(cluster.Attributes)),
 	}
 
 	if cluster.Features != nil {
@@ -28,7 +28,7 @@ func filterCluster(doc *spec.Doc, cluster *matter.Cluster) (cut *clusterUnderTes
 			}
 
 			feat := bit.(*matter.Feature)
-			f := &feature{Code: feat.Code, Summary: feat.Summary(), Conformance: feat.Conformance()}
+			f := &Feature{Code: feat.Code, Summary: feat.Summary(), Conformance: feat.Conformance()}
 			f.From, f.To, err = feat.Bits()
 			if err != nil {
 				return
@@ -38,7 +38,7 @@ func filterCluster(doc *spec.Doc, cluster *matter.Cluster) (cut *clusterUnderTes
 					f.Bits = append(f.Bits, i)
 				}
 			}
-			cut.features = append(cut.features, f)
+			p.Features = append(p.Features, f)
 		}
 	}
 	for _, attribute := range cluster.Attributes {
@@ -46,7 +46,7 @@ func filterCluster(doc *spec.Doc, cluster *matter.Cluster) (cut *clusterUnderTes
 			continue
 		}
 
-		cut.attributes = append(cut.attributes, attribute)
+		p.Attributes = append(p.Attributes, attribute)
 	}
 
 	for _, command := range cluster.Commands {
@@ -55,7 +55,7 @@ func filterCluster(doc *spec.Doc, cluster *matter.Cluster) (cut *clusterUnderTes
 		}
 		switch command.Direction {
 		case matter.InterfaceServer:
-			cut.commandsAccepted = append(cut.commandsAccepted, command)
+			p.CommandsAccepted = append(p.CommandsAccepted, command)
 		}
 	}
 
@@ -65,9 +65,9 @@ func filterCluster(doc *spec.Doc, cluster *matter.Cluster) (cut *clusterUnderTes
 		}
 		switch command.Direction {
 		case matter.InterfaceClient:
-			for _, c := range cut.commandsAccepted {
+			for _, c := range p.CommandsAccepted {
 				if c.Response != nil && c.Response.Name == command.Name {
-					cut.commandsGenerated = append(cut.commandsGenerated, command)
+					p.CommandsGenerated = append(p.CommandsGenerated, command)
 					break
 				}
 			}
@@ -78,11 +78,17 @@ func filterCluster(doc *spec.Doc, cluster *matter.Cluster) (cut *clusterUnderTes
 		if !checkConformance(event.Conformance, cluster.Attributes) {
 			continue
 		}
-		cut.events = append(cut.events, event)
+		p.Events = append(p.Events, event)
 	}
 	return
 }
 
 func checkConformance(c conformance.Set, store conformance.IdentifierStore) bool {
 	return !(conformance.IsZigbee(store, c) || conformance.IsDisallowed(c) || conformance.IsDeprecated(c))
+}
+
+func (p *Plan) ToTests() (tests []*Test) {
+	t := &Test{}
+	tests = append(tests, t)
+	return
 }

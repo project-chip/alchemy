@@ -12,6 +12,7 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/testplan"
 	"github.com/project-chip/alchemy/yaml2python/parse"
 )
 
@@ -43,7 +44,7 @@ func getArg(arg any) (name string, value any, ok bool) {
 	return
 }
 
-func getCluster(spec *spec.Specification, t *test, ts *testStep) (clusterName string, cluster *matter.Cluster) {
+func getCluster(spec *spec.Specification, t *testplan.Test, ts *testplan.Step) (clusterName string, cluster *matter.Cluster) {
 	clusterName = ts.Cluster
 	if clusterName == "" {
 		clusterName = t.Config.Cluster
@@ -51,7 +52,7 @@ func getCluster(spec *spec.Specification, t *test, ts *testStep) (clusterName st
 	var ok bool
 	cluster, ok = spec.ClustersByName[clusterName]
 	if !ok {
-		slog.Warn("Unknown cluster in test", slog.String("path", ts.Parent.Path), slog.String("clusterName", clusterName))
+		slog.Warn("Unknown cluster in test", slog.String("path", ts.Parent.Parent.Path), slog.String("clusterName", clusterName))
 	}
 	return
 }
@@ -181,7 +182,7 @@ func commandArgValue(name string, cluster *matter.Cluster, command *matter.Comma
 
 }
 
-func commandArgHelper(test test, step testStep, name string) raymond.SafeString {
+func commandArgHelper(test testplan.Test, step testplan.Step, name string) raymond.SafeString {
 	for _, arg := range step.Arguments.Values {
 		argName, value, ok := getArg(arg)
 		if !ok {
@@ -195,8 +196,8 @@ func commandArgHelper(test test, step testStep, name string) raymond.SafeString 
 	return raymond.SafeString(fmt.Sprintf("unknown argument: %s", name))
 }
 
-func commandArgsHelper(spec *spec.Specification) func(test test, step testStep) raymond.SafeString {
-	return func(test test, step testStep) raymond.SafeString {
+func commandArgsHelper(spec *spec.Specification) func(test testplan.Test, step testplan.Step) raymond.SafeString {
+	return func(test testplan.Test, step testplan.Step) raymond.SafeString {
 		clusterName, cluster := getCluster(spec, &test, &step)
 		if cluster == nil {
 			return raymond.SafeString(fmt.Sprintf("error: unknown cluster: %s", clusterName))
