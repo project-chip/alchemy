@@ -18,6 +18,7 @@ import (
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/testplan"
 )
 
 type GeneratorOption func(g *Renderer)
@@ -72,10 +73,10 @@ func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc]
 			continue
 		}
 
-		var cut *clusterUnderTest
-		cut, err = filterCluster(doc, cluster)
+		var tp *testplan.Plan
+		tp, err = testplan.NewPlan(doc, cluster)
 		if err != nil {
-			err = fmt.Errorf("failed filtering %s: %w", path, err)
+			err = fmt.Errorf("failed creating test plan %s: %w", path, err)
 			return
 		}
 
@@ -85,20 +86,20 @@ func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc]
 			"cluster":           cluster,
 			"context":           tc,
 			"doc":               doc,
-			"features":          cut.features,
-			"attributes":        cut.attributes,
-			"commandsAccepted":  cut.commandsAccepted,
-			"commandsGenerated": cut.commandsGenerated,
-			"events":            cut.events,
+			"features":          tp.Features,
+			"attributes":        tp.Attributes,
+			"commandsAccepted":  tp.CommandsAccepted,
+			"commandsGenerated": tp.CommandsGenerated,
+			"events":            tp.Events,
 		}
 
 		if len(cluster.Revisions) > 0 {
 			args["lastRevision"] = cluster.Revisions[len(cluster.Revisions)-1]
 		}
-		args["attributeOptions"] = getOptionality(cut.attributes, func(a *matter.Field) string { return a.Name }, func(a *matter.Field) conformance.Set { return a.Conformance })
-		args["eventOptions"] = getOptionality(cut.events, func(a *matter.Event) string { return a.Name }, func(a *matter.Event) conformance.Set { return a.Conformance })
-		args["commandsAcceptedOptions"] = getOptionality(cut.commandsAccepted, func(a *matter.Command) string { return a.Name }, func(a *matter.Command) conformance.Set { return a.Conformance })
-		args["commandsGeneratedOptions"] = getOptionality(cut.commandsGenerated, func(a *matter.Command) string { return a.Name }, func(a *matter.Command) conformance.Set { return a.Conformance })
+		args["attributeOptions"] = getOptionality(tp.Attributes, func(a *matter.Field) string { return a.Name }, func(a *matter.Field) conformance.Set { return a.Conformance })
+		args["eventOptions"] = getOptionality(tp.Events, func(a *matter.Event) string { return a.Name }, func(a *matter.Event) conformance.Set { return a.Conformance })
+		args["commandsAcceptedOptions"] = getOptionality(tp.CommandsAccepted, func(a *matter.Command) string { return a.Name }, func(a *matter.Command) conformance.Set { return a.Conformance })
+		args["commandsGeneratedOptions"] = getOptionality(tp.CommandsGenerated, func(a *matter.Command) string { return a.Name }, func(a *matter.Command) conformance.Set { return a.Conformance })
 
 		var result string
 		result, err = t.Exec(args)

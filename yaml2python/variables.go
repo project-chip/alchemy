@@ -1,10 +1,12 @@
-package python
+package yaml2python
 
 import (
 	"slices"
+
+	"github.com/project-chip/alchemy/testplan"
 )
 
-func getVariables(t *test) []string {
+func getVariables(t *testplan.Test) []string {
 	var variables []string
 	variableNames := make(map[string]struct{})
 	for _, s := range t.Groups {

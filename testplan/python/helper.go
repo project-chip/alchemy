@@ -13,6 +13,7 @@ import (
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/testplan"
 )
 
 func registerHelpers(t *raymond.Template, spec *spec.Specification) {
@@ -33,15 +34,15 @@ func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("pythonString", pythonStringHelper)
 }
 
-func clusterIsHelper(step testStep, is string, options *raymond.Options) string {
+func clusterIsHelper(step testplan.Step, is string, options *raymond.Options) string {
 	if step.Cluster == is {
 		return options.Fn()
 	}
 	return options.Inverse()
 }
 
-func clusterNameHelper(sp *spec.Specification) func(test test) raymond.SafeString {
-	return func(test test) raymond.SafeString {
+func clusterNameHelper(sp *spec.Specification) func(test testplan.Test) raymond.SafeString {
+	return func(test testplan.Test) raymond.SafeString {
 		clusterName := test.Config.Cluster
 		_, ok := sp.ClustersByName[clusterName]
 		if !ok {
@@ -51,8 +52,8 @@ func clusterNameHelper(sp *spec.Specification) func(test test) raymond.SafeStrin
 	}
 }
 
-func stepClusterNameHelper(sp *spec.Specification) func(test test, step testStep) raymond.SafeString {
-	return func(test test, step testStep) raymond.SafeString {
+func stepClusterNameHelper(sp *spec.Specification) func(test testplan.Test, step testplan.Step) raymond.SafeString {
+	return func(test testplan.Test, step testplan.Step) raymond.SafeString {
 		clusterName := test.Config.Cluster
 		if step.Cluster != "" {
 			clusterName = step.Cluster
@@ -65,8 +66,8 @@ func stepClusterNameHelper(sp *spec.Specification) func(test test, step testStep
 	}
 }
 
-func clusterVariableHelper(sp *spec.Specification) func(test test, step testStep) raymond.SafeString {
-	return func(test test, step testStep) raymond.SafeString {
+func clusterVariableHelper(sp *spec.Specification) func(test testplan.Test, step testplan.Step) raymond.SafeString {
+	return func(test testplan.Test, step testplan.Step) raymond.SafeString {
 		if step.Cluster == "" || step.Cluster == test.Config.Cluster {
 			return raymond.SafeString("cluster")
 		}
@@ -79,14 +80,14 @@ func clusterVariableHelper(sp *spec.Specification) func(test test, step testStep
 	}
 }
 
-func endpointVariableHelper(test test, step testStep) raymond.SafeString {
+func endpointVariableHelper(test testplan.Test, step testplan.Step) raymond.SafeString {
 	if step.Endpoint != math.MaxUint64 {
 		return raymond.SafeString(strconv.FormatUint(step.Endpoint, 10))
 	}
 	return raymond.SafeString("endpoint")
 }
 
-func commandIsHelper(step testStep, is string, options *raymond.Options) string {
+func commandIsHelper(step testplan.Step, is string, options *raymond.Options) string {
 	if step.Command == is {
 		return options.Fn()
 	}

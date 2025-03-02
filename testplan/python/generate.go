@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/yaml2python/parse"
+	"github.com/project-chip/alchemy/testplan"
 )
 
 type GeneratorOption func(g *PythonTestGenerator)
@@ -46,18 +46,12 @@ func (sp PythonTestGenerator) Name() string {
 	return "Generating test plans"
 }
 
-func (sp *PythonTestGenerator) Process(cxt context.Context, input *pipeline.Data[*parse.Test], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*parse.Test], err error) {
+func (sp *PythonTestGenerator) Process(cxt context.Context, input *pipeline.Data[*testplan.Test], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*testplan.Test], err error) {
 
 	outPath := sp.getPath(input.Path)
 	slog.Info("generating", "in", input.Path, "out", outPath)
 
-	var test *test
-	test, err = sp.convert(input.Content, input.Path)
-	if err != nil {
-		slog.WarnContext(cxt, "Error converting test to model", slog.String("path", input.Path), slog.Any("error", err))
-		err = nil
-		return
-	}
+	test := input.Content
 
 	if test.Config.Cluster == "" {
 		return
