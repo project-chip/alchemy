@@ -1,4 +1,4 @@
-package testplan
+package render
 
 import (
 	"fmt"

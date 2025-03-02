@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/yaml2python/generate"
+	"github.com/project-chip/alchemy/testplan/python"
 	"github.com/project-chip/alchemy/yaml2python/parse"
 	"github.com/spf13/cobra"
 )
@@ -40,9 +40,9 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 
 	overwrite, _ := cmd.Flags().GetBool("overwrite")
 	templateRoot, _ := cmd.Flags().GetString("templateRoot")
-	generatorOptions := []generate.GeneratorOption{
-		generate.Overwrite(overwrite),
-		generate.TemplateRoot(templateRoot),
+	generatorOptions := []python.GeneratorOption{
+		python.Overwrite(overwrite),
+		python.TemplateRoot(templateRoot),
 	}
 
 	var inputs pipeline.Paths
@@ -112,7 +112,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	generator := generate.NewPythonTestGenerator(specBuilder.Spec, sdkRoot, picsLabels, generatorOptions...)
+	generator := python.NewPythonTestGenerator(specBuilder.Spec, sdkRoot, picsLabels, generatorOptions...)
 	var scripts pipeline.StringSet
 	scripts, err = pipeline.Parallel(cxt, pipelineOptions, generator, tests)
 	if err != nil {

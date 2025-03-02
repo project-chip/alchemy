@@ -1,4 +1,4 @@
-package testplan
+package render
 
 import (
 	"github.com/project-chip/alchemy/matter/conformance"

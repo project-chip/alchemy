@@ -1,4 +1,4 @@
-package testplan
+package render
 
 import (
 	"embed"
@@ -19,7 +19,7 @@ type templateContext struct {
 	ReferenceStore conformance.ReferenceStore
 }
 
-func (sp *Generator) loadTemplate() (*raymond.Template, error) {
+func (sp *Renderer) loadTemplate() (*raymond.Template, error) {
 	t, err := template.Do(func() (*raymond.Template, error) {
 
 		ov := handlebars.NewOverlay(sp.templateRoot, templateFiles, "templates")
