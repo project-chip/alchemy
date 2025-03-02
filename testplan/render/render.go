@@ -1,4 +1,4 @@
-package testplan
+package render
 
 import (
 	"context"
@@ -20,33 +20,33 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-type GeneratorOption func(g *Generator)
+type GeneratorOption func(g *Renderer)
 
-type Generator struct {
+type Renderer struct {
 	testPlanRoot string
 	templateRoot string
 	overwrite    bool
 }
 
-func NewGenerator(testPlanRoot string, overwrite bool, options ...GeneratorOption) *Generator {
-	g := &Generator{testPlanRoot: testPlanRoot, overwrite: overwrite}
+func NewRenderer(testPlanRoot string, overwrite bool, options ...GeneratorOption) *Renderer {
+	g := &Renderer{testPlanRoot: testPlanRoot, overwrite: overwrite}
 	for _, o := range options {
 		o(g)
 	}
 	return g
 }
 
-func TemplateRoot(templateRoot string) func(*Generator) {
-	return func(g *Generator) {
+func TemplateRoot(templateRoot string) func(*Renderer) {
+	return func(g *Renderer) {
 		g.templateRoot = templateRoot
 	}
 }
 
-func (sp Generator) Name() string {
+func (sp Renderer) Name() string {
 	return "Generating test plans"
 }
 
-func (sp *Generator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*spec.Doc], err error) {
+func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*spec.Doc], err error) {
 	doc := input.Content
 	path := doc.Path
 

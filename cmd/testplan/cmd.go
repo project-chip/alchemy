@@ -12,7 +12,7 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/testplan"
+	testplanRender "github.com/project-chip/alchemy/testplan/render"
 	"github.com/project-chip/alchemy/zap"
 	"github.com/spf13/cobra"
 )
@@ -42,10 +42,10 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	asciiSettings := common.ASCIIDocAttributes(cmd)
 	fileOptions := files.Flags(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
-	var testplanGeneratorOptions []testplan.GeneratorOption
+	var testplanGeneratorOptions []testplanRender.GeneratorOption
 
 	if templateRoot != "" {
-		testplanGeneratorOptions = append(testplanGeneratorOptions, testplan.TemplateRoot(templateRoot))
+		testplanGeneratorOptions = append(testplanGeneratorOptions, testplanRender.TemplateRoot(templateRoot))
 	}
 
 	errata.LoadErrataConfig(specRoot)
@@ -100,7 +100,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	generator := testplan.NewGenerator(testRoot, overwrite, testplanGeneratorOptions...)
+	generator := testplanRender.NewRenderer(testRoot, overwrite, testplanGeneratorOptions...)
 	var testplans pipeline.StringSet
 	testplans, err = pipeline.Parallel(cxt, pipelineOptions, generator, specDocs)
 	if err != nil {
