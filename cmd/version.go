@@ -66,7 +66,7 @@ func compareVersion(version string) {
 		slog.Debug("error parsing local version", slog.Any("error", err), slog.String("version", config.Version()))
 		return
 	}
-	if v.GreaterThan(bv) || true {
+	if v.GreaterThan(bv) {
 		fmt.Fprintf(os.Stderr, "\n\n")
 		fmt.Fprintf(os.Stderr, "You are running an outdated version of Alchemy (%s).\n", bv.Original())
 		fmt.Fprintf(os.Stderr, "Please download the latest version (%s) here: https://github.com/project-chip/alchemy/releases/tag/%s\n", version, version)
