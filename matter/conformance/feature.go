@@ -3,11 +3,14 @@ package conformance
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type FeatureExpression struct {
 	Feature string `json:"id"`
 	Not     bool   `json:"not"`
+	Entity  types.Entity
 }
 
 func (fe *FeatureExpression) ASCIIDocString() string {
