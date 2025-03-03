@@ -173,6 +173,9 @@ func resolveFieldConformanceExpressionReferences(spec *Specification, cluster *m
 			resolveFieldConformanceExpressionReferences(spec, cluster, finder, source, entity, re)
 		}
 	case *conformance.FeatureExpression:
+		if exp.Entity == nil {
+			exp.Entity = findEntityForFieldIdentifier(spec, cluster, finder, source, entity, exp.Feature)
+		}
 	case *conformance.ComparisonExpression:
 		resolveFieldConformanceValueReferences(spec, cluster, finder, source, entity, exp.Left)
 		resolveFieldConformanceValueReferences(spec, cluster, finder, source, entity, exp.Right)
