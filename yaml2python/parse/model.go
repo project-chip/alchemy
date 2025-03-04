@@ -223,11 +223,11 @@ func (sr *StepResponse) UnmarshalMapSlice(c yaml.MapSlice) error {
 }
 
 type StepResponseConstraints struct {
-	Type string `yaml:"type,omitempty"`
-	//	MinLength     any      `yaml:"minLength,omitempty"`
-	//	MaxLength     any      `yaml:"maxLength,omitempty"`
-	MinValue any `yaml:"minValue,omitempty"`
-	MaxValue any `yaml:"maxValue,omitempty"`
+	Type      string `yaml:"type,omitempty"`
+	MinLength any    `yaml:"minLength,omitempty"`
+	MaxLength any    `yaml:"maxLength,omitempty"`
+	MinValue  any    `yaml:"minValue,omitempty"`
+	MaxValue  any    `yaml:"maxValue,omitempty"`
 	//	NotValue      any      `yaml:"notValue,omitempty"`
 	//	HasValue      bool     `yaml:"hasValue,omitempty"`
 	HasMasksSet   []uint64 `yaml:"hasMasksSet,omitempty"`

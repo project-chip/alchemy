@@ -36,5 +36,4 @@ type Step struct {
 	PICSSet          pics.Expression
 
 	Label string
-	PICS  string
 }

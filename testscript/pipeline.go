@@ -1,8 +1,7 @@
-package yaml2python
+package testscript
 
 import (
 	"context"
-	"path/filepath"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
@@ -14,41 +13,8 @@ import (
 )
 
 func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOptions pipeline.Options, asciiSettings []asciidoc.AttributeName, generatorOptions []python.GeneratorOption, fileOptions files.Options, filePaths []string) (err error) {
-	var inputs pipeline.Paths
-	inputs, err = pipeline.Start(cxt, files.PathsTargeter(filePaths...))
-	if err != nil {
-		return
-	}
-
-	picsYamlFilter := func(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[struct{}], err error) {
-		for _, input := range inputs {
-			switch filepath.Base(input.Path) {
-			case "PICS.yaml":
-			default:
-				outputs = append(outputs, input)
-			}
-		}
-		return
-	}
-
-	inputs, err = pipeline.Collective(cxt, pipelineOptions, pipeline.CollectiveFunc("Filtering YAML tests", picsYamlFilter), inputs)
-	if err != nil {
-		return
-	}
 
 	errata.LoadErrataConfig(specRoot)
-
-	var parser parse.TestYamlParser
-	parser, err = parse.NewTestYamlParser(sdkRoot)
-	if err != nil {
-		return
-	}
-
-	var tests pipeline.Map[string, *pipeline.Data[*parse.Test]]
-	tests, err = pipeline.Parallel(cxt, pipelineOptions, parser, inputs)
-	if err != nil {
-		return
-	}
 
 	docParser, err := spec.NewParser(specRoot, asciiSettings)
 	if err != nil {
@@ -81,9 +47,16 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOpti
 		return
 	}
 
-	converter := NewYamlTestConverter(specBuilder.Spec, sdkRoot, picsLabels)
+	if len(filePaths) > 0 { // Filter the spec by whatever extra args were passed
+		filter := files.NewPathFilter[*spec.Doc](filePaths)
+		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
+		if err != nil {
+			return
+		}
+	}
 
-	testplans, err := pipeline.Parallel(cxt, pipelineOptions, converter, tests)
+	scriptGenerator := NewTestPlanGenerator(specBuilder.Spec, sdkRoot, picsLabels)
+	testplans, err := pipeline.Parallel(cxt, pipelineOptions, scriptGenerator, specDocs)
 	if err != nil {
 		return
 	}

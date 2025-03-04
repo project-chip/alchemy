@@ -1,0 +1,31 @@
+{{#ifSet step.Response.Constraints.Type}}
+{{#ifEqual step.Response.Constraints.Type "uint64" ~}}
+matter_asserts.assert_valid_uint64({{> test/commands/response_value step=step}}, {{pythonString step.attribute ~}})
+{{else ifEqual step.Response.Constraints.Type "uint32" ~}}
+matter_asserts.assert_valid_uint32({{> test/commands/response_value step=step}}, {{pythonString step.attribute ~}})
+{{else ifEqual step.Response.Constraints.Type "uint16" ~}}
+matter_asserts.assert_valid_uint16({{> test/commands/response_value step=step}}, {{pythonString step.attribute ~}})
+{{else ifEqual step.Response.Constraints.Type "uint8" ~}}
+matter_asserts.assert_valid_uint8({{> test/commands/response_value step=step}}, {{pythonString step.attribute ~}})
+{{else ifEqual step.Response.Constraints.Type "int64" ~}}
+matter_asserts.assert_valid_int64({{> test/commands/response_value step=step}}, {{pythonString step.attribute ~}})
+{{else ifEqual step.Response.Constraints.Type "int32" ~}}
+matter_asserts.assert_valid_int32({{> test/commands/response_value step=step}}, {{pythonString step.attribute ~}})
+{{else ifEqual step.Response.Constraints.Type "int16" ~}}
+matter_asserts.assert_valid_int16({{> test/commands/response_value step=step}}, {{pythonString step.attribute ~}})
+{{else ifEqual step.Response.Constraints.Type "int8" ~}}
+matter_asserts.assert_valid_int8({{> test/commands/response_value step=step}}, {{pythonString step.attribute ~}})
+{{else ifEqual step.Response.Constraints.Type "bool" ~}}
+matter_asserts.assert_valid_bool({{> test/commands/response_value step=step}}, {{pythonString step.attribute ~}})
+{{else ifEqual step.Response.Constraints.Type "string" ~}}
+matter_asserts.assert_is_string({{> test/commands/response_value step=step}}, "{{step.attribute}} must be a string")
+{{else ifEqual step.Response.Constraints.Type "octstr" ~}}
+matter_asserts.assert_is_octstr({{> test/commands/response_value step=step}}, "{{step.attribute}} must be an octstr")
+{{else ifEqual step.Response.Constraints.Type "list" ~}}
+asserts.assert_true(isinstance({{> test/commands/response_value step=step}}, list), "{{step.attribute}} must be a list")
+{{else ifEqual step.Response.Constraints.Type "enum8" ~}}
+asserts.assert_true(isinstance({{> test/commands/response_value step=step}}, list), "{{step.attribute}} must be a list")
+{{else ~}}
+# Unimplemented type check: {{step.Response.Constraints.Type}}
+{{/ifEqual ~}}
+{{/ifSet ~}}
