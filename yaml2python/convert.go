@@ -17,18 +17,21 @@ import (
 
 type YamlTestConverter struct {
 	spec       *spec.Specification
+	sdkRoot    string
 	picsLabels map[string]string
 }
 
-func NewYamlTestConverter(spec *spec.Specification, picsLabels map[string]string) *YamlTestConverter {
-	return &YamlTestConverter{spec: spec, picsLabels: picsLabels}
+func NewYamlTestConverter(spec *spec.Specification, sdkRoot string, picsLabels map[string]string) *YamlTestConverter {
+	return &YamlTestConverter{spec: spec, sdkRoot: sdkRoot, picsLabels: picsLabels}
 }
 
-func (sp YamlTestConverter) Name() string {
+func (ytc YamlTestConverter) Name() string {
 	return "Converting YAML tests"
 }
 
-func (sp *YamlTestConverter) Process(cxt context.Context, input *pipeline.Data[*parse.Test], index int32, total int32) (outputs []*pipeline.Data[*testplan.Test], extras []*pipeline.Data[*parse.Test], err error) {
+var stepPattern = regexp.MustCompile(`(?s)^\s*[s|S]tep\s+([0-9a-zA-Z]+):\s*(.*)`)
+
+func (ytc *YamlTestConverter) Process(cxt context.Context, input *pipeline.Data[*parse.Test], index int32, total int32) (outputs []*pipeline.Data[*testplan.Test], extras []*pipeline.Data[*parse.Test], err error) {
 
 	t := &testplan.Test{
 		Test: *input.Content,
@@ -77,7 +80,7 @@ func (sp *YamlTestConverter) Process(cxt context.Context, input *pipeline.Data[*
 		currentGroup.Steps = append(currentGroup.Steps, ts)
 	}
 	t.Variables = getVariables(t)
-	t.PICSAliases = testplan.BuildPicsMap(sp.spec, t)
+	t.PICSAliases = testplan.BuildPicsMap(ytc.spec, t)
 	picsAliases := testplan.BuildPicsAliasList(t.PICSAliases)
 	var lastEntityType = types.EntityTypeUnknown
 	var entityAliases []*testplan.PicsAlias
@@ -87,7 +90,7 @@ func (sp *YamlTestConverter) Process(cxt context.Context, input *pipeline.Data[*
 			entityAliases = nil
 		}
 		entityAliases = append(entityAliases, pa)
-		label, ok := sp.picsLabels[pa.Pics]
+		label, ok := ytc.picsLabels[pa.Pics]
 		if ok {
 			pa.Comments = strings.Split(label, "\n")
 		}
@@ -96,11 +99,16 @@ func (sp *YamlTestConverter) Process(cxt context.Context, input *pipeline.Data[*
 	if len(entityAliases) > 0 {
 		t.PICSAliasList = append(t.PICSAliasList, entityAliases)
 	}
-	outputs = append(outputs, pipeline.NewData(input.Path, t))
+	outputs = append(outputs, pipeline.NewData(ytc.getPath(input.Path), t))
 	return
 }
 
-var stepPattern = regexp.MustCompile(`(?s)^\s*[s|S]tep\s+([0-9a-zA-Z]+):\s*(.*)`)
+func (ytc *YamlTestConverter) getPath(path string) string {
+
+	path = getTestName(path)
+	path += ".py"
+	return filepath.Join(ytc.sdkRoot, "src/python_testing", path)
+}
 
 func getTestName(path string) string {
 	path = filepath.Base(path)

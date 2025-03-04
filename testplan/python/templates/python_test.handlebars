@@ -35,7 +35,8 @@ from chip import ChipDeviceCtrl  # Needed before chip.FabricAdmin
 from chip.clusters import Globals
 from chip.clusters.Types import NullValue
 from chip.interaction_model import InteractionModelError, Status
-from matter_testing_support import MatterBaseTest, TestStep, async_test_body, default_matter_test_main
+from chip.testing import matter_asserts
+from chip.testing.matter_testing import MatterBaseTest, TestStep, async_test_body, default_matter_test_main
 from mobly import asserts
 
 logger = logging.getLogger(__name__)
@@ -55,8 +56,8 @@ class {{test.ID}}(MatterBaseTest):
     def steps_{{test.ID}}(self) -> list[TestStep]:
         steps = [
 {{#each test.Groups}}
-{{#if this.step}}
-            TestStep({{quote this.step}}, {{quote this.description}}),
+{{#if this.name}}
+            TestStep({{quote this.name}}, {{quote this.description}}),
 {{/if}}
 {{/each}}
         ]
@@ -83,7 +84,7 @@ class {{test.ID}}(MatterBaseTest):
 
 {{/each}}
 {{#each test.Groups}}
-        self.step({{quote this.step}})
+        self.step({{quote this.name}})
 
 {{#each this.Steps}}
 {{#if this.PICSSet}}
