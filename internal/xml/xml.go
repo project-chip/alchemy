@@ -15,14 +15,6 @@ func ReadSimpleElement(parent *etree.Element, name string) (value string, ok boo
 	return e.Text(), true
 }
 
-func SetNonexistentAttr(el *etree.Element, name string, value string) *etree.Attr {
-	a := el.SelectAttr(name)
-	if a == nil {
-		a = el.CreateAttr(name, value)
-	}
-	return a
-}
-
 func CreateSimpleElementIfNotExists(parent *etree.Element, name string, value string, afterElements ...string) (el *etree.Element, exists bool) {
 	el = parent.SelectElement(name)
 	if el != nil {
@@ -151,12 +143,6 @@ func InsertElementByName(parent *etree.Element, el *etree.Element, alternatives 
 		elText := el.Text()
 		return strings.Compare(elText, text) > 0
 	}, alternatives...)
-}
-
-func PrependAttribute(el *etree.Element, name string, value string) {
-	el.CreateAttr(name, value)
-	a := el.RemoveAttr(name)
-	el.Attr = append([]etree.Attr{*a}, el.Attr...)
 }
 
 func RemoveElements(parent *etree.Element, elementNames ...string) {
