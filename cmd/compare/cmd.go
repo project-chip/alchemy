@@ -13,6 +13,7 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/zap/generate"
 	"github.com/project-chip/alchemy/zap/parse"
 	"github.com/spf13/cobra"
@@ -43,6 +44,11 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	asciiSettings := common.ASCIIDocAttributes(cmd)
 	pipelineOptions := pipeline.Flags(cmd)
 	fileOptions := files.Flags(cmd)
+
+	err = sdk.CheckAlchemyVersion(sdkRoot)
+	if err != nil {
+		return
+	}
 
 	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 	if err != nil {

@@ -12,6 +12,7 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -33,6 +34,12 @@ type Output struct {
 }
 
 func Pipeline(cxt context.Context, specRoot string, sdkRoot string, docPaths []string, options Options) (output Output, err error) {
+
+	err = sdk.CheckAlchemyVersion(sdkRoot)
+	if err != nil {
+		return
+	}
+
 	errata.LoadErrataConfig(specRoot)
 
 	var specFiles pipeline.Paths

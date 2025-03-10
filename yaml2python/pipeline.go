@@ -9,11 +9,18 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/testplan/python"
 	"github.com/project-chip/alchemy/yaml2python/parse"
 )
 
 func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOptions pipeline.Options, asciiSettings []asciidoc.AttributeName, generatorOptions []python.GeneratorOption, fileOptions files.Options, filePaths []string) (err error) {
+
+	err = sdk.CheckAlchemyVersion(sdkRoot)
+	if err != nil {
+		return
+	}
+
 	var inputs pipeline.Paths
 	inputs, err = pipeline.Start(cxt, files.PathsTargeter(filePaths...))
 	if err != nil {
