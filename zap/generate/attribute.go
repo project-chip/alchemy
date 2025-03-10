@@ -88,6 +88,8 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	cr.elementMap[ae] = attribute
 	patchNumberAttribute(ae, attribute.ID, "code")
 	ae.CreateAttr("side", "server")
+	xml.PrependAttribute(ae, "name", attribute.Name, "side", "code")
+	xml.RemoveElements(ae, "description")
 	define := getDefine(attribute.Name, clusterPrefix, cr.configurator.Errata)
 	xml.SetNonexistentAttr(ae, "define", define)
 	cr.writeAttributeDataType(ae, cluster.Attributes, attribute)
@@ -128,13 +130,8 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	requiresQuality := cr.requiresQuality(types.EntityTypeAttribute, attribute.Quality)
 	if !requiresPermissions && !requiresQuality && !requiresConformance {
 		ae.Child = nil
-		ae.SetText(attribute.Name)
 	} else {
 		ae.SetText("")
-		de, exists := xml.CreateSimpleElementIfNotExists(ae, "description", attribute.Name)
-		if exists {
-			de.SetText(attribute.Name)
-		}
 		if requiresPermissions {
 			accessElements := ae.SelectElements("access")
 			for _, ax := range accessElements {
