@@ -13,6 +13,7 @@ type ZAP struct {
 	DefineOverrides              map[string]string   `yaml:"override-defines,omitempty"`
 	ClusterName                  string              `yaml:"cluster-name,omitempty"`
 	ClusterAliases               map[string][]string `yaml:"cluster-aliases,omitempty"`
+	ClusterListKeys              map[string]string   `yaml:"cluster-list-keys,omitempty"`
 
 	WritePrivilegeAsRole bool            `yaml:"write-privilege-as-role,omitempty"`
 	SeparateStructs      SeparateStructs `yaml:"separate-structs,omitempty"`
@@ -23,6 +24,8 @@ type ZAP struct {
 	ClusterSkip  []string          `yaml:"cluster-skip,omitempty"`
 
 	Domain matter.Domain `yaml:"domain,omitempty"`
+
+	DeviceTypeNames map[string]string `yaml:"device-type-names,omitempty"`
 
 	TypeNames map[string]string `yaml:"type-names,omitempty"`
 }

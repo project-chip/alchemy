@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/iancoleman/orderedmap"
-	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -52,14 +53,26 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		if err != nil {
 			return
 		}
+		errata := doc.Errata()
 		for _, e := range entities {
 			switch e := e.(type) {
 			case *matter.Cluster:
+				if !e.ID.Valid() {
+					slog.Debug("Skipping adding cluster, no valid ID", slog.String("clusterName", e.Name))
+					continue
+				}
 				name := e.Name
 				if !text.HasCaseInsensitiveSuffix(name, " cluster") {
 					name += " Cluster"
 				}
-				names = append(names, strcase.ToScreamingSnake(name))
+				name = strings.ToUpper(matter.CaseWithSeparator(name, '_'))
+				if errata.ZAP.ClusterListKeys != nil {
+					if alias, ok := errata.ZAP.ClusterListKeys[name]; ok {
+						name = alias
+					}
+
+				}
+				names = append(names, name)
 			}
 		}
 	}
