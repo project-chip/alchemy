@@ -43,7 +43,10 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOpti
 		return
 	}
 
-	errata.LoadErrataConfig(specRoot)
+	err = errata.LoadErrataConfig(specRoot)
+	if err != nil {
+		return
+	}
 
 	var parser parse.TestYamlParser
 	parser, err = parse.NewTestYamlParser(sdkRoot)

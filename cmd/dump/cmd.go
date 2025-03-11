@@ -45,7 +45,10 @@ var Command = &cobra.Command{
 				}
 				dumpElements(doc, doc.Elements(), 0)
 			} else if jsonOut {
-				errata.LoadErrataConfig(specRoot)
+				err = errata.LoadErrataConfig(specRoot)
+				if err != nil {
+					return
+				}
 				path, err := spec.NewDocPath(f, specRoot)
 				if err != nil {
 					return fmt.Errorf("error resolving doc path %s: %w", f, err)

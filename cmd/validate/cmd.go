@@ -25,7 +25,10 @@ func validateSpec(cmd *cobra.Command, args []string) (err error) {
 
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 
-	errata.LoadErrataConfig(specRoot)
+	err = errata.LoadErrataConfig(specRoot)
+	if err != nil {
+		return
+	}
 
 	asciiSettings := common.ASCIIDocAttributes(cmd)
 	pipelineOptions := pipeline.Flags(cmd)

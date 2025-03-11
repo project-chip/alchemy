@@ -23,7 +23,10 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	specRoot, _ := cmd.Flags().GetString("specRoot")
 	dmRoot, _ := cmd.Flags().GetString("dmRoot")
 
-	errata.LoadErrataConfig(specRoot)
+	err = errata.LoadErrataConfig(specRoot)
+	if err != nil {
+		return
+	}
 
 	asciiSettings := common.ASCIIDocAttributes(cmd)
 	fileOptions := files.Flags(cmd)

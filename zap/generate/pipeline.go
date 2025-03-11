@@ -40,7 +40,10 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, docPaths []s
 		return
 	}
 
-	errata.LoadErrataConfig(specRoot)
+	err = errata.LoadErrataConfig(specRoot)
+	if err != nil {
+		return
+	}
 
 	var specFiles pipeline.Paths
 	specFiles, err = pipeline.Start(cxt, spec.Targeter(specRoot))

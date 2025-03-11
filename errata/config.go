@@ -2,18 +2,21 @@ package errata
 
 import (
 	_ "embed"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
 
+	"github.com/Masterminds/semver"
 	"github.com/goccy/go-yaml"
+	"github.com/project-chip/alchemy/config"
 	"github.com/project-chip/alchemy/internal/files"
 )
 
 //go:embed default.yaml
 var defaultErrata []byte
 
-func LoadErrataConfig(specRoot string) {
+func LoadErrataConfig(specRoot string) error {
 	b := loadConfig(specRoot)
 	if b == nil {
 		b = defaultErrata
@@ -22,7 +25,11 @@ func LoadErrataConfig(specRoot string) {
 	err := yaml.Unmarshal(b, &errataOverlay)
 	if err != nil {
 		slog.Warn("error parsing errata file", slog.Any("error", err))
-		return
+		return nil
+	}
+	err = checkMinimumVersion(errataOverlay)
+	if err != nil {
+		return err
 	}
 	Erratas = errataOverlay.Errata
 	for p := range Erratas {
@@ -32,10 +39,12 @@ func LoadErrataConfig(specRoot string) {
 			slog.Warn("errata points to non-existent file", "path", p)
 		}
 	}
+	return nil
 }
 
 type errataOverlay struct {
-	Errata map[string]*Errata `yaml:"errata"`
+	MinimumVersion string             `yaml:"minimumVersion"`
+	Errata         map[string]*Errata `yaml:"errata"`
 }
 
 func loadConfig(specRoot string) []byte {
@@ -78,4 +87,21 @@ func dumpConfig(errataPath string) {
 		slog.Warn("error writing errata", slog.Any("error", err))
 		return
 	}
+}
+
+func checkMinimumVersion(errataOverlay errataOverlay) error {
+	minVersion, err := semver.NewVersion(errataOverlay.MinimumVersion)
+	if err != nil {
+		slog.Debug("error parsing minimum version", slog.Any("error", err))
+		return nil
+	}
+	bv, err := semver.NewVersion(config.Version())
+	if err != nil {
+		slog.Debug("error parsing local version", slog.Any("error", err), slog.String("version", config.Version()))
+		return nil
+	}
+	if minVersion.GreaterThan(bv) {
+		return fmt.Errorf("this version of the Matter specification requires Alchemy %s", minVersion.String())
+	}
+	return nil
 }
