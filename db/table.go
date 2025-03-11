@@ -10,6 +10,8 @@ import (
 	"github.com/dolthub/go-mysql-server/sql/types"
 	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
@@ -93,6 +95,30 @@ func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTa
 			case matter.TableColumnBit:
 				bitRows := getBitmapSchemaColumnValues(v)
 				row = append(row, bitRows...)
+			case matter.TableColumnConformance:
+				switch v := v.(type) {
+				case conformance.Conformance:
+					row = append(row, v.ASCIIDocString())
+				case nil:
+					row = append(row, nil)
+				case string:
+					row = append(row, v)
+				default:
+					row = append(row, "unknown")
+				}
+			case matter.TableColumnConstraint, matter.TableColumnFallback:
+				switch v := v.(type) {
+				case constraint.Constraint:
+					row = append(row, v.ASCIIDocString(nil))
+				case constraint.Limit:
+					row = append(row, v.ASCIIDocString(nil))
+				case nil:
+					row = append(row, nil)
+				case string:
+					row = append(row, v)
+				default:
+					row = append(row, "unknown")
+				}
 			default:
 				if !ok {
 					row = append(row, nil)
@@ -118,7 +144,7 @@ func populateTable(cxt *mms.Context, t *memory.Table, tableName string, parentTa
 						}
 					}
 					if err != nil {
-						slog.Warn("error encoding row", slog.Any("value", v), slog.Any("error", err))
+						slog.Warn("error encoding row", slog.String("column", col.String()), slog.Any("value", v), slog.Any("error", err))
 						v = nil
 					}
 					row = append(row, v)
