@@ -20,7 +20,10 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOpti
 		return
 	}
 
-	errata.LoadErrataConfig(specRoot)
+	err = errata.LoadErrataConfig(specRoot)
+	if err != nil {
+		return
+	}
 
 	docParser, err := spec.NewParser(specRoot, asciiSettings)
 	if err != nil {

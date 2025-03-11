@@ -48,7 +48,10 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		testplanGeneratorOptions = append(testplanGeneratorOptions, testplanRender.TemplateRoot(templateRoot))
 	}
 
-	errata.LoadErrataConfig(specRoot)
+	err = errata.LoadErrataConfig(specRoot)
+	if err != nil {
+		return
+	}
 
 	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 	if err != nil {

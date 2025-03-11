@@ -22,7 +22,10 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 		}
 	}
 
-	errata.LoadErrataConfig(specRoot)
+	err = errata.LoadErrataConfig(specRoot)
+	if err != nil {
+		return
+	}
 
 	if specRoot != "" {
 
