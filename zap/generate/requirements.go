@@ -24,8 +24,13 @@ type clusterRequirements struct {
 	elementRequirements            []*matter.ElementRequirement
 }
 
+func alternateDeviceTypeName(deviceType *matter.DeviceType) string {
+	name := matter.Case(deviceType.Name)
+	return "MA-" + strings.ToLower(name)
+}
+
 func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
-	xml.SetOrCreateSimpleElement(dte, "name", zap.DeviceTypeName(deviceType))
+	setDeviceTypeName(spec, dte, deviceType)
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP", "name")
 	xml.SetOrCreateSimpleElement(dte, "typeName", deviceType.Name, "name", "domain")
 	xml.SetOrCreateSimpleElement(dte, "profileId", "0x0103", "name", "domain", "typeName").CreateAttr("editable", "false")
@@ -65,6 +70,35 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 	clusterRequirementsByID := p.buildClusterRequirements(spec, cxt, deviceType.ClusterRequirements, deviceType.ElementRequirements)
 	p.setClustersElement(spec, cxt, deviceType, clusterRequirementsByID, dte)
 	return
+}
+
+func setDeviceTypeName(spec *spec.Specification, dte *etree.Element, deviceType *matter.DeviceType) {
+	deviceTypeName := zap.DeviceTypeName(deviceType)
+	doc, ok := spec.DocRefs[deviceType]
+	if ok {
+		errata := doc.Errata()
+		if errata != nil {
+			if errata.ZAP.DeviceTypeNames != nil {
+				nameOverride, ok := errata.ZAP.DeviceTypeNames[deviceType.Name]
+				if ok {
+					deviceTypeName = nameOverride
+					slog.Warn("device type source override doc", "path", deviceTypeName)
+				}
+			}
+		}
+	}
+	existingName, ok := xml.ReadSimpleElement(dte, "name")
+	if ok {
+		if existingName == deviceTypeName {
+			return
+		}
+		alternateName := alternateDeviceTypeName(deviceType)
+		if existingName == alternateName {
+			return
+		}
+	}
+	xml.SetOrCreateSimpleElement(dte, "name", deviceTypeName)
+
 }
 
 func (p *DeviceTypesPatcher) buildClusterRequirements(spec *spec.Specification, conformanceContext conformance.Context, clusterReqs []*matter.ClusterRequirement, elementReqs []*matter.ElementRequirement) (clusterRequirementsByID map[uint64]*clusterRequirements) {
