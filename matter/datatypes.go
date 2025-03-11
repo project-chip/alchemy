@@ -64,7 +64,7 @@ type AssociatedDataTypes struct {
 	Enums     EnumSet     `json:"enums,omitempty"`
 	Structs   StructSet   `json:"structs,omitempty"`
 	TypeDefs  TypeDefSet  `json:"typedefs,omitempty"`
-	Constants ConstantSet `json:"typedefs,omitempty"`
+	Constants ConstantSet `json:"constants,omitempty"`
 }
 
 func (adt *AssociatedDataTypes) AddDataTypes(entities ...types.Entity) {
