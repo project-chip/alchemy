@@ -5,7 +5,7 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/testscript/python"
-	"github.com/project-chip/alchemy/yaml2python"
+	"github.com/project-chip/alchemy/testscript/yaml2python"
 	"github.com/spf13/cobra"
 )
 

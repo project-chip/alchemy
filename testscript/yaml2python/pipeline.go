@@ -11,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/testscript/python"
-	"github.com/project-chip/alchemy/yaml2python/parse"
+	"github.com/project-chip/alchemy/testscript/yaml2python/parse"
 )
 
 func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOptions pipeline.Options, asciiSettings []asciidoc.AttributeName, generatorOptions []python.GeneratorOption, fileOptions files.Options, filePaths []string) (err error) {

@@ -13,7 +13,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testplan"
-	"github.com/project-chip/alchemy/yaml2python/parse"
+	"github.com/project-chip/alchemy/testscript/yaml2python/parse"
 )
 
 func getArg(arg any) (name string, value any, ok bool) {
