@@ -1,4 +1,4 @@
-package yaml2python
+package yaml
 
 import (
 	"slices"
