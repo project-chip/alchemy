@@ -3,7 +3,7 @@ package testplan
 import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/testplan/pics"
-	"github.com/project-chip/alchemy/yaml2python/parse"
+	"github.com/project-chip/alchemy/testscript/yaml2python/parse"
 )
 
 type Test struct {
