@@ -4,8 +4,8 @@ import (
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/testplan/python"
 	"github.com/project-chip/alchemy/testscript"
+	"github.com/project-chip/alchemy/testscript/python"
 	"github.com/spf13/cobra"
 )
 

@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/sdk"
-	"github.com/project-chip/alchemy/testplan/python"
+	"github.com/project-chip/alchemy/testscript/python"
 	"github.com/project-chip/alchemy/yaml2python/parse"
 )
 
