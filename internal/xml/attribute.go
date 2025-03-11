@@ -24,7 +24,7 @@ func PrependAttribute(el *etree.Element, name string, value string, after ...str
 				}
 			}
 		}
-		if lastAfterIndex >= 0 && lastAfterIndex != len(el.Attr)-1 {
+		if lastAfterIndex >= 0 {
 			el.Attr = append(el.Attr[:lastAfterIndex+1], append([]etree.Attr{*a}, el.Attr[lastAfterIndex+1:]...)...)
 			return
 		}
