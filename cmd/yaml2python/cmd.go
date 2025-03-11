@@ -5,7 +5,7 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/testscript/python"
-	"github.com/project-chip/alchemy/testscript/yaml2python"
+	"github.com/project-chip/alchemy/testscript/yaml"
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +40,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		python.TemplateRoot(templateRoot),
 	}
 
-	err = yaml2python.Pipeline(cxt, specRoot, sdkRoot, pipelineOptions, asciiSettings, generatorOptions, fileOptions, args)
+	err = yaml.Pipeline(cxt, specRoot, sdkRoot, pipelineOptions, asciiSettings, generatorOptions, fileOptions, args)
 
 	return
 }
