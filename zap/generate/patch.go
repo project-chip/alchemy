@@ -94,6 +94,7 @@ func patchNumberElement(e *etree.Element, n *matter.Number) {
 func patchDataExtremeAttribute(e *etree.Element, attribute string, de *types.DataTypeExtreme, field *matter.Field) {
 	if !de.Defined() || de.IsNull() {
 		e.RemoveAttr(attribute)
+		return
 	}
 	if de.IsNumeric() {
 		n := matter.NumberFromExtreme(de)
