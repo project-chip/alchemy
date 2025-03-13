@@ -204,7 +204,7 @@ func renderListConstraint(c constraint.Constraint, entryType *types.DataType, pa
 	switch c := c.(type) {
 	case constraint.Set:
 		for _, c := range c {
-			renderConstraint(c, entryType, parent, nil)
+			renderListConstraint(c, entryType, parent)
 		}
 	case *constraint.ListConstraint:
 		renderConstraint(c.EntryConstraint, entryType, parent, nil)
