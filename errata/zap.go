@@ -27,7 +27,8 @@ type ZAP struct {
 
 	DeviceTypeNames map[string]string `yaml:"device-type-names,omitempty"`
 
-	TypeNames map[string]string `yaml:"type-names,omitempty"`
+	TypeNames         map[string]string `yaml:"type-names,omitempty"`
+	ForceIncludeTypes []string          `yaml:"force-include-types,omitempty"`
 }
 
 func GetZAP(path string) *ZAP {

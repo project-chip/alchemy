@@ -82,6 +82,8 @@ func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster) 
 		c.addTypes(parentEntity, e.Fields)
 	}
 
+	c.addForcedTypes(v, parentEntity)
+
 	if v.ID.Valid() {
 		c.ClusterIDs = append(c.ClusterIDs, v.ID.HexString())
 	}
@@ -98,6 +100,35 @@ func (c *Configurator) addCluster(parentEntity types.Entity, v *matter.Cluster) 
 		}
 	}
 	c.Clusters[v] = false
+}
+
+func (c *Configurator) addForcedTypes(cluster *matter.Cluster, parentEntity types.Entity) {
+	if c.Errata != nil && len(c.Errata.ForceIncludeTypes) > 0 {
+		for _, bm := range cluster.Bitmaps {
+			for _, force := range c.Errata.ForceIncludeTypes {
+				if strings.EqualFold(bm.Name, force) {
+					c.addEntityType(parentEntity, bm)
+					break
+				}
+			}
+		}
+		for _, en := range cluster.Enums {
+			for _, force := range c.Errata.ForceIncludeTypes {
+				if strings.EqualFold(en.Name, force) {
+					c.addEntityType(parentEntity, en)
+					break
+				}
+			}
+		}
+		for _, s := range cluster.Structs {
+			for _, force := range c.Errata.ForceIncludeTypes {
+				if strings.EqualFold(s.Name, force) {
+					c.addEntityType(parentEntity, s)
+					break
+				}
+			}
+		}
+	}
 }
 
 func (c *Configurator) addTypes(parentEntity types.Entity, fs matter.FieldSet) {
