@@ -211,22 +211,6 @@ func findEntityForFieldIdentifier(spec *Specification, cluster *matter.Cluster, 
 		return
 	}
 
-	if cluster != nil {
-		if cluster.Features != nil {
-			for fb := range cluster.Features.FeatureBits() {
-				if strings.EqualFold(fb.Code, identifier) {
-					e = fb
-					return
-				}
-			}
-		}
-		for _, a := range cluster.Attributes {
-			if strings.EqualFold(a.Name, identifier) {
-				e = a
-				return
-			}
-		}
-	}
 	field, isField := entity.(*matter.Field)
 	if isField {
 		entity = field.Type.Entity
@@ -265,6 +249,22 @@ func findEntityForFieldIdentifier(spec *Specification, cluster *matter.Cluster, 
 			childField := fieldSet.Get(identifier)
 			if childField != nil {
 				e = childField
+				return
+			}
+		}
+	}
+	if cluster != nil {
+		if cluster.Features != nil {
+			for fb := range cluster.Features.FeatureBits() {
+				if strings.EqualFold(fb.Code, identifier) {
+					e = fb
+					return
+				}
+			}
+		}
+		for _, a := range cluster.Attributes {
+			if strings.EqualFold(a.Name, identifier) {
+				e = a
 				return
 			}
 		}
