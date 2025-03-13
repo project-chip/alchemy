@@ -26,9 +26,6 @@ Input <- conf:Cons+ EOF {
         con := i.(Constraint)
         set = append(set, con)
     }
-	if len(set) == 1 {
-		return set[0], nil
-	}
     return set, nil
 }
 
@@ -47,7 +44,7 @@ EntryConstraint <- _ "[" _ cons:Constraint _ "]" {
 	return cons.(Constraint), nil
 }
 
-Constraint <- cons:(Described / Any /  Range / Min / Max / Logical / TagList / Limit)  {
+Constraint <- cons:(Described / Any /  Range / Min / Max / LogicalConstraint / LogicalLimit / TagList / Limit)  {
 	switch cons := cons.(type) {
 		case Constraint:
 			return cons, nil

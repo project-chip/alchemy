@@ -1,4 +1,4 @@
-Logical = or:Or &{
+LogicalLimit = or:LogicalLimitOr &{
     ll, ok := or.(*LogicalLimit)
     if !ok {
         return false, nil
@@ -8,7 +8,7 @@ Logical = or:Or &{
     return or, nil
 }
 
-Or <- _ left:Xor _ right:OrOp* _ {
+LogicalLimitOr <- _ left:LogicalLimitXor _ right:LogicalLimitOrOp* _ {
     //debug("matched OR %s\n", string(c.text))
     if right == nil {
         return left, nil
@@ -21,13 +21,13 @@ Or <- _ left:Xor _ right:OrOp* _ {
     return NewLogicalLimit("|", leftCE, orOps)
 }
 
-OrOp <- _ ("|" / "\\|") _ f:Xor {
+LogicalLimitOrOp <- _ ("|" / "\\|") _ f:LogicalLimitXor {
     //debug("matched OR op %s\n", string(c.text))
     fc := f.(Limit)
     return fc, nil
 }
 
-Xor <- _ left:And _ right:XorOp* _ {
+LogicalLimitXor <- _ left:LogicalLimitAnd _ right:LogicalLimitXorOp* _ {
     //debug("matched XOR %s\n", string(c.text))
     if right == nil {
         return left, nil
@@ -40,13 +40,13 @@ Xor <- _ left:And _ right:XorOp* _ {
     return NewLogicalLimit("^", leftCE, xorOps)
 }
 
-XorOp <- _ "^" _ f:And {
+LogicalLimitXorOp <- _ "^" _ f:LogicalLimitAnd {
    // debug("matched XOR op %s\n", string(c.text))
     fc := f.(Limit)
     return fc, nil
 }
 
-And <- _ left:LogicalTerm _ right:AndOp* _ {
+LogicalLimitAnd <- _ left:LogicalLimitTerm _ right:LogicalLimitAndOp* _ {
    // debug("matched AND %s\n", string(c.text))
     if right == nil {
         return left, nil
@@ -59,13 +59,13 @@ And <- _ left:LogicalTerm _ right:AndOp* _ {
     return NewLogicalLimit("&", leftCE, addOps)
 }
 
-AndOp <- _ "&" _ f:LogicalTerm {
+LogicalLimitAndOp <- _ "&" _ f:LogicalLimitTerm {
     //debug("matched AND op %s\n", string(c.text))
     fc := f.(Limit)
     return fc, nil
 }
 
-LogicalTerm <- limit:( ParentheticalLogicalLimit / PlainLogicalLimit ) {
+LogicalLimitTerm <- limit:( ParentheticalLogicalLimit / PlainLogicalLimit ) {
 	debug("found limit %s\n", string(c.text))
 	return limit.(Limit), nil
 }
@@ -91,4 +91,92 @@ LogicalIdentifierLimit <- ref:(LogicalIdentifier) field:(ReferenceField)? {
 LogicalIdentifier <- Word {
 	debug("found logical identifier %s\n", string(c.text))
 	return string(c.text), nil
+}
+
+LogicalConstraint = or:LogicalConstraintOr &{
+    ll, ok := or.(*LogicalConstraint)
+    if !ok {
+        return false, nil
+    }
+    return len(ll.Right) > 0, nil 
+} {
+    return or, nil
+}
+
+LogicalConstraintOr <- _ left:LogicalConstraintXor _ right:LogicalConstraintOrOp* _ {
+    //debug("matched OR %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    orOps := right.([]any)
+    if len(orOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(Constraint)
+    return NewLogicalConstraint("|", leftCE, orOps)
+}
+
+LogicalConstraintOrOp <- _ ("|" / "\\|") _ f:LogicalConstraintXor {
+    //debug("matched OR op %s\n", string(c.text))
+    fc := f.(Constraint)
+    return fc, nil
+}
+
+LogicalConstraintXor <- _ left:LogicalConstraintAnd _ right:LogicalConstraintXorOp* _ {
+    //debug("matched XOR %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    xorOps := right.([]any)
+    if len(xorOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(Constraint)
+    return NewLogicalConstraint("^", leftCE, xorOps)
+}
+
+LogicalConstraintXorOp <- _ "^" _ f:LogicalConstraintAnd {
+   // debug("matched XOR op %s\n", string(c.text))
+    fc := f.(Constraint)
+    return fc, nil
+}
+
+LogicalConstraintAnd <- _ left:LogicalConstraintTerm _ right:LogicalConstraintAndOp* _ {
+   // debug("matched AND %s\n", string(c.text))
+    if right == nil {
+        return left, nil
+    }
+    addOps := right.([]any)
+    if len(addOps) == 0 {
+        return left, nil
+    }
+    leftCE := left.(Constraint)
+    return NewLogicalConstraint("&", leftCE, addOps)
+}
+
+LogicalConstraintAndOp <- _ "&" _ f:LogicalConstraintTerm {
+    //debug("matched AND op %s\n", string(c.text))
+    fc := f.(Constraint)
+    return fc, nil
+}
+
+LogicalConstraintTerm <- constraint:( ParentheticalLogicalConstraint / PlainLogicalConstraint ) {
+	debug("found Constraint %s\n", string(c.text))
+	return constraint.(Constraint), nil
+}
+
+ParentheticalLogicalConstraint <- "(" _ constraint:PlainLogicalConstraint _ ")" {
+	return constraint.(Constraint), nil
+}
+
+// Logical expressions are more restricted than most
+PlainLogicalConstraint <- constraint:( Range / Min / Max / Limit) {
+    switch constraint := constraint.(type) {
+		case Constraint:
+			return constraint, nil
+		case Limit:
+			return &ExactConstraint{Value:constraint}, nil
+		default:
+			return nil, fmt.Errorf("unexpected constraint type: %T", constraint)
+	}
 }
