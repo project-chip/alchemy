@@ -228,7 +228,10 @@ func (p *DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element
 					return
 				}
 			} else {
-				slog.Warn("unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
+				slog.Warn("Removing unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
+				if include != nil {
+					clustersElement.RemoveChild(include)
+				}
 				return
 			}
 		}
