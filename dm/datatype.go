@@ -197,8 +197,17 @@ func renderDataType(f *matter.Field, i *etree.Element) {
 	i.CreateAttr("type", "list")
 	e := i.CreateElement("entry")
 	e.CreateAttr("type", dataModelName(f.Type.EntryType))
-	if lc, ok := f.Constraint.(*constraint.ListConstraint); ok {
-		renderConstraint(lc.EntryConstraint, f.Type.EntryType, e, nil)
+	renderListConstraint(f.Constraint, f.Type.EntryType, e)
+}
+
+func renderListConstraint(c constraint.Constraint, entryType *types.DataType, parent *etree.Element) {
+	switch c := c.(type) {
+	case constraint.Set:
+		for _, c := range c {
+			renderConstraint(c, entryType, parent, nil)
+		}
+	case *constraint.ListConstraint:
+		renderConstraint(c.EntryConstraint, entryType, parent, nil)
 	}
 }
 

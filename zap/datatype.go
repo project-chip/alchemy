@@ -540,19 +540,30 @@ func minMaxFromConstraint(cc *matter.ConstraintContext, c constraint.Constraint)
 	if c == nil {
 		return
 	}
-	if cc.Field.Type.IsArray() {
-		switch cc.Field.Constraint.(type) {
-		case *constraint.DescribedConstraint, *constraint.AllConstraint, *constraint.GenericConstraint:
-			return
-		case *constraint.ListConstraint, *constraint.MaxConstraint, *constraint.MinConstraint, *constraint.RangeConstraint, *constraint.ExactConstraint:
-		default:
-			slog.Warn("Array field has constraint not compatible with arrays", "field", cc.Field.Name, "constraint", cc.Field.Constraint)
-			return
-		}
+	if cc.Field.Type.IsArray() && !isValidArrayConstraint(cc.Field, c) {
+		return
 	}
 	from = c.Min(cc)
 	to = c.Max(cc)
 	return
+}
+
+func isValidArrayConstraint(field *matter.Field, cons constraint.Constraint) bool {
+	switch cons := cons.(type) {
+	case constraint.Set:
+		for _, c := range cons {
+			if !isValidArrayConstraint(field, c) {
+				return false
+			}
+		}
+	case *constraint.DescribedConstraint, *constraint.AllConstraint, *constraint.GenericConstraint:
+		return false
+	case *constraint.ListConstraint, *constraint.MaxConstraint, *constraint.MinConstraint, *constraint.RangeConstraint, *constraint.ExactConstraint:
+	default:
+		slog.Warn("Array field has constraint not compatible with arrays", "field", field.Name, "constraint", cons)
+		return false
+	}
+	return true
 }
 
 func GetFallbackValue(cc *matter.ConstraintContext) (fallbackValue types.DataTypeExtreme) {
