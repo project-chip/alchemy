@@ -231,7 +231,6 @@ func findEntityForFieldIdentifier(spec *Specification, cluster *matter.Cluster, 
 					return
 				}
 			}
-			slog.Warn("Unable to find matching enum for identifier limit", log.Path("source", source), slog.String("identifier", identifier), slog.String("enum", entity.Name), log.Path("enumSource", entity))
 
 		case *matter.Bitmap:
 			for _, v := range entity.Bits {
@@ -240,10 +239,8 @@ func findEntityForFieldIdentifier(spec *Specification, cluster *matter.Cluster, 
 					return
 				}
 			}
-			slog.Warn("Unable to find matching bit for identifier limit", log.Path("source", source), slog.String("identifier", identifier), log.Type("bitmap", entity.Name))
-
 		default:
-			slog.Warn("referenced constraint field has a type without fields", log.Path("source", source), slog.String("identifier", identifier), log.Type("type", entity))
+			slog.Warn("referenced identifier field has a type without fields", log.Path("source", source), slog.String("identifier", identifier), log.Type("type", entity))
 		}
 		if len(fieldSet) > 0 {
 			childField := fieldSet.Get(identifier)
@@ -277,5 +274,6 @@ func findEntityForFieldIdentifier(spec *Specification, cluster *matter.Cluster, 
 			}
 		}
 	}
+	slog.Warn("Unable to find matching entity for identifier", log.Path("source", source), slog.String("identifier", identifier))
 	return
 }
