@@ -21,9 +21,9 @@ func (cs Set) ASCIIDocString(dataType *types.DataType) string {
 		if b.Len() > 0 {
 			b.WriteString(", ")
 		}
-		b.WriteString(con.ASCIIDocString(dataType))
+		b.WriteString(text.TrimUnnecessaryParens(con.ASCIIDocString(dataType)))
 	}
-	return text.TrimUnnecessaryParens(b.String())
+	return b.String()
 }
 
 func (cs Set) Equal(o Constraint) bool {
@@ -52,6 +52,11 @@ func (cs Set) Min(c Context) (min types.DataTypeExtreme) {
 		if !f.Defined() {
 			continue
 		}
+		if !from.Defined() {
+			from = f
+			continue
+		}
+
 		from = minExtreme(from, f)
 	}
 
@@ -61,11 +66,15 @@ func (cs Set) Min(c Context) (min types.DataTypeExtreme) {
 func (cs Set) Max(c Context) (max types.DataTypeExtreme) {
 	var to types.DataTypeExtreme
 
-	to = cs[0].Min(c)
+	to = cs[0].Max(c)
 	for i := 1; i < len(cs); i++ {
 		con := cs[i]
 		t := con.Max(c)
 		if !t.Defined() {
+			continue
+		}
+		if !to.Defined() {
+			to = t
 			continue
 		}
 		to = maxExtreme(to, t)
@@ -115,6 +124,7 @@ func minExtreme(f1 types.DataTypeExtreme, f2 types.DataTypeExtreme) types.DataTy
 			if f1.UInt64 < f2.UInt64 {
 				return f1
 			}
+			return f2
 		case types.DataTypeExtremeTypeInt64:
 			if f1.UInt64 > math.MaxInt64 {
 				return f2
@@ -137,15 +147,15 @@ func maxExtreme(f1 types.DataTypeExtreme, f2 types.DataTypeExtreme) types.DataTy
 		case types.DataTypeExtremeTypeUndefined:
 			return f2
 		case types.DataTypeExtremeTypeInt64:
-			if f1.Int64 > f2.Int64 {
-				return f1
+			if f2.Int64 > f1.Int64 {
+				return f2
 			}
-			return f2
+			return f1
 		case types.DataTypeExtremeTypeUInt64:
 			if f2.UInt64 > math.MaxInt64 {
 				return f2
 			}
-			if f1.Int64 < int64(f2.UInt64) {
+			if int64(f2.UInt64) > f1.Int64 {
 				return f2
 			}
 			return f1
@@ -155,9 +165,10 @@ func maxExtreme(f1 types.DataTypeExtreme, f2 types.DataTypeExtreme) types.DataTy
 		case types.DataTypeExtremeTypeUndefined:
 			return f2
 		case types.DataTypeExtremeTypeUInt64:
-			if f1.UInt64 < f2.UInt64 {
+			if f2.UInt64 > f1.UInt64 {
 				return f2
 			}
+			return f1
 		case types.DataTypeExtremeTypeInt64:
 			if f1.UInt64 > math.MaxInt64 {
 				return f1

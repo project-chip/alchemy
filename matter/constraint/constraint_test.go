@@ -106,6 +106,12 @@ func stitchFieldConstraint(fs fieldSet, cons Constraint) {
 	case *RangeConstraint:
 		stitchFieldLimit(fs, cons.Maximum)
 		stitchFieldLimit(fs, cons.Minimum)
+	case *LogicalConstraint:
+		stitchFieldConstraint(fs, cons.Left)
+		for _, r := range cons.Right {
+			stitchFieldConstraint(fs, r)
+		}
+	case *AllConstraint, *TagListConstraint:
 	default:
 		fmt.Printf("unknown field constraint type: %T\n", cons)
 	}
@@ -125,7 +131,12 @@ func stitchFieldLimit(fs fieldSet, l Limit) {
 	case *MathExpressionLimit:
 		stitchFieldLimit(fs, l.Left)
 		stitchFieldLimit(fs, l.Right)
-	case *IntLimit:
+	case *LogicalLimit:
+		stitchFieldLimit(fs, l.Left)
+		for _, r := range l.Right {
+			stitchFieldLimit(fs, r)
+		}
+	case *BooleanLimit, *IntLimit, *ExpLimit, *HexLimit, *NullLimit, *PercentLimit, *TemperatureLimit, *ManufacturerLimit:
 	default:
 		fmt.Printf("unknown field limit type: %T\n", l)
 	}
@@ -144,6 +155,15 @@ type constraintTest struct {
 }
 
 var constraintTests = []constraintTest{
+	{
+		constraint: "HoldTimeMin & min 10",
+		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeInt64, Int64: 10, Format: types.NumberFormatInt},
+		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined},
+		zapMin:     "10",
+		fields: stitchFieldSet(fieldSet{
+			{Name: "HoldTimeMin", Constraint: mustParseConstraint("min 1")},
+		}),
+	},
 	{
 		constraint: "Includes `Grid` and `Battery`",
 		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
@@ -164,14 +184,14 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "kWh | kVAh",
 		asciiDoc:   `kWh \| kVAh`,
-		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
-		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined},
+		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined},
 	},
 	{
 		constraint: `kWh \| kVAh`,
 		asciiDoc:   `kWh \| kVAh`,
-		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
-		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
+		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined},
+		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined},
 	},
 	{
 		constraint: "min <<ref_NumberOfScheduleTransitions>>",
@@ -607,13 +627,6 @@ func TestSuite(t *testing.T) {
 
 		if min.ZapString(ct.dataType) != ct.zapMin {
 			t.Errorf("incorrect ZAP min value for \"%s\": expected %s, got %s", ct.constraint, ct.zapMin, min.ZapString(ct.dataType))
-			t.Errorf("expected error parsing %s; got %T: %s", ct.constraint, c, c.ASCIIDocString(ct.dataType))
-			if c, ok := c.(*ListConstraint); ok {
-				t.Errorf("expected error parsing %s; got %T: %s", ct.constraint, c.Constraint, c.Constraint.ASCIIDocString(ct.dataType))
-				t.Errorf("expected error parsing %s; got %T: %s", ct.constraint, c.EntryConstraint, c.EntryConstraint.ASCIIDocString(ct.dataType))
-
-			}
-
 		}
 		if max.ZapString(ct.dataType) != ct.zapMax {
 			t.Errorf("incorrect ZAP max value for \"%s\": expected %s, got %s", ct.constraint, ct.zapMax, max.ZapString(ct.dataType))

@@ -26,7 +26,7 @@ func (cs Set) ASCIIDocString() string {
 		if s.Len() > 0 {
 			s.WriteString(", ")
 		}
-		s.WriteString(c.ASCIIDocString())
+		s.WriteString(text.TrimUnnecessaryParens(c.ASCIIDocString()))
 		switch c := c.(type) {
 		case *Disallowed, *Deprecated:
 			return s.String()
@@ -40,7 +40,7 @@ func (cs Set) ASCIIDocString() string {
 			}
 		}
 	}
-	return text.TrimUnnecessaryParens(s.String())
+	return s.String()
 }
 
 func (cs Set) Description() string {
