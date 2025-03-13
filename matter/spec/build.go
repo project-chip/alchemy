@@ -184,6 +184,8 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 	if !sp.ignoreHierarchy {
 		resolveHierarchy(spec)
 	}
+	associateDeviceTypeRequirementWithClusters(spec)
+
 	sp.resolveDataTypeReferences(spec)
 	sp.resolveConformances(spec)
 	sp.resolveConstraints(spec)
@@ -193,7 +195,6 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 	}
 
 	buildClusterReferences(spec)
-	associateDeviceTypeRequirementWithClusters(spec)
 
 	return
 }
