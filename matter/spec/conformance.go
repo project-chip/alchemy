@@ -138,6 +138,9 @@ func resolveFieldConformanceReferences(spec *Specification, cluster *matter.Clus
 		for _, c := range con {
 			resolveFieldConformanceReferences(spec, cluster, finder, source, entity, c)
 		}
+	case *conformance.Disallowed, *conformance.Provisional, *conformance.Described, *conformance.Deprecated:
+	default:
+		slog.Warn("Unexpected field conformance type", log.Type("type", con))
 	}
 }
 
@@ -194,7 +197,6 @@ func resolveFieldConformanceValueReferences(spec *Specification, cluster *matter
 		}
 	case *conformance.ReferenceValue:
 		if cv.Entity == nil {
-			//slog.Info("resolving conformance value reference", "ref", cv.Reference, log.Path("path", source))
 			cv.Entity = getCustomDataTypeFromReference(spec, cluster, cv.Reference, cv.Label)
 			if cv.Entity == nil {
 				slog.Warn("failed to resolve conformance value reference", "ref", cv.Reference, log.Path("path", source), slog.Any("entity", cv.Entity))
