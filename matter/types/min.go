@@ -36,7 +36,7 @@ var fromRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypePosixMilliseconds: {Type: DataTypeExtremeTypeUInt64, UInt64: 0, Format: NumberFormatHex},
 
 	BaseDataTypePercent:           {Type: DataTypeExtremeTypeUInt64, UInt64: 0},
-	BaseDataTypePercentHundredths: {Type: DataTypeExtremeTypeUInt64, UInt64: 10000},
+	BaseDataTypePercentHundredths: {Type: DataTypeExtremeTypeUInt64, UInt64: 0},
 	BaseDataTypeTemperature:       {Type: DataTypeExtremeTypeInt64, Int64: -27315, Format: NumberFormatInt},
 	BaseDataTypeAmperage:          {Type: DataTypeExtremeTypeInt64, Int64: minInt62, Format: NumberFormatHex},
 	BaseDataTypeVoltage:           {Type: DataTypeExtremeTypeInt64, Int64: minInt62, Format: NumberFormatHex},
@@ -54,13 +54,17 @@ var fromRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeUnsignedTemperature:   {Type: DataTypeExtremeTypeUInt64, UInt64: 0},
 }
 
-func (dt *DataType) Min(nullable bool) (from DataTypeExtreme) {
+func Min(baseType BaseDataType, nullable bool) (from DataTypeExtreme) {
 	var ok bool
 	if nullable {
-		from, ok = fromRangesNullable[dt.BaseType]
+		from, ok = fromRangesNullable[baseType]
 	}
 	if !ok {
-		from = fromRanges[dt.BaseType]
+		from = fromRanges[baseType]
 	}
 	return
+}
+
+func (dt *DataType) Min(nullable bool) (from DataTypeExtreme) {
+	return Min(dt.BaseType, nullable)
 }
