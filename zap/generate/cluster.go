@@ -189,7 +189,7 @@ func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.
 			slog.Warn("globalAttribute element with invalid code attribute", slog.String("path", configurator.OutPath), slog.String("code", code.Value))
 			continue
 		}
-		setClusterGlobalAttribute(globalAttribute, cluster, id)
+		setClusterGlobalAttribute(cle, globalAttribute, cluster, id)
 		if id.Value() == 0xFFFD {
 			setClusterRevision = true
 		}
@@ -198,13 +198,13 @@ func generateClusterGlobalAttributes(configurator *zap.Configurator, cle *etree.
 		globalAttribute := etree.NewElement("globalAttribute")
 		id := matter.NewNumber(0xFFFD)
 		globalAttribute.CreateAttr("code", id.HexString())
-		setClusterGlobalAttribute(globalAttribute, cluster, id)
+		setClusterGlobalAttribute(cle, globalAttribute, cluster, id)
 		xml.AppendElement(cle, globalAttribute, "server", "client", "description", "define")
 	}
 	return
 }
 
-func setClusterGlobalAttribute(globalAttribute *etree.Element, cluster *matter.Cluster, id *matter.Number) {
+func setClusterGlobalAttribute(parent *etree.Element, globalAttribute *etree.Element, cluster *matter.Cluster, id *matter.Number) {
 	switch id.Value() {
 	case 0xFFFD:
 		var lastRevision uint64
@@ -216,6 +216,11 @@ func setClusterGlobalAttribute(globalAttribute *etree.Element, cluster *matter.C
 		}
 		globalAttribute.CreateAttr("side", "either")
 		globalAttribute.CreateAttr("value", strconv.FormatUint(lastRevision, 10))
+	case 0xFFFC:
+		slog.Warn("Removing redundant feature global attribute", slog.String("clusterName", cluster.Name))
+		parent.RemoveChild(globalAttribute)
+	default:
+		slog.Warn("Unrecognized global attribute", slog.String("id", id.HexString()))
 	}
 }
 
