@@ -45,6 +45,17 @@ func (ce *DataTypeExtreme) IsNumeric() bool {
 	return ce.Type == DataTypeExtremeTypeInt64 || ce.Type == DataTypeExtremeTypeUInt64
 }
 
+func (ce *DataTypeExtreme) IsZero() bool {
+	switch ce.Type {
+	case DataTypeExtremeTypeInt64:
+		return ce.Int64 == 0
+	case DataTypeExtremeTypeUInt64:
+		return ce.UInt64 == 0
+	default:
+		return false
+	}
+}
+
 func (ce *DataTypeExtreme) Value() any {
 	switch ce.Type {
 	case DataTypeExtremeTypeInt64:
