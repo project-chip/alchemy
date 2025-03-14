@@ -43,9 +43,9 @@ func (ll *LengthLimit) Min(cc Context) (min types.DataTypeExtreme) {
 func (ll *LengthLimit) Max(cc Context) (max types.DataTypeExtreme) {
 	switch ref := ll.Reference.(type) {
 	case *ReferenceLimit:
-		max = cc.MaxEntityValue(ref.Entity, ref.Field)
+		max = ref.Max(cc)
 	case *IdentifierLimit:
-		max = cc.MaxEntityValue(ref.Entity, ref.Field)
+		max = ref.Max(cc)
 	default:
 		slog.Warn("Unknown limit type on length limit", log.Type("type", ref))
 	}

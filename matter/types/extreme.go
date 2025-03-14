@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cmp"
 	"fmt"
 	"math"
 	"strconv"
@@ -218,5 +219,35 @@ func (ce DataTypeExtreme) ValueEquals(o DataTypeExtreme) bool {
 		return false
 	default:
 		return ce.Type == o.Type
+	}
+}
+func (ce DataTypeExtreme) Compare(o DataTypeExtreme) (int, bool) {
+	switch ce.Type {
+	case DataTypeExtremeTypeInt64:
+		switch o.Type {
+		case DataTypeExtremeTypeInt64:
+			return cmp.Compare(ce.Int64, o.Int64), true
+		case DataTypeExtremeTypeUInt64:
+			if o.UInt64 > math.MaxInt64 {
+				return -1, true
+			}
+			return cmp.Compare(ce.Int64, int64(o.UInt64)), true
+		default:
+			return 0, false
+		}
+	case DataTypeExtremeTypeUInt64:
+		switch o.Type {
+		case DataTypeExtremeTypeUInt64:
+			return cmp.Compare(ce.UInt64, o.UInt64), true
+		case DataTypeExtremeTypeInt64:
+			if ce.UInt64 > math.MaxInt64 {
+				return 1, true
+			}
+			return cmp.Compare(int64(ce.UInt64), o.Int64), true
+		default:
+			return 0, false
+		}
+	default:
+		return 0, false
 	}
 }

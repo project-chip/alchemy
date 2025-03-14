@@ -175,7 +175,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 func setFieldFallback(e *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
 	if !constraint.IsGenericLimit(field.Fallback) && !constraint.IsBlankLimit(field.Fallback) {
 		fallbackValue := zap.GetFallbackValue(&matter.ConstraintContext{Field: field, Fields: fieldSet})
-		patchDataExtremeAttribute(e, "default", &fallbackValue, field)
+		patchDataExtremeAttribute(e, "default", &fallbackValue, field, dataExtremeTypeFallback)
 	} else {
 		e.RemoveAttr("default")
 	}

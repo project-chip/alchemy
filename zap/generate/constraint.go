@@ -31,19 +31,19 @@ func renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {
 
 	if f.Type != nil && (f.Type.HasLength() || f.Type.IsArray()) {
 		if to.Defined() {
-			patchDataExtremeAttribute(el, "length", &to, f)
+			patchDataExtremeAttribute(el, "length", &to, f, dataExtremeTypeMinimum)
 		}
 		if from.Defined() {
-			patchDataExtremeAttribute(el, "minLength", &from, f)
+				patchDataExtremeAttribute(el, "minLength", &from, f, dataExtremeTypeMaximum)
 		}
 		el.RemoveAttr("min")
 		el.RemoveAttr("max")
 	} else {
 		if from.Defined() {
-			patchDataExtremeAttribute(el, "min", &from, f)
+			patchDataExtremeAttribute(el, "min", &from, f, dataExtremeTypeMinimum)
 		}
 		if to.Defined() {
-			patchDataExtremeAttribute(el, "max", &to, f)
+			patchDataExtremeAttribute(el, "max", &to, f, dataExtremeTypeMaximum)
 		}
 		el.RemoveAttr("minLength")
 		el.RemoveAttr("length")

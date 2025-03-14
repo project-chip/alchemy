@@ -31,6 +31,10 @@ func (c *MinConstraint) Min(cc Context) (min types.DataTypeExtreme) {
 }
 
 func (c *MinConstraint) Max(cc Context) (max types.DataTypeExtreme) {
+	dt := cc.DataType()
+	if dt != nil {
+		max = types.Max(dt.BaseType, cc.Nullable())
+	}
 	return
 }
 

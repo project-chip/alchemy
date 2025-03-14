@@ -12,6 +12,7 @@ type field struct {
 	Name       string
 	Constraint Constraint
 	Type       *types.DataType
+	Nullable   bool
 }
 
 func (f *field) EntityType() types.EntityType {
@@ -40,6 +41,13 @@ func (fs fieldSet) getField(name string) *field {
 type constraintTestContext struct {
 	field  *field
 	fields fieldSet
+}
+
+func (cc *constraintTestContext) Nullable() bool {
+	if cc.field != nil {
+		return cc.field.Nullable
+	}
+	return false
 }
 
 func (cc *constraintTestContext) DataType() *types.DataType {
