@@ -43,7 +43,7 @@ func LoadErrataConfig(specRoot string) error {
 }
 
 type errataOverlay struct {
-	MinimumVersion string             `yaml:"minimumVersion"`
+	MinimumVersion string             `yaml:"minimum-version"`
 	Errata         map[string]*Errata `yaml:"errata"`
 }
 
