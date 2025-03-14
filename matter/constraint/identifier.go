@@ -2,6 +2,7 @@ package constraint
 
 import (
 	"encoding/json"
+	"log/slog"
 	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
@@ -35,11 +36,20 @@ func (c *IdentifierLimit) Equal(o Limit) bool {
 }
 
 func (c *IdentifierLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	if c.Entity == nil {
+		slog.Error("Unable to find min value for identifier", slog.String("id", c.ID))
+		return
+	}
+
 	min = cc.MinEntityValue(c.Entity, c.Field)
 	return
 }
 
 func (c *IdentifierLimit) Max(cc Context) (max types.DataTypeExtreme) {
+	if c.Entity == nil {
+		slog.Error("Unable to find max value for identifier", slog.String("id", c.ID))
+		return
+	}
 	max = cc.MaxEntityValue(c.Entity, c.Field)
 	return
 }

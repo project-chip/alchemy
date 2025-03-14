@@ -264,7 +264,7 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 			} else {
 				if c, ok := spec.ClustersByName[cr.ClusterName]; ok {
 					cr.Cluster = c
-					slog.Warn("linking cluster requirement by name on device type", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
+					slog.Warn("linking cluster requirement by name on device type since cluster ID was not recognized", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
 				} else {
 					slog.Error("unknown cluster ID for cluster requirement on device type", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
 				}
@@ -279,7 +279,7 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 			} else {
 				if c, ok := spec.ClustersByName[er.ClusterName]; ok {
 					er.Cluster = c
-					slog.Warn("linking element requirement by cluster name on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
+					slog.Warn("linking element requirement by cluster name on device type since cluster ID was not recognized", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
 				} else {
 					slog.Error("unknown cluster ID for element requirement on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
 				}
