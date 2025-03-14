@@ -42,14 +42,14 @@ var toRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeEpochSeconds:      {Type: DataTypeExtremeTypeUInt64, UInt64: math.MaxUint32, Format: NumberFormatHex},
 	BaseDataTypePosixMilliseconds: {Type: DataTypeExtremeTypeUInt64, UInt64: math.MaxUint64, Format: NumberFormatHex},
 
-	BaseDataTypeAmperage:       {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeVoltage:        {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypePower:          {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeEnergy:         {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeApparentPower:  {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeApparentEnergy: {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeReactivePower:  {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
-	BaseDataTypeReactiveEnergy: {Type: DataTypeExtremeTypeInt64, Int64: maxInt62},
+	BaseDataTypeAmperage:       {Type: DataTypeExtremeTypeInt64, Int64: maxInt62, Format: NumberFormatHex},
+	BaseDataTypeVoltage:        {Type: DataTypeExtremeTypeInt64, Int64: maxInt62, Format: NumberFormatHex},
+	BaseDataTypePower:          {Type: DataTypeExtremeTypeInt64, Int64: maxInt62, Format: NumberFormatHex},
+	BaseDataTypeEnergy:         {Type: DataTypeExtremeTypeInt64, Int64: maxInt62, Format: NumberFormatHex},
+	BaseDataTypeApparentPower:  {Type: DataTypeExtremeTypeInt64, Int64: maxInt62, Format: NumberFormatHex},
+	BaseDataTypeApparentEnergy: {Type: DataTypeExtremeTypeInt64, Int64: maxInt62, Format: NumberFormatHex},
+	BaseDataTypeReactivePower:  {Type: DataTypeExtremeTypeInt64, Int64: maxInt62, Format: NumberFormatHex},
+	BaseDataTypeReactiveEnergy: {Type: DataTypeExtremeTypeInt64, Int64: maxInt62, Format: NumberFormatHex},
 
 	BaseDataTypeMoney: {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt64, Format: NumberFormatInt},
 
