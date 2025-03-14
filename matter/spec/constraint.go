@@ -274,6 +274,6 @@ func findEntityForFieldIdentifier(spec *Specification, cluster *matter.Cluster, 
 			}
 		}
 	}
-	slog.Warn("Unable to find matching entity for identifier", log.Path("source", source), slog.String("identifier", identifier))
+	slog.Error("Unable to find matching entity for identifier", log.Path("source", source), slog.String("identifier", identifier))
 	return
 }

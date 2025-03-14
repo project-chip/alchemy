@@ -2,6 +2,7 @@ package constraint
 
 import (
 	"encoding/json"
+	"log/slog"
 	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
@@ -42,11 +43,20 @@ func (c *ReferenceLimit) Equal(o Limit) bool {
 }
 
 func (c *ReferenceLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	if c.Entity == nil {
+		slog.Error("Unable to find min value for reference", slog.String("reference", c.Reference))
+		return
+	}
 	min = cc.MinEntityValue(c.Entity, c.Field)
 	return
 }
 
 func (c *ReferenceLimit) Max(cc Context) (max types.DataTypeExtreme) {
+	if c.Entity == nil {
+		slog.Error("Unable to find max value for reference", slog.String("reference", c.Reference))
+		return
+	}
+
 	max = cc.MaxEntityValue(c.Entity, c.Field)
 	return
 }
