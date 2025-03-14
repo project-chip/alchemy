@@ -34,7 +34,11 @@ func renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {
 			patchDataExtremeAttribute(el, "length", &to, f, dataExtremeTypeMinimum)
 		}
 		if from.Defined() {
+			if from.IsZero() {
+				el.RemoveAttr("minLength")
+			} else {
 				patchDataExtremeAttribute(el, "minLength", &from, f, dataExtremeTypeMaximum)
+			}
 		}
 		el.RemoveAttr("min")
 		el.RemoveAttr("max")
