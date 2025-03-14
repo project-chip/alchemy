@@ -80,7 +80,7 @@ func (cc *ConstraintContext) getReferencedField(ref string, field constraint.Lim
 func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constraint.Limit) (min types.DataTypeExtreme) {
 	switch entity := entity.(type) {
 	case *Field:
-		min = entity.Constraint.Min(cc)
+		min = entity.Constraint.Min(&ConstraintContext{Field: entity, Fields: cc.Fields, visitedReferences: cc.visitedReferences})
 	case Bit:
 		from, _, err := entity.Bits()
 		if err != nil {
@@ -101,7 +101,7 @@ func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constrain
 func (cc *ConstraintContext) MaxEntityValue(entity types.Entity, field constraint.Limit) (max types.DataTypeExtreme) {
 	switch entity := entity.(type) {
 	case *Field:
-		max = entity.Constraint.Max(cc)
+		max = entity.Constraint.Max(&ConstraintContext{Field: entity, Fields: cc.Fields, visitedReferences: cc.visitedReferences})
 	case Bit:
 		_, to, err := entity.Bits()
 		if err != nil {
