@@ -437,6 +437,46 @@ func ToBaseDataType(s string) types.BaseDataType {
 	}
 	return types.BaseDataTypeUnknown
 }
+
+func ToUnderlyingType(dt types.BaseDataType) types.BaseDataType {
+	switch dt {
+	case types.BaseDataTypeInt40,
+		types.BaseDataTypeInt48,
+		types.BaseDataTypeInt56:
+		return types.BaseDataTypeInt64
+	case types.BaseDataTypeUInt40,
+		types.BaseDataTypeUInt48,
+		types.BaseDataTypeUInt56:
+		return types.BaseDataTypeUInt64
+	case types.BaseDataTypePower,
+		types.BaseDataTypeApparentPower,
+		types.BaseDataTypeReactivePower,
+		types.BaseDataTypeAmperage,
+		types.BaseDataTypeVoltage,
+		types.BaseDataTypeEnergy,
+		types.BaseDataTypeApparentEnergy,
+		types.BaseDataTypeReactiveEnergy,
+		types.BaseDataTypeMoney:
+		return types.BaseDataTypeInt64
+	case types.BaseDataTypeEpochMicroseconds,
+		types.BaseDataTypeSystimeMicroseconds,
+		types.BaseDataTypePosixMilliseconds,
+		types.BaseDataTypeSystimeMilliseconds:
+		return types.BaseDataTypeUInt64
+	case types.BaseDataTypeEpochSeconds,
+		types.BaseDataTypeElapsedSeconds:
+		return types.BaseDataTypeUInt32
+	case types.BaseDataTypeTemperature:
+		return types.BaseDataTypeInt16
+	case types.BaseDataTypePercent:
+		return types.BaseDataTypeUInt8
+	case types.BaseDataTypePercentHundredths:
+		return types.BaseDataTypeUInt16
+	default:
+		return dt
+	}
+}
+
 func maxOver255Bytes(fs matter.FieldSet, f *matter.Field) bool {
 	if f.Constraint == nil {
 		return false
@@ -478,6 +518,7 @@ func GetMinMax(cc *matter.ConstraintContext, c constraint.Constraint) (from type
 	if cc.Field.Type == nil {
 		return
 	}
+
 	from, to = minMaxFromConstraint(cc, c)
 
 	if from.Defined() || to.Defined() {

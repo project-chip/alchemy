@@ -15,6 +15,13 @@ type ConstraintContext struct {
 	visitedReferences map[string]struct{}
 }
 
+func (cc *ConstraintContext) Nullable() bool {
+	if cc.Field != nil {
+		return cc.Field.Quality.Has(QualityNullable)
+	}
+	return false
+}
+
 func (cc *ConstraintContext) DataType() *types.DataType {
 	if cc.Field != nil {
 		return cc.Field.Type

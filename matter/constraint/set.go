@@ -45,18 +45,15 @@ func (cs Set) Equal(o Constraint) bool {
 func (cs Set) Min(c Context) (min types.DataTypeExtreme) {
 	var from types.DataTypeExtreme
 
-	from = cs[0].Min(c)
-	for i := 1; i < len(cs); i++ {
-		con := cs[i]
+	for _, con := range cs {
 		f := con.Min(c)
-		if !f.Defined() {
-			continue
-		}
 		if !from.Defined() {
 			from = f
 			continue
 		}
-
+		if !f.Defined() {
+			continue
+		}
 		from = minExtreme(from, f)
 	}
 
@@ -66,15 +63,13 @@ func (cs Set) Min(c Context) (min types.DataTypeExtreme) {
 func (cs Set) Max(c Context) (max types.DataTypeExtreme) {
 	var to types.DataTypeExtreme
 
-	to = cs[0].Max(c)
-	for i := 1; i < len(cs); i++ {
-		con := cs[i]
+	for _, con := range cs {
 		t := con.Max(c)
-		if !t.Defined() {
-			continue
-		}
 		if !to.Defined() {
 			to = t
+			continue
+		}
+		if !t.Defined() {
 			continue
 		}
 		to = maxExtreme(to, t)
