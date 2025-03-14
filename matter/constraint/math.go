@@ -90,10 +90,23 @@ func (c *MathExpressionLimit) operate(left types.DataTypeExtreme, right types.Da
 	default:
 	}
 	if extreme.Type != types.DataTypeExtremeTypeUndefined {
-		if left.Format == right.Format {
-			extreme.Format = left.Format
-		} else {
-			extreme.Format = types.NumberFormatAuto
+		switch left.Format {
+		case types.NumberFormatHex:
+			extreme.Format = types.NumberFormatHex
+		case types.NumberFormatInt:
+			switch right.Format {
+			case types.NumberFormatInt, types.NumberFormatHex:
+				extreme.Format = right.Format
+			case types.NumberFormatAuto, types.NumberFormatUndefined:
+				extreme.Format = left.Format
+			}
+		case types.NumberFormatAuto:
+			switch right.Format {
+			case types.NumberFormatInt, types.NumberFormatHex:
+				extreme.Format = right.Format
+			case types.NumberFormatAuto, types.NumberFormatUndefined:
+				extreme.Format = types.NumberFormatAuto
+			}
 		}
 	}
 	return
