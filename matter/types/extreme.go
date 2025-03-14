@@ -76,7 +76,7 @@ func (ce *DataTypeExtreme) ZapString(dataType *DataType) string {
 			}
 			return fmt.Sprintf("0x%X", uint64(val))
 		case NumberFormatAuto:
-			if val > 255 || val < 256 {
+			if val > 255 || val < -256 {
 				return fmt.Sprintf("0x%X", uint64(val))
 			}
 			return strconv.FormatInt(val, 10)

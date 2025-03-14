@@ -59,13 +59,17 @@ var toRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeUnsignedTemperature:   {Type: DataTypeExtremeTypeUInt64, UInt64: math.MaxUint8, Format: NumberFormatInt},
 }
 
-func (dt *DataType) Max(nullable bool) (to DataTypeExtreme) {
+func Max(baseType BaseDataType, nullable bool) (to DataTypeExtreme) {
 	var ok bool
 	if nullable {
-		to, ok = toRangesNullable[dt.BaseType]
+		to, ok = toRangesNullable[baseType]
 	}
 	if !ok {
-		to = toRanges[dt.BaseType]
+		to = toRanges[baseType]
 	}
 	return
+}
+
+func (dt *DataType) Max(nullable bool) (to DataTypeExtreme) {
+	return Max(dt.BaseType, nullable)
 }
