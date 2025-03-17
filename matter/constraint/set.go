@@ -205,3 +205,95 @@ func UnmarshalConstraintSetJSON(list []json.RawMessage) (set Set, err error) {
 	}
 	return
 }
+
+type LimitSet []Limit
+
+func (ls LimitSet) ASCIIDocString(dataType *types.DataType, sb *strings.Builder) {
+	for i, l := range ls {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(text.TrimUnnecessaryParens(l.ASCIIDocString(dataType)))
+	}
+}
+
+func (ls LimitSet) DataModelString(dataType *types.DataType, sb *strings.Builder) {
+	for i, l := range ls {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(text.TrimUnnecessaryParens(l.DataModelString(dataType)))
+	}
+}
+
+func (ls LimitSet) Equal(o LimitSet) bool {
+	if len(ls) != len(o) {
+		return false
+	}
+	for i, l := range ls {
+		if !o[i].Equal(l) {
+			return false
+		}
+	}
+	return true
+}
+
+func (ls LimitSet) Min(c Context) (min types.DataTypeExtreme) {
+	var from types.DataTypeExtreme
+
+	for _, l := range ls {
+		f := l.Min(c)
+		if !from.Defined() {
+			from = f
+			continue
+		}
+		if !f.Defined() {
+			continue
+		}
+		from = minExtreme(from, f)
+	}
+
+	return from
+}
+
+func (ls LimitSet) Max(c Context) (max types.DataTypeExtreme) {
+	var to types.DataTypeExtreme
+
+	for _, l := range ls {
+		t := l.Max(c)
+		if !to.Defined() {
+			to = t
+			continue
+		}
+		if !t.Defined() {
+			continue
+		}
+		to = maxExtreme(to, t)
+	}
+	return to
+}
+
+func (ls LimitSet) Clone() LimitSet {
+	nc := make(LimitSet, 0, len(ls))
+	for _, c := range ls {
+		nc = append(nc, c.Clone())
+	}
+	return nc
+}
+
+func (ls *LimitSet) UnmarshalJSON(data []byte) (err error) {
+	var list []json.RawMessage
+	err = json.Unmarshal(data, &list)
+	if err != nil {
+		return
+	}
+	for _, e := range list {
+		var l Limit
+		l, err = UnmarshalLimit(e)
+		if err != nil {
+			return
+		}
+		*ls = append(*ls, l)
+	}
+	return
+}

@@ -514,28 +514,28 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	return DataTypeName(f.Type)
 }
 
-func GetMinMax(cc *matter.ConstraintContext, c constraint.Constraint) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
-	if cc.Field.Type == nil {
+func GetMinMax(field *matter.Field, fieldSet matter.FieldSet) (from types.DataTypeExtreme, to types.DataTypeExtreme) {
+	if field.Type == nil {
 		return
 	}
 
-	from, to = minMaxFromConstraint(cc, c)
+	from, to = minMaxFromConstraint(&matter.ConstraintContext{Field: field, Fields: fieldSet}, field.Constraint)
 
 	if from.Defined() || to.Defined() {
 		return
 	}
 
-	from, to = minMaxFromEntity(cc)
+	from, to = minMaxFromEntity(&matter.ConstraintContext{Field: field, Fields: fieldSet})
 
 	if from.Defined() || to.Defined() {
 		return
 	}
 
-	if cc.Field.Access.Write != matter.PrivilegeUnknown {
+	if field.Access.Write != matter.PrivilegeUnknown {
 		// Writable fields get default min/max
-		isNullable := cc.Field.Quality.Has(matter.QualityNullable)
-		from = cc.Field.Type.Min(isNullable)
-		to = cc.Field.Type.Max(isNullable)
+		isNullable := field.Quality.Has(matter.QualityNullable)
+		from = field.Type.Min(isNullable)
+		to = field.Type.Max(isNullable)
 
 	}
 	return
