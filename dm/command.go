@@ -92,7 +92,7 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 			i.CreateAttr("name", f.Name)
 			renderDataType(f, i)
 			if !constraint.IsBlankLimit(f.Fallback) {
-				renderConstraintLimit(i, f.Fallback, f.Type, "default", nil)
+				renderConstraintLimit(i, i, f.Fallback, f.Type, "default", nil)
 			}
 			err = renderAnonymousType(doc, cluster, i, f)
 			if err != nil {

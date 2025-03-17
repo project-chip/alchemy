@@ -3,6 +3,7 @@ package constraint
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -64,5 +65,71 @@ func (c *MinConstraint) UnmarshalJSON(data []byte) (err error) {
 	}
 
 	c.Minimum, err = UnmarshalLimit(js.Min)
+	return
+}
+
+type MinOfLimit struct {
+	Minimums LimitSet `json:"minimums"`
+}
+
+func (c *MinOfLimit) ASCIIDocString(dataType *types.DataType) string {
+
+	var b strings.Builder
+	b.WriteString("minOf(")
+	c.Minimums.ASCIIDocString(dataType, &b)
+	b.WriteString(")")
+	return b.String()
+}
+
+func (c *MinOfLimit) DataModelString(dataType *types.DataType) string {
+
+	var b strings.Builder
+	b.WriteString("minOf(")
+	c.Minimums.DataModelString(dataType, &b)
+	b.WriteString(")")
+	return b.String()
+}
+
+func (c *MinOfLimit) Equal(o Limit) bool {
+	if oc, ok := o.(*MinOfLimit); ok {
+		return oc.Minimums.Equal(c.Minimums)
+	}
+	return false
+}
+
+func (c *MinOfLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	return c.Minimums.Min(cc)
+}
+
+func (c *MinOfLimit) Max(cc Context) (max types.DataTypeExtreme) {
+	return c.Minimums.Min(cc)
+}
+
+func (c *MinOfLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
+	return
+}
+
+func (c *MinOfLimit) Clone() Limit {
+	return &MinOfLimit{Minimums: c.Minimums.Clone()}
+}
+
+func (c *MinOfLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type":     "minOf",
+		"minimums": c.Minimums,
+	}
+	return json.Marshal(js)
+}
+
+func (c *MinOfLimit) UnmarshalJSON(data []byte) (err error) {
+	var js struct {
+		Mins json.RawMessage `json:"minimums"`
+	}
+	err = json.Unmarshal(data, &js)
+	if err != nil {
+		return
+	}
+
+	err = c.Minimums.UnmarshalJSON(js.Mins)
 	return
 }
