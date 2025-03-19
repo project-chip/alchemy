@@ -18,7 +18,7 @@ func renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {
 		return
 	}
 
-	from, to := zap.GetMinMax(&matter.ConstraintContext{Field: f, Fields: fs}, f.Constraint)
+	from, to := zap.GetMinMax(f, fs)
 
 	if !from.Defined() {
 		el.RemoveAttr("min")

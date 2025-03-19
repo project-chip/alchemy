@@ -12,7 +12,7 @@ type ConstraintContext struct {
 	Field  *Field
 	Fields FieldSet
 
-	visitedReferences map[string]struct{}
+	visitedReferences map[types.Entity]struct{}
 }
 
 func (cc *ConstraintContext) Nullable() bool {
@@ -29,57 +29,32 @@ func (cc *ConstraintContext) DataType() *types.DataType {
 	return nil
 }
 
-func (cc *ConstraintContext) getReference(ref string) *Field {
-	r := cc.Fields.Get(ref)
+func (cc *ConstraintContext) referenceAlreadyVisited(entity types.Entity) bool {
 	if cc.visitedReferences == nil {
-		cc.visitedReferences = make(map[string]struct{})
-	} else if _, ok := cc.visitedReferences[ref]; ok {
-		return nil
-	}
-	cc.visitedReferences[ref] = struct{}{}
-	return r
-}
+		cc.visitedReferences = make(map[types.Entity]struct{})
+	} else if _, ok := cc.visitedReferences[entity]; ok {
+		switch e := entity.(type) {
+		case *Field:
+			slog.Warn("Visited field twice when resolving constraint", slog.String("name", e.Name), log.Path("source", e))
+		case *EnumValue:
+			slog.Warn("Visited enum value twice when resolving constraint", slog.String("name", e.Name), log.Path("source", e))
+		default:
+			slog.Warn("Visited entity twice when resolving constraint", log.Type("entity", entity))
 
-func (cc *ConstraintContext) getReferencedField(ref string, field constraint.Limit) *Field {
-	f := cc.getReference(ref)
-	if f == nil {
-		slog.Warn("Unknown reference when fetching constraint", slog.String("reference", ref))
-		return nil
+		}
+		return true
 	}
-	if field == nil {
-		return f
-	}
-	if f.Type == nil {
-		slog.Warn("Referenced constraint field has no type information for child field", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field))
-		return nil
-	}
-	var fieldSet FieldSet
-	switch e := f.Type.Entity.(type) {
-	case *Struct:
-		fieldSet = e.Fields
-	case *Command:
-		fieldSet = e.Fields
-	case *Event:
-		fieldSet = e.Fields
-	default:
-		slog.Warn("referenced constraint field has a type without fields", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field), log.Type("type", e))
-		return nil
-	}
-	childField := fieldSet.Get(ref)
-	ccc := &ConstraintContext{Field: childField, Fields: fieldSet}
-	switch f := field.(type) {
-	case *constraint.IdentifierLimit:
-		return ccc.getReferencedField(f.ID, f.Field)
-	case *constraint.ReferenceLimit:
-		return ccc.getReferencedField(f.Reference, f.Field)
-	}
-	slog.Warn("referenced constraint field has unrecognized type", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field), log.Type("type", field))
-	return nil
+	cc.visitedReferences[entity] = struct{}{}
+	return false
 }
 
 func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constraint.Limit) (min types.DataTypeExtreme) {
+	if cc.referenceAlreadyVisited(entity) {
+		return
+	}
 	switch entity := entity.(type) {
 	case *Field:
+
 		min = entity.Constraint.Min(&ConstraintContext{Field: entity, Fields: cc.Fields, visitedReferences: cc.visitedReferences})
 	case Bit:
 		from, _, err := entity.Bits()
@@ -99,6 +74,9 @@ func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constrain
 }
 
 func (cc *ConstraintContext) MaxEntityValue(entity types.Entity, field constraint.Limit) (max types.DataTypeExtreme) {
+	if cc.referenceAlreadyVisited(entity) {
+		return
+	}
 	switch entity := entity.(type) {
 	case *Field:
 		max = entity.Constraint.Max(&ConstraintContext{Field: entity, Fields: cc.Fields, visitedReferences: cc.visitedReferences})
