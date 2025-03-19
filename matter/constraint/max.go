@@ -3,6 +3,7 @@ package constraint
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -64,5 +65,71 @@ func (c *MaxConstraint) UnmarshalJSON(data []byte) (err error) {
 	}
 
 	c.Maximum, err = UnmarshalLimit(js.Max)
+	return
+}
+
+type MaxOfLimit struct {
+	Maximums LimitSet `json:"maximums"`
+}
+
+func (c *MaxOfLimit) ASCIIDocString(dataType *types.DataType) string {
+
+	var b strings.Builder
+	b.WriteString("maxOf(")
+	c.Maximums.ASCIIDocString(dataType, &b)
+	b.WriteString(")")
+	return b.String()
+}
+
+func (c *MaxOfLimit) DataModelString(dataType *types.DataType) string {
+
+	var b strings.Builder
+	b.WriteString("maxOf(")
+	c.Maximums.DataModelString(dataType, &b)
+	b.WriteString(")")
+	return b.String()
+}
+
+func (c *MaxOfLimit) Equal(o Limit) bool {
+	if oc, ok := o.(*MinOfLimit); ok {
+		return oc.Minimums.Equal(c.Maximums)
+	}
+	return false
+}
+
+func (c *MaxOfLimit) Min(cc Context) (min types.DataTypeExtreme) {
+	return c.Maximums.Max(cc)
+}
+
+func (c *MaxOfLimit) Max(cc Context) (max types.DataTypeExtreme) {
+	return c.Maximums.Max(cc)
+}
+
+func (c *MaxOfLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
+	return
+}
+
+func (c *MaxOfLimit) Clone() Limit {
+	return &MaxOfLimit{Maximums: c.Maximums.Clone()}
+}
+
+func (c *MaxOfLimit) MarshalJSON() ([]byte, error) {
+	js := map[string]any{
+		"type":     "maxOf",
+		"maximums": c.Maximums,
+	}
+	return json.Marshal(js)
+}
+
+func (c *MaxOfLimit) UnmarshalJSON(data []byte) (err error) {
+	var js struct {
+		Mins json.RawMessage `json:"maximums"`
+	}
+	err = json.Unmarshal(data, &js)
+	if err != nil {
+		return
+	}
+
+	err = c.Maximums.UnmarshalJSON(js.Mins)
 	return
 }
