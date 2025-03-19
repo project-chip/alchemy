@@ -91,13 +91,6 @@ func resolveFieldConstraintReferences(spec *Specification, cluster *matter.Clust
 		for _, c := range con {
 			resolveFieldConstraintReferences(spec, cluster, finder, source, entity, c)
 		}
-	case *constraint.GenericConstraint,
-		*constraint.DescribedConstraint,
-		*constraint.AllConstraint: // These constraint types do not have references to resolve
-	case *constraint.TagListConstraint:
-		resolveFieldConstraintLimit(spec, cluster, finder, source, entity, con.Tags)
-	default:
-		slog.Warn("Unexpected field constraint type", log.Type("type", con))
 	}
 }
 
@@ -130,14 +123,6 @@ func resolveFieldConstraintLimit(spec *Specification, cluster *matter.Cluster, f
 		}
 		if l.Entity != nil && l.Field != nil {
 			resolveFieldConstraintLimit(spec, cluster, makeFinder(l.Entity), source, l.Entity, l.Field)
-		}
-	case *constraint.MinOfLimit:
-		for _, l := range l.Minimums {
-			resolveFieldConstraintLimit(spec, cluster, finder, source, entity, l)
-		}
-	case *constraint.MaxOfLimit:
-		for _, l := range l.Maximums {
-			resolveFieldConstraintLimit(spec, cluster, finder, source, entity, l)
 		}
 	case nil, *constraint.ManufacturerLimit, *constraint.IntLimit, *constraint.NullLimit, *constraint.StatusCodeLimit, *constraint.EmptyLimit, *constraint.StringLimit, *constraint.GenericLimit, *constraint.BooleanLimit, *constraint.TemperatureLimit, *constraint.UnspecifiedLimit, *constraint.ExpLimit, *constraint.HexLimit, *constraint.PercentLimit:
 	default:

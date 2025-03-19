@@ -31,7 +31,7 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		ax.CreateAttr("name", a.Name)
 		renderDataType(a, ax)
 		if !constraint.IsBlankLimit(a.Fallback) {
-			renderConstraintLimit(ax, ax, a.Fallback, a.Type, "default", nil)
+			renderConstraintLimit(ax, a.Fallback, a.Type, "default", nil)
 		}
 		err = renderAnonymousType(doc, cluster, ax, a)
 		if err != nil {

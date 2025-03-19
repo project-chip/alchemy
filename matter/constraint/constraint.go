@@ -61,8 +61,6 @@ const (
 	ConstraintTypeList
 	ConstraintTypeMax
 	ConstraintTypeMin
-	ConstraintTypeMaxOf
-	ConstraintTypeMinOf
 	ConstraintTypeRange
 	ConstraintTypeSet
 	ConstraintTypeTagList
@@ -79,8 +77,6 @@ var constraintTypeNames = map[Type]string{
 	ConstraintTypeList:      "list",
 	ConstraintTypeMax:       "max",
 	ConstraintTypeMin:       "min",
-	ConstraintTypeMaxOf:     "maxOf",
-	ConstraintTypeMinOf:     "minOf",
 	ConstraintTypeRange:     "range",
 	ConstraintTypeSet:       "set",
 	ConstraintTypeTagList:   "tagList",

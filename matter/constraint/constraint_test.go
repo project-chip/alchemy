@@ -164,15 +164,6 @@ type constraintTest struct {
 
 var constraintTests = []constraintTest{
 	{
-		constraint: "min maxOf(HoldTimeMin, 10)",
-		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeInt64, Int64: 10, Format: types.NumberFormatInt},
-		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined},
-		zapMin:     "10",
-		fields: stitchFieldSet(fieldSet{
-			{Name: "HoldTimeMin", Constraint: mustParseConstraint("min 1")},
-		}),
-	},
-	{
 		constraint: "HoldTimeMin & min 10",
 		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeInt64, Int64: 10, Format: types.NumberFormatInt},
 		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined},
