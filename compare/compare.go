@@ -47,8 +47,8 @@ func compareConstraint(entityType types.EntityType, specFieldSet matter.FieldSet
 		minProp = DiffPropertyMinLength
 	}
 
-	specFrom, specTo := zap.GetMinMax(specField, specFieldSet)
-	zapFrom, zapTo := zap.GetMinMax(zapField, zapFieldSet)
+	specFrom, specTo := zap.GetMinMax(&matter.ConstraintContext{Field: specField, Fields: specFieldSet}, specField.Constraint)
+	zapFrom, zapTo := zap.GetMinMax(&matter.ConstraintContext{Field: zapField, Fields: zapFieldSet}, zapField.Constraint)
 	if specFrom.Defined() {
 		if !zapFrom.Defined() {
 			diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: minProp, Spec: specFrom.ZapString(specField.Type)})

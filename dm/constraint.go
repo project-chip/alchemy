@@ -42,8 +42,7 @@ func renderConstraintElement(con constraint.Constraint, dataType *types.DataType
 		constraints = append(constraints, cx)
 	case *constraint.ExactConstraint:
 		cx := etree.NewElement(name)
-		allowed := cx.CreateElement("allowed")
-		renderConstraintLimit(allowed, allowed, con.Value, dataType, "value", parentEntity)
+		renderConstraintLimit(cx.CreateElement("allowed"), con.Value, dataType, "value", parentEntity)
 		constraints = append(constraints, cx)
 	case *constraint.RangeConstraint:
 		cx := etree.NewElement(name)
@@ -75,7 +74,7 @@ func renderConstraintElement(con constraint.Constraint, dataType *types.DataType
 		} else {
 			minElement = cx.CreateElement("min")
 		}
-		renderConstraintLimit(minElement, minElement, con.Minimum, dataType, "value", parentEntity)
+		renderConstraintLimit(minElement, con.Minimum, dataType, "value", parentEntity)
 		constraints = append(constraints, cx)
 	case *constraint.MaxConstraint:
 		cx := etree.NewElement(name)
@@ -87,12 +86,12 @@ func renderConstraintElement(con constraint.Constraint, dataType *types.DataType
 		} else {
 			maxElement = cx.CreateElement("max")
 		}
-		renderConstraintLimit(maxElement, maxElement, con.Maximum, dataType, "value", parentEntity)
+		renderConstraintLimit(maxElement, con.Maximum, dataType, "value", parentEntity)
 		constraints = append(constraints, cx)
 		if characterLimit, ok := con.Maximum.(*constraint.CharacterLimit); ok {
 			cx := parent.CreateElement(name)
 			maxElement = cx.CreateElement("maxCodePoints")
-			renderConstraintLimit(maxElement, maxElement, characterLimit.CodepointCount, dataType, "value", parentEntity)
+			renderConstraintLimit(maxElement, characterLimit.CodepointCount, dataType, "value", parentEntity)
 			constraints = append(constraints, cx)
 		}
 	case *constraint.ListConstraint:
@@ -100,7 +99,7 @@ func renderConstraintElement(con constraint.Constraint, dataType *types.DataType
 	case *constraint.TagListConstraint:
 		cx := etree.NewElement(name)
 		tagsElement := cx.CreateElement("tags")
-		renderConstraintLimit(tagsElement, tagsElement, con.Tags, dataType, "value", parentEntity)
+		renderConstraintLimit(tagsElement, con.Tags, dataType, "value", parentEntity)
 		constraints = append(constraints, cx)
 	case constraint.Set:
 		for _, cs := range con {
@@ -119,32 +118,17 @@ func renderConstraintElement(con constraint.Constraint, dataType *types.DataType
 	return
 }
 
-func renderConstraintLimit(parent *etree.Element, element *etree.Element, limit constraint.Limit, dataType *types.DataType, name string, parentEntity types.Entity) {
+func renderConstraintLimit(parent *etree.Element, limit constraint.Limit, dataType *types.DataType, name string, parentEntity types.Entity) {
 	switch limit := limit.(type) {
 	case *constraint.TagIdentifierLimit:
 		t := parent.CreateElement("tag")
 		t.CreateAttr("name", limit.Tag)
 	case *constraint.LogicalLimit:
 		renderLogicalLimit(parent, limit, dataType, name, parentEntity)
-	case *constraint.MinOfLimit:
-		t := parent.CreateElement("minOf")
-		for _, l := range limit.Minimums {
-			renderConstraintLimit(t, nil, l, dataType, name, parentEntity)
-		}
-	case *constraint.MaxOfLimit:
-		t := parent.CreateElement("maxOf")
-		for _, l := range limit.Maximums {
-			renderConstraintLimit(t, nil, l, dataType, name, parentEntity)
-		}
 	default:
 		ref, entity, field := getLimitField(limit)
 		if entity == nil && field == nil {
-			if element != nil {
-				element.CreateAttr(name, renderLimitValue(limit, dataType))
-			} else {
-				element = parent.CreateElement(name)
-				element.SetText(renderLimitValue(limit, dataType))
-			}
+			parent.CreateAttr(name, renderLimitValue(limit, dataType))
 			return
 		}
 		renderConstraintReferenceLimit(parent, field, limit, dataType, name, entity, ref, parentEntity)
@@ -166,9 +150,9 @@ func renderLogicalLimit(parent *etree.Element, limit *constraint.LogicalLimit, d
 	default:
 		el = parent
 	}
-	renderConstraintLimit(el, el, limit.Left, dataType, name, parentEntity)
+	renderConstraintLimit(el, limit.Left, dataType, name, parentEntity)
 	for _, r := range limit.Right {
-		renderConstraintLimit(el, el, r, dataType, name, parentEntity)
+		renderConstraintLimit(el, r, dataType, name, parentEntity)
 	}
 }
 
@@ -256,7 +240,7 @@ func renderFieldConstraint(parent *etree.Element, entity *matter.Field, ref stri
 		parent.CreateAttr("reference", ref)
 	}
 	if field != nil {
-		renderConstraintLimit(parent, parent, field, nil, "value", entity.Type.Entity)
+		renderConstraintLimit(parent, field, nil, "value", entity.Type.Entity)
 	}
 }
 
