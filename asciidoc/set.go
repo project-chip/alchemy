@@ -8,8 +8,8 @@ func (s Set) Elements() Set {
 	return s
 }
 
-func (s *Set) Append(e Element) {
-	*s = append(*s, e)
+func (s *Set) Append(e ...Element) {
+	*s = append(*s, e...)
 }
 
 func (s *Set) SetElements(els Set) {

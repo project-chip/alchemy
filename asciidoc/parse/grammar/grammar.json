@@ -50,7 +50,7 @@
         "conditional.peg",
         "text.peg"
       ],
-      "alternateEntryPoints":["PreParse", "TableCellInlineContent", "IncludeParse"]
+      "alternateEntryPoints":["PreParse", "TableCellInlineContent", "IncludeParse", "IncludedTableElements"]
     }
   ]
 }

@@ -142,6 +142,10 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 				eventRequirements = append(eventRequirements, er)
 			case types.EntityTypeCommand, types.EntityTypeCommandField:
 				var cmd *matter.Command
+				if cr.Cluster == nil {
+					slog.Warn("Missing cluster on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.Name), slog.String("clusterName", cr.ClusterName))
+					break
+				}
 				for _, c := range cr.Cluster.Commands {
 					if c.Name == er.Name {
 						cmd = c

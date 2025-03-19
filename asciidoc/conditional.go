@@ -19,6 +19,8 @@ type IfDef struct {
 
 	Attributes AttributeNames
 	Union      ConditionalUnion
+
+	Inline bool
 }
 
 func NewIfDef(attributes []AttributeName, union ConditionalUnion) *IfDef {
@@ -37,12 +39,18 @@ func (a *IfDef) Equals(o Element) bool {
 	return a.Attributes.Equals(oa.Attributes)
 }
 
+func (a *IfDef) Eval(cc ConditionalContext) bool {
+	return ifIsTrue(cc, a.Attributes, a.Union)
+}
+
 type IfNDef struct {
 	position
 	raw
 
 	Attributes AttributeNames
 	Union      ConditionalUnion
+
+	Inline bool
 }
 
 func NewIfNDef(attributes []AttributeName, union ConditionalUnion) *IfNDef {
@@ -61,6 +69,10 @@ func (a *IfNDef) Equals(o Element) bool {
 	return a.Attributes.Equals(oa.Attributes)
 }
 
+func (a *IfNDef) Eval(cc ConditionalContext) bool {
+	return !ifIsTrue(cc, a.Attributes, a.Union)
+}
+
 type InlineIfDef struct {
 	position
 	raw
@@ -68,9 +80,10 @@ type InlineIfDef struct {
 	Set
 
 	Attributes AttributeNames
+	Union      ConditionalUnion
 }
 
-func NewInlineIfDef(attributes []AttributeName) *InlineIfDef {
+func NewInlineIfDef(attributes []AttributeName, union ConditionalUnion) *InlineIfDef {
 	return &InlineIfDef{Attributes: attributes}
 }
 
@@ -90,6 +103,10 @@ func (a *InlineIfDef) Equals(o Element) bool {
 	return a.Set.Equals(oa.Set)
 }
 
+func (a *InlineIfDef) Eval(cc ConditionalContext) bool {
+	return ifIsTrue(cc, a.Attributes, a.Union)
+}
+
 type InlineIfNDef struct {
 	position
 	raw
@@ -97,9 +114,10 @@ type InlineIfNDef struct {
 	Set
 
 	Attributes AttributeNames
+	Union      ConditionalUnion
 }
 
-func NewInlineIfNDef(attributes []AttributeName) *InlineIfNDef {
+func NewInlineIfNDef(attributes []AttributeName, union ConditionalUnion) *InlineIfNDef {
 	return &InlineIfNDef{Attributes: attributes}
 }
 
@@ -117,6 +135,10 @@ func (a *InlineIfNDef) Equals(o Element) bool {
 		return false
 	}
 	return a.Set.Equals(oa.Set)
+}
+
+func (a *InlineIfNDef) Eval(cc ConditionalContext) bool {
+	return !ifIsTrue(cc, a.Attributes, a.Union)
 }
 
 type EndIf struct {
@@ -188,6 +210,8 @@ type IfEval struct {
 	Left     IfEvalValue
 	Operator ConditionalOperator
 	Right    IfEvalValue
+
+	Inline bool
 }
 
 func NewIfEval(left IfEvalValue, operator ConditionalOperator, right IfEvalValue) *IfEval {
@@ -210,6 +234,10 @@ func (a *IfEval) Equals(o Element) bool {
 		return false
 	}
 	return a.Right.Equals(oa.Right)
+}
+
+func (a *IfEval) Eval(cc ConditionalContext) (bool, error) {
+	return eval(cc, a.Left, a.Operator, a.Right)
 }
 
 type IfDefBlock struct {
@@ -401,11 +429,15 @@ func (a *IfEvalBlock) Equals(o Element) bool {
 }
 
 func (a *IfEvalBlock) Eval(cc ConditionalContext) (bool, error) {
-	left, err := a.Left.Eval(cc)
+	return eval(cc, a.Left, a.Operator, a.Right)
+}
+
+func eval(cc ConditionalContext, leftValue IfEvalValue, operator ConditionalOperator, rightValue IfEvalValue) (bool, error) {
+	left, err := leftValue.Eval(cc)
 	if err != nil {
 		return false, err
 	}
-	right, err := a.Right.Eval(cc)
+	right, err := rightValue.Eval(cc)
 	if err != nil {
 		return false, err
 	}
@@ -415,7 +447,7 @@ func (a *IfEvalBlock) Eval(cc ConditionalContext) (bool, error) {
 		if !ok {
 			return false, nil
 		}
-		switch a.Operator {
+		switch operator {
 		case ConditionalOperatorEqual:
 			return left == r, nil
 		default:
@@ -427,7 +459,7 @@ func (a *IfEvalBlock) Eval(cc ConditionalContext) (bool, error) {
 			return false, nil
 		}
 		c := strings.Compare(left, r)
-		switch a.Operator {
+		switch operator {
 		case ConditionalOperatorEqual:
 			return c == 0, nil
 		case ConditionalOperatorNotEqual:
@@ -446,7 +478,7 @@ func (a *IfEvalBlock) Eval(cc ConditionalContext) (bool, error) {
 		if !ok {
 			return false, nil
 		}
-		switch a.Operator {
+		switch operator {
 		case ConditionalOperatorEqual:
 			return left == r, nil
 		case ConditionalOperatorNotEqual:

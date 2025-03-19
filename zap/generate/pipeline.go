@@ -21,6 +21,7 @@ type Options struct {
 	AsciiSettings []asciidoc.AttributeName
 	Template      []TemplateOption
 	DeviceTypes   []DeviceTypePatcherOption
+	Inline        bool
 }
 
 type Output struct {
@@ -56,6 +57,7 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, docPaths []s
 	if err != nil {
 		return
 	}
+	docParser.Inline = options.Inline
 	var specDocs spec.DocSet
 	specDocs, err = pipeline.Parallel(cxt, options.Pipeline, docParser, specFiles)
 	if err != nil {

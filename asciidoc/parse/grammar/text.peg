@@ -65,6 +65,13 @@ EndOfFile = !.
 
 NotEndOfFile = &(.)
 
+BeginningOfFile = &(.) &{
+    if (c.pos.line == 0 && c.pos.col == 0) {
+        debugPosition(c, "matched beginning of file %s\n", string(c.text))
+    }
+    return c.pos.line == 0 && c.pos.col == 0, nil
+}
+
 BeginningOfLine = !OffsetCharacter
 
 OffsetCharacter = . &{

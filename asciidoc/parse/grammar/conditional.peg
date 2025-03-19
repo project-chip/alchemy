@@ -1,25 +1,30 @@
 
+IfDefStatement = "ifdef::" 
+
 IfDef = IfDefStatement attributes:(ConditionalAttributes) "[]" AnySpaces  &EndOfLine {
     attr := attributes.(conditionalAttributes)
     return asciidoc.NewIfDef(attr.names, attr.union), nil
 }
 
-IfDefStatement = "ifdef::" 
+IfNDefStatement = "ifndef::" 
 
-IfNDef = "ifndef::" attributes:(ConditionalAttributes) "[]" AnySpaces  &EndOfLine {
+
+IfNDef = IfNDefStatement attributes:(ConditionalAttributes) "[]" AnySpaces  &EndOfLine {
      attr := attributes.(conditionalAttributes)
     return asciidoc.NewIfNDef(attr.names, attr.union), nil
 }
 
-InlineIfDef = "ifdef::" attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" AnySpaces {
+InlineIfDef = IfDefStatement attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" AnySpaces {
     attr := attributes.(conditionalAttributes)
-    return compose(c, asciidoc.NewInlineIfDef(attr.names), setElements[*asciidoc.InlineIfDef](content))
+    return compose(c, asciidoc.NewInlineIfDef(attr.names, attr.union), setElements[*asciidoc.InlineIfDef](content))
 }
 
-InlineIfNDef = "ifndef::" attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" AnySpaces {
+InlineIfNDef = IfNDefStatement attributes:(ConditionalAttributes) "[" content:(InlineConditionalContent) "]" AnySpaces {
     attr := attributes.(conditionalAttributes)
-    return compose(c, asciidoc.NewInlineIfNDef(attr.names), setElements[*asciidoc.InlineIfNDef](content))
+    return compose(c, asciidoc.NewInlineIfNDef(attr.names, attr.union), setElements[*asciidoc.InlineIfNDef](content))
 }
+
+EndIfDefStatement = "endif::" 
 
 EndIfDef = EndIfDefStatement attributes:(ConditionalAttributes)? "[]"  AnySpaces &EndOfLine  {
     var attr []asciidoc.AttributeName
@@ -30,8 +35,6 @@ EndIfDef = EndIfDefStatement attributes:(ConditionalAttributes)? "[]"  AnySpaces
     }
     return asciidoc.NewEndIf(attr, union), nil
 }
-
-EndIfDefStatement = "endif::" 
 
 ConditionalAttributes = ConditionalAttributesAny / ConditionalAttributesAll
 
@@ -66,10 +69,7 @@ IfEval = IfEvalStatement "[" AnySpaces left:(IfEvalValue) AnySpaces  operand:(If
     return asciidoc.NewIfEval(left.(asciidoc.IfEvalValue), operand.(asciidoc.ConditionalOperator), right.(asciidoc.IfEvalValue)), nil
 }
 
-IfEvalStatement = "ifeval::" {
-    debugPosition(c, "matched ifeval statement: %s\n", string(c.text))
-    return string(c.text), nil
-}
+IfEvalStatement = "ifeval::" 
 
 IfEvalValue = val:(SingleQuoteAttributeValue / DoubleQuoteAttributeValue / NakedAttributeValue) {
     return asciidoc.IfEvalValue{Quote:val.(*attributeValue).quote, Value:val.(*attributeValue).value}, nil
@@ -82,3 +82,5 @@ IfEvalOperator <-
     / ("<=" { return asciidoc.ConditionalOperatorLessThanOrEqual, nil })
     / (">"  { return asciidoc.ConditionalOperatorGreaterThan, nil })
     / (">=" { return asciidoc.ConditionalOperatorGreaterThanOrEqual, nil })
+
+ConditionalStatement = (IfDefStatement / IfNDefStatement / IfEvalStatement / EndIfDefStatement)
