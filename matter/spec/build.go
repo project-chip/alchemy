@@ -110,9 +110,9 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				spec.Namespaces = append(spec.Namespaces, m)
 			case *matter.Bitmap:
 				slog.Debug("Found global bitmap", "name", m.Name, "path", d.Path)
-				_, ok := spec.bitmapIndex[m.Name]
+				existing, ok := spec.bitmapIndex[m.Name]
 				if ok {
-					slog.Error("multiple bitmaps with same name", "name", m.Name)
+					slog.Error("multiple bitmaps with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
 				} else {
 					spec.bitmapIndex[m.Name] = m
 				}
@@ -120,9 +120,9 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.Enum:
 				slog.Debug("Found global enum", "name", m.Name, "path", d.Path)
-				_, ok := spec.enumIndex[m.Name]
+				existing, ok := spec.enumIndex[m.Name]
 				if ok {
-					slog.Error("multiple enums with same name", "name", m.Name)
+					slog.Error("multiple enums with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
 				} else {
 					spec.enumIndex[m.Name] = m
 				}
@@ -130,9 +130,9 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.Struct:
 				slog.Debug("Found global struct", "name", m.Name, "path", d.Path)
-				_, ok := spec.structIndex[m.Name]
+				existing, ok := spec.structIndex[m.Name]
 				if ok {
-					slog.Error("multiple structs with same name", "name", m.Name)
+					slog.Error("multiple structs with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
 				} else {
 					spec.structIndex[m.Name] = m
 				}
@@ -140,27 +140,27 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.TypeDef:
 				slog.Debug("Found global typedef", "name", m.Name, "path", d.Path)
-				_, ok := spec.typeDefIndex[m.Name]
+				existing, ok := spec.typeDefIndex[m.Name]
 				if ok {
-					slog.Warn("multiple global typedefs with same name", "name", m.Name)
+					slog.Warn("multiple global typedefs with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
 				} else {
 					spec.typeDefIndex[m.Name] = m
 				}
 				spec.addEntityByName(m.Name, m, nil)
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.Command:
-				_, ok := spec.commandIndex[m.Name]
+				existing, ok := spec.commandIndex[m.Name]
 				if ok {
-					slog.Error("multiple commands with same name", "name", m.Name)
+					slog.Error("multiple commands with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
 				} else {
 					spec.commandIndex[m.Name] = m
 				}
 				spec.addEntityByName(m.Name, m, nil)
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.Event:
-				_, ok := spec.eventIndex[m.Name]
+				existing, ok := spec.eventIndex[m.Name]
 				if ok {
-					slog.Error("multiple events with same name", "name", m.Name)
+					slog.Error("multiple events with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
 				} else {
 					spec.eventIndex[m.Name] = m
 				}
@@ -264,9 +264,17 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 			} else {
 				if c, ok := spec.ClustersByName[cr.ClusterName]; ok {
 					cr.Cluster = c
-					slog.Warn("linking cluster requirement by name on device type since cluster ID was not recognized", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
+					slog.Warn("linking cluster requirement by name on device type since cluster ID was not recognized",
+						slog.String("clusterId", cr.ClusterID.HexString()),
+						slog.String("clusterName", cr.ClusterName),
+						slog.String("deviceType", dt.Name),
+						log.Path("source", cr))
 				} else {
-					slog.Error("unknown cluster ID for cluster requirement on device type", "clusterId", cr.ClusterID.HexString(), "clusterName", cr.ClusterName, "deviceType", dt.Name)
+					slog.Error("unknown cluster ID for cluster requirement on device type",
+						slog.String("clusterId", cr.ClusterID.HexString()),
+						slog.String("clusterName", cr.ClusterName),
+						slog.String("deviceType", dt.Name),
+						log.Path("source", cr))
 				}
 			}
 		}
@@ -279,9 +287,17 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 			} else {
 				if c, ok := spec.ClustersByName[er.ClusterName]; ok {
 					er.Cluster = c
-					slog.Warn("linking element requirement by cluster name on device type since cluster ID was not recognized", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
+					slog.Warn("linking element requirement by cluster name on device type since cluster ID was not recognized",
+						slog.String("clusterId", er.ClusterID.HexString()),
+						slog.String("clusterName", er.ClusterName),
+						slog.String("deviceType", dt.Name),
+						log.Path("source", er))
 				} else {
-					slog.Error("unknown cluster ID for element requirement on device type", "clusterId", er.ClusterID.HexString(), "clusterName", er.ClusterName, "deviceType", dt.Name)
+					slog.Error("unknown cluster ID for element requirement on device type",
+						slog.String("clusterId", er.ClusterID.HexString()),
+						slog.String("clusterName", er.ClusterName),
+						slog.String("deviceType", dt.Name),
+						log.Path("source", er))
 				}
 			}
 		}
