@@ -13,6 +13,34 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
+func InlineParse(path asciidoc.Path, specRoot string, attributes ...asciidoc.AttributeName) (*Doc, error) {
+	ac := &preparseContext{
+		docPath:  path,
+		rootPath: specRoot,
+	}
+
+	for _, a := range attributes {
+		ac.Set(string(a), nil)
+	}
+
+	contents, err := os.Open(path.Absolute)
+	if err != nil {
+		return nil, err
+	}
+	defer contents.Close()
+
+	d, err := parse.Inline(ac, path.Relative, contents)
+	if err != nil {
+		return nil, fmt.Errorf("parse error in %s: %w", path, err)
+	}
+	doc, err := newDoc(d, path)
+	if err != nil {
+		return nil, err
+	}
+	doc.parsed = true
+	return doc, nil
+}
+
 func ParseFile(path asciidoc.Path, specRoot string, attributes ...asciidoc.AttributeName) (*Doc, error) {
 
 	contents, err := os.Open(path.Absolute)
@@ -70,6 +98,8 @@ func parseDocument(r io.Reader, path asciidoc.Path, specRoot string, attributes 
 type Parser struct {
 	rootPath   string
 	attributes []asciidoc.AttributeName
+
+	Inline bool
 }
 
 func NewParser(rootPath string, attributes []asciidoc.AttributeName) (Parser, error) {
@@ -95,7 +125,11 @@ func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 		return
 	}
 	var doc *Doc
-	doc, err = ParseFile(path, p.rootPath, p.attributes...)
+	if p.Inline {
+		doc, err = InlineParse(path, p.rootPath, p.attributes...)
+	} else {
+		doc, err = ParseFile(path, p.rootPath, p.attributes...)
+	}
 	if err != nil {
 		return
 	}

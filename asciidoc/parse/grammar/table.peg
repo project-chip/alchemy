@@ -17,6 +17,17 @@ TableElement = (
         / TableRow
         ) 
 
+IncludedTableElements = content:(IncludedTableElement)* EndOfFile {
+    table := c.globalStore["table"].(*asciidoc.Table)
+    return parseTableRows(table, content.([]any))
+}
+
+IncludedTableElement = (
+        IncludedTableEmptyLine 
+        / TableMacros
+        / IncludedTableRow
+        ) 
+
 TableStart = !"\\" "|===" "="* AnySpaces &EndOfLine  {
     debugPosition(c, "TABLE: matched table start %s\n", string(c.text))
     return asciidoc.NewString(string(c.text)), nil
@@ -27,11 +38,31 @@ TableEmptyLine = !TableEnd NewLine AnySpaces &(NewLine )  {
     return compose(c, asciidoc.NewEmptyLine(string(c.text)))
 }
 
-TableMacros = (TableIfDef / TableIfNDef / TableEndIfDef / TableComment / TableMultiLineComment / TableFileInclude)
+IncludedTableEmptyLine = !TableEnd NewLine AnySpaces &(NewLine / EndOfFile )  {
+    debugPosition(c, "TABLE: matched table empty line %s\n", string(c.text))
+    return compose(c, asciidoc.NewEmptyLine(string(c.text)))
+}
+
+TableMacros = (TableInlineIfDef / TableInlineIfNDef / TableIfDef / TableIfNDef / TableEndIfDef / TableComment / TableMultiLineComment / TableFileInclude)
 
 TableIfDef = !TableEnd NewLine AnySpaces ifdef:IfDef  {
     debugPosition(c, "TABLE: matched table ifdef %s\n", string(c.text))
     return compose(c, ifdef.(*asciidoc.IfDef))
+}
+
+TableInlineIfDef = !TableEnd NewLine AnySpaces ifdef:IfDef NewLine !InitialTableCellDelimiter content:(InlineTableLines) endif:TableEndIfDef {
+    debugPosition(c, "TABLE: matched table ifdef %s\n", string(c.text))
+    id, err := compose(c, ifdef.(*asciidoc.IfDef))
+    if err != nil {
+        return nil, err
+    }
+    id.Inline = true
+    ei, err := compose(c, endif.(*asciidoc.EndIf))
+    if err != nil {
+        return nil, err
+    }
+    out := append(asciidoc.Set{id}, content.(asciidoc.Set)...)
+    return append(out, ei), nil
 }
 
 TableIfNDef = !TableEnd NewLine AnySpaces ifndef:IfNDef   {
@@ -39,12 +70,47 @@ TableIfNDef = !TableEnd NewLine AnySpaces ifndef:IfNDef   {
     return compose(c, ifndef.(*asciidoc.IfNDef))
 }
 
+TableInlineIfNDef = !TableEnd NewLine AnySpaces ifndef:IfNDef NewLine !InitialTableCellDelimiter content:(InlineTableLines) endif:TableEndIfDef {
+    debugPosition(c, "TABLE: matched table ifndef %s\n", string(c.text))
+    id, err := compose(c, ifndef.(*asciidoc.IfNDef))
+    if err != nil {
+        return nil, err
+    }
+    id.Inline = true
+    ei, err := compose(c, endif.(*asciidoc.EndIf))
+    if err != nil {
+        return nil, err
+    }
+    out := append(asciidoc.Set{id}, content.(asciidoc.Set)...)
+    return append(out, ei), nil
+}
+
+TableIfEval = !TableEnd NewLine AnySpaces ifeval:IfEval   {
+    debugPosition(c, "TABLE: matched table ifeval %s\n", string(c.text))
+    return compose(c, ifeval.(*asciidoc.IfEval))
+}
+
+TableInlineIfEval = !TableEnd NewLine AnySpaces ifeval:IfEval NewLine !InitialTableCellDelimiter content:(InlineTableLines) endif:TableEndIfDef {
+    debugPosition(c, "TABLE: matched table ifeval %s\n", string(c.text))
+    id, err := compose(c, ifeval.(*asciidoc.IfEval))
+    if err != nil {
+        return nil, err
+    }
+    id.Inline = true
+    ei, err := compose(c, endif.(*asciidoc.EndIf))
+    if err != nil {
+        return nil, err
+    }
+    out := append(asciidoc.Set{id}, content.(asciidoc.Set)...)
+    return append(out, ei), nil
+}
+
 TableEndIfDef = !TableEnd NewLine AnySpaces endifdef:EndIfDef   {
     debugPosition(c, "TABLE: matched table end if %s\n", string(c.text))
     return compose(c, endifdef.(*asciidoc.EndIf))
 }
 
-TableComment = !TableEnd NewLine comment:(SingleLineComment)   {
+TableComment = !TableEnd (NewLine / BeginningOfFile) comment:(SingleLineComment)   {
     debugPosition(c, "TABLE: matched table comment %s\n", string(c.text))
     return compose(c, comment.(*asciidoc.SingleLineComment))
 }
@@ -81,8 +147,18 @@ TableCellInlineContentElement =(
 
 TableEnd = NewLine !"\\" "|===" "="* AnySpaces &EndOfLine  
 
-TableRow = initial:(InitialInlineTableCell ) additional:(AdditionalInlineTableCell)* &(TableEnd / TableCellDelimiter /  NewLine  ) {
+TableRow = initial:(InitialInlineTableCell ) additional:(AdditionalInlineTableCell)* &(TableEnd / TableCellDelimiter /  NewLine / EndOfFile ) {
         debugPosition(c, "TABLE ROW: matched table row \"%s\"\n", string(c.text))
+
+    var rows = []*asciidoc.TableCell{initial.(*asciidoc.TableCell)}
+    if len(additional.([]any)) > 0 {
+        rows = append(rows, cast[any, *asciidoc.TableCell](additional.([]any))...)
+    }
+    return rows, nil
+}
+
+IncludedTableRow = initial:(InitialInlineTableCell ) additional:(AdditionalInlineTableCell)* &(EndOfFile / TableCellDelimiter /  NewLine  ) {
+        debugPosition(c, "TABLE ROW: matched included table row \"%s\"\n", string(c.text))
 
     var rows = []*asciidoc.TableCell{initial.(*asciidoc.TableCell)}
     if len(additional.([]any)) > 0 {
@@ -104,23 +180,6 @@ AdditionalInlineTableCell =  format:(AdditionalTableCellDelimiter) content:(Inli
     return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](content.(asciidoc.Set)) )
 }
 
-InitialBlockTableCell = format:(InitialTableCellDelimiter) content:(BlockTableElement / InlineTableElements)* &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter /  NewLine  ) &{
-   debugPosition(c, "TABLE: checking block initial table cell\n")
-       return format != nil && format.(*asciidoc.TableCellFormat).Style.Value == asciidoc.TableCellStyleAsciiDoc, nil
-    }
-    {
-    debugPosition(c, "TABLE: matched initial block table cell \"%s\" (format:%v)\n", string(c.text), format)
-    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](asciidoc.Set(cast[any, asciidoc.Element](content.([]any)))))
-}
-
-AdditionalBlockTableCell = format:(AdditionalTableCellDelimiter) content:(BlockTableElement / InlineTableElements)* &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter /  NewLine  ) &{
-   debugPosition(c, "TABLE: checking additional block table cell\n")
-       return format != nil && format.(*asciidoc.TableCellFormat).Style.Value == asciidoc.TableCellStyleAsciiDoc, nil
-    }
-    {
-    debugPosition(c, "TABLE: matched additional block table cell \"%s\" (format:%v) (%T)\n", string(c.text), format, content)
-    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](asciidoc.Set(cast[any, asciidoc.Element](content.([]any)))))
-}
 
 InlineTableLines = content:(MultiLineTableCell / InlineTableElements / EmptyCell) {
     debugPosition(c, "TABLE: matched inline table lines \"%s\" (%T)\n", string(c.text), content)
@@ -220,7 +279,7 @@ CharacterClassTableCell = ("\\|" / [^|\r\n])  {
 }
 
 // First table cell format in a row just needs to follow a new line
-InitialTableCellDelimiter = !TableEnd NewLine AnySpaces format:(TableCellFormat)? !"\\" "|"  {
+InitialTableCellDelimiter = !TableEnd (BeginningOfFile / NewLine) AnySpaces format:(TableCellFormat)? !"\\" "|"  {
     debugPosition(c, "TABLE: matched initial table cell delimiter %s\n", string(c.text))
     if format != nil {
         return format, nil

@@ -19,6 +19,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 
 	}*/
 	table = &asciidoc.Table{}
+
 	if attributes != nil {
 		as, ok := attributes.([]asciidoc.Attribute)
 		if !ok {
@@ -41,17 +42,26 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 	if err != nil {
 		return
 	}
+	for _, el := range elements {
+		if pos, ok := el.(asciidoc.HasPosition); ok {
+			copyPosition(pos, table)
+			break
+		}
+	}
+	var rows []asciidoc.Element
+	rows, err = parseTableRows(table, elements)
+	if err != nil {
+		return
+	}
+	table.Append(rows...)
+	return
+}
+
+func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Set, err error) {
 	cellIndex := 0
 	var currentTableRow *asciidoc.TableRow
 	colSkip := make(map[int]int)
-	var copiedPosition bool
 	for _, el := range elements {
-		if !copiedPosition {
-			if pos, ok := el.(asciidoc.HasPosition); ok {
-				copyPosition(pos, table)
-				copiedPosition = true
-			}
-		}
 		switch el := el.(type) {
 		case []*asciidoc.TableCell:
 			for _, cell := range el {
@@ -59,7 +69,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 					currentTableRow = &asciidoc.TableRow{Parent: table}
 					currentTableRow.SetPosition(cell.Position())
 					currentTableRow.SetPath(cell.Path())
-					table.Append(currentTableRow)
+					rows = append(rows, currentTableRow)
 					cellIndex = 0
 				}
 				cell.Parent = currentTableRow
@@ -76,7 +86,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 					currentTableRow = &asciidoc.TableRow{}
 					currentTableRow.SetPosition(cell.Position())
 					currentTableRow.SetPath(cell.Path())
-					table.Append(currentTableRow)
+					rows = append(rows, currentTableRow)
 					cellIndex = 0
 				}
 				currentTableRow.Append(cell)
@@ -101,7 +111,9 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 				}
 			}
 		case asciidoc.Element:
-			table.Append(el)
+			rows = append(rows, el)
+		case asciidoc.Set:
+			rows = append(rows, el...)
 		default:
 			err = fmt.Errorf("unexpected type in table elements: %T", el)
 			return

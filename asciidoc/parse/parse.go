@@ -40,17 +40,10 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 	switch vals := vals.(type) {
 	case asciidoc.Set:
 		//		fmt.Printf("coalescing asciidoc...\n")
-		var d *asciidoc.Document
-		var els asciidoc.Set
-		err = reparseTables(vals)
+		d, err := setToDoc(vals)
 		if err != nil {
 			return nil, err
 		}
-		els, err = coalesce(vals)
-		if err != nil {
-			return nil, err
-		}
-		d = buildDoc(els)
 		if debugParser {
 			fmt.Printf("\n\n\n\n\n\n")
 			dump(0, d.Elements()...)
@@ -60,6 +53,21 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 	default:
 		return nil, fmt.Errorf("unexpected type in File: %T", vals)
 	}
+}
+
+func setToDoc(vals asciidoc.Set) (d *asciidoc.Document, err error) {
+	var els asciidoc.Set
+	err = reparseTables(vals)
+	if err != nil {
+		return nil, err
+	}
+	els, err = coalesce(vals)
+	if err != nil {
+		return nil, err
+	}
+	d = buildDoc(els)
+
+	return d, nil
 }
 
 func String(path string, s string) (*asciidoc.Document, error) {

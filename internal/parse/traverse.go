@@ -103,10 +103,10 @@ func SkimFunc[T any](elements asciidoc.Set, callback func(t T) bool) bool {
 	return false
 }
 
-func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit bool)) (shortCircuit bool) {
+func Filter(parent HasElements, callback func(parent HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Set, shortCircuit bool)) (shortCircuit bool) {
 	i := 0
 	els := parent.Elements()
-	var removed bool
+	var altered bool
 	for i < len(els) {
 		e := els[i]
 		if ae, ok := e.(HasBase); ok {
@@ -119,11 +119,17 @@ func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit 
 		if shortCircuit {
 			break
 		}
-		remove, shortCircuit := callback(e)
+		var remove bool
+		var replace asciidoc.Set
+		remove, replace, shortCircuit = callback(parent, e)
 		var empty asciidoc.Set
-		if remove {
+		if len(replace) > 0 {
+			els = slices.Delete(els, i, i+1)
+			els = slices.Insert(els, i, replace...)
+			altered = true
+		} else if remove {
 			els = slices.Replace(els, i, i+1, empty...)
-			removed = true
+			altered = true
 		} else {
 			i++
 		}
@@ -131,7 +137,7 @@ func Filter(parent HasElements, callback func(i any) (remove bool, shortCircuit 
 			break
 		}
 	}
-	if removed {
+	if altered {
 		parent.SetElements(els)
 	}
 	return

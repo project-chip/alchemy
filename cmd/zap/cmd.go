@@ -22,6 +22,7 @@ func init() {
 	Command.Flags().Bool("endpointCompositionXML", false, "write new style endpoint composition XML")
 	Command.Flags().Bool("specOrder", false, "write ZAP template XML in spec order")
 	Command.Flags().Bool("extendedQuality", false, "write quality element with all qualities, suppressing redundant attributes")
+	Command.Flags().Bool("inline", false, "use inline parser")
 }
 
 func zapTemplates(cmd *cobra.Command, args []string) (err error) {
@@ -34,6 +35,8 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	var options generate.Options
 
 	fileOptions := files.Flags(cmd)
+
+	options.Inline, _ = cmd.Flags().GetBool("inline")
 
 	options.AsciiSettings = common.ASCIIDocAttributes(cmd)
 	options.Pipeline = pipeline.Flags(cmd)

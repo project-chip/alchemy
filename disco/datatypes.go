@@ -313,12 +313,14 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 		}
 
 		var removedTable bool
-		parse.Filter(dt.section, func(i any) (remove bool, shortCircuit bool) {
-			if t, ok := i.(*asciidoc.Table); ok && table == t {
+		parse.Filter(dt.section, func(parent parse.HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Set, shortCircuit bool) {
+			if t, ok := el.(*asciidoc.Table); ok && table == t {
 				removedTable = true
-				return true, true
+				remove = true
+				shortCircuit = true
+				return
 			}
-			return false, false
+			return
 		})
 
 		if !removedTable {
