@@ -37,27 +37,6 @@ func NewSpecPath(path string, rootPath string) (asciidoc.Path, error) {
 	return p, err
 }
 
-func NewDocPath(path string, rootPath string) (asciidoc.Path, error) {
-	var p asciidoc.Path
-	if !filepath.IsAbs(path) {
-		var err error
-		p.Absolute, err = filepath.Abs(path)
-		if err != nil {
-			return p, err
-		}
-	} else {
-		p.Absolute = path
-	}
-	var err error
-	var r string
-	r, err = filepath.Abs(rootPath)
-	if err != nil {
-		return p, err
-	}
-	p.Relative, err = filepath.Rel(r, p.Absolute)
-	return p, err
-}
-
 func deriveSpecPath(path string) string {
 	if !filepath.IsAbs(path) {
 		var err error
