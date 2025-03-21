@@ -37,7 +37,7 @@ func read(b []byte, path string, rootPath string) (doc *Doc, err error) {
 	}
 
 	var p asciidoc.Path
-	p, err = NewDocPath(path, rootPath)
+	p, err = asciidoc.NewPath(path, rootPath)
 	if err != nil {
 		return nil, err
 	}

@@ -26,3 +26,21 @@ func (p Path) Dir() string {
 func (p Path) Origin() (path string, line int) {
 	return p.Relative, -1
 }
+
+func NewPath(path string, rootPath string) (p Path, err error) {
+	if !filepath.IsAbs(path) {
+		p.Absolute, err = filepath.Abs(path)
+		if err != nil {
+			return
+		}
+	} else {
+		p.Absolute = path
+	}
+	var r string
+	r, err = filepath.Abs(rootPath)
+	if err != nil {
+		return
+	}
+	p.Relative, err = filepath.Rel(r, p.Absolute)
+	return
+}

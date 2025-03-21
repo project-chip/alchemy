@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
@@ -50,7 +51,7 @@ var Command = &cobra.Command{
 				if err != nil {
 					return
 				}
-				path, err := spec.NewDocPath(f, specRoot)
+				path, err := asciidoc.NewPath(f, specRoot)
 				if err != nil {
 					return fmt.Errorf("error resolving doc path %s: %w", f, err)
 				}
@@ -76,7 +77,7 @@ var Command = &cobra.Command{
 				if err != nil {
 					return
 				}
-				path, err := spec.NewDocPath(f, specRoot)
+				path, err := asciidoc.NewPath(f, specRoot)
 				if err != nil {
 					return fmt.Errorf("error resolving doc path %s: %w", f, err)
 				}
