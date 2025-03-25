@@ -2,9 +2,7 @@ package spec
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -14,14 +12,7 @@ type DeviceTypeSet pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
 
 func (s *Section) toDeviceTypes(d *Doc, pc *parseContext) (err error) {
 	var deviceTypes []*matter.DeviceType
-	var description string
-	p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
-	if p != nil {
-		se := parse.FindFirst[*asciidoc.String](p.Elements())
-		if se != nil {
-			description = strings.ReplaceAll(se.Value, "\n", " ")
-		}
-	}
+	description := getDescription(d, s.Elements())
 
 	for _, s := range parse.Skim[*Section](s.Elements()) {
 		switch s.SecType {

@@ -134,7 +134,8 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 	patchNumberElement(xml.SetOrCreateSimpleElement(clusterElement, "code", "", "name", "domain"), cluster.ID)
 	xml.CreateSimpleElementIfNotExists(clusterElement, "define", define, "code", "name", "domain")
 
-	if clusterElement.SelectElement("description") == nil {
+	descriptionElement := clusterElement.SelectElement("description")
+	if descriptionElement == nil || descriptionElement.Text() == "" {
 		xml.SetOrCreateSimpleElement(clusterElement, "description", cluster.Description, "define", "code", "name", "domain")
 	}
 

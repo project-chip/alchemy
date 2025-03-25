@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
@@ -15,15 +14,7 @@ import (
 
 func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 	var clusters []*matter.Cluster
-	var description string
-	// We take the first string in the first paragraph as the description of the cluster
-	p := parse.FindFirst[*asciidoc.Paragraph](s.Elements())
-	if p != nil {
-		se := parse.FindFirst[*asciidoc.String](p.Elements())
-		if se != nil {
-			description = strings.ReplaceAll(se.Value, "\n", " ")
-		}
-	}
+	var description = getDescription(d, s.Elements())
 
 	elements := parse.Skim[*Section](s.Elements())
 
