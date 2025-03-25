@@ -11,8 +11,8 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:     "dm",
-	Short:   "transmute the Matter spec into data model XML",
+	Use:     "dm [filename_pattern]",
+	Short:   "transmute the Matter spec into data model XML; optionally filtered to the files specified in filename_pattern",
 	Aliases: []string{"datamodel", "data-model"},
 	RunE:    dataModel,
 }

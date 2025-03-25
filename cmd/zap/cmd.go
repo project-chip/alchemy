@@ -9,8 +9,8 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:   "zap",
-	Short: "transmute the Matter spec into ZAP templates",
+	Use:   "zap [filename_pattern]",
+	Short: "transmute the Matter spec into ZAP templates, optionally filtered to the files specified by filename_pattern",
 	RunE:  zapTemplates,
 }
 

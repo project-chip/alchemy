@@ -18,8 +18,8 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:   "testplan",
-	Short: "create an initial test plan from the spec",
+	Use:   "testplan [filename_pattern]",
+	Short: "create an initial test plan from the spec, optionally filtered to the files specified in filename_pattern",
 	RunE:  tp,
 }
 

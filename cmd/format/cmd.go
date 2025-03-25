@@ -9,8 +9,8 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:   "format",
-	Short: "format Matter spec documents",
+	Use:   "format filename_pattern",
+	Short: "format Matter spec documents specified by filename_pattern",
 	RunE:  format,
 }
 

@@ -10,8 +10,8 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:   "yaml2python",
-	Short: "create a shell python script from a test YAML",
+	Use:   "yaml2python [filename_pattern]",
+	Short: "create a shell python script from a test YAML, optionally filtered to the files specified by filename_pattern",
 	RunE:  tp,
 }
 
