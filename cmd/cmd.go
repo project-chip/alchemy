@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/lmittmann/tint"
+	"github.com/project-chip/alchemy/config"
 	"github.com/spf13/cobra"
 )
 
@@ -15,6 +16,7 @@ var rootCmd = &cobra.Command{
 	Short:        "",
 	Long:         ``,
 	SilenceUsage: true,
+	Version:      config.Version(),
 }
 
 var defaultCommand string
@@ -65,4 +67,6 @@ func init() {
 	}
 	rootCmd.PersistentFlags().Bool("suppressVersionCheck", false, "")
 	rootCmd.PersistentFlags().MarkHidden("suppressVersionCheck")
+	rootCmd.SetVersionTemplate(`{{printf "version: %s" .Version}}
+`)
 }
