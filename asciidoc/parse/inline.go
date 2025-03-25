@@ -27,6 +27,7 @@ func Inline(context PreParseContext, path string, reader io.Reader, opts ...Opti
 	var suppress bool
 	var lastTableCell *asciidoc.TableCell
 	var addToCell bool
+
 	parse.Filter(&set, func(parent parse.HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Set, shortCircuit bool) {
 		switch el := el.(type) {
 		case *asciidoc.AttributeEntry:
