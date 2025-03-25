@@ -10,10 +10,6 @@ ListItemValue = line:InlineElement+ &EndOfLine lines:(ListItemLine)* attachedBlo
     return flat(value), nil
 }
 
-AttachedBlock = element:(AttachedBlockElement) &EndOfLine {
-    return element, nil
-}
-
 AttachedBlockElement = "+" AnySpaces NewLine value:(BlockElements) {
     return asciidoc.NewAttachedBlock(value.(asciidoc.Element)), nil
 }
