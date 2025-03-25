@@ -7,6 +7,7 @@ type SpecSection struct {
 type Spec struct {
 	UtilityInclude bool                   `yaml:"utility-include,omitempty"`
 	Sections       map[string]SpecSection `yaml:"sections,omitempty"`
+	DocRoot        bool                   `yaml:"doc-root,omitempty"`
 }
 
 func GetSpec(path string) *Spec {

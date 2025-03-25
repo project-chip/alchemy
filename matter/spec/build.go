@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -35,29 +36,36 @@ func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (
 	for _, i := range inputs {
 		docs = append(docs, i.Content)
 	}
-	sp.Spec, err = sp.buildSpec(docs)
-	outputs = inputs
+	var referencedDocs []*Doc
+	sp.Spec, referencedDocs, err = sp.buildSpec(docs)
+	for _, d := range referencedDocs {
+		outputs = append(outputs, pipeline.NewData(d.Path.Absolute, d))
+	}
 	return
 }
 
-func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
+func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, referencedDocs []*Doc, err error) {
 
 	buildTree(docs)
 
 	spec = newSpec()
 
-	buildDocumentGroups(docs, spec)
+	docGroups := buildDocumentGroups(docs, spec)
 
-	indexCrossReferences(docs)
+	for _, dg := range docGroups {
+		referencedDocs = append(referencedDocs, dg.Docs...)
+	}
 
-	err = indexAnchors(docs)
+	indexCrossReferences(referencedDocs)
+
+	err = indexAnchors(referencedDocs)
 	if err != nil {
 		return
 	}
 
 	var basicInformationCluster, bridgedBasicInformationCluster *matter.Cluster
 
-	for _, d := range docs {
+	for _, d := range referencedDocs {
 		slog.Debug("building spec", "path", d.Path)
 
 		dt, dterr := d.DocType()
@@ -199,15 +207,30 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, err error) {
 	return
 }
 
-func buildDocumentGroups(docs []*Doc, spec *Specification) {
+func buildDocumentGroups(docs []*Doc, spec *Specification) (docGroups []*DocGroup) {
 	for _, d := range docs {
 		if len(d.parents) > 0 {
 			continue
 		}
 
+		var isDocRoot bool
+		path := d.Path.Relative
+		for _, docRoot := range errata.DocRoots {
+			if strings.EqualFold(path, docRoot) {
+				isDocRoot = true
+				break
+			}
+		}
+
+		if !isDocRoot {
+			continue
+		}
+
 		dg := NewDocGroup(d.Path.Relative)
+		docGroups = append(docGroups, dg)
 		setSpec(d, spec, dg)
 	}
+	return
 }
 
 func buildClusterReferences(spec *Specification) {
