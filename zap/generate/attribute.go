@@ -125,7 +125,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	} else {
 		ae.RemoveAttr("optional")
 	}
-	requiresConformance := cr.generator.generateConformanceXML && !conformance.IsBlank(attribute.Conformance) && !conformance.IsMandatory(attribute.Conformance)
+	requiresConformance := cr.generator.generateConformanceXML && !conformance.IsBlank(attribute.Conformance) && !(conformance.IsMandatory(attribute.Conformance) && !conformance.IsProvisional(attribute.Conformance))
 	requiresPermissions := !cr.configurator.Errata.SuppressAttributePermissions && (needsRead || needsWrite)
 	requiresQuality := cr.requiresQuality(types.EntityTypeAttribute, attribute.Quality)
 	if !requiresPermissions && !requiresQuality && !requiresConformance {

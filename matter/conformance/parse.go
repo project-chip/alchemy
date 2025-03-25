@@ -46,10 +46,14 @@ func IsMandatory(conformance Conformance) bool {
 	case *Mandatory:
 		return conformance.Expression == nil
 	case Set:
-		if len(conformance) > 0 {
-			mc, ok := conformance[0].(*Mandatory)
-			if ok {
-				return mc.Expression == nil
+		for _, c := range conformance {
+			switch c := c.(type) {
+			case *Provisional:
+				continue
+			case *Mandatory:
+				return c.Expression == nil
+			default:
+				return false
 			}
 		}
 	}
