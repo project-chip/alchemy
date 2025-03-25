@@ -48,7 +48,7 @@ func (s *Section) toAttributes(d *Doc, cluster *matter.Cluster, pc *parseContext
 		if err != nil {
 			return
 		}
-		attr.Fallback = ti.ReadLimit(row, matter.TableColumnFallback, matter.TableColumnDefault)
+		attr.Fallback = ti.ReadLimit(row, matter.TableColumnFallback)
 		var a string
 		a, err = ti.ReadString(row, matter.TableColumnAccess)
 		if err != nil {
