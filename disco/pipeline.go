@@ -7,6 +7,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 )
@@ -16,7 +17,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 	var docs spec.DocSet
 
 	if specRoot == "" {
-		allPaths, e := files.PathsTargeter(docPaths...)(cxt)
+		allPaths, e := paths.NewTargeter(docPaths...)(cxt)
 		if e == nil {
 			specRoot = spec.DeriveSpecPathFromPaths(allPaths)
 		}
@@ -52,7 +53,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 			return err
 		}
 		if len(docPaths) > 0 {
-			filter := files.NewPathFilter[*spec.Doc](docPaths)
+			filter := paths.NewFilter[*spec.Doc](specRoot, docPaths)
 			docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
 			if err != nil {
 				return err
@@ -60,7 +61,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 		}
 	} else if len(docPaths) > 0 {
 		var inputs pipeline.Paths
-		inputs, err = pipeline.Start(cxt, files.PathsTargeter(docPaths...))
+		inputs, err = pipeline.Start(cxt, paths.NewTargeter(docPaths...))
 		if err != nil {
 			return err
 		}

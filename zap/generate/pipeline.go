@@ -7,8 +7,8 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -98,7 +98,7 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, docPaths []s
 	}
 
 	if len(docPaths) > 0 { // Filter the spec by whatever extra args were passed
-		filter := files.NewPathFilter[*spec.Doc](docPaths)
+		filter := paths.NewFilter[*spec.Doc](specRoot, docPaths)
 		specDocs, err = pipeline.Collective(cxt, options.Pipeline, filter, specDocs)
 		if err != nil {
 			return

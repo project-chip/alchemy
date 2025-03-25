@@ -8,8 +8,8 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/errata"
-	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,7 @@ var Command = &cobra.Command{
 		unifiedOut, _ := cmd.Flags().GetBool("unified")
 		specRoot, _ := cmd.Flags().GetString("specRoot")
 
-		files, err := files.Paths(args)
+		files, err := paths.Expand(args)
 		if err != nil {
 			return fmt.Errorf("error building paths: %w", err)
 		}

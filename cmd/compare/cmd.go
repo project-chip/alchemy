@@ -9,6 +9,7 @@ import (
 	"github.com/project-chip/alchemy/compare"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -73,7 +74,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	xmlPaths, err := pipeline.Start(cxt, files.PathsTargeter(filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")))
+	xmlPaths, err := pipeline.Start(cxt, paths.NewTargeter(filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")))
 	if err != nil {
 		return err
 	}

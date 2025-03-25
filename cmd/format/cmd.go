@@ -3,6 +3,7 @@ package format
 import (
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/spf13/cobra"
@@ -19,7 +20,7 @@ func format(cmd *cobra.Command, args []string) (err error) {
 
 	var inputs pipeline.Paths
 
-	inputs, err = pipeline.Start(cxt, files.PathsTargeter(args...))
+	inputs, err = pipeline.Start(cxt, paths.NewTargeter(args...))
 
 	if err != nil {
 		return err
