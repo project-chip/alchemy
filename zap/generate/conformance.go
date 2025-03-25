@@ -14,7 +14,7 @@ import (
 
 func renderConformance(spec *spec.Specification, entity types.Entity, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element, alternatives ...string) error {
 	removeConformance(parent)
-	if conformance.IsMandatory(c) {
+	if conformance.IsMandatory(c) && !conformance.IsProvisional(c) {
 		return nil
 	}
 	doc, ok := spec.DocRefs[entity]
