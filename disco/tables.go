@@ -309,9 +309,6 @@ func (b *Baller) renameTableHeaderCells(cxt *discoContext, section *spec.Section
 	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableRenameHeaders) {
 		return
 	}
-	if len(overrides) == 0 {
-		return
-	}
 	if table.HeaderRowIndex == -1 {
 		return
 	}
