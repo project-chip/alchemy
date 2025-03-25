@@ -40,7 +40,7 @@ func (r Baller) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], in
 		err = nil
 		return
 	}
-	outputs = append(outputs, pipeline.NewData[*spec.Doc](input.Path, input.Content))
+	outputs = append(outputs, pipeline.NewData(input.Path, input.Content))
 	return
 }
 

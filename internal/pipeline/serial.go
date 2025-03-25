@@ -34,6 +34,7 @@ func processSerial[I, O any](cxt context.Context, name string, processor Individ
 			return nil, err
 		}
 		counter++
+		gray.Fprintf(os.Stderr, "%s...\n", input.Path)
 		processed[input.Path] = true
 		for _, e := range extras {
 			_, ok := processed[e.Path]

@@ -34,7 +34,7 @@ func NewRenderer(dmRoot string, spec *spec.Specification) *Renderer {
 }
 
 func (p *Renderer) Name() string {
-	return "Saving data model"
+	return "Rendering data model"
 }
 
 func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[string], extra []*pipeline.Data[*spec.Doc], err error) {

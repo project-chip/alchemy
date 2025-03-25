@@ -38,7 +38,7 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 				for _, a := range anchors {
 					sources = append(sources, log.Path("target", a.Source))
 				}
-				slog.Warn("cross reference points to ambiguous anchor", sources...)
+				slog.Warn("cross reference points to ambiguous anchor", slog.Group("sources", sources...))
 			}
 			continue
 		}

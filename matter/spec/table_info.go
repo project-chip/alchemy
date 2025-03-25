@@ -278,7 +278,7 @@ func (ti *TableInfo) ReadLimit(row *asciidoc.TableRow, columns ...matter.TableCo
 	s = strings.ReplaceAll(s, "\n", " ")
 	l, err := constraint.TryParseLimit(s)
 	if err != nil {
-		slog.Error("failed parsing constraint cell", log.Element("source", ti.Doc.Path, source), slog.String("constraint", val))
+		slog.Error("failed parsing limit cell", log.Element("source", ti.Doc.Path, source), slog.String("limit", val))
 		return &constraint.GenericLimit{Value: val}
 	}
 	if l == nil {
@@ -471,7 +471,6 @@ func buildDataTypeString(d *Doc, cellElements asciidoc.Set, sb *strings.Builder)
 		case *asciidoc.CrossReference:
 			if len(v.Set) > 0 {
 				buildDataTypeString(d, v.Set, sb)
-
 			} else {
 				var name string
 				anchor := d.FindAnchor(v.ID)

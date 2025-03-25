@@ -16,14 +16,15 @@ import (
 )
 
 var cyan = color.New(color.FgCyan).Add(color.Bold)
+var gray = color.New(color.FgBlack).Add(color.Bold)
 
 func Parallel[I, O any](cxt context.Context, options Options, processor IndividualProcessor[I, O], input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
 	total := int32(input.Size())
 	queue := make(chan *Data[I], total)
 	var values iter.Seq[*Data[I]]
 	if options.Serial {
-		inputs := DataMapToSlice[I](input)
-		SortData[I](inputs)
+		inputs := DataMapToSlice(input)
+		SortData(inputs)
 		values = slices.Values(inputs)
 	} else {
 		values = dataMapValues(input)
@@ -40,9 +41,9 @@ func Parallel[I, O any](cxt context.Context, options Options, processor Individu
 		}
 	}
 	if options.Serial {
-		return processSerial[I, O](cxt, processor.Name(), processor.Process, queue, total)
+		return processSerial(cxt, processor.Name(), processor.Process, queue, total)
 	}
-	return processParallel[I, O](cxt, processor.Name(), processor.Process, queue, total, !options.NoProgress)
+	return processParallel(cxt, processor.Name(), processor.Process, queue, total, !options.NoProgress)
 }
 
 func processParallel[I, O any](cxt context.Context, name string, processor IndividualProcess[I, O], queue chan *Data[I], total int32, showProgress bool) (output Map[string, *Data[O]], err error) {
