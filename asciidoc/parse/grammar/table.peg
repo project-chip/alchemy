@@ -14,6 +14,7 @@ TableElements = (TableElement)*
 TableElement = (
         TableEmptyLine 
         / TableMacros
+        / TableFileInclude
         / TableRow
         ) 
 
@@ -25,6 +26,7 @@ IncludedTableElements = content:(IncludedTableElement)* EndOfFile {
 IncludedTableElement = (
         IncludedTableEmptyLine 
         / TableMacros
+        / TableFileInclude
         / IncludedTableRow
         ) 
 
@@ -43,7 +45,7 @@ IncludedTableEmptyLine = !TableEnd NewLine AnySpaces &(NewLine / EndOfFile )  {
     return compose(c, asciidoc.NewEmptyLine(string(c.text)))
 }
 
-TableMacros = (TableInlineIfDef / TableInlineIfNDef / TableIfDef / TableIfNDef / TableEndIfDef / TableComment / TableMultiLineComment / TableFileInclude)
+TableMacros = (TableInlineIfDef / TableInlineIfNDef / TableIfDef / TableIfNDef / TableEndIfDef / TableComment / TableMultiLineComment  )
 
 TableIfDef = !TableEnd NewLine AnySpaces ifdef:IfDef  {
     debugPosition(c, "TABLE: matched table ifdef %s\n", string(c.text))
@@ -191,9 +193,9 @@ EmptyCell = &(TableEnd / TableCellDelimiter /  NewLine) {
     return asciidoc.Set{}, nil
 }
 
-ValidTableCellPrefix = !TableEnd !TableCellDelimiter 
+ValidTableCellPrefix = !TableEnd !TableCellDelimiter !TableMacros
 
-ValidMultilineTableCellPrefix = !MultiLineComment !SingleLineComment
+ValidMultilineTableCellPrefix = !TableMacros
 
 MultiLineTableCell = lines:(InlineTableCellLine)* content:(InlineTableCellLastLine) {
     var cellLines asciidoc.Set
