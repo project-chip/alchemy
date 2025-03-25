@@ -5,6 +5,7 @@ import "github.com/project-chip/alchemy/asciidoc"
 func renderConditional(cxt Target, prefix string, attributes asciidoc.AttributeNames, union asciidoc.ConditionalUnion) {
 	cxt.FlushWrap()
 	cxt.DisableWrap()
+	cxt.EnsureNewLine()
 	cxt.WriteString(prefix)
 	var separator rune
 	switch union {
@@ -26,6 +27,7 @@ func renderConditional(cxt Target, prefix string, attributes asciidoc.AttributeN
 func renderIfEval(cxt Target, el *asciidoc.IfEval) (err error) {
 	cxt.FlushWrap()
 	cxt.DisableWrap()
+	cxt.EnsureNewLine()
 	cxt.WriteString("ifeval::[")
 	switch el.Left.Quote {
 	case asciidoc.AttributeQuoteTypeDouble:
