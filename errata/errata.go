@@ -21,3 +21,10 @@ func GetErrata(path string) *Errata {
 }
 
 var Erratas = map[string]*Errata{}
+
+var DocRoots = []string{
+	"src/main.adoc",
+	"src/appclusters.adoc",
+	"src/device_library.adoc",
+	"src/standard_namespaces.adoc",
+}

@@ -37,7 +37,7 @@ func buildTree(docs []*Doc) {
 				cd.addParent(doc)
 				doc.addChild(cd)
 			} else {
-				slog.Debug("unknown child path", log.Element("parent", doc.Path, link), "child", linkPath)
+				slog.Warn("unknown child path", log.Element("parent", doc.Path, link), "child", linkPath)
 			}
 		}
 	}

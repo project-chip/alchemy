@@ -12,6 +12,8 @@ import (
 type DocGroup struct {
 	Root string
 	referenceIndex
+
+	Docs []*Doc
 }
 
 func NewDocGroup(root string) *DocGroup {
@@ -28,6 +30,7 @@ func setSpec(d *Doc, si *Specification, docGroup *DocGroup) {
 		}
 		return
 	}
+	docGroup.Docs = append(docGroup.Docs, d)
 	d.spec = si
 	d.group = docGroup
 	for _, c := range d.children {
