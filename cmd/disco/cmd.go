@@ -9,8 +9,8 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:     "disco",
-	Short:   "disco ball Matter spec documents",
+	Use:     "disco filename_pattern",
+	Short:   "disco ball Matter spec documents specified by the filename_pattern",
 	Long:    ``,
 	Aliases: []string{"discoball", "disco-ball"},
 	RunE:    discoBall,

@@ -10,8 +10,8 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:   "testscript",
-	Short: "create shell python scripts from the spec",
+	Use:   "testscript [filename_pattern]",
+	Short: "create shell python scripts from the spec, optionally filtered to the files specified by filename_pattern",
 	RunE:  tp,
 }
 

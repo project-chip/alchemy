@@ -15,8 +15,8 @@ import (
 )
 
 var Command = &cobra.Command{
-	Use:   "dump",
-	Short: "dump the parse tree of Matter documents",
+	Use:   "dump filename_pattern",
+	Short: "dump the parse tree of Matter documents specified by filename_pattern",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 		asciiSettings := common.ASCIIDocAttributes(cmd)
