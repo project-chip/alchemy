@@ -5,8 +5,8 @@ import (
 )
 
 var inlineTests = parseTests{
-	{"inline admonition", "inline_admonition.adoc", inlineAdmonition},
-	{"inline image", "inline_image.adoc", inlineImage},
+	{"inline admonition", "inline_admonition.adoc", inlineAdmonition, nil},
+	{"inline image", "inline_image.adoc", inlineImage, nil},
 }
 
 func TestInline(t *testing.T) {
