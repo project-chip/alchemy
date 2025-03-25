@@ -6,18 +6,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/paths"
 )
 
-func getSpecPaths(specRoot string) (paths []string, err error) {
+func getSpecPaths(specRoot string) (specPaths []string, err error) {
 	srcRoot := filepath.Join(specRoot, "/src/")
 	err = filepath.WalkDir(srcRoot, func(path string, d fs.DirEntry, err error) error {
 		if filepath.Ext(path) == ".adoc" && !strings.HasSuffix(path, "-draft.adoc") {
-			paths = append(paths, path)
+			specPaths = append(specPaths, path)
 		}
 		return nil
 	})
-	paths = files.FilterBannedPaths(paths...)
+	specPaths = paths.FilterBanned(specPaths...)
 	return
 }
 

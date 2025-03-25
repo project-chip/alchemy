@@ -7,6 +7,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/sdk"
@@ -22,7 +23,7 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOpti
 	}
 
 	var inputs pipeline.Paths
-	inputs, err = pipeline.Start(cxt, files.PathsTargeter(filePaths...))
+	inputs, err = pipeline.Start(cxt, paths.NewTargeter(filePaths...))
 	if err != nil {
 		return
 	}

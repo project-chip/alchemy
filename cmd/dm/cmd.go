@@ -5,6 +5,7 @@ import (
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/spf13/cobra"
@@ -56,7 +57,7 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if len(args) > 0 {
-		filter := files.NewPathFilter[*spec.Doc](args)
+		filter := paths.NewFilter[*spec.Doc](specRoot, args)
 		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return err

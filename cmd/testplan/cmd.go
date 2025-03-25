@@ -9,6 +9,7 @@ import (
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -96,7 +97,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if len(args) > 0 { // Filter the spec by whatever extra args were passed
-		filter := files.NewPathFilter[*spec.Doc](args)
+		filter := paths.NewFilter[*spec.Doc](specRoot, args)
 		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return err
