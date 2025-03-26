@@ -39,7 +39,10 @@ func renderUnorderedListElement(cxt Target, el *asciidoc.UnorderedListItem) (err
 
 func renderDescriptionListItem(cxt Target, el *asciidoc.DescriptionListItem) (err error) {
 	cxt.FlushWrap()
-	renderAttributes(cxt, el.Attributes(), false)
+	err = renderAttributes(cxt, el.Attributes(), false)
+	if err != nil {
+		return
+	}
 	cxt.DisableWrap()
 	err = Elements(cxt, "", el.Term...)
 	if err != nil {

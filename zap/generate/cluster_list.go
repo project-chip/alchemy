@@ -92,7 +92,7 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		return
 	}
 	clusterListBytes = pretty.PrettyOptions(clusterListBytes, &prettyOptions)
-	outputs = append(outputs, pipeline.NewData[[]byte](clusterListPath, clusterListBytes))
+	outputs = append(outputs, pipeline.NewData(clusterListPath, clusterListBytes))
 	return
 }
 

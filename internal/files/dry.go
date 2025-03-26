@@ -18,7 +18,7 @@ func (sp *DryRun[T]) Write(cxt context.Context, data pipeline.Map[string, *pipel
 }
 
 func (sp *DryRun[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (outputs []*pipeline.Data[struct{}], err error) {
-	pipeline.SortData[T](inputs)
+	pipeline.SortData(inputs)
 	for _, i := range inputs {
 		fmt.Fprintf(os.Stderr, "Skipping %s...\n", i.Path)
 	}

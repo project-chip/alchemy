@@ -239,17 +239,6 @@ InlineTableCellLastLine = ValidTableCellPrefix nl:NewLine ValidMultilineTableCel
     return els, nil
 }
 
-BlockTableCellLine = content:(BlockTableElement / InlineTableCellIntermediateLine ) {
-    debugPosition(c, "TABLE: block table cell line: \"%s\"\n",string(c.text))
-    return content, nil
-}
-
-BlockTableCellLastLine = ValidTableCellPrefix NewLine content:(InlineTableElement)+ &(TableEnd / TableCellDelimiter)
- {
-    debugPosition(c, "TABLE: inline table last cell line (%d): \"%s\"\n", len(content.([]any)), string(c.text))
-    return trim(mergeStrings(flat(content.([]any)))), nil
-}
-
 InlineTableElements = ValidTableCellPrefix content:(InlineTableElement)+ 
     {
     debugPosition(c, "TABLE: inline table elements (%d): %s\n", len(content.([]any)), string(c.text))
@@ -322,8 +311,8 @@ TableCellSpan = column:(n:PositiveInteger  {
        )? "+" 
        {
             span := asciidoc.NewTableCellSpan()
-            span.Column = asciidoc.Maybe[int](column, span.Column.Value)
-            span.Row = asciidoc.Maybe[int](row, span.Row.Value)
+            span.Column = asciidoc.Maybe(column, span.Column.Value)
+            span.Row = asciidoc.Maybe(row, span.Row.Value)
             return span, nil
        }
 
@@ -364,12 +353,12 @@ TableCellFormat =
      {
     debugPosition(c, "TABLE: matched table cell format: %s\n", string(c.text))
     format := asciidoc.NewTableCellFormat()
-    format.Multiplier = asciidoc.Maybe[int](multiplier, format.Multiplier.Value)
+    format.Multiplier = asciidoc.Maybe(multiplier, format.Multiplier.Value)
     if span != nil {
         format.Span = span.(asciidoc.TableCellSpan)
     }
-    format.HorizontalAlign = asciidoc.Maybe[asciidoc.TableCellHorizontalAlign](horizontalAlign, format.HorizontalAlign.Value)
-    format.VerticalAlign = asciidoc.Maybe[asciidoc.TableCellVerticalAlign](verticalAlign, format.VerticalAlign.Value)
-    format.Style = asciidoc.Maybe[asciidoc.TableCellStyle](style, format.Style.Value)
+    format.HorizontalAlign = asciidoc.Maybe(horizontalAlign, format.HorizontalAlign.Value)
+    format.VerticalAlign = asciidoc.Maybe(verticalAlign, format.VerticalAlign.Value)
+    format.Style = asciidoc.Maybe(style, format.Style.Value)
     return format, nil
 }

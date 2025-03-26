@@ -23,7 +23,7 @@ func (cr *configuratorRenderer) generateCommands(commands map[*matter.Command]st
 			continue
 		}
 		source := cmde.SelectAttr("source")
-		if code == nil {
+		if source == nil {
 			slog.Warn("missing source attribute in command", slog.String("path", cr.configurator.OutPath))
 			continue
 		}

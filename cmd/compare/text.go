@@ -50,7 +50,7 @@ func writeEntityDiffs(w io.Writer, indent int, diffs []compare.Diff, entityType 
 		fmt.Fprintln(w)
 	}
 	if len(identified) > 0 {
-		slices.SortFunc[[]*compare.IdentifiedDiff](identified, func(a *compare.IdentifiedDiff, b *compare.IdentifiedDiff) int {
+		slices.SortFunc(identified, func(a *compare.IdentifiedDiff, b *compare.IdentifiedDiff) int {
 			return strings.Compare(a.Name, b.Name)
 		})
 		for _, m := range identified {
@@ -108,7 +108,7 @@ func writeIdentifiedDiffs(indent int, id *compare.IdentifiedDiff, w io.Writer) {
 		}
 	}
 	if len(identified) > 0 {
-		slices.SortFunc[[]*compare.IdentifiedDiff](identified, func(a *compare.IdentifiedDiff, b *compare.IdentifiedDiff) int {
+		slices.SortFunc(identified, func(a *compare.IdentifiedDiff, b *compare.IdentifiedDiff) int {
 			return strings.Compare(a.Name, b.Name)
 		})
 		for _, idd := range identified {

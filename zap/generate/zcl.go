@@ -71,13 +71,13 @@ func (p ZclPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.D
 	if err != nil {
 		return
 	}
-	outputs = append(outputs, pipeline.NewData[[]byte](path, value))
+	outputs = append(outputs, pipeline.NewData(path, value))
 
 	path, value, err = p.patchZapJSONFile(p.sdkRoot, "src/app/zap-templates/zcl/zcl-with-test-extensions.json", files, clusterMap)
 	if err != nil {
 		return
 	}
-	outputs = append(outputs, pipeline.NewData[[]byte](path, value))
+	outputs = append(outputs, pipeline.NewData(path, value))
 	return
 }
 

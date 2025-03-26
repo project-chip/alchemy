@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"iter"
 	"strings"
 
@@ -64,14 +63,6 @@ func (cf *eventFactory) Details(d *Doc, s *Section, pc *parseContext, e *matter.
 				}
 			}
 		}
-	}
-	if err != nil {
-		if err == ErrNoTableFound {
-			err = nil
-			return
-		}
-		err = fmt.Errorf("failed reading %s event fields: %w", s.Name, err)
-		return
 	}
 	e.Fields, err = d.readFields(ti, types.EntityTypeEventField, e)
 	if err != nil {

@@ -45,7 +45,7 @@ func (sp *FileWriter[T]) Name() string {
 }
 
 func (sp *FileWriter[T]) Write(cxt context.Context, data pipeline.Map[string, *pipeline.Data[T]], pipelineOptions pipeline.Options) (err error) {
-	_, err = pipeline.Parallel[T, struct{}](cxt, pipelineOptions, sp, data)
+	_, err = pipeline.Parallel(cxt, pipelineOptions, sp, data)
 	return
 }
 

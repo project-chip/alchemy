@@ -35,12 +35,12 @@ func (p ProvisionalPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	if err != nil {
 		return
 	}
-	outputs = append(outputs, pipeline.NewData[[]byte](path, value))
+	outputs = append(outputs, pipeline.NewData(path, value))
 
 	path, value, err = patchTestsYamlBytes(p.sdkRoot, files)
 	if err != nil {
 		return
 	}
-	outputs = append(outputs, pipeline.NewData[[]byte](path, value))
+	outputs = append(outputs, pipeline.NewData(path, value))
 	return
 }

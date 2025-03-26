@@ -21,7 +21,7 @@ func (sp *Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], i
 	if err != nil {
 		return
 	}
-	outputs = append(outputs, pipeline.NewData[[]byte](input.Path, b))
+	outputs = append(outputs, pipeline.NewData(input.Path, b))
 	return
 }
 

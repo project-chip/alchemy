@@ -10,7 +10,7 @@ AttributeEntryName = CharacterGroupWord (CharacterGroupWord / "-")* {
 
 AttributeEntryElements = value:AttributeEntryElement*  {
      debugPosition(c, "matched attribute entry elements: %s (%d)\n", string(c.text), len(value.([]any)))
-    return join[asciidoc.Element](flat(value.([]any))), nil
+    return join(flat(value.([]any))), nil
 }
 
 AttributeEntryElement = (LineBreak EndOfLine / CharacterClassInline) 
@@ -109,7 +109,7 @@ NakedAttributeValue = !_ value:(
     }
 )+ {
     debugPosition(c, "matched naked attribute value elements: %s\n", string(c.text))
-    return &attributeValue{value:join[asciidoc.Element](flat(value.([]any)))}, nil
+    return &attributeValue{value:join(flat(value.([]any)))}, nil
 }
 
 InlineAttributes = "[" attributes:(AttributeList) "]" {

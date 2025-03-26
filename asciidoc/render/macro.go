@@ -2,18 +2,25 @@ package render
 
 import "github.com/project-chip/alchemy/asciidoc"
 
-func renderFileInclude(cxt Target, el *asciidoc.FileInclude) {
+func renderFileInclude(cxt Target, el *asciidoc.FileInclude) (err error) {
 	cxt.StartBlock()
 	cxt.WriteString("include::")
-	Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Elements()...)
+	if err != nil {
+		return
+	}
 	attributes := el.Attributes()
 	if len(attributes) == 0 {
 		cxt.WriteString("[]\n")
 	} else {
-		renderAttributes(cxt, el.Attributes(), true)
+		err = renderAttributes(cxt, el.Attributes(), true)
+		if err != nil {
+			return
+		}
 		cxt.WriteRune('\n')
 	}
 	cxt.EndBlock()
+	return
 }
 
 func renderCounter(cxt Target, el *asciidoc.Counter) {

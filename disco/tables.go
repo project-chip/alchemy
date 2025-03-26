@@ -276,11 +276,6 @@ func (b *Baller) reorderColumns(cxt *discoContext, section *spec.Section, ti *sp
 func setCellString(cell *asciidoc.TableCell, v string) {
 	se := asciidoc.NewString(v)
 	cell.SetElements(asciidoc.Set{se})
-	return
-}
-
-func setCellValue(cell *asciidoc.TableCell, val asciidoc.Set) {
-	cell.SetElements(val)
 }
 
 func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {

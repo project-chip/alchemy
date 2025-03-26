@@ -64,9 +64,9 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 		cr := newConfiguratorRenderer(tg, configurator)
 		var out string
 		out, err = cr.render(doc, nil)
-		globalFiles.Store(filepath.Base(configurator.OutPath), pipeline.NewData[string](configurator.OutPath, out))
+		globalFiles.Store(filepath.Base(configurator.OutPath), pipeline.NewData(configurator.OutPath, out))
 		if provisional {
-			tg.ProvisionalZclFiles.Store(filepath.Base(configurator.OutPath), pipeline.NewData[struct{}](configurator.OutPath, struct{}{}))
+			tg.ProvisionalZclFiles.Store(filepath.Base(configurator.OutPath), pipeline.NewData(configurator.OutPath, struct{}{}))
 		}
 
 	}
