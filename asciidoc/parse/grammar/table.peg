@@ -242,7 +242,7 @@ InlineTableCellLastLine = ValidTableCellPrefix nl:NewLine ValidMultilineTableCel
 InlineTableElements = ValidTableCellPrefix content:(InlineTableElement)+ 
     {
     debugPosition(c, "TABLE: inline table elements (%d): %s\n", len(content.([]any)), string(c.text))
-    return trim(mergeStrings(flat(content.([]any)))), nil
+    return mergeStrings(flat(content.([]any))), nil
 }
 
 InlineTableElement = ValidTableCellPrefix  element:(
