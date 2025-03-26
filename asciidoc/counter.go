@@ -31,3 +31,16 @@ func (a *Counter) Equals(o Element) bool {
 	}
 	return a.Display == oa.Display
 }
+
+type CounterType uint8
+
+const (
+	CounterTypeInteger CounterType = iota
+	CounterTypeUpperCase
+	CounterTypeLowerCase
+)
+
+type CounterState struct {
+	CounterType CounterType
+	Value       int
+}
