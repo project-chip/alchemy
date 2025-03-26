@@ -42,7 +42,7 @@ func comparePrivilege(entityType types.EntityType, prop DiffProperty, spec matte
 		spec = defaultSpec
 	}
 	if spec != zap {
-		diffs = append(diffs, NewPropertyDiff[matter.Privilege](DiffTypeMismatch, prop, spec, zap))
+		diffs = append(diffs, NewPropertyDiff(DiffTypeMismatch, prop, spec, zap))
 	}
 	return
 }
@@ -55,7 +55,7 @@ func compareScoping(prop DiffProperty, spec matter.FabricScoping, zap matter.Fab
 		spec = defaultSpec
 	}
 	if spec != zap {
-		diffs = append(diffs, NewPropertyDiff[matter.FabricScoping](DiffTypeMismatch, prop, spec, zap))
+		diffs = append(diffs, NewPropertyDiff(DiffTypeMismatch, prop, spec, zap))
 	}
 	return
 }
@@ -68,7 +68,7 @@ func compareSensitivity(prop DiffProperty, spec matter.FabricSensitivity, zap ma
 		spec = defaultSpec
 	}
 	if spec != zap {
-		diffs = append(diffs, NewPropertyDiff[matter.FabricSensitivity](DiffTypeMismatch, prop, spec, zap))
+		diffs = append(diffs, NewPropertyDiff(DiffTypeMismatch, prop, spec, zap))
 	}
 	return
 }
@@ -81,7 +81,7 @@ func compareTiming(prop DiffProperty, spec matter.Timing, zap matter.Timing, def
 		spec = defaultSpec
 	}
 	if spec != zap {
-		diffs = append(diffs, NewPropertyDiff[matter.Timing](DiffTypeMismatch, prop, spec, zap))
+		diffs = append(diffs, NewPropertyDiff(DiffTypeMismatch, prop, spec, zap))
 	}
 	return
 }

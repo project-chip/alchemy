@@ -93,7 +93,7 @@ func (p NamespacePatcher) Process(cxt context.Context, inputs []*pipeline.Data[[
 		return
 	}
 	out = postProcessTemplate(out)
-	outputs = append(outputs, pipeline.NewData[[]byte](namespaceXMLPath, []byte(out)))
+	outputs = append(outputs, pipeline.NewData(namespaceXMLPath, []byte(out)))
 
 	return
 }

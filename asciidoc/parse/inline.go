@@ -103,12 +103,6 @@ func Inline(context PreParseContext, path string, reader io.Reader, opts ...Opti
 				}
 			}
 		default:
-
-			if suppress {
-				//				slog.Info("Removing", log.Type("type", el))
-			} else {
-				//				slog.Info("Keeping", log.Type("type", el))
-			}
 			remove = suppress
 			if !suppress && addToCell {
 				if lastTableCell != nil {

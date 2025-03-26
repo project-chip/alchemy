@@ -125,7 +125,7 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 		}
 		outputs = append(outputs, &pipeline.Data[string]{Path: newPath, Content: result})
 		if provisional {
-			tg.ProvisionalZclFiles.Store(filepath.Base(newPath), pipeline.NewData[struct{}](newPath, struct{}{}))
+			tg.ProvisionalZclFiles.Store(filepath.Base(newPath), pipeline.NewData(newPath, struct{}{}))
 		}
 	}
 	return
@@ -186,10 +186,10 @@ func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet
 			clusters.Store(path, data)
 		}
 		if len(dts) > 0 {
-			deviceTypes.Store(path, pipeline.NewData[[]*matter.DeviceType](path, dts))
+			deviceTypes.Store(path, pipeline.NewData(path, dts))
 		}
 		if len(ns) > 0 {
-			namespaces.Store(path, pipeline.NewData[[]*matter.Namespace](path, ns))
+			namespaces.Store(path, pipeline.NewData(path, ns))
 		}
 		return true
 	})

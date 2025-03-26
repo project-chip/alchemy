@@ -144,7 +144,10 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		}
 		if deviceTypeToUpdate != nil {
 			if !matter.NonGlobalIDInvalidForEntity(deviceTypeToUpdate.ID, types.EntityTypeDeviceType) {
-				p.applyDeviceTypeToElement(p.spec, deviceTypeToUpdate, deviceTypeElement)
+				err = p.applyDeviceTypeToElement(p.spec, deviceTypeToUpdate, deviceTypeElement)
+				if err != nil {
+					return
+				}
 			} else {
 				configurator.RemoveChild(deviceTypeElement)
 			}
@@ -221,6 +224,6 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		return
 	}
 	out = postProcessTemplate(out)
-	outputs = append(outputs, pipeline.NewData[[]byte](deviceTypesXMLPath, []byte(out)))
+	outputs = append(outputs, pipeline.NewData(deviceTypesXMLPath, []byte(out)))
 	return
 }

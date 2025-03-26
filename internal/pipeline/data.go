@@ -17,7 +17,7 @@ func NewData[T any](path string, content T) *Data[T] {
 }
 
 func SortData[T any](data []*Data[T]) {
-	slices.SortStableFunc[[]*Data[T], *Data[T]](data, func(a *Data[T], b *Data[T]) int {
+	slices.SortStableFunc(data, func(a *Data[T], b *Data[T]) int {
 		return strings.Compare(a.Path, b.Path)
 	})
 }
@@ -45,7 +45,7 @@ func Cast[T any, U any](from Map[string, *Data[T]], to Map[string, *Data[U]]) (e
 			err = fmt.Errorf("cannot convert %T to %T", value.Content, new(U))
 			return false
 		}
-		to.Store(key, NewData[U](value.Path, o))
+		to.Store(key, NewData(value.Path, o))
 		return true
 	})
 	return

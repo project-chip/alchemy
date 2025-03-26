@@ -353,6 +353,6 @@ func attributeAsciiDocStringElement(sb *strings.Builder, e Element) {
 		sb.WriteString(e.Name())
 		sb.WriteRune('}')
 	default:
-		sb.WriteString(fmt.Sprintf("ERROR: unexpected attribute element: %T", e))
+		fmt.Fprintf(sb, "ERROR: unexpected attribute element: %T", e)
 	}
 }

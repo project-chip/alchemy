@@ -11,11 +11,11 @@ func compareStruct(specStruct *matter.Struct, zapStruct *matter.Struct) (diffs [
 	switch zapStruct.FabricScoping {
 	case matter.FabricScopingScoped:
 		if specStruct.FabricScoping != matter.FabricScopingScoped {
-			diffs = append(diffs, NewPropertyDiff[matter.FabricScoping](DiffTypeMismatch, DiffPropertyFabricScoping, specStruct.FabricScoping, zapStruct.FabricScoping))
+			diffs = append(diffs, NewPropertyDiff(DiffTypeMismatch, DiffPropertyFabricScoping, specStruct.FabricScoping, zapStruct.FabricScoping))
 		}
 	case matter.FabricScopingUnscoped:
 		if specStruct.FabricScoping == matter.FabricScopingScoped {
-			diffs = append(diffs, NewPropertyDiff[matter.FabricScoping](DiffTypeMismatch, DiffPropertyFabricScoping, specStruct.FabricScoping, zapStruct.FabricScoping))
+			diffs = append(diffs, NewPropertyDiff(DiffTypeMismatch, DiffPropertyFabricScoping, specStruct.FabricScoping, zapStruct.FabricScoping))
 		}
 	}
 

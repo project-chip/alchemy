@@ -185,7 +185,7 @@ func ContainsNumber(s []*Number, n *Number) bool {
 }
 
 func SortNumbers(s []*Number) {
-	slices.SortStableFunc[[]*Number, *Number](s, func(a *Number, b *Number) int {
+	slices.SortStableFunc(s, func(a *Number, b *Number) int {
 		av := a.Value()
 		bv := b.Value()
 		if av < bv {
