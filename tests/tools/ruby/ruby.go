@@ -13,7 +13,9 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/lithammer/dedent"
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/sanity-io/litter"
 )
 
@@ -26,12 +28,13 @@ type adTestGroup struct {
 }
 
 type adTest struct {
-	Name         string
-	QuotedName   string
-	TestName     string
-	Asciidoc     string
-	AsciidocPath string
-	GoObject     string
+	Name            string
+	QuotedName      string
+	TestName        string
+	Asciidoc        string
+	AsciidocPath    string
+	DocObject       string
+	ParsedDocObject string
 }
 
 func init() {
@@ -72,11 +75,24 @@ func main() {
 		name := strings.ReplaceAll(t.Name, ",", "")
 		name = strings.ReplaceAll(name, "/", " ")
 		name = strings.ReplaceAll(name, "\"", " ")
+
+		docPath, err := asciidoc.NewPath("test.adoc", ".")
+		if err != nil {
+			slog.Error("failed creating path", "test", t.Name, "err", err)
+			continue
+		}
+		parsedDoc, err := parse.Inline(spec.NewPreparseContext(docPath, "."), "test.adoc", strings.NewReader(a))
+		if err != nil {
+			slog.Error("failed creating path", "test", t.Name, "err", err)
+			continue
+		}
+
 		t.TestName = strcase.ToLowerCamel(name)
-		t.GoObject = cleanObjectDump(litter.Sdump(doc))
+		t.DocObject = cleanObjectDump(litter.Sdump(doc))
+		t.ParsedDocObject = cleanObjectDump(litter.Sdump(parsedDoc))
 		t.AsciidocPath = path.Join("asciidoctor/", testName+"_"+strcase.ToSnakeWithIgnore(name, ",")+".adoc")
-		docPath := path.Join("tests/asciidoctor/", testName+"_"+strcase.ToSnakeWithIgnore(name, ",")+".adoc")
-		err = os.WriteFile(docPath, []byte(a), os.ModeAppend|0644)
+		renderedDocPath := path.Join("tests/asciidoctor/", testName+"_"+strcase.ToSnakeWithIgnore(name, ",")+".adoc")
+		err = os.WriteFile(renderedDocPath, []byte(a), os.ModeAppend|0644)
 		if err != nil {
 			panic(err)
 		}

@@ -16,22 +16,9 @@ type PreParseContext interface {
 	Get(name string) any
 	Set(name string, value any)
 	Unset(name string)
-	GetCounterState(name string, initialValue string) (*CounterState, error)
+	GetCounterState(name string, initialValue string) (*asciidoc.CounterState, error)
 	ResolvePath(path string) (asciidoc.Path, error)
 	ShouldIncludeFile(path asciidoc.Path) bool
-}
-
-type CounterType uint8
-
-const (
-	CounterTypeInteger CounterType = iota
-	CounterTypeUpperCase
-	CounterTypeLowerCase
-)
-
-type CounterState struct {
-	CounterType CounterType
-	Value       int
 }
 
 func PreParseFile(context PreParseContext, path string) (string, error) {
@@ -192,24 +179,24 @@ func renderCounter(context PreParseContext, c *asciidoc.Counter, w *asciidoc.Wri
 
 	if c.Display {
 		switch cc.CounterType {
-		case CounterTypeInteger:
+		case asciidoc.CounterTypeInteger:
 			w.Write(asciidoc.NewString(strconv.Itoa(cc.Value)))
-		case CounterTypeLowerCase:
+		case asciidoc.CounterTypeLowerCase:
 			r := rune(int('a') + cc.Value)
 			w.Write(asciidoc.NewString(string(r)))
-		case CounterTypeUpperCase:
+		case asciidoc.CounterTypeUpperCase:
 			r := rune(int('A') + cc.Value)
 			w.Write(asciidoc.NewString(string(r)))
 		}
 	}
 	switch cc.CounterType {
-	case CounterTypeInteger:
+	case asciidoc.CounterTypeInteger:
 		cc.Value += 1
-	case CounterTypeUpperCase:
+	case asciidoc.CounterTypeUpperCase:
 		if cc.Value < 'Z' {
 			cc.Value += 1
 		}
-	case CounterTypeLowerCase:
+	case asciidoc.CounterTypeLowerCase:
 		if cc.Value < 'z' {
 			cc.Value += 1
 		}
