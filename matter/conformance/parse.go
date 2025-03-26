@@ -68,15 +68,15 @@ func IsRequired(conformance Conformance) bool {
 	case *Mandatory:
 		return true
 	case Set:
-		if len(conformance) > 0 {
-			for _, c := range conformance {
-				_, ok := c.(*Mandatory)
-				if !ok {
-					return false
-				}
+		for _, c := range conformance {
+			switch c.(type) {
+			case *Provisional, *Mandatory:
+				continue
+			default: // If there's anything other than provisional and mandatory
+				return false
 			}
-			return true
 		}
+		return true
 	}
 	return false
 }
