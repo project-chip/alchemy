@@ -15,38 +15,40 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
-	Command.Flags().Bool("featureXML", true, "write new style feature XML")
-	Command.Flags().Bool("conformanceXML", true, "write new style conformance XML")
-	Command.Flags().Bool("endpointCompositionXML", false, "write new style endpoint composition XML")
-	Command.Flags().Bool("specOrder", false, "write ZAP template XML in spec order")
-	Command.Flags().Bool("extendedQuality", false, "write quality element with all qualities, suppressing redundant attributes")
-	Command.Flags().Bool("inline", false, "use inline parser")
+	flags := Command.Flags()
+	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	flags.String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
+	flags.Bool("featureXML", true, "write new style feature XML")
+	flags.Bool("conformanceXML", true, "write new style conformance XML")
+	flags.Bool("endpointCompositionXML", false, "write new style endpoint composition XML")
+	flags.Bool("specOrder", false, "write ZAP template XML in spec order")
+	flags.Bool("extendedQuality", false, "write quality element with all qualities, suppressing redundant attributes")
+	flags.Bool("inline", false, "use inline parser")
 }
 
 func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	cxt := cmd.Context()
+	flags := cmd.Flags()
 
-	specRoot, _ := cmd.Flags().GetString("specRoot")
-	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
+	specRoot, _ := flags.GetString("specRoot")
+	sdkRoot, _ := flags.GetString("sdkRoot")
 
 	var options generate.Options
 
-	fileOptions := files.Flags(cmd)
+	fileOptions := files.Flags(flags)
 
-	options.Inline, _ = cmd.Flags().GetBool("inline")
+	options.Inline, _ = flags.GetBool("inline")
 
-	options.AsciiSettings = common.ASCIIDocAttributes(cmd)
-	options.Pipeline = pipeline.Flags(cmd)
+	options.AsciiSettings = common.ASCIIDocAttributes(flags)
+	options.Pipeline = pipeline.Flags(flags)
 
-	featureXML, _ := cmd.Flags().GetBool("featureXML")
+	featureXML, _ := flags.GetBool("featureXML")
 	options.Template = append(options.Template, generate.GenerateFeatureXML(featureXML))
-	conformanceXML, _ := cmd.Flags().GetBool("conformanceXML")
-	extendedQuality, _ := cmd.Flags().GetBool("extendedQuality")
-	endpointCompositionXML, _ := cmd.Flags().GetBool("endpointCompositionXML")
-	specOrder, _ := cmd.Flags().GetBool("specOrder")
+	conformanceXML, _ := flags.GetBool("conformanceXML")
+	extendedQuality, _ := flags.GetBool("extendedQuality")
+	endpointCompositionXML, _ := flags.GetBool("endpointCompositionXML")
+	specOrder, _ := flags.GetBool("specOrder")
 	options.Template = append(options.Template, generate.GenerateConformanceXML(conformanceXML))
 	options.Template = append(options.Template, generate.ExtendedQuality(extendedQuality))
 	options.Template = append(options.Template, generate.SpecOrder(specOrder))

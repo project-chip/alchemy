@@ -4,11 +4,11 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
-func ASCIIDocAttributes(cmd *cobra.Command) (settings []asciidoc.AttributeName) {
-	attributes, _ := cmd.Flags().GetStringSlice("attribute")
+func ASCIIDocAttributes(flags *pflag.FlagSet) (settings []asciidoc.AttributeName) {
+	attributes, _ := flags.GetStringSlice("attribute")
 	for _, a := range attributes {
 		if len(a) == 0 {
 			continue

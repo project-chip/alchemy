@@ -6,6 +6,7 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 var Command = &cobra.Command{
@@ -18,44 +19,46 @@ var Command = &cobra.Command{
 
 func discoBall(cmd *cobra.Command, args []string) (err error) {
 	cxt := cmd.Context()
+	flags := cmd.Flags()
 
-	specRoot, _ := cmd.Flags().GetString("specRoot")
+	specRoot, _ := flags.GetString("specRoot")
 
-	pipelineOptions := pipeline.Flags(cmd)
-	fileOptions := files.Flags(cmd)
+	pipelineOptions := pipeline.Flags(flags)
+	fileOptions := files.Flags(flags)
 
 	writer := files.NewWriter[string]("Writing disco-balled docs", fileOptions)
 
-	err = disco.Pipeline(cxt, specRoot, args, pipelineOptions, getDiscoOptions(cmd), getRenderOptions(cmd), writer)
+	err = disco.Pipeline(cxt, specRoot, args, pipelineOptions, getDiscoOptions(flags), getRenderOptions(flags), writer)
 
 	return
 }
 
 func init() {
-	Command.Flags().String("specRoot", "", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().Bool("linkIndexTables", false, "link index tables to child sections")
-	Command.Flags().Bool("addMissingColumns", true, "add standard columns missing from tables")
-	Command.Flags().Bool("reorderColumns", true, "rearrange table columns into disco-ball order")
-	Command.Flags().Bool("renameTableHeaders", true, "rename table headers to disco-ball standard names")
-	Command.Flags().Bool("formatAccess", true, "reformat access columns in disco-ball order")
-	Command.Flags().Bool("promoteDataTypes", true, "promote inline data types to Data Types section")
-	Command.Flags().Bool("reorderSections", true, "reorder sections in disco-ball order")
-	Command.Flags().Bool("normalizeTableOptions", true, "remove existing table options and replace with standard disco-ball options")
-	Command.Flags().Bool("normalizeFeatureNames", true, "correct invalid feature names")
-	Command.Flags().Bool("fixCommandDirection", true, "normalize command directions")
-	Command.Flags().Bool("appendSubsectionTypes", true, "add missing suffixes to data type sections (e.g. \"Bit\", \"Value\", \"Field\", etc.)")
-	Command.Flags().Bool("uppercaseHex", true, "uppercase hex values")
-	Command.Flags().Bool("addSpaceAfterPunctuation", true, "add missing space after punctuation")
-	Command.Flags().Bool("removeExtraSpaces", true, "remove extraneous spaces")
-	Command.Flags().Bool("disambiguateConformanceChoice", true, "ensure conformance choices are only used once per document")
-	Command.Flags().Bool("normalizeAnchors", false, "rewrite anchors and references without labels")
-	Command.Flags().Bool("removeMandatoryFallbacks", true, "remove fallback values for mandatory fields")
-	Command.Flags().Int("wrap", 0, "the maximum length of a line")
+	flags := Command.Flags()
+	flags.String("specRoot", "", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	flags.Bool("linkIndexTables", false, "link index tables to child sections")
+	flags.Bool("addMissingColumns", true, "add standard columns missing from tables")
+	flags.Bool("reorderColumns", true, "rearrange table columns into disco-ball order")
+	flags.Bool("renameTableHeaders", true, "rename table headers to disco-ball standard names")
+	flags.Bool("formatAccess", true, "reformat access columns in disco-ball order")
+	flags.Bool("promoteDataTypes", true, "promote inline data types to Data Types section")
+	flags.Bool("reorderSections", true, "reorder sections in disco-ball order")
+	flags.Bool("normalizeTableOptions", true, "remove existing table options and replace with standard disco-ball options")
+	flags.Bool("normalizeFeatureNames", true, "correct invalid feature names")
+	flags.Bool("fixCommandDirection", true, "normalize command directions")
+	flags.Bool("appendSubsectionTypes", true, "add missing suffixes to data type sections (e.g. \"Bit\", \"Value\", \"Field\", etc.)")
+	flags.Bool("uppercaseHex", true, "uppercase hex values")
+	flags.Bool("addSpaceAfterPunctuation", true, "add missing space after punctuation")
+	flags.Bool("removeExtraSpaces", true, "remove extraneous spaces")
+	flags.Bool("disambiguateConformanceChoice", true, "ensure conformance choices are only used once per document")
+	flags.Bool("normalizeAnchors", false, "rewrite anchors and references without labels")
+	flags.Bool("removeMandatoryFallbacks", true, "remove fallback values for mandatory fields")
+	flags.Int("wrap", 0, "the maximum length of a line")
 }
 
 type discoOption func(bool) disco.Option
 
-func getDiscoOptions(cmd *cobra.Command) []disco.Option {
+func getDiscoOptions(flags *pflag.FlagSet) []disco.Option {
 	var optionFuncs = map[string]discoOption{
 		"linkIndexTables":               disco.LinkIndexTables,
 		"addMissingColumns":             disco.AddMissingColumns,
@@ -77,7 +80,7 @@ func getDiscoOptions(cmd *cobra.Command) []disco.Option {
 	}
 	var discoOptions []disco.Option
 	for name, o := range optionFuncs {
-		on, err := cmd.Flags().GetBool(name)
+		on, err := flags.GetBool(name)
 		if err != nil {
 			continue
 		}
@@ -86,9 +89,9 @@ func getDiscoOptions(cmd *cobra.Command) []disco.Option {
 	return discoOptions
 }
 
-func getRenderOptions(cmd *cobra.Command) []render.Option {
+func getRenderOptions(flags *pflag.FlagSet) []render.Option {
 	var renderOptions []render.Option
-	wrap, err := cmd.Flags().GetInt("wrap")
+	wrap, err := flags.GetInt("wrap")
 	if err == nil {
 		renderOptions = append(renderOptions, render.Wrap(wrap))
 	}

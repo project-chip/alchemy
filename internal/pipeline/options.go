@@ -1,13 +1,15 @@
 package pipeline
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/pflag"
+)
 
 type Options struct {
 	Serial     bool
 	NoProgress bool
 }
 
-func Flags(cmd *cobra.Command) (options Options) {
-	options.Serial, _ = cmd.Flags().GetBool("serial")
+func Flags(flags *pflag.FlagSet) (options Options) {
+	options.Serial, _ = flags.GetBool("serial")
 	return
 }

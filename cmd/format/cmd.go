@@ -17,6 +17,7 @@ var Command = &cobra.Command{
 
 func format(cmd *cobra.Command, args []string) (err error) {
 	cxt := cmd.Context()
+	flags := cmd.Flags()
 
 	var inputs pipeline.Paths
 
@@ -26,8 +27,8 @@ func format(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	pipelineOptions := pipeline.Flags(cmd)
-	fileOptions := files.Flags(cmd)
+	pipelineOptions := pipeline.Flags(flags)
+	fileOptions := files.Flags(flags)
 
 	docReader, err := spec.NewReader("Reading docs", "")
 	if err != nil {
@@ -44,7 +45,7 @@ func format(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	wrap, _ := cmd.Flags().GetInt("wrap")
+	wrap, _ := flags.GetInt("wrap")
 	renderer := render.NewRenderer(render.Wrap(wrap))
 	var renders pipeline.StringSet
 	renders, err = pipeline.Parallel(cxt, pipelineOptions, renderer, ids)
