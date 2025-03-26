@@ -21,24 +21,25 @@ var Command = &cobra.Command{
 func dataModel(cmd *cobra.Command, args []string) (err error) {
 	cxt := cmd.Context()
 
-	specRoot, _ := cmd.Flags().GetString("specRoot")
-	dmRoot, _ := cmd.Flags().GetString("dmRoot")
+	flags := cmd.Flags()
+	specRoot, _ := flags.GetString("specRoot")
+	dmRoot, _ := flags.GetString("dmRoot")
 
 	err = errata.LoadErrataConfig(specRoot)
 	if err != nil {
 		return
 	}
 
-	asciiSettings := common.ASCIIDocAttributes(cmd)
-	fileOptions := files.Flags(cmd)
-	pipelineOptions := pipeline.Flags(cmd)
+	asciiSettings := common.ASCIIDocAttributes(flags)
+	fileOptions := files.Flags(flags)
+	pipelineOptions := pipeline.Flags(flags)
 
 	docParser, err := spec.NewParser(specRoot, asciiSettings)
 	if err != nil {
 		return err
 	}
 
-	docParser.Inline, _ = cmd.Flags().GetBool("inline")
+	docParser.Inline, _ = flags.GetBool("inline")
 
 	specBuilder := spec.NewBuilder(spec.IgnoreHierarchy(true))
 
@@ -86,7 +87,8 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 }
 
 func init() {
-	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("dmRoot", "connectedhomeip/data_model/master", "where to place the data model files")
-	Command.Flags().Bool("inline", false, "use inline parser")
+	flags := Command.Flags()
+	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	flags.String("dmRoot", "connectedhomeip/data_model/master", "where to place the data model files")
+	flags.Bool("inline", false, "use inline parser")
 }

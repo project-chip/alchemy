@@ -27,27 +27,29 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("sdkRoot", "connectedhomeip", "the src root of your clone of project-chip/connectedhomeip")
-	Command.Flags().Bool("text", false, "output as text")
+	flags := Command.Flags()
+	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	flags.String("sdkRoot", "connectedhomeip", "the src root of your clone of project-chip/connectedhomeip")
+	flags.Bool("text", false, "output as text")
 }
 
 func compareSpec(cmd *cobra.Command, args []string) (err error) {
 
 	cxt := cmd.Context()
+	flags := cmd.Flags()
 
-	specRoot, _ := cmd.Flags().GetString("specRoot")
-	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
-	text, _ := cmd.Flags().GetBool("text")
+	specRoot, _ := flags.GetString("specRoot")
+	sdkRoot, _ := flags.GetString("sdkRoot")
+	text, _ := flags.GetBool("text")
 
 	err = errata.LoadErrataConfig(specRoot)
 	if err != nil {
 		return
 	}
 
-	asciiSettings := common.ASCIIDocAttributes(cmd)
-	pipelineOptions := pipeline.Flags(cmd)
-	fileOptions := files.Flags(cmd)
+	asciiSettings := common.ASCIIDocAttributes(flags)
+	pipelineOptions := pipeline.Flags(flags)
+	fileOptions := files.Flags(flags)
 
 	err = sdk.CheckAlchemyVersion(sdkRoot)
 	if err != nil {

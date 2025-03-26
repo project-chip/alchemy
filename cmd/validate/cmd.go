@@ -22,16 +22,17 @@ func init() {
 func validateSpec(cmd *cobra.Command, args []string) (err error) {
 
 	cxt := cmd.Context()
+	flags := cmd.Flags()
 
-	specRoot, _ := cmd.Flags().GetString("specRoot")
+	specRoot, _ := flags.GetString("specRoot")
 
 	err = errata.LoadErrataConfig(specRoot)
 	if err != nil {
 		return
 	}
 
-	asciiSettings := common.ASCIIDocAttributes(cmd)
-	pipelineOptions := pipeline.Flags(cmd)
+	asciiSettings := common.ASCIIDocAttributes(flags)
+	pipelineOptions := pipeline.Flags(flags)
 
 	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 	if err != nil {

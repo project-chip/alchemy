@@ -19,11 +19,13 @@ var Command = &cobra.Command{
 	Short: "dump the parse tree of Matter documents specified by filename_pattern",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-		asciiSettings := common.ASCIIDocAttributes(cmd)
-		asciiOut, _ := cmd.Flags().GetBool("ascii")
-		jsonOut, _ := cmd.Flags().GetBool("json")
-		unifiedOut, _ := cmd.Flags().GetBool("inline")
-		specRoot, _ := cmd.Flags().GetString("specRoot")
+		flags := cmd.Flags()
+
+		asciiSettings := common.ASCIIDocAttributes(flags)
+		asciiOut, _ := flags.GetBool("ascii")
+		jsonOut, _ := flags.GetBool("json")
+		unifiedOut, _ := flags.GetBool("inline")
+		specRoot, _ := flags.GetString("specRoot")
 
 		files, err := paths.Expand(args)
 		if err != nil {
@@ -99,8 +101,9 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().Bool("ascii", false, "dump asciidoc object model")
-	Command.Flags().Bool("json", false, "dump json object model")
-	Command.Flags().Bool("inline", false, "use inline parser")
-	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	flags := Command.Flags()
+	flags.Bool("ascii", false, "dump asciidoc object model")
+	flags.Bool("json", false, "dump json object model")
+	flags.Bool("inline", false, "use inline parser")
+	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
 }

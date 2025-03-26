@@ -16,25 +16,27 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
-	Command.Flags().String("templateRoot", "", "the root of your local template files; if not specified, Alchemy will use an internal copy")
-	Command.Flags().Bool("overwrite", true, "overwrite existing test scripts")
+	flags := Command.Flags()
+	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	flags.String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
+	flags.String("templateRoot", "", "the root of your local template files; if not specified, Alchemy will use an internal copy")
+	flags.Bool("overwrite", true, "overwrite existing test scripts")
 }
 
 func tp(cmd *cobra.Command, args []string) (err error) {
 
 	cxt := cmd.Context()
+	flags := cmd.Flags()
 
-	specRoot, _ := cmd.Flags().GetString("specRoot")
-	sdkRoot, _ := cmd.Flags().GetString("sdkRoot")
+	specRoot, _ := flags.GetString("specRoot")
+	sdkRoot, _ := flags.GetString("sdkRoot")
 
-	asciiSettings := common.ASCIIDocAttributes(cmd)
-	fileOptions := files.Flags(cmd)
-	pipelineOptions := pipeline.Flags(cmd)
+	asciiSettings := common.ASCIIDocAttributes(flags)
+	fileOptions := files.Flags(flags)
+	pipelineOptions := pipeline.Flags(flags)
 
-	overwrite, _ := cmd.Flags().GetBool("overwrite")
-	templateRoot, _ := cmd.Flags().GetString("templateRoot")
+	overwrite, _ := flags.GetBool("overwrite")
+	templateRoot, _ := flags.GetString("templateRoot")
 	generatorOptions := []python.GeneratorOption{
 		python.Overwrite(overwrite),
 		python.TemplateRoot(templateRoot),

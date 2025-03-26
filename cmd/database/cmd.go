@@ -19,17 +19,19 @@ var Command = &cobra.Command{
 	Short: "run a local MySQL DB containing the contents of the Matter spec or the ZAP templates",
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		cxt := cmd.Context()
-		specRoot, _ := cmd.Flags().GetString("specRoot")
+		flags := cmd.Flags()
 
-		asciiSettings := common.ASCIIDocAttributes(cmd)
+		specRoot, _ := flags.GetString("specRoot")
 
-		address, _ := cmd.Flags().GetString("address")
-		port, _ := cmd.Flags().GetInt("port")
-		raw, _ := cmd.Flags().GetBool("raw")
+		asciiSettings := common.ASCIIDocAttributes(flags)
+
+		address, _ := flags.GetString("address")
+		port, _ := flags.GetInt("port")
+		raw, _ := flags.GetBool("raw")
 
 		errata.LoadErrataConfig(specRoot)
 
-		pipelineOptions := pipeline.Flags(cmd)
+		pipelineOptions := pipeline.Flags(flags)
 
 		specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
 		if err != nil {
@@ -69,8 +71,9 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	Command.Flags().String("address", "localhost", "the address to host the database server on")
-	Command.Flags().Int("port", 3306, "the port to run the database server on")
-	Command.Flags().Bool("raw", false, "parse the sections directly, bypassing entity building")
+	flags := Command.Flags()
+	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	flags.String("address", "localhost", "the address to host the database server on")
+	flags.Int("port", 3306, "the port to run the database server on")
+	flags.Bool("raw", false, "parse the sections directly, bypassing entity building")
 }

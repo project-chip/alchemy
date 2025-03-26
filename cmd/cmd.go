@@ -52,16 +52,18 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().Bool("verbose", false, "display verbose information")
-	rootCmd.PersistentFlags().String("log", "console", "changes format of log; 'console' or 'json'")
+	flags := rootCmd.PersistentFlags()
+	flags.Bool("verbose", false, "display verbose information")
+	flags.String("log", "console", "changes format of log; 'console' or 'json'")
 	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-		verbose, _ := rootCmd.PersistentFlags().GetBool("verbose")
+		flags := rootCmd.PersistentFlags()
+		verbose, _ := flags.GetBool("verbose")
 		level := slog.LevelInfo
 		if verbose {
 			level = slog.LevelDebug
 		}
 		var handler slog.Handler
-		logType, _ := rootCmd.PersistentFlags().GetString("log")
+		logType, _ := flags.GetString("log")
 		switch logType {
 		case "json":
 			handler = slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: level})
@@ -72,10 +74,10 @@ func init() {
 			})
 		}
 		slog.SetDefault(slog.New(handler))
-		suppressVersionCheck, _ = rootCmd.PersistentFlags().GetBool("suppressVersionCheck")
+		suppressVersionCheck, _ = flags.GetBool("suppressVersionCheck")
 	}
-	rootCmd.PersistentFlags().Bool("suppressVersionCheck", false, "")
-	rootCmd.PersistentFlags().MarkHidden("suppressVersionCheck")
+	flags.Bool("suppressVersionCheck", false, "")
+	flags.MarkHidden("suppressVersionCheck")
 	rootCmd.SetVersionTemplate(`{{printf "version: %s" .Version}}
 `)
 }
