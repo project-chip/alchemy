@@ -41,7 +41,7 @@ func (cf *eventFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.Tab
 }
 
 func (cf *eventFactory) Details(d *Doc, s *Section, pc *parseContext, e *matter.Event) (err error) {
-	e.Description = getDescription(d, s.Set)
+	e.Description = getDescription(d, e, s.Set)
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {

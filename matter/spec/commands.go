@@ -53,7 +53,7 @@ func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.T
 }
 
 func (cf *commandFactory) Details(d *Doc, s *Section, pc *parseContext, c *matter.Command) (err error) {
-	c.Description = getDescription(d, s.Elements())
+	c.Description = getDescription(d, c, s.Elements())
 
 	if !d.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCommandArguments) {
 		var ti *TableInfo

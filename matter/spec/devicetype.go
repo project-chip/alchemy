@@ -12,7 +12,6 @@ type DeviceTypeSet pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
 
 func (s *Section) toDeviceTypes(d *Doc, pc *parseContext) (err error) {
 	var deviceTypes []*matter.DeviceType
-	description := getDescription(d, s.Elements())
 
 	for _, s := range parse.Skim[*Section](s.Elements()) {
 		switch s.SecType {
@@ -23,6 +22,12 @@ func (s *Section) toDeviceTypes(d *Doc, pc *parseContext) (err error) {
 			return
 		}
 	}
+
+	if len(deviceTypes) == 0 {
+		return
+	}
+
+	description := getDescription(d, deviceTypes[0], s.Elements())
 
 	for _, c := range deviceTypes {
 		c.Description = description
