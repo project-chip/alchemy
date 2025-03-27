@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -58,6 +59,9 @@ func (s *Section) toNamespace(d *Doc, pc *parseContext) (err error) {
 		st.Name, err = valuesTable.ReadString(row, matter.TableColumnName)
 		if err != nil {
 			return
+		}
+		if !text.IsAlphanumeric(st.Name) {
+			slog.Warn("Semantic tag name is not alphanumeric", slog.String("name", st.Name), log.Path("source", row))
 		}
 		if text.HasCaseInsensitivePrefix(st.Name, "Reserved") {
 			slog.Debug("Skipping reserved semantic tag", slog.String("name", st.Name))

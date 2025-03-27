@@ -30,12 +30,35 @@ func Path(name string, source Source) slog.Attr {
 func Element(name string, path fmt.Stringer, element asciidoc.Element) slog.Attr {
 	var arg strings.Builder
 	arg.WriteString(path.String())
+	if el, ok := element.(interface{ GetBase() asciidoc.Element }); ok {
+		element = el.GetBase()
+	}
 	if hp, ok := element.(asciidoc.HasPosition); ok {
 		l, _, _ := hp.Position()
 		if l >= 0 {
 			arg.WriteRune(':')
 			arg.WriteString(strconv.Itoa(l))
 		}
+	}
+	return slog.String(name, arg.String())
+}
+
+func Elements(name string, path fmt.Stringer, elements asciidoc.Set) slog.Attr {
+	var arg strings.Builder
+	arg.WriteString(path.String())
+	for _, element := range elements {
+		if el, ok := element.(interface{ GetBase() asciidoc.Element }); ok {
+			element = el.GetBase()
+		}
+		if hp, ok := element.(asciidoc.HasPosition); ok {
+			l, _, _ := hp.Position()
+			if l >= 0 {
+				arg.WriteRune(':')
+				arg.WriteString(strconv.Itoa(l))
+				break
+			}
+		}
+
 	}
 	return slog.String(name, arg.String())
 }
