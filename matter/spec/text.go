@@ -8,13 +8,15 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 var endOfSentencePattern = regexp.MustCompile(`(?m)(\.( |$)|\n\n)`)
 
-func getDescription(doc *Doc, els asciidoc.Set) string {
+func getDescription(doc *Doc, entity types.Entity, els asciidoc.Set) string {
 	var sb strings.Builder
 	readDescription(doc, els, &sb)
 	description := sb.String()
@@ -30,6 +32,11 @@ func getDescription(doc *Doc, els asciidoc.Set) string {
 		}
 		description = possible
 		break
+	}
+	if description == "" {
+		slog.Warn("Missing description for entity", matter.LogEntity("entity", entity), log.Elements("source", doc.Path, els))
+	} else if !strings.HasSuffix(description, ".") {
+		slog.Warn("Description for entity is not sentence", matter.LogEntity("entity", entity), slog.String("description", description), log.Elements("source", doc.Path, els))
 	}
 	return description
 }

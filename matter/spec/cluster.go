@@ -14,7 +14,6 @@ import (
 
 func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 	var clusters []*matter.Cluster
-	var description = getDescription(d, s.Elements())
 
 	elements := parse.Skim[*Section](s.Elements())
 
@@ -92,6 +91,8 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 	} else {
 		pc.addRootEntity(clusters[0], s.Base)
 	}
+
+	var description = getDescription(d, clusters[0], s.Elements())
 
 	for _, c := range clusters {
 		c.Description = description
