@@ -30,9 +30,18 @@ func CreateConformanceElement(doc *spec.Doc, c conformance.Conformance, parentEn
 	}
 	switch cs := c.(type) {
 	case conformance.Set:
-		if len(cs) > 1 {
+		var filtered []conformance.Conformance
+		for _, c := range cs {
+			switch c := c.(type) {
+			case *conformance.Generic:
+				continue
+			default:
+				filtered = append(filtered, c)
+			}
+		}
+		if len(filtered) > 1 {
 			return renderConformanceSet(doc, cs, parentEntity)
-		} else if len(cs) == 1 {
+		} else if len(filtered) == 1 {
 			return renderConformance(doc, cs[0], parentEntity)
 		}
 	case *conformance.Generic:
@@ -81,7 +90,9 @@ func renderConformance(doc *spec.Doc, con conformance.Conformance, parentEntity 
 	case *conformance.Deprecated:
 		element = etree.NewElement("deprecateConform")
 	case *conformance.Described:
+		element = etree.NewElement("describedConform")
 	case *conformance.Generic:
+		err = fmt.Errorf("generic conformance elements are not supported in XML")
 	case conformance.Set:
 		return renderConformanceSet(doc, con, parentEntity)
 	default:
