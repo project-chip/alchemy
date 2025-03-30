@@ -1,3 +1,9 @@
-{{#ifSet step.Response.Constraints.MinValue}}
-asserts.assert_greater_equal({{> test/commands/response_value step=step}}, {{pythonValue step.Response.Constraints.MinValue}})
+{{#ifSet action.Variable}}
+{{#ifFieldIsArray action.Field}}
+asserts.assert_greater_equal(len({{action.Variable}}), {{minConstraint action}}, "{{attributeName step action }} must have at least {{minConstraint action}} entries!")
+{{else ifFieldHasLength action.Field}}
+asserts.assert_greater_equal(len({{action.Variable}}), {{minConstraint action}}, "{{attributeName step action }} must be at least {{minConstraint action}} long!")
+{{else}}
+asserts.assert_greater_equal({{action.Variable}}, {{minConstraint action}})
+{{/ifFieldIsArray}}
 {{/ifSet}}

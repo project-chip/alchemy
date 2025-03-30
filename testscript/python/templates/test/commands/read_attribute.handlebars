@@ -1,11 +1,15 @@
-{{#if step.Response.Error ~}}
-await self.read_single_attribute_expect_error(endpoint={{endpointVariable test step}}, cluster={{> test/commands/cluster_arg test=test step=step}}, attribute=cluster.Attributes.{{step.Attribute}})
+{{#if action.ExpectedError ~}}
+await self.read_single_attribute_expect_error(endpoint={{endpointVariable test action.Endpoint}}, cluster={{> test/commands/cluster_arg test=test step=step}}, attribute=cluster.Attributes.{{attributeName step action}})
 {{else ~}}
-{{#if step.Response.SaveAs ~}}
-{{variable step.Response.SaveAs}} = {{else if step.Response.Constraints ~}}
-val = {{else if step.Response.Value ~}}val = {{/if ~}}
-await self.read_single_attribute_check_success(endpoint={{endpointVariable test step}}, cluster={{> test/commands/cluster_arg test=test step=step}}, attribute=cluster.Attributes.{{step.Attribute ~}}
-{{#if step.FabricFiltered ~}}
+{{#if action.Variable ~}}
+{{variable action.Variable}} = {{/if ~}}
+await self.read_single_attribute_check_success(endpoint={{endpointVariable test action.Endpoint}}, cluster={{> test/commands/cluster_arg test=test step=step}}, attribute=cluster.Attributes.{{attributeName step action ~}}
+{{#if action.FabricFiltered ~}}
 fabricFiltered=True{{/if}})
 {{/if}}
-{{> test/constraints/list test=test step=step}}
+{{#ifFieldIsNullable action.Attribute}}
+if {{action.variable}} is not NullValue:
+    {{> test/validations test=test step=step action=action}}
+{{else}}
+{{> test/validations test=test step=step action=action}}
+{{/ifFieldIsNullable}}

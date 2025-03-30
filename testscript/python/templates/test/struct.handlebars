@@ -1,0 +1,10 @@
+async def test_{{step.name}}(self, endpoint, cluster, struct):
+    pass # structTest({{quote step.name}}
+{{#each step.Actions}}
+{{#ifNeedsConformanceCheck this}}
+    if {{conformanceGuard this}}:
+        {{> test/action test=test step=step action=this}}
+{{else}}
+    {{> test/action test=test step=step action=this}}
+{{/ifNeedsConformanceCheck}}
+{{/each}}

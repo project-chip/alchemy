@@ -218,3 +218,29 @@ func (c *Cluster) Identifier(name string) (types.Entity, bool) {
 	}
 	return nil, false
 }
+
+func (c *Cluster) Cluster() *Cluster {
+	return c
+}
+
+func findCluster(entity types.Entity) *Cluster {
+	switch e := entity.(type) {
+	case *Cluster:
+		return e
+	case *ClusterGroup:
+		return e.Clusters[0]
+	case *Struct:
+		return findCluster(e.parent)
+	case *Field:
+		return findCluster(e.parent)
+	case *Event:
+		return findCluster(e.parent)
+	case *Command:
+		return findCluster(e.parent)
+	case *Bitmap:
+		return findCluster(e.parent)
+	case *Enum:
+		return findCluster(e.parent)
+	}
+	return nil
+}

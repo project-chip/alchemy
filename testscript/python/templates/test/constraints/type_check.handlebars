@@ -1,0 +1,39 @@
+{{#typeCheckIs action "uint64" ~}}
+matter_asserts.assert_valid_uint64({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "uint32" ~}}
+matter_asserts.assert_valid_uint32({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "uint16" ~}}
+matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "uint8" ~}}
+matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "int64" ~}}
+matter_asserts.assert_valid_int64({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "int32" ~}}
+matter_asserts.assert_valid_int32({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "int16" ~}}
+matter_asserts.assert_valid_int16({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "int8" ~}}
+matter_asserts.assert_valid_int8({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "bool" ~}}
+matter_asserts.assert_valid_bool({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "string" ~}}
+matter_asserts.assert_is_string({{action.Variable}}, "{{attributeName step action}} attribute must return a string")
+{{else typeCheckIs action "octstr" ~}}
+matter_asserts.assert_is_octstr({{action.Variable}}, "{{attributeName step action}} attribute must return an octstr")
+{{else typeCheckIs action "list" ~}}
+matter_asserts.assert_list({{action.Variable}}, "{{attributeName step action}} attribute must return a list")
+matter_asserts.assert_list_element_type({{action.Variable}},  "{{attributeName step action }} attribute must contain {{entryTypeName test step action.Field}} elements", {{entryTypeName test step action.Field}})
+{{else typeCheckIs action "percent" ~}}
+matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action}}')
+asserts.assert_less_equal({{action.Variable}}, 100)
+{{else typeCheckIs action "percent100ths" ~}}
+matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action}}')
+asserts.assert_less_equal({{action.Variable}}, 10000)
+{{else typeCheckIs action "enum" ~}}
+matter_asserts.assert_valid_enum({{action.Variable}}, "{{attributeName step action}} attribute must return a {{enumName action}}", cluster.Enums.{{enumName action}})
+{{else typeCheckIs action "bitmap" ~}}
+matter_asserts.assert_valid_bitmap({{action.Variable}}, "{{attributeName step action}} attribute must return a {{bitmapName action}}", cluster.Bitmaps.{{bitmapName action}})
+{{else ~}}
+logging.info(f"Unimplemented check: {{attributeName step action}} {{raw '{'}}{{action.Variable}}{{raw '}'}} ({{step.Response.Constraints.Type}} -> {{raw '{'}}type({{action.Variable}}){{raw '}'}}")
+pass  # Unimplemented type check: {{step.Response.Constraints.Type}}
+{{/typeCheckIs ~}}

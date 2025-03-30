@@ -1,0 +1,65 @@
+package testscript
+
+import (
+	"context"
+	"log/slog"
+	"path/filepath"
+
+	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
+)
+
+type TestScriptGenerator struct {
+	spec       *spec.Specification
+	sdkRoot    string
+	picsLabels map[string]string
+}
+
+func NewTestScriptGenerator(spec *spec.Specification, sdkRoot string, picsLabels map[string]string) *TestScriptGenerator {
+	return &TestScriptGenerator{spec: spec, sdkRoot: sdkRoot, picsLabels: picsLabels}
+}
+
+func (sp TestScriptGenerator) Name() string {
+	return "Creating test script steps"
+}
+
+func (sp *TestScriptGenerator) Process(cxt context.Context, input *pipeline.Data[*spec.Doc], index int32, total int32) (outputs []*pipeline.Data[*Test], extras []*pipeline.Data[*spec.Doc], err error) {
+	var entities []types.Entity
+	entities, err = input.Content.Entities()
+	if err != nil {
+		slog.ErrorContext(cxt, "error converting doc to entities", "doc", input.Content.Path, "error", err)
+		err = nil
+		return
+	}
+
+	var clusters []*matter.Cluster
+	for _, m := range entities {
+		switch m := m.(type) {
+		case *matter.ClusterGroup:
+			clusters = append(clusters, m.Clusters...)
+		case *matter.Cluster:
+			clusters = append(clusters, m)
+		}
+	}
+	for _, cluster := range clusters {
+		if len(cluster.Attributes) > 0 {
+			var t *Test
+			t, err = sp.buildClusterTest(cluster)
+			outputs = append(outputs, pipeline.NewData(sp.getPath(t), t))
+		}
+	}
+	return
+}
+
+func (ytc *TestScriptGenerator) getPath(test *Test) string {
+
+	path := getTestName(test)
+	path += ".py"
+	return filepath.Join(ytc.sdkRoot, "src/python_testing", path)
+}
+
+func getTestName(test *Test) string {
+	return "TC_" + test.ID
+}

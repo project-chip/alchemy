@@ -1,0 +1,56 @@
+{{#if action.description}}
+{{#each action.description}}
+# {{raw this}}
+{{/each}}
+{{/if}}
+{{#if action.comments}}
+{{#each action.comments}}
+# {{raw this}}
+{{/each}}
+{{/if}}
+{{#if action.disabled}}
+# Disabled
+pass
+{{else}}
+{{#if action.userVerification}}
+{{> test/commands/user_prompt step=action}}
+{{else}}
+{{#actionIs step "DelayCommands"}}
+# Delay Command
+{{else actionIs step "EqualityCommands"}}
+{{> test/commands/equality test=test step=action}}
+{{else actionIs step "AnyCommands"}}
+# TODO: Any Commands
+{{else actionIs step "CommissionerCommands"}}
+# TODO: Commissioner Commands
+{{else actionIs step "SystemCommands"}}
+# TODO: System Commands
+{{else actionIs action "readAttribute"}}
+{{> test/commands/read_attribute test=test step=step action=action}}
+{{else actionIs step "writeAttribute"}}
+{{> test/commands/write_attribute test=test step=action}}
+{{else actionIs step "readField"}}
+{{> test/commands/read_field test=test step=action}}
+{{else actionIs step "UserPrompt"}}
+{{> test/commands/user_prompt step=action}}
+{{else actionIs step "readEvent"}}
+# TODO: Read Event
+{{else actionIs step "waitForReport"}}
+# TODO: Wait For Report
+{{else actionIs step "subscribeAttribute"}}
+# TODO: Subscribe Attribute
+{{else actionIs action "checkType"}}
+{{> test/constraints/type_check test=test step=step action=action}}
+{{else actionIs action "checkMinConstraint"}}
+{{> test/constraints/min_value test=test step=step action=action}}
+{{else actionIs action "checkMaxConstraint"}}
+{{> test/constraints/max_value test=test step=step action=action}}
+{{else actionIs action "checkRangeConstraint"}}
+{{> test/constraints/min_value test=test step=step action=action}}
+{{> test/constraints/max_value test=test step=step action=action}}
+{{else}}
+pass #Unknown action
+{{> test/commands/command test=test step=action}}
+{{/actionIs}}
+{{/if}}
+{{/if}}

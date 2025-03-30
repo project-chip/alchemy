@@ -11,6 +11,7 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/sdk"
+	"github.com/project-chip/alchemy/testscript"
 	"github.com/project-chip/alchemy/testscript/python"
 	"github.com/project-chip/alchemy/testscript/yaml/parse"
 )
@@ -54,13 +55,14 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Opti
 		return
 	}
 
-	var tests pipeline.Map[string, *pipeline.Data[*parse.Test]]
-	tests, err = pipeline.Parallel(cxt, pipelineOptions, parser, inputs)
+	var parser parse.TestYamlParser
+	parser, err = parse.NewTestYamlParser(sdkRoot)
 	if err != nil {
 		return
 	}
 
-	docParser, err := spec.NewParser(specRoot, asciiSettings)
+	var tests pipeline.Map[string, *pipeline.Data[*parse.Test]]
+	tests, err = pipeline.Parallel(cxt, pipelineOptions, parser, inputs)
 	if err != nil {
 		return
 	}
@@ -98,9 +100,17 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Opti
 		return
 	}
 
-	generator := python.NewPythonTestGenerator(specBuilder.Spec, sdkRoot, picsLabels, generatorOptions...)
+	generator := testscript.NewTestScriptConverter(specBuilder.Spec, sdkRoot, picsLabels)
+
+	var testscripts pipeline.Map[string, *pipeline.Data[*testscript.Test]]
+	testscripts, err = pipeline.Parallel(cxt, pipelineOptions, generator, testplans)
+	if err != nil {
+		return
+	}
+
+	renderer := python.NewPythonTestRenderer(specBuilder.Spec, sdkRoot, picsLabels, generatorOptions...)
 	var scripts pipeline.StringSet
-	scripts, err = pipeline.Parallel(cxt, pipelineOptions, generator, testplans)
+	scripts, err = pipeline.Parallel(cxt, pipelineOptions, renderer, testscripts)
 	if err != nil {
 		return
 	}

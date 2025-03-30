@@ -11,19 +11,26 @@ import (
 	"github.com/goccy/go-yaml"
 	"github.com/iancoleman/strcase"
 	"github.com/mailgun/raymond/v2"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/text"
+	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/testplan"
+	"github.com/project-chip/alchemy/testscript"
 )
 
 func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("pics", picsHelper)
 	t.RegisterHelper("picsGuard", picsGuardHelper)
-	t.RegisterHelper("clusterIs", clusterIsHelper)
+	t.RegisterHelper("conformanceGuard", conformanceGuardHelper)
+	t.RegisterHelper("actionIs", actionIsHelper)
 	t.RegisterHelper("commandIs", commandIsHelper)
 	t.RegisterHelper("pythonValue", pythonValueHelper)
 	t.RegisterHelper("asUpperCamelCase", asUpperCamelCaseHelper)
 	t.RegisterHelper("clusterName", clusterNameHelper(spec))
+	t.RegisterHelper("attributeName", attributeNameHelper(spec))
 	t.RegisterHelper("clusterVariable", clusterVariableHelper(spec))
 	t.RegisterHelper("endpointVariable", endpointVariableHelper)
 	t.RegisterHelper("stepClusterName", stepClusterNameHelper(spec))
@@ -32,57 +39,161 @@ func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("statusError", statusErrorHelper)
 	t.RegisterHelper("octetString", octetStringHelper)
 	t.RegisterHelper("pythonString", pythonStringHelper)
+	t.RegisterHelper("ifIsEnum", ifEnumHelper)
+	t.RegisterHelper("enumName", enumNameHelper)
+	t.RegisterHelper("ifIsBitmap", ifBitmapHelper)
+	t.RegisterHelper("bitmapName", bitmapNameHelper)
+	t.RegisterHelper("ifNeedsConformanceCheck", needsConformanceCheckHelper)
+	t.RegisterHelper("entryTypeName", entryTypeHelper)
+	t.RegisterHelper("minConstraint", minConstraintHelper)
+	t.RegisterHelper("maxConstraint", maxConstraintHelper)
+	t.RegisterHelper("ifFieldIsNullable", ifFieldIsNullableHelper)
+	t.RegisterHelper("ifFieldIsArray", ifFieldIsArrayHelper)
+	t.RegisterHelper("ifFieldHasLength", ifFieldHasLengthHelper)
+	t.RegisterHelper("typeCheckIs", typeCheckIsHelper)
 }
 
-func clusterIsHelper(step testplan.Step, is string, options *raymond.Options) string {
-	if step.Cluster == is {
+func actionIsHelper(action testscript.TestAction, is string, options *raymond.Options) string {
+	var ok bool
+	switch is {
+	case "readAttribute":
+		var ra testscript.ReadAttribute
+		ra, ok = action.(testscript.ReadAttribute)
+		if ok {
+			slog.Info("action is read", "action", is, log.Type("type", action), slog.String("variable", ra.Variable))
+		}
+	case "checkMinConstraint":
+		_, ok = action.(*testscript.CheckMinConstraint)
+		if !ok {
+			_, ok = action.(testscript.CheckMinConstraint)
+		}
+	case "checkMaxConstraint":
+		_, ok = action.(*testscript.CheckMaxConstraint)
+		if !ok {
+			_, ok = action.(testscript.CheckMaxConstraint)
+		}
+	case "checkRangeConstraint":
+		_, ok = action.(*testscript.CheckRangeConstraint)
+		if !ok {
+			_, ok = action.(testscript.CheckRangeConstraint)
+		}
+	case "checkType":
+		_, ok = action.(*testscript.CheckType)
+		if !ok {
+			_, ok = action.(testscript.CheckType)
+		}
+	}
+	if ok {
 		return options.Fn()
 	}
+	slog.Info("action is not", "desired", is, log.Type("actual", action))
 	return options.Inverse()
 }
 
-func clusterNameHelper(sp *spec.Specification) func(test testplan.Test) raymond.SafeString {
-	return func(test testplan.Test) raymond.SafeString {
-		clusterName := test.Config.Cluster
+func typeCheckIsHelper(action testscript.CheckType, is string, options *raymond.Options) string {
+	var ok bool
+	underlyingType := sdk.ToUnderlyingType(action.Field.Type.BaseType)
+	switch is {
+	case "uint64":
+		ok = underlyingType == types.BaseDataTypeUInt64
+	case "uint32":
+		ok = underlyingType == types.BaseDataTypeUInt32
+	case "uint16":
+		ok = underlyingType == types.BaseDataTypeUInt16
+	case "uint8":
+		ok = underlyingType == types.BaseDataTypeUInt8
+	case "int64":
+		ok = underlyingType == types.BaseDataTypeInt64
+	case "int32":
+		ok = underlyingType == types.BaseDataTypeInt32
+	case "int16":
+		ok = underlyingType == types.BaseDataTypeInt16
+	case "int8":
+		ok = underlyingType == types.BaseDataTypeInt8
+	case "string":
+		ok = underlyingType == types.BaseDataTypeString
+	case "list":
+		ok = underlyingType == types.BaseDataTypeList
+	case "percent":
+		ok = action.Field.Type.BaseType == types.BaseDataTypePercent
+	case "percent100ths":
+		ok = action.Field.Type.BaseType == types.BaseDataTypePercentHundredths
+	case "octstr":
+		ok = action.Field.Type.BaseType == types.BaseDataTypeOctStr
+	case "bitmap":
+		if action.Field.Type.Entity != nil {
+			_, ok = action.Field.Type.Entity.(*matter.Bitmap)
+		}
+	case "enum":
+		if action.Field.Type.Entity != nil {
+			_, ok = action.Field.Type.Entity.(*matter.Enum)
+		}
+	}
+	if ok {
+		return options.Fn()
+	}
+	slog.Info("type is not", "desired", is, "actual", action.Field.Type.BaseType.String())
+	return options.Inverse()
+}
+
+func clusterNameHelper(sp *spec.Specification) func(test testscript.Test) raymond.SafeString {
+	return func(test testscript.Test) raymond.SafeString {
+
+		/*clusterName := test.Config.Cluster
 		_, ok := sp.ClustersByName[clusterName]
 		if !ok {
 			slog.Warn("Unknown cluster in test", slog.String("clusterName", clusterName))
+		}*/
+		return raymond.SafeString(spec.CanonicalName(test.Cluster.Name))
+	}
+}
+
+func stepClusterNameHelper(sp *spec.Specification) func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
+		clusterName := test.Cluster.Name
+		if step.Cluster != nil {
+			clusterName = step.Cluster.Name
 		}
 		return raymond.SafeString(spec.CanonicalName(clusterName))
 	}
 }
 
-func stepClusterNameHelper(sp *spec.Specification) func(test testplan.Test, step testplan.Step) raymond.SafeString {
-	return func(test testplan.Test, step testplan.Step) raymond.SafeString {
-		clusterName := test.Config.Cluster
-		if step.Cluster != "" {
-			clusterName = step.Cluster
+func attributeNameHelper(sp *spec.Specification) func(step testscript.TestStep, action testscript.TestAction) raymond.SafeString {
+	return func(step testscript.TestStep, action testscript.TestAction) raymond.SafeString {
+		switch action := action.(type) {
+		case testscript.ReadAttribute:
+			if action.Attribute != nil {
+				return raymond.SafeString(action.Attribute.Name)
+			}
+			return raymond.SafeString(action.AttributeName)
+		case testscript.CheckType:
+			return raymond.SafeString(action.Field.Name)
+		case testscript.CheckMaxConstraint:
+			return raymond.SafeString(action.Field.Name)
+		case testscript.CheckMinConstraint:
+			return raymond.SafeString(action.Field.Name)
+		case testscript.CheckRangeConstraint:
+			return raymond.SafeString(action.Field.Name)
+		default:
+			slog.Error("Unexpected action type in attribute name helper", log.Type("type", action))
 		}
-		_, ok := sp.ClustersByName[clusterName]
-		if !ok {
-			slog.Warn("Unknown cluster in test", slog.String("clusterName", clusterName))
-		}
-		return raymond.SafeString(spec.CanonicalName(clusterName))
+		return raymond.SafeString("UnknownAttribute")
 	}
 }
 
-func clusterVariableHelper(sp *spec.Specification) func(test testplan.Test, step testplan.Step) raymond.SafeString {
-	return func(test testplan.Test, step testplan.Step) raymond.SafeString {
-		if step.Cluster == "" || step.Cluster == test.Config.Cluster {
+func clusterVariableHelper(sp *spec.Specification) func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
+		if step.Cluster == nil || step.Cluster == test.Cluster {
 			return raymond.SafeString("cluster")
 		}
-		clusterName := step.Cluster
-		_, ok := sp.ClustersByName[clusterName]
-		if !ok {
-			slog.Warn("Unknown cluster in test", slog.String("clusterName", clusterName))
-		}
+		clusterName := step.Cluster.Name
 		return raymond.SafeString("Clusters." + spec.CanonicalName(clusterName))
 	}
 }
 
-func endpointVariableHelper(test testplan.Test, step testplan.Step) raymond.SafeString {
-	if step.Endpoint != math.MaxUint64 {
-		return raymond.SafeString(strconv.FormatUint(step.Endpoint, 10))
+func endpointVariableHelper(test testscript.Test, endpoint uint64) raymond.SafeString {
+	if endpoint != math.MaxUint64 {
+		return raymond.SafeString(strconv.FormatUint(endpoint, 10))
 	}
 	return raymond.SafeString("endpoint")
 }
@@ -242,7 +353,136 @@ func valueHelper(variables map[string]struct{}) func(value any) raymond.SafeStri
 
 func variableHelper(variables map[string]struct{}) func(variableName string) raymond.SafeString {
 	return func(variableName string) raymond.SafeString {
+		slog.Info("variable", "name", variableName)
 		variables[variableName] = struct{}{}
 		return raymond.SafeString(variableName)
 	}
+}
+
+func ifEnumHelper(e types.Entity, options *raymond.Options) string {
+	switch e := e.(type) {
+	case *matter.Field:
+		slog.Info("Field enum?", slog.String("baseType", e.Type.BaseType.String()))
+		if e.Type.IsEnum() {
+			return options.Fn()
+		}
+		switch e.Type.Entity.(type) {
+		case *matter.Enum:
+			return options.Fn()
+		}
+	default:
+		slog.Error("Unexpected type checking isEnum", log.Type("type", e))
+	}
+	return options.Inverse()
+}
+
+func enumNameHelper(action testscript.CheckType) raymond.SafeString {
+
+	if action.Field.Type.Entity == nil {
+		slog.Error("Missing enum entity on field", slog.String("fieldName", action.Field.Name))
+		return raymond.SafeString("")
+	}
+	switch entity := action.Field.Type.Entity.(type) {
+	case *matter.Enum:
+		return raymond.SafeString(entity.Name)
+	default:
+		slog.Error("Unexpected type getting enum name", log.Type("type", entity))
+		return raymond.SafeString("unknown")
+	}
+}
+
+func ifBitmapHelper(e types.Entity, options *raymond.Options) string {
+	switch e := e.(type) {
+	case *matter.Field:
+		slog.Info("Field bitmap?", slog.String("baseType", e.Type.BaseType.String()))
+
+		switch e.Type.Entity.(type) {
+		case *matter.Bitmap:
+			return options.Fn()
+		}
+	default:
+		slog.Error("Unexpected type checking ifBitmap", log.Type("type", e))
+	}
+	return options.Inverse()
+}
+
+func bitmapNameHelper(action testscript.CheckType) raymond.SafeString {
+	if action.Field.Type.Entity == nil {
+		slog.Error("Missing bitmap entity on field", slog.String("fieldName", action.Field.Name))
+		return raymond.SafeString("")
+	}
+	switch entity := action.Field.Type.Entity.(type) {
+	case *matter.Bitmap:
+		return raymond.SafeString(entity.Name)
+	default:
+		slog.Error("Unexpected type getting bitmap name", log.Type("type", entity))
+		return raymond.SafeString("unknown")
+	}
+}
+
+func entryTypeHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+	if field.Type.EntryType == nil {
+		slog.Error("Missing entry type on list field", slog.String("fieldName", field.Name))
+		return raymond.SafeString("")
+	}
+	var name string
+	var collection string
+	var cluster *matter.Cluster
+	switch entryEntity := field.Type.EntryType.Entity.(type) {
+	case *matter.Bitmap:
+		name = entryEntity.Name
+		cluster = entryEntity.Cluster()
+		collection = "Bitmaps"
+	case *matter.Command:
+		name = entryEntity.Name
+		cluster = entryEntity.Cluster()
+		collection = "Commands"
+	case *matter.Struct:
+		name = entryEntity.Name
+		cluster = entryEntity.Cluster()
+		collection = "Structs"
+	case *matter.Enum:
+		name = entryEntity.Name
+		cluster = entryEntity.Cluster()
+		collection = "Enums"
+	case nil:
+		slog.Error("Missing entry type entity on list field", slog.String("fieldName", field.Name))
+		return raymond.SafeString("")
+	default:
+		slog.Error("Missing entry type entity on list field", slog.String("fieldName", field.Name), log.Type("type", entryEntity))
+		return raymond.SafeString("")
+	}
+	var clusterPrefix string
+	var localCluster = test.Cluster
+	if step.Cluster != localCluster {
+		localCluster = step.Cluster
+	}
+	if localCluster != cluster {
+		clusterPrefix = fmt.Sprintf("Clusters.%s.%s.", spec.CanonicalName(cluster.Name), collection)
+	} else {
+		clusterPrefix = fmt.Sprintf("cluster.%s.", collection)
+	}
+	//cluster = Clusters.Thermostat
+	return raymond.SafeString(clusterPrefix + name)
+}
+
+func ifFieldIsNullableHelper(field matter.Field, options *raymond.Options) string {
+	if field.Quality.Has(matter.QualityNullable) {
+		return options.Fn()
+	}
+	return options.Inverse()
+}
+
+func ifFieldIsArrayHelper(field matter.Field, options *raymond.Options) string {
+	if field.Type.IsArray() {
+		return options.Fn()
+	}
+	return options.Inverse()
+}
+
+func ifFieldHasLengthHelper(field matter.Field, options *raymond.Options) string {
+	if field.Type.HasLength() {
+		return options.Fn()
+	}
+	return options.Inverse()
 }
