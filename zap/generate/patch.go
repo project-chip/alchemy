@@ -2,15 +2,13 @@ package generate
 
 import (
 	"fmt"
-	"log/slog"
 	"slices"
 	"strings"
 
 	"github.com/beevik/etree"
-	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/zap"
+	"github.com/project-chip/alchemy/sdk"
 )
 
 func mergeLines(lines []string, newLineMap map[string]struct{}, skip int) []string {
@@ -94,41 +92,16 @@ func patchNumberElement(e *etree.Element, n *matter.Number) {
 	e.SetText(n.HexString())
 }
 
-type dataExtremeType int8
-
-const (
-	dataExtremeTypeMinimum  dataExtremeType = 0
-	dataExtremeTypeMaximum                  = iota
-	dataExtremeTypeFallback                 = iota
-)
-
-func patchDataExtremeAttribute(e *etree.Element, attribute string, de *types.DataTypeExtreme, field *matter.Field, dataExtremeType dataExtremeType) {
+func patchDataExtremeAttribute(e *etree.Element, attribute string, de *types.DataTypeExtreme, field *matter.Field, dataExtremePurpose types.DataExtremePurpose) {
 	if !de.Defined() || de.IsNull() {
 		e.RemoveAttr(attribute)
 		return
 	}
 	if de.IsNumeric() {
-		switch dataExtremeType {
-		case dataExtremeTypeMinimum:
-			fieldMinimum := types.Min(zap.ToUnderlyingType(field.Type.BaseType), field.Quality.Has(matter.QualityNullable))
-			if cmp, ok := de.Compare(fieldMinimum); ok && cmp == -1 {
-				slog.Warn("Field has minimum lower than the range of its data type; overriding", slog.String("name", field.Name), log.Path("source", field), slog.String("specifiedMinimum", de.ZapString(field.Type)), slog.String("fieldMinimum", fieldMinimum.ZapString(field.Type)))
-				de = &fieldMinimum
-			}
-			if types.Min(zap.ToUnderlyingType(field.Type.BaseType), false).ValueEquals(*de) {
-				e.RemoveAttr(attribute)
-				return
-			}
-		case dataExtremeTypeMaximum:
-			fieldMaximum := types.Max(zap.ToUnderlyingType(field.Type.BaseType), field.Quality.Has(matter.QualityNullable))
-			if cmp, ok := de.Compare(fieldMaximum); ok && cmp == 1 {
-				slog.Warn("Field has maximum greater than the range of its data type; overriding", slog.String("name", field.Name), log.Path("source", field), slog.String("specifiedMaximum", de.ZapString(field.Type)), slog.String("fieldMaximum", fieldMaximum.ZapString(field.Type)))
-				de = &fieldMaximum
-			}
-			if types.Max(zap.ToUnderlyingType(field.Type.BaseType), false).ValueEquals(*de) {
-				e.RemoveAttr(attribute)
-				return
-			}
+		redundant := sdk.CheckUnderlyingType(field, de, dataExtremePurpose)
+		if redundant {
+			e.RemoveAttr(attribute)
+			return
 		}
 
 		n := matter.NumberFromExtreme(de)

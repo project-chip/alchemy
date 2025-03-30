@@ -17,6 +17,14 @@ const (
 	DataTypeExtremeTypeEmptyList
 )
 
+type DataExtremePurpose int8
+
+const (
+	DataExtremePurposeMinimum  DataExtremePurpose = 0
+	DataExtremePurposeMaximum                     = iota
+	DataExtremePurposeFallback                    = iota
+)
+
 type DataTypeExtreme struct {
 	Type   DataTypeExtremeType
 	Format NumberFormat
