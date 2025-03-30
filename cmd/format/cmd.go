@@ -27,8 +27,8 @@ func format(cmd *cobra.Command, args []string) (err error) {
 		return err
 	}
 
-	pipelineOptions := pipeline.Flags(flags)
-	fileOptions := files.Flags(flags)
+	pipelineOptions := pipeline.PipelineOptions(flags)
+	fileOptions := files.OutputOptions(flags)
 
 	docReader, err := spec.NewReader("Reading docs", "")
 	if err != nil {

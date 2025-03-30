@@ -50,8 +50,8 @@ func read(b []byte, path string, rootPath string) (doc *Doc, err error) {
 }
 
 type Reader struct {
-	name     string
-	rootPath string
+	name string
+	Root string
 }
 
 func NewReader(name string, rootPath string) (Reader, error) {
@@ -62,7 +62,7 @@ func NewReader(name string, rootPath string) (Reader, error) {
 			return Reader{}, err
 		}
 	}
-	return Reader{name: name, rootPath: rootPath}, nil
+	return Reader{name: name, Root: rootPath}, nil
 }
 
 func (r Reader) Name() string {
@@ -71,7 +71,7 @@ func (r Reader) Name() string {
 
 func (r Reader) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
 	var doc *Doc
-	doc, err = ReadFile(input.Path, r.rootPath)
+	doc, err = ReadFile(input.Path, r.Root)
 	if err != nil {
 		return
 	}

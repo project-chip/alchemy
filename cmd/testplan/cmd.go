@@ -38,40 +38,42 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	cxt := cmd.Context()
 
 	flags := cmd.Flags()
-	specRoot, _ := flags.GetString("specRoot")
+
 	testRoot, _ := flags.GetString("testRoot")
 	overwrite, _ := flags.GetBool("overwrite")
 	templateRoot, _ := flags.GetString("templateRoot")
 
 	asciiSettings := common.ASCIIDocAttributes(flags)
-	fileOptions := files.Flags(flags)
-	pipelineOptions := pipeline.Flags(flags)
+	fileOptions := files.OutputOptions(flags)
+	pipelineOptions := pipeline.PipelineOptions(flags)
+	parserOptions := spec.ParserOptions(flags)
 	var testplanGeneratorOptions []testplanRender.GeneratorOption
+
+	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
+	if err != nil {
+		return err
+	}
 
 	if templateRoot != "" {
 		testplanGeneratorOptions = append(testplanGeneratorOptions, testplanRender.TemplateRoot(templateRoot))
 	}
 
-	err = errata.LoadErrataConfig(specRoot)
+	err = errata.LoadErrataConfig(specParser.Root)
 	if err != nil {
 		return
 	}
 
-	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
+	specFiles, err := pipeline.Start(cxt, specParser.Targets)
 	if err != nil {
 		return err
 	}
 
-	docParser, err := spec.NewParser(specRoot, asciiSettings)
-	if err != nil {
-		return err
-	}
-	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
 	if err != nil {
 		return err
 	}
 
-	specBuilder := spec.NewBuilder()
+	specBuilder := spec.NewBuilder(specParser.Root)
 	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
@@ -100,7 +102,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if len(args) > 0 { // Filter the spec by whatever extra args were passed
-		filter := paths.NewFilter[*spec.Doc](specRoot, args)
+		filter := paths.NewFilter[*spec.Doc](specParser.Root, args)
 		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return err

@@ -21,28 +21,29 @@ var Command = &cobra.Command{
 		cxt := cmd.Context()
 		flags := cmd.Flags()
 
-		specRoot, _ := flags.GetString("specRoot")
-
 		asciiSettings := common.ASCIIDocAttributes(flags)
+
+		parserOptions := spec.ParserOptions(flags)
+
+		specParser, err := spec.NewParser(asciiSettings, parserOptions...)
+		if err != nil {
+			return err
+		}
 
 		address, _ := flags.GetString("address")
 		port, _ := flags.GetInt("port")
 		raw, _ := flags.GetBool("raw")
 
-		errata.LoadErrataConfig(specRoot)
+		errata.LoadErrataConfig(specParser.Root)
 
-		pipelineOptions := pipeline.Flags(flags)
+		pipelineOptions := pipeline.PipelineOptions(flags)
 
-		specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
+		specFiles, err := pipeline.Start(cxt, specParser.Targets)
 		if err != nil {
 			return err
 		}
 
-		docParser, err := spec.NewParser(specRoot, asciiSettings)
-		if err != nil {
-			return err
-		}
-		specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
+		specDocs, err := pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
 		if err != nil {
 			return err
 		}
@@ -72,7 +73,7 @@ var Command = &cobra.Command{
 
 func init() {
 	flags := Command.Flags()
-	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	spec.ParserFlags(flags)
 	flags.String("address", "localhost", "the address to host the database server on")
 	flags.Int("port", 3306, "the port to run the database server on")
 	flags.Bool("raw", false, "parse the sections directly, bypassing entity building")

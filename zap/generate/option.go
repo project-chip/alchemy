@@ -28,12 +28,6 @@ func AsciiAttributes(attributes []asciidoc.AttributeName) TemplateOption {
 	}
 }
 
-func SpecRoot(specRoot string) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.specRoot = specRoot
-	}
-}
-
 func ExtendedQuality(extendedQuality bool) TemplateOption {
 	return func(tg *TemplateGenerator) {
 		tg.generateExtendedQualityElement = extendedQuality

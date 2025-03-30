@@ -4,6 +4,7 @@ import (
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/zap/generate"
 	"github.com/spf13/cobra"
 )
@@ -31,17 +32,15 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	cxt := cmd.Context()
 	flags := cmd.Flags()
 
-	specRoot, _ := flags.GetString("specRoot")
 	sdkRoot, _ := flags.GetString("sdkRoot")
 
 	var options generate.Options
 
-	fileOptions := files.Flags(flags)
-
-	options.Inline, _ = flags.GetBool("inline")
+	fileOptions := files.OutputOptions(flags)
+	options.Parser = spec.ParserOptions(flags)
 
 	options.AsciiSettings = common.ASCIIDocAttributes(flags)
-	options.Pipeline = pipeline.Flags(flags)
+	options.Pipeline = pipeline.PipelineOptions(flags)
 
 	featureXML, _ := flags.GetBool("featureXML")
 	options.Template = append(options.Template, generate.GenerateFeatureXML(featureXML))
@@ -53,13 +52,12 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	options.Template = append(options.Template, generate.ExtendedQuality(extendedQuality))
 	options.Template = append(options.Template, generate.SpecOrder(specOrder))
 	options.Template = append(options.Template, generate.AsciiAttributes(options.AsciiSettings))
-	options.Template = append(options.Template, generate.SpecRoot(specRoot))
 
 	options.DeviceTypes = append(options.DeviceTypes, generate.DeviceTypePatcherGenerateFeatureXML(featureXML))
 	options.DeviceTypes = append(options.DeviceTypes, generate.DeviceTypePatcherFullEndpointComposition(endpointCompositionXML))
 
 	var output generate.Output
-	output, err = generate.Pipeline(cxt, specRoot, sdkRoot, args, options)
+	output, err = generate.Pipeline(cxt, sdkRoot, args, options)
 	if err != nil {
 		return
 	}

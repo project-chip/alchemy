@@ -24,7 +24,7 @@ var Command = &cobra.Command{
 		asciiSettings := common.ASCIIDocAttributes(flags)
 		asciiOut, _ := flags.GetBool("ascii")
 		jsonOut, _ := flags.GetBool("json")
-		unifiedOut, _ := flags.GetBool("inline")
+		inline, _ := flags.GetBool("inline")
 		specRoot, _ := flags.GetString("specRoot")
 
 		files, err := paths.Expand(args)
@@ -74,7 +74,7 @@ var Command = &cobra.Command{
 				encoder := json.NewEncoder(os.Stdout)
 				//encoder.SetIndent("", "\t")
 				return encoder.Encode(entities)
-			} else if unifiedOut {
+			} else if inline {
 				err = errata.LoadErrataConfig(specRoot)
 				if err != nil {
 					return
@@ -104,6 +104,5 @@ func init() {
 	flags := Command.Flags()
 	flags.Bool("ascii", false, "dump asciidoc object model")
 	flags.Bool("json", false, "dump json object model")
-	flags.Bool("inline", false, "use inline parser")
-	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	spec.ParserFlags(flags)
 }

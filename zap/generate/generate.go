@@ -23,7 +23,6 @@ type TemplateGenerator struct {
 	pipeline    pipeline.Options
 	attributes  []asciidoc.AttributeName
 	sdkRoot     string
-	specRoot    string
 	specVersion string
 
 	generateFeaturesXML            bool
@@ -49,9 +48,9 @@ func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.Opt
 	for _, o := range options {
 		o(tg)
 	}
-	if tg.specRoot != "" {
+	if spec.Root != "" {
 		var err error
-		tg.specVersion, err = gitDescribe(tg.specRoot)
+		tg.specVersion, err = gitDescribe(spec.Root)
 		if err != nil {
 			slog.Warn("Unable to determine spec git tag", slog.Any("error", err))
 		}

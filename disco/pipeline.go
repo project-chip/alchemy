@@ -38,16 +38,16 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 			return err
 		}
 
-		docReader, err := spec.NewReader("Reading spec docs", specRoot)
+		specReader, err := spec.NewReader("Reading spec docs", specRoot)
 		if err != nil {
 			return err
 		}
-		docs, err = pipeline.Parallel(cxt, pipelineOptions, docReader, inputs)
+		docs, err = pipeline.Parallel(cxt, pipelineOptions, specReader, inputs)
 		if err != nil {
 			return err
 		}
 
-		specBuilder := spec.NewBuilder()
+		specBuilder := spec.NewBuilder(specReader.Root)
 		docs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, docs)
 		if err != nil {
 			return err
