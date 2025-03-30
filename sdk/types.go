@@ -1,0 +1,76 @@
+package sdk
+
+import (
+	"log/slog"
+
+	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
+)
+
+func ToUnderlyingType(dt types.BaseDataType) types.BaseDataType {
+	switch dt {
+	case types.BaseDataTypeInt40,
+		types.BaseDataTypeInt48,
+		types.BaseDataTypeInt56:
+		return types.BaseDataTypeInt64
+	case types.BaseDataTypeUInt40,
+		types.BaseDataTypeUInt48,
+		types.BaseDataTypeUInt56:
+		return types.BaseDataTypeUInt64
+	case types.BaseDataTypePower,
+		types.BaseDataTypeApparentPower,
+		types.BaseDataTypeReactivePower,
+		types.BaseDataTypeAmperage,
+		types.BaseDataTypeVoltage,
+		types.BaseDataTypeEnergy,
+		types.BaseDataTypeApparentEnergy,
+		types.BaseDataTypeReactiveEnergy,
+		types.BaseDataTypeMoney:
+		return types.BaseDataTypeInt64
+	case types.BaseDataTypeEpochMicroseconds,
+		types.BaseDataTypeSystimeMicroseconds,
+		types.BaseDataTypePosixMilliseconds,
+		types.BaseDataTypeSystimeMilliseconds:
+		return types.BaseDataTypeUInt64
+	case types.BaseDataTypeEpochSeconds,
+		types.BaseDataTypeElapsedSeconds:
+		return types.BaseDataTypeUInt32
+	case types.BaseDataTypeTemperature, types.BaseDataTypeTemperatureDifference:
+		return types.BaseDataTypeInt16
+	case types.BaseDataTypeSignedTemperature:
+		return types.BaseDataTypeInt8
+	case types.BaseDataTypeUnsignedTemperature:
+		return types.BaseDataTypeUInt8
+	case types.BaseDataTypePercent:
+		return types.BaseDataTypeUInt8
+	case types.BaseDataTypePercentHundredths:
+		return types.BaseDataTypeUInt16
+	default:
+		return dt
+	}
+}
+
+func CheckUnderlyingType(field *matter.Field, de *types.DataTypeExtreme, dataExtremePurpose types.DataExtremePurpose) (redundant bool) {
+	switch dataExtremePurpose {
+	case types.DataExtremePurposeMinimum:
+		fieldMinimum := types.Min(ToUnderlyingType(field.Type.BaseType), field.Quality.Has(matter.QualityNullable))
+		if cmp, ok := de.Compare(fieldMinimum); ok && cmp == -1 {
+			slog.Warn("Field has minimum lower than the range of its data type; overriding", slog.String("name", field.Name), log.Path("source", field), slog.String("specifiedMinimum", de.ZapString(field.Type)), slog.String("fieldMinimum", fieldMinimum.ZapString(field.Type)))
+			de = &fieldMinimum
+		}
+		if types.Min(ToUnderlyingType(field.Type.BaseType), false).ValueEquals(*de) {
+			redundant = true
+		}
+	case types.DataExtremePurposeMaximum:
+		fieldMaximum := types.Max(ToUnderlyingType(field.Type.BaseType), field.Quality.Has(matter.QualityNullable))
+		if cmp, ok := de.Compare(fieldMaximum); ok && cmp == 1 {
+			slog.Warn("Field has maximum greater than the range of its data type; overriding", slog.String("name", field.Name), log.Path("source", field), slog.String("specifiedMaximum", de.ZapString(field.Type)), slog.String("fieldMaximum", fieldMaximum.ZapString(field.Type)))
+			de = &fieldMaximum
+		}
+		if types.Max(ToUnderlyingType(field.Type.BaseType), false).ValueEquals(*de) {
+			redundant = true
+		}
+	}
+	return
+}
