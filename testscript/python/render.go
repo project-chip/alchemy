@@ -2,7 +2,6 @@ package python
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -32,8 +31,6 @@ func (sp PythonTestRenderer) Name() string {
 }
 
 func (sp *PythonTestRenderer) Process(cxt context.Context, input *pipeline.Data[*testscript.Test], index int32, total int32) (outputs []*pipeline.Data[string], extras []*pipeline.Data[*testscript.Test], err error) {
-
-	slog.Info("generating", "out", input.Path)
 
 	test := input.Content
 

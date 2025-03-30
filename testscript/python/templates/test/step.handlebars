@@ -5,8 +5,8 @@ if {{conformanceGuard this}}:
     {{> test/action test=test step=step action=this}}
 {{else}}
 {{#ifSet step.PICSSet}}
-    if self.pics_guard({{picsGuard step.PICSSet test.PICSAliases}}):
-        {{> test/action test=test step=step action=this}}
+if self.pics_guard({{picsGuard step.PICSSet test.PICSAliases}}):
+    {{> test/action test=test step=step action=this}}
 {{else}}
 {{> test/action test=test step=step action=this}}
 {{/ifSet}}
