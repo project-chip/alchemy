@@ -23,8 +23,8 @@ func discoBall(cmd *cobra.Command, args []string) (err error) {
 
 	specRoot, _ := flags.GetString("specRoot")
 
-	pipelineOptions := pipeline.Flags(flags)
-	fileOptions := files.Flags(flags)
+	pipelineOptions := pipeline.PipelineOptions(flags)
+	fileOptions := files.OutputOptions(flags)
 
 	writer := files.NewWriter[string]("Writing disco-balled docs", fileOptions)
 

@@ -52,20 +52,22 @@ func (tg *TemplateGenerator) findDataTypeDependencies(spec *spec.Specification, 
 		tg.findDataTypeDependencies(spec, dt.EntryType, dependencies)
 		return
 	}
-	if dt.Entity != nil {
-		_, isGlobal := spec.GlobalObjects[dt.Entity]
-		if isGlobal {
-			tg.globalObjectDependencies.Store(dt.Entity, struct{}{})
-			return
-		}
-		entityDoc, ok := spec.DocRefs[dt.Entity]
-		if !ok {
-			slog.Warn("missing document for data type", "name", dt.Name, "entity", dt.Entity, "pointer", fmt.Sprintf("%p", dt.Entity))
-			return
-		}
-		_, loaded := dependencies.LoadOrStore(entityDoc.Path.Relative, false)
-		if !loaded {
-			slog.Debug("dependency found", "name", dt.Name, "path", entityDoc.Path.Relative)
-		}
+	if dt.Entity == nil {
+		return
 	}
+	_, isGlobal := spec.GlobalObjects[dt.Entity]
+	if isGlobal {
+		tg.globalObjectDependencies.Store(dt.Entity, struct{}{})
+		return
+	}
+	entityDoc, ok := spec.DocRefs[dt.Entity]
+	if !ok {
+		slog.Warn("missing document for data type", "name", dt.Name, "entity", dt.Entity, "pointer", fmt.Sprintf("%p", dt.Entity))
+		return
+	}
+	_, loaded := dependencies.LoadOrStore(entityDoc.Path.Relative, false)
+	if !loaded {
+		slog.Debug("dependency found", "name", dt.Name, "path", entityDoc.Path.Relative)
+	}
+
 }

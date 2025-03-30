@@ -38,39 +38,41 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	cxt := cmd.Context()
 	flags := cmd.Flags()
 
-	specRoot, _ := flags.GetString("specRoot")
+	asciiSettings := common.ASCIIDocAttributes(flags)
+
 	sdkRoot, _ := flags.GetString("sdkRoot")
 	text, _ := flags.GetBool("text")
 
-	err = errata.LoadErrataConfig(specRoot)
-	if err != nil {
-		return
-	}
-
-	asciiSettings := common.ASCIIDocAttributes(flags)
-	pipelineOptions := pipeline.Flags(flags)
-	fileOptions := files.Flags(flags)
+	pipelineOptions := pipeline.PipelineOptions(flags)
+	parserOptions := spec.ParserOptions(flags)
+	outputOptions := files.OutputOptions(flags)
 
 	err = sdk.CheckAlchemyVersion(sdkRoot)
 	if err != nil {
 		return
 	}
 
-	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
+	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
 	if err != nil {
 		return err
 	}
 
-	docParser, err := spec.NewParser(specRoot, asciiSettings)
+	err = errata.LoadErrataConfig(specParser.Root)
 	if err != nil {
-		return err
+		return
 	}
-	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
+
+	specFiles, err := pipeline.Start(cxt, spec.Targeter(specParser.Root))
 	if err != nil {
 		return err
 	}
 
-	specBuilder := spec.NewBuilder()
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
+	if err != nil {
+		return err
+	}
+
+	specBuilder := spec.NewBuilder(specParser.Root)
 	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
@@ -140,7 +142,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 		return
 	}
 
-	if fileOptions.DryRun {
+	if outputOptions.DryRun {
 		return nil
 	}
 

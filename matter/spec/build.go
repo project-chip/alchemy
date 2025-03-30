@@ -14,13 +14,15 @@ import (
 )
 
 type Builder struct {
+	specRoot string
+
 	Spec *Specification
 
 	ignoreHierarchy bool
 }
 
-func NewBuilder(options ...BuilderOption) Builder {
-	b := Builder{}
+func NewBuilder(specRoot string, options ...BuilderOption) Builder {
+	b := Builder{specRoot: specRoot}
 	for _, o := range options {
 		o(&b)
 	}
@@ -48,7 +50,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, referencedDocs [
 
 	buildTree(docs)
 
-	spec = newSpec()
+	spec = newSpec(sp.specRoot)
 
 	docGroups := buildDocumentGroups(docs, spec)
 

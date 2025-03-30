@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/cmd/compare"
 	"github.com/project-chip/alchemy/cmd/disco"
 	"github.com/project-chip/alchemy/cmd/dm"
@@ -13,14 +14,15 @@ import (
 	"github.com/project-chip/alchemy/cmd/validate"
 	"github.com/project-chip/alchemy/cmd/yaml2python"
 	"github.com/project-chip/alchemy/cmd/zap"
+	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
 func init() {
 	flags := rootCmd.PersistentFlags()
-	flags.BoolP("dryrun", "d", false, "whether or not to actually output files")
-	flags.BoolP("patch", "p", false, "generate patch file")
-	flags.Bool("serial", false, "process files one-by-one")
-	flags.StringSliceP("attribute", "a", []string{}, "attribute for pre-processing asciidoc; this flag can be provided more than once")
+	files.Flags(flags)
+	common.AttributeFlags(flags)
+	pipeline.Flags(flags)
 
 	rootCmd.AddCommand(format.Command)
 	rootCmd.AddCommand(disco.Command)

@@ -21,7 +21,7 @@ type Options struct {
 	AsciiSettings []asciidoc.AttributeName
 	Template      []TemplateOption
 	DeviceTypes   []DeviceTypePatcherOption
-	Inline        bool
+	Parser        []spec.ParserOption
 }
 
 type Output struct {
@@ -34,37 +34,37 @@ type Output struct {
 	ZclJson            pipeline.FileSet
 }
 
-func Pipeline(cxt context.Context, specRoot string, sdkRoot string, docPaths []string, options Options) (output Output, err error) {
+func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Options) (output Output, err error) {
 
 	err = sdk.CheckAlchemyVersion(sdkRoot)
 	if err != nil {
 		return
 	}
 
-	err = errata.LoadErrataConfig(specRoot)
+	var specParser spec.Parser
+	specParser, err = spec.NewParser(options.AsciiSettings, options.Parser...)
+	if err != nil {
+		return
+	}
+
+	err = errata.LoadErrataConfig(specParser.Root)
 	if err != nil {
 		return
 	}
 
 	var specFiles pipeline.Paths
-	specFiles, err = pipeline.Start(cxt, spec.Targeter(specRoot))
+	specFiles, err = pipeline.Start(cxt, specParser.Targets)
 	if err != nil {
 		return
 	}
 
-	var docParser spec.Parser
-	docParser, err = spec.NewParser(specRoot, options.AsciiSettings)
-	if err != nil {
-		return
-	}
-	docParser.Inline = options.Inline
 	var specDocs spec.DocSet
-	specDocs, err = pipeline.Parallel(cxt, options.Pipeline, docParser, specFiles)
+	specDocs, err = pipeline.Parallel(cxt, options.Pipeline, specParser, specFiles)
 	if err != nil {
 		return
 	}
 
-	specBuilder := spec.NewBuilder()
+	specBuilder := spec.NewBuilder(specParser.Root)
 	specDocs, err = pipeline.Collective(cxt, options.Pipeline, &specBuilder, specDocs)
 	if err != nil {
 		return
@@ -98,7 +98,7 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, docPaths []s
 	}
 
 	if len(docPaths) > 0 { // Filter the spec by whatever extra args were passed
-		filter := paths.NewFilter[*spec.Doc](specRoot, docPaths)
+		filter := paths.NewFilter[*spec.Doc](specParser.Root, docPaths)
 		specDocs, err = pipeline.Collective(cxt, options.Pipeline, filter, specDocs)
 		if err != nil {
 			return

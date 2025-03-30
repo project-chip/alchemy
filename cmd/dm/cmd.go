@@ -22,33 +22,32 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	cxt := cmd.Context()
 
 	flags := cmd.Flags()
-	specRoot, _ := flags.GetString("specRoot")
 	dmRoot, _ := flags.GetString("dmRoot")
 
-	err = errata.LoadErrataConfig(specRoot)
+	asciiSettings := common.ASCIIDocAttributes(flags)
+	fileOptions := files.OutputOptions(flags)
+	pipelineOptions := pipeline.PipelineOptions(flags)
+
+	parserOptions := spec.ParserOptions(flags)
+
+	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
+	if err != nil {
+		return err
+	}
+
+	err = errata.LoadErrataConfig(specParser.Root)
 	if err != nil {
 		return
 	}
 
-	asciiSettings := common.ASCIIDocAttributes(flags)
-	fileOptions := files.Flags(flags)
-	pipelineOptions := pipeline.Flags(flags)
+	specBuilder := spec.NewBuilder(specParser.Root, spec.IgnoreHierarchy(true))
 
-	docParser, err := spec.NewParser(specRoot, asciiSettings)
+	specFiles, err := pipeline.Start(cxt, specParser.Targets)
 	if err != nil {
 		return err
 	}
 
-	docParser.Inline, _ = flags.GetBool("inline")
-
-	specBuilder := spec.NewBuilder(spec.IgnoreHierarchy(true))
-
-	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
-	if err != nil {
-		return err
-	}
-
-	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
 	if err != nil {
 		return err
 	}
@@ -58,7 +57,7 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	if len(args) > 0 {
-		filter := paths.NewFilter[*spec.Doc](specRoot, args)
+		filter := paths.NewFilter[*spec.Doc](specParser.Root, args)
 		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return err
@@ -88,7 +87,6 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 
 func init() {
 	flags := Command.Flags()
-	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	spec.ParserFlags(flags)
 	flags.String("dmRoot", "connectedhomeip/data_model/master", "where to place the data model files")
-	flags.Bool("inline", false, "use inline parser")
 }

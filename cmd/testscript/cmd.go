@@ -17,7 +17,7 @@ var Command = &cobra.Command{
 
 func init() {
 	flags := Command.Flags()
-	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	spec.ParserFlags(flags)
 	flags.String("sdkRoot", "connectedhomeip", "the root of your clone of project-chip/connectedhomeip")
 	flags.String("templateRoot", "", "the root of your local template files; if not specified, Alchemy will use an internal copy")
 	flags.Bool("overwrite", true, "overwrite existing test scripts")
@@ -28,12 +28,12 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 	cxt := cmd.Context()
 	flags := cmd.Flags()
 
-	specRoot, _ := flags.GetString("specRoot")
 	sdkRoot, _ := flags.GetString("sdkRoot")
 
 	asciiSettings := common.ASCIIDocAttributes(flags)
-	fileOptions := files.Flags(flags)
-	pipelineOptions := pipeline.Flags(flags)
+	fileOptions := files.OutputOptions(flags)
+	pipelineOptions := pipeline.PipelineOptions(flags)
+	parserOptions := spec.ParserOptions(flags)
 
 	overwrite, _ := flags.GetBool("overwrite")
 	templateRoot, _ := flags.GetString("templateRoot")

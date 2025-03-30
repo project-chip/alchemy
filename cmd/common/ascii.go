@@ -7,6 +7,10 @@ import (
 	"github.com/spf13/pflag"
 )
 
+func AttributeFlags(flags *pflag.FlagSet) {
+	flags.StringSliceP("attribute", "a", []string{}, "attribute for pre-processing asciidoc; this flag can be provided more than once")
+}
+
 func ASCIIDocAttributes(flags *pflag.FlagSet) (settings []asciidoc.AttributeName) {
 	attributes, _ := flags.GetStringSlice("attribute")
 	for _, a := range attributes {

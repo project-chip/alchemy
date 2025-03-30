@@ -13,6 +13,8 @@ type ClusterRefs struct {
 }
 
 type Specification struct {
+	Root string
+
 	Clusters       map[*matter.Cluster]struct{}
 	ClustersByID   map[uint64]*matter.Cluster
 	ClustersByName map[string]*matter.Cluster
@@ -41,8 +43,10 @@ type Specification struct {
 	DocGroups []*DocGroup
 }
 
-func newSpec() *Specification {
+func newSpec(specRoot string) *Specification {
 	return &Specification{
+		Root: specRoot,
+
 		Clusters:          make(map[*matter.Cluster]struct{}),
 		ClustersByID:      make(map[uint64]*matter.Cluster),
 		ClustersByName:    make(map[string]*matter.Cluster),

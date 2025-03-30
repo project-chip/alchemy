@@ -15,7 +15,7 @@ import (
 	"github.com/project-chip/alchemy/testscript/yaml/parse"
 )
 
-func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOptions pipeline.Options, asciiSettings []asciidoc.AttributeName, generatorOptions []python.GeneratorOption, fileOptions files.Options, filePaths []string) (err error) {
+func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Options, parserOptions []spec.ParserOption, asciiSettings []asciidoc.AttributeName, generatorOptions []python.GeneratorOption, fileOptions files.Options, filePaths []string) (err error) {
 
 	err = sdk.CheckAlchemyVersion(sdkRoot)
 	if err != nil {
@@ -44,13 +44,12 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOpti
 		return
 	}
 
-	err = errata.LoadErrataConfig(specRoot)
+	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
 	if err != nil {
 		return
 	}
 
-	var parser parse.TestYamlParser
-	parser, err = parse.NewTestYamlParser(sdkRoot)
+	err = errata.LoadErrataConfig(specParser.Root)
 	if err != nil {
 		return
 	}
@@ -66,17 +65,17 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOpti
 		return
 	}
 
-	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
+	specFiles, err := pipeline.Start(cxt, specParser.Targets)
 	if err != nil {
 		return
 	}
 
-	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
 	if err != nil {
 		return
 	}
 
-	specBuilder := spec.NewBuilder()
+	specBuilder := spec.NewBuilder(specParser.Root)
 	_, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return

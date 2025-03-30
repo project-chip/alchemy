@@ -16,7 +16,7 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.Flags().String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
+	spec.ParserFlags(Command.Flags())
 }
 
 func validateSpec(cmd *cobra.Command, args []string) (err error) {
@@ -24,31 +24,32 @@ func validateSpec(cmd *cobra.Command, args []string) (err error) {
 	cxt := cmd.Context()
 	flags := cmd.Flags()
 
-	specRoot, _ := flags.GetString("specRoot")
+	parserOptions := spec.ParserOptions(flags)
+	asciiSettings := common.ASCIIDocAttributes(flags)
 
-	err = errata.LoadErrataConfig(specRoot)
+	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
+	if err != nil {
+		return err
+	}
+
+	err = errata.LoadErrataConfig(specParser.Root)
 	if err != nil {
 		return
 	}
 
-	asciiSettings := common.ASCIIDocAttributes(flags)
-	pipelineOptions := pipeline.Flags(flags)
+	pipelineOptions := pipeline.PipelineOptions(flags)
 
-	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
+	specFiles, err := pipeline.Start(cxt, specParser.Targets)
 	if err != nil {
 		return err
 	}
 
-	docParser, err := spec.NewParser(specRoot, asciiSettings)
-	if err != nil {
-		return err
-	}
-	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
 	if err != nil {
 		return err
 	}
 
-	specBuilder := spec.NewBuilder()
+	specBuilder := spec.NewBuilder(specParser.Root)
 	_, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
