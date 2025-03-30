@@ -15,6 +15,10 @@ type ConstraintContext struct {
 	visitedReferences map[string]struct{}
 }
 
+func NewConstraintContext(field *Field, fields FieldSet) *ConstraintContext {
+	return &ConstraintContext{Field: field, Fields: fields}
+}
+
 func (cc *ConstraintContext) Nullable() bool {
 	if cc.Field != nil {
 		return cc.Field.Quality.Has(QualityNullable)

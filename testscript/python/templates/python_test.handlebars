@@ -55,7 +55,7 @@ class {{test.ID}}(MatterBaseTest):
 
     def steps_{{test.ID}}(self) -> list[TestStep]:
         steps = [
-{{#each test.Groups}}
+{{#each test.Steps}}
 {{#if this.name}}
             TestStep({{quote this.name}}, {{quote this.description}}),
 {{/if}}
@@ -64,15 +64,18 @@ class {{test.ID}}(MatterBaseTest):
 
         return steps
 
-    @ async_test_body
+{{#each test.GlobalVariables}}
+    {{variable this}} = None
+{{/each}}
+
+    @async_test_body
     async def test_{{test.ID}}(self):
-        endpoint = self.matter_test_config.endpoint if self.matter_test_config.endpoint is not None else 1
+        endpoint = self.get_endpoint()
+        attributes = cluster.Attributes
 
         {{> test/config/list test=test}}
 
-{{#each test.Variables}}
-        {{variable this}} = None
-{{/each}}
+
 
 {{#each test.PICSAliasList}}
 {{#each this}}
@@ -83,19 +86,15 @@ class {{test.ID}}(MatterBaseTest):
 {{/each}}
 
 {{/each}}
-{{#each test.Groups}}
-        self.step({{quote this.name}})
-
-{{#each this.Steps}}
-{{#if this.PICSSet}}
-        if self.pics_guard({{picsGuard this.PICSSet test.PICSAliases}}):
-            {{> test/step test=test step=this}}
-
-{{else}}
+{{#each test.Steps}}
         {{> test/step test=test step=this}}
 
-{{/if}}
 {{/each}}
+
+{{#each test.StructChecks ~}}
+        {{> test/struct test=test step=this}}
+
 {{/each}}
+
 if __name__ == "__main__":
     default_matter_test_main()

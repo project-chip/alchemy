@@ -1,3 +1,9 @@
-{{#ifSet step.Response.Constraints.MaxValue}}
-asserts.assert_less_equal({{> test/commands/response_value step=step}}, {{pythonValue step.Response.Constraints.MaxValue}})
+{{#ifSet action.Variable}}
+{{#ifFieldIsArray action.Field}}
+asserts.assert_less_equal(len({{action.Variable}}), {{maxConstraint action}}, "{{attributeName step action }} must have at most {{maxConstraint action}} entries!")
+{{else ifFieldHasLength action.Field}}
+asserts.assert_less_equal(len({{action.Variable}}), {{maxConstraint action}}, "{{attributeName step action }} must have length at most {{maxConstraint action}}!")
+{{else}}
+asserts.assert_less_equal({{action.Variable}}, {{maxConstraint action}})
+{{/ifFieldIsArray}}
 {{/ifSet}}

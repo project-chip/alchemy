@@ -1,4 +1,4 @@
-package testscript
+package python
 
 import (
 	"context"
@@ -10,38 +10,38 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/sdk"
-	"github.com/project-chip/alchemy/testscript/python"
+	"github.com/project-chip/alchemy/testscript"
 	"github.com/project-chip/alchemy/testscript/yaml/parse"
 )
 
-func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOptions pipeline.Options, asciiSettings []asciidoc.AttributeName, generatorOptions []python.GeneratorOption, fileOptions files.Options, filePaths []string) (err error) {
+func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Options, parserOptions []spec.ParserOption, asciiSettings []asciidoc.AttributeName, generatorOptions []GeneratorOption, fileOptions files.Options, filePaths []string) (err error) {
+
+	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
+	if err != nil {
+		return
+	}
 
 	err = sdk.CheckAlchemyVersion(sdkRoot)
 	if err != nil {
 		return
 	}
 
-	err = errata.LoadErrataConfig(specRoot)
+	err = errata.LoadErrataConfig(specParser.Root)
 	if err != nil {
 		return
 	}
 
-	docParser, err := spec.NewParser(specRoot, asciiSettings)
+	specFiles, err := pipeline.Start(cxt, specParser.Targets)
 	if err != nil {
 		return
 	}
 
-	specFiles, err := pipeline.Start(cxt, spec.Targeter(specRoot))
+	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
 	if err != nil {
 		return
 	}
 
-	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, docParser, specFiles)
-	if err != nil {
-		return
-	}
-
-	specBuilder := spec.NewBuilder()
+	specBuilder := spec.NewBuilder(specParser.Root)
 	_, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return
@@ -58,20 +58,20 @@ func Pipeline(cxt context.Context, specRoot string, sdkRoot string, pipelineOpti
 	}
 
 	if len(filePaths) > 0 { // Filter the spec by whatever extra args were passed
-		filter := paths.NewFilter[*spec.Doc](specRoot, filePaths)
+		filter := paths.NewFilter[*spec.Doc](specParser.Root, filePaths)
 		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return
 		}
 	}
 
-	scriptGenerator := NewTestPlanGenerator(specBuilder.Spec, sdkRoot, picsLabels)
+	scriptGenerator := testscript.NewTestScriptGenerator(specBuilder.Spec, sdkRoot, picsLabels)
 	testplans, err := pipeline.Parallel(cxt, pipelineOptions, scriptGenerator, specDocs)
 	if err != nil {
 		return
 	}
 
-	generator := python.NewPythonTestGenerator(specBuilder.Spec, sdkRoot, picsLabels, generatorOptions...)
+	generator := NewPythonTestRenderer(specBuilder.Spec, sdkRoot, picsLabels, generatorOptions...)
 	var scripts pipeline.StringSet
 	scripts, err = pipeline.Parallel(cxt, pipelineOptions, generator, testplans)
 	if err != nil {

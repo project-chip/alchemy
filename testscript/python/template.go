@@ -15,7 +15,7 @@ var templateFiles embed.FS
 
 var template pipeline.Once[*raymond.Template]
 
-func (sp *PythonTestGenerator) loadTemplate(spec *spec.Specification) (*raymond.Template, error) {
+func (sp *PythonTestRenderer) loadTemplate(spec *spec.Specification) (*raymond.Template, error) {
 	t, err := template.Do(func() (*raymond.Template, error) {
 
 		ov := handlebars.NewOverlay(sp.templateRoot, templateFiles, "templates")

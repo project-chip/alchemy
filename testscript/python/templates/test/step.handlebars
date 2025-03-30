@@ -1,46 +1,14 @@
-{{#if step.description}}
-{{#each step.description}}
-# {{raw this}}
+self.step({{quote step.name}})
+{{#each step.Actions}}
+{{#ifNeedsConformanceCheck this}}
+if {{conformanceGuard this}}:
+    {{> test/action test=test step=step action=this}}
+{{else}}
+{{#ifSet step.PICSSet}}
+    if self.pics_guard({{picsGuard step.PICSSet test.PICSAliases}}):
+        {{> test/action test=test step=step action=this}}
+{{else}}
+{{> test/action test=test step=step action=this}}
+{{/ifSet}}
+{{/ifNeedsConformanceCheck}}
 {{/each}}
-{{/if}}
-{{#if step.comments}}
-{{#each step.comments}}
-# {{raw this}}
-{{/each}}
-{{/if}}
-{{#if step.disabled}}
-# Disabled
-pass
-{{else}}
-{{#if step.userVerification}}
-{{> test/commands/user_prompt step=step}}
-{{else}}
-{{#clusterIs step "DelayCommands"}}
-# Delay Command
-{{else clusterIs step "EqualityCommands"}}
-{{> test/commands/equality test=test step=step}}
-{{else clusterIs step "AnyCommands"}}
-# TODO: Any Commands
-{{else clusterIs step "CommissionerCommands"}}
-# TODO: Commissioner Commands
-{{else clusterIs step "SystemCommands"}}
-# TODO: System Commands
-{{else}}
-{{#commandIs step "readAttribute"}}
-{{> test/commands/read_attribute test=test step=step}}
-{{else commandIs step "writeAttribute"}}
-{{> test/commands/write_attribute test=test step=step}}
-{{else commandIs step "UserPrompt"}}
-{{> test/commands/user_prompt step=step}}
-{{else commandIs step "readEvent"}}
-# TODO: Read Event
-{{else commandIs step "waitForReport"}}
-# TODO: Wait For Report
-{{else commandIs step "subscribeAttribute"}}
-# TODO: Subscribe Attribute
-{{else}}
-{{> test/commands/command test=test step=step}}
-{{/commandIs}}
-{{/clusterIs}}
-{{/if}}
-{{/if}}

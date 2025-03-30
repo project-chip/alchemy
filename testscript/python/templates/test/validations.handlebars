@@ -1,0 +1,14 @@
+{{#each action.Validations}}
+{{#actionIs this "checkType"}}
+{{> test/constraints/type_check test=test step=step action=this}}
+{{else actionIs this "checkMinConstraint"}}
+{{> test/constraints/min_value test=test step=step action=this}}
+{{else actionIs this "checkMaxConstraint"}}
+{{> test/constraints/max_value test=test step=step action=this}}
+{{else actionIs this "checkRangeConstraint"}}
+{{> test/constraints/min_value test=test step=step action=this}}
+{{> test/constraints/max_value test=test step=step action=this}}
+{{else}}
+pass #Unknown validation
+{{/actionIs}}
+{{/each}}

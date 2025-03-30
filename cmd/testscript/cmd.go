@@ -4,7 +4,7 @@ import (
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/testscript"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/testscript/python"
 	"github.com/spf13/cobra"
 )
@@ -42,7 +42,7 @@ func tp(cmd *cobra.Command, args []string) (err error) {
 		python.TemplateRoot(templateRoot),
 	}
 
-	err = testscript.Pipeline(cxt, specRoot, sdkRoot, pipelineOptions, asciiSettings, generatorOptions, fileOptions, args)
+	err = python.Pipeline(cxt, sdkRoot, pipelineOptions, parserOptions, asciiSettings, generatorOptions, fileOptions, args)
 
 	return
 }

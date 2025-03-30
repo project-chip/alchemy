@@ -26,3 +26,7 @@ func (e entity) Origin() (path string, line int) {
 		return "", -1
 	}
 }
+
+func (e entity) Cluster() *Cluster {
+	return findCluster(e.parent)
+}

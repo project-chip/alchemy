@@ -72,6 +72,20 @@ func convertExpression(e conformance.Expression) (Expression, error) {
 			PICS: EntityIdentifier(e.Entity),
 			Not:  e.Not,
 		}, nil
+	case *conformance.LogicalExpression:
+		left, err := convertExpression(e.Left)
+		if err != nil {
+			return nil, err
+		}
+		var right []any
+		for _, r := range e.Right {
+			re, err := convertExpression(r)
+			if err != nil {
+				return nil, err
+			}
+			right = append(right, re)
+		}
+		return NewLogicalExpression(LogicalOperatorAnd, left, right)
 	default:
 		return nil, fmt.Errorf("unexpected conformance expression converting to PICS expression: %T", e)
 	}

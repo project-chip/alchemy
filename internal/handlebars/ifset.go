@@ -1,6 +1,8 @@
 package handlebars
 
-import "github.com/mailgun/raymond/v2"
+import (
+	"github.com/mailgun/raymond/v2"
+)
 
 func IfSetHelper(value any, options *raymond.Options) string {
 	switch value.(type) {
