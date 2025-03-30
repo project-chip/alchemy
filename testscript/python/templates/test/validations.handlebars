@@ -8,6 +8,8 @@
 {{else actionIs this "checkRangeConstraint"}}
 {{> test/constraints/min_value test=test step=step action=this}}
 {{> test/constraints/max_value test=test step=step action=this}}
+{{else actionIs this "anyOf"}}
+{{> test/constraints/any_of test=test step=step action=this}}
 {{else}}
 pass #Unknown validation
 {{/actionIs}}

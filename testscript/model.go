@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/testplan/pics"
 )
 
 type Test struct {
@@ -16,12 +17,16 @@ type Test struct {
 	Steps           []*TestStep
 
 	StructChecks []*TestStep
+
+	PICSList []pics.Expression
 }
 
 func (t *Test) AddStep(s *TestStep) {
 	s.Parent = t
 	t.Steps = append(t.Steps, s)
-	s.Name = fmt.Sprintf("%d", len(t.Steps))
+	if s.Name == "" {
+		s.Name = fmt.Sprintf("%d", len(t.Steps))
+	}
 }
 
 type TestStep struct {

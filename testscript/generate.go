@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"path/filepath"
+	"strings"
 
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -47,19 +48,22 @@ func (sp *TestScriptGenerator) Process(cxt context.Context, input *pipeline.Data
 		if len(cluster.Attributes) > 0 {
 			var t *Test
 			t, err = sp.buildClusterTest(cluster)
-			outputs = append(outputs, pipeline.NewData(sp.getPath(t), t))
+			outputs = append(outputs, pipeline.NewData(getPath(sp.sdkRoot, t), t))
 		}
 	}
 	return
 }
 
-func (ytc *TestScriptGenerator) getPath(test *Test) string {
+func getPath(sdkRoot string, test *Test) string {
 
 	path := getTestName(test)
 	path += ".py"
-	return filepath.Join(ytc.sdkRoot, "src/python_testing", path)
+	return filepath.Join(sdkRoot, "src/python_testing", path)
 }
 
 func getTestName(test *Test) string {
+	if strings.HasPrefix(test.ID, "TC_") {
+		return test.ID
+	}
 	return "TC_" + test.ID
 }

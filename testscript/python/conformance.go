@@ -30,12 +30,9 @@ func needsConformanceCheckHelper(action testscript.TestAction, options *raymond.
 		}
 		switch action.Attribute.Conformance {
 		case nil:
-			slog.Info("nil attribute conformance")
 			return options.Inverse()
 		default:
-			slog.Info("non-nil attribute conformance", slog.String("attr", action.Attribute.Name), slog.String("c", action.Attribute.Conformance.ASCIIDocString()))
 			if conformance.IsMandatory(action.Attribute.Conformance) {
-				slog.Info("non-nil attribute conformance is mandatory", slog.String("c", action.Attribute.Conformance.ASCIIDocString()))
 				return options.Inverse()
 			}
 			return options.Fn()
@@ -49,7 +46,6 @@ func conformanceGuardHelper(action testscript.TestAction) raymond.SafeString {
 	var sb strings.Builder
 	switch action := action.(type) {
 	case *testscript.ReadAttribute:
-		slog.Info("conformance guard read attribute", slog.String("attr", action.Attribute.Name))
 		err := buildPythonConformance(action.Attribute.Conformance, action.Attribute, &sb)
 		if err != nil {
 			slog.Error("Error building conformance", slog.Any("error", err))
@@ -106,7 +102,6 @@ func buildPythonMandatoryConformance(o *conformance.Mandatory, entity types.Enti
 }
 
 func buildPythonOptionalConformance(o *conformance.Optional, entity types.Entity, builder *strings.Builder) error {
-	slog.Info("conformance guard optional conformance", log.Type("entity", entity))
 	switch entity := entity.(type) {
 	case *matter.Field:
 		switch entity.EntityType() {

@@ -1,3 +1,1 @@
-{{#ifSet step.Response.Constraints.AnyOf}}
-asserts.assert_in({{> test/commands/response_value step=step}}, {{pythonValue step.Response.Constraints.AnyOf}})
-{{/ifSet}}
+asserts.assert_in({{action.Variable}}, {{pythonValue action.Values}})

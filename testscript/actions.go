@@ -20,7 +20,7 @@ type remoteAction struct {
 	action
 
 	Endpoint      uint64
-	ExpectedError bool
+	ExpectedError string
 }
 
 type ReadAttribute struct {
@@ -33,6 +33,13 @@ type ReadAttribute struct {
 	Variable string
 
 	Validations []TestAction
+}
+
+type WriteAttribute struct {
+	remoteAction
+
+	AttributeName string
+	Attribute     *matter.Field
 }
 
 type constraintAction struct {
@@ -62,4 +69,10 @@ type CheckRangeConstraint struct {
 	constraintAction
 
 	Constraint *constraint.RangeConstraint
+}
+
+type CheckAnyOfConstraint struct {
+	constraintAction
+
+	Values any
 }

@@ -2,6 +2,7 @@ package python
 
 import (
 	"log/slog"
+	"strconv"
 	"strings"
 
 	"github.com/mailgun/raymond/v2"
@@ -91,6 +92,8 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 		}
 	case *constraint.IntLimit:
 		builder.WriteString(l.DataModelString(field.Type))
+	case *constraint.HexLimit:
+		builder.WriteString(strconv.FormatUint(l.Value, 10))
 	case *constraint.TemperatureLimit:
 		builder.WriteString(l.DataModelString(field.Type))
 	case *constraint.PercentLimit:
@@ -100,55 +103,3 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 		slog.Warn("Unexpected limit type for Python limit", log.Type("type", l))
 	}
 }
-
-/*
-func findVariableForLimit(field *matter.Field, l constraint.Limit) string {
-	switch l := l.(type) {
-	case *constraint.IdentifierLimit:
-		switch entity := l.Entity.(type) {
-		case *matter.Field:
-			return entity.Name
-		case nil:
-			slog.Warn("Missing entity when evaluating limit", slog.String("fieldName", field.Name))
-			return ""
-		default:
-			slog.Warn("Unexpected entity type when evaluating limit", log.Type("type", entity), slog.String("fieldName", field.Name))
-			return ""
-		}
-	case *constraint.ReferenceLimit:
-		switch entity := l.Entity.(type) {
-		case *matter.Field:
-			return entity.Name
-		case nil:
-			slog.Warn("Missing entity when evaluating limit", slog.String("fieldName", field.Name))
-			return ""
-		default:
-			slog.Warn("Unexpected entity type when evaluating limit", log.Type("type", entity), slog.String("fieldName", field.Name))
-			return ""
-		}
-	case *constraint.TagIdentifierLimit:
-		switch entity := l.Entity.(type) {
-		case *matter.Field:
-			return entity.Name
-		case nil:
-			slog.Warn("Missing entity when evaluating limit", slog.String("fieldName", field.Name))
-			return ""
-		default:
-			slog.Warn("Unexpected entity type when evaluating limit", log.Type("type", entity), slog.String("fieldName", field.Name))
-			return ""
-		}
-	case *constraint.MathExpressionLimit:
-		findVariablesForLimit(l.Left, variables)
-		findVariablesForLimit(l.Right, variables)
-	case *constraint.LogicalLimit:
-		findVariablesForLimit(l.Left, variables)
-		for _, r := range l.Right {
-			findVariablesForLimit(r, variables)
-		}
-	case *constraint.IntLimit, *constraint.TemperatureLimit, *constraint.PercentLimit:
-		return
-	default:
-		slog.Warn("Unexpected limit type for variables", log.Type("type", l))
-	}
-}
-*/

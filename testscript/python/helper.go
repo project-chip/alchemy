@@ -57,10 +57,9 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 	var ok bool
 	switch is {
 	case "readAttribute":
-		var ra testscript.ReadAttribute
-		ra, ok = action.(testscript.ReadAttribute)
-		if ok {
-			slog.Info("action is read", "action", is, log.Type("type", action), slog.String("variable", ra.Variable))
+		_, ok = action.(*testscript.ReadAttribute)
+		if !ok {
+			_, ok = action.(testscript.ReadAttribute)
 		}
 	case "checkMinConstraint":
 		_, ok = action.(*testscript.CheckMinConstraint)
@@ -82,11 +81,15 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 		if !ok {
 			_, ok = action.(testscript.CheckType)
 		}
+	case "anyOf":
+		_, ok = action.(*testscript.CheckAnyOfConstraint)
+		if !ok {
+			_, ok = action.(testscript.CheckAnyOfConstraint)
+		}
 	}
 	if ok {
 		return options.Fn()
 	}
-	slog.Info("action is not", "desired", is, log.Type("actual", action))
 	return options.Inverse()
 }
 
@@ -128,6 +131,8 @@ func typeCheckIsHelper(action testscript.CheckType, is string, options *raymond.
 		if action.Field.Type.Entity != nil {
 			_, ok = action.Field.Type.Entity.(*matter.Enum)
 		}
+	case "bool":
+		ok = underlyingType == types.BaseDataTypeBoolean
 	}
 	if ok {
 		return options.Fn()
