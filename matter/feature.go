@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"iter"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -12,8 +13,28 @@ type Features struct {
 	Bitmap
 }
 
+func NewFeatures(source asciidoc.Element, parent types.Entity) *Features {
+	f := &Features{
+		Bitmap: Bitmap{
+			Name: "Features",
+			Type: types.NewDataType(types.BaseDataTypeMap32, false),
+			entity: entity{
+				source: source,
+				parent: parent,
+			},
+		},
+	}
+	return f
+}
+
 func (fs *Features) Clone() *Features {
 	return &Features{Bitmap: *fs.Bitmap.Clone()}
+}
+
+func (fs *Features) CloneTo(cluster *Cluster) *Features {
+	f := &Features{Bitmap: *fs.Bitmap.Clone()}
+	f.entity.parent = cluster
+	return f
 }
 
 func (fs *Features) Identifier(id string) (types.Entity, bool) {
@@ -53,8 +74,8 @@ type Feature struct {
 	Code string
 }
 
-func NewFeature(bit string, name string, code string, summary string, conformance conformance.Set) *Feature {
-	return &Feature{BitmapBit: BitmapBit{bit: bit, name: name, summary: summary, conformance: conformance}, Code: code}
+func NewFeature(source asciidoc.Element, bit string, name string, code string, summary string, conformance conformance.Set) *Feature {
+	return &Feature{BitmapBit: BitmapBit{entity: entity{source: source}, bit: bit, name: name, summary: summary, conformance: conformance}, Code: code}
 }
 
 func (f *Feature) Entity() types.EntityType {
@@ -62,7 +83,7 @@ func (f *Feature) Entity() types.EntityType {
 }
 
 func (f *Feature) Clone() Bit {
-	return NewFeature(f.bit, f.name, f.Code, f.summary, f.conformance)
+	return NewFeature(f.source, f.bit, f.name, f.Code, f.summary, f.conformance)
 }
 
 func (f *Feature) MarshalJSON() ([]byte, error) {
