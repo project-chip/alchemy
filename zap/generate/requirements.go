@@ -303,12 +303,12 @@ func (p *DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element
 		include.CreateAttr("cluster", cluster.Name)
 	}
 
-	if !client && clientLocked { // Disallowed, so override whatever is there
+	if clientLocked { // Locked, so override whatever is there
 		include.CreateAttr("client", strconv.FormatBool(client))
 	} else {
 		xml.SetNonexistentAttr(include, "client", strconv.FormatBool(client))
 	}
-	if !server && serverLocked { // Disallowed, so override whatever is there
+	if serverLocked { // Locked, so override whatever is there
 		include.CreateAttr("server", strconv.FormatBool(server))
 	} else {
 		xml.SetNonexistentAttr(include, "server", strconv.FormatBool(server))
