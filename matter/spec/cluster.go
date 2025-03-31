@@ -97,7 +97,9 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 	for _, c := range clusters {
 		c.Description = description
 		c.AddDataTypes(dataTypes...)
-		c.Features = features
+		if features != nil {
+			c.Features = features.CloneTo(c)
+		}
 
 		for _, s := range elements {
 			switch s.SecType {

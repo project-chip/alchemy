@@ -12,6 +12,7 @@ import (
 
 func (sp *Builder) resolveConformances(spec *Specification) {
 	for cluster := range spec.Clusters {
+		sp.resolveFeatureConformances(spec, cluster)
 		for _, a := range cluster.Attributes {
 			sp.resolveFieldConformances(spec, cluster, cluster.Attributes, a, a.Type)
 		}
@@ -57,6 +58,23 @@ func (sp *Builder) resolveConformances(spec *Specification) {
 		}
 	}
 
+}
+
+func (sp *Builder) resolveFeatureConformances(spec *Specification, cluster *matter.Cluster) {
+	if cluster.Features == nil {
+		return
+	}
+	featureFinder := func(identifier string) types.Entity {
+		for f := range cluster.Features.FeatureBits() {
+			if strings.EqualFold(f.Code, identifier) {
+				return f
+			}
+		}
+		return nil
+	}
+	for feature := range cluster.Features.FeatureBits() {
+		resolveFieldConformanceReferences(spec, cluster, featureFinder, feature, feature, feature.Conformance())
+	}
 }
 
 func (sp *Builder) resolveFieldConformances(spec *Specification, cluster *matter.Cluster, fieldSet matter.FieldSet, field *matter.Field, dataType *types.DataType) {

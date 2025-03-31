@@ -8,7 +8,6 @@ import (
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
 func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Features, err error) {
@@ -18,12 +17,7 @@ func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Feature
 		return nil, fmt.Errorf("failed reading features: %w", err)
 
 	}
-	features = &matter.Features{
-		Bitmap: matter.Bitmap{
-			Name: "Feature",
-			Type: types.NewDataType(types.BaseDataTypeMap32, false),
-		},
-	}
+	features = matter.NewFeatures(s.Base, nil)
 	featureMap := make(map[string]*matter.Feature)
 	for row := range ti.Body() {
 		var bit, code, name, summary string
@@ -57,7 +51,7 @@ func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Feature
 		if conf == nil {
 			conf = conformance.Set{&conformance.Optional{}}
 		}
-		f := matter.NewFeature(bit, name, code, summary, conf)
+		f := matter.NewFeature(row, bit, name, code, summary, conf)
 		features.AddFeatureBit(f)
 		featureMap[name] = f
 	}
