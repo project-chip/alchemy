@@ -92,13 +92,14 @@ func patchNumberElement(e *etree.Element, n *matter.Number) {
 	e.SetText(n.HexString())
 }
 
-func patchDataExtremeAttribute(e *etree.Element, attribute string, de *types.DataTypeExtreme, field *matter.Field, dataExtremePurpose types.DataExtremePurpose) {
+func patchDataExtremeAttribute(e *etree.Element, attribute string, de types.DataTypeExtreme, field *matter.Field, dataExtremePurpose types.DataExtremePurpose) {
 	if !de.Defined() || de.IsNull() {
 		e.RemoveAttr(attribute)
 		return
 	}
 	if de.IsNumeric() {
-		redundant := sdk.CheckUnderlyingType(field, de, dataExtremePurpose)
+		var redundant bool
+		de, redundant = sdk.CheckUnderlyingType(field, de, dataExtremePurpose)
 		if redundant {
 			e.RemoveAttr(attribute)
 			return

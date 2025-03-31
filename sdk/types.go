@@ -51,24 +51,25 @@ func ToUnderlyingType(dt types.BaseDataType) types.BaseDataType {
 	}
 }
 
-func CheckUnderlyingType(field *matter.Field, de *types.DataTypeExtreme, dataExtremePurpose types.DataExtremePurpose) (redundant bool) {
+func CheckUnderlyingType(field *matter.Field, de types.DataTypeExtreme, dataExtremePurpose types.DataExtremePurpose) (out types.DataTypeExtreme, redundant bool) {
+	out = de
 	switch dataExtremePurpose {
 	case types.DataExtremePurposeMinimum:
 		fieldMinimum := types.Min(ToUnderlyingType(field.Type.BaseType), field.Quality.Has(matter.QualityNullable))
 		if cmp, ok := de.Compare(fieldMinimum); ok && cmp == -1 {
 			slog.Warn("Field has minimum lower than the range of its data type; overriding", slog.String("name", field.Name), log.Path("source", field), slog.String("specifiedMinimum", de.ZapString(field.Type)), slog.String("fieldMinimum", fieldMinimum.ZapString(field.Type)))
-			de = &fieldMinimum
+			out = fieldMinimum
 		}
-		if types.Min(ToUnderlyingType(field.Type.BaseType), false).ValueEquals(*de) {
+		if types.Min(ToUnderlyingType(field.Type.BaseType), false).ValueEquals(out) {
 			redundant = true
 		}
 	case types.DataExtremePurposeMaximum:
 		fieldMaximum := types.Max(ToUnderlyingType(field.Type.BaseType), field.Quality.Has(matter.QualityNullable))
 		if cmp, ok := de.Compare(fieldMaximum); ok && cmp == 1 {
 			slog.Warn("Field has maximum greater than the range of its data type; overriding", slog.String("name", field.Name), log.Path("source", field), slog.String("specifiedMaximum", de.ZapString(field.Type)), slog.String("fieldMaximum", fieldMaximum.ZapString(field.Type)))
-			de = &fieldMaximum
+			out = fieldMaximum
 		}
-		if types.Max(ToUnderlyingType(field.Type.BaseType), false).ValueEquals(*de) {
+		if types.Max(ToUnderlyingType(field.Type.BaseType), false).ValueEquals(out) {
 			redundant = true
 		}
 	}

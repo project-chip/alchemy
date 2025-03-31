@@ -26,7 +26,7 @@ func ParseNumber(s string) *Number {
 	return id
 }
 
-func NumberFromExtreme(de *types.DataTypeExtreme) *Number {
+func NumberFromExtreme(de types.DataTypeExtreme) *Number {
 	n := &Number{}
 	switch de.Type {
 	case types.DataTypeExtremeTypeInt64:
