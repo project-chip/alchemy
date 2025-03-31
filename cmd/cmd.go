@@ -42,6 +42,10 @@ func Execute() {
 		handleError(err)
 	}
 
+	if errored {
+		os.Exit(1)
+	}
+
 	if !suppressVersionCheck {
 		select {
 		case version := <-versionChan:
@@ -73,11 +77,30 @@ func init() {
 				TimeFormat: time.StampMilli,
 			})
 		}
+		errorExitCode, _ := flags.GetBool("errorExitCode")
+		if errorExitCode {
+			handler = &errorHandler{Handler: handler}
+		}
 		slog.SetDefault(slog.New(handler))
 		suppressVersionCheck, _ = flags.GetBool("suppressVersionCheck")
 	}
 	flags.Bool("suppressVersionCheck", false, "")
 	flags.MarkHidden("suppressVersionCheck")
+	flags.Bool("errorExitCode", false, "")
+	flags.MarkHidden("errorExitCode")
 	rootCmd.SetVersionTemplate(`{{printf "version: %s" .Version}}
 `)
+}
+
+var errored bool
+
+type errorHandler struct {
+	slog.Handler
+}
+
+func (er *errorHandler) Handle(cxt context.Context, record slog.Record) error {
+	if !errored && record.Level >= slog.LevelError {
+		errored = true
+	}
+	return er.Handler.Handle(cxt, record)
 }
