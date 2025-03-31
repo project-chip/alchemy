@@ -111,6 +111,8 @@ func canCheckType(field *matter.Field) bool {
 		types.BaseDataTypeOctStr,
 		types.BaseDataTypeString,
 		types.BaseDataTypeBoolean,
+		types.BaseDataTypeSingle,
+		types.BaseDataTypeDouble,
 		types.BaseDataTypeCustom,
 		types.BaseDataTypeList:
 		return true

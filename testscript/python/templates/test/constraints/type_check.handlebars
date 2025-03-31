@@ -20,6 +20,10 @@ matter_asserts.assert_valid_bool({{action.Variable}}, '{{attributeName step acti
 matter_asserts.assert_is_string({{action.Variable}}, "{{attributeName step action}} must be a string")
 {{else typeCheckIs action "octstr" ~}}
 matter_asserts.assert_is_octstr({{action.Variable}}, "{{attributeName step action}} must be an octstr")
+{{else typeCheckIs action "single" ~}}
+asserts.assert_true(isinstance({{action.Variable}}, float), f"{{action.variable}} must be a float")
+{{else typeCheckIs action "double" ~}}
+asserts.assert_true(isinstance({{action.Variable}}, float), f"{{action.variable}} must be a float")
 {{else typeCheckIs action "string" ~}}
 matter_asserts.assert_is_string({{action.Variable}}, "{{attributeName step action}} must be a string")
 {{else typeCheckIs action "list" ~}}
