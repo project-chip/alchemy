@@ -37,7 +37,15 @@ func removeConformance(parent *etree.Element) {
 		switch child := child.(type) {
 		case *etree.Element:
 			switch child.Tag {
-			case "mandatoryConform", "optionalConform", "disableConform", "disallowConform", "provisionalConform", "deprecateConform", "otherwiseConform":
+			case "mandatoryConform",
+				"optionalConform",
+				"disableConform",
+				"disallowConform",
+				"provisionalConform",
+				"deprecateConform",
+				"otherwiseConform",
+				"describedConform",
+				"genericConform":
 				trash = append(trash, child)
 			}
 		}
