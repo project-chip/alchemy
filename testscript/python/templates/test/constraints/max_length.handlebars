@@ -1,3 +1,0 @@
-{{#ifSet step.Response.Constraints.MaxLength}}
-asserts.assert_less_equal(len({{> test/commands/response_value step=step}}), {{pythonValue step.Response.Constraints.MaxLength}}, "{{pythonString step.attribute}} must have at most {{pythonValue step.Response.Constraints.MaxLength}} entries!")
-{{/ifSet}}
