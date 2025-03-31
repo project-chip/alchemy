@@ -19,6 +19,7 @@ type action struct {
 type remoteAction struct {
 	action
 
+	Cluster       *matter.Cluster
 	Endpoint      uint64
 	ExpectedError string
 }
@@ -40,6 +41,8 @@ type WriteAttribute struct {
 
 	AttributeName string
 	Attribute     *matter.Field
+
+	Value any
 }
 
 type constraintAction struct {
@@ -75,4 +78,26 @@ type CheckAnyOfConstraint struct {
 	constraintAction
 
 	Values any
+}
+
+type CheckValueConstraint struct {
+	constraintAction
+
+	Value any
+}
+
+type CheckStruct struct {
+	action
+
+	Struct *matter.Struct
+
+	Fields []*CheckStructField
+}
+
+type CheckStructField struct {
+	action
+
+	Field *matter.Field
+
+	Validations []TestAction
 }

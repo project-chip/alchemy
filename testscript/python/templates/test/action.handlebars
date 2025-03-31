@@ -15,39 +15,30 @@ pass
 {{#if action.userVerification}}
 {{> test/commands/user_prompt step=action}}
 {{else}}
-{{#actionIs step "DelayCommands"}}
+{{#actionIs action "DelayCommands"}}
 # Delay Command
-{{else actionIs step "EqualityCommands"}}
+{{else actionIs action "EqualityCommands"}}
 {{> test/commands/equality test=test step=action}}
-{{else actionIs step "AnyCommands"}}
+{{else actionIs action "AnyCommands"}}
 # TODO: Any Commands
-{{else actionIs step "CommissionerCommands"}}
+{{else actionIs action "CommissionerCommands"}}
 # TODO: Commissioner Commands
-{{else actionIs step "SystemCommands"}}
+{{else actionIs action "SystemCommands"}}
 # TODO: System Commands
 {{else actionIs action "readAttribute"}}
 {{> test/commands/read_attribute test=test step=step action=action}}
-{{else actionIs step "writeAttribute"}}
-{{> test/commands/write_attribute test=test step=action}}
-{{else actionIs step "readField"}}
+{{else actionIs action "writeAttribute"}}
+{{> test/commands/write_attribute test=test step=step action=action}}
+{{else actionIs action "readField"}}
 {{> test/commands/read_field test=test step=action}}
-{{else actionIs step "UserPrompt"}}
+{{else actionIs action "UserPrompt"}}
 {{> test/commands/user_prompt step=action}}
-{{else actionIs step "readEvent"}}
+{{else actionIs action "readEvent"}}
 # TODO: Read Event
-{{else actionIs step "waitForReport"}}
+{{else actionIs action "waitForReport"}}
 # TODO: Wait For Report
-{{else actionIs step "subscribeAttribute"}}
+{{else actionIs action "subscribeAttribute"}}
 # TODO: Subscribe Attribute
-{{else actionIs action "checkType"}}
-{{> test/constraints/type_check test=test step=step action=action}}
-{{else actionIs action "checkMinConstraint"}}
-{{> test/constraints/min_value test=test step=step action=action}}
-{{else actionIs action "checkMaxConstraint"}}
-{{> test/constraints/max_value test=test step=step action=action}}
-{{else actionIs action "checkRangeConstraint"}}
-{{> test/constraints/min_value test=test step=step action=action}}
-{{> test/constraints/max_value test=test step=step action=action}}
 {{else}}
 pass #Unknown action
 {{> test/commands/command test=test step=action}}

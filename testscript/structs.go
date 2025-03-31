@@ -1,6 +1,10 @@
 package testscript
 
 import (
+	"slices"
+	"strings"
+
+	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -42,23 +46,49 @@ func findStructsForEntity(entity types.Entity, structs map[*matter.Struct]struct
 }
 
 func buildTestsForStructs(structs map[*matter.Struct]struct{}) (tests []*TestStep, err error) {
+	sl := make([]*matter.Struct, 0, len(structs))
 	for s := range structs {
+		sl = append(sl, s)
+	}
+	slices.SortStableFunc(sl, func(a, b *matter.Struct) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+	for _, s := range sl {
 		step := &TestStep{
-			Name: s.Name,
+			Name:   s.Name,
+			Entity: s,
+		}
+		checkStruct := &CheckStruct{
+			action: action{},
+
+			Struct: s,
 		}
 		for _, f := range s.Fields {
 			if conformance.IsBlank(f.Conformance) && constraint.IsBlank(f.Constraint) {
 				continue
 			}
 
+			checkStructField := &CheckStructField{
+				Field: f,
+			}
+
+			variableName := "struct." + strcase.ToLowerCamel(f.Name)
+
 			var actions []TestAction
-			actions, err = addConstraintActions(f, s.Fields, f.Constraint, "struct."+f.Name)
+			if canCheckType(f) {
+				checkStructField.Validations = append(checkStructField.Validations, &CheckType{constraintAction: constraintAction{Field: f, Variable: variableName}})
+			}
+			actions, err = addConstraintActions(f, s.Fields, f.Constraint, variableName)
 			if err != nil {
 				return
 			}
-			step.Actions = append(step.Actions, actions...)
+			checkStructField.Validations = append(checkStructField.Validations, actions...)
+			if len(checkStructField.Validations) > 0 {
+				checkStruct.Fields = append(checkStruct.Fields, checkStructField)
+			}
 		}
-		if len(step.Actions) > 0 {
+		if len(checkStruct.Fields) > 0 {
+			step.Actions = append(step.Actions, checkStruct)
 			tests = append(tests, step)
 		}
 	}
