@@ -3,7 +3,9 @@ package testscript
 import (
 	"fmt"
 
+	"github.com/goccy/go-yaml"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testplan/pics"
 )
 
@@ -18,7 +20,8 @@ type Test struct {
 
 	StructChecks []*TestStep
 
-	PICSList []pics.Expression
+	PICSList      []pics.Expression
+	YamlVariables yaml.MapSlice
 }
 
 func (t *Test) AddStep(s *TestStep) {
@@ -37,4 +40,6 @@ type TestStep struct {
 
 	Cluster *matter.Cluster
 	Actions []TestAction
+
+	Entity types.Entity
 }

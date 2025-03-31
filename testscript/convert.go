@@ -54,7 +54,10 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 		/*Config: parse.TestConfig{
 			Cluster: cluster.Name,
 		},*/
+		YamlVariables: testPlan.Config.Extras,
 	}
+
+	slog.Info("yaml", slog.Any("extras", t.YamlVariables))
 
 	attributes := make(map[string]*matter.Field)
 	for _, a := range cluster.Attributes {
@@ -70,24 +73,51 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 			switch s.Command {
 			case "readAttribute":
 				slog.Info("Reading attribute", slog.Any("comments", s.Comments))
+				commandCluster := cluster
 				a, ok := attributes[s.Attribute]
 				if !ok {
-					slog.Error("Unknown attribute", slog.String("testPlanId", testPlan.ID), slog.String("attribute", s.Attribute))
-					continue
+					if s.Cluster == "" {
+						slog.Error("Unknown attribute", slog.String("testPlanId", testPlan.ID), slog.String("attribute", s.Attribute))
+						continue
+					}
+					c, ok := sp.spec.ClustersByName[s.Cluster]
+					if !ok {
+						slog.Error("Unknown cluster", slog.String("testPlanId", testPlan.ID), slog.String("cluster", s.Cluster))
+						continue
+					}
+					for _, attr := range c.Attributes {
+						if attr.Name == s.Attribute {
+							a = attr
+							commandCluster = c
+							break
+						}
+					}
+					if a == nil {
+						slog.Error("Unknown attribute", slog.String("testPlanId", testPlan.ID), slog.String("attribute", s.Attribute))
+						continue
+					}
+				}
+				variableName := "val"
+				if s.Response.SaveAs != "" {
+					variableName = s.Response.SaveAs
 				}
 				readAttribute := &ReadAttribute{
 					remoteAction: remoteAction{
 						action: action{
 							Description: s.Description,
+							Conformance: a.Conformance,
 						},
 						Endpoint: s.Endpoint,
 					},
 					Attribute:  a,
 					Attributes: cluster.Attributes,
-					Variable:   "val",
+					Variable:   variableName,
+				}
+				if commandCluster != cluster {
+					readAttribute.Cluster = commandCluster
 				}
 				step.Actions = append(step.Actions, readAttribute)
-				readAttribute.Validations, err = buildValidations(s, a)
+				readAttribute.Validations, err = buildValidations(s, a, variableName)
 			case "writeAttribute":
 				a, ok := attributes[s.Attribute]
 				if !ok {
@@ -97,11 +127,18 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 				writeAttribute := &WriteAttribute{
 					remoteAction: remoteAction{
 						action: action{
-							Comments: s.Comments,
+							Comments:    s.Comments,
+							Conformance: a.Conformance,
 						},
+
 						Endpoint: s.Endpoint,
 					},
 					Attribute: a,
+					Value:     s.Arguments.Value,
+				}
+				if s.Response.Error != "" {
+					slog.Info("expected error", "error", s.Response.Error)
+					writeAttribute.ExpectedError = s.Response.Error
 				}
 				step.Actions = append(step.Actions, writeAttribute)
 			default:
@@ -116,21 +153,25 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 	return
 }
 
-func buildValidations(step *testplan.Step, field *matter.Field) (validations []TestAction, err error) {
-	if step.Response.Constraints == nil {
-		return
+func buildValidations(step *testplan.Step, field *matter.Field, variableName string) (validations []TestAction, err error) {
+	if step.Response.Constraints != nil {
+		if step.Response.Constraints.Type != "" {
+			validations = append(validations, &CheckType{constraintAction: constraintAction{Field: field, Variable: variableName}})
+		}
+		if step.Response.Constraints.MinValue != nil {
+			validations = append(validations, &CheckMinConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Constraint: &constraint.MinConstraint{Minimum: buildValidationLimit(step.Response.Constraints.MinValue)}})
+		}
+		if step.Response.Constraints.MaxValue != nil {
+			validations = append(validations, &CheckMaxConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Constraint: &constraint.MaxConstraint{Maximum: buildValidationLimit(step.Response.Constraints.MaxValue)}})
+		}
+		if step.Response.Constraints.AnyOf != nil {
+			validations = append(validations, &CheckAnyOfConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Values: step.Response.Constraints.AnyOf})
+		}
 	}
-	if step.Response.Constraints.Type != "" {
-		validations = append(validations, &CheckType{constraintAction: constraintAction{Field: field, Variable: "val"}})
-	}
-	if step.Response.Constraints.MinValue != nil {
-		validations = append(validations, &CheckMinConstraint{constraintAction: constraintAction{Field: field, Variable: "val"}, Constraint: &constraint.MinConstraint{Minimum: buildValidationLimit(step.Response.Constraints.MinValue)}})
-	}
-	if step.Response.Constraints.MaxValue != nil {
-		validations = append(validations, &CheckMaxConstraint{constraintAction: constraintAction{Field: field, Variable: "val"}, Constraint: &constraint.MaxConstraint{Maximum: buildValidationLimit(step.Response.Constraints.MaxValue)}})
-	}
-	if step.Response.Constraints.AnyOf != nil {
-		validations = append(validations, &CheckAnyOfConstraint{constraintAction: constraintAction{Field: field, Variable: "val"}, Values: step.Response.Constraints.AnyOf})
+	slog.Warn("validation", log.Type("value", step.Response.Value))
+	if step.Response.Value != nil {
+		slog.Warn("adding validation", "value", step.Response.Value)
+		validations = append(validations, &CheckValueConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Value: step.Response.Value})
 	}
 	return
 }

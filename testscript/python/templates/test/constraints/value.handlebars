@@ -1,3 +1,1 @@
-{{#ifSet step.Response.Value}}
-asserts.assert_equal({{> test/commands/response_value step=step}}, {{pythonValue step.Response.Value}})
-{{/ifSet}}
+asserts.assert_equal({{action.Variable}}, {{pythonValue action.Value}})

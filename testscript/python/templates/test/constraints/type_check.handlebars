@@ -17,12 +17,18 @@ matter_asserts.assert_valid_int8({{action.Variable}}, '{{attributeName step acti
 {{else typeCheckIs action "bool" ~}}
 matter_asserts.assert_valid_bool({{action.Variable}}, '{{attributeName step action ~}}')
 {{else typeCheckIs action "string" ~}}
-matter_asserts.assert_is_string({{action.Variable}}, "{{attributeName step action}} attribute must return a string")
+matter_asserts.assert_is_string({{action.Variable}}, "{{attributeName step action}} must be a string")
 {{else typeCheckIs action "octstr" ~}}
-matter_asserts.assert_is_octstr({{action.Variable}}, "{{attributeName step action}} attribute must return an octstr")
+matter_asserts.assert_is_octstr({{action.Variable}}, "{{attributeName step action}} must be an octstr")
+{{else typeCheckIs action "string" ~}}
+matter_asserts.assert_is_string({{action.Variable}}, "{{attributeName step action}} must be a string")
 {{else typeCheckIs action "list" ~}}
 matter_asserts.assert_list({{action.Variable}}, "{{attributeName step action}} attribute must return a list")
-matter_asserts.assert_list_element_type({{action.Variable}},  "{{attributeName step action }} attribute must contain {{entryTypeName test step action.Field}} elements", {{entryTypeName test step action.Field}})
+matter_asserts.assert_list_element_type({{action.Variable}},  "{{attributeName step action }} attribute must contain {{entryTypeFullName test step action.Field}} elements", {{entryTypeFullName test step action.Field}})
+{{#entryTypeCheckIs action "struct"}}
+for item in {{action.Variable}}:
+    await self.test_check{{entryTypeName test step action.Field}}(endpoint=endpoint, cluster=cluster, struct=item)
+{{/entryTypeCheckIs}}
 {{else typeCheckIs action "percent" ~}}
 matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action}}')
 asserts.assert_less_equal({{action.Variable}}, 100)
@@ -30,10 +36,14 @@ asserts.assert_less_equal({{action.Variable}}, 100)
 matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action}}')
 asserts.assert_less_equal({{action.Variable}}, 10000)
 {{else typeCheckIs action "enum" ~}}
-matter_asserts.assert_valid_enum({{action.Variable}}, "{{attributeName step action}} attribute must return a {{enumName action}}", cluster.Enums.{{enumName action}})
+matter_asserts.assert_valid_enum({{action.Variable}}, "{{attributeName step action}} attribute must return a {{entityTypeFullName test step action}}", {{entityTypeFullName test step action}})
 {{else typeCheckIs action "bitmap" ~}}
-matter_asserts.assert_valid_bitmap({{action.Variable}}, "{{attributeName step action}} attribute must return a {{bitmapName action}}", cluster.Bitmaps.{{bitmapName action}})
+matter_asserts.is_valid_int_value({{action.Variable}})
+{{else typeCheckIs action "custom" ~}}
+asserts.assert_true(isinstance({{action.Variable}}, {{entityTypeFullName test step action}}),
+                            f"{{action.variable}} must be of type {{entityTypeFullName test step action}}")
+await self.test_check{{entityTypeName test step action}}(endpoint=endpoint, cluster=cluster, struct={{action.Variable}})
 {{else ~}}
 logging.info(f"Unimplemented check: {{attributeName step action}} {{raw '{'}}{{action.Variable}}{{raw '}'}} ({{step.Response.Constraints.Type}} -> {{raw '{'}}type({{action.Variable}}){{raw '}'}}")
-pass  # Unimplemented type check: {{step.Response.Constraints.Type}}
+pass  # Unimplemented type check: {{type action}}
 {{/typeCheckIs ~}}

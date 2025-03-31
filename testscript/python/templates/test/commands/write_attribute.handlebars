@@ -1,3 +1,3 @@
-{{#if step.ExpectedError}}status = {{/if}}await self.write_single_attribute(attribute_value={{clusterVariable test step}}.Attributes.{{attributeName action}}({{value step.arguments.value}}), cluster={{clusterVariable test step}}, endpoint_id={{endpointVariable test step}}{{#if step.ExpectedError}}, expect_success=False{{/if}})
-{{#if step.ExpectedError}}asserts.assert_equal(status, {{statusError step.ExpectedError}})
+{{#if action.ExpectedError}}status = {{/if}}await self.write_single_attribute(attribute_value={{clusterVariable test step action}}.Attributes.{{attributeName step action}}({{value action.value}}), cluster={{clusterVariable test step action}}, endpoint_id={{endpointVariable test action.Endpoint}}{{#if action.ExpectedError}}, expect_success=False{{/if}})
+{{#if action.ExpectedError}}asserts.assert_equal(status, {{statusError action.ExpectedError}})
 {{/if}}

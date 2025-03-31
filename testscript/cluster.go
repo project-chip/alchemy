@@ -77,7 +77,7 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 		variableName := "val"
 		_, ok := variables[a]
 		if ok {
-			variableName = a.Name
+			variableName = "self." + a.Name
 		}
 
 		if canCheckType(a) {
@@ -109,6 +109,8 @@ func canCheckType(field *matter.Field) bool {
 		types.BaseDataTypeInt8,
 		types.BaseDataTypeUInt8,
 		types.BaseDataTypeOctStr,
+		types.BaseDataTypeString,
+		types.BaseDataTypeBoolean,
 		types.BaseDataTypeCustom,
 		types.BaseDataTypeList:
 		return true

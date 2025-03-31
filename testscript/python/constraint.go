@@ -47,6 +47,7 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 	case *constraint.IdentifierLimit:
 		switch entity := l.Entity.(type) {
 		case *matter.Field:
+			builder.WriteString("self.")
 			builder.WriteString(entity.Name)
 		case nil:
 			slog.Warn("Missing entity when evaluating identifier limit", slog.String("fieldName", field.Name))
@@ -56,6 +57,7 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 	case *constraint.ReferenceLimit:
 		switch entity := l.Entity.(type) {
 		case *matter.Field:
+			builder.WriteString("self.")
 			builder.WriteString(entity.Name)
 		case nil:
 			slog.Warn("Missing entity when evaluating reference limit", slog.String("fieldName", field.Name))
@@ -65,6 +67,7 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 	case *constraint.TagIdentifierLimit:
 		switch entity := l.Entity.(type) {
 		case *matter.Field:
+			builder.WriteString("self.")
 			builder.WriteString(entity.Name)
 		case nil:
 			slog.Warn("Missing entity when evaluating tag identifier limit", slog.String("fieldName", field.Name))

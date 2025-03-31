@@ -74,9 +74,6 @@ class {{test.ID}}(MatterBaseTest):
         attributes = cluster.Attributes
 
         {{> test/config/list test=test}}
-
-
-
 {{#each test.PICSAliasList}}
 {{#each this}}
 {{#each this.Comments}}
@@ -92,7 +89,7 @@ class {{test.ID}}(MatterBaseTest):
 {{/each}}
 
 {{#each test.StructChecks ~}}
-        {{> test/struct test=test step=this}}
+    {{> test/struct test=test step=this}}
 
 {{/each}}
 

@@ -1,0 +1,18 @@
+{{#each action.Fields}}
+{{#ifFieldIsOptional this.Field}}
+{{#ifFieldIsNullable this.Field}}
+if struct.{{fieldName test step this.Field}} is not NullValue and struct.{{fieldName test step this.Field}} is not None:
+    {{> test/validations test=test step=step action=this}}
+{{else}}
+if struct.{{fieldName test step this.Field}} is not None:
+    {{> test/validations test=test step=step action=this}}
+{{/ifFieldIsNullable}}
+{{else}}
+{{#ifFieldIsNullable this.Field}}
+if struct.{{fieldName test step this.Field}} is not NullValue:
+    {{> test/validations test=test step=step action=this}}
+{{else}}
+{{> test/validations test=test step=step action=this}}
+{{/ifFieldIsNullable}}
+{{/ifFieldIsOptional}}
+{{/each}}

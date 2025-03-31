@@ -24,21 +24,32 @@ func (cc *conformanceContext) Entity() types.Entity {
 func needsConformanceCheckHelper(action testscript.TestAction, options *raymond.Options) string {
 	switch action := action.(type) {
 	case *testscript.ReadAttribute:
-		if action.Attribute == nil {
-			slog.Info("nil attribute")
-			return options.Inverse()
-		}
-		switch action.Attribute.Conformance {
-		case nil:
-			return options.Inverse()
-		default:
-			if conformance.IsMandatory(action.Attribute.Conformance) {
-				return options.Inverse()
-			}
+		if needsConformanceCheck(action.Attribute.Conformance) {
 			return options.Fn()
 		}
+		return options.Inverse()
+	case *testscript.WriteAttribute:
+		if needsConformanceCheck(action.Attribute.Conformance) {
+			return options.Fn()
+		}
+		return options.Inverse()
 	default:
 		return options.Inverse()
+	}
+}
+
+func needsConformanceCheck(c conformance.Conformance) bool {
+	if c == nil {
+		return false
+	}
+	switch c {
+	case nil:
+		return false
+	default:
+		if conformance.IsMandatory(c) {
+			return false
+		}
+		return true
 	}
 }
 
@@ -46,6 +57,12 @@ func conformanceGuardHelper(action testscript.TestAction) raymond.SafeString {
 	var sb strings.Builder
 	switch action := action.(type) {
 	case *testscript.ReadAttribute:
+		err := buildPythonConformance(action.Attribute.Conformance, action.Attribute, &sb)
+		if err != nil {
+			slog.Error("Error building conformance", slog.Any("error", err))
+			return raymond.SafeString("True")
+		}
+	case *testscript.WriteAttribute:
 		err := buildPythonConformance(action.Attribute.Conformance, action.Attribute, &sb)
 		if err != nil {
 			slog.Error("Error building conformance", slog.Any("error", err))

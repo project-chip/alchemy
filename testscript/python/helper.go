@@ -14,6 +14,7 @@ import (
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/sdk"
@@ -44,13 +45,25 @@ func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("ifIsBitmap", ifBitmapHelper)
 	t.RegisterHelper("bitmapName", bitmapNameHelper)
 	t.RegisterHelper("ifNeedsConformanceCheck", needsConformanceCheckHelper)
-	t.RegisterHelper("entryTypeName", entryTypeHelper)
 	t.RegisterHelper("minConstraint", minConstraintHelper)
 	t.RegisterHelper("maxConstraint", maxConstraintHelper)
 	t.RegisterHelper("ifFieldIsNullable", ifFieldIsNullableHelper)
 	t.RegisterHelper("ifFieldIsArray", ifFieldIsArrayHelper)
 	t.RegisterHelper("ifFieldHasLength", ifFieldHasLengthHelper)
 	t.RegisterHelper("typeCheckIs", typeCheckIsHelper)
+	t.RegisterHelper("entryTypeCheckIs", entryTypeCheckIsHelper)
+	t.RegisterHelper("type", typeHelper)
+	t.RegisterHelper("entityTypeName", entityTypeNameHelper)
+	t.RegisterHelper("entryTypeName", entryTypeNameHelper)
+	t.RegisterHelper("entityTypeFullName", entityTypeFullNameHelper)
+	t.RegisterHelper("entryTypeFullName", entryTypeFullNameHelper)
+	t.RegisterHelper("structFullName", structFullNameHelper)
+	t.RegisterHelper("fieldName", fieldNameHelper)
+	t.RegisterHelper("ifFieldIsOptional", ifFieldIsOptionalHelper)
+}
+
+func typeHelper(t any) raymond.SafeString {
+	return raymond.SafeString(fmt.Sprintf("%T", t))
 }
 
 func actionIsHelper(action testscript.TestAction, is string, options *raymond.Options) string {
@@ -60,6 +73,12 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 		_, ok = action.(*testscript.ReadAttribute)
 		if !ok {
 			_, ok = action.(testscript.ReadAttribute)
+		}
+	case "writeAttribute":
+		slog.Info("writeAttribute", log.Type("action", action))
+		_, ok = action.(*testscript.WriteAttribute)
+		if !ok {
+			_, ok = action.(testscript.WriteAttribute)
 		}
 	case "checkMinConstraint":
 		_, ok = action.(*testscript.CheckMinConstraint)
@@ -81,10 +100,20 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 		if !ok {
 			_, ok = action.(testscript.CheckType)
 		}
+	case "checkStruct":
+		_, ok = action.(*testscript.CheckStruct)
+		if !ok {
+			_, ok = action.(testscript.CheckStruct)
+		}
 	case "anyOf":
 		_, ok = action.(*testscript.CheckAnyOfConstraint)
 		if !ok {
 			_, ok = action.(testscript.CheckAnyOfConstraint)
+		}
+	case "equals":
+		_, ok = action.(*testscript.CheckValueConstraint)
+		if !ok {
+			_, ok = action.(testscript.CheckValueConstraint)
 		}
 	}
 	if ok {
@@ -94,8 +123,27 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 }
 
 func typeCheckIsHelper(action testscript.CheckType, is string, options *raymond.Options) string {
+	ok := checkUnderlyingType(action.Field.Type, is)
+	if ok {
+		return options.Fn()
+	}
+	return options.Inverse()
+}
+
+func entryTypeCheckIsHelper(action testscript.CheckType, is string, options *raymond.Options) string {
+	if !action.Field.Type.IsArray() {
+		return options.Inverse()
+	}
+	ok := checkUnderlyingType(action.Field.Type.EntryType, is)
+	if ok {
+		return options.Fn()
+	}
+	return options.Inverse()
+}
+
+func checkUnderlyingType(dataType *types.DataType, is string) bool {
 	var ok bool
-	underlyingType := sdk.ToUnderlyingType(action.Field.Type.BaseType)
+	underlyingType := sdk.ToUnderlyingType(dataType.BaseType)
 	switch is {
 	case "uint64":
 		ok = underlyingType == types.BaseDataTypeUInt64
@@ -118,27 +166,29 @@ func typeCheckIsHelper(action testscript.CheckType, is string, options *raymond.
 	case "list":
 		ok = underlyingType == types.BaseDataTypeList
 	case "percent":
-		ok = action.Field.Type.BaseType == types.BaseDataTypePercent
+		ok = dataType.BaseType == types.BaseDataTypePercent
 	case "percent100ths":
-		ok = action.Field.Type.BaseType == types.BaseDataTypePercentHundredths
+		ok = dataType.BaseType == types.BaseDataTypePercentHundredths
 	case "octstr":
-		ok = action.Field.Type.BaseType == types.BaseDataTypeOctStr
+		ok = dataType.BaseType == types.BaseDataTypeOctStr
 	case "bitmap":
-		if action.Field.Type.Entity != nil {
-			_, ok = action.Field.Type.Entity.(*matter.Bitmap)
+		if dataType.Entity != nil {
+			_, ok = dataType.Entity.(*matter.Bitmap)
 		}
 	case "enum":
-		if action.Field.Type.Entity != nil {
-			_, ok = action.Field.Type.Entity.(*matter.Enum)
+		if dataType.Entity != nil {
+			_, ok = dataType.Entity.(*matter.Enum)
+		}
+	case "struct":
+		if dataType.Entity != nil {
+			_, ok = dataType.Entity.(*matter.Struct)
 		}
 	case "bool":
 		ok = underlyingType == types.BaseDataTypeBoolean
+	case "custom":
+		ok = underlyingType == types.BaseDataTypeCustom
 	}
-	if ok {
-		return options.Fn()
-	}
-	slog.Info("type is not", "desired", is, "actual", action.Field.Type.BaseType.String())
-	return options.Inverse()
+	return ok
 }
 
 func clusterNameHelper(sp *spec.Specification) func(test testscript.Test) raymond.SafeString {
@@ -171,6 +221,21 @@ func attributeNameHelper(sp *spec.Specification) func(step testscript.TestStep, 
 				return raymond.SafeString(action.Attribute.Name)
 			}
 			return raymond.SafeString(action.AttributeName)
+		case *testscript.ReadAttribute:
+			if action.Attribute != nil {
+				return raymond.SafeString(action.Attribute.Name)
+			}
+			return raymond.SafeString(action.AttributeName)
+		case testscript.WriteAttribute:
+			if action.Attribute != nil {
+				return raymond.SafeString(action.Attribute.Name)
+			}
+			return raymond.SafeString(action.AttributeName)
+		case *testscript.WriteAttribute:
+			if action.Attribute != nil {
+				return raymond.SafeString(action.Attribute.Name)
+			}
+			return raymond.SafeString(action.AttributeName)
 		case testscript.CheckType:
 			return raymond.SafeString(action.Field.Name)
 		case testscript.CheckMaxConstraint:
@@ -186,12 +251,25 @@ func attributeNameHelper(sp *spec.Specification) func(step testscript.TestStep, 
 	}
 }
 
-func clusterVariableHelper(sp *spec.Specification) func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
-	return func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
-		if step.Cluster == nil || step.Cluster == test.Cluster {
+func clusterVariableHelper(sp *spec.Specification) func(test testscript.Test, step testscript.TestStep, action testscript.TestAction) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, action testscript.TestAction) raymond.SafeString {
+		var cluster *matter.Cluster
+		switch action := action.(type) {
+		case testscript.ReadAttribute:
+			cluster = action.Cluster
+		case testscript.WriteAttribute:
+			cluster = action.Cluster
+		}
+		if cluster == nil {
+			cluster = step.Cluster
+		}
+		if cluster == nil {
+			cluster = test.Cluster
+		}
+		if cluster == test.Cluster {
 			return raymond.SafeString("cluster")
 		}
-		clusterName := step.Cluster.Name
+		clusterName := cluster.Name
 		return raymond.SafeString("Clusters." + spec.CanonicalName(clusterName))
 	}
 }
@@ -358,7 +436,6 @@ func valueHelper(variables map[string]struct{}) func(value any) raymond.SafeStri
 
 func variableHelper(variables map[string]struct{}) func(variableName string) raymond.SafeString {
 	return func(variableName string) raymond.SafeString {
-		slog.Info("variable", "name", variableName)
 		variables[variableName] = struct{}{}
 		return raymond.SafeString(variableName)
 	}
@@ -367,7 +444,6 @@ func variableHelper(variables map[string]struct{}) func(variableName string) ray
 func ifEnumHelper(e types.Entity, options *raymond.Options) string {
 	switch e := e.(type) {
 	case *matter.Field:
-		slog.Info("Field enum?", slog.String("baseType", e.Type.BaseType.String()))
 		if e.Type.IsEnum() {
 			return options.Fn()
 		}
@@ -399,8 +475,6 @@ func enumNameHelper(action testscript.CheckType) raymond.SafeString {
 func ifBitmapHelper(e types.Entity, options *raymond.Options) string {
 	switch e := e.(type) {
 	case *matter.Field:
-		slog.Info("Field bitmap?", slog.String("baseType", e.Type.BaseType.String()))
-
 		switch e.Type.Entity.(type) {
 		case *matter.Bitmap:
 			return options.Fn()
@@ -425,15 +499,37 @@ func bitmapNameHelper(action testscript.CheckType) raymond.SafeString {
 	}
 }
 
-func entryTypeHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
-	if field.Type.EntryType == nil {
-		slog.Error("Missing entry type on list field", slog.String("fieldName", field.Name))
-		return raymond.SafeString("")
+func entityTypeNameHelper(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
+	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, false)
+}
+
+func entryTypeNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, false)
+}
+
+func entityTypeFullNameHelper(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
+	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, true)
+}
+
+func entryTypeFullNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, true)
+}
+
+func structFullNameHelper(test testscript.Test, step testscript.TestStep, s *matter.Struct) raymond.SafeString {
+	return customTypeHelper(test, step, matter.Field{}, nil, s, true)
+}
+
+func customTypeHelper(test testscript.Test, step testscript.TestStep, field matter.Field, dataType *types.DataType, entity types.Entity, fullName bool) raymond.SafeString {
+	if dataType != nil {
+		underlyingType := sdk.ToUnderlyingType(dataType.BaseType)
+		if underlyingType.IsSimple() {
+			return raymond.SafeString(toPythonType(underlyingType))
+		}
 	}
 	var name string
 	var collection string
 	var cluster *matter.Cluster
-	switch entryEntity := field.Type.EntryType.Entity.(type) {
+	switch entryEntity := entity.(type) {
 	case *matter.Bitmap:
 		name = entryEntity.Name
 		cluster = entryEntity.Cluster()
@@ -451,28 +547,42 @@ func entryTypeHelper(test testscript.Test, step testscript.TestStep, field matte
 		cluster = entryEntity.Cluster()
 		collection = "Enums"
 	case nil:
-		slog.Error("Missing entry type entity on list field", slog.String("fieldName", field.Name))
+		slog.Error("Missing entry type entity on list field", slog.String("fieldName", field.Name), slog.String("baseDataType", field.Type.BaseType.String()))
 		return raymond.SafeString("")
 	default:
-		slog.Error("Missing entry type entity on list field", slog.String("fieldName", field.Name), log.Type("type", entryEntity))
+		slog.Error("Unknown entry type entity on list field", slog.String("fieldName", field.Name), log.Type("type", entryEntity))
 		return raymond.SafeString("")
 	}
 	var clusterPrefix string
-	var localCluster = test.Cluster
-	if step.Cluster != localCluster {
-		localCluster = step.Cluster
+	if fullName {
+		var localCluster = test.Cluster
+		if step.Cluster != localCluster {
+			localCluster = step.Cluster
+		}
+		if cluster == nil {
+			clusterPrefix = fmt.Sprintf("Globals.%s.", collection)
+		} else if localCluster != cluster {
+			clusterPrefix = fmt.Sprintf("Clusters.%s.%s.", spec.CanonicalName(cluster.Name), collection)
+		} else {
+			clusterPrefix = fmt.Sprintf("cluster.%s.", collection)
+		}
 	}
-	if localCluster != cluster {
-		clusterPrefix = fmt.Sprintf("Clusters.%s.%s.", spec.CanonicalName(cluster.Name), collection)
-	} else {
-		clusterPrefix = fmt.Sprintf("cluster.%s.", collection)
-	}
-	//cluster = Clusters.Thermostat
 	return raymond.SafeString(clusterPrefix + name)
+}
+
+func fieldNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+	return raymond.SafeString(strcase.ToLowerCamel(field.Name))
 }
 
 func ifFieldIsNullableHelper(field matter.Field, options *raymond.Options) string {
 	if field.Quality.Has(matter.QualityNullable) {
+		return options.Fn()
+	}
+	return options.Inverse()
+}
+
+func ifFieldIsOptionalHelper(field matter.Field, options *raymond.Options) string {
+	if !conformance.IsRequired(field.Conformance) {
 		return options.Fn()
 	}
 	return options.Inverse()

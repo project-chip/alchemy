@@ -10,6 +10,8 @@
 {{> test/constraints/max_value test=test step=step action=this}}
 {{else actionIs this "anyOf"}}
 {{> test/constraints/any_of test=test step=step action=this}}
+{{else actionIs this "equals"}}
+{{> test/constraints/value test=test step=step action=this}}
 {{else}}
 pass #Unknown validation
 {{/actionIs}}
