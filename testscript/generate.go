@@ -57,6 +57,7 @@ func (sp *TestScriptGenerator) Process(cxt context.Context, input *pipeline.Data
 func getPath(sdkRoot string, test *Test) string {
 
 	path := getTestName(test)
+	path = strings.ReplaceAll(path, "/", "")
 	path += ".py"
 	return filepath.Join(sdkRoot, "src/python_testing", path)
 }

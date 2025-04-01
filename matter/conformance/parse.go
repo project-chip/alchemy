@@ -22,20 +22,24 @@ func tryParseConformance(conformance string) (Set, error) {
 	return c.(Set), err
 }
 
-func IsProvisional(conformance Conformance) bool {
+func isOnly[T Conformance](conformance Conformance) bool {
 	if conformance == nil {
 		return false
 	}
 	switch conformance := conformance.(type) {
-	case *Provisional:
+	case T:
 		return true
 	case Set:
 		if len(conformance) > 0 {
-			_, ok := conformance[0].(*Provisional)
+			_, ok := conformance[0].(T)
 			return ok
 		}
 	}
 	return false
+}
+
+func IsProvisional(conformance Conformance) bool {
+	return isOnly[*Provisional](conformance)
 }
 
 func IsMandatory(conformance Conformance) bool {
@@ -82,35 +86,15 @@ func IsRequired(conformance Conformance) bool {
 }
 
 func IsDeprecated(conformance Conformance) bool {
-	if conformance == nil {
-		return false
-	}
-	switch conformance := conformance.(type) {
-	case *Deprecated:
-		return true
-	case Set:
-		if len(conformance) > 0 {
-			_, ok := conformance[0].(*Deprecated)
-			return ok
-		}
-	}
-	return false
+	return isOnly[*Deprecated](conformance)
 }
 
 func IsDisallowed(conformance Conformance) bool {
-	if conformance == nil {
-		return false
-	}
-	switch conformance := conformance.(type) {
-	case *Disallowed:
-		return true
-	case Set:
-		if len(conformance) > 0 {
-			_, ok := conformance[0].(*Disallowed)
-			return ok
-		}
-	}
-	return false
+	return isOnly[*Disallowed](conformance)
+}
+
+func IsDescribed(conformance Conformance) bool {
+	return isOnly[*Described](conformance)
 }
 
 func IsZigbee(store IdentifierStore, conformance Conformance) bool {

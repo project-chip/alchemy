@@ -101,3 +101,9 @@ type CheckStructField struct {
 
 	Validations []TestAction
 }
+
+type CheckListEntries struct {
+	constraintAction
+
+	Validations []TestAction
+}

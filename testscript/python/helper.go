@@ -17,7 +17,6 @@ import (
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
-	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/testplan"
 	"github.com/project-chip/alchemy/testscript"
 )
@@ -51,6 +50,7 @@ func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("ifFieldIsArray", ifFieldIsArrayHelper)
 	t.RegisterHelper("ifFieldHasLength", ifFieldHasLengthHelper)
 	t.RegisterHelper("typeCheckIs", typeCheckIsHelper)
+	t.RegisterHelper("unimplementedTypeCheck", unimplementedTypeCheckHelper)
 	t.RegisterHelper("entryTypeCheckIs", entryTypeCheckIsHelper)
 	t.RegisterHelper("type", typeHelper)
 	t.RegisterHelper("entityTypeName", entityTypeNameHelper)
@@ -115,80 +115,16 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 		if !ok {
 			_, ok = action.(testscript.CheckValueConstraint)
 		}
-	}
-	if ok {
-		return options.Fn()
-	}
-	return options.Inverse()
-}
-
-func typeCheckIsHelper(action testscript.CheckType, is string, options *raymond.Options) string {
-	ok := checkUnderlyingType(action.Field.Type, is)
-	if ok {
-		return options.Fn()
-	}
-	return options.Inverse()
-}
-
-func entryTypeCheckIsHelper(action testscript.CheckType, is string, options *raymond.Options) string {
-	if !action.Field.Type.IsArray() {
-		return options.Inverse()
-	}
-	ok := checkUnderlyingType(action.Field.Type.EntryType, is)
-	if ok {
-		return options.Fn()
-	}
-	return options.Inverse()
-}
-
-func checkUnderlyingType(dataType *types.DataType, is string) bool {
-	var ok bool
-	underlyingType := sdk.ToUnderlyingType(dataType.BaseType)
-	switch is {
-	case "uint64":
-		ok = underlyingType == types.BaseDataTypeUInt64
-	case "uint32":
-		ok = underlyingType == types.BaseDataTypeUInt32
-	case "uint16":
-		ok = underlyingType == types.BaseDataTypeUInt16
-	case "uint8":
-		ok = underlyingType == types.BaseDataTypeUInt8
-	case "int64":
-		ok = underlyingType == types.BaseDataTypeInt64
-	case "int32":
-		ok = underlyingType == types.BaseDataTypeInt32
-	case "int16":
-		ok = underlyingType == types.BaseDataTypeInt16
-	case "int8":
-		ok = underlyingType == types.BaseDataTypeInt8
-	case "string":
-		ok = underlyingType == types.BaseDataTypeString
 	case "list":
-		ok = underlyingType == types.BaseDataTypeList
-	case "percent":
-		ok = dataType.BaseType == types.BaseDataTypePercent
-	case "percent100ths":
-		ok = dataType.BaseType == types.BaseDataTypePercentHundredths
-	case "octstr":
-		ok = dataType.BaseType == types.BaseDataTypeOctStr
-	case "bitmap":
-		if dataType.Entity != nil {
-			_, ok = dataType.Entity.(*matter.Bitmap)
+		_, ok = action.(*testscript.CheckListEntries)
+		if !ok {
+			_, ok = action.(testscript.CheckListEntries)
 		}
-	case "enum":
-		if dataType.Entity != nil {
-			_, ok = dataType.Entity.(*matter.Enum)
-		}
-	case "struct":
-		if dataType.Entity != nil {
-			_, ok = dataType.Entity.(*matter.Struct)
-		}
-	case "bool":
-		ok = underlyingType == types.BaseDataTypeBoolean
-	case "custom":
-		ok = underlyingType == types.BaseDataTypeCustom
 	}
-	return ok
+	if ok {
+		return options.Fn()
+	}
+	return options.Inverse()
 }
 
 func clusterNameHelper(sp *spec.Specification) func(test testscript.Test) raymond.SafeString {
@@ -441,6 +377,28 @@ func variableHelper(variables map[string]struct{}) func(variableName string) ray
 	}
 }
 
+func globalVariableHelper(variables map[string]types.Entity) func(variableName string) raymond.SafeString {
+	return func(variableName string) raymond.SafeString {
+		e, ok := variables[variableName]
+		if ok {
+			switch e := e.(type) {
+			case *matter.Field:
+				return raymond.SafeString("None")
+			case *matter.Constant:
+				switch v := e.Value.(type) {
+				case int:
+					return raymond.SafeString(strconv.Itoa(v))
+				default:
+					slog.Warn("Unexpected constant value type", log.Type("type", v), matter.LogEntity("entity", e))
+				}
+				return raymond.SafeString("None")
+			}
+		}
+
+		return raymond.SafeString("None")
+	}
+}
+
 func ifEnumHelper(e types.Entity, options *raymond.Options) string {
 	switch e := e.(type) {
 	case *matter.Field:
@@ -520,11 +478,8 @@ func structFullNameHelper(test testscript.Test, step testscript.TestStep, s *mat
 }
 
 func customTypeHelper(test testscript.Test, step testscript.TestStep, field matter.Field, dataType *types.DataType, entity types.Entity, fullName bool) raymond.SafeString {
-	if dataType != nil {
-		underlyingType := sdk.ToUnderlyingType(dataType.BaseType)
-		if underlyingType.IsSimple() {
-			return raymond.SafeString(toPythonType(underlyingType))
-		}
+	if dataType != nil && !dataType.IsCustom() && testscript.CanCheckType(&field) {
+		return raymond.SafeString(toPythonType(dataType.BaseType))
 	}
 	var name string
 	var collection string
@@ -547,8 +502,10 @@ func customTypeHelper(test testscript.Test, step testscript.TestStep, field matt
 		cluster = entryEntity.Cluster()
 		collection = "Enums"
 	case nil:
-		slog.Error("Missing entry type entity on list field", slog.String("fieldName", field.Name), slog.String("baseDataType", field.Type.BaseType.String()))
+		slog.Error("Missing entry type entity on list field", slog.String("fieldName", field.Name), slog.String("baseDataType", dataType.BaseType.String()))
 		return raymond.SafeString("")
+	case *matter.TypeDef:
+		return customTypeHelper(test, step, field, entryEntity.Type, nil, fullName)
 	default:
 		slog.Error("Unknown entry type entity on list field", slog.String("fieldName", field.Name), log.Type("type", entryEntity))
 		return raymond.SafeString("")

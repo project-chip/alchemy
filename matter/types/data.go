@@ -244,6 +244,10 @@ func (dt *DataType) IsArray() bool {
 	return dt != nil && dt.BaseType == BaseDataTypeList
 }
 
+func (dt *DataType) IsCustom() bool {
+	return dt != nil && dt.BaseType == BaseDataTypeCustom
+}
+
 func (dt *DataType) IsMap() bool {
 	if dt == nil {
 		return false

@@ -4,7 +4,6 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -72,10 +71,10 @@ func buildTestsForStructs(structs map[*matter.Struct]struct{}) (tests []*TestSte
 				Field: f,
 			}
 
-			variableName := "struct." + strcase.ToLowerCamel(f.Name)
+			variableName := "struct." + matter.CamelCase(f.Name)
 
 			var actions []TestAction
-			if canCheckType(f) {
+			if CanCheckType(f) {
 				checkStructField.Validations = append(checkStructField.Validations, &CheckType{constraintAction: constraintAction{Field: f, Variable: variableName}})
 			}
 			actions, err = addConstraintActions(f, s.Fields, f.Constraint, variableName)

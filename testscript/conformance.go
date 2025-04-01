@@ -23,13 +23,32 @@ func isExcludedConformance(c conformance.Conformance) bool {
 	return false
 }
 
-func findVariables(cluster *matter.Cluster) (variables map[types.Entity]struct{}) {
-	variables = make(map[types.Entity]struct{})
-
-	for _, a := range cluster.Attributes {
-		findVariablesForConstraint(a.Constraint, variables)
+func findReferencedEntities(entity types.Entity, variables map[types.Entity]struct{}) {
+	switch entity := entity.(type) {
+	case *matter.Cluster:
+		for _, a := range entity.Attributes {
+			findVariablesForConstraint(a.Constraint, variables)
+		}
+		for _, s := range entity.Structs {
+			findReferencedEntities(s, variables)
+		}
+	case *matter.Struct:
+		for _, f := range entity.Fields {
+			findReferencedEntities(f, variables)
+		}
+	case *matter.Command:
+		for _, f := range entity.Fields {
+			findReferencedEntities(f, variables)
+		}
+	case *matter.Event:
+		for _, f := range entity.Fields {
+			findReferencedEntities(f, variables)
+		}
+	case *matter.Field:
+		findVariablesForConstraint(entity.Constraint, variables)
+	default:
+		slog.Warn("Unexpected entity finding referenced entities", log.Type("type", entity))
 	}
-	return
 }
 
 func findVariablesForConstraint(c constraint.Constraint, variables map[types.Entity]struct{}) {
@@ -52,6 +71,10 @@ func findVariablesForConstraint(c constraint.Constraint, variables map[types.Ent
 		findVariablesForLimit(c.Maximum, variables)
 	case *constraint.MinConstraint:
 		findVariablesForLimit(c.Minimum, variables)
+	case *constraint.ListConstraint:
+		findVariablesForConstraint(c.Constraint, variables)
+		findVariablesForConstraint(c.EntryConstraint, variables)
+	case nil:
 	default:
 		slog.Warn("Unexpected constraint type for variables", log.Type("type", c))
 	}
@@ -79,7 +102,15 @@ func findVariablesForLimit(l constraint.Limit, variables map[types.Entity]struct
 		for _, r := range l.Right {
 			findVariablesForLimit(r, variables)
 		}
-	case *constraint.IntLimit, *constraint.TemperatureLimit, *constraint.PercentLimit:
+	case *constraint.CharacterLimit:
+		findVariablesForLimit(l.ByteCount, variables)
+		findVariablesForLimit(l.CodepointCount, variables)
+	case *constraint.IntLimit,
+		*constraint.HexLimit,
+		*constraint.TemperatureLimit,
+		*constraint.PercentLimit,
+		*constraint.ManufacturerLimit,
+		*constraint.ExpLimit:
 		return
 	default:
 		slog.Warn("Unexpected limit type for variables", log.Type("type", l))

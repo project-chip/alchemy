@@ -3,6 +3,7 @@ package python
 import (
 	"fmt"
 	"log/slog"
+	"strconv"
 	"strings"
 
 	"github.com/mailgun/raymond/v2"
@@ -43,10 +44,14 @@ func needsConformanceCheck(c conformance.Conformance) bool {
 		return false
 	}
 	switch c {
-	case nil:
-		return false
 	default:
+		if conformance.IsDeprecated(c) {
+			return false
+		}
 		if conformance.IsMandatory(c) {
+			return false
+		}
+		if conformance.IsDescribed(c) {
 			return false
 		}
 		return true
@@ -57,13 +62,13 @@ func conformanceGuardHelper(action testscript.TestAction) raymond.SafeString {
 	var sb strings.Builder
 	switch action := action.(type) {
 	case *testscript.ReadAttribute:
-		err := buildPythonConformance(action.Attribute.Conformance, action.Attribute, &sb)
+		err := buildPythonConformance(action.Cluster, action.Attribute.Conformance, action.Attribute, &sb)
 		if err != nil {
 			slog.Error("Error building conformance", slog.Any("error", err))
 			return raymond.SafeString("True")
 		}
 	case *testscript.WriteAttribute:
-		err := buildPythonConformance(action.Attribute.Conformance, action.Attribute, &sb)
+		err := buildPythonConformance(action.Cluster, action.Attribute.Conformance, action.Attribute, &sb)
 		if err != nil {
 			slog.Error("Error building conformance", slog.Any("error", err))
 			return raymond.SafeString("True")
@@ -75,7 +80,7 @@ func conformanceGuardHelper(action testscript.TestAction) raymond.SafeString {
 	return raymond.SafeString(sb.String())
 }
 
-func buildPythonConformance(c conformance.Conformance, entity types.Entity, builder *strings.Builder) error {
+func buildPythonConformance(cluster *matter.Cluster, c conformance.Conformance, entity types.Entity, builder *strings.Builder) error {
 	switch c := c.(type) {
 	case *conformance.Deprecated:
 		return fmt.Errorf("deprecated conformance cannot be converted to Python")
@@ -84,9 +89,9 @@ func buildPythonConformance(c conformance.Conformance, entity types.Entity, buil
 	case *conformance.Generic:
 		return fmt.Errorf("generic conformance cannot be converted to Python")
 	case *conformance.Mandatory:
-		return buildPythonMandatoryConformance(c, entity, builder)
+		return buildPythonMandatoryConformance(cluster, c, entity, builder)
 	case *conformance.Optional:
-		return buildPythonOptionalConformance(c, entity, builder)
+		return buildPythonOptionalConformance(cluster, c, entity, builder)
 	case conformance.Set:
 		var count int
 		for _, c := range c {
@@ -95,10 +100,13 @@ func buildPythonConformance(c conformance.Conformance, entity types.Entity, buil
 				continue
 
 			default:
+				if conformance.IsDeprecated(c) {
+					continue
+				}
 				if count > 0 {
 					builder.WriteString(" and ")
 				}
-				if err := buildPythonConformance(c, entity, builder); err != nil {
+				if err := buildPythonConformance(cluster, c, entity, builder); err != nil {
 					return err
 				}
 				count++
@@ -110,15 +118,15 @@ func buildPythonConformance(c conformance.Conformance, entity types.Entity, buil
 	return nil
 }
 
-func buildPythonMandatoryConformance(o *conformance.Mandatory, entity types.Entity, builder *strings.Builder) error {
+func buildPythonMandatoryConformance(cluster *matter.Cluster, o *conformance.Mandatory, entity types.Entity, builder *strings.Builder) error {
 	if o.Expression == nil {
 		builder.WriteString("True")
 		return nil
 	}
-	return buildPythonConformanceExpression(o.Expression, entity, builder)
+	return buildPythonConformanceExpression(cluster, o.Expression, entity, builder)
 }
 
-func buildPythonOptionalConformance(o *conformance.Optional, entity types.Entity, builder *strings.Builder) error {
+func buildPythonOptionalConformance(cluster *matter.Cluster, o *conformance.Optional, entity types.Entity, builder *strings.Builder) error {
 	switch entity := entity.(type) {
 	case *matter.Field:
 		switch entity.EntityType() {
@@ -128,7 +136,7 @@ func buildPythonOptionalConformance(o *conformance.Optional, entity types.Entity
 			builder.WriteString(")")
 		case types.EntityTypeStructField:
 			builder.WriteString("struct.")
-			builder.WriteString(entity.Name)
+			builder.WriteString(matter.CamelCase(entity.Name))
 			builder.WriteString(" is not None")
 		default:
 			return fmt.Errorf("unexpected field type when converting optional conformance to Python: %s", entity.EntityType().String())
@@ -142,40 +150,51 @@ func buildPythonOptionalConformance(o *conformance.Optional, entity types.Entity
 		return nil
 	}
 	builder.WriteString(" and ")
-	return buildPythonConformanceExpression(o.Expression, entity, builder)
+	return buildPythonConformanceExpression(cluster, o.Expression, entity, builder)
 }
 
-func buildPythonConformanceExpression(e conformance.Expression, entity types.Entity, builder *strings.Builder) error {
+func buildPythonConformanceExpression(cluster *matter.Cluster, e conformance.Expression, entity types.Entity, builder *strings.Builder) error {
 	switch e := e.(type) {
+	case *conformance.ComparisonExpression:
+		if err := buildPythonConformanceCompareValue(e.Left, entity, builder); err != nil {
+			return err
+		}
+		builder.WriteString(" ")
+		builder.WriteString(e.Op.String())
+		builder.WriteString(" ")
+		if err := buildPythonConformanceCompareValue(e.Right, entity, builder); err != nil {
+			return err
+		}
+		return nil
 	case *conformance.LogicalExpression:
 		builder.WriteRune('(')
 		switch e.Operand {
 		case "|":
 			if e.Not {
 				builder.WriteRune('!')
-				if err := buildPythonConformanceExpression(e.Left, entity, builder); err != nil {
+				if err := buildPythonConformanceExpression(cluster, e.Left, entity, builder); err != nil {
 					return err
 				}
 				for _, r := range e.Right {
 					builder.WriteString(" and !")
-					if err := buildPythonConformanceExpression(r, entity, builder); err != nil {
+					if err := buildPythonConformanceExpression(cluster, r, entity, builder); err != nil {
 						return err
 					}
 				}
 			} else {
-				if err := buildPythonConformanceExpression(e.Left, entity, builder); err != nil {
+				if err := buildPythonConformanceExpression(cluster, e.Left, entity, builder); err != nil {
 					return err
 				}
 				for _, r := range e.Right {
 					builder.WriteString(" or ")
-					if err := buildPythonConformanceExpression(r, entity, builder); err != nil {
+					if err := buildPythonConformanceExpression(cluster, r, entity, builder); err != nil {
 						return err
 					}
 				}
 
 			}
 		case "&":
-			if err := buildPythonConformanceExpression(e.Left, entity, builder); err != nil {
+			if err := buildPythonConformanceExpression(cluster, e.Left, entity, builder); err != nil {
 				return err
 			}
 			for _, r := range e.Right {
@@ -184,7 +203,7 @@ func buildPythonConformanceExpression(e conformance.Expression, entity types.Ent
 				} else {
 					builder.WriteString(" and ")
 				}
-				if err := buildPythonConformanceExpression(r, entity, builder); err != nil {
+				if err := buildPythonConformanceExpression(cluster, r, entity, builder); err != nil {
 					return err
 				}
 			}
@@ -193,13 +212,13 @@ func buildPythonConformanceExpression(e conformance.Expression, entity types.Ent
 				builder.WriteString("!")
 			}
 			builder.WriteRune('(')
-			if err := buildPythonConformanceExpression(e.Left, entity, builder); err != nil {
+			if err := buildPythonConformanceExpression(cluster, e.Left, entity, builder); err != nil {
 				return err
 			}
 			for _, r := range e.Right {
 
 				builder.WriteString(" ^ ")
-				if err := buildPythonConformanceExpression(r, entity, builder); err != nil {
+				if err := buildPythonConformanceExpression(cluster, r, entity, builder); err != nil {
 					return err
 				}
 			}
@@ -216,6 +235,7 @@ func buildPythonConformanceExpression(e conformance.Expression, entity types.Ent
 		case nil:
 			return fmt.Errorf("conformance feature expression missing entity: %s", e.Feature)
 		default:
+			slog.Error("Unexpected entity type when converting feature expression to Python", log.Type("type", fe), matter.LogEntity("entity", fe))
 			return fmt.Errorf("unexpected entity type when converting feature expression to Python: %T", fe)
 		}
 
@@ -223,8 +243,44 @@ func buildPythonConformanceExpression(e conformance.Expression, entity types.Ent
 		builder.WriteString(feature.Name())
 		builder.WriteString(")")
 		return nil
+	case *conformance.IdentifierExpression:
+		switch ie := e.Entity.(type) {
+		case *matter.Field:
+			switch ie.EntityType() {
+			case types.EntityTypeAttribute:
+				builder.WriteString("await self.attribute_guard(endpoint=endpoint, attribute=attributes.")
+				builder.WriteString(ie.Name)
+				builder.WriteString(")")
+				return nil
+			default:
+				return fmt.Errorf("unexpected field entity type when converting identifier expression to Python: %s", ie.EntityType().String())
+			}
+		case *matter.Condition:
+			slog.Error("Condition identifier conformance expression not supported", slog.String("id", e.ID), log.Path("source", ie))
+			return fmt.Errorf("condition identifier expression not supported: %s", e.ID)
+		case nil:
+			return fmt.Errorf("conformance identifier expression missing entity: %s", e.ID)
+		default:
+			return fmt.Errorf("unexpected entity type when converting identifier expression to Python: %T", ie)
+		}
 	default:
 		return fmt.Errorf("unimplemented conformance expression converting to Python: %T", e)
 
 	}
+}
+
+func buildPythonConformanceCompareValue(cv conformance.ComparisonValue, entity types.Entity, builder *strings.Builder) error {
+	switch cv := cv.(type) {
+	case *conformance.IdentifierValue:
+		builder.WriteString(cv.ID)
+		if cv.Field != nil {
+			builder.WriteString(".")
+			buildPythonConformanceCompareValue(cv.Field, cv.Entity, builder)
+		}
+	case *conformance.IntValue:
+		builder.WriteString(strconv.FormatInt(cv.Int, 10))
+	default:
+		return fmt.Errorf("unimplemented conformance compare value converting to Python: %T", cv)
+	}
+	return nil
 }

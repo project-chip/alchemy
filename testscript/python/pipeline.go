@@ -42,7 +42,7 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Opti
 	}
 
 	specBuilder := spec.NewBuilder(specParser.Root)
-	_, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
+	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return
 	}

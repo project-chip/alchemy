@@ -15,8 +15,9 @@ type Test struct {
 
 	Cluster *matter.Cluster
 
-	GlobalVariables []string
-	Steps           []*TestStep
+	GlobalVariableNames []string
+	GlobalVariables     map[string]types.Entity
+	Steps               []*TestStep
 
 	StructChecks []*TestStep
 

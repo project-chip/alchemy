@@ -38,6 +38,30 @@ func addConstraintActions(field *matter.Field, fieldSet matter.FieldSet, c const
 			Constraint: c})
 	case *constraint.AllConstraint, *constraint.DescribedConstraint, *constraint.GenericConstraint:
 		return
+	case *constraint.ListConstraint:
+		var acts []TestAction
+		acts, err = addConstraintActions(field, fieldSet, c.Constraint, variableName)
+		if err != nil {
+			return
+		}
+		actions = append(actions, acts...)
+		var entryActs []TestAction
+		entryActs, err = addConstraintActions(field, fieldSet, c.EntryConstraint, variableName)
+		if err != nil {
+			return
+		}
+		if len(entryActs) > 0 {
+			actions = append(actions, &CheckListEntries{
+				constraintAction: constraintAction{
+					Field:    field,
+					FieldSet: fieldSet,
+					Variable: variableName,
+				},
+				Validations: entryActs,
+			})
+		}
+	case *constraint.ExactConstraint:
+		return
 	case constraint.Set:
 		for _, c := range c {
 			var acts []TestAction
