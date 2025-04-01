@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
+	"slices"
 
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -18,9 +20,6 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 		Cluster: cluster,
 		ID:      strcase.ToScreamingSnake(spec.CanonicalName(cluster.Name)) + "_2_1",
 		Name:    "Attributes with Server as DUT",
-		/*Config: parse.TestConfig{
-			Cluster: cluster.Name,
-		},*/
 	}
 
 	/*t.AddStep(&TestStep{
@@ -36,17 +35,29 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 		},
 	})*/
 
-	variables := findVariables(cluster)
-	for v := range variables {
-		switch v := v.(type) {
-		case *matter.Field:
-			t.GlobalVariables = append(t.GlobalVariables, v.Name)
-		default:
-			err = fmt.Errorf("unexpected variable type: %T", v)
-			return
+	variables := make(map[types.Entity]struct{})
+	findReferencedEntities(cluster, variables)
+
+	if len(variables) > 0 {
+		t.GlobalVariables = make(map[string]types.Entity)
+		for v := range variables {
+			switch v := v.(type) {
+			case *matter.Field:
+				t.GlobalVariableNames = append(t.GlobalVariableNames, v.Name)
+				t.GlobalVariables[v.Name] = v
+			case *matter.Constant:
+				t.GlobalVariableNames = append(t.GlobalVariableNames, v.Name)
+				t.GlobalVariables[v.Name] = v
+			case *matter.EnumValue:
+				t.GlobalVariableNames = append(t.GlobalVariableNames, v.Name)
+				t.GlobalVariables[v.Name] = v
+			default:
+				err = fmt.Errorf("unexpected variable type: %T", v)
+				return
+			}
 		}
+		slices.Sort(t.GlobalVariableNames)
 	}
-	//slices.Sort(t.Variables)
 
 	structs := findStructs(cluster)
 
@@ -56,7 +67,7 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 	}
 
 	for _, a := range cluster.Attributes {
-		if conformance.IsDeprecated(a.Conformance) {
+		if conformance.IsDeprecated(a.Conformance) || conformance.IsDisallowed(a.Conformance) {
 			continue
 		}
 		step := &TestStep{
@@ -72,6 +83,26 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 			Attribute:  a,
 			Attributes: cluster.Attributes,
 		}
+
+		if !conformance.IsMandatory(a.Conformance) {
+			if !conformance.IsDeprecated(a.Conformance) && !conformance.IsDescribed(a.Conformance) {
+				attributeCheck := &conformance.Mandatory{
+					Expression: &conformance.IdentifierExpression{
+						ID:     a.Name,
+						Entity: a,
+					},
+				}
+				switch c := readAttribute.Conformance.(type) {
+				case conformance.Set:
+					readAttribute.Conformance = append(c, attributeCheck)
+				case nil:
+					readAttribute.Conformance = attributeCheck
+				default:
+					readAttribute.Conformance = &conformance.Set{c, attributeCheck}
+				}
+			}
+		}
+
 		step.Actions = append(step.Actions, readAttribute)
 
 		variableName := "val"
@@ -80,7 +111,7 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 			variableName = "self." + a.Name
 		}
 
-		if canCheckType(a) {
+		if CanCheckType(a) {
 			readAttribute.Validations = append(readAttribute.Validations, &CheckType{constraintAction: constraintAction{Field: a, Variable: variableName}})
 		}
 		var actions []TestAction
@@ -97,26 +128,54 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 	return
 }
 
-func canCheckType(field *matter.Field) bool {
+func CanCheckType(field *matter.Field) bool {
+	if field == nil || field.Type == nil {
+		return false
+	}
 	underlyingType := sdk.ToUnderlyingType(field.Type.BaseType)
 	switch underlyingType {
 	case types.BaseDataTypeUInt64,
 		types.BaseDataTypeInt64,
 		types.BaseDataTypeUInt32,
 		types.BaseDataTypeInt32,
+		types.BaseDataTypeUInt24,
+		types.BaseDataTypeInt24,
 		types.BaseDataTypeUInt16,
 		types.BaseDataTypeInt16,
 		types.BaseDataTypeInt8,
 		types.BaseDataTypeUInt8,
+		types.BaseDataTypeEnum16,
+		types.BaseDataTypeEnum8,
+		types.BaseDataTypeMap64,
+		types.BaseDataTypeMap32,
+		types.BaseDataTypeMap16,
+		types.BaseDataTypeMap8,
 		types.BaseDataTypeOctStr,
 		types.BaseDataTypeString,
 		types.BaseDataTypeBoolean,
 		types.BaseDataTypeSingle,
 		types.BaseDataTypeDouble,
 		types.BaseDataTypeCustom,
-		types.BaseDataTypeList:
+		types.BaseDataTypeList,
+		types.BaseDataTypeVendorID,
+		types.BaseDataTypeGroupID,
+		types.BaseDataTypeDeviceTypeID,
+		types.BaseDataTypeNodeID,
+		types.BaseDataTypeMessageID,
+		types.BaseDataTypeSubjectID,
+		types.BaseDataTypeFabricID,
+		types.BaseDataTypeFabricIndex,
+		types.BaseDataTypeIPAddress,
+		types.BaseDataTypeIPv4Address,
+		types.BaseDataTypeIPv6Prefix,
+		types.BaseDataTypeIPv6Address,
+		types.BaseDataTypeHardwareAddress,
+		types.BaseDataTypeClusterID,
+		types.BaseDataTypeEndpointNumber,
+		types.BaseDataTypeTag,
+		types.BaseDataTypeNamespaceID:
 		return true
 	}
-	slog.Info("can't check type", slog.String("field", field.Name), slog.String("type", field.Type.BaseType.String()))
+	slog.Warn("Unimplemented base type; no type check will be generated", slog.String("field", field.Name), slog.String("type", field.Type.BaseType.String()), log.Path("source", field))
 	return false
 }

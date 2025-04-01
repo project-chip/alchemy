@@ -204,7 +204,6 @@ func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster
 		entities := anchor.Document.entitiesBySection[el]
 		if len(entities) == 1 {
 			e = entities[0]
-
 		}
 	}
 	if e != nil && label != "" {

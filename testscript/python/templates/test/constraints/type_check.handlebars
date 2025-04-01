@@ -2,6 +2,8 @@
 matter_asserts.assert_valid_uint64({{action.Variable}}, '{{attributeName step action ~}}')
 {{else typeCheckIs action "uint32" ~}}
 matter_asserts.assert_valid_uint32({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "uint24" ~}}
+asserts.assert_true(matter_asserts.is_valid_uint_value(value, bit_count=24), '{{attributeName step action ~}} must be a valid uint24 integer')
 {{else typeCheckIs action "uint16" ~}}
 matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action ~}}')
 {{else typeCheckIs action "uint8" ~}}
@@ -10,6 +12,8 @@ matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step act
 matter_asserts.assert_valid_int64({{action.Variable}}, '{{attributeName step action ~}}')
 {{else typeCheckIs action "int32" ~}}
 matter_asserts.assert_valid_int32({{action.Variable}}, '{{attributeName step action ~}}')
+{{else typeCheckIs action "int24" ~}}
+asserts.assert_true(matter_asserts.is_valid_int_value(value, bit_count=24), '{{attributeName step action ~}} must be a valid int24 integer')
 {{else typeCheckIs action "int16" ~}}
 matter_asserts.assert_valid_int16({{action.Variable}}, '{{attributeName step action ~}}')
 {{else typeCheckIs action "int8" ~}}
@@ -26,6 +30,56 @@ asserts.assert_true(isinstance({{action.Variable}}, float), f"{{action.variable}
 asserts.assert_true(isinstance({{action.Variable}}, float), f"{{action.variable}} must be a float")
 {{else typeCheckIs action "string" ~}}
 matter_asserts.assert_is_string({{action.Variable}}, "{{attributeName step action}} must be a string")
+{{else typeCheckIs action "vendor-id" ~}}
+matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action }} must be uint16')
+{{else typeCheckIs action "group-id" ~}}
+matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action }} must be uint16')
+{{else typeCheckIs action "devtype-id" ~}}
+matter_asserts.assert_valid_uint32({{action.Variable}}, '{{attributeName step action }} must be uint32')
+{{else typeCheckIs action "fabric-idx" ~}}
+matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action }} must be uint8')
+{{else typeCheckIs action "fabric-id" ~}}
+matter_asserts.assert_valid_uint64({{action.Variable}}, '{{attributeName step action }} must be uint64')
+{{else typeCheckIs action "node-id" ~}}
+matter_asserts.assert_valid_uint64({{action.Variable}}, '{{attributeName step action }} must be uint64')
+{{else typeCheckIs action "subject-id" ~}}
+matter_asserts.assert_valid_uint64({{action.Variable}}, '{{attributeName step action }} must be uint64')
+{{else typeCheckIs action "cluster-id" ~}}
+matter_asserts.assert_valid_uint32({{action.Variable}}, '{{attributeName step action }} must be uint32')
+{{else typeCheckIs action "endpoint-no" ~}}
+matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action }} must be uint16')
+{{else typeCheckIs action "enum16" ~}}
+matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action }} must be uint16')
+{{else typeCheckIs action "enum8" ~}}
+matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action }} must be uint8')
+{{else typeCheckIs action "map64" ~}}
+matter_asserts.assert_valid_uint64({{action.Variable}}, '{{attributeName step action }} must be uint64')
+{{else typeCheckIs action "map32" ~}}
+matter_asserts.assert_valid_uint32({{action.Variable}}, '{{attributeName step action }} must be uint32')
+{{else typeCheckIs action "map16" ~}}
+matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action }} must be uint16')
+{{else typeCheckIs action "map8" ~}}
+matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action }} must be uint8')
+{{else typeCheckIs action "tag" ~}}
+matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action }} must be uint8')
+{{else typeCheckIs action "namespace" ~}}
+matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action }} must be uint8')
+{{else typeCheckIs action "message-id" ~}}
+asserts.assert_true(isinstance({{action.Variable}}, bytes), "{{attributeName step action }} must be of type bytes")
+asserts.assert_equal(len({{action.Variable}}), 16, "{{attributeName step action }} must have a length of 16")
+{{else typeCheckIs action "ipv4adr" ~}}
+asserts.assert_true(isinstance({{action.Variable}}, bytes), "{{attributeName step action }} must be of type bytes")
+asserts.assert_equal(len({{action.Variable}}), 4, "{{attributeName step action }} must have a length of 4")
+{{else typeCheckIs action "ipv6pre" ~}}
+asserts.assert_true(isinstance({{action.Variable}}, bytes), "{{attributeName step action }} must be of type bytes")
+matter_asserts.assert_int_in_range(len({{action.Variable}}), 1, 17, "{{attributeName step action }} must have a length of between 1 and 17")
+{{else typeCheckIs action "ipv6adr" ~}}
+asserts.assert_true(isinstance({{action.Variable}}, bytes), "{{attributeName step action }} must be of type bytes")
+asserts.assert_equal(len({{action.Variable}}), 16, "{{attributeName step action }} must have a length of 16")
+{{else typeCheckIs action "hwaddr" ~}}
+asserts.assert_true(isinstance({{action.Variable}}, bytes), "{{attributeName step action }} must be of type bytes")
+asserts.assert_true(len({{action.Variable}}) in [6,8]), "{{attributeName step action }} must have a length of 6 or 8 bytes")
+{{attributeName step action }} must have a length of 6")
 {{else typeCheckIs action "list" ~}}
 matter_asserts.assert_list({{action.Variable}}, "{{attributeName step action}} attribute must return a list")
 matter_asserts.assert_list_element_type({{action.Variable}},  "{{attributeName step action }} attribute must contain {{entryTypeFullName test step action.Field}} elements", {{entryTypeFullName test step action.Field}})
@@ -43,11 +97,13 @@ asserts.assert_less_equal({{action.Variable}}, 10000)
 matter_asserts.assert_valid_enum({{action.Variable}}, "{{attributeName step action}} attribute must return a {{entityTypeFullName test step action}}", {{entityTypeFullName test step action}})
 {{else typeCheckIs action "bitmap" ~}}
 matter_asserts.is_valid_int_value({{action.Variable}})
+{{else typeCheckIs action "typedef" ~}}
+matter_asserts.is_valid_int_value({{action.Variable}})
 {{else typeCheckIs action "custom" ~}}
 asserts.assert_true(isinstance({{action.Variable}}, {{entityTypeFullName test step action}}),
                             f"{{action.variable}} must be of type {{entityTypeFullName test step action}}")
 await self.test_check{{entityTypeName test step action}}(endpoint=endpoint, cluster=cluster, struct={{action.Variable}})
 {{else ~}}
 logging.info(f"Unimplemented check: {{attributeName step action}} {{raw '{'}}{{action.Variable}}{{raw '}'}} ({{step.Response.Constraints.Type}} -> {{raw '{'}}type({{action.Variable}}){{raw '}'}}")
-pass  # Unimplemented type check: {{type action}}
+pass  # {{unimplementedTypeCheck step action}}: {{type action}}
 {{/typeCheckIs ~}}

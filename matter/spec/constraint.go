@@ -103,13 +103,13 @@ func resolveFieldConstraintLimit(spec *Specification, cluster *matter.Cluster, f
 		resolveFieldConstraintLimit(spec, cluster, finder, source, entity, l.Reference)
 	case *constraint.IdentifierLimit:
 		if l.Entity == nil {
-			l.Entity = findEntityForFieldIdentifier(spec, cluster, finder, source, entity, l.ID)
+			l.Entity = findEntityForEntityIdentifier(spec, cluster, finder, source, entity, l.ID)
 			if l.Entity == nil {
 				slog.Error("failed to resolve constraint identifier", "ref", l.ID, log.Path("path", source))
 			}
 		}
 		if l.Entity != nil && l.Field != nil {
-			resolveFieldConstraintLimit(spec, cluster, makeFinder(l.Entity), source, l.Entity, l.Field)
+			resolveFieldConstraintLimit(spec, cluster, makeEntityFinder(l.Entity), source, l.Entity, l.Field)
 		}
 	case *constraint.MathExpressionLimit:
 		resolveFieldConstraintLimit(spec, cluster, finder, source, entity, l.Left)
@@ -122,158 +122,10 @@ func resolveFieldConstraintLimit(spec *Specification, cluster *matter.Cluster, f
 			}
 		}
 		if l.Entity != nil && l.Field != nil {
-			resolveFieldConstraintLimit(spec, cluster, makeFinder(l.Entity), source, l.Entity, l.Field)
+			resolveFieldConstraintLimit(spec, cluster, makeEntityFinder(l.Entity), source, l.Entity, l.Field)
 		}
 	case nil, *constraint.ManufacturerLimit, *constraint.IntLimit, *constraint.NullLimit, *constraint.StatusCodeLimit, *constraint.EmptyLimit, *constraint.StringLimit, *constraint.GenericLimit, *constraint.BooleanLimit, *constraint.TemperatureLimit, *constraint.UnspecifiedLimit, *constraint.ExpLimit, *constraint.HexLimit, *constraint.PercentLimit:
 	default:
 		slog.Warn("Unexpected field constraint limit type", log.Type("type", l))
 	}
-}
-
-type findNamedEntity func(name string) types.Entity
-
-func makeFinder(entity types.Entity) findNamedEntity {
-	switch entity := entity.(type) {
-
-	case *matter.Bitmap:
-		return func(identifier string) types.Entity {
-			for _, bmv := range entity.Bits {
-				if strings.EqualFold(bmv.Name(), identifier) {
-					return bmv
-				}
-			}
-			return nil
-		}
-	case *matter.Enum:
-		return func(identifier string) types.Entity {
-			for _, ev := range entity.Values {
-				if strings.EqualFold(ev.Name, identifier) {
-					return ev
-				}
-			}
-			return nil
-		}
-	case *matter.Struct:
-		return func(identifier string) types.Entity {
-			for _, ev := range entity.Fields {
-				if strings.EqualFold(ev.Name, identifier) {
-					return ev
-				}
-			}
-			return nil
-		}
-	case *matter.Command:
-		return func(identifier string) types.Entity {
-			for _, ev := range entity.Fields {
-				if strings.EqualFold(ev.Name, identifier) {
-					return ev
-				}
-			}
-			return nil
-		}
-	case *matter.Event:
-		return func(identifier string) types.Entity {
-			for _, ev := range entity.Fields {
-				if strings.EqualFold(ev.Name, identifier) {
-					return ev
-				}
-			}
-			return nil
-		}
-	case *matter.Field:
-		return makeFinder(entity.Type.Entity)
-
-	default:
-		slog.Warn("Unable to make named entry finder for type", log.Type("type", entity))
-		return nil
-	}
-}
-
-func findEntityForFieldIdentifier(spec *Specification, cluster *matter.Cluster, finder findNamedEntity, source log.Source, entity types.Entity, identifier string) (e types.Entity) {
-
-	if spec.BaseDeviceType != nil {
-		for _, c := range spec.BaseDeviceType.Conditions {
-			if strings.EqualFold(c.Feature, identifier) {
-				e = c
-				return
-			}
-		}
-	}
-	if finder != nil {
-		e = finder(identifier)
-		if e != nil {
-			return
-		}
-	}
-
-	e = getCustomDataTypeFromIdentifier(spec, cluster, source, identifier)
-	if e != nil {
-		return
-	}
-
-	field, isField := entity.(*matter.Field)
-	if isField {
-		entity = field.Type.Entity
-	}
-	if entity != nil {
-		var fieldSet matter.FieldSet
-		switch entity := entity.(type) {
-		case *matter.Struct:
-			fieldSet = entity.Fields
-		case *matter.Command:
-			fieldSet = entity.Fields
-		case *matter.Event:
-			fieldSet = entity.Fields
-		case *matter.Enum:
-			for _, v := range entity.Values {
-				if strings.EqualFold(v.Name, identifier) {
-					e = v
-					return
-				}
-			}
-
-		case *matter.Bitmap:
-			for _, v := range entity.Bits {
-				if strings.EqualFold(v.Name(), identifier) {
-					e = v
-					return
-				}
-			}
-		default:
-			slog.Warn("referenced identifier field has a type without fields", log.Path("source", source), slog.String("identifier", identifier), log.Type("type", entity))
-		}
-		if len(fieldSet) > 0 {
-			childField := fieldSet.Get(identifier)
-			if childField != nil {
-				e = childField
-				return
-			}
-		}
-	}
-	if cluster != nil {
-		if cluster.Features != nil {
-			for fb := range cluster.Features.FeatureBits() {
-				if strings.EqualFold(fb.Code, identifier) {
-					e = fb
-					return
-				}
-			}
-		}
-		for _, a := range cluster.Attributes {
-			if strings.EqualFold(a.Name, identifier) {
-				e = a
-				return
-			}
-		}
-	}
-	if spec.BaseDeviceType != nil {
-		for _, con := range spec.BaseDeviceType.Conditions {
-			if strings.EqualFold(identifier, con.Feature) {
-				e = con
-				return
-			}
-		}
-	}
-	slog.Error("Unable to find matching entity for identifier", log.Path("source", source), slog.String("identifier", identifier))
-	return
 }

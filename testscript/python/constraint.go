@@ -1,6 +1,7 @@
 package python
 
 import (
+	"fmt"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -50,9 +51,9 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 			builder.WriteString("self.")
 			builder.WriteString(entity.Name)
 		case nil:
-			slog.Warn("Missing entity when evaluating identifier limit", slog.String("fieldName", field.Name))
+			slog.Warn("Missing entity when evaluating identifier limit", slog.String("id", l.ID), slog.String("fieldName", field.Name), log.Path("source", field))
 		default:
-			slog.Warn("Unexpected entity type when evaluating identifier limit", log.Type("type", entity), slog.String("fieldName", field.Name))
+			slog.Warn("Unexpected entity type when evaluating identifier limit", log.Type("type", entity), slog.String("id", l.ID), slog.String("fieldName", field.Name), log.Path("source", field))
 		}
 	case *constraint.ReferenceLimit:
 		switch entity := l.Entity.(type) {
@@ -60,9 +61,9 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 			builder.WriteString("self.")
 			builder.WriteString(entity.Name)
 		case nil:
-			slog.Warn("Missing entity when evaluating reference limit", slog.String("fieldName", field.Name))
+			slog.Warn("Missing entity when evaluating reference limit", slog.String("reference", l.Reference), slog.String("fieldName", field.Name), log.Path("source", field))
 		default:
-			slog.Warn("Unexpected entity type when evaluating reference limit", log.Type("type", entity), slog.String("fieldName", field.Name))
+			slog.Warn("Unexpected entity type when evaluating reference limit", log.Type("type", entity), slog.String("reference", l.Reference), slog.String("fieldName", field.Name), log.Path("source", field))
 		}
 	case *constraint.TagIdentifierLimit:
 		switch entity := l.Entity.(type) {
@@ -70,9 +71,9 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 			builder.WriteString("self.")
 			builder.WriteString(entity.Name)
 		case nil:
-			slog.Warn("Missing entity when evaluating tag identifier limit", slog.String("fieldName", field.Name))
+			slog.Warn("Missing entity when evaluating tag identifier limit", slog.String("tag", l.Tag), slog.String("fieldName", field.Name), log.Path("source", field))
 		default:
-			slog.Warn("Unexpected entity type when evaluating tag identifier limit", log.Type("type", entity), slog.String("fieldName", field.Name))
+			slog.Warn("Unexpected entity type when evaluating tag identifier limit", log.Type("type", entity), slog.String("tag", l.Tag), slog.String("fieldName", field.Name), log.Path("source", field))
 		}
 	case *constraint.MathExpressionLimit:
 		buildPythonLimit(l.Left, field, builder)
@@ -102,7 +103,13 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 	case *constraint.PercentLimit:
 		builder.WriteString(l.Value.String())
 		return
+	case *constraint.ExpLimit:
+		builder.WriteString(fmt.Sprintf("%de%d", l.Value, l.Exp))
+		return
+	case *constraint.ManufacturerLimit:
+	case *constraint.CharacterLimit:
+		builder.WriteString(l.ByteCount.DataModelString(field.Type))
 	default:
-		slog.Warn("Unexpected limit type for Python limit", log.Type("type", l))
+		slog.Warn("Unexpected limit type for Python limit", log.Type("type", l), slog.String("fieldName", field.Name), log.Path("source", field))
 	}
 }

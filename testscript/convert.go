@@ -116,8 +116,8 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 				if commandCluster != cluster {
 					readAttribute.Cluster = commandCluster
 				}
-				step.Actions = append(step.Actions, readAttribute)
 				readAttribute.Validations, err = buildValidations(s, a, variableName)
+				step.Actions = append(step.Actions, readAttribute)
 			case "writeAttribute":
 				a, ok := attributes[s.Attribute]
 				if !ok {

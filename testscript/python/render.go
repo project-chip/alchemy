@@ -45,6 +45,7 @@ func (sp *PythonTestRenderer) Process(cxt context.Context, input *pipeline.Data[
 	}
 	variables := make(map[string]struct{})
 	t.RegisterHelper("variable", variableHelper(variables))
+	t.RegisterHelper("globalVariable", globalVariableHelper(test.GlobalVariables))
 	t.RegisterHelper("value", valueHelper(variables))
 	tc := map[string]any{
 		"test": test,

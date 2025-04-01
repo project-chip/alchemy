@@ -29,8 +29,23 @@ func toPythonType(baseDataType types.BaseDataType) string {
 		return "int"
 	case types.BaseDataTypeString:
 		return "str"
+	case types.BaseDataTypeEndpointNumber,
+		types.BaseDataTypeVendorID,
+		types.BaseDataTypeNodeID,
+		types.BaseDataTypeGroupID,
+		types.BaseDataTypeSubjectID,
+		types.BaseDataTypeClusterID:
+		return "int"
+	case types.BaseDataTypeOctStr,
+		types.BaseDataTypeIPAddress,
+		types.BaseDataTypeIPv4Address,
+		types.BaseDataTypeIPv6Prefix,
+		types.BaseDataTypeIPv6Address,
+		types.BaseDataTypeHardwareAddress,
+		types.BaseDataTypeMessageID:
+		return "bytes"
 	default:
-		slog.Info("Unimplemented base type Python conversion", slog.String("baseDataType", baseDataType.String()))
+		slog.Warn("Unimplemented base type Python conversion", slog.String("baseDataType", baseDataType.String()))
 		return "unknown"
 	}
 }

@@ -64,8 +64,8 @@ class {{test.ID}}(MatterBaseTest):
 
         return steps
 
-{{#each test.GlobalVariables}}
-    {{variable this}} = None
+{{#each test.GlobalVariableNames}}
+    {{this}} = {{globalVariable this}}
 {{/each}}
 
     @async_test_body

@@ -12,6 +12,9 @@
 {{> test/constraints/any_of test=test step=step action=this}}
 {{else actionIs this "equals"}}
 {{> test/constraints/value test=test step=step action=this}}
+{{else actionIs this "list"}}
+for {{action.Variable}} in {{action.Variable}}:
+    {{> test/validations test=test step=step action=this}}
 {{else}}
 pass #Unknown validation
 {{/actionIs}}

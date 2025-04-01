@@ -30,6 +30,20 @@ func CaseWithSeparator(s string, separator rune) string {
 	return caseify(s, separator)
 }
 
+func CamelCase(s string) string {
+	s = caseify(s, 0)
+	_, isAcronym := acronyms.Load(s)
+	if isAcronym {
+		return s
+	}
+	runes := []rune(s)
+	if len(runes) > 0 && unicode.IsUpper(runes[0]) {
+		runes[0] = unicode.ToLower(runes[0])
+		s = string(runes)
+	}
+	return s
+}
+
 func caseify(s string, separator rune) string {
 	runes := []rune(s)
 	b := make([]byte, 0, len(runes))
