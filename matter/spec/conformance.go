@@ -66,7 +66,7 @@ func (sp *Builder) resolveFeatureConformances(spec *Specification, cluster *matt
 	}
 	featureFinder := func(identifier string) types.Entity {
 		for f := range cluster.Features.FeatureBits() {
-			if strings.EqualFold(f.Code, identifier) {
+			if f.Code == identifier {
 				return f
 			}
 		}

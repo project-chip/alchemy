@@ -63,7 +63,7 @@ func validateDeviceTypes(spec *spec.Specification) {
 					if !ok {
 						continue
 					}
-					if strings.EqualFold(f.Code, er.Name) || strings.EqualFold(f.Name(), er.Name) {
+					if f.Code == er.Name || strings.EqualFold(f.Name(), er.Name) {
 						found = true
 						break
 					}
