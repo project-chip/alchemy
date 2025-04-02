@@ -14239,6 +14239,9 @@ var shouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &as
 								},
 							},
 							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: " ",
+								},
 								&asciidoc.Italic{
 									AttributeList: nil,
 									Set: asciidoc.Set{
@@ -14246,6 +14249,9 @@ var shouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &as
 											Value: "foo",
 										},
 									},
+								},
+								&asciidoc.String{
+									Value: " ",
 								},
 							},
 							Blank: false,
@@ -14335,7 +14341,7 @@ var shouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &as
 										},
 									},
 									AttributeList: nil,
-									Indent:        "",
+									Indent:        " ",
 									Marker:        "*",
 									Checklist:     0,
 								},
@@ -20138,7 +20144,7 @@ var shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStart
 							},
 							Set: asciidoc.Set{
 								&asciidoc.String{
-									Value: "paragraph",
+									Value: " paragraph",
 								},
 							},
 							Blank: false,
@@ -20690,7 +20696,7 @@ var shouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle = &as
 							},
 							Set: asciidoc.Set{
 								&asciidoc.String{
-									Value: "AsciiDoc",
+									Value: " AsciiDoc",
 								},
 							},
 							Blank: false,
@@ -20837,7 +20843,7 @@ var shouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle = &as
 							},
 							Set: asciidoc.Set{
 								&asciidoc.String{
-									Value: "AsciiDoc",
+									Value: " AsciiDoc",
 								},
 							},
 							Blank: false,
