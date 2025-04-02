@@ -298,6 +298,8 @@ func renderComparisonValue(value conformance.ComparisonValue, parent *etree.Elem
 		parent.CreateElement("literal").CreateAttr("value", value.Float.String())
 	case *conformance.HexValue:
 		parent.CreateElement("literal").CreateAttr("value", value.ASCIIDocString())
+	case *conformance.BooleanValue:
+		parent.CreateElement("literal").CreateAttr("value", strconv.FormatBool(value.Boolean))
 	case *conformance.StatusCodeValue:
 		parent.CreateElement("status").CreateAttr("name", value.StatusCode.String())
 	default:

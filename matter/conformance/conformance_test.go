@@ -61,6 +61,13 @@ type conformanceTest struct {
 
 var otherwiseTests = []conformanceTestSuite{
 	{
+		Conformance: "RequiresEncodedPixels==true",
+		Tests: []conformanceTest{
+			{Context: Context{Values: map[string]any{"RequiresEncodedPixels": false}}, Expected: StateDisallowed},
+			{Context: Context{Values: map[string]any{"RequiresEncodedPixels": true}}, Expected: StateMandatory},
+		},
+	},
+	{
 		Conformance: `OperationalStateID >= 0x80 & OperationalStateID \<= 0xBF`,
 		Tests: []conformanceTest{
 			{Context: Context{Values: map[string]any{"OperationalStateID": 0x7A}}, Expected: StateDisallowed},

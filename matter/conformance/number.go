@@ -109,6 +109,10 @@ func (fv *IntValue) Compare(context Context, other ComparisonValue, op Compariso
 		return fv.Int < ore.Int, nil
 	case ComparisonOperatorLessThanOrEqual:
 		return fv.Int <= ore.Int, nil
+	case ComparisonOperatorEqual:
+		return fv.Int == ore.Int, nil
+	case ComparisonOperatorNotEqual:
+		return fv.Int != ore.Int, nil
 	default:
 		return false, fmt.Errorf("invalid operator: %s", op.String())
 	}

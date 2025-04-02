@@ -169,7 +169,20 @@ func compare(context Context, op ComparisonOperator, a ComparisonValue, b Compar
 		default:
 			return false, fmt.Errorf("can't compare float64 to %T", bv)
 		}
-
+	case bool:
+		switch bv := bv.(type) {
+		case bool:
+			switch op {
+			case ComparisonOperatorNotEqual:
+				return av != bv, nil
+			case ComparisonOperatorEqual:
+				return av == bv, nil
+			default:
+				return false, fmt.Errorf("invalid op on comparison: %s", op.String())
+			}
+		default:
+			return false, fmt.Errorf("invalid type on comparison with bool: %T", bv)
+		}
 	default:
 		return false, fmt.Errorf("invalid type on comparison: %T", av)
 	}
