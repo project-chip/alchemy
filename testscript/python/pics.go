@@ -1,6 +1,7 @@
 package python
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/mailgun/raymond/v2"
@@ -11,6 +12,15 @@ func picsHelper(pics []pics.Expression) raymond.SafeString {
 	ps := make([]string, 0, len(pics))
 	for _, r := range pics {
 		ps = append(ps, r.PythonString())
+	}
+	return raymond.SafeString(strings.Join(ps, ","))
+}
+
+func picsListHelper(pics []pics.Expression) raymond.SafeString {
+	ps := make([]string, 0, len(pics))
+	for _, r := range pics {
+
+		ps = append(ps, strconv.Quote(r.String()))
 	}
 	return raymond.SafeString(strings.Join(ps, ","))
 }

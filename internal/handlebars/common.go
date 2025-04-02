@@ -10,4 +10,5 @@ func RegisterCommonHelpers(t *raymond.Template) {
 	t.RegisterHelper("add", AddHelper)
 	t.RegisterHelper("brace", BraceHelper)
 	t.RegisterHelper("format", FormatHelper)
+	t.RegisterHelper("year", YearHelper)
 }
