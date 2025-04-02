@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/lmittmann/tint"
@@ -59,10 +60,28 @@ func init() {
 	flags := rootCmd.PersistentFlags()
 	flags.Bool("verbose", false, "display verbose information")
 	flags.String("log", "console", "changes format of log; 'console' or 'json'")
+	flags.String("loglevel", "info", "changes level of log; 'debug', 'info', 'warn' or 'error'")
+	flags.Bool("suppressVersionCheck", false, "")
+	flags.MarkHidden("suppressVersionCheck")
+	flags.Bool("errorExitCode", false, "")
+	flags.MarkHidden("errorExitCode")
+	rootCmd.SetVersionTemplate(`{{printf "version: %s" .Version}}
+`)
 	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 		flags := rootCmd.PersistentFlags()
 		verbose, _ := flags.GetBool("verbose")
 		level := slog.LevelInfo
+		loglevel, _ := flags.GetString("loglevel")
+		switch strings.ToLower(loglevel) {
+		case "error":
+			level = slog.LevelError
+		case "warn":
+			level = slog.LevelWarn
+		case "info":
+			level = slog.LevelInfo
+		case "debug":
+			level = slog.LevelDebug
+		}
 		if verbose {
 			level = slog.LevelDebug
 		}
@@ -84,12 +103,7 @@ func init() {
 		slog.SetDefault(slog.New(handler))
 		suppressVersionCheck, _ = flags.GetBool("suppressVersionCheck")
 	}
-	flags.Bool("suppressVersionCheck", false, "")
-	flags.MarkHidden("suppressVersionCheck")
-	flags.Bool("errorExitCode", false, "")
-	flags.MarkHidden("errorExitCode")
-	rootCmd.SetVersionTemplate(`{{printf "version: %s" .Version}}
-`)
+
 }
 
 var errored bool
