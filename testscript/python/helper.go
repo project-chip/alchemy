@@ -23,6 +23,7 @@ import (
 
 func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("pics", picsHelper)
+	t.RegisterHelper("picsList", picsListHelper)
 	t.RegisterHelper("picsGuard", picsGuardHelper)
 	t.RegisterHelper("conformanceGuard", conformanceGuardHelper)
 	t.RegisterHelper("actionIs", actionIsHelper)

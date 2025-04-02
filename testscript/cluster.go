@@ -6,20 +6,28 @@ import (
 	"math"
 	"slices"
 
-	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/sdk"
+	"github.com/project-chip/alchemy/testplan/pics"
 )
 
 func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, err error) {
 	t = &Test{
 		Cluster: cluster,
-		ID:      strcase.ToScreamingSnake(spec.CanonicalName(cluster.Name)) + "_2_1",
+		ID:      cluster.PICS + "_2_1",
 		Name:    "Attributes with Server as DUT",
+	}
+
+	if cluster.PICS != "" {
+		var p pics.Expression
+		p, err = pics.ParseString(cluster.PICS)
+		if err != nil {
+			return
+		}
+		t.PICSList = append(t.PICSList, p)
 	}
 
 	/*t.AddStep(&TestStep{
