@@ -10,6 +10,13 @@ NumberValue <- (val: Hex {
         return NewIntValue(val.(int64), string(c.text)), nil
     })
 
+BooleanValue <- ("true"i / "false"i) {
+	val, err := strconv.ParseBool(string(c.text))
+	if err != nil {
+		return nil, err
+	}
+	return NewBooleanValue(val, string(c.text)), nil
+}
 
 Float <- Integer ("." [0-9]+) {
 	return decimal.NewFromString(string(c.text))
