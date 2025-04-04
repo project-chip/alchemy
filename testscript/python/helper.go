@@ -56,6 +56,8 @@ func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("type", typeHelper)
 	t.RegisterHelper("entityTypeName", entityTypeNameHelper)
 	t.RegisterHelper("entryTypeName", entryTypeNameHelper)
+	t.RegisterHelper("entityTypeQualifiedName", entityTypeQualifiedNameHelper)
+	t.RegisterHelper("entryTypeQualifiedName", entryTypeQualifiedNameHelper)
 	t.RegisterHelper("entityTypeFullName", entityTypeFullNameHelper)
 	t.RegisterHelper("entryTypeFullName", entryTypeFullNameHelper)
 	t.RegisterHelper("structFullName", structFullNameHelper)
@@ -459,26 +461,42 @@ func bitmapNameHelper(action testscript.CheckType) raymond.SafeString {
 }
 
 func entityTypeNameHelper(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
-	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, false)
+	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, customTypeNameTypeShort)
 }
 
 func entryTypeNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
-	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, false)
+	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, customTypeNameTypeShort)
+}
+
+func entityTypeQualifiedNameHelper(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
+	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, customTypeNameTypeQualified)
+}
+
+func entryTypeQualifiedNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, customTypeNameTypeQualified)
 }
 
 func entityTypeFullNameHelper(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
-	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, true)
+	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, customTypeNameTypeFull)
 }
 
 func entryTypeFullNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
-	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, true)
+	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, customTypeNameTypeFull)
 }
 
 func structFullNameHelper(test testscript.Test, step testscript.TestStep, s *matter.Struct) raymond.SafeString {
-	return customTypeHelper(test, step, matter.Field{}, nil, s, true)
+	return customTypeHelper(test, step, matter.Field{}, nil, s, customTypeNameTypeFull)
 }
 
-func customTypeHelper(test testscript.Test, step testscript.TestStep, field matter.Field, dataType *types.DataType, entity types.Entity, fullName bool) raymond.SafeString {
+type customTypeNameType int
+
+const (
+	customTypeNameTypeShort customTypeNameType = iota
+	customTypeNameTypeQualified
+	customTypeNameTypeFull
+)
+
+func customTypeHelper(test testscript.Test, step testscript.TestStep, field matter.Field, dataType *types.DataType, entity types.Entity, nameType customTypeNameType) raymond.SafeString {
 	if dataType != nil && !dataType.IsCustom() && testscript.CanCheckType(&field) {
 		return raymond.SafeString(toPythonType(dataType.BaseType))
 	}
@@ -506,15 +524,17 @@ func customTypeHelper(test testscript.Test, step testscript.TestStep, field matt
 		slog.Error("Missing entry type entity on list field", slog.String("fieldName", field.Name), slog.String("baseDataType", dataType.BaseType.String()))
 		return raymond.SafeString("")
 	case *matter.TypeDef:
-		return customTypeHelper(test, step, field, entryEntity.Type, nil, fullName)
+		return customTypeHelper(test, step, field, entryEntity.Type, nil, nameType)
 	default:
 		slog.Error("Unknown entry type entity on list field", slog.String("fieldName", field.Name), log.Type("type", entryEntity))
 		return raymond.SafeString("")
 	}
 	var clusterPrefix string
-	if fullName {
+	switch nameType {
+	case customTypeNameTypeShort:
+	case customTypeNameTypeQualified:
 		var localCluster = test.Cluster
-		if step.Cluster != localCluster {
+		if step.Cluster != nil {
 			localCluster = step.Cluster
 		}
 		if cluster == nil {
@@ -523,6 +543,12 @@ func customTypeHelper(test testscript.Test, step testscript.TestStep, field matt
 			clusterPrefix = fmt.Sprintf("Clusters.%s.%s.", spec.CanonicalName(cluster.Name), collection)
 		} else {
 			clusterPrefix = fmt.Sprintf("cluster.%s.", collection)
+		}
+	case customTypeNameTypeFull:
+		if cluster == nil {
+			clusterPrefix = fmt.Sprintf("Globals.%s.", collection)
+		} else {
+			clusterPrefix = fmt.Sprintf("Clusters.%s.%s.", spec.CanonicalName(cluster.Name), collection)
 		}
 	}
 	return raymond.SafeString(clusterPrefix + name)

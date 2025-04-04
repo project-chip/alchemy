@@ -6,24 +6,32 @@ import (
 	"math"
 	"slices"
 
+	"github.com/iancoleman/strcase"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/testplan/pics"
 )
 
 func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, err error) {
+	id := cluster.PICS
+
+	if id == "" {
+		slog.Warn("Missing PICS for cluster, substituting name", slog.String("clusterName", cluster.Name))
+		id = strcase.ToScreamingSnake(spec.CanonicalName(cluster.Name))
+	}
 	t = &Test{
 		Cluster: cluster,
-		ID:      cluster.PICS + "_2_1",
+		ID:      id + "_2_1",
 		Name:    "Attributes with Server as DUT",
 	}
 
 	if cluster.PICS != "" {
 		var p pics.Expression
-		p, err = pics.ParseString(cluster.PICS)
+		p, err = pics.ParseString(cluster.PICS + ".S")
 		if err != nil {
 			return
 		}
@@ -83,9 +91,6 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 		}
 		readAttribute := &ReadAttribute{
 			remoteAction: remoteAction{
-				action: action{
-					Conformance: a.Conformance,
-				},
 				Endpoint: math.MaxUint64,
 			},
 			Attribute:  a,
@@ -93,22 +98,13 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 		}
 
 		if !conformance.IsMandatory(a.Conformance) {
-			if !conformance.IsDeprecated(a.Conformance) && !conformance.IsDescribed(a.Conformance) {
-				attributeCheck := &conformance.Mandatory{
-					Expression: &conformance.IdentifierExpression{
-						ID:     a.Name,
-						Entity: a,
-					},
-				}
-				switch c := readAttribute.Conformance.(type) {
-				case conformance.Set:
-					readAttribute.Conformance = append(c, attributeCheck)
-				case nil:
-					readAttribute.Conformance = attributeCheck
-				default:
-					readAttribute.Conformance = &conformance.Set{c, attributeCheck}
-				}
+			attributeCheck := &conformance.Mandatory{
+				Expression: &conformance.IdentifierExpression{
+					ID:     a.Name,
+					Entity: a,
+				},
 			}
+			readAttribute.Conformance = conformance.Set{attributeCheck}
 		}
 
 		step.Actions = append(step.Actions, readAttribute)
@@ -127,7 +123,9 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 		if err != nil {
 			return
 		}
+		actions = append(actions, checkBitmapRange(a, cluster.Attributes, variableName)...)
 		readAttribute.Validations = append(readAttribute.Validations, actions...)
+
 		if len(readAttribute.Validations) > 0 {
 			readAttribute.Variable = variableName
 		}

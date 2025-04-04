@@ -1,1 +1,6 @@
+{{#if action.Comments}}
+{{#each action.Comments}}
+# {{this}}
+{{/each}}
+{{/if}}
 asserts.assert_equal({{action.Variable}}, {{pythonValue action.Value}})
