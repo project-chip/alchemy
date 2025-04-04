@@ -1,4 +1,9 @@
 {{#ifSet action.Variable}}
+{{#if action.Comments}}
+{{#each action.Comments}}
+# {{this}}
+{{/each}}
+{{/if}}
 {{#ifFieldIsArray action.Field}}
 asserts.assert_greater_equal(len({{action.Variable}}), {{minConstraint action}}, "{{attributeName step action }} must have at least {{minConstraint action}} entries!")
 {{else ifFieldHasLength action.Field}}

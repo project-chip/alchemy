@@ -46,6 +46,8 @@ type WriteAttribute struct {
 }
 
 type constraintAction struct {
+	action
+
 	Field    *matter.Field
 	FieldSet matter.FieldSet
 

@@ -1,7 +1,7 @@
-async def test_check{{step.name}}(self, 
-                             endpoint: int = None, 
-                             cluster: Clusters.{{clusterName test}} = None, 
-                             struct: {{structFullName test step step.Entity}} = None):
+async def test_check{{step.name}}(self,
+                    {{indentLength step.name}} endpoint: int = None,
+                    {{indentLength step.name}} cluster: Clusters.{{clusterName test}} = None,
+                    {{indentLength step.name}} struct: {{structFullName test step step.Entity}} = None):
 {{#each step.Actions}}
     {{> test/struct_field test=test step=step action=this}}
 {{/each}}

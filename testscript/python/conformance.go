@@ -62,13 +62,13 @@ func conformanceGuardHelper(action testscript.TestAction) raymond.SafeString {
 	var sb strings.Builder
 	switch action := action.(type) {
 	case *testscript.ReadAttribute:
-		err := buildPythonConformance(action.Cluster, action.Attribute.Conformance, action.Attribute, &sb)
+		err := buildPythonConformance(action.Cluster, action.Conformance, action.Attribute, &sb)
 		if err != nil {
 			slog.Error("Error building conformance", slog.Any("error", err))
 			return raymond.SafeString("True")
 		}
 	case *testscript.WriteAttribute:
-		err := buildPythonConformance(action.Cluster, action.Attribute.Conformance, action.Attribute, &sb)
+		err := buildPythonConformance(action.Cluster, action.Conformance, action.Attribute, &sb)
 		if err != nil {
 			slog.Error("Error building conformance", slog.Any("error", err))
 			return raymond.SafeString("True")

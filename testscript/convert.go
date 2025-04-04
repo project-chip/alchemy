@@ -8,6 +8,7 @@ import (
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/testplan"
@@ -127,14 +128,22 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 				writeAttribute := &WriteAttribute{
 					remoteAction: remoteAction{
 						action: action{
-							Comments:    s.Comments,
-							Conformance: a.Conformance,
+							Comments: s.Comments,
 						},
 
 						Endpoint: s.Endpoint,
 					},
 					Attribute: a,
 					Value:     s.Arguments.Value,
+				}
+				if !conformance.IsMandatory(a.Conformance) {
+					attributeCheck := &conformance.Mandatory{
+						Expression: &conformance.IdentifierExpression{
+							ID:     a.Name,
+							Entity: a,
+						},
+					}
+					writeAttribute.Conformance = conformance.Set{attributeCheck}
 				}
 				if s.Response.Error != "" {
 					slog.Info("expected error", "error", s.Response.Error)

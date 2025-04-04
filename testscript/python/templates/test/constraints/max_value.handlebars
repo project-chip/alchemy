@@ -1,4 +1,9 @@
 {{#ifSet action.Variable}}
+{{#if action.Comments}}
+{{#each action.Comments}}
+# {{this}}
+{{/each}}
+{{/if}}
 {{#ifFieldIsArray action.Field}}
 asserts.assert_less_equal(len({{action.Variable}}), {{maxConstraint action}}, "{{attributeName step action }} must have at most {{maxConstraint action}} entries!")
 {{else ifFieldHasLength action.Field}}

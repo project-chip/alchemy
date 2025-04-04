@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/constraint"
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testscript"
 )
 
@@ -48,7 +49,12 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 	case *constraint.IdentifierLimit:
 		switch entity := l.Entity.(type) {
 		case *matter.Field:
-			builder.WriteString("self.")
+			switch entity.EntityType() {
+			case types.EntityTypeAttribute:
+				builder.WriteString("self.")
+			default:
+				builder.WriteString("struct.")
+			}
 			builder.WriteString(entity.Name)
 		case nil:
 			slog.Warn("Missing entity when evaluating identifier limit", slog.String("id", l.ID), slog.String("fieldName", field.Name), log.Path("source", field))
@@ -58,7 +64,12 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 	case *constraint.ReferenceLimit:
 		switch entity := l.Entity.(type) {
 		case *matter.Field:
-			builder.WriteString("self.")
+			switch entity.EntityType() {
+			case types.EntityTypeAttribute:
+				builder.WriteString("self.")
+			default:
+				builder.WriteString("struct.")
+			}
 			builder.WriteString(entity.Name)
 		case nil:
 			slog.Warn("Missing entity when evaluating reference limit", slog.String("reference", l.Reference), slog.String("fieldName", field.Name), log.Path("source", field))
@@ -68,7 +79,12 @@ func buildPythonLimit(l constraint.Limit, field *matter.Field, builder *strings.
 	case *constraint.TagIdentifierLimit:
 		switch entity := l.Entity.(type) {
 		case *matter.Field:
-			builder.WriteString("self.")
+			switch entity.EntityType() {
+			case types.EntityTypeAttribute:
+				builder.WriteString("self.")
+			default:
+				builder.WriteString("struct.")
+			}
 			builder.WriteString(entity.Name)
 		case nil:
 			slog.Warn("Missing entity when evaluating tag identifier limit", slog.String("tag", l.Tag), slog.String("fieldName", field.Name), log.Path("source", field))
