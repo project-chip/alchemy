@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"slices"
 
-	"github.com/iancoleman/orderedmap"
+	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -88,9 +88,10 @@ func (p *ZclPatcher) patchZapJSONFile(sdkRoot string, file string, files []strin
 		return
 	}
 
-	o := orderedmap.New()
+	var o internal.JSONMap
 	err = json.Unmarshal(zclJSONBytes, &o)
 	if err != nil {
+		err = fmt.Errorf("error unmarshaling %s: %w", zclJSONPath, err)
 		return
 	}
 	val, ok := o.Get("xmlFile")
@@ -120,9 +121,9 @@ func (p *ZclPatcher) patchZapJSONFile(sdkRoot string, file string, files []strin
 	xmls = slices.Compact(xmls)
 	o.Set("xmlFile", xmls)
 
-	p.patchAttributeAccessInterfaceAttributes(o, clusterMap)
+	p.patchAttributeAccessInterfaceAttributes(&o, clusterMap)
 
-	zclJSONBytes, err = json.MarshalIndent(o, "", "    ")
+	zclJSONBytes, err = json.MarshalIndent(&o, "", "    ")
 	if err != nil {
 		err = fmt.Errorf("error marshaling %s: %w", zclJSONPath, err)
 		return
@@ -131,12 +132,12 @@ func (p *ZclPatcher) patchZapJSONFile(sdkRoot string, file string, files []strin
 	return
 }
 
-func (p *ZclPatcher) patchAttributeAccessInterfaceAttributes(o *orderedmap.OrderedMap, clusterMap map[string]*matter.Cluster) {
+func (p *ZclPatcher) patchAttributeAccessInterfaceAttributes(o *internal.JSONMap, clusterMap map[string]*matter.Cluster) {
 	val, ok := o.Get("attributeAccessInterfaceAttributes")
 	if !ok {
 		return
 	}
-	om, ok := val.(orderedmap.OrderedMap)
+	om, ok := val.(*internal.JSONMap)
 	if !ok {
 		slog.Warn("attributeAccessInterfaceAttributes has unexpected type", log.Type("type", val))
 		return

@@ -9,7 +9,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/iancoleman/orderedmap"
+	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -39,9 +39,10 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		return
 	}
 
-	o := orderedmap.New()
+	var o internal.JSONMap
 	err = json.Unmarshal(clusterListBytes, &o)
 	if err != nil {
+		err = fmt.Errorf("error unmarshaling %s: %w", clusterListPath, err)
 		return
 	}
 
@@ -77,17 +78,17 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 		}
 	}
 
-	err = insertClusterName(o, "ClientDirectories", names)
+	err = insertClusterName(&o, "ClientDirectories", names)
 	if err != nil {
 		return
 	}
 
-	err = insertClusterName(o, "ServerDirectories", names)
+	err = insertClusterName(&o, "ServerDirectories", names)
 	if err != nil {
 		return
 	}
 
-	clusterListBytes, err = json.MarshalIndent(o, "", "    ")
+	clusterListBytes, err = json.MarshalIndent(&o, "", "    ")
 	if err != nil {
 		return
 	}
@@ -96,12 +97,12 @@ func (p ClusterListPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	return
 }
 
-func insertClusterName(o *orderedmap.OrderedMap, key string, names []string) error {
+func insertClusterName(o *internal.JSONMap, key string, names []string) error {
 	val, ok := o.Get(key)
 	if !ok {
 		return fmt.Errorf("no %s field in zap_cluster_list.json", key)
 	}
-	is, ok := val.(orderedmap.OrderedMap)
+	is, ok := val.(*internal.JSONMap)
 	if !ok {
 		return fmt.Errorf("%s not a map in zap_cluster_list.json; %T", key, val)
 	}
@@ -112,10 +113,9 @@ func insertClusterName(o *orderedmap.OrderedMap, key string, names []string) err
 			insertedNames = append(insertedNames, name)
 		}
 	}
+
 	is.SortKeys(func(keys []string) {
 		reorderLinesSemiAlphabetically(keys, insertedNames, 0)
 	})
-
-	o.Set(key, is)
 	return nil
 }
