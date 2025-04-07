@@ -8,12 +8,12 @@
 
 
 {{#each attributes}}
-:PICS_S{{id this.ID}}{{entityIdPadding attributes this}} : {PICS_S}.A{{id this.ID}}({{#brace}}{{entityId this}}{{/brace}})
+:PICS_S{{entityId this}}{{entityIdPadding attributes this}} : {PICS_S}.A{{id this.ID}}({{#brace}}{{entityId this}}{{/brace}})
 {{/each}}
 
 
 {{#each attributes}}
-:PICS_S{{id this.ID}}_CONFORMANCE{{entityIdPadding attributes this}} : {PICS_S}.A{{id this.ID}}({{#brace}}{{entityId this}}{{/brace}})
+:PICS_S{{entityId this}}_CONFORMANCE{{entityIdPadding attributes this}} : {PICS_S}.A{{id this.ID}}({{#brace}}{{entityId this}}{{/brace}})
 {{/each}}
 
 
