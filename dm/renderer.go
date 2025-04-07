@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/iancoleman/orderedmap"
 	"github.com/iancoleman/strcase"
+	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/text"
@@ -189,12 +189,11 @@ func (p *Renderer) GenerateClusterIDsJson() (*pipeline.Data[string], error) {
 	}
 
 	slices.Sort(clusterIDs)
-	o := orderedmap.New()
+	o := internal.NewJSONMap()
 	for _, cid := range clusterIDs {
 		name := clusters[cid]
 		id := strconv.FormatUint(cid, 10)
 		o.Set(id, name)
-
 	}
 	b, err := json.MarshalIndent(o, "", "    ")
 	if err != nil {
