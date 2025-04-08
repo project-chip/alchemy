@@ -67,6 +67,50 @@ func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []type
 			c.addEntityType(nil, v)
 		}
 	}
+	var extraEntities []types.Entity
+	for name, et := range errata.ExtraTypes {
+		switch et.Type {
+		case "bitmap16", "bitmap8":
+			bm := matter.NewBitmap(nil, nil)
+			bm.Name = name
+			bm.Type = types.ParseDataType(et.Type, false)
+			bm.Description = et.Description
+			for _, ef := range et.Fields {
+				b := matter.NewBitmapBit(nil, ef.Bit, ef.Name, "", nil)
+				bm.Bits = append(bm.Bits, b)
+			}
+			extraEntities = append(extraEntities, bm)
+		case "enum8", "enum16":
+			e := matter.NewEnum(nil, nil)
+			e.Name = name
+			e.Type = types.ParseDataType(et.Type, false)
+			e.Description = et.Description
+			for _, ef := range et.Fields {
+				ev := matter.NewEnumValue(nil, nil)
+				ev.Name = ef.Name
+				ev.Value = matter.ParseNumber(ef.Value)
+				e.Values = append(e.Values, ev)
+			}
+			extraEntities = append(extraEntities, e)
+		default:
+			slog.Error("Unknown extra type in ZAP errata", "type", et.Type, "path", outPath)
+		}
+
+	}
+	for _, e := range extraEntities {
+		for _, m := range entities {
+			switch v := m.(type) {
+			case *matter.ClusterGroup:
+				for _, cl := range v.Clusters {
+					c.Spec.ClusterRefs.Add(cl, e)
+					c.addEntityType(cl, e)
+				}
+			case *matter.Cluster:
+				c.Spec.ClusterRefs.Add(v, e)
+				c.addEntityType(v, e)
+			}
+		}
+	}
 	return c, nil
 }
 

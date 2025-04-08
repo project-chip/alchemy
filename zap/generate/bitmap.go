@@ -115,7 +115,7 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 			if conformance.IsZigbee(bm.Bits, bit.Conformance()) || conformance.IsDisallowed(bit.Conformance()) {
 				continue
 			}
-			err = setBitmapFieldAttributes(be, bit, valFormat)
+			err = cr.setBitmapFieldAttributes(be, bm, bit, valFormat)
 			if err != nil {
 				return
 			}
@@ -129,7 +129,7 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 			continue
 		}
 		fe := etree.NewElement("field")
-		err = setBitmapFieldAttributes(fe, bit, valFormat)
+		err = cr.setBitmapFieldAttributes(fe, bm, bit, valFormat)
 		if err != nil {
 			return
 		}
@@ -139,14 +139,16 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 	return
 }
 
-func setBitmapFieldAttributes(e *etree.Element, b matter.Bit, valFormat string) error {
+func (cr *configuratorRenderer) setBitmapFieldAttributes(e *etree.Element, bm *matter.Bitmap, b matter.Bit, valFormat string) error {
 
 	mask, err := b.Mask()
 	if err != nil {
 		return err
 	}
 
-	name := zap.CleanName(b.Name())
+	name := b.Name()
+	name = zap.CleanName(name)
+	name = cr.configurator.Errata.FieldName(bm.Name, name)
 	e.CreateAttr("name", name)
 	ma := e.SelectAttr("mask")
 	if ma != nil {

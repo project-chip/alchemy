@@ -69,9 +69,6 @@ func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.N
 	for _, en := range remainingEnums {
 		bme := etree.NewElement("enum")
 		clusterIds := enums[en]
-		if len(clusterIds) == 0 {
-			continue
-		}
 		err = cr.populateEnum(bme, en, clusterIds)
 		if err != nil {
 			return
@@ -113,7 +110,7 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 			if conformance.IsZigbee(en.Values, value.Conformance) || conformance.IsDisallowed(value.Conformance) {
 				continue
 			}
-			setEnumItemAttributes(be, value, valFormat)
+			cr.setEnumItemAttributes(be, en, value, valFormat)
 			break
 		}
 	}
@@ -124,15 +121,16 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 			continue
 		}
 		ie := etree.NewElement("item")
-		setEnumItemAttributes(ie, value, valFormat)
+		cr.setEnumItemAttributes(ie, en, value, valFormat)
 		xml.AppendElement(ee, ie, "cluster")
 	}
 
 	return
 }
 
-func setEnumItemAttributes(e *etree.Element, v *matter.EnumValue, valFormat string) {
+func (cr *configuratorRenderer) setEnumItemAttributes(e *etree.Element, en *matter.Enum, v *matter.EnumValue, valFormat string) {
 	name := zap.CleanName(v.Name)
+	name = cr.configurator.Errata.FieldName(en.Name, name)
 	e.CreateAttr("name", name)
 	patchNumberAttributeFormat(e, v.Value, "value", valFormat)
 }

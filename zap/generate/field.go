@@ -8,10 +8,10 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
+func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, parentTypeName string, field *matter.Field, fieldSet matter.FieldSet) {
 	mandatory := conformance.IsMandatory(field.Conformance)
 	fieldElement.CreateAttr("name", field.Name)
-	cr.writeDataType(fieldElement, fieldSet, field)
+	cr.writeDataType(fieldElement, parentTypeName, fieldSet, field)
 	if !mandatory {
 		fieldElement.CreateAttr("optional", "true")
 	} else {
@@ -32,12 +32,13 @@ func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, 
 	renderConstraint(fieldElement, fieldSet, field)
 }
 
-func (cr *configuratorRenderer) writeDataType(element *etree.Element, fieldSet matter.FieldSet, field *matter.Field) {
+func (cr *configuratorRenderer) writeDataType(element *etree.Element, parentTypeName string, fieldSet matter.FieldSet, field *matter.Field) {
 	if field.Type == nil {
 		return
 	}
 	dts := getDataTypeString(fieldSet, field)
 	dts = cr.configurator.Errata.TypeName(dts)
+	dts = cr.configurator.Errata.FieldTypeName(parentTypeName, field.Name, dts)
 	if field.Type.IsArray() {
 		element.CreateAttr("array", "true")
 		element.CreateAttr("type", dts)

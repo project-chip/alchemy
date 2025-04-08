@@ -29,6 +29,27 @@ type ZAP struct {
 
 	TypeNames         map[string]string `yaml:"type-names,omitempty"`
 	ForceIncludeTypes []string          `yaml:"force-include-types,omitempty"`
+
+	Types      map[string]*ZAPType `yaml:"types,omitempty"`
+	ExtraTypes map[string]*ZAPType `yaml:"extra-types,omitempty"`
+}
+
+type ZAPType struct {
+	Type         string      `yaml:"type,omitempty"`
+	OverrideName string      `yaml:"override-name,omitempty"`
+	Fields       []*ZAPField `yaml:"fields,omitempty"`
+	Priority     string      `yaml:"priority,omitempty"`
+	Description  string      `yaml:"description,omitempty"`
+}
+
+type ZAPField struct {
+	Name  string `yaml:"name,omitempty"`
+	Type  string `yaml:"type,omitempty"`
+	Bit   string `yaml:"bit,omitempty"`
+	Value string `yaml:"value,omitempty"`
+
+	OverrideName string `yaml:"override-name,omitempty"`
+	OverrideType string `yaml:"override-type,omitempty"`
 }
 
 func GetZAP(path string) *ZAP {
@@ -37,14 +58,79 @@ func GetZAP(path string) *ZAP {
 }
 
 func (zap *ZAP) TypeName(typeName string) string {
-	if zap == nil || zap.TypeNames == nil {
+	if zap == nil || (zap.TypeNames == nil && len(zap.Types) == 0) {
 		return typeName
 	}
+	t, ok := zap.Types[typeName]
+	if ok && t.OverrideName != "" {
+		return t.OverrideName
+	}
+
 	tn, ok := zap.TypeNames[typeName]
 	if ok {
 		return tn
 	}
 	return typeName
+}
+
+func (zap *ZAP) TypeDescription(typeName string, defaultDescription string) string {
+	if zap == nil || len(zap.Types) == 0 {
+		return defaultDescription
+	}
+	t, ok := zap.Types[typeName]
+	if ok && t.Description != "" {
+		return t.Description
+	}
+	return defaultDescription
+}
+
+func (zap *ZAP) FieldName(typeName string, fieldName string) string {
+	if len(zap.Types) == 0 {
+		return fieldName
+	}
+	t, ok := zap.Types[typeName]
+	if !ok {
+		return fieldName
+	}
+	for _, f := range t.Fields {
+		if f.Name == fieldName {
+			if f.OverrideName != "" {
+				return f.OverrideName
+			}
+			break
+		}
+	}
+	return fieldName
+}
+
+func (zap *ZAP) FieldTypeName(typeName string, fieldName string, defaultTypeName string) string {
+	if len(zap.Types) == 0 {
+		return defaultTypeName
+	}
+	t, ok := zap.Types[typeName]
+	if !ok {
+		return defaultTypeName
+	}
+	for _, f := range t.Fields {
+		if f.Name == fieldName {
+			if f.OverrideType != "" {
+				return f.OverrideType
+			}
+			break
+		}
+	}
+	return defaultTypeName
+}
+
+func (zap *ZAP) EventPriority(eventName string, defaultPriority string) string {
+	if len(zap.Types) == 0 {
+		return defaultPriority
+	}
+	t, ok := zap.Types[eventName]
+	if ok && t.Priority != "" {
+		return t.Priority
+	}
+	return defaultPriority
 }
 
 type SeparateStructs map[string]struct{}

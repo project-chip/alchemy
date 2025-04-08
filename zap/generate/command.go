@@ -96,7 +96,9 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		serverSource = true
 	}
 	ce.CreateAttr("code", c.ID.ShortHexString())
-	ce.CreateAttr("name", zap.CleanName(c.Name))
+	commandName := zap.CleanName(c.Name)
+	commandName = cr.configurator.Errata.FieldName(c.Name, commandName)
+	ce.CreateAttr("name", commandName)
 	if c.Access.IsFabricScoped() {
 		ce.CreateAttr("isFabricScoped", "true")
 	} else {
@@ -105,10 +107,21 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 	if !mandatory {
 		ce.CreateAttr("optional", "true")
 	} else {
-		ce.CreateAttr("optional", "false")
+		ce.RemoveAttr("optional")
 	}
-	if c.Response != nil && c.Response.Name != "Y" && c.Response.Name != "N" {
-		ce.CreateAttr("response", c.Response.Name)
+	var responseName string
+	if c.Response != nil {
+		switch response := c.Response.Entity.(type) {
+		case *matter.Command:
+			responseName = response.Name
+		case nil:
+			if c.Response.Name != "Y" && c.Response.Name != "N" {
+				responseName = c.Response.Name
+			}
+		}
+	}
+	if responseName != "" {
+		ce.CreateAttr("response", responseName)
 	} else {
 		ce.RemoveAttr("response")
 	}
@@ -129,7 +142,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		ce.Child = append([]etree.Token{de}, ce.Child...)
 	}
 	if len(c.Description) > 0 {
-		de.SetText(c.Description)
+		de.SetText(cr.configurator.Errata.TypeDescription(c.Name, c.Description))
 	}
 
 	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate && c.Direction != matter.InterfaceClient
@@ -172,7 +185,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 				continue
 			}
 			xml.PrependAttribute(fe, "id", f.ID.IntString())
-			cr.setFieldAttributes(fe, f, c.Fields)
+			cr.setFieldAttributes(fe, c.Name, f, c.Fields)
 			break
 		}
 	}
@@ -187,7 +200,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		}
 		fe := ce.CreateElement("arg")
 		fe.CreateAttr("id", f.ID.IntString())
-		cr.setFieldAttributes(fe, f, c.Fields)
+		cr.setFieldAttributes(fe, c.Name, f, c.Fields)
 		xml.AppendElement(ce, fe)
 	}
 
