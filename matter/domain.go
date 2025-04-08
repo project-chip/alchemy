@@ -22,6 +22,7 @@ const (
 	DomainHomeAutomation
 	DomainEnergyManagement
 	DomainCameras
+	DomainNetworkInfrastructure
 )
 
 var DomainNames = map[Domain]string{
@@ -37,6 +38,7 @@ var DomainNames = map[Domain]string{
 	DomainRobots:                "Robots",
 	DomainHomeAutomation:        "Home Automation",
 	DomainEnergyManagement:      "Energy Management",
+	DomainNetworkInfrastructure: "Network Infrastructure",
 	DomainCameras:               "Cameras",
 }
 
