@@ -227,22 +227,6 @@ func buildPythonConformanceExpression(cluster *matter.Cluster, e conformance.Exp
 		}
 		builder.WriteRune(')')
 		return nil
-	case *conformance.FeatureExpression:
-		var feature *matter.Feature
-		switch fe := e.Entity.(type) {
-		case *matter.Feature:
-			feature = fe
-		case nil:
-			return fmt.Errorf("conformance feature expression missing entity: %s", e.Feature)
-		default:
-			slog.Error("Unexpected entity type when converting feature expression to Python", log.Type("type", fe), matter.LogEntity("entity", fe))
-			return fmt.Errorf("unexpected entity type when converting feature expression to Python: %T", fe)
-		}
-
-		builder.WriteString("await self.feature_guard(endpoint=endpoint, cluster=cluster, feature_int=cluster.Bitmaps.Feature.k")
-		builder.WriteString(feature.Name())
-		builder.WriteString(")")
-		return nil
 	case *conformance.IdentifierExpression:
 		switch ie := e.Entity.(type) {
 		case *matter.Field:
@@ -255,6 +239,11 @@ func buildPythonConformanceExpression(cluster *matter.Cluster, e conformance.Exp
 			default:
 				return fmt.Errorf("unexpected field entity type when converting identifier expression to Python: %s", ie.EntityType().String())
 			}
+		case *matter.Feature:
+			builder.WriteString("await self.feature_guard(endpoint=endpoint, cluster=cluster, feature_int=cluster.Bitmaps.Feature.k")
+			builder.WriteString(ie.Name())
+			builder.WriteString(")")
+			return nil
 		case *matter.Condition:
 			slog.Error("Condition identifier conformance expression not supported", slog.String("id", e.ID), log.Path("source", ie))
 			return fmt.Errorf("condition identifier expression not supported: %s", e.ID)

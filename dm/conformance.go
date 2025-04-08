@@ -130,11 +130,6 @@ func renderConformanceExpression(doc *spec.Doc, exp conformance.Expression, pare
 		return nil
 	}
 	switch e := exp.(type) {
-	case *conformance.FeatureExpression:
-		if e.Not {
-			parent = parent.CreateElement("notTerm")
-		}
-		parent.CreateElement("feature").CreateAttr("name", e.Feature)
 	case *conformance.IdentifierExpression:
 		if e.Not {
 			parent = parent.CreateElement("notTerm")
@@ -209,8 +204,14 @@ func renderConformanceExpression(doc *spec.Doc, exp conformance.Expression, pare
 func renderConformanceEntity(parent *etree.Element, entity types.Entity, name string, field conformance.ComparisonValue, parentEntity types.Entity) {
 	var el *etree.Element
 	switch entity := entity.(type) {
+	case *matter.Feature:
+		el = parent.CreateElement("feature")
+		el.CreateAttr("name", entity.Code)
 	case *matter.Command:
 		el = parent.CreateElement("command")
+		el.CreateAttr("name", entity.Name)
+	case *matter.Event:
+		el = parent.CreateElement("event")
 		el.CreateAttr("name", entity.Name)
 	case *matter.Field:
 		switch entity.EntityType() {
@@ -249,6 +250,21 @@ func renderConformanceEntity(parent *etree.Element, entity types.Entity, name st
 			el = parent.CreateElement("value")
 			el.CreateAttr("name", entity.Name)
 		}
+	case *matter.BitmapBit:
+		bitParent := entity.Parent()
+		if bitParent != nil && bitParent != parentEntity {
+			switch bitParent := bitParent.(type) {
+			case *matter.Bitmap:
+				el = parent.CreateElement("bitmap")
+				el.CreateAttr("name", bitParent.Name)
+				el.CreateAttr("value", entity.Name())
+			default:
+				slog.Warn("Unexpected bitmap bit parent entity type", log.Type("parentEntityType", bitParent))
+			}
+		} else {
+			el = parent.CreateElement("value")
+			el.CreateAttr("name", entity.Name())
+		}
 	default:
 		slog.Warn("Unexpected conformance entity type", log.Type("type", entity))
 	}
@@ -286,8 +302,6 @@ func writeOptionalParentElement(parent *etree.Element, entity *matter.Field, par
 
 func renderComparisonValue(value conformance.ComparisonValue, parent *etree.Element, parentEntity types.Entity) (err error) {
 	switch value := value.(type) {
-	case *conformance.FeatureValue:
-		parent.CreateElement("feature").CreateAttr("name", value.Feature)
 	case *conformance.IdentifierValue:
 		renderConformanceEntity(parent, value.Entity, value.ID, value.Field, parentEntity)
 	case *conformance.ReferenceValue:
