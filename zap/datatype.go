@@ -442,7 +442,8 @@ func maxOver255Bytes(fs matter.FieldSet, f *matter.Field) bool {
 	if f.Constraint == nil {
 		return false
 	}
-	max := f.Constraint.Max(&matter.ConstraintContext{Field: f, Fields: fs})
+	max := f.Constraint.Max(matter.NewConstraintContext(f, fs))
+
 	switch max.Type {
 	case types.DataTypeExtremeTypeInt64:
 		if max.Int64 > 255 {
@@ -460,6 +461,7 @@ func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
 	if f.Type == nil {
 		return ""
 	}
+
 	if f.Type.BaseType == types.BaseDataTypeString && maxOver255Bytes(fs, f) {
 		// Special case; needs to be long_char_string if over 255
 		return "long_char_string"

@@ -12,11 +12,29 @@ type ConstraintContext struct {
 	Field  *Field
 	Fields FieldSet
 
-	visitedReferences map[string]struct{}
+	visitedMinReferences map[types.Entity]struct{}
+	visitedMaxReferences map[types.Entity]struct{}
+
+	parent *ConstraintContext
 }
 
 func NewConstraintContext(field *Field, fields FieldSet) *ConstraintContext {
-	return &ConstraintContext{Field: field, Fields: fields}
+	return &ConstraintContext{
+		Field:                field,
+		Fields:               fields,
+		visitedMinReferences: make(map[types.Entity]struct{}),
+		visitedMaxReferences: make(map[types.Entity]struct{}),
+	}
+}
+
+func (cc *ConstraintContext) Child(field *Field, fields FieldSet) *ConstraintContext {
+	return &ConstraintContext{
+		Field:                field,
+		Fields:               cc.Fields,
+		parent:               cc,
+		visitedMinReferences: make(map[types.Entity]struct{}),
+		visitedMaxReferences: make(map[types.Entity]struct{}),
+	}
 }
 
 func (cc *ConstraintContext) Nullable() bool {
@@ -33,58 +51,16 @@ func (cc *ConstraintContext) DataType() *types.DataType {
 	return nil
 }
 
-func (cc *ConstraintContext) getReference(ref string) *Field {
-	r := cc.Fields.Get(ref)
-	if cc.visitedReferences == nil {
-		cc.visitedReferences = make(map[string]struct{})
-	} else if _, ok := cc.visitedReferences[ref]; ok {
-		return nil
-	}
-	cc.visitedReferences[ref] = struct{}{}
-	return r
-}
-
-func (cc *ConstraintContext) getReferencedField(ref string, field constraint.Limit) *Field {
-	f := cc.getReference(ref)
-	if f == nil {
-		slog.Warn("Unknown reference when fetching constraint", slog.String("reference", ref))
-		return nil
-	}
-	if field == nil {
-		return f
-	}
-	if f.Type == nil {
-		slog.Warn("Referenced constraint field has no type information for child field", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field))
-		return nil
-	}
-	var fieldSet FieldSet
-	switch e := f.Type.Entity.(type) {
-	case *Struct:
-		fieldSet = e.Fields
-	case *Command:
-		fieldSet = e.Fields
-	case *Event:
-		fieldSet = e.Fields
-	default:
-		slog.Warn("referenced constraint field has a type without fields", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field), log.Type("type", e))
-		return nil
-	}
-	childField := fieldSet.Get(ref)
-	ccc := &ConstraintContext{Field: childField, Fields: fieldSet}
-	switch f := field.(type) {
-	case *constraint.IdentifierLimit:
-		return ccc.getReferencedField(f.ID, f.Field)
-	case *constraint.ReferenceLimit:
-		return ccc.getReferencedField(f.Reference, f.Field)
-	}
-	slog.Warn("referenced constraint field has unrecognized type", log.Path("source", f), slog.String("reference", ref), slog.Any("field", field), log.Type("type", field))
-	return nil
-}
-
 func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constraint.Limit) (min types.DataTypeExtreme) {
+
 	switch entity := entity.(type) {
 	case *Field:
-		min = entity.Constraint.Min(&ConstraintContext{Field: entity, Fields: cc.Fields, visitedReferences: cc.visitedReferences})
+		child := cc.Child(entity, cc.Fields)
+		if child.recordMinReference(entity) {
+			slog.Error("Circular reference detected", LogEntity("entity", entity))
+			return
+		}
+		min = entity.Constraint.Min(child)
 	case Bit:
 		from, _, err := entity.Bits()
 		if err != nil {
@@ -96,6 +72,9 @@ func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constrain
 		min = types.NewUintDataTypeExtreme(entity.Value.Value(), types.NumberFormatHex)
 	case *Constant:
 		min = getConstantValue(entity)
+	case *TypeDef:
+		slog.Warn("MinEntityValue on type definition")
+		min = types.Min(entity.Type.BaseType, cc.Nullable())
 	default:
 		slog.Warn("Unexpected entity type on MinEntityValue", log.Type("entity", entity))
 	}
@@ -103,9 +82,15 @@ func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constrain
 }
 
 func (cc *ConstraintContext) MaxEntityValue(entity types.Entity, field constraint.Limit) (max types.DataTypeExtreme) {
+
 	switch entity := entity.(type) {
 	case *Field:
-		max = entity.Constraint.Max(&ConstraintContext{Field: entity, Fields: cc.Fields, visitedReferences: cc.visitedReferences})
+		child := cc.Child(entity, cc.Fields)
+		if child.recordMaxReference(entity) {
+			slog.Error("Circular reference detected", LogEntity("entity", entity))
+			return
+		}
+		max = entity.Constraint.Max(child)
 	case Bit:
 		_, to, err := entity.Bits()
 		if err != nil {
@@ -117,9 +102,42 @@ func (cc *ConstraintContext) MaxEntityValue(entity types.Entity, field constrain
 		max = types.NewUintDataTypeExtreme(entity.Value.Value(), types.NumberFormatHex)
 	case *Constant:
 		max = getConstantValue(entity)
+	case *TypeDef:
+		slog.Warn("MaxEntityValue on type definition")
+		max = types.Max(entity.Type.BaseType, cc.Nullable())
 	default:
 		slog.Warn("Unexpected entity type on MaxEntityValue", log.Type("entity", entity))
 	}
+	return
+}
+
+func (cc *ConstraintContext) recordMinReference(entity types.Entity) (previouslyVisited bool) {
+	c := cc
+	for {
+		if c == nil {
+			break
+		}
+		if _, previouslyVisited = c.visitedMinReferences[entity]; previouslyVisited {
+			return
+		}
+		c = c.parent
+	}
+	cc.visitedMinReferences[entity] = struct{}{}
+	return
+}
+
+func (cc *ConstraintContext) recordMaxReference(entity types.Entity) (previouslyVisited bool) {
+	c := cc
+	for {
+		if c == nil {
+			break
+		}
+		if _, previouslyVisited = c.visitedMaxReferences[entity]; previouslyVisited {
+			return
+		}
+		c = c.parent
+	}
+	cc.visitedMaxReferences[entity] = struct{}{}
 	return
 }
 
