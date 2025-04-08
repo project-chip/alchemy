@@ -93,3 +93,11 @@ func (*NewLine) Equals(e Element) bool {
 	_, ok := e.(*NewLine)
 	return ok
 }
+
+func StringValue(el Element) string {
+	switch el := el.(type) {
+	case *String:
+		return el.Value
+	}
+	return ""
+}
