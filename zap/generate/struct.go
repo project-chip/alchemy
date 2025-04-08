@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func (cr *configuratorRenderer) generateStructs(structs map[*matter.Struct][]*matter.Number, configuratorElement *etree.Element) (err error) {
@@ -150,8 +151,10 @@ func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *ma
 	e.RemoveAttr("code")
 	e.RemoveAttr("id")
 	xml.PrependAttribute(e, "fieldId", v.ID.IntString())
-	e.CreateAttr("name", v.Name)
-	cr.writeDataType(e, s.Fields, v)
+	name := zap.CleanName(v.Name)
+	name = cr.configurator.Errata.FieldName(s.Name, name)
+	e.CreateAttr("name", name)
+	cr.writeDataType(e, s.Name, s.Fields, v)
 	if v.Quality.Has(matter.QualityNullable) && !cr.generator.generateExtendedQualityElement {
 		e.CreateAttr("isNullable", "true")
 	} else {

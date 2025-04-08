@@ -60,7 +60,8 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 
 	patchNumberAttribute(eventElement, event.ID, "code")
 	eventElement.CreateAttr("name", event.Name)
-	eventElement.CreateAttr("priority", strings.ToLower(event.Priority))
+	priority := cr.configurator.Errata.EventPriority(event.Name, strings.ToLower(event.Priority))
+	eventElement.CreateAttr("priority", priority)
 	eventElement.CreateAttr("side", "server")
 
 	if event.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
@@ -80,7 +81,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 		eventElement.Child = append([]etree.Token{descriptionElement}, eventElement.Child...)
 	}
 	if len(event.Description) > 0 {
-		descriptionElement.SetText(event.Description)
+		descriptionElement.SetText(cr.configurator.Errata.TypeDescription(event.Name, event.Description))
 	}
 
 	if needsAccess {
@@ -119,7 +120,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 				continue
 			}
 			fe.CreateAttr("id", f.ID.IntString())
-			cr.setFieldAttributes(fe, f, event.Fields)
+			cr.setFieldAttributes(fe, event.Name, f, event.Fields)
 			break
 		}
 	}
@@ -134,7 +135,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 		}
 		fe := etree.NewElement("field")
 		fe.CreateAttr("id", f.ID.IntString())
-		cr.setFieldAttributes(fe, f, event.Fields)
+		cr.setFieldAttributes(fe, event.Name, f, event.Fields)
 		xml.AppendElement(eventElement, fe, "access")
 	}
 

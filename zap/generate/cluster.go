@@ -136,7 +136,7 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 
 	descriptionElement := clusterElement.SelectElement("description")
 	if descriptionElement == nil || descriptionElement.Text() == "" {
-		xml.SetOrCreateSimpleElement(clusterElement, "description", cluster.Description, "define", "code", "name", "domain")
+		xml.SetOrCreateSimpleElement(clusterElement, "description", cr.configurator.Errata.TypeDescription(cluster.Name, cluster.Description), "define", "code", "name", "domain")
 	}
 
 	if client := clusterElement.SelectElement("client"); client == nil {
