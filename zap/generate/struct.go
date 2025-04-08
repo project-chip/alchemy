@@ -119,7 +119,7 @@ func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Stru
 			}
 			f := s.Fields[fieldIndex]
 			fieldIndex++
-			if conformance.IsZigbee(s.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+			if conformance.IsZigbee(s.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) || conformance.IsDeprecated(f.Conformance) {
 				continue
 			}
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeStructField) {

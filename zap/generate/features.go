@@ -73,6 +73,6 @@ func (cr *configuratorRenderer) generateFeaturesXML(configuratorElement *etree.E
 	if !ok {
 		slog.Warn("missing doc ref for cluster", slog.String("clusterName", cluster.Name))
 	}
-	err = dm.RenderFeatureElements(doc, cluster, fse)
+	err = dm.RenderFeatureElements(doc, cluster, fse, true)
 	return
 }
