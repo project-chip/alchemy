@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -19,7 +18,15 @@ func (tlc *TagListConstraint) Type() Type {
 func (tlc *TagListConstraint) ASCIIDocString(dataType *types.DataType) string {
 	var s strings.Builder
 	s.WriteString("Includes ")
-	s.WriteString(text.TrimUnnecessaryParens(tlc.Tags.ASCIIDocString(dataType)))
+	requiresParens := tlc.Tags.NeedsParens(false)
+	if requiresParens {
+		s.WriteString("(")
+	}
+	s.WriteString(tlc.Tags.ASCIIDocString(dataType))
+	if requiresParens {
+		s.WriteString(")")
+	}
+	s.WriteString(" tags")
 	return s.String()
 }
 
@@ -37,6 +44,10 @@ func (tlc *TagListConstraint) Min(c Context) (min types.DataTypeExtreme) {
 
 func (tlc *TagListConstraint) Max(c Context) (max types.DataTypeExtreme) {
 	return tlc.Min(c)
+}
+
+func (tlc *TagListConstraint) NeedsParens(topLevel bool) bool {
+	return false
 }
 
 func (tlc *TagListConstraint) Clone() Constraint {
@@ -77,6 +88,10 @@ func (c *TagIdentifierLimit) Max(cc Context) (max types.DataTypeExtreme) {
 
 func (c *TagIdentifierLimit) Fallback(cc Context) (def types.DataTypeExtreme) {
 	return
+}
+
+func (c *TagIdentifierLimit) NeedsParens(topLevel bool) bool {
+	return false
 }
 
 func (c *TagIdentifierLimit) Clone() Limit {

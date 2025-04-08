@@ -30,15 +30,17 @@ func (c *IntLimit) Equal(o Limit) bool {
 func (c *IntLimit) value(dataType *types.DataType) types.DataTypeExtreme {
 	if dataType != nil && dataType.BaseType.IsUnsigned() {
 		return types.DataTypeExtreme{
-			Type:   types.DataTypeExtremeTypeUInt64,
-			Format: types.NumberFormatInt,
-			UInt64: uint64(c.Value),
+			Type:     types.DataTypeExtremeTypeUInt64,
+			Format:   types.NumberFormatInt,
+			UInt64:   uint64(c.Value),
+			Constant: true,
 		}
 	}
 	return types.DataTypeExtreme{
-		Type:   types.DataTypeExtremeTypeInt64,
-		Format: types.NumberFormatInt,
-		Int64:  c.Value,
+		Type:     types.DataTypeExtremeTypeInt64,
+		Format:   types.NumberFormatInt,
+		Int64:    c.Value,
+		Constant: true,
 	}
 }
 
@@ -52,6 +54,10 @@ func (c *IntLimit) Max(cc Context) (max types.DataTypeExtreme) {
 
 func (c *IntLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.value(cc.DataType())
+}
+
+func (c *IntLimit) NeedsParens(topLevel bool) bool {
+	return false
 }
 
 func (c *IntLimit) Clone() Limit {

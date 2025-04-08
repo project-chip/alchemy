@@ -58,6 +58,10 @@ func (c *IdentifierLimit) Fallback(cc Context) (def types.DataTypeExtreme) {
 	return cc.Fallback(c.Entity, c.Field)
 }
 
+func (c *IdentifierLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *IdentifierLimit) Clone() Limit {
 	il := &IdentifierLimit{ID: c.ID}
 	if c.Field != nil {

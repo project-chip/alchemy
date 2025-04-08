@@ -19,7 +19,7 @@ func renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {
 		return
 	}
 
-	from, to := zap.GetMinMax(&matter.ConstraintContext{Field: f, Fields: fs}, f.Constraint)
+	from, to := zap.GetMinMax(matter.NewConstraintContext(f, fs), f.Constraint)
 
 	if !from.Defined() {
 		el.RemoveAttr("min")
@@ -32,13 +32,13 @@ func renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {
 
 	if f.Type != nil && (f.Type.HasLength() || f.Type.IsArray()) {
 		if to.Defined() {
-			patchDataExtremeAttribute(el, "length", to, f, types.DataExtremePurposeMinimum)
+			patchDataExtremeAttribute(el, "length", to, f, types.DataExtremePurposeMaximum)
 		}
 		if from.Defined() {
 			if from.IsZero() {
 				el.RemoveAttr("minLength")
 			} else {
-				patchDataExtremeAttribute(el, "minLength", from, f, types.DataExtremePurposeMaximum)
+				patchDataExtremeAttribute(el, "minLength", from, f, types.DataExtremePurposeMinimum)
 			}
 		}
 		el.RemoveAttr("min")

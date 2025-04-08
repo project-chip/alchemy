@@ -2,7 +2,7 @@ package constraint
 
 import (
 	"encoding/json"
-	"fmt"
+	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -17,7 +17,25 @@ func (c *RangeConstraint) Type() Type {
 }
 
 func (c *RangeConstraint) ASCIIDocString(dataType *types.DataType) string {
-	return fmt.Sprintf("%s to %s", c.Minimum.ASCIIDocString(dataType), c.Maximum.ASCIIDocString(dataType))
+	var s strings.Builder
+	minRequiresParens := c.Minimum.NeedsParens(false)
+	if minRequiresParens {
+		s.WriteString("(")
+	}
+	s.WriteString(c.Minimum.ASCIIDocString(dataType))
+	if minRequiresParens {
+		s.WriteString(")")
+	}
+	s.WriteString(" to ")
+	maxRequiresParens := c.Maximum.NeedsParens(false)
+	if maxRequiresParens {
+		s.WriteString("(")
+	}
+	s.WriteString(c.Maximum.ASCIIDocString(dataType))
+	if maxRequiresParens {
+		s.WriteString(")")
+	}
+	return s.String()
 }
 
 func (c *RangeConstraint) Equal(o Constraint) bool {
@@ -28,15 +46,21 @@ func (c *RangeConstraint) Equal(o Constraint) bool {
 }
 
 func (c *RangeConstraint) Min(cc Context) (from types.DataTypeExtreme) {
-	return c.Minimum.Min(cc)
+	m := c.Minimum.Min(cc)
+	return m
 }
 
 func (c *RangeConstraint) Max(cc Context) (to types.DataTypeExtreme) {
-	return c.Maximum.Max(cc)
+	m := c.Maximum.Max(cc)
+	return m
 }
 
 func (c *RangeConstraint) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
+}
+
+func (c *RangeConstraint) NeedsParens(topLevel bool) bool {
+	return false
 }
 
 func (c *RangeConstraint) Clone() Constraint {

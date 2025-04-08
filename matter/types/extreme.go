@@ -3,7 +3,9 @@ package types
 import (
 	"cmp"
 	"fmt"
+	"log/slog"
 	"math"
+	"math/big"
 	"strconv"
 )
 
@@ -26,11 +28,12 @@ const (
 )
 
 type DataTypeExtreme struct {
-	Type   DataTypeExtremeType
-	Format NumberFormat
-	Int64  int64
-	UInt64 uint64
-	Entity Entity
+	Type     DataTypeExtremeType
+	Format   NumberFormat
+	Int64    int64
+	UInt64   uint64
+	Entity   Entity
+	Constant bool
 }
 
 func NewIntDataTypeExtreme(i int64, f NumberFormat) DataTypeExtreme {
@@ -39,6 +42,16 @@ func NewIntDataTypeExtreme(i int64, f NumberFormat) DataTypeExtreme {
 
 func NewUintDataTypeExtreme(u uint64, f NumberFormat) DataTypeExtreme {
 	return DataTypeExtreme{Type: DataTypeExtremeTypeUInt64, Format: f, UInt64: u}
+}
+
+func NewIntegerDataTypeExtreme(i *big.Int) DataTypeExtreme {
+	if i.IsUint64() {
+		return NewUintDataTypeExtreme(i.Uint64(), NumberFormatUndefined)
+	}
+	if i.IsInt64() {
+		return NewIntDataTypeExtreme(i.Int64(), NumberFormatUndefined)
+	}
+	return DataTypeExtreme{Type: DataTypeExtremeTypeUndefined}
 }
 
 func (ce *DataTypeExtreme) Defined() bool {
@@ -51,6 +64,27 @@ func (ce *DataTypeExtreme) IsNull() bool {
 
 func (ce *DataTypeExtreme) IsNumeric() bool {
 	return ce.Type == DataTypeExtremeTypeInt64 || ce.Type == DataTypeExtremeTypeUInt64
+}
+
+func (ce *DataTypeExtreme) IsNegative() bool {
+	switch ce.Type {
+	case DataTypeExtremeTypeInt64:
+		return ce.Int64 < 0
+	default:
+		return false
+	}
+}
+
+func (ce *DataTypeExtreme) Big() *big.Int {
+	switch ce.Type {
+	case DataTypeExtremeTypeInt64:
+		return big.NewInt(ce.Int64)
+	case DataTypeExtremeTypeUInt64:
+		return new(big.Int).SetUint64(ce.UInt64)
+	default:
+		slog.Error("Attempt to convert non-integer to big.Int")
+		return nil
+	}
 }
 
 func (ce *DataTypeExtreme) IsZero() bool {

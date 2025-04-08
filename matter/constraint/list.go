@@ -39,6 +39,10 @@ func (c *ListConstraint) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
+func (c *ListConstraint) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *ListConstraint) Clone() Constraint {
 	return &ListConstraint{Constraint: c.Constraint.Clone(), EntryConstraint: c.EntryConstraint.Clone()}
 }

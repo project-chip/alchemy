@@ -76,6 +76,10 @@ func (c *ExpLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.minmax()
 }
 
+func (c *ExpLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *ExpLimit) Clone() Limit {
 	return &ExpLimit{Value: c.Value, Exp: c.Exp}
 }

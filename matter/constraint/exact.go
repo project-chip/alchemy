@@ -38,6 +38,10 @@ func (c *ExactConstraint) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Value.Fallback(cc)
 }
 
+func (c *ExactConstraint) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *ExactConstraint) Clone() Constraint {
 	return &ExactConstraint{Value: c.Value.Clone()}
 }

@@ -34,6 +34,10 @@ func (c *EmptyLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
+func (c *EmptyLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *EmptyLimit) Clone() Limit {
 	return &EmptyLimit{}
 }

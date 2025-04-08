@@ -2,7 +2,7 @@ package constraint
 
 import (
 	"encoding/json"
-	"fmt"
+	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -16,7 +16,17 @@ func (c *MinConstraint) Type() Type {
 }
 
 func (c *MinConstraint) ASCIIDocString(dataType *types.DataType) string {
-	return fmt.Sprintf("min %s", c.Minimum.ASCIIDocString(dataType))
+	requiresParens := c.Minimum.NeedsParens(false)
+	var s strings.Builder
+	s.WriteString("min ")
+	if requiresParens {
+		s.WriteString("(")
+	}
+	s.WriteString(c.Minimum.ASCIIDocString(dataType))
+	if requiresParens {
+		s.WriteString(")")
+	}
+	return s.String()
 }
 
 func (c *MinConstraint) Equal(o Constraint) bool {
@@ -40,6 +50,10 @@ func (c *MinConstraint) Max(cc Context) (max types.DataTypeExtreme) {
 
 func (c *MinConstraint) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
+}
+
+func (c *MinConstraint) NeedsParens(topLevel bool) bool {
+	return false
 }
 
 func (c *MinConstraint) Clone() Constraint {

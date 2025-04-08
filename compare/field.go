@@ -60,12 +60,12 @@ func compareField(entityType types.EntityType, specFields matter.FieldSet, specF
 		}
 	}
 	diffs = append(diffs, compareAccess(entityType, specField.Access, zapField.Access)...)
-	defaultValue := zap.GetFallbackValue(&matter.ConstraintContext{Field: specField, Fields: specFields})
+	defaultValue := zap.GetFallbackValue(matter.NewConstraintContext(specField, specFields))
 	if defaultValue.Defined() {
 		specDefault := constraint.ParseLimit(defaultValue.ZapString(specField.Type))
 		if !specDefault.Equal(zapField.Fallback) && !(constraint.IsNullLimit(specField.Fallback) && constraint.IsBlankLimit(zapField.Fallback)) { // ZAP frequently omits default null
-			specFallback := specField.Fallback.Fallback(&matter.ConstraintContext{Fields: specFields, Field: specField})
-			zapFallback := zapField.Fallback.Fallback(&matter.ConstraintContext{Fields: zapFields, Field: zapField})
+			specFallback := specField.Fallback.Fallback(matter.NewConstraintContext(specField, specFields))
+			zapFallback := zapField.Fallback.Fallback(matter.NewConstraintContext(zapField, zapFields))
 			if !specFallback.ValueEquals(zapFallback) {
 				diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specFallback.ZapString(specField.Type), ZAP: zapFallback.ZapString(zapField.Type)})
 			}
@@ -74,9 +74,9 @@ func compareField(entityType types.EntityType, specFields matter.FieldSet, specF
 	} else if !constraint.IsBlankLimit(zapField.Fallback) {
 
 		if !constraint.IsBlankLimit(specField.Fallback) {
-			zapFallback := zapField.Fallback.Fallback(&matter.ConstraintContext{Fields: zapFields, Field: zapField})
+			zapFallback := zapField.Fallback.Fallback(matter.NewConstraintContext(zapField, zapFields))
 			if !constraint.IsNullLimit(specField.Fallback) || !zapFallback.IsNull() {
-				specFallback := specField.Fallback.Fallback(&matter.ConstraintContext{Fields: specFields, Field: specField})
+				specFallback := specField.Fallback.Fallback(matter.NewConstraintContext(specField, specFields))
 				if !specFallback.ValueEquals(zapFallback) {
 					diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specFallback.ZapString(specField.Type), ZAP: zapFallback.ZapString(zapField.Type)})
 				}

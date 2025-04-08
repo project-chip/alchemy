@@ -34,6 +34,10 @@ func (c *DescribedConstraint) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
+func (c *DescribedConstraint) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *DescribedConstraint) Clone() Constraint {
 	return &DescribedConstraint{}
 }

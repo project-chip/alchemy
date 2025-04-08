@@ -5,7 +5,6 @@ import (
 	"math"
 	"strings"
 
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -21,7 +20,14 @@ func (cs Set) ASCIIDocString(dataType *types.DataType) string {
 		if b.Len() > 0 {
 			b.WriteString(", ")
 		}
-		b.WriteString(text.TrimUnnecessaryParens(con.ASCIIDocString(dataType)))
+		requiresParens := con.NeedsParens(true)
+		if requiresParens {
+			b.WriteString("(")
+		}
+		b.WriteString(con.ASCIIDocString(dataType))
+		if requiresParens {
+			b.WriteString(")")
+		}
 	}
 	return b.String()
 }
@@ -79,6 +85,10 @@ func (cs Set) Max(c Context) (max types.DataTypeExtreme) {
 
 func (cs Set) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
+}
+
+func (cs Set) NeedsParens(topLevel bool) bool {
+	return false
 }
 
 func (cs Set) Clone() Constraint {

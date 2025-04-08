@@ -65,6 +65,10 @@ func (c *ReferenceLimit) Fallback(cc Context) (def types.DataTypeExtreme) {
 	return cc.Fallback(c.Entity, c.Field)
 }
 
+func (c *ReferenceLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *ReferenceLimit) Clone() Limit {
 	return &ReferenceLimit{Reference: c.Reference}
 }

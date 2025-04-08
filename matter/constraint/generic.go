@@ -37,6 +37,10 @@ func (c *GenericConstraint) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
+func (c *GenericConstraint) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *GenericConstraint) Clone() Constraint {
 	return &GenericConstraint{Value: c.Value}
 }
@@ -82,6 +86,10 @@ func (gl *GenericLimit) Max(c Context) (max types.DataTypeExtreme) {
 
 func (gl *GenericLimit) Fallback(c Context) (max types.DataTypeExtreme) {
 	return
+}
+
+func (gl *GenericLimit) NeedsParens(topLevel bool) bool {
+	return false
 }
 
 func (gl *GenericLimit) Clone() Limit {

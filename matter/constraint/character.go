@@ -39,6 +39,10 @@ func (c *CharacterLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.ByteCount.Fallback(cc)
 }
 
+func (c *CharacterLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *CharacterLimit) Clone() Limit {
 	return &CharacterLimit{ByteCount: c.ByteCount.Clone(), CodepointCount: c.CodepointCount.Clone()}
 }
