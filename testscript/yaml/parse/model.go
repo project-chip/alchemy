@@ -21,7 +21,7 @@ type Test struct {
 	Extras yaml.MapSlice
 }
 
-func (t *Test) UnmarshalYAML(unmarshal func(interface{}) error) (err error) {
+func (t *Test) UnmarshalYAML(unmarshal func(any) error) (err error) {
 	var yt yaml.MapSlice
 	if err = unmarshal(&yt); err != nil {
 		return err

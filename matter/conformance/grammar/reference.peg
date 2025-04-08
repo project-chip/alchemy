@@ -21,7 +21,7 @@ IdentifierValue <- identifier:Identifier  field:(ReferenceField)? {
     return iv, nil
 }
 
-Identifier <- PascalCase ('-' PascalCase)* {
+Identifier <- Feature / (PascalCase ('-' PascalCase)*) {
     //debug("matched identifier %s\n", string(c.text))
     return string(c.text), nil
 }
@@ -74,31 +74,6 @@ ReferenceField <- "." field:(ReferenceValue / IdentifierValue) {
 	return field.(ComparisonValue), nil
 }
 
-FeatureOp <- not:'!'? feature:Feature {
-    id := feature.(string)
-    switch id {
-        case "O", "M", "P":
-            return nil, fmt.Errorf("invalid optional conformance value: %s", id)
-    }
-    ic := &FeatureExpression{Feature:id}
-    if not != nil {
-        ic.Not = true
-    }
-    return ic, nil
-}
-
-FeatureValue <- feature:Feature {
-    id := feature.(string)
-    switch id {
-        case "O", "M", "P":
-            return nil, fmt.Errorf("invalid optional conformance value: %s", id)
-    }
-    ic := &FeatureValue{Feature:id}
-    return ic, nil
-}
-
-
 Feature <- [A-Z][A-Z0-9_]+ &(![A-Za-z0-9_] / EOF) {
     return string(c.text), nil
 }
-

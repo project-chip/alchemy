@@ -64,14 +64,6 @@ func convertExpression(e conformance.Expression) (Expression, error) {
 			PICS: EntityIdentifier(e.Entity),
 			Not:  e.Not,
 		}, nil
-	case *conformance.FeatureExpression:
-		if e.Entity == nil {
-			return nil, fmt.Errorf("conformance feature expression missing entity: %s", e.Feature)
-		}
-		return &PICSExpression{
-			PICS: EntityIdentifier(e.Entity),
-			Not:  e.Not,
-		}, nil
 	case *conformance.LogicalExpression:
 		left, err := convertExpression(e.Left)
 		if err != nil {
