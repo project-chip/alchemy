@@ -30,6 +30,7 @@ const (
 	EntityTypeDef
 	EntityTypeNamespace
 	EntityTypeConstant
+	EntityTypeSemanticTag
 )
 
 type Entity interface {
@@ -64,6 +65,7 @@ var (
 		EntityTypeDef:                "typeDef",
 		EntityTypeNamespace:          "namespace",
 		EntityTypeConstant:           "constant",
+		EntityTypeSemanticTag:        "semanticTag",
 	}
 )
 

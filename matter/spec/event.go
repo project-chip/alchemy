@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -107,4 +108,26 @@ func (s *Section) toEvents(d *Doc, pc *parseContext, parent types.Entity) (event
 	events, err = buildList(d, s, t, pc, events, &ef, parent)
 
 	return
+}
+
+type eventFinder struct {
+	entityFinderCommon
+
+	events []*matter.Event
+}
+
+func newEventFinder(events []*matter.Event, inner entityFinder) *eventFinder {
+	return &eventFinder{entityFinderCommon: entityFinderCommon{inner: inner}, events: events}
+}
+
+func (cf *eventFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+	for _, c := range cf.events {
+		if c.Name == identifier && c != cf.identity {
+			return c
+		}
+	}
+	if cf.inner != nil {
+		return cf.inner.findEntityByIdentifier(identifier, source)
+	}
+	return nil
 }

@@ -135,3 +135,25 @@ func ParseCommandDirection(s string) matter.Interface {
 		return matter.InterfaceUnknown
 	}
 }
+
+type commandFinder struct {
+	entityFinderCommon
+
+	commands []*matter.Command
+}
+
+func newCommandFinder(commands []*matter.Command, inner entityFinder) *commandFinder {
+	return &commandFinder{entityFinderCommon: entityFinderCommon{inner: inner}, commands: commands}
+}
+
+func (cf *commandFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+	for _, c := range cf.commands {
+		if c.Name == identifier {
+			return c
+		}
+	}
+	if cf.inner != nil {
+		return cf.inner.findEntityByIdentifier(identifier, source)
+	}
+	return nil
+}

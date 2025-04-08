@@ -31,44 +31,68 @@ func (s *Section) toBitmap(d *Doc, pc *parseContext, parent types.Entity) (bm *m
 	if err != nil {
 		if err == ErrNoTableFound {
 			slog.Warn("no table found for bitmap", log.Element("source", s.Doc.Path, s.Base), slog.String("name", bm.Name))
-			return bm, nil
+			err = nil
+		} else {
+			return nil, fmt.Errorf("failed reading bitmap %s: %w", name, err)
 		}
-		return nil, fmt.Errorf("failed reading bitmap %s: %w", name, err)
-	}
-
-	for row := range ti.Body() {
-		var bit, name, summary string
-		var conf conformance.Set
-		name, err = ti.ReadValue(row, matter.TableColumnName)
-		if err != nil {
-			return
-		}
-		name = matter.StripTypeSuffixes(name)
-		summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
-		if err != nil {
-			return
-		}
-		conf = ti.ReadConformance(row, matter.TableColumnConformance)
-		if conf == nil {
-			conf = conformance.Set{&conformance.Mandatory{}}
-		}
-		bit, err = ti.ReadString(row, matter.TableColumnBit)
-		if err != nil {
-			return
-		}
-		if len(bit) == 0 {
-			bit, err = ti.ReadString(row, matter.TableColumnValue)
+	} else {
+		for row := range ti.Body() {
+			var bit, name, summary string
+			var conf conformance.Set
+			name, err = ti.ReadValue(row, matter.TableColumnName)
 			if err != nil {
 				return
 			}
+			name = matter.StripTypeSuffixes(name)
+			summary, err = ti.ReadValue(row, matter.TableColumnSummary, matter.TableColumnDescription)
+			if err != nil {
+				return
+			}
+			conf = ti.ReadConformance(row, matter.TableColumnConformance)
+			if conf == nil {
+				conf = conformance.Set{&conformance.Mandatory{}}
+			}
+			bit, err = ti.ReadString(row, matter.TableColumnBit)
+			if err != nil {
+				return
+			}
+			if len(bit) == 0 {
+				bit, err = ti.ReadString(row, matter.TableColumnValue)
+				if err != nil {
+					return
+				}
+			}
+			if len(name) == 0 && len(summary) > 0 {
+				name = matter.Case(summary)
+			}
+			bv := matter.NewBitmapBit(s.Base, bit, CanonicalName(name), summary, conf)
+			bm.AddBit(bv)
 		}
-		if len(name) == 0 && len(summary) > 0 {
-			name = matter.Case(summary)
-		}
-		bv := matter.NewBitmapBit(s.Base, bit, CanonicalName(name), summary, conf)
-		bm.AddBit(bv)
 	}
+
 	bm.Name = CanonicalName(bm.Name)
 	pc.addEntity(bm, s.Base)
 	return
+}
+
+type bitmapFinder struct {
+	entityFinderCommon
+
+	bitmap *matter.Bitmap
+}
+
+func newBitmapFinder(bm *matter.Bitmap, inner entityFinder) *bitmapFinder {
+	return &bitmapFinder{entityFinderCommon: entityFinderCommon{inner: inner}, bitmap: bm}
+}
+
+func (bf *bitmapFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+	for _, bmv := range bf.bitmap.Bits {
+		if bmv.Name() == identifier && bmv != bf.identity {
+			return bmv
+		}
+	}
+	if bf.inner != nil {
+		return bf.inner.findEntityByIdentifier(identifier, source)
+	}
+	return nil
 }

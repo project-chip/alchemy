@@ -57,6 +57,8 @@ var toRanges = map[BaseDataType]DataTypeExtreme{
 	BaseDataTypeTemperatureDifference: {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt16, Format: NumberFormatInt},
 	BaseDataTypeSignedTemperature:     {Type: DataTypeExtremeTypeInt64, Int64: math.MaxInt8, Format: NumberFormatInt},
 	BaseDataTypeUnsignedTemperature:   {Type: DataTypeExtremeTypeUInt64, UInt64: math.MaxUint8, Format: NumberFormatInt},
+
+	BaseDataTypeList: {Type: DataTypeExtremeTypeInt64, Int64: math.MaxUint16 - 1, Format: NumberFormatInt},
 }
 
 func Max(baseType BaseDataType, nullable bool) (to DataTypeExtreme) {

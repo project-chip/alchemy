@@ -23,7 +23,19 @@ func (*Namespace) EntityType() types.EntityType {
 }
 
 type SemanticTag struct {
+	entity
+
 	ID          *Number `json:"id,omitempty"`
 	Name        string  `json:"name,omitempty"`
 	Description string  `json:"description,omitempty"`
+}
+
+func (*SemanticTag) EntityType() types.EntityType {
+	return types.EntityTypeSemanticTag
+}
+
+func NewSemanticTag(namespace *Namespace, source asciidoc.Element) *SemanticTag {
+	return &SemanticTag{
+		entity: entity{parent: namespace, source: source},
+	}
 }

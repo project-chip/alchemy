@@ -103,8 +103,10 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			c.Bitmaps = append(c.Bitmaps, pbm)
-			linkedEntities = append(linkedEntities, pbm)
+			matching = pbm.Clone()
+			c.Bitmaps = append(c.Bitmaps, matching)
+			matching.parent = c
+			linkedEntities = append(linkedEntities, matching)
 			continue
 		}
 		err = matching.Inherit(pbm)
@@ -122,8 +124,10 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			c.Enums = append(c.Enums, pe)
-			linkedEntities = append(linkedEntities, pe)
+			matching = pe.Clone()
+			c.Enums = append(c.Enums, matching)
+			matching.parent = c
+			linkedEntities = append(linkedEntities, matching)
 			continue
 		}
 		err = matching.Inherit(pe)
@@ -141,8 +145,10 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			c.Structs = append(c.Structs, ps)
-			linkedEntities = append(linkedEntities, ps)
+			matching = ps.Clone()
+			c.Structs = append(c.Structs, matching)
+			matching.parent = c
+			linkedEntities = append(linkedEntities, matching)
 			continue
 		}
 		matching.Inherit(ps)
@@ -157,7 +163,9 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			c.Events = append(c.Events, pe.Clone())
+			matching = pe.Clone()
+			matching.parent = c
+			c.Events = append(c.Events, matching)
 			continue
 		}
 		matching.Inherit(pe)
@@ -172,7 +180,9 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			c.Commands = append(c.Commands, pc.Clone())
+			matching = pc.Clone()
+			matching.parent = c
+			c.Commands = append(c.Commands, matching)
 			continue
 		}
 		matching.Inherit(pc)
@@ -187,7 +197,9 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 			}
 		}
 		if matching == nil {
-			c.Constants = append(c.Constants, pc.Clone())
+			matching = pc.Clone()
+			matching.parent = c
+			c.Constants = append(c.Constants, matching)
 			continue
 		}
 		matching.Inherit(pc)

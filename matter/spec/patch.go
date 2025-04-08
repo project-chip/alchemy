@@ -140,7 +140,9 @@ func patchLevelControlCluster(spec *Specification) {
 			continue
 		}
 		for _, f := range matchingCommand.Fields {
-			c.Fields = append(c.Fields, f.Clone())
+			clone := f.Clone()
+			clone.Type.Entity = f.Type.Entity
+			c.Fields = append(c.Fields, clone)
 		}
 	}
 }

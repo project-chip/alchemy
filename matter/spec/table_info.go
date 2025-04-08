@@ -10,7 +10,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
-	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -424,6 +423,132 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeList)\[([^]]+)]`)
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
+func crossReferenceToDataType(cr *asciidoc.CrossReference, isArray bool) *types.DataType {
+	var dt *types.DataType
+	id := cr.ID
+	if len(cr.Set) > 0 {
+		id = strings.TrimSpace(asciidoc.AttributeAsciiDocString(cr.Set))
+	}
+	id = strings.TrimPrefix(id, "ref_")
+	id = strings.TrimPrefix(id, "DataType")
+	baseType, nameOverride := types.ParseDataTypeName(id)
+	switch baseType {
+	case types.BaseDataTypeCustom:
+		if nameOverride != "" {
+			dt = &types.DataType{
+				BaseType: baseType,
+				Name:     nameOverride,
+			}
+		} else {
+			dt = &types.DataType{
+				BaseType: types.BaseDataTypeCustom,
+				Source:   cr,
+			}
+		}
+	default:
+		dt = &types.DataType{
+			BaseType: baseType,
+			Name:     id,
+		}
+	}
+	if isArray {
+		return &types.DataType{
+			BaseType:  types.BaseDataTypeList,
+			Name:      "list",
+			EntryType: dt,
+		}
+	}
+	return dt
+}
+
+type dataTypePattern func(elements []asciidoc.Element) (*types.DataType, bool)
+
+func simpleDataTypePattern(elements []asciidoc.Element) (dt *types.DataType, empty bool) {
+	if len(elements) != 1 {
+		return
+	}
+	switch el := elements[0].(type) {
+	case *asciidoc.String:
+		if el.Value == "" {
+			empty = true
+			return
+		}
+		var name string
+		var isArray bool
+		var content = asteriskPattern.ReplaceAllString(el.Value, "")
+		match := listDataTypeDefinitionPattern.FindStringSubmatch(content)
+		if match != nil {
+			name = match[1]
+			isArray = true
+		} else {
+			name = content
+		}
+
+		dt = types.ParseDataType(name, isArray)
+		if dt == nil {
+			slog.Warn("unable to parse data type", slog.String("dataType", el.Value))
+		}
+	case *asciidoc.CrossReference:
+		dt = crossReferenceToDataType(el, false)
+	default:
+		slog.Warn("unexpected type in data type cell", log.Type("type", el))
+	}
+	return
+}
+
+func listDataTypePattern(elements []asciidoc.Element) (dt *types.DataType, empty bool) {
+	switch len(elements) {
+	case 2:
+		slog.Warn("unexpected number of elements in list data type cell", slog.Int("count", len(elements)))
+	case 3:
+		if !strings.EqualFold(asciidoc.StringValue(elements[0]), "list[") {
+			return
+		}
+		if !strings.EqualFold(asciidoc.StringValue(elements[2]), "]") {
+			return
+		}
+		switch el := elements[1].(type) {
+		case *asciidoc.String:
+			dt = types.ParseDataType(el.Value, true)
+		case *asciidoc.CrossReference:
+			return crossReferenceToDataType(el, true), false
+		default:
+			slog.Warn("unexpected type in list data type cell", log.Type("type", el))
+		}
+	case 4:
+		if !strings.EqualFold(asciidoc.StringValue(elements[1]), "[") {
+			return
+		}
+		if !strings.EqualFold(asciidoc.StringValue(elements[3]), "]") {
+			return
+		}
+		listTypeElement, ok := elements[0].(*asciidoc.CrossReference)
+		if !ok {
+			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[1]))
+			return
+		}
+		listType := crossReferenceToDataType(listTypeElement, false)
+		if !listType.IsArray() {
+			slog.Warn("unexpected non-list type in list data type cell", slog.String("listType", listType.Name), slog.String("id", listTypeElement.ID), log.Type("type", elements[0]))
+			return
+		}
+
+		switch el := elements[2].(type) {
+		case *asciidoc.String:
+			dt = types.ParseDataType(el.Value, true)
+		case *asciidoc.CrossReference:
+			listType.EntryType = crossReferenceToDataType(el, false)
+			dt = listType
+		default:
+			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[2]))
+			return
+		}
+	default:
+		slog.Warn("unexpected number of elements in list data type cell", slog.Int("count", len(elements)))
+	}
+	return
+}
+
 func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableColumn) (*types.DataType, error) {
 	if !ti.Doc.anchorsParsed {
 		ti.Doc.findAnchors()
@@ -434,32 +559,22 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 	}
 	cell := row.Cell(i)
 	cellElements := cell.Elements()
+
 	if len(cellElements) == 0 {
 		return nil, fmt.Errorf("empty %s cell for data type", column)
 	}
 
-	var isArray bool
+	var dt *types.DataType
+	var dataTypePatterns = []dataTypePattern{simpleDataTypePattern, listDataTypePattern}
+	for _, pattern := range dataTypePatterns {
+		var empty bool
+		dt, empty = pattern(cellElements)
+		if dt != nil || empty {
+			return dt, nil
+		}
+	}
 
-	var sb strings.Builder
-	source := buildDataTypeString(ti.Doc, cellElements, &sb)
-	var name string
-	var content = asteriskPattern.ReplaceAllString(sb.String(), "")
-	match := listDataTypeDefinitionPattern.FindStringSubmatch(content)
-	if match != nil {
-		name = match[1]
-		isArray = true
-	} else {
-		name = content
-	}
-	commaIndex := strings.IndexRune(name, ',')
-	if commaIndex >= 0 {
-		name = name[:commaIndex]
-	}
-	name = text.TrimCaseInsensitiveSuffix(name, " Type")
-	dt := types.ParseDataType(name, isArray)
-	if dt != nil {
-		dt.Source = source
-	}
+	slog.Warn("no matching data type patterns", log.Path("source", row))
 	return dt, nil
 }
 

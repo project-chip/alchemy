@@ -37,12 +37,22 @@ func LogEntity(key string, en types.Entity) slog.Attr {
 	case *Cluster:
 		args = append(args, slog.String("type", "cluster"))
 		args = append(args, slog.String("name", entity.Name))
+	case *TypeDef:
+		args = append(args, slog.String("type", "typeDef"))
+		args = append(args, slog.String("name", entity.Name))
+	case *EnumValue:
+		args = append(args, slog.String("type", "enumValue"))
+		args = append(args, slog.String("name", entity.Name))
+	case nil:
+		args = append(args, slog.String("type", "nil"))
 	default:
 		args = append(args, slog.String("type", en.EntityType().String()))
 	}
-	parent := en.Parent()
-	if parent != nil {
-		args = append(args, LogEntity("parent", en.Parent()))
+	if en != nil {
+		parent := en.Parent()
+		if parent != nil {
+			args = append(args, LogEntity("parent", en.Parent()))
+		}
 	}
 
 	return slog.Group(key, args...)

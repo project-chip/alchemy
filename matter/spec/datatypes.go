@@ -80,36 +80,56 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 	return
 }
 
-func (sp *Builder) resolveDataTypeReferences(spec *Specification) {
-	for cluster := range spec.Clusters {
+func (sp *Builder) resolveDataTypeReferences(onlyBaseClusters bool) {
+	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
+	for cluster := range sp.Spec.Clusters {
+		inheritedCluster := cluster.Hierarchy != "Base"
+		if (onlyBaseClusters && inheritedCluster) || (!onlyBaseClusters && !inheritedCluster) {
+			continue
+		}
+
+		specEntityFinder.cluster = cluster
+		clusterFinder := newClusterEntityFinder(cluster, specEntityFinder)
+
 		for _, a := range cluster.Attributes {
-			sp.resolveFieldDataTypes(spec, cluster, cluster.Attributes, a, a.Type)
+			clusterFinder.setIdentity(a)
+			sp.resolveFieldDataTypes(cluster, cluster.Attributes, a, a.Type, clusterFinder)
 		}
 		for _, s := range cluster.Structs {
 			for _, f := range s.Fields {
-				sp.resolveFieldDataTypes(spec, cluster, s.Fields, f, f.Type)
+				clusterFinder.setIdentity(f)
+				sp.resolveFieldDataTypes(cluster, s.Fields, f, f.Type, clusterFinder)
 			}
 		}
 		for _, event := range cluster.Events {
 			for _, f := range event.Fields {
-				sp.resolveFieldDataTypes(spec, cluster, event.Fields, f, f.Type)
+				clusterFinder.setIdentity(f)
+				sp.resolveFieldDataTypes(cluster, event.Fields, f, f.Type, clusterFinder)
 			}
 		}
 		for _, command := range cluster.Commands {
 			for _, f := range command.Fields {
-				sp.resolveFieldDataTypes(spec, cluster, command.Fields, f, f.Type)
+				clusterFinder.setIdentity(f)
+				sp.resolveFieldDataTypes(cluster, command.Fields, f, f.Type, clusterFinder)
 			}
+			clusterFinder.setIdentity(command)
+			sp.resolveCommandResponseDataType(cluster, command, clusterFinder)
 		}
 	}
 
-	for _, s := range spec.structIndex {
-		for _, f := range s.Fields {
-			sp.resolveFieldDataTypes(spec, nil, s.Fields, f, f.Type)
+	if onlyBaseClusters {
+		specEntityFinder.cluster = nil
+		for _, s := range sp.Spec.structIndex {
+			for _, f := range s.Fields {
+				specEntityFinder.setIdentity(f)
+				sp.resolveFieldDataTypes(nil, s.Fields, f, f.Type, specEntityFinder)
+			}
 		}
+
 	}
 }
 
-func (sp *Builder) resolveFieldDataTypes(spec *Specification, cluster *matter.Cluster, fieldSet matter.FieldSet, field *matter.Field, dataType *types.DataType) {
+func (sp *Builder) resolveFieldDataTypes(cluster *matter.Cluster, fieldSet matter.FieldSet, field *matter.Field, dataType *types.DataType, finder entityFinder) {
 	if dataType == nil {
 		if !conformance.IsDeprecated(field.Conformance) && !conformance.IsDisallowed(field.Conformance) && !sp.ignoreHierarchy && (cluster == nil || cluster.Hierarchy == "Base") {
 			var clusterName string
@@ -123,175 +143,112 @@ func (sp *Builder) resolveFieldDataTypes(spec *Specification, cluster *matter.Cl
 	if dataType.Entity != nil {
 		// This has already been resolved by some other process
 		if cluster != nil {
-			spec.ClusterRefs.Add(cluster, dataType.Entity)
+			sp.Spec.ClusterRefs.Add(cluster, dataType.Entity)
+			sp.Spec.addEntity(dataType.Entity, cluster)
 		}
 		return
 	}
 	switch dataType.BaseType {
 	case types.BaseDataTypeTag:
-		getTagNamespace(spec, field)
+		sp.getTagNamespace(field)
 	case types.BaseDataTypeList:
-		sp.resolveFieldDataTypes(spec, cluster, fieldSet, field, dataType.EntryType)
+		sp.resolveFieldDataTypes(cluster, fieldSet, field, dataType.EntryType, finder)
 	case types.BaseDataTypeCustom:
 		if dataType.Entity == nil {
-			dataType.Entity = getCustomDataType(spec, dataType.Name, cluster, field)
+			finder.setIdentity(field)
+			sp.getCustomDataType(dataType, cluster, field, finder)
 			if dataType.Entity == nil {
-				slog.Error("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field))
+				slog.Error("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field), log.Type("element", dataType.Source))
+			} else {
+				dataType.Name = matter.EntityName(dataType.Entity)
 			}
 		}
 		if cluster == nil || dataType.Entity == nil {
 			return
 		}
-		spec.ClusterRefs.Add(cluster, dataType.Entity)
-		s, ok := dataType.Entity.(*matter.Struct)
-		if !ok {
+		sp.Spec.ClusterRefs.Add(cluster, dataType.Entity)
+		sp.Spec.addEntity(dataType.Entity, cluster)
+		switch e := dataType.Entity.(type) {
+		case *matter.Struct:
+			// If this data type is a struct, we need to resolve all data types on its fields
+			for _, f := range e.Fields {
+				sp.resolveFieldDataTypes(cluster, fieldSet, f, f.Type, finder)
+			}
+		case *matter.TypeDef:
+			switch e.Name {
+			case "SignedTemperature":
+				dataType.BaseType = types.BaseDataTypeSignedTemperature
+			case "UnsignedTemperature":
+				dataType.BaseType = types.BaseDataTypeUnsignedTemperature
+			case "TemperatureDifference":
+				dataType.BaseType = types.BaseDataTypeTemperatureDifference
+			}
+		}
+
+	}
+}
+
+func (sp *Builder) resolveCommandResponseDataType(cluster *matter.Cluster, command *matter.Command, finder entityFinder) {
+	if command.Response == nil {
+		return
+	}
+	if command.Response.Entity != nil {
+		return
+	}
+	switch source := command.Response.Source.(type) {
+	case *asciidoc.CrossReference:
+		command.Response.Entity = sp.getCustomDataTypeFromFieldReference(cluster, source, newCommandFinder(cluster.Commands, finder))
+	case nil:
+
+	}
+	if command.Response.Entity != nil && command.Response.Name == "" {
+		if cluster != nil {
+			sp.Spec.ClusterRefs.Add(cluster, command.Response.Entity)
+		}
+		return
+	}
+	var desiredDirection matter.Interface
+	switch command.Direction {
+	case matter.InterfaceServer:
+		desiredDirection = matter.InterfaceClient
+	case matter.InterfaceClient:
+		desiredDirection = matter.InterfaceServer
+	}
+	for _, cmd := range cluster.Commands {
+		if cmd.Direction == desiredDirection && cmd.Name == command.Response.Name {
+			command.Response.Entity = cmd.Response.Entity
+			if cluster != nil && command.Response.Entity != nil {
+				sp.Spec.ClusterRefs.Add(cluster, command.Response.Entity)
+			}
 			return
 		}
-		// If this data type is a struct, we need to resolve all data types on its fields
-		for _, f := range s.Fields {
-			sp.resolveFieldDataTypes(spec, cluster, fieldSet, f, f.Type)
-		}
 	}
 }
 
-func getCustomDataType(spec *Specification, dataTypeName string, cluster *matter.Cluster, field *matter.Field) (e types.Entity) {
-	e = getCustomDataTypeFromFieldReference(spec, cluster, field.Type.Source)
-	if e != nil {
-		// We have a reference to a data type; use that
-		return
-	}
-	e = getCustomDataTypeFromIdentifier(spec, cluster, field, dataTypeName)
-	return
-}
-
-func getCustomDataTypeFromIdentifier(spec *Specification, cluster *matter.Cluster, source log.Source, identifier string) types.Entity {
-	entities := spec.entities[identifier]
-	if len(entities) == 0 {
-		canonicalName := CanonicalName(identifier)
-		if canonicalName != identifier {
-			return getCustomDataTypeFromIdentifier(spec, cluster, source, canonicalName)
-		}
-	} else if len(entities) == 1 {
-		for m := range entities {
-			return m
-		}
-	} else {
-		return disambiguateDataType(entities, cluster, identifier, source)
-	}
-	return nil
-}
-
-func getCustomDataTypeFromFieldReference(spec *Specification, cluster *matter.Cluster, source asciidoc.Element) (e types.Entity) {
-	switch source := source.(type) {
+func (sp *Builder) getCustomDataType(dataType *types.DataType, cluster *matter.Cluster, field *matter.Field, finder entityFinder) {
+	//slog.Info("getCustomDataType", log.Type("refType", dataType.Source))
+	switch ref := dataType.Source.(type) {
 	case *asciidoc.CrossReference:
-		return getCustomDataTypeFromReference(spec, cluster, source.ID, asciidoc.ValueToString(source.Elements()))
-	default:
-		return
+		dataType.Entity = sp.getCustomDataTypeFromFieldReference(cluster, ref, finder)
+		if dataType.Entity != nil {
+			// We have a reference to a data type; use that
+			return
+		}
 	}
+
+	dataType.Entity = finder.findEntityByIdentifier(dataType.Name, field)
+
 }
 
-func getCustomDataTypeFromReference(spec *Specification, cluster *matter.Cluster, reference string, label string) (e types.Entity) {
-	doc, ok := spec.DocRefs[cluster]
-	if !ok {
+func (sp *Builder) getCustomDataTypeFromFieldReference(cluster *matter.Cluster, reference *asciidoc.CrossReference, finder entityFinder) (e types.Entity) {
+	label := strings.TrimSpace(asciidoc.ValueToString(reference.Elements()))
+	//slog.Info("getCustomDataTypeFromFieldReference", "id", source.ID, "label", label, log.Path("source", source))
+	e = finder.findEntityByReference(reference.ID, label, reference)
+	if e != nil {
 		return
 	}
-	anchor := doc.FindAnchor(reference)
-	if anchor == nil {
-		return
-	}
-	switch el := anchor.Element.(type) {
-	case *asciidoc.Section:
-		entities := anchor.Document.entitiesBySection[el]
-		if len(entities) == 1 {
-			e = entities[0]
-		}
-	}
-	if e != nil && label != "" {
-		switch entity := e.(type) {
-		case *matter.Enum:
-			if strings.EqualFold(entity.Name, label) {
-				return
-			}
-			for _, ev := range entity.Values {
-				if strings.EqualFold(label, ev.Name) {
-					e = ev
-					return
-				}
-			}
-		case *matter.Struct:
-			if strings.EqualFold(entity.Name, label) {
-				return
-			}
-			for _, f := range entity.Fields {
-				if strings.EqualFold(label, f.Name) {
-					e = f
-					return
-				}
-			}
-		case *matter.Command:
-			if strings.EqualFold(entity.Name, label) {
-				return
-			}
-			for _, f := range entity.Fields {
-				if strings.EqualFold(label, f.Name) {
-					e = f
-					return
-				}
-			}
-		case *matter.Field:
-			if strings.EqualFold(entity.Name, label) {
-				return
-			}
-			slog.Warn("Unhandled reference field with label", slog.String("clusterName", cluster.Name), slog.String("field", entity.Name))
-		case *matter.Constant:
-			if strings.EqualFold(entity.Name, label) {
-				return
-			}
-			slog.Warn("Unhandled reference constant with label", slog.String("clusterName", cluster.Name), slog.String("constant", entity.Name))
-		default:
-			slog.Warn("Unhandled reference type with label", slog.String("clusterName", cluster.Name), log.Type("entityType", e))
-		}
+	if label != "" {
+		e = finder.findEntityByIdentifier(label, reference)
 	}
 	return
-}
-
-func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, identifier string, source log.Source) types.Entity {
-	// If there are multiple entities with the same name, prefer the one on the current cluster
-	for m, c := range entities {
-		if c == cluster {
-			return m
-		}
-	}
-
-	// OK, if the data type is defined on the direct parent of this cluster, take that one
-	if cluster != nil && cluster.ParentCluster != nil {
-		for m, c := range entities {
-			if c != nil && c == cluster.ParentCluster {
-				return m
-			}
-		}
-	}
-
-	var nakedEntities []types.Entity
-	for m, c := range entities {
-		if c == nil {
-			nakedEntities = append(nakedEntities, m)
-		}
-	}
-	if len(nakedEntities) == 1 {
-		return nakedEntities[0]
-	}
-
-	// Can't disambiguate out this data model
-	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "identifier", identifier, log.Path("source", source))
-	for m, c := range entities {
-		var clusterName string
-		if c != nil {
-			clusterName = c.Name
-		} else {
-			clusterName = "naked"
-		}
-		slog.Warn("ambiguous data type", matter.LogEntity("source", m), "cluster", clusterName)
-	}
-	return nil
 }
