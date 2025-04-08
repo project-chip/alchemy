@@ -58,6 +58,10 @@ Lowercase <- [a-z] {
 	return string(c.text), nil
 }
 
+AnySpaces = [ \t]* 
+
+__ = [ \t]+ 
+
 _ "whitespace" ← [ \t\r\n]*
 
 Comma <- ',' 

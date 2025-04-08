@@ -64,6 +64,10 @@ func (ll *LengthLimit) Fallback(cc Context) (def types.DataTypeExtreme) {
 	return
 }
 
+func (ll *LengthLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (ll *LengthLimit) Clone() Limit {
 	return &LengthLimit{Reference: ll.Reference.Clone()}
 }

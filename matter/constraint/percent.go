@@ -56,6 +56,10 @@ func (c *PercentLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
+func (c *PercentLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *PercentLimit) Clone() Limit {
 	return &PercentLimit{Value: c.Value.Copy(), Hundredths: c.Hundredths}
 }

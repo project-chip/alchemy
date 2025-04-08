@@ -42,9 +42,10 @@ func (c *HexLimit) Equal(o Limit) bool {
 
 func (c *HexLimit) value() types.DataTypeExtreme {
 	return types.DataTypeExtreme{
-		Type:   types.DataTypeExtremeTypeUInt64,
-		Format: types.NumberFormatHex,
-		UInt64: c.Value,
+		Type:     types.DataTypeExtremeTypeUInt64,
+		Format:   types.NumberFormatHex,
+		UInt64:   c.Value,
+		Constant: true,
 	}
 }
 
@@ -58,6 +59,10 @@ func (c *HexLimit) Max(cc Context) (max types.DataTypeExtreme) {
 
 func (c *HexLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.value()
+}
+
+func (c *HexLimit) NeedsParens(topLevel bool) bool {
+	return false
 }
 
 func (c *HexLimit) Clone() Limit {

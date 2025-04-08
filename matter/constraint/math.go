@@ -2,8 +2,8 @@ package constraint
 
 import (
 	"encoding/json"
-	"fmt"
-	"math"
+	"math/big"
+	"strings"
 
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -15,7 +15,27 @@ type MathExpressionLimit struct {
 }
 
 func (c *MathExpressionLimit) ASCIIDocString(dataType *types.DataType) string {
-	return fmt.Sprintf("(%s %s %s)", c.Left.ASCIIDocString(dataType), c.Operand, c.Right.ASCIIDocString(dataType))
+	var s strings.Builder
+	leftRequiresParens := c.Left.NeedsParens(false)
+	if leftRequiresParens {
+		s.WriteString("(")
+	}
+	s.WriteString(c.Left.ASCIIDocString(dataType))
+	if leftRequiresParens {
+		s.WriteString(")")
+	}
+	s.WriteString(" ")
+	s.WriteString(c.Operand)
+	s.WriteString(" ")
+	rightRequiresParens := c.Right.NeedsParens(false)
+	if rightRequiresParens {
+		s.WriteString("(")
+	}
+	s.WriteString(c.Right.ASCIIDocString(dataType))
+	if rightRequiresParens {
+		s.WriteString(")")
+	}
+	return s.String()
 }
 
 func (c *MathExpressionLimit) DataModelString(dataType *types.DataType) string {
@@ -33,58 +53,154 @@ type Number interface {
 	int64 | uint64
 }
 
-func operate[T Number](operand string, left, right T) (val T) {
+func operate(operand string, left, right *big.Int) (val *big.Int) {
+	val = new(big.Int)
 	switch operand {
 	case "+":
-		val = left + right
+		val.Add(left, right)
 	case "-":
-		val = left - right
+		val.Sub(left, right)
 	case "*":
-		val = left * right
+		val.Mul(left, right)
 	case "/":
-		val = left / right
+		val.Div(left, right)
 	}
 	return
 }
 
 func (c *MathExpressionLimit) Min(cc Context) types.DataTypeExtreme {
-	leftMin := c.Left.Min(cc)
-	rightMin := c.Right.Min(cc)
-	return c.operate(leftMin, rightMin)
+	var leftMin, rightMin types.DataTypeExtreme
+	leftMin = c.Left.Min(cc)
+	rightMin = c.Right.Min(cc)
+	var m types.DataTypeExtreme
+	switch c.Operand {
+	case "+":
+		m = c.operate(leftMin, rightMin)
+	case "*":
+		if leftMin.Constant {
+			if rightMin.Constant {
+				m = c.operate(leftMin, rightMin)
+			} else if leftMin.IsNegative() {
+				// if left is a negative constant, multiply by the largest number on the right
+				m = c.operate(leftMin, c.Right.Max(cc))
+			} else {
+				// if left is a positive constant, multiply by the smallest number on the right
+				m = c.operate(leftMin, rightMin)
+			}
+		} else if rightMin.Constant {
+			if rightMin.IsNegative() {
+				m = c.operate(c.Left.Max(cc), rightMin)
+			} else {
+				m = c.operate(leftMin, rightMin)
+			}
+		} else {
+			// Both sides are non-constant
+			if leftMin.IsNegative() && rightMin.IsNegative() {
+				// Multiply both sides and take the smallest
+				m = types.MinExtreme(c.operate(leftMin, c.Right.Max(cc)), c.operate(c.Left.Max(cc), rightMin))
+			} else {
+				m = c.operate(leftMin, rightMin)
+			}
+		}
+	case "-":
+		m = c.operate(leftMin, c.Right.Max(cc))
+	case "/":
+		rightMax := c.Right.Max(cc)
+		if leftMin.Constant {
+			if rightMax.Constant {
+				m = c.operate(leftMin, rightMax)
+			} else if leftMin.IsNegative() {
+				// If left is a negative constant, divide by the smallest number on the right
+				m = c.operate(leftMin, rightMin)
+			} else {
+				// If left is a positive constant, divide by the largest number on the right
+				m = c.operate(leftMin, rightMax)
+			}
+		} else {
+			if leftMin.IsNegative() && rightMax.IsNegative() {
+				m = types.MaxExtreme(c.operate(leftMin, rightMax), c.operate(c.Left.Max(cc), rightMin))
+			} else {
+				m = c.operate(leftMin, rightMax)
+			}
+
+		}
+	}
+	return m
 }
 
 func (c *MathExpressionLimit) Max(cc Context) types.DataTypeExtreme {
-	leftMax := c.Left.Max(cc)
-	rightMax := c.Right.Max(cc)
-	return c.operate(leftMax, rightMax)
+	var leftMax, rightMax types.DataTypeExtreme
+	leftMax = c.Left.Max(cc)
+	rightMax = c.Right.Max(cc)
+	var m types.DataTypeExtreme
+	switch c.Operand {
+	case "+":
+		m = c.operate(leftMax, rightMax)
+	case "*":
+		if leftMax.Constant {
+			if rightMax.Constant {
+				m = c.operate(leftMax, rightMax)
+			} else if leftMax.IsNegative() {
+				// if left is a negative constant, multiply by the smallest number on the right
+				m = c.operate(leftMax, c.Right.Min(cc))
+			} else {
+				// if left is a positive constant, multiply by the largest number on the right
+				m = c.operate(c.Left.Min(cc), rightMax)
+			}
+		} else if rightMax.Constant {
+			if rightMax.IsNegative() {
+				// if right is a negative constant, multiply by the smallest number on the left
+				m = c.operate(c.Left.Min(cc), rightMax)
+			} else {
+				m = c.operate(leftMax, rightMax)
+			}
+		} else {
+			// Both sides are non-constant
+			if leftMax.IsNegative() && rightMax.IsNegative() {
+				// Multiply both sides and take the smallest
+				m = types.MaxExtreme(c.operate(leftMax, c.Right.Min(cc)), c.operate(c.Left.Min(cc), rightMax))
+			} else {
+				m = c.operate(leftMax, rightMax)
+			}
+		}
+	case "-":
+		m = c.operate(leftMax, c.Right.Min(cc))
+	case "/":
+		rightMin := c.Right.Min(cc)
+		if leftMax.Constant {
+			if rightMin.Constant {
+				m = c.operate(leftMax, rightMin)
+			} else if leftMax.IsNegative() {
+				// If left is a negative constant, divide by the largest number on the right
+				m = c.operate(leftMax, rightMax)
+			} else {
+				// If left is a positive constant, divide by the smallest number on the right
+				m = c.operate(leftMax, rightMin)
+			}
+		} else {
+			if leftMax.IsNegative() && rightMin.IsNegative() {
+				m = types.MaxExtreme(c.operate(leftMax, rightMin), c.operate(c.Left.Min(cc), rightMax))
+			} else {
+				m = c.operate(leftMax, rightMin)
+			}
+
+		}
+	}
+	return m
 }
 
 func (c *MathExpressionLimit) operate(left types.DataTypeExtreme, right types.DataTypeExtreme) (extreme types.DataTypeExtreme) {
 	switch left.Type {
 	case types.DataTypeExtremeTypeInt64:
 		switch right.Type {
-		case types.DataTypeExtremeTypeInt64:
-			extreme.Int64 = operate(c.Operand, left.Int64, right.Int64)
-			extreme.Type = types.DataTypeExtremeTypeInt64
-		case types.DataTypeExtremeTypeUInt64:
-			if right.UInt64 > math.MaxInt64 {
-				break
-			}
-			extreme.Int64 = operate(c.Operand, left.Int64, int64(right.UInt64))
-			extreme.Type = types.DataTypeExtremeTypeInt64
+		case types.DataTypeExtremeTypeInt64, types.DataTypeExtremeTypeUInt64:
+			extreme = types.NewIntegerDataTypeExtreme(operate(c.Operand, left.Big(), right.Big()))
 		default:
 		}
 	case types.DataTypeExtremeTypeUInt64:
 		switch right.Type {
-		case types.DataTypeExtremeTypeInt64:
-			if right.Int64 < 0 {
-				break
-			}
-			extreme.UInt64 = operate(c.Operand, left.UInt64, uint64(right.Int64))
-			extreme.Type = types.DataTypeExtremeTypeUInt64
-		case types.DataTypeExtremeTypeUInt64:
-			extreme.UInt64 = operate(c.Operand, left.UInt64, right.UInt64)
-			extreme.Type = types.DataTypeExtremeTypeUInt64
+		case types.DataTypeExtremeTypeInt64, types.DataTypeExtremeTypeUInt64:
+			extreme = types.NewIntegerDataTypeExtreme(operate(c.Operand, left.Big(), right.Big()))
 		default:
 		}
 	default:
@@ -114,6 +230,10 @@ func (c *MathExpressionLimit) operate(left types.DataTypeExtreme, right types.Da
 
 func (c *MathExpressionLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
+}
+
+func (c *MathExpressionLimit) NeedsParens(topLevel bool) bool {
+	return !topLevel
 }
 
 func (c *MathExpressionLimit) Clone() Limit {

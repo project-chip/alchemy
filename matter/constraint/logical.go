@@ -189,6 +189,10 @@ func (le *LogicalLimit) MarshalJSON() ([]byte, error) {
 	return json.Marshal(js)
 }
 
+func (ll *LogicalLimit) NeedsParens(topLevel bool) bool {
+	return !topLevel
+}
+
 func (ll *LogicalLimit) Clone() Limit {
 	nle := &LogicalLimit{Not: ll.Not, Operand: ll.Operand, Left: ll.Left.Clone()}
 	for _, re := range ll.Right {
@@ -342,6 +346,10 @@ func (lc *LogicalConstraint) Max(c Context) (max types.DataTypeExtreme) {
 		}
 	}
 	return
+}
+
+func (lc *LogicalConstraint) NeedsParens(topLevel bool) bool {
+	return !topLevel
 }
 
 func (lc *LogicalConstraint) Clone() Constraint {

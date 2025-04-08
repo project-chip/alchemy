@@ -58,6 +58,10 @@ func (c *TemperatureLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
+func (c *TemperatureLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *TemperatureLimit) Clone() Limit {
 	return &TemperatureLimit{Value: c.Value.Copy()}
 }

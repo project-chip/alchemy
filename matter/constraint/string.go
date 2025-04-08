@@ -36,6 +36,10 @@ func (c *StringLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
+func (c *StringLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *StringLimit) Clone() Limit {
 	return &StringLimit{}
 }

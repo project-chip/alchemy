@@ -1,4 +1,4 @@
-Range <- from:Limit " to " to:Limit {
+Range <- from:Limit __ "to"i __ to:Limit {
 	debug("found range %s\n", string(c.text))
 	return &RangeConstraint  {
 		Minimum:from.(Limit),
@@ -6,12 +6,12 @@ Range <- from:Limit " to " to:Limit {
 	}, nil
 }
 
-Min <- [Mm] "in " _ limit:Limit {
+Min <- "min"i __ limit:Limit {
 	debug("found min limit %s\n", string(c.text))
 	return &MinConstraint{Minimum:limit.(Limit)}, nil
 }
 
-Max <- [Mm] "ax " _ limit:Limit (_ "chars")? {
+Max <- "max"i __ limit:Limit (_ "chars"i)? {
 	debug("found max limit %s\n", string(c.text))
 	return &MaxConstraint{Maximum:limit.(Limit)}, nil
 }

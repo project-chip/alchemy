@@ -37,6 +37,10 @@ func (c *ManufacturerLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return
 }
 
+func (c *ManufacturerLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *ManufacturerLimit) Clone() Limit {
 	return &ManufacturerLimit{Value: c.Value}
 }

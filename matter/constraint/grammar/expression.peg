@@ -1,5 +1,12 @@
-Term <- '(' _ exp:Expression _ ')' {
+Term <- negative:'-'? '(' _ exp:Expression _ ')' {
 	debug("found term add/subtract %s\n", string(c.text))
+	if negative != nil {
+		return &MathExpressionLimit{
+			Operand:"*",
+			Left:&IntLimit{Value:-1},
+			Right:exp.(Limit),
+		}, nil
+	}
     return exp, nil
 } / exp:(Expression) {
 	debug("found term expression %s\n", string(c.text))

@@ -46,6 +46,10 @@ func (c *BooleanLimit) Fallback(cc Context) (max types.DataTypeExtreme) {
 	return c.Min(cc)
 }
 
+func (c *BooleanLimit) NeedsParens(topLevel bool) bool {
+	return false
+}
+
 func (c *BooleanLimit) Clone() Limit {
 	return &BooleanLimit{Value: c.Value}
 }
