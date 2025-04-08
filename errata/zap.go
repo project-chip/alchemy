@@ -43,10 +43,12 @@ type ZAPType struct {
 }
 
 type ZAPField struct {
-	Name  string `yaml:"name,omitempty"`
-	Type  string `yaml:"type,omitempty"`
-	Bit   string `yaml:"bit,omitempty"`
-	Value string `yaml:"value,omitempty"`
+	Name      string `yaml:"name,omitempty"`
+	Type      string `yaml:"type,omitempty"`
+	Bit       string `yaml:"bit,omitempty"`
+	Value     string `yaml:"value,omitempty"`
+	List      bool   `yaml:"list,omitempty"`
+	MaxLength int64  `yaml:"max-length,omitempty"`
 
 	OverrideName string `yaml:"override-name,omitempty"`
 	OverrideType string `yaml:"override-type,omitempty"`
