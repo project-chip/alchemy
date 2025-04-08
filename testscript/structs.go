@@ -81,6 +81,8 @@ func buildTestsForStructs(structs map[*matter.Struct]struct{}) (tests []*TestSte
 			if err != nil {
 				return
 			}
+			actions = append(actions, checkBitmapRange(f, s.Fields, variableName)...)
+
 			checkStructField.Validations = append(checkStructField.Validations, actions...)
 			if len(checkStructField.Validations) > 0 {
 				checkStruct.Fields = append(checkStruct.Fields, checkStructField)
