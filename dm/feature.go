@@ -5,6 +5,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
@@ -13,16 +14,19 @@ func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 		return
 	}
 	features := c.CreateElement("features")
-	err = RenderFeatureElements(doc, cluster, features)
+	err = RenderFeatureElements(doc, cluster, features, false)
 	return
 }
 
-func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etree.Element) (err error) {
+func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etree.Element, excludeDisallowed bool) (err error) {
 	for _, b := range cluster.Features.Bits {
 		f, ok := b.(*matter.Feature)
 		if !ok {
 			err = fmt.Errorf("feature bits contains non-feature bit %s on cluster %s ", b.Name(), cluster.Name)
 			return
+		}
+		if excludeDisallowed && conformance.IsDisallowed(f.Conformance()) {
+			continue
 		}
 		bit := matter.ParseNumber(f.Bit())
 		if !bit.Valid() {

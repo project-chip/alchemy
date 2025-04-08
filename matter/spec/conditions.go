@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err error) {
@@ -108,4 +110,39 @@ func (s *Section) toBaseDeviceTypeConditions(d *Doc) (conditions []*matter.Condi
 		conditions = append(conditions, c)
 	}
 	return
+}
+
+type conditionFinder struct {
+	entityFinderCommon
+
+	deviceType     *matter.DeviceType
+	baseDeviceType *matter.DeviceType
+}
+
+func newConditionFinder(deviceType *matter.DeviceType, baseDeviceType *matter.DeviceType, inner entityFinder) *conditionFinder {
+	return &conditionFinder{
+		entityFinderCommon: entityFinderCommon{inner: inner},
+		deviceType:         deviceType,
+		baseDeviceType:     baseDeviceType,
+	}
+}
+
+func (cf *conditionFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+	for _, con := range cf.deviceType.Conditions {
+		if con.Feature == identifier && con != cf.identity {
+			return con
+		}
+	}
+	if cf.baseDeviceType != nil {
+		for _, con := range cf.baseDeviceType.Conditions {
+			if con.Feature == identifier && con != cf.identity {
+				return con
+			}
+		}
+	}
+	if cf.inner != nil {
+		return cf.inner.findEntityByIdentifier(identifier, source)
+	}
+	return nil
+
 }

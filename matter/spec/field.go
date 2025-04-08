@@ -266,3 +266,25 @@ func findTagNamespace(s *Section, field *matter.Field) error {
 	}
 	return nil
 }
+
+type fieldFinder struct {
+	entityFinderCommon
+
+	fields matter.FieldSet
+}
+
+func newFieldFinder(fields matter.FieldSet, inner entityFinder) *fieldFinder {
+	return &fieldFinder{entityFinderCommon: entityFinderCommon{inner: inner}, fields: fields}
+}
+
+func (ff *fieldFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+	for _, c := range ff.fields {
+		if c.Name == identifier && c != ff.identity {
+			return c
+		}
+	}
+	if ff.inner != nil {
+		return ff.inner.findEntityByIdentifier(identifier, source)
+	}
+	return nil
+}

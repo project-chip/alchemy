@@ -43,7 +43,7 @@ func (f *Field) EntityType() types.EntityType {
 
 func (f *Field) Inherit(parent *Field) {
 	if (f.Type == nil || f.Type.BaseType == types.BaseDataTypeUnknown) && parent.Type != nil {
-		f.Type = parent.Type
+		f.Type = parent.Type.Clone()
 	}
 	if !constraint.IsBlank(parent.Constraint) {
 		if constraint.IsBlank(f.Constraint) {
@@ -58,7 +58,7 @@ func (f *Field) Inherit(parent *Field) {
 	if f.Quality == QualityNone {
 		f.Quality = parent.Quality
 	}
-	if !constraint.IsBlankLimit(f.Fallback) {
+	if constraint.IsBlankLimit(f.Fallback) {
 		f.Fallback = parent.Fallback
 	}
 	if f.entityType == types.EntityTypeUnknown && parent.entityType != types.EntityTypeUnknown {
@@ -68,7 +68,18 @@ func (f *Field) Inherit(parent *Field) {
 }
 
 func (f *Field) Clone() *Field {
-	nf := &Field{entity: entity{source: f.source, parent: f.parent}, ID: f.ID.Clone(), Name: f.Name, Quality: f.Quality, Access: f.Access, Fallback: f.Fallback, entityType: f.entityType}
+	nf := &Field{
+		entity: entity{
+			source: f.source,
+			parent: f.parent,
+		},
+		ID:         f.ID.Clone(),
+		Name:       f.Name,
+		Quality:    f.Quality,
+		Access:     f.Access,
+		Fallback:   f.Fallback,
+		entityType: f.entityType,
+	}
 	if f.Type != nil {
 		nf.Type = f.Type.Clone()
 	}

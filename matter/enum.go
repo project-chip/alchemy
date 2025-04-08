@@ -81,6 +81,9 @@ func (e *Enum) Inherit(parent *Enum) error {
 		return a.Value.Compare(b.Value)
 	})
 	e.Values = mergedValues
+	for _, ev := range e.Values {
+		ev.parent = e
+	}
 	return nil
 }
 

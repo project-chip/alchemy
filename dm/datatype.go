@@ -24,6 +24,8 @@ func dataModelName(dataType *types.DataType) string {
 			return e.Name
 		case *matter.Command:
 			return e.Name
+		case *matter.TypeDef:
+			return e.Name
 		}
 	}
 	if dataType.IsEnum() || dataType.IsMap() {
@@ -236,7 +238,7 @@ func renderFallback(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
 			}
 		}
 	}
-	def := f.Fallback.Fallback(&matter.ConstraintContext{Fields: fs, Field: f})
+	def := f.Fallback.Fallback(matter.NewConstraintContext(f, fs))
 	if !def.Defined() {
 		return
 	}

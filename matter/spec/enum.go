@@ -150,3 +150,25 @@ func (s *Section) toModeTags(d *Doc, parent types.Entity) (e *matter.Enum, err e
 	}
 	return
 }
+
+type enumFinder struct {
+	entityFinderCommon
+
+	en *matter.Enum
+}
+
+func newEnumFinder(en *matter.Enum, inner entityFinder) *enumFinder {
+	return &enumFinder{entityFinderCommon: entityFinderCommon{inner: inner}, en: en}
+}
+
+func (ef *enumFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+	for _, ev := range ef.en.Values {
+		if ev.Name == identifier && ev != ef.identity {
+			return ev
+		}
+	}
+	if ef.inner != nil {
+		return ef.inner.findEntityByIdentifier(identifier, source)
+	}
+	return nil
+}

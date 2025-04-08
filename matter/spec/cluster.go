@@ -158,71 +158,9 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 				return
 			}
 		}
-		assignCustomDataTypes(c)
 	}
 
 	return
-}
-
-func assignCustomDataTypes(c *matter.Cluster) {
-	for _, s := range c.Structs {
-		for _, f := range s.Fields {
-			assignCustomDataType(c, f.Type)
-		}
-	}
-	for _, e := range c.Events {
-		for _, f := range e.Fields {
-			assignCustomDataType(c, f.Type)
-		}
-	}
-	for _, cmd := range c.Commands {
-		for _, f := range cmd.Fields {
-			assignCustomDataType(c, f.Type)
-		}
-	}
-	for _, a := range c.Attributes {
-		assignCustomDataType(c, a.Type)
-	}
-}
-
-func assignCustomDataType(c *matter.Cluster, dt *types.DataType) {
-	if dt == nil {
-		return
-	} else if dt.IsArray() {
-		assignCustomDataType(c, dt.EntryType)
-		return
-	} else if dt.BaseType != types.BaseDataTypeCustom {
-		return
-	}
-	if dt.Entity != nil {
-		return
-	}
-	name := dt.Name
-	for _, bm := range c.Bitmaps {
-		if name == bm.Name {
-			dt.Entity = bm
-			return
-		}
-	}
-	for _, e := range c.Enums {
-		if name == e.Name {
-			dt.Entity = e
-			return
-		}
-	}
-	for _, s := range c.Structs {
-		if name == s.Name {
-			dt.Entity = s
-			return
-		}
-	}
-	for _, t := range c.TypeDefs {
-		if name == t.Name {
-			dt.Entity = t
-			return
-		}
-	}
-	slog.Debug("unable to find data type for field", slog.String("dataType", name), log.Type("source", dt.Source))
 }
 
 func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, err error) {
@@ -363,4 +301,89 @@ func parseDerivedCluster(d *Doc, s *Section, c *matter.Cluster) error {
 		}
 	}
 	return nil
+}
+
+type clusterEntityFinder struct {
+	entityFinderCommon
+
+	cluster *matter.Cluster
+}
+
+func newClusterEntityFinder(cluster *matter.Cluster, inner entityFinder) *clusterEntityFinder {
+	return &clusterEntityFinder{entityFinderCommon: entityFinderCommon{inner: inner}, cluster: cluster}
+}
+
+func (cf *clusterEntityFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+
+	e := cf.findEntityInCluster(cf.cluster, identifier)
+	if e != nil {
+		return e
+	}
+	if cf.cluster.ParentCluster != nil {
+		e = cf.findEntityInCluster(cf.cluster.ParentCluster, identifier)
+		if e != nil {
+			slog.Info("found entity in parent cluster", matter.LogEntity("entity", e), log.Path("source", source), slog.String("cluster", cf.cluster.Name))
+			return e
+		}
+	}
+	if cf.inner != nil {
+		return cf.inner.findEntityByIdentifier(identifier, source)
+	}
+	return nil
+}
+
+func (cf *clusterEntityFinder) findEntityInCluster(cluster *matter.Cluster, identifier string) types.Entity {
+	if cluster.Features != nil {
+		for f := range cluster.Features.FeatureBits() {
+			if f.Code == identifier && f != cf.identity {
+				return f
+			}
+		}
+	}
+	for _, bm := range cluster.Bitmaps {
+		if bm.Name == identifier && bm != cf.identity {
+			return bm
+		}
+	}
+	for _, en := range cluster.Enums {
+		if en.Name == identifier && en != cf.identity {
+			return en
+		}
+	}
+	for _, s := range cluster.Structs {
+		if s.Name == identifier && s != cf.identity {
+			return s
+		}
+	}
+	return nil
+}
+
+func (cef *clusterEntityFinder) findEntityByReference(reference string, label string, source log.Source) (e types.Entity) {
+	if cef.inner != nil {
+		e = cef.inner.findEntityByReference(reference, label, source)
+	}
+	if cef.cluster.Hierarchy != "Base" {
+		switch en := e.(type) {
+		case *matter.Bitmap:
+			local := cef.findEntityInCluster(cef.cluster, en.Name)
+			if local != nil {
+				e = local
+				return
+			}
+		case *matter.Enum:
+			local := cef.findEntityInCluster(cef.cluster, en.Name)
+			if local != nil {
+				e = local
+				return
+			}
+		case *matter.Struct:
+			local := cef.findEntityInCluster(cef.cluster, en.Name)
+			if local != nil {
+				e = local
+				return
+			}
+		}
+	}
+
+	return
 }

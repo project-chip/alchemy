@@ -8,6 +8,7 @@ import (
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func (s *Section) toNamespace(d *Doc, pc *parseContext) (err error) {
@@ -48,7 +49,7 @@ func (s *Section) toNamespace(d *Doc, pc *parseContext) (err error) {
 		break
 	}
 	for row := range valuesTable.Body() {
-		st := &matter.SemanticTag{}
+		st := matter.NewSemanticTag(ns, row)
 		st.ID, err = valuesTable.ReadID(row, matter.TableColumnID)
 		if err != nil {
 			return
@@ -74,4 +75,26 @@ func (s *Section) toNamespace(d *Doc, pc *parseContext) (err error) {
 	pc.orderedEntities = append(pc.orderedEntities, ns)
 	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], ns)
 	return
+}
+
+type tagFinder struct {
+	entityFinderCommon
+
+	namespace *matter.Namespace
+}
+
+func newTagFinder(namespace *matter.Namespace, inner entityFinder) *tagFinder {
+	return &tagFinder{entityFinderCommon: entityFinderCommon{inner: inner}, namespace: namespace}
+}
+
+func (tf *tagFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+	for _, c := range tf.namespace.SemanticTags {
+		if c.Name == identifier && c != tf.identity {
+			return c
+		}
+	}
+	if tf.inner != nil {
+		return tf.inner.findEntityByIdentifier(identifier, source)
+	}
+	return nil
 }

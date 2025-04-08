@@ -19,10 +19,13 @@ type Builder struct {
 	Spec *Specification
 
 	ignoreHierarchy bool
+
+	conformanceFailures map[any]log.Source
+	constraintFailures  map[any]log.Source
 }
 
 func NewBuilder(specRoot string, options ...BuilderOption) Builder {
-	b := Builder{specRoot: specRoot}
+	b := Builder{specRoot: specRoot, conformanceFailures: make(map[any]log.Source), constraintFailures: make(map[any]log.Source)}
 	for _, o := range options {
 		o(&b)
 	}
@@ -39,20 +42,21 @@ func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (
 		docs = append(docs, i.Content)
 	}
 	var referencedDocs []*Doc
-	sp.Spec, referencedDocs, err = sp.buildSpec(docs)
+	referencedDocs, err = sp.buildSpec(docs)
 	for _, d := range referencedDocs {
 		outputs = append(outputs, pipeline.NewData(d.Path.Absolute, d))
 	}
 	return
 }
 
-func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, referencedDocs []*Doc, err error) {
+func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 
 	buildTree(docs)
 
-	spec = newSpec(sp.specRoot)
+	sp.Spec = newSpec(sp.specRoot)
+	spec := sp.Spec
 
-	docGroups := buildDocumentGroups(docs, spec)
+	docGroups := buildDocumentGroups(docs, sp.Spec)
 
 	for _, dg := range docGroups {
 		referencedDocs = append(referencedDocs, dg.Docs...)
@@ -91,7 +95,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, referencedDocs [
 			switch m := m.(type) {
 			case *matter.ClusterGroup:
 				for _, c := range m.Clusters {
-					addClusterToSpec(spec, d, c)
+					sp.addCluster(d, c)
 				}
 			case *matter.Cluster:
 				switch m.Name {
@@ -100,7 +104,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, referencedDocs [
 				case "Bridged Device Basic Information":
 					bridgedBasicInformationCluster = m
 				}
-				addClusterToSpec(spec, d, m)
+				sp.addCluster(d, m)
 			case *matter.DeviceType:
 				spec.DeviceTypes = append(spec.DeviceTypes, m)
 				if m.ID.Valid() {
@@ -191,20 +195,24 @@ func (sp *Builder) buildSpec(docs []*Doc) (spec *Specification, referencedDocs [
 
 	}
 
+	sp.resolveDataTypeReferences(true)
 	if !sp.ignoreHierarchy {
-		resolveHierarchy(spec)
+		sp.resolveHierarchy()
 	}
 	associateDeviceTypeRequirementWithClusters(spec)
+	sp.resolveDataTypeReferences(false)
 
-	sp.resolveDataTypeReferences(spec)
-	sp.resolveConformances(spec)
-	sp.resolveConstraints(spec)
-	err = updateBridgedBasicInformationCluster(basicInformationCluster, bridgedBasicInformationCluster)
+	sp.resolveConformances()
+	sp.resolveConstraints()
+	err = updateBridgedBasicInformationCluster(spec, basicInformationCluster, bridgedBasicInformationCluster)
 	if err != nil {
 		return
 	}
 
 	buildClusterReferences(spec)
+
+	sp.noteConformanceResolutionFailures()
+	sp.noteConstraintResolutionFailures()
 
 	return
 }
@@ -329,14 +337,14 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 	}
 }
 
-func addClusterToSpec(spec *Specification, doc *Doc, cluster *matter.Cluster) {
-	spec.Clusters[cluster] = struct{}{}
+func (sp *Builder) addCluster(doc *Doc, cluster *matter.Cluster) {
+	sp.Spec.Clusters[cluster] = struct{}{}
 	if cluster.ID.Valid() {
-		existing, ok := spec.ClustersByID[cluster.ID.Value()]
+		existing, ok := sp.Spec.ClustersByID[cluster.ID.Value()]
 		if ok {
 			slog.Warn("Duplicate cluster ID", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterName", existing.Name))
 		}
-		spec.ClustersByID[cluster.ID.Value()] = cluster
+		sp.Spec.ClustersByID[cluster.ID.Value()] = cluster
 	} else {
 		idText := cluster.ID.Text()
 		if !strings.EqualFold(idText, "n/a") {
@@ -348,77 +356,77 @@ func addClusterToSpec(spec *Specification, doc *Doc, cluster *matter.Cluster) {
 			}
 		}
 	}
-	existing, ok := spec.ClustersByName[cluster.Name]
+	existing, ok := sp.Spec.ClustersByName[cluster.Name]
 	if ok {
 		slog.Warn("Duplicate cluster Name", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterId", existing.ID.HexString()))
 	}
-	spec.ClustersByName[cluster.Name] = cluster
+	sp.Spec.ClustersByName[cluster.Name] = cluster
 
 	for _, en := range cluster.Bitmaps {
-		_, ok := spec.bitmapIndex[en.Name]
+		_, ok := sp.Spec.bitmapIndex[en.Name]
 		if ok {
 			slog.Debug("multiple bitmaps with same name", "name", en.Name)
 		} else {
-			spec.bitmapIndex[en.Name] = en
+			sp.Spec.bitmapIndex[en.Name] = en
 		}
-		spec.addEntityByName(en.Name, en, cluster)
+		sp.Spec.addEntityByName(en.Name, en, cluster)
 	}
 	for _, en := range cluster.Enums {
-		_, ok := spec.enumIndex[en.Name]
+		_, ok := sp.Spec.enumIndex[en.Name]
 		if ok {
 			slog.Debug("multiple enums with same name", "name", en.Name)
 		} else {
-			spec.enumIndex[en.Name] = en
+			sp.Spec.enumIndex[en.Name] = en
 		}
-		spec.addEntityByName(en.Name, en, cluster)
+		sp.Spec.addEntityByName(en.Name, en, cluster)
 	}
 	for _, en := range cluster.Structs {
-		_, ok := spec.structIndex[en.Name]
+		_, ok := sp.Spec.structIndex[en.Name]
 		if ok {
 			slog.Debug("multiple structs with same name", "name", en.Name)
 		} else {
-			spec.structIndex[en.Name] = en
+			sp.Spec.structIndex[en.Name] = en
 		}
-		spec.addEntityByName(en.Name, en, cluster)
+		sp.Spec.addEntityByName(en.Name, en, cluster)
 	}
 	for _, en := range cluster.TypeDefs {
-		_, ok := spec.typeDefIndex[en.Name]
+		_, ok := sp.Spec.typeDefIndex[en.Name]
 		if ok {
 			slog.Debug("multiple structs with same name", "name", en.Name)
 		} else {
-			spec.typeDefIndex[en.Name] = en
+			sp.Spec.typeDefIndex[en.Name] = en
 		}
-		spec.addEntityByName(en.Name, en, cluster)
+		sp.Spec.addEntityByName(en.Name, en, cluster)
 	}
-	noteDocRefs(spec, doc, cluster)
+	sp.noteDocRefs(doc, cluster)
 }
 
-func noteDocRefs(spec *Specification, doc *Doc, cluster *matter.Cluster) {
+func (sp *Builder) noteDocRefs(doc *Doc, cluster *matter.Cluster) {
 	for _, bm := range cluster.Bitmaps {
-		spec.DocRefs[bm] = doc
+		sp.Spec.DocRefs[bm] = doc
 	}
 	for _, e := range cluster.Enums {
-		spec.DocRefs[e] = doc
+		sp.Spec.DocRefs[e] = doc
 	}
 	for _, s := range cluster.Structs {
-		spec.DocRefs[s] = doc
+		sp.Spec.DocRefs[s] = doc
 	}
 	for _, td := range cluster.TypeDefs {
-		spec.DocRefs[td] = doc
+		sp.Spec.DocRefs[td] = doc
 	}
 	for _, a := range cluster.Attributes {
-		spec.DocRefs[a] = doc
+		sp.Spec.DocRefs[a] = doc
 	}
 	for _, e := range cluster.Events {
-		spec.DocRefs[e] = doc
+		sp.Spec.DocRefs[e] = doc
 	}
 	for _, cmd := range cluster.Commands {
-		spec.DocRefs[cmd] = doc
+		sp.Spec.DocRefs[cmd] = doc
 	}
 }
 
-func getTagNamespace(spec *Specification, field *matter.Field) {
-	for _, ns := range spec.Namespaces {
+func (sp *Builder) getTagNamespace(field *matter.Field) {
+	for _, ns := range sp.Spec.Namespaces {
 		if strings.EqualFold(ns.Name, field.Type.Name) {
 			field.Type.Entity = ns
 			return
@@ -437,12 +445,12 @@ func clusterName(cluster *matter.Cluster) string {
 	return "none"
 }
 
-func resolveHierarchy(spec *Specification) {
-	for _, c := range spec.ClustersByID {
+func (sp *Builder) resolveHierarchy() {
+	for _, c := range sp.Spec.ClustersByID {
 		if c.Hierarchy == "Base" {
 			continue
 		}
-		base, ok := spec.ClustersByName[c.Hierarchy]
+		base, ok := sp.Spec.ClustersByName[c.Hierarchy]
 		if !ok {
 			slog.Warn("Failed to find base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy)
 			continue
@@ -451,42 +459,33 @@ func resolveHierarchy(spec *Specification) {
 		if err != nil {
 			slog.Warn("Failed to inherit from base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy, "error", err)
 		}
-		// These entities were inherited from a base cluster, but not modified
+		// These entities were inherited from a base cluster
 		for _, linkedEntity := range linkedEntities {
-			spec.ClusterRefs.Add(c, linkedEntity)
-			spec.addEntity(linkedEntity, c)
+			sp.Spec.ClusterRefs.Add(c, linkedEntity)
+			sp.Spec.addEntity(linkedEntity, c)
 		}
-		doc, ok := spec.DocRefs[c]
+		doc, ok := sp.Spec.DocRefs[c]
 		if ok {
 			// We may have created some new entities during the inherit, so make sure their doc refs are set
-			noteDocRefs(spec, doc, c)
+			sp.noteDocRefs(doc, c)
 		}
-		assignCustomDataTypes(c)
 	}
 }
 
-func updateBridgedBasicInformationCluster(basicInformationCluster *matter.Cluster, bridgedBasicInformationCluster *matter.Cluster) error {
+func updateBridgedBasicInformationCluster(spec *Specification, basicInformationCluster *matter.Cluster, bridgedBasicInformationCluster *matter.Cluster) error {
 	if basicInformationCluster == nil {
 		return fmt.Errorf("missing Basic Information Cluster in spec")
 	}
 	if bridgedBasicInformationCluster == nil {
 		return fmt.Errorf("missing Basic Information Cluster in spec")
 	}
-	am := make(map[uint64]*matter.Field, len(basicInformationCluster.Attributes))
-	for _, a := range basicInformationCluster.Attributes {
-		am[a.ID.Value()] = a
+	linkedEntities, err := bridgedBasicInformationCluster.Inherit(basicInformationCluster)
+	if err != nil {
+		return err
 	}
-	for _, ba := range bridgedBasicInformationCluster.Attributes {
-		id := ba.ID.Value()
-		a, ok := am[id]
-		if !ok {
-			continue
-		}
-		ba.Type = a.Type.Clone()
-		ba.Constraint = a.Constraint.Clone()
-		ba.Quality = a.Quality
-		ba.Fallback = a.Fallback
-		ba.Access = a.Access
+	for _, linkedEntity := range linkedEntities {
+		spec.ClusterRefs.Add(bridgedBasicInformationCluster, linkedEntity)
+		spec.addEntity(linkedEntity, bridgedBasicInformationCluster)
 	}
 	return nil
 }

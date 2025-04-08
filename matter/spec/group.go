@@ -54,6 +54,10 @@ func (si *Specification) addEntity(entity types.Entity, cluster *matter.Cluster)
 		si.addEntityByName(entity.Name, entity, cluster)
 	case *matter.Struct:
 		si.addEntityByName(entity.Name, entity, cluster)
+	case *matter.TypeDef:
+		si.addEntityByName(entity.Name, entity, cluster)
+	case *matter.Namespace:
+		si.addEntityByName(entity.Name, entity, cluster)
 	default:
 		slog.Warn("Unexpected type adding entity to spec", log.Type("type", entity))
 	}

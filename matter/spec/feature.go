@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Features, err error) {
@@ -71,4 +73,29 @@ func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Feature
 		}
 	}
 	return
+}
+
+type featureFinder struct {
+	entityFinderCommon
+
+	features *matter.Features
+}
+
+func newFeatureFinder(features *matter.Features, inner entityFinder) *featureFinder {
+	return &featureFinder{entityFinderCommon: entityFinderCommon{inner: inner}, features: features}
+}
+
+func (ff *featureFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+
+	if ff.features != nil {
+		for f := range ff.features.FeatureBits() {
+			if f.Code == identifier {
+				return f
+			}
+		}
+	}
+	if ff.inner != nil {
+		return ff.inner.findEntityByIdentifier(identifier, source)
+	}
+	return nil
 }

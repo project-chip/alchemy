@@ -1,10 +1,12 @@
 package dm
 
 import (
+	"log/slog"
 	"slices"
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -60,7 +62,16 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 		case matter.InterfaceServer:
 			cx.CreateAttr("direction", "commandToServer")
 			if cmd.Response != nil {
-				cx.CreateAttr("response", cmd.Response.Name)
+				var responseName string
+				switch response := cmd.Response.Entity.(type) {
+				case *matter.Command:
+					responseName = response.Name
+				case nil:
+					responseName = cmd.Response.Name
+				default:
+					slog.Error("Unexpected entity type on command response", slog.String("commandName", cmd.Name), matter.LogEntity("entity", response), log.Path("source", cmd))
+				}
+				cx.CreateAttr("response", responseName)
 			}
 			if cmd.Quality.Has(matter.QualityLargeMessage) {
 				cx.CreateElement("quality").CreateAttr("largeMessage", "true")
