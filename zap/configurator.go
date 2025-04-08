@@ -7,6 +7,7 @@ import (
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -92,6 +93,22 @@ func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []type
 				e.Values = append(e.Values, ev)
 			}
 			extraEntities = append(extraEntities, e)
+		case "struct":
+			s := matter.NewStruct(nil, nil)
+			s.Name = name
+			s.Description = et.Description
+			for i, ef := range et.Fields {
+				f := matter.NewField(nil, nil, types.EntityTypeStructField)
+				f.ID = matter.NewNumber(uint64(i))
+				f.Name = ef.Name
+				f.Type = types.ParseDataType(ef.Type, ef.List)
+				if ef.MaxLength > 0 {
+					f.Constraint = constraint.Set{&constraint.MaxConstraint{Maximum: &constraint.IntLimit{Value: ef.MaxLength}}}
+				}
+				f.Conformance = conformance.Set{&conformance.Mandatory{}}
+				s.Fields = append(s.Fields, f)
+			}
+			extraEntities = append(extraEntities, s)
 		default:
 			slog.Error("Unknown extra type in ZAP errata", "type", et.Type, "path", outPath)
 		}
