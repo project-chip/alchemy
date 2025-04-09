@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/goccy/go-yaml"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -178,6 +179,28 @@ func (fs *FabricSensitivity) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (fs FabricSensitivity) MarshalYAML() ([]byte, error) {
+	return yaml.Marshal(fs.String())
+}
+
+func (fs *FabricSensitivity) UnmarshalYAML(b []byte) error {
+	var sensitivity string
+	if err := yaml.Unmarshal(b, &sensitivity); err != nil {
+		return fmt.Errorf("error parsing fabric sensitivity %s: %w", string(b), err)
+	}
+	switch sensitivity {
+	case "sensitive":
+		*fs = FabricSensitivitySensitive
+	case "insensitive":
+		*fs = FabricSensitivityInsensitive
+	case "unknown":
+		*fs = FabricSensitivityUnknown
+	default:
+		return fmt.Errorf("unknown fabric sensitivity: %s", sensitivity)
+	}
+	return nil
+}
+
 type Timing uint8
 
 const (
@@ -220,13 +243,13 @@ func (t *Timing) UnmarshalJSON(data []byte) error {
 }
 
 type Access struct {
-	Read   Privilege `json:"read,omitempty"`
-	Write  Privilege `json:"write,omitempty"`
-	Invoke Privilege `json:"invoke,omitempty"`
+	Read   Privilege `json:"read,omitempty" yaml:"read,omitempty"`
+	Write  Privilege `json:"write,omitempty"  yaml:"write,omitempty"`
+	Invoke Privilege `json:"invoke,omitempty"  yaml:"invoke,omitempty"`
 
-	OptionalWrite     bool              `json:"optionalWrite,omitempty"`
-	FabricScoping     FabricScoping     `json:"fabricScoped,omitempty"`
-	FabricSensitivity FabricSensitivity `json:"fabricSensitive,omitempty"`
+	OptionalWrite     bool              `json:"optionalWrite,omitempty"  yaml:"optionalWrite,omitempty"`
+	FabricScoping     FabricScoping     `json:"fabricScoped,omitempty"  yaml:"fabricScoping,omitempty"`
+	FabricSensitivity FabricSensitivity `json:"fabricSensitive,omitempty"  yaml:"fabricSensitivity,omitempty"`
 
 	Timing Timing `json:"timed,omitempty"`
 }

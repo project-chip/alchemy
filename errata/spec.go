@@ -1,5 +1,7 @@
 package errata
 
+import "github.com/project-chip/alchemy/internal/yaml"
+
 type SpecSection struct {
 	Skip SpecPurpose `yaml:"skip,omitempty"`
 }
@@ -66,9 +68,9 @@ func (i SpecPurpose) HasAny(o SpecPurpose) bool {
 }
 
 func (i SpecPurpose) MarshalYAML() ([]byte, error) {
-	return marshalYamlBitmap(specPurposes, i, SpecPurposeAll)
+	return yaml.MarshalBitmap(specPurposes, i, SpecPurposeAll)
 }
 
 func (i *SpecPurpose) UnmarshalYAML(b []byte) error {
-	return unmarshalYamlBitmap(specPurposes, i, b)
+	return yaml.UnmarshalBitmap(specPurposes, i, b)
 }

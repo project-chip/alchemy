@@ -186,7 +186,7 @@ func (cr *configuratorRenderer) writeAttributeDataType(x *etree.Element, fs matt
 		return
 	}
 	dts := zap.FieldToZapDataType(fs, f)
-	dts = cr.configurator.Errata.TypeName(dts)
+	dts = cr.configurator.Errata.TypeName(types.EntityTypeAttribute, dts)
 	if f.Type.IsArray() {
 		x.CreateAttr("type", "array")
 		x.CreateAttr("entryType", dts)

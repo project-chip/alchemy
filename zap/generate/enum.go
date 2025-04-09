@@ -28,7 +28,7 @@ func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.N
 		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range enums {
-			if cr.configurator.Errata.TypeName(bm.Name) == name || cr.configurator.Errata.TypeName(strings.TrimSuffix(bm.Name, "Enum")) == name {
+			if cr.configurator.Errata.TypeName(types.EntityTypeBitmap, bm.Name) == name || cr.configurator.Errata.TypeName(types.EntityTypeBitmap, strings.TrimSuffix(bm.Name, "Enum")) == name {
 				matchingEnum = bm
 				skip = len(handled) == 0
 				clusterIds = handled
@@ -89,8 +89,8 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 		valFormat = "0x%02X"
 	}
 
-	ee.CreateAttr("name", cr.configurator.Errata.TypeName(en.Name))
-	ee.CreateAttr("type", zap.DataTypeName(en.Type))
+	ee.CreateAttr("name", cr.configurator.Errata.TypeName(types.EntityTypeEnum, en.Name))
+	ee.CreateAttr("type", cr.configurator.Errata.DataTypeName(types.EntityTypeEnum, en.Type.Name))
 
 	if !cr.configurator.Global {
 		_, remainingClusterIds := amendExistingClusterCodes(ee, en, clusterIds)
@@ -130,7 +130,7 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 
 func (cr *configuratorRenderer) setEnumItemAttributes(e *etree.Element, en *matter.Enum, v *matter.EnumValue, valFormat string) {
 	name := zap.CleanName(v.Name)
-	name = cr.configurator.Errata.FieldName(en.Name, name)
+	name = cr.configurator.Errata.FieldName(types.EntityTypeEnum, en.Name, name)
 	e.CreateAttr("name", name)
 	patchNumberAttributeFormat(e, v.Value, "value", valFormat)
 }

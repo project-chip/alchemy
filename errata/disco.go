@@ -1,5 +1,7 @@
 package errata
 
+import "github.com/project-chip/alchemy/internal/yaml"
+
 type DiscoSection struct {
 	Skip DiscoPurpose `yaml:"skip,omitempty"`
 }
@@ -73,9 +75,9 @@ func (i DiscoPurpose) HasAny(o DiscoPurpose) bool {
 }
 
 func (i DiscoPurpose) MarshalYAML() ([]byte, error) {
-	return marshalYamlBitmap(discoPurposes, i, DiscoPurposeAll)
+	return yaml.MarshalBitmap(discoPurposes, i, DiscoPurposeAll)
 }
 
 func (i *DiscoPurpose) UnmarshalYAML(b []byte) error {
-	return unmarshalYamlBitmap(discoPurposes, i, b)
+	return yaml.UnmarshalBitmap(discoPurposes, i, b)
 }
