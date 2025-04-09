@@ -137,6 +137,14 @@ func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder e
 		if l.Entity != nil && l.Field != nil {
 			sp.resolveFieldConstraintLimit(cluster, makeEntityFinder(l.Entity, finder), source, l.Field)
 		}
+	case *constraint.MinOfLimit:
+		for _, l := range l.Minimums {
+			sp.resolveFieldConstraintLimit(cluster, finder, source, l)
+		}
+	case *constraint.MaxOfLimit:
+		for _, l := range l.Maximums {
+			sp.resolveFieldConstraintLimit(cluster, finder, source, l)
+		}
 	case nil, *constraint.ManufacturerLimit,
 		*constraint.IntLimit,
 		*constraint.NullLimit,

@@ -15,3 +15,31 @@ Max <- "max"i __ limit:Limit (_ "chars"i)? {
 	debug("found max limit %s\n", string(c.text))
 	return &MaxConstraint{Maximum:limit.(Limit)}, nil
 }
+
+MinOfLimit <- "minOf("i _ limit:Limit limits:(MinMaxSetLimit)+ _ ")" {
+	ls := limits.([]interface{})
+
+    var set LimitSet
+	set = append(set, limit.(Limit))
+    for _, i := range ls {
+        con := i.(Limit)
+        set = append(set, con)
+    }
+	return &MinOfLimit{Minimums:set}, nil
+}
+
+MaxOfLimit <- "maxOf("i _ limit:Limit limits:(MinMaxSetLimit)+ _ ")" {
+	ls := limits.([]interface{})
+
+    var set LimitSet
+	set = append(set, limit.(Limit))
+    for _, i := range ls {
+        con := i.(Limit)
+        set = append(set, con)
+    }
+	return &MaxOfLimit{Maximums:set}, nil
+}
+
+MinMaxSetLimit <- (_ Comma _) limit:Limit {
+	return limit, nil
+}
