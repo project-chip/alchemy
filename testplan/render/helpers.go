@@ -49,9 +49,9 @@ func dataTypeHelper(dt types.DataType) raymond.SafeString {
 		if dt.Entity != nil {
 			switch entity := dt.Entity.(type) {
 			case *matter.Enum:
-				return raymond.SafeString(entity.Type.Name)
+				return raymond.SafeString(entity.Name)
 			case *matter.Bitmap:
-				return raymond.SafeString(entity.Type.Name)
+				return raymond.SafeString(entity.Name)
 			}
 		}
 		return raymond.SafeString(dt.Name)
