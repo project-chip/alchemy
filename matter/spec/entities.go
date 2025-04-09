@@ -71,10 +71,16 @@ func makeEntityFinder(entity types.Entity, inner entityFinder) entityFinder {
 	case *matter.Struct:
 		return newFieldFinder(entity.Fields, inner)
 	case *matter.Field:
-		return makeEntityFinder(entity.Type.Entity, inner)
+		if entity.Type.Entity != nil {
+			return makeEntityFinder(entity.Type.Entity, inner)
+		}
+		return inner
 	case *matter.Namespace:
 		return newTagFinder(entity, inner)
 	case *matter.TypeDef: // There are no fields in a typedef
+		return inner
+	case nil:
+		slog.Warn("Unable to make named entry finder for nil type")
 		return inner
 	default:
 		slog.Warn("Unable to make named entry finder for type", log.Type("type", entity), matter.LogEntity("entity", entity))

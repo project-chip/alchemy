@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter/types"
 )
 

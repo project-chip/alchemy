@@ -160,7 +160,7 @@ func (sp *Builder) resolveEntityConformanceReferences(cluster *matter.Cluster, f
 	case *conformance.Disallowed, *conformance.Provisional, *conformance.Described, *conformance.Deprecated:
 	case *conformance.Generic:
 		if !conformance.IsBlank(con) {
-			slog.Warn("Can not resolve entities on generic conformance", slog.String("conformance", con.RawText()))
+			slog.Warn("Can not resolve entities on generic conformance", slog.String("conformance", con.RawText()), log.Path("source", source))
 
 		}
 	default:
