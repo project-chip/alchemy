@@ -229,7 +229,9 @@ func (ce *DataTypeExtreme) formatUint64(dataType *DataType, val uint64) string {
 
 func (ce DataTypeExtreme) Equals(o DataTypeExtreme) bool {
 	if ce.Type != o.Type {
-		return false
+		if !ce.IsNumeric() || !o.IsNumeric() {
+			return false
+		}
 	}
 	switch ce.Type {
 	case DataTypeExtremeTypeInt64:
