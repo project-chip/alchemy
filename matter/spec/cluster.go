@@ -126,7 +126,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:
-				err = parseDerivedCluster(d, s, c)
+				err = parseDerivedCluster(d, pc, s, c)
 			case matter.SectionClusterID:
 			case matter.SectionDataTypes, matter.SectionFeatures, matter.SectionStatusCodes: // Handled above
 			default:
@@ -287,7 +287,7 @@ func readClusterClassification(doc *Doc, name string, classification *matter.Clu
 	return nil
 }
 
-func parseDerivedCluster(d *Doc, s *Section, c *matter.Cluster) error {
+func parseDerivedCluster(d *Doc, pc *parseContext, s *Section, c *matter.Cluster) error {
 	elements := parse.Skim[*Section](s.Elements())
 	for _, s := range elements {
 		switch s.SecType {
@@ -297,7 +297,12 @@ func parseDerivedCluster(d *Doc, s *Section, c *matter.Cluster) error {
 				return err
 			}
 			c.Enums = append(c.Enums, en)
-
+		case matter.SectionStatusCodes:
+			en, err := s.toStatusCodes(d, pc, c)
+			if err != nil {
+				return err
+			}
+			c.Enums = append(c.Enums, en)
 		}
 	}
 	return nil

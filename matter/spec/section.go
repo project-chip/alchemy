@@ -262,6 +262,8 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 		switch name {
 		case "mode tags":
 			return matter.SectionModeTags
+		default:
+			return deriveSectionType(section, parent)
 		}
 	case matter.SectionAttributes:
 		if strings.HasSuffix(name, " attribute") {
@@ -411,10 +413,15 @@ func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
 		return
 	}
 	if !hasSummary && !hasDescription {
+		if !hasValue && hasStatusCode {
+			sectionType = matter.SectionStatusCodes
+			return
+		}
 		return
 	}
 	if hasBit {
 		sectionType = matter.SectionDataTypeBitmap
+		return
 	}
 	if hasValue || hasStatusCode {
 		sectionType = matter.SectionDataTypeEnum
@@ -544,6 +551,17 @@ func findLooseEntities(doc *Doc, section *Section, pc *parseContext, parentEntit
 				err = nil
 			} else {
 				entities = append(entities, ges...)
+			}
+		case matter.SectionStatusCodes:
+			var me *matter.Enum
+			me, err = section.toEnum(doc, pc, parentEntity)
+			if err != nil {
+				if err != ErrNotEnoughRowsInTable || doc.parsed {
+					slog.Warn("Error converting section to status code", log.Element("source", doc.Path, section.Base), slog.Any("error", err))
+				}
+				err = nil
+			} else {
+				entities = append(entities, me)
 			}
 		}
 		if err != nil {
