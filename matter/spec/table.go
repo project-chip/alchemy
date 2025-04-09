@@ -195,7 +195,7 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnNamespace
 	case "mode tag value":
 		return matter.TableColumnModeTagValue
-	case "status code":
+	case "status code", "status code value":
 		return matter.TableColumnStatusCode
 	}
 	return matter.TableColumnUnknown
