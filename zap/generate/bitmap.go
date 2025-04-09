@@ -33,7 +33,7 @@ func (cr *configuratorRenderer) generateBitmaps(bitmaps map[*matter.Bitmap][]*ma
 		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range bitmaps {
-			if cr.configurator.Errata.TypeName(bm.Name) == name || cr.configurator.Errata.TypeName(strings.TrimSuffix(bm.Name, "Bitmap")) == name {
+			if cr.configurator.Errata.TypeName(types.EntityTypeBitmap, bm.Name) == name || cr.configurator.Errata.TypeName(types.EntityTypeBitmap, strings.TrimSuffix(bm.Name, "Bitmap")) == name {
 				matchingBitmap = bm
 				clusterIds = handled
 				skip = len(handled) == 0
@@ -90,12 +90,14 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 
 	}
 
-	ee.CreateAttr("name", cr.configurator.Errata.TypeName(bm.Name))
+	ee.CreateAttr("name", cr.configurator.Errata.TypeName(types.EntityTypeBitmap, bm.Name))
+	var typeName string
 	if bm.Type != nil {
-		ee.CreateAttr("type", zap.DataTypeName(bm.Type))
+		typeName = cr.configurator.Errata.DataTypeName(types.EntityTypeBitmap, zap.DataTypeName(bm.Type))
 	} else {
-		ee.CreateAttr("type", "bitmap8")
+		typeName = cr.configurator.Errata.DataTypeName(types.EntityTypeBitmap, "bitmap8")
 	}
+	ee.CreateAttr("type", typeName)
 
 	if !cr.configurator.Global {
 		_, remainingClusterIds := amendExistingClusterCodes(ee, bm, clusterIds)
@@ -148,7 +150,7 @@ func (cr *configuratorRenderer) setBitmapFieldAttributes(e *etree.Element, bm *m
 
 	name := b.Name()
 	name = zap.CleanName(name)
-	name = cr.configurator.Errata.FieldName(bm.Name, name)
+	name = cr.configurator.Errata.FieldName(types.EntityTypeBitmap, bm.Name, name)
 	e.CreateAttr("name", name)
 	ma := e.SelectAttr("mask")
 	if ma != nil {

@@ -97,7 +97,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 	}
 	ce.CreateAttr("code", c.ID.ShortHexString())
 	commandName := zap.CleanName(c.Name)
-	commandName = cr.configurator.Errata.FieldName(c.Name, commandName)
+	commandName = cr.configurator.Errata.FieldName(types.EntityTypeCommand, c.Name, commandName)
 	ce.CreateAttr("name", commandName)
 	if c.Access.IsFabricScoped() {
 		ce.CreateAttr("isFabricScoped", "true")
@@ -142,7 +142,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		ce.Child = append([]etree.Token{de}, ce.Child...)
 	}
 	if len(c.Description) > 0 {
-		de.SetText(cr.configurator.Errata.TypeDescription(c.Name, c.Description))
+		de.SetText(cr.configurator.Errata.TypeDescription(types.EntityTypeCommand, c.Name, c.Description))
 	}
 
 	needsAccess := c.Access.Invoke != matter.PrivilegeUnknown && c.Access.Invoke != matter.PrivilegeOperate && c.Direction != matter.InterfaceClient
@@ -185,7 +185,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 				continue
 			}
 			xml.PrependAttribute(fe, "id", f.ID.IntString())
-			cr.setFieldAttributes(fe, c.Name, f, c.Fields)
+			cr.setFieldAttributes(fe, types.EntityTypeCommand, c.Name, f, c.Fields)
 			break
 		}
 	}
@@ -200,7 +200,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		}
 		fe := ce.CreateElement("arg")
 		fe.CreateAttr("id", f.ID.IntString())
-		cr.setFieldAttributes(fe, c.Name, f, c.Fields)
+		cr.setFieldAttributes(fe, types.EntityTypeCommand, c.Name, f, c.Fields)
 		xml.AppendElement(ce, fe)
 	}
 

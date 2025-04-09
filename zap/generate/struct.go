@@ -28,7 +28,7 @@ func (cr *configuratorRenderer) generateStructs(structs map[*matter.Struct][]*ma
 		var clusterIds []*matter.Number
 		var skip bool
 		for s, handled := range structs {
-			if errata.TypeName(s.Name) == name || errata.TypeName(strings.TrimSuffix(s.Name, "Struct")) == name {
+			if errata.TypeName(types.EntityTypeStruct, s.Name) == name || errata.TypeName(types.EntityTypeStruct, strings.TrimSuffix(s.Name, "Struct")) == name {
 				matchingStruct = s
 				skip = len(handled) == 0
 				clusterIds = handled
@@ -94,7 +94,7 @@ func (cr *configuratorRenderer) generateStructs(structs map[*matter.Struct][]*ma
 
 func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Number, provisional bool) (remainingClusterIDs []*matter.Number) {
 	cr.elementMap[ee] = s
-	ee.CreateAttr("name", cr.configurator.Errata.TypeName(s.Name))
+	ee.CreateAttr("name", cr.configurator.Errata.TypeName(types.EntityTypeStruct, s.Name))
 	if provisional {
 		ee.CreateAttr("apiMaturity", "provisional")
 	}
@@ -152,9 +152,9 @@ func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *ma
 	e.RemoveAttr("id")
 	xml.PrependAttribute(e, "fieldId", v.ID.IntString())
 	name := zap.CleanName(v.Name)
-	name = cr.configurator.Errata.FieldName(s.Name, name)
+	name = cr.configurator.Errata.FieldName(types.EntityTypeStruct, s.Name, name)
 	e.CreateAttr("name", name)
-	cr.writeDataType(e, s.Name, s.Fields, v)
+	cr.writeDataType(e, types.EntityTypeStruct, s.Name, s.Fields, v)
 	if v.Quality.Has(matter.QualityNullable) && !cr.generator.generateExtendedQualityElement {
 		e.CreateAttr("isNullable", "true")
 	} else {

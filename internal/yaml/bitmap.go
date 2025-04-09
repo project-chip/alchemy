@@ -1,4 +1,4 @@
-package errata
+package yaml
 
 import (
 	"fmt"
@@ -8,11 +8,11 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-type yamlBitmap[BitmapType ~uint32 | ~uint64] interface {
+type Bitmap[BitmapType ~uint32 | ~uint64] interface {
 	Has(bt BitmapType) bool
 }
 
-func marshalYamlBitmap[BitmapType ~uint32 | ~uint64](valueMap map[string]BitmapType, value yamlBitmap[BitmapType], allValue yamlBitmap[BitmapType]) ([]byte, error) {
+func MarshalBitmap[BitmapType ~uint32 | ~uint64](valueMap map[string]BitmapType, value Bitmap[BitmapType], allValue Bitmap[BitmapType]) ([]byte, error) {
 	if value == allValue {
 		return []byte("all"), nil
 	}
@@ -26,7 +26,7 @@ func marshalYamlBitmap[BitmapType ~uint32 | ~uint64](valueMap map[string]BitmapT
 	return yaml.Marshal(purposes)
 }
 
-func unmarshalYamlBitmap[BitmapType ~uint32 | ~uint64](valueMap map[string]BitmapType, value *BitmapType, b []byte) error {
+func UnmarshalBitmap[BitmapType ~uint32 | ~uint64](valueMap map[string]BitmapType, value *BitmapType, b []byte) error {
 	var v []string
 	if err := yaml.Unmarshal(b, &v); err != nil {
 		return err
@@ -34,7 +34,7 @@ func unmarshalYamlBitmap[BitmapType ~uint32 | ~uint64](valueMap map[string]Bitma
 	for _, p := range v {
 		dp, ok := valueMap[strings.ToLower(strings.TrimSpace(p))]
 		if !ok {
-			return fmt.Errorf("unknown purpose: %s", strings.TrimSpace(p))
+			return fmt.Errorf("unknown YAML bitmap value: %s", strings.TrimSpace(p))
 		}
 		*value |= dp
 	}

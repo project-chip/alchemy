@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
@@ -14,11 +16,11 @@ func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 		return
 	}
 	features := c.CreateElement("features")
-	err = RenderFeatureElements(doc, cluster, features, false)
+	err = RenderFeatureElements(doc, cluster, features, false, nil)
 	return
 }
 
-func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etree.Element, excludeDisallowed bool) (err error) {
+func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etree.Element, excludeDisallowed bool, errata *errata.ZAP) (err error) {
 	for _, b := range cluster.Features.Bits {
 		f, ok := b.(*matter.Feature)
 		if !ok {
@@ -35,7 +37,11 @@ func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etr
 		feature := features.CreateElement("feature")
 		feature.CreateAttr("bit", bit.IntString())
 		feature.CreateAttr("code", f.Code)
-		feature.CreateAttr("name", f.Name())
+		name := f.Name()
+		if errata != nil {
+			name = errata.FieldName(types.EntityTypeEnum, "Features", name)
+		}
+		feature.CreateAttr("name", name)
 		if len(f.Summary()) > 0 {
 			feature.CreateAttr("summary", scrubDescription(f.Summary()))
 		}

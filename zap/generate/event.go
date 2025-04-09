@@ -81,7 +81,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 		eventElement.Child = append([]etree.Token{descriptionElement}, eventElement.Child...)
 	}
 	if len(event.Description) > 0 {
-		descriptionElement.SetText(cr.configurator.Errata.TypeDescription(event.Name, event.Description))
+		descriptionElement.SetText(cr.configurator.Errata.TypeDescription(types.EntityTypeEvent, event.Name, event.Description))
 	}
 
 	if needsAccess {
@@ -120,7 +120,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 				continue
 			}
 			fe.CreateAttr("id", f.ID.IntString())
-			cr.setFieldAttributes(fe, event.Name, f, event.Fields)
+			cr.setFieldAttributes(fe, types.EntityTypeEvent, event.Name, f, event.Fields)
 			break
 		}
 	}
@@ -135,7 +135,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 		}
 		fe := etree.NewElement("field")
 		fe.CreateAttr("id", f.ID.IntString())
-		cr.setFieldAttributes(fe, event.Name, f, event.Fields)
+		cr.setFieldAttributes(fe, types.EntityTypeEvent, event.Name, f, event.Fields)
 		xml.AppendElement(eventElement, fe, "access")
 	}
 
