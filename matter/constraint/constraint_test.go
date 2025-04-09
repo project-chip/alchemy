@@ -615,14 +615,15 @@ func TestSuite(t *testing.T) {
 		minField := &field{}
 		minField.Type = ct.dataType
 		min := c.Min(&constraintTestContext{fields: ct.fields, field: minField})
-		if min != ct.min {
-			t.Errorf("incorrect min value for \"%s\": expected %d, got %d", ct.constraint, ct.min, min)
+		if !min.Equals(ct.min) {
+			//t.Errorf("incorrect min value for \"%s\": expected %s, got %s", ct.constraint, ct.min.DataModelString(ct.dataType), min.DataModelString(ct.dataType))
+			t.Errorf("incorrect min value for \"%v\": expected %v, got %v", ct.constraint, ct.min, min)
 		}
 		maxField := &field{}
 		maxField.Type = ct.dataType
 		max := c.Max(&constraintTestContext{fields: ct.fields, field: maxField})
-		if max != ct.max {
-			t.Errorf("incorrect max value for \"%s\": expected %d, got %d", ct.constraint, ct.max, max)
+		if !max.Equals(ct.max) {
+			t.Errorf("incorrect max value for \"%s\": expected %s, got %s", ct.constraint, ct.max.DataModelString(ct.dataType), max.DataModelString(ct.dataType))
 		}
 		as := c.ASCIIDocString(ct.dataType)
 		es := ct.constraint
