@@ -26,7 +26,6 @@ func (tlc *TagListConstraint) ASCIIDocString(dataType *types.DataType) string {
 	if requiresParens {
 		s.WriteString(")")
 	}
-	s.WriteString(" tags")
 	return s.String()
 }
 
