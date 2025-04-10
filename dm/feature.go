@@ -8,7 +8,6 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/matter/types"
 )
 
 func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
@@ -39,7 +38,7 @@ func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etr
 		feature.CreateAttr("code", f.Code)
 		name := f.Name()
 		if errata != nil {
-			name = errata.FieldName(types.EntityTypeEnum, "Features", name)
+			name = errata.OverrideName(b, name)
 		}
 		feature.CreateAttr("name", name)
 		if len(f.Summary()) > 0 {

@@ -105,8 +105,8 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	} else {
 		ae.RemoveAttr("mustUseAtomicWrite")
 	}
-	renderConstraint(ae, cluster.Attributes, attribute)
-	setFieldFallback(ae, attribute, cluster.Attributes)
+	cr.renderConstraint(ae, cluster.Attributes, attribute)
+	cr.setFieldFallback(ae, attribute, cluster.Attributes)
 	needsRead := attribute.Access.Read != matter.PrivilegeUnknown && attribute.Access.Read != matter.PrivilegeView
 	var needsWrite bool
 	if attribute.Access.Write != matter.PrivilegeUnknown {
@@ -172,9 +172,10 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	return
 }
 
-func setFieldFallback(e *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
-	if !constraint.IsGenericLimit(field.Fallback) && !constraint.IsBlankLimit(field.Fallback) {
-		fallbackValue := zap.GetFallbackValue(matter.NewConstraintContext(field, fieldSet))
+func (cr *configuratorRenderer) setFieldFallback(e *etree.Element, field *matter.Field, fieldSet matter.FieldSet) {
+	fallback := cr.configurator.Errata.OverrideFallback(field)
+	if !constraint.IsGenericLimit(fallback) && !constraint.IsBlankLimit(fallback) {
+		fallbackValue := zap.GetFallbackValue(matter.NewConstraintContext(field, fieldSet), fallback)
 		patchDataExtremeAttribute(e, "default", fallbackValue, field, types.DataExtremePurposeFallback)
 	} else {
 		e.RemoveAttr("default")
@@ -185,8 +186,8 @@ func (cr *configuratorRenderer) writeAttributeDataType(x *etree.Element, fs matt
 	if f.Type == nil {
 		return
 	}
-	dts := zap.FieldToZapDataType(fs, f)
-	dts = cr.configurator.Errata.TypeName(types.EntityTypeAttribute, dts)
+	dts := zap.FieldToZapDataType(fs, f, cr.configurator.Errata.OverrideConstraint(f))
+	dts = cr.configurator.Errata.OverrideName(f, dts)
 	if f.Type.IsArray() {
 		x.CreateAttr("type", "array")
 		x.CreateAttr("entryType", dts)

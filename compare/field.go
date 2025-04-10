@@ -28,7 +28,7 @@ func compareFieldTypes(specFieldSet matter.FieldSet, specField *matter.Field, sp
 		diffs = append(diffs, compareFieldTypes(specFieldSet, specField, specFieldName, specFieldType.EntryType, zapFieldSet, zapField, zapFieldName, zapFieldType.EntryType)...)
 		return
 	}
-	specFieldTypeName := zap.FieldToZapDataType(specFieldSet, specField)
+	specFieldTypeName := zap.FieldToZapDataType(specFieldSet, specField, specField.Constraint)
 	var zapFieldTypeName string
 	if zapField.Type.IsArray() {
 		zapFieldTypeName = zapField.Type.EntryType.Name
@@ -60,7 +60,7 @@ func compareField(entityType types.EntityType, specFields matter.FieldSet, specF
 		}
 	}
 	diffs = append(diffs, compareAccess(entityType, specField.Access, zapField.Access)...)
-	defaultValue := zap.GetFallbackValue(matter.NewConstraintContext(specField, specFields))
+	defaultValue := zap.GetFallbackValue(matter.NewConstraintContext(specField, specFields), specField.Fallback)
 	if defaultValue.Defined() {
 		specDefault := constraint.ParseLimit(defaultValue.ZapString(specField.Type))
 		if !specDefault.Equal(zapField.Fallback) && !(constraint.IsNullLimit(specField.Fallback) && constraint.IsBlankLimit(zapField.Fallback)) { // ZAP frequently omits default null

@@ -183,3 +183,31 @@ func (cc *ConstraintContext) Fallback(entity types.Entity, field constraint.Limi
 
 	return
 }
+
+func EntityConstraint(entity types.Entity) constraint.Constraint {
+	switch entity := entity.(type) {
+	case *Field:
+		return entity.Constraint
+	case *DeviceTypeRequirement:
+		return entity.Constraint
+	case *ElementRequirement:
+		return entity.Constraint
+	case nil:
+		slog.Warn("Enexpected nil entity fetching conformance")
+	default:
+		slog.Warn("Enexpected entity fetching conformance", LogEntity("entity", entity))
+	}
+	return nil
+}
+
+func EntityFallback(entity types.Entity) constraint.Limit {
+	switch entity := entity.(type) {
+	case *Field:
+		return entity.Fallback
+	case nil:
+		slog.Warn("Enexpected nil entity fetching conformance")
+	default:
+		slog.Warn("Enexpected entity fetching conformance", LogEntity("entity", entity))
+	}
+	return nil
+}

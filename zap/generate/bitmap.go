@@ -33,7 +33,8 @@ func (cr *configuratorRenderer) generateBitmaps(bitmaps map[*matter.Bitmap][]*ma
 		var clusterIds []*matter.Number
 		var skip bool
 		for bm, handled := range bitmaps {
-			if cr.configurator.Errata.TypeName(types.EntityTypeBitmap, bm.Name) == name || cr.configurator.Errata.TypeName(types.EntityTypeBitmap, strings.TrimSuffix(bm.Name, "Bitmap")) == name {
+			typeName := cr.configurator.Errata.OverrideName(bm, bm.Name)
+			if typeName == name || strings.TrimSuffix(typeName, "Bitmap") == name {
 				matchingBitmap = bm
 				clusterIds = handled
 				skip = len(handled) == 0
@@ -90,12 +91,12 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 
 	}
 
-	ee.CreateAttr("name", cr.configurator.Errata.TypeName(types.EntityTypeBitmap, bm.Name))
+	ee.CreateAttr("name", cr.configurator.Errata.OverrideName(bm, bm.Name))
 	var typeName string
 	if bm.Type != nil {
-		typeName = cr.configurator.Errata.DataTypeName(types.EntityTypeBitmap, zap.DataTypeName(bm.Type))
+		typeName = cr.configurator.Errata.OverrideType(bm, zap.DataTypeName(bm.Type))
 	} else {
-		typeName = cr.configurator.Errata.DataTypeName(types.EntityTypeBitmap, "bitmap8")
+		typeName = cr.configurator.Errata.OverrideType(bm, "bitmap8")
 	}
 	ee.CreateAttr("type", typeName)
 
@@ -117,7 +118,7 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 			if conformance.IsZigbee(bm.Bits, bit.Conformance()) || conformance.IsDisallowed(bit.Conformance()) {
 				continue
 			}
-			err = cr.setBitmapFieldAttributes(be, bm, bit, valFormat)
+			err = cr.setBitmapFieldAttributes(be, bit, valFormat)
 			if err != nil {
 				return
 			}
@@ -131,7 +132,7 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 			continue
 		}
 		fe := etree.NewElement("field")
-		err = cr.setBitmapFieldAttributes(fe, bm, bit, valFormat)
+		err = cr.setBitmapFieldAttributes(fe, bit, valFormat)
 		if err != nil {
 			return
 		}
@@ -141,7 +142,7 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 	return
 }
 
-func (cr *configuratorRenderer) setBitmapFieldAttributes(e *etree.Element, bm *matter.Bitmap, b matter.Bit, valFormat string) error {
+func (cr *configuratorRenderer) setBitmapFieldAttributes(e *etree.Element, b matter.Bit, valFormat string) error {
 
 	mask, err := b.Mask()
 	if err != nil {
@@ -150,7 +151,7 @@ func (cr *configuratorRenderer) setBitmapFieldAttributes(e *etree.Element, bm *m
 
 	name := b.Name()
 	name = zap.CleanName(name)
-	name = cr.configurator.Errata.FieldName(types.EntityTypeBitmap, bm.Name, name)
+	name = cr.configurator.Errata.OverrideName(b, name)
 	e.CreateAttr("name", name)
 	ma := e.SelectAttr("mask")
 	if ma != nil {

@@ -13,12 +13,6 @@ func (c *Configurator) addExtraTypes(errata *errata.ZAP, entities []types.Entity
 		return
 	}
 	var extraEntities []types.Entity
-	for name, ea := range errata.ExtraTypes.Attributes {
-		a := matter.NewAttribute(nil, nil)
-		a.Name = name
-		a.Type = types.ParseDataType(ea.Type, ea.List)
-		extraEntities = append(extraEntities, a)
-	}
 	for name, eb := range errata.ExtraTypes.Bitmaps {
 		bm := matter.NewBitmap(nil, nil)
 		bm.Name = name
@@ -52,8 +46,11 @@ func (c *Configurator) addExtraTypes(errata *errata.ZAP, entities []types.Entity
 			f.ID = matter.NewNumber(uint64(i))
 			f.Name = ef.Name
 			f.Type = types.ParseDataType(ef.Type, ef.List)
-			if ef.MaxLength > 0 {
-				f.Constraint = constraint.Set{&constraint.MaxConstraint{Maximum: &constraint.IntLimit{Value: ef.MaxLength}}}
+			if ef.Constraint != "" {
+				f.Constraint = constraint.ParseString(ef.Constraint)
+			}
+			if ef.Conformance != "" {
+				f.Conformance = conformance.ParseConformance(ef.Conformance)
 			}
 			f.Conformance = conformance.Set{&conformance.Mandatory{}}
 			s.Fields = append(s.Fields, f)

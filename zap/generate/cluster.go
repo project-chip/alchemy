@@ -11,7 +11,6 @@ import (
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -126,7 +125,7 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 		return !conformance.IsZigbee(cluster.Commands, c.Conformance) && !conformance.IsDisallowed(c.Conformance)
 	})))
 
-	xml.SetOrCreateSimpleElement(clusterElement, "domain", cr.configurator.Errata.ClusterDomain(cluster.Name, cr.configurator.Domain))
+	xml.SetOrCreateSimpleElement(clusterElement, "domain", cr.configurator.Errata.OverrideDomain(cluster.Name, cr.configurator.Domain))
 	clusterName := cluster.Name
 	if cr.configurator.Errata.ClusterName != "" {
 		clusterName = cr.configurator.Errata.ClusterName
@@ -137,7 +136,7 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 
 	descriptionElement := clusterElement.SelectElement("description")
 	if descriptionElement == nil || descriptionElement.Text() == "" {
-		xml.SetOrCreateSimpleElement(clusterElement, "description", cr.configurator.Errata.TypeDescription(types.EntityTypeCluster, cluster.Name, cluster.Description), "define", "code", "name", "domain")
+		xml.SetOrCreateSimpleElement(clusterElement, "description", cr.configurator.Errata.OverrideDescription(cluster, cluster.Description), "define", "code", "name", "domain")
 	}
 
 	if client := clusterElement.SelectElement("client"); client == nil {
