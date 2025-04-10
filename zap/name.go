@@ -17,7 +17,7 @@ func CleanName(name string) string {
 	return strcase.ToCamel(name)
 }
 
-func ClusterName(path string, errata *errata.ZAP, entities []types.Entity) string {
+func ClusterName(path string, errata *errata.SDK, entities []types.Entity) string {
 
 	if errata.TemplatePath != "" {
 		return errata.TemplatePath

@@ -6,7 +6,7 @@ type Errata struct {
 	Disco    Disco    `yaml:"disco,omitempty"`
 	Spec     Spec     `yaml:"spec,omitempty"`
 	TestPlan TestPlan `yaml:"test-plan,omitempty"`
-	ZAP      ZAP      `yaml:"zap,omitempty"`
+	SDK      SDK      `yaml:"sdk,zap,omitempty"`
 }
 
 var DefaultErrata = &Errata{}

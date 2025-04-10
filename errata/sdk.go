@@ -11,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-type ZAP struct {
+type SDK struct {
 	SkipFile                     bool                `yaml:"skip-file,omitempty"`
 	SuppressAttributePermissions bool                `yaml:"suppress-attribute-permissions,omitempty"`
 	ClusterDefinePrefix          string              `yaml:"cluster-define-prefix,omitempty"`
@@ -36,28 +36,28 @@ type ZAP struct {
 	TypeNames         map[string]string `yaml:"type-names,omitempty"`
 	ForceIncludeTypes []string          `yaml:"force-include-types,omitempty"`
 
-	Types      *ZAPTypes `yaml:"types,omitempty"`
-	ExtraTypes *ZAPTypes `yaml:"extra-types,omitempty"`
+	Types      *SDKTypes `yaml:"types,omitempty"`
+	ExtraTypes *SDKTypes `yaml:"extra-types,omitempty"`
 }
 
-type ZAPTypes struct {
-	Attributes map[string]*ZAPType `yaml:"attributes,omitempty"`
-	Clusters   map[string]*ZAPType `yaml:"clusters,omitempty"`
-	Enums      map[string]*ZAPType `yaml:"enums,omitempty"`
-	Bitmaps    map[string]*ZAPType `yaml:"bitmaps,omitempty"`
-	Structs    map[string]*ZAPType `yaml:"structs,omitempty"`
-	Commands   map[string]*ZAPType `yaml:"commands,omitempty"`
-	Events     map[string]*ZAPType `yaml:"events,omitempty"`
+type SDKTypes struct {
+	Attributes map[string]*SDKType `yaml:"attributes,omitempty"`
+	Clusters   map[string]*SDKType `yaml:"clusters,omitempty"`
+	Enums      map[string]*SDKType `yaml:"enums,omitempty"`
+	Bitmaps    map[string]*SDKType `yaml:"bitmaps,omitempty"`
+	Structs    map[string]*SDKType `yaml:"structs,omitempty"`
+	Commands   map[string]*SDKType `yaml:"commands,omitempty"`
+	Events     map[string]*SDKType `yaml:"events,omitempty"`
 }
 
-type ZAPType struct {
+type SDKType struct {
 	Type         string `yaml:"type,omitempty"`
 	Name         string `yaml:"name,omitempty"`
 	OverrideName string `yaml:"override-name,omitempty"`
 	OverrideType string `yaml:"override-type,omitempty"`
 	List         bool   `yaml:"list,omitempty"`
 
-	Fields      []*ZAPType `yaml:"fields,omitempty"`
+	Fields      []*SDKType `yaml:"fields,omitempty"`
 	Domain      string     `yaml:"domain,omitempty"`
 	Priority    string     `yaml:"priority,omitempty"`
 	Description string     `yaml:"description,omitempty"`
@@ -70,14 +70,14 @@ type ZAPType struct {
 	Fallback    string `yaml:"fallback,omitempty"`
 }
 
-func GetZAP(path string) *ZAP {
+func GetSDK(path string) *SDK {
 	e := GetErrata(path)
-	return &e.ZAP
+	return &e.SDK
 }
 
-type ZAPTypeCollection map[string]*ZAPType
+type SDKTypeCollection map[string]*SDKType
 
-func (z *ZAP) getTypes(entityType types.EntityType) ZAPTypeCollection {
+func (z *SDK) getTypes(entityType types.EntityType) SDKTypeCollection {
 	if z.Types == nil {
 		return nil
 	}
@@ -103,7 +103,7 @@ func (z *ZAP) getTypes(entityType types.EntityType) ZAPTypeCollection {
 	return nil
 }
 
-func (ztc ZAPTypeCollection) getType(typeName string) (*ZAPType, bool) {
+func (ztc SDKTypeCollection) getType(typeName string) (*SDKType, bool) {
 	if len(ztc) == 0 {
 		return nil, false
 	}
@@ -114,7 +114,7 @@ func (ztc ZAPTypeCollection) getType(typeName string) (*ZAPType, bool) {
 	return t, true
 }
 
-func (t *ZAPType) getField(fieldName string) (f *ZAPType, ok bool) {
+func (t *SDKType) getField(fieldName string) (f *SDKType, ok bool) {
 	if t == nil || t.Fields == nil {
 		return nil, false
 	}
@@ -126,7 +126,7 @@ func (t *ZAPType) getField(fieldName string) (f *ZAPType, ok bool) {
 	return nil, false
 }
 
-func (z *ZAP) getType(entity types.Entity) (*ZAPType, bool) {
+func (z *SDK) getType(entity types.Entity) (*SDKType, bool) {
 	if z == nil {
 		return nil, false
 	}
@@ -186,7 +186,7 @@ func (z *ZAP) getType(entity types.Entity) (*ZAPType, bool) {
 	return nil, false
 }
 
-func (zap *ZAP) OverrideName(entity types.Entity, defaultTypeName string) string {
+func (zap *SDK) OverrideName(entity types.Entity, defaultTypeName string) string {
 	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
 		return defaultTypeName
 	}
@@ -202,7 +202,7 @@ func (zap *ZAP) OverrideName(entity types.Entity, defaultTypeName string) string
 	return defaultTypeName
 }
 
-func (zap *ZAP) OverrideConformance(entity types.Entity) conformance.Conformance {
+func (zap *SDK) OverrideConformance(entity types.Entity) conformance.Conformance {
 	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
 		return matter.EntityConformance(entity)
 	}
@@ -213,7 +213,7 @@ func (zap *ZAP) OverrideConformance(entity types.Entity) conformance.Conformance
 	return matter.EntityConformance(entity)
 }
 
-func (zap *ZAP) OverrideConstraint(entity types.Entity) constraint.Constraint {
+func (zap *SDK) OverrideConstraint(entity types.Entity) constraint.Constraint {
 	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
 		return matter.EntityConstraint(entity)
 	}
@@ -224,7 +224,7 @@ func (zap *ZAP) OverrideConstraint(entity types.Entity) constraint.Constraint {
 	return matter.EntityConstraint(entity)
 }
 
-func (zap *ZAP) OverrideFallback(entity types.Entity) constraint.Limit {
+func (zap *SDK) OverrideFallback(entity types.Entity) constraint.Limit {
 	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
 		return matter.EntityFallback(entity)
 	}
@@ -235,7 +235,7 @@ func (zap *ZAP) OverrideFallback(entity types.Entity) constraint.Limit {
 	return matter.EntityFallback(entity)
 }
 
-func (zap *ZAP) OverrideDomain(clusterName string, defaultDomain string) string {
+func (zap *SDK) OverrideDomain(clusterName string, defaultDomain string) string {
 	if zap == nil || zap.Types == nil {
 		return defaultDomain
 	}
@@ -246,7 +246,7 @@ func (zap *ZAP) OverrideDomain(clusterName string, defaultDomain string) string 
 	return defaultDomain
 }
 
-func (zap *ZAP) OverrideType(entity types.Entity, dataTypeName string) string {
+func (zap *SDK) OverrideType(entity types.Entity, dataTypeName string) string {
 	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
 		return dataTypeName
 	}
@@ -262,7 +262,7 @@ func (zap *ZAP) OverrideType(entity types.Entity, dataTypeName string) string {
 	return dataTypeName
 }
 
-func (zap *ZAP) OverrideDescription(entity types.Entity, defaultDescription string) string {
+func (zap *SDK) OverrideDescription(entity types.Entity, defaultDescription string) string {
 	if zap == nil || zap.Types == nil {
 		return defaultDescription
 	}
@@ -273,7 +273,7 @@ func (zap *ZAP) OverrideDescription(entity types.Entity, defaultDescription stri
 	return defaultDescription
 }
 
-func (zap *ZAP) OverridePriority(entity types.Entity, defaultPriority string) string {
+func (zap *SDK) OverridePriority(entity types.Entity, defaultPriority string) string {
 	if zap == nil || zap.Types == nil {
 		return defaultPriority
 	}
