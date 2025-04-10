@@ -230,7 +230,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			ex.CreateAttr("id", cr.command.ID.HexString())
 
 			ex.CreateAttr("name", cr.command.Name)
-			if cr.command != nil {
+			if cr.command != nil && cr.requirement != nil {
 				err = renderConformanceElement(doc, cr.requirement.Conformance, ex, nil)
 				if err != nil {
 					return

@@ -216,6 +216,9 @@ func (sp *Builder) resolveCommandResponseDataType(cluster *matter.Cluster, comma
 	}
 	for _, cmd := range cluster.Commands {
 		if cmd.Direction == desiredDirection && cmd.Name == command.Response.Name {
+			if cmd.Response == nil {
+				break
+			}
 			command.Response.Entity = cmd.Response.Entity
 			if cluster != nil && command.Response.Entity != nil {
 				sp.Spec.ClusterRefs.Add(cluster, command.Response.Entity)
