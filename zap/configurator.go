@@ -24,11 +24,11 @@ type Configurator struct {
 	Structs  map[*matter.Struct][]*matter.Number
 
 	ClusterIDs []string
-	Errata     *errata.ZAP
+	Errata     *errata.SDK
 	Global     bool
 }
 
-func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []types.Entity, outPath string, errata *errata.ZAP, global bool) (*Configurator, error) {
+func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []types.Entity, outPath string, errata *errata.SDK, global bool) (*Configurator, error) {
 	c := &Configurator{
 		Spec:    spec,
 		Docs:    docs,

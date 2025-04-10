@@ -8,7 +8,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (c *Configurator) addExtraTypes(errata *errata.ZAP, entities []types.Entity) {
+func (c *Configurator) addExtraTypes(errata *errata.SDK, entities []types.Entity) {
 	if errata.ExtraTypes == nil {
 		return
 	}

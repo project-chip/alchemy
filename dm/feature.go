@@ -19,7 +19,7 @@ func renderFeatures(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 	return
 }
 
-func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etree.Element, excludeDisallowed bool, errata *errata.ZAP) (err error) {
+func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etree.Element, excludeDisallowed bool, errata *errata.SDK) (err error) {
 	for _, b := range cluster.Features.Bits {
 		f, ok := b.(*matter.Feature)
 		if !ok {
