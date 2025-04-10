@@ -5,7 +5,7 @@ import (
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/zap/generate"
+	"github.com/project-chip/alchemy/zap/render"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +34,7 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 
 	sdkRoot, _ := flags.GetString("sdkRoot")
 
-	var options generate.Options
+	var options render.Options
 
 	fileOptions := files.OutputOptions(flags)
 	options.Parser = spec.ParserOptions(flags)
@@ -43,21 +43,21 @@ func zapTemplates(cmd *cobra.Command, args []string) (err error) {
 	options.Pipeline = pipeline.PipelineOptions(flags)
 
 	featureXML, _ := flags.GetBool("featureXML")
-	options.Template = append(options.Template, generate.GenerateFeatureXML(featureXML))
+	options.Template = append(options.Template, render.GenerateFeatureXML(featureXML))
 	conformanceXML, _ := flags.GetBool("conformanceXML")
 	extendedQuality, _ := flags.GetBool("extendedQuality")
 	endpointCompositionXML, _ := flags.GetBool("endpointCompositionXML")
 	specOrder, _ := flags.GetBool("specOrder")
-	options.Template = append(options.Template, generate.GenerateConformanceXML(conformanceXML))
-	options.Template = append(options.Template, generate.ExtendedQuality(extendedQuality))
-	options.Template = append(options.Template, generate.SpecOrder(specOrder))
-	options.Template = append(options.Template, generate.AsciiAttributes(options.AsciiSettings))
+	options.Template = append(options.Template, render.GenerateConformanceXML(conformanceXML))
+	options.Template = append(options.Template, render.ExtendedQuality(extendedQuality))
+	options.Template = append(options.Template, render.SpecOrder(specOrder))
+	options.Template = append(options.Template, render.AsciiAttributes(options.AsciiSettings))
 
-	options.DeviceTypes = append(options.DeviceTypes, generate.DeviceTypePatcherGenerateFeatureXML(featureXML))
-	options.DeviceTypes = append(options.DeviceTypes, generate.DeviceTypePatcherFullEndpointComposition(endpointCompositionXML))
+	options.DeviceTypes = append(options.DeviceTypes, render.DeviceTypePatcherGenerateFeatureXML(featureXML))
+	options.DeviceTypes = append(options.DeviceTypes, render.DeviceTypePatcherFullEndpointComposition(endpointCompositionXML))
 
-	var output generate.Output
-	output, err = generate.Pipeline(cxt, sdkRoot, args, options)
+	var output render.Output
+	output, err = render.Pipeline(cxt, sdkRoot, args, options)
 	if err != nil {
 		return
 	}

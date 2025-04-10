@@ -15,8 +15,8 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/sdk"
-	"github.com/project-chip/alchemy/zap/generate"
 	"github.com/project-chip/alchemy/zap/parse"
+	"github.com/project-chip/alchemy/zap/render"
 	"github.com/spf13/cobra"
 )
 
@@ -114,9 +114,9 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 	specEntityMap := make(map[string][]types.Entity, specEntities.Size())
 	specEntities.Range(func(path string, entities *pipeline.Data[[]types.Entity]) bool {
 
-		errata := errata.GetZAP(path)
+		errata := errata.GetSDK(path)
 
-		destinations := generate.ZAPTemplateDestinations(sdkRoot, path, entities.Content, errata)
+		destinations := render.ZAPTemplateDestinations(sdkRoot, path, entities.Content, errata)
 		for templatePath, entities := range destinations {
 			var clusters []types.Entity
 			for _, e := range entities {
