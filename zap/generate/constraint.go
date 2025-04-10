@@ -7,7 +7,7 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {
+func (cr *configuratorRenderer) renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {
 
 	if f.Access.Write != matter.PrivilegeUnknown && f.Type != nil && f.Type.Size() > 2 {
 		// ZAP can't handle min/max on types whose size is larger than two bytes, due to limitations in the template generation code
@@ -19,7 +19,7 @@ func renderConstraint(el *etree.Element, fs matter.FieldSet, f *matter.Field) {
 		return
 	}
 
-	from, to := zap.GetMinMax(matter.NewConstraintContext(f, fs), f.Constraint)
+	from, to := zap.GetMinMax(matter.NewConstraintContext(f, fs), cr.configurator.Errata.OverrideConstraint(f))
 
 	if !from.Defined() {
 		el.RemoveAttr("min")

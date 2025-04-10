@@ -438,11 +438,11 @@ func ToBaseDataType(s string) types.BaseDataType {
 	return types.BaseDataTypeUnknown
 }
 
-func maxOver255Bytes(fs matter.FieldSet, f *matter.Field) bool {
-	if f.Constraint == nil {
+func maxOver255Bytes(fs matter.FieldSet, f *matter.Field, constraint constraint.Constraint) bool {
+	if constraint == nil {
 		return false
 	}
-	max := f.Constraint.Max(matter.NewConstraintContext(f, fs))
+	max := constraint.Max(matter.NewConstraintContext(f, fs))
 
 	switch max.Type {
 	case types.DataTypeExtremeTypeInt64:
@@ -457,16 +457,16 @@ func maxOver255Bytes(fs matter.FieldSet, f *matter.Field) bool {
 	return false
 }
 
-func FieldToZapDataType(fs matter.FieldSet, f *matter.Field) string {
+func FieldToZapDataType(fs matter.FieldSet, f *matter.Field, constraint constraint.Constraint) string {
 	if f.Type == nil {
 		return ""
 	}
 
-	if f.Type.BaseType == types.BaseDataTypeString && maxOver255Bytes(fs, f) {
+	if f.Type.BaseType == types.BaseDataTypeString && maxOver255Bytes(fs, f, constraint) {
 		// Special case; needs to be long_char_string if over 255
 		return "long_char_string"
 	}
-	if f.Type.BaseType == types.BaseDataTypeOctStr && maxOver255Bytes(fs, f) {
+	if f.Type.BaseType == types.BaseDataTypeOctStr && maxOver255Bytes(fs, f, constraint) {
 		// Special case; needs to be long_octet_string if over 255
 		return "long_octet_string"
 	}
@@ -570,8 +570,8 @@ func isValidArrayConstraint(field *matter.Field, cons constraint.Constraint) boo
 	return true
 }
 
-func GetFallbackValue(cc *matter.ConstraintContext) (fallbackValue types.DataTypeExtreme) {
-	fallbackValue = cc.Field.Fallback.Fallback(cc)
+func GetFallbackValue(cc *matter.ConstraintContext, fallback constraint.Limit) (fallbackValue types.DataTypeExtreme) {
+	fallbackValue = fallback.Fallback(cc)
 	switch fallbackValue.Type {
 	case types.DataTypeExtremeTypeEmptyList:
 		if !cc.Field.Type.HasLength() {

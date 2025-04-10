@@ -6,6 +6,8 @@ import (
 
 	"github.com/goccy/go-yaml"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -55,17 +57,17 @@ type ZAPType struct {
 	OverrideType string `yaml:"override-type,omitempty"`
 	List         bool   `yaml:"list,omitempty"`
 
-	Fields      []*ZAPField `yaml:"fields,omitempty"`
-	Domain      string      `yaml:"domain,omitempty"`
-	Priority    string      `yaml:"priority,omitempty"`
-	Description string      `yaml:"description,omitempty"`
-	MaxLength   int64       `yaml:"max-length,omitempty"`
-}
+	Fields      []*ZAPType `yaml:"fields,omitempty"`
+	Domain      string     `yaml:"domain,omitempty"`
+	Priority    string     `yaml:"priority,omitempty"`
+	Description string     `yaml:"description,omitempty"`
 
-type ZAPField struct {
-	ZAPType `yaml:",inline"`
-	Bit     string `yaml:"bit,omitempty"`
-	Value   string `yaml:"value,omitempty"`
+	Bit   string `yaml:"bit,omitempty"`
+	Value string `yaml:"value,omitempty"`
+
+	Constraint  string `yaml:"constraint,omitempty"`
+	Conformance string `yaml:"conformance,omitempty"`
+	Fallback    string `yaml:"fallback,omitempty"`
 }
 
 func GetZAP(path string) *ZAP {
@@ -112,7 +114,7 @@ func (ztc ZAPTypeCollection) getType(typeName string) (*ZAPType, bool) {
 	return t, true
 }
 
-func (t *ZAPType) getField(fieldName string) (f *ZAPField, ok bool) {
+func (t *ZAPType) getField(fieldName string) (f *ZAPType, ok bool) {
 	if t == nil || t.Fields == nil {
 		return nil, false
 	}
@@ -124,23 +126,116 @@ func (t *ZAPType) getField(fieldName string) (f *ZAPField, ok bool) {
 	return nil, false
 }
 
-func (zap *ZAP) TypeName(entityType types.EntityType, typeName string) string {
-	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
-		return typeName
+func (z *ZAP) getType(entity types.Entity) (*ZAPType, bool) {
+	if z == nil {
+		return nil, false
 	}
-	t, ok := zap.getTypes(entityType).getType(typeName)
+	switch entity := entity.(type) {
+	case *matter.Field:
+		switch entity.EntityType() {
+		case types.EntityTypeAttribute:
+			return z.getTypes(types.EntityTypeAttribute).getType(entity.Name)
+		case types.EntityTypeCommandField,
+			types.EntityTypeStructField,
+			types.EntityTypeEventField:
+			if entity.Parent() == nil {
+				return nil, false
+			}
+			if t, ok := z.getType(entity.Parent()); ok {
+				return t.getField(entity.Name)
+			}
+		default:
+			slog.Warn("Unexpected entity type in ZAP errata types", slog.String("type", entity.EntityType().String()))
+		}
+	case *matter.Enum:
+		return z.getTypes(types.EntityTypeEnum).getType(entity.Name)
+	case *matter.EnumValue:
+		if entity.Parent() == nil {
+			return nil, false
+		}
+		if e, ok := z.getType(entity.Parent()); ok {
+			return e.getField(entity.Name)
+		}
+	case *matter.Bitmap:
+		return z.getTypes(types.EntityTypeBitmap).getType(entity.Name)
+	case *matter.BitmapBit:
+		if entity.Parent() == nil {
+			return nil, false
+		}
+		if e, ok := z.getType(entity.Parent()); ok {
+			return e.getField(entity.Name())
+		}
+	case *matter.Feature:
+		if f, ok := z.getTypes(types.EntityTypeBitmap).getType("Features"); ok {
+			return f.getField(entity.Name())
+		}
+	case *matter.Struct:
+		return z.getTypes(types.EntityTypeStruct).getType(entity.Name)
+	case *matter.Cluster:
+		return z.getTypes(types.EntityTypeCluster).getType(entity.Name)
+	case *matter.Command:
+		return z.getTypes(types.EntityTypeCommand).getType(entity.Name)
+	case *matter.Event:
+		return z.getTypes(types.EntityTypeEvent).getType(entity.Name)
+	case nil:
+		slog.Warn("Unexpected nil entity in ZAP errata types")
+		debug.PrintStack()
+	default:
+		slog.Warn("Unexpected entity type in ZAP errata types", matter.LogEntity("entity", entity))
+	}
+	return nil, false
+}
+
+func (zap *ZAP) OverrideName(entity types.Entity, defaultTypeName string) string {
+	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
+		return defaultTypeName
+	}
+	t, ok := zap.getType(entity)
 	if ok && t.OverrideName != "" {
 		return t.OverrideName
 	}
 
-	tn, ok := zap.TypeNames[typeName]
+	tn, ok := zap.TypeNames[defaultTypeName]
 	if ok {
 		return tn
 	}
-	return typeName
+	return defaultTypeName
 }
 
-func (zap *ZAP) ClusterDomain(clusterName string, defaultDomain string) string {
+func (zap *ZAP) OverrideConformance(entity types.Entity) conformance.Conformance {
+	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
+		return matter.EntityConformance(entity)
+	}
+	t, ok := zap.getType(entity)
+	if ok && t.Conformance != "" {
+		return conformance.ParseConformance(t.Conformance)
+	}
+	return matter.EntityConformance(entity)
+}
+
+func (zap *ZAP) OverrideConstraint(entity types.Entity) constraint.Constraint {
+	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
+		return matter.EntityConstraint(entity)
+	}
+	t, ok := zap.getType(entity)
+	if ok && t.Constraint != "" {
+		return constraint.ParseString(t.Constraint)
+	}
+	return matter.EntityConstraint(entity)
+}
+
+func (zap *ZAP) OverrideFallback(entity types.Entity) constraint.Limit {
+	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
+		return matter.EntityFallback(entity)
+	}
+	t, ok := zap.getType(entity)
+	if ok && t.Fallback != "" {
+		return constraint.ParseLimit(t.Fallback)
+	}
+	return matter.EntityFallback(entity)
+}
+
+func (zap *ZAP) OverrideDomain(clusterName string, defaultDomain string) string {
 	if zap == nil || zap.Types == nil {
 		return defaultDomain
 	}
@@ -151,11 +246,11 @@ func (zap *ZAP) ClusterDomain(clusterName string, defaultDomain string) string {
 	return defaultDomain
 }
 
-func (zap *ZAP) DataTypeName(entityType types.EntityType, dataTypeName string) string {
+func (zap *ZAP) OverrideType(entity types.Entity, dataTypeName string) string {
 	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
 		return dataTypeName
 	}
-	t, ok := zap.getTypes(entityType).getType(dataTypeName)
+	t, ok := zap.getType(entity)
 	if ok && t.OverrideType != "" {
 		return t.OverrideType
 	}
@@ -167,52 +262,22 @@ func (zap *ZAP) DataTypeName(entityType types.EntityType, dataTypeName string) s
 	return dataTypeName
 }
 
-func (zap *ZAP) TypeDescription(entityType types.EntityType, typeName string, defaultDescription string) string {
+func (zap *ZAP) OverrideDescription(entity types.Entity, defaultDescription string) string {
 	if zap == nil || zap.Types == nil {
 		return defaultDescription
 	}
-	t, ok := zap.getTypes(entityType).getType(typeName)
+	t, ok := zap.getType(entity)
 	if ok && t.Description != "" {
 		return t.Description
 	}
 	return defaultDescription
 }
 
-func (zap *ZAP) FieldName(entityType types.EntityType, typeName string, fieldName string) string {
-	if zap == nil || zap.Types == nil {
-		return fieldName
-	}
-	t, ok := zap.getTypes(entityType).getType(typeName)
-	if !ok {
-		return fieldName
-	}
-	f, ok := t.getField(fieldName)
-	if ok && f.OverrideName != "" {
-		return f.OverrideName
-	}
-	return fieldName
-}
-
-func (zap *ZAP) FieldTypeName(entityType types.EntityType, typeName string, fieldName string, defaultTypeName string) string {
-	if zap == nil || zap.Types == nil {
-		return defaultTypeName
-	}
-	t, ok := zap.getTypes(entityType).getType(typeName)
-	if !ok {
-		return defaultTypeName
-	}
-	f, ok := t.getField(fieldName)
-	if ok && f.OverrideType != "" {
-		return f.OverrideType
-	}
-	return defaultTypeName
-}
-
-func (zap *ZAP) EventPriority(eventName string, defaultPriority string) string {
+func (zap *ZAP) OverridePriority(entity types.Entity, defaultPriority string) string {
 	if zap == nil || zap.Types == nil {
 		return defaultPriority
 	}
-	t, ok := zap.getTypes(types.EntityTypeEvent).getType(eventName)
+	t, ok := zap.getType(entity)
 	if ok && t.Priority != "" {
 		return t.Priority
 	}

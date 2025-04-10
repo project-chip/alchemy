@@ -58,6 +58,10 @@ type ClusterRequirement struct {
 	Cluster *Cluster `json:"cluster,omitempty"`
 }
 
+func (cr *ClusterRequirement) EntityType() types.EntityType {
+	return types.EntityTypeClusterRequirement
+}
+
 func (cr *ClusterRequirement) Clone() *ClusterRequirement {
 	cer := &ClusterRequirement{
 		entity:      entity{source: cr.source},
@@ -93,6 +97,10 @@ type ElementRequirement struct {
 	Cluster *Cluster `json:"cluster,omitempty"`
 }
 
+func (er *ElementRequirement) EntityType() types.EntityType {
+	return types.EntityTypeElementRequirement
+}
+
 func (er *ElementRequirement) Clone() *ElementRequirement {
 	cer := &ElementRequirement{
 		entity:      entity{source: er.source},
@@ -124,6 +132,10 @@ type DeviceTypeRequirement struct {
 	DeviceTypeName string                `json:"deviceTypeName,omitempty"`
 	Constraint     constraint.Constraint `json:"constraint,omitempty"`
 	Conformance    conformance.Set       `json:"conformance,omitempty"`
+}
+
+func (dtr *DeviceTypeRequirement) EntityType() types.EntityType {
+	return types.EntityTypeDeviceTypeRequirement
 }
 
 type ComposedDeviceTypeRequirement struct {

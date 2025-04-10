@@ -27,6 +27,8 @@ const (
 	EntityTypeCondition
 	EntityTypeStructField
 	EntityTypeElementRequirement
+	EntityTypeDeviceTypeRequirement
+	EntityTypeClusterRequirement
 	EntityTypeDef
 	EntityTypeNamespace
 	EntityTypeConstant
@@ -45,27 +47,29 @@ func (et EntityType) String() string {
 
 var (
 	entityTypeNames = map[EntityType]string{
-		EntityTypeUnknown:            "unknown",
-		EntityTypeCluster:            "cluster",
-		EntityTypeBitmap:             "bitmap",
-		EntityTypeBitmapValue:        "bit",
-		EntityTypeEnum:               "enum",
-		EntityTypeEnumValue:          "enumValue",
-		EntityTypeStruct:             "struct",
-		EntityTypeAttribute:          "attribute",
-		EntityTypeCommand:            "command",
-		EntityTypeCommandField:       "commandField",
-		EntityTypeEventField:         "eventField",
-		EntityTypeEvent:              "event",
-		EntityTypeFeature:            "feature",
-		EntityTypeDeviceType:         "deviceType",
-		EntityTypeCondition:          "condition",
-		EntityTypeStructField:        "structField",
-		EntityTypeElementRequirement: "elementRequirement",
-		EntityTypeDef:                "typeDef",
-		EntityTypeNamespace:          "namespace",
-		EntityTypeConstant:           "constant",
-		EntityTypeSemanticTag:        "semanticTag",
+		EntityTypeUnknown:               "unknown",
+		EntityTypeCluster:               "cluster",
+		EntityTypeBitmap:                "bitmap",
+		EntityTypeBitmapValue:           "bit",
+		EntityTypeEnum:                  "enum",
+		EntityTypeEnumValue:             "enumValue",
+		EntityTypeStruct:                "struct",
+		EntityTypeAttribute:             "attribute",
+		EntityTypeCommand:               "command",
+		EntityTypeCommandField:          "commandField",
+		EntityTypeEventField:            "eventField",
+		EntityTypeEvent:                 "event",
+		EntityTypeFeature:               "feature",
+		EntityTypeDeviceType:            "deviceType",
+		EntityTypeCondition:             "condition",
+		EntityTypeStructField:           "structField",
+		EntityTypeElementRequirement:    "elementRequirement",
+		EntityTypeDeviceTypeRequirement: "deviceTypeRequirement",
+		EntityTypeClusterRequirement:    "clusterRequirement",
+		EntityTypeDef:                   "typeDef",
+		EntityTypeNamespace:             "namespace",
+		EntityTypeConstant:              "constant",
+		EntityTypeSemanticTag:           "semanticTag",
 	}
 )
 
