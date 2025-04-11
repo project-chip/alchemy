@@ -156,9 +156,9 @@ func (tg *TemplateGenerator) openConfigurator(configurator *zap.Configurator) (d
 	return
 }
 
-func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet, deviceTypes spec.DeviceTypeSet, namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]], err error) {
+func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet, deviceTypes spec.DocSet, namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]], err error) {
 	clusters = spec.NewDocSet()
-	deviceTypes = pipeline.NewMap[string, *pipeline.Data[[]*matter.DeviceType]]()
+	deviceTypes = spec.NewDocSet()
 	namespaces = pipeline.NewMap[string, *pipeline.Data[[]*matter.Namespace]]()
 	inputs.Range(func(path string, data *pipeline.Data[*spec.Doc]) bool {
 		var hasCluster bool
@@ -185,7 +185,7 @@ func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet
 			clusters.Store(path, data)
 		}
 		if len(dts) > 0 {
-			deviceTypes.Store(path, pipeline.NewData(path, dts))
+			deviceTypes.Store(path, data)
 		}
 		if len(ns) > 0 {
 			namespaces.Store(path, pipeline.NewData(path, ns))

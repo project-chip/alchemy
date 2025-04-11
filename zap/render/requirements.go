@@ -24,15 +24,10 @@ type clusterRequirements struct {
 	elementRequirements            []*matter.ElementRequirement
 }
 
-func alternateDeviceTypeName(deviceType *matter.DeviceType) string {
-	name := matter.Case(deviceType.Name)
-	return "MA-" + strings.ToLower(name)
-}
-
-func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element) (err error) {
-	setDeviceTypeName(spec, dte, deviceType)
+func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element, errata *errata.SDK) (err error) {
+	setDeviceTypeName(spec, dte, deviceType, errata)
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP", "name")
-	xml.SetOrCreateSimpleElement(dte, "typeName", deviceType.Name, "name", "domain")
+	xml.SetOrCreateSimpleElement(dte, "typeName", errata.OverrideType(deviceType, deviceType.Name), "name", "domain")
 	xml.SetOrCreateSimpleElement(dte, "profileId", "0x0103", "name", "domain", "typeName").CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString(), "name", "domain", "typeName", "profileId").CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class, "name", "domain", "typeName", "profileId", "deviceId")
@@ -72,33 +67,14 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 	return
 }
 
-func setDeviceTypeName(spec *spec.Specification, dte *etree.Element, deviceType *matter.DeviceType) {
-	deviceTypeName := zap.DeviceTypeName(deviceType)
-	doc, ok := spec.DocRefs[deviceType]
-	if ok {
-		errata := doc.Errata()
-		if errata != nil {
-			if errata.SDK.DeviceTypeNames != nil {
-				nameOverride, ok := errata.SDK.DeviceTypeNames[deviceType.Name]
-				if ok {
-					deviceTypeName = nameOverride
-					slog.Warn("device type source override doc", "path", deviceTypeName)
-				}
-			}
-		}
-	}
+func setDeviceTypeName(spec *spec.Specification, dte *etree.Element, deviceType *matter.DeviceType, errata *errata.SDK) {
+	deviceTypeName := zap.DeviceTypeName(deviceType, errata)
+
 	existingName, ok := xml.ReadSimpleElement(dte, "name")
-	if ok {
-		if existingName == deviceTypeName {
-			return
-		}
-		alternateName := alternateDeviceTypeName(deviceType)
-		if existingName == alternateName {
-			return
-		}
+	if ok && existingName == deviceTypeName {
+		return
 	}
 	xml.SetOrCreateSimpleElement(dte, "name", deviceTypeName)
-
 }
 
 func (p *DeviceTypesPatcher) buildClusterRequirements(spec *spec.Specification, conformanceContext conformance.Context, clusterReqs []*matter.ClusterRequirement, elementReqs []*matter.ElementRequirement) (clusterRequirementsByID map[uint64]*clusterRequirements) {
@@ -188,6 +164,7 @@ func (p DeviceTypesPatcher) setClustersElement(spec *spec.Specification, cxt con
 			if strings.EqualFold(ca.Value, crs.name) {
 				cr = crs
 				clusterId = id
+				break
 			}
 		}
 		if cr == nil {

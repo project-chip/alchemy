@@ -80,7 +80,7 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 	return
 }
 
-func (sp *Builder) resolveDataTypeReferences(onlyBaseClusters bool) {
+func (sp *Builder) resolveClusterDataTypeReferences(onlyBaseClusters bool) {
 	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
 	for cluster := range sp.Spec.Clusters {
 		inheritedCluster := cluster.Hierarchy != "Base"
@@ -116,16 +116,15 @@ func (sp *Builder) resolveDataTypeReferences(onlyBaseClusters bool) {
 			sp.resolveCommandResponseDataType(cluster, command, clusterFinder)
 		}
 	}
+}
 
-	if onlyBaseClusters {
-		specEntityFinder.cluster = nil
-		for _, s := range sp.Spec.structIndex {
-			for _, f := range s.Fields {
-				specEntityFinder.setIdentity(f)
-				sp.resolveFieldDataTypes(nil, s.Fields, f, f.Type, specEntityFinder)
-			}
+func (sp *Builder) resolveGlobalDataTypeReferences() {
+	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
+	for _, s := range sp.Spec.structIndex {
+		for _, f := range s.Fields {
+			specEntityFinder.setIdentity(f)
+			sp.resolveFieldDataTypes(nil, s.Fields, f, f.Type, specEntityFinder)
 		}
-
 	}
 }
 

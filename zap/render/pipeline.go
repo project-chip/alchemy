@@ -106,7 +106,7 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 	}
 
 	var clusters spec.DocSet
-	var deviceTypes pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
+	var deviceTypes spec.DocSet
 	var namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]]
 	clusters, deviceTypes, namespaces, err = SplitZAPDocs(cxt, specDocs)
 	if err != nil {
