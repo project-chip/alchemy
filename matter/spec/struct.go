@@ -32,16 +32,13 @@ func (s *Section) toStruct(d *Doc, pc *parseContext, parent types.Entity) (ms *m
 			}
 		}
 	}
-	ms.Fields, err = d.readFields(ti, types.EntityTypeStructField, ms)
+	var fieldMap map[string]*matter.Field
+	ms.Fields, fieldMap, err = d.readFields(ti, types.EntityTypeStructField, ms)
 	if err != nil {
 		return
 	}
 	pc.orderedEntities = append(pc.orderedEntities, ms)
 	pc.entitiesByElement[s.Base] = append(pc.entitiesByElement[s.Base], ms)
-	fieldMap := make(map[string]*matter.Field, len(ms.Fields))
-	for _, f := range ms.Fields {
-		fieldMap[f.Name] = f
-	}
 	err = s.mapFields(fieldMap, pc)
 	if err != nil {
 		return
