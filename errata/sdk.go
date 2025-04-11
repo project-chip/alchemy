@@ -31,8 +31,6 @@ type SDK struct {
 
 	Domain matter.Domain `yaml:"domain,omitempty"`
 
-	DeviceTypeNames map[string]string `yaml:"device-type-names,omitempty"`
-
 	TypeNames         map[string]string `yaml:"type-names,omitempty"`
 	ForceIncludeTypes []string          `yaml:"force-include-types,omitempty"`
 
@@ -41,13 +39,14 @@ type SDK struct {
 }
 
 type SDKTypes struct {
-	Attributes map[string]*SDKType `yaml:"attributes,omitempty"`
-	Clusters   map[string]*SDKType `yaml:"clusters,omitempty"`
-	Enums      map[string]*SDKType `yaml:"enums,omitempty"`
-	Bitmaps    map[string]*SDKType `yaml:"bitmaps,omitempty"`
-	Structs    map[string]*SDKType `yaml:"structs,omitempty"`
-	Commands   map[string]*SDKType `yaml:"commands,omitempty"`
-	Events     map[string]*SDKType `yaml:"events,omitempty"`
+	Attributes  map[string]*SDKType `yaml:"attributes,omitempty"`
+	Clusters    map[string]*SDKType `yaml:"clusters,omitempty"`
+	Enums       map[string]*SDKType `yaml:"enums,omitempty"`
+	Bitmaps     map[string]*SDKType `yaml:"bitmaps,omitempty"`
+	Structs     map[string]*SDKType `yaml:"structs,omitempty"`
+	Commands    map[string]*SDKType `yaml:"commands,omitempty"`
+	Events      map[string]*SDKType `yaml:"events,omitempty"`
+	DeviceTypes map[string]*SDKType `yaml:"device-types,omitempty"`
 }
 
 type SDKType struct {
@@ -96,6 +95,8 @@ func (z *SDK) getTypes(entityType types.EntityType) SDKTypeCollection {
 		return z.Types.Commands
 	case types.EntityTypeEvent:
 		return z.Types.Events
+	case types.EntityTypeDeviceType:
+		return z.Types.DeviceTypes
 	default:
 		slog.Warn("Unexpected entity type in ZAP errata types", slog.String("type", entityType.String()))
 		debug.PrintStack()
@@ -177,6 +178,8 @@ func (z *SDK) getType(entity types.Entity) (*SDKType, bool) {
 		return z.getTypes(types.EntityTypeCommand).getType(entity.Name)
 	case *matter.Event:
 		return z.getTypes(types.EntityTypeEvent).getType(entity.Name)
+	case *matter.DeviceType:
+		return z.getTypes(types.EntityTypeDeviceType).getType(entity.Name)
 	case nil:
 		slog.Warn("Unexpected nil entity in ZAP errata types")
 		debug.PrintStack()
@@ -186,20 +189,20 @@ func (z *SDK) getType(entity types.Entity) (*SDKType, bool) {
 	return nil, false
 }
 
-func (zap *SDK) OverrideName(entity types.Entity, defaultTypeName string) string {
+func (zap *SDK) OverrideName(entity types.Entity, defaultName string) string {
 	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
-		return defaultTypeName
+		return defaultName
 	}
 	t, ok := zap.getType(entity)
 	if ok && t.OverrideName != "" {
 		return t.OverrideName
 	}
 
-	tn, ok := zap.TypeNames[defaultTypeName]
+	tn, ok := zap.TypeNames[defaultName]
 	if ok {
 		return tn
 	}
-	return defaultTypeName
+	return defaultName
 }
 
 func (zap *SDK) OverrideConformance(entity types.Entity) conformance.Conformance {
@@ -246,20 +249,20 @@ func (zap *SDK) OverrideDomain(clusterName string, defaultDomain string) string 
 	return defaultDomain
 }
 
-func (zap *SDK) OverrideType(entity types.Entity, dataTypeName string) string {
+func (zap *SDK) OverrideType(entity types.Entity, defaultTypeName string) string {
 	if zap == nil || (zap.TypeNames == nil && zap.Types == nil) {
-		return dataTypeName
+		return defaultTypeName
 	}
 	t, ok := zap.getType(entity)
 	if ok && t.OverrideType != "" {
 		return t.OverrideType
 	}
 
-	tn, ok := zap.TypeNames[dataTypeName]
+	tn, ok := zap.TypeNames[defaultTypeName]
 	if ok {
 		return tn
 	}
-	return dataTypeName
+	return defaultTypeName
 }
 
 func (zap *SDK) OverrideDescription(entity types.Entity, defaultDescription string) string {

@@ -39,7 +39,7 @@ func ClusterName(path string, errata *errata.SDK, entities []types.Entity) strin
 	return strcase.ToKebab(name)
 }
 
-func DeviceTypeName(deviceType *matter.DeviceType) string {
+func DeviceTypeName(deviceType *matter.DeviceType, errata *errata.SDK) string {
 	name := matter.CaseWithSeparator(deviceType.Name, '-')
-	return "MA-" + strings.ToLower(name)
+	return errata.OverrideName(deviceType, "MA-"+strings.ToLower(name))
 }

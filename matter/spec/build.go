@@ -195,12 +195,13 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 
 	}
 
-	sp.resolveDataTypeReferences(true)
+	sp.resolveClusterDataTypeReferences(true)
+	sp.resolveGlobalDataTypeReferences()
 	if !sp.ignoreHierarchy {
 		sp.resolveHierarchy()
 	}
 	associateDeviceTypeRequirementWithClusters(spec)
-	sp.resolveDataTypeReferences(false)
+	sp.resolveClusterDataTypeReferences(false)
 
 	sp.resolveConformances()
 	sp.resolveConstraints()
@@ -294,6 +295,9 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 			}
 			if c, ok := spec.ClustersByID[cr.ClusterID.Value()]; ok {
 				cr.Cluster = c
+				if c.Name != cr.ClusterName {
+					slog.Warn("Mismatch between cluster requirement ID and cluster name", slog.String("clusterId", cr.ClusterID.HexString()), slog.String("clusterName", c.Name), slog.String("clusterRequirementName", cr.ClusterName))
+				}
 			} else {
 				if c, ok := spec.ClustersByName[cr.ClusterName]; ok {
 					cr.Cluster = c

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/beevik/etree"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
@@ -59,16 +60,27 @@ func (p DeviceTypesPatcher) Name() string {
 	return "Patching device types"
 }
 
-func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data[[]*matter.DeviceType]) (outputs []*pipeline.Data[[]byte], err error) {
+func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
 
+	deviceTypeDocs := make(map[*matter.DeviceType]*spec.Doc)
 	deviceTypesToUpdateByID := make(map[uint64]*matter.DeviceType)
 	deviceTypesToUpdateByName := make(map[string]*matter.DeviceType)
 	for _, input := range inputs {
-		for _, dt := range input.Content {
-			if dt.ID.Valid() {
-				deviceTypesToUpdateByID[dt.ID.Value()] = dt
-			} else {
-				deviceTypesToUpdateByName[dt.Name] = dt
+		var entities []types.Entity
+		entities, err = input.Content.Entities()
+		if err != nil {
+			return
+		}
+
+		for _, entity := range entities {
+			switch dt := entity.(type) {
+			case *matter.DeviceType:
+				if dt.ID.Valid() {
+					deviceTypesToUpdateByID[dt.ID.Value()] = dt
+				} else {
+					deviceTypesToUpdateByName[dt.Name] = dt
+				}
+				deviceTypeDocs[dt] = input.Content
 			}
 		}
 	}
@@ -143,8 +155,13 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			}
 		}
 		if deviceTypeToUpdate != nil {
+			doc, ok := deviceTypeDocs[deviceTypeToUpdate]
+			if !ok {
+				err = fmt.Errorf("missing device type doc for %s", deviceTypeToUpdate.Name)
+				return
+			}
 			if !matter.NonGlobalIDInvalidForEntity(deviceTypeToUpdate.ID, types.EntityTypeDeviceType) {
-				err = p.applyDeviceTypeToElement(p.spec, deviceTypeToUpdate, deviceTypeElement)
+				err = p.applyDeviceTypeToElement(p.spec, deviceTypeToUpdate, deviceTypeElement, errata.GetSDK(doc.Path.Relative))
 				if err != nil {
 					return
 				}
@@ -158,6 +175,11 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 
 	for _, dt := range deviceTypesToUpdateByID {
 		slog.Info("Adding new device type", slog.String("name", dt.Name))
+		doc, ok := deviceTypeDocs[dt]
+		if !ok {
+			err = fmt.Errorf("missing device type doc for %s", dt.Name)
+			return
+		}
 		if matter.NonGlobalIDInvalidForEntity(dt.ID, types.EntityTypeDeviceType) {
 			continue
 		}
@@ -181,7 +203,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			}
 			return deviceTypeID.Compare(dt.ID) > 0
 		})
-		err = p.applyDeviceTypeToElement(p.spec, dt, dte)
+		err = p.applyDeviceTypeToElement(p.spec, dt, dte, errata.GetSDK(doc.Path.Relative))
 		if err != nil {
 			return
 		}
@@ -189,6 +211,11 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 
 	for _, dt := range deviceTypesToUpdateByName {
 		slog.Info("Adding new device type", slog.String("name", dt.Name))
+		doc, ok := deviceTypeDocs[dt]
+		if !ok {
+			err = fmt.Errorf("missing device type doc for %s", dt.Name)
+			return
+		}
 		dte := etree.NewElement("deviceType")
 		xml.InsertElement(configurator, dte, func(el *etree.Element) bool {
 			dide := el.SelectElement("deviceId")
@@ -210,7 +237,7 @@ func (p DeviceTypesPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 			}
 			return strings.Compare(tne.Text(), dt.Name) > 0
 		})
-		err = p.applyDeviceTypeToElement(p.spec, dt, dte)
+		err = p.applyDeviceTypeToElement(p.spec, dt, dte, errata.GetSDK(doc.Path.Relative))
 		if err != nil {
 			return
 		}
