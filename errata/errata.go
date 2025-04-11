@@ -1,12 +1,14 @@
 package errata
 
-import "path/filepath"
+import (
+	"path/filepath"
+)
 
 type Errata struct {
 	Disco    Disco    `yaml:"disco,omitempty"`
 	Spec     Spec     `yaml:"spec,omitempty"`
 	TestPlan TestPlan `yaml:"test-plan,omitempty"`
-	SDK      SDK      `yaml:"sdk,zap,omitempty"`
+	SDK      SDK      `yaml:"sdk,omitempty"`
 }
 
 var DefaultErrata = &Errata{}
