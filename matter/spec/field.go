@@ -85,10 +85,18 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 				if f.Type.IsArray() {
 					lc, ok := f.Constraint.(*constraint.ListConstraint)
 					if ok {
-						lc.EntryConstraint = constraint.AppendConstraint(lc.EntryConstraint, cs...)
+						if constraint.IsAllOrEmpty(lc.EntryConstraint) {
+							lc.EntryConstraint = cs
+						} else {
+							lc.EntryConstraint = constraint.AppendConstraint(lc.EntryConstraint, cs...)
+						}
 					}
 				} else {
-					f.Constraint = constraint.AppendConstraint(f.Constraint, cs...)
+					if constraint.IsAllOrEmpty(f.Constraint) {
+						f.Constraint = cs
+					} else {
+						f.Constraint = constraint.AppendConstraint(f.Constraint, cs...)
+					}
 				}
 
 			}

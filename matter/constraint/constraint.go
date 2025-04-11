@@ -169,6 +169,23 @@ func IsBlank(c Constraint) bool {
 	return false
 }
 
+func IsAllOrEmpty(c Constraint) bool {
+	switch c := c.(type) {
+	case *AllConstraint:
+		return true
+	case Set:
+		if len(c) == 1 {
+			_, ok := c[0].(*AllConstraint)
+			if ok {
+				return true
+			}
+		} else if len(c) == 0 {
+			return true
+		}
+	}
+	return false
+}
+
 func IsGeneric(c Constraint) bool {
 	switch c := c.(type) {
 	case *GenericConstraint:
