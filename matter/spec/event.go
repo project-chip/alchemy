@@ -65,13 +65,10 @@ func (cf *eventFactory) Details(d *Doc, s *Section, pc *parseContext, e *matter.
 			}
 		}
 	}
-	e.Fields, err = d.readFields(ti, types.EntityTypeEventField, e)
+	var fieldMap map[string]*matter.Field
+	e.Fields, fieldMap, err = d.readFields(ti, types.EntityTypeEventField, e)
 	if err != nil {
 		return
-	}
-	fieldMap := make(map[string]*matter.Field, len(e.Fields))
-	for _, f := range e.Fields {
-		fieldMap[f.Name] = f
 	}
 	err = s.mapFields(fieldMap, pc)
 	if err != nil {

@@ -67,13 +67,10 @@ func (cf *commandFactory) Details(d *Doc, s *Section, pc *parseContext, c *matte
 			}
 			return
 		}
-		c.Fields, err = d.readFields(ti, types.EntityTypeCommandField, c)
+		var fieldMap map[string]*matter.Field
+		c.Fields, fieldMap, err = d.readFields(ti, types.EntityTypeCommandField, c)
 		if err != nil {
 			return
-		}
-		fieldMap := make(map[string]*matter.Field, len(c.Fields))
-		for _, f := range c.Fields {
-			fieldMap[f.Name] = f
 		}
 		err = s.mapFields(fieldMap, pc)
 		if err != nil {
