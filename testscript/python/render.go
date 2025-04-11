@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mailgun/raymond/v2"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/testscript"
@@ -38,6 +39,13 @@ func (sp *PythonTestRenderer) Process(cxt context.Context, input *pipeline.Data[
 		return
 	}
 
+	var sdkErrata *errata.SDK
+	if input.Content.Doc != nil {
+		sdkErrata = errata.GetSDK(input.Content.Doc.Path.Relative)
+	} else {
+		sdkErrata = &errata.DefaultErrata.SDK
+	}
+
 	var t *raymond.Template
 	t, err = sp.loadTemplate(sp.spec)
 	if err != nil {
@@ -47,6 +55,7 @@ func (sp *PythonTestRenderer) Process(cxt context.Context, input *pipeline.Data[
 	t.RegisterHelper("variable", variableHelper(variables))
 	t.RegisterHelper("globalVariable", globalVariableHelper(test.GlobalVariables))
 	t.RegisterHelper("value", valueHelper(variables))
+	registerDocHelpers(t, sdkErrata)
 	tc := map[string]any{
 		"test": test,
 	}

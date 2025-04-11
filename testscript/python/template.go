@@ -30,7 +30,7 @@ func (sp *PythonTestRenderer) loadTemplate(spec *spec.Specification) (*raymond.T
 
 		handlebars.RegisterCommonHelpers(t)
 
-		registerHelpers(t, spec)
+		registerSpecHelpers(t, spec)
 
 		return t, nil
 	})

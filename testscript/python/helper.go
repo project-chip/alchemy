@@ -11,6 +11,7 @@ import (
 	"github.com/goccy/go-yaml"
 	"github.com/iancoleman/strcase"
 	"github.com/mailgun/raymond/v2"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
@@ -21,7 +22,7 @@ import (
 	"github.com/project-chip/alchemy/testscript"
 )
 
-func registerHelpers(t *raymond.Template, spec *spec.Specification) {
+func registerSpecHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("pics", picsHelper)
 	t.RegisterHelper("picsList", picsListHelper)
 	t.RegisterHelper("picsGuard", picsGuardHelper)
@@ -30,20 +31,15 @@ func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("commandIs", commandIsHelper)
 	t.RegisterHelper("pythonValue", pythonValueHelper)
 	t.RegisterHelper("asUpperCamelCase", asUpperCamelCaseHelper)
-	t.RegisterHelper("clusterName", clusterNameHelper(spec))
-	t.RegisterHelper("attributeName", attributeNameHelper(spec))
 	t.RegisterHelper("clusterVariable", clusterVariableHelper(spec))
 	t.RegisterHelper("endpointVariable", endpointVariableHelper)
-	t.RegisterHelper("stepClusterName", stepClusterNameHelper(spec))
 	t.RegisterHelper("commandArg", commandArgHelper)
 	t.RegisterHelper("commandArgs", commandArgsHelper(spec))
 	t.RegisterHelper("statusError", statusErrorHelper)
 	t.RegisterHelper("octetString", octetStringHelper)
 	t.RegisterHelper("pythonString", pythonStringHelper)
 	t.RegisterHelper("ifIsEnum", ifEnumHelper)
-	t.RegisterHelper("enumName", enumNameHelper)
 	t.RegisterHelper("ifIsBitmap", ifBitmapHelper)
-	t.RegisterHelper("bitmapName", bitmapNameHelper)
 	t.RegisterHelper("ifNeedsConformanceCheck", needsConformanceCheckHelper)
 	t.RegisterHelper("minConstraint", minConstraintHelper)
 	t.RegisterHelper("maxConstraint", maxConstraintHelper)
@@ -54,15 +50,24 @@ func registerHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("unimplementedTypeCheck", unimplementedTypeCheckHelper)
 	t.RegisterHelper("entryTypeCheckIs", entryTypeCheckIsHelper)
 	t.RegisterHelper("type", typeHelper)
-	t.RegisterHelper("entityTypeName", entityTypeNameHelper)
-	t.RegisterHelper("entryTypeName", entryTypeNameHelper)
-	t.RegisterHelper("entityTypeQualifiedName", entityTypeQualifiedNameHelper)
-	t.RegisterHelper("entryTypeQualifiedName", entryTypeQualifiedNameHelper)
-	t.RegisterHelper("entityTypeFullName", entityTypeFullNameHelper)
-	t.RegisterHelper("entryTypeFullName", entryTypeFullNameHelper)
-	t.RegisterHelper("structFullName", structFullNameHelper)
-	t.RegisterHelper("fieldName", fieldNameHelper)
 	t.RegisterHelper("ifFieldIsOptional", ifFieldIsOptionalHelper)
+}
+
+func registerDocHelpers(t *raymond.Template, errata *errata.SDK) {
+	t.RegisterHelper("bitmapName", bitmapNameHelper(errata))
+	t.RegisterHelper("entityTypeName", entityTypeNameHelper(errata))
+	t.RegisterHelper("entryTypeName", entryTypeNameHelper(errata))
+	t.RegisterHelper("clusterName", clusterNameHelper(errata))
+	t.RegisterHelper("attributeName", attributeNameHelper(errata))
+	t.RegisterHelper("stepClusterName", stepClusterNameHelper(errata))
+	t.RegisterHelper("enumName", enumNameHelper(errata))
+	t.RegisterHelper("entityTypeQualifiedName", entityTypeQualifiedNameHelper(errata))
+	t.RegisterHelper("entryTypeQualifiedName", entryTypeQualifiedNameHelper(errata))
+	t.RegisterHelper("entityTypeFullName", entityTypeFullNameHelper(errata))
+	t.RegisterHelper("entryTypeFullName", entryTypeFullNameHelper(errata))
+	t.RegisterHelper("structName", structNameHelper(errata))
+	t.RegisterHelper("structFullName", structFullNameHelper(errata))
+	t.RegisterHelper("fieldName", fieldNameHelper(errata))
 }
 
 func typeHelper(t any) raymond.SafeString {
@@ -130,59 +135,53 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 	return options.Inverse()
 }
 
-func clusterNameHelper(sp *spec.Specification) func(test testscript.Test) raymond.SafeString {
+func clusterNameHelper(errata *errata.SDK) func(test testscript.Test) raymond.SafeString {
 	return func(test testscript.Test) raymond.SafeString {
-
-		/*clusterName := test.Config.Cluster
-		_, ok := sp.ClustersByName[clusterName]
-		if !ok {
-			slog.Warn("Unknown cluster in test", slog.String("clusterName", clusterName))
-		}*/
-		return raymond.SafeString(spec.CanonicalName(test.Cluster.Name))
+		return raymond.SafeString(errata.OverrideName(test.Cluster, spec.CanonicalName(test.Cluster.Name)))
 	}
 }
 
-func stepClusterNameHelper(sp *spec.Specification) func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
+func stepClusterNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
 	return func(test testscript.Test, step testscript.TestStep) raymond.SafeString {
-		clusterName := test.Cluster.Name
+		clusterName := errata.OverrideName(test.Cluster, test.Cluster.Name)
 		if step.Cluster != nil {
-			clusterName = step.Cluster.Name
+			clusterName = errata.OverrideName(step.Cluster, step.Cluster.Name)
 		}
 		return raymond.SafeString(spec.CanonicalName(clusterName))
 	}
 }
 
-func attributeNameHelper(sp *spec.Specification) func(step testscript.TestStep, action testscript.TestAction) raymond.SafeString {
+func attributeNameHelper(errata *errata.SDK) func(step testscript.TestStep, action testscript.TestAction) raymond.SafeString {
 	return func(step testscript.TestStep, action testscript.TestAction) raymond.SafeString {
 		switch action := action.(type) {
 		case testscript.ReadAttribute:
 			if action.Attribute != nil {
-				return raymond.SafeString(action.Attribute.Name)
+				return raymond.SafeString(errata.OverrideName(action.Attribute, action.Attribute.Name))
 			}
 			return raymond.SafeString(action.AttributeName)
 		case *testscript.ReadAttribute:
 			if action.Attribute != nil {
-				return raymond.SafeString(action.Attribute.Name)
+				return raymond.SafeString(errata.OverrideName(action.Attribute, action.Attribute.Name))
 			}
 			return raymond.SafeString(action.AttributeName)
 		case testscript.WriteAttribute:
 			if action.Attribute != nil {
-				return raymond.SafeString(action.Attribute.Name)
+				return raymond.SafeString(errata.OverrideName(action.Attribute, action.Attribute.Name))
 			}
 			return raymond.SafeString(action.AttributeName)
 		case *testscript.WriteAttribute:
 			if action.Attribute != nil {
-				return raymond.SafeString(action.Attribute.Name)
+				return raymond.SafeString(errata.OverrideName(action.Attribute, action.Attribute.Name))
 			}
 			return raymond.SafeString(action.AttributeName)
 		case testscript.CheckType:
-			return raymond.SafeString(action.Field.Name)
+			return raymond.SafeString(errata.OverrideName(action.Field, action.Field.Name))
 		case testscript.CheckMaxConstraint:
-			return raymond.SafeString(action.Field.Name)
+			return raymond.SafeString(errata.OverrideName(action.Field, action.Field.Name))
 		case testscript.CheckMinConstraint:
-			return raymond.SafeString(action.Field.Name)
+			return raymond.SafeString(errata.OverrideName(action.Field, action.Field.Name))
 		case testscript.CheckRangeConstraint:
-			return raymond.SafeString(action.Field.Name)
+			return raymond.SafeString(errata.OverrideName(action.Field, action.Field.Name))
 		default:
 			slog.Error("Unexpected action type in attribute name helper", log.Type("type", action))
 		}
@@ -418,18 +417,19 @@ func ifEnumHelper(e types.Entity, options *raymond.Options) string {
 	return options.Inverse()
 }
 
-func enumNameHelper(action testscript.CheckType) raymond.SafeString {
-
-	if action.Field.Type.Entity == nil {
-		slog.Error("Missing enum entity on field", slog.String("fieldName", action.Field.Name))
-		return raymond.SafeString("")
-	}
-	switch entity := action.Field.Type.Entity.(type) {
-	case *matter.Enum:
-		return raymond.SafeString(entity.Name)
-	default:
-		slog.Error("Unexpected type getting enum name", log.Type("type", entity))
-		return raymond.SafeString("unknown")
+func enumNameHelper(errata *errata.SDK) func(action testscript.CheckType) raymond.SafeString {
+	return func(action testscript.CheckType) raymond.SafeString {
+		if action.Field.Type.Entity == nil {
+			slog.Error("Missing enum entity on field", slog.String("fieldName", action.Field.Name))
+			return raymond.SafeString("")
+		}
+		switch entity := action.Field.Type.Entity.(type) {
+		case *matter.Enum:
+			return raymond.SafeString(errata.OverrideName(entity, entity.Name))
+		default:
+			slog.Error("Unexpected type getting enum name", log.Type("type", entity))
+			return raymond.SafeString("unknown")
+		}
 	}
 }
 
@@ -446,46 +446,68 @@ func ifBitmapHelper(e types.Entity, options *raymond.Options) string {
 	return options.Inverse()
 }
 
-func bitmapNameHelper(action testscript.CheckType) raymond.SafeString {
-	if action.Field.Type.Entity == nil {
-		slog.Error("Missing bitmap entity on field", slog.String("fieldName", action.Field.Name))
-		return raymond.SafeString("")
+func bitmapNameHelper(errata *errata.SDK) func(action testscript.CheckType) raymond.SafeString {
+	return func(action testscript.CheckType) raymond.SafeString {
+		if action.Field.Type.Entity == nil {
+			slog.Error("Missing bitmap entity on field", slog.String("fieldName", action.Field.Name))
+			return raymond.SafeString("")
+		}
+		switch entity := action.Field.Type.Entity.(type) {
+		case *matter.Bitmap:
+			return raymond.SafeString(errata.OverrideName(entity, entity.Name))
+		default:
+			slog.Error("Unexpected type getting bitmap name", log.Type("type", entity))
+			return raymond.SafeString("unknown")
+		}
 	}
-	switch entity := action.Field.Type.Entity.(type) {
-	case *matter.Bitmap:
-		return raymond.SafeString(entity.Name)
-	default:
-		slog.Error("Unexpected type getting bitmap name", log.Type("type", entity))
-		return raymond.SafeString("unknown")
+}
+
+func entityTypeNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
+		return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, customTypeNameTypeShort, errata)
 	}
 }
 
-func entityTypeNameHelper(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
-	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, customTypeNameTypeShort)
+func entryTypeNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+		return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, customTypeNameTypeShort, errata)
+	}
 }
 
-func entryTypeNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
-	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, customTypeNameTypeShort)
+func entityTypeQualifiedNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
+		return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, customTypeNameTypeQualified, errata)
+	}
 }
 
-func entityTypeQualifiedNameHelper(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
-	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, customTypeNameTypeQualified)
+func entryTypeQualifiedNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+		return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, customTypeNameTypeQualified, errata)
+	}
 }
 
-func entryTypeQualifiedNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
-	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, customTypeNameTypeQualified)
+func entityTypeFullNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
+		return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, customTypeNameTypeFull, errata)
+	}
 }
 
-func entityTypeFullNameHelper(test testscript.Test, step testscript.TestStep, action testscript.CheckType) raymond.SafeString {
-	return customTypeHelper(test, step, *action.Field, action.Field.Type, action.Field.Type.Entity, customTypeNameTypeFull)
+func entryTypeFullNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+		return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, customTypeNameTypeFull, errata)
+	}
 }
 
-func entryTypeFullNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
-	return customTypeHelper(test, step, field, field.Type.EntryType, field.Type.EntryType.Entity, customTypeNameTypeFull)
+func structNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, s *matter.Struct) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, s *matter.Struct) raymond.SafeString {
+		return customTypeHelper(test, step, matter.Field{}, nil, s, customTypeNameTypeShort, errata)
+	}
 }
 
-func structFullNameHelper(test testscript.Test, step testscript.TestStep, s *matter.Struct) raymond.SafeString {
-	return customTypeHelper(test, step, matter.Field{}, nil, s, customTypeNameTypeFull)
+func structFullNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, s *matter.Struct) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, s *matter.Struct) raymond.SafeString {
+		return customTypeHelper(test, step, matter.Field{}, nil, s, customTypeNameTypeFull, errata)
+	}
 }
 
 type customTypeNameType int
@@ -496,7 +518,7 @@ const (
 	customTypeNameTypeFull
 )
 
-func customTypeHelper(test testscript.Test, step testscript.TestStep, field matter.Field, dataType *types.DataType, entity types.Entity, nameType customTypeNameType) raymond.SafeString {
+func customTypeHelper(test testscript.Test, step testscript.TestStep, field matter.Field, dataType *types.DataType, entity types.Entity, nameType customTypeNameType, errata *errata.SDK) raymond.SafeString {
 	if dataType != nil && !dataType.IsCustom() && testscript.CanCheckType(&field) {
 		return raymond.SafeString(toPythonType(dataType.BaseType))
 	}
@@ -505,26 +527,26 @@ func customTypeHelper(test testscript.Test, step testscript.TestStep, field matt
 	var cluster *matter.Cluster
 	switch entryEntity := entity.(type) {
 	case *matter.Bitmap:
-		name = entryEntity.Name
+		name = errata.OverrideName(entryEntity, entryEntity.Name)
 		cluster = entryEntity.Cluster()
 		collection = "Bitmaps"
 	case *matter.Command:
-		name = entryEntity.Name
+		name = errata.OverrideName(entryEntity, entryEntity.Name)
 		cluster = entryEntity.Cluster()
 		collection = "Commands"
 	case *matter.Struct:
-		name = entryEntity.Name
+		name = errata.OverrideName(entryEntity, entryEntity.Name)
 		cluster = entryEntity.Cluster()
 		collection = "Structs"
 	case *matter.Enum:
-		name = entryEntity.Name
+		name = errata.OverrideName(entryEntity, entryEntity.Name)
 		cluster = entryEntity.Cluster()
 		collection = "Enums"
 	case nil:
 		slog.Error("Missing entry type entity on list field", slog.String("fieldName", field.Name), slog.String("baseDataType", dataType.BaseType.String()))
 		return raymond.SafeString("")
 	case *matter.TypeDef:
-		return customTypeHelper(test, step, field, entryEntity.Type, nil, nameType)
+		return customTypeHelper(test, step, field, entryEntity.Type, nil, nameType, errata)
 	default:
 		slog.Error("Unknown entry type entity on list field", slog.String("fieldName", field.Name), log.Type("type", entryEntity))
 		return raymond.SafeString("")
@@ -554,8 +576,10 @@ func customTypeHelper(test testscript.Test, step testscript.TestStep, field matt
 	return raymond.SafeString(clusterPrefix + name)
 }
 
-func fieldNameHelper(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
-	return raymond.SafeString(strcase.ToLowerCamel(field.Name))
+func fieldNameHelper(errata *errata.SDK) func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, field matter.Field) raymond.SafeString {
+		return raymond.SafeString(strcase.ToLowerCamel(errata.OverrideName(&field, field.Name)))
+	}
 }
 
 func ifFieldIsNullableHelper(field matter.Field, options *raymond.Options) string {

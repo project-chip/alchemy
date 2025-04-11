@@ -4,27 +4,27 @@
 {{/each}}
 {{/if}}
 {{#typeCheckIs action "uint64" ~}}
-matter_asserts.assert_valid_uint64({{action.Variable}}, '{{attributeName step action ~}}')
+matter_asserts.assert_valid_uint64({{action.Variable}}, '{{attributeName step action }} must be a valid uint64')
 {{else typeCheckIs action "uint32" ~}}
-matter_asserts.assert_valid_uint32({{action.Variable}}, '{{attributeName step action ~}}')
+matter_asserts.assert_valid_uint32({{action.Variable}}, '{{attributeName step action }} must be a valid uint32')
 {{else typeCheckIs action "uint24" ~}}
-asserts.assert_true(matter_asserts.is_valid_uint_value(value, bit_count=24), '{{attributeName step action ~}} must be a valid uint24 integer')
+asserts.assert_true(matter_asserts.is_valid_uint_value(value, bit_count=24), '{{attributeName step action }} must be a valid uint24 integer')
 {{else typeCheckIs action "uint16" ~}}
-matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action ~}}')
+matter_asserts.assert_valid_uint16({{action.Variable}}, '{{attributeName step action }} must be an uint16')
 {{else typeCheckIs action "uint8" ~}}
-matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action ~}}')
+matter_asserts.assert_valid_uint8({{action.Variable}}, '{{attributeName step action }} must be an uint8')
 {{else typeCheckIs action "int64" ~}}
-matter_asserts.assert_valid_int64({{action.Variable}}, '{{attributeName step action ~}}')
+matter_asserts.assert_valid_int64({{action.Variable}}, '{{attributeName step action }} must be an int64')
 {{else typeCheckIs action "int32" ~}}
-matter_asserts.assert_valid_int32({{action.Variable}}, '{{attributeName step action ~}}')
+matter_asserts.assert_valid_int32({{action.Variable}}, '{{attributeName step action }} must be an int32')
 {{else typeCheckIs action "int24" ~}}
-asserts.assert_true(matter_asserts.is_valid_int_value(value, bit_count=24), '{{attributeName step action ~}} must be a valid int24 integer')
+asserts.assert_true(matter_asserts.is_valid_int_value(value, bit_count=24), '{{attributeName step action }} must be a valid int24 integer')
 {{else typeCheckIs action "int16" ~}}
-matter_asserts.assert_valid_int16({{action.Variable}}, '{{attributeName step action ~}}')
+matter_asserts.assert_valid_int16({{action.Variable}}, '{{attributeName step action }} must be an int16')
 {{else typeCheckIs action "int8" ~}}
-matter_asserts.assert_valid_int8({{action.Variable}}, '{{attributeName step action ~}}')
+matter_asserts.assert_valid_int8({{action.Variable}}, '{{attributeName step action }} must be an int8')
 {{else typeCheckIs action "bool" ~}}
-matter_asserts.assert_valid_bool({{action.Variable}}, '{{attributeName step action ~}}')
+matter_asserts.assert_valid_bool({{action.Variable}}, '{{attributeName step action }} must be a bool')
 {{else typeCheckIs action "string" ~}}
 matter_asserts.assert_is_string({{action.Variable}}, "{{attributeName step action}} must be a string")
 {{else typeCheckIs action "octstr" ~}}

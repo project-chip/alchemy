@@ -34,7 +34,13 @@ func needsConformanceCheckHelper(action testscript.TestAction, options *raymond.
 			return options.Fn()
 		}
 		return options.Inverse()
+	case *testscript.CheckStructField:
+		if needsConformanceCheck(action.Field.Conformance) {
+			return options.Fn()
+		}
+		return options.Inverse()
 	default:
+		slog.Info("Unexpected action type", log.Type("type", action))
 		return options.Inverse()
 	}
 }
@@ -74,6 +80,12 @@ func conformanceGuardHelper(action testscript.TestAction) raymond.SafeString {
 			return raymond.SafeString("True")
 		}
 	case *testscript.CheckType:
+	case *testscript.CheckStructField:
+		err := buildPythonConformance(action.Field.Cluster(), action.Field.Conformance, action.Field, &sb)
+		if err != nil {
+			slog.Error("Error building conformance", slog.Any("error", err))
+			return raymond.SafeString("True")
+		}
 	default:
 		slog.Error("Unexpected action type", log.Type("type", action))
 	}
