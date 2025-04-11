@@ -31,7 +31,30 @@ func LoadErrataConfig(specRoot string) error {
 	if err != nil {
 		return err
 	}
-	Erratas = errataOverlay.Errata
+	// TODO: once alchemy has migrated to using sdk: instead of zap: in errata.yaml, we can drop this indirection
+	// This is only here because YAML can't have two tags aliasing the same value
+	overlayErrata := make(map[string]*Errata)
+	for path, oe := range errataOverlay.Errata {
+		var e Errata
+		if oe.Disco != nil {
+			e.Disco = *oe.Disco
+		}
+		if oe.Spec != nil {
+			e.Spec = *oe.Spec
+		}
+		if oe.TestPlan != nil {
+			e.TestPlan = *oe.TestPlan
+		}
+		if oe.SDK != nil {
+			e.SDK = *oe.SDK
+		} else if oe.ZAP != nil {
+			e.SDK = *oe.ZAP
+		}
+		overlayErrata[path] = &e
+	}
+	if len(overlayErrata) > 0 {
+		Erratas = overlayErrata
+	}
 	var docRoots []string
 	for p, e := range Erratas {
 		path := filepath.Join(specRoot, p)
@@ -50,8 +73,16 @@ func LoadErrataConfig(specRoot string) error {
 }
 
 type errataOverlay struct {
-	MinimumVersion string             `yaml:"minimum-version"`
-	Errata         map[string]*Errata `yaml:"errata"`
+	MinimumVersion string                    `yaml:"minimum-version"`
+	Errata         map[string]*overlayErrata `yaml:"errata"`
+}
+
+type overlayErrata struct {
+	Disco    *Disco    `yaml:"disco,omitempty"`
+	Spec     *Spec     `yaml:"spec,omitempty"`
+	TestPlan *TestPlan `yaml:"test-plan,omitempty"`
+	SDK      *SDK      `yaml:"sdk,omitempty"`
+	ZAP      *SDK      `yaml:"zap,omitempty"`
 }
 
 func loadConfig(specRoot string) []byte {
@@ -77,7 +108,10 @@ func loadConfig(specRoot string) []byte {
 }
 
 func dumpConfig(errataPath string) {
-	errataOverlay := errataOverlay{Errata: Erratas}
+	errataOverlay := errataOverlay{Errata: make(map[string]*overlayErrata)}
+	for path, oe := range Erratas {
+		errataOverlay.Errata[path] = &overlayErrata{Disco: &oe.Disco, Spec: &oe.Spec, TestPlan: &oe.TestPlan, SDK: &oe.SDK}
+	}
 	d, err := yaml.Marshal(&errataOverlay)
 	if err != nil {
 		slog.Warn("error marshalling yaml", slog.Any("error", err))
