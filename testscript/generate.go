@@ -47,7 +47,7 @@ func (sp *TestScriptGenerator) Process(cxt context.Context, input *pipeline.Data
 	for _, cluster := range clusters {
 		if len(cluster.Attributes) > 0 {
 			var t *Test
-			t, err = sp.buildClusterTest(cluster)
+			t, err = sp.buildClusterTest(input.Content, cluster)
 			if err != nil {
 				slog.Error("Error generating test script", matter.LogEntity("cluster", cluster), slog.Any("error", err))
 				err = nil

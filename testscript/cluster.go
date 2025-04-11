@@ -16,7 +16,7 @@ import (
 	"github.com/project-chip/alchemy/testplan/pics"
 )
 
-func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, err error) {
+func (*TestScriptGenerator) buildClusterTest(doc *spec.Doc, cluster *matter.Cluster) (t *Test, err error) {
 	id := cluster.PICS
 
 	if id == "" {
@@ -24,6 +24,7 @@ func (*TestScriptGenerator) buildClusterTest(cluster *matter.Cluster) (t *Test, 
 		id = strcase.ToScreamingSnake(spec.CanonicalName(cluster.Name))
 	}
 	t = &Test{
+		Doc:     doc,
 		Cluster: cluster,
 		ID:      id + "_2_1",
 		Name:    "Attributes with Server as DUT",

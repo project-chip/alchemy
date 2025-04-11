@@ -12,7 +12,9 @@ if struct.{{fieldName test step this.Field}} is not None:
 if struct.{{fieldName test step this.Field}} is not NullValue:
     {{> test/validations test=test step=step action=this}}
 {{else}}
+asserts.assert_not_equal(struct.{{fieldName test step this.Field}}, NullValue, "{{structName test step step.Entity}}.{{fieldName test step this.Field}} is not allowed to be null")
 {{> test/validations test=test step=step action=this}}
 {{/ifFieldIsNullable}}
 {{/ifFieldIsOptional}}
+
 {{/each}}

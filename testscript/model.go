@@ -5,6 +5,7 @@ import (
 
 	"github.com/goccy/go-yaml"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testplan/pics"
 )
@@ -12,6 +13,8 @@ import (
 type Test struct {
 	ID   string
 	Name string
+
+	Doc *spec.Doc
 
 	Cluster *matter.Cluster
 
