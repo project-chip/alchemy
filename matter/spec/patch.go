@@ -242,6 +242,8 @@ func addAtomicOperations(spec *Specification, cluster *matter.Cluster) {
 			},
 		},
 	}
+	spec.DataTypeRefs.Add(atomicRequest.Fields[0], atomicRequestTypeEnum)
+	spec.DataTypeRefs.Add(atomicResponse.Fields[0], atomicRequestTypeEnum)
 	spec.ClusterRefs.Add(cluster, atomicRequest)
 	spec.ClusterRefs.Add(cluster, atomicResponse)
 	cluster.Commands = append(cluster.Commands, atomicRequest)

@@ -3,18 +3,12 @@ package spec
 import (
 	"log/slog"
 	"strings"
-	"sync"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
-
-type ClusterRefs struct {
-	sync.RWMutex
-	refs map[types.Entity]map[*matter.Cluster]struct{}
-}
 
 type Specification struct {
 	Root string
@@ -30,8 +24,9 @@ type Specification struct {
 
 	Namespaces []*matter.Namespace
 
-	ClusterRefs ClusterRefs
-	DocRefs     map[types.Entity]*Doc
+	ClusterRefs  EntityRefs[*matter.Cluster]
+	DataTypeRefs EntityRefs[types.Entity]
+	DocRefs      map[types.Entity]*Doc
 
 	bitmapIndex  map[string]*matter.Bitmap
 	enumIndex    map[string]*matter.Enum
@@ -54,7 +49,8 @@ func newSpec(specRoot string) *Specification {
 		Clusters:          make(map[*matter.Cluster]struct{}),
 		ClustersByID:      make(map[uint64]*matter.Cluster),
 		ClustersByName:    make(map[string]*matter.Cluster),
-		ClusterRefs:       ClusterRefs{refs: make(map[types.Entity]map[*matter.Cluster]struct{})},
+		ClusterRefs:       NewEntityRefs[*matter.Cluster](),
+		DataTypeRefs:      NewEntityRefs[types.Entity](),
 		DeviceTypesByID:   make(map[uint64]*matter.DeviceType),
 		DeviceTypesByName: make(map[string]*matter.DeviceType),
 		DocRefs:           make(map[types.Entity]*Doc),
@@ -70,24 +66,6 @@ func newSpec(specRoot string) *Specification {
 
 		entities: make(map[string]map[types.Entity]*matter.Cluster),
 	}
-}
-
-func (cr *ClusterRefs) Add(c *matter.Cluster, m types.Entity) {
-	cr.Lock()
-	cm, ok := cr.refs[m]
-	if !ok {
-		cm = make(map[*matter.Cluster]struct{})
-		cr.refs[m] = cm
-	}
-	cm[c] = struct{}{}
-	cr.Unlock()
-}
-
-func (cr *ClusterRefs) Get(m types.Entity) (map[*matter.Cluster]struct{}, bool) {
-	cr.RLock()
-	cm, ok := cr.refs[m]
-	cr.RUnlock()
-	return cm, ok
 }
 
 type specEntityFinder struct {

@@ -142,6 +142,7 @@ func (sp *Builder) resolveFieldDataTypes(cluster *matter.Cluster, fieldSet matte
 	if dataType.Entity != nil {
 		// This has already been resolved by some other process
 		if cluster != nil {
+			sp.Spec.DataTypeRefs.Add(field, dataType.Entity)
 			sp.Spec.ClusterRefs.Add(cluster, dataType.Entity)
 			sp.Spec.addEntity(dataType.Entity, cluster)
 		}
@@ -165,6 +166,7 @@ func (sp *Builder) resolveFieldDataTypes(cluster *matter.Cluster, fieldSet matte
 		if cluster == nil || dataType.Entity == nil {
 			return
 		}
+		sp.Spec.DataTypeRefs.Add(field, dataType.Entity)
 		sp.Spec.ClusterRefs.Add(cluster, dataType.Entity)
 		sp.Spec.addEntity(dataType.Entity, cluster)
 		switch e := dataType.Entity.(type) {

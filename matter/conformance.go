@@ -27,10 +27,12 @@ func EntityConformance(entity types.Entity) conformance.Set {
 		return entity.Conformance
 	case *ElementRequirement:
 		return entity.Conformance
+	case *Struct, *Enum, *Bitmap:
+		return nil
 	case nil:
-		slog.Warn("Enexpected nil entity fetching conformance")
+		slog.Warn("Unexpected nil entity fetching conformance")
 	default:
-		slog.Warn("Enexpected entity fetching conformance", LogEntity("entity", entity))
+		slog.Warn("Unexpected entity fetching conformance", LogEntity("entity", entity))
 	}
 	return nil
 }
