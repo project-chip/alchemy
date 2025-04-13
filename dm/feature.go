@@ -36,10 +36,7 @@ func RenderFeatureElements(doc *spec.Doc, cluster *matter.Cluster, features *etr
 		feature := features.CreateElement("feature")
 		feature.CreateAttr("bit", bit.IntString())
 		feature.CreateAttr("code", f.Code)
-		name := f.Name()
-		if errata != nil {
-			name = errata.OverrideName(b, name)
-		}
+		name := errata.OverrideName(b, f.Name())
 		feature.CreateAttr("name", name)
 		if len(f.Summary()) > 0 {
 			feature.CreateAttr("summary", scrubDescription(f.Summary()))
