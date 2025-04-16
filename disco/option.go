@@ -1,145 +1,43 @@
 package disco
 
-type Option func(options *options)
+type Option func(options *DiscoOptions)
 
-type options struct {
-	linkIndexTables               bool
-	addMissingColumns             bool
-	reorderColumns                bool
-	renameTableHeaders            bool
-	formatAccess                  bool
-	promoteDataTypes              bool
-	reorderSections               bool
-	normalizeTableOptions         bool
-	fixCommandDirection           bool
-	appendSubsectionTypes         bool
-	uppercaseHex                  bool
-	addSpaceAfterPunctuation      bool
-	removeExtraSpaces             bool
-	normalizeFeatureNames         bool
-	disambiguateConformanceChoice bool
-	normalizeAnchors              bool
-	removeMandatoryFallbacks      bool
+type DiscoOptions struct {
+	LinkIndexTables               bool `default:"false" aliases:"linkIndexTables" help:"link index tables to child sections" group:"Discoballing:"`
+	AddMissingColumns             bool `default:"true" aliases:"addMissingColumns" help:"add standard columns missing from tables" group:"Discoballing:"`
+	ReorderColumns                bool `default:"true" aliases:"reorderColumns" help:"rearrange table columns into disco-ball order" group:"Discoballing:"`
+	RenameTableHeaders            bool `default:"true" aliases:"renameTableHeaders" help:"rename table headers to disco-ball standard names" group:"Discoballing:"`
+	FormatAccess                  bool `default:"true" aliases:"formatAccess" help:"reformat access columns in disco-ball order" group:"Discoballing:"`
+	PromoteDataTypes              bool `default:"true" aliases:"promoteDataTypes" help:"promote inline data types to Data Types section" group:"Discoballing:"`
+	ReorderSections               bool `default:"true" aliases:"reorderSections" help:"reorder sections in disco-ball order" group:"Discoballing:"`
+	NormalizeTableOptions         bool `default:"true" aliases:"normalizeTableOptions" help:"remove existing table options and replace with standard disco-ball options" group:"Discoballing:"`
+	FixCommandDirection           bool `default:"true" aliases:"fixCommandDirection" help:"normalize command directions" group:"Discoballing:"`
+	AppendSubsectionTypes         bool `default:"true" aliases:"appendSubsectionTypes" help:"add missing suffixes to data type sections (e.g. \"Bit\", \"Value\", \"Field\", etc.)" group:"Discoballing:"`
+	UppercaseHex                  bool `default:"true" aliases:"uppercaseHex" help:"uppercase hex values" group:"Discoballing:"`
+	AddSpaceAfterPunctuation      bool `default:"true" aliases:"addSpaceAfterPunctuation" help:"add missing space after punctuation" group:"Discoballing:"`
+	RemoveExtraSpaces             bool `default:"true" aliases:"removeExtraSpaces" help:"remove extraneous spaces" group:"Discoballing:"`
+	NormalizeFeatureNames         bool `default:"true" aliases:"normalizeFeatureNames" help:"correct invalid feature names" group:"Discoballing:"`
+	DisambiguateConformanceChoice bool `default:"true" aliases:"disambiguateConformanceChoice" help:"ensure conformance choices are only used once per document" group:"Discoballing:"`
+	NormalizeAnchors              bool `default:"false" aliases:"normalizeAnchors" help:"rewrite anchors and references without labels" group:"Discoballing:"`
+	RemoveMandatoryFallbacks      bool `default:"true" aliases:"removeMandatoryFallbacks" help:"remove fallback values for mandatory fields" group:"Discoballing:"`
 }
 
-var defaultOptions = options{
-	linkIndexTables:               false,
-	addMissingColumns:             true,
-	reorderColumns:                true,
-	renameTableHeaders:            true,
-	formatAccess:                  true,
-	promoteDataTypes:              true,
-	reorderSections:               true,
-	normalizeTableOptions:         true,
-	fixCommandDirection:           true,
-	appendSubsectionTypes:         true,
-	uppercaseHex:                  true,
-	addSpaceAfterPunctuation:      true,
-	removeExtraSpaces:             true,
-	normalizeFeatureNames:         true,
-	disambiguateConformanceChoice: false,
-	normalizeAnchors:              false,
-	removeMandatoryFallbacks:      false,
-}
-
-func LinkIndexTables(link bool) Option {
-	return func(options *options) {
-		options.linkIndexTables = link
-	}
-}
-
-func AddMissingColumns(add bool) Option {
-	return func(options *options) {
-		options.addMissingColumns = add
-	}
-}
-
-func ReorderColumns(reorder bool) Option {
-	return func(options *options) {
-		options.reorderColumns = reorder
-	}
-}
-
-func RenameTableHeaders(rename bool) Option {
-	return func(options *options) {
-		options.renameTableHeaders = rename
-	}
-}
-
-func FormatAccess(format bool) Option {
-	return func(options *options) {
-		options.formatAccess = format
-	}
-}
-
-func PromoteDataTypes(promote bool) Option {
-	return func(options *options) {
-		options.promoteDataTypes = promote
-	}
-}
-
-func ReorderSections(reorder bool) Option {
-	return func(options *options) {
-		options.reorderSections = reorder
-	}
-}
-
-func FixCommandDirection(add bool) Option {
-	return func(options *options) {
-		options.fixCommandDirection = add
-	}
-}
-
-func AppendSubsectionTypes(add bool) Option {
-	return func(options *options) {
-		options.appendSubsectionTypes = add
-	}
-}
-
-func UppercaseHex(add bool) Option {
-	return func(options *options) {
-		options.uppercaseHex = add
-	}
-}
-
-func AddSpaceAfterPunctuation(add bool) Option {
-	return func(options *options) {
-		options.addSpaceAfterPunctuation = add
-	}
-}
-
-func RemoveExtraSpaces(add bool) Option {
-	return func(options *options) {
-		options.removeExtraSpaces = add
-	}
-}
-
-func NormalizeTableOptions(add bool) Option {
-	return func(options *options) {
-		options.normalizeTableOptions = add
-	}
-}
-
-func NormalizeFeatureNames(add bool) Option {
-	return func(options *options) {
-		options.normalizeFeatureNames = add
-	}
-}
-
-func DisambiguateConformanceChoice(add bool) Option {
-	return func(options *options) {
-		options.disambiguateConformanceChoice = add
-	}
-}
-
-func NormalizeAnchors(add bool) Option {
-	return func(options *options) {
-		options.normalizeAnchors = add
-	}
-}
-
-func RemoveMandatoryFallbacks(add bool) Option {
-	return func(options *options) {
-		options.removeMandatoryFallbacks = add
-	}
+var DefaultOptions = DiscoOptions{
+	LinkIndexTables:               false,
+	AddMissingColumns:             true,
+	ReorderColumns:                true,
+	RenameTableHeaders:            true,
+	FormatAccess:                  true,
+	PromoteDataTypes:              true,
+	ReorderSections:               true,
+	NormalizeTableOptions:         true,
+	FixCommandDirection:           true,
+	AppendSubsectionTypes:         true,
+	UppercaseHex:                  true,
+	AddSpaceAfterPunctuation:      true,
+	RemoveExtraSpaces:             true,
+	NormalizeFeatureNames:         true,
+	DisambiguateConformanceChoice: false,
+	NormalizeAnchors:              false,
+	RemoveMandatoryFallbacks:      false,
 }

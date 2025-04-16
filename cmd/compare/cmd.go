@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/compare"
 	"github.com/project-chip/alchemy/errata"
@@ -17,42 +18,25 @@ import (
 	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/zap/parse"
 	"github.com/project-chip/alchemy/zap/render"
-	"github.com/spf13/cobra"
 )
 
-var Command = &cobra.Command{
-	Use:   "compare",
-	Short: "compare the spec to zap-templates and output a JSON diff",
-	RunE:  compareSpec,
+type Command struct {
+	spec.ParserOptions         `embed:""`
+	sdk.SDKOptions             `embed:""`
+	common.ASCIIDocAttributes  `embed:""`
+	pipeline.ProcessingOptions `embed:""`
+	files.OutputOptions        `embed:""`
+
+	Text bool
 }
 
-func init() {
-	flags := Command.Flags()
-	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	flags.String("sdkRoot", "connectedhomeip", "the src root of your clone of project-chip/connectedhomeip")
-	flags.Bool("text", false, "output as text")
-}
-
-func compareSpec(cmd *cobra.Command, args []string) (err error) {
-
-	cxt := cmd.Context()
-	flags := cmd.Flags()
-
-	asciiSettings := common.ASCIIDocAttributes(flags)
-
-	sdkRoot, _ := flags.GetString("sdkRoot")
-	text, _ := flags.GetBool("text")
-
-	pipelineOptions := pipeline.PipelineOptions(flags)
-	parserOptions := spec.ParserOptions(flags)
-	outputOptions := files.OutputOptions(flags)
-
-	err = sdk.CheckAlchemyVersion(sdkRoot)
+func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
+	err = sdk.CheckAlchemyVersion(c.SdkRoot)
 	if err != nil {
 		return
 	}
 
-	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
+	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ToOptions()...)
 	if err != nil {
 		return err
 	}
@@ -62,29 +46,29 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 		return
 	}
 
-	specFiles, err := pipeline.Start(cxt, spec.Targeter(specParser.Root))
+	specFiles, err := pipeline.Start(alchemy, spec.Targeter(specParser.Root))
 	if err != nil {
 		return err
 	}
 
-	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
+	specDocs, err := pipeline.Parallel(alchemy, c.ProcessingOptions, specParser, specFiles)
 	if err != nil {
 		return err
 	}
 
 	specBuilder := spec.NewBuilder(specParser.Root)
-	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
+	specDocs, err = pipeline.Collective(alchemy, c.ProcessingOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
 
-	xmlPaths, err := pipeline.Start(cxt, paths.NewTargeter(filepath.Join(sdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")))
+	xmlPaths, err := pipeline.Start(alchemy, paths.NewTargeter(filepath.Join(c.SdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")))
 	if err != nil {
 		return err
 	}
 
 	var xmlFiles pipeline.FileSet
-	xmlFiles, err = pipeline.Parallel(cxt, pipelineOptions, files.NewReader("Reading ZAP templates"), xmlPaths)
+	xmlFiles, err = pipeline.Parallel(alchemy, c.ProcessingOptions, files.NewReader("Reading ZAP templates"), xmlPaths)
 
 	if err != nil {
 		return
@@ -92,14 +76,14 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 
 	var zapEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
 	zapParser := parse.NewZapParser()
-	zapEntities, err = pipeline.Parallel(cxt, pipelineOptions, zapParser, xmlFiles)
+	zapEntities, err = pipeline.Parallel(alchemy, c.ProcessingOptions, zapParser, xmlFiles)
 	if err != nil {
 		return
 	}
 	zapParser.ResolveReferences()
 
 	var specEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
-	specEntities, err = pipeline.Collective(cxt, pipelineOptions, &common.EntityFilter[*spec.Doc, types.Entity]{}, specDocs)
+	specEntities, err = pipeline.Collective(alchemy, c.ProcessingOptions, &common.EntityFilter[*spec.Doc, types.Entity]{}, specDocs)
 
 	if err != nil {
 		return
@@ -116,7 +100,7 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 
 		errata := errata.GetSDK(path)
 
-		destinations := render.ZAPTemplateDestinations(sdkRoot, path, entities.Content, errata)
+		destinations := render.ZAPTemplateDestinations(c.SdkRoot, path, entities.Content, errata)
 		for templatePath, entities := range destinations {
 			var clusters []types.Entity
 			for _, e := range entities {
@@ -142,11 +126,11 @@ func compareSpec(cmd *cobra.Command, args []string) (err error) {
 		return
 	}
 
-	if outputOptions.DryRun {
+	if c.DryRun {
 		return nil
 	}
 
-	if text {
+	if c.Text {
 		writeText(os.Stdout, diffs)
 		return
 	}

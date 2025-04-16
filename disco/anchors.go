@@ -27,14 +27,11 @@ type anchorGroup struct {
 }
 
 type AnchorNormalizer struct {
-	options options
+	options DiscoOptions
 }
 
-func newAnchorNormalizer(discoOptions []Option) AnchorNormalizer {
-	an := AnchorNormalizer{}
-	for _, o := range discoOptions {
-		o(&an.options)
-	}
+func newAnchorNormalizer(discoOptions DiscoOptions) AnchorNormalizer {
+	an := AnchorNormalizer{options: discoOptions}
 	return an
 }
 
@@ -204,7 +201,7 @@ func (an AnchorNormalizer) normalizeAnchor(info *spec.Anchor) (id string) {
 	if labelText(info.LabelElements) == name {
 		info.LabelElements = nil
 	}
-	if an.options.normalizeAnchors {
+	if an.options.NormalizeAnchors {
 		_, isSection := info.Element.(*asciidoc.Section)
 		if isSection {
 			info.LabelElements = nil

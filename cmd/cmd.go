@@ -2,119 +2,82 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
-	"strings"
-	"time"
 
-	"github.com/lmittmann/tint"
+	"github.com/alecthomas/kong"
+	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/config"
-	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
-	Use:          "alchemy",
-	Short:        "",
-	Long:         ``,
-	SilenceUsage: true,
-	Version:      config.Version(),
+type globalFlags struct {
+	Verbose              bool   `default:"false" help:"display verbose information" group:"Logging:"`
+	LogLevel             string `default:"info" aliases:"loglevel" help:"changes level of log; 'debug', 'info', 'warn' or 'error'" group:"Logging:"`
+	Log                  string `default:"console"  help:"changes format of log; 'console' or 'json'" group:"Logging:"`
+	SuppressVersionCheck bool   `default:"false" aliases:"suppressVersionCheck" hidden:""`
+	ErrorExitCode        bool   `default:"false" aliases:"errorExitCode" hidden:""`
+
+	Version kong.VersionFlag `default:"false" help:"display version"`
 }
 
-var defaultCommand string
-var suppressVersionCheck bool
-
 func Execute() {
-	if len(defaultCommand) > 0 {
-		cmd, _, err := rootCmd.Find(os.Args[1:])
-		if err != nil || cmd.Use == rootCmd.Use {
-			rootCmd.SetArgs(append([]string{defaultCommand}, os.Args[1:]...))
-		}
+
+	if len(os.Args) < 2 {
+		os.Args = append(os.Args, "--help")
 	}
 
-	cxt := context.Background()
+	k := kong.Parse(&commands,
+		kong.Name("alchemy"),
+		kong.Description("A transmuter of Matter"),
+		kong.ConfigureHelp(kong.HelpOptions{
+			Compact:   true,
+			FlagsLast: true,
+		}),
+		kong.UsageOnError(),
+		kong.Vars{"version": fmt.Sprintf("version: %s", config.Version())})
+
+	alchemy := cli.Alchemy{
+		Context: context.Background(),
+		Kong:    k,
+	}
+
+	configureLogging()
 
 	versionChan := make(chan string, 1)
-	if !suppressVersionCheck {
-		go checkVersion(cxt, versionChan)
+	if !commands.SuppressVersionCheck {
+		go checkVersion(alchemy, versionChan)
 	}
 
-	err := rootCmd.ExecuteContext(cxt)
+	err := k.Run(&alchemy)
+
 	if err != nil {
-		handleError(err)
+		handleError(k, err)
 	}
 
-	if errored {
+	if logHadErrors {
 		os.Exit(1)
 	}
 
-	if !suppressVersionCheck {
+	if !commands.SuppressVersionCheck {
 		select {
 		case version := <-versionChan:
 			compareVersion(version)
 		default:
 		}
 	}
-}
-
-func init() {
-	flags := rootCmd.PersistentFlags()
-	flags.Bool("verbose", false, "display verbose information")
-	flags.String("log", "console", "changes format of log; 'console' or 'json'")
-	flags.String("loglevel", "info", "changes level of log; 'debug', 'info', 'warn' or 'error'")
-	flags.Bool("suppressVersionCheck", false, "")
-	flags.MarkHidden("suppressVersionCheck")
-	flags.Bool("errorExitCode", false, "")
-	flags.MarkHidden("errorExitCode")
-	rootCmd.SetVersionTemplate(`{{printf "version: %s" .Version}}
-`)
-	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-		flags := rootCmd.PersistentFlags()
-		verbose, _ := flags.GetBool("verbose")
-		level := slog.LevelInfo
-		loglevel, _ := flags.GetString("loglevel")
-		switch strings.ToLower(loglevel) {
-		case "error":
-			level = slog.LevelError
-		case "warn":
-			level = slog.LevelWarn
-		case "info":
-			level = slog.LevelInfo
-		case "debug":
-			level = slog.LevelDebug
-		}
-		if verbose {
-			level = slog.LevelDebug
-		}
-		var handler slog.Handler
-		logType, _ := flags.GetString("log")
-		switch logType {
-		case "json":
-			handler = slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: level})
-		default:
-			handler = tint.NewHandler(os.Stderr, &tint.Options{
-				Level:      level,
-				TimeFormat: time.StampMilli,
-			})
-		}
-		errorExitCode, _ := flags.GetBool("errorExitCode")
-		if errorExitCode {
-			handler = &errorHandler{Handler: handler}
-		}
-		slog.SetDefault(slog.New(handler))
-		suppressVersionCheck, _ = flags.GetBool("suppressVersionCheck")
-	}
 
 }
 
-var errored bool
+var logHadErrors bool
 
 type errorHandler struct {
 	slog.Handler
 }
 
 func (er *errorHandler) Handle(cxt context.Context, record slog.Record) error {
-	if !errored && record.Level >= slog.LevelError {
-		errored = true
+	if !logHadErrors && record.Level >= slog.LevelError {
+		logHadErrors = true
 	}
 	return er.Handler.Handle(cxt, record)
 }

@@ -22,7 +22,7 @@ func NewPatcher[T string | []byte](name string, out io.Writer) Writer[T] {
 	return &Patcher[T]{writer: writer{name: name}, out: out}
 }
 
-func (sp *Patcher[T]) Write(cxt context.Context, data pipeline.Map[string, *pipeline.Data[T]], pipelineOptions pipeline.Options) (err error) {
+func (sp *Patcher[T]) Write(cxt context.Context, data pipeline.Map[string, *pipeline.Data[T]], pipelineOptions pipeline.ProcessingOptions) (err error) {
 	_, err = pipeline.Collective(cxt, pipelineOptions, sp, data)
 	return
 }

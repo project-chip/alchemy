@@ -12,7 +12,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineOptions pipeline.Options, discoOptions []Option, renderOptions []render.Option, writer files.Writer[string]) (err error) {
+func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, discoOptions DiscoOptions, renderOptions []render.Option, writer files.Writer[string]) (err error) {
 
 	var docs spec.DocSet
 

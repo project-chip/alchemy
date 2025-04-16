@@ -2,8 +2,11 @@
 
 package cmd
 
-import "os"
+import (
+	"github.com/alecthomas/kong"
+)
 
-func handleError(err error) {
-	os.Exit(1)
+func handleError(ctx *kong.Context, err error) {
+	//fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+	ctx.FatalIfErrorf(err)
 }

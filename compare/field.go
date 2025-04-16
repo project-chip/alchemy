@@ -59,18 +59,19 @@ func compareField(entityType types.EntityType, specFields matter.FieldSet, specF
 			diffs = append(diffs, &BoolDiff{Type: DiffTypeMismatch, Property: DiffPropertyNullable, Spec: specField.Quality.Has(matter.QualityNullable), ZAP: zapField.Quality.Has(matter.QualityNullable)})
 		}
 	}
-	diffs = append(diffs, compareAccess(entityType, specField.Access, zapField.Access)...)
 	defaultValue := zap.GetFallbackValue(matter.NewConstraintContext(specField, specFields), specField.Fallback)
 	if defaultValue.Defined() {
-		specDefault := constraint.ParseLimit(defaultValue.ZapString(specField.Type))
-		if !specDefault.Equal(zapField.Fallback) && !(constraint.IsNullLimit(specField.Fallback) && constraint.IsBlankLimit(zapField.Fallback)) { // ZAP frequently omits default null
-			specFallback := specField.Fallback.Fallback(matter.NewConstraintContext(specField, specFields))
-			zapFallback := zapField.Fallback.Fallback(matter.NewConstraintContext(zapField, zapFields))
-			if !specFallback.ValueEquals(zapFallback) {
-				diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specFallback.ZapString(specField.Type), ZAP: zapFallback.ZapString(zapField.Type)})
+		dv := defaultValue.ZapString(specField.Type)
+		if dv != "" {
+			specDefault := constraint.ParseLimit(defaultValue.ZapString(specField.Type))
+			if !specDefault.Equal(zapField.Fallback) && !(constraint.IsNullLimit(specField.Fallback) && constraint.IsBlankLimit(zapField.Fallback)) { // ZAP frequently omits default null
+				specFallback := specField.Fallback.Fallback(matter.NewConstraintContext(specField, specFields))
+				zapFallback := zapField.Fallback.Fallback(matter.NewConstraintContext(zapField, zapFields))
+				if !specFallback.ValueEquals(zapFallback) {
+					diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyDefault, Spec: specFallback.ZapString(specField.Type), ZAP: zapFallback.ZapString(zapField.Type)})
+				}
 			}
 		}
-
 	} else if !constraint.IsBlankLimit(zapField.Fallback) {
 
 		if !constraint.IsBlankLimit(specField.Fallback) {

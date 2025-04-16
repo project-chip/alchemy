@@ -66,7 +66,7 @@ func (b *Baller) organizeAttributesSection(cxt *discoContext) (err error) {
 }
 
 func (b *Baller) linkIndexTables(cxt *discoContext, section *subSection) error {
-	if !b.options.linkIndexTables {
+	if !b.options.LinkIndexTables {
 		return nil
 	}
 	if cxt.errata.IgnoreSection(section.section.Name, errata.DiscoPurposeTableLinkIndexes) {

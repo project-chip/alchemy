@@ -24,23 +24,19 @@ import (
 type GeneratorOption func(g *Renderer)
 
 type Renderer struct {
-	testPlanRoot string
-	templateRoot string
-	overwrite    bool
+	options RendererOptions
 }
 
-func NewRenderer(testPlanRoot string, overwrite bool, options ...GeneratorOption) *Renderer {
-	g := &Renderer{testPlanRoot: testPlanRoot, overwrite: overwrite}
-	for _, o := range options {
-		o(g)
-	}
+type RendererOptions struct {
+	TestRoot     string `default:"chip-test-plans" aliases:"testRoot" help:"the root of your clone of CHIP-Specifications/chip-test-plans" group:"Test Plans:"`
+	Overwrite    bool   `help:"overwrite existing test plans" group:"Test Plans:"`
+	TemplateRoot string `default:"" aliases:"templateRoot" help:"the root of your local template files; if not specified, Alchemy will use an internal copy" group:"Test Plans:"`
+}
+
+func NewRenderer(options RendererOptions) *Renderer {
+	g := &Renderer{options: options}
+
 	return g
-}
-
-func TemplateRoot(templateRoot string) func(*Renderer) {
-	return func(g *Renderer) {
-		g.templateRoot = templateRoot
-	}
 }
 
 func (sp Renderer) Name() string {
@@ -57,7 +53,7 @@ func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc]
 		return
 	}
 
-	destinations := buildDestinations(sp.testPlanRoot, entities, doc.Errata().TestPlan)
+	destinations := buildDestinations(sp.options.TestRoot, entities, doc.Errata().TestPlan)
 
 	var t *raymond.Template
 	t, err = sp.loadTemplate()
@@ -68,7 +64,7 @@ func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc]
 	for newPath, cluster := range destinations {
 
 		_, err = os.ReadFile(newPath)
-		if (err == nil || !errors.Is(err, os.ErrNotExist)) && !sp.overwrite {
+		if (err == nil || !errors.Is(err, os.ErrNotExist)) && !sp.options.Overwrite {
 			slog.InfoContext(cxt, "Skipping existing test plan", slog.String("path", newPath))
 			continue
 		}

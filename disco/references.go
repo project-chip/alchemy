@@ -65,7 +65,7 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 			}
 		}
 	}
-	if an.options.normalizeAnchors {
+	if an.options.NormalizeAnchors {
 		parse.Traverse(nil, doc.Base.Elements(), func(el asciidoc.Element, parent parse.HasElements, index int) parse.SearchShould {
 			if se, ok := el.(*spec.Element); ok {
 				el = se.Base

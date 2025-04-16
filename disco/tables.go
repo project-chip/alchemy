@@ -15,7 +15,7 @@ import (
 )
 
 func (b *Baller) ensureTableOptions(els asciidoc.Set) {
-	if !b.options.normalizeTableOptions {
+	if !b.options.NormalizeTableOptions {
 		return
 	}
 	parse.Search(els, func(t *asciidoc.Table) parse.SearchShould {
@@ -43,7 +43,7 @@ func (b *Baller) ensureTableOptions(els asciidoc.Set) {
 }
 
 func (b *Baller) addMissingColumns(cxt *discoContext, section *spec.Section, ti *spec.TableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {
-	if !b.options.addMissingColumns {
+	if !b.options.AddMissingColumns {
 		return
 	}
 	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableAddMissingColumns) {
@@ -151,7 +151,7 @@ func (b *Baller) getDefaultColumnValue(ti *spec.TableInfo, row *asciidoc.TableRo
 }
 
 func (b *Baller) reorderColumns(cxt *discoContext, section *spec.Section, ti *spec.TableInfo, tableType matter.TableType) (err error) {
-	if !b.options.reorderColumns {
+	if !b.options.ReorderColumns {
 		return
 	}
 	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableReorderColumns) {
@@ -298,7 +298,7 @@ func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toI
 }
 
 func (b *Baller) renameTableHeaderCells(cxt *discoContext, section *spec.Section, table *spec.TableInfo, overrides map[matter.TableColumn]matter.TableColumn) (err error) {
-	if !b.options.renameTableHeaders {
+	if !b.options.RenameTableHeaders {
 		return
 	}
 	if cxt.errata.IgnoreSection(section.Name, errata.DiscoPurposeTableRenameHeaders) {

@@ -1,7 +1,5 @@
 package spec
 
-import "github.com/spf13/pflag"
-
 type BuilderOption func(tg *Builder)
 
 func IgnoreHierarchy(ignore bool) BuilderOption {
@@ -10,20 +8,22 @@ func IgnoreHierarchy(ignore bool) BuilderOption {
 	}
 }
 
-type ParserOption func(p *Parser)
-
-func ParserFlags(flags *pflag.FlagSet) {
-	flags.String("specRoot", "connectedhomeip-spec", "the src root of your clone of CHIP-Specifications/connectedhomeip-spec")
-	flags.Bool("inline", false, "use inline parser")
+type BuilderOptions struct {
+	IgnoreHierarchy bool `default:"false" help:"ignore hierarchy" group:"Spec:"`
 }
 
-func ParserOptions(flags *pflag.FlagSet) (options []ParserOption) {
-	specRoot, _ := flags.GetString("specRoot")
-	inline, _ := flags.GetBool("inline")
+type ParserOption func(p *Parser)
 
-	options = append(options, SpecRoot(specRoot))
-	options = append(options, UseInlineParser(inline))
-	return
+type ParserOptions struct {
+	SpecRoot string `default:"connectedhomeip-spec" help:"the src root of your clone of CHIP-Specifications/connectedhomeip-spec"  group:"Spec:"`
+	Inline   bool   `default:"false" help:"use inline parser"  group:"Spec:"`
+}
+
+func (po ParserOptions) ToOptions() []ParserOption {
+	return []ParserOption{
+		SpecRoot(po.SpecRoot),
+		UseInlineParser(po.Inline),
+	}
 }
 
 func UseInlineParser(useInline bool) ParserOption {

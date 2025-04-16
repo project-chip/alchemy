@@ -1,22 +1,16 @@
 package python
 
-import (
-	"github.com/spf13/pflag"
-)
-
 type GeneratorOption func(g *PythonTestRenderer)
 
-func Flags(flags *pflag.FlagSet) {
-	flags.String("templateRoot", "", "the root of your local template files; if not specified, Alchemy will use an internal copy")
-	flags.Bool("overwrite", true, "overwrite existing test scripts")
+type GeneratorOptions struct {
+	TemplateRoot string `aliases:"templateRoot" help:"the root of your local template files; if not specified, Alchemy will use an internal copy" group:"Test Script Options:"`
+	Overwrite    bool   `default:"false" help:"overwrite existing test scripts"  group:"Test Script Options:"`
 }
 
-func GeneratorOptions(flags *pflag.FlagSet) (options []GeneratorOption) {
-	overwrite, _ := flags.GetBool("overwrite")
-	templateRoot, _ := flags.GetString("templateRoot")
+func (g GeneratorOptions) ToOptions() []GeneratorOption {
 	return []GeneratorOption{
-		Overwrite(overwrite),
-		TemplateRoot(templateRoot),
+		TemplateRoot(g.TemplateRoot),
+		Overwrite(g.Overwrite),
 	}
 }
 

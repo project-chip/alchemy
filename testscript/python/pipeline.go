@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/testscript/yaml/parse"
 )
 
-func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Options, parserOptions []spec.ParserOption, asciiSettings []asciidoc.AttributeName, generatorOptions []GeneratorOption, fileOptions files.Options, filePaths []string) (err error) {
+func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.ProcessingOptions, parserOptions []spec.ParserOption, asciiSettings []asciidoc.AttributeName, generatorOptions []GeneratorOption, fileOptions files.OutputOptions, filePaths []string) (err error) {
 
 	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
 	if err != nil {

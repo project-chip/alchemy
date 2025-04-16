@@ -33,17 +33,17 @@ func (b *Baller) postCleanUpStrings(els asciidoc.Set) {
 		case *asciidoc.Table:
 			return parse.SearchShouldSkip
 		case *asciidoc.String:
-			if b.options.addSpaceAfterPunctuation {
+			if b.options.AddSpaceAfterPunctuation {
 				el.Value = missingSpaceAfterPunctuationPattern.ReplaceAllString(el.Value, "$1$2 $3")
 			}
 		}
 		return parse.SearchShouldContinue
 	})
 	parse.Search(els, func(t *asciidoc.String) parse.SearchShould {
-		if b.options.removeExtraSpaces {
+		if b.options.RemoveExtraSpaces {
 			t.Value = multipleSpacesPattern.ReplaceAllString(t.Value, "$1 $2")
 		}
-		if b.options.uppercaseHex {
+		if b.options.UppercaseHex {
 			t.Value = lowercaseHexPattern.ReplaceAllStringFunc(t.Value, func(s string) string {
 				return lowercasePattern.ReplaceAllStringFunc(s, func(s string) string {
 					return strings.ToUpper(s)

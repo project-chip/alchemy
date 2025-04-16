@@ -9,8 +9,6 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-type Option func(r *Renderer)
-
 type Renderer struct {
 	wordWrapLength int
 }

@@ -22,7 +22,7 @@ type templateContext struct {
 func (sp *Renderer) loadTemplate() (*raymond.Template, error) {
 	t, err := template.Do(func() (*raymond.Template, error) {
 
-		ov := handlebars.NewOverlay(sp.templateRoot, templateFiles, "templates")
+		ov := handlebars.NewOverlay(sp.options.TemplateRoot, templateFiles, "templates")
 		err := ov.Flush()
 		if err != nil {
 			slog.Error("Error flushing embedded templates", slog.Any("error", err))

@@ -6,31 +6,33 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/spf13/cobra"
 )
 
-var conformanceCommand = &cobra.Command{
-	Use:   "conformance",
-	Short: "test conformance values",
-	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		if len(args) == 0 {
-			return cmd.Usage()
-		}
-		c := conformance.ParseConformance(args[0])
-		fmt.Fprintf(os.Stdout, "description: %s\n", c.Description())
-		if len(args) > 1 {
-			var cxt conformance.Context
-			cxt.Values = make(map[string]any)
-			for _, arg := range args[1:] {
-				cxt.Values[arg] = true
-			}
-			crm, err := c.Eval(cxt)
-			if err != nil {
-				return err
-			}
-			fmt.Fprintf(os.Stdout, "conformance: %v\n", crm)
-		}
+type Conformance struct {
+	Conformance string   `arg:"" help:"conformance string" required:""`
+	Params      []string `arg:"" help:"parameters to use to evaluate conformance" optional:""`
+}
+
+func (cmd *Conformance) Run(alchemy *cli.Alchemy) (err error) {
+	if len(cmd.Conformance) == 0 {
+		// TODO: re-add usage
 		return nil
-	},
+	}
+	c := conformance.ParseConformance(cmd.Conformance)
+	fmt.Fprintf(os.Stdout, "description: %s\n", c.Description())
+	if len(cmd.Params) > 0 {
+		var cxt conformance.Context
+		cxt.Values = make(map[string]any)
+		for _, arg := range cmd.Params {
+			cxt.Values[arg] = true
+		}
+		crm, err := c.Eval(cxt)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(os.Stdout, "conformance: %v\n", crm)
+	}
+	return nil
 }

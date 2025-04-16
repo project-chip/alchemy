@@ -20,7 +20,7 @@ import (
 
 type TemplateGenerator struct {
 	spec        *spec.Specification
-	pipeline    pipeline.Options
+	pipeline    pipeline.ProcessingOptions
 	attributes  []asciidoc.AttributeName
 	sdkRoot     string
 	specVersion string
@@ -36,7 +36,7 @@ type TemplateGenerator struct {
 	ClusterAliases pipeline.Map[string, []string]
 }
 
-func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.Options, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
+func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.ProcessingOptions, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
 	tg := &TemplateGenerator{
 		spec:                     spec,
 		pipeline:                 pipelineOptions,

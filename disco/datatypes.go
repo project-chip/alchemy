@@ -163,7 +163,7 @@ func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, row
 }
 
 func (b *Baller) promoteDataTypes(cxt *discoContext, top *spec.Section) (promoted bool, err error) {
-	if !b.options.promoteDataTypes {
+	if !b.options.PromoteDataTypes {
 		return
 	}
 
@@ -499,7 +499,7 @@ func renameDataType(subSections []*subSection, oldName string, newName string) {
 }
 
 func (b *Baller) removeMandatoryFallbacks(ti *spec.TableInfo) {
-	if !b.options.removeMandatoryFallbacks {
+	if !b.options.RemoveMandatoryFallbacks {
 		return
 	}
 	fallbackIndex, hasFallback := ti.ColumnMap[matter.TableColumnFallback]
