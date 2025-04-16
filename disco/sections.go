@@ -121,7 +121,7 @@ func (b *Baller) appendSubsectionTypes(cxt *discoContext, section *spec.Section,
 			if _, ok := subSectionNames[name]; !ok {
 				continue
 			}
-			if !b.options.appendSubsectionTypes {
+			if !b.options.AppendSubsectionTypes {
 				continue
 			}
 			if ss.SecType == matter.SectionUnknown {

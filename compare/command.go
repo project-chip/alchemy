@@ -12,8 +12,15 @@ func compareCommand(specCommand *matter.Command, zapCommand *matter.Command) (di
 	if !namesEqual(specCommand.Name, zapCommand.Name) {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyName, Spec: specCommand.Name, ZAP: zapCommand.Name})
 	}
-	if specCommand.Response != zapCommand.Response && !(specCommand.Response == nil && zapCommand.Response.Name == "N") {
-		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyCommandResponse, Spec: specCommand.Response.Name, ZAP: zapCommand.Response.Name})
+	if !specCommand.Response.Equals(zapCommand.Response) && !(specCommand.Response == nil && zapCommand.Response.Name == "N") {
+		var specResponse, zapResponse string
+		if specCommand.Response != nil {
+			specResponse = specCommand.Response.Name
+		}
+		if zapCommand.Response != nil {
+			zapResponse = zapCommand.Response.Name
+		}
+		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyCommandResponse, Spec: specResponse, ZAP: zapResponse})
 	}
 	if specCommand.Direction != zapCommand.Direction {
 		diffs = append(diffs, &StringDiff{Type: DiffTypeMismatch, Property: DiffPropertyCommandDirection, Spec: specCommand.Direction.String(), ZAP: zapCommand.Direction.String()})

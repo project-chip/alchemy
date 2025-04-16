@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/cmd/compare"
 	"github.com/project-chip/alchemy/cmd/disco"
 	"github.com/project-chip/alchemy/cmd/dm"
@@ -14,25 +13,21 @@ import (
 	"github.com/project-chip/alchemy/cmd/validate"
 	"github.com/project-chip/alchemy/cmd/yaml2python"
 	"github.com/project-chip/alchemy/cmd/zap"
-	"github.com/project-chip/alchemy/internal/files"
-	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-func init() {
-	flags := rootCmd.PersistentFlags()
-	files.Flags(flags)
-	common.AttributeFlags(flags)
-	pipeline.Flags(flags)
+var commands struct {
+	Format      format.Command      `cmd:"" help:"disco ball Matter spec documents specified by the filename_pattern" group:"Spec Commands:"`
+	Disco       disco.Command       `cmd:"" help:"disco ball Matter spec documents specified by the filename_pattern" group:"Spec Commands:"`
+	ZAP         zap.Command         `cmd:"" help:"transmute the Matter spec into ZAP templates, optionally filtered to the files specified by filename_pattern" group:"SDK Commands:"`
+	Compare     compare.Command     `cmd:"" help:"compare the spec to zap-templates and output a JSON diff"  group:"SDK Commands:"`
+	Conformance Conformance         `cmd:"" help:"test conformance values"  group:"Spec Commands:"`
+	Dump        dump.Command        `cmd:"" hidden:"" help:"dump the parse tree of Matter documents specified by filename_pattern"`
+	DM          dm.Command          `cmd:"" help:"transmute the Matter spec into data model XML; optionally filtered to the files specified in filename_pattern" group:"SDK Commands:"`
+	TestPlan    testplan.Command    `cmd:"" name:"testplan" help:"create an initial test plan from the spec, optionally filtered to the files specified in filename_pattern" group:"Testing Commands:"`
+	TestScript  testscript.Command  `cmd:"" name:"testscript" help:"create shell python scripts from the spec, optionally filtered to the files specified by filename_pattern" group:"Testing Commands:"`
+	Validate    validate.Command    `cmd:"" help:"validate the Matter specification object model" group:"Spec Commands:"`
+	Yaml2Python yaml2python.Command `cmd:"" name:"yaml2python" help:"create a shell python script from a test YAML, optionally filtered to the files specified by filename_pattern"  group:"Testing Commands:"`
+	Version     Version             `cmd:"" hidden:"" name:"version" help:"display version number"`
 
-	rootCmd.AddCommand(format.Command)
-	rootCmd.AddCommand(disco.Command)
-	rootCmd.AddCommand(zap.Command)
-	rootCmd.AddCommand(compare.Command)
-	rootCmd.AddCommand(conformanceCommand)
-	rootCmd.AddCommand(dump.Command)
-	rootCmd.AddCommand(dm.Command)
-	rootCmd.AddCommand(testplan.Command)
-	rootCmd.AddCommand(testscript.Command)
-	rootCmd.AddCommand(validate.Command)
-	rootCmd.AddCommand(yaml2python.Command)
+	globalFlags `embed:""`
 }

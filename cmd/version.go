@@ -9,21 +9,16 @@ import (
 	"os"
 
 	"github.com/Masterminds/semver"
+	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/config"
-	"github.com/spf13/cobra"
 )
 
-var versionCommand = &cobra.Command{
-	Use:   "version",
-	Short: "displays the current version",
-	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		fmt.Fprintf(os.Stdout, "version: %v\n", config.Version())
-		return nil
-	},
+type Version struct {
 }
 
-func init() {
-	rootCmd.AddCommand(versionCommand)
+func (v Version) Run(a *cli.Alchemy) (err error) {
+	fmt.Fprintf(os.Stdout, "version: %v\n", config.Version())
+	return
 }
 
 func checkVersion(ctx context.Context, versionChan chan string) {

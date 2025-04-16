@@ -10,7 +10,7 @@ import (
 )
 
 func (b *Baller) fixAccessCells(cxt *discoContext, subSection *subSection, entityType types.EntityType) (err error) {
-	if !b.options.formatAccess {
+	if !b.options.FormatAccess {
 		return nil
 	}
 	if cxt.errata.IgnoreSection(subSection.section.Name, errata.DiscoPurposeTableAccess) {

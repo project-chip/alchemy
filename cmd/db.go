@@ -4,12 +4,10 @@ package cmd
 
 import (
 	"github.com/project-chip/alchemy/cmd/database"
-	"github.com/sirupsen/logrus"
 )
 
-func init() {
-	logrus.SetLevel(logrus.ErrorLevel)
-	rootCmd.PersistentFlags().StringSliceP("attribute", "a", []string{}, "attribute for pre-processing asciidoc; this flag can be provided more than once")
-	rootCmd.AddCommand(database.Command)
-	defaultCommand = "db"
+var commands struct {
+	DB database.Command `cmd:"" default:"1" help:"run a local MySQL DB containing the contents of the Matter spec or the ZAP templates"`
+
+	globalFlags `embed:""`
 }

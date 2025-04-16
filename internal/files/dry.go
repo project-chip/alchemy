@@ -12,7 +12,7 @@ type DryRun[T string | []byte] struct {
 	writer
 }
 
-func (sp *DryRun[T]) Write(cxt context.Context, data pipeline.Map[string, *pipeline.Data[T]], pipelineOptions pipeline.Options) (err error) {
+func (sp *DryRun[T]) Write(cxt context.Context, data pipeline.Map[string, *pipeline.Data[T]], pipelineOptions pipeline.ProcessingOptions) (err error) {
 	_, err = pipeline.Collective(cxt, pipelineOptions, sp, data)
 	return
 }

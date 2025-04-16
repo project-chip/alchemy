@@ -1,6 +1,7 @@
 package dm
 
 import (
+	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/errata"
@@ -8,29 +9,20 @@ import (
 	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/spf13/cobra"
 )
 
-var Command = &cobra.Command{
-	Use:     "dm [filename_pattern]",
-	Short:   "transmute the Matter spec into data model XML; optionally filtered to the files specified in filename_pattern",
-	Aliases: []string{"datamodel", "data-model"},
-	RunE:    dataModel,
+type Command struct {
+	common.ASCIIDocAttributes  `embed:""`
+	spec.ParserOptions         `embed:""`
+	pipeline.ProcessingOptions `embed:""`
+	files.OutputOptions        `embed:""`
+	dm.DataModelOptions        `embed:""`
+
+	Paths []string `arg:"" optional:""`
 }
 
-func dataModel(cmd *cobra.Command, args []string) (err error) {
-	cxt := cmd.Context()
-
-	flags := cmd.Flags()
-	dmRoot, _ := flags.GetString("dmRoot")
-
-	asciiSettings := common.ASCIIDocAttributes(flags)
-	fileOptions := files.OutputOptions(flags)
-	pipelineOptions := pipeline.PipelineOptions(flags)
-
-	parserOptions := spec.ParserOptions(flags)
-
-	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
+func (c Command) Run(alchemy *cli.Alchemy) (err error) {
+	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions.ToOptions()...)
 	if err != nil {
 		return err
 	}
@@ -42,31 +34,31 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 
 	specBuilder := spec.NewBuilder(specParser.Root, spec.IgnoreHierarchy(true))
 
-	specFiles, err := pipeline.Start(cxt, specParser.Targets)
+	specFiles, err := pipeline.Start(alchemy, specParser.Targets)
 	if err != nil {
 		return err
 	}
 
-	specDocs, err := pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
+	specDocs, err := pipeline.Parallel(alchemy, c.ProcessingOptions, specParser, specFiles)
 	if err != nil {
 		return err
 	}
-	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
+	specDocs, err = pipeline.Collective(alchemy, c.ProcessingOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
 
-	if len(args) > 0 {
-		filter := paths.NewFilter[*spec.Doc](specParser.Root, args)
-		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
+	if len(c.Paths) > 0 {
+		filter := paths.NewFilter[*spec.Doc](specParser.Root, c.Paths)
+		specDocs, err = pipeline.Collective(alchemy, c.ProcessingOptions, filter, specDocs)
 		if err != nil {
 			return err
 		}
 	}
 
-	dataModelRenderer := dm.NewRenderer(dmRoot, specBuilder.Spec)
+	dataModelRenderer := dm.NewRenderer(c.DmRoot, specBuilder.Spec)
 
-	dataModelDocs, err := pipeline.Parallel(cxt, pipelineOptions, dataModelRenderer, specDocs)
+	dataModelDocs, err := pipeline.Parallel(alchemy, c.ProcessingOptions, dataModelRenderer, specDocs)
 	if err != nil {
 		return err
 	}
@@ -77,16 +69,10 @@ func dataModel(cmd *cobra.Command, args []string) (err error) {
 	}
 	dataModelDocs.Store(clusterIDJSON.Path, clusterIDJSON)
 
-	writer := files.NewWriter[string]("Writing data model", fileOptions)
-	err = writer.Write(cxt, dataModelDocs, pipelineOptions)
+	writer := files.NewWriter[string]("Writing data model", c.OutputOptions)
+	err = writer.Write(alchemy, dataModelDocs, c.ProcessingOptions)
 	if err != nil {
 		return err
 	}
 	return
-}
-
-func init() {
-	flags := Command.Flags()
-	spec.ParserFlags(flags)
-	flags.String("dmRoot", "connectedhomeip/data_model/master", "where to place the data model files")
 }

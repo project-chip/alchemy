@@ -12,15 +12,12 @@ import (
 )
 
 type Baller struct {
-	options options
+	options DiscoOptions
 }
 
-func NewBaller(discoOptions []Option) *Baller {
+func NewBaller(discoOptions DiscoOptions) *Baller {
 	b := &Baller{
-		options: defaultOptions,
-	}
-	for _, o := range discoOptions {
-		o(&b.options)
+		options: discoOptions,
 	}
 	return b
 }
@@ -102,7 +99,7 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 		return fmt.Errorf("error disco balling top level section in %s: %w", doc.Path, err)
 	}
 
-	if b.options.disambiguateConformanceChoice {
+	if b.options.DisambiguateConformanceChoice {
 		err = disambiguateConformance(dc)
 		if err != nil {
 			return fmt.Errorf("error disambiguating conformance in %s: %w", doc.Path, err)
@@ -112,7 +109,7 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 }
 
 func (b *Baller) discoBallTopLevelSection(doc *spec.Doc, top *spec.Section, docType matter.DocType) error {
-	if b.options.reorderSections {
+	if b.options.ReorderSections {
 		sectionOrder, ok := matter.TopLevelSectionOrders[docType]
 		if !ok {
 			slog.Debug("could not determine section order", slog.String("path", doc.Path.Relative), slog.String("docType", docType.String()))

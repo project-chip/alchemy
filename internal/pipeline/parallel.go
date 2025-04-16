@@ -18,7 +18,7 @@ import (
 var cyan = color.New(color.FgCyan).Add(color.Bold)
 var gray = color.New(color.FgBlack).Add(color.Bold)
 
-func Parallel[I, O any](cxt context.Context, options Options, processor IndividualProcessor[I, O], input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
+func Parallel[I, O any](cxt context.Context, options ProcessingOptions, processor IndividualProcessor[I, O], input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
 	total := int32(input.Size())
 	queue := make(chan *Data[I], total)
 	var values iter.Seq[*Data[I]]

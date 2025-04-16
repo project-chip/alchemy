@@ -12,7 +12,7 @@ type CollectiveProcessor[I, O any] interface {
 
 type CollectiveProcess[I, O any] func(cxt context.Context, inputs []*Data[I]) (outputs []*Data[O], err error)
 
-func Collective[I, O any](cxt context.Context, options Options, processor CollectiveProcessor[I, O], input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
+func Collective[I, O any](cxt context.Context, options ProcessingOptions, processor CollectiveProcessor[I, O], input Map[string, *Data[I]]) (output Map[string, *Data[O]], err error) {
 	inputs := DataMapToSlice(input)
 	output = NewMapPresized[string, *Data[O]](input.Size())
 	var outputs []*Data[O]

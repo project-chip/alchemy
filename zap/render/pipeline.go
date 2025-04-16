@@ -17,7 +17,7 @@ import (
 )
 
 type Options struct {
-	Pipeline      pipeline.Options
+	Pipeline      pipeline.ProcessingOptions
 	AsciiSettings []asciidoc.AttributeName
 	Template      []TemplateOption
 	DeviceTypes   []DeviceTypePatcherOption
