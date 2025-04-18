@@ -70,7 +70,15 @@ func readEvent(path string, d *xml.Decoder, e xml.StartElement) (event *matter.E
 					event.Fields = append(event.Fields, field)
 				}
 			default:
-				err = fmt.Errorf("unexpected event level element: %s", t.Name.Local)
+				if isConformanceElement(t) {
+					var cs conformance.Conformance
+					cs, err = parseConformance(d, t)
+					if err == nil {
+						event.Conformance = append(event.Conformance, cs)
+					}
+				} else {
+					err = fmt.Errorf("unexpected event level element: %s", t.Name.Local)
+				}
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

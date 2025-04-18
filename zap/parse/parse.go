@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"path/filepath"
 	"sync"
 
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -37,6 +38,9 @@ func (sp *ZapParser) Name() string {
 }
 
 func (sp *ZapParser) Process(cxt context.Context, input *pipeline.Data[[]byte], index int32, total int32) (outputs []*pipeline.Data[[]types.Entity], extras []*pipeline.Data[[]byte], err error) {
+	if filepath.Base(input.Path) == "matter-devices.xml" {
+		return
+	}
 	d := xml.NewDecoder(bytes.NewReader(input.Content))
 	var entities []types.Entity
 	for {
