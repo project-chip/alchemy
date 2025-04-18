@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -33,8 +34,18 @@ func readAttribute(d *xml.Decoder, e xml.StartElement, c *matter.Cluster) (attr 
 				err = readAccess(d, t, &attr.Access)
 			case "description":
 				attr.Name, err = readSimpleElement(d, t.Name.Local)
+			case "quality":
+				c.Quality, err = parseQuality(d, t)
 			default:
-				err = fmt.Errorf("unexpected attribute level element: %s", t.Name.Local)
+				if isConformanceElement(t) {
+					var cs conformance.Conformance
+					cs, err = parseConformance(d, t)
+					if err == nil {
+						attr.Conformance = append(attr.Conformance, cs)
+					}
+				} else {
+					err = fmt.Errorf("unexpected attribute level element: %s", t.Name.Local)
+				}
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

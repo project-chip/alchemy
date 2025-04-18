@@ -72,6 +72,12 @@ func readCluster(path string, d *xml.Decoder, e xml.StartElement) (cluster *matt
 				err = Ignore(d, t.Name.Local)
 			case "tag":
 				_, err = readTag(d, t)
+			case "features":
+				var features *matter.Features
+				features, err = readFeatures(path, d, t)
+				if err == nil {
+					cluster.Features = features
+				}
 			default:
 				err = fmt.Errorf("unexpected cluster level element: %s", t.Name.Local)
 			}

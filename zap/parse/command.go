@@ -83,6 +83,8 @@ func readCommand(path string, d *xml.Decoder, e xml.StartElement) (c *matter.Com
 				err = readAccess(d, t, &c.Access)
 			case "description":
 				_, err = readSimpleElement(d, t.Name.Local)
+			case "quality":
+				c.Quality, err = parseQuality(d, t)
 			case "arg":
 				var f *matter.Field
 				f, err = readField(path, d, t, types.EntityTypeCommand, "arg", c)
@@ -92,7 +94,15 @@ func readCommand(path string, d *xml.Decoder, e xml.StartElement) (c *matter.Com
 					c.Fields = append(c.Fields, f)
 				}
 			default:
-				err = fmt.Errorf("unexpected command level element: %s", t.Name.Local)
+				if isConformanceElement(t) {
+					var cs conformance.Conformance
+					cs, err = parseConformance(d, t)
+					if err == nil {
+						c.Conformance = append(c.Conformance, cs)
+					}
+				} else {
+					err = fmt.Errorf("unexpected command level element: %s", t.Name.Local)
+				}
 			}
 		case xml.EndElement:
 			switch t.Name.Local {

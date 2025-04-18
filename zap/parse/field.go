@@ -30,6 +30,21 @@ func readField(path string, d *xml.Decoder, e xml.StartElement, entityType types
 			return
 		}
 		switch t := tok.(type) {
+		case xml.StartElement:
+			switch t.Name.Local {
+			case "quality":
+				field.Quality, err = parseQuality(d, t)
+			default:
+				if isConformanceElement(t) {
+					var cs conformance.Conformance
+					cs, err = parseConformance(d, t)
+					if err == nil {
+						field.Conformance = append(field.Conformance, cs)
+					}
+				} else {
+					err = fmt.Errorf("unexpected %s level element: %s", name, t.Name.Local)
+				}
+			}
 		case xml.EndElement:
 			switch t.Name.Local {
 			case name:
@@ -105,6 +120,10 @@ func readFieldAttributes(e xml.StartElement, field *matter.Field, name string) (
 		case "side":
 		case "define":
 		case "introducedIn":
+		case "mustUseAtomicWrite":
+			if a.Value == "true" {
+				field.Quality |= matter.QualityAtomicWrite
+			}
 		default:
 			return fmt.Errorf("unexpected %s attribute: %s", name, a.Name.Local)
 		}
