@@ -8,20 +8,20 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-type ProvisionalPatcher struct {
+type IndexFilesPatcher struct {
 	spec    *spec.Specification
 	sdkRoot string
 }
 
-func NewProvisionalPatcher(sdkRoot string, spec *spec.Specification) *ProvisionalPatcher {
-	return &ProvisionalPatcher{sdkRoot: sdkRoot, spec: spec}
+func NewIndexFilesPatcher(sdkRoot string, spec *spec.Specification) *IndexFilesPatcher {
+	return &IndexFilesPatcher{sdkRoot: sdkRoot, spec: spec}
 }
 
-func (p ProvisionalPatcher) Name() string {
-	return "Patching files with provisional clusters and device types"
+func (ifp IndexFilesPatcher) Name() string {
+	return "Patching index files with clusters and device types"
 }
 
-func (p ProvisionalPatcher) Process(cxt context.Context, inputs []*pipeline.Data[struct{}]) (outputs []*pipeline.Data[[]byte], err error) {
+func (ifp IndexFilesPatcher) Process(cxt context.Context, inputs []*pipeline.Data[string]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	files := make([]string, 0, len(inputs))
 	for _, input := range inputs {
@@ -31,13 +31,13 @@ func (p ProvisionalPatcher) Process(cxt context.Context, inputs []*pipeline.Data
 	var path string
 	var value []byte
 
-	path, value, err = patchLintBytes(p.sdkRoot, files)
+	path, value, err = patchLintBytes(ifp.sdkRoot, files)
 	if err != nil {
 		return
 	}
 	outputs = append(outputs, pipeline.NewData(path, value))
 
-	path, value, err = patchTestsYamlBytes(p.sdkRoot, files)
+	path, value, err = patchTestsYamlBytes(ifp.sdkRoot, files)
 	if err != nil {
 		return
 	}

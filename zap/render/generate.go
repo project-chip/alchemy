@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"path/filepath"
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
@@ -30,7 +29,6 @@ type TemplateGenerator struct {
 	specOrder                      bool
 	generateExtendedQualityElement bool
 
-	ProvisionalZclFiles      pipeline.Paths
 	globalObjectDependencies pipeline.Map[types.Entity, struct{}]
 
 	ClusterAliases pipeline.Map[string, []string]
@@ -41,7 +39,6 @@ func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.Pro
 		spec:                     spec,
 		pipeline:                 pipelineOptions,
 		sdkRoot:                  sdkRoot,
-		ProvisionalZclFiles:      pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]](),
 		globalObjectDependencies: pipeline.NewConcurrentMap[types.Entity, struct{}](),
 		ClusterAliases:           pipeline.NewConcurrentMap[string, []string](),
 	}
@@ -112,10 +109,19 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 		var result string
 
 		var doc *etree.Document
-		var provisional bool
-		doc, provisional, err = tg.openConfigurator(configurator)
+		doc, err = tg.openConfigurator(configurator)
 		if err != nil {
 			return
+		}
+
+		for e := range configurator.ExternalEntities {
+			slog.Info("External entity", matter.LogEntity("entity", e), "path", newPath)
+			externalDoc, ok := tg.spec.DocRefs[e]
+			if !ok {
+				slog.Error("External entity with no associated document", matter.LogEntity("entity", e), "path", newPath)
+				continue
+			}
+			extra = append(extra, pipeline.NewData(externalDoc.Path.Absolute, externalDoc))
 		}
 
 		tg.buildClusterAliases(configurator)
@@ -126,21 +132,18 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 			return
 		}
 		outputs = append(outputs, &pipeline.Data[string]{Path: newPath, Content: result})
-		if provisional {
-			tg.ProvisionalZclFiles.Store(filepath.Base(newPath), pipeline.NewData(newPath, struct{}{}))
-		}
+
 	}
 	return
 }
 
-func (tg *TemplateGenerator) openConfigurator(configurator *zap.Configurator) (doc *etree.Document, provisional bool, err error) {
+func (tg *TemplateGenerator) openConfigurator(configurator *zap.Configurator) (doc *etree.Document, err error) {
 	var existing []byte
 	existing, err = os.ReadFile(configurator.OutPath)
 	if errors.Is(err, os.ErrNotExist) {
 		if tg.pipeline.Serial {
 			slog.Info("Rendering new ZAP template", configurator.DocLogs(), "to", configurator.OutPath)
 		}
-		provisional = true
 		doc = newZapTemplate()
 		err = nil
 	} else if err != nil {

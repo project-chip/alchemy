@@ -26,6 +26,8 @@ type Configurator struct {
 	ClusterIDs []string
 	Errata     *errata.SDK
 	Global     bool
+
+	ExternalEntities map[types.Entity]struct{}
 }
 
 func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []types.Entity, outPath string, errata *errata.SDK, global bool) (*Configurator, error) {
@@ -41,6 +43,8 @@ func NewConfigurator(spec *spec.Specification, docs []*spec.Doc, entities []type
 
 		Errata: errata,
 		Global: global,
+
+		ExternalEntities: make(map[types.Entity]struct{}),
 	}
 	if len(docs) > 0 {
 		c.Domain = matter.DomainNames[docs[0].Domain]
@@ -160,15 +164,14 @@ func (c *Configurator) addType(parentEntity types.Entity, dt *types.DataType) {
 		return
 	}
 	if parentEntity != nil {
-		if typeBelongsToOtherCluster(entity, parentEntity) {
-			slog.Debug("skipping data type for different entity", "name", dt.Name, "parent", entity, "context", parentEntity)
+		if c.typeBelongsToOtherCluster(entity, parentEntity) {
 			return
 		}
 	}
 	c.addEntityType(parentEntity, entity)
 }
 
-func typeBelongsToOtherCluster(entity types.Entity, parentEntity types.Entity) bool {
+func (c *Configurator) typeBelongsToOtherCluster(entity types.Entity, parentEntity types.Entity) bool {
 	typeParent := entity.Parent()
 	for {
 		if typeParent == nil { // This is a global type, and doesn't belong to any cluster
@@ -177,6 +180,7 @@ func typeBelongsToOtherCluster(entity types.Entity, parentEntity types.Entity) b
 		if typeParent == parentEntity {
 			return false
 		}
+		c.ExternalEntities[typeParent] = struct{}{}
 		typeParent = typeParent.Parent()
 	}
 }
@@ -192,9 +196,7 @@ func (c *Configurator) addEntityType(parentEntity types.Entity, entity types.Ent
 		c.Enums[entity] = c.getClusterCodes(entity)
 	case *matter.Struct:
 		c.Structs[entity] = c.getClusterCodes(entity)
-		if !c.Global {
-			c.addTypes(parentEntity, entity.Fields)
-		}
+		c.addTypes(parentEntity, entity.Fields)
 	}
 }
 

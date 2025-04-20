@@ -30,7 +30,7 @@ type Output struct {
 	PatchedDeviceTypes pipeline.FileSet
 	PatchedNamespaces  pipeline.FileSet
 	ClusterList        pipeline.FileSet
-	ProvisionalDocs    pipeline.FileSet
+	IndexDocs          pipeline.FileSet
 	ZclJson            pipeline.FileSet
 }
 
@@ -113,7 +113,6 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 		return
 	}
 
-	var provisionalZclFiles pipeline.Paths
 	var clusterAliases pipeline.Map[string, []string]
 	if clusters.Size() > 0 {
 		var templateGenerator *TemplateGenerator
@@ -126,7 +125,6 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 		if err != nil {
 			return
 		}
-		provisionalZclFiles = templateGenerator.ProvisionalZclFiles
 		clusterAliases = templateGenerator.ClusterAliases
 
 		output.GlobalObjectFiles, err = templateGenerator.RenderGlobalObjecs(cxt)
@@ -135,7 +133,6 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 		}
 	} else {
 		clusterAliases = pipeline.NewConcurrentMap[string, []string]()
-		provisionalZclFiles = pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]]()
 	}
 
 	if deviceTypes.Size() > 0 {
@@ -161,16 +158,20 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 			return
 		}
 
-		zclPatcher := NewZclPatcher(sdkRoot, specBuilder.Spec, provisionalZclFiles)
+		clusterPaths := pipeline.NewConcurrentMap[string, *pipeline.Data[struct{}]]()
+		clusters.Range(func(path string, data *pipeline.Data[*spec.Doc]) bool {
+			clusterPaths.Store(path, pipeline.NewData(path, struct{}{}))
+			return true
+		})
+
+		zclPatcher := NewZclPatcher(sdkRoot, specBuilder.Spec, output.ZapTemplateDocs)
 		output.ZclJson, err = pipeline.Collective(cxt, options.Pipeline, zclPatcher, clusters)
 		if err != nil {
 			return
 		}
-	}
 
-	if provisionalZclFiles.Size() > 0 {
-		provisionalPatcher := NewProvisionalPatcher(sdkRoot, specBuilder.Spec)
-		output.ProvisionalDocs, err = pipeline.Collective(cxt, options.Pipeline, provisionalPatcher, provisionalZclFiles)
+		provisionalPatcher := NewIndexFilesPatcher(sdkRoot, specBuilder.Spec)
+		output.IndexDocs, err = pipeline.Collective(cxt, options.Pipeline, provisionalPatcher, output.ZapTemplateDocs)
 		if err != nil {
 			return
 		}
