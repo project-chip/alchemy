@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"github.com/project-chip/alchemy/cmd/compare"
 	"github.com/project-chip/alchemy/cmd/disco"
 	"github.com/project-chip/alchemy/cmd/dm"
 	"github.com/project-chip/alchemy/cmd/dump"
@@ -19,7 +18,6 @@ var commands struct {
 	Format      format.Command      `cmd:"" help:"disco ball Matter spec documents specified by the filename_pattern" group:"Spec Commands:"`
 	Disco       disco.Command       `cmd:"" help:"disco ball Matter spec documents specified by the filename_pattern" group:"Spec Commands:"`
 	ZAP         zap.Command         `cmd:"" help:"transmute the Matter spec into ZAP templates, optionally filtered to the files specified by filename_pattern" group:"SDK Commands:"`
-	Compare     compare.Command     `cmd:"" help:"compare the spec to zap-templates and output a JSON diff"  group:"SDK Commands:"`
 	Conformance Conformance         `cmd:"" help:"test conformance values"  group:"Spec Commands:"`
 	Dump        dump.Command        `cmd:"" hidden:"" help:"dump the parse tree of Matter documents specified by filename_pattern"`
 	DM          dm.Command          `cmd:"" help:"transmute the Matter spec into data model XML; optionally filtered to the files specified in filename_pattern" group:"SDK Commands:"`
