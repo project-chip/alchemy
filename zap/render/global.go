@@ -55,8 +55,7 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 		configurator.Domain = "CHIP"
 
 		var doc *etree.Document
-		var provisional bool
-		doc, provisional, err = tg.openConfigurator(configurator)
+		doc, err = tg.openConfigurator(configurator)
 		if err != nil {
 			return
 		}
@@ -65,10 +64,6 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 		var out string
 		out, err = cr.render(doc, nil)
 		globalFiles.Store(filepath.Base(configurator.OutPath), pipeline.NewData(configurator.OutPath, out))
-		if provisional {
-			tg.ProvisionalZclFiles.Store(filepath.Base(configurator.OutPath), pipeline.NewData(configurator.OutPath, struct{}{}))
-		}
-
 	}
 	return
 }

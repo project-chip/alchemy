@@ -30,10 +30,10 @@ var prettyOptions = pretty.Options{
 type ZclPatcher struct {
 	spec                *spec.Specification
 	sdkRoot             string
-	provisionalZclFiles pipeline.Paths
+	provisionalZclFiles pipeline.StringSet
 }
 
-func NewZclPatcher(sdkRoot string, spec *spec.Specification, provisionalZclFiles pipeline.Paths) *ZclPatcher {
+func NewZclPatcher(sdkRoot string, spec *spec.Specification, provisionalZclFiles pipeline.StringSet) *ZclPatcher {
 	return &ZclPatcher{sdkRoot: sdkRoot, spec: spec, provisionalZclFiles: provisionalZclFiles}
 }
 
@@ -44,7 +44,7 @@ func (p ZclPatcher) Name() string {
 func (p ZclPatcher) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[[]byte], err error) {
 
 	files := make([]string, 0, p.provisionalZclFiles.Size())
-	p.provisionalZclFiles.Range(func(key string, value *pipeline.Data[struct{}]) bool {
+	p.provisionalZclFiles.Range(func(key string, value *pipeline.Data[string]) bool {
 		files = append(files, filepath.Base(value.Path))
 		return true
 	})
