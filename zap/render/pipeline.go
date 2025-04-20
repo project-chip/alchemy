@@ -116,7 +116,12 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 	var provisionalZclFiles pipeline.Paths
 	var clusterAliases pipeline.Map[string, []string]
 	if clusters.Size() > 0 {
-		templateGenerator := NewTemplateGenerator(specBuilder.Spec, options.Pipeline, sdkRoot, options.Template...)
+		var templateGenerator *TemplateGenerator
+		templateGenerator, err = NewTemplateGenerator(specBuilder.Spec, options.Pipeline, sdkRoot, options.Template...)
+		if err != nil {
+			return
+		}
+		options.Pipeline.Serial = true
 		output.ZapTemplateDocs, err = pipeline.Parallel(cxt, options.Pipeline, templateGenerator, clusters)
 		if err != nil {
 			return

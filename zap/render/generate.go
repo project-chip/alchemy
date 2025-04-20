@@ -36,7 +36,7 @@ type TemplateGenerator struct {
 	ClusterAliases pipeline.Map[string, []string]
 }
 
-func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.ProcessingOptions, sdkRoot string, options ...TemplateOption) *TemplateGenerator {
+func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.ProcessingOptions, sdkRoot string, options ...TemplateOption) (*TemplateGenerator, error) {
 	tg := &TemplateGenerator{
 		spec:                     spec,
 		pipeline:                 pipelineOptions,
@@ -52,10 +52,13 @@ func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.Pro
 		var err error
 		tg.specVersion, err = gitDescribe(spec.Root)
 		if err != nil {
-			slog.Warn("Unable to determine spec git tag", slog.Any("error", err))
+			slog.Error("Unable to determine spec git tag", slog.Any("error", err))
+			return nil, err
 		}
+	} else {
+		slog.Warn("Skipping Git due to empty specification root")
 	}
-	return tg
+	return tg, nil
 }
 
 func (tg TemplateGenerator) Name() string {
