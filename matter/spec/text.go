@@ -76,7 +76,7 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 				value.WriteString(strings.TrimSpace(label.String()))
 			} else {
 				var val string
-				anchor := doc.FindAnchor(el.ID)
+				anchor := doc.FindAnchor(el.ID, el)
 				if anchor != nil {
 					val = matter.StripTypeSuffixes(ReferenceName(anchor.Element))
 				} else {

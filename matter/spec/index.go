@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"log/slog"
 	"slices"
 
@@ -57,7 +56,7 @@ func (ri *referenceIndex) changeCrossReference(reference *CrossReference, id str
 	ri.crossReferences[id] = append(ri.crossReferences[id], reference)
 }
 
-func (ri *referenceIndex) findAnchor(path fmt.Stringer, id string) *Anchor {
+func (ri *referenceIndex) findAnchor(source log.Source, id string) *Anchor {
 
 	anchors := ri.findAnchorsByID(id)
 	switch len(anchors) {
@@ -66,7 +65,7 @@ func (ri *referenceIndex) findAnchor(path fmt.Stringer, id string) *Anchor {
 	case 1:
 		return anchors[0]
 	default:
-		args := []any{slog.String("anchorId", id), slog.String("source", path.String())}
+		args := []any{slog.String("anchorId", id), log.Path("source", source)}
 		for _, an := range anchors {
 			args = append(args, log.Path("target", an.Source))
 		}
@@ -79,7 +78,7 @@ func (ri *referenceIndex) findAnchorsByID(id string) []*Anchor {
 	return ri.anchors[id]
 }
 
-func (ri *referenceIndex) findAnchorByLabel(path fmt.Stringer, label string) *Anchor {
+func (ri *referenceIndex) findAnchorByLabel(source log.Source, label string) *Anchor {
 	anchors := ri.findAnchorsByLabel(label)
 	switch len(anchors) {
 	case 0:
@@ -87,7 +86,7 @@ func (ri *referenceIndex) findAnchorByLabel(path fmt.Stringer, label string) *An
 	case 1:
 		return anchors[0]
 	default:
-		args := []any{slog.String("label", label), slog.String("source", path.String())}
+		args := []any{slog.String("label", label), log.Path("source", source)}
 		for _, an := range anchors {
 			args = append(args, log.Path("target", an.Source))
 		}

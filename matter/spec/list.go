@@ -53,7 +53,7 @@ func buildList[T types.Entity, L ~[]T](d *Doc, s *Section, t *asciidoc.Table, pc
 		list = append(list, entity)
 		index.byName[strings.ToLower(name)] = entity
 		if xref != nil {
-			anchor := d.FindAnchor(xref.ID)
+			anchor := d.FindAnchor(xref.ID, xref)
 			if anchor != nil && anchor.Element != nil {
 				index.byReference[anchor.Element] = entity
 			}
