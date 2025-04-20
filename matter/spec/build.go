@@ -25,7 +25,11 @@ type Builder struct {
 }
 
 func NewBuilder(specRoot string, options ...BuilderOption) Builder {
-	b := Builder{specRoot: specRoot, conformanceFailures: make(map[any]log.Source), constraintFailures: make(map[any]log.Source)}
+	b := Builder{
+		specRoot:            specRoot,
+		conformanceFailures: make(map[any]log.Source),
+		constraintFailures:  make(map[any]log.Source),
+	}
 	for _, o := range options {
 		o(&b)
 	}

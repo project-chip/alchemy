@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
 )
@@ -214,21 +215,21 @@ func getAnchorElements(element asciidoc.Element, crossReferences map[string][]*C
 	return
 }
 
-func (d *Doc) FindAnchor(id string) *Anchor {
-	a := d.findAnchor(d.Path, id)
+func (d *Doc) FindAnchor(id string, source log.Source) *Anchor {
+	a := d.findAnchor(source, id)
 	if a != nil {
 		return a
 	}
-	a = d.findAnchorByLabel(d.Path, id)
+	a = d.findAnchorByLabel(source, id)
 	if a != nil {
 		return a
 	}
 	if d.group != nil {
-		a = d.group.findAnchor(d.Path, id)
+		a = d.group.findAnchor(source, id)
 		if a != nil {
 			return a
 		}
-		a = d.group.findAnchorByLabel(d.Path, id)
+		a = d.group.findAnchorByLabel(source, id)
 		if a != nil {
 			return a
 		}

@@ -149,7 +149,7 @@ func (d *Doc) EntitiesForSection(section *asciidoc.Section) ([]types.Entity, boo
 
 func (doc *Doc) Reference(ref string) (types.Entity, bool) {
 
-	a := doc.FindAnchor(ref)
+	a := doc.FindAnchor(ref, doc.Path)
 
 	if a == nil {
 		slog.Warn("unknown reference", slog.String("path", doc.Path.String()), slog.String("reference", ref))

@@ -360,7 +360,7 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 				}
 			} else {
 				var val string
-				anchor := doc.FindAnchor(el.ID)
+				anchor := doc.FindAnchor(el.ID, el)
 				if anchor != nil {
 					val = matter.StripTypeSuffixes(ReferenceName(anchor.Element))
 				} else {
@@ -587,7 +587,7 @@ func buildDataTypeString(d *Doc, cellElements asciidoc.Set, sb *strings.Builder)
 				buildDataTypeString(d, v.Set, sb)
 			} else {
 				var name string
-				anchor := d.FindAnchor(v.ID)
+				anchor := d.FindAnchor(v.ID, v)
 				if anchor != nil {
 					name = ReferenceName(anchor.Element)
 					if len(name) == 0 {

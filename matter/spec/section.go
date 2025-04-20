@@ -161,7 +161,7 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 				slog.Debug("Unusual depth for section type", slog.String("name", section.Name), slog.String("type", section.SecType.String()), slog.String("path", doc.Path.String()))
 			}
 		}
-		slog.Debug("sec type", "name", section.Name, "type", section.SecType, "parent", ps.Name, "parentType", ps.SecType)
+		slog.Debug("sec type", "name", section.Name, "type", section.SecType, "parent", ps.Name, "parentType", ps.SecType, log.Path("source", section.Base))
 		return parse.SearchShouldContinue
 	})
 	top.sectionTypesAssigned = true

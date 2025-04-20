@@ -15,7 +15,10 @@ import (
 
 func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 	for id, xrefs := range doc.CrossReferences() {
-		anchor := doc.FindAnchor(id)
+		if len(xrefs) == 0 {
+			continue
+		}
+		anchor := doc.FindAnchor(id, xrefs[0].Reference)
 		if anchor == nil {
 			sources := []any{slog.String("id", id)}
 			for _, xref := range xrefs {
@@ -89,7 +92,7 @@ func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, pa
 	if len(icr.Set) > 0 {
 		return
 	}
-	anchor := doc.FindAnchor(icr.ID)
+	anchor := doc.FindAnchor(icr.ID, icr)
 	if anchor == nil {
 		return
 	}
@@ -132,7 +135,7 @@ func normalizeCrossReference(doc *spec.Doc, icr *asciidoc.CrossReference) {
 		// Don't touch existing labels
 		return
 	}
-	anchor := doc.FindAnchor(icr.ID)
+	anchor := doc.FindAnchor(icr.ID, icr)
 	if anchor == nil {
 		return
 	}
