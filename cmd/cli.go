@@ -23,10 +23,10 @@ var commands struct {
 	Conformance Conformance         `cmd:"" help:"test conformance values"  group:"Spec Commands:"`
 	Dump        dump.Command        `cmd:"" hidden:"" help:"dump the parse tree of Matter documents specified by filename_pattern"`
 	DM          dm.Command          `cmd:"" help:"transmute the Matter spec into data model XML; optionally filtered to the files specified in filename_pattern" group:"SDK Commands:"`
-	TestPlan    testplan.Command    `cmd:"" name:"testplan" help:"create an initial test plan from the spec, optionally filtered to the files specified in filename_pattern" group:"Testing Commands:"`
-	TestScript  testscript.Command  `cmd:"" name:"testscript" help:"create shell python scripts from the spec, optionally filtered to the files specified by filename_pattern" group:"Testing Commands:"`
+	TestPlan    testplan.Command    `cmd:"" name:"test-plan" aliases:"testplan" help:"create an initial test plan from the spec, optionally filtered to the files specified in filename_pattern" group:"Testing Commands:"`
+	TestScript  testscript.Command  `cmd:"" name:"test-script" aliases:"testscript" help:"create shell python scripts from the spec, optionally filtered to the files specified by filename_pattern" group:"Testing Commands:"`
 	Validate    validate.Command    `cmd:"" help:"validate the Matter specification object model" group:"Spec Commands:"`
-	Yaml2Python yaml2python.Command `cmd:"" name:"yaml2python" help:"create a shell python script from a test YAML, optionally filtered to the files specified by filename_pattern"  group:"Testing Commands:"`
+	Yaml2Python yaml2python.Command `cmd:"" name:"yaml-2-python" aliases:"yaml2python" help:"create a shell python script from a test YAML, optionally filtered to the files specified by filename_pattern"  group:"Testing Commands:"`
 	Version     Version             `cmd:"" hidden:"" name:"version" help:"display version number"`
 
 	globalFlags `embed:""`

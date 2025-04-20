@@ -18,7 +18,7 @@ type globalFlags struct {
 	SuppressVersionCheck bool   `default:"false" aliases:"suppressVersionCheck" hidden:""`
 	ErrorExitCode        bool   `default:"false" aliases:"errorExitCode" hidden:""`
 
-	Version kong.VersionFlag `default:"false" help:"display version"`
+	Version kong.VersionFlag ` help:"display version"`
 }
 
 func Execute() {
