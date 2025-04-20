@@ -139,5 +139,9 @@ func gitDescribe(specRoot string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.TrimSpace(string(out)), nil
+	gitDescription := strings.TrimSpace(string(out))
+	if gitDescription == "" {
+		return "", fmt.Errorf("git describe returned empty string")
+	}
+	return gitDescription, nil
 }
