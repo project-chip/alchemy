@@ -58,9 +58,9 @@ func (z *Command) Run(alchemy *cli.Alchemy) (err error) {
 	}
 
 	byteWriter := files.NewWriter[[]byte]("", z.OutputOptions)
-	if output.ProvisionalDocs != nil && output.ProvisionalDocs.Size() > 0 {
+	if output.IndexDocs != nil && output.IndexDocs.Size() > 0 {
 		byteWriter.SetName("Writing provisional docs")
-		err = byteWriter.Write(alchemy, output.ProvisionalDocs, options.Pipeline)
+		err = byteWriter.Write(alchemy, output.IndexDocs, options.Pipeline)
 		if err != nil {
 			return err
 		}
