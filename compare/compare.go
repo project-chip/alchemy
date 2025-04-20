@@ -35,6 +35,7 @@ func compareConformance(entityType types.EntityType, spec conformance.Set, zap c
 
 	return
 }
+
 func compareConstraint(entityType types.EntityType, specFieldSet matter.FieldSet, specField *matter.Field, zapFieldSet matter.FieldSet, zapField *matter.Field) (diffs []Diff) {
 	if specField.Constraint == nil && zapField.Constraint == nil {
 		return

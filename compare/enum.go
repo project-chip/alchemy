@@ -78,14 +78,12 @@ func compareEnums(spec *spec.Specification, specCluster *matter.Cluster, zapEnum
 		if ok {
 			var externalReference bool
 			for c := range clusters {
-				slog.Info("checking enum reference", "name", f.Name, "clusterName", c.Name)
 				if c == specCluster {
 					externalReference = true
 					break
 				}
 			}
 			if externalReference {
-				slog.Warn("Enum referred by different spec", "name", f.Name)
 				continue
 			}
 		}
