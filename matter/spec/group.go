@@ -66,13 +66,18 @@ func (si *Specification) addEntity(entity types.Entity, cluster *matter.Cluster)
 func (si *Specification) addEntityByName(name string, entity types.Entity, cluster *matter.Cluster) {
 	m, ok := si.entities[name]
 	if !ok {
-		m = make(map[types.Entity]*matter.Cluster)
+		m = make(map[types.Entity]map[*matter.Cluster]struct{})
 		si.entities[name] = m
 	}
-	existing, ok := m[entity]
+	clusters, ok := m[entity]
+	if !ok {
+		clusters = make(map[*matter.Cluster]struct{})
+		m[entity] = clusters
+	}
+	_, ok = clusters[cluster]
 	if ok {
-		slog.Debug("Registering same entity twice", "cluster", cluster.Name, "name", name, "address", fmt.Sprintf("%p", entity), "existing", fmt.Sprintf("%p", existing))
+		slog.Debug("Registering same entity twice", "cluster", cluster.Name, "name", name, "address", fmt.Sprintf("%p", cluster))
 		return
 	}
-	m[entity] = cluster
+	clusters[cluster] = struct{}{}
 }

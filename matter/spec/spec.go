@@ -37,7 +37,7 @@ type Specification struct {
 
 	GlobalObjects map[types.Entity]struct{}
 
-	entities map[string]map[types.Entity]*matter.Cluster
+	entities map[string]map[types.Entity]map[*matter.Cluster]struct{}
 
 	DocGroups []*DocGroup
 }
@@ -64,7 +64,7 @@ func newSpec(specRoot string) *Specification {
 
 		GlobalObjects: make(map[types.Entity]struct{}),
 
-		entities: make(map[string]map[types.Entity]*matter.Cluster),
+		entities: make(map[string]map[types.Entity]map[*matter.Cluster]struct{}),
 	}
 }
 
@@ -117,7 +117,7 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 	var anchors []*Anchor
 	group := doc.Group()
 	if group == nil {
-		anchor := doc.FindAnchor(reference)
+		anchor := doc.FindAnchor(reference, source)
 		if anchor == nil {
 			slog.Warn("failed to find anchor for data type reference", "ref", reference, log.Path("path", source), slog.String("cluster", clusterName(sef.cluster)), slog.String("docPath", doc.Path.Relative))
 			return
@@ -164,6 +164,16 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 					return
 				}
 			}
+		case *matter.Bitmap:
+			if strings.EqualFold(entity.Name, label) {
+				return
+			}
+			for _, ev := range entity.Bits {
+				if strings.EqualFold(label, ev.Name()) {
+					e = ev
+					return
+				}
+			}
 		case *matter.Struct:
 			if strings.EqualFold(entity.Name, label) {
 				return
@@ -201,19 +211,23 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 	return
 }
 
-func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *matter.Cluster, identifier string, source log.Source) types.Entity {
+func disambiguateDataType(entities map[types.Entity]map[*matter.Cluster]struct{}, cluster *matter.Cluster, identifier string, source log.Source) types.Entity {
 	// If there are multiple entities with the same name, prefer the one on the current cluster
-	for m, c := range entities {
-		if c == cluster {
-			return m
+	for m, clusters := range entities {
+		for c := range clusters {
+			if c == cluster {
+				return m
+			}
 		}
 	}
 
 	// OK, if the data type is defined on the direct parent of this cluster, take that one
 	if cluster != nil && cluster.ParentCluster != nil {
-		for m, c := range entities {
-			if c != nil && c == cluster.ParentCluster {
-				return m
+		for m, clusters := range entities {
+			for c := range clusters {
+				if c != nil && c == cluster.ParentCluster {
+					return m
+				}
 			}
 		}
 	}
@@ -230,14 +244,16 @@ func disambiguateDataType(entities map[types.Entity]*matter.Cluster, cluster *ma
 
 	// Can't disambiguate out this data model
 	slog.Warn("ambiguous data type", "cluster", clusterName(cluster), "identifier", identifier, log.Path("source", source))
-	for m, c := range entities {
-		var clusterName string
-		if c != nil {
-			clusterName = c.Name
-		} else {
-			clusterName = "naked"
+	for m, clusters := range entities {
+		for c := range clusters {
+			var clusterName string
+			if c != nil {
+				clusterName = c.Name
+			} else {
+				clusterName = "naked"
+			}
+			slog.Warn("ambiguous data type", matter.LogEntity("source", m), "cluster", clusterName)
 		}
-		slog.Warn("ambiguous data type", matter.LogEntity("source", m), "cluster", clusterName)
 	}
 	return nil
 }
