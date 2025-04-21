@@ -14,9 +14,9 @@ import (
 	"github.com/project-chip/alchemy/testscript/yaml/parse"
 )
 
-func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.ProcessingOptions, parserOptions []spec.ParserOption, asciiSettings []asciidoc.AttributeName, generatorOptions []GeneratorOption, fileOptions files.OutputOptions, filePaths []string) (err error) {
+func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.ProcessingOptions, parserOptions spec.ParserOptions, asciiSettings []asciidoc.AttributeName, generatorOptions []GeneratorOption, fileOptions files.OutputOptions, filePaths []string) (err error) {
 
-	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
+	specParser, err := spec.NewParser(asciiSettings, parserOptions)
 	if err != nil {
 		return
 	}
@@ -26,7 +26,7 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Proc
 		return
 	}
 
-	err = errata.LoadErrataConfig(specParser.Root)
+	err = errata.LoadErrataConfig(parserOptions.Root)
 	if err != nil {
 		return
 	}
@@ -41,7 +41,7 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Proc
 		return
 	}
 
-	specBuilder := spec.NewBuilder(specParser.Root)
+	specBuilder := spec.NewBuilder(parserOptions.Root)
 	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return
@@ -58,7 +58,7 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Proc
 	}
 
 	if len(filePaths) > 0 { // Filter the spec by whatever extra args were passed
-		filter := paths.NewFilter[*spec.Doc](specParser.Root, filePaths)
+		filter := paths.NewFilter[*spec.Doc](parserOptions.Root, filePaths)
 		specDocs, err = pipeline.Collective(cxt, pipelineOptions, filter, specDocs)
 		if err != nil {
 			return

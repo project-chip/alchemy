@@ -1,7 +1,6 @@
-package testscript
+package cli
 
 import (
-	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -10,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/testscript/python"
 )
 
-type Command struct {
+type TestScript struct {
 	sdk.SDKOptions             `embed:""`
 	common.ASCIIDocAttributes  `embed:""`
 	pipeline.ProcessingOptions `embed:""`
@@ -21,12 +20,12 @@ type Command struct {
 	Paths []string `arg:""`
 }
 
-func (cmd *Command) Run(alchemy *cli.Alchemy) (err error) {
+func (cmd *TestScript) Run(cc *Context) (err error) {
 
-	err = python.Pipeline(alchemy,
+	err = python.Pipeline(cc,
 		cmd.SdkRoot,
 		cmd.ProcessingOptions,
-		cmd.ParserOptions.ToOptions(),
+		cmd.ParserOptions,
 		cmd.ASCIIDocAttributes.ToList(),
 		cmd.GeneratorOptions.ToOptions(),
 		cmd.OutputOptions,

@@ -37,7 +37,7 @@ func Execute() {
 		kong.UsageOnError(),
 		kong.Vars{"version": fmt.Sprintf("version: %s", config.Version())})
 
-	alchemy := cli.Alchemy{
+	cc := cli.Context{
 		Context: context.Background(),
 		Kong:    k,
 	}
@@ -46,10 +46,10 @@ func Execute() {
 
 	versionChan := make(chan string, 1)
 	if !commands.SuppressVersionCheck {
-		go checkVersion(alchemy, versionChan)
+		go checkVersion(cc, versionChan)
 	}
 
-	err := k.Run(&alchemy)
+	err := k.Run(&cc)
 
 	if err != nil {
 		handleError(k, err)

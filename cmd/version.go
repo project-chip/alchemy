@@ -16,7 +16,7 @@ import (
 type Version struct {
 }
 
-func (v Version) Run(a *cli.Alchemy) (err error) {
+func (v Version) Run(*cli.Context) (err error) {
 	fmt.Fprintf(os.Stdout, "version: %v\n", config.Version())
 	return
 }

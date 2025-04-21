@@ -23,7 +23,7 @@ type Command struct {
 	Json  bool     `name:"json" help:"dump json object model"`
 }
 
-func (d *Command) Run(alchemy *cli.Alchemy) (err error) {
+func (d *Command) Run(cc *cli.Context) (err error) {
 	files, err := paths.Expand(d.Paths)
 	if err != nil {
 		return fmt.Errorf("error building paths: %w", err)
@@ -46,16 +46,16 @@ func (d *Command) Run(alchemy *cli.Alchemy) (err error) {
 			}
 			dumpElements(doc, doc.Elements(), 0)
 		} else if d.Json {
-			err = errata.LoadErrataConfig(d.SpecRoot)
+			err = errata.LoadErrataConfig(d.Root)
 			if err != nil {
 				return
 			}
-			path, err := asciidoc.NewPath(f, d.SpecRoot)
+			path, err := asciidoc.NewPath(f, d.Root)
 			if err != nil {
 				return fmt.Errorf("error resolving doc path %s: %w", f, err)
 			}
 
-			doc, err := spec.ParseFile(path, d.SpecRoot, d.ASCIIDocAttributes.ToList()...)
+			doc, err := spec.ParseFile(path, d.Root, d.ASCIIDocAttributes.ToList()...)
 			if err != nil {
 				return fmt.Errorf("error opening doc %s: %w", f, err)
 			}
@@ -72,15 +72,15 @@ func (d *Command) Run(alchemy *cli.Alchemy) (err error) {
 			//encoder.SetIndent("", "\t")
 			return encoder.Encode(entities)
 		} else if d.Inline {
-			err = errata.LoadErrataConfig(d.SpecRoot)
+			err = errata.LoadErrataConfig(d.Root)
 			if err != nil {
 				return
 			}
-			path, err := asciidoc.NewPath(f, d.SpecRoot)
+			path, err := asciidoc.NewPath(f, d.Root)
 			if err != nil {
 				return fmt.Errorf("error resolving doc path %s: %w", f, err)
 			}
-			doc, err := spec.InlineParse(path, d.SpecRoot, d.ASCIIDocAttributes.ToList()...)
+			doc, err := spec.InlineParse(path, d.Root, d.ASCIIDocAttributes.ToList()...)
 			if err != nil {
 				return fmt.Errorf("error parsing %s: %w", f, err)
 			}

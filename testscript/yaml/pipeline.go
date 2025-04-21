@@ -16,9 +16,9 @@ import (
 	"github.com/project-chip/alchemy/testscript/yaml/parse"
 )
 
-func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.ProcessingOptions, parserOptions []spec.ParserOption, asciiSettings []asciidoc.AttributeName, generatorOptions []python.GeneratorOption, fileOptions files.OutputOptions, filePaths []string) (err error) {
+func Pipeline(cxt context.Context, sdkOptions sdk.SDKOptions, pipelineOptions pipeline.ProcessingOptions, parserOptions spec.ParserOptions, asciiSettings []asciidoc.AttributeName, generatorOptions []python.GeneratorOption, fileOptions files.OutputOptions, filePaths []string) (err error) {
 
-	err = sdk.CheckAlchemyVersion(sdkRoot)
+	err = sdk.CheckAlchemyVersion(sdkOptions.SdkRoot)
 	if err != nil {
 		return
 	}
@@ -45,18 +45,18 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Proc
 		return
 	}
 
-	specParser, err := spec.NewParser(asciiSettings, parserOptions...)
+	specParser, err := spec.NewParser(asciiSettings, parserOptions)
 	if err != nil {
 		return
 	}
 
-	err = errata.LoadErrataConfig(specParser.Root)
+	err = errata.LoadErrataConfig(parserOptions.Root)
 	if err != nil {
 		return
 	}
 
 	var parser parse.TestYamlParser
-	parser, err = parse.NewTestYamlParser(sdkRoot)
+	parser, err = parse.NewTestYamlParser(sdkOptions.SdkRoot)
 	if err != nil {
 		return
 	}
@@ -77,7 +77,7 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Proc
 		return
 	}
 
-	specBuilder := spec.NewBuilder(specParser.Root)
+	specBuilder := spec.NewBuilder(parserOptions.Root)
 	_, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
 	if err != nil {
 		return
@@ -88,19 +88,19 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Proc
 		return
 	}
 
-	picsLabels, err := parse.LoadPICSLabels(sdkRoot)
+	picsLabels, err := parse.LoadPICSLabels(parserOptions.Root)
 	if err != nil {
 		return
 	}
 
-	converter := NewYamlTestConverter(specBuilder.Spec, sdkRoot, picsLabels)
+	converter := NewYamlTestConverter(specBuilder.Spec, sdkOptions.SdkRoot, picsLabels)
 
 	testplans, err := pipeline.Parallel(cxt, pipelineOptions, converter, tests)
 	if err != nil {
 		return
 	}
 
-	generator := testscript.NewTestScriptConverter(specBuilder.Spec, sdkRoot, picsLabels)
+	generator := testscript.NewTestScriptConverter(specBuilder.Spec, sdkOptions.SdkRoot, picsLabels)
 
 	var testscripts pipeline.Map[string, *pipeline.Data[*testscript.Test]]
 	testscripts, err = pipeline.Parallel(cxt, pipelineOptions, generator, testplans)
@@ -108,7 +108,7 @@ func Pipeline(cxt context.Context, sdkRoot string, pipelineOptions pipeline.Proc
 		return
 	}
 
-	renderer := python.NewPythonTestRenderer(specBuilder.Spec, sdkRoot, picsLabels, generatorOptions...)
+	renderer := python.NewPythonTestRenderer(specBuilder.Spec, sdkOptions.SdkRoot, picsLabels, generatorOptions...)
 	var scripts pipeline.StringSet
 	scripts, err = pipeline.Parallel(cxt, pipelineOptions, renderer, testscripts)
 	if err != nil {

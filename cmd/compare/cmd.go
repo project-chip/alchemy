@@ -30,45 +30,45 @@ type Command struct {
 	Text bool
 }
 
-func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
+func (c *Command) Run(cc *cli.Context) (err error) {
 	err = sdk.CheckAlchemyVersion(c.SdkRoot)
 	if err != nil {
 		return
 	}
 
-	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ToOptions()...)
+	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions)
 	if err != nil {
 		return err
 	}
 
-	err = errata.LoadErrataConfig(specParser.Root)
+	err = errata.LoadErrataConfig(c.ParserOptions.Root)
 	if err != nil {
 		return
 	}
 
-	specFiles, err := pipeline.Start(alchemy, spec.Targeter(specParser.Root))
+	specFiles, err := pipeline.Start(cc, spec.Targeter(c.ParserOptions.Root))
 	if err != nil {
 		return err
 	}
 
-	specDocs, err := pipeline.Parallel(alchemy, c.ProcessingOptions, specParser, specFiles)
+	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specFiles)
 	if err != nil {
 		return err
 	}
 
-	specBuilder := spec.NewBuilder(specParser.Root)
-	specDocs, err = pipeline.Collective(alchemy, c.ProcessingOptions, &specBuilder, specDocs)
+	specBuilder := spec.NewBuilder(c.ParserOptions.Root)
+	specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
 
-	xmlPaths, err := pipeline.Start(alchemy, paths.NewTargeter(filepath.Join(c.SdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")))
+	xmlPaths, err := pipeline.Start(cc, paths.NewTargeter(filepath.Join(c.SdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")))
 	if err != nil {
 		return err
 	}
 
 	var xmlFiles pipeline.FileSet
-	xmlFiles, err = pipeline.Parallel(alchemy, c.ProcessingOptions, files.NewReader("Reading ZAP templates"), xmlPaths)
+	xmlFiles, err = pipeline.Parallel(cc, c.ProcessingOptions, files.NewReader("Reading ZAP templates"), xmlPaths)
 
 	if err != nil {
 		return
@@ -76,14 +76,14 @@ func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
 
 	var zapEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
 	zapParser := parse.NewZapParser()
-	zapEntities, err = pipeline.Parallel(alchemy, c.ProcessingOptions, zapParser, xmlFiles)
+	zapEntities, err = pipeline.Parallel(cc, c.ProcessingOptions, zapParser, xmlFiles)
 	if err != nil {
 		return
 	}
 	zapParser.ResolveReferences()
 
 	var specEntities pipeline.Map[string, *pipeline.Data[[]types.Entity]]
-	specEntities, err = pipeline.Collective(alchemy, c.ProcessingOptions, &common.EntityFilter[*spec.Doc, types.Entity]{}, specDocs)
+	specEntities, err = pipeline.Collective(cc, c.ProcessingOptions, &common.EntityFilter[*spec.Doc, types.Entity]{}, specDocs)
 
 	if err != nil {
 		return

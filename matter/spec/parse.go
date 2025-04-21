@@ -96,25 +96,13 @@ func parseDocument(r io.Reader, path asciidoc.Path, specRoot string, attributes 
 }
 
 type Parser struct {
-	Root       string
 	attributes []asciidoc.AttributeName
 
-	inline bool
+	options ParserOptions
 }
 
-func NewParser(attributes []asciidoc.AttributeName, parserOptions ...ParserOption) (Parser, error) {
-	p := Parser{attributes: attributes}
-	for _, opt := range parserOptions {
-		opt(&p)
-	}
-	if !filepath.IsAbs(p.Root) {
-		var err error
-		p.Root, err = filepath.Abs(p.Root)
-		if err != nil {
-			return Parser{}, err
-		}
-	}
-	return p, nil
+func NewParser(attributes []asciidoc.AttributeName, parserOptions ParserOptions) (Parser, error) {
+	return Parser{attributes: attributes, options: parserOptions}, nil
 }
 
 func (p Parser) Name() string {
@@ -122,21 +110,21 @@ func (p Parser) Name() string {
 }
 
 func (p Parser) Targets(cxt context.Context) ([]string, error) {
-	return getSpecPaths(p.Root)
+	return getSpecPaths(p.options.Root)
 }
 
 func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], index int32, total int32) (outputs []*pipeline.Data[*Doc], extras []*pipeline.Data[struct{}], err error) {
 
 	var path asciidoc.Path
-	path, err = NewSpecPath(input.Path, p.Root)
+	path, err = NewSpecPath(input.Path, p.options.Root)
 	if err != nil {
 		return
 	}
 	var doc *Doc
-	if p.inline {
-		doc, err = InlineParse(path, p.Root, p.attributes...)
+	if p.options.Inline {
+		doc, err = InlineParse(path, p.options.Root, p.attributes...)
 	} else {
-		doc, err = ParseFile(path, p.Root, p.attributes...)
+		doc, err = ParseFile(path, p.options.Root, p.attributes...)
 	}
 	if err != nil {
 		return

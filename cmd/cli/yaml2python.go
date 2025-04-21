@@ -1,8 +1,7 @@
-package yaml2python
+package cli
 
 import (
 	"github.com/project-chip/alchemy/asciidoc/render"
-	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -12,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/testscript/yaml"
 )
 
-type Command struct {
+type Yaml2Python struct {
 	common.ASCIIDocAttributes  `embed:""`
 	pipeline.ProcessingOptions `embed:""`
 	files.OutputOptions        `embed:""`
@@ -24,9 +23,16 @@ type Command struct {
 	Paths []string `arg:""`
 }
 
-func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
+func (c *Yaml2Python) Run(cc *Context) (err error) {
 
-	err = yaml.Pipeline(alchemy, c.SdkRoot, c.ProcessingOptions, c.ParserOptions.ToOptions(), c.ASCIIDocAttributes.ToList(), c.GeneratorOptions.ToOptions(), c.OutputOptions, c.Paths)
+	err = yaml.Pipeline(cc,
+		c.SDKOptions,
+		c.ProcessingOptions,
+		c.ParserOptions,
+		c.ASCIIDocAttributes.ToList(),
+		c.GeneratorOptions.ToOptions(),
+		c.OutputOptions,
+		c.Paths)
 
 	return
 }
