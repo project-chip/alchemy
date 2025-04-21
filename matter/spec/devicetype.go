@@ -29,8 +29,8 @@ func (s *Section) toDeviceTypes(d *Doc, pc *parseContext) (err error) {
 
 	description := getDescription(d, deviceTypes[0], s.Elements())
 
-	for _, c := range deviceTypes {
-		c.Description = description
+	for _, dt := range deviceTypes {
+		dt.Description = description
 
 		elements := parse.FindAll[*Section](s.Elements())
 		for _, s := range elements {
@@ -39,18 +39,18 @@ func (s *Section) toDeviceTypes(d *Doc, pc *parseContext) (err error) {
 				var crs []*matter.ClusterRequirement
 				crs, err = s.toClusterRequirements(d)
 				if err == nil {
-					c.ClusterRequirements = append(c.ClusterRequirements, crs...)
+					dt.ClusterRequirements = append(dt.ClusterRequirements, crs...)
 				}
 			case matter.SectionElementRequirements:
-				c.ElementRequirements, err = s.toElementRequirements(d)
+				dt.ElementRequirements, err = s.toElementRequirements(d)
 			case matter.SectionComposedDeviceTypeRequirements:
-				c.ComposedDeviceTypeRequirements, err = s.toComposedDeviceTypeRequirements(d)
+				dt.ComposedDeviceTypeRequirements, err = s.toComposedDeviceTypeRequirements(d)
 			case matter.SectionConditions:
-				c.Conditions, err = s.toConditions(d)
+				dt.Conditions, err = s.toConditions(d, dt)
 			case matter.SectionDeviceTypeRequirements:
-				c.DeviceTypeRequirements, err = s.toDeviceTypeRequirements(d)
+				dt.DeviceTypeRequirements, err = s.toDeviceTypeRequirements(d)
 			case matter.SectionRevisionHistory:
-				c.Revisions, err = readRevisionHistory(d, s)
+				dt.Revisions, err = readRevisionHistory(d, s)
 			default:
 			}
 			if err != nil {
@@ -140,7 +140,7 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 
 			case matter.SectionConditions:
 				var conditions []*matter.Condition
-				conditions, err = sec.toBaseDeviceTypeConditions(d)
+				conditions, err = sec.toBaseDeviceTypeConditions(d, baseDeviceType)
 
 				baseDeviceType.Conditions = append(baseDeviceType.Conditions, conditions...)
 			case matter.SectionRevisionHistory:
