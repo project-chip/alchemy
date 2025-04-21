@@ -37,10 +37,11 @@ func (sp *Builder) resolveConstraints() {
 		}
 	}
 	specEntityFinder.cluster = nil
-	for _, s := range sp.Spec.structIndex {
-		if s.Parent() == nil {
-			for _, f := range s.Fields {
-				sp.resolveFieldConstraints(nil, s.Fields, f, f.Type, specEntityFinder)
+	for o := range sp.Spec.GlobalObjects {
+		switch o := o.(type) {
+		case *matter.Struct:
+			for _, f := range o.Fields {
+				sp.resolveFieldConstraints(nil, o.Fields, f, f.Type, specEntityFinder)
 			}
 		}
 	}
