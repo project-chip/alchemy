@@ -117,14 +117,33 @@ func newEventFinder(events []*matter.Event, inner entityFinder) *eventFinder {
 	return &eventFinder{entityFinderCommon: entityFinderCommon{inner: inner}, events: events}
 }
 
-func (cf *eventFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
-	for _, c := range cf.events {
-		if c.Name == identifier && c != cf.identity {
+func (ef *eventFinder) findEntityByIdentifier(identifier string, source log.Source) types.Entity {
+	for _, c := range ef.events {
+		if c.Name == identifier && c != ef.identity {
 			return c
 		}
 	}
-	if cf.inner != nil {
-		return cf.inner.findEntityByIdentifier(identifier, source)
+	if ef.inner != nil {
+		return ef.inner.findEntityByIdentifier(identifier, source)
 	}
 	return nil
+}
+
+func (ef *eventFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+		for _, f := range ef.events {
+
+			if f == ef.identity {
+				continue
+			}
+			if !yield(f.Name, f) {
+				return
+			}
+
+		}
+	})
+	if ef.inner != nil {
+		ef.inner.suggestIdentifiers(identifier, suggestions)
+	}
+	return
 }

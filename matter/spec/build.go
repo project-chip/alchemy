@@ -20,15 +20,15 @@ type Builder struct {
 
 	ignoreHierarchy bool
 
-	conformanceFailures map[any]log.Source
-	constraintFailures  map[any]log.Source
+	conformanceFailures map[any]referenceFailure
+	constraintFailures  map[any]referenceFailure
 }
 
 func NewBuilder(specRoot string, options ...BuilderOption) Builder {
 	b := Builder{
 		specRoot:            specRoot,
-		conformanceFailures: make(map[any]log.Source),
-		constraintFailures:  make(map[any]log.Source),
+		conformanceFailures: make(map[any]referenceFailure),
+		constraintFailures:  make(map[any]referenceFailure),
 	}
 	for _, o := range options {
 		o(&b)

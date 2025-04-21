@@ -56,6 +56,7 @@ type entityFinder interface {
 	setIdentity(entity types.Entity)
 	findEntityByIdentifier(identifier string, source log.Source) types.Entity
 	findEntityByReference(reference string, label string, source log.Source) types.Entity
+	suggestIdentifiers(identifier string, suggestions map[types.Entity]int)
 }
 
 func makeEntityFinder(entity types.Entity, inner entityFinder) entityFinder {
@@ -102,6 +103,11 @@ func (bf *entityFinderCommon) findEntityByReference(reference string, label stri
 		return bf.inner.findEntityByReference(reference, label, source)
 	}
 	return nil
+}
+
+type referenceFailure struct {
+	source log.Source
+	finder entityFinder
 }
 
 type entityFilter struct {

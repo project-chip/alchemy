@@ -99,3 +99,23 @@ func (ff *featureFinder) findEntityByIdentifier(identifier string, source log.So
 	}
 	return nil
 }
+
+func (ff *featureFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+	if ff.features != nil {
+		suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+			for f := range ff.features.FeatureBits() {
+				if f == ff.identity {
+					continue
+				}
+				if !yield(f.Code, f) {
+					return
+				}
+
+			}
+		})
+	}
+	if ff.inner != nil {
+		ff.inner.suggestIdentifiers(identifier, suggestions)
+	}
+	return
+}

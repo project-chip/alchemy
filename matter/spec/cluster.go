@@ -2,6 +2,7 @@ package spec
 
 import (
 	"fmt"
+	"iter"
 	"log/slog"
 	"strings"
 
@@ -361,6 +362,46 @@ func (cf *clusterEntityFinder) findEntityInCluster(cluster *matter.Cluster, iden
 		}
 	}
 	return nil
+}
+
+func (cef *clusterEntityFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+	suggest(identifier, suggestions, cef.suggestEntityInCluster(cef.cluster))
+	if cef.cluster.ParentCluster != nil {
+		suggest(identifier, suggestions, cef.suggestEntityInCluster(cef.cluster.ParentCluster))
+	}
+	if cef.inner != nil {
+		cef.inner.suggestIdentifiers(identifier, suggestions)
+	}
+	return
+}
+
+func (cf *clusterEntityFinder) suggestEntityInCluster(cluster *matter.Cluster) iter.Seq2[string, types.Entity] {
+	return func(yield func(string, types.Entity) bool) {
+		if cluster.Features != nil {
+			for f := range cluster.Features.FeatureBits() {
+				if f != cf.identity && !yield(f.Code, f) {
+					return
+				}
+			}
+		}
+		for _, bm := range cluster.Bitmaps {
+			if bm != cf.identity && !yield(bm.Name, bm) {
+				return
+			}
+		}
+		for _, en := range cluster.Enums {
+			if en != cf.identity && !yield(en.Name, en) {
+				return
+			}
+		}
+		for _, s := range cluster.Structs {
+			if s != cf.identity && !yield(s.Name, s) {
+				return
+			}
+		}
+		return
+	}
+
 }
 
 func (cef *clusterEntityFinder) findEntityByReference(reference string, label string, source log.Source) (e types.Entity) {

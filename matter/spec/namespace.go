@@ -98,3 +98,22 @@ func (tf *tagFinder) findEntityByIdentifier(identifier string, source log.Source
 	}
 	return nil
 }
+
+func (tf *tagFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+		for _, t := range tf.namespace.SemanticTags {
+
+			if t == tf.identity {
+				continue
+			}
+			if !yield(t.Name, t) {
+				return
+			}
+
+		}
+	})
+	if tf.inner != nil {
+		tf.inner.suggestIdentifiers(identifier, suggestions)
+	}
+	return
+}
