@@ -120,10 +120,13 @@ func (sp *Builder) resolveClusterDataTypeReferences(onlyBaseClusters bool) {
 
 func (sp *Builder) resolveGlobalDataTypeReferences() {
 	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
-	for _, s := range sp.Spec.structIndex {
-		for _, f := range s.Fields {
-			specEntityFinder.setIdentity(f)
-			sp.resolveFieldDataTypes(nil, s.Fields, f, f.Type, specEntityFinder)
+	for o := range sp.Spec.GlobalObjects {
+		switch s := o.(type) {
+		case *matter.Struct:
+			for _, f := range s.Fields {
+				specEntityFinder.setIdentity(f)
+				sp.resolveFieldDataTypes(nil, s.Fields, f, f.Type, specEntityFinder)
+			}
 		}
 	}
 }

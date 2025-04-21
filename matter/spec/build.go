@@ -128,60 +128,24 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 				spec.Namespaces = append(spec.Namespaces, m)
 			case *matter.Bitmap:
 				slog.Debug("Found global bitmap", "name", m.Name, "path", d.Path)
-				existing, ok := spec.bitmapIndex[m.Name]
-				if ok {
-					slog.Error("multiple bitmaps with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
-				} else {
-					spec.bitmapIndex[m.Name] = m
-				}
 				spec.addEntityByName(m.Name, m, nil)
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.Enum:
 				slog.Debug("Found global enum", "name", m.Name, "path", d.Path)
-				existing, ok := spec.enumIndex[m.Name]
-				if ok {
-					slog.Error("multiple enums with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
-				} else {
-					spec.enumIndex[m.Name] = m
-				}
 				spec.addEntityByName(m.Name, m, nil)
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.Struct:
 				slog.Debug("Found global struct", "name", m.Name, "path", d.Path)
-				existing, ok := spec.structIndex[m.Name]
-				if ok {
-					slog.Error("multiple structs with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
-				} else {
-					spec.structIndex[m.Name] = m
-				}
 				spec.addEntityByName(m.Name, m, nil)
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.TypeDef:
 				slog.Debug("Found global typedef", "name", m.Name, "path", d.Path)
-				existing, ok := spec.typeDefIndex[m.Name]
-				if ok {
-					slog.Warn("multiple global typedefs with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
-				} else {
-					spec.typeDefIndex[m.Name] = m
-				}
 				spec.addEntityByName(m.Name, m, nil)
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.Command:
-				existing, ok := spec.commandIndex[m.Name]
-				if ok {
-					slog.Error("multiple commands with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
-				} else {
-					spec.commandIndex[m.Name] = m
-				}
 				spec.addEntityByName(m.Name, m, nil)
 				spec.GlobalObjects[m] = struct{}{}
 			case *matter.Event:
-				existing, ok := spec.eventIndex[m.Name]
-				if ok {
-					slog.Error("multiple events with same name", "name", m.Name, log.Path("previousSource", existing), log.Path("newSource", m))
-				} else {
-					spec.eventIndex[m.Name] = m
-				}
 				spec.addEntityByName(m.Name, m, nil)
 				spec.GlobalObjects[m] = struct{}{}
 			default:
@@ -371,39 +335,15 @@ func (sp *Builder) addCluster(doc *Doc, cluster *matter.Cluster) {
 	sp.Spec.ClustersByName[cluster.Name] = cluster
 
 	for _, en := range cluster.Bitmaps {
-		_, ok := sp.Spec.bitmapIndex[en.Name]
-		if ok {
-			slog.Debug("multiple bitmaps with same name", "name", en.Name)
-		} else {
-			sp.Spec.bitmapIndex[en.Name] = en
-		}
 		sp.Spec.addEntityByName(en.Name, en, cluster)
 	}
 	for _, en := range cluster.Enums {
-		_, ok := sp.Spec.enumIndex[en.Name]
-		if ok {
-			slog.Debug("multiple enums with same name", "name", en.Name)
-		} else {
-			sp.Spec.enumIndex[en.Name] = en
-		}
 		sp.Spec.addEntityByName(en.Name, en, cluster)
 	}
 	for _, en := range cluster.Structs {
-		_, ok := sp.Spec.structIndex[en.Name]
-		if ok {
-			slog.Debug("multiple structs with same name", "name", en.Name)
-		} else {
-			sp.Spec.structIndex[en.Name] = en
-		}
 		sp.Spec.addEntityByName(en.Name, en, cluster)
 	}
 	for _, en := range cluster.TypeDefs {
-		_, ok := sp.Spec.typeDefIndex[en.Name]
-		if ok {
-			slog.Debug("multiple structs with same name", "name", en.Name)
-		} else {
-			sp.Spec.typeDefIndex[en.Name] = en
-		}
 		sp.Spec.addEntityByName(en.Name, en, cluster)
 	}
 	sp.noteDocRefs(doc, cluster)

@@ -28,13 +28,6 @@ type Specification struct {
 	DataTypeRefs EntityRefs[types.Entity]
 	DocRefs      map[types.Entity]*Doc
 
-	bitmapIndex  map[string]*matter.Bitmap
-	enumIndex    map[string]*matter.Enum
-	structIndex  map[string]*matter.Struct
-	typeDefIndex map[string]*matter.TypeDef
-	commandIndex map[string]*matter.Command
-	eventIndex   map[string]*matter.Event
-
 	GlobalObjects map[types.Entity]struct{}
 
 	entities map[string]map[types.Entity]map[*matter.Cluster]struct{}
@@ -54,13 +47,6 @@ func newSpec(specRoot string) *Specification {
 		DeviceTypesByID:   make(map[uint64]*matter.DeviceType),
 		DeviceTypesByName: make(map[string]*matter.DeviceType),
 		DocRefs:           make(map[types.Entity]*Doc),
-
-		bitmapIndex:  make(map[string]*matter.Bitmap),
-		enumIndex:    make(map[string]*matter.Enum),
-		structIndex:  make(map[string]*matter.Struct),
-		typeDefIndex: make(map[string]*matter.TypeDef),
-		commandIndex: make(map[string]*matter.Command),
-		eventIndex:   make(map[string]*matter.Event),
 
 		GlobalObjects: make(map[types.Entity]struct{}),
 

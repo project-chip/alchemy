@@ -30,9 +30,12 @@ func (sp *Builder) resolveConformances() {
 		sp.resolveCommandConformances(cluster, clusterFinder)
 	}
 	specEntityFinder.cluster = nil
-	for _, s := range sp.Spec.structIndex {
-		for _, f := range s.Fields {
-			sp.resolveFieldConformances(nil, specEntityFinder, s.Fields, f, f.Type)
+	for o := range sp.Spec.GlobalObjects {
+		switch o := o.(type) {
+		case *matter.Struct:
+			for _, f := range o.Fields {
+				sp.resolveFieldConformances(nil, specEntityFinder, o.Fields, f, f.Type)
+			}
 		}
 	}
 	for _, deviceType := range sp.Spec.DeviceTypes {
