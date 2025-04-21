@@ -1,7 +1,6 @@
-package validate
+package cli
 
 import (
-	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -9,20 +8,20 @@ import (
 	"github.com/project-chip/alchemy/matter/spec/validate"
 )
 
-type Command struct {
+type Validate struct {
 	common.ASCIIDocAttributes  `embed:""`
 	spec.ParserOptions         `embed:""`
 	pipeline.ProcessingOptions `embed:""`
 }
 
-func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
+func (c *Validate) Run(alchemy *Context) (err error) {
 
-	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions.ToOptions()...)
+	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions)
 	if err != nil {
 		return err
 	}
 
-	err = errata.LoadErrataConfig(specParser.Root)
+	err = errata.LoadErrataConfig(c.ParserOptions.Root)
 	if err != nil {
 		return
 	}
@@ -37,7 +36,7 @@ func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
 		return err
 	}
 
-	specBuilder := spec.NewBuilder(specParser.Root)
+	specBuilder := spec.NewBuilder(c.ParserOptions.Root)
 	_, err = pipeline.Collective(alchemy, c.ProcessingOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err

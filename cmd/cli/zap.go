@@ -1,7 +1,6 @@
-package zap
+package cli
 
 import (
-	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -10,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/zap/render"
 )
 
-type Command struct {
+type ZAP struct {
 	FeatureXML             bool `default:"true" aliases:"featureXML" help:"write new style feature XML" group:"ZAP:"`
 	ConformanceXML         bool `default:"true" aliases:"conformanceXML" help:"write new style conformance XML" group:"ZAP:"`
 	EndpointCompositionXML bool `default:"false" aliases:"endpointCompositionXML" help:"write new style endpoint composition XML" group:"ZAP:"`
@@ -26,11 +25,11 @@ type Command struct {
 	Paths []string `arg:"" optional:"" help:"Paths of AsciiDoc files to generate ZAP templates for"`
 }
 
-func (z *Command) Run(alchemy *cli.Alchemy) (err error) {
+func (z *ZAP) Run(cc *Context) (err error) {
 
 	var options render.Options
 
-	options.Parser = z.ParserOptions.ToOptions()
+	options.Parser = z.ParserOptions
 	options.AsciiSettings = z.ASCIIDocAttributes.ToList()
 	options.Pipeline = z.ProcessingOptions
 
@@ -43,7 +42,7 @@ func (z *Command) Run(alchemy *cli.Alchemy) (err error) {
 	options.DeviceTypes = append(options.DeviceTypes, render.DeviceTypePatcherFullEndpointComposition(z.EndpointCompositionXML))
 
 	var output render.Output
-	output, err = render.Pipeline(alchemy, z.SdkRoot, z.Paths, options)
+	output, err = render.Pipeline(cc, z.SdkRoot, z.Paths, options)
 	if err != nil {
 		return
 	}
@@ -51,7 +50,7 @@ func (z *Command) Run(alchemy *cli.Alchemy) (err error) {
 	stringWriter := files.NewWriter[string]("", z.OutputOptions)
 	if output.ZapTemplateDocs != nil && output.ZapTemplateDocs.Size() > 0 {
 		stringWriter.SetName("Writing ZAP templates")
-		err = stringWriter.Write(alchemy, output.ZapTemplateDocs, options.Pipeline)
+		err = stringWriter.Write(cc, output.ZapTemplateDocs, options.Pipeline)
 		if err != nil {
 			return err
 		}
@@ -60,7 +59,7 @@ func (z *Command) Run(alchemy *cli.Alchemy) (err error) {
 	byteWriter := files.NewWriter[[]byte]("", z.OutputOptions)
 	if output.IndexDocs != nil && output.IndexDocs.Size() > 0 {
 		byteWriter.SetName("Writing provisional docs")
-		err = byteWriter.Write(alchemy, output.IndexDocs, options.Pipeline)
+		err = byteWriter.Write(cc, output.IndexDocs, options.Pipeline)
 		if err != nil {
 			return err
 		}
@@ -68,7 +67,7 @@ func (z *Command) Run(alchemy *cli.Alchemy) (err error) {
 
 	if output.PatchedDeviceTypes != nil && output.PatchedDeviceTypes.Size() > 0 {
 		byteWriter.SetName("Writing deviceTypes")
-		err = byteWriter.Write(alchemy, output.PatchedDeviceTypes, options.Pipeline)
+		err = byteWriter.Write(cc, output.PatchedDeviceTypes, options.Pipeline)
 		if err != nil {
 			return err
 		}
@@ -76,7 +75,7 @@ func (z *Command) Run(alchemy *cli.Alchemy) (err error) {
 
 	if output.PatchedNamespaces != nil && output.PatchedNamespaces.Size() > 0 {
 		byteWriter.SetName("Writing namespaces")
-		err = byteWriter.Write(alchemy, output.PatchedNamespaces, options.Pipeline)
+		err = byteWriter.Write(cc, output.PatchedNamespaces, options.Pipeline)
 		if err != nil {
 			return err
 		}
@@ -84,7 +83,7 @@ func (z *Command) Run(alchemy *cli.Alchemy) (err error) {
 
 	if output.GlobalObjectFiles != nil && output.GlobalObjectFiles.Size() > 0 {
 		stringWriter.SetName("Writing global objects")
-		err = stringWriter.Write(alchemy, output.GlobalObjectFiles, options.Pipeline)
+		err = stringWriter.Write(cc, output.GlobalObjectFiles, options.Pipeline)
 		if err != nil {
 			return err
 		}
@@ -92,12 +91,12 @@ func (z *Command) Run(alchemy *cli.Alchemy) (err error) {
 
 	if output.ClusterList != nil && output.ClusterList.Size() > 0 {
 		byteWriter.SetName("Writing cluster list")
-		err = byteWriter.Write(alchemy, output.ClusterList, options.Pipeline)
+		err = byteWriter.Write(cc, output.ClusterList, options.Pipeline)
 	}
 
 	if output.ZclJson != nil && output.ZclJson.Size() > 0 {
 		byteWriter.SetName("Writing ZCL JSON")
-		err = byteWriter.Write(alchemy, output.ZclJson, options.Pipeline)
+		err = byteWriter.Write(cc, output.ZclJson, options.Pipeline)
 	}
 
 	return

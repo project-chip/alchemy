@@ -21,7 +21,7 @@ type Options struct {
 	AsciiSettings []asciidoc.AttributeName
 	Template      []TemplateOption
 	DeviceTypes   []DeviceTypePatcherOption
-	Parser        []spec.ParserOption
+	Parser        spec.ParserOptions
 }
 
 type Output struct {
@@ -42,12 +42,12 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 	}
 
 	var specParser spec.Parser
-	specParser, err = spec.NewParser(options.AsciiSettings, options.Parser...)
+	specParser, err = spec.NewParser(options.AsciiSettings, options.Parser)
 	if err != nil {
 		return
 	}
 
-	err = errata.LoadErrataConfig(specParser.Root)
+	err = errata.LoadErrataConfig(options.Parser.Root)
 	if err != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 		return
 	}
 
-	specBuilder := spec.NewBuilder(specParser.Root)
+	specBuilder := spec.NewBuilder(options.Parser.Root)
 	specDocs, err = pipeline.Collective(cxt, options.Pipeline, &specBuilder, specDocs)
 	if err != nil {
 		return
@@ -98,7 +98,7 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 	}
 
 	if len(docPaths) > 0 { // Filter the spec by whatever extra args were passed
-		filter := paths.NewFilter[*spec.Doc](specParser.Root, docPaths)
+		filter := paths.NewFilter[*spec.Doc](options.Parser.Root, docPaths)
 		specDocs, err = pipeline.Collective(cxt, options.Pipeline, filter, specDocs)
 		if err != nil {
 			return

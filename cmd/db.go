@@ -7,7 +7,8 @@ import (
 )
 
 var commands struct {
-	DB database.Command `cmd:"" default:"1" help:"run a local MySQL DB containing the contents of the Matter spec or the ZAP templates"`
+	DB      database.Command `cmd:"" default:"1" help:"run a local MySQL DB containing the contents of the Matter spec or the ZAP templates"`
+	Version Version          `cmd:"" hidden:"" name:"version" help:"display version number"`
 
 	globalFlags `embed:""`
 }

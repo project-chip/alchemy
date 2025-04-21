@@ -1,7 +1,6 @@
-package dm
+package cli
 
 import (
-	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/errata"
@@ -11,7 +10,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-type Command struct {
+type DataModel struct {
 	common.ASCIIDocAttributes  `embed:""`
 	spec.ParserOptions         `embed:""`
 	pipeline.ProcessingOptions `embed:""`
@@ -21,36 +20,36 @@ type Command struct {
 	Paths []string `arg:"" optional:""`
 }
 
-func (c Command) Run(alchemy *cli.Alchemy) (err error) {
-	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions.ToOptions()...)
+func (c *DataModel) Run(cc *Context) (err error) {
+	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions)
 	if err != nil {
 		return err
 	}
 
-	err = errata.LoadErrataConfig(specParser.Root)
+	err = errata.LoadErrataConfig(c.ParserOptions.Root)
 	if err != nil {
 		return
 	}
 
-	specBuilder := spec.NewBuilder(specParser.Root, spec.IgnoreHierarchy(true))
+	specBuilder := spec.NewBuilder(c.ParserOptions.Root, spec.IgnoreHierarchy(true))
 
-	specFiles, err := pipeline.Start(alchemy, specParser.Targets)
+	specFiles, err := pipeline.Start(cc, specParser.Targets)
 	if err != nil {
 		return err
 	}
 
-	specDocs, err := pipeline.Parallel(alchemy, c.ProcessingOptions, specParser, specFiles)
+	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specFiles)
 	if err != nil {
 		return err
 	}
-	specDocs, err = pipeline.Collective(alchemy, c.ProcessingOptions, &specBuilder, specDocs)
+	specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
 
 	if len(c.Paths) > 0 {
-		filter := paths.NewFilter[*spec.Doc](specParser.Root, c.Paths)
-		specDocs, err = pipeline.Collective(alchemy, c.ProcessingOptions, filter, specDocs)
+		filter := paths.NewFilter[*spec.Doc](c.ParserOptions.Root, c.Paths)
+		specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, filter, specDocs)
 		if err != nil {
 			return err
 		}
@@ -58,7 +57,7 @@ func (c Command) Run(alchemy *cli.Alchemy) (err error) {
 
 	dataModelRenderer := dm.NewRenderer(c.DmRoot, specBuilder.Spec)
 
-	dataModelDocs, err := pipeline.Parallel(alchemy, c.ProcessingOptions, dataModelRenderer, specDocs)
+	dataModelDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, dataModelRenderer, specDocs)
 	if err != nil {
 		return err
 	}
@@ -70,7 +69,7 @@ func (c Command) Run(alchemy *cli.Alchemy) (err error) {
 	dataModelDocs.Store(clusterIDJSON.Path, clusterIDJSON)
 
 	writer := files.NewWriter[string]("Writing data model", c.OutputOptions)
-	err = writer.Write(alchemy, dataModelDocs, c.ProcessingOptions)
+	err = writer.Write(cc, dataModelDocs, c.ProcessingOptions)
 	if err != nil {
 		return err
 	}

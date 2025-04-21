@@ -1,12 +1,9 @@
-//go:build !db
-
-package cmd
+package cli
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/matter/conformance"
 )
 
@@ -15,7 +12,7 @@ type Conformance struct {
 	Params      []string `arg:"" help:"parameters to use to evaluate conformance" optional:""`
 }
 
-func (cmd *Conformance) Run(alchemy *cli.Alchemy) (err error) {
+func (cmd *Conformance) Run(cc *Context) (err error) {
 	if len(cmd.Conformance) == 0 {
 		// TODO: re-add usage
 		return nil

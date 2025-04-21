@@ -6,7 +6,7 @@ import (
 	"github.com/alecthomas/kong"
 )
 
-type Alchemy struct {
+type Context struct {
 	context.Context
 
 	Kong *kong.Context

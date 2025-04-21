@@ -1,4 +1,4 @@
-package disco
+package action
 
 import (
 	"bytes"
@@ -15,10 +15,10 @@ import (
 	"github.com/sethvargo/go-githubactions"
 )
 
-type Command struct {
+type Disco struct {
 }
 
-func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
+func (c *Disco) Run(cc *cli.Context) (err error) {
 
 	action := githubactions.New()
 
@@ -29,7 +29,7 @@ func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
 		return fmt.Errorf("failed on getting GitHub context: %w", err)
 
 	}
-	pr, err := github.ReadPullRequest(alchemy, githubContext, action)
+	pr, err := github.ReadPullRequest(cc, githubContext, action)
 	if err != nil {
 		return fmt.Errorf("failed on reading pull request: %w", err)
 	}
@@ -37,7 +37,7 @@ func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
 		return nil
 	}
 	var changedFiles []string
-	changedFiles, err = github.GetPRChangedFiles(alchemy, githubContext, action, pr)
+	changedFiles, err = github.GetPRChangedFiles(cc, githubContext, action, pr)
 	if err != nil {
 		return fmt.Errorf("failed on getting pull request changes: %w", err)
 	}
@@ -63,7 +63,7 @@ func (c *Command) Run(alchemy *cli.Alchemy) (err error) {
 	var out bytes.Buffer
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
 
-	err = disco.Pipeline(alchemy, ".", changedDocs, pipelineOptions, disco.DefaultOptions, nil, writer)
+	err = disco.Pipeline(cc, ".", changedDocs, pipelineOptions, disco.DefaultOptions, nil, writer)
 	if err != nil {
 		return fmt.Errorf("failed disco-balling: %v", err)
 	}

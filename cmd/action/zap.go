@@ -1,4 +1,4 @@
-package zap
+package action
 
 import (
 	"fmt"
@@ -11,10 +11,10 @@ import (
 	"github.com/sethvargo/go-githubactions"
 )
 
-type Command struct {
+type ZAP struct {
 }
 
-func (z *Command) Run(a *cli.Alchemy) (err error) {
+func (z *ZAP) Run(cc *cli.Context) (err error) {
 	action := githubactions.New()
 
 	action.Infof("Alchemy %s", config.Version())
@@ -24,7 +24,7 @@ func (z *Command) Run(a *cli.Alchemy) (err error) {
 		return fmt.Errorf("failed on getting GitHub context: %w", err)
 
 	}
-	pr, err := github.ReadPullRequest(a, githubContext, action)
+	pr, err := github.ReadPullRequest(cc, githubContext, action)
 	if err != nil {
 		return fmt.Errorf("failed on reading pull request: %w", err)
 	}
@@ -32,7 +32,7 @@ func (z *Command) Run(a *cli.Alchemy) (err error) {
 		return nil
 	}
 	var changedFiles []string
-	changedFiles, err = github.GetPRChangedFiles(a, githubContext, action, pr)
+	changedFiles, err = github.GetPRChangedFiles(cc, githubContext, action, pr)
 	if err != nil {
 		return fmt.Errorf("failed on getting pull request changes: %w", err)
 	}
