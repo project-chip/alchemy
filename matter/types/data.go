@@ -213,7 +213,7 @@ func ParseDataTypeName(typeName string) (baseType BaseDataType, name string) {
 	case "semtag":
 		baseType = BaseDataTypeCustom
 		name = "SemanticTagStruct"
-	case "status":
+	case "status", "statuscode", "status code":
 		baseType = BaseDataTypeStatus
 	case "priority":
 		baseType = BaseDataTypePriority
@@ -226,7 +226,7 @@ func ParseDataTypeName(typeName string) (baseType BaseDataType, name string) {
 	case "locationdesc":
 		baseType = BaseDataTypeCustom
 		name = "LocationDescriptorStruct"
-	case "currency":
+	case "currency", "currencystruct":
 		baseType = BaseDataTypeCustom
 		name = "CurrencyStruct"
 	case "price":
