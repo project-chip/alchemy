@@ -150,8 +150,8 @@ type Condition struct {
 	Description string
 }
 
-func NewCondition(source asciidoc.Element) *Condition {
-	return &Condition{entity: entity{source: source}}
+func NewCondition(source asciidoc.Element, dt *DeviceType) *Condition {
+	return &Condition{entity: entity{source: source, parent: dt}}
 }
 
 func (c *Condition) EntityType() types.EntityType {

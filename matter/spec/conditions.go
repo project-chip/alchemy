@@ -10,7 +10,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err error) {
+func (s *Section) toConditions(d *Doc, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
@@ -39,7 +39,7 @@ func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err erro
 		}
 	}
 	for row := range ti.Body() {
-		c := matter.NewCondition(s.Base)
+		c := matter.NewCondition(s.Base, dt)
 		c.Feature, err = ti.ReadStringAtOffset(row, featureIndex)
 		if err != nil {
 			return
@@ -53,7 +53,7 @@ func (s *Section) toConditions(d *Doc) (conditions []*matter.Condition, err erro
 	return
 }
 
-func (s *Section) toBaseDeviceTypeConditions(d *Doc) (conditions []*matter.Condition, err error) {
+func (s *Section) toBaseDeviceTypeConditions(d *Doc, dt *matter.DeviceType) (conditions []*matter.Condition, err error) {
 	if !text.HasCaseInsensitiveSuffix(s.Name, " Conditions") {
 		return
 	}
@@ -76,7 +76,7 @@ func (s *Section) toBaseDeviceTypeConditions(d *Doc) (conditions []*matter.Condi
 			return
 		}
 		for row := range ti.Body() {
-			c := matter.NewCondition(row)
+			c := matter.NewCondition(row, dt)
 			c.Feature, err = ti.ReadStringAtOffset(row, tagOffset)
 			if err != nil {
 				return
@@ -105,7 +105,7 @@ func (s *Section) toBaseDeviceTypeConditions(d *Doc) (conditions []*matter.Condi
 		if err != nil {
 			continue
 		}
-		c := matter.NewCondition(row)
+		c := matter.NewCondition(row, dt)
 		c.Feature = sb.String()
 		conditions = append(conditions, c)
 	}
