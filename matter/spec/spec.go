@@ -83,6 +83,24 @@ func (sef *specEntityFinder) findEntityByIdentifier(identifier string, source lo
 	return nil
 }
 
+func (tf *specEntityFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+		for identifier, entities := range tf.spec.entities {
+			for e := range entities {
+				if e == tf.identity {
+					continue
+				}
+				if !yield(identifier, e) {
+					return
+				}
+			}
+		}
+	})
+	if tf.inner != nil {
+		tf.inner.suggestIdentifiers(identifier, suggestions)
+	}
+}
+
 func (sef *specEntityFinder) findEntityByReference(reference string, label string, source log.Source) (e types.Entity) {
 	e = sef.findSpecEntityByReference(reference, label, source)
 	if e != nil {
@@ -219,9 +237,11 @@ func disambiguateDataType(entities map[types.Entity]map[*matter.Cluster]struct{}
 	}
 
 	var nakedEntities []types.Entity
-	for m, c := range entities {
-		if c == nil {
-			nakedEntities = append(nakedEntities, m)
+	for m, clusters := range entities {
+		for c := range clusters {
+			if c == nil {
+				nakedEntities = append(nakedEntities, m)
+			}
 		}
 	}
 	if len(nakedEntities) == 1 {
@@ -238,7 +258,7 @@ func disambiguateDataType(entities map[types.Entity]map[*matter.Cluster]struct{}
 			} else {
 				clusterName = "naked"
 			}
-			slog.Warn("ambiguous data type", matter.LogEntity("source", m), "cluster", clusterName)
+			slog.Warn("ambiguous data type candidate", matter.LogEntity("source", m), "cluster", clusterName)
 		}
 	}
 	return nil

@@ -57,18 +57,21 @@ func (sp *Builder) resolveConstraints() {
 }
 
 func (sp *Builder) noteConstraintResolutionFailures() {
-	for exp, source := range sp.constraintFailures {
+	for exp, failure := range sp.constraintFailures {
 		switch exp := exp.(type) {
 		case *constraint.IdentifierLimit:
 			if exp.Entity == nil {
-				slog.Error("Failed to resolve constraint identifier", "ref", exp.ID, log.Path("path", source))
+				slog.Error("Failed to resolve constraint identifier", "ref", exp.ID, log.Path("path", failure.source))
+				suggestions := make(map[types.Entity]int)
+				failure.finder.suggestIdentifiers(exp.ID, suggestions)
+				listSuggestions(exp.ID, suggestions)
 			}
 		case *constraint.ReferenceLimit:
 			if exp.Entity == nil {
-				slog.Error("Failed to resolve constraint reference", "ref", exp.Reference, log.Path("path", source))
+				slog.Error("Failed to resolve constraint reference", "ref", exp.Reference, log.Path("path", failure.source))
 			}
 		default:
-			slog.Warn("Unexpected failed constraint entity", log.Type("type", exp), log.Path("path", source))
+			slog.Warn("Unexpected failed constraint entity", log.Type("type", exp), log.Path("path", failure.source))
 		}
 	}
 }
@@ -117,7 +120,7 @@ func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder e
 		if l.Entity == nil {
 			l.Entity = finder.findEntityByIdentifier(l.ID, source)
 			if l.Entity == nil {
-				sp.constraintFailures[l] = source
+				sp.constraintFailures[l] = referenceFailure{source: source, finder: finder}
 				slog.Error("failed to resolve constraint identifier", "ref", l.ID, log.Path("path", source))
 			}
 		}
@@ -132,7 +135,7 @@ func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder e
 			l.Entity = finder.findEntityByReference(l.Reference, l.Label, source)
 			if l.Entity == nil {
 				slog.Error("failed to resolve constraint reference", "ref", l.Reference, log.Path("path", source))
-				sp.constraintFailures[l] = source
+				sp.constraintFailures[l] = referenceFailure{source: source, finder: finder}
 			}
 		}
 		if l.Entity != nil && l.Field != nil {

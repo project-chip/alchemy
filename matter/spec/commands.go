@@ -154,3 +154,22 @@ func (cf *commandFinder) findEntityByIdentifier(identifier string, source log.So
 	}
 	return nil
 }
+
+func (cf *commandFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+		for _, f := range cf.commands {
+
+			if f == cf.identity {
+				continue
+			}
+			if !yield(f.Name, f) {
+				return
+			}
+
+		}
+	})
+	if cf.inner != nil {
+		cf.inner.suggestIdentifiers(identifier, suggestions)
+	}
+	return
+}

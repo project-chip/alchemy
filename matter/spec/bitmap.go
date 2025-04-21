@@ -96,3 +96,22 @@ func (bf *bitmapFinder) findEntityByIdentifier(identifier string, source log.Sou
 	}
 	return nil
 }
+
+func (bf *bitmapFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+		for _, bmv := range bf.bitmap.Bits {
+
+			if bmv == bf.identity {
+				continue
+			}
+			if !yield(bmv.Name(), bmv) {
+				return
+			}
+
+		}
+	})
+	if bf.inner != nil {
+		bf.inner.suggestIdentifiers(identifier, suggestions)
+	}
+	return
+}

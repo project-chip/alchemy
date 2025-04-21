@@ -300,3 +300,22 @@ func (ff *fieldFinder) findEntityByIdentifier(identifier string, source log.Sour
 	}
 	return nil
 }
+
+func (ff *fieldFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+		for _, f := range ff.fields {
+
+			if f == ff.identity {
+				continue
+			}
+			if !yield(f.Name, f) {
+				return
+			}
+
+		}
+	})
+	if ff.inner != nil {
+		ff.inner.suggestIdentifiers(identifier, suggestions)
+	}
+	return
+}

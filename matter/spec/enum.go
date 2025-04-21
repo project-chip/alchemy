@@ -172,3 +172,22 @@ func (ef *enumFinder) findEntityByIdentifier(identifier string, source log.Sourc
 	}
 	return nil
 }
+
+func (ef *enumFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+		for _, ev := range ef.en.Values {
+
+			if ev == ef.identity {
+				continue
+			}
+			if !yield(ev.Name, ev) {
+				return
+			}
+
+		}
+	})
+	if ef.inner != nil {
+		ef.inner.suggestIdentifiers(identifier, suggestions)
+	}
+	return
+}

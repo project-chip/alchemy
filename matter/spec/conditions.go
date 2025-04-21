@@ -146,3 +146,32 @@ func (cf *conditionFinder) findEntityByIdentifier(identifier string, source log.
 	return nil
 
 }
+
+func (cf *conditionFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
+
+	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+		for _, con := range cf.deviceType.Conditions {
+			if con == cf.identity {
+				continue
+			}
+			if !yield(con.Feature, con) {
+				return
+			}
+		}
+		if cf.baseDeviceType != nil {
+			for _, con := range cf.baseDeviceType.Conditions {
+				if con == cf.identity {
+					continue
+				}
+				if !yield(con.Feature, con) {
+					return
+				}
+			}
+		}
+	})
+
+	if cf.inner != nil {
+		cf.inner.suggestIdentifiers(identifier, suggestions)
+	}
+	return
+}
