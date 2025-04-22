@@ -115,7 +115,6 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 		}
 
 		for e := range configurator.ExternalEntities {
-			slog.Info("External entity", matter.LogEntity("entity", e), "path", newPath)
 			externalDoc, ok := tg.spec.DocRefs[e]
 			if !ok {
 				slog.Error("External entity with no associated document", matter.LogEntity("entity", e), "path", newPath)

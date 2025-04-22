@@ -33,6 +33,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 	options.AsciiSettings = z.ASCIIDocAttributes.ToList()
 	options.Pipeline = z.ProcessingOptions
 
+	options.Template = append(options.Template, render.GenerateFeatureXML(z.FeatureXML))
 	options.Template = append(options.Template, render.GenerateConformanceXML(z.ConformanceXML))
 	options.Template = append(options.Template, render.ExtendedQuality(z.ExtendedQuality))
 	options.Template = append(options.Template, render.SpecOrder(z.SpecOrder))
