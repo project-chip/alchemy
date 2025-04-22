@@ -25,25 +25,25 @@ type Command struct {
 	Raw     bool   `default:"false" help:"parse the sections directly, bypassing entity building"`
 }
 
-func (cmd *Command) Run(alchemy *cli.Alchemy) (err error) {
-	specParser, err := spec.NewParser(cmd.ASCIIDocAttributes.ToList(), cmd.ParserOptions.ToOptions()...)
+func (cmd *Command) Run(cc *cli.Context) (err error) {
+	specParser, err := spec.NewParser(cmd.ASCIIDocAttributes.ToList(), cmd.ParserOptions)
 	if err != nil {
 		return err
 	}
 
-	errata.LoadErrataConfig(specParser.Root)
+	errata.LoadErrataConfig(cmd.ParserOptions.Root)
 
-	specFiles, err := pipeline.Start(alchemy, specParser.Targets)
+	specFiles, err := pipeline.Start(cc, specParser.Targets)
 	if err != nil {
 		return err
 	}
 
-	specDocs, err := pipeline.Parallel(alchemy, cmd.ProcessingOptions, specParser, specFiles)
+	specDocs, err := pipeline.Parallel(cc, cmd.ProcessingOptions, specParser, specFiles)
 	if err != nil {
 		return err
 	}
-	specBuilder := spec.NewBuilder(specParser.Root, spec.IgnoreHierarchy(cmd.IgnoreHierarchy))
-	specDocs, err = pipeline.Collective(alchemy, cmd.ProcessingOptions, &specBuilder, specDocs)
+	specBuilder := spec.NewBuilder(cmd.ParserOptions.Root, spec.IgnoreHierarchy(cmd.IgnoreHierarchy))
+	specDocs, err = pipeline.Collective(cc, cmd.ProcessingOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (cmd *Command) Run(alchemy *cli.Alchemy) (err error) {
 		return true
 	})
 
-	sc := sql.NewContext(alchemy)
+	sc := sql.NewContext(cc)
 	sc.SetCurrentDatabase("matter")
 
 	h := db.New()
