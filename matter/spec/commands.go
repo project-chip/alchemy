@@ -108,7 +108,27 @@ func (s *Section) toCommands(d *Doc, pc *parseContext, parent types.Entity) (com
 	var cf commandFactory
 	commands, err = buildList(d, s, t, pc, commands, &cf, parent)
 
+	cmdMap := make(map[matter.Interface]map[uint64]*matter.Command)
+
 	for _, cmd := range commands {
+		if cmdMap[cmd.Direction] == nil {
+			cmdMap[cmd.Direction] = make(map[uint64]*matter.Command)
+		}
+		existing, ok := cmdMap[cmd.Direction][cmd.ID.Value()]
+		if ok {
+			slog.Error("Duplicate Command ID",
+				slog.String("clusterName",
+					matter.EntityName(parent)),
+				slog.String("commandName", cmd.Name),
+				slog.String("commandID", cmd.ID.IntString()),
+				slog.String("direction",
+					cmd.Direction.String()),
+				slog.String("previousCommand", existing.Name),
+			)
+		}
+
+		cmdMap[cmd.Direction][cmd.ID.Value()] = cmd
+
 		if cmd.Response != nil {
 			for _, rc := range commands {
 				if strings.EqualFold(cmd.Response.Name, rc.Name) {

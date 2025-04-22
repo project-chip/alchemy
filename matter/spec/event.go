@@ -2,6 +2,7 @@ package spec
 
 import (
 	"iter"
+	"log/slog"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -104,6 +105,24 @@ func (s *Section) toEvents(d *Doc, pc *parseContext, parent types.Entity) (event
 	var ef eventFactory
 	events, err = buildList(d, s, t, pc, events, &ef, parent)
 
+	if err != nil {
+		return
+	}
+
+	eventMap := make(map[uint64]*matter.Event)
+	for _, ev := range events {
+		existing, ok := eventMap[ev.ID.Value()]
+		if ok {
+			slog.Error("Duplicate Event ID",
+				slog.String("clusterName",
+					matter.EntityName(parent)),
+				slog.String("eventName", ev.Name),
+				slog.String("eventId", ev.ID.IntString()),
+				slog.String("previousEvent", existing.Name),
+			)
+		}
+		eventMap[ev.ID.Value()] = ev
+	}
 	return
 }
 
