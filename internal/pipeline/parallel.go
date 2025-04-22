@@ -97,7 +97,7 @@ func processParallel[I, O any](cxt context.Context, name string, processor Indiv
 				for _, e := range extras {
 					_, loaded := processed.LoadOrStore(e.Path, false)
 					if loaded {
-						slog.WarnContext(cxt, "skipping already queued input", slog.String("path", input.Path))
+						slog.DebugContext(cxt, "skipping already queued input", slog.String("path", input.Path))
 						continue
 					}
 					select {
