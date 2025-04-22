@@ -4,6 +4,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/sdk"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -28,6 +29,31 @@ func (cr *configuratorRenderer) renderConstraint(el *etree.Element, fs matter.Fi
 	if !to.Defined() {
 		el.RemoveAttr("max")
 		el.RemoveAttr("length")
+	}
+
+	hasNumericMin := from.Defined() && from.IsNumeric()
+	hasNumericMax := to.Defined() && to.IsNumeric()
+
+	if f.Quality.Has(matter.QualityNullable) {
+		// Because this is a nullable field, we might end up with a min/max value that is
+		// different than the underlying data type's max/min, but only because of its nullability
+		// If that's true of both min and max, or only true of one with the other
+		var minDueToNullable, maxDueToNullable bool
+		if hasNumericMin {
+			minDueToNullable = types.Min(sdk.ToUnderlyingType(f.Type.BaseType), true).ValueEquals(from)
+		}
+		if hasNumericMax {
+			maxDueToNullable = types.Max(sdk.ToUnderlyingType(f.Type.BaseType), true).ValueEquals(to)
+		}
+		if (minDueToNullable && maxDueToNullable) ||
+			(minDueToNullable && !hasNumericMax) ||
+			(maxDueToNullable && !hasNumericMin) {
+			el.RemoveAttr("min")
+			el.RemoveAttr("minLength")
+			el.RemoveAttr("max")
+			el.RemoveAttr("length")
+			return
+		}
 	}
 
 	if f.Type != nil && (f.Type.HasLength() || f.Type.IsArray()) {
