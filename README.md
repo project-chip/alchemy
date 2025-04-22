@@ -27,7 +27,7 @@ There are two builds for each architecture: plain and db. The db build includes 
 
 Alchemy is written in pure Go, so to build from source:
 
-1. Install Go 1.23.1 or greater
+1. Install Go 1.24 or greater
 2. Clone the alchemy repo
 3. In the root of the alchemy repo, run ```go build```
 
@@ -37,11 +37,11 @@ Alchemy is written in pure Go, so to build from source:
 
 | Flag                                  | Default       | Description   |	
 | :------------------------------------ |:-------------:| :-------------|
-| --serial          	                  |	false         | Process Asciidoc files one-by-one instead of in parallel; slower
-| --dryrun -d                           | false         | Run all logic for the command, but do not write results to disk
-| --patch   	                          |	false         | Write a patch file for any changes to stdout
-| --verbose 	                          |	false         | Display more verbose logging; best used with --serial
-| --attribute ```<name of attribute>``` | empty string	| Sets an attribute for Asciidoc processing, e.g. "in-progress". This parameter can be specified multiple times for different attributes 
+| `--serial`          	                | false         | Process Asciidoc files one-by-one instead of in parallel; slower
+| `--dry-run` `-d`                          | false         | Run all logic for the command, but do not write results to disk
+| `--patch`   	                        | false         | Write a patch file for any changes to stdout
+| `--verbose` 	                        | false         | Display more verbose logging; best used with --serial
+| `--attribute="<name of attribute>"` | empty string	| Sets an attribute for Asciidoc processing, e.g. "in-progress".<br/>This parameter can be specified multiple times for different attributes 
 
 
 ### format
@@ -104,25 +104,25 @@ Disco-ball is more aggressive than format, and attempts to rewrite the document 
 - Removes extra spaces at the end of lines
 - Fixes common section naming mistakes
 
-| Flag                            | Default  | Description   |	
-| :------------------------------ |:--------:| :-------------|
-| --linkIndexTables               | false    | Link table cells to child sections |
-| --addMissingColumns             | true     | Add standard columns missing from tables |
-| --reorderColumns                | true     | Rearrange table columns into disco-ball order |
-| --renameTableHeaders            | true     | Rename table headers to disco-ball standard names |
-| --formatAccess                  | true     | Reformat access columns in disco-ball order |
-| --promoteDataTypes              | true     | Promote inline data types to Data Types section |
-| --reorderSections               | true     | Reorder sections in disco-ball order |
-| --normalizeTableOptions         | true     | Remove existing table options and replace with standard disco-ball options |
-| --fixCommandDirection           | true     | Normalize command directions |
-| --appendSubsectionTypes         | true     | Add missing suffixes to data type sections (e.g. "Bit", "Value", "Field", etc.) |
-| --uppercaseHex                  | true     | Uppercase hex values |
-| --addSpaceAfterPunctuation      | true     | Add missing space after punctuation |
-| --removeExtraSpaces             | true     | Remove extraneous spaces |
-| --normalizeFeatureNames         | true     | Normalize feature names to be compatible with downstream code generation |
-| --disambiguateConformanceChoice | false    | Ensure that each document only uses each conformance choice identifier once |
-| --specRoot                      | <empty>  | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| --wrap                          | none     | The number of characters to wrap lines without disrupting Asciidoc syntax |
+| Flag                                 | Default                | Description   |	
+| :----------------------------------- |:----------------------:| :-------------|
+| `--link-index-tables`                | false                  | Link table cells to child sections |
+| `--add-missing-columns`              | true                   | Add standard columns missing from tables |
+| `--reorder-columns`                  | true                   | Rearrange table columns into disco-ball order |
+| `--rename-table-headers`             | true                   | Rename table headers to disco-ball standard names |
+| `--format-access`                    | true                   | Reformat access columns in disco-ball order |
+| `--promote-data-types`               | true                   | Promote inline data types to Data Types section |
+| `--reorder-sections`                 | true                   | Reorder sections in disco-ball order |
+| `--normalize-table-options`          | true                   | Remove existing table options and replace<br/>with standard disco-ball options |
+| `--fix-command-direction`            | true                   | Normalize command directions |
+| `--append-subsection-types`          | true                   | Add missing suffixes to data type sections<br/>(e.g. "Bit", "Value", "Field", etc.) |
+| `--uppercase-hex`                    | true                   | Uppercase hex values |
+| `--add-space-after-punctuation`      | true                   | Add missing space after punctuation |
+| `--remove-extra-spaces`              | true                   | Remove extraneous spaces |
+| `--normalize-feature-names`          | true                   | Normalize feature names to be compatible<br/>with downstream code generation |
+| `--disambiguate-conformance-choice`  | false                  | Ensure that each document only uses each<br/>conformance choice identifier once |
+| `--spec-root`                        | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| `--wrap`                             | none                   | The number of characters to wrap lines<br/>without disrupting Asciidoc syntax |
 
 #### Examples
 
@@ -135,20 +135,19 @@ alchemy disco connectedhomeip-spec/src/app_clusters/Thermostat.adoc
 Disco-ball the whole spec:
 
 ```console
-alchemy disco --specRoot=./connectedhomeip-spec
+alchemy disco --spec-root=./connectedhomeip-spec
 ```
-
 
 Disco-ball a single document, but update any other documents if needed (e.g. rewriting a reference):
 
 ```console
-alchemy disco --specRoot=./connectedhomeip-spec ./connectedhomeip-spec/src/app_clusters/Thermostat.adoc
+alchemy disco --spec-root=./connectedhomeip-spec ./connectedhomeip-spec/src/app_clusters/Thermostat.adoc
 ```
 
 Disco-ball a single document, wrapping the text at 120 characters and linking table entries to their associated sections:
 
 ```console
-alchemy disco connectedhomeip-spec/src/app_clusters/Thermostat.adoc --wrap=120 --linkIndexTables
+alchemy disco connectedhomeip-spec/src/app_clusters/Thermostat.adoc --wrap=120 --link-index-tables
 ```
 
 ### zap
@@ -158,21 +157,40 @@ changes.
 
 | Flag                       | Default                | Description   |	
 | :------------------------- |:----------------------:| :-------------|
-| --specRoot                 | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| --sdkRoot                  | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
-| --overwrite                | false                  | Overwrite existing XML files instead of amending them
+| `--spec-root`              | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| `--sdk-root`               | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
+| `--overwrite`              | false                  | Overwrite existing XML files instead of amending them
+
+> [!IMPORTANT]  
+> ZAP generates the XML based on how the spec would render for the attributes provided. If you are attempting to generate the zap-template XML for a
+> part of the spec that is hidden by an #ifdef by default, you will need to provide the necessary attributes to allow it to render.
+>
+> For example, if your cluster was included in the spec like so:
+>
+> ```
+> ifdef::in-progress,my-cool-feature[]
+> include::./MyAwesomeCluster.adoc[]
+> endif::[]
+> ```
+>
+> You would need to pass an `--attribute` flag for either `in-progress` or `my-cool-feature`:
+>
+> ```console
+> alchemy zap --attribute="in-progress"  --sdk-root=./connectedhomeip/ --spec-root=./connectedhomeip-spec/
+> ```
 
 > [!NOTE]  
 > By default, existing ZAP XML files will be amended by Alchemy, leaving ordering of elements, comments and unrecognized XML attributes in place. The overwrite flag allows regenerating the XML files from scratch.
 
-
 #### Generate ZAP files for a single cluster
 
 ```console
-alchemy zap --attribute="in-progress"  --sdkRoot=./connectedhomeip/ --specRoot=./connectedhomeip-spec/ ./connectedhomeip-spec/src/app_clusters/Thermostat.adoc
+alchemy zap --attribute="in-progress"  --sdk-root=./connectedhomeip/ --spec-root=./connectedhomeip-spec/ ./connectedhomeip-spec/src/app_clusters/Thermostat.adoc
 ```
 > [!NOTE]  
 > Alchemy follows dependencies between clusters, so if the specified doc requires data types from other docs, it will also generate XML files for them as well. In the above case, Thermostat depends on an enumeration in OccupancySensor, so occupancy-sensing-cluster.xml will also be generated.
+>
+> If the targeted cluster references, directly or indirectly, one of the global data type files (e.g. global-structs.xml, global-enums.xml, etc.), the entire global data type file will be generated. This may pull in changes to global data types from other clusters.
 
 ### compare
 
@@ -180,14 +198,14 @@ Compare loads the spec and the ZAP template XMLs and returns their differences i
 
 | Flag                       | Default                | Description   |	
 | :------------------------- |:----------------------:| :-------------|
-| --specRoot                 | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| --sdkRoot                  | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
-| --text                     | false                  | Returns differences in a text format |
+| `--spec-root`              | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| `--sdk-root`               | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
+| `--text`                   | false                  | Returns differences in a text format |
 
 #### Example
 
 ```console
-alchemy compare --sdkRoot=./connectedhomeip/ --specRoot=./connectedhomeip-spec/
+alchemy compare --sdk-root=./connectedhomeip/ --spec-root=./connectedhomeip-spec/
 ```
 
 ### conformance
@@ -220,10 +238,10 @@ conformance: Disallowed
 
 Data Model generates the Data Model XML files from the spec.
 
-| Flag                       | Default                                  | Description   |	
-| :------------------------- |:----------------------------------------:| :-------------|
-| --specRoot                 | ./connectedhomeip-spec                   | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| --dmRoot                   | ./connectedhomeip/data_model/master      | The data model directory of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
+| Flag                       | Default                                 | Description   |	
+| :------------------------- |:---------------------------------------:| :-------------|
+| `--spec-root`              | ./connectedhomeip-spec                  | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| `--dm-root`                | ./connectedhomeip/data_model/master     | The data model directory of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
 
 
 ### testplan
@@ -233,13 +251,29 @@ Testplan generates basic test plan adoc files from the spec.
 
 | Flag                       | Default                | Description   |	
 | :------------------------- |:----------------------:| :-------------|
-| --specRoot                 | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| --testRoot                 | ./chip-test-plans      | The root of your clone of [the Matter test plans](https://github.com/CHIP-Specifications/chip-test-plans) |
-| --overwrite                | false                  | Overwrite existing XML files instead of amending them
+| `--spec-root`              | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| `--test-root`              | ./chip-test-plans      | The root of your clone of [the Matter test plans](https://github.com/CHIP-Specifications/chip-test-plans) |
+| `--overwrite`              | false                  | Overwrite existing test plan files instead of amending them
 
 
 > [!NOTE]  
-> By default, existing test plan Asciidoc files will be ignored. The overwrite flag allows regenerating the test plan Asciidoc files from scratch; this will destroy any existing tests aside from basic validation of features, attributes, etc.
+> By default, any existing test plan Asciidoc files will be ignored. The overwrite flag allows regenerating the test plan Asciidoc files from scratch; this will destroy any existing tests aside from basic validation of features, attributes, etc.
+
+### testscript
+
+Testplan generates a basic test script from the spec.
+
+
+| Flag                       | Default                | Description   |	
+| :------------------------- |:----------------------:| :-------------|
+| `--spec-root`              | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| `--template-root`          |                        | The root of your local template files; if not specified, Alchemy will use an internal copy|
+| `--overwrite`              | false                  | Overwrite existing test scripts files instead of amending them
+
+
+> [!NOTE]  
+> By default, any existing test script files will be ignored. The overwrite flag allows regenerating the test script files from scratch; this will destroy any existing tests aside from basic validation of features, attributes, etc.
+
 
 ### alchemy-db
 
@@ -247,14 +281,14 @@ Alchemy-db is provided as a separate binary. It loads up a set of spec docs or Z
 
 | Flag                       | Default                | Description   |	
 | :------------------------- |:----------------------:| :-------------|
-| --specRoot                 | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| --sdkRoot                  | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
-| --address                  | localhost              | The address to bind the MySQL server to |
-| --port                     | 3306                   | The port to bind the MySQL server to |
-| --raw                      | false                  | Populates the tables with the raw text of the associated entities, rather than parsing into an object model first |
+| `--spec-root`              | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| `--sdk-root`               | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
+| `--address`                | localhost              | The address to bind the MySQL server to |
+| `--port`                   | 3306                   | The port to bind the MySQL server to |
+| `--raw`                    | false                  | Populates the tables with the raw text of the associated entities,<br/> rather than parsing into an object model first |
 
 #### Examples
 
 ```console
-alchemy-db --sdkRoot=./connectedhomeip/ --specRoot=./connectedhomeip-spec/
+alchemy-db --sdk-root=./connectedhomeip/ --spec-root=./connectedhomeip-spec/
 ```
