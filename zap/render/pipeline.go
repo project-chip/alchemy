@@ -120,7 +120,6 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 		if err != nil {
 			return
 		}
-		options.Pipeline.Serial = true
 		output.ZapTemplateDocs, err = pipeline.Parallel(cxt, options.Pipeline, templateGenerator, clusters)
 		if err != nil {
 			return

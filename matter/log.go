@@ -43,6 +43,15 @@ func LogEntity(key string, en types.Entity) slog.Attr {
 	case *EnumValue:
 		args = append(args, slog.String("type", "enumValue"))
 		args = append(args, slog.String("name", entity.Name))
+	case *Condition:
+		args = append(args, slog.String("type", "condition"))
+		args = append(args, slog.String("name", entity.Description))
+	case *Feature:
+		args = append(args, slog.String("type", "feature"))
+		args = append(args, slog.String("name", entity.Code))
+	case Bit:
+		args = append(args, slog.String("type", "bit"))
+		args = append(args, slog.String("name", entity.Name()))
 	case nil:
 		args = append(args, slog.String("type", "nil"))
 	default:
