@@ -88,7 +88,7 @@ func Pipeline(cxt context.Context, sdkOptions sdk.SDKOptions, pipelineOptions pi
 		return
 	}
 
-	picsLabels, err := parse.LoadPICSLabels(parserOptions.Root)
+	picsLabels, err := parse.LoadPICSLabels(sdkOptions.SdkRoot)
 	if err != nil {
 		return
 	}
