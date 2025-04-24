@@ -86,8 +86,31 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 				value.WriteString(val)
 			}
 		case *asciidoc.Link:
-			value.WriteString(el.URL.Scheme)
-			readDescription(doc, el.URL.Path, value)
+			var textAttribute, titleAttribute, altTextAttribute asciidoc.Attribute
+			for _, a := range el.AttributeList.Attributes() {
+				switch a.AttributeType() {
+				case asciidoc.AttributeTypeTitle:
+					titleAttribute = a
+				case asciidoc.AttributeTypeAlternateText:
+					altTextAttribute = a
+				}
+			}
+			if altTextAttribute != nil {
+				textAttribute = altTextAttribute
+			} else if titleAttribute != nil {
+				textAttribute = titleAttribute
+			}
+			if textAttribute != nil {
+				switch val := textAttribute.Value().(type) {
+				case asciidoc.Set:
+					readDescription(doc, val, value)
+				default:
+					slog.Warn("Unexpected value type when reading entity description", log.Type("valueType", val), log.Path("source", el))
+				}
+			} else {
+				value.WriteString(el.URL.Scheme)
+				readDescription(doc, el.URL.Path, value)
+			}
 		case *asciidoc.LinkMacro:
 			value.WriteString(el.URL.Scheme)
 			readDescription(doc, el.URL.Path, value)
