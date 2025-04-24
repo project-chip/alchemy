@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
@@ -72,7 +73,7 @@ func (sp *Builder) noteConformanceResolutionFailures() {
 				slog.Warn("Failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("path", failure.source))
 				suggestions := make(map[types.Entity]int)
 				failure.finder.suggestIdentifiers(exp.ID, suggestions)
-				listSuggestions(exp.ID, suggestions)
+				suggest.ListPossibilities(exp.ID, suggestions)
 			}
 		case *conformance.IdentifierValue:
 			if exp.Entity == nil {

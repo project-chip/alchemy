@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -149,7 +150,7 @@ func (cf *conditionFinder) findEntityByIdentifier(identifier string, source log.
 
 func (cf *conditionFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
 
-	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+	suggest.PossibleEntities(identifier, suggestions, func(yield func(string, types.Entity) bool) {
 		for _, con := range cf.deviceType.Conditions {
 			if con == cf.identity {
 				continue

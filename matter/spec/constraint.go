@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
@@ -64,7 +65,7 @@ func (sp *Builder) noteConstraintResolutionFailures() {
 				slog.Error("Failed to resolve constraint identifier", "ref", exp.ID, log.Path("path", failure.source))
 				suggestions := make(map[types.Entity]int)
 				failure.finder.suggestIdentifiers(exp.ID, suggestions)
-				listSuggestions(exp.ID, suggestions)
+				suggest.ListPossibilities(exp.ID, suggestions)
 			}
 		case *constraint.ReferenceLimit:
 			if exp.Entity == nil {

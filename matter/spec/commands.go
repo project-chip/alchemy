@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -176,7 +177,7 @@ func (cf *commandFinder) findEntityByIdentifier(identifier string, source log.So
 }
 
 func (cf *commandFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
-	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+	suggest.PossibleEntities(identifier, suggestions, func(yield func(string, types.Entity) bool) {
 		for _, f := range cf.commands {
 
 			if f == cf.identity {

@@ -7,10 +7,12 @@ import (
 
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testplan"
 )
 
@@ -43,6 +45,15 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 		cluster, ok = sp.spec.ClustersByName[clusterName]
 		if !ok {
 			slog.Error("Unknown cluster converting test plan to test script", slog.String("testPlanId", testPlan.ID), slog.String("clusterName", clusterName))
+			possibilities := make(map[types.Entity]int)
+			suggest.PossibleEntities(clusterName, possibilities, func(yield func(string, types.Entity) bool) {
+				for name, cluster := range sp.spec.ClustersByName {
+					if !yield(name, cluster) {
+						return
+					}
+				}
+			})
+			suggest.ListPossibilities(clusterName, possibilities)
 			return
 		}
 	}

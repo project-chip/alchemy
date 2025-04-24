@@ -8,6 +8,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -149,7 +150,7 @@ func (ef *eventFinder) findEntityByIdentifier(identifier string, source log.Sour
 }
 
 func (ef *eventFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
-	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+	suggest.PossibleEntities(identifier, suggestions, func(yield func(string, types.Entity) bool) {
 		for _, f := range ef.events {
 
 			if f == ef.identity {
