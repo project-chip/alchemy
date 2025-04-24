@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"iter"
 	"log/slog"
+	"math"
 	"os"
 	"path/filepath"
 	"slices"
@@ -46,7 +47,8 @@ func processParallel[I, O any](cxt context.Context, name string, processor Indiv
 		bar = progressbar.Default(int64(total))
 	}
 	var complete int32
-	queue := make(chan *Data[I], total)
+	queueLength := total + max(5, int32(math.Floor(float64(total)*1.2))) // We add a little bit of buffer to deal with extras
+	queue := make(chan *Data[I], queueLength)
 	for value := range values {
 		select {
 		case queue <- value:
@@ -107,7 +109,7 @@ func processParallel[I, O any](cxt context.Context, name string, processor Indiv
 							bar.ChangeMax(int(newTotal))
 						}
 					default:
-						return fmt.Errorf("queue full")
+						return fmt.Errorf("queue full adding extra elements to pipeline")
 					}
 				}
 				for _, o := range outputs {
