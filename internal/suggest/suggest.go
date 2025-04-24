@@ -1,4 +1,4 @@
-package spec
+package suggest
 
 import (
 	"cmp"
@@ -7,20 +7,19 @@ import (
 	"log/slog"
 	"slices"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func suggest(incorrect string, suggestions map[types.Entity]int, list iter.Seq2[string, types.Entity]) {
+func PossibleEntities(incorrect string, possibilities map[types.Entity]int, list iter.Seq2[string, types.Entity]) {
 	for possibility, entity := range list {
 		l := levenshtein(incorrect, possibility)
 		if strings.HasPrefix(possibility, incorrect) || l <= 2 {
-			existing, ok := suggestions[entity]
+			existing, ok := possibilities[entity]
 			if !ok || l < existing {
-				suggestions[entity] = l
+				possibilities[entity] = l
 			}
 		}
 	}
@@ -31,14 +30,14 @@ type suggestionScore struct {
 	score  int
 }
 
-func listSuggestions(identifier string, suggestions map[types.Entity]int) {
-	switch len(suggestions) {
+func ListPossibilities(identifier string, possibilities map[types.Entity]int) {
+	switch len(possibilities) {
 	case 0:
 		return
 	default:
 		slog.Info(fmt.Sprintf("By \"%s\", did you mean:", identifier))
-		entities := make([]suggestionScore, 0, len(suggestions))
-		for entity, score := range suggestions {
+		entities := make([]suggestionScore, 0, len(possibilities))
+		for entity, score := range possibilities {
 			entities = append(entities, suggestionScore{entity: entity, score: score})
 		}
 		slices.SortFunc(entities, func(a, b suggestionScore) int {
@@ -89,33 +88,4 @@ func listSuggestions(identifier string, suggestions map[types.Entity]int) {
 			}
 		}
 	}
-}
-
-// https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Go
-// License: https://creativecommons.org/licenses/by-sa/3.0/
-func levenshtein(a, b string) int {
-	f := make([]int, utf8.RuneCountInString(b)+1)
-
-	for j := range f {
-		f[j] = j
-	}
-
-	for _, ca := range a {
-		j := 1
-		fj1 := f[0] // fj1 is the value of f[j - 1] in last iteration
-		f[0]++
-		for _, cb := range b {
-			mn := min(f[j]+1, f[j-1]+1) // delete & insert
-			if cb != ca {
-				mn = min(mn, fj1+1) // change
-			} else {
-				mn = min(mn, fj1) // matched
-			}
-
-			fj1, f[j] = f[j], mn // save f[j] to fj1(j is about to increase), update f[j] to mn
-			j++
-		}
-	}
-
-	return f[len(f)-1]
 }

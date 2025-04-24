@@ -6,6 +6,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -100,7 +101,7 @@ func (tf *tagFinder) findEntityByIdentifier(identifier string, source log.Source
 }
 
 func (tf *tagFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
-	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+	suggest.PossibleEntities(identifier, suggestions, func(yield func(string, types.Entity) bool) {
 		for _, t := range tf.namespace.SemanticTags {
 
 			if t == tf.identity {

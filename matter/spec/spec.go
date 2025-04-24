@@ -6,6 +6,7 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -84,7 +85,7 @@ func (sef *specEntityFinder) findEntityByIdentifier(identifier string, source lo
 }
 
 func (tf *specEntityFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
-	suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+	suggest.PossibleEntities(identifier, suggestions, func(yield func(string, types.Entity) bool) {
 		for identifier, entities := range tf.spec.entities {
 			for e := range entities {
 				if e == tf.identity {

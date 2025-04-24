@@ -6,6 +6,7 @@ import (
 
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -102,7 +103,7 @@ func (ff *featureFinder) findEntityByIdentifier(identifier string, source log.So
 
 func (ff *featureFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
 	if ff.features != nil {
-		suggest(identifier, suggestions, func(yield func(string, types.Entity) bool) {
+		suggest.PossibleEntities(identifier, suggestions, func(yield func(string, types.Entity) bool) {
 			for f := range ff.features.FeatureBits() {
 				if f == ff.identity {
 					continue

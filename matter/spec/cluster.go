@@ -8,6 +8,7 @@ import (
 
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -365,9 +366,9 @@ func (cf *clusterEntityFinder) findEntityInCluster(cluster *matter.Cluster, iden
 }
 
 func (cef *clusterEntityFinder) suggestIdentifiers(identifier string, suggestions map[types.Entity]int) {
-	suggest(identifier, suggestions, cef.suggestEntityInCluster(cef.cluster))
+	suggest.PossibleEntities(identifier, suggestions, cef.suggestEntityInCluster(cef.cluster))
 	if cef.cluster.ParentCluster != nil {
-		suggest(identifier, suggestions, cef.suggestEntityInCluster(cef.cluster.ParentCluster))
+		suggest.PossibleEntities(identifier, suggestions, cef.suggestEntityInCluster(cef.cluster.ParentCluster))
 	}
 	if cef.inner != nil {
 		cef.inner.suggestIdentifiers(identifier, suggestions)
