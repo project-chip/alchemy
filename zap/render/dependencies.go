@@ -55,6 +55,20 @@ func (tg *TemplateGenerator) findDataTypeDependencies(spec *spec.Specification, 
 	if dt.Entity == nil {
 		return
 	}
+	switch entity := dt.Entity.(type) {
+	case *matter.Struct:
+		for _, f := range entity.Fields {
+			tg.findDataTypeDependencies(spec, f.Type, dependencies)
+		}
+	case *matter.Command:
+		for _, f := range entity.Fields {
+			tg.findDataTypeDependencies(spec, f.Type, dependencies)
+		}
+	case *matter.Event:
+		for _, f := range entity.Fields {
+			tg.findDataTypeDependencies(spec, f.Type, dependencies)
+		}
+	}
 	_, isGlobal := spec.GlobalObjects[dt.Entity]
 	if isGlobal {
 		tg.globalObjectDependencies.Store(dt.Entity, struct{}{})
