@@ -11,6 +11,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/internal/vcs"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -47,7 +48,7 @@ func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.Pro
 	}
 	if spec.Root != "" {
 		var err error
-		tg.specVersion, err = gitDescribe(spec.Root)
+		tg.specVersion, err = vcs.GitDescribe(spec.Root)
 		if err != nil {
 			slog.Error("Unable to determine spec git tag", slog.Any("error", err))
 			return nil, err
