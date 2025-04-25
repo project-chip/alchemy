@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"log/slog"
-	"os/exec"
 	"regexp"
 	"slices"
 	"strconv"
@@ -130,18 +129,4 @@ func (cr *configuratorRenderer) patchAlchemyComment(configurator *zap.Configurat
 		x.InsertChildAt(copyrightComment.Index()+1, alchemyComment)
 	}
 	return nil
-}
-
-func gitDescribe(specRoot string) (string, error) {
-	cmd := exec.Command("git", "describe", "--dirty", "--broken", "--tags")
-	cmd.Dir = specRoot
-	out, err := cmd.Output()
-	if err != nil {
-		return "", err
-	}
-	gitDescription := strings.TrimSpace(string(out))
-	if gitDescription == "" {
-		return "", fmt.Errorf("git describe returned empty string")
-	}
-	return gitDescription, nil
 }
