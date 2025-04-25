@@ -196,7 +196,9 @@ func (c *Configurator) addEntityType(parentEntity types.Entity, entity types.Ent
 		c.Enums[entity] = c.getClusterCodes(entity)
 	case *matter.Struct:
 		c.Structs[entity] = c.getClusterCodes(entity)
-		c.addTypes(parentEntity, entity.Fields)
+		if !c.Global {
+			c.addTypes(parentEntity, entity.Fields)
+		}
 	}
 }
 
