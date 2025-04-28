@@ -7,7 +7,7 @@ import (
 )
 
 type ASCIIDocAttributes struct {
-	Attribute []string `aliases:"a" help:"attribute for pre-processing AsciiDoc; this flag can be provided more than once" group:"Spec:"`
+	Attribute []string `short:"a" help:"attribute for pre-processing AsciiDoc; this flag can be provided more than once" group:"Spec:"`
 }
 
 func (aa *ASCIIDocAttributes) ToList() (settings []asciidoc.AttributeName) {
