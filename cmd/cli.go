@@ -3,6 +3,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/cmd/dump"
 )
@@ -21,4 +23,10 @@ var commands struct {
 	Version     Version         `cmd:"" hidden:"" name:"version" help:"display version number"`
 
 	globalFlags `embed:""`
+}
+
+func init() {
+	if len(os.Args) < 2 {
+		os.Args = append(os.Args, "--help")
+	}
 }
