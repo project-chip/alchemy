@@ -1,12 +1,9 @@
 package render
 
 import (
-	"log/slog"
-
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/internal/xml"
-	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -17,11 +14,7 @@ func renderConformance(spec *spec.Specification, entity types.Entity, identifier
 	if conformance.IsMandatory(c) && !conformance.IsProvisional(c) {
 		return nil
 	}
-	doc, ok := spec.DocRefs[entity]
-	if !ok {
-		slog.Warn("missing doc ref for entity", matter.LogEntity("entity", entity))
-	}
-	conformanceElement, err := dm.CreateConformanceElement(doc, c, nil)
+	conformanceElement, err := dm.CreateConformanceElement(c, nil)
 	if err != nil {
 		return err
 	}

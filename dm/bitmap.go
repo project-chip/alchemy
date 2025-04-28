@@ -7,22 +7,21 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
-	bitmaps := make([]*matter.Bitmap, len(cluster.Bitmaps))
-	copy(bitmaps, cluster.Bitmaps)
-	slices.SortStableFunc(bitmaps, func(a, b *matter.Bitmap) int {
+func renderBitmaps(bitmaps []*matter.Bitmap, dt *etree.Element) (err error) {
+	bs := make([]*matter.Bitmap, len(bitmaps))
+	copy(bs, bitmaps)
+	slices.SortStableFunc(bs, func(a, b *matter.Bitmap) int {
 		return strings.Compare(a.Name, b.Name)
 	})
-	for _, bm := range bitmaps {
+	for _, bm := range bs {
 		en := dt.CreateElement("bitmap")
 		en.CreateAttr("name", bm.Name)
 		size := bm.Size() / 4
 		for _, v := range bm.Bits {
-			err = renderBit(doc, cluster, en, v, size, bm)
+			err = renderBit(en, v, size, bm)
 			if err != nil {
 				return
 			}
@@ -31,7 +30,7 @@ func renderBitmaps(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (e
 	return
 }
 
-func renderBit(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, v matter.Bit, size int, parentEntity types.Entity) (err error) {
+func renderBit(en *etree.Element, v matter.Bit, size int, parentEntity types.Entity) (err error) {
 	i := en.CreateElement("bitfield")
 	i.CreateAttr("name", v.Name())
 	val := matter.ParseNumber(v.Bit())
@@ -52,6 +51,6 @@ func renderBit(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, v matt
 		i.CreateAttr("to", fmt.Sprintf("0x%0*X", size, to))
 	}
 	i.CreateAttr("summary", scrubDescription(v.Summary()))
-	err = renderConformanceElement(doc, v.Conformance(), i, parentEntity)
+	err = renderConformanceElement(v.Conformance(), i, parentEntity)
 	return
 }

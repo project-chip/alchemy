@@ -9,7 +9,6 @@ import (
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/constraint"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -160,31 +159,33 @@ func dataModelName(dataType *types.DataType) string {
 		return "endpoint-id"
 	case types.BaseDataTypeTag:
 		return "tag"
+	case types.BaseDataTypeNamespaceID:
+		return "namespace"
 	default:
 		slog.Warn("unknown data model type", "name", dataType.Name)
 		return dataType.Name
 	}
 }
 
-func renderDataTypes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderDataTypes(cluster *matter.Cluster, c *etree.Element) (err error) {
 	if len(cluster.Enums) == 0 && len(cluster.Bitmaps) == 0 && len(cluster.Structs) == 0 {
 		return
 	}
 	dt := c.CreateElement("dataTypes")
-	err = renderTypeDefs(doc, cluster, dt)
+	err = renderTypeDefs(cluster.TypeDefs, dt)
 	if err != nil {
 		return
 	}
-	err = renderEnums(doc, cluster, dt)
+	err = renderEnums(cluster.Enums, dt)
 	if err != nil {
 		return
 	}
-	err = renderBitmaps(doc, cluster, dt)
+	err = renderBitmaps(cluster.Bitmaps, dt)
 	if err != nil {
 		return
 	}
 
-	err = renderStructs(doc, cluster, dt)
+	err = renderStructs(cluster.Structs, dt)
 	return
 }
 
@@ -245,13 +246,13 @@ func renderFallback(fs matter.FieldSet, f *matter.Field, e *etree.Element) {
 	e.CreateAttr("default", def.DataModelString(f.Type))
 }
 
-func renderTypeDefs(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
-	typeDefs := make([]*matter.TypeDef, len(cluster.TypeDefs))
-	copy(typeDefs, cluster.TypeDefs)
-	slices.SortStableFunc(typeDefs, func(a, b *matter.TypeDef) int {
+func renderTypeDefs(typeDefs []*matter.TypeDef, dt *etree.Element) (err error) {
+	tds := make([]*matter.TypeDef, len(typeDefs))
+	copy(tds, typeDefs)
+	slices.SortStableFunc(tds, func(a, b *matter.TypeDef) int {
 		return strings.Compare(a.Name, b.Name)
 	})
-	for _, e := range typeDefs {
+	for _, e := range tds {
 		en := dt.CreateElement("number")
 		en.CreateAttr("name", e.Name)
 		en.CreateAttr("type", dataModelName(e.Type))

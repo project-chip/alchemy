@@ -6,20 +6,19 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func renderStructs(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
-	structs := make([]*matter.Struct, len(cluster.Structs))
-	copy(structs, cluster.Structs)
-	slices.SortStableFunc(structs, func(a, b *matter.Struct) int {
+func renderStructs(structs []*matter.Struct, dt *etree.Element) (err error) {
+	ss := make([]*matter.Struct, len(structs))
+	copy(ss, structs)
+	slices.SortStableFunc(ss, func(a, b *matter.Struct) int {
 		return strings.Compare(a.Name, b.Name)
 	})
-	for _, s := range structs {
+	for _, s := range ss {
 		en := dt.CreateElement("struct")
 		en.CreateAttr("name", s.Name)
-		err = renderFields(doc, cluster, s.Fields, en, s)
+		err = renderFields(s.Fields, en, s)
 		if err != nil {
 			return
 		}
@@ -30,14 +29,14 @@ func renderStructs(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (e
 	return
 }
 
-func renderFields(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, parent *etree.Element, parentEntity types.Entity) (err error) {
+func renderFields(fs matter.FieldSet, parent *etree.Element, parentEntity types.Entity) (err error) {
 	for _, f := range fs {
-		err = renderField(doc, cluster, fs, f, parent, parentEntity)
+		err = renderField(fs, f, parent, parentEntity)
 	}
 	return
 }
 
-func renderField(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *matter.Field, parent *etree.Element, parentEntity types.Entity) (err error) {
+func renderField(fs matter.FieldSet, f *matter.Field, parent *etree.Element, parentEntity types.Entity) (err error) {
 	if !f.ID.Valid() {
 		return
 	}
@@ -45,13 +44,13 @@ func renderField(doc *spec.Doc, cluster *matter.Cluster, fs matter.FieldSet, f *
 	i.CreateAttr("id", f.ID.IntString())
 	i.CreateAttr("name", f.Name)
 	renderDataType(f, i)
-	err = renderAnonymousType(doc, cluster, i, f)
+	err = renderAnonymousType(i, f)
 	if err != nil {
 		return
 	}
 	renderAttributeAccess(i, f.Access)
 	renderQuality(i, f.Quality)
-	err = renderConformanceElement(doc, f.Conformance, i, parentEntity)
+	err = renderConformanceElement(f.Conformance, i, parentEntity)
 	if err != nil {
 		return
 	}

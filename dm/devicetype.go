@@ -12,7 +12,6 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -25,7 +24,7 @@ func getDeviceTypePath(dmRoot string, path asciidoc.Path, deviceTypeName string)
 	return filepath.Join(dmRoot, fmt.Sprintf("/device_types/%s.xml", file))
 }
 
-func renderDeviceType(doc *spec.Doc, deviceType *matter.DeviceType) (output string, err error) {
+func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) {
 	x := etree.NewDocument()
 
 	x.CreateProcInst("xml", `version="1.0"`)
@@ -94,11 +93,11 @@ func renderDeviceType(doc *spec.Doc, deviceType *matter.DeviceType) (output stri
 				clx.CreateAttr("side", "server")
 			}
 			renderQuality(clx, cr.Quality)
-			err = renderConformanceElement(doc, cr.Conformance, clx, nil)
+			err = renderConformanceElement(cr.Conformance, clx, nil)
 			if err != nil {
 				return
 			}
-			err = renderElementRequirements(doc, deviceType, cr, clx)
+			err = renderElementRequirements(deviceType, cr, clx)
 			if err != nil {
 				return
 			}
@@ -120,7 +119,7 @@ type commandRequirement struct {
 	fields      []*matter.ElementRequirement
 }
 
-func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
+func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.ClusterRequirement, clx *etree.Element) (err error) {
 	erMap := make(map[types.EntityType][]*matter.ElementRequirement)
 	for _, er := range deviceType.ElementRequirements {
 		if er.ClusterID.Equals(cr.ClusterID) {
@@ -198,7 +197,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			}
 			ex.CreateAttr("code", code)
 			ex.CreateAttr("name", fr.Name)
-			err = renderConformanceElement(doc, fr.Conformance, ex, nil)
+			err = renderConformanceElement(fr.Conformance, ex, nil)
 			if err != nil {
 				return
 			}
@@ -207,7 +206,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 	if len(attributeRequirements) > 0 {
 		erx := clx.CreateElement("attributes")
 		for _, ar := range attributeRequirements {
-			err = renderAttributeRequirement(doc, deviceType, ar, erx)
+			err = renderAttributeRequirement(deviceType, ar, erx)
 			if err != nil {
 				return
 			}
@@ -231,7 +230,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 
 			ex.CreateAttr("name", cr.command.Name)
 			if cr.command != nil && cr.requirement != nil {
-				err = renderConformanceElement(doc, cr.requirement.Conformance, ex, nil)
+				err = renderConformanceElement(cr.requirement.Conformance, ex, nil)
 				if err != nil {
 					return
 				}
@@ -239,7 +238,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 			for _, fr := range cr.fields {
 				fx := ex.CreateElement("field")
 				fx.CreateAttr("name", fr.Field)
-				err = renderConformanceElement(doc, fr.Conformance, fx, nil)
+				err = renderConformanceElement(fr.Conformance, fx, nil)
 				if err != nil {
 					return
 				}
@@ -264,7 +263,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 				ex.CreateAttr("id", code)
 			}
 			ex.CreateAttr("name", er.Name)
-			err = renderConformanceElement(doc, er.Conformance, ex, nil)
+			err = renderConformanceElement(er.Conformance, ex, nil)
 			if err != nil {
 				return
 			}
@@ -274,7 +273,7 @@ func renderElementRequirements(doc *spec.Doc, deviceType *matter.DeviceType, cr 
 	return
 }
 
-func renderAttributeRequirement(doc *spec.Doc, deviceType *matter.DeviceType, er *matter.ElementRequirement, parent *etree.Element) (err error) {
+func renderAttributeRequirement(deviceType *matter.DeviceType, er *matter.ElementRequirement, parent *etree.Element) (err error) {
 	var code string
 	var attribute *matter.Field
 	var dataType *types.DataType
@@ -296,7 +295,7 @@ func renderAttributeRequirement(doc *spec.Doc, deviceType *matter.DeviceType, er
 
 	renderAttributeAccess(ex, er.Access)
 	renderQuality(ex, er.Quality)
-	err = renderConformanceElement(doc, er.Conformance, ex, nil)
+	err = renderConformanceElement(er.Conformance, ex, nil)
 	if err != nil {
 		return
 	}

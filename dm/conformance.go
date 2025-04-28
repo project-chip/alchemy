@@ -9,12 +9,11 @@ import (
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func renderConformanceElement(doc *spec.Doc, c conformance.Conformance, parent *etree.Element, parentEntity types.Entity) error {
-	conformanceElement, err := CreateConformanceElement(doc, c, parentEntity)
+func renderConformanceElement(c conformance.Conformance, parent *etree.Element, parentEntity types.Entity) error {
+	conformanceElement, err := CreateConformanceElement(c, parentEntity)
 	if err != nil {
 		return err
 	}
@@ -24,7 +23,7 @@ func renderConformanceElement(doc *spec.Doc, c conformance.Conformance, parent *
 	return nil
 }
 
-func CreateConformanceElement(doc *spec.Doc, c conformance.Conformance, parentEntity types.Entity) (element *etree.Element, err error) {
+func CreateConformanceElement(c conformance.Conformance, parentEntity types.Entity) (element *etree.Element, err error) {
 	if c == nil {
 		return
 	}
@@ -40,24 +39,24 @@ func CreateConformanceElement(doc *spec.Doc, c conformance.Conformance, parentEn
 			}
 		}
 		if len(filtered) > 1 {
-			return renderConformanceSet(doc, cs, parentEntity)
+			return renderConformanceSet(cs, parentEntity)
 		} else if len(filtered) == 1 {
-			return renderConformance(doc, cs[0], parentEntity)
+			return renderConformance(cs[0], parentEntity)
 		}
 	case *conformance.Generic:
 		return
 	default:
-		return renderConformance(doc, c, parentEntity)
+		return renderConformance(c, parentEntity)
 
 	}
 	return
 }
 
-func renderConformanceSet(doc *spec.Doc, set conformance.Set, parentEntity types.Entity) (element *etree.Element, err error) {
+func renderConformanceSet(set conformance.Set, parentEntity types.Entity) (element *etree.Element, err error) {
 	element = etree.NewElement("otherwiseConform")
 	for _, c := range set {
 		var ce *etree.Element
-		ce, err = renderConformance(doc, c, parentEntity)
+		ce, err = renderConformance(c, parentEntity)
 		if err != nil {
 			err = fmt.Errorf("error rendering conformance %s: %w", c.ASCIIDocString(), err)
 			return
@@ -67,13 +66,13 @@ func renderConformanceSet(doc *spec.Doc, set conformance.Set, parentEntity types
 	return
 }
 
-func renderConformance(doc *spec.Doc, con conformance.Conformance, parentEntity types.Entity) (element *etree.Element, err error) {
+func renderConformance(con conformance.Conformance, parentEntity types.Entity) (element *etree.Element, err error) {
 	switch con := con.(type) {
 	case *conformance.Mandatory:
 		_, isEquality := con.Expression.(*conformance.EqualityExpression)
 		if !isEquality {
 			element = etree.NewElement("mandatoryConform")
-			err = renderConformanceExpression(doc, con.Expression, element, parentEntity)
+			err = renderConformanceExpression(con.Expression, element, parentEntity)
 			if err != nil {
 				return
 			}
@@ -83,7 +82,7 @@ func renderConformance(doc *spec.Doc, con conformance.Conformance, parentEntity 
 	case *conformance.Optional:
 		element = etree.NewElement("optionalConform")
 		renderChoice(con.Choice, element)
-		err = renderConformanceExpression(doc, con.Expression, element, parentEntity)
+		err = renderConformanceExpression(con.Expression, element, parentEntity)
 		return
 	case *conformance.Disallowed:
 		element = etree.NewElement("disallowConform")
@@ -94,7 +93,7 @@ func renderConformance(doc *spec.Doc, con conformance.Conformance, parentEntity 
 	case *conformance.Generic:
 		err = fmt.Errorf("generic conformance elements are not supported in XML")
 	case conformance.Set:
-		return renderConformanceSet(doc, con, parentEntity)
+		return renderConformanceSet(con, parentEntity)
 	default:
 		err = fmt.Errorf("unknown conformance type: %T", con)
 	}
@@ -125,7 +124,7 @@ func renderChoice(choice *conformance.Choice, parent *etree.Element) {
 	}
 }
 
-func renderConformanceExpression(doc *spec.Doc, exp conformance.Expression, parent *etree.Element, parentEntity types.Entity) error {
+func renderConformanceExpression(exp conformance.Expression, parent *etree.Element, parentEntity types.Entity) error {
 	if exp == nil {
 		return nil
 	}
@@ -136,7 +135,7 @@ func renderConformanceExpression(doc *spec.Doc, exp conformance.Expression, pare
 		}
 		renderConformanceEntity(parent, e.Entity, e.ID, e.Field, parentEntity)
 	case *conformance.EqualityExpression:
-		return renderConformanceEqualityExpression(doc, e, parent, parentEntity)
+		return renderConformanceEqualityExpression(e, parent, parentEntity)
 	case *conformance.LogicalExpression:
 		if e.Not {
 			parent = parent.CreateElement("notTerm")
@@ -152,12 +151,12 @@ func renderConformanceExpression(doc *spec.Doc, exp conformance.Expression, pare
 		default:
 			return fmt.Errorf("unknown operand: %s", e.Operand)
 		}
-		err := renderConformanceExpression(doc, e.Left, el, parentEntity)
+		err := renderConformanceExpression(e.Left, el, parentEntity)
 		if err != nil {
 			return fmt.Errorf("error rendering conformance expression %s: %w", e.Left.ASCIIDocString(), err)
 		}
 		for _, r := range e.Right {
-			err = renderConformanceExpression(doc, r, el, parentEntity)
+			err = renderConformanceExpression(r, el, parentEntity)
 			if err != nil {
 				return fmt.Errorf("error rendering conformance expression %s: %w", r.ASCIIDocString(), err)
 			}
@@ -316,23 +315,25 @@ func renderComparisonValue(value conformance.ComparisonValue, parent *etree.Elem
 		parent.CreateElement("literal").CreateAttr("value", strconv.FormatBool(value.Boolean))
 	case *conformance.StatusCodeValue:
 		parent.CreateElement("status").CreateAttr("name", value.StatusCode.String())
+	case *conformance.NullValue:
+		parent.CreateElement("literal").CreateAttr("value", "null")
 	default:
 		slog.Warn("Unexpected type in comparison value", log.Type("type", value))
 	}
 	return nil
 }
 
-func renderConformanceEqualityExpression(doc *spec.Doc, exp *conformance.EqualityExpression, parent *etree.Element, parentEntity types.Entity) (err error) {
+func renderConformanceEqualityExpression(exp *conformance.EqualityExpression, parent *etree.Element, parentEntity types.Entity) (err error) {
 	var e *etree.Element
 	if exp.Not {
 		e = parent.CreateElement("notEqualTerm")
 	} else {
 		e = parent.CreateElement("equalTerm")
 	}
-	err = renderConformanceExpression(doc, exp.Left, e, parentEntity)
+	err = renderConformanceExpression(exp.Left, e, parentEntity)
 	if err != nil {
 		return
 	}
-	err = renderConformanceExpression(doc, exp.Right, e, parentEntity)
+	err = renderConformanceExpression(exp.Right, e, parentEntity)
 	return
 }

@@ -9,10 +9,9 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
+func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 	if len(cluster.Attributes) == 0 {
 		return
 	}
@@ -33,13 +32,13 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 		if !constraint.IsBlankLimit(a.Fallback) {
 			renderConstraintLimit(ax, ax, a.Fallback, a.Type, "default", nil)
 		}
-		err = renderAnonymousType(doc, cluster, ax, a)
+		err = renderAnonymousType(ax, a)
 		if err != nil {
 			return
 		}
 		renderAttributeAccess(ax, a.Access)
 		renderQuality(ax, a.Quality)
-		err = renderConformanceElement(doc, a.Conformance, ax, nil)
+		err = renderConformanceElement(a.Conformance, ax, nil)
 		if err != nil {
 			return
 		}
@@ -51,21 +50,21 @@ func renderAttributes(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) 
 	return
 }
 
-func renderAnonymousType(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Element, field *matter.Field) error {
+func renderAnonymousType(ax *etree.Element, field *matter.Field) error {
 	switch at := field.AnonymousType.(type) {
 	case *matter.AnonymousEnum:
-		return renderAnonymousEnum(doc, cluster, ax, at)
+		return renderAnonymousEnum(ax, at)
 	case *matter.AnonymousBitmap:
-		return renderAnonymousBitmap(doc, cluster, ax, at)
+		return renderAnonymousBitmap(ax, at)
 	default:
 	}
 	return nil
 }
 
-func renderAnonymousEnum(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Element, an *matter.AnonymousEnum) (err error) {
+func renderAnonymousEnum(ax *etree.Element, an *matter.AnonymousEnum) (err error) {
 	en := ax.CreateElement("enum")
 	for index, v := range an.Values {
-		err = renderEnumValue(doc, cluster, en, index, v, an)
+		err = renderEnumValue(en, index, v, an)
 		if err != nil {
 			return
 		}
@@ -73,11 +72,11 @@ func renderAnonymousEnum(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Eleme
 	return
 }
 
-func renderAnonymousBitmap(doc *spec.Doc, cluster *matter.Cluster, ax *etree.Element, bm *matter.AnonymousBitmap) (err error) {
+func renderAnonymousBitmap(ax *etree.Element, bm *matter.AnonymousBitmap) (err error) {
 	en := ax.CreateElement("bitmap")
 	size := bm.Size()
 	for _, v := range bm.Bits {
-		err = renderBit(doc, cluster, en, v, size, bm)
+		err = renderBit(en, v, size, bm)
 		if err != nil {
 			return
 		}
