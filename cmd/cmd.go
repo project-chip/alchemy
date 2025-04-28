@@ -13,8 +13,8 @@ import (
 
 type globalFlags struct {
 	Verbose              bool   `default:"false" help:"display verbose information" group:"Logging:"`
-	LogLevel             string `default:"info" aliases:"loglevel" help:"changes level of log; 'debug', 'info', 'warn' or 'error'" group:"Logging:"`
-	Log                  string `default:"console"  help:"changes format of log; 'console' or 'json'" group:"Logging:"`
+	LogLevel             string `default:"info" aliases:"loglevel" enum:"debug,info,warn,error" help:"changes level of log; 'debug', 'info', 'warn' or 'error'" group:"Logging:"`
+	Log                  string `default:"console" enum:"console,json"  help:"changes format of log; 'console' or 'json'" group:"Logging:"`
 	SuppressVersionCheck bool   `default:"false" aliases:"suppressVersionCheck" hidden:""`
 	ErrorExitCode        bool   `default:"false" aliases:"errorExitCode" hidden:""`
 
@@ -22,10 +22,6 @@ type globalFlags struct {
 }
 
 func Execute() {
-
-	if len(os.Args) < 2 {
-		os.Args = append(os.Args, "--help")
-	}
 
 	k := kong.Parse(&commands,
 		kong.Name("alchemy"),
