@@ -62,17 +62,17 @@ func (sp *Builder) noteConstraintResolutionFailures() {
 		switch exp := exp.(type) {
 		case *constraint.IdentifierLimit:
 			if exp.Entity == nil {
-				slog.Error("Failed to resolve constraint identifier", "ref", exp.ID, log.Path("path", failure.source))
+				slog.Error("Failed to resolve constraint identifier", "ref", exp.ID, log.Path("source", failure.source))
 				suggestions := make(map[types.Entity]int)
 				failure.finder.suggestIdentifiers(exp.ID, suggestions)
 				suggest.ListPossibilities(exp.ID, suggestions)
 			}
 		case *constraint.ReferenceLimit:
 			if exp.Entity == nil {
-				slog.Error("Failed to resolve constraint reference", "ref", exp.Reference, log.Path("path", failure.source))
+				slog.Error("Failed to resolve constraint reference", "ref", exp.Reference, log.Path("source", failure.source))
 			}
 		default:
-			slog.Warn("Unexpected failed constraint entity", log.Type("type", exp), log.Path("path", failure.source))
+			slog.Warn("Unexpected failed constraint entity", log.Type("type", exp), log.Path("source", failure.source))
 		}
 	}
 }
@@ -122,7 +122,7 @@ func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder e
 			l.Entity = finder.findEntityByIdentifier(l.ID, source)
 			if l.Entity == nil {
 				sp.constraintFailures[l] = referenceFailure{source: source, finder: finder}
-				slog.Error("failed to resolve constraint identifier", "ref", l.ID, log.Path("path", source))
+				slog.Error("failed to resolve constraint identifier", "ref", l.ID, log.Path("source", source))
 			}
 		}
 		if l.Entity != nil && l.Field != nil {
@@ -135,7 +135,7 @@ func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder e
 		if l.Entity == nil {
 			l.Entity = finder.findEntityByReference(l.Reference, l.Label, source)
 			if l.Entity == nil {
-				slog.Error("failed to resolve constraint reference", "ref", l.Reference, log.Path("path", source))
+				slog.Error("failed to resolve constraint reference", "ref", l.Reference, log.Path("source", source))
 				sp.constraintFailures[l] = referenceFailure{source: source, finder: finder}
 			}
 		}

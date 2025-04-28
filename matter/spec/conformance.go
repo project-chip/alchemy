@@ -66,25 +66,25 @@ func (sp *Builder) noteConformanceResolutionFailures() {
 		switch exp := exp.(type) {
 		case *conformance.ReferenceExpression:
 			if exp.Entity == nil {
-				slog.Warn("Failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("path", failure.source))
+				slog.Warn("Failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("source", failure.source))
 			}
 		case *conformance.IdentifierExpression:
 			if exp.Entity == nil {
-				slog.Warn("Failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("path", failure.source))
+				slog.Warn("Failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("source", failure.source))
 				suggestions := make(map[types.Entity]int)
 				failure.finder.suggestIdentifiers(exp.ID, suggestions)
 				suggest.ListPossibilities(exp.ID, suggestions)
 			}
 		case *conformance.IdentifierValue:
 			if exp.Entity == nil {
-				slog.Warn("failed to resolve conformance value identifier", "id", exp.ID, log.Path("path", failure.source))
+				slog.Warn("failed to resolve conformance value identifier", "id", exp.ID, log.Path("source", failure.source))
 			}
 		case *conformance.ReferenceValue:
 			if exp.Entity == nil {
-				slog.Warn("failed to resolve conformance value reference", "ref", exp.Reference, log.Path("path", failure.source))
+				slog.Warn("failed to resolve conformance value reference", "ref", exp.Reference, log.Path("source", failure.source))
 			}
 		default:
-			slog.Warn("Unexpected failed conformance entity", log.Type("type", exp), log.Path("path", failure.source))
+			slog.Warn("Unexpected failed conformance entity", log.Type("type", exp), log.Path("source", failure.source))
 		}
 	}
 }
@@ -181,7 +181,7 @@ func (sp *Builder) resolveEntityConformanceExpressionReferences(cluster *matter.
 		if exp.Entity == nil {
 			exp.Entity = finder.findEntityByReference(exp.Reference, exp.Label, source)
 			if exp.Entity == nil {
-				//slog.Warn("failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("path", source))
+				//slog.Warn("failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("source", source))
 				sp.conformanceFailures[exp] = referenceFailure{source: source, finder: finder}
 				failed = true
 				return
@@ -201,7 +201,7 @@ func (sp *Builder) resolveEntityConformanceExpressionReferences(cluster *matter.
 		if exp.Entity == nil {
 			exp.Entity = finder.findEntityByIdentifier(exp.ID, source)
 			if exp.Entity == nil {
-				//slog.Warn("failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("path", source))
+				//slog.Warn("failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("source", source))
 				sp.conformanceFailures[exp] = referenceFailure{source: source, finder: finder}
 				failed = true
 				return
@@ -267,7 +267,7 @@ func (sp *Builder) resolveEntityConformanceValueReferences(cluster *matter.Clust
 			if cv.Entity == nil {
 				sp.conformanceFailures[cv] = referenceFailure{source: source, finder: finder}
 
-				//slog.Warn("failed to resolve conformance value reference", "ref", cv.Reference, log.Path("path", source), slog.Any("entity", cv.Entity))
+				//slog.Warn("failed to resolve conformance value reference", "ref", cv.Reference, log.Path("source", source), slog.Any("entity", cv.Entity))
 				failed = true
 				return
 			}

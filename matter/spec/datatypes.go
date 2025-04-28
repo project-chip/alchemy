@@ -138,7 +138,7 @@ func (sp *Builder) resolveFieldDataTypes(cluster *matter.Cluster, fieldSet matte
 			if cluster != nil {
 				clusterName = cluster.Name
 			}
-			slog.Warn("missing type on field", log.Path("path", field), slog.String("id", field.ID.HexString()), slog.String("name", field.Name), slog.String("cluster", clusterName))
+			slog.Warn("missing type on field", log.Path("source", field), slog.String("id", field.ID.HexString()), slog.String("name", field.Name), slog.String("cluster", clusterName))
 		}
 		return
 	}
