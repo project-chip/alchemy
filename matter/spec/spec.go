@@ -33,6 +33,7 @@ type Specification struct {
 
 	entities map[string]map[types.Entity]map[*matter.Cluster]struct{}
 
+	Docs      map[string]*Doc
 	DocGroups []*DocGroup
 }
 
@@ -47,6 +48,7 @@ func newSpec(specRoot string) *Specification {
 		DataTypeRefs:      NewEntityRefs[types.Entity](),
 		DeviceTypesByID:   make(map[uint64]*matter.DeviceType),
 		DeviceTypesByName: make(map[string]*matter.DeviceType),
+		Docs:              make(map[string]*Doc),
 		DocRefs:           make(map[types.Entity]*Doc),
 
 		GlobalObjects: make(map[types.Entity]struct{}),
@@ -114,15 +116,22 @@ func (sef *specEntityFinder) findEntityByReference(reference string, label strin
 }
 
 func (sef *specEntityFinder) findSpecEntityByReference(reference string, label string, source log.Source) (e types.Entity) {
-	doc, ok := sef.spec.DocRefs[sef.cluster]
-	if !ok {
-		slog.Warn("failed to find document for reference", "ref", reference, log.Path("path", source), slog.Any("cluster", sef.cluster))
+	var referenceDoc *Doc
+	if sef.cluster != nil {
+		referenceDoc = sef.spec.DocRefs[sef.cluster]
+	}
+	if referenceDoc == nil {
+		path, _ := source.Origin()
+		referenceDoc = sef.spec.Docs[path]
+	}
+	if referenceDoc == nil {
+		slog.Warn("failed to find document for reference", "ref", reference, log.Path("source", source), slog.Any("cluster", sef.cluster))
 		return
 	}
 	var anchors []*Anchor
-	group := doc.Group()
+	group := referenceDoc.Group()
 	if group == nil {
-		anchor := doc.FindAnchor(reference, source)
+		anchor := referenceDoc.FindAnchor(reference, source)
 		if anchor == nil {
 			slog.Warn("failed to find anchor for data type reference", "ref", reference, log.Path("source", source), slog.String("cluster", clusterName(sef.cluster)), slog.String("docPath", referenceDoc.Path.Relative))
 			return

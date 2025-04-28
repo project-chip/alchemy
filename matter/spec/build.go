@@ -160,7 +160,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 				spec.DocRefs[m] = d
 			}
 		}
-
+		spec.Docs[d.Path.Relative] = d
 	}
 
 	sp.resolveClusterDataTypeReferences(true)
