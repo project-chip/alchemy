@@ -7,21 +7,20 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func renderEnums(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err error) {
-	enums := make([]*matter.Enum, len(cluster.Enums))
-	copy(enums, cluster.Enums)
-	slices.SortStableFunc(enums, func(a, b *matter.Enum) int {
+func renderEnums(enums []*matter.Enum, dt *etree.Element) (err error) {
+	es := make([]*matter.Enum, len(enums))
+	copy(es, enums)
+	slices.SortStableFunc(es, func(a, b *matter.Enum) int {
 		return strings.Compare(a.Name, b.Name)
 	})
-	for _, e := range enums {
+	for _, e := range es {
 		en := dt.CreateElement("enum")
 		en.CreateAttr("name", e.Name)
 		for index, v := range e.Values {
-			err = renderEnumValue(doc, cluster, en, index, v, e)
+			err = renderEnumValue(en, index, v, e)
 			if err != nil {
 				return
 			}
@@ -30,7 +29,7 @@ func renderEnums(doc *spec.Doc, cluster *matter.Cluster, dt *etree.Element) (err
 	return
 }
 
-func renderEnumValue(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, index int, v *matter.EnumValue, parentEntity types.Entity) (err error) {
+func renderEnumValue(en *etree.Element, index int, v *matter.EnumValue, parentEntity types.Entity) (err error) {
 	var val, from, to *matter.Number
 	var valFormat, fromFormat, toFormat types.NumberFormat
 	if v.Value.Valid() {
@@ -73,6 +72,6 @@ func renderEnumValue(doc *spec.Doc, cluster *matter.Cluster, en *etree.Element, 
 	if len(v.Summary) > 0 {
 		i.CreateAttr("summary", scrubDescription(v.Summary))
 	}
-	err = renderConformanceElement(doc, v.Conformance, i, parentEntity)
+	err = renderConformanceElement(v.Conformance, i, parentEntity)
 	return
 }

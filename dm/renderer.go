@@ -97,7 +97,7 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 
 	if len(deviceTypes) == 1 {
 		var s string
-		s, err = renderDeviceType(doc, deviceTypes[0])
+		s, err = renderDeviceType(deviceTypes[0])
 		if err != nil {
 			err = fmt.Errorf("failed rendering device type %s: %w", doc.Path, err)
 			return
@@ -106,7 +106,7 @@ func (p *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc],
 	} else if len(deviceTypes) > 1 {
 		for _, dt := range deviceTypes {
 			var s string
-			s, err = renderDeviceType(doc, dt)
+			s, err = renderDeviceType(dt)
 			if err != nil {
 				err = fmt.Errorf("failed rendering device types %s: %w", doc.Path, err)
 				return

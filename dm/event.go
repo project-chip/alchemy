@@ -7,16 +7,15 @@ import (
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func renderEvents(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
-	if len(cluster.Events) == 0 {
+func renderEvents(es matter.EventSet, c *etree.Element) (err error) {
+	if len(es) == 0 {
 		return
 	}
-	evs := make([]*matter.Event, 0, len(cluster.Events))
-	for _, e := range cluster.Events {
-		if conformance.IsZigbee(cluster.Commands, e.Conformance) {
+	evs := make([]*matter.Event, 0, len(es))
+	for _, e := range es {
+		if conformance.IsZigbee(es, e.Conformance) {
 			continue
 		}
 		evs = append(evs, e)
@@ -42,12 +41,12 @@ func renderEvents(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err
 				a.CreateAttr("fabricSensitive", "true")
 			}
 		}
-		err = renderConformanceElement(doc, e.Conformance, cx, e)
+		err = renderConformanceElement(e.Conformance, cx, e)
 		if err != nil {
 			return
 		}
 
-		err = renderFields(doc, cluster, e.Fields, cx, e)
+		err = renderFields(e.Fields, cx, e)
 		if err != nil {
 			return
 		}

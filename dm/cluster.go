@@ -94,7 +94,7 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output 
 			clusterID.CreateAttr("picsCode", cluster.PICS)
 		}
 		if cluster.Conformance != nil && !conformance.IsMandatory(cluster.Conformance) {
-			err = renderConformanceElement(doc, cluster.Conformance, clusterID, nil)
+			err = renderConformanceElement(cluster.Conformance, clusterID, nil)
 			if err != nil {
 				return
 			}
@@ -118,19 +118,19 @@ func (p *Renderer) renderAppCluster(doc *spec.Doc, entity types.Entity) (output 
 	if err != nil {
 		return
 	}
-	err = renderDataTypes(doc, cluster, c)
+	err = renderDataTypes(cluster, c)
 	if err != nil {
 		return
 	}
-	err = renderAttributes(doc, cluster, c)
+	err = renderAttributes(cluster, c)
 	if err != nil {
 		return
 	}
-	err = renderCommands(doc, cluster, c)
+	err = renderCommands(cluster.Commands, c)
 	if err != nil {
 		return
 	}
-	err = renderEvents(doc, cluster, c)
+	err = renderEvents(cluster.Events, c)
 	if err != nil {
 		return
 	}

@@ -10,17 +10,16 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
-	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (err error) {
-	if len(cluster.Commands) == 0 {
+func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
+	if len(cs) == 0 {
 		return
 	}
 
-	cmds := make([]*matter.Command, 0, len(cluster.Commands))
-	for _, c := range cluster.Commands {
-		if conformance.IsZigbee(cluster.Commands, c.Conformance) {
+	cmds := make([]*matter.Command, 0, len(cs))
+	for _, c := range cs {
+		if conformance.IsZigbee(cs, c.Conformance) {
 			continue
 		}
 		cmds = append(cmds, c)
@@ -90,7 +89,7 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 			}
 		}
 
-		err = renderConformanceElement(doc, cmd.Conformance, cx, cmd)
+		err = renderConformanceElement(cmd.Conformance, cx, cmd)
 		if err != nil {
 			return
 		}
@@ -105,12 +104,12 @@ func renderCommands(doc *spec.Doc, cluster *matter.Cluster, c *etree.Element) (e
 			if !constraint.IsBlankLimit(f.Fallback) {
 				renderConstraintLimit(i, i, f.Fallback, f.Type, "default", nil)
 			}
-			err = renderAnonymousType(doc, cluster, i, f)
+			err = renderAnonymousType(i, f)
 			if err != nil {
 				return
 			}
 			renderQuality(i, f.Quality)
-			err = renderConformanceElement(doc, f.Conformance, i, cmd)
+			err = renderConformanceElement(f.Conformance, i, cmd)
 			if err != nil {
 				return
 			}
