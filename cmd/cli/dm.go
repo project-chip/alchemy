@@ -62,6 +62,16 @@ func (c *DataModel) Run(cc *Context) (err error) {
 		return err
 	}
 
+	globalDocs, err := dataModelRenderer.GenerateGlobalObjects()
+	if err != nil {
+		return err
+	}
+
+	globalDocs.Range(func(key string, value *pipeline.Data[string]) bool {
+		dataModelDocs.Store(key, value)
+		return true
+	})
+
 	clusterIDJSON, err := dataModelRenderer.GenerateClusterIDsJson()
 	if err != nil {
 		return err
