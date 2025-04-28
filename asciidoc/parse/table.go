@@ -269,7 +269,7 @@ func parseInlineCell(tc *asciidoc.TableCell) error {
 	}
 	line, col, offset := tc.Position()
 	col++
-	vals, err := Parse("", []byte(val), Entrypoint("TableCellInlineContent"), initialPosition(line, col, offset))
+	vals, err := Parse(tc.Path(), []byte(val), Entrypoint("TableCellInlineContent"), initialPosition(line, col, offset))
 	if err != nil {
 		return err
 	}
@@ -303,7 +303,7 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 	}
 	line, col, offset := tc.Position()
 	col++
-	vals, err := Parse("", []byte(val), initialPosition(line, col, offset))
+	vals, err := Parse(tc.Path(), []byte(val), initialPosition(line, col, offset))
 	if err != nil {
 		return err
 	}

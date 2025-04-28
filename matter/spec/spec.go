@@ -124,14 +124,14 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 	if group == nil {
 		anchor := doc.FindAnchor(reference, source)
 		if anchor == nil {
-			slog.Warn("failed to find anchor for data type reference", "ref", reference, log.Path("path", source), slog.String("cluster", clusterName(sef.cluster)), slog.String("docPath", doc.Path.Relative))
+			slog.Warn("failed to find anchor for data type reference", "ref", reference, log.Path("source", source), slog.String("cluster", clusterName(sef.cluster)), slog.String("docPath", referenceDoc.Path.Relative))
 			return
 		}
 		anchors = append(anchors, anchor)
 	} else {
 		anchors = group.Anchors(reference)
 		if len(anchors) == 0 {
-			slog.Warn("failed to find anchors for data type reference", "ref", reference, log.Path("path", source), slog.String("cluster", clusterName(sef.cluster)), slog.String("docPath", doc.Path.Relative))
+			slog.Warn("failed to find anchors for data type reference", "ref", reference, log.Path("source", source), slog.String("cluster", clusterName(sef.cluster)), slog.String("docPath", referenceDoc.Path.Relative))
 			return
 		}
 	}
@@ -147,13 +147,13 @@ func (sef *specEntityFinder) findSpecEntityByReference(reference string, label s
 	}
 	switch len(discoveredEntities) {
 	case 0:
-		slog.Warn("no entities found for reference", "ref", reference, log.Path("path", source))
+		slog.Warn("no entities found for reference", "ref", reference, log.Path("source", source))
 	case 1:
 		e = discoveredEntities[0]
 	default:
-		slog.Warn("ambiguous reference", "ref", reference, log.Path("path", source))
+		slog.Warn("ambiguous reference", "ref", reference, log.Path("source", source))
 		for _, m := range discoveredEntities {
-			slog.Warn("ambiguous reference", matter.LogEntity("entity", m), log.Path("path", source))
+			slog.Warn("ambiguous reference", matter.LogEntity("entity", m), log.Path("source", source))
 		}
 	}
 	if e != nil && label != "" {
