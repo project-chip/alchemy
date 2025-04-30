@@ -29,6 +29,10 @@ func (vt ViolationType) String() string {
 	return sb.String()
 }
 
+func (vt ViolationType) Has(o ViolationType) bool {
+	return (vt & o) == o
+}
+
 type Violation struct {
 	Type   ViolationType
 	Entity types.Entity

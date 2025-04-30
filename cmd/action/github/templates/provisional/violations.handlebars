@@ -1,0 +1,26 @@
+<img align="left" width="75" height="75" src="https://raw.githubusercontent.com/project-chip/alchemy/refs/heads/main/alchemy.svg">
+<b><a href="https://github.com/project-chip/alchemy">Alchemy</a> found provisionality violations in this pull request</b>
+
+---
+
+<table>
+{{#each comment.Files}}
+<tr><td colspan="4"><b>{{this.Path}}</b></td></tr>
+<tr><td>Name</td><td>Type</td><td>Source</td><td>Violation</td></tr>
+{{#each this.Violations}}
+<tr>
+    <td>{{this.EntityName}}</td>
+    <td>{{this.EntityType}}</td>
+    <td><a href="{{this.SourceLink}}">Line {{this.SourceLine}}</a></td>
+    <td>
+    {{#each this.Violations}}
+    <div>{{this}}</div>
+    {{/each}}
+    </td>
+</tr>
+{{/each}}
+{{/each}}
+</table>
+
+> [!CAUTION]
+> These issues must be resolved before this PR can be merged.
