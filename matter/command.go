@@ -32,6 +32,20 @@ func (c *Command) EntityType() types.EntityType {
 	return types.EntityTypeCommand
 }
 
+func (c *Command) Equals(e types.Entity) bool {
+	oc, ok := e.(*Command)
+	if !ok {
+		return false
+	}
+	if c.Direction != oc.Direction {
+		return false
+	}
+	if c.ID.Valid() && oc.ID.Valid() {
+		return c.ID.Equals(oc.ID)
+	}
+	return c.Name == oc.Name
+}
+
 func (c *Command) GetConformance() conformance.Set {
 	return c.Conformance
 }

@@ -193,9 +193,9 @@ func EntityConstraint(entity types.Entity) constraint.Constraint {
 	case *ElementRequirement:
 		return entity.Constraint
 	case nil:
-		slog.Warn("Unexpected nil entity fetching conformance")
+		slog.Warn("Unexpected nil entity fetching constraint")
 	default:
-		slog.Warn("Unexpected entity fetching conformance", LogEntity("entity", entity))
+		slog.Warn("Unexpected entity fetching constraint", LogEntity("entity", entity))
 	}
 	return nil
 }
@@ -205,9 +205,9 @@ func EntityFallback(entity types.Entity) constraint.Limit {
 	case *Field:
 		return entity.Fallback
 	case nil:
-		slog.Warn("Unexpected nil entity fetching conformance")
+		slog.Warn("Unexpected nil entity fetching fallback")
 	default:
-		slog.Warn("Unexpected entity fetching conformance", LogEntity("entity", entity))
+		slog.Warn("Unexpected entity fetching fallback", LogEntity("entity", entity))
 	}
 	return nil
 }

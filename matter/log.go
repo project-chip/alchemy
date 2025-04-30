@@ -19,6 +19,8 @@ func LogEntity(key string, en types.Entity) slog.Attr {
 			args = append(args, slog.String("type", en.EntityType().String()))
 		}
 		args = append(args, slog.String("name", entity.Name))
+	case *Features:
+		args = append(args, slog.String("type", "features"))
 	case *Bitmap:
 		args = append(args, slog.String("type", "bitmap"))
 		args = append(args, slog.String("name", entity.Name))

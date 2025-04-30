@@ -29,7 +29,7 @@ type Specification struct {
 	DataTypeRefs EntityRefs[types.Entity]
 	DocRefs      map[types.Entity]*Doc
 
-	GlobalObjects map[types.Entity]struct{}
+	GlobalObjects types.EntitySet
 
 	entities map[string]map[types.Entity]map[*matter.Cluster]struct{}
 
@@ -51,7 +51,7 @@ func newSpec(specRoot string) *Specification {
 		Docs:              make(map[string]*Doc),
 		DocRefs:           make(map[types.Entity]*Doc),
 
-		GlobalObjects: make(map[types.Entity]struct{}),
+		GlobalObjects: make(types.EntitySet),
 
 		entities: make(map[string]map[types.Entity]map[*matter.Cluster]struct{}),
 	}

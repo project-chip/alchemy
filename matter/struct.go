@@ -43,6 +43,14 @@ func (s *Struct) Inherit(parent *Struct) {
 	s.Fields = s.Fields.Inherit(parent.Fields)
 }
 
+func (s *Struct) Equals(e types.Entity) bool {
+	os, ok := e.(*Struct)
+	if !ok {
+		return false
+	}
+	return s.Name == os.Name
+}
+
 type StructSet []*Struct
 
 func (ss StructSet) Identifier(name string) (types.Entity, bool) {

@@ -67,6 +67,8 @@ func EntityName(e types.Entity) string {
 		return entity.Name
 	case Bit:
 		return entity.Name()
+	case *EnumValue:
+		return entity.Name
 	default:
 		slog.Error("Unknown entity type for name", LogEntity("entity", e))
 		return ""

@@ -88,3 +88,15 @@ func IsDataTypeEntity(entityType EntityType) bool {
 	}
 	return false
 }
+
+type EntitySet map[Entity]struct{}
+
+func FilterSet[T Entity](set EntitySet) (out []T) {
+	for e := range set {
+		t, ok := e.(T)
+		if ok {
+			out = append(out, t)
+		}
+	}
+	return
+}
