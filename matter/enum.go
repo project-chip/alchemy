@@ -27,6 +27,14 @@ func (*Enum) EntityType() types.EntityType {
 	return types.EntityTypeEnum
 }
 
+func (en *Enum) Equals(e types.Entity) bool {
+	oen, ok := e.(*Enum)
+	if !ok {
+		return false
+	}
+	return en.Name == oen.Name
+}
+
 func (e *Enum) BaseDataType() types.BaseDataType {
 	return e.Type.BaseType
 }
@@ -114,6 +122,17 @@ func NewEnumValue(source asciidoc.Element, parent types.Entity) *EnumValue {
 
 func (ev *EnumValue) EntityType() types.EntityType {
 	return types.EntityTypeEnumValue
+}
+
+func (ev *EnumValue) Equals(e types.Entity) bool {
+	oev, ok := e.(*EnumValue)
+	if !ok {
+		return false
+	}
+	if ev.Value.Valid() && oev.Value.Valid() {
+		return ev.Value.Equals(oev.Value)
+	}
+	return ev.Name == oev.Name
 }
 
 func (ev *EnumValue) Clone() *EnumValue {

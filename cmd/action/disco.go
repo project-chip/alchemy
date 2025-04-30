@@ -31,6 +31,7 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 	}
 	pr, err := github.ReadPullRequest(cc, githubContext, action)
 	if err != nil {
+		action.Errorf("failed on reading pull request: %s", err.Error())
 		return fmt.Errorf("failed on reading pull request: %w", err)
 	}
 	if pr == nil {

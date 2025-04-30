@@ -41,6 +41,17 @@ func (f *Field) EntityType() types.EntityType {
 	return f.entityType
 }
 
+func (f *Field) Equals(e types.Entity) bool {
+	of, ok := e.(*Field)
+	if !ok {
+		return false
+	}
+	if f.ID.Valid() && of.ID.Valid() {
+		return f.ID.Equals(of.ID)
+	}
+	return f.Name == of.Name
+}
+
 func (f *Field) Inherit(parent *Field) {
 	if (f.Type == nil || f.Type.BaseType == types.BaseDataTypeUnknown) && parent.Type != nil {
 		f.Type = parent.Type.Clone()

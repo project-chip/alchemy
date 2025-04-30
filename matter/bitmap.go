@@ -37,6 +37,14 @@ func (bm *Bitmap) EntityType() types.EntityType {
 	return types.EntityTypeBitmap
 }
 
+func (bm *Bitmap) Equals(e types.Entity) bool {
+	obm, ok := e.(*Bitmap)
+	if !ok {
+		return false
+	}
+	return bm.Name == obm.Name
+}
+
 func (bm *Bitmap) BaseDataType() types.BaseDataType {
 	return bm.Type.BaseType
 }
@@ -67,12 +75,16 @@ func (bm *Bitmap) AddBit(b *BitmapBit) {
 }
 
 func (bm *Bitmap) Clone() *Bitmap {
-	nbm := &Bitmap{entity: bm.entity, Name: bm.Name, Description: bm.Description}
+	return bm.CloneTo(bm.parent)
+}
+
+func (bm *Bitmap) CloneTo(parent types.Entity) *Bitmap {
+	nbm := &Bitmap{entity: entity{parent: parent, source: bm.source}, Name: bm.Name, Description: bm.Description}
 	if bm.Type != nil {
 		nbm.Type = bm.Type.Clone()
 	}
 	for _, b := range bm.Bits {
-		nbm.Bits = append(nbm.Bits, b.Clone())
+		nbm.Bits = append(nbm.Bits, b.CloneTo(parent))
 	}
 	return nbm
 }
@@ -152,6 +164,8 @@ type Bit interface {
 
 	Inherit(parent Bit) error
 	Clone() Bit
+	CloneTo(parent types.Entity) Bit
+	Equals(e types.Entity) bool
 
 	Bits() (from uint64, to uint64, err error)
 	Mask() (uint64, error)
@@ -173,6 +187,22 @@ func (bmb *BitmapBit) EntityType() types.EntityType {
 	return types.EntityTypeBitmapValue
 }
 
+func (bmb *BitmapBit) Equals(e types.Entity) bool {
+	obmb, ok := e.(*BitmapBit)
+	if !ok {
+		return false
+	}
+	f, t, err := bmb.Bits()
+	if err != nil {
+		return false
+	}
+	of, ot, err := obmb.Bits()
+	if err != nil {
+		return false
+	}
+	return of == f && t == ot
+}
+
 func (bmb *BitmapBit) Bit() string {
 	return bmb.bit
 }
@@ -190,7 +220,11 @@ func (bmb *BitmapBit) Conformance() conformance.Set {
 }
 
 func (bmb *BitmapBit) Clone() Bit {
-	nb := &BitmapBit{entity: entity{source: bmb.source, parent: bmb.parent}, bit: bmb.bit, name: bmb.name, summary: bmb.summary}
+	return bmb.CloneTo(bmb.parent)
+}
+
+func (bmb *BitmapBit) CloneTo(parent types.Entity) Bit {
+	nb := &BitmapBit{entity: entity{source: bmb.source, parent: parent}, bit: bmb.bit, name: bmb.name, summary: bmb.summary}
 	if len(bmb.conformance) > 0 {
 		nb.conformance = bmb.conformance.CloneSet()
 	}

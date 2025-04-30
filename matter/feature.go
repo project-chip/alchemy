@@ -28,12 +28,13 @@ func NewFeatures(source asciidoc.Element, parent types.Entity) *Features {
 }
 
 func (fs *Features) Clone() *Features {
-	return &Features{Bitmap: *fs.Bitmap.Clone()}
+	fc := &Features{Bitmap: *fs.Bitmap.Clone()}
+	fc.entity.parent = fs.parent
+	return fc
 }
 
 func (fs *Features) CloneTo(cluster *Cluster) *Features {
-	f := &Features{Bitmap: *fs.Bitmap.Clone()}
-	f.entity.parent = cluster
+	f := &Features{Bitmap: *fs.Bitmap.CloneTo(cluster)}
 	return f
 }
 
@@ -60,6 +61,9 @@ func (fs *Features) AddFeatureBit(b *Feature) {
 
 func (fs *Features) FeatureBits() iter.Seq[*Feature] {
 	return func(yield func(*Feature) bool) {
+		if fs == nil {
+			return
+		}
 		for _, b := range fs.Bits {
 			f, ok := b.(*Feature)
 			if ok && !yield(f) {
@@ -82,8 +86,25 @@ func (f *Feature) Entity() types.EntityType {
 	return types.EntityTypeFeature
 }
 
+func (f *Feature) Equals(e types.Entity) bool {
+	of, ok := e.(*Feature)
+	if !ok {
+		return false
+	}
+	if of.Code == f.Code {
+		return true
+	}
+	return false
+}
+
 func (f *Feature) Clone() Bit {
-	return NewFeature(f.source, f.bit, f.name, f.Code, f.summary, f.conformance)
+	return f.CloneTo(f.parent)
+}
+
+func (f *Feature) CloneTo(parent types.Entity) Bit {
+	nf := NewFeature(f.source, f.bit, f.name, f.Code, f.summary, f.conformance)
+	nf.parent = parent
+	return nf
 }
 
 func (f *Feature) MarshalJSON() ([]byte, error) {

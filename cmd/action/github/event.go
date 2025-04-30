@@ -31,6 +31,6 @@ func ReadPullRequest(cxt context.Context, githubContext *githubactions.GitHubCon
 
 	default:
 		action.Infof("unsupported event name: %s", name)
+		return nil, fmt.Errorf("unsupported event name: %s", name)
 	}
-	return nil, nil
 }

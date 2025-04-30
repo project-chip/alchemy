@@ -32,6 +32,17 @@ func (e *Event) EntityType() types.EntityType {
 	return types.EntityTypeEvent
 }
 
+func (ev *Event) Equals(e types.Entity) bool {
+	oev, ok := e.(*Event)
+	if !ok {
+		return false
+	}
+	if ev.ID.Valid() && oev.ID.Valid() {
+		return ev.ID.Equals(oev.ID)
+	}
+	return ev.Name == oev.Name
+}
+
 func (e *Event) Clone() *Event {
 	ne := &Event{entity: entity{source: e.source}, ID: e.ID.Clone(), Name: e.Name, Description: e.Description, Priority: e.Priority, Access: e.Access}
 	if len(e.Conformance) > 0 {

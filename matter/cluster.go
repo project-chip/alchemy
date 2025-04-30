@@ -75,6 +75,17 @@ func (c *Cluster) EntityType() types.EntityType {
 	return types.EntityTypeCluster
 }
 
+func (c *Cluster) Equals(e types.Entity) bool {
+	oc, ok := e.(*Cluster)
+	if !ok {
+		return false
+	}
+	if c.ID.Valid() && oc.ID.Valid() {
+		return c.ID.Equals(oc.ID)
+	}
+	return c.Name == oc.Name
+}
+
 func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err error) {
 	c.ParentCluster = parent
 	if parent.Features != nil {
