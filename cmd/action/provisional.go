@@ -8,9 +8,10 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"strings"
 
+	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/cmd/action/github"
+	"github.com/project-chip/alchemy/cmd/action/github/templates"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/config"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -20,6 +21,7 @@ import (
 )
 
 type Provisional struct {
+	WriteComment bool `default:"false" hidden:"" help:"Write comment directly"`
 }
 
 func (c *Provisional) Run(cc *cli.Context) (err error) {
@@ -40,6 +42,8 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 		return fmt.Errorf("failed on getting GitHub context: %w", err)
 
 	}
+	action.Infof("Workspace: %s", githubContext.Workspace)
+
 	pr, err := github.ReadPullRequest(cc, githubContext, action)
 	if err != nil {
 		action.Errorf("failed on reading pull request: %s", err.Error())
@@ -93,7 +97,7 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 		return fmt.Errorf("failed checking out base: %w", err)
 	}
 
-	headRoot = "."
+	headRoot = githubContext.Workspace
 
 	_ = pipelineOptions
 	_ = headRoot
@@ -104,18 +108,20 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 		return fmt.Errorf("failed checking provisional status: %v", err)
 	}
 
-	sha256.Sum256([]byte(""))
-
 	owner, repo := githubContext.Repo()
 
 	var comment string
 	if len(violations.Set) > 0 {
 		action.SetOutput("provisional_status", "violations")
-		var sb strings.Builder
-		sb.WriteString("<img align=\"left\" width=\"75\" height=\"75\" src=\"https://raw.githubusercontent.com/project-chip/alchemy/refs/heads/main/alchemy.svg\">\n")
-		sb.WriteString(`<b><a href="https://github.com/project-chip/alchemy">Alchemy</a> found provisionality violations in this pull request</b>`)
-		sb.WriteString("\n\n")
-		sb.WriteString("---\n\n")
+
+		var t *raymond.Template
+		t, err = templates.LoadProvisionalViolationsTemplate()
+		if err != nil {
+			err = fmt.Errorf("error loading violation template: %w", err)
+			return
+		}
+
+		vc := templates.ViolationComment{}
 
 		vmap := make(map[string][]provisional.Violation)
 		var paths []string
@@ -128,40 +134,61 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 		}
 
 		slices.Sort(paths)
-		sb.WriteString("<table>\n")
+
 		for _, path := range paths {
 			vs := vmap[path]
 			slices.SortFunc(vs, func(a provisional.Violation, b provisional.Violation) int {
 				return a.Line - b.Line
 			})
-			sb.WriteString("<tr><td colspan=\"4\"><b>")
-			sb.WriteString(path)
-			sb.WriteString("</b></td></tr>\n")
-			sb.WriteString("<tr><td>Name</td><td>Type</td><td>Source</td><td>Violation</td></tr>\n")
+			vf := templates.ViolationFile{Path: path}
 			for _, v := range vs {
-				sb.WriteString("<tr>")
-				sb.WriteString(fmt.Sprintf("<td>%s</td>", matter.EntityName(v.Entity)))
-				sb.WriteString(fmt.Sprintf("<td>%s</td>", v.Entity.EntityType().String()))
-				pathHash := sha256.Sum256([]byte(path))
-				link := fmt.Sprintf("https://github.com/%s/%s/pull/%d/files#diff-%sR%d", owner, repo, pr.GetNumber(), hex.EncodeToString(pathHash[:]), v.Line)
-				sb.WriteString(fmt.Sprintf("<td><a href=\"%s\">Line %d</a> </td>", link, v.Line))
-				sb.WriteString(fmt.Sprintf("<td>%s</td>", v.Type.String()))
-				sb.WriteString("</tr>\n")
-			}
-		}
-		sb.WriteString("</table>\n\n")
-		sb.WriteString("> [!CAUTION]\n")
-		sb.WriteString("> These issues must be resolved before this PR can be merged.\n\n")
+				vv := templates.Violation{}
+				vv.EntityName = matter.EntityName(v.Entity)
+				vv.EntityType = v.Entity.EntityType().String()
 
-		comment = sb.String()
+				pathHash := sha256.Sum256([]byte(path))
+				vv.SourceLink = fmt.Sprintf("https://github.com/%s/%s/pull/%d/files#diff-%sR%d", owner, repo, pr.GetNumber(), hex.EncodeToString(pathHash[:]), v.Line)
+				vv.SourceLine = v.Line
+				if v.Type.Has(provisional.ViolationTypeNonProvisional) {
+					vv.Violations = append(vv.Violations, "Not marked Provisional")
+				}
+				if v.Type.Has(provisional.ViolationTypeNotIfDefd) {
+					vv.Violations = append(vv.Violations, "Not in in-progress ifdef")
+				}
+				vf.Violations = append(vf.Violations, vv)
+			}
+			vc.Files = append(vc.Files, vf)
+		}
+
+		tc := map[string]any{
+			"comment": vc,
+		}
+		comment, err = t.Exec(tc)
+		if err != nil {
+			return
+		}
 	} else {
 		action.SetOutput("provisional_status", "no_violations")
-		comment = "✨ Provisional violations have been resolved."
+
+		var t *raymond.Template
+		t, err = templates.LoadProvisionalNoViolationsTemplate()
+		if err != nil {
+			err = fmt.Errorf("error loading no violation template: %w", err)
+			return
+		}
+		comment, err = t.Exec(map[string]any{})
+		if err != nil {
+			return
+		}
 	}
 
-	err = github.WriteComment(cc, githubContext, action, pr, "provisional-violations", comment)
-	if err != nil {
-		return
+	if c.WriteComment {
+		err = github.WriteComment(cc, githubContext, action, pr, "disco-ball", comment)
+		if err != nil {
+			return
+		}
+	} else {
+		action.SetOutput("comment", comment)
 	}
 	return nil
 }
