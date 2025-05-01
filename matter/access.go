@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/goccy/go-yaml"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -262,6 +264,63 @@ func (a Access) IsEmpty() bool {
 		return false
 	}
 	return a.Timing == TimingUnknown
+}
+
+func (a Access) IsValid(e types.Entity) bool {
+	if a.IsFabricScoped() {
+		switch e.EntityType() {
+		case types.EntityTypeAttribute, types.EntityTypeStruct, types.EntityTypeCommand:
+		default:
+			slog.Error("Fabric scoping is not allowed on this entity", LogEntity("entity", e), log.Path("source", e))
+			return false
+		}
+	}
+	if a.IsFabricSensitive() {
+		if !isFabricSensitivityAllowed(e) {
+			slog.Error("Fabric sensitivity is not allowed on this entity", LogEntity("entity", e), log.Path("source", e))
+			return false
+		}
+	}
+	return true
+}
+
+func isFabricSensitivityAllowed(e types.Entity) bool {
+	switch e := e.(type) {
+	case *Field:
+		switch e.EntityType() {
+		case types.EntityTypeAttribute:
+			if e.Type == nil {
+				return false
+			}
+			if !e.Type.IsArray() {
+				return false
+			}
+			if e.Type.Entity == nil {
+				return false
+			}
+			switch te := e.Type.Entity.(type) {
+			case *Struct:
+				return te.FabricScoping == FabricScopingScoped
+			default:
+				return false
+			}
+		case types.EntityTypeStructField:
+			parent := e.Parent()
+			switch parent := parent.(type) {
+			case *Struct:
+				return parent.FabricScoping == FabricScopingScoped
+			default:
+				slog.Warn("Unexpected struct field parent type", log.Type("parentType", parent), log.Path("source", e))
+				return false
+			}
+		default:
+			return false
+		}
+	case *Event:
+		return true
+	default:
+		return false
+	}
 }
 
 func (a Access) String() string {
