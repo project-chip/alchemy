@@ -58,7 +58,10 @@ func LoadErrataConfig(specRoot string) error {
 	var docRoots []string
 	for p, e := range Erratas {
 		path := filepath.Join(specRoot, p)
-		exists, _ := files.Exists(path)
+		exists, err := files.Exists(path)
+		if err != nil {
+			slog.Error("error checking if file exists", slog.Any("error", err))
+		}
 		if !exists {
 			slog.Warn("errata points to non-existent file", "path", p)
 		}
