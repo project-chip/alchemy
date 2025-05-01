@@ -45,6 +45,24 @@ type WriteAttribute struct {
 	Value any
 }
 
+type SubscribeAttribute struct {
+	remoteAction
+
+	AttributeName string
+	Attribute     *matter.Field
+
+	MinInterval uint64
+	MaxInterval uint64
+	Timeout     uint64
+}
+
+type TestEventTrigger struct {
+	remoteAction
+
+	EventTrigger string
+	EnableKey    string
+}
+
 type constraintAction struct {
 	action
 
@@ -88,6 +106,12 @@ type CheckValueConstraint struct {
 	Value any
 }
 
+type CheckNotValueConstraint struct {
+	constraintAction
+
+	Value any
+}
+
 type CheckStruct struct {
 	action
 
@@ -108,4 +132,23 @@ type CheckListEntries struct {
 	constraintAction
 
 	Validations []TestAction
+}
+
+type CallCommand struct {
+	remoteAction
+
+	Cluster   *matter.Cluster
+	Command   *matter.Command
+	Arguments []*CommandArgument
+
+	Variable string
+
+	Validations []TestAction
+}
+
+type CommandArgument struct {
+	Field *matter.Field
+	Value any
+}
+type WaitForCommissionee struct {
 }

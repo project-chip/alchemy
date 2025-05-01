@@ -6,13 +6,13 @@ import (
 	"strings"
 
 	"github.com/goccy/go-yaml"
-	"github.com/iancoleman/strcase"
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testplan"
+	"github.com/project-chip/alchemy/testscript"
 	"github.com/project-chip/alchemy/testscript/yaml/parse"
 )
 
@@ -62,10 +62,10 @@ func commandArgValue(name string, cluster *matter.Cluster, command *matter.Comma
 		return fmt.Sprintf("unknown field: %s", name)
 	}
 	if field.Type == nil {
-		return fmt.Sprintf("%v=%s", strcase.ToLowerCamel(name), string(pythonValueHelper(value)))
+		return fmt.Sprintf("%v=%s", matter.CamelCase(name), string(pythonValueHelper(value)))
 	}
 	if field.Type.Entity == nil {
-		return fmt.Sprintf("%v=%s", strcase.ToLowerCamel(name), string(pythonValueHelper(value)))
+		return fmt.Sprintf("%v=%s", matter.CamelCase(name), string(pythonValueHelper(value)))
 
 	}
 	var parentEntity types.Entity
@@ -87,7 +87,7 @@ func commandArgValue(name string, cluster *matter.Cluster, command *matter.Comma
 				}
 			}
 		case nil:
-			return fmt.Sprintf("%v=null", strcase.ToLowerCamel(name))
+			return fmt.Sprintf("%v=null", matter.CamelCase(name))
 
 		default:
 			slog.Info("unknown enum arg type", slog.String("cluster", cluster.Name), slog.String("command", command.Name), slog.String("field", name), log.Type("type", value), slog.Any("value", value))
@@ -109,7 +109,7 @@ func commandArgValue(name string, cluster *matter.Cluster, command *matter.Comma
 				}
 			}
 		case nil:
-			return fmt.Sprintf("%v=null", strcase.ToLowerCamel(name))
+			return fmt.Sprintf("%v=null", matter.CamelCase(name))
 		default:
 			slog.Info("unknown bitmap arg type", slog.String("cluster", cluster.Name), slog.String("command", command.Name), slog.String("field", name), log.Type("type", value), slog.Any("value", value))
 		}
@@ -135,7 +135,7 @@ func commandArgValue(name string, cluster *matter.Cluster, command *matter.Comma
 		}
 	}
 	var sb strings.Builder
-	sb.WriteString(strcase.ToLowerCamel(name))
+	sb.WriteString(matter.CamelCase(name))
 	sb.WriteRune('=')
 	if namespace != "" || objectGroup != "" || objectName != "" {
 		if namespace != "" {
@@ -196,9 +196,15 @@ func commandArgHelper(test testplan.Test, step testplan.Step, name string) raymo
 	return raymond.SafeString(fmt.Sprintf("unknown argument: %s", name))
 }
 
-func commandArgsHelper(spec *spec.Specification) func(test testplan.Test, step testplan.Step) raymond.SafeString {
-	return func(test testplan.Test, step testplan.Step) raymond.SafeString {
-		clusterName, cluster := getCluster(spec, &test, &step)
+func commandArgsHelper(spec *spec.Specification) func(test testscript.Test, step testscript.TestStep, action testscript.CallCommand) raymond.SafeString {
+	return func(test testscript.Test, step testscript.TestStep, action testscript.CallCommand) raymond.SafeString {
+		var args []string
+		for _, arg := range action.Arguments {
+			args = append(args, commandArgValue(arg.Field.Name, action.Cluster, action.Command, arg.Field, arg.Value))
+		}
+
+		return raymond.SafeString(strings.Join(args, ", "))
+		/*clusterName, cluster := getCluster(spec, &test, &step)
 		if cluster == nil {
 			return raymond.SafeString(fmt.Sprintf("error: unknown cluster: %s", clusterName))
 		}
@@ -256,6 +262,6 @@ func commandArgsHelper(spec *spec.Specification) func(test testplan.Test, step t
 			}
 		}
 
-		return raymond.SafeString(strings.Join(args, ", "))
+		return raymond.SafeString(strings.Join(args, ", "))*/
 	}
 }

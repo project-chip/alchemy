@@ -9,6 +9,8 @@ import (
 	"github.com/project-chip/alchemy/internal/log"
 )
 
+var NullValue struct{} = struct{}{}
+
 type Test struct {
 	Path string `yaml:"-"`
 
@@ -137,6 +139,9 @@ type TestStep struct {
 	MaxInterval               uint64        `yaml:"maxInterval,omitempty"`
 	MinInterval               uint64        `yaml:"minInterval,omitempty"`
 
+	Wait    uint64 `yaml:"wait,omitempty"`
+	Timeout uint64 `yaml:"timeout,omitempty"`
+
 	Extras yaml.MapSlice
 }
 
@@ -167,6 +172,8 @@ func (ts *TestStep) UnmarshalMapSlice(c yaml.MapSlice) error {
 	ts.EventNumber, c = extractValue[string](c, "eventNumber")
 	ts.MaxInterval, c = extractValue[uint64](c, "maxInterval")
 	ts.MinInterval, c = extractValue[uint64](c, "minInterval")
+	ts.Wait, c = extractValue[uint64](c, "wait")
+	ts.Timeout, c = extractValue[uint64](c, "timeout")
 
 	if len(c) > 0 {
 		ts.Extras = make(yaml.MapSlice, len(c))
@@ -179,14 +186,52 @@ func (ts *TestStep) UnmarshalMapSlice(c yaml.MapSlice) error {
 }
 
 type TestArguments struct {
-	Value  any   `yaml:"value,omitempty"`
-	Values []any `yaml:"values,omitempty"`
+	Value  any                 `yaml:"value,omitempty"`
+	Values TestArgumentsValues `yaml:"values,omitempty"`
 }
 
 func (ta *TestArguments) UnmarshalMapSlice(c yaml.MapSlice) error {
 	ta.Value, c = extractValue[any](c, "value")
 	ta.Values, _ = extractArrayAny(c, "values")
 	return nil
+}
+
+type TestArgumentsValues []any
+
+func (tav TestArgumentsValues) ToValues() (values map[string]any) {
+	values = make(map[string]any)
+	for _, arg := range tav {
+		switch arg := arg.(type) {
+		case yaml.MapSlice:
+			var name string
+			var value any
+			for _, item := range arg {
+				key, ok := item.Key.(string)
+				if !ok {
+					slog.Error("Unexpected key type in argument values", log.Type("keyType", item.Key))
+					continue
+				}
+				switch key {
+				case "name":
+					name, ok = item.Value.(string)
+					if !ok {
+						slog.Error("Unexpected name type in argument values", log.Type("keyType", item.Value))
+						continue
+					}
+				case "value":
+					value = item.Value
+				}
+
+			}
+			if name != "" {
+				values[name] = value
+			}
+		default:
+			slog.Error("Unexpected type in argument values")
+		}
+		slog.Info("Argument!", log.Type("type", arg))
+	}
+	return
 }
 
 type TestArgumentValue struct {
@@ -207,7 +252,17 @@ type StepResponse struct {
 func (sr *StepResponse) UnmarshalMapSlice(c yaml.MapSlice) error {
 	sr.SaveAs, c = extractValue[string](c, "saveAs")
 	sr.Error, c = extractValue[string](c, "error")
-	sr.Value, c = extractValue[any](c, "value")
+	var val any
+	var valExists bool
+	val, c, valExists = tryExtractValue[any](c, "value", nil)
+	if valExists {
+		if val == nil {
+			slog.Info("setting null value")
+			sr.Value = NullValue
+		} else {
+			sr.Value = val
+		}
+	}
 	sr.Values, c = extractArrayAny(c, "values")
 
 	sr.Constraints, c = extractObject[StepResponseConstraints](c, "constraints")
@@ -228,7 +283,7 @@ type StepResponseConstraints struct {
 	MaxLength any    `yaml:"maxLength,omitempty"`
 	MinValue  any    `yaml:"minValue,omitempty"`
 	MaxValue  any    `yaml:"maxValue,omitempty"`
-	//	NotValue      any      `yaml:"notValue,omitempty"`
+	NotValue  any    `yaml:"notValue,omitempty"`
 	//	HasValue      bool     `yaml:"hasValue,omitempty"`
 	HasMasksSet   []uint64 `yaml:"hasMasksSet,omitempty"`
 	HasMasksClear []uint64 `yaml:"hasMasksClear,omitempty"`
@@ -241,11 +296,11 @@ type StepResponseConstraints struct {
 
 func (src *StepResponseConstraints) UnmarshalMapSlice(c yaml.MapSlice) error {
 	src.Type, c = extractValue[string](c, "type")
-	//src.MinLength = extractValue[any](c, "minLength")
-	//src.MaxLength = extractValue[any](c, "maxLength")
+	src.MinLength, c = extractValue[any](c, "minLength")
+	src.MaxLength, c = extractValue[any](c, "maxLength")
 	src.MinValue, c = extractValue[any](c, "minValue")
 	src.MaxValue, c = extractValue[any](c, "maxValue")
-	//src.NotValue = extractValue[any](c, "notValue")
+	src.NotValue, c = extractValue[any](c, "notValue")
 	//src.HasValue = extractValue[bool](c, "hasValue")
 	src.HasMasksSet, c = extractArray[uint64](c, "hasMasksSet")
 	src.HasMasksClear, c = extractArray[uint64](c, "hasMasksClear")

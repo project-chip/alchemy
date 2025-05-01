@@ -9,7 +9,6 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/internal/suggest"
 	"github.com/project-chip/alchemy/matter"
-	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
@@ -31,8 +30,7 @@ func (sp TestScriptConverter) Name() string {
 }
 
 func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data[*testplan.Test], index int32, total int32) (outputs []*pipeline.Data[*Test], extras []*pipeline.Data[*testplan.Test], err error) {
-	var testPlan *testplan.Test
-	testPlan = input.Content
+	testPlan := input.Content
 	cluster := testPlan.Cluster
 
 	if cluster == nil {
@@ -59,110 +57,24 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 	}
 
 	t := &Test{
-		Cluster:  cluster,
-		ID:       testPlan.ID,
-		Name:     testPlan.Name,
-		PICSList: testPlan.PICSList,
-		/*Config: parse.TestConfig{
-			Cluster: cluster.Name,
-		},*/
+		Cluster:       cluster,
+		ID:            testPlan.ID,
+		Name:          testPlan.Name,
+		PICSList:      testPlan.PICSList,
 		YamlVariables: testPlan.Config.Extras,
 	}
 
 	slog.Info("yaml", slog.Any("extras", t.YamlVariables))
-
-	attributes := make(map[string]*matter.Field)
-	for _, a := range cluster.Attributes {
-		attributes[a.Name] = a
-	}
 
 	for _, g := range testPlan.Groups {
 		step := &TestStep{
 			Name:        g.Name,
 			Description: g.Description,
 		}
-		for _, s := range g.Steps {
-			switch s.Command {
-			case "readAttribute":
-				slog.Info("Reading attribute", slog.Any("comments", s.Comments))
-				commandCluster := cluster
-				a, ok := attributes[s.Attribute]
-				if !ok {
-					if s.Cluster == "" {
-						slog.Error("Unknown attribute", slog.String("testPlanId", testPlan.ID), slog.String("attribute", s.Attribute))
-						continue
-					}
-					c, ok := sp.spec.ClustersByName[s.Cluster]
-					if !ok {
-						slog.Error("Unknown cluster", slog.String("testPlanId", testPlan.ID), slog.String("cluster", s.Cluster))
-						continue
-					}
-					for _, attr := range c.Attributes {
-						if attr.Name == s.Attribute {
-							a = attr
-							commandCluster = c
-							break
-						}
-					}
-					if a == nil {
-						slog.Error("Unknown attribute", slog.String("testPlanId", testPlan.ID), slog.String("attribute", s.Attribute))
-						continue
-					}
-				}
-				variableName := "val"
-				if s.Response.SaveAs != "" {
-					variableName = s.Response.SaveAs
-				}
-				readAttribute := &ReadAttribute{
-					remoteAction: remoteAction{
-						action: action{
-							Description: s.Description,
-							Conformance: a.Conformance,
-						},
-						Endpoint: s.Endpoint,
-					},
-					Attribute:  a,
-					Attributes: cluster.Attributes,
-					Variable:   variableName,
-				}
-				if commandCluster != cluster {
-					readAttribute.Cluster = commandCluster
-				}
-				readAttribute.Validations, err = buildValidations(s, a, variableName)
-				step.Actions = append(step.Actions, readAttribute)
-			case "writeAttribute":
-				a, ok := attributes[s.Attribute]
-				if !ok {
-					slog.Error("Unknown attribute", slog.String("testPlanId", testPlan.ID), slog.String("attribute", s.Attribute))
-					continue
-				}
-				writeAttribute := &WriteAttribute{
-					remoteAction: remoteAction{
-						action: action{
-							Comments: s.Comments,
-						},
-
-						Endpoint: s.Endpoint,
-					},
-					Attribute: a,
-					Value:     s.Arguments.Value,
-				}
-				if !conformance.IsMandatory(a.Conformance) {
-					attributeCheck := &conformance.Mandatory{
-						Expression: &conformance.IdentifierExpression{
-							ID:     a.Name,
-							Entity: a,
-						},
-					}
-					writeAttribute.Conformance = conformance.Set{attributeCheck}
-				}
-				if s.Response.Error != "" {
-					slog.Info("expected error", "error", s.Response.Error)
-					writeAttribute.ExpectedError = s.Response.Error
-				}
-				step.Actions = append(step.Actions, writeAttribute)
-			default:
-				slog.Error("Unknown command converting test plan to test script", slog.String("testPlanId", testPlan.ID), slog.String("command", s.Command))
+		for _, testPlanStep := range g.Steps {
+			err = sp.convertCommand(testPlan, testPlanStep, cluster, step)
+			if err != nil {
+				return
 			}
 		}
 		t.AddStep(step)
@@ -174,6 +86,10 @@ func (sp *TestScriptConverter) Process(cxt context.Context, input *pipeline.Data
 }
 
 func buildValidations(step *testplan.Step, field *matter.Field, variableName string) (validations []TestAction, err error) {
+	if step.Response.Value != nil {
+		slog.Warn("adding validation", "value", step.Response.Value, log.Type("type", step.Response.Value))
+		validations = append(validations, &CheckValueConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Value: step.Response.Value})
+	}
 	if step.Response.Constraints != nil {
 		if step.Response.Constraints.Type != "" {
 			validations = append(validations, &CheckType{constraintAction: constraintAction{Field: field, Variable: variableName}})
@@ -184,14 +100,18 @@ func buildValidations(step *testplan.Step, field *matter.Field, variableName str
 		if step.Response.Constraints.MaxValue != nil {
 			validations = append(validations, &CheckMaxConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Constraint: &constraint.MaxConstraint{Maximum: buildValidationLimit(step.Response.Constraints.MaxValue)}})
 		}
+		if step.Response.Constraints.MinLength != nil {
+			validations = append(validations, &CheckMinConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Constraint: &constraint.MinConstraint{Minimum: buildValidationLimit(step.Response.Constraints.MinLength)}})
+		}
+		if step.Response.Constraints.MaxLength != nil {
+			validations = append(validations, &CheckMaxConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Constraint: &constraint.MaxConstraint{Maximum: buildValidationLimit(step.Response.Constraints.MaxLength)}})
+		}
 		if step.Response.Constraints.AnyOf != nil {
 			validations = append(validations, &CheckAnyOfConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Values: step.Response.Constraints.AnyOf})
 		}
-	}
-	slog.Warn("validation", log.Type("value", step.Response.Value))
-	if step.Response.Value != nil {
-		slog.Warn("adding validation", "value", step.Response.Value)
-		validations = append(validations, &CheckValueConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Value: step.Response.Value})
+		if step.Response.Constraints.NotValue != nil {
+			validations = append(validations, &CheckNotValueConstraint{constraintAction: constraintAction{Field: field, Variable: variableName}, Value: step.Response.Value})
+		}
 	}
 	return
 }
