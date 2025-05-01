@@ -1,0 +1,5 @@
+{{#if action.EnableKey ~}}
+await self.send_test_event_triggers(eventTrigger={{action.EventTrigger}}, enableKey={{action.EnableKey}})
+{{else}}
+await self.send_test_event_triggers(eventTrigger={{action.EventTrigger}})
+{{/if}}

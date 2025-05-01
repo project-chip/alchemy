@@ -20,6 +20,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/testplan"
 	"github.com/project-chip/alchemy/testscript"
+	"github.com/project-chip/alchemy/testscript/yaml/parse"
 )
 
 func registerSpecHelpers(t *raymond.Template, spec *spec.Specification) {
@@ -46,6 +47,7 @@ func registerSpecHelpers(t *raymond.Template, spec *spec.Specification) {
 	t.RegisterHelper("ifFieldIsNullable", ifFieldIsNullableHelper)
 	t.RegisterHelper("ifFieldIsArray", ifFieldIsArrayHelper)
 	t.RegisterHelper("ifFieldHasLength", ifFieldHasLengthHelper)
+	t.RegisterHelper("ifCheckNull", ifCheckNullHelper)
 	t.RegisterHelper("typeCheckIs", typeCheckIsHelper)
 	t.RegisterHelper("unimplementedTypeCheck", unimplementedTypeCheckHelper)
 	t.RegisterHelper("entryTypeCheckIs", entryTypeCheckIsHelper)
@@ -83,10 +85,19 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 			_, ok = action.(testscript.ReadAttribute)
 		}
 	case "writeAttribute":
-		slog.Info("writeAttribute", log.Type("action", action))
 		_, ok = action.(*testscript.WriteAttribute)
 		if !ok {
 			_, ok = action.(testscript.WriteAttribute)
+		}
+	case "subscribeAttribute":
+		_, ok = action.(*testscript.SubscribeAttribute)
+		if !ok {
+			_, ok = action.(testscript.SubscribeAttribute)
+		}
+	case "testEventTrigger":
+		_, ok = action.(*testscript.TestEventTrigger)
+		if !ok {
+			_, ok = action.(testscript.TestEventTrigger)
 		}
 	case "checkMinConstraint":
 		_, ok = action.(*testscript.CheckMinConstraint)
@@ -127,6 +138,16 @@ func actionIsHelper(action testscript.TestAction, is string, options *raymond.Op
 		_, ok = action.(*testscript.CheckListEntries)
 		if !ok {
 			_, ok = action.(testscript.CheckListEntries)
+		}
+	case "callCommand":
+		_, ok = action.(*testscript.CallCommand)
+		if !ok {
+			_, ok = action.(testscript.CallCommand)
+		}
+	case "waitForCommissionee":
+		_, ok = action.(*testscript.WaitForCommissionee)
+		if !ok {
+			_, ok = action.(testscript.WaitForCommissionee)
 		}
 	}
 	if ok {
@@ -606,6 +627,18 @@ func ifFieldIsArrayHelper(field matter.Field, options *raymond.Options) string {
 func ifFieldHasLengthHelper(field matter.Field, options *raymond.Options) string {
 	if field.Type.HasLength() {
 		return options.Fn()
+	}
+	return options.Inverse()
+}
+
+func ifCheckNullHelper(action testscript.ReadAttribute, options *raymond.Options) string {
+	for _, validation := range action.Validations {
+		switch validation := validation.(type) {
+		case *testscript.CheckValueConstraint:
+			if validation.Value == parse.NullValue {
+				return options.Fn()
+			}
+		}
 	}
 	return options.Inverse()
 }

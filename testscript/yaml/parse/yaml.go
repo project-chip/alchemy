@@ -52,6 +52,9 @@ func tryExtractValue[T any](val yaml.MapSlice, key string, defaultValue ...T) (v
 			}
 			ok = false
 		}
+	case nil:
+		out = deleteMapItem(val, key)
+		return
 	default:
 		ok = false
 	}

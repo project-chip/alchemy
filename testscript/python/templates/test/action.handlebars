@@ -29,6 +29,8 @@ pass
 {{> test/commands/read_attribute test=test step=step action=action}}
 {{else actionIs action "writeAttribute"}}
 {{> test/commands/write_attribute test=test step=step action=action}}
+{{else actionIs action "subscribeAttribute"}}
+{{> test/commands/subscribe_attribute test=test step=step action=action}}
 {{else actionIs action "readField"}}
 {{> test/commands/read_field test=test step=action}}
 {{else actionIs action "UserPrompt"}}
@@ -39,9 +41,14 @@ pass
 # TODO: Wait For Report
 {{else actionIs action "subscribeAttribute"}}
 # TODO: Subscribe Attribute
+{{else actionIs action "waitForCommissionee"}}
+{{> test/commands/wait_for_commissionee test=test step=step action=action}}
+{{else actionIs action "testEventTrigger"}}
+{{> test/commands/test_event_trigger test=test step=step action=action}}
+{{else actionIs action "callCommand"}}
+{{> test/commands/command test=test step=step action=action}}
 {{else}}
 pass #Unknown action
-{{> test/commands/command test=test step=action}}
 {{/actionIs}}
 {{/if}}
 {{/if}}

@@ -7,6 +7,9 @@ await self.read_single_attribute_check_success(endpoint={{endpointVariable test 
 {{#if action.FabricFiltered ~}}
 fabricFiltered=True{{/if}})
 {{/if}}
+{{#ifCheckNull action}}
+asserts.assert_equal({{action.variable}}, NullValue, "{{attributeName step action }} should be null")
+{{else}}
 {{#ifFieldIsOptional action.Attribute}}
 {{#ifFieldIsNullable action.Attribute}}
 if {{action.variable}} is not NullValue and {{action.variable}} is not None:
@@ -23,3 +26,4 @@ if {{action.variable}} is not NullValue:
 {{> test/validations test=test step=step action=action}}
 {{/ifFieldIsNullable}}
 {{/ifFieldIsOptional}}
+{{/ifCheckNull}}
