@@ -20,7 +20,7 @@ type specs struct {
 	HeadInProgress *spec.Specification
 }
 
-func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, renderOptions []render.Option, writer files.Writer[string]) (violations *Violations, err error) {
+func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []string, pipelineOptions pipeline.ProcessingOptions, renderOptions []render.Option, writer files.Writer[string]) (violations map[string][]Violation, err error) {
 
 	var specs specs
 
@@ -41,8 +41,14 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 	slog.Info("cluster count base in-progress", "count", len(specs.BaseInProgress.Clusters))
 
 	violations = compare(specs)
-	for _, v := range violations.Set {
-		slog.Error("Provisionality violation", matter.LogEntity("entity", v.Entity), slog.String("violationType", v.Type.String()))
+	for path, vs := range violations {
+		for _, v := range vs {
+			slog.Error("Provisionality violation", slog.String("path", path), matter.LogEntity("entity", v.Entity), slog.String("violationType", v.Type.String()))
+		}
+	}
+
+	if writer != nil {
+		err = patchProvisional(cxt, pipelineOptions, specs.HeadInProgress, violations, writer)
 	}
 	return
 }

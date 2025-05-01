@@ -1,31 +1,35 @@
 package provisional
 
 import (
+	"iter"
+
 	"github.com/project-chip/alchemy/internal"
-	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func compareGlobals(specs specs, violations *Violations) {
-	compareGlobalEntities[*matter.Bitmap](specs, violations)
-	compareGlobalEntities[*matter.Enum](specs, violations)
-	compareGlobalEntities[*matter.Struct](specs, violations)
-	compareGlobalEntities[*matter.Command](specs, violations)
-	compareGlobalEntities[*matter.Event](specs, violations)
+func compareGlobals(specs specs, violations map[string][]Violation) {
+	compareGlobalEntities(specs, iterateBits, violations)
+	compareGlobalEntities(specs, iterateEnumValues, violations)
+	compareGlobalEntities(specs, iterateStructFields, violations)
+	compareGlobalEntities(specs, iterateCommandFields, violations)
+	compareGlobalEntities(specs, iterateEventFields, violations)
 }
 
-func compareGlobalEntities[T ComparableEntity](specs specs, violations *Violations) (states []EntityState[T]) {
-	baseEntities := types.FilterSet[T](specs.Base.GlobalObjects)
-	baseInProgressEntities := types.FilterSet[T](specs.BaseInProgress.GlobalObjects)
-	headEntities := types.FilterSet[T](specs.Head.GlobalObjects)
-	headInProgressEntities := types.FilterSet[T](specs.HeadInProgress.GlobalObjects)
+func compareGlobalEntities[Parent ComparableEntity, Child ComparableEntity](specs specs, iterator func(p Parent) iter.Seq[Child], violations map[string][]Violation) {
+	baseEntities := types.FilterSet[Parent](specs.Base.GlobalObjects)
+	baseInProgressEntities := types.FilterSet[Parent](specs.BaseInProgress.GlobalObjects)
+	headEntities := types.FilterSet[Parent](specs.Head.GlobalObjects)
+	headInProgressEntities := types.FilterSet[Parent](specs.HeadInProgress.GlobalObjects)
 
 	for _, e := range headInProgressEntities {
-		state := EntityState[T]{HeadInProgress: e}
+		state := EntityState[Parent]{HeadInProgress: e}
 		state.Head = findExistingEntity(e, internal.Iterate(headEntities))
 		state.BaseInProgress = findExistingEntity(e, internal.Iterate(baseInProgressEntities))
 		state.Base = findExistingEntity(e, internal.Iterate(baseEntities))
 		compareStates(specs.HeadInProgress, violations, state)
+
+		for c := range iterator(e) {
+			compareEntity(specs.HeadInProgress, violations, c, state, iterator)
+		}
 	}
-	return
 }
