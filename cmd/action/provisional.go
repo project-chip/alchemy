@@ -1,6 +1,7 @@
 package action
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -14,8 +15,10 @@ import (
 	"github.com/project-chip/alchemy/cmd/action/github/templates"
 	"github.com/project-chip/alchemy/cmd/cli"
 	"github.com/project-chip/alchemy/config"
+	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/types"
 	"github.com/project-chip/alchemy/provisional"
 	"github.com/sethvargo/go-githubactions"
 )
@@ -102,8 +105,11 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 	_ = pipelineOptions
 	_ = headRoot
 
-	var violations *provisional.Violations
-	violations, err = provisional.Pipeline(cc, baseRoot, headRoot, changedDocs, pipelineOptions, nil, nil)
+	var out bytes.Buffer
+	writer := files.NewPatcher[string]("Generating patch file...", &out)
+
+	var violations map[string][]provisional.Violation
+	violations, err = provisional.Pipeline(cc, baseRoot, headRoot, changedDocs, pipelineOptions, nil, writer)
 	if err != nil {
 		return fmt.Errorf("failed checking provisional status: %v", err)
 	}
@@ -111,8 +117,13 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 	owner, repo := githubContext.Repo()
 
 	var comment string
-	if len(violations.Set) > 0 {
+	if len(violations) > 0 {
 		action.SetOutput("provisional_status", "violations")
+
+		err = os.WriteFile("provisional.patch", out.Bytes(), os.ModeAppend|0644)
+		if err != nil {
+			return fmt.Errorf("failed saving provisional patch: %v", err)
+		}
 
 		var t *raymond.Template
 		t, err = templates.LoadProvisionalViolationsTemplate()
@@ -123,20 +134,15 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 
 		vc := templates.ViolationComment{}
 
-		vmap := make(map[string][]provisional.Violation)
 		var paths []string
-		for _, v := range violations.Set {
-			_, ok := vmap[v.Path]
-			if !ok {
-				paths = append(paths, v.Path)
-			}
-			vmap[v.Path] = append(vmap[v.Path], v)
+		for path := range violations {
+			paths = append(paths, path)
 		}
 
 		slices.Sort(paths)
 
 		for _, path := range paths {
-			vs := vmap[path]
+			vs := violations[path]
 			slices.SortFunc(vs, func(a provisional.Violation, b provisional.Violation) int {
 				return a.Line - b.Line
 			})
@@ -144,7 +150,16 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 			for _, v := range vs {
 				vv := templates.Violation{}
 				vv.EntityName = matter.EntityName(v.Entity)
-				vv.EntityType = v.Entity.EntityType().String()
+				vv.EntityType = entityTypeName(v.Entity)
+
+				parent := v.Entity.Parent()
+				for {
+					if parent == nil {
+						break
+					}
+					vv.EntityName = matter.EntityName(parent) + "." + vv.EntityName
+					parent = parent.Parent()
+				}
 
 				pathHash := sha256.Sum256([]byte(path))
 				vv.SourceLink = fmt.Sprintf("https://github.com/%s/%s/pull/%d/files#diff-%sR%d", owner, repo, pr.GetNumber(), hex.EncodeToString(pathHash[:]), v.Line)
@@ -191,4 +206,36 @@ func (c *Provisional) Run(cc *cli.Context) (err error) {
 		action.SetOutput("comment", comment)
 	}
 	return nil
+}
+
+func entityTypeName(e types.Entity) string {
+	switch e := e.(type) {
+	case *matter.Struct:
+		return "Struct"
+	case *matter.Feature:
+		return "Feature"
+	case *matter.Field:
+		switch e.EntityType() {
+		case types.EntityTypeAttribute:
+			return "Attribute"
+		case types.EntityTypeEventField:
+			return "Event Field"
+		case types.EntityTypeCommandField:
+			return "Command Field"
+		case types.EntityTypeStructField:
+			return "Struct Field"
+		default:
+			return "Field"
+		}
+	case *matter.Bitmap:
+		return "Bitmap"
+	case *matter.Enum:
+		return "Enum"
+	case *matter.EnumValue:
+		return "Enum Value"
+	case matter.Bit:
+		return "Bit"
+	default:
+		return e.EntityType().String()
+	}
 }

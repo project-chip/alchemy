@@ -39,7 +39,3 @@ type Violation struct {
 	Path   string
 	Line   int
 }
-
-type Violations struct {
-	Set []Violation
-}

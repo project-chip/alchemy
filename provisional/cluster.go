@@ -2,6 +2,7 @@ package provisional
 
 import (
 	"iter"
+	"log/slog"
 
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/matter"
@@ -9,7 +10,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func compareClusters(specs specs, violations *Violations) {
+func compareClusters(specs specs, violations map[string][]Violation) {
 
 	var clusterStates []EntityState[*matter.Cluster]
 	//var headInProgressClusters []*matter.Cluster // Clusters which only appear in the head spec when in-progress is set
@@ -28,7 +29,7 @@ func compareClusters(specs specs, violations *Violations) {
 	}
 }
 
-func compareClusterEntities(spec *spec.Specification, violations *Violations, clusterState EntityState[*matter.Cluster]) {
+func compareClusterEntities(spec *spec.Specification, violations map[string][]Violation, clusterState EntityState[*matter.Cluster]) {
 
 	for f := range clusterState.HeadInProgress.Features.FeatureBits() {
 		compareEntity(spec, violations, f, clusterState, func(c *matter.Cluster) iter.Seq[*matter.Feature] {
@@ -103,7 +104,13 @@ func compareClusterEntities(spec *spec.Specification, violations *Violations, cl
 	}
 }
 
-func compareEntity[T ComparableEntity, Parent types.Entity](spec *spec.Specification, violations *Violations, e T, parentState EntityState[Parent], iterator func(p Parent) iter.Seq[T]) {
+func compareEntity[T ComparableEntity, Parent types.Entity](spec *spec.Specification, violations map[string][]Violation, e T, parentState EntityState[Parent], iterator func(p Parent) iter.Seq[T]) {
+	switch en := any(e).(type) {
+	case *matter.EnumValue:
+		if en.Name == "NewNonProvisionalValue" {
+			slog.Info("NewNonProvisionalValue", "state", getEntityState(e, parentState, iterator))
+		}
+	}
 	compareStates(spec, violations, getEntityState(e, parentState, iterator))
 }
 

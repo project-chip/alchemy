@@ -76,7 +76,7 @@ func (s *Section) findEnumValues(e *matter.Enum) (matter.EnumValueSet, error) {
 		}
 		var values matter.EnumValueSet
 		for row := range ti.Body() {
-			ev := matter.NewEnumValue(s.Base, e)
+			ev := matter.NewEnumValue(row, e)
 			ev.Name, err = ti.ReadValue(row, matter.TableColumnName)
 			if err != nil {
 				return nil, err
