@@ -38,6 +38,7 @@ const (
 type Entity interface {
 	EntityType() EntityType
 	Source() asciidoc.Element
+	Origin() (path string, line int)
 	Parent() Entity
 }
 

@@ -23,6 +23,10 @@ func (f *field) Source() asciidoc.Element {
 	return nil
 }
 
+func (f *field) Origin() (path string, line int) {
+	return
+}
+
 func (f *field) Parent() types.Entity {
 	return nil
 }
