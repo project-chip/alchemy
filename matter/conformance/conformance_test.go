@@ -5,7 +5,7 @@ import (
 )
 
 func TestOptional(t *testing.T) {
-	conformance, err := tryParseConformance("[!AB & (CD != EF)], O")
+	conformance, err := TryParseConformance("[!AB & (CD != EF)], O")
 	if err != nil {
 
 		t.Errorf("failed parsing: %v", err)
@@ -23,7 +23,7 @@ type conformanceTestSuite struct {
 }
 
 func (cts *conformanceTestSuite) run(t *testing.T) {
-	conformance, err := tryParseConformance(cts.Conformance)
+	conformance, err := TryParseConformance(cts.Conformance)
 	t.Logf("testing %s: %T", cts.Conformance, conformance)
 	if err != nil {
 		if cts.InvalidConformance {

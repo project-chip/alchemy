@@ -8,6 +8,7 @@ import (
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/constraint"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
@@ -28,7 +29,7 @@ func (pc *parseContext) addEntity(e types.Entity, source asciidoc.Attributable) 
 	pc.entitiesByElement[source] = append(pc.entitiesByElement[source], e)
 }
 
-func (doc *Doc) parseEntities() error {
+func (doc *Doc) parseEntities(spec *Specification) error {
 	pc := &parseContext{
 		entitiesByElement: make(map[asciidoc.Attributable][]types.Entity),
 	}
@@ -38,7 +39,7 @@ func (doc *Doc) parseEntities() error {
 			return err
 		}
 
-		err = top.toEntities(doc, pc)
+		err = top.toEntities(spec, doc, pc)
 		if err != nil {
 			return fmt.Errorf("failed converting doc %s to entities: %w", doc.Path, err)
 		}
@@ -106,8 +107,9 @@ func (bf *entityFinderCommon) findEntityByReference(reference string, label stri
 }
 
 type referenceFailure struct {
-	source log.Source
-	finder entityFinder
+	source    types.Entity
+	reference constraint.Limit
+	finder    entityFinder
 }
 
 type entityFilter struct {

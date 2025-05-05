@@ -14,7 +14,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
+func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err error) {
 	var clusters []*matter.Cluster
 
 	elements := parse.Skim[*Section](s.Elements())
@@ -60,7 +60,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 		switch s.SecType {
 		case matter.SectionDataTypes, matter.SectionStatusCodes:
 			var dts []types.Entity
-			dts, err = s.toDataTypes(d, pc, parentEntity)
+			dts, err = s.toDataTypes(spec, d, pc, parentEntity)
 			if err == nil {
 				dataTypes = append(dataTypes, dts...)
 			}
@@ -117,14 +117,14 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 			switch s.SecType {
 			case matter.SectionAttributes:
 				var attr []*matter.Field
-				attr, err = s.toAttributes(d, c, pc)
+				attr, err = s.toAttributes(spec, d, c, pc)
 				if err == nil {
 					c.Attributes = append(c.Attributes, attr...)
 				}
 			case matter.SectionEvents:
-				c.Events, err = s.toEvents(d, pc, parentEntity)
+				c.Events, err = s.toEvents(spec, d, pc, parentEntity)
 			case matter.SectionCommands:
-				c.Commands, err = s.toCommands(d, pc, parentEntity)
+				c.Commands, err = s.toCommands(spec, d, pc, parentEntity)
 			case matter.SectionRevisionHistory:
 				c.Revisions, err = readRevisionHistory(d, s)
 			case matter.SectionDerivedClusterNamespace:
@@ -133,7 +133,7 @@ func (s *Section) toClusters(d *Doc, pc *parseContext) (err error) {
 			case matter.SectionDataTypes, matter.SectionFeatures, matter.SectionStatusCodes: // Handled above
 			default:
 				var looseEntities []types.Entity
-				looseEntities, err = findLooseEntities(d, s, pc, parentEntity)
+				looseEntities, err = findLooseEntities(spec, d, s, pc, parentEntity)
 				if err != nil {
 					err = fmt.Errorf("error reading section %s: %w", s.Name, err)
 					return

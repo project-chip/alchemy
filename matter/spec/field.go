@@ -16,7 +16,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent types.Entity) (fields []*matter.Field, fieldMap map[string]*matter.Field, err error) {
+func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.EntityType, parent types.Entity) (fields []*matter.Field, fieldMap map[string]*matter.Field, err error) {
 	ids := make(map[uint64]*matter.Field)
 	fieldMap = make(map[string]*matter.Field)
 	for row := range ti.Body() {
@@ -62,6 +62,7 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 			existing, ok := ids[id]
 			if ok {
 				slog.Error("duplicate field ID", log.Path("source", f), slog.String("name", name), slog.Uint64("id", id), log.Path("original", existing))
+				spec.addError(&DuplicateEntityIDError{Entity: f, Previous: existing})
 			}
 			ids[id] = f
 		}
@@ -105,8 +106,9 @@ func (d *Doc) readFields(ti *TableInfo, entityType types.EntityType, parent type
 		f.Name = CanonicalName(f.Name)
 
 		fields = append(fields, f)
-		if _, ok := fieldMap[f.Name]; ok {
+		if existing, ok := fieldMap[f.Name]; ok {
 			slog.Error("duplicate field name", slog.String("name", name), matter.LogEntity("parent", parent), log.Path("source", f))
+			spec.addError(&DuplicateEntityIDError{Entity: f, Previous: existing})
 		}
 		fieldMap[f.Name] = f
 	}

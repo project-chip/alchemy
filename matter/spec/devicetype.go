@@ -10,7 +10,7 @@ import (
 
 type DeviceTypeSet pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
 
-func (s *Section) toDeviceTypes(d *Doc, pc *parseContext) (err error) {
+func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (err error) {
 	var deviceTypes []*matter.DeviceType
 
 	for _, s := range parse.Skim[*Section](s.Elements()) {

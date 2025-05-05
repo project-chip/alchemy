@@ -61,7 +61,7 @@ func (sp *Builder) resolveConformances() {
 	}
 }
 
-func (sp *Builder) noteConformanceResolutionFailures() {
+func (sp *Builder) noteConformanceResolutionFailures(spec *Specification) {
 	for exp, failure := range sp.conformanceFailures {
 		switch exp := exp.(type) {
 		case *conformance.ReferenceExpression:
@@ -154,7 +154,7 @@ func (sp *Builder) resolveEventConformances(cluster *matter.Cluster, finder enti
 	}
 }
 
-func (sp *Builder) resolveEntityConformanceReferences(cluster *matter.Cluster, finder entityFinder, source log.Source, con conformance.Conformance) {
+func (sp *Builder) resolveEntityConformanceReferences(cluster *matter.Cluster, finder entityFinder, source types.Entity, con conformance.Conformance) {
 	switch con := con.(type) {
 	case *conformance.Mandatory:
 		sp.resolveEntityConformanceExpressionReferences(cluster, finder, source, con.Expression)
@@ -175,7 +175,7 @@ func (sp *Builder) resolveEntityConformanceReferences(cluster *matter.Cluster, f
 	}
 }
 
-func (sp *Builder) resolveEntityConformanceExpressionReferences(cluster *matter.Cluster, finder entityFinder, source log.Source, exp conformance.Expression) (resolved types.Entity, failed bool) {
+func (sp *Builder) resolveEntityConformanceExpressionReferences(cluster *matter.Cluster, finder entityFinder, source types.Entity, exp conformance.Expression) (resolved types.Entity, failed bool) {
 	switch exp := exp.(type) {
 	case *conformance.ReferenceExpression:
 		if exp.Entity == nil {
@@ -244,7 +244,7 @@ func (sp *Builder) resolveEntityConformanceExpressionReferences(cluster *matter.
 	return
 }
 
-func (sp *Builder) resolveEntityConformanceValueReferences(cluster *matter.Cluster, finder entityFinder, source log.Source, cv conformance.ComparisonValue) (resolved types.Entity, failed bool) {
+func (sp *Builder) resolveEntityConformanceValueReferences(cluster *matter.Cluster, finder entityFinder, source types.Entity, cv conformance.ComparisonValue) (resolved types.Entity, failed bool) {
 	switch cv := cv.(type) {
 	case *conformance.IdentifierValue:
 		if cv.Entity == nil {

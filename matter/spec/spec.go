@@ -35,6 +35,8 @@ type Specification struct {
 
 	Docs      map[string]*Doc
 	DocGroups []*DocGroup
+
+	Errors []Error
 }
 
 func newSpec(specRoot string) *Specification {

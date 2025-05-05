@@ -57,7 +57,7 @@ func (sp *Builder) resolveConstraints() {
 	}
 }
 
-func (sp *Builder) noteConstraintResolutionFailures() {
+func (sp *Builder) noteConstraintResolutionFailures(spec *Specification) {
 	for exp, failure := range sp.constraintFailures {
 		switch exp := exp.(type) {
 		case *constraint.IdentifierLimit:
@@ -66,10 +66,12 @@ func (sp *Builder) noteConstraintResolutionFailures() {
 				suggestions := make(map[types.Entity]int)
 				failure.finder.suggestIdentifiers(exp.ID, suggestions)
 				suggest.ListPossibilities(exp.ID, suggestions)
+				spec.addError(&UnknownConstraintIdentifierError{Identifier: exp, Source: failure.source})
 			}
 		case *constraint.ReferenceLimit:
 			if exp.Entity == nil {
 				slog.Error("Failed to resolve constraint reference", "ref", exp.Reference, log.Path("source", failure.source))
+				spec.addError(&UnknownConstraintReferenceError{Reference: exp, Source: failure.source})
 			}
 		default:
 			slog.Warn("Unexpected failed constraint entity", log.Type("type", exp), log.Path("source", failure.source))
@@ -89,7 +91,7 @@ func (sp *Builder) resolveFieldConstraints(cluster *matter.Cluster, fieldSet mat
 	sp.resolveFieldConstraintLimit(cluster, fieldFinder, field, field.Fallback)
 }
 
-func (sp *Builder) resolveFieldConstraintReferences(cluster *matter.Cluster, finder entityFinder, source log.Source, con constraint.Constraint) {
+func (sp *Builder) resolveFieldConstraintReferences(cluster *matter.Cluster, finder entityFinder, source types.Entity, con constraint.Constraint) {
 	switch con := con.(type) {
 	case *constraint.ExactConstraint:
 		sp.resolveFieldConstraintLimit(cluster, finder, source, con.Value)
@@ -110,7 +112,7 @@ func (sp *Builder) resolveFieldConstraintReferences(cluster *matter.Cluster, fin
 	}
 }
 
-func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder entityFinder, source log.Source, l constraint.Limit) {
+func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder entityFinder, source types.Entity, l constraint.Limit) {
 	switch l := l.(type) {
 	case *constraint.CharacterLimit:
 		sp.resolveFieldConstraintLimit(cluster, finder, source, l.ByteCount)
@@ -121,8 +123,7 @@ func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder e
 		if l.Entity == nil {
 			l.Entity = finder.findEntityByIdentifier(l.ID, source)
 			if l.Entity == nil {
-				sp.constraintFailures[l] = referenceFailure{source: source, finder: finder}
-				slog.Error("failed to resolve constraint identifier", "ref", l.ID, log.Path("source", source))
+				sp.constraintFailures[l] = referenceFailure{source: source, reference: l, finder: finder}
 			}
 		}
 		if l.Entity != nil && l.Field != nil {
@@ -135,8 +136,7 @@ func (sp *Builder) resolveFieldConstraintLimit(cluster *matter.Cluster, finder e
 		if l.Entity == nil {
 			l.Entity = finder.findEntityByReference(l.Reference, l.Label, source)
 			if l.Entity == nil {
-				slog.Error("failed to resolve constraint reference", "ref", l.Reference, log.Path("source", source))
-				sp.constraintFailures[l] = referenceFailure{source: source, finder: finder}
+				sp.constraintFailures[l] = referenceFailure{source: source, reference: l, finder: finder}
 			}
 		}
 		if l.Entity != nil && l.Field != nil {
