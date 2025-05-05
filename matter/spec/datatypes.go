@@ -13,7 +13,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entity) (dataTypes []types.Entity, err error) {
+func (s *Section) toDataTypes(spec *Specification, d *Doc, pc *parseContext, parentEntity types.Entity) (dataTypes []types.Entity, err error) {
 
 	traverseSections(d, s, errata.SpecPurposeDataTypes, func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch s.SecType {
@@ -41,7 +41,7 @@ func (s *Section) toDataTypes(d *Doc, pc *parseContext, parentEntity types.Entit
 			}
 		case matter.SectionDataTypeStruct:
 			var me *matter.Struct
-			me, err = s.toStruct(d, pc, parentEntity)
+			me, err = s.toStruct(spec, d, pc, parentEntity)
 			if err != nil {
 				if err != ErrNotEnoughRowsInTable || d.parsed {
 					slog.Warn("Error converting section to struct", log.Element("source", d.Path, s.Base), slog.Any("error", err))
@@ -162,6 +162,7 @@ func (sp *Builder) resolveFieldDataTypes(cluster *matter.Cluster, fieldSet matte
 			sp.getCustomDataType(dataType, cluster, field, finder)
 			if dataType.Entity == nil {
 				slog.Error("unknown custom data type", slog.String("cluster", clusterName(cluster)), slog.String("field", field.Name), slog.String("type", dataType.Name), log.Path("source", field), log.Type("element", dataType.Source))
+				sp.Spec.addError(&UnknownCustomDataTypeError{Field: field, DataType: dataType})
 			} else {
 				dataType.Name = matter.EntityName(dataType.Entity)
 			}

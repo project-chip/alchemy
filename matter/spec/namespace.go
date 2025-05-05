@@ -12,7 +12,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toNamespace(d *Doc, pc *parseContext) (err error) {
+func (s *Section) toNamespace(spec *Specification, d *Doc, pc *parseContext) (err error) {
 	var namespaceTable *TableInfo
 	var valuesTable *TableInfo
 	parse.SkimFunc(s.Elements(), func(t *asciidoc.Table) bool {

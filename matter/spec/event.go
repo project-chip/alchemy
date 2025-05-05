@@ -16,7 +16,7 @@ import (
 
 type eventFactory struct{}
 
-func (cf *eventFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (e *matter.Event, err error) {
+func (cf *eventFactory) New(spec *Specification, d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (e *matter.Event, err error) {
 
 	e = matter.NewEvent(s.Base, parent)
 	e.Name = matter.StripTypeSuffixes(name)
@@ -43,7 +43,7 @@ func (cf *eventFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.Tab
 	return
 }
 
-func (cf *eventFactory) Details(d *Doc, s *Section, pc *parseContext, e *matter.Event) (err error) {
+func (cf *eventFactory) Details(spec *Specification, d *Doc, s *Section, pc *parseContext, e *matter.Event) (err error) {
 	e.Description = getDescription(d, e, s.Set)
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
@@ -68,7 +68,7 @@ func (cf *eventFactory) Details(d *Doc, s *Section, pc *parseContext, e *matter.
 		}
 	}
 	var fieldMap map[string]*matter.Field
-	e.Fields, fieldMap, err = d.readFields(ti, types.EntityTypeEventField, e)
+	e.Fields, fieldMap, err = d.readFields(spec, ti, types.EntityTypeEventField, e)
 	if err != nil {
 		return
 	}
@@ -97,20 +97,21 @@ func (cf *eventFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	}
 }
 
-func (s *Section) toEvents(d *Doc, pc *parseContext, parent types.Entity) (events matter.EventSet, err error) {
+func (s *Section) toEvents(spec *Specification, d *Doc, pc *parseContext, parent types.Entity) (events matter.EventSet, err error) {
 	t := FindFirstTable(s)
 	if t == nil {
 		return nil, nil
 	}
 
 	var ef eventFactory
-	events, err = buildList(d, s, t, pc, events, &ef, parent)
+	events, err = buildList(spec, d, s, t, pc, events, &ef, parent)
 
 	if err != nil {
 		return
 	}
 
 	eventMap := make(map[uint64]*matter.Event)
+	eventNameMap := make(map[string]*matter.Event)
 	for _, ev := range events {
 		existing, ok := eventMap[ev.ID.Value()]
 		if ok {
@@ -121,8 +122,21 @@ func (s *Section) toEvents(d *Doc, pc *parseContext, parent types.Entity) (event
 				slog.String("eventId", ev.ID.IntString()),
 				slog.String("previousEvent", existing.Name),
 			)
+			spec.addError(&DuplicateEntityIDError{Entity: ev, Previous: existing})
+		}
+		existing, ok = eventNameMap[ev.Name]
+		if ok {
+			slog.Error("Duplicate Event Name",
+				slog.String("clusterName",
+					matter.EntityName(parent)),
+				slog.String("eventName", ev.Name),
+				slog.String("eventId", ev.ID.IntString()),
+				slog.String("previousEvent", existing.Name),
+			)
+			spec.addError(&DuplicateEntityNameError{Entity: ev, Previous: existing})
 		}
 		eventMap[ev.ID.Value()] = ev
+		eventNameMap[ev.Name] = ev
 	}
 	return
 }

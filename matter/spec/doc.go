@@ -114,7 +114,7 @@ func (doc *Doc) addChild(child *Doc) {
 
 func (doc *Doc) Entities() (entities []types.Entity, err error) {
 	if !doc.entitiesParsed {
-		err = doc.parseEntities()
+		err = doc.parseEntities(nil)
 		if err != nil {
 			return nil, err
 		}
@@ -124,7 +124,7 @@ func (doc *Doc) Entities() (entities []types.Entity, err error) {
 
 func (doc *Doc) GlobalObjects() (entities []types.Entity, err error) {
 	if !doc.entitiesParsed {
-		err = doc.parseEntities()
+		err = doc.parseEntities(nil)
 		if err != nil {
 			return nil, err
 		}
@@ -134,7 +134,7 @@ func (doc *Doc) GlobalObjects() (entities []types.Entity, err error) {
 
 func (doc *Doc) OrderedEntities() (entities []types.Entity, err error) {
 	if !doc.entitiesParsed {
-		err = doc.parseEntities()
+		err = doc.parseEntities(nil)
 		if err != nil {
 			return nil, err
 		}

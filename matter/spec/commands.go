@@ -20,7 +20,7 @@ var parentheticalExpressionPattern = regexp.MustCompile(`\s*\([^\)]+\)$`)
 
 type commandFactory struct{}
 
-func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
+func (cf *commandFactory) New(spec *Specification, d *Doc, s *Section, ti *TableInfo, row *asciidoc.TableRow, name string, parent types.Entity) (*matter.Command, error) {
 	cmd := matter.NewCommand(s.Base, parent)
 	var err error
 	cmd.ID, err = ti.ReadID(row, matter.TableColumnID)
@@ -53,7 +53,7 @@ func (cf *commandFactory) New(d *Doc, s *Section, ti *TableInfo, row *asciidoc.T
 	return cmd, nil
 }
 
-func (cf *commandFactory) Details(d *Doc, s *Section, pc *parseContext, c *matter.Command) (err error) {
+func (cf *commandFactory) Details(spec *Specification, d *Doc, s *Section, pc *parseContext, c *matter.Command) (err error) {
 	c.Description = getDescription(d, c, s.Elements())
 
 	if !d.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCommandArguments) {
@@ -69,7 +69,7 @@ func (cf *commandFactory) Details(d *Doc, s *Section, pc *parseContext, c *matte
 			return
 		}
 		var fieldMap map[string]*matter.Field
-		c.Fields, fieldMap, err = d.readFields(ti, types.EntityTypeCommandField, c)
+		c.Fields, fieldMap, err = d.readFields(spec, ti, types.EntityTypeCommandField, c)
 		if err != nil {
 			return
 		}
@@ -99,7 +99,7 @@ func (cf *commandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	}
 }
 
-func (s *Section) toCommands(d *Doc, pc *parseContext, parent types.Entity) (commands matter.CommandSet, err error) {
+func (s *Section) toCommands(spec *Specification, d *Doc, pc *parseContext, parent types.Entity) (commands matter.CommandSet, err error) {
 
 	t := FindFirstTable(s)
 	if t == nil {
@@ -107,7 +107,7 @@ func (s *Section) toCommands(d *Doc, pc *parseContext, parent types.Entity) (com
 	}
 
 	var cf commandFactory
-	commands, err = buildList(d, s, t, pc, commands, &cf, parent)
+	commands, err = buildList(spec, d, s, t, pc, commands, &cf, parent)
 
 	cmdMap := make(map[matter.Interface]map[uint64]*matter.Command)
 
@@ -126,6 +126,7 @@ func (s *Section) toCommands(d *Doc, pc *parseContext, parent types.Entity) (com
 					cmd.Direction.String()),
 				slog.String("previousCommand", existing.Name),
 			)
+			spec.addError(&DuplicateEntityIDError{Entity: cmd, Previous: existing})
 		}
 
 		cmdMap[cmd.Direction][cmd.ID.Value()] = cmd

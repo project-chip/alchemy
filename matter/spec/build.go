@@ -114,6 +114,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 				if m.ID.Valid() {
 					if existing, ok := spec.DeviceTypesByID[m.ID.Value()]; ok {
 						slog.Error("duplicate device type ID", slog.String("deviceTypeId", m.ID.HexString()), log.Path("previousSource", existing), log.Path("newSource", m))
+						spec.addError(&DuplicateEntityIDError{Entity: m, Previous: existing})
 					} else {
 						spec.DeviceTypesByID[m.ID.Value()] = m
 					}
@@ -122,6 +123,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 				existing, ok := spec.DeviceTypesByName[m.Name]
 				if ok {
 					slog.Warn("Duplicate Device Type Name", slog.String("deviceTypeId", m.ID.HexString()), slog.String("deviceTypeName", m.Name), slog.String("existingDeviceTypeId", existing.ID.HexString()))
+					spec.addError(&DuplicateEntityNameError{Entity: m, Previous: existing})
 				}
 				spec.DeviceTypesByName[m.Name] = m
 			case *matter.Namespace:
@@ -180,8 +182,8 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 
 	buildClusterReferences(spec)
 
-	sp.noteConformanceResolutionFailures()
-	sp.noteConstraintResolutionFailures()
+	sp.noteConformanceResolutionFailures(spec)
+	sp.noteConstraintResolutionFailures(spec)
 
 	return
 }
@@ -280,6 +282,7 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 						slog.String("clusterName", cr.ClusterName),
 						slog.String("deviceType", dt.Name),
 						log.Path("source", cr))
+					spec.addError(&UnknownClusterRequirementError{Requirement: cr})
 				}
 			}
 		}
@@ -298,11 +301,13 @@ func associateDeviceTypeRequirementWithClusters(spec *Specification) {
 						slog.String("deviceType", dt.Name),
 						log.Path("source", er))
 				} else {
+
 					slog.Error("unknown cluster ID for element requirement on device type",
 						slog.String("clusterId", er.ClusterID.HexString()),
 						slog.String("clusterName", er.ClusterName),
 						slog.String("deviceType", dt.Name),
 						log.Path("source", er))
+					spec.addError(&UnknownElementRequirementClusterError{Requirement: er})
 				}
 			}
 		}
@@ -315,6 +320,7 @@ func (sp *Builder) addCluster(doc *Doc, cluster *matter.Cluster) {
 		existing, ok := sp.Spec.ClustersByID[cluster.ID.Value()]
 		if ok {
 			slog.Warn("Duplicate cluster ID", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterName", existing.Name))
+			sp.Spec.addError(&DuplicateEntityIDError{Entity: cluster, Previous: existing})
 		}
 		sp.Spec.ClustersByID[cluster.ID.Value()] = cluster
 	} else {
@@ -331,6 +337,8 @@ func (sp *Builder) addCluster(doc *Doc, cluster *matter.Cluster) {
 	existing, ok := sp.Spec.ClustersByName[cluster.Name]
 	if ok {
 		slog.Warn("Duplicate cluster Name", slog.String("clusterId", cluster.ID.HexString()), slog.String("clusterName", cluster.Name), slog.String("existingClusterId", existing.ID.HexString()))
+		sp.Spec.addError(&DuplicateEntityNameError{Entity: cluster, Previous: existing})
+
 	}
 	sp.Spec.ClustersByName[cluster.Name] = cluster
 
@@ -401,6 +409,7 @@ func (sp *Builder) resolveHierarchy() {
 		base, ok := sp.Spec.ClustersByName[c.Hierarchy]
 		if !ok {
 			slog.Warn("Failed to find base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy)
+			sp.Spec.addError(&UnknownBaseClusterError{Cluster: c})
 			continue
 		}
 		linkedEntities, err := c.Inherit(base)

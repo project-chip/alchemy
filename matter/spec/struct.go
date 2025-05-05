@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (s *Section) toStruct(d *Doc, pc *parseContext, parent types.Entity) (ms *matter.Struct, err error) {
+func (s *Section) toStruct(spec *Specification, d *Doc, pc *parseContext, parent types.Entity) (ms *matter.Struct, err error) {
 	name := text.TrimCaseInsensitiveSuffix(s.Name, " Type")
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
@@ -33,7 +33,7 @@ func (s *Section) toStruct(d *Doc, pc *parseContext, parent types.Entity) (ms *m
 		}
 	}
 	var fieldMap map[string]*matter.Field
-	ms.Fields, fieldMap, err = d.readFields(ti, types.EntityTypeStructField, ms)
+	ms.Fields, fieldMap, err = d.readFields(spec, ti, types.EntityTypeStructField, ms)
 	if err != nil {
 		return
 	}

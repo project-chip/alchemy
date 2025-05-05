@@ -5,14 +5,14 @@ import (
 )
 
 func ParseConformance(conformance string) Set {
-	c, err := tryParseConformance(conformance)
+	c, err := TryParseConformance(conformance)
 	if err != nil {
 		return Set{&Generic{raw: conformance}}
 	}
 	return c
 }
 
-func tryParseConformance(conformance string) (Set, error) {
+func TryParseConformance(conformance string) (Set, error) {
 	conformance = strings.ReplaceAll(conformance, "\\|", "|")
 
 	c, err := Parse("", []byte(conformance))
