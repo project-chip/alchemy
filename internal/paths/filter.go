@@ -15,6 +15,8 @@ import (
 type Filter[T any] struct {
 	specRoot string
 	paths    []string
+
+	Exclude bool
 }
 
 func NewFilter[T any](specRoot string, paths []string) *Filter[T] {
@@ -53,16 +55,26 @@ func (p *Filter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (ou
 		if err != nil {
 			return
 		}
+		var sameFile bool
 		for i, ofi := range stats {
-			if os.SameFile(fi, ofi) {
-				outputs = append(outputs, d)
-				if len(stats) <= 1 {
-					stats = nil
-					return
-				}
+			sameFile = os.SameFile(fi, ofi)
+			if sameFile {
 				stats[i] = stats[len(stats)-1]
 				stats = stats[:len(stats)-1]
 				delete(filteredFiles, ofi)
+				break
+			}
+		}
+		if p.Exclude {
+			if sameFile {
+				continue
+			}
+			outputs = append(outputs, d)
+		} else if sameFile {
+			outputs = append(outputs, d)
+			if len(stats) <= 1 {
+				stats = nil
+				return
 			}
 		}
 	}

@@ -211,6 +211,8 @@ func (ti *TableInfo) ReadConformance(row *asciidoc.TableRow, column matter.Table
 	conf := conformance.ParseConformance(s)
 	if conformance.IsGeneric(conf) {
 		slog.Error("failed parsing conformance cell", log.Element("source", ti.Doc.Path, source), slog.String("value", s))
+		ti.Doc.spec.addError(&InvalidConformanceError{Source: row, Conformance: s})
+
 	}
 	return conf
 }
@@ -265,18 +267,20 @@ func (ti *TableInfo) ReadConstraint(row *asciidoc.TableRow, columns ...matter.Ta
 	c, err := constraint.TryParseString(s)
 	if err != nil {
 		slog.Error("failed parsing constraint cell", log.Element("source", ti.Doc.Path, source), slog.String("constraint", val))
+		ti.Doc.spec.addError(&InvalidConstraintError{Source: row, Constraint: val})
 		return &constraint.GenericConstraint{Value: val}
 	}
 	return c
 }
 
-func (ti *TableInfo) ReadLimit(row *asciidoc.TableRow, columns ...matter.TableColumn) constraint.Limit {
+func (ti *TableInfo) ReadFallback(row *asciidoc.TableRow, columns ...matter.TableColumn) constraint.Limit {
 	val, source, _ := ti.RenderColumn(row, ti.buildConstraintValue, columns...)
 	s := strings.TrimSpace(val)
 	s = strings.ReplaceAll(s, "\n", " ")
 	l, err := constraint.TryParseLimit(s)
 	if err != nil {
 		slog.Error("failed parsing limit cell", log.Element("source", ti.Doc.Path, source), slog.String("limit", val))
+		ti.Doc.spec.addError(&InvalidFallbackError{Source: row, Fallback: val})
 		return &constraint.GenericLimit{Value: val}
 	}
 	if l == nil {

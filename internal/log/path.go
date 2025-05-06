@@ -13,10 +13,7 @@ type Source interface {
 	Origin() (path string, line int)
 }
 
-func Path(name string, source Source) slog.Attr {
-	if source == nil {
-		return slog.String(name, "unknown")
-	}
+func Origin(source Source) string {
 	var path strings.Builder
 	p, l := source.Origin()
 	path.WriteString(p)
@@ -24,7 +21,14 @@ func Path(name string, source Source) slog.Attr {
 		path.WriteRune(':')
 		path.WriteString(strconv.Itoa(l))
 	}
-	return slog.String(name, path.String())
+	return path.String()
+}
+
+func Path(name string, source Source) slog.Attr {
+	if source == nil {
+		return slog.String(name, "unknown")
+	}
+	return slog.String(name, Origin(source))
 }
 
 func Element(name string, path fmt.Stringer, element asciidoc.Element) slog.Attr {

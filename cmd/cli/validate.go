@@ -5,7 +5,6 @@ import (
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
-	"github.com/project-chip/alchemy/matter/spec/validate"
 )
 
 type Validate struct {
@@ -42,6 +41,6 @@ func (c *Validate) Run(alchemy *Context) (err error) {
 		return err
 	}
 
-	validate.Validate(specBuilder.Spec)
+	spec.Validate(specBuilder.Spec)
 	return
 }

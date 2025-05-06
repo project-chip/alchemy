@@ -17,7 +17,6 @@ import (
 )
 
 func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.EntityType, parent types.Entity) (fields []*matter.Field, fieldMap map[string]*matter.Field, err error) {
-	ids := make(map[uint64]*matter.Field)
 	fieldMap = make(map[string]*matter.Field)
 	for row := range ti.Body() {
 		f := matter.NewField(row, parent, entityType)
@@ -45,7 +44,7 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 		if err != nil {
 			return
 		}
-		f.Fallback = ti.ReadLimit(row, matter.TableColumnFallback)
+		f.Fallback = ti.ReadFallback(row, matter.TableColumnFallback)
 
 		var a string
 		a, err = ti.ReadString(row, matter.TableColumnAccess)
@@ -56,15 +55,6 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 		f.ID, err = ti.ReadID(row, matter.TableColumnID)
 		if err != nil {
 			return
-		}
-		if f.ID.Valid() {
-			id := f.ID.Value()
-			existing, ok := ids[id]
-			if ok {
-				slog.Error("duplicate field ID", log.Path("source", f), slog.String("name", name), slog.Uint64("id", id), log.Path("original", existing))
-				spec.addError(&DuplicateEntityIDError{Entity: f, Previous: existing})
-			}
-			ids[id] = f
 		}
 
 		if f.Type != nil {
@@ -320,5 +310,32 @@ func (ff *fieldFinder) suggestIdentifiers(identifier string, suggestions map[typ
 	if ff.inner != nil {
 		ff.inner.suggestIdentifiers(identifier, suggestions)
 	}
-	return
+}
+
+func validateFields(spec *Specification, parent types.Entity, fields matter.FieldSet) {
+	fieldIds := make(map[uint64]*matter.Field)
+	for _, f := range fields {
+		if !f.ID.Valid() {
+			slog.Warn("Field has invalid ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldName", f.Name))
+		}
+		fieldId := f.ID.Value()
+		existing, ok := fieldIds[fieldId]
+		if ok {
+			slog.Error("Duplicate field ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldId", f.ID.HexString()), slog.String("fieldName", f.Name), slog.String("previousFieldName", existing.Name))
+			spec.addError(&DuplicateEntityIDError{Entity: f, Previous: existing})
+		} else {
+			fieldIds[fieldId] = f
+		}
+		if fieldId >= 0xFE && fieldId <= 0x100 {
+			slog.Warn("Struct is using global field ID", log.Path("source", f), matter.LogEntity("parent", parent), slog.String("fieldName", f.Name), slog.String("fieldId", f.ID.HexString()))
+		}
+
+		validateAccess(spec, f, f.Access)
+		if f.Access.IsFabricScoped() && !matter.IsFabricScopingAllowed(f) {
+			slog.Error("Fabric scoping is not allowed on this entity", matter.LogEntity("entity", f), log.Path("source", f))
+		}
+		if f.Access.IsFabricSensitive() && !matter.IsFabricSensitivityAllowed(f) {
+			slog.Error("Fabric sensitivity is not allowed on this entity", matter.LogEntity("entity", f), log.Path("source", f))
+		}
+	}
 }

@@ -3,6 +3,7 @@ package render
 import (
 	"context"
 	"log/slog"
+	"path/filepath"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/cmd/common"
@@ -22,6 +23,9 @@ type Options struct {
 	Template      []TemplateOption
 	DeviceTypes   []DeviceTypePatcherOption
 	Parser        spec.ParserOptions
+
+	Force   bool
+	Exclude []string
 }
 
 type Output struct {
@@ -102,6 +106,35 @@ func Pipeline(cxt context.Context, sdkRoot string, docPaths []string, options Op
 		specDocs, err = pipeline.Collective(cxt, options.Pipeline, filter, specDocs)
 		if err != nil {
 			return
+		}
+	}
+
+	if len(options.Exclude) > 0 {
+		filter := paths.NewFilter[*spec.Doc](options.Parser.Root, options.Exclude)
+		filter.Exclude = true
+		specDocs, err = pipeline.Collective(cxt, options.Pipeline, filter, specDocs)
+		if err != nil {
+			return
+		}
+	}
+
+	if len(specBuilder.Spec.Errors) > 0 && !options.Force {
+		if options.Force {
+			slog.Warn("Ignoring parse errors; proceed with caution")
+		} else {
+			var errors spec.ParseErrors
+			for _, specError := range specBuilder.Spec.Errors {
+				path, _ := specError.Origin()
+				path = filepath.Join(specBuilder.Spec.Root, path)
+				_, ok := specDocs.Load(path)
+				if ok {
+					errors.Errors = append(errors.Errors, specError)
+				}
+			}
+			if len(errors.Errors) > 0 {
+				err = &errors
+				return
+			}
 		}
 	}
 
