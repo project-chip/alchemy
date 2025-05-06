@@ -25,10 +25,6 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			dumpElements(doc, as.Elements(), indent+2)
 			continue
 		}
-		ae, ok := e.(*spec.Element)
-		if ok {
-			e = ae.Base
-		}
 		switch el := e.(type) {
 		case asciidoc.EmptyLine:
 			fmt.Print("{empty}\n")

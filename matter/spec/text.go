@@ -44,17 +44,8 @@ func getDescription(doc *Doc, entity types.Entity, els asciidoc.Set) string {
 func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err error) {
 	var foundNonBlock bool
 	for _, el := range els {
-		var e asciidoc.Element
-		switch el := el.(type) {
-		case *Element:
-			e = el.Base
-		case asciidoc.Element:
-			e = el
-		default:
-			return
-		}
 
-		switch e.Type() {
+		switch el.Type() {
 		case asciidoc.ElementTypeBlock, asciidoc.ElementTypeDocument:
 			if foundNonBlock {
 				return
@@ -64,7 +55,7 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 			continue
 		}
 		foundNonBlock = true
-		switch el := e.(type) {
+		switch el := el.(type) {
 		case *asciidoc.String:
 			value.WriteString(el.Value)
 		case asciidoc.FormattedTextElement:

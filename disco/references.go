@@ -70,9 +70,6 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 	}
 	if an.options.NormalizeAnchors {
 		parse.Traverse(nil, doc.Base.Elements(), func(el asciidoc.Element, parent parse.HasElements, index int) parse.SearchShould {
-			if se, ok := el.(*spec.Element); ok {
-				el = se.Base
-			}
 			switch el := el.(type) {
 			case *asciidoc.CrossReference:
 				normalizeCrossReference(doc, el)
@@ -166,8 +163,8 @@ func findRefSection(parent any) *spec.Section {
 	switch p := parent.(type) {
 	case *spec.Section:
 		return p
-	case *spec.Element:
-		return findRefSection(p.Parent)
+	case asciidoc.HasParent:
+		return findRefSection(p.Parent())
 	case *spec.Doc:
 		return nil
 	default:

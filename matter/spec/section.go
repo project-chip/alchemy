@@ -41,7 +41,7 @@ func NewSection(doc *Doc, parent any, s *asciidoc.Section) (*Section, error) {
 		switch el := e.(type) {
 		case *asciidoc.AttributeEntry:
 			doc.attributes[el.Name] = el.Elements()
-			ss.Append(NewElement(ss, e))
+			ss.Append(e)
 		case *asciidoc.Section:
 			s, err := NewSection(doc, ss, el)
 			if err != nil {
@@ -49,7 +49,7 @@ func NewSection(doc *Doc, parent any, s *asciidoc.Section) (*Section, error) {
 			}
 			ss.Append(s)
 		default:
-			ss.Append(NewElement(ss, e))
+			ss.Append(e)
 		}
 	}
 	return ss, nil
@@ -465,9 +465,6 @@ var dataTypeDefinitionPattern = regexp.MustCompile(`(?:(?:This\s+data\s+type\s+S
 func (s *Section) GetDataType() *types.DataType {
 	var dts string
 	for _, el := range s.Elements() {
-		if se, ok := el.(*Element); ok {
-			el = se.Base
-		}
 		switch el := el.(type) {
 		case asciidoc.EmptyLine:
 		case *asciidoc.String:
