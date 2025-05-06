@@ -53,16 +53,8 @@ func ReferenceName(element any) string {
 		return buildReferenceName(el.Title)
 	case asciidoc.Attributable:
 		return referenceNameFromAttributes(el)
-	case *Element:
-		if el == nil {
-			slog.Warn("nil element in reference name", "type", fmt.Sprintf("%T", el))
-			return ""
-		}
-		if el.Base == nil {
-			slog.Warn("untethered element in reference name", "type", fmt.Sprintf("%T", el))
-			return ""
-		}
-		return ReferenceName(el.Base)
+	case asciidoc.Element:
+		return ReferenceName(el)
 	default:
 		slog.Warn("Unknown type to get reference name", "type", fmt.Sprintf("%T", element))
 	}

@@ -123,13 +123,6 @@ func (doc *Doc) findAnchors() {
 		switch el := el.(type) {
 		case *asciidoc.Anchor:
 			anchor = NewAnchor(doc, el.ID, el, parent, el.Set...)
-		case *Element:
-			switch el := el.Base.(type) {
-			case *asciidoc.Anchor:
-				anchor = NewAnchor(doc, el.ID, el, parent, el.Set...)
-			default:
-				anchor = doc.makeAnchor(parent, el, crossReferences)
-			}
 		case *Section:
 			anchor = doc.makeAnchor(parent, el.Base, crossReferences)
 			if anchor != nil {

@@ -61,7 +61,7 @@ func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {
 		switch el := e.(type) {
 		case *asciidoc.AttributeEntry:
 			doc.attributes[el.Name] = el.Elements()
-			doc.Append(NewElement(doc, e))
+			doc.Append(e)
 		case *asciidoc.Section:
 			s, err := NewSection(doc, doc, el)
 			if err != nil {
@@ -69,7 +69,7 @@ func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {
 			}
 			doc.Append(s)
 		default:
-			doc.Append(NewElement(doc, e))
+			doc.Append(e)
 		}
 	}
 	return doc, nil
