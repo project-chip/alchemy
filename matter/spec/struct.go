@@ -46,3 +46,17 @@ func (s *Section) toStruct(spec *Specification, d *Doc, pc *parseContext, parent
 	ms.Name = CanonicalName(ms.Name)
 	return
 }
+
+func validateStructs(spec *Specification) {
+	for c := range spec.Clusters {
+		for _, s := range c.Structs {
+			validateFields(spec, s, s.Fields)
+		}
+	}
+	for obj := range spec.GlobalObjects {
+		switch obj := obj.(type) {
+		case *matter.Struct:
+			validateFields(spec, obj, obj.Fields)
+		}
+	}
+}

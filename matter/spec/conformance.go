@@ -67,10 +67,12 @@ func (sp *Builder) noteConformanceResolutionFailures(spec *Specification) {
 		case *conformance.ReferenceExpression:
 			if exp.Entity == nil {
 				slog.Warn("Failed to resolve conformance expression reference", "ref", exp.Reference, log.Path("source", failure.source))
+				spec.addError(&UnknownConformanceReferenceError{Entity: failure.source, Reference: exp.Reference})
 			}
 		case *conformance.IdentifierExpression:
 			if exp.Entity == nil {
 				slog.Warn("Failed to resolve conformance expression identifier", "ref", exp.ID, log.Path("source", failure.source))
+				spec.addError(&UnknownConformanceIdentifierError{Entity: failure.source, Identifier: exp.ID})
 				suggestions := make(map[types.Entity]int)
 				failure.finder.suggestIdentifiers(exp.ID, suggestions)
 				suggest.ListPossibilities(exp.ID, suggestions)
@@ -78,10 +80,15 @@ func (sp *Builder) noteConformanceResolutionFailures(spec *Specification) {
 		case *conformance.IdentifierValue:
 			if exp.Entity == nil {
 				slog.Warn("failed to resolve conformance value identifier", "id", exp.ID, log.Path("source", failure.source))
+				spec.addError(&UnknownConformanceIdentifierError{Entity: failure.source, Identifier: exp.ID})
+				suggestions := make(map[types.Entity]int)
+				failure.finder.suggestIdentifiers(exp.ID, suggestions)
+				suggest.ListPossibilities(exp.ID, suggestions)
 			}
 		case *conformance.ReferenceValue:
 			if exp.Entity == nil {
 				slog.Warn("failed to resolve conformance value reference", "ref", exp.Reference, log.Path("source", failure.source))
+				spec.addError(&UnknownConformanceReferenceError{Entity: failure.source, Reference: exp.Reference})
 			}
 		default:
 			slog.Warn("Unexpected failed conformance entity", log.Type("type", exp), log.Path("source", failure.source))

@@ -185,6 +185,8 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 	sp.noteConformanceResolutionFailures(spec)
 	sp.noteConstraintResolutionFailures(spec)
 
+	Validate(spec)
+
 	return
 }
 

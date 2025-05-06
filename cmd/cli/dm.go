@@ -1,6 +1,10 @@
 package cli
 
 import (
+	"fmt"
+	"log/slog"
+	"path/filepath"
+
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/dm"
 	"github.com/project-chip/alchemy/errata"
@@ -17,7 +21,8 @@ type DataModel struct {
 	files.OutputOptions        `embed:""`
 	dm.DataModelOptions        `embed:""`
 
-	Paths []string `arg:"" optional:""`
+	Paths   []string `arg:"" optional:""`
+	Exclude []string `short:"e"  help:"exclude files matching this file pattern" group:"Data Model:"`
 }
 
 func (c *DataModel) Run(cc *Context) (err error) {
@@ -42,6 +47,7 @@ func (c *DataModel) Run(cc *Context) (err error) {
 	if err != nil {
 		return err
 	}
+
 	specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
@@ -52,6 +58,31 @@ func (c *DataModel) Run(cc *Context) (err error) {
 		specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, filter, specDocs)
 		if err != nil {
 			return err
+		}
+	}
+
+	if len(c.Exclude) > 0 {
+		filter := paths.NewFilter[*spec.Doc](c.ParserOptions.Root, c.Exclude)
+		filter.Exclude = true
+		specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, filter, specDocs)
+		if err != nil {
+			return
+		}
+	}
+
+	if len(specBuilder.Spec.Errors) > 0 && !c.Force {
+		if c.Force {
+			slog.Warn("Ignoring parse errors; proceed with caution")
+		} else {
+			for _, specError := range specBuilder.Spec.Errors {
+				path, _ := specError.Origin()
+				path = filepath.Join(specBuilder.Spec.Root, path)
+				_, ok := specDocs.Load(path)
+				if ok {
+					err = fmt.Errorf("specified document has errors: %s %s", path, specError.Error())
+					return
+				}
+			}
 		}
 	}
 

@@ -193,5 +193,19 @@ func (cf *commandFinder) suggestIdentifiers(identifier string, suggestions map[t
 	if cf.inner != nil {
 		cf.inner.suggestIdentifiers(identifier, suggestions)
 	}
-	return
+
+}
+
+func validateCommands(spec *Specification) {
+	for c := range spec.Clusters {
+		for _, s := range c.Commands {
+			validateFields(spec, s, s.Fields)
+		}
+	}
+	for obj := range spec.GlobalObjects {
+		switch obj := obj.(type) {
+		case *matter.Command:
+			validateFields(spec, obj, obj.Fields)
+		}
+	}
 }

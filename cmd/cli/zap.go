@@ -15,6 +15,7 @@ type ZAP struct {
 	EndpointCompositionXML bool `default:"false" aliases:"endpointCompositionXML" help:"write new style endpoint composition XML" group:"ZAP:"`
 	SpecOrder              bool `default:"false" aliases:"specOrder" help:"write ZAP template XML in spec order" group:"ZAP:"`
 	ExtendedQuality        bool `default:"false" aliases:"extendedQuality" help:"write quality element with all qualities, suppressing redundant attributes" group:"ZAP:"`
+	Force                  bool `default:"false" help:"write ZAP XML even if there were parsing errors" group:"ZAP:"`
 
 	common.ASCIIDocAttributes  `embed:""`
 	pipeline.ProcessingOptions `embed:""`
@@ -22,7 +23,8 @@ type ZAP struct {
 	spec.ParserOptions         `embed:""`
 	sdk.SDKOptions             `embed:""`
 
-	Paths []string `arg:"" optional:"" help:"Paths of AsciiDoc files to generate ZAP templates for"`
+	Paths   []string `arg:"" optional:"" help:"Paths of AsciiDoc files to generate ZAP templates for"`
+	Exclude []string `short:"e"  help:"exclude files matching this file pattern" group:"ZAP:"`
 }
 
 func (z *ZAP) Run(cc *Context) (err error) {
@@ -41,6 +43,9 @@ func (z *ZAP) Run(cc *Context) (err error) {
 
 	options.DeviceTypes = append(options.DeviceTypes, render.DeviceTypePatcherGenerateFeatureXML(z.FeatureXML))
 	options.DeviceTypes = append(options.DeviceTypes, render.DeviceTypePatcherFullEndpointComposition(z.EndpointCompositionXML))
+
+	options.Force = z.Force
+	options.Exclude = z.Exclude
 
 	var output render.Output
 	output, err = render.Pipeline(cc, z.SdkRoot, z.Paths, options)

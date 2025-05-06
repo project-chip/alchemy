@@ -181,3 +181,17 @@ func (ef *eventFinder) suggestIdentifiers(identifier string, suggestions map[typ
 	}
 	return
 }
+
+func validateEvents(spec *Specification) {
+	for c := range spec.Clusters {
+		for _, e := range c.Events {
+			validateFields(spec, e, e.Fields)
+		}
+	}
+	for obj := range spec.GlobalObjects {
+		switch obj := obj.(type) {
+		case *matter.Event:
+			validateFields(spec, obj, obj.Fields)
+		}
+	}
+}

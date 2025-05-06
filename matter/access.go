@@ -266,25 +266,23 @@ func (a Access) IsEmpty() bool {
 	return a.Timing == TimingUnknown
 }
 
-func (a Access) IsValid(e types.Entity) bool {
-	if a.IsFabricScoped() {
+func IsFabricScopingAllowed(e types.Entity) bool {
+	switch e := e.(type) {
+	case *Field:
 		switch e.EntityType() {
-		case types.EntityTypeAttribute, types.EntityTypeStruct, types.EntityTypeCommand:
+		case types.EntityTypeAttribute:
+			return true
 		default:
-			slog.Error("Fabric scoping is not allowed on this entity", LogEntity("entity", e), log.Path("source", e))
 			return false
 		}
+	case *Struct, *Command:
+		return true
+	default:
+		return false
 	}
-	if a.IsFabricSensitive() {
-		if !isFabricSensitivityAllowed(e) {
-			slog.Error("Fabric sensitivity is not allowed on this entity", LogEntity("entity", e), log.Path("source", e))
-			return false
-		}
-	}
-	return true
 }
 
-func isFabricSensitivityAllowed(e types.Entity) bool {
+func IsFabricSensitivityAllowed(e types.Entity) bool {
 	switch e := e.(type) {
 	case *Field:
 		switch e.EntityType() {
@@ -295,10 +293,10 @@ func isFabricSensitivityAllowed(e types.Entity) bool {
 			if !e.Type.IsArray() {
 				return false
 			}
-			if e.Type.Entity == nil {
+			if e.Type.EntryType == nil || e.Type.EntryType.Entity == nil {
 				return false
 			}
-			switch te := e.Type.Entity.(type) {
+			switch te := e.Type.EntryType.Entity.(type) {
 			case *Struct:
 				return te.FabricScoping == FabricScopingScoped
 			default:

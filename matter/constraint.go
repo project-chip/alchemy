@@ -73,7 +73,6 @@ func (cc *ConstraintContext) MinEntityValue(entity types.Entity, field constrain
 	case *Constant:
 		min = getConstantValue(entity)
 	case *TypeDef:
-		slog.Warn("MinEntityValue on type definition")
 		min = types.Min(entity.Type.BaseType, cc.Nullable())
 	default:
 		slog.Warn("Unexpected entity type on MinEntityValue", log.Type("entity", entity))
