@@ -26,4 +26,4 @@ Expression <- left:(ExpressionLimit) _ operand:('+'/'-'/'*'/'-') _ right:Limit {
 	}, nil
 }
 
-ExpressionLimit <- ( NullLimit / EmptyLimit / StringLimit / BooleanLimit / StatusCodeLimit / HexLimit / TempLimit / IntLimit /  ReferenceLimit / IdentifierLimit)
+ExpressionLimit <- ( NullLimit / EmptyLimit / MinOfLimit / MaxOfLimit / StringLimit / BooleanLimit / StatusCodeLimit / HexLimit / TempLimit / IntLimit /  ReferenceLimit / IdentifierLimit)
