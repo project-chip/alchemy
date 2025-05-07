@@ -18,7 +18,7 @@ func (tlc *TagListConstraint) Type() Type {
 func (tlc *TagListConstraint) ASCIIDocString(dataType *types.DataType) string {
 	var s strings.Builder
 	s.WriteString("Includes ")
-	requiresParens := tlc.Tags.NeedsParens(false)
+	requiresParens := tlc.Tags.NeedsParens(true)
 	if requiresParens {
 		s.WriteString("(")
 	}
