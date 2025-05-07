@@ -49,7 +49,7 @@ func (cr *configuratorRenderer) generateEvents(ce *etree.Element, cluster *matte
 	for event := range events {
 		ee := etree.NewElement("event")
 		cr.populateEvent(ee, event, cluster)
-		xml.InsertElementByAttribute(ce, ee, "code", "command", "attribute", "globalAttribute")
+		xml.InsertElementByAttribute(ce, ee, "code", "command", "attribute", "globalAttribute", "features")
 	}
 	return
 }

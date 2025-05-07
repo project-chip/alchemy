@@ -79,7 +79,7 @@ func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *
 		if err != nil {
 			return
 		}
-		xml.InsertElementByAttributeNumber(cle, ae, "code", a.ID, "globalAttribute", "server", "client", "domain")
+		xml.InsertElementByAttributeNumber(cle, ae, "code", a.ID, "globalAttribute", "server", "client", "domain", "features")
 	}
 	return
 }

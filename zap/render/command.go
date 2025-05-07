@@ -79,7 +79,7 @@ func (cr *configuratorRenderer) generateCommands(commands map[*matter.Command]st
 		if err != nil {
 			return err
 		}
-		xml.InsertElementByAttribute(parent, cme, "code", "attribute", "globalAttribute")
+		xml.InsertElementByAttribute(parent, cme, "code", "attribute", "globalAttribute", "features")
 	}
 	return
 }
