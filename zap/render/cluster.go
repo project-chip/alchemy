@@ -151,7 +151,7 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 		server.CreateAttr("tick", "false")
 		server.SetText("true")
 	}
-	if cr.generator.generateFeaturesXML {
+	if cr.generator.options.FeatureXML {
 		err = cr.generateFeaturesXML(clusterElement, cluster)
 		if err != nil {
 			return

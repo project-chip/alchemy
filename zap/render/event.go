@@ -140,7 +140,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 	}
 
 	if cluster != nil && cr.configurator != nil {
-		if cr.generator.generateConformanceXML {
+		if cr.generator.options.ConformanceXML {
 			renderConformance(cr.generator.spec, event, cluster, event.Conformance, eventElement, "field", "access", "description")
 		} else {
 			removeConformance(eventElement)

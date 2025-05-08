@@ -93,7 +93,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	define := getDefine(attribute.Name, clusterPrefix, cr.configurator.Errata)
 	xml.SetNonexistentAttr(ae, "define", define)
 	cr.writeAttributeDataType(ae, cluster.Attributes, attribute)
-	if attribute.Quality.Has(matter.QualityNullable) && !cr.generator.generateExtendedQualityElement {
+	if attribute.Quality.Has(matter.QualityNullable) && !cr.generator.options.ExtendedQuality {
 		ae.CreateAttr("isNullable", "true")
 	} else {
 		ae.RemoveAttr("isNullable")
@@ -125,7 +125,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	} else {
 		ae.RemoveAttr("optional")
 	}
-	requiresConformance := cr.generator.generateConformanceXML && !conformance.IsBlank(attribute.Conformance) && !(conformance.IsMandatory(attribute.Conformance) && !conformance.IsProvisional(attribute.Conformance))
+	requiresConformance := cr.generator.options.ConformanceXML && !conformance.IsBlank(attribute.Conformance) && !(conformance.IsMandatory(attribute.Conformance) && !conformance.IsProvisional(attribute.Conformance))
 	requiresPermissions := !cr.configurator.Errata.SuppressAttributePermissions && (needsRead || needsWrite)
 	requiresQuality := cr.requiresQuality(types.EntityTypeAttribute, attribute.Quality)
 	if !requiresPermissions && !requiresQuality && !requiresConformance {
@@ -159,7 +159,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 
 		cr.setQuality(ae, types.EntityTypeAttribute, attribute.Quality, "access", "description")
 
-		if cr.generator.generateConformanceXML {
+		if cr.generator.options.ConformanceXML {
 			err = renderConformance(cr.generator.spec, attribute, cluster, attribute.Conformance, ae, "quality", "access", "description")
 			if err != nil {
 				return err

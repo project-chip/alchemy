@@ -9,7 +9,6 @@ import (
 	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/parse"
-	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -18,12 +17,11 @@ import (
 )
 
 type TestPlan struct {
-	Paths []string `arg:"" help:"Paths of AsciiDoc files to generate test plans for. If not specified, all files will be generated." optional:""`
-
 	testplanRender.RendererOptions `embed:""`
 
 	common.ASCIIDocAttributes  `embed:""`
 	spec.ParserOptions         `embed:""`
+	spec.FilterOptions         `embed:""`
 	pipeline.ProcessingOptions `embed:""`
 	files.OutputOptions        `embed:""`
 }
@@ -78,12 +76,9 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return err
 	}
 
-	if len(c.Paths) > 0 { // Filter the spec by whatever extra args were passed
-		filter := paths.NewFilter[*spec.Doc](c.ParserOptions.Root, c.Paths)
-		specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, filter, specDocs)
-		if err != nil {
-			return err
-		}
+	specDocs, err = filterSpecDocs(cc, specDocs, specBuilder.Spec, c.FilterOptions, c.ProcessingOptions)
+	if err != nil {
+		return
 	}
 
 	generator := testplanRender.NewRenderer(c.RendererOptions)

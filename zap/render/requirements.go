@@ -59,7 +59,7 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 		},
 	}
 
-	if p.fullEndpointComposition {
+	if p.options.EndpointCompositionXML {
 		p.setEndpointCompositionElement(spec, cxt, deviceType, dte)
 	}
 	clusterRequirementsByID := p.buildClusterRequirements(spec, cxt, deviceType.ClusterRequirements, deviceType.ElementRequirements)
@@ -420,7 +420,7 @@ func (p *DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element
 
 			fe.CreateAttr("code", feature.Code)
 			fe.CreateAttr("name", feature.Name())
-			if p.generateFeatureXml {
+			if p.options.FeatureXML {
 				renderConformance(p.spec, deviceType, cluster, er.Conformance, fe)
 			} else {
 				removeConformance(fe)
@@ -431,7 +431,7 @@ func (p *DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element
 			fe := etree.NewElement("feature")
 			fe.CreateAttr("code", feature.Code)
 			fe.CreateAttr("name", feature.Name())
-			if p.generateFeatureXml {
+			if p.options.FeatureXML {
 				renderConformance(p.spec, deviceType, cluster, er.Conformance, fe)
 			}
 			xml.InsertElementByAttribute(fse, fe, "code")
