@@ -18,7 +18,7 @@ func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, 
 	} else {
 		fieldElement.RemoveAttr("optional")
 	}
-	if field.Quality.Has(matter.QualityNullable) && !cr.generator.generateExtendedQualityElement {
+	if field.Quality.Has(matter.QualityNullable) && !cr.generator.options.ExtendedQuality {
 		fieldElement.CreateAttr("isNullable", "true")
 	} else {
 		fieldElement.RemoveAttr("isNullable")

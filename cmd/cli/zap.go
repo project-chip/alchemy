@@ -1,108 +1,219 @@
 package cli
 
 import (
+	"context"
+	"log/slog"
+
 	"github.com/project-chip/alchemy/cmd/common"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
+	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
+	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/sdk"
+	"github.com/project-chip/alchemy/zap"
 	"github.com/project-chip/alchemy/zap/render"
 )
 
 type ZAP struct {
-	FeatureXML             bool `default:"true" aliases:"featureXML" help:"write new style feature XML" group:"ZAP:"`
-	ConformanceXML         bool `default:"true" aliases:"conformanceXML" help:"write new style conformance XML" group:"ZAP:"`
-	EndpointCompositionXML bool `default:"false" aliases:"endpointCompositionXML" help:"write new style endpoint composition XML" group:"ZAP:"`
-	SpecOrder              bool `default:"false" aliases:"specOrder" help:"write ZAP template XML in spec order" group:"ZAP:"`
-	ExtendedQuality        bool `default:"false" aliases:"extendedQuality" help:"write quality element with all qualities, suppressing redundant attributes" group:"ZAP:"`
-	Force                  bool `default:"false" help:"write ZAP XML even if there were parsing errors" group:"ZAP:"`
-
 	common.ASCIIDocAttributes  `embed:""`
 	pipeline.ProcessingOptions `embed:""`
 	files.OutputOptions        `embed:""`
 	spec.ParserOptions         `embed:""`
+	spec.FilterOptions         `embed:""`
 	sdk.SDKOptions             `embed:""`
-
-	Paths   []string `arg:"" optional:"" help:"Paths of AsciiDoc files to generate ZAP templates for"`
-	Exclude []string `short:"e"  help:"exclude files matching this file pattern" group:"ZAP:"`
+	render.TemplateOptions     `embed:""`
 }
 
 func (z *ZAP) Run(cc *Context) (err error) {
 
-	var options render.Options
+	asciiSettings := z.ASCIIDocAttributes.ToList()
 
-	options.Parser = z.ParserOptions
-	options.AsciiSettings = z.ASCIIDocAttributes.ToList()
-	options.Pipeline = z.ProcessingOptions
-
-	options.Template = append(options.Template, render.GenerateFeatureXML(z.FeatureXML))
-	options.Template = append(options.Template, render.GenerateConformanceXML(z.ConformanceXML))
-	options.Template = append(options.Template, render.ExtendedQuality(z.ExtendedQuality))
-	options.Template = append(options.Template, render.SpecOrder(z.SpecOrder))
-	options.Template = append(options.Template, render.AsciiAttributes(options.AsciiSettings))
-
-	options.DeviceTypes = append(options.DeviceTypes, render.DeviceTypePatcherGenerateFeatureXML(z.FeatureXML))
-	options.DeviceTypes = append(options.DeviceTypes, render.DeviceTypePatcherFullEndpointComposition(z.EndpointCompositionXML))
-
-	options.Force = z.Force
-	options.Exclude = z.Exclude
-
-	var output render.Output
-	output, err = render.Pipeline(cc, z.SdkRoot, z.Paths, options)
+	err = sdk.CheckAlchemyVersion(z.SdkRoot)
 	if err != nil {
 		return
 	}
 
+	var specParser spec.Parser
+	specParser, err = spec.NewParser(asciiSettings, z.ParserOptions)
+	if err != nil {
+		return
+	}
+
+	err = errata.LoadErrataConfig(z.ParserOptions.Root)
+	if err != nil {
+		return
+	}
+
+	var specFiles pipeline.Paths
+	specFiles, err = pipeline.Start(cc, specParser.Targets)
+	if err != nil {
+		return
+	}
+
+	var specDocs spec.DocSet
+	specDocs, err = pipeline.Parallel(cc, z.ProcessingOptions, specParser, specFiles)
+	if err != nil {
+		return
+	}
+
+	specBuilder := spec.NewBuilder(z.ParserOptions.Root)
+	specDocs, err = pipeline.Collective(cc, z.ProcessingOptions, &specBuilder, specDocs)
+	if err != nil {
+		return
+	}
+
+	err = spec.PatchSpecForSdk(specBuilder.Spec)
+	if err != nil {
+		return
+	}
+
+	var appClusterIndexes spec.DocSet
+	appClusterIndexes, err = pipeline.Collective(cc, z.ProcessingOptions, common.NewDocTypeFilter(matter.DocTypeAppClusterIndex), specDocs)
+
+	if err != nil {
+		return
+	}
+
+	domainIndexer := func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
+		doc := input.Content
+		top := parse.FindFirst[*spec.Section](doc.Elements())
+		if top != nil {
+			doc.Domain = zap.StringToDomain(top.Name)
+			slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
+		}
+		return
+	}
+
+	_, err = pipeline.Parallel(cc, z.ProcessingOptions, pipeline.ParallelFunc("Assigning index domains", domainIndexer), appClusterIndexes)
+	if err != nil {
+		return
+	}
+
+	specDocs, err = filterSpecDocs(cc, specDocs, specBuilder.Spec, z.FilterOptions, z.ProcessingOptions)
+	if err != nil {
+		return
+	}
+
+	var clusters spec.DocSet
+	var deviceTypes spec.DocSet
+	var namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]]
+	clusters, deviceTypes, namespaces, err = render.SplitZAPDocs(cc, specDocs)
+	if err != nil {
+		return
+	}
+
+	var zapTemplateDocs, globalObjectFiles pipeline.StringSet
+	var patchedDeviceTypes, patchedNamespaces, clusterList, indexDocs, zclJson pipeline.FileSet
+
+	var clusterAliases pipeline.Map[string, []string]
+	if clusters.Size() > 0 {
+		var templateGenerator *render.TemplateGenerator
+		templateGenerator, err = render.NewTemplateGenerator(specBuilder.Spec, z.ProcessingOptions, z.SdkRoot, z.TemplateOptions)
+		if err != nil {
+			return
+		}
+		zapTemplateDocs, err = pipeline.Parallel(cc, z.ProcessingOptions, templateGenerator, clusters)
+		if err != nil {
+			return
+		}
+		clusterAliases = templateGenerator.ClusterAliases
+
+		globalObjectFiles, err = templateGenerator.RenderGlobalObjecs(cc)
+		if err != nil {
+			return
+		}
+	} else {
+		clusterAliases = pipeline.NewConcurrentMap[string, []string]()
+	}
+
+	if deviceTypes.Size() > 0 {
+		deviceTypePatcher := render.NewDeviceTypesPatcher(z.SdkRoot, specBuilder.Spec, clusterAliases, z.TemplateOptions)
+		patchedDeviceTypes, err = pipeline.Collective(cc, z.ProcessingOptions, deviceTypePatcher, deviceTypes)
+		if err != nil {
+			return
+		}
+	}
+
+	if namespaces.Size() > 0 {
+		namespacePatcher := render.NewNamespacePatcher(z.SdkRoot, specBuilder.Spec)
+		patchedNamespaces, err = pipeline.Collective(cc, z.ProcessingOptions, namespacePatcher, namespaces)
+		if err != nil {
+			return
+		}
+	}
+
+	if clusters.Size() > 0 {
+		clusterListPatcher := render.NewClusterListPatcher(z.SdkRoot)
+		clusterList, err = pipeline.Collective(cc, z.ProcessingOptions, clusterListPatcher, clusters)
+		if err != nil {
+			return
+		}
+
+		zclPatcher := render.NewZclPatcher(z.SdkRoot, specBuilder.Spec, zapTemplateDocs)
+		zclJson, err = pipeline.Collective(cc, z.ProcessingOptions, zclPatcher, clusters)
+		if err != nil {
+			return
+		}
+
+		provisionalPatcher := render.NewIndexFilesPatcher(z.SdkRoot, specBuilder.Spec)
+		indexDocs, err = pipeline.Collective(cc, z.ProcessingOptions, provisionalPatcher, zapTemplateDocs)
+		if err != nil {
+			return
+		}
+	}
+
 	stringWriter := files.NewWriter[string]("", z.OutputOptions)
-	if output.ZapTemplateDocs != nil && output.ZapTemplateDocs.Size() > 0 {
+	if zapTemplateDocs != nil && zapTemplateDocs.Size() > 0 {
 		stringWriter.SetName("Writing ZAP templates")
-		err = stringWriter.Write(cc, output.ZapTemplateDocs, options.Pipeline)
+		err = stringWriter.Write(cc, zapTemplateDocs, z.ProcessingOptions)
 		if err != nil {
 			return err
 		}
 	}
 
 	byteWriter := files.NewWriter[[]byte]("", z.OutputOptions)
-	if output.IndexDocs != nil && output.IndexDocs.Size() > 0 {
+	if indexDocs != nil && indexDocs.Size() > 0 {
 		byteWriter.SetName("Writing provisional docs")
-		err = byteWriter.Write(cc, output.IndexDocs, options.Pipeline)
+		err = byteWriter.Write(cc, indexDocs, z.ProcessingOptions)
 		if err != nil {
 			return err
 		}
 	}
 
-	if output.PatchedDeviceTypes != nil && output.PatchedDeviceTypes.Size() > 0 {
+	if patchedDeviceTypes != nil && patchedDeviceTypes.Size() > 0 {
 		byteWriter.SetName("Writing deviceTypes")
-		err = byteWriter.Write(cc, output.PatchedDeviceTypes, options.Pipeline)
+		err = byteWriter.Write(cc, patchedDeviceTypes, z.ProcessingOptions)
 		if err != nil {
 			return err
 		}
 	}
 
-	if output.PatchedNamespaces != nil && output.PatchedNamespaces.Size() > 0 {
+	if patchedNamespaces != nil && patchedNamespaces.Size() > 0 {
 		byteWriter.SetName("Writing namespaces")
-		err = byteWriter.Write(cc, output.PatchedNamespaces, options.Pipeline)
+		err = byteWriter.Write(cc, patchedNamespaces, z.ProcessingOptions)
 		if err != nil {
 			return err
 		}
 	}
 
-	if output.GlobalObjectFiles != nil && output.GlobalObjectFiles.Size() > 0 {
+	if globalObjectFiles != nil && globalObjectFiles.Size() > 0 {
 		stringWriter.SetName("Writing global objects")
-		err = stringWriter.Write(cc, output.GlobalObjectFiles, options.Pipeline)
+		err = stringWriter.Write(cc, globalObjectFiles, z.ProcessingOptions)
 		if err != nil {
 			return err
 		}
 	}
 
-	if output.ClusterList != nil && output.ClusterList.Size() > 0 {
+	if clusterList != nil && clusterList.Size() > 0 {
 		byteWriter.SetName("Writing cluster list")
-		err = byteWriter.Write(cc, output.ClusterList, options.Pipeline)
+		err = byteWriter.Write(cc, clusterList, z.ProcessingOptions)
 	}
 
-	if output.ZclJson != nil && output.ZclJson.Size() > 0 {
+	if zclJson != nil && zclJson.Size() > 0 {
 		byteWriter.SetName("Writing ZCL JSON")
-		err = byteWriter.Write(cc, output.ZclJson, options.Pipeline)
+		err = byteWriter.Write(cc, zclJson, z.ProcessingOptions)
 	}
 
 	return

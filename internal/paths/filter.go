@@ -16,11 +16,15 @@ type Filter[T any] struct {
 	specRoot string
 	paths    []string
 
-	Exclude bool
+	exclude bool
 }
 
-func NewFilter[T any](specRoot string, paths []string) *Filter[T] {
+func NewIncludeFilter[T any](specRoot string, paths []string) *Filter[T] {
 	return &Filter[T]{specRoot: specRoot, paths: paths}
+}
+
+func NewExcludeFilter[T any](specRoot string, paths []string) *Filter[T] {
+	return &Filter[T]{specRoot: specRoot, paths: paths, exclude: true}
 }
 
 func (p Filter[T]) Name() string {
@@ -65,8 +69,9 @@ func (p *Filter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (ou
 				break
 			}
 		}
-		if p.Exclude {
+		if p.exclude {
 			if sameFile {
+				slog.Info("excluding file", "path", d.Path)
 				continue
 			}
 			outputs = append(outputs, d)
@@ -96,7 +101,7 @@ func (p *Filter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (ou
 		}
 		ignoredFiles = append(ignoredFiles, specPath.Relative)
 	}
-	if len(ignoredFiles) > 0 {
+	if !p.exclude && len(ignoredFiles) > 0 {
 		slices.Sort(ignoredFiles)
 		docRootLogs := make([]slog.Attr, 0, len(errata.DocRoots))
 		for _, p := range errata.DocRoots {

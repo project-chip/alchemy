@@ -205,7 +205,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 	}
 
 	if cluster != nil && cr.generator != nil {
-		if cr.generator.generateConformanceXML {
+		if cr.generator.options.ConformanceXML {
 			err = renderConformance(cr.generator.spec, c, cluster, c.Conformance, ce, "access", "arg", "description")
 			if err != nil {
 				return err

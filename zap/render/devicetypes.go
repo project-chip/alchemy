@@ -24,35 +24,18 @@ type DeviceTypesPatcher struct {
 	spec           *spec.Specification
 	clusterAliases map[string]string
 
-	generateFeatureXml      bool
-	fullEndpointComposition bool
+	options TemplateOptions
 }
 
-type DeviceTypePatcherOption func(dtp *DeviceTypesPatcher)
-
-func DeviceTypePatcherGenerateFeatureXML(generate bool) DeviceTypePatcherOption {
-	return func(dtp *DeviceTypesPatcher) {
-		dtp.generateFeatureXml = generate
-	}
-}
-
-func DeviceTypePatcherFullEndpointComposition(generate bool) DeviceTypePatcherOption {
-	return func(dtp *DeviceTypesPatcher) {
-		dtp.fullEndpointComposition = generate
-	}
-}
-
-func NewDeviceTypesPatcher(sdkRoot string, spec *spec.Specification, clusterAliases pipeline.Map[string, []string], options ...DeviceTypePatcherOption) *DeviceTypesPatcher {
-	dtp := &DeviceTypesPatcher{sdkRoot: sdkRoot, spec: spec, clusterAliases: make(map[string]string)}
+func NewDeviceTypesPatcher(sdkRoot string, spec *spec.Specification, clusterAliases pipeline.Map[string, []string], options TemplateOptions) *DeviceTypesPatcher {
+	dtp := &DeviceTypesPatcher{sdkRoot: sdkRoot, spec: spec, options: options, clusterAliases: make(map[string]string)}
 	clusterAliases.Range(func(cluster string, aliases []string) bool {
 		for _, alias := range aliases {
 			dtp.clusterAliases[alias] = cluster
 		}
 		return true
 	})
-	for _, opt := range options {
-		opt(dtp)
-	}
+
 	return dtp
 }
 

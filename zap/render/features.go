@@ -21,7 +21,7 @@ func (cr *configuratorRenderer) generateFeatures(configuratorElement *etree.Elem
 		if nameAttr == nil || nameAttr.Value != "Feature" {
 			continue
 		}
-		if needFeatures && !cr.generator.generateFeaturesXML {
+		if needFeatures && !cr.generator.options.FeatureXML {
 
 			err = cr.populateBitmap(bm, &features.Bitmap, clusterIds)
 			needFeatures = false
@@ -29,7 +29,7 @@ func (cr *configuratorRenderer) generateFeatures(configuratorElement *etree.Elem
 			configuratorElement.RemoveChild(bm)
 		}
 	}
-	if cr.generator.generateFeaturesXML {
+	if cr.generator.options.FeatureXML {
 		return
 	}
 	if needFeatures {

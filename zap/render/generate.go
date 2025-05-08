@@ -25,26 +25,21 @@ type TemplateGenerator struct {
 	sdkRoot     string
 	specVersion string
 
-	generateFeaturesXML            bool
-	generateConformanceXML         bool
-	specOrder                      bool
-	generateExtendedQualityElement bool
+	options TemplateOptions
 
 	globalObjectDependencies pipeline.Map[types.Entity, struct{}]
 
 	ClusterAliases pipeline.Map[string, []string]
 }
 
-func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.ProcessingOptions, sdkRoot string, options ...TemplateOption) (*TemplateGenerator, error) {
+func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.ProcessingOptions, sdkRoot string, options TemplateOptions) (*TemplateGenerator, error) {
 	tg := &TemplateGenerator{
 		spec:                     spec,
 		pipeline:                 pipelineOptions,
 		sdkRoot:                  sdkRoot,
 		globalObjectDependencies: pipeline.NewConcurrentMap[types.Entity, struct{}](),
 		ClusterAliases:           pipeline.NewConcurrentMap[string, []string](),
-	}
-	for _, o := range options {
-		o(tg)
+		options:                  options,
 	}
 	if spec.Root != "" {
 		var err error

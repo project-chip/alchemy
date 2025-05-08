@@ -156,7 +156,7 @@ func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *ma
 	name = cr.configurator.Errata.OverrideName(s, name)
 	e.CreateAttr("name", name)
 	cr.writeDataType(e, types.EntityTypeStruct, s.Name, s.Fields, v)
-	if v.Quality.Has(matter.QualityNullable) && !cr.generator.generateExtendedQualityElement {
+	if v.Quality.Has(matter.QualityNullable) && !cr.generator.options.ExtendedQuality {
 		e.CreateAttr("isNullable", "true")
 	} else {
 		e.RemoveAttr("isNullable")

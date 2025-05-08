@@ -1,35 +1,9 @@
 package render
 
-import "github.com/project-chip/alchemy/asciidoc"
-
-type TemplateOption func(tg *TemplateGenerator)
-
-func GenerateFeatureXML(generate bool) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.generateFeaturesXML = generate
-	}
-}
-
-func GenerateConformanceXML(generate bool) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.generateConformanceXML = generate
-	}
-}
-
-func SpecOrder(specOrder bool) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.specOrder = specOrder
-	}
-}
-
-func AsciiAttributes(attributes []asciidoc.AttributeName) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.attributes = attributes
-	}
-}
-
-func ExtendedQuality(extendedQuality bool) TemplateOption {
-	return func(tg *TemplateGenerator) {
-		tg.generateExtendedQualityElement = extendedQuality
-	}
+type TemplateOptions struct {
+	FeatureXML             bool `default:"true" aliases:"featureXML" help:"write new style feature XML" group:"ZAP:"`
+	ConformanceXML         bool `default:"true" aliases:"conformanceXML" help:"write new style conformance XML" group:"ZAP:"`
+	EndpointCompositionXML bool `default:"false" aliases:"endpointCompositionXML" help:"write new style endpoint composition XML" group:"ZAP:"`
+	SpecOrder              bool `default:"false" aliases:"specOrder" help:"write ZAP template XML in spec order" group:"ZAP:"`
+	ExtendedQuality        bool `default:"false" aliases:"extendedQuality" help:"write quality element with all qualities, suppressing redundant attributes" group:"ZAP:"`
 }

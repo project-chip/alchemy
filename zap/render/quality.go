@@ -12,7 +12,7 @@ func (cr *configuratorRenderer) requiresQuality(entityType types.EntityType, q m
 	if !ok {
 		return false
 	}
-	if cr.generator.generateExtendedQualityElement {
+	if cr.generator.options.ExtendedQuality {
 		return q.Any(allowed)
 	}
 	return q.Any(allowed & (matter.QualityChangedOmitted | matter.QualityLargeMessage))
@@ -45,7 +45,7 @@ func (cr *configuratorRenderer) setQuality(parent *etree.Element, entityType typ
 func (cr *configuratorRenderer) setQualityAttributes(element *etree.Element, q matter.Quality) {
 	setQualityAttribute(element, "changeOmitted", q, matter.QualityChangedOmitted)
 	setQualityAttribute(element, "largeMessage", q, matter.QualityLargeMessage)
-	if cr.generator.generateExtendedQualityElement {
+	if cr.generator.options.ExtendedQuality {
 		setQualityAttribute(element, "nullable", q, matter.QualityNullable)
 		setQualityAttribute(element, "scene", q, matter.QualityScene)
 		setQualityAttribute(element, "fixed", q, matter.QualityFixed)

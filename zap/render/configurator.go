@@ -74,7 +74,7 @@ func (cr *configuratorRenderer) render(x *etree.Document, exampleCluster *matter
 	if err != nil {
 		return
 	}
-	if cr.generator.specOrder && !cr.configurator.Global {
+	if cr.generator.options.SpecOrder && !cr.configurator.Global {
 		err = cr.reorderConfigurator(configuratorElement)
 		if err != nil {
 			return

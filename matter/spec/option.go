@@ -21,7 +21,7 @@ type BuilderOptions struct {
 
 type ParserOptions struct {
 	Root   string `name:"spec-root" default:"connectedhomeip-spec" aliases:"specRoot" help:"the src root of your clone of CHIP-Specifications/connectedhomeip-spec"  group:"Spec:"`
-	Inline bool   `default:"true" help:"use inline parser"  group:"Spec:"`
+	Inline bool   `default:"true" help:"use inline parser"  group:"Spec:" hidden:""`
 }
 
 func (po *ParserOptions) AfterApply() error {
@@ -40,4 +40,11 @@ func (po *ParserOptions) AfterApply() error {
 		return fmt.Errorf("spec root %s does not exist", po.Root)
 	}
 	return nil
+}
+
+type FilterOptions struct {
+	Paths         []string `arg:"" optional:"" help:"Paths of AsciiDoc files to use for generation" group:"Spec:"`
+	Exclude       []string `short:"e"  help:"exclude files matching this file pattern" group:"Spec:"`
+	Force         bool     `default:"false" help:"generate files even if there were spec parsing errors" group:"Spec:"`
+	IgnoreErrored bool     `default:"false" help:"ignore any spec files with parsing errors" group:"Spec:"`
 }

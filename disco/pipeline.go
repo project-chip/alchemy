@@ -53,7 +53,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 			return err
 		}
 		if len(docPaths) > 0 {
-			filter := paths.NewFilter[*spec.Doc](specRoot, docPaths)
+			filter := paths.NewIncludeFilter[*spec.Doc](specRoot, docPaths)
 			docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
 			if err != nil {
 				return err
