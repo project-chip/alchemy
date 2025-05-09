@@ -13,7 +13,7 @@ type Validate struct {
 	pipeline.ProcessingOptions `embed:""`
 }
 
-func (c *Validate) Run(alchemy *Context) (err error) {
+func (c *Validate) Run(cc *Context) (err error) {
 
 	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions)
 	if err != nil {
@@ -25,18 +25,18 @@ func (c *Validate) Run(alchemy *Context) (err error) {
 		return
 	}
 
-	specFiles, err := pipeline.Start(alchemy, specParser.Targets)
+	specFiles, err := pipeline.Start(cc, specParser.Targets)
 	if err != nil {
 		return err
 	}
 
-	specDocs, err := pipeline.Parallel(alchemy, c.ProcessingOptions, specParser, specFiles)
+	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specFiles)
 	if err != nil {
 		return err
 	}
 
 	specBuilder := spec.NewBuilder(c.ParserOptions.Root)
-	_, err = pipeline.Collective(alchemy, c.ProcessingOptions, &specBuilder, specDocs)
+	_, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, specDocs)
 	if err != nil {
 		return err
 	}
