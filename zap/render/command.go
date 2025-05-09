@@ -86,7 +86,6 @@ func (cr *configuratorRenderer) generateCommands(commands map[*matter.Command]st
 
 func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matter.Cluster, c *matter.Command) (err error) {
 	cr.elementMap[ce] = c
-	mandatory := conformance.IsMandatory(c.Conformance)
 
 	var serverSource bool
 	if c.Direction == matter.InterfaceServer {
@@ -104,11 +103,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 	} else {
 		ce.RemoveAttr("isFabricScoped")
 	}
-	if !mandatory {
-		ce.CreateAttr("optional", "true")
-	} else {
-		ce.RemoveAttr("optional")
-	}
+	ce.RemoveAttr("optional")
 	var responseName string
 	if c.Response != nil {
 		switch response := c.Response.Entity.(type) {
