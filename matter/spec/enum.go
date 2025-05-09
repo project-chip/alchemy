@@ -190,5 +190,33 @@ func (ef *enumFinder) suggestIdentifiers(identifier string, suggestions map[type
 	if ef.inner != nil {
 		ef.inner.suggestIdentifiers(identifier, suggestions)
 	}
-	return
+}
+
+func validateEnums(spec *Specification) {
+	for c := range spec.Clusters {
+		for _, e := range c.Enums {
+			validateEnum(spec, e)
+		}
+	}
+	for _, en := range types.FilterSet[*matter.Enum](spec.GlobalObjects) {
+		validateEnum(spec, en)
+	}
+}
+
+func validateEnum(spec *Specification, en *matter.Enum) {
+	enumValues := make(map[uint64]*matter.EnumValue)
+	for _, ev := range en.Values {
+		if !ev.Value.Valid() {
+			slog.Warn("Enum value has invalid ID", log.Path("source", ev), matter.LogEntity("parent", en), slog.String("valueName", en.Name))
+			continue
+		}
+		valueId := ev.Value.Value()
+		existing, ok := enumValues[valueId]
+		if ok {
+			slog.Error("Duplicate enum value", log.Path("source", ev), matter.LogEntity("parent", en), slog.String("enumValue", ev.Value.HexString()), slog.String("enumValueName", ev.Name), slog.String("previousEnumValueName", existing.Name))
+			spec.addError(&DuplicateEntityIDError{Entity: ev, Previous: existing})
+		} else {
+			enumValues[valueId] = ev
+		}
+	}
 }
