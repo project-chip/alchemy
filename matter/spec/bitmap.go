@@ -116,3 +116,37 @@ func (bf *bitmapFinder) suggestIdentifiers(identifier string, suggestions map[ty
 	}
 	return
 }
+
+func validateBitmaps(spec *Specification) {
+	for c := range spec.Clusters {
+		for _, bm := range c.Bitmaps {
+			validateBitmap(spec, bm)
+		}
+		if c.Features != nil {
+			validateBitmap(spec, &c.Features.Bitmap)
+		}
+	}
+	for _, bm := range types.FilterSet[*matter.Bitmap](spec.GlobalObjects) {
+		validateBitmap(spec, bm)
+	}
+}
+
+func validateBitmap(spec *Specification, en *matter.Bitmap) {
+	bits := make(map[uint64]matter.Bit)
+	for _, b := range en.Bits {
+		from, to, err := b.Bits()
+		if err != nil {
+			slog.Warn("Unable to determine range of bitmap values", log.Path("source", b), matter.LogEntity("parent", en), slog.String("name", b.Name()), slog.Any("error", err))
+			continue
+		}
+		for i := from; i <= to; i++ {
+			existing, ok := bits[i]
+			if ok {
+				slog.Error("Overlapping bitmap bit range", log.Path("source", b), matter.LogEntity("parent", en), slog.Uint64("bitFrom", from), slog.Uint64("bitTo", to), slog.Uint64("bitOverlap", i), slog.String("bitName", b.Name()), slog.String("previousBitName", existing.Name()))
+				spec.addError(&DuplicateEntityIDError{Entity: b, Previous: existing})
+			}
+			bits[i] = b
+		}
+	}
+
+}

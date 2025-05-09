@@ -6,6 +6,7 @@ func Validate(spec *Specification) {
 	validateAttributes(spec)
 	validateCommands(spec)
 	validateEvents(spec)
+	validateBitmaps(spec)
 	validateEnums(spec)
 	validateStructs(spec)
 	validateDeviceTypes(spec)
