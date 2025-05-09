@@ -50,6 +50,11 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 			if firstLetterIsLower(file) {
 				return matter.DocTypeAppClusterIndex, nil
 			}
+			for _, p := range doc.Parents() {
+				if filepath.Base(p.Path.Relative) == "appclusters.adoc" {
+					return matter.DocTypeAppClusterIndex, nil
+				}
+			}
 			return matter.DocTypeCluster, nil
 		case "common_protocol":
 			return matter.DocTypeCommonProtocol, nil
