@@ -47,7 +47,7 @@ func (b *Baller) fixAccessCells(cxt *discoContext, subSection *subSection, entit
 			}
 		} else {
 			c := getSubsectionCluster(cxt.parsed, subSection.section)
-			if c != nil {
+			if c != nil && c.classification != nil {
 				ci := getClassificationInfo(c.classification.table)
 				if ci.hierarchy != "Base" {
 					continue
