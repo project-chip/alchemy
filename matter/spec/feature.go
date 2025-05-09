@@ -17,6 +17,10 @@ func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Feature
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
+		if err == ErrNoTableFound {
+			err = nil
+			return
+		}
 		return nil, fmt.Errorf("failed reading features: %w", err)
 
 	}
