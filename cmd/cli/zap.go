@@ -78,10 +78,18 @@ func (z *ZAP) Run(cc *Context) (err error) {
 
 	domainIndexer := func(cxt context.Context, input *pipeline.Data[*spec.Doc], index, total int32) (outputs []*pipeline.Data[*spec.Doc], extra []*pipeline.Data[*spec.Doc], err error) {
 		doc := input.Content
+		e := errata.GetErrata(input.Content.Path.Relative)
+		if e != nil && e.Spec.Domain != "" {
+			doc.Domain = zap.StringToDomain(e.Spec.Domain)
+			if doc.Domain != matter.DomainUnknown {
+				slog.DebugContext(cxt, "Assigned domain from errata", "file", input.Content.Path.Relative, "domain", doc.Domain)
+				return
+			}
+		}
 		top := parse.FindFirst[*spec.Section](doc.Elements())
 		if top != nil {
 			doc.Domain = zap.StringToDomain(top.Name)
-			slog.DebugContext(cxt, "Assigned domain", "file", top.Name, "domain", doc.Domain)
+			slog.DebugContext(cxt, "Assigned domain", "file", input.Content.Path.Relative, "domain", doc.Domain)
 		}
 		return
 	}
