@@ -23,7 +23,13 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 	globalFiles = pipeline.NewMap[string, *pipeline.Data[string]]()
 	globalEntities := make(map[types.EntityType][]types.Entity)
 	tg.globalObjectDependencies.Range(func(entity types.Entity, _ struct{}) bool {
-		globalEntities[entity.EntityType()] = append(globalEntities[entity.EntityType()], entity)
+		et := entity.EntityType()
+		switch et {
+		case types.EntityTypeStruct, types.EntityTypeBitmap, types.EntityTypeEnum, types.EntityTypeCommand, types.EntityTypeEvent:
+			globalEntities[entity.EntityType()] = append(globalEntities[entity.EntityType()], entity)
+		default:
+			slog.Warn("Skipping unsupported global entity type", matter.LogEntity("entity", entity))
+		}
 		return true
 	})
 	if len(globalEntities) == 0 {
@@ -80,6 +86,8 @@ func (tg *TemplateGenerator) getGlobalPath(entityType types.EntityType) (path st
 		path = "global-commands"
 	case types.EntityTypeEvent:
 		path = "global-events"
+	case types.EntityTypeDef:
+		path = "global-typedefs"
 	default:
 		err = fmt.Errorf("unexpected global entity type: %s", entityType.String())
 		return
