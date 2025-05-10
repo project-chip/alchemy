@@ -38,7 +38,7 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 				return fmt.Errorf("error opening doc %s: %w", f, err)
 			}
 
-			for _, top := range parse.Skim[*spec.Section](doc.Elements()) {
+			for top := range parse.Skim[*spec.Section](doc.Elements()) {
 				err := spec.AssignSectionTypes(doc, top)
 				if err != nil {
 					return err

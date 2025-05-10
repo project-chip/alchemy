@@ -15,12 +15,12 @@ func (h *Host) indexDoc(ctx context.Context, doc *spec.Doc, raw bool) (*sectionI
 	ds.values.values = map[matter.TableColumn]any{matter.TableColumnName: doc.Path.Base(), matter.TableColumnType: dts}
 	ds.values.extras = map[string]any{"path": doc.Path.Absolute}
 	if raw {
-		for _, top := range parse.Skim[*spec.Section](doc.Elements()) {
+		for top := range parse.Skim[*spec.Section](doc.Elements()) {
 			err := spec.AssignSectionTypes(doc, top)
 			if err != nil {
 				return nil, err
 			}
-			for _, s := range parse.Skim[*spec.Section](top.Elements()) {
+			for s := range parse.Skim[*spec.Section](top.Elements()) {
 				var err error
 				switch s.SecType {
 				case matter.SectionClusterID:

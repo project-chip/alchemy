@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
-	"github.com/project-chip/alchemy/internal/parse"
 )
 
 type Section interface {
@@ -16,9 +15,6 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 	for _, e := range elementList {
 		if he, ok := e.(Section); ok {
 			e = he.GetASCIISection()
-		}
-		if hb, ok := e.(parse.HasBase); ok {
-			e = hb.GetBase()
 		}
 		switch el := e.(type) {
 		case *asciidoc.AlchemyEscape:

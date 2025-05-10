@@ -51,7 +51,7 @@ func (h *Host) indexEvents(cxt context.Context, doc *spec.Doc, ci *sectionInfo, 
 			}
 		}
 	}
-	for _, s := range parse.Skim[*spec.Section](es.Elements()) {
+	for s := range parse.Skim[*spec.Section](es.Elements()) {
 		switch s.SecType {
 		case matter.SectionEvent:
 			name := text.TrimCaseInsensitiveSuffix(s.Name, " Event")

@@ -102,7 +102,7 @@ func (h *Host) indexDataTypes(cxt context.Context, doc *spec.Doc, ds *sectionInf
 	if ds.children == nil {
 		ds.children = make(map[string][]*sectionInfo)
 	}
-	for _, s := range parse.Skim[*spec.Section](dts.Elements()) {
+	for s := range parse.Skim[*spec.Section](dts.Elements()) {
 		switch s.SecType {
 		case matter.SectionDataTypeBitmap, matter.SectionDataTypeEnum, matter.SectionDataTypeStruct, matter.SectionDataTypeDef:
 			var t string

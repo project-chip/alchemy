@@ -194,9 +194,9 @@ func assignSectionType(doc *Doc, s *Section, sectionType matter.Section) {
 
 func FindSectionByType(top *Section, sectionType matter.Section) *Section {
 	var found *Section
-	parse.Search(top.Elements(), func(s *Section) parse.SearchShould {
-		if s.SecType == sectionType {
-			found = s
+	parse.Traverse(top, top.Elements(), func(el *Section, parent parse.HasElements, index int) parse.SearchShould {
+		if el.SecType == sectionType {
+			found = el
 			return parse.SearchShouldStop
 		}
 		return parse.SearchShouldContinue

@@ -96,6 +96,17 @@ func (doc *Doc) Parents() []*Doc {
 	return p
 }
 
+func (doc *Doc) Type() asciidoc.ElementType {
+	return asciidoc.ElementTypeDocument
+}
+
+func (doc *Doc) Equals(other asciidoc.Element) bool {
+	if other, ok := other.(*Doc); ok {
+		return doc.Path.Absolute == other.Path.Absolute
+	}
+	return false
+}
+
 func (doc *Doc) Group() *DocGroup {
 	return doc.group
 }

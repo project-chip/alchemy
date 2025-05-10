@@ -21,7 +21,7 @@ func buildTree(docs []*Doc) {
 		path := doc.Path
 		docPaths[path.Absolute] = doc
 
-		parse.Search(doc.Elements(), func(link *asciidoc.FileInclude) parse.SearchShould {
+		parse.Traverse(doc, doc.Elements(), func(link *asciidoc.FileInclude, parent parse.HasElements, index int) parse.SearchShould {
 			tree[doc] = append(tree[doc], link)
 			return parse.SearchShouldContinue
 		})

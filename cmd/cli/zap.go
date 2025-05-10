@@ -86,7 +86,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 				return
 			}
 		}
-		top := parse.FindFirst[*spec.Section](doc.Elements())
+		top := parse.FindFirst[*spec.Section](doc)
 		if top != nil {
 			doc.Domain = zap.StringToDomain(top.Name)
 			slog.DebugContext(cxt, "Assigned domain", "file", input.Content.Path.Relative, "domain", doc.Domain)
