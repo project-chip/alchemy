@@ -103,7 +103,7 @@ func (doc *Doc) determineDocType() (matter.DocType, error) {
 }
 
 func (doc *Doc) guessDocType() matter.DocType {
-	firstSection := parse.FindFirst[*Section](doc.Elements())
+	firstSection := parse.FindFirst[*Section](doc)
 	if firstSection != nil {
 		if text.HasCaseInsensitiveSuffix(firstSection.Name, " cluster") {
 			return matter.DocTypeCluster

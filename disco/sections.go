@@ -114,9 +114,8 @@ func (b *Baller) appendSubsectionTypes(cxt *discoContext, section *spec.Section,
 			}
 			subSectionNames[name] = struct{}{}
 		}
-		subSections := parse.FindAll[*spec.Section](section.Elements())
 		suffix := " " + subsectionSuffix
-		for _, ss := range subSections {
+		for ss := range parse.FindAll[*spec.Section](section) {
 			name := text.TrimCaseInsensitiveSuffix(ss.Name, suffix)
 			if _, ok := subSectionNames[name]; !ok {
 				continue

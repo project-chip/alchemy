@@ -14,11 +14,11 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Baller) ensureTableOptions(els asciidoc.Set) {
+func (b *Baller) ensureTableOptions(root asciidoc.HasElements) {
 	if !b.options.NormalizeTableOptions {
 		return
 	}
-	parse.Search(els, func(t *asciidoc.Table) parse.SearchShould {
+	parse.Traverse(root, root.Elements(), func(t *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
 		var excludedIndexes []int
 		for i, attr := range t.Attributes() {
 			na, ok := attr.(*asciidoc.NamedAttribute)
@@ -39,7 +39,6 @@ func (b *Baller) ensureTableOptions(els asciidoc.Set) {
 		}
 		return parse.SearchShouldContinue
 	})
-
 }
 
 func (b *Baller) addMissingColumns(cxt *discoContext, section *spec.Section, ti *spec.TableInfo, tableTemplate matter.Table, entityType types.EntityType) (err error) {

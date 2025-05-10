@@ -17,7 +17,7 @@ import (
 func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err error) {
 	var clusters []*matter.Cluster
 
-	elements := parse.Skim[*Section](s.Elements())
+	elements := parse.SkimList[*Section](s.Elements())
 
 	// Find the cluster ID section and read the IDs from the table
 	for _, s := range elements {
@@ -291,7 +291,7 @@ func readClusterClassification(doc *Doc, name string, classification *matter.Clu
 
 func parseDerivedCluster(d *Doc, pc *parseContext, s *Section, c *matter.Cluster) error {
 	elements := parse.Skim[*Section](s.Elements())
-	for _, s := range elements {
+	for s := range elements {
 		switch s.SecType {
 		case matter.SectionModeTags:
 			en, err := s.toModeTags(d, c)

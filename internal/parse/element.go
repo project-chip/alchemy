@@ -12,10 +12,6 @@ type HasElements interface {
 	Elements() asciidoc.Set
 }
 
-type HasBase interface {
-	GetBase() asciidoc.Element
-}
-
 func HexOrDec(s string) (uint64, error) {
 	id, err := strconv.ParseUint(s, 10, 64)
 	if err == nil {

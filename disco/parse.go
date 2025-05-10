@@ -65,7 +65,7 @@ func (b *Baller) parseDoc(doc *spec.Doc, docType matter.DocType, topLevelSection
 		conformanceCache: make(map[asciidoc.Element]conformance.Set),
 		tableCache:       make(map[*asciidoc.Table]*spec.TableInfo),
 	}
-	for _, section := range parse.FindAll[*spec.Section](topLevelSection.Elements()) {
+	for section := range parse.FindAll[*spec.Section](topLevelSection) {
 		switch section.SecType {
 		case matter.SectionCluster:
 			dp.clusters[section] = &clusterInfo{}
@@ -214,10 +214,12 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 		}
 		subSectionNames[subSectionName] = i
 	}
-	for i, ss := range parse.Skim[*spec.Section](parent.section.Elements()) {
+	var i int
+	for ss := range parse.Skim[*spec.Section](parent.section.Elements()) {
 		name := text.TrimCaseInsensitiveSuffix(ss.Name, childPattern.suffix)
 		var ok bool
 		if _, ok = subSectionNames[name]; !ok {
+			i++
 			continue
 		}
 		var subs *subSection
@@ -231,6 +233,7 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 		}
 		subs.parent = parent
 		subs.parentIndex = i
+		i++
 		subSections = append(subSections, subs)
 	}
 	return

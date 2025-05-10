@@ -32,7 +32,7 @@ func getExistingDataTypes(cxt *discoContext) {
 		return
 	}
 
-	for _, ss := range parse.FindAll[*spec.Section](cxt.parsed.dataTypes.section.Elements()) {
+	for ss := range parse.FindAll[*spec.Section](cxt.parsed.dataTypes.section) {
 		name := matter.StripDataTypeSuffixes(ss.Name)
 		nameKey := strings.ToLower(name)
 		dataType := ss.GetDataType()

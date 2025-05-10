@@ -106,7 +106,7 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 }
 
 func (s *Section) mapFields(fieldMap map[string]*matter.Field, pc *parseContext) error {
-	for _, s := range parse.Skim[*Section](s.Elements()) {
+	for s := range parse.Skim[*Section](s.Elements()) {
 		var name string
 		switch s.SecType {
 		case matter.SectionAttribute:

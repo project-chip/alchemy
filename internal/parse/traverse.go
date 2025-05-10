@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"iter"
 	"slices"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -14,73 +15,42 @@ const (
 	SearchShouldSkip
 )
 
-func FindAll[T any](elements asciidoc.Set) []T {
-	var list []T
-	find(elements, func(t T) SearchShould {
-		list = append(list, t)
-		return SearchShouldContinue
-	})
-	return list
+func FindAll[T any](parent asciidoc.HasElements) iter.Seq[T] {
+	return func(yield func(T) bool) {
+		traverse(parent, parent.Elements(), func(el T, parent HasElements, index int) SearchShould {
+			if !yield(el) {
+				return SearchShouldStop
+			}
+			return SearchShouldContinue
+		})
+	}
 }
 
-func FindFirst[T any](elements asciidoc.Set) T {
+func FindFirst[T any](parent asciidoc.HasElements) T {
 	var found T
-	find(elements, func(t T) SearchShould {
-		found = t
+	traverse(parent, parent.Elements(), func(el T, parent HasElements, index int) SearchShould {
+		found = el
 		return SearchShouldStop
 	})
 	return found
 }
 
-func Search[T any](elements asciidoc.Set, callback func(t T) SearchShould) {
-	find(elements, callback)
-}
-
-func find[T any](elements asciidoc.Set, callback func(t T) SearchShould) SearchShould {
-	for _, e := range elements {
-		var shortCircuit SearchShould
-		if el, ok := e.(T); ok {
-			shortCircuit = callback(el)
-		} else if ae, ok := e.(HasBase); ok {
-			be := ae.GetBase()
-			if el, ok := be.(T); ok {
-				shortCircuit = callback(el)
+func Skim[T any](elements asciidoc.Set) iter.Seq[T] {
+	return func(yield func(T) bool) {
+		for _, e := range elements {
+			if el, ok := e.(T); ok {
+				if !yield(el) {
+					break
+				}
 			}
-		}
-		switch shortCircuit {
-		case SearchShouldStop:
-			return shortCircuit
-		case SearchShouldSkip:
-			continue
-		case SearchShouldContinue:
-		}
-
-		if he, ok := e.(HasElements); ok {
-			shortCircuit = find(he.Elements(), callback)
-		} else if ae, ok := e.(HasBase); ok {
-			be := ae.GetBase()
-			if el, ok := be.(HasElements); ok {
-				shortCircuit = find(el.Elements(), callback)
-			}
-		}
-		if shortCircuit == SearchShouldStop {
-			return shortCircuit
 		}
 	}
-	return SearchShouldContinue
 }
 
-func Skim[T any](elements asciidoc.Set) []T {
+func SkimList[T any](elements asciidoc.Set) []T {
 	var list []T
-	for _, e := range elements {
-		if ae, ok := e.(HasBase); ok {
-			e = ae.GetBase()
-		}
-		switch el := e.(type) {
-		case T:
-			list = append(list, el)
-		}
-
+	for e := range Skim[T](elements) {
+		list = append(list, e)
 	}
 	return list
 }
@@ -90,11 +60,6 @@ func SkimFunc[T any](elements asciidoc.Set, callback func(t T) bool) bool {
 		var shortCircuit bool
 		if el, ok := e.(T); ok {
 			shortCircuit = callback(el)
-		} else if ae, ok := e.(HasBase); ok {
-			be := ae.GetBase()
-			if el, ok := be.(T); ok {
-				shortCircuit = callback(el)
-			}
 		}
 		if shortCircuit {
 			return true
@@ -109,9 +74,6 @@ func Filter(parent HasElements, callback func(parent HasElements, el asciidoc.El
 	var altered bool
 	for i < len(els) {
 		e := els[i]
-		if ae, ok := e.(HasBase); ok {
-			e = ae.GetBase()
-		}
 		switch el := e.(type) {
 		case HasElements:
 			shortCircuit = Filter(el, callback)
@@ -155,11 +117,6 @@ func traverse[T any](parent HasElements, els asciidoc.Set, callback TraverseCall
 		var shortCircuit SearchShould
 		if el, ok := e.(T); ok {
 			shortCircuit = callback(el, parent, i)
-		} else if ae, ok := e.(HasBase); ok {
-			be := ae.GetBase()
-			if el, ok := be.(T); ok {
-				shortCircuit = callback(el, parent, i)
-			}
 		}
 		switch shortCircuit {
 		case SearchShouldStop:
@@ -171,11 +128,6 @@ func traverse[T any](parent HasElements, els asciidoc.Set, callback TraverseCall
 
 		if he, ok := e.(HasElements); ok {
 			shortCircuit = traverse(he, he.Elements(), callback)
-		} else if ae, ok := e.(HasBase); ok {
-			be := ae.GetBase()
-			if el, ok := be.(HasElements); ok {
-				shortCircuit = traverse(el, el.Elements(), callback)
-			}
 		}
 		if shortCircuit == SearchShouldStop {
 			return shortCircuit

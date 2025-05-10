@@ -16,7 +16,7 @@ type DeviceTypeSet pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
 func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (err error) {
 	var deviceTypes []*matter.DeviceType
 
-	for _, s := range parse.Skim[*Section](s.Elements()) {
+	for s := range parse.Skim[*Section](s.Elements()) {
 		switch s.SecType {
 		case matter.SectionClassification:
 			deviceTypes, err = readDeviceTypeIDs(d, s)
@@ -35,8 +35,8 @@ func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (
 	for _, dt := range deviceTypes {
 		dt.Description = description
 
-		elements := parse.FindAll[*Section](s.Elements())
-		for _, s := range elements {
+		elements := parse.FindAll[*Section](s)
+		for s := range elements {
 			switch s.SecType {
 			case matter.SectionClusterRequirements:
 				var crs []*matter.ClusterRequirement
@@ -105,7 +105,7 @@ func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
 }
 
 func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) {
-	for _, top := range parse.Skim[*Section](d.Elements()) {
+	for top := range parse.Skim[*Section](d.Elements()) {
 		err = AssignSectionTypes(d, top)
 		if err != nil {
 			return
