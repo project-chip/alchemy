@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log/slog"
 	"slices"
 	"strings"
@@ -73,6 +74,10 @@ func (cr *configuratorRenderer) generateCommands(commands map[*matter.Command]st
 		if matter.NonGlobalIDInvalidForEntity(command.ID, types.EntityTypeCommand) {
 			continue
 		}
+		if cr.isProvisionalViolation(command) {
+			err = fmt.Errorf("new command added without provisional conformance: %s.%s", cluster.Name, command.Name)
+			return
+		}
 		cme := etree.NewElement("command")
 		cme.CreateAttr("code", command.ID.HexString())
 		err = cr.populateCommand(cme, cluster, command)
@@ -130,6 +135,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 	} else {
 		ce.RemoveAttr("mustUseTimedInvoke")
 	}
+	cr.setProvisional(ce, c)
 
 	de := ce.SelectElement("description")
 	if de == nil {
@@ -192,6 +198,10 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 		}
 		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeCommandField) {
 			continue
+		}
+		if cr.isProvisionalViolation(f) {
+			err = fmt.Errorf("new command field added without provisional conformance: %s.%s.%s", cluster.Name, c.Name, f.Name)
+			return
 		}
 		fe := ce.CreateElement("arg")
 		fe.CreateAttr("id", f.ID.IntString())

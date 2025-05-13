@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log/slog"
 	"slices"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/provisional"
 	"github.com/project-chip/alchemy/zap"
 )
 
@@ -73,31 +75,47 @@ func (cr *configuratorRenderer) generateStructs(structs map[*matter.Struct][]*ma
 	})
 
 	for _, s := range remainingStructs {
+		if cr.isProvisionalViolation(s) {
+			err = fmt.Errorf("new struct added without provisional conformance: %s", s.Name)
+			return
+		}
 		clusterIds := structs[s]
 		if errata != nil && errata.SeparateStructs != nil {
 			if _, ok := errata.SeparateStructs[s.Name]; ok {
 
 				for _, clusterID := range clusterIds {
 					bme := etree.NewElement("struct")
-					cr.populateStruct(bme, s, []*matter.Number{clusterID}, false)
+					_, err = cr.populateStruct(bme, s, []*matter.Number{clusterID}, false)
+					if err != nil {
+						return
+					}
 					xml.AppendElement(configuratorElement, bme, "enum", "bitmap")
 				}
 				continue
 			}
 		}
+
 		bme := etree.NewElement("struct")
-		cr.populateStruct(bme, s, clusterIds, true)
+		_, err = cr.populateStruct(bme, s, clusterIds, true)
+		if err != nil {
+			return
+		}
 		xml.InsertElementByAttribute(configuratorElement, bme, "name", "enum", "bitmap", "domain")
 	}
 
 	return
 }
 
-func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Number, provisional bool) (remainingClusterIDs []*matter.Number) {
+func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Struct, clusterIDs []*matter.Number, newlyAdded bool) (remainingClusterIDs []*matter.Number, err error) {
 	cr.elementMap[ee] = s
 	ee.CreateAttr("name", cr.configurator.Errata.OverrideName(s, s.Name))
-	if provisional {
-		ee.CreateAttr("apiMaturity", "provisional")
+	switch provisional.Policy(cr.generator.options.ProvisionalPolicy) {
+	case provisional.PolicyNone:
+		if newlyAdded {
+			ee.CreateAttr("apiMaturity", "provisional")
+		}
+	default:
+		cr.setProvisional(ee, s)
 	}
 	if s.FabricScoping == matter.FabricScopingScoped {
 		ee.CreateAttr("isFabricScoped", "true")
@@ -126,7 +144,7 @@ func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Stru
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeStructField) {
 				continue
 			}
-			cr.setStructFieldAttributes(fe, s, f)
+			cr.setStructFieldAttributes(fe, s, f, newlyAdded)
 			break
 		}
 	}
@@ -139,15 +157,19 @@ func (cr *configuratorRenderer) populateStruct(ee *etree.Element, s *matter.Stru
 		if matter.NonGlobalIDInvalidForEntity(field.ID, types.EntityTypeStructField) {
 			continue
 		}
+		if cr.isProvisionalViolation(field) {
+			err = fmt.Errorf("new struct field added without provisional conformance: %s.%s", s.Name, field.Name)
+			return
+		}
 		fe := etree.NewElement("item")
-		cr.setStructFieldAttributes(fe, s, field)
+		cr.setStructFieldAttributes(fe, s, field, newlyAdded)
 		xml.AppendElement(ee, fe, "cluster")
 	}
 
 	return
 }
 
-func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Field) {
+func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *matter.Struct, v *matter.Field, newlyAdded bool) {
 	// Remove incorrect attributes from legacy XML
 	e.RemoveAttr("code")
 	e.RemoveAttr("id")
@@ -174,4 +196,13 @@ func (cr *configuratorRenderer) setStructFieldAttributes(e *etree.Element, s *ma
 	cr.setFieldFallback(e, v, s.Fields)
 	cr.setQuality(e, v.EntityType(), v.Quality)
 	cr.renderConstraint(e, s.Fields, v)
+	switch provisional.Policy(cr.generator.options.ProvisionalPolicy) {
+	case provisional.PolicyNone:
+	case provisional.PolicyLoose:
+		if newlyAdded {
+			e.CreateAttr("apiMaturity", "provisional")
+		}
+	case provisional.PolicyStrict:
+		cr.setProvisional(e, v)
+	}
 }

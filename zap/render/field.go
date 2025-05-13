@@ -31,6 +31,7 @@ func (cr *configuratorRenderer) setFieldAttributes(fieldElement *etree.Element, 
 	cr.setFieldFallback(fieldElement, field, fieldSet)
 	cr.setQuality(fieldElement, field.EntityType(), field.Quality)
 	cr.renderConstraint(fieldElement, fieldSet, field)
+	cr.setProvisional(fieldElement, field)
 }
 
 func (cr *configuratorRenderer) writeDataType(element *etree.Element, parentEntityType types.EntityType, parentTypeName string, fieldSet matter.FieldSet, field *matter.Field) {
