@@ -62,6 +62,10 @@ func (cr *configuratorRenderer) generateBitmaps(bitmaps map[*matter.Bitmap][]*ma
 		if len(clusterIds) == 0 {
 			continue
 		}
+		if cr.isProvisionalViolation(bm) {
+			err = fmt.Errorf("new bitmap added without provisional conformance: %s", bm.Name)
+			return
+		}
 		bme := etree.NewElement("bitmap")
 		err = cr.populateBitmap(bme, bm, clusterIds)
 		if err != nil {
@@ -99,6 +103,7 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 		typeName = cr.configurator.Errata.OverrideType(bm, "bitmap8")
 	}
 	ee.CreateAttr("type", typeName)
+	cr.setProvisional(ee, bm)
 
 	if !cr.configurator.Global {
 		_, remainingClusterIds := amendExistingClusterCodes(ee, bm, clusterIds)
@@ -130,6 +135,10 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 		bitIndex++
 		if conformance.IsZigbee(bm.Bits, bit.Conformance()) || conformance.IsDisallowed(bit.Conformance()) {
 			continue
+		}
+		if cr.isProvisionalViolation(bit) {
+			err = fmt.Errorf("new bit added without provisional conformance: %s.%s", bm.Name, bit.Name())
+			return
 		}
 		fe := etree.NewElement("field")
 		err = cr.setBitmapFieldAttributes(fe, bit, valFormat)

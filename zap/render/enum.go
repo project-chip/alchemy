@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log/slog"
 	"slices"
 	"strings"
@@ -68,6 +69,10 @@ func (cr *configuratorRenderer) generateEnums(enums map[*matter.Enum][]*matter.N
 	slices.SortStableFunc(remainingEnums, func(a, b *matter.Enum) int { return strings.Compare(a.Name, b.Name) })
 
 	for _, en := range remainingEnums {
+		if cr.isProvisionalViolation(en) {
+			err = fmt.Errorf("new enum added without provisional conformance: %s", en.Name)
+			return
+		}
 		bme := etree.NewElement("enum")
 		clusterIds := enums[en]
 		err = cr.populateEnum(bme, en, clusterIds)
@@ -92,6 +97,8 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 
 	ee.CreateAttr("name", cr.configurator.Errata.OverrideName(en, en.Name))
 	ee.CreateAttr("type", cr.configurator.Errata.OverrideType(en, en.Type.Name))
+
+	cr.setProvisional(ee, en)
 
 	if !cr.configurator.Global {
 		_, remainingClusterIds := amendExistingClusterCodes(ee, en, clusterIds)
@@ -120,6 +127,10 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 		itemIndex++
 		if conformance.IsZigbee(en.Values, value.Conformance) || conformance.IsDisallowed(value.Conformance) {
 			continue
+		}
+		if cr.isProvisionalViolation(value) {
+			err = fmt.Errorf("new enum value added without provisional conformance: %s.%s", en.Name, value.Name)
+			return
 		}
 		ie := etree.NewElement("item")
 		cr.setEnumItemAttributes(ie, value, valFormat)

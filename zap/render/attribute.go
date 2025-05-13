@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log/slog"
 	"regexp"
 	"strings"
@@ -74,6 +75,11 @@ func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *
 			continue
 		}
 
+		if cr.isProvisionalViolation(a) {
+			err = fmt.Errorf("new attribute added without provisional conformance: %s.%s", cluster.Name, a.Name)
+			return
+		}
+
 		ae := etree.NewElement("attribute")
 		err = cr.populateAttribute(ae, a, cluster, clusterPrefix)
 		if err != nil {
@@ -121,6 +127,8 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 		ae.RemoveAttr("mustUseTimedWrite")
 	}
 	ae.RemoveAttr("optional")
+	cr.setProvisional(ae, attribute)
+
 	requiresConformance := cr.generator.options.ConformanceXML && !conformance.IsBlank(attribute.Conformance) && !(conformance.IsMandatory(attribute.Conformance) && !conformance.IsProvisional(attribute.Conformance))
 	requiresPermissions := !cr.configurator.Errata.SuppressAttributePermissions && (needsRead || needsWrite)
 	requiresQuality := cr.requiresQuality(types.EntityTypeAttribute, attribute.Quality)

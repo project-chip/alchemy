@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log/slog"
 	"slices"
 	"strconv"
@@ -91,6 +92,10 @@ func (cr *configuratorRenderer) renderClusters(ce *etree.Element) (err error) {
 	})
 
 	for _, cluster := range remainingClusters {
+		if cr.isProvisionalViolation(cluster) {
+			err = fmt.Errorf("new cluster added without provisional conformance: %s", cluster.Name)
+			return
+		}
 		cle := etree.NewElement("cluster")
 		xml.AppendElement(ce, cle, "struct", "enum", "bitmap", "domain")
 		err = cr.populateCluster(cle, cluster)
@@ -111,13 +116,7 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 		clusterPrefix = cr.configurator.Errata.ClusterDefinePrefix
 	}
 
-	if cluster.Conformance != nil {
-		if conformance.IsProvisional(cluster.Conformance) {
-			clusterElement.CreateAttr("apiMaturity", "provisional")
-		} else {
-			clusterElement.RemoveAttr("apiMaturity")
-		}
-	}
+	cr.setProvisional(clusterElement, cluster)
 
 	attributes := find.ToMap(cluster.Attributes)
 	events := find.ToMap(cluster.Events)

@@ -1,6 +1,7 @@
 package render
 
 import (
+	"fmt"
 	"log/slog"
 	"strings"
 
@@ -47,14 +48,21 @@ func (cr *configuratorRenderer) generateEvents(ce *etree.Element, cluster *matte
 	}
 
 	for event := range events {
+		if cr.isProvisionalViolation(event) {
+			err = fmt.Errorf("new event added without provisional conformance: %s", event.Name)
+			return
+		}
 		ee := etree.NewElement("event")
-		cr.populateEvent(ee, event, cluster)
+		err = cr.populateEvent(ee, event, cluster)
+		if err != nil {
+			return
+		}
 		xml.InsertElementByAttribute(ce, ee, "code", "command", "attribute", "globalAttribute", "features")
 	}
 	return
 }
 
-func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event *matter.Event, cluster *matter.Cluster) {
+func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event *matter.Event, cluster *matter.Cluster) (err error) {
 	cr.elementMap[eventElement] = event
 	needsAccess := event.Access.Read != matter.PrivilegeUnknown && event.Access.Read != matter.PrivilegeView
 
@@ -63,6 +71,8 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 	priority := cr.configurator.Errata.OverridePriority(event, strings.ToLower(event.Priority))
 	eventElement.CreateAttr("priority", priority)
 	eventElement.CreateAttr("side", "server")
+
+	cr.setProvisional(eventElement, event)
 
 	if event.Access.FabricSensitivity == matter.FabricSensitivitySensitive {
 		eventElement.CreateAttr("isFabricSensitive", "true")
@@ -129,6 +139,10 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
 			continue
 		}
+		if cr.isProvisionalViolation(f) {
+			err = fmt.Errorf("new event field added without provisional conformance: %s.%s.%s", cluster.Name, event.Name, f.Name)
+			return
+		}
 		fe := etree.NewElement("field")
 		fe.CreateAttr("id", f.ID.IntString())
 		cr.setFieldAttributes(fe, types.EntityTypeEvent, event.Name, f, event.Fields)
@@ -142,4 +156,5 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 			removeConformance(eventElement)
 		}
 	}
+	return
 }
