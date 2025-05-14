@@ -77,12 +77,14 @@ func compareEnums(spec *spec.Specification, specCluster *matter.Cluster, zapEnum
 		clusters, ok := spec.ClusterRefs.Get(f)
 		if ok {
 			var externalReference bool
-			for c := range clusters {
+			clusters.Range(func(c *matter.Cluster, value struct{}) bool {
 				if c == specCluster {
 					externalReference = true
-					break
+					return false
 				}
-			}
+				return true
+			})
+
 			if externalReference {
 				continue
 			}

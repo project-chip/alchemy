@@ -13,7 +13,8 @@ func (cr *configuratorRenderer) isProvisional(entity types.Entity) bool {
 	switch is {
 	case provisional.StateAllClustersProvisional,
 		provisional.StateAllDataTypeReferencesProvisional,
-		provisional.StateExplicitlyProvisional:
+		provisional.StateExplicitlyProvisional,
+		provisional.StateUnreferenced:
 		return true
 	default:
 		return false
