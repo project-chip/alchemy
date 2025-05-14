@@ -122,6 +122,16 @@ func (sp *Builder) resolveGlobalDataTypeReferences() {
 	specEntityFinder := newSpecEntityFinder(sp.Spec, nil, nil)
 	for o := range sp.Spec.GlobalObjects {
 		switch s := o.(type) {
+		case *matter.Event:
+			for _, f := range s.Fields {
+				specEntityFinder.setIdentity(f)
+				sp.resolveFieldDataTypes(nil, s.Fields, f, f.Type, specEntityFinder)
+			}
+		case *matter.Command:
+			for _, f := range s.Fields {
+				specEntityFinder.setIdentity(f)
+				sp.resolveFieldDataTypes(nil, s.Fields, f, f.Type, specEntityFinder)
+			}
 		case *matter.Struct:
 			for _, f := range s.Fields {
 				specEntityFinder.setIdentity(f)
