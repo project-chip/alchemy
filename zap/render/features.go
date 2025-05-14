@@ -1,12 +1,15 @@
 package render
 
 import (
-	"log/slog"
+	"fmt"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/dm"
+	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
+	"github.com/project-chip/alchemy/matter/conformance"
 )
 
 func (cr *configuratorRenderer) generateFeatures(configuratorElement *etree.Element, features *matter.Features) (err error) {
@@ -69,10 +72,46 @@ func (cr *configuratorRenderer) generateFeaturesXML(configuratorElement *etree.E
 	} else {
 		fse.Child = nil
 	}
-	doc, ok := cr.generator.spec.DocRefs[cluster]
-	if !ok {
-		slog.Warn("missing doc ref for cluster", slog.String("clusterName", cluster.Name))
-	}
-	err = dm.RenderFeatureElements(doc, cluster, fse, true, cr.configurator.Errata)
+	err = cr.renderFeatureElements(cluster, fse, true, cr.configurator.Errata)
 	return
+}
+
+func (cr *configuratorRenderer) renderFeatureElements(cluster *matter.Cluster, features *etree.Element, excludeDisallowed bool, errata *errata.SDK) (err error) {
+	for _, b := range cluster.Features.Bits {
+		f, ok := b.(*matter.Feature)
+		if !ok {
+			err = fmt.Errorf("feature bits contains non-feature bit %s on cluster %s ", b.Name(), cluster.Name)
+			return
+		}
+		if excludeDisallowed && conformance.IsDisallowed(f.Conformance()) {
+			continue
+		}
+		bit := matter.ParseNumber(f.Bit())
+		if !bit.Valid() {
+			continue
+		}
+		feature := features.CreateElement("feature")
+		feature.CreateAttr("bit", bit.IntString())
+		feature.CreateAttr("code", f.Code)
+		name := errata.OverrideName(b, f.Name())
+		feature.CreateAttr("name", name)
+		if len(f.Summary()) > 0 {
+			feature.CreateAttr("summary", scrubDescription(f.Summary()))
+		}
+		cr.setProvisional(feature, f)
+
+		var conformanceElement *etree.Element
+		conformanceElement, err = dm.CreateConformanceElement(f.Conformance(), nil)
+		if err != nil {
+			return err
+		}
+		if conformanceElement != nil {
+			feature.AddChild(conformanceElement)
+		}
+	}
+	return
+}
+
+func scrubDescription(description string) string {
+	return strings.Join(strings.Fields(description), " ")
 }
