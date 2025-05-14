@@ -9,7 +9,6 @@ It can:
 - Generate ZAP XML files for clusters and device types
 - Generate Data Model XML files
 - Generate basic test plans for clusters
-- Compare the Matter spec to the SDK and generate a list of differences
 - Present the Matter spec as a MySQL-compatible database to run queries against
 - Print English-language explanations of Matter conformance strings
 
@@ -155,11 +154,15 @@ alchemy disco connectedhomeip-spec/src/app_clusters/Thermostat.adoc --wrap=120 -
 ZAP generates zap-template XMLs from a spec, creating new XML files for provisional clusters, and amending existing XML files with
 changes.
 
-| Flag                       | Default                | Description   |	
-| :------------------------- |:----------------------:| :-------------|
-| `--spec-root`              | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| `--sdk-root`               | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
-| `--overwrite`              | false                  | Overwrite existing XML files instead of amending them
+| Flag                                       | Default                | Description   |	
+| :----------------------------------------- |:----------------------:| :-------------|
+| `--spec-root`                              | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
+| `--sdk-root`                               | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
+| `--overwrite`                              | false                  | Overwrite existing XML files instead of amending them
+| `--force`                                  | false                  | Forces generation of XML files, even if there are parsing errors reading the spec
+| `--ignore-errored`                         | false                  | Generates XML files for all provided spec files that had no parsing errors
+| `--exclude=<file pattern>`                 |                        | Ignores a pattern of file paths for generation; this attribute may be provided multiple times
+| `--provisional-policy=[none|loose|strict]` | none                   | Sets the provisional policy (see below)
 
 > [!IMPORTANT]  
 > ZAP generates the XML based on how the spec would render for the attributes provided. If you are attempting to generate the zap-template XML for a
@@ -179,6 +182,15 @@ changes.
 > alchemy zap --attribute="in-progress"  --sdk-root=./connectedhomeip/ --spec-root=./connectedhomeip-spec/
 > ```
 
+> [!WARNING]  
+> By default, Alchemy will refuse to generate XML for spec files with errors. If you receive the error `Alchemy was unable to proceed due to the following fatal errors in parsing the spec`,
+> you can either:
+>
+> 1. Fix the error. This is the best route.
+> 2. Use the `--exclude` flag to exclude the file that is failing to parse.
+> 3. Use the `--ignore-errored` flag to automatically exclude any files that are failing to parse
+> 4. Use the `--force` flag to cause Alchemy to ignore all errors and generate XML as best as it can. This is likely to cause issues later, and should be avoided if possible.
+
 > [!NOTE]  
 > By default, existing ZAP XML files will be amended by Alchemy, leaving ordering of elements, comments and unrecognized XML attributes in place. The overwrite flag allows regenerating the XML files from scratch.
 
@@ -192,21 +204,40 @@ alchemy zap --attribute="in-progress"  --sdk-root=./connectedhomeip/ --spec-root
 >
 > If the targeted cluster references, directly or indirectly, one of the global data type files (e.g. global-structs.xml, global-enums.xml, etc.), the entire global data type file will be generated. This may pull in changes to global data types from other clusters.
 
-### compare
 
-Compare loads the spec and the ZAP template XMLs and returns their differences in JSON format.
+#### Provisional Policy
 
-| Flag                       | Default                | Description   |	
-| :------------------------- |:----------------------:| :-------------|
-| `--spec-root`              | ./connectedhomeip-spec | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
-| `--sdk-root`               | ./connectedhomeip      | The root of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
-| `--text`                   | false                  | Returns differences in a text format |
+The provisional policy changes how Alchemy handles adding new data types to the XML files.
 
-#### Example
+##### None
 
-```console
-alchemy compare --sdk-root=./connectedhomeip/ --spec-root=./connectedhomeip-spec/
-```
+The "none" policy causes Alchemy treat provisional data types the same way it did before these policies were introduced:
+
+1. Clusters/attributes with provisional conformance are written with the "apiMaturity" attribute set to "provisional"; clusters/attributes without provisional conformance have this attribute removed, if it already exists
+2. Structs which do not currently exist in the ZAP XML are written with "apiMaturity" set to "provisional"
+
+##### Loose
+
+The "loose" policy causes Alchemy to write or clear apiMaturity attributes on the following data types:
+
+* Attributes
+* Bitmaps
+* Clusters
+* Commands
+* Enums
+* Events
+* Features
+* Structs
+* Fields on Commands, Events and Structs 
+
+Data types are considered provisional unless one of the following is true:
+
+1. The data type has a conformance column which does not have provisional conformance set
+2. The data type is referenced by a data type which is not provisional
+
+##### Strict
+
+The "strict" policy has the same rules as the "loose" policy, except that it will refuse to add new data types to the generated XML if they are not provisional. 
 
 ### conformance
 
@@ -242,7 +273,9 @@ Data Model generates the Data Model XML files from the spec.
 | :------------------------- |:---------------------------------------:| :-------------|
 | `--spec-root`              | ./connectedhomeip-spec                  | The root of your clone of [the Matter Specification](https://github.com/CHIP-Specifications/connectedhomeip-spec/) |
 | `--dm-root`                | ./connectedhomeip/data_model/master     | The data model directory of your clone of [the Matter SDK](https://github.com/project-chip/connectedhomeip/) |
-
+| `--force`                  | false                                   | Forces generation of data model files, even if there are parsing errors reading the spec
+| `--ignore-errored`         | false                                   | Generates data model files for all provided spec files that had no parsing errors
+| `--exclude=<file pattern>` |                                         | Ignores a pattern of file paths for generation; this attribute may be provided multiple times
 
 ### testplan
 
@@ -262,7 +295,6 @@ Testplan generates basic test plan adoc files from the spec.
 ### testscript
 
 Testplan generates a basic test script from the spec.
-
 
 | Flag                       | Default                | Description   |	
 | :------------------------- |:----------------------:| :-------------|
