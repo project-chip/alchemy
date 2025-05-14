@@ -2,7 +2,6 @@ package provisional
 
 import (
 	"log/slog"
-	"runtime/debug"
 
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"

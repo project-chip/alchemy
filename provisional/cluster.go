@@ -2,7 +2,6 @@ package provisional
 
 import (
 	"iter"
-	"log/slog"
 
 	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/matter"
@@ -105,12 +104,6 @@ func compareClusterEntities(spec *spec.Specification, violations map[string][]Vi
 }
 
 func compareEntity[T ComparableEntity, Parent types.Entity](spec *spec.Specification, violations map[string][]Violation, e T, parentState EntityState[Parent], iterator func(p Parent) iter.Seq[T]) {
-	switch en := any(e).(type) {
-	case *matter.EnumValue:
-		if en.Name == "NewNonProvisionalValue" {
-			slog.Info("NewNonProvisionalValue", "state", getEntityState(e, parentState, iterator))
-		}
-	}
 	compareStates(spec, violations, getEntityState(e, parentState, iterator))
 }
 
