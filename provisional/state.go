@@ -65,6 +65,17 @@ func Check(spec *spec.Specification, entity types.Entity, originalEntity types.E
 		// This is explicitly marked provisional
 		return StateExplicitlyProvisional
 	}
+	// There are a couple of test data types that should just be marked as non-provisional
+	switch entity := entity.(type) {
+	case *matter.Struct:
+		if entity.Name == "TestGlobalStruct" {
+			return StateAllDataTypeReferencesNonProvisional
+		}
+	case *matter.Enum:
+		if entity.Name == "TestGlobalEnum" {
+			return StateAllDataTypeReferencesNonProvisional
+		}
+	}
 	switch entity := entity.(type) {
 	case *matter.Cluster:
 		b := conformance.IsProvisional(matter.EntityConformance(entity))
