@@ -329,7 +329,6 @@ func (cf *clusterEntityFinder) findEntityByIdentifier(identifier string, source 
 	if cf.cluster.ParentCluster != nil {
 		e = cf.findEntityInCluster(cf.cluster.ParentCluster, identifier)
 		if e != nil {
-			slog.Info("found entity in parent cluster", matter.LogEntity("entity", e), log.Path("source", source), slog.String("cluster", cf.cluster.Name))
 			return e
 		}
 	}

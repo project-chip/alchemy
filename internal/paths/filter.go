@@ -71,7 +71,6 @@ func (p *Filter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (ou
 		}
 		if p.exclude {
 			if sameFile {
-				slog.Info("excluding file", "path", d.Path)
 				continue
 			}
 			outputs = append(outputs, d)

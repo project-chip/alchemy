@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"log/slog"
 
 	"github.com/goccy/go-yaml"
 )
@@ -34,7 +33,6 @@ func (om *YamlMap[V]) MarshalYAML() ([]byte, error) {
 
 func (t *YamlMap[V]) UnmarshalYAML(unmarshal func(any) error) (err error) {
 	var ms yaml.MapSlice
-	slog.Info("Unmarshalling ordered map yaml")
 	if err = unmarshal(&ms); err != nil {
 		err = fmt.Errorf("error unmarshaling map: %w", err)
 		return err
