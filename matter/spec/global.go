@@ -2,9 +2,11 @@ package spec
 
 import (
 	"iter"
+	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -49,9 +51,35 @@ func (s *Section) toGlobalElements(spec *Specification, d *Doc, pc *parseContext
 	var commands matter.CommandSet
 	commands, err = buildList(spec, d, s, commandsTable, pc, commands, &cf, parent)
 
+	commandMap := make(map[string]*matter.Command)
 	for _, c := range commands {
 		entities = append(entities, c)
+		commandMap[c.Name] = c
 	}
+
+	// The definnition of global commands is frequently elsewhere, so let's scan the doc for other commmand sections
+	parse.Traverse(d, d.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
+		switch sec.SecType {
+		case matter.SectionCommand:
+			slog.Info("Found other command section", "section", sec.Name)
+			commandName := text.TrimCaseInsensitiveSuffix(sec.Name, " Command")
+			command, ok := commandMap[commandName]
+			if !ok {
+				return parse.SearchShouldContinue
+			}
+			if len(command.Fields) > 0 { // We've already found fields for this command, so skip
+				return parse.SearchShouldContinue
+			}
+			if command.Source() == sec {
+				return parse.SearchShouldContinue
+			}
+			err = readCommand(pc, spec, d, sec, command)
+			if err != nil {
+				return parse.SearchShouldStop
+			}
+		}
+		return parse.SearchShouldContinue
+	})
 
 	return
 }
