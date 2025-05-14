@@ -54,32 +54,37 @@ func (cf *commandFactory) New(spec *Specification, d *Doc, s *Section, ti *Table
 }
 
 func (cf *commandFactory) Details(spec *Specification, d *Doc, s *Section, pc *parseContext, c *matter.Command) (err error) {
+	return readCommand(pc, spec, d, s, c)
+}
+
+func readCommand(pc *parseContext, spec *Specification, d *Doc, s *Section, c *matter.Command) (err error) {
 	c.Description = getDescription(d, c, s.Elements())
 
-	if !d.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCommandArguments) {
-		var ti *TableInfo
-		ti, err = parseFirstTable(d, s)
-		if err != nil {
-			if err == ErrNoTableFound {
-				err = nil
-			} else {
-				slog.Warn("No valid command parameter table found", log.Element("source", d.Path, s.Base), "command", c.Name)
-				err = nil
-			}
-			return
-		}
-		var fieldMap map[string]*matter.Field
-		c.Fields, fieldMap, err = d.readFields(spec, ti, types.EntityTypeCommandField, c)
-		if err != nil {
-			return
-		}
-		err = s.mapFields(fieldMap, pc)
-		if err != nil {
-			return
-		}
-	}
-
 	c.Name = CanonicalName(c.Name)
+
+	if d.errata.Spec.IgnoreSection(s.Name, errata.SpecPurposeCommandArguments) {
+		return
+	}
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
+	if err != nil {
+		if err == ErrNoTableFound {
+			err = nil
+		} else {
+			slog.Warn("No valid command parameter table found", log.Element("source", d.Path, s.Base), "command", c.Name)
+			err = nil
+		}
+		return
+	}
+	var fieldMap map[string]*matter.Field
+	c.Fields, fieldMap, err = d.readFields(spec, ti, types.EntityTypeCommandField, c)
+	if err != nil {
+		return
+	}
+	err = s.mapFields(fieldMap, pc)
+	if err != nil {
+		return
+	}
 	return
 }
 

@@ -62,13 +62,38 @@ func (c *Configurator) addExtraTypes(errata *errata.SDK, entities []types.Entity
 			switch v := m.(type) {
 			case *matter.ClusterGroup:
 				for _, cl := range v.Clusters {
-					c.Spec.ClusterRefs.Add(cl, e)
-					c.addEntityType(cl, e)
+					c.addExtraEntity(cl, e)
 				}
 			case *matter.Cluster:
-				c.Spec.ClusterRefs.Add(v, e)
+				c.addExtraEntity(v, e)
+			}
+		}
+	}
+	c.Spec.BuildDataTypeReferences()
+	c.Spec.BuildClusterReferences()
+	for _, e := range extraEntities {
+		for _, m := range entities {
+			switch v := m.(type) {
+			case *matter.ClusterGroup:
+				for _, cl := range v.Clusters {
+					c.addEntityType(cl, e)
+
+				}
+			case *matter.Cluster:
 				c.addEntityType(v, e)
 			}
 		}
+	}
+
+}
+
+func (c *Configurator) addExtraEntity(cluster *matter.Cluster, e types.Entity) {
+	switch e := e.(type) {
+	case *matter.Bitmap:
+		cluster.AddBitmaps(e)
+	case *matter.Enum:
+		cluster.AddEnums(e)
+	case *matter.Struct:
+		cluster.AddStructs(e)
 	}
 }

@@ -180,7 +180,8 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 		return
 	}
 
-	buildClusterReferences(spec)
+	spec.BuildClusterReferences()
+	spec.BuildDataTypeReferences()
 
 	sp.noteConformanceResolutionFailures(spec)
 	sp.noteConstraintResolutionFailures(spec)
@@ -216,21 +217,12 @@ func buildDocumentGroups(docs []*Doc, spec *Specification) (docGroups []*DocGrou
 	return
 }
 
-func buildClusterReferences(spec *Specification) {
-	for _, c := range spec.ClustersByName {
-		if c.Features != nil {
-			spec.ClusterRefs.Add(c, c.Features)
+func (spec *Specification) BuildClusterReferences() {
+	iterateOverDataTypes(spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
+		if cluster != nil {
+			spec.ClusterRefs.Add(cluster, entity)
 		}
-		for _, en := range c.Bitmaps {
-			spec.ClusterRefs.Add(c, en)
-		}
-		for _, en := range c.Enums {
-			spec.ClusterRefs.Add(c, en)
-		}
-		for _, en := range c.Structs {
-			spec.ClusterRefs.Add(c, en)
-		}
-	}
+	})
 }
 
 func indexAnchors(docs []*Doc) (err error) {
@@ -414,14 +406,9 @@ func (sp *Builder) resolveHierarchy() {
 			sp.Spec.addError(&UnknownBaseClusterError{Cluster: c})
 			continue
 		}
-		linkedEntities, err := c.Inherit(base)
+		_, err := c.Inherit(base)
 		if err != nil {
 			slog.Warn("Failed to inherit from base cluster", "cluster", c.Name, "baseCluster", c.Hierarchy, "error", err)
-		}
-		// These entities were inherited from a base cluster
-		for _, linkedEntity := range linkedEntities {
-			sp.Spec.ClusterRefs.Add(c, linkedEntity)
-			sp.Spec.addEntity(linkedEntity, c)
 		}
 		doc, ok := sp.Spec.DocRefs[c]
 		if ok {
@@ -443,7 +430,6 @@ func updateBridgedBasicInformationCluster(spec *Specification, basicInformationC
 		return err
 	}
 	for _, linkedEntity := range linkedEntities {
-		spec.ClusterRefs.Add(bridgedBasicInformationCluster, linkedEntity)
 		spec.addEntity(linkedEntity, bridgedBasicInformationCluster)
 	}
 	return nil

@@ -21,6 +21,15 @@ func EntityConformance(entity types.Entity) conformance.Set {
 		return entity.Conformance
 	case *Cluster:
 		return entity.Conformance
+	case *ClusterGroup:
+		var con conformance.Set
+		for _, c := range entity.Clusters {
+			if !conformance.IsBlank(c.Conformance) {
+				con = c.Conformance
+				break
+			}
+		}
+		return con
 	case *DeviceTypeRequirement:
 		return entity.Conformance
 	case *ClusterRequirement:
