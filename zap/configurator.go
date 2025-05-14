@@ -212,9 +212,10 @@ func (c *Configurator) getClusterCodes(entity types.Entity) (clusterIDs []*matte
 		slog.Warn("unknown cluster ref when searching for cluster codes", c.DocLogs(), matter.LogEntity("entity", entity))
 		return
 	}
-	for ref := range refs {
-		clusterIDs = append(clusterIDs, ref.ID)
-	}
+	refs.Range(func(cluster *matter.Cluster, value struct{}) bool {
+		clusterIDs = append(clusterIDs, cluster.ID)
+		return true
+	})
 	matter.SortNumbers(clusterIDs)
 	return
 }

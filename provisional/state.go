@@ -2,6 +2,7 @@ package provisional
 
 import (
 	"log/slog"
+	"runtime/debug"
 
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
@@ -78,13 +79,13 @@ func Check(spec *spec.Specification, entity types.Entity, originalEntity types.E
 
 	case *matter.Enum, *matter.Bitmap, *matter.Struct:
 		refs, ok := spec.DataTypeRefs.Get(entity)
-		if !ok || len(refs) == 0 {
-			slog.Warn("enum, bitmap or struct has no clusters", matter.LogEntity("entity", entity))
+		if !ok || refs.Size() == 0 {
+			slog.Warn("Enum, bitmap or struct has no references; assuming provisional", matter.LogEntity("entity", entity))
 			return StateUnreferenced
 		}
 		var hasProvisionalRef bool
 		var hasNonProvisionalRef bool
-		for ref := range refs {
+		refs.Range(func(ref types.Entity, value struct{}) bool {
 			switch Check(spec, ref, originalEntity) {
 			case StateExplicitlyProvisional, StateAllClustersProvisional, StateAllDataTypeReferencesProvisional:
 				hasProvisionalRef = true
@@ -98,8 +99,8 @@ func Check(spec *spec.Specification, entity types.Entity, originalEntity types.E
 			default:
 				slog.Warn("Unexpected provisional state", "state", Check(spec, ref, originalEntity))
 			}
-
-		}
+			return true
+		})
 		if hasProvisionalRef {
 			if hasNonProvisionalRef {
 				return StateSomeDataTypeReferencesProvisional
@@ -117,28 +118,31 @@ func Check(spec *spec.Specification, entity types.Entity, originalEntity types.E
 		b := Check(spec, entity.Parent(), originalEntity)
 		return b
 	case *matter.Command, *matter.Event:
-		clusterProvisional := Check(spec, entity.Parent(), originalEntity)
-		switch clusterProvisional {
-		case StateAllClustersProvisional, StateExplicitlyProvisional:
-			return clusterProvisional
-		case StateAllClustersNonProvisional:
-			return clusterProvisional
+		cluster := entity.Parent()
+		if cluster != nil {
+			clusterProvisional := Check(spec, cluster, originalEntity)
+			switch clusterProvisional {
+			case StateAllClustersProvisional, StateExplicitlyProvisional:
+				return clusterProvisional
+			case StateAllClustersNonProvisional:
+				return clusterProvisional
+			}
 		}
 		clusters, ok := spec.ClusterRefs.Get(entity)
-		if !ok || len(clusters) == 0 {
+		if !ok || clusters.Size() == 0 {
 			slog.Warn("command or event has no clusters", matter.LogEntity("entity", entity))
 			return StateUnreferenced
 		}
 		var hasProvisionalCluster bool
 		var hasNonProvisionalCluster bool
-		for cluster := range clusters {
+		clusters.Range(func(cluster *matter.Cluster, value struct{}) bool {
 			if !conformance.IsProvisional(cluster.Conformance) {
 				hasNonProvisionalCluster = true
-
 			} else {
 				hasProvisionalCluster = true
 			}
-		}
+			return true
+		})
 		if hasProvisionalCluster {
 			if !hasNonProvisionalCluster {
 				return StateAllClustersProvisional

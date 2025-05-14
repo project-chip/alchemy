@@ -3,18 +3,19 @@ package spec
 import (
 	"sync"
 
+	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
 
 type EntityRefs[T comparable] struct {
 	sync.RWMutex
-	refs map[types.Entity]map[T]struct{}
+	refs map[types.Entity]pipeline.Map[T, struct{}]
 }
 
 func NewEntityRefs[T comparable]() EntityRefs[T] {
 	return EntityRefs[T]{
-		refs: make(map[types.Entity]map[T]struct{}),
+		refs: make(map[types.Entity]pipeline.Map[T, struct{}]),
 	}
 }
 
@@ -22,18 +23,24 @@ func (cr *EntityRefs[T]) Add(c T, m types.Entity) {
 	cr.Lock()
 	cm, ok := cr.refs[m]
 	if !ok {
-		cm = make(map[T]struct{})
+		cm = pipeline.NewConcurrentMap[T, struct{}]()
 		cr.refs[m] = cm
 	}
-	cm[c] = struct{}{}
+	cm.Store(c, struct{}{})
 	cr.Unlock()
 }
 
-func (cr *EntityRefs[T]) Get(m types.Entity) (map[T]struct{}, bool) {
+func (cr *EntityRefs[T]) Get(m types.Entity) (pipeline.Map[T, struct{}], bool) {
 	cr.RLock()
 	cm, ok := cr.refs[m]
 	cr.RUnlock()
 	return cm, ok
+}
+
+func (spec *Specification) BuildDataTypeReferences() {
+	iterateOverDataTypes(spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
+		spec.DataTypeRefs.Add(parent, entity)
+	})
 }
 
 func iterateOverDataTypes(spec *Specification, callback func(cluster *matter.Cluster, parent types.Entity, entity types.Entity)) {
@@ -74,7 +81,6 @@ func iterateOverDataTypes(spec *Specification, callback func(cluster *matter.Clu
 		}
 	}
 	for e := range spec.GlobalObjects {
-
 		switch en := e.(type) {
 		case *matter.Struct:
 			for _, f := range en.Fields {
@@ -122,10 +128,4 @@ func iterateOverFieldDataTypes(spec *Specification, cluster *matter.Cluster, fie
 			iterateOverFieldDataTypes(spec, cluster, f, callback)
 		}
 	}
-}
-
-func (spec *Specification) BuildDataTypeReferences() {
-	iterateOverDataTypes(spec, func(cluster *matter.Cluster, parent, entity types.Entity) {
-		spec.DataTypeRefs.Add(parent, entity)
-	})
 }
