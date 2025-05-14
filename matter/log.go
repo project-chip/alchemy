@@ -39,6 +39,9 @@ func LogEntity(key string, en types.Entity) slog.Attr {
 	case *Cluster:
 		args = append(args, slog.String("type", "cluster"))
 		args = append(args, slog.String("name", entity.Name))
+	case *ClusterGroup:
+		args = append(args, slog.String("type", "clusterGroup"))
+		args = append(args, slog.String("name", entity.Name))
 	case *TypeDef:
 		args = append(args, slog.String("type", "typeDef"))
 		args = append(args, slog.String("name", entity.Name))
