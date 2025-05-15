@@ -18,6 +18,8 @@ var (
 	eventFieldTable                   = "event_field"
 	commandTable                      = "command"
 	commandFieldTable                 = "command_field"
+	namespaceTable                    = "namespace"
+	tagTable                          = "tag"
 	deviceTypeTable                   = "device_type"
 	deviceTypeRevisionTable           = "device_type_revision"
 	deviceTypeConditionTable          = "device_type_condition"
@@ -213,6 +215,20 @@ var tableSchema = map[string]tableSchemaDef{
 			matter.TableColumnQuality,
 			matter.TableColumnConformance,
 			matter.TableColumnDirection,
+		},
+	},
+	namespaceTable: {
+		parent: documentTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnID,
+			matter.TableColumnName,
+		},
+	},
+	tagTable: {
+		parent: namespaceTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnID,
+			matter.TableColumnName,
 		},
 	},
 }
