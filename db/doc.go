@@ -49,6 +49,8 @@ func (h *Host) indexDoc(ctx context.Context, doc *spec.Doc, raw bool) (*sectionI
 				err = h.indexClusterModel(ctx, ds, v)
 			case *matter.DeviceType:
 				err = h.indexDeviceTypeModel(ctx, ds, v)
+			case *matter.Namespace:
+				err = h.indexNamepsace(ctx, ds, v)
 			}
 			if err != nil {
 				return nil, err
