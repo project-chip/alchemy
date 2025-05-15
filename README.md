@@ -321,6 +321,73 @@ Alchemy-db is provided as a separate binary. It loads up a set of spec docs or Z
 
 #### Examples
 
+##### Command line to launch, loading from specific paths
 ```console
 alchemy-db --sdk-root=./connectedhomeip/ --spec-root=./connectedhomeip-spec/
+```
+
+##### Semantic tags used across multiple Namespaces
+```sql
+SELECT
+    t.name AS tag,
+    ns.name AS namespace,
+    d.path
+FROM
+    tag AS t
+    JOIN namespace AS ns ON t.namespace_id = ns.namespace_id
+    JOIN document AS d on ns.document_id = d.document_id
+WHERE
+    t.name IN 
+    (
+        SELECT
+            name
+        FROM
+            tag
+        GROUP BY
+            name
+        HAVING
+            COUNT(*) > 1
+    )
+ORDER BY
+    t.name
+
+```
+
+```sql
+
+
+
+WITH LargeEnums AS (
+    SELECT
+        enum_id,
+        name
+    FROM
+        enum
+    WHERE enum_id IN
+    (
+    SELECT 
+        enum_id
+    FROM   
+        enum_value
+    GROUP BY enum_id
+    HAVING COUNT(*) > 3
+    )
+) 
+SELECT 
+    c.name AS cluster_name, 
+    e.name AS event_name
+FROM   
+    event AS e
+    JOIN cluster c ON e.cluster_id = c.id
+WHERE 
+    event_id IN 
+    (
+        SELECT 
+            event_id
+        FROM   
+            event_field
+        WHERE 
+            data_type IN 
+        (SELECT NAME FROM LargeEnums)
+    );  
 ```
