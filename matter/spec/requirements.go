@@ -97,13 +97,29 @@ func (s *Section) toDeviceTypeRequirements(d *Doc) (deviceTypeRequirements []*ma
 	}
 	for row := range ti.Body() {
 		cr := matter.NewDeviceTypeRequirement(row)
-		cr.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
+
+		var deviceId string
+		deviceId, err = ti.ReadString(row, matter.TableColumnDeviceID, matter.TableColumnID)
+		if err != nil {
+			return
+		}
+		if strings.HasSuffix(deviceId, "+") {
+			deviceId = deviceId[:len(deviceId)-1]
+			cr.AllowsSuperset = true
+		}
+		cr.DeviceTypeID = matter.ParseNumber(deviceId)
+
+		cr.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID, matter.TableColumnID)
 		if err != nil {
 			return
 		}
 		cr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnName)
 		if err != nil {
 			return
+		}
+		if strings.HasSuffix(cr.DeviceTypeName, "+") {
+			cr.AllowsSuperset = true
+			cr.DeviceTypeName = cr.DeviceTypeName[:len(cr.DeviceTypeName)-1]
 		}
 		cr.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
 		cr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)

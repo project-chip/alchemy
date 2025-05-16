@@ -132,6 +132,7 @@ type DeviceTypeRequirement struct {
 	DeviceTypeName string                `json:"deviceTypeName,omitempty"`
 	Constraint     constraint.Constraint `json:"constraint,omitempty"`
 	Conformance    conformance.Set       `json:"conformance,omitempty"`
+	AllowsSuperset bool                  `json:"allowsSuperset,omitempty"`
 }
 
 func (dtr *DeviceTypeRequirement) EntityType() types.EntityType {
