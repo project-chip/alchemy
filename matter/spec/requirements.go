@@ -21,44 +21,53 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 		return
 	}
 	for row := range ti.Body() {
-		cr := matter.NewClusterRequirement(row)
-		cr.ClusterID, err = ti.ReadID(row, matter.TableColumnID)
+		var cr matter.ClusterRequirement
+		cr, err = s.toClusterRequirement(ti, row)
 		if err != nil {
 			return
 		}
-		cr.ClusterName, err = ti.ReadValue(row, matter.TableColumnCluster)
-		if err != nil {
-			return
-		}
-		if cr.ClusterName == "" {
-			cr.ClusterName, _, err = ti.ReadName(row, matter.TableColumnName)
-			if err != nil {
-				return
-			}
-		}
-		var q string
-		q, err = ti.ReadString(row, matter.TableColumnQuality)
-		if err != nil {
-			return
-		}
-		var cs string
-		cs, err = ti.ReadString(row, matter.TableColumnClientServer)
-		if err != nil {
-			return
-		}
-		switch strings.ToLower(cs) {
-		case "server":
-			cr.Interface = matter.InterfaceServer
-		case "client":
-			cr.Interface = matter.InterfaceClient
-		default:
-			err = fmt.Errorf("unknown client/server value: %s", cs)
-			return
-		}
-		cr.Quality = matter.ParseQuality(q)
-		cr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
-		clusterRequirements = append(clusterRequirements, cr)
+		clusterRequirements = append(clusterRequirements, &cr)
 	}
+	return
+}
+
+func (*Section) toClusterRequirement(ti *TableInfo, row *asciidoc.TableRow) (cr matter.ClusterRequirement, err error) {
+	cr = matter.NewClusterRequirement(row)
+	cr.ClusterID, err = ti.ReadID(row, matter.TableColumnID)
+	if err != nil {
+		return
+	}
+	cr.ClusterName, err = ti.ReadValue(row, matter.TableColumnCluster)
+	if err != nil {
+		return
+	}
+	if cr.ClusterName == "" {
+		cr.ClusterName, _, err = ti.ReadName(row, matter.TableColumnName)
+		if err != nil {
+			return
+		}
+	}
+	var q string
+	q, err = ti.ReadString(row, matter.TableColumnQuality)
+	if err != nil {
+		return
+	}
+	var cs string
+	cs, err = ti.ReadString(row, matter.TableColumnClientServer)
+	if err != nil {
+		return
+	}
+	switch strings.ToLower(cs) {
+	case "server":
+		cr.Interface = matter.InterfaceServer
+	case "client":
+		cr.Interface = matter.InterfaceClient
+	default:
+		err = fmt.Errorf("unknown client/server value: %s", cs)
+		return
+	}
+	cr.Quality = matter.ParseQuality(q)
+	cr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
 	return
 }
 
@@ -128,7 +137,7 @@ func (s *Section) toDeviceTypeRequirements(d *Doc) (deviceTypeRequirements []*ma
 	return
 }
 
-func (s *Section) toComposedDeviceTypeRequirements(d *Doc) (composedRequirements []*matter.ComposedDeviceTypeRequirement, err error) {
+func (s *Section) toComposedDeviceTypeClusterRequirements(d *Doc) (composedClusterRequirements []*matter.ComposedDeviceTypeClusterRequirement, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
@@ -140,7 +149,7 @@ func (s *Section) toComposedDeviceTypeRequirements(d *Doc) (composedRequirements
 		return
 	}
 	for row := range ti.Body() {
-		var cr matter.ComposedDeviceTypeRequirement
+		var cr matter.ComposedDeviceTypeClusterRequirement
 		cr.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
 		if err != nil {
 			return
@@ -149,11 +158,59 @@ func (s *Section) toComposedDeviceTypeRequirements(d *Doc) (composedRequirements
 		if err != nil {
 			return
 		}
-		cr.ElementRequirement, err = s.toElementRequirement(d, ti, row)
+		cr.ClusterRequirement, err = s.toClusterRequirement(ti, row)
 		if err != nil {
 			return
 		}
-		composedRequirements = append(composedRequirements, &cr)
+		composedClusterRequirements = append(composedClusterRequirements, &cr)
+	}
+	return
+}
+
+func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc) (composedElementRequirements []*matter.ComposedDeviceTypeElementRequirement, composedClusterRequirements []*matter.ComposedDeviceTypeClusterRequirement, err error) {
+	var ti *TableInfo
+	ti, err = parseFirstTable(d, s)
+	if err != nil {
+		if err == ErrNoTableFound {
+			err = nil
+		} else {
+			err = fmt.Errorf("error reading element requirements table: %w", err)
+		}
+		return
+	}
+	for row := range ti.Body() {
+		var er matter.ComposedDeviceTypeElementRequirement
+		er.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
+		if err != nil {
+			return
+		}
+		er.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnDeviceName)
+		if err != nil {
+			return
+		}
+		er.ElementRequirement, err = s.toElementRequirement(d, ti, row)
+		if err != nil {
+			return
+		}
+
+		if er.Element != types.EntityTypeUnknown {
+			composedElementRequirements = append(composedElementRequirements, &er)
+		} else {
+			// The element is blank; we previous expressed some kinds of composed cluster requirements this way
+			var cr matter.ComposedDeviceTypeClusterRequirement
+			cr.DeviceTypeID = er.DeviceTypeID
+			cr.DeviceTypeName = er.DeviceTypeName
+			cr.ClusterRequirement = matter.NewClusterRequirement(row)
+			// These always only apply to the server
+			cr.ClusterRequirement.Interface = matter.InterfaceServer
+			cr.ClusterRequirement.ClusterID = er.ClusterID
+			cr.ClusterRequirement.ClusterName = er.ClusterName
+			cr.ClusterRequirement.Quality = er.Quality
+			if len(er.Conformance) > 0 {
+				cr.ClusterRequirement.Conformance = er.Conformance.CloneSet()
+			}
+			composedClusterRequirements = append(composedClusterRequirements, &cr)
+		}
 	}
 	return
 }

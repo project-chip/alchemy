@@ -21,9 +21,10 @@ type DeviceType struct {
 	Conditions             []*Condition             `json:"conditions,omitempty"`
 	DeviceTypeRequirements []*DeviceTypeRequirement `json:"deviceTypeRequirements,omitempty"`
 
-	ClusterRequirements            []*ClusterRequirement            `json:"clusterRequirements,omitempty"`
-	ElementRequirements            []*ElementRequirement            `json:"elementRequirements,omitempty"`
-	ComposedDeviceTypeRequirements []*ComposedDeviceTypeRequirement `json:"composedDeviceTypeRequirements,omitempty"`
+	ClusterRequirements                   []*ClusterRequirement                   `json:"clusterRequirements,omitempty"`
+	ElementRequirements                   []*ElementRequirement                   `json:"elementRequirements,omitempty"`
+	ComposedDeviceTypeClusterRequirements []*ComposedDeviceTypeClusterRequirement `json:"composedDeviceTypeClusterRequirements,omitempty"`
+	ComposedDeviceTypeElementRequirements []*ComposedDeviceTypeElementRequirement `json:"composedDeviceTypeElementRequirements,omitempty"`
 }
 
 func NewDeviceType(source asciidoc.Element) *DeviceType {
@@ -43,8 +44,8 @@ func (dt *DeviceType) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
-func NewClusterRequirement(source asciidoc.Element) *ClusterRequirement {
-	return &ClusterRequirement{entity: entity{source: source}}
+func NewClusterRequirement(source asciidoc.Element) ClusterRequirement {
+	return ClusterRequirement{entity: entity{source: source}}
 }
 
 type ClusterRequirement struct {
@@ -139,7 +140,13 @@ func (dtr *DeviceTypeRequirement) EntityType() types.EntityType {
 	return types.EntityTypeDeviceTypeRequirement
 }
 
-type ComposedDeviceTypeRequirement struct {
+type ComposedDeviceTypeClusterRequirement struct {
+	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
+	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
+	ClusterRequirement
+}
+
+type ComposedDeviceTypeElementRequirement struct {
 	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
 	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
 	ElementRequirement

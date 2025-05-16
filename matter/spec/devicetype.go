@@ -46,8 +46,12 @@ func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (
 				}
 			case matter.SectionElementRequirements:
 				dt.ElementRequirements, err = s.toElementRequirements(d)
-			case matter.SectionComposedDeviceTypeRequirements:
-				dt.ComposedDeviceTypeRequirements, err = s.toComposedDeviceTypeRequirements(d)
+			case matter.SectionComposedDeviceTypeClusterRequirements:
+				dt.ComposedDeviceTypeClusterRequirements, err = s.toComposedDeviceTypeClusterRequirements(d)
+			case matter.SectionComposedDeviceTypeElementRequirements:
+				var extraComposedDeviceClusterRequirements []*matter.ComposedDeviceTypeClusterRequirement
+				dt.ComposedDeviceTypeElementRequirements, extraComposedDeviceClusterRequirements, err = s.toComposedDeviceTypeElementRequirements(d)
+				dt.ComposedDeviceTypeClusterRequirements = append(dt.ComposedDeviceTypeClusterRequirements, extraComposedDeviceClusterRequirements...)
 			case matter.SectionConditions:
 				dt.Conditions, err = s.toConditions(d, dt)
 			case matter.SectionDeviceTypeRequirements:
