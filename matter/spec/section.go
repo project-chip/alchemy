@@ -229,7 +229,17 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 	case "device type requirements":
 		return matter.SectionDeviceTypeRequirements
 	case "cluster requirements on composing device types":
-		return matter.SectionComposedDeviceTypeRequirements
+		// This is for backwards compatibility; we should have named this
+		// section "Element Requirements on Composing Device Types", so
+		// we check if it has an Element field in the table, and if it does,
+		// it's actually element requirements
+		st := guessDataTypeFromTable(section)
+		if st == matter.SectionComposedDeviceTypeElementRequirements {
+			return st
+		}
+		return matter.SectionComposedDeviceTypeClusterRequirements
+	case "element requirements on composing device types":
+		return matter.SectionComposedDeviceTypeElementRequirements
 	}
 	switch parent.SecType {
 	case matter.SectionTop, matter.SectionCluster, matter.SectionDeviceType:
@@ -405,7 +415,7 @@ func guessDataTypeFromTable(section *Section) (sectionType matter.Section) {
 	_, hasClusterId := ti.ColumnIndex(matter.TableColumnClusterID)
 	_, hasElement := ti.ColumnIndex(matter.TableColumnElement)
 	if hasDeviceId && hasClusterId && hasElement {
-		sectionType = matter.SectionComposedDeviceTypeRequirements
+		sectionType = matter.SectionComposedDeviceTypeElementRequirements
 		return
 	}
 	if hasID && hasType && !hasBit && !hasValue {

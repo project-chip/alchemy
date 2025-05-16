@@ -60,7 +60,10 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 	}
 
 	if p.options.EndpointCompositionXML {
-		p.setEndpointCompositionElement(spec, cxt, deviceType, dte)
+		err = p.setEndpointCompositionElement(spec, cxt, deviceType, dte)
+		if err != nil {
+			return
+		}
 	}
 	clusterRequirementsByID := p.buildClusterRequirements(spec, cxt, deviceType.ClusterRequirements, deviceType.ElementRequirements)
 	p.setClustersElement(spec, cxt, deviceType, clusterRequirementsByID, dte)
