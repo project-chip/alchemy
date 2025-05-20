@@ -189,7 +189,7 @@ func renderDataTypes(cluster *matter.Cluster, c *etree.Element) (err error) {
 	return
 }
 
-func renderDataType(f *matter.Field, i *etree.Element) {
+func renderDataType(f *matter.Field, i *etree.Element) (err error) {
 	if f.Type == nil {
 		return
 	}
@@ -200,18 +200,23 @@ func renderDataType(f *matter.Field, i *etree.Element) {
 	i.CreateAttr("type", "list")
 	e := i.CreateElement("entry")
 	e.CreateAttr("type", dataModelName(f.Type.EntryType))
-	renderListConstraint(f.Constraint, f.Type.EntryType, e)
+	err = renderListConstraint(f.Constraint, f.Type.EntryType, e)
+	return
 }
 
-func renderListConstraint(c constraint.Constraint, entryType *types.DataType, parent *etree.Element) {
+func renderListConstraint(c constraint.Constraint, entryType *types.DataType, parent *etree.Element) (err error) {
 	switch c := c.(type) {
 	case constraint.Set:
 		for _, c := range c {
-			renderListConstraint(c, entryType, parent)
+			err = renderListConstraint(c, entryType, parent)
+			if err != nil {
+				return
+			}
 		}
 	case *constraint.ListConstraint:
-		renderConstraint(c.EntryConstraint, entryType, parent, nil)
+		err = renderConstraint(c.EntryConstraint, entryType, parent, nil)
 	}
+	return
 }
 
 func renderFallback(fs matter.FieldSet, f *matter.Field, e *etree.Element) {

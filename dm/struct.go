@@ -32,6 +32,9 @@ func renderStructs(structs []*matter.Struct, dt *etree.Element) (err error) {
 func renderFields(fs matter.FieldSet, parent *etree.Element, parentEntity types.Entity) (err error) {
 	for _, f := range fs {
 		err = renderField(fs, f, parent, parentEntity)
+		if err != nil {
+			return
+		}
 	}
 	return
 }
@@ -43,7 +46,10 @@ func renderField(fs matter.FieldSet, f *matter.Field, parent *etree.Element, par
 	i := parent.CreateElement("field")
 	i.CreateAttr("id", f.ID.IntString())
 	i.CreateAttr("name", f.Name)
-	renderDataType(f, i)
+	err = renderDataType(f, i)
+	if err != nil {
+		return
+	}
 	err = renderAnonymousType(i, f)
 	if err != nil {
 		return
