@@ -81,6 +81,11 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return
 	}
 
+	specDocs, err = checkSpecErrors(cc, specDocs, specBuilder.Spec, c.FilterOptions, c.ProcessingOptions)
+	if err != nil {
+		return
+	}
+
 	generator := testplanRender.NewRenderer(c.RendererOptions)
 	var testplans pipeline.StringSet
 	testplans, err = pipeline.Parallel(cc, c.ProcessingOptions, generator, specDocs)

@@ -24,17 +24,17 @@ type TestScript struct {
 
 func (cmd *TestScript) Run(cc *Context) (err error) {
 
-	specParser, err := spec.NewParser(cmd.ASCIIDocAttributes.ToList(), cmd.ParserOptions)
-	if err != nil {
-		return
-	}
-
 	err = sdk.CheckAlchemyVersion(cmd.SDKOptions.SdkRoot)
 	if err != nil {
 		return
 	}
 
 	err = errata.LoadErrataConfig(cmd.ParserOptions.Root)
+	if err != nil {
+		return
+	}
+
+	specParser, err := spec.NewParser(cmd.ASCIIDocAttributes.ToList(), cmd.ParserOptions)
 	if err != nil {
 		return
 	}
@@ -66,6 +66,11 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 	}
 
 	specDocs, err = filterSpecDocs(cc, specDocs, specBuilder.Spec, cmd.FilterOptions, cmd.ProcessingOptions)
+	if err != nil {
+		return
+	}
+
+	specDocs, err = checkSpecErrors(cc, specDocs, specBuilder.Spec, cmd.FilterOptions, cmd.ProcessingOptions)
 	if err != nil {
 		return
 	}
