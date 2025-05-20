@@ -11,7 +11,7 @@ import (
 	"github.com/project-chip/alchemy/internal/parse"
 )
 
-func buildTree(docs []*Doc) {
+func buildTree(specRoot string, docs []*Doc) error {
 
 	tree := make(map[*Doc][]*asciidoc.FileInclude)
 	docPaths := make(map[string]*Doc)
@@ -31,16 +31,23 @@ func buildTree(docs []*Doc) {
 		for _, link := range children {
 			var p strings.Builder
 			buildDataTypeString(doc, link.Set, &p)
-			linkPath := filepath.Join(doc.Path.Dir(), p.String())
-			slog.Debug("Link path", log.Path("from", doc.Path), slog.String("to", p.String()), slog.String("linkPath", linkPath))
-			if cd, ok := docPaths[linkPath]; ok {
+			linkFullPath := filepath.Join(doc.Path.Dir(), p.String())
+			linkPath, err := asciidoc.NewPath(linkFullPath, specRoot)
+			if err != nil {
+				return err
+			}
+			slog.Debug("Link path", log.Path("from", doc.Path), slog.String("to", p.String()), log.Path("linkPath", linkPath))
+			if cd, ok := docPaths[linkPath.Absolute]; ok {
 				cd.addParent(doc)
 				doc.addChild(cd)
 			} else {
-				slog.Warn("unknown child path", log.Element("parent", doc.Path, link), "child", linkPath)
+				if strings.HasPrefix(linkPath.Relative, "src/") {
+					slog.Warn("unknown child path", log.Element("parent", doc.Path, link), "child", linkPath.Relative)
+				}
 			}
 		}
 	}
+	return nil
 }
 
 func dumpTree(r *Doc, indent int) {
