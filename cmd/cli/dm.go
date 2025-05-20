@@ -52,6 +52,11 @@ func (c *DataModel) Run(cc *Context) (err error) {
 		return
 	}
 
+	specDocs, err = checkSpecErrors(cc, specDocs, specBuilder.Spec, c.FilterOptions, c.ProcessingOptions)
+	if err != nil {
+		return
+	}
+
 	dataModelRenderer := dm.NewRenderer(c.DmRoot, specBuilder.Spec)
 
 	dataModelDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, dataModelRenderer, specDocs)
