@@ -55,7 +55,10 @@ func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (
 
 func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 
-	buildTree(docs)
+	err = buildTree(sp.specRoot, docs)
+	if err != nil {
+		return
+	}
 
 	sp.Spec = newSpec(sp.specRoot)
 	spec := sp.Spec
