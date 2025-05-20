@@ -162,7 +162,7 @@ changes.
 | `--force`                                  | false                  | Forces generation of XML files, even if there are parsing errors reading the spec
 | `--ignore-errored`                         | false                  | Generates XML files for all provided spec files that had no parsing errors
 | `--exclude=<file pattern>`                 |                        | Ignores a pattern of file paths for generation; this attribute may be provided multiple times
-| `--provisional-policy=[none|loose|strict]` | none                   | Sets the provisional policy (see below)
+| `--provisional-policy=[none\|loose\|strict]` | none                   | Sets the provisional policy (see below)
 
 > [!IMPORTANT]  
 > ZAP generates the XML based on how the spec would render for the attributes provided. If you are attempting to generate the zap-template XML for a
@@ -353,10 +353,8 @@ ORDER BY
 
 ```
 
+##### Events with fields whose data types are enumerations with more than three values
 ```sql
-
-
-
 WITH LargeEnums AS (
     SELECT
         enum_id,
