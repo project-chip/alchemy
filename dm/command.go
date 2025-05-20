@@ -100,9 +100,15 @@ func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
 				i.CreateAttr("id", f.ID.IntString())
 			}
 			i.CreateAttr("name", f.Name)
-			renderDataType(f, i)
+			err = renderDataType(f, i)
+			if err != nil {
+				return
+			}
 			if !constraint.IsBlankLimit(f.Fallback) {
-				renderConstraintLimit(i, i, f.Fallback, f.Type, "default", nil)
+				err = renderConstraintLimit(i, i, f.Fallback, f.Type, "default", nil)
+				if err != nil {
+					return
+				}
 			}
 			err = renderAnonymousType(i, f)
 			if err != nil {

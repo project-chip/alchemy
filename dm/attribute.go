@@ -28,9 +28,15 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 		ax := attributes.CreateElement("attribute")
 		ax.CreateAttr("id", a.ID.HexString())
 		ax.CreateAttr("name", a.Name)
-		renderDataType(a, ax)
+		err = renderDataType(a, ax)
+		if err != nil {
+			return
+		}
 		if !constraint.IsBlankLimit(a.Fallback) {
-			renderConstraintLimit(ax, ax, a.Fallback, a.Type, "default", nil)
+			err = renderConstraintLimit(ax, ax, a.Fallback, a.Type, "default", nil)
+			if err != nil {
+				return
+			}
 		}
 		err = renderAnonymousType(ax, a)
 		if err != nil {
