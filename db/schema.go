@@ -24,6 +24,7 @@ var (
 	deviceTypeRevisionTable           = "device_type_revision"
 	deviceTypeConditionTable          = "device_type_condition"
 	deviceTypeClusterRequirementTable = "device_type_cluster_requirement"
+	deviceTypeCompositionTable        = "device_type_composition"
 	typedefTable                      = "typedef"
 )
 
@@ -215,6 +216,15 @@ var tableSchema = map[string]tableSchemaDef{
 			matter.TableColumnQuality,
 			matter.TableColumnConformance,
 			matter.TableColumnDirection,
+		},
+	},
+	deviceTypeCompositionTable: {
+		parent: deviceTypeTable,
+		columns: []matter.TableColumn{
+			matter.TableColumnID,
+			matter.TableColumnName,
+			matter.TableColumnConstraint,
+			matter.TableColumnConformance,
 		},
 	},
 	namespaceTable: {
