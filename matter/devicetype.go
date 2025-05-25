@@ -1,6 +1,8 @@
 package matter
 
 import (
+	"fmt"
+
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/constraint"
@@ -127,13 +129,44 @@ func NewDeviceTypeRequirement(source asciidoc.Element) *DeviceTypeRequirement {
 	return &DeviceTypeRequirement{entity: entity{source: source}}
 }
 
+type DeviceTypeRequirementLocation uint8
+
+const (
+	DeviceTypeRequirementLocationUnknown DeviceTypeRequirementLocation = iota
+	DeviceTypeRequirementLocationDeviceEndpoint
+	DeviceTypeRequirementLocationChildEndpoint
+	DeviceTypeRequirementLocationRootEndpoint
+	DeviceTypeRequirementLocationDescendantEndpoint
+)
+
+var (
+	deviceTypeRequirementRelations = map[DeviceTypeRequirementLocation]string{
+		DeviceTypeRequirementLocationUnknown:            "unknown",
+		DeviceTypeRequirementLocationDeviceEndpoint:     "deviceEndpoint",
+		DeviceTypeRequirementLocationChildEndpoint:      "childEndpoint",
+		DeviceTypeRequirementLocationRootEndpoint:       "rootEndpoint",
+		DeviceTypeRequirementLocationDescendantEndpoint: "descendantEndpoint",
+	}
+)
+
+func (s DeviceTypeRequirementLocation) String() string {
+	str, ok := deviceTypeRequirementRelations[s]
+	if ok {
+		return str
+	}
+	return fmt.Sprintf("DeviceTypeRequirementRelation(%d)", s)
+}
+
 type DeviceTypeRequirement struct {
 	entity
-	DeviceTypeID   *Number               `json:"deviceTypeId,omitempty"`
-	DeviceTypeName string                `json:"deviceTypeName,omitempty"`
-	Constraint     constraint.Constraint `json:"constraint,omitempty"`
-	Conformance    conformance.Set       `json:"conformance,omitempty"`
-	AllowsSuperset bool                  `json:"allowsSuperset,omitempty"`
+	DeviceTypeID   *Number                       `json:"deviceTypeId,omitempty"`
+	DeviceTypeName string                        `json:"deviceTypeName,omitempty"`
+	Constraint     constraint.Constraint         `json:"constraint,omitempty"`
+	Conformance    conformance.Set               `json:"conformance,omitempty"`
+	AllowsSuperset bool                          `json:"allowsSuperset,omitempty"`
+	Location       DeviceTypeRequirementLocation `json:"location,omitempty"`
+
+	DeviceType *DeviceType `json:"deviceType,omitempty"`
 }
 
 func (dtr *DeviceTypeRequirement) EntityType() types.EntityType {

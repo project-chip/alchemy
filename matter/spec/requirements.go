@@ -33,7 +33,7 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 
 func (*Section) toClusterRequirement(ti *TableInfo, row *asciidoc.TableRow) (cr matter.ClusterRequirement, err error) {
 	cr = matter.NewClusterRequirement(row)
-	cr.ClusterID, err = ti.ReadID(row, matter.TableColumnID)
+	cr.ClusterID, err = ti.ReadID(row, matter.TableColumnClusterID, matter.TableColumnID)
 	if err != nil {
 		return
 	}
@@ -105,7 +105,7 @@ func (s *Section) toDeviceTypeRequirements(d *Doc) (deviceTypeRequirements []*ma
 		return
 	}
 	for row := range ti.Body() {
-		cr := matter.NewDeviceTypeRequirement(row)
+		dtr := matter.NewDeviceTypeRequirement(row)
 
 		var deviceId string
 		deviceId, err = ti.ReadString(row, matter.TableColumnDeviceID, matter.TableColumnID)
@@ -114,25 +114,25 @@ func (s *Section) toDeviceTypeRequirements(d *Doc) (deviceTypeRequirements []*ma
 		}
 		if strings.HasSuffix(deviceId, "+") {
 			deviceId = deviceId[:len(deviceId)-1]
-			cr.AllowsSuperset = true
+			dtr.AllowsSuperset = true
 		}
-		cr.DeviceTypeID = matter.ParseNumber(deviceId)
+		dtr.DeviceTypeID = matter.ParseNumber(deviceId)
 
-		cr.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID, matter.TableColumnID)
+		dtr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnName)
 		if err != nil {
 			return
 		}
-		cr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnName)
+		if strings.HasSuffix(dtr.DeviceTypeName, "+") {
+			dtr.AllowsSuperset = true
+			dtr.DeviceTypeName = dtr.DeviceTypeName[:len(dtr.DeviceTypeName)-1]
+		}
+		dtr.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
+		dtr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
+		dtr.Location, err = ti.ReadLocation(row, matter.TableColumnLocation)
 		if err != nil {
 			return
 		}
-		if strings.HasSuffix(cr.DeviceTypeName, "+") {
-			cr.AllowsSuperset = true
-			cr.DeviceTypeName = cr.DeviceTypeName[:len(cr.DeviceTypeName)-1]
-		}
-		cr.Constraint = ti.ReadConstraint(row, matter.TableColumnConstraint)
-		cr.Conformance = ti.ReadConformance(row, matter.TableColumnConformance)
-		deviceTypeRequirements = append(deviceTypeRequirements, cr)
+		deviceTypeRequirements = append(deviceTypeRequirements, dtr)
 	}
 	return
 }
@@ -184,7 +184,7 @@ func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc) (composedEleme
 		if err != nil {
 			return
 		}
-		er.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnDeviceName)
+		er.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnDeviceName, matter.TableColumnDevice)
 		if err != nil {
 			return
 		}
@@ -193,7 +193,7 @@ func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc) (composedEleme
 			return
 		}
 
-		if er.Element != types.EntityTypeUnknown {
+		if er.ElementRequirement.Element != types.EntityTypeUnknown {
 			composedElementRequirements = append(composedElementRequirements, &er)
 		} else {
 			// The element is blank; we previous expressed some kinds of composed cluster requirements this way
