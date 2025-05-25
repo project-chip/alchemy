@@ -173,16 +173,37 @@ func (dtr *DeviceTypeRequirement) EntityType() types.EntityType {
 	return types.EntityTypeDeviceTypeRequirement
 }
 
+func (dtr *DeviceTypeRequirement) Clone() *DeviceTypeRequirement {
+	cdtr := &DeviceTypeRequirement{
+		entity:         entity{source: dtr.source},
+		DeviceTypeID:   dtr.DeviceTypeID.Clone(),
+		DeviceTypeName: dtr.DeviceTypeName,
+		AllowsSuperset: dtr.AllowsSuperset,
+		DeviceType:     dtr.DeviceType,
+	}
+	if dtr.Constraint != nil {
+		cdtr.Constraint = dtr.Constraint.Clone()
+	}
+	if len(dtr.Conformance) > 0 {
+		cdtr.Conformance = dtr.Conformance.CloneSet()
+	}
+	return cdtr
+}
+
 type ComposedDeviceTypeClusterRequirement struct {
 	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
 	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
 	ClusterRequirement
+
+	DeviceType *DeviceType `json:"deviceType,omitempty"`
 }
 
 type ComposedDeviceTypeElementRequirement struct {
 	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
 	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
 	ElementRequirement
+
+	DeviceType *DeviceType `json:"deviceType,omitempty"`
 }
 
 type Condition struct {

@@ -2,7 +2,6 @@ package spec
 
 import (
 	"iter"
-	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
@@ -61,7 +60,6 @@ func (s *Section) toGlobalElements(spec *Specification, d *Doc, pc *parseContext
 	parse.Traverse(d, d.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch sec.SecType {
 		case matter.SectionCommand:
-			slog.Info("Found other command section", "section", sec.Name)
 			commandName := text.TrimCaseInsensitiveSuffix(sec.Name, " Command")
 			command, ok := commandMap[commandName]
 			if !ok {

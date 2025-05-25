@@ -165,6 +165,10 @@ func getTableColumn(val string) matter.TableColumn {
 		return matter.TableColumnFeature
 	case "cluster id":
 		return matter.TableColumnClusterID
+	case "device":
+		return matter.TableColumnDevice
+	case "location":
+		return matter.TableColumnLocation
 	case "device id", "device type id":
 		return matter.TableColumnDeviceID
 	case "device name":

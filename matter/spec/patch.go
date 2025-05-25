@@ -33,7 +33,7 @@ func PatchSpecForSdk(spec *Specification) error {
 	// We have to rebuild these indicies after we make the above changes
 	spec.BuildClusterReferences()
 	spec.BuildDataTypeReferences()
-	associateDeviceTypeRequirementWithClusters(spec)
+	spec.associateDeviceTypeRequirements()
 	return nil
 }
 
@@ -180,4 +180,6 @@ func addAtomicOperations(spec *Specification, cluster *matter.Cluster) {
 	}
 	cluster.Commands = append(cluster.Commands, atomicRequest)
 	cluster.Commands = append(cluster.Commands, atomicResponse)
+	spec.ClusterRefs.Add(cluster, atomicRequest)
+	spec.ClusterRefs.Add(cluster, atomicResponse)
 }
