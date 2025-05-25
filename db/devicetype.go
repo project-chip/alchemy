@@ -55,5 +55,21 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 
 	}
 	parent.children[deviceTypeTable] = append(parent.children[deviceTypeTable], dti)
+
+	for _, dr := range deviceType.DeviceTypeRequirements {
+		row := newDBRow()
+		row.values[matter.TableColumnID] = dr.DeviceTypeID.IntString()
+		row.values[matter.TableColumnName] = dr.DeviceTypeName
+		if dr.Conformance != nil {
+			row.values[matter.TableColumnConformance] = dr.Conformance.ASCIIDocString()
+		}
+		if dr.Constraint != nil {
+			row.values[matter.TableColumnConstraint] = dr.Constraint.ASCIIDocString(nil)
+
+		}
+		fci := &sectionInfo{id: h.nextID(deviceTypeCompositionTable), parent: dti, values: row}
+		dti.children[deviceTypeCompositionTable] = append(dti.children[deviceTypeCompositionTable], fci)
+
+	}
 	return nil
 }
