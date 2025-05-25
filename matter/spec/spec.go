@@ -21,7 +21,9 @@ type Specification struct {
 	DeviceTypes       []*matter.DeviceType
 	DeviceTypesByID   map[uint64]*matter.DeviceType
 	DeviceTypesByName map[string]*matter.DeviceType
-	BaseDeviceType    *matter.DeviceType
+
+	BaseDeviceType *matter.DeviceType
+
 
 	Namespaces []*matter.Namespace
 

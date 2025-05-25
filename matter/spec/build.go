@@ -173,7 +173,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 	if !sp.ignoreHierarchy {
 		sp.resolveHierarchy()
 	}
-	associateDeviceTypeRequirementWithClusters(spec)
+	spec.associateDeviceTypeRequirements()
 	sp.resolveClusterDataTypeReferences(false)
 
 	sp.resolveConformances()
@@ -250,63 +250,6 @@ func indexCrossReferences(docs []*Doc) {
 		crossReferences := d.CrossReferences()
 		for id, xrefs := range crossReferences {
 			d.group.crossReferences[id] = append(d.group.crossReferences[id], xrefs...)
-		}
-	}
-}
-
-func associateDeviceTypeRequirementWithClusters(spec *Specification) {
-	for _, dt := range spec.DeviceTypes {
-		for _, cr := range dt.ClusterRequirements {
-			if cr.Cluster != nil {
-				continue
-			}
-			if c, ok := spec.ClustersByID[cr.ClusterID.Value()]; ok {
-				cr.Cluster = c
-				if c.Name != cr.ClusterName {
-					slog.Warn("Mismatch between cluster requirement ID and cluster name", slog.String("clusterId", cr.ClusterID.HexString()), slog.String("clusterName", c.Name), slog.String("clusterRequirementName", cr.ClusterName), log.Path("source", cr))
-				}
-			} else {
-				if c, ok := spec.ClustersByName[cr.ClusterName]; ok {
-					cr.Cluster = c
-					slog.Warn("linking cluster requirement by name on device type since cluster ID was not recognized",
-						slog.String("clusterId", cr.ClusterID.HexString()),
-						slog.String("clusterName", cr.ClusterName),
-						slog.String("deviceType", dt.Name),
-						log.Path("source", cr))
-				} else {
-					slog.Error("unknown cluster ID for cluster requirement on device type",
-						slog.String("clusterId", cr.ClusterID.HexString()),
-						slog.String("clusterName", cr.ClusterName),
-						slog.String("deviceType", dt.Name),
-						log.Path("source", cr))
-					spec.addError(&UnknownClusterRequirementError{Requirement: cr})
-				}
-			}
-		}
-		for _, er := range dt.ElementRequirements {
-			if er.Cluster != nil {
-				continue
-			}
-			if c, ok := spec.ClustersByID[er.ClusterID.Value()]; ok {
-				er.Cluster = c
-			} else {
-				if c, ok := spec.ClustersByName[er.ClusterName]; ok {
-					er.Cluster = c
-					slog.Warn("linking element requirement by cluster name on device type since cluster ID was not recognized",
-						slog.String("clusterId", er.ClusterID.HexString()),
-						slog.String("clusterName", er.ClusterName),
-						slog.String("deviceType", dt.Name),
-						log.Path("source", er))
-				} else {
-
-					slog.Error("unknown cluster ID for element requirement on device type",
-						slog.String("clusterId", er.ClusterID.HexString()),
-						slog.String("clusterName", er.ClusterName),
-						slog.String("deviceType", dt.Name),
-						log.Path("source", er))
-					spec.addError(&UnknownElementRequirementClusterError{Requirement: er})
-				}
-			}
 		}
 	}
 }

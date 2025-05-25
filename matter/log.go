@@ -57,10 +57,11 @@ func LogEntity(key string, en types.Entity) slog.Attr {
 	case Bit:
 		args = append(args, slog.String("type", "bit"))
 		args = append(args, slog.String("name", entity.Name()))
-	case nil:
-		args = append(args, slog.String("type", "nil"))
-	default:
-		args = append(args, slog.String("type", en.EntityType().String()))
+	case *ClusterRequirement:
+		args = append(args, slog.String("type", "clusterRequirement"))
+		args = append(args, slog.String("clusterId", entity.ClusterID.HexString()))
+		args = append(args, slog.String("clusterName", entity.ClusterName))
+		args = append(args, slog.String("interface", entity.Interface.String()))
 	}
 	if en != nil {
 		parent := en.Parent()

@@ -2,9 +2,11 @@ package spec
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -242,13 +244,10 @@ func (*Section) toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableR
 	case "event":
 		cr.Element = types.EntityTypeEvent
 	default:
-		if e != "" {
-			err = fmt.Errorf("unknown element type: \"%s\"", e)
-		}
+		//err = fmt.Errorf("unknown element type: \"%s\"", e)
+		slog.Warn("Blank element in element requirements; treating as a cluster requirement", slog.String("clusterName", cr.ClusterName), log.Path("source", row))
 	}
-	if err != nil {
-		return
-	}
+
 	cr.Name, err = ti.ReadString(row, matter.TableColumnName)
 	if err != nil {
 		return

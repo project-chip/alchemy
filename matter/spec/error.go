@@ -21,6 +21,17 @@ const (
 	ErrorTypeUnknownCustomDataType
 	ErrorTypeUnknownClusterRequirement
 	ErrorTypeUnknownElementRequirementCluster
+	ErrorTypeElementRequirementUnreferencedCluster
+	ErrorTypeElementRequirementUnknownElement
+	ErrorTypeComposingDeviceTypeRequirementUnknownDeviceType
+	ErrorTypeComposingDeviceTypeClusterRequirementUnknownCluster
+	ErrorTypeComposingDeviceTypeClusterRequirementUnknownDeviceType
+	ErrorTypeComposingDeviceTypeClusterRequirementUnreferencedDeviceType
+	ErrorTypeComposingDeviceTypeElementRequirementUnknownCluster
+	ErrorTypeComposingDeviceTypeElementRequirementUnknownDeviceType
+	ErrorTypeComposingDeviceTypeElementRequirementUnreferencedDeviceType
+	ErrorTypeClusterReferenceNameMismatch
+	ErrorTypeDeviceTypeReferenceNameMismatch
 	ErrorTypeUnknownBaseCluster
 	ErrorTypeUnknownConformanceIdentifier
 	ErrorTypeUnknownConformanceReference
@@ -177,6 +188,150 @@ func (ddt UnknownElementRequirementClusterError) Error() string {
 	return fmt.Sprintf("unknown element requirement cluster: %s", ddt.Requirement.ClusterName)
 }
 
+type ElementRequirementUnreferencedClusterError struct {
+	Requirement *matter.ElementRequirement
+}
+
+func (ddt ElementRequirementUnreferencedClusterError) Type() ErrorType {
+	return ErrorTypeElementRequirementUnreferencedCluster
+}
+
+func (ddt ElementRequirementUnreferencedClusterError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt ElementRequirementUnreferencedClusterError) Error() string {
+	return fmt.Sprintf("unreferenced element requirement cluster: %s", ddt.Requirement.ClusterName)
+}
+
+type ElementRequirementUnknownElementError struct {
+	Requirement *matter.ElementRequirement
+}
+
+func (ddt ElementRequirementUnknownElementError) Type() ErrorType {
+	return ErrorTypeElementRequirementUnknownElement
+}
+
+func (ddt ElementRequirementUnknownElementError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt ElementRequirementUnknownElementError) Error() string {
+	return fmt.Sprintf("element requirement references unknown element: %s %s", ddt.Requirement.Element.String(), ddt.Requirement.Name)
+}
+
+type UnknownComposingDeviceTypeRequirementDeviceTypeError struct {
+	Requirement *matter.DeviceTypeRequirement
+}
+
+func (ddt UnknownComposingDeviceTypeRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeComposingDeviceTypeRequirementUnknownDeviceType
+}
+
+func (ddt UnknownComposingDeviceTypeRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnknownComposingDeviceTypeRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("unknown composing device device type requirement: %s", ddt.Requirement.DeviceTypeName)
+}
+
+type UnknownComposingDeviceTypeRequirementClusterError struct {
+	Requirement *matter.ComposedDeviceTypeClusterRequirement
+}
+
+func (ddt UnknownComposingDeviceTypeRequirementClusterError) Type() ErrorType {
+	return ErrorTypeComposingDeviceTypeClusterRequirementUnknownCluster
+}
+
+func (ddt UnknownComposingDeviceTypeRequirementClusterError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnknownComposingDeviceTypeRequirementClusterError) Error() string {
+	return fmt.Sprintf("unknown composing device cluster requirement: %s", ddt.Requirement.ClusterName)
+}
+
+type UnknownComposingDeviceTypeClusterRequirementDeviceTypeError struct {
+	Requirement *matter.ComposedDeviceTypeClusterRequirement
+}
+
+func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeComposingDeviceTypeClusterRequirementUnknownDeviceType
+}
+
+func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnknownComposingDeviceTypeClusterRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("unknown composing device cluster requirement device type: %s", ddt.Requirement.DeviceTypeName)
+}
+
+type UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError struct {
+	Requirement *matter.ComposedDeviceTypeClusterRequirement
+}
+
+func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeComposingDeviceTypeClusterRequirementUnreferencedDeviceType
+}
+
+func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("unreferenced composing device cluster requirement device type: %s", ddt.Requirement.DeviceTypeName)
+}
+
+type UnknownComposingElementRequirementClusterError struct {
+	Requirement *matter.ComposedDeviceTypeElementRequirement
+}
+
+func (ddt UnknownComposingElementRequirementClusterError) Type() ErrorType {
+	return ErrorTypeComposingDeviceTypeElementRequirementUnknownCluster
+}
+
+func (ddt UnknownComposingElementRequirementClusterError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnknownComposingElementRequirementClusterError) Error() string {
+	return fmt.Sprintf("unknown composing device element requirement cluster: %s", ddt.Requirement.ClusterName)
+}
+
+type UnknownComposingDeviceTypeElementRequirementDeviceTypeError struct {
+	Requirement *matter.ComposedDeviceTypeElementRequirement
+}
+
+func (ddt UnknownComposingDeviceTypeElementRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeComposingDeviceTypeElementRequirementUnknownDeviceType
+}
+
+func (ddt UnknownComposingDeviceTypeElementRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnknownComposingDeviceTypeElementRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("unknown composing device element requirement device type: %s", ddt.Requirement.DeviceTypeName)
+}
+
+type UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError struct {
+	Requirement *matter.ComposedDeviceTypeElementRequirement
+}
+
+func (ddt UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeComposingDeviceTypeElementRequirementUnreferencedDeviceType
+}
+
+func (ddt UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("unreferenced composing device element requirement device type: %s", ddt.Requirement.DeviceTypeName)
+}
+
 type UnknownBaseClusterError struct {
 	Cluster *matter.Cluster
 }
@@ -191,6 +346,42 @@ func (ddt UnknownBaseClusterError) Origin() (path string, line int) {
 
 func (ddt UnknownBaseClusterError) Error() string {
 	return fmt.Sprintf("unknown base cluster: %s", ddt.Cluster.Hierarchy)
+}
+
+type ClusterReferenceNameMismatch struct {
+	Cluster *matter.Cluster
+	Name    string
+	Source  log.Source
+}
+
+func (ddt ClusterReferenceNameMismatch) Type() ErrorType {
+	return ErrorTypeClusterReferenceNameMismatch
+}
+
+func (ddt ClusterReferenceNameMismatch) Origin() (path string, line int) {
+	return ddt.Source.Origin()
+}
+
+func (ddt ClusterReferenceNameMismatch) Error() string {
+	return fmt.Sprintf("cluster reference has mismatched name: %s vs. %s", ddt.Cluster.Name, ddt.Name)
+}
+
+type DeviceTypeReferenceNameMismatch struct {
+	DeviceType *matter.DeviceType
+	Name       string
+	Source     log.Source
+}
+
+func (ddt DeviceTypeReferenceNameMismatch) Type() ErrorType {
+	return ErrorTypeDeviceTypeReferenceNameMismatch
+}
+
+func (ddt DeviceTypeReferenceNameMismatch) Origin() (path string, line int) {
+	return ddt.Source.Origin()
+}
+
+func (ddt DeviceTypeReferenceNameMismatch) Error() string {
+	return fmt.Sprintf("device type reference has mismatched name: %s vs. %s", ddt.DeviceType.Name, ddt.Name)
 }
 
 type UnknownConformanceIdentifierError struct {
