@@ -347,6 +347,29 @@ func (ti *TableInfo) ReadQuality(row *asciidoc.TableRow, entityType types.Entity
 	return
 }
 
+func (ti *TableInfo) ReadLocation(row *asciidoc.TableRow, columns ...matter.TableColumn) (relation matter.DeviceTypeRequirementLocation, err error) {
+	var rs string
+	rs, err = ti.ReadString(row, columns...)
+	if err != nil {
+		return
+	}
+	switch rs {
+	case "":
+		relation = matter.DeviceTypeRequirementLocationUnknown
+	case "DeviceEndpoint":
+		relation = matter.DeviceTypeRequirementLocationDeviceEndpoint
+	case "ChildEndpoint":
+		relation = matter.DeviceTypeRequirementLocationChildEndpoint
+	case "RootEndpoint":
+		relation = matter.DeviceTypeRequirementLocationRootEndpoint
+	case "DescendantEndpoint":
+		relation = matter.DeviceTypeRequirementLocationDescendantEndpoint
+	default:
+		err = fmt.Errorf("unknown relation: %s", rs)
+	}
+	return
+}
+
 func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder) (err error) {
 	for _, el := range els {
 		switch el := el.(type) {
