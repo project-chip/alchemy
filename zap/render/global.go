@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"path/filepath"
 	"slices"
 
 	"github.com/beevik/etree"
@@ -19,33 +18,55 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFiles pipeline.StringSet, err error) {
-	globalFiles = pipeline.NewMap[string, *pipeline.Data[string]]()
-	globalEntities := make(map[types.EntityType][]types.Entity)
-	tg.globalObjectDependencies.Range(func(entity types.Entity, _ struct{}) bool {
-		et := entity.EntityType()
-		switch et {
-		case types.EntityTypeStruct, types.EntityTypeBitmap, types.EntityTypeEnum, types.EntityTypeCommand, types.EntityTypeEvent:
-			globalEntities[entity.EntityType()] = append(globalEntities[entity.EntityType()], entity)
-		default:
-			slog.Warn("Skipping unsupported global entity type", matter.LogEntity("entity", entity))
-		}
-		return true
-	})
-	if len(globalEntities) == 0 {
-		return
+type GlobalObjectsRenderer struct {
+	spec      *spec.Specification
+	sdkRoot   string
+	generator *TemplateGenerator
+}
+
+func NewGlobalObjectsRenderer(spec *spec.Specification, sdkRoot string, generator *TemplateGenerator) *GlobalObjectsRenderer {
+	dt := &GlobalObjectsRenderer{
+		spec:      spec,
+		sdkRoot:   sdkRoot,
+		generator: generator,
 	}
 
-	for entityType := range globalEntities {
-		var outPath string
-		outPath, err = tg.getGlobalPath(entityType)
+	return dt
+}
+
+func (p GlobalObjectsRenderer) Name() string {
+	return "Renering ZAP global objects"
+}
+
+func (p GlobalObjectsRenderer) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[string], err error) {
+
+	globalEntities := make(map[types.EntityType][]types.Entity)
+	for _, input := range inputs {
+		var entities []types.Entity
+		entities, err = input.Content.Entities()
 		if err != nil {
 			return
 		}
-		allEntities := slices.Collect(find.Filter(find.Keys(tg.spec.GlobalObjects), func(e types.Entity) bool { return e.EntityType() == entityType }))
+		for _, entity := range entities {
+			et := entity.EntityType()
+			switch et {
+			case types.EntityTypeStruct, types.EntityTypeBitmap, types.EntityTypeEnum:
+				globalEntities[entity.EntityType()] = append(globalEntities[entity.EntityType()], entity)
+			default:
+				slog.Warn("Skipping unsupported global entity type", matter.LogEntity("entity", entity))
+			}
+		}
+	}
+	for entityType := range globalEntities {
+		var outPath string
+		outPath, err = p.getGlobalPath(entityType)
+		if err != nil {
+			return
+		}
+		allEntities := slices.Collect(find.Filter(find.Keys(p.spec.GlobalObjects), func(e types.Entity) bool { return e.EntityType() == entityType }))
 		docs := make(map[*spec.Doc]struct{})
 		for _, e := range allEntities {
-			doc, ok := tg.spec.DocRefs[e]
+			doc, ok := p.spec.DocRefs[e]
 			if !ok {
 				slog.Warn("missing doc ref for global entity", slog.String("entityType", entityType.String()))
 			} else {
@@ -54,27 +75,30 @@ func (tg *TemplateGenerator) RenderGlobalObjecs(cxt context.Context) (globalFile
 		}
 		allEntities = append(allEntities, getGlobalTestEntites(entityType)...)
 		var configurator *zap.Configurator
-		configurator, err = zap.NewConfigurator(tg.spec, find.Keys(docs), allEntities, outPath, &errata.DefaultErrata.SDK, true)
+		configurator, err = zap.NewConfigurator(p.spec, find.Keys(docs), allEntities, outPath, &errata.DefaultErrata.SDK, true)
 		if err != nil {
 			return
 		}
 		configurator.Domain = "CHIP"
 
 		var doc *etree.Document
-		doc, err = tg.openConfigurator(configurator)
+		doc, err = openConfigurator(configurator, p.generator.pipeline)
 		if err != nil {
 			return
 		}
 
-		cr := newConfiguratorRenderer(tg, configurator)
+		cr := newConfiguratorRenderer(p.generator, configurator)
 		var out string
 		out, err = cr.render(doc, nil)
-		globalFiles.Store(filepath.Base(configurator.OutPath), pipeline.NewData(configurator.OutPath, out))
+		outputs = append(outputs, pipeline.NewData(configurator.OutPath, out))
+	}
+	if len(globalEntities) == 0 {
+		return
 	}
 	return
 }
 
-func (tg *TemplateGenerator) getGlobalPath(entityType types.EntityType) (path string, err error) {
+func (tg *GlobalObjectsRenderer) getGlobalPath(entityType types.EntityType) (path string, err error) {
 	switch entityType {
 	case types.EntityTypeBitmap:
 		path = "global-bitmaps"
