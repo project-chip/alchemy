@@ -7,17 +7,12 @@ import (
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/internal/handlebars"
 	"github.com/project-chip/alchemy/internal/pipeline"
-	"github.com/project-chip/alchemy/matter/conformance"
 )
 
 //go:embed templates
 var templateFiles embed.FS
 
 var template pipeline.Once[*raymond.Template]
-
-type templateContext struct {
-	ReferenceStore conformance.ReferenceStore
-}
 
 func (sp *Renderer) loadTemplate() (*raymond.Template, error) {
 	t, err := template.Do(func() (*raymond.Template, error) {

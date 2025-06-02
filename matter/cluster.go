@@ -219,29 +219,6 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 	return
 }
 
-func (c *Cluster) Identifier(name string) (types.Entity, bool) {
-	if c == nil {
-		return nil, false
-	}
-	var cr types.Entity
-	var ok bool
-	if c.Features != nil {
-		cr, ok = c.Features.Identifier(name)
-		if ok {
-			return cr, ok
-		}
-
-	}
-	stores := []conformance.IdentifierStore{c.Attributes, c.Commands, c.Events, c.Enums, c.Bitmaps, c.Structs}
-	for _, s := range stores {
-		cr, ok = s.Identifier(name)
-		if ok {
-			return cr, true
-		}
-	}
-	return nil, false
-}
-
 func (c *Cluster) Cluster() *Cluster {
 	return c
 }

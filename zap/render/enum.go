@@ -115,7 +115,7 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 			}
 			value := en.Values[itemIndex]
 			itemIndex++
-			if conformance.IsZigbee(en.Values, value.Conformance) || conformance.IsDisallowed(value.Conformance) {
+			if conformance.IsZigbee(value.Conformance) || conformance.IsDisallowed(value.Conformance) {
 				continue
 			}
 			cr.setEnumItemAttributes(be, value, valFormat)
@@ -125,7 +125,7 @@ func (cr *configuratorRenderer) populateEnum(ee *etree.Element, en *matter.Enum,
 	for itemIndex < len(en.Values) {
 		value := en.Values[itemIndex]
 		itemIndex++
-		if conformance.IsZigbee(en.Values, value.Conformance) || conformance.IsDisallowed(value.Conformance) {
+		if conformance.IsZigbee(value.Conformance) || conformance.IsDisallowed(value.Conformance) {
 			continue
 		}
 		if cr.isProvisionalViolation(value) {

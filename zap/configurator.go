@@ -141,7 +141,7 @@ func (c *Configurator) addTypes(parentEntity types.Entity, fs matter.FieldSet) {
 		if f.Type == nil {
 			continue
 		}
-		if conformance.IsZigbee(fs, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+		if conformance.IsZigbee(f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
 		c.addType(parentEntity, f.Type)

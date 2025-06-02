@@ -12,15 +12,15 @@ import (
 
 type conformanceEntityFormatter func(entity types.Entity) string
 
-func picsConformanceHelper(doc conformance.ReferenceStore, cluster matter.Cluster, cs conformance.Set) raymond.SafeString {
+func picsConformanceHelper(cluster matter.Cluster, cs conformance.Set) raymond.SafeString {
 	var b strings.Builder
-	renderConformance(cs, &b, doc, &cluster, entityPICS)
+	renderConformance(cs, &b, &cluster, entityPICS)
 	return raymond.SafeString(b.String())
 }
 
-func conformanceHelper(doc conformance.ReferenceStore, cluster matter.Cluster, cs conformance.Set) raymond.SafeString {
+func conformanceHelper(cluster matter.Cluster, cs conformance.Set) raymond.SafeString {
 	var b strings.Builder
-	renderConformance(cs, &b, doc, &cluster, entityVariable)
+	renderConformance(cs, &b, &cluster, entityVariable)
 	return raymond.SafeString(b.String())
 }
 
@@ -34,7 +34,7 @@ func renderChoice(c *conformance.Optional, b *strings.Builder) {
 	}
 }
 
-func renderConformance(cs conformance.Set, b *strings.Builder, doc conformance.ReferenceStore, cluster *matter.Cluster, formatter conformanceEntityFormatter) {
+func renderConformance(cs conformance.Set, b *strings.Builder, cluster *matter.Cluster, formatter conformanceEntityFormatter) {
 	// PICS tool can't handle otherwise conformances, so render anything with an otherwise conformance as optional for the purposes of the
 	// test plan PICS. This can be fully evaluated in the tests.
 	// The only exception is if it is provisional, which should be rendered as X.
@@ -53,14 +53,14 @@ func renderConformance(cs conformance.Set, b *strings.Builder, doc conformance.R
 			b.WriteString("{PICS_S}: M")
 			return
 		}
-		renderExpression(b, doc, cluster, c.Expression, formatter)
+		renderExpression(b, cluster, c.Expression, formatter)
 	case *conformance.Optional:
 		if c.Expression == nil {
 			b.WriteString("{PICS_S}: O")
 			renderChoice(c, b)
 			return
 		}
-		renderExpression(b, doc, cluster, c.Expression, formatter)
+		renderExpression(b, cluster, c.Expression, formatter)
 		b.WriteString(": O")
 		renderChoice(c, b)
 	case *conformance.Provisional:
@@ -76,29 +76,29 @@ func renderConformance(cs conformance.Set, b *strings.Builder, doc conformance.R
 	}
 }
 
-func renderExpression(b *strings.Builder, doc conformance.ReferenceStore, cluster *matter.Cluster, exp conformance.Expression, formatter conformanceEntityFormatter) {
+func renderExpression(b *strings.Builder, cluster *matter.Cluster, exp conformance.Expression, formatter conformanceEntityFormatter) {
 	switch exp := exp.(type) {
 	case *conformance.EqualityExpression:
 		b.WriteRune('(')
-		renderExpression(b, doc, cluster, exp.Left, formatter)
+		renderExpression(b, cluster, exp.Left, formatter)
 		b.WriteString(" == ")
-		renderExpression(b, doc, cluster, exp.Right, formatter)
+		renderExpression(b, cluster, exp.Right, formatter)
 		b.WriteRune(')')
 	case *conformance.IdentifierExpression:
-		b.WriteString(renderIdentifier(cluster, exp.ID, formatter))
+		b.WriteString(renderIdentifier(exp, formatter))
 	case *conformance.ReferenceExpression:
-		b.WriteString(renderReference(doc, exp.Reference, formatter))
+		b.WriteString(renderReference(exp, formatter))
 	case *conformance.LogicalExpression:
 		if exp.Not {
 			b.WriteString("NOT")
 		}
 		b.WriteRune('(')
-		renderExpression(b, doc, cluster, exp.Left, formatter)
+		renderExpression(b, cluster, exp.Left, formatter)
 		for _, e := range exp.Right {
 			b.WriteString(" ")
 			b.WriteString(exp.Operand)
 			b.WriteString(" ")
-			renderExpression(b, doc, cluster, e, formatter)
+			renderExpression(b, cluster, e, formatter)
 		}
 		b.WriteRune(')')
 	case *conformance.ComparisonExpression:
@@ -114,24 +114,16 @@ func renderExpression(b *strings.Builder, doc conformance.ReferenceStore, cluste
 	}
 }
 
-func renderIdentifier(store conformance.IdentifierStore, id string, formatter conformanceEntityFormatter) string {
-	if store == nil {
-		return ""
+func renderIdentifier(id *conformance.IdentifierExpression, formatter conformanceEntityFormatter) string {
+	if id.Entity == nil {
+		return fmt.Sprintf("UNKNOWN_ID_%s", id.ID)
 	}
-	entity, ok := store.Identifier(id)
-	if !ok {
-		return fmt.Sprintf("UNKNOWN_ID_%s", id)
-	}
-	return formatter(entity)
+	return formatter(id.Entity)
 }
 
-func renderReference(store conformance.ReferenceStore, id string, formatter conformanceEntityFormatter) string {
-	if store == nil {
-		return ""
+func renderReference(ref *conformance.ReferenceExpression, formatter conformanceEntityFormatter) string {
+	if ref.Entity == nil {
+		return fmt.Sprintf("UNKNOWN_ID_%s", ref.Reference)
 	}
-	entity, ok := store.Reference(id)
-	if !ok {
-		return fmt.Sprintf("UNKNOWN_ID_%s", id)
-	}
-	return formatter(entity)
+	return formatter(ref.Entity)
 }

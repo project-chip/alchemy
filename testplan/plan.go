@@ -23,7 +23,7 @@ func NewPlan(doc *spec.Doc, cluster *matter.Cluster) (p *Plan, err error) {
 
 	if cluster.Features != nil {
 		for _, bit := range cluster.Features.Bits {
-			if !checkConformance(bit.Conformance(), cluster.Features) {
+			if !checkConformance(bit.Conformance()) {
 				continue
 			}
 
@@ -42,7 +42,7 @@ func NewPlan(doc *spec.Doc, cluster *matter.Cluster) (p *Plan, err error) {
 		}
 	}
 	for _, attribute := range cluster.Attributes {
-		if !checkConformance(attribute.Conformance, cluster.Attributes) {
+		if !checkConformance(attribute.Conformance) {
 			continue
 		}
 
@@ -50,7 +50,7 @@ func NewPlan(doc *spec.Doc, cluster *matter.Cluster) (p *Plan, err error) {
 	}
 
 	for _, command := range cluster.Commands {
-		if !checkConformance(command.Conformance, cluster.Features) {
+		if !checkConformance(command.Conformance) {
 			continue
 		}
 		switch command.Direction {
@@ -60,7 +60,7 @@ func NewPlan(doc *spec.Doc, cluster *matter.Cluster) (p *Plan, err error) {
 	}
 
 	for _, command := range cluster.Commands {
-		if !checkConformance(command.Conformance, cluster.Features) {
+		if !checkConformance(command.Conformance) {
 			continue
 		}
 		switch command.Direction {
@@ -75,7 +75,7 @@ func NewPlan(doc *spec.Doc, cluster *matter.Cluster) (p *Plan, err error) {
 	}
 
 	for _, event := range cluster.Events {
-		if !checkConformance(event.Conformance, cluster.Attributes) {
+		if !checkConformance(event.Conformance) {
 			continue
 		}
 		p.Events = append(p.Events, event)
@@ -83,8 +83,8 @@ func NewPlan(doc *spec.Doc, cluster *matter.Cluster) (p *Plan, err error) {
 	return
 }
 
-func checkConformance(c conformance.Set, store conformance.IdentifierStore) bool {
-	return !(conformance.IsZigbee(store, c) || conformance.IsDisallowed(c) || conformance.IsDeprecated(c))
+func checkConformance(c conformance.Set) bool {
+	return !(conformance.IsZigbee(c) || conformance.IsDisallowed(c) || conformance.IsDeprecated(c))
 }
 
 func (p *Plan) ToTests() (tests []*Test) {

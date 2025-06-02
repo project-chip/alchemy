@@ -10,6 +10,7 @@ import (
 
 type ReferenceLimit struct {
 	Reference string `json:"reference"`
+	Not       bool   `json:"not,omitempty"`
 	Entity    types.Entity
 	Label     string `json:"label"`
 	Field     Limit  `json:"field,omitempty"`

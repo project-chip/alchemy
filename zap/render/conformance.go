@@ -9,7 +9,7 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func renderConformance(spec *spec.Specification, entity types.Entity, identifierStore conformance.IdentifierStore, c conformance.Conformance, parent *etree.Element, alternatives ...string) error {
+func renderConformance(spec *spec.Specification, entity types.Entity, c conformance.Conformance, parent *etree.Element, alternatives ...string) error {
 	removeConformance(parent)
 	if conformance.IsMandatory(c) && !conformance.IsProvisional(c) {
 		return nil
