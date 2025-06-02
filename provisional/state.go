@@ -160,6 +160,10 @@ func Check(spec *spec.Specification, entity types.Entity, originalEntity types.E
 			return StateSomeClustersProvisional
 		}
 		return StateAllClustersNonProvisional
+	case *matter.ClusterGroup:
+		for _, c := range entity.Clusters {
+			return Check(spec, c, originalEntity)
+		}
 	default:
 		slog.Error("Unexpected entity type checking provisional status", matter.LogEntity("entity", entity))
 	}
