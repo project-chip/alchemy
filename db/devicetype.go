@@ -10,7 +10,7 @@ func (h *Host) indexDeviceTypeModel(cxt context.Context, parent *sectionInfo, de
 	deviceTypeRow := newDBRow()
 	deviceTypeRow.values[matter.TableColumnID] = deviceType.ID.IntString()
 	deviceTypeRow.values[matter.TableColumnName] = deviceType.Name
-	deviceTypeRow.values[matter.TableColumnSuperset] = deviceType.Superset
+	deviceTypeRow.values[matter.TableColumnSupersetOf] = deviceType.SupersetOf
 	deviceTypeRow.values[matter.TableColumnClass] = deviceType.Class
 	deviceTypeRow.values[matter.TableColumnScope] = deviceType.Scope
 

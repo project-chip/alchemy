@@ -34,7 +34,7 @@ const (
 	TableColumnDevice
 	TableColumnDeviceID
 	TableColumnDeviceName
-	TableColumnSuperset
+	TableColumnSupersetOf
 	TableColumnClass
 	TableColumnDirection
 	TableColumnDescription
@@ -76,7 +76,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnDevice:       "Device",
 	TableColumnDeviceID:     "Device ID",
 	TableColumnDeviceName:   "Device Name",
-	TableColumnSuperset:     "Superset Of",
+	TableColumnSupersetOf:   "Superset Of",
 	TableColumnClass:        "Class",
 	TableColumnDirection:    "Direction",
 	TableColumnDescription:  "Description",
@@ -172,7 +172,7 @@ var Tables = map[TableType]Table{
 		ColumnOrder: []TableColumn{
 			TableColumnID,
 			TableColumnDeviceName,
-			TableColumnSuperset,
+			TableColumnSupersetOf,
 			TableColumnClass, // This will get renamed to Scope
 			TableColumnScope,
 		},

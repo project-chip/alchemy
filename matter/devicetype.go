@@ -16,9 +16,9 @@ type DeviceType struct {
 	Description string      `json:"description,omitempty"`
 	Revisions   []*Revision `json:"revisions,omitempty"`
 
-	Superset string `json:"superset,omitempty"`
-	Class    string `json:"class,omitempty"`
-	Scope    string `json:"scope,omitempty"`
+	SupersetOf string `json:"supersetOf,omitempty"`
+	Class      string `json:"class,omitempty"`
+	Scope      string `json:"scope,omitempty"`
 
 	Conditions             []*Condition             `json:"conditions,omitempty"`
 	DeviceTypeRequirements []*DeviceTypeRequirement `json:"deviceTypeRequirements,omitempty"`

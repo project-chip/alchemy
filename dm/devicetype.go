@@ -51,8 +51,8 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 	c.CreateAttr("revision", strconv.FormatUint(latestRev, 10))
 	if deviceType.Class != "" || deviceType.Scope != "" {
 		class := c.CreateElement("classification")
-		if deviceType.Superset != "" {
-			class.CreateAttr("superset", deviceType.Superset)
+		if deviceType.SupersetOf != "" {
+			class.CreateAttr("superset", deviceType.SupersetOf)
 		}
 		if deviceType.Class != "" {
 			class.CreateAttr("class", strings.ToLower(deviceType.Class))

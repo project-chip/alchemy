@@ -191,7 +191,7 @@ var tableSchema = map[string]tableSchemaDef{
 		columns: []matter.TableColumn{
 			matter.TableColumnID,
 			matter.TableColumnName,
-			matter.TableColumnSuperset,
+			matter.TableColumnSupersetOf,
 			matter.TableColumnClass,
 			matter.TableColumnScope,
 		},
