@@ -81,7 +81,12 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return
 	}
 
-	specDocs, err = checkSpecErrors(cc, specDocs, specBuilder.Spec, c.FilterOptions, c.ProcessingOptions)
+	specDocs, err = filterSpecErrors(cc, specDocs, specBuilder.Spec, c.FilterOptions, c.ProcessingOptions)
+	if err != nil {
+		return
+	}
+
+	err = checkSpecErrors(cc, specBuilder.Spec, c.FilterOptions, specDocs)
 	if err != nil {
 		return
 	}
