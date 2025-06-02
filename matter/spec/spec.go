@@ -79,9 +79,20 @@ func (sef *specEntityFinder) findEntityByIdentifier(identifier string, source lo
 		if canonicalName != identifier {
 			return sef.findEntityByIdentifier(canonicalName, source)
 		}
+		// These are special-cased, as they are references to attributes from a different rendered document
+		// Once we combine clusters into a single document, this can be removed.
+		switch identifier {
+		case "SupportedFabrics":
+			if opCredentialsCluster, ok := sef.spec.ClustersByID[0x003E]; ok {
+				return opCredentialsCluster.Attributes.Get(identifier)
+			}
+		case "SubjectsPerAccessControlEntry", "TargetsPerAccessControlEntry":
+			if aclCluster, ok := sef.spec.ClustersByID[0x001F]; ok {
+				return aclCluster.Attributes.Get(identifier)
+			}
+		}
 	} else if len(entities) == 1 {
 		for m := range entities {
-			//	slog.Info("returning single entity for identifier", "id", identifier, matter.LogEntity("entity", m))
 			return m
 		}
 	} else {
