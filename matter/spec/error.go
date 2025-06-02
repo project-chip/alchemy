@@ -19,6 +19,7 @@ const (
 	ErrorTypeUnknownConstraintIdentifier
 	ErrorTypeUnknownConstraintReference
 	ErrorTypeUnknownCustomDataType
+	ErrorTypeUnknownSuperset
 	ErrorTypeUnknownClusterRequirement
 	ErrorTypeUnknownElementRequirementCluster
 	ErrorTypeElementRequirementUnreferencedCluster
@@ -154,6 +155,22 @@ func (ddt UnknownCustomDataTypeError) Origin() (path string, line int) {
 
 func (ddt UnknownCustomDataTypeError) Error() string {
 	return fmt.Sprintf("unknown custom data type: %s", ddt.DataType.Name)
+}
+
+type UnknownSupersetError struct {
+	DeviceType *matter.DeviceType
+}
+
+func (ddt UnknownSupersetError) Type() ErrorType {
+	return ErrorTypeUnknownSuperset
+}
+
+func (ddt UnknownSupersetError) Origin() (path string, line int) {
+	return ddt.DeviceType.Origin()
+}
+
+func (ddt UnknownSupersetError) Error() string {
+	return fmt.Sprintf("unknown superset: %s", ddt.DeviceType.SupersetOf)
 }
 
 type UnknownClusterRequirementError struct {

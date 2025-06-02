@@ -91,7 +91,7 @@ func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Superset, err = ti.ReadString(row, matter.TableColumnSuperset)
+		c.SupersetOf, err = ti.ReadString(row, matter.TableColumnSupersetOf)
 		if err != nil {
 			return nil, err
 		}
