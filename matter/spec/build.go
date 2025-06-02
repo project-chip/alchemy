@@ -173,7 +173,11 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 	if !sp.ignoreHierarchy {
 		sp.resolveHierarchy()
 	}
-	spec.associateDeviceTypeRequirements()
+	err = spec.associateDeviceTypeRequirements()
+	if err != nil {
+		return
+	}
+
 	sp.resolveClusterDataTypeReferences(false)
 
 	sp.resolveConformances()

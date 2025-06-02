@@ -13,7 +13,7 @@ func FirstPairFunc[K comparable, V any](m map[K]V, filter func(K) bool) (key K, 
 func FindPairFunc[K comparable, V any](m map[K]V, filter func(K) bool) iter.Seq2[K, V] {
 	return func(yield func(K, V) bool) {
 		for k, v := range m {
-			if filter(k) && yield(k, v) {
+			if filter(k) && !yield(k, v) {
 				return
 			}
 		}

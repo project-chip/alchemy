@@ -50,7 +50,7 @@ func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (
 			case matter.SectionComposedDeviceTypeClusterRequirements:
 				dt.ComposedDeviceTypeClusterRequirements, err = s.toComposedDeviceTypeClusterRequirements(d)
 			case matter.SectionComposedDeviceTypeElementRequirements:
-				var extraComposedDeviceClusterRequirements []*matter.ComposedDeviceTypeClusterRequirement
+				var extraComposedDeviceClusterRequirements []*matter.DeviceTypeClusterRequirement
 				dt.ComposedDeviceTypeElementRequirements, extraComposedDeviceClusterRequirements, err = s.toComposedDeviceTypeElementRequirements(d)
 				dt.ComposedDeviceTypeClusterRequirements = append(dt.ComposedDeviceTypeClusterRequirements, extraComposedDeviceClusterRequirements...)
 			case matter.SectionConditions:
@@ -165,18 +165,43 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 	return nil, fmt.Errorf("failed to find base device type")
 }
 
-func (spec *Specification) associateDeviceTypeRequirements() {
-	for _, dt := range spec.DeviceTypes {
-		spec.associateDeviceTypeRequirement(dt)
-	}
+func (spec *Specification) associateDeviceTypeRequirements() (err error) {
 	if spec.BaseDeviceType != nil {
-		spec.associateDeviceTypeRequirement(spec.BaseDeviceType)
+		err = spec.associateDeviceTypeRequirement(spec.BaseDeviceType)
+		if err != nil {
+			return
+		}
 	}
+	for _, dt := range spec.DeviceTypes {
+		err = spec.associateDeviceTypeRequirement(dt)
+		if err != nil {
+			return
+		}
+	}
+	return
 }
 
-func (spec *Specification) associateDeviceTypeRequirement(dt *matter.DeviceType) {
-	deviceTypes := make(map[*matter.DeviceType]struct{})
-	deviceTypes[dt] = struct{}{}
+func (spec *Specification) associateDeviceTypeRequirement(dt *matter.DeviceType) (err error) {
+	deviceTypes := make(map[*matter.DeviceType]*matter.DeviceTypeRequirement)
+	//deviceTypes[dt] = struct{}{}
+	switch dt.SupersetOf {
+	case "":
+		if dt != spec.BaseDeviceType {
+			dt.SubsetDeviceType = spec.BaseDeviceType
+		}
+	default:
+		superset, ok := spec.DeviceTypesByName[dt.SupersetOf]
+		if !ok {
+			spec.addError(&UnknownSupersetError{DeviceType: dt})
+			slog.Error("Device type superset not found", slog.String("deviceType", dt.Name), slog.String("superset", dt.SupersetOf), log.Path("source", dt))
+			break
+		}
+		if superset == dt {
+			slog.Error("Device type superset is the same as the device type", slog.String("deviceType", dt.Name), log.Path("source", dt))
+			break
+		}
+		dt.SubsetDeviceType = superset
+	}
 	for _, cr := range dt.ClusterRequirements {
 		if cr.Cluster != nil {
 			continue
@@ -217,7 +242,7 @@ func (spec *Specification) associateDeviceTypeRequirement(dt *matter.DeviceType)
 				log.Path("source", dr))
 			spec.addError(&UnknownComposingDeviceTypeRequirementDeviceTypeError{Requirement: dr})
 		} else {
-			deviceTypes[dr.DeviceType] = struct{}{}
+			deviceTypes[dr.DeviceType] = dr
 			if dr.Location == matter.DeviceTypeRequirementLocationUnknown {
 				switch dr.DeviceType.Class {
 				case "Simple":
@@ -231,75 +256,93 @@ func (spec *Specification) associateDeviceTypeRequirement(dt *matter.DeviceType)
 		}
 	}
 	for _, cr := range dt.ComposedDeviceTypeClusterRequirements {
-		if cr.Cluster == nil {
-			cr.Cluster = findDeviceTypeRequirementCluster(spec, cr.ClusterID, cr.ClusterName, cr)
-			if cr.Cluster == nil {
+		if cr.ClusterRequirement.Cluster == nil {
+			cr.ClusterRequirement.Cluster = findDeviceTypeRequirementCluster(spec, cr.ClusterRequirement.ClusterID, cr.ClusterRequirement.ClusterName, cr.ClusterRequirement)
+			if cr.ClusterRequirement.Cluster == nil {
 				slog.Error("unknown cluster ID for cluster requirement on composing device type",
-					slog.String("clusterId", cr.ClusterID.HexString()),
-					slog.String("clusterName", cr.ClusterName),
+					slog.String("clusterId", cr.ClusterRequirement.ClusterID.HexString()),
+					slog.String("clusterName", cr.ClusterRequirement.ClusterName),
 					slog.String("deviceType", dt.Name),
-					log.Path("source", cr))
+					log.Path("source", cr.ClusterRequirement))
 				spec.addError(&UnknownComposingDeviceTypeRequirementClusterError{Requirement: cr})
 			}
 		}
 		if cr.DeviceType == nil {
-			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, cr.DeviceTypeID, cr.DeviceTypeName, cr)
+			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, cr.DeviceTypeID, cr.DeviceTypeName, cr.ClusterRequirement)
 			if referencedDeviceType == nil {
 				slog.Error("unknown device type ID for cluster requirement on composing device type",
 					slog.String("deviceTypeId", cr.DeviceTypeID.HexString()),
 					slog.String("deviceTypeName", cr.DeviceTypeName),
 					slog.String("deviceType", dt.Name),
-					log.Path("source", cr))
+					log.Path("source", cr.ClusterRequirement))
 				spec.addError(&UnknownComposingDeviceTypeClusterRequirementDeviceTypeError{Requirement: cr})
 			} else {
-				if _, ok := deviceTypes[referencedDeviceType]; !ok {
+				if dtr, ok := deviceTypes[referencedDeviceType]; !ok {
 					slog.Error("Cluster requirement on composing device type refers to unincluded device type",
 						slog.String("deviceTypeId", cr.DeviceTypeID.HexString()),
 						slog.String("deviceTypeName", cr.DeviceTypeName),
 						slog.String("deviceType", dt.Name),
-						log.Path("source", cr))
+						log.Path("source", cr.ClusterRequirement))
 					spec.addError(&UnreferencedComposingDeviceTypeClusterRequirementDeviceTypeError{Requirement: cr})
 				} else {
 					cr.DeviceType = referencedDeviceType
+					cr.DeviceTypeRequirement = dtr
 				}
 			}
 		}
 	}
 	for _, er := range dt.ComposedDeviceTypeElementRequirements {
-		if er.Cluster == nil {
-			er.Cluster = findDeviceTypeRequirementCluster(spec, er.ClusterID, er.ClusterName, er)
-			if er.Cluster == nil {
+		if er.ElementRequirement.Cluster == nil {
+			er.ElementRequirement.Cluster = findDeviceTypeRequirementCluster(spec, er.ElementRequirement.ClusterID, er.ElementRequirement.ClusterName, er.ElementRequirement)
+			if er.ElementRequirement.Cluster == nil {
 				slog.Error("unknown cluster ID for element requirement on composing device type",
-					slog.String("clusterId", er.ClusterID.HexString()),
-					slog.String("clusterName", er.ClusterName),
+					slog.String("clusterId", er.ElementRequirement.ClusterID.HexString()),
+					slog.String("clusterName", er.ElementRequirement.ClusterName),
 					slog.String("deviceType", dt.Name),
-					log.Path("source", er))
+					log.Path("source", er.ElementRequirement))
 				spec.addError(&UnknownComposingElementRequirementClusterError{Requirement: er})
 			}
 		}
 		if er.DeviceType == nil {
-			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, er.DeviceTypeID, er.DeviceTypeName, er)
+			referencedDeviceType := findDeviceTypeRequirementDeviceType(spec, er.DeviceTypeID, er.DeviceTypeName, er.ElementRequirement)
 			if referencedDeviceType == nil {
 				slog.Error("unknown device type ID for cluster requirement on composing device type",
 					slog.String("deviceTypeId", er.DeviceTypeID.HexString()),
 					slog.String("deviceTypeName", er.DeviceTypeName),
 					slog.String("deviceType", dt.Name),
-					log.Path("source", er))
+					log.Path("source", er.ElementRequirement))
 				spec.addError(&UnknownComposingDeviceTypeElementRequirementDeviceTypeError{Requirement: er})
 			} else {
-				if _, ok := deviceTypes[referencedDeviceType]; !ok {
+				if dtr, ok := deviceTypes[referencedDeviceType]; !ok {
 					slog.Error("Element requirement on composing device type refers to unincluded device type",
 						slog.String("deviceTypeId", er.DeviceTypeID.HexString()),
 						slog.String("deviceTypeName", er.DeviceTypeName),
 						slog.String("deviceType", dt.Name),
-						log.Path("source", er))
+						log.Path("source", er.ElementRequirement))
 					spec.addError(&UnreferencedComposingDeviceTypeElementRequirementDeviceTypeError{Requirement: er})
 				} else {
 					er.DeviceType = referencedDeviceType
+					er.DeviceTypeRequirement = dtr
 				}
 			}
 		}
 	}
+	referencedClusters := make(map[*matter.Cluster]struct{})
+	buildReferencedClusters(spec.BaseDeviceType, referencedClusters)
+	buildReferencedClusters(dt, referencedClusters)
+	for _, er := range dt.ElementRequirements {
+		err = associateElementRequirement(spec, dt, er, referencedClusters)
+		if err != nil {
+			return
+		}
+	}
+	for _, er := range dt.ComposedDeviceTypeElementRequirements {
+		err = associateElementRequirement(spec, er.DeviceType, er.ElementRequirement, referencedClusters)
+		if err != nil {
+			return
+		}
+	}
+	return
 }
 
 func findDeviceTypeRequirementCluster(spec *Specification, id *matter.Number, name string, entity types.Entity) (cluster *matter.Cluster) {
@@ -377,10 +420,78 @@ func validateDeviceTypes(spec *Specification) {
 			validateElementRequirement(spec, dt, er, referencedClusters)
 		}
 		for _, der := range dt.ComposedDeviceTypeElementRequirements {
-			validateAccess(spec, der, der.ElementRequirement.Access)
-			validateElementRequirement(spec, der.DeviceType, &der.ElementRequirement, referencedClusters)
+			validateAccess(spec, der.ElementRequirement, der.ElementRequirement.Access)
+			validateElementRequirement(spec, der.DeviceType, der.ElementRequirement, referencedClusters)
 		}
 	}
+}
+
+func associateElementRequirement(spec *Specification, dt *matter.DeviceType, er *matter.ElementRequirement, referencedClusters map[*matter.Cluster]struct{}) (err error) {
+	if er.Cluster == nil {
+		return
+	}
+	_, ok := referencedClusters[er.Cluster]
+	if !ok {
+		slog.Error("Element Requirement references non-required cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), log.Path("source", er))
+		return
+	}
+	switch er.Element {
+	case types.EntityTypeAttribute:
+
+		for _, a := range er.Cluster.Attributes {
+			if strings.EqualFold(a.Name, er.Name) {
+				er.Entity = a
+				break
+			}
+		}
+	case types.EntityTypeFeature:
+		for _, fb := range er.Cluster.Features.Bits {
+			f, ok := fb.(*matter.Feature)
+			if !ok {
+				continue
+			}
+			if f.Code == er.Name || strings.EqualFold(f.Name(), er.Name) {
+				er.Entity = f
+				break
+			}
+		}
+	case types.EntityTypeCommand:
+		for _, cmd := range er.Cluster.Commands {
+			if strings.EqualFold(cmd.Name, er.Name) {
+				er.Entity = cmd
+				break
+			}
+		}
+	case types.EntityTypeCommandField:
+		var command *matter.Command
+		for _, cmd := range er.Cluster.Commands {
+			if strings.EqualFold(cmd.Name, er.Name) {
+				command = cmd
+				break
+			}
+		}
+		if command == nil {
+			break
+		}
+		for _, f := range command.Fields {
+			if strings.EqualFold(f.Name, er.Field) {
+				er.Entity = f
+				break
+			}
+		}
+	case types.EntityTypeEvent:
+		for _, e := range er.Cluster.Events {
+			if strings.EqualFold(e.Name, er.Name) {
+				er.Entity = e
+				break
+			}
+		}
+
+	default:
+		slog.Error("Unexpected entity type", slog.String("entityType", er.Element.String()))
+		err = fmt.Errorf("unexpected element type: %s", er.Element.String())
+	}
+	return
 }
 
 func validateElementRequirement(spec *Specification, dt *matter.DeviceType, er *matter.ElementRequirement, referencedClusters map[*matter.Cluster]struct{}) {
@@ -389,64 +500,36 @@ func validateElementRequirement(spec *Specification, dt *matter.DeviceType, er *
 	}
 	_, ok := referencedClusters[er.Cluster]
 	if !ok {
-		slog.Error("Element Requirement references non-required cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName))
+		slog.Error("Element Requirement references non-required cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), log.Path("source", er))
 		spec.addError(ElementRequirementUnreferencedClusterError{Requirement: er})
 		return
 	}
 	switch er.Element {
 	case types.EntityTypeAttribute:
-		found := false
-		for _, a := range er.Cluster.Attributes {
-			if strings.EqualFold(a.Name, er.Name) {
-				found = true
-				break
-			}
-		}
-		if !found {
-			slog.Error("Element Requirement references unknown attribute", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("attributeName", er.Name))
+		if er.Entity == nil {
+			slog.Error("Element Requirement references unknown attribute", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("attributeName", er.Name), log.Path("source", er))
 			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
 		}
 	case types.EntityTypeFeature:
-		found := false
-		for _, fb := range er.Cluster.Features.Bits {
-			f, ok := fb.(*matter.Feature)
-			if !ok {
-				continue
-			}
-			if f.Code == er.Name || strings.EqualFold(f.Name(), er.Name) {
-				found = true
-				break
-			}
-		}
-		if !found {
-			slog.Error("Element Requirement references unknown feature", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("featureName", er.Name))
+		if er.Entity == nil {
+			slog.Error("Element Requirement references unknown feature", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("featureName", er.Name), log.Path("source", er))
 			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
 		}
 	case types.EntityTypeCommand:
-		found := false
-		for _, cmd := range er.Cluster.Commands {
-			if strings.EqualFold(cmd.Name, er.Name) {
-				found = true
-				break
-			}
+		if er.Entity == nil {
+			slog.Error("Element Requirement references unknown command", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("commandName", er.Name), log.Path("source", er))
+			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
 		}
-		if !found {
-			slog.Error("Element Requirement references unknown command", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("commandName", er.Name))
+	case types.EntityTypeCommandField:
+		if er.Entity == nil {
+			slog.Error("Element Requirement references unknown command field", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("commandName", er.Name), slog.String("commandField", er.Field), log.Path("source", er))
 			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
 		}
 	case types.EntityTypeEvent:
-		found := false
-		for _, e := range er.Cluster.Events {
-			if strings.EqualFold(e.Name, er.Name) {
-				found = true
-				break
-			}
-		}
-		if !found {
+		if er.Entity == nil {
 			slog.Error("Element Requirement references unknown event", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("commandName", er.Name))
 			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
 		}
-
 	default:
 		slog.Error("Unknown entity type", slog.String("entityType", er.Element.String()))
 	}

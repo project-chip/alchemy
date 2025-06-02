@@ -4,7 +4,7 @@ import (
 	"iter"
 )
 
-func CastList[I any, O any](list []I) (i iter.Seq[O]) {
+func IterateCast[I any, O any](list []I) (i iter.Seq[O]) {
 	return func(yield func(O) bool) {
 		for _, l := range list {
 			switch o := any(l).(type) {
@@ -15,4 +15,14 @@ func CastList[I any, O any](list []I) (i iter.Seq[O]) {
 			}
 		}
 	}
+}
+
+func ListCast[I any, O any](list []I) (out []O) {
+	for _, l := range list {
+		switch o := any(l).(type) {
+		case O:
+			out = append(out, o)
+		}
+	}
+	return
 }

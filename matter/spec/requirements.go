@@ -23,17 +23,17 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 		return
 	}
 	for row := range ti.Body() {
-		var cr matter.ClusterRequirement
+		var cr *matter.ClusterRequirement
 		cr, err = s.toClusterRequirement(ti, row)
 		if err != nil {
 			return
 		}
-		clusterRequirements = append(clusterRequirements, &cr)
+		clusterRequirements = append(clusterRequirements, cr)
 	}
 	return
 }
 
-func (*Section) toClusterRequirement(ti *TableInfo, row *asciidoc.TableRow) (cr matter.ClusterRequirement, err error) {
+func (*Section) toClusterRequirement(ti *TableInfo, row *asciidoc.TableRow) (cr *matter.ClusterRequirement, err error) {
 	cr = matter.NewClusterRequirement(row)
 	cr.ClusterID, err = ti.ReadID(row, matter.TableColumnClusterID, matter.TableColumnID)
 	if err != nil {
@@ -139,7 +139,7 @@ func (s *Section) toDeviceTypeRequirements(d *Doc) (deviceTypeRequirements []*ma
 	return
 }
 
-func (s *Section) toComposedDeviceTypeClusterRequirements(d *Doc) (composedClusterRequirements []*matter.ComposedDeviceTypeClusterRequirement, err error) {
+func (s *Section) toComposedDeviceTypeClusterRequirements(d *Doc) (composedClusterRequirements []*matter.DeviceTypeClusterRequirement, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
@@ -151,7 +151,7 @@ func (s *Section) toComposedDeviceTypeClusterRequirements(d *Doc) (composedClust
 		return
 	}
 	for row := range ti.Body() {
-		var cr matter.ComposedDeviceTypeClusterRequirement
+		var cr matter.DeviceTypeClusterRequirement
 		cr.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
 		if err != nil {
 			return
@@ -169,7 +169,7 @@ func (s *Section) toComposedDeviceTypeClusterRequirements(d *Doc) (composedClust
 	return
 }
 
-func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc) (composedElementRequirements []*matter.ComposedDeviceTypeElementRequirement, composedClusterRequirements []*matter.ComposedDeviceTypeClusterRequirement, err error) {
+func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc) (composedElementRequirements []*matter.DeviceTypeElementRequirement, composedClusterRequirements []*matter.DeviceTypeClusterRequirement, err error) {
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
@@ -181,7 +181,7 @@ func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc) (composedEleme
 		return
 	}
 	for row := range ti.Body() {
-		var er matter.ComposedDeviceTypeElementRequirement
+		var er matter.DeviceTypeElementRequirement
 		er.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
 		if err != nil {
 			return
@@ -190,26 +190,28 @@ func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc) (composedEleme
 		if err != nil {
 			return
 		}
-		er.ElementRequirement, err = s.toElementRequirement(d, ti, row)
+		var req matter.ElementRequirement
+		req, err = s.toElementRequirement(d, ti, row)
 		if err != nil {
 			return
 		}
+		er.ElementRequirement = &req
 
 		if er.ElementRequirement.Element != types.EntityTypeUnknown {
 			composedElementRequirements = append(composedElementRequirements, &er)
 		} else {
 			// The element is blank; we previous expressed some kinds of composed cluster requirements this way
-			var cr matter.ComposedDeviceTypeClusterRequirement
+			var cr matter.DeviceTypeClusterRequirement
 			cr.DeviceTypeID = er.DeviceTypeID
 			cr.DeviceTypeName = er.DeviceTypeName
 			cr.ClusterRequirement = matter.NewClusterRequirement(row)
 			// These always only apply to the server
 			cr.ClusterRequirement.Interface = matter.InterfaceServer
-			cr.ClusterRequirement.ClusterID = er.ClusterID
-			cr.ClusterRequirement.ClusterName = er.ClusterName
-			cr.ClusterRequirement.Quality = er.Quality
-			if len(er.Conformance) > 0 {
-				cr.ClusterRequirement.Conformance = er.Conformance.CloneSet()
+			cr.ClusterRequirement.ClusterID = er.ElementRequirement.ClusterID
+			cr.ClusterRequirement.ClusterName = er.ElementRequirement.ClusterName
+			cr.ClusterRequirement.Quality = er.ElementRequirement.Quality
+			if len(er.ElementRequirement.Conformance) > 0 {
+				cr.ClusterRequirement.Conformance = er.ElementRequirement.Conformance.CloneSet()
 			}
 			composedClusterRequirements = append(composedClusterRequirements, &cr)
 		}
@@ -243,9 +245,11 @@ func (*Section) toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableR
 		cr.Element = types.EntityTypeCommandField
 	case "event":
 		cr.Element = types.EntityTypeEvent
-	default:
-		//err = fmt.Errorf("unknown element type: \"%s\"", e)
+	case "":
 		slog.Warn("Blank element in element requirements; treating as a cluster requirement", slog.String("clusterName", cr.ClusterName), log.Path("source", row))
+	default:
+		err = fmt.Errorf("unknown element type: \"%s\"", e)
+		return
 	}
 
 	cr.Name, err = ti.ReadString(row, matter.TableColumnName)
@@ -258,6 +262,9 @@ func (*Section) toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableR
 			cr.Name = parts[0]
 			cr.Field = parts[1]
 		}
+	}
+	if cr.Field == "" {
+		cr.Field, err = ti.ReadString(row, matter.TableColumnField)
 	}
 	cr.Quality, err = ti.ReadQuality(row, cr.Element, matter.TableColumnQuality)
 	if err != nil {

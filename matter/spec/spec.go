@@ -24,6 +24,7 @@ type Specification struct {
 
 	BaseDeviceType *matter.DeviceType
 
+	deviceTypeCompositionCache map[*matter.DeviceType]*matter.DeviceTypeComposition
 
 	Namespaces []*matter.Namespace
 
@@ -57,7 +58,8 @@ func newSpec(specRoot string) *Specification {
 
 		GlobalObjects: make(types.EntitySet),
 
-		entities: make(map[string]map[types.Entity]map[*matter.Cluster]struct{}),
+		entities:                   make(map[string]map[types.Entity]map[*matter.Cluster]struct{}),
+		deviceTypeCompositionCache: make(map[*matter.DeviceType]*matter.DeviceTypeComposition),
 	}
 }
 

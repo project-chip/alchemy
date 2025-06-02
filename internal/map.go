@@ -79,3 +79,11 @@ func (om *OrderedMap[K, V]) Sort(compare func(a, b K) int) {
 func (om *OrderedMap[K, V]) SortKeys(sort func(keys []K)) {
 	sort(om.keys)
 }
+
+func ToMap[K comparable, V any](i iter.Seq[V], keyExtractor func(v V) K) (result map[K]V) {
+	result = make(map[K]V)
+	for v := range i {
+		result[keyExtractor(v)] = v
+	}
+	return
+}

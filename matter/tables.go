@@ -48,6 +48,7 @@ const (
 	TableColumnModeTagValue
 	TableColumnNamespace
 	TableColumnLocation
+	TableColumnField
 )
 
 var TableColumnNames = map[TableColumn]string{
@@ -90,6 +91,7 @@ var TableColumnNames = map[TableColumn]string{
 	TableColumnModeTagValue: "Mode Tag Value",
 	TableColumnNamespace:    "Namespace",
 	TableColumnLocation:     "Location",
+	TableColumnField:        "Field",
 }
 
 func (tc TableColumn) String() string {

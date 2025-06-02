@@ -20,13 +20,16 @@ type DeviceType struct {
 	Class      string `json:"class,omitempty"`
 	Scope      string `json:"scope,omitempty"`
 
-	Conditions             []*Condition             `json:"conditions,omitempty"`
-	DeviceTypeRequirements []*DeviceTypeRequirement `json:"deviceTypeRequirements,omitempty"`
+	SubsetDeviceType *DeviceType `json:"-"`
 
-	ClusterRequirements                   []*ClusterRequirement                   `json:"clusterRequirements,omitempty"`
-	ElementRequirements                   []*ElementRequirement                   `json:"elementRequirements,omitempty"`
-	ComposedDeviceTypeClusterRequirements []*ComposedDeviceTypeClusterRequirement `json:"composedDeviceTypeClusterRequirements,omitempty"`
-	ComposedDeviceTypeElementRequirements []*ComposedDeviceTypeElementRequirement `json:"composedDeviceTypeElementRequirements,omitempty"`
+	Conditions []*Condition `json:"conditions,omitempty"`
+
+	ClusterRequirements []*ClusterRequirement `json:"clusterRequirements,omitempty"`
+	ElementRequirements []*ElementRequirement `json:"elementRequirements,omitempty"`
+
+	DeviceTypeRequirements                []*DeviceTypeRequirement        `json:"deviceTypeRequirements,omitempty"`
+	ComposedDeviceTypeClusterRequirements []*DeviceTypeClusterRequirement `json:"composedDeviceTypeClusterRequirements,omitempty"`
+	ComposedDeviceTypeElementRequirements []*DeviceTypeElementRequirement `json:"composedDeviceTypeElementRequirements,omitempty"`
 }
 
 func NewDeviceType(source asciidoc.Element) *DeviceType {
@@ -46,8 +49,8 @@ func (dt *DeviceType) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
-func NewClusterRequirement(source asciidoc.Element) ClusterRequirement {
-	return ClusterRequirement{entity: entity{source: source}}
+func NewClusterRequirement(source asciidoc.Element) *ClusterRequirement {
+	return &ClusterRequirement{entity: entity{source: source}}
 }
 
 type ClusterRequirement struct {
@@ -91,6 +94,8 @@ type ElementRequirement struct {
 	Element     types.EntityType `json:"element,omitempty"`
 	Name        string           `json:"name,omitempty"`
 	Field       string           `json:"field,omitempty"`
+
+	Entity types.Entity `json:"entity,omitempty"`
 
 	Constraint  constraint.Constraint `json:"constraint,omitempty"`
 	Quality     Quality               `json:"quality,omitempty"`
@@ -188,22 +193,6 @@ func (dtr *DeviceTypeRequirement) Clone() *DeviceTypeRequirement {
 		cdtr.Conformance = dtr.Conformance.CloneSet()
 	}
 	return cdtr
-}
-
-type ComposedDeviceTypeClusterRequirement struct {
-	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
-	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
-	ClusterRequirement
-
-	DeviceType *DeviceType `json:"deviceType,omitempty"`
-}
-
-type ComposedDeviceTypeElementRequirement struct {
-	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
-	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
-	ElementRequirement
-
-	DeviceType *DeviceType `json:"deviceType,omitempty"`
 }
 
 type Condition struct {
