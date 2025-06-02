@@ -70,7 +70,12 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 		return
 	}
 
-	specDocs, err = checkSpecErrors(cc, specDocs, specBuilder.Spec, cmd.FilterOptions, cmd.ProcessingOptions)
+	specDocs, err = filterSpecDocs(cc, specDocs, specBuilder.Spec, cmd.FilterOptions, cmd.ProcessingOptions)
+	if err != nil {
+		return
+	}
+
+	err = checkSpecErrors(cc, specBuilder.Spec, cmd.FilterOptions, specDocs)
 	if err != nil {
 		return
 	}
