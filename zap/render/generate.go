@@ -27,19 +27,16 @@ type TemplateGenerator struct {
 
 	options TemplateOptions
 
-	globalObjectDependencies pipeline.Map[types.Entity, struct{}]
-
 	ClusterAliases pipeline.Map[string, []string]
 }
 
 func NewTemplateGenerator(spec *spec.Specification, pipelineOptions pipeline.ProcessingOptions, sdkRoot string, options TemplateOptions) (*TemplateGenerator, error) {
 	tg := &TemplateGenerator{
-		spec:                     spec,
-		pipeline:                 pipelineOptions,
-		sdkRoot:                  sdkRoot,
-		globalObjectDependencies: pipeline.NewConcurrentMap[types.Entity, struct{}](),
-		ClusterAliases:           pipeline.NewConcurrentMap[string, []string](),
-		options:                  options,
+		spec:           spec,
+		pipeline:       pipelineOptions,
+		sdkRoot:        sdkRoot,
+		ClusterAliases: pipeline.NewConcurrentMap[string, []string](),
+		options:        options,
 	}
 	if spec.Root != "" {
 		var err error
@@ -84,8 +81,6 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 			continue
 		}
 
-		tg.findDependencies(tg.spec, entities, dependencies)
-
 		input.Content.Domain = getDocDomain(input.Content)
 
 		if input.Content.Domain == matter.DomainUnknown {
@@ -105,7 +100,7 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 		var result string
 
 		var doc *etree.Document
-		doc, err = tg.openConfigurator(configurator)
+		doc, err = openConfigurator(configurator, tg.pipeline)
 		if err != nil {
 			return
 		}
@@ -132,11 +127,11 @@ func (tg TemplateGenerator) Process(cxt context.Context, input *pipeline.Data[*s
 	return
 }
 
-func (tg *TemplateGenerator) openConfigurator(configurator *zap.Configurator) (doc *etree.Document, err error) {
+func openConfigurator(configurator *zap.Configurator, options pipeline.ProcessingOptions) (doc *etree.Document, err error) {
 	var existing []byte
 	existing, err = os.ReadFile(configurator.OutPath)
 	if errors.Is(err, os.ErrNotExist) {
-		if tg.pipeline.Serial {
+		if options.Serial {
 			slog.Info("Rendering new ZAP template", configurator.DocLogs(), "to", configurator.OutPath)
 		}
 		doc = newZapTemplate()
@@ -144,7 +139,7 @@ func (tg *TemplateGenerator) openConfigurator(configurator *zap.Configurator) (d
 	} else if err != nil {
 		return
 	} else {
-		if tg.pipeline.Serial {
+		if options.Serial {
 			slog.Info("Rendering existing ZAP template", configurator.DocLogs(), "to", configurator.OutPath)
 		}
 		doc = etree.NewDocument()
@@ -157,10 +152,10 @@ func (tg *TemplateGenerator) openConfigurator(configurator *zap.Configurator) (d
 	return
 }
 
-func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet, deviceTypes spec.DocSet, namespaces pipeline.Map[string, *pipeline.Data[[]*matter.Namespace]], err error) {
+func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet, deviceTypes spec.DocSet, namespaces spec.DocSet, err error) {
 	clusters = spec.NewDocSet()
 	deviceTypes = spec.NewDocSet()
-	namespaces = pipeline.NewMap[string, *pipeline.Data[[]*matter.Namespace]]()
+	namespaces = pipeline.NewMap[string, *pipeline.Data[*spec.Doc]]()
 	inputs.Range(func(path string, data *pipeline.Data[*spec.Doc]) bool {
 		var hasCluster bool
 		var dts []*matter.DeviceType
@@ -189,7 +184,7 @@ func SplitZAPDocs(cxt context.Context, inputs spec.DocSet) (clusters spec.DocSet
 			deviceTypes.Store(path, data)
 		}
 		if len(ns) > 0 {
-			namespaces.Store(path, pipeline.NewData(path, ns))
+			namespaces.Store(path, data)
 		}
 		return true
 	})

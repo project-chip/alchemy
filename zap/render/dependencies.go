@@ -1,6 +1,7 @@
 package render
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
@@ -10,7 +11,45 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (tg *TemplateGenerator) findDependencies(spec *spec.Specification, entities []types.Entity, dependencies pipeline.Map[string, bool]) {
+type DependencyTracer struct {
+	spec                     *spec.Specification
+	GlobalObjectDependencies spec.DocSet
+}
+
+func NewDependencyTracer(specification *spec.Specification) *DependencyTracer {
+	dt := &DependencyTracer{
+		spec:                     specification,
+		GlobalObjectDependencies: pipeline.NewConcurrentMap[string, *pipeline.Data[*spec.Doc]](),
+	}
+
+	return dt
+}
+
+func (p DependencyTracer) Name() string {
+	return "Tracing dependencies"
+}
+
+func (p DependencyTracer) Process(cxt context.Context, inputs []*pipeline.Data[*spec.Doc]) (outputs []*pipeline.Data[*spec.Doc], err error) {
+
+	docMap := make(map[*spec.Doc]struct{}, len(inputs))
+	for _, input := range inputs {
+		docMap[input.Content] = struct{}{}
+	}
+	for _, input := range inputs {
+		var entities []types.Entity
+		entities, err = input.Content.Entities()
+		if err != nil {
+			return
+		}
+		p.findDependencies(p.spec, entities, docMap)
+	}
+	for doc := range docMap {
+		outputs = append(outputs, pipeline.NewData(doc.Path.Absolute, doc))
+	}
+	return
+}
+
+func (tg *DependencyTracer) findDependencies(spec *spec.Specification, entities []types.Entity, dependencies map[*spec.Doc]struct{}) {
 	for _, m := range entities {
 		switch m := m.(type) {
 		case *matter.ClusterGroup:
@@ -25,7 +64,7 @@ func (tg *TemplateGenerator) findDependencies(spec *spec.Specification, entities
 	}
 }
 
-func (tg *TemplateGenerator) findClusterDependencies(spec *spec.Specification, c *matter.Cluster, dependencies pipeline.Map[string, bool]) {
+func (tg *DependencyTracer) findClusterDependencies(spec *spec.Specification, c *matter.Cluster, dependencies map[*spec.Doc]struct{}) {
 	tg.findFieldSetDependencies(spec, c.Attributes, dependencies)
 	for _, s := range c.Structs {
 		tg.findFieldSetDependencies(spec, s.Fields, dependencies)
@@ -38,13 +77,13 @@ func (tg *TemplateGenerator) findClusterDependencies(spec *spec.Specification, c
 	}
 }
 
-func (tg *TemplateGenerator) findFieldSetDependencies(spec *spec.Specification, fs matter.FieldSet, dependencies pipeline.Map[string, bool]) {
+func (tg *DependencyTracer) findFieldSetDependencies(spec *spec.Specification, fs matter.FieldSet, dependencies map[*spec.Doc]struct{}) {
 	for _, f := range fs {
 		tg.findDataTypeDependencies(spec, f.Type, dependencies)
 	}
 }
 
-func (tg *TemplateGenerator) findDataTypeDependencies(spec *spec.Specification, dt *types.DataType, dependencies pipeline.Map[string, bool]) {
+func (tg *DependencyTracer) findDataTypeDependencies(spec *spec.Specification, dt *types.DataType, dependencies map[*spec.Doc]struct{}) {
 	if dt == nil {
 		return
 	}
@@ -69,19 +108,20 @@ func (tg *TemplateGenerator) findDataTypeDependencies(spec *spec.Specification, 
 			tg.findDataTypeDependencies(spec, f.Type, dependencies)
 		}
 	}
-	_, isGlobal := spec.GlobalObjects[dt.Entity]
-	if isGlobal {
-		tg.globalObjectDependencies.Store(dt.Entity, struct{}{})
-		return
-	}
 	entityDoc, ok := spec.DocRefs[dt.Entity]
 	if !ok {
 		slog.Warn("missing document for data type", "name", dt.Name, "entity", dt.Entity, "pointer", fmt.Sprintf("%p", dt.Entity))
 		return
 	}
-	_, loaded := dependencies.LoadOrStore(entityDoc.Path.Relative, false)
-	if !loaded {
-		slog.Debug("dependency found", "name", dt.Name, "path", entityDoc.Path.Relative)
+	_, isGlobal := spec.GlobalObjects[dt.Entity]
+	if isGlobal {
+		tg.GlobalObjectDependencies.Store(entityDoc.Path.Relative, pipeline.NewData(entityDoc.Path.Relative, entityDoc))
+		return
 	}
+	if _, ok := dependencies[entityDoc]; !ok {
+		return
+	}
+	slog.Debug("dependency found", "name", dt.Name, "path", entityDoc.Path.Relative)
+	dependencies[entityDoc] = struct{}{}
 
 }
