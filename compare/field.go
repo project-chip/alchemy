@@ -97,7 +97,7 @@ func compareFields(entityType types.EntityType, specFields matter.FieldSet, zapF
 	specFieldMap := make(map[uint64]*matter.Field)
 	specFieldNameMap := make(map[string]*matter.Field)
 	for _, f := range specFields {
-		if conformance.IsZigbee(specFields, f.Conformance) {
+		if conformance.IsZigbee(f.Conformance) {
 			continue
 		}
 		specFieldNameMap[strings.ToLower(f.Name)] = f

@@ -43,34 +43,27 @@ func (re *ReferenceExpression) Description() string {
 }
 
 func (re *ReferenceExpression) Eval(context Context) (bool, error) {
-	return evalReference(context, re.Reference, re.Not)
-}
 
-func evalReference(context Context, id string, not bool) (bool, error) {
-
-	if context.References != nil {
-		if context.VisitedReferences == nil {
-			context.VisitedReferences = make(map[string]struct{})
-		} else if _, ok := context.VisitedReferences[id]; ok {
-			return false, nil
-		}
-		ref, ok := context.References.Reference(id)
-		context.VisitedReferences[id] = struct{}{}
-		if !ok {
-			return false, nil
-		}
-		if ref, ok := ref.(HasConformance); ok {
-			conf := ref.GetConformance()
-			if conf != nil {
-				cs, err := conf.Eval(context)
-				if err != nil {
-					return false, err
-				}
-				return (cs == StateMandatory || cs == StateOptional || cs == StateProvisional || cs == StateDeprecated) != not, nil
+	if re.Entity == nil {
+		return false, nil
+	}
+	if context.VisitedReferences == nil {
+		context.VisitedReferences = make(map[string]struct{})
+	} else if _, ok := context.VisitedReferences[re.Reference]; ok {
+		return false, nil
+	}
+	context.VisitedReferences[re.Reference] = struct{}{}
+	if ref, ok := re.Entity.(HasConformance); ok {
+		conf := ref.GetConformance()
+		if conf != nil {
+			cs, err := conf.Eval(context)
+			if err != nil {
+				return false, err
 			}
+			return (cs == StateMandatory || cs == StateOptional || cs == StateProvisional || cs == StateDeprecated) != re.Not, nil
 		}
 	}
-	return not, nil
+	return re.Not, nil
 }
 
 func (re *ReferenceExpression) Equal(e Expression) bool {

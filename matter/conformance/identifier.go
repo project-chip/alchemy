@@ -35,41 +35,34 @@ func (ie *IdentifierExpression) Description() string {
 }
 
 func (ie *IdentifierExpression) Eval(context Context) (bool, error) {
-	return evalIdentifier(context, ie.ID, ie.Not)
-}
-
-func evalIdentifier(context Context, id string, not bool) (bool, error) {
 	if context.Values != nil {
-		v, ok := context.Values[id]
+		v, ok := context.Values[ie.ID]
 		if ok {
 			if b, ok := v.(bool); ok {
-				return b != not, nil
+				return b != ie.Not, nil
 			}
 		}
 	}
-	if context.Identifiers != nil {
-		if context.VisitedReferences == nil {
-			context.VisitedReferences = make(map[string]struct{})
-		} else if _, ok := context.VisitedReferences[id]; ok {
-			return false, nil
-		}
-		ref, ok := context.Identifiers.Identifier(id)
-		context.VisitedReferences[id] = struct{}{}
-		if !ok {
-			return false, nil
-		}
-		if ref, ok := ref.(HasConformance); ok {
-			conf := ref.GetConformance()
-			if conf != nil {
-				cs, err := conf.Eval(context)
-				if err != nil {
-					return false, err
-				}
-				return (cs == StateMandatory || cs == StateOptional || cs == StateProvisional || cs == StateDeprecated) != not, nil
+	if ie.Entity == nil {
+		return ie.Not, nil
+	}
+	if context.VisitedReferences == nil {
+		context.VisitedReferences = make(map[string]struct{})
+	} else if _, ok := context.VisitedReferences[ie.ID]; ok {
+		return false, nil
+	}
+	context.VisitedReferences[ie.ID] = struct{}{}
+	if ref, ok := ie.Entity.(HasConformance); ok {
+		conf := ref.GetConformance()
+		if conf != nil {
+			cs, err := conf.Eval(context)
+			if err != nil {
+				return false, err
 			}
+			return (cs == StateMandatory || cs == StateOptional || cs == StateProvisional || cs == StateDeprecated) != ie.Not, nil
 		}
 	}
-	return not, nil
+	return ie.Not, nil
 }
 
 func (ie *IdentifierExpression) Equal(e Expression) bool {

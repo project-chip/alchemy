@@ -35,7 +35,7 @@ func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *
 				continue
 			}
 
-			if conformance.IsZigbee(cluster, a.Conformance) || conformance.IsDisallowed(a.Conformance) {
+			if conformance.IsZigbee(a.Conformance) || conformance.IsDisallowed(a.Conformance) {
 				continue
 			}
 
@@ -59,7 +59,7 @@ func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *
 	}
 
 	for a := range attributes {
-		if conformance.IsZigbee(cluster, a.Conformance) {
+		if conformance.IsZigbee(a.Conformance) {
 			continue
 		}
 		if conformance.IsDeprecated(a.Conformance) {
@@ -164,7 +164,7 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 		cr.setQuality(ae, types.EntityTypeAttribute, attribute.Quality, "access", "description")
 
 		if cr.generator.options.ConformanceXML {
-			err = renderConformance(cr.generator.spec, attribute, cluster, attribute.Conformance, ae, "quality", "access", "description")
+			err = renderConformance(cr.generator.spec, cluster, attribute.Conformance, ae, "quality", "access", "description")
 			if err != nil {
 				return err
 			}

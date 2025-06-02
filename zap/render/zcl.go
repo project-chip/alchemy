@@ -167,7 +167,7 @@ func (p *ZclPatcher) patchAttributeAccessInterfaceAttributes(o *internal.JSONMap
 			found := false
 			for _, ca := range cluster.Attributes {
 				if ca.Name == as {
-					if conformance.IsZigbee(cluster, ca.Conformance) || conformance.IsDisallowed(ca.Conformance) {
+					if conformance.IsZigbee(ca.Conformance) || conformance.IsDisallowed(ca.Conformance) {
 						break
 					}
 

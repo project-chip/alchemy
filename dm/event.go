@@ -15,7 +15,7 @@ func renderEvents(es matter.EventSet, c *etree.Element) (err error) {
 	}
 	evs := make([]*matter.Event, 0, len(es))
 	for _, e := range es {
-		if conformance.IsZigbee(es, e.Conformance) {
+		if conformance.IsZigbee(e.Conformance) {
 			continue
 		}
 		evs = append(evs, e)

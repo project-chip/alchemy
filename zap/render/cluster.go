@@ -121,7 +121,7 @@ func (cr *configuratorRenderer) populateCluster(clusterElement *etree.Element, c
 	attributes := find.ToMap(cluster.Attributes)
 	events := find.ToMap(cluster.Events)
 	commands := find.ToMap(slices.Collect(find.Filter(cluster.Commands, func(c *matter.Command) bool {
-		return !conformance.IsZigbee(cluster.Commands, c.Conformance) && !conformance.IsDisallowed(c.Conformance)
+		return !conformance.IsZigbee(c.Conformance) && !conformance.IsDisallowed(c.Conformance)
 	})))
 
 	xml.SetOrCreateSimpleElement(clusterElement, "domain", cr.configurator.Errata.OverrideDomain(cluster.Name, cr.configurator.Domain))

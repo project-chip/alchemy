@@ -97,13 +97,13 @@ func IsDescribed(conformance Conformance) bool {
 	return isOnly[*Described](conformance)
 }
 
-func IsZigbee(store IdentifierStore, conformance Conformance) bool {
+func IsZigbee(conformance Conformance) bool {
 	if conformance == nil {
 		return false
 	}
 	var err error
 	var withZigbee, withoutZigbee State
-	cxt := Context{Identifiers: store, Values: map[string]any{"Zigbee": true}}
+	cxt := Context{Values: map[string]any{"Zigbee": true}}
 	withZigbee, err = conformance.Eval(cxt)
 	if err != nil {
 		return false

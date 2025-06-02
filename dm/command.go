@@ -19,7 +19,7 @@ func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
 
 	cmds := make([]*matter.Command, 0, len(cs))
 	for _, c := range cs {
-		if conformance.IsZigbee(cs, c.Conformance) {
+		if conformance.IsZigbee(c.Conformance) {
 			continue
 		}
 		cmds = append(cmds, c)

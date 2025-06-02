@@ -76,11 +76,8 @@ func (sp *Renderer) Process(cxt context.Context, input *pipeline.Data[*spec.Doc]
 			return
 		}
 
-		tc := templateContext{ReferenceStore: conformance.ReferenceStore(doc)}
-
 		args := map[string]any{
 			"cluster":           cluster,
-			"context":           tc,
 			"doc":               doc,
 			"features":          tp.Features,
 			"attributes":        tp.Attributes,

@@ -14,7 +14,7 @@
 |===
 | *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*
 {{#each commandsAccepted}}
-| {{#brace}}PICS_S{{entityId this}}{{/brace}} | {devimp} the _{{#brace}}{{entityId this}}{{/brace}}_ command?| {{#if this.conformance}}{{picsConformance context.referenceStore cluster this.conformance}}{{/if}} |
+| {{#brace}}PICS_S{{entityId this}}{{/brace}} | {devimp} the _{{#brace}}{{entityId this}}{{/brace}}_ command?| {{#if this.conformance}}{{picsConformance cluster this.conformance}}{{/if}} |
 {{/each}}
 |===
 
@@ -35,7 +35,7 @@
 |===
 | *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*
 {{#each commandsGenerated}}
-| {{#brace}}PICS_S{{entityId this}}{{/brace}} | {devimp} sending the _{{#brace}}{{entityId this}}{{/brace}}_ command?| {{#if this.conformance}}{{picsConformance context.referenceStore cluster this.conformance}}{{/if}} |
+| {{#brace}}PICS_S{{entityId this}}{{/brace}} | {devimp} sending the _{{#brace}}{{entityId this}}{{/brace}}_ command?| {{#if this.conformance}}{{picsConformance cluster this.conformance}}{{/if}} |
 {{/each}}
 |===
 

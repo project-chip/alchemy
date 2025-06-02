@@ -29,7 +29,7 @@ func (cr *configuratorRenderer) generateEvents(ce *etree.Element, cluster *matte
 
 		var matchingEvent *matter.Event
 		for e := range events {
-			if conformance.IsZigbee(cluster.Commands, e.Conformance) || conformance.IsDisallowed(e.Conformance) {
+			if conformance.IsZigbee(e.Conformance) || conformance.IsDisallowed(e.Conformance) {
 				continue
 			}
 			if e.ID.Equals(eventID) {
@@ -119,7 +119,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 			}
 			f := event.Fields[fieldIndex]
 			fieldIndex++
-			if conformance.IsZigbee(event.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+			if conformance.IsZigbee(f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 				continue
 			}
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
@@ -133,7 +133,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 	for fieldIndex < len(event.Fields) {
 		f := event.Fields[fieldIndex]
 		fieldIndex++
-		if conformance.IsZigbee(event.Fields, f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+		if conformance.IsZigbee(f.Conformance) || conformance.IsDisallowed(f.Conformance) {
 			continue
 		}
 		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
@@ -151,7 +151,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 
 	if cluster != nil && cr.configurator != nil {
 		if cr.generator.options.ConformanceXML {
-			renderConformance(cr.generator.spec, event, cluster, event.Conformance, eventElement, "field", "access", "description")
+			renderConformance(cr.generator.spec, event, event.Conformance, eventElement, "field", "access", "description")
 		} else {
 			removeConformance(eventElement)
 		}

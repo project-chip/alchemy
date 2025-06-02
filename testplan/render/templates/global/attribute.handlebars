@@ -13,7 +13,7 @@
 {{#if optionality.features}}
 {featureEntries} +
 {{#each optionality.features}}
-- 0x{{id this.entity.ID format=idFormat}}: {shallIncludeIf} {{picsConformance context.referenceStore cluster this.conformance}} and {shallNotInclude}.
+- 0x{{id this.entity.ID format=idFormat}}: {shallIncludeIf} {{picsConformance  cluster this.conformance}} and {shallNotInclude}.
 {{/each}}
 {{/if}}
 {{else}}

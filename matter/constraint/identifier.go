@@ -10,6 +10,7 @@ import (
 
 type IdentifierLimit struct {
 	ID     string `json:"id"`
+	Not    bool   `json:"not,omitempty"`
 	Entity types.Entity
 	Field  Limit `json:"field,omitempty"`
 }

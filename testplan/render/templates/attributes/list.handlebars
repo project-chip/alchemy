@@ -20,7 +20,7 @@
 |===
 | *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*
 {{#each attributes}}
-| {{#brace}}PICS_S{{entityId this}}{{/brace}}| {devimp} the _{{#brace}}{{entityId this}}{{/brace}}_ attribute?| {{#if this.conformance}}{{picsConformance context.referenceStore cluster this.conformance}}{{/if}} |
+| {{#brace}}PICS_S{{entityId this}}{{/brace}}| {devimp} the _{{#brace}}{{entityId this}}{{/brace}}_ attribute?| {{#if this.conformance}}{{picsConformance cluster this.conformance}}{{/if}} |
 {{/each}}
 |===
 
