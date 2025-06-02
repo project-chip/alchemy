@@ -10,6 +10,10 @@ import (
 
 func ToUnderlyingType(dt types.BaseDataType) types.BaseDataType {
 	switch dt {
+	case types.BaseDataTypeEnum8:
+		return types.BaseDataTypeUInt8
+	case types.BaseDataTypeEnum16:
+		return types.BaseDataTypeUInt16
 	case types.BaseDataTypeInt40,
 		types.BaseDataTypeInt48,
 		types.BaseDataTypeInt56:
