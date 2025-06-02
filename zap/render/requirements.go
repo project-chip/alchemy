@@ -1,12 +1,15 @@
 package render
 
 import (
+	"fmt"
 	"log/slog"
+	"slices"
 	"strconv"
 	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/errata"
+	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/internal/find"
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
@@ -16,14 +19,6 @@ import (
 	"github.com/project-chip/alchemy/zap"
 )
 
-type clusterRequirements struct {
-	id                             *matter.Number
-	name                           string
-	requirementsFromDeviceType     []*matter.ClusterRequirement
-	requirementsFromBaseDeviceType []*matter.ClusterRequirement
-	elementRequirements            []*matter.ElementRequirement
-}
-
 func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, deviceType *matter.DeviceType, dte *etree.Element, errata *errata.SDK) (err error) {
 	setDeviceTypeName(spec, dte, deviceType, errata)
 	xml.SetOrCreateSimpleElement(dte, "domain", "CHIP", "name")
@@ -32,42 +27,349 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 	xml.SetOrCreateSimpleElement(dte, "deviceId", deviceType.ID.HexString(), "name", "domain", "typeName", "profileId").CreateAttr("editable", "false")
 	xml.SetOrCreateSimpleElement(dte, "class", deviceType.Class, "name", "domain", "typeName", "profileId", "deviceId")
 	xml.SetOrCreateSimpleElement(dte, "scope", deviceType.Scope, "name", "domain", "typeName", "profileId", "deviceId", "class")
-	var hasClient, hasServer bool
 
-	for _, cr := range deviceType.ClusterRequirements {
-		if !cr.ClusterID.Valid() {
-			continue
-		}
-		if conformance.IsMandatory(cr.Conformance) {
-			switch cr.Interface {
-			case matter.InterfaceClient:
-				hasClient = true
-			case matter.InterfaceServer:
-				hasServer = true
-			}
-		}
-		if hasClient && hasServer {
-			break
-		}
+	var composition *matter.DeviceTypeComposition
+	composition, err = spec.ComposeDeviceType(deviceType)
+	if err != nil {
+		return
 	}
-	cxt := conformance.Context{
-		Values: map[string]any{
-			"Matter":         true,
-			deviceType.Class: true,
-			"Client":         hasClient,
-			"Server":         hasServer,
-		},
+	err = p.renderClusterIncludes(spec, dte, composition)
+	if err != nil {
+		return
 	}
-
-	if p.options.EndpointCompositionXML {
+	/*if p.options.EndpointCompositionXML {
 		err = p.setEndpointCompositionElement(spec, cxt, deviceType, dte)
 		if err != nil {
 			return
 		}
-	}
-	clusterRequirementsByID := p.buildClusterRequirements(spec, cxt, deviceType.ClusterRequirements, deviceType.ElementRequirements)
-	p.setClustersElement(spec, cxt, deviceType, clusterRequirementsByID, dte)
+	}*/
 	return
+}
+
+func (p *DeviceTypesPatcher) renderClusterIncludes(spec *spec.Specification, parent *etree.Element, composition *matter.DeviceTypeComposition) (err error) {
+	var composedClusters map[*matter.Cluster]*matter.ClusterComposition
+	composedClusters, err = Compose(composition)
+	if err != nil {
+		return
+	}
+	clustersElement := parent.SelectElement("clusters")
+
+	if len(composedClusters) == 0 {
+		if clustersElement != nil {
+			parent.RemoveChild(clustersElement)
+		}
+		return
+	}
+	if clustersElement == nil {
+		clustersElement = parent.CreateElement("clusters")
+	}
+	for _, include := range clustersElement.SelectElements("include") {
+		ca := include.SelectAttr("cluster")
+		if ca == nil {
+			slog.Warn("missing cluster attribute on include", slog.String("deviceTypeId", composition.DeviceType.ID.HexString()))
+			clustersElement.RemoveChild(include)
+			continue
+		}
+		var clusterComposition *matter.ClusterComposition
+		for c, cc := range composedClusters {
+			if strings.EqualFold(ca.Value, c.Name) {
+				clusterComposition = cc
+				delete(composedClusters, c)
+				break
+			}
+		}
+		if clusterComposition == nil {
+			slog.Debug("unknown cluster attribute on include", slog.String("deviceTypeId", composition.DeviceType.ID.HexString()), slog.String("clusterName", ca.Value))
+			clustersElement.RemoveChild(include)
+			continue
+		}
+		err = p.renderClusterInclude(spec, clustersElement, include, composition.DeviceType, clusterComposition)
+		if err != nil {
+			return
+		}
+	}
+	for _, clusterComposition := range composedClusters {
+		err = p.renderClusterInclude(spec, clustersElement, nil, composition.DeviceType, clusterComposition)
+	}
+	return
+}
+
+func (p *DeviceTypesPatcher) renderClusterInclude(spec *spec.Specification,
+	clustersElement *etree.Element,
+	includeElement *etree.Element,
+	deviceType *matter.DeviceType,
+	clusterComposition *matter.ClusterComposition) (err error) {
+
+	clusterDoc, ok := spec.DocRefs[clusterComposition.Cluster]
+	if !ok {
+		slog.Warn("unknown doc path on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", clusterComposition.Cluster.Name))
+		return
+	}
+
+	if (clusterComposition.Server == conformance.StateUnknown || clusterComposition.Server == conformance.StateDisallowed) && (clusterComposition.Client == conformance.StateUnknown || clusterComposition.Client == conformance.StateDisallowed) {
+		if includeElement != nil {
+			clustersElement.RemoveChild(includeElement)
+		}
+		return
+	}
+
+	var server, client, clientLocked, serverLocked bool
+	switch clusterComposition.Server {
+	case conformance.StateMandatory, conformance.StateProvisional:
+		server = true
+		serverLocked = true
+	case conformance.StateOptional, conformance.StateDeprecated:
+		server = false
+		serverLocked = false
+	case conformance.StateDisallowed, conformance.StateUnknown:
+		server = false
+		serverLocked = true
+		server = false
+		serverLocked = true
+	default:
+		err = fmt.Errorf("unexpected conformance state %s", clusterComposition.Server.String())
+		return
+	}
+
+	switch clusterComposition.Client {
+	case conformance.StateMandatory, conformance.StateProvisional:
+		client = true
+		clientLocked = true
+	case conformance.StateOptional, conformance.StateDeprecated:
+		client = false
+		clientLocked = false
+	case conformance.StateDisallowed, conformance.StateUnknown:
+		client = false
+		clientLocked = true
+	default:
+		err = fmt.Errorf("unexpected conformance state %s", clusterComposition.Server.String())
+		return
+	}
+
+	if serverLocked && !server && clientLocked && !client {
+		// This is just completely disallowed; remove it if here
+		if includeElement != nil {
+			clustersElement.RemoveChild(includeElement)
+			return
+		}
+	}
+
+	errata := errata.GetSDK(clusterDoc.Path.Relative)
+
+	if includeElement == nil {
+		includeElement = etree.NewElement("include")
+		includeElement.CreateAttr("cluster", clusterComposition.Cluster.Name)
+		xml.InsertElementByAttribute(clustersElement, includeElement, "cluster")
+	} else {
+		includeElement.CreateAttr("cluster", clusterComposition.Cluster.Name)
+	}
+
+	if clientLocked { // Locked, so override whatever is there
+		includeElement.CreateAttr("client", strconv.FormatBool(client))
+	} else {
+		xml.SetNonexistentAttr(includeElement, "client", strconv.FormatBool(client))
+	}
+	if serverLocked { // Locked, so override whatever is there
+		includeElement.CreateAttr("server", strconv.FormatBool(server))
+	} else {
+		xml.SetNonexistentAttr(includeElement, "server", strconv.FormatBool(server))
+	}
+	includeElement.CreateAttr("clientLocked", strconv.FormatBool(clientLocked))
+	includeElement.CreateAttr("serverLocked", strconv.FormatBool(serverLocked))
+
+	err = p.renderClusterElementRequirements2(spec, includeElement, deviceType, clusterComposition, errata)
+	return
+}
+
+func (p *DeviceTypesPatcher) renderClusterElementRequirements2(spec *spec.Specification,
+	includeElement *etree.Element,
+	deviceType *matter.DeviceType,
+	clusterComposition *matter.ClusterComposition,
+	errata *errata.SDK) (err error) {
+
+	p.renderFeatureRequirements2(spec, deviceType, includeElement, clusterComposition)
+	p.renderAttributeRequirements2(spec, deviceType, includeElement, clusterComposition, errata)
+	p.renderCommandRequirements2(spec, deviceType, includeElement, clusterComposition)
+	return
+}
+
+func (p *DeviceTypesPatcher) renderFeatureRequirements2(spec *spec.Specification, deviceType *matter.DeviceType,
+	root *etree.Element, clusterComposition *matter.ClusterComposition) {
+
+	features := internal.ToMap(find.Filter(clusterComposition.Elements, func(ec *matter.ElementComposition) bool {
+		_, ok := ec.ElementRequirement.Entity.(*matter.Feature)
+		return ok
+	}), func(ec *matter.ElementComposition) *matter.Feature {
+		return ec.ElementRequirement.Entity.(*matter.Feature)
+	})
+
+	fse := root.SelectElement("features")
+	if len(features) == 0 {
+		if fse != nil {
+			root.RemoveChild(fse)
+		}
+		return
+	}
+	if fse == nil {
+		fse = root.CreateElement("features")
+	}
+	fes := fse.SelectElements("feature")
+	for _, fe := range fes {
+		featureCode := fe.SelectAttr("code")
+		featureName := fe.SelectAttr("name")
+		if featureCode == nil && featureName == nil {
+			slog.Warn("feature element missing code and name attributes", slog.String("deviceType", deviceType.Name), slog.String("clusterName", clusterComposition.Cluster.Name))
+			fse.RemoveChild(fe)
+			continue
+		}
+		var feature *matter.Feature
+		for f := range features {
+			if featureCode != nil && strings.EqualFold(featureCode.Value, f.Code) {
+				feature = f
+				break
+			}
+			if featureName != nil && strings.EqualFold(featureName.Value, f.Name()) {
+				feature = f
+				break
+			}
+		}
+
+		if feature == nil {
+			slog.Warn("Unrecognized feature", slog.String("deviceType", deviceType.Name), slog.String("clusterName", clusterComposition.Cluster.Name), slog.Any("featureCode", featureCode), slog.Any("featureName", featureName))
+			fse.RemoveChild(fe)
+			continue
+		}
+
+		er := features[feature]
+		fe.CreateAttr("code", feature.Code)
+		fe.CreateAttr("name", feature.Name())
+		if p.options.FeatureXML {
+			renderConformance(spec, deviceType, er.ElementRequirement.Conformance, fe)
+		} else {
+			removeConformance(fe)
+		}
+		delete(features, feature)
+	}
+	for feature, er := range features {
+		fe := etree.NewElement("feature")
+		fe.CreateAttr("code", feature.Code)
+		fe.CreateAttr("name", feature.Name())
+		if p.options.FeatureXML {
+			renderConformance(spec, deviceType, er.ElementRequirement.Conformance, fe)
+		} else {
+			removeConformance(fe)
+		}
+		xml.InsertElementByAttribute(fse, fe, "code")
+	}
+}
+
+func renderCommandRequirements(root *etree.Element, elements map[types.Entity]*matter.DeviceTypeElementRequirement) {
+	commands := find.ListCast[types.Entity, *matter.Command](find.Keys(elements))
+
+	rcs := root.SelectElements("requireCommand")
+	for _, rc := range rcs {
+		rct := rc.Text()
+		cmd := find.First(commands, func(c *matter.Command) bool { return strings.EqualFold(rct, c.Name) })
+		if cmd == nil {
+			root.RemoveChild(rc)
+		} else {
+			commands = slices.DeleteFunc(commands, func(c *matter.Command) bool { return c == cmd })
+		}
+	}
+	for _, cmd := range commands {
+		rae := etree.NewElement("requireCommand")
+		rae.SetText(cmd.Name)
+		xml.InsertElementByName(root, rae, "requireAttribute")
+	}
+}
+
+func (p *DeviceTypesPatcher) renderCommandRequirements2(spec *spec.Specification, deviceType *matter.DeviceType,
+	root *etree.Element, clusterComposition *matter.ClusterComposition) {
+
+	commands := internal.ToMap(find.Filter(clusterComposition.Elements, func(ec *matter.ElementComposition) bool {
+		_, ok := ec.ElementRequirement.Entity.(*matter.Command)
+
+		return ok
+	}), func(ec *matter.ElementComposition) *matter.Command {
+		return ec.ElementRequirement.Entity.(*matter.Command)
+	})
+
+	rcs := root.SelectElements("requireCommand")
+	for _, rc := range rcs {
+		rct := rc.Text()
+		command, _, required := find.FirstPairFunc(commands, func(a *matter.Command) bool { return strings.EqualFold(rct, a.Name) })
+
+		if !required {
+			root.RemoveChild(rc)
+		} else {
+			delete(commands, command)
+		}
+	}
+	for cmd := range commands {
+		rae := etree.NewElement("requireCommand")
+		rae.SetText(cmd.Name)
+		xml.InsertElementByName(root, rae, "requireAttribute")
+	}
+}
+
+func (p *DeviceTypesPatcher) renderAttributeRequirements2(spec *spec.Specification, deviceType *matter.DeviceType,
+	root *etree.Element, clusterComposition *matter.ClusterComposition, errata *errata.SDK) {
+
+	attributes := internal.ToMap(find.Filter(clusterComposition.Elements, func(ec *matter.ElementComposition) bool {
+		f, ok := ec.ElementRequirement.Entity.(*matter.Field)
+		if ok {
+			return f.EntityType() == types.EntityTypeAttribute
+		}
+		return ok
+	}), func(ec *matter.ElementComposition) *matter.Field {
+		return ec.ElementRequirement.Entity.(*matter.Field)
+	})
+
+	defines := make(map[*matter.Field]string, len(attributes))
+	for a := range attributes {
+		defines[a] = getDefine(a.Name, errata.ClusterDefinePrefix, errata)
+	}
+
+	ras := root.SelectElements("requireAttribute")
+	for _, ra := range ras {
+		rat := ra.Text()
+		attribute, _, required := find.FirstPairFunc(defines, func(a *matter.Field) bool { return strings.EqualFold(rat, defines[a]) })
+		if required {
+			delete(defines, attribute)
+		} else {
+			root.RemoveChild(ra)
+		}
+	}
+	for _, ra := range defines {
+		rae := etree.NewElement("requireAttribute")
+		rae.SetText(ra)
+		xml.InsertElementByName(root, rae, "")
+	}
+}
+
+func renderAttributeRequirements(root *etree.Element, elements map[types.Entity]*matter.DeviceTypeElementRequirement, errata *errata.SDK) {
+	attributes := find.ListCast[types.Entity, *matter.Field](find.Keys(elements))
+	attributes = internal.List(find.Filter(attributes, func(a *matter.Field) bool { return a.EntityType() == types.EntityTypeAttribute }))
+	requiredAttributeDefines := make(map[*matter.Field]string)
+	for _, a := range attributes {
+		requiredAttributeDefines[a] = getDefine(a.Name, errata.ClusterDefinePrefix, errata)
+	}
+
+	ras := root.SelectElements("requireAttribute")
+	for _, ra := range ras {
+		rat := ra.Text()
+		attribute, _, required := find.FirstPairFunc(requiredAttributeDefines, func(a *matter.Field) bool { return strings.EqualFold(rat, requiredAttributeDefines[a]) })
+		if required {
+			delete(requiredAttributeDefines, attribute)
+		} else {
+			root.RemoveChild(ra)
+		}
+	}
+	for _, ra := range requiredAttributeDefines {
+		rae := etree.NewElement("requireAttribute")
+		rae.SetText(ra)
+		xml.InsertElementByName(root, rae, "")
+	}
 }
 
 func setDeviceTypeName(spec *spec.Specification, dte *etree.Element, deviceType *matter.DeviceType, errata *errata.SDK) {
@@ -78,482 +380,4 @@ func setDeviceTypeName(spec *spec.Specification, dte *etree.Element, deviceType 
 		return
 	}
 	xml.SetOrCreateSimpleElement(dte, "name", deviceTypeName)
-}
-
-func (p *DeviceTypesPatcher) buildClusterRequirements(spec *spec.Specification, conformanceContext conformance.Context, clusterReqs []*matter.ClusterRequirement, elementReqs []*matter.ElementRequirement) (clusterRequirementsByID map[uint64]*clusterRequirements) {
-	clusterRequirementsByID = make(map[uint64]*clusterRequirements)
-	for _, cr := range clusterReqs {
-		if !cr.ClusterID.Valid() {
-			continue
-		}
-		crr, ok := clusterRequirementsByID[cr.ClusterID.Value()]
-		if !ok {
-			crr = &clusterRequirements{id: cr.ClusterID, name: cr.ClusterName}
-			clusterRequirementsByID[cr.ClusterID.Value()] = crr
-		}
-
-		crr.requirementsFromDeviceType = append(crr.requirementsFromDeviceType, cr)
-	}
-	for _, er := range elementReqs {
-		if !er.ClusterID.Valid() {
-			continue
-		}
-		crr, ok := clusterRequirementsByID[er.ClusterID.Value()]
-		if !ok {
-			// The spec has an element requirement for a cluster that wasn't required; probably a mistake, so
-			// let's pretend the cluster was in the requirements, but optional
-			crr = &clusterRequirements{id: er.ClusterID, name: er.ClusterName}
-			clusterRequirementsByID[er.ClusterID.Value()] = crr
-		}
-		crr.elementRequirements = append(crr.elementRequirements, er)
-	}
-	for _, er := range spec.BaseDeviceType.ElementRequirements {
-		if !er.ClusterID.Valid() {
-			continue
-		}
-		crr, ok := clusterRequirementsByID[er.ClusterID.Value()]
-		if ok {
-			// If the Base Device Type has an element requirement for a cluster required by the Device Type, then include its element requirements too
-			crr.elementRequirements = append(crr.elementRequirements, er)
-		}
-	}
-
-	for _, cr := range spec.BaseDeviceType.ClusterRequirements {
-		if !cr.ClusterID.Valid() {
-			continue
-		}
-		crr, ok := clusterRequirementsByID[cr.ClusterID.Value()]
-		if ok {
-			// If a Base Device Type requirement specifies a cluster also specified by the device type, then include the relevant Base Device type requirement
-			crr.requirementsFromBaseDeviceType = append(crr.requirementsFromBaseDeviceType, cr)
-			slog.Debug("adding base device type cluster requirement", slog.String("cluster", cr.ClusterName))
-		} else if !conformance.IsMandatory(cr.Conformance) {
-			conf, confErr := cr.Conformance.Eval(conformanceContext)
-			if confErr != nil {
-				slog.Warn("Error evaluating conformance of cluster requirement", slog.String("clusterName", cr.ClusterName), slog.Any("error", confErr))
-			} else if conf == conformance.StateMandatory {
-				// If the Base Device Type has a requirement that is not plain Mandatory ("M"), but it returns Mandatory when evaulated, then include it
-				crr = &clusterRequirements{id: cr.ClusterID, name: cr.ClusterName}
-				crr.requirementsFromBaseDeviceType = append(crr.requirementsFromBaseDeviceType, cr)
-				clusterRequirementsByID[cr.ClusterID.Value()] = crr
-			}
-		}
-	}
-	return
-}
-
-func (p DeviceTypesPatcher) setClustersElement(spec *spec.Specification, cxt conformance.Context, deviceType *matter.DeviceType, clusterRequirementsByID map[uint64]*clusterRequirements, parent *etree.Element) {
-	clustersElement := parent.SelectElement("clusters")
-	if len(deviceType.ClusterRequirements) == 0 {
-		if clustersElement != nil {
-			parent.RemoveChild(clustersElement)
-		}
-		return
-	}
-	if clustersElement == nil {
-		clustersElement = parent.CreateElement("clusters")
-	}
-
-	for _, include := range clustersElement.SelectElements("include") {
-		ca := include.SelectAttr("cluster")
-		if ca == nil {
-			slog.Warn("missing cluster attribute on include", slog.String("deviceTypeId", deviceType.ID.HexString()))
-			clustersElement.RemoveChild(include)
-			continue
-		}
-		var cr *clusterRequirements
-		var clusterId uint64
-		for id, crs := range clusterRequirementsByID {
-			if strings.EqualFold(ca.Value, crs.name) {
-				cr = crs
-				clusterId = id
-				break
-			}
-		}
-		if cr == nil {
-			slog.Debug("unknown cluster attribute on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", ca.Value))
-			clustersElement.RemoveChild(include)
-			continue
-		}
-		p.setIncludeAttributes(clustersElement, include, spec, deviceType, cr, cxt)
-		delete(clusterRequirementsByID, clusterId)
-	}
-	for _, crs := range [][]*matter.ClusterRequirement{spec.BaseDeviceType.ClusterRequirements, deviceType.ClusterRequirements} {
-		for _, cr := range crs {
-			if !cr.ClusterID.Valid() {
-				continue
-			}
-			crr, ok := clusterRequirementsByID[cr.ClusterID.Value()]
-			if ok {
-				p.setIncludeAttributes(clustersElement, nil, spec, deviceType, crr, cxt)
-				delete(clusterRequirementsByID, cr.ClusterID.Value())
-			}
-		}
-	}
-}
-
-func (p *DeviceTypesPatcher) setIncludeAttributes(clustersElement *etree.Element, include *etree.Element, spec *spec.Specification, deviceType *matter.DeviceType, cr *clusterRequirements, cxt conformance.Context) {
-	var cluster *matter.Cluster
-	var ok bool
-	cluster, ok = spec.ClustersByID[cr.id.Value()]
-	if !ok {
-		cluster, ok = spec.ClustersByName[cr.name]
-		if !ok {
-			var alias string
-			alias, ok = p.clusterAliases[cr.name]
-			if ok {
-				cluster, ok = spec.ClustersByName[alias]
-				if !ok {
-					slog.Warn("unknown cluster alias on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name), slog.String("alias", alias))
-					return
-				}
-			} else {
-				slog.Warn("Removing unknown cluster on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cr.name))
-				if include != nil {
-					clustersElement.RemoveChild(include)
-				}
-				return
-			}
-		}
-	}
-
-	clusterDoc, ok := spec.DocRefs[cluster]
-	if !ok {
-		slog.Warn("unknown doc path on include", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name))
-	}
-
-	errata := errata.GetSDK(clusterDoc.Path.Relative)
-
-	var server, client, clientLocked, serverLocked bool
-	clientLocked = true
-	serverLocked = true
-	// Any requirements brought over from the Base Device Type should be overridden by device type requirements, so we parse in order
-	for _, crs := range [][]*matter.ClusterRequirement{cr.requirementsFromBaseDeviceType, cr.requirementsFromDeviceType} {
-		for _, cr := range crs {
-			if conformance.IsBlank(cr.Conformance) {
-				// If the device type has blank conformance, ignore it
-				continue
-			}
-			conf, err := getClusterRequirementConformance(cxt, cr)
-			if err != nil {
-				slog.Warn("Error evaluating conformance of cluster requirement", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
-				continue
-			}
-
-			switch conf {
-			case conformance.StateOptional, conformance.StateProvisional:
-				switch cr.Interface {
-				case matter.InterfaceServer:
-					server = false
-					serverLocked = false
-				case matter.InterfaceClient:
-					client = false
-					clientLocked = false
-				}
-			case conformance.StateMandatory:
-				switch cr.Interface {
-				case matter.InterfaceServer:
-					server = true
-					serverLocked = true
-				case matter.InterfaceClient:
-					client = true
-					clientLocked = true
-				}
-			case conformance.StateDisallowed:
-				switch cr.Interface {
-				case matter.InterfaceServer:
-					server = false
-					serverLocked = true
-				case matter.InterfaceClient:
-					client = false
-					clientLocked = true
-				}
-			default:
-				slog.Warn("Unexpected conformance", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("conformance", conf.String()))
-				return
-			}
-		}
-	}
-
-	if include == nil {
-		include = etree.NewElement("include")
-		include.CreateAttr("cluster", cluster.Name)
-		xml.InsertElementByAttribute(clustersElement, include, "cluster")
-	} else {
-		include.CreateAttr("cluster", cluster.Name)
-	}
-
-	if clientLocked { // Locked, so override whatever is there
-		include.CreateAttr("client", strconv.FormatBool(client))
-	} else {
-		xml.SetNonexistentAttr(include, "client", strconv.FormatBool(client))
-	}
-	if serverLocked { // Locked, so override whatever is there
-		include.CreateAttr("server", strconv.FormatBool(server))
-	} else {
-		xml.SetNonexistentAttr(include, "server", strconv.FormatBool(server))
-	}
-	include.CreateAttr("clientLocked", strconv.FormatBool(clientLocked))
-	include.CreateAttr("serverLocked", strconv.FormatBool(serverLocked))
-
-	requiredAttributes := make(map[*matter.Field]*matter.ElementRequirement)
-	requiredAttributeDefines := make(map[string]struct{})
-	requiredCommands := make(map[*matter.Command]*matter.ElementRequirement)
-	requiredCommandFields := make(map[*matter.Command]map[string]*matter.ElementRequirement)
-	requiredEvents := make(map[*matter.Event]*matter.ElementRequirement)
-	requiredFeatures := make(map[*matter.Feature]*matter.ElementRequirement)
-
-	for _, er := range cr.elementRequirements {
-		if conformance.IsZigbee(cluster, er.Conformance) {
-			continue
-		}
-		conf, err := er.Conformance.Eval(cxt)
-		if err != nil {
-			slog.Warn("Error evaluating conformance of element requirement", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
-			continue
-		}
-		if conf == conformance.StateMandatory || conf == conformance.StateProvisional {
-			switch er.Element {
-			case types.EntityTypeFeature:
-				var feature *matter.Feature
-				for f := range cluster.Features.FeatureBits() {
-					if strings.EqualFold(er.Name, f.Name()) {
-						feature = f
-						break
-					}
-				}
-				if feature == nil {
-					slog.Warn("unknown feature in element requirement", slog.String("deviceType", deviceType.Name), slog.String("clusterName", cluster.Name), slog.String("feature", er.Name))
-					continue
-				}
-				cxt.Values[er.Name] = true
-				requiredFeatures[feature] = er
-			case types.EntityTypeAttribute:
-				var attribute *matter.Field
-				for _, a := range cluster.Attributes {
-					if strings.EqualFold(a.Name, er.Name) {
-						attribute = a
-						break
-					}
-				}
-				if attribute == nil {
-					slog.Warn("unknown attribute in element requirement", slog.String("deviceType", deviceType.Name), slog.String("clusterName", cluster.Name), slog.String("attribute", er.Name))
-					continue
-				}
-				requiredAttributes[attribute] = er
-				requiredAttributeDefines[getDefine(attribute.Name, errata.ClusterDefinePrefix, errata)] = struct{}{}
-				cxt.Values[er.Name] = true
-			case types.EntityTypeCommand:
-				var command *matter.Command
-				for _, cmd := range cluster.Commands {
-					if strings.EqualFold(cmd.Name, er.Name) {
-						command = cmd
-						break
-					}
-				}
-				if command == nil {
-					slog.Warn("unknown command in element requirement", slog.String("deviceType", deviceType.Name), slog.String("clusterName", cluster.Name), slog.String("attribute", er.Name))
-					continue
-				}
-				requiredCommands[command] = er
-				cxt.Values[er.Name] = true
-			case types.EntityTypeEvent:
-				var event *matter.Event
-				for _, ev := range cluster.Events {
-					if strings.EqualFold(ev.Name, er.Name) {
-						event = ev
-						break
-					}
-				}
-				if event == nil {
-					slog.Warn("unknown event in element requirement", slog.String("deviceType", deviceType.Name), slog.String("clusterName", cluster.Name), slog.String("attribute", er.Name))
-					continue
-				}
-				requiredEvents[event] = er
-				cxt.Values[er.Name] = true
-			case types.EntityTypeCommandField:
-				var command *matter.Command
-				for _, a := range cluster.Commands {
-					if strings.EqualFold(a.Name, er.Name) {
-						command = a
-						break
-					}
-				}
-				if command == nil {
-					slog.Warn("unknown command in element requirement", slog.String("deviceType", deviceType.Name), slog.String("clusterName", cluster.Name), slog.String("attribute", er.Name))
-					continue
-				}
-				cf, ok := requiredCommandFields[command]
-				if !ok {
-					cf = make(map[string]*matter.ElementRequirement)
-					requiredCommandFields[command] = cf
-					cxt.Values[er.Name] = true
-				}
-				cf[er.Field] = er
-			default:
-				slog.Warn("Element requirement with unrecognized element type", slog.String("deviceType", deviceType.Name), slog.String("entityType", er.Element.String()))
-			}
-		}
-	}
-
-	fse := include.SelectElement("features")
-	if len(requiredFeatures) > 0 {
-		if fse == nil {
-			fse = include.CreateElement("features")
-		}
-		fes := fse.SelectElements("feature")
-		for _, fe := range fes {
-			featureCode := fe.SelectAttr("code")
-			featureName := fe.SelectAttr("name")
-			if featureCode == nil && featureName == nil {
-				slog.Warn("feature element missing code and name attributes", slog.String("deviceType", deviceType.Name), slog.String("clusterName", cluster.Name))
-				include.RemoveChild(fe)
-				continue
-			}
-			feature, er, required := find.FirstPairFunc(requiredFeatures, func(f *matter.Feature) bool {
-				if featureCode != nil && strings.EqualFold(featureCode.Value, f.Code) {
-					return true
-				}
-				return featureName != nil && strings.EqualFold(featureName.Value, f.Name())
-			})
-			if !required {
-				include.RemoveChild(fe)
-				continue
-			}
-
-			fe.CreateAttr("code", feature.Code)
-			fe.CreateAttr("name", feature.Name())
-			if p.options.FeatureXML {
-				renderConformance(p.spec, deviceType, cluster, er.Conformance, fe)
-			} else {
-				removeConformance(fe)
-			}
-			delete(requiredFeatures, feature)
-		}
-		for feature, er := range requiredFeatures {
-			fe := etree.NewElement("feature")
-			fe.CreateAttr("code", feature.Code)
-			fe.CreateAttr("name", feature.Name())
-			if p.options.FeatureXML {
-				renderConformance(p.spec, deviceType, cluster, er.Conformance, fe)
-			}
-			xml.InsertElementByAttribute(fse, fe, "code")
-		}
-	} else if fse != nil {
-		include.RemoveChild(fse)
-	}
-
-	ras := include.SelectElements("requireAttribute")
-	for _, ra := range ras {
-		rat := ra.Text()
-		_, required := requiredAttributeDefines[rat]
-		if required {
-			delete(requiredAttributeDefines, rat)
-		} else {
-			include.RemoveChild(ra)
-		}
-	}
-	for ra := range requiredAttributeDefines {
-		rae := etree.NewElement("requireAttribute")
-		rae.SetText(ra)
-		xml.InsertElementByName(include, rae, "")
-	}
-	rcs := include.SelectElements("requireCommand")
-	for _, rc := range rcs {
-		rct := rc.Text()
-		cmd, _, required := find.FirstPairFunc(requiredCommands, func(command *matter.Command) bool { return strings.EqualFold(rct, command.Name) })
-		if required {
-			delete(requiredCommands, cmd)
-		} else {
-			include.RemoveChild(rc)
-		}
-	}
-	for ra := range requiredCommands {
-		rae := etree.NewElement("requireCommand")
-		rae.SetText(ra.Name)
-		xml.InsertElementByName(include, rae, "requireAttribute")
-	}
-	rcfs := include.SelectElements("requireCommandField")
-	for _, rc := range rcfs {
-		rcfc := rc.SelectElement("command")
-		if rcfc == nil {
-			include.RemoveChild(rc)
-			continue
-		}
-		rct := rcfc.Text()
-		cmd, fields, required := find.FirstPairFunc(requiredCommandFields, func(command *matter.Command) bool { return strings.EqualFold(rct, command.Name) })
-		if required {
-			delete(requiredCommandFields, cmd)
-		} else {
-			include.RemoveChild(rc)
-			continue
-		}
-		rcffs := rc.SelectElements("field")
-		for _, rcff := range rcffs {
-			rcft := rc.Text()
-			_, required := fields[rcft]
-			if required {
-				delete(fields, rcft)
-			} else {
-				rc.RemoveChild(rcff)
-			}
-		}
-		for rcft := range fields {
-			rae := etree.NewElement("field")
-			rae.SetText(rcft)
-			xml.InsertElementByName(rc, rae, "command")
-		}
-	}
-	for rcfc, rcffs := range requiredCommandFields {
-		rcfe := etree.NewElement("requireCommandField")
-		rcfce := rcfe.CreateElement("command")
-		rcfce.SetText(rcfc.Name)
-		for rcff := range rcffs {
-			rcfe.CreateElement("field").SetText(rcff)
-		}
-		xml.InsertElementByName(include, rcfe, "requireAttribute", "requireCommand")
-	}
-	res := include.SelectElements("requireEvent")
-	for _, re := range res {
-		ret := re.Text()
-		ev, _, required := find.FirstPairFunc(requiredEvents, func(e *matter.Event) bool { return strings.EqualFold(e.Name, ret) })
-		if required {
-			delete(requiredEvents, ev)
-		} else {
-			include.RemoveChild(re)
-		}
-	}
-	for ra := range requiredEvents {
-		rae := etree.NewElement("requireEvent")
-		rae.SetText(ra.Name)
-		xml.InsertElementByName(include, rae, "requireAttribute", "requireCommand", "requireCommandField")
-	}
-}
-
-func getClusterRequirementConformance(cxt conformance.Context, cr *matter.ClusterRequirement) (conf conformance.State, err error) {
-
-	conf, err = cr.Conformance.Eval(cxt)
-	if err != nil {
-		return
-	}
-	if conf == conformance.StateProvisional {
-
-	}
-	if conf == conformance.StateMandatory {
-		// If evaluating the conformance yields a mandatory result, take that
-		return
-	}
-	// Otherwise, conformances might be returning Disallowed due to conditions we're unaware of
-	// We'll check if the conformance is non-conditionally mandatory or disallowed, where we can be sure
-	if conformance.IsMandatory(cr.Conformance) {
-		conf = conformance.StateMandatory
-		return
-	}
-	if conformance.IsDisallowed(cr.Conformance) {
-		conf = conformance.StateDisallowed
-		return
-	}
-	// All other conditions will be assumed optional
-	conf = conformance.StateOptional
-	return
 }

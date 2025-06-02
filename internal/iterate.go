@@ -11,3 +11,10 @@ func Iterate[T any](list []T) iter.Seq[T] {
 		}
 	}
 }
+
+func List[T any](i iter.Seq[T]) (list []T) {
+	for v := range i {
+		list = append(list, v)
+	}
+	return
+}

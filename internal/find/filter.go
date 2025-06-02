@@ -11,3 +11,10 @@ func Filter[T any](list []T, filter func(T) bool) iter.Seq[T] {
 		}
 	}
 }
+
+func First[T any](list []T, filter func(T) bool) (v T) {
+	for v = range Filter(list, filter) {
+		return
+	}
+	return
+}
