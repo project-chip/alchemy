@@ -3,7 +3,6 @@ package render
 import (
 	"fmt"
 	"log/slog"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -37,12 +36,12 @@ func (p DeviceTypesPatcher) applyDeviceTypeToElement(spec *spec.Specification, d
 	if err != nil {
 		return
 	}
-	/*if p.options.EndpointCompositionXML {
-		err = p.setEndpointCompositionElement(spec, cxt, deviceType, dte)
+	if p.options.EndpointCompositionXML {
+		err = p.setEndpointCompositionElement(spec, composition, dte)
 		if err != nil {
 			return
 		}
-	}*/
+	}
 	return
 }
 
@@ -90,6 +89,9 @@ func (p *DeviceTypesPatcher) renderClusterIncludes(spec *spec.Specification, par
 	}
 	for _, clusterComposition := range composedClusters {
 		err = p.renderClusterInclude(spec, clustersElement, nil, composition.DeviceType, clusterComposition)
+	}
+	if len(clustersElement.Child) == 0 {
+		parent.RemoveChild(clustersElement)
 	}
 	return
 }
@@ -187,13 +189,14 @@ func (p *DeviceTypesPatcher) renderClusterElementRequirements2(spec *spec.Specif
 	clusterComposition *matter.ClusterComposition,
 	errata *errata.SDK) (err error) {
 
-	p.renderFeatureRequirements2(spec, deviceType, includeElement, clusterComposition)
-	p.renderAttributeRequirements2(spec, deviceType, includeElement, clusterComposition, errata)
-	p.renderCommandRequirements2(spec, deviceType, includeElement, clusterComposition)
+	p.renderFeatureRequirements(spec, deviceType, includeElement, clusterComposition)
+	p.renderAttributeRequirements(spec, deviceType, includeElement, clusterComposition, errata)
+	p.renderCommandRequirements(spec, deviceType, includeElement, clusterComposition)
+	p.renderEventRequirements(spec, deviceType, includeElement, clusterComposition)
 	return
 }
 
-func (p *DeviceTypesPatcher) renderFeatureRequirements2(spec *spec.Specification, deviceType *matter.DeviceType,
+func (p *DeviceTypesPatcher) renderFeatureRequirements(spec *spec.Specification, deviceType *matter.DeviceType,
 	root *etree.Element, clusterComposition *matter.ClusterComposition) {
 
 	features := internal.ToMap(find.Filter(clusterComposition.Elements, func(ec *matter.ElementComposition) bool {
@@ -263,27 +266,7 @@ func (p *DeviceTypesPatcher) renderFeatureRequirements2(spec *spec.Specification
 	}
 }
 
-func renderCommandRequirements(root *etree.Element, elements map[types.Entity]*matter.DeviceTypeElementRequirement) {
-	commands := find.ListCast[types.Entity, *matter.Command](find.Keys(elements))
-
-	rcs := root.SelectElements("requireCommand")
-	for _, rc := range rcs {
-		rct := rc.Text()
-		cmd := find.First(commands, func(c *matter.Command) bool { return strings.EqualFold(rct, c.Name) })
-		if cmd == nil {
-			root.RemoveChild(rc)
-		} else {
-			commands = slices.DeleteFunc(commands, func(c *matter.Command) bool { return c == cmd })
-		}
-	}
-	for _, cmd := range commands {
-		rae := etree.NewElement("requireCommand")
-		rae.SetText(cmd.Name)
-		xml.InsertElementByName(root, rae, "requireAttribute")
-	}
-}
-
-func (p *DeviceTypesPatcher) renderCommandRequirements2(spec *spec.Specification, deviceType *matter.DeviceType,
+func (p *DeviceTypesPatcher) renderCommandRequirements(spec *spec.Specification, deviceType *matter.DeviceType,
 	root *etree.Element, clusterComposition *matter.ClusterComposition) {
 
 	commands := internal.ToMap(find.Filter(clusterComposition.Elements, func(ec *matter.ElementComposition) bool {
@@ -297,22 +280,57 @@ func (p *DeviceTypesPatcher) renderCommandRequirements2(spec *spec.Specification
 	rcs := root.SelectElements("requireCommand")
 	for _, rc := range rcs {
 		rct := rc.Text()
-		command, _, required := find.FirstPairFunc(commands, func(a *matter.Command) bool { return strings.EqualFold(rct, a.Name) })
+		command, ec, required := find.FirstPairFunc(commands, func(a *matter.Command) bool { return strings.EqualFold(rct, a.Name) })
 
-		if !required {
+		if !required || ec.State.State != conformance.StateMandatory {
 			root.RemoveChild(rc)
 		} else {
 			delete(commands, command)
 		}
 	}
-	for cmd := range commands {
+	for cmd, ec := range commands {
+		if ec.State.State != conformance.StateMandatory {
+			continue
+		}
 		rae := etree.NewElement("requireCommand")
 		rae.SetText(cmd.Name)
 		xml.InsertElementByName(root, rae, "requireAttribute")
 	}
 }
 
-func (p *DeviceTypesPatcher) renderAttributeRequirements2(spec *spec.Specification, deviceType *matter.DeviceType,
+func (p *DeviceTypesPatcher) renderEventRequirements(spec *spec.Specification, deviceType *matter.DeviceType,
+	root *etree.Element, clusterComposition *matter.ClusterComposition) {
+
+	events := internal.ToMap(find.Filter(clusterComposition.Elements, func(ec *matter.ElementComposition) bool {
+		_, ok := ec.ElementRequirement.Entity.(*matter.Event)
+
+		return ok
+	}), func(ec *matter.ElementComposition) *matter.Event {
+		return ec.ElementRequirement.Entity.(*matter.Event)
+	})
+
+	rcs := root.SelectElements("requireEvent")
+	for _, rc := range rcs {
+		rct := rc.Text()
+		event, ec, required := find.FirstPairFunc(events, func(a *matter.Event) bool { return strings.EqualFold(rct, a.Name) })
+
+		if !required || ec.State.State != conformance.StateMandatory {
+			root.RemoveChild(rc)
+		} else {
+			delete(events, event)
+		}
+	}
+	for cmd, ec := range events {
+		if ec.State.State != conformance.StateMandatory {
+			continue
+		}
+		rae := etree.NewElement("requireEvent")
+		rae.SetText(cmd.Name)
+		xml.InsertElementByName(root, rae, "requireAttribute", "requireCommand")
+	}
+}
+
+func (p *DeviceTypesPatcher) renderAttributeRequirements(spec *spec.Specification, deviceType *matter.DeviceType,
 	root *etree.Element, clusterComposition *matter.ClusterComposition, errata *errata.SDK) {
 
 	attributes := internal.ToMap(find.Filter(clusterComposition.Elements, func(ec *matter.ElementComposition) bool {
@@ -334,38 +352,14 @@ func (p *DeviceTypesPatcher) renderAttributeRequirements2(spec *spec.Specificati
 	for _, ra := range ras {
 		rat := ra.Text()
 		attribute, _, required := find.FirstPairFunc(defines, func(a *matter.Field) bool { return strings.EqualFold(rat, defines[a]) })
-		if required {
+		ec := attributes[attribute]
+		if required || ec.State.State != conformance.StateMandatory {
 			delete(defines, attribute)
 		} else {
 			root.RemoveChild(ra)
 		}
 	}
 	for _, ra := range defines {
-		rae := etree.NewElement("requireAttribute")
-		rae.SetText(ra)
-		xml.InsertElementByName(root, rae, "")
-	}
-}
-
-func renderAttributeRequirements(root *etree.Element, elements map[types.Entity]*matter.DeviceTypeElementRequirement, errata *errata.SDK) {
-	attributes := find.ListCast[types.Entity, *matter.Field](find.Keys(elements))
-	attributes = internal.List(find.Filter(attributes, func(a *matter.Field) bool { return a.EntityType() == types.EntityTypeAttribute }))
-	requiredAttributeDefines := make(map[*matter.Field]string)
-	for _, a := range attributes {
-		requiredAttributeDefines[a] = getDefine(a.Name, errata.ClusterDefinePrefix, errata)
-	}
-
-	ras := root.SelectElements("requireAttribute")
-	for _, ra := range ras {
-		rat := ra.Text()
-		attribute, _, required := find.FirstPairFunc(requiredAttributeDefines, func(a *matter.Field) bool { return strings.EqualFold(rat, requiredAttributeDefines[a]) })
-		if required {
-			delete(requiredAttributeDefines, attribute)
-		} else {
-			root.RemoveChild(ra)
-		}
-	}
-	for _, ra := range requiredAttributeDefines {
 		rae := etree.NewElement("requireAttribute")
 		rae.SetText(ra)
 		xml.InsertElementByName(root, rae, "")

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
-	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/internal/xml"
@@ -264,14 +263,11 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 	return
 }
 
-func (p DeviceTypesPatcher) setEndpointCompositionElement(spec *spec.Specification, cxt conformance.Context, deviceType *matter.DeviceType, parent *etree.Element) error {
+func (p DeviceTypesPatcher) setEndpointCompositionElement(spec *spec.Specification, composition *matter.DeviceTypeComposition, parent *etree.Element) error {
 
-	composedDeviceTypes, composedDeviceTypeRequirements, composedDeviceTypeClusterRequirements, composedDeviceTypeElementRequirements, err := p.buildComposedDeviceRequirements(deviceType, spec)
-	if err != nil {
-		return err
-	}
+	childDeviceTypes := composition.ComposedDeviceTypes[matter.DeviceTypeRequirementLocationChildEndpoint]
 	endpointCompositionElement := parent.SelectElement("endpointComposition")
-	if len(composedDeviceTypes) == 0 {
+	if len(childDeviceTypes) == 0 {
 		if endpointCompositionElement != nil {
 			parent.RemoveChild(endpointCompositionElement)
 		}
@@ -279,105 +275,35 @@ func (p DeviceTypesPatcher) setEndpointCompositionElement(spec *spec.Specificati
 	}
 	if endpointCompositionElement == nil {
 		endpointCompositionElement = etree.NewElement("endpointComposition")
-		xml.AppendElement(parent, endpointCompositionElement, "clusters")
+		xml.AppendElement(parent, endpointCompositionElement, "clusters", "scope")
 	}
+	endpointCompositionElement.Child = nil
 	xml.SetOrCreateSimpleElement(endpointCompositionElement, "compositionType", "tree")
-	endpointElement := xml.SetOrCreateSimpleElement(endpointCompositionElement, "endpoint", "")
-	endpointElement.RemoveAttr("conformance")
-	endpointElement.CreateAttr("constraint", "min 1")
-	xml.RemoveElements(endpointElement, "deviceType")
-	for _, dt := range composedDeviceTypes {
-		dte := endpointElement.CreateElement("deviceType")
-		req := composedDeviceTypeRequirements[dt]
-		dte.CreateAttr("id", dt.ID.HexString())
-		dte.CreateAttr("name", dt.Name)
-		renderConformance(spec, dt, req.Conformance, dte)
-		clusterRequirements := make([]*matter.ClusterRequirement, 0, len(dt.ClusterRequirements))
-		for _, cr := range dt.ClusterRequirements {
-			clusterRequirements = append(clusterRequirements, cr.Clone())
-		}
-		elementRequirements := make([]*matter.ElementRequirement, 0, len(dt.ElementRequirements))
-		for _, dtr := range dt.ElementRequirements {
-			elementRequirements = append(elementRequirements, dtr.Clone())
-		}
-		deviceTypeRequirements := make([]*matter.DeviceTypeRequirement, 0, len(dt.DeviceTypeRequirements))
-		for _, dtr := range dt.DeviceTypeRequirements {
-			deviceTypeRequirements = append(deviceTypeRequirements, dtr.Clone())
-		}
-		crcq := composedDeviceTypeClusterRequirements[dt]
-		for _, cdtr := range crcq {
-			var matched bool
-			for _, cr := range clusterRequirements {
-				if cdtr.ClusterRequirement.ClusterID.Valid() && !cdtr.ClusterRequirement.ClusterID.Equals(cr.ClusterID) {
-					continue
-				}
-				if !strings.EqualFold(cdtr.ClusterRequirement.ClusterName, cr.ClusterName) {
-					continue
-				}
-				if cdtr.ClusterRequirement.Interface != cr.Interface {
-					continue
-				}
-				slog.Info("inherited cluster requirement on composed device type", matter.LogEntity("entity", cdtr.ClusterRequirement))
-				cdtr.ClusterRequirement.Quality.Inherit(cr.Quality)
-				cr.Quality = cdtr.ClusterRequirement.Quality
-				if len(cdtr.ClusterRequirement.Conformance) > 0 {
-					cr.Conformance = cdtr.ClusterRequirement.Conformance.CloneSet()
-				}
-				matched = true
-				break
-			}
-			if !matched {
-				slog.Warn("Composed device type requirement references unknown cluster",
-					slog.String("deviceTypeId", deviceType.ID.HexString()),
-					slog.String("deviceTypeName", deviceType.Name),
-					slog.String("composedDeviceTypeId", dt.ID.HexString()),
-					slog.String("composedDeviceTypeName", dt.Name),
-					slog.String("clusterId", cdtr.ClusterRequirement.ClusterID.HexString()),
-					slog.String("clusterName", cdtr.ClusterRequirement.ClusterName),
-				)
-				for _, cr := range clusterRequirements {
-					slog.Info("cluster requirement", matter.LogEntity("entity", cr))
-				}
+	slices.SortFunc(childDeviceTypes, func(a *matter.DeviceTypeComposition, b *matter.DeviceTypeComposition) int {
+		return a.DeviceType.ID.Compare(b.DeviceType.ID)
+	})
+	for _, childDeviceType := range childDeviceTypes {
+		var req *matter.DeviceTypeRequirement
+		for _, r := range composition.DeviceTypeRequirements {
+			if childDeviceType.DeviceType == r.DeviceType {
+				req = r
 			}
 		}
-		creq := composedDeviceTypeElementRequirements[dt]
-		for _, cdtr := range creq {
-			var matched bool
-			for i, dtr := range elementRequirements {
-				if cdtr.ElementRequirement.ClusterID.Valid() && !cdtr.ElementRequirement.ClusterID.Equals(dtr.ClusterID) {
-					continue
-				}
-				if !strings.EqualFold(cdtr.ElementRequirement.ClusterName, dtr.ClusterName) {
-					continue
-				}
-				if cdtr.ElementRequirement.Element != dtr.Element {
-					continue
-				}
-				if !strings.EqualFold(cdtr.ElementRequirement.Name, dtr.Name) {
-					continue
-				}
-				if !strings.EqualFold(cdtr.ElementRequirement.Field, dtr.Field) {
-					continue
-				}
-				cdter := cdtr.ElementRequirement.Clone()
-				if cdtr.ElementRequirement.Constraint == nil && dtr.Constraint != nil {
-					cdter.Constraint = dtr.Constraint.Clone()
-				}
-				if len(cdtr.ElementRequirement.Conformance) == 0 && len(dtr.Conformance) > 0 {
-					cdter.Conformance = dtr.Conformance.CloneSet()
-				}
-				cdter.Access.Inherit(dtr.Access)
-				cdter.Quality.Inherit(dtr.Quality)
-				elementRequirements[i] = cdter
-				matched = true
-				break
-			}
-			if !matched {
-				elementRequirements = append(elementRequirements, cdtr.ElementRequirement)
-			}
+		if req == nil {
+			continue
 		}
-		/*clusterRequirementsByID := p.buildClusterRequirements(spec, cxt, dt, clusterRequirements, elementRequirements)
-		p.setClustersElement(spec, cxt, dt, clusterRequirementsByID, dte)*/
+		endpoint := endpointCompositionElement.CreateElement("endpoint")
+		conf := req.Conformance.ASCIIDocString()
+		if conf != "" {
+			endpoint.CreateAttr("conformance", conf)
+		}
+		cons := req.Constraint.ASCIIDocString(nil)
+		if cons != "" {
+			endpoint.CreateAttr("constraint", cons)
+		}
+		endpoint.CreateElement("deviceType").SetText(childDeviceType.DeviceType.ID.HexString())
+		//endpoint.CreateElement("typeName").SetText(childDeviceType.DeviceType.Name)
+		p.renderClusterIncludes(spec, endpoint, childDeviceType)
 	}
 	return nil
 }
