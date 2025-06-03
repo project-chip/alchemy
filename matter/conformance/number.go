@@ -23,33 +23,37 @@ func (fv FloatValue) Description() string {
 	return fv.raw
 }
 
-func (fv *FloatValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+func (fv *FloatValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (ExpressionResult, error) {
 	if fv == nil {
-		return false, fmt.Errorf("can not compare nil value")
+		return nil, fmt.Errorf("can not compare nil value")
 	}
 	if other == nil {
-		return false, fmt.Errorf("can not compare to nil value")
+		return nil, fmt.Errorf("can not compare to nil value")
 	}
-	ore, ok := other.(*FloatValue)
+	val, err := other.Value(context)
+	if err != nil {
+		return nil, err
+	}
+	ore, ok := val.Value().(*FloatValue)
 	if !ok {
-		return false, fmt.Errorf("can not compare to non-float value")
+		return nil, fmt.Errorf("can not compare to non-float value")
 	}
 	switch op {
 	case ComparisonOperatorGreaterThan:
-		return fv.Float.GreaterThan(ore.Float), nil
+		return &expressionResult{value: fv.Float.GreaterThan(ore.Float), confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorGreaterThanOrEqual:
-		return fv.Float.GreaterThanOrEqual(ore.Float), nil
+		return &expressionResult{value: fv.Float.GreaterThanOrEqual(ore.Float), confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorLessThan:
-		return fv.Float.LessThan(ore.Float), nil
+		return &expressionResult{value: fv.Float.LessThan(ore.Float), confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorLessThanOrEqual:
-		return fv.Float.LessThanOrEqual(ore.Float), nil
+		return &expressionResult{value: fv.Float.LessThanOrEqual(ore.Float), confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	default:
-		return false, fmt.Errorf("invalid operator: %s", op.String())
+		return nil, fmt.Errorf("invalid operator: %s", op.String())
 	}
 }
 
-func (fv FloatValue) Value(context Context) (any, error) {
-	return fv.Float, nil
+func (fv *FloatValue) Value(context Context) (ExpressionResult, error) {
+	return &expressionResult{value: fv, confidence: ConfidenceDefinite}, nil
 }
 
 func (fv *FloatValue) Equal(ofv ComparisonValue) bool {
@@ -89,37 +93,41 @@ func (fv IntValue) Description() string {
 	return fv.raw
 }
 
-func (fv *IntValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+func (fv *IntValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (ExpressionResult, error) {
 	if fv == nil {
-		return false, fmt.Errorf("can not compare nil value")
+		return nil, fmt.Errorf("can not compare nil value")
 	}
 	if other == nil {
-		return false, fmt.Errorf("can not compare to nil value")
+		return nil, fmt.Errorf("can not compare to nil value")
 	}
-	ore, ok := other.(*IntValue)
+	val, err := other.Value(context)
+	if err != nil {
+		return nil, err
+	}
+	ore, ok := val.Value().(*IntValue)
 	if !ok {
-		return false, fmt.Errorf("can not compare to non-int value")
+		return nil, fmt.Errorf("can not compare to non-int value")
 	}
 	switch op {
 	case ComparisonOperatorGreaterThan:
-		return fv.Int > ore.Int, nil
+		return &expressionResult{value: fv.Int > ore.Int, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorGreaterThanOrEqual:
-		return fv.Int >= ore.Int, nil
+		return &expressionResult{value: fv.Int >= ore.Int, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorLessThan:
-		return fv.Int < ore.Int, nil
+		return &expressionResult{value: fv.Int < ore.Int, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorLessThanOrEqual:
-		return fv.Int <= ore.Int, nil
+		return &expressionResult{value: fv.Int <= ore.Int, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorEqual:
-		return fv.Int == ore.Int, nil
+		return &expressionResult{value: fv.Int == ore.Int, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorNotEqual:
-		return fv.Int != ore.Int, nil
+		return &expressionResult{value: fv.Int != ore.Int, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	default:
-		return false, fmt.Errorf("invalid operator: %s", op.String())
+		return nil, fmt.Errorf("invalid operator: %s", op.String())
 	}
 }
 
-func (fv IntValue) Value(context Context) (any, error) {
-	return fv.Int, nil
+func (fv *IntValue) Value(context Context) (ExpressionResult, error) {
+	return &expressionResult{value: fv, confidence: ConfidenceDefinite}, nil
 }
 
 func (fv *IntValue) Equal(ofv ComparisonValue) bool {
@@ -159,33 +167,42 @@ func (fv HexValue) Description() string {
 	return fv.raw
 }
 
-func (fv *HexValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+func (fv *HexValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (ExpressionResult, error) {
 	if fv == nil {
-		return false, fmt.Errorf("can not compare nil value")
+		return nil, fmt.Errorf("can not compare nil value")
 	}
 	if other == nil {
-		return false, fmt.Errorf("can not compare to nil value")
+		return nil, fmt.Errorf("can not compare to nil value")
 	}
-	ore, ok := other.(*HexValue)
+	val, err := other.Value(context)
+	if err != nil {
+		return nil, err
+	}
+	ore, ok := val.Value().(*HexValue)
 	if !ok {
-		return false, fmt.Errorf("can not compare to non-int value")
+		return nil, fmt.Errorf("can not compare to non-int value")
 	}
 	switch op {
 	case ComparisonOperatorGreaterThan:
-		return fv.Hex > ore.Hex, nil
+		return &expressionResult{value: fv.Hex > ore.Hex, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorGreaterThanOrEqual:
-		return fv.Hex >= ore.Hex, nil
+		return &expressionResult{value: fv.Hex >= ore.Hex, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorLessThan:
-		return fv.Hex < ore.Hex, nil
+		return &expressionResult{value: fv.Hex < ore.Hex, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
 	case ComparisonOperatorLessThanOrEqual:
-		return fv.Hex <= ore.Hex, nil
+		return &expressionResult{value: fv.Hex <= ore.Hex, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
+	case ComparisonOperatorEqual:
+		return &expressionResult{value: fv.Hex == ore.Hex, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
+	case ComparisonOperatorNotEqual:
+		return &expressionResult{value: fv.Hex != ore.Hex, confidence: coalesceConfidences(ConfidenceDefinite, val.Confidence())}, nil
+
 	default:
-		return false, fmt.Errorf("invalid operator: %s", op.String())
+		return nil, fmt.Errorf("invalid operator: %s", op.String())
 	}
 }
 
-func (fv HexValue) Value(context Context) (any, error) {
-	return fv.Hex, nil
+func (fv *HexValue) Value(context Context) (ExpressionResult, error) {
+	return &expressionResult{value: fv, confidence: ConfidenceDefinite}, nil
 }
 
 func (fv *HexValue) Equal(ofv ComparisonValue) bool {

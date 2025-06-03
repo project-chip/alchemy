@@ -18,29 +18,29 @@ func (fv NullValue) Description() string {
 	return fv.raw
 }
 
-func (fv *NullValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+func (fv *NullValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (ExpressionResult, error) {
 	switch op {
 	case ComparisonOperatorEqual:
 		switch other.(type) {
 		case nil, *NullValue:
-			return true, nil
+			return &expressionResult{value: true, confidence: coalesceConfidences(ConfidenceDefinite)}, nil
 		default:
-			return false, nil
+			return &expressionResult{value: false, confidence: coalesceConfidences(ConfidenceDefinite)}, nil
 		}
 	case ComparisonOperatorNotEqual:
 		switch other.(type) {
 		case nil, *NullValue:
-			return false, nil
+			return &expressionResult{value: false, confidence: coalesceConfidences(ConfidenceDefinite)}, nil
 		default:
-			return true, nil
+			return &expressionResult{value: true, confidence: coalesceConfidences(ConfidenceDefinite)}, nil
 		}
 	default:
-		return false, fmt.Errorf("invalid operator with null value: %s", op.String())
+		return nil, fmt.Errorf("invalid operator with null value: %s", op.String())
 	}
 }
 
-func (fv NullValue) Value(context Context) (any, error) {
-	return nil, nil
+func (fv NullValue) Value(context Context) (ExpressionResult, error) {
+	return &expressionResult{value: nil, confidence: ConfidenceDefinite}, nil
 }
 
 func (fv *NullValue) Equal(ofv ComparisonValue) bool {

@@ -9,13 +9,63 @@ type Expression interface {
 	ASCIIDocString() string
 	Description() string
 
-	Eval(context Context) (bool, error)
+	Eval(context Context) (ExpressionResult, error)
 	Equal(e Expression) bool
 	Clone() Expression
 }
 
 type HasExpression interface {
 	GetExpression() Expression
+}
+
+type ExpressionResult interface {
+	Confidence() Confidence
+	Value() any
+	IsTrue() bool
+}
+
+type expressionResult struct {
+	confidence Confidence
+	value      any
+}
+
+func (er *expressionResult) Confidence() Confidence {
+	return er.confidence
+}
+
+func (er *expressionResult) IsTrue() bool {
+	switch v := er.value.(type) {
+	case bool:
+		return v
+	default:
+		return false
+	}
+}
+
+func (er *expressionResult) Value() any {
+	return er.value
+}
+
+type Confidence uint8
+
+const (
+	ConfindenceUnknown Confidence = iota
+	ConfidenceDefinite
+	ConfidenceImpossible
+	ConfidencePossible
+)
+
+func coalesceConfidences(et Confidence, oets ...Confidence) (out Confidence) {
+	out = et
+	for oet := range et {
+		switch oet {
+		case ConfidenceDefinite:
+		case ConfidenceImpossible:
+		case ConfidencePossible:
+			out = ConfidencePossible
+		}
+	}
+	return
 }
 
 type ExpressionType uint8

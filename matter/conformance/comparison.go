@@ -40,8 +40,8 @@ type ComparisonValue interface {
 	ASCIIDocString() string
 	Description() string
 
-	Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error)
-	Value(context Context) (any, error)
+	Compare(context Context, other ComparisonValue, op ComparisonOperator) (ExpressionResult, error)
+	Value(context Context) (ExpressionResult, error)
 	Equal(e ComparisonValue) bool
 	Clone() ComparisonValue
 }
@@ -60,7 +60,7 @@ func (ce *ComparisonExpression) Description() string {
 	return fmt.Sprintf("(%s %s %s)", ce.Left.ASCIIDocString(), ce.Op.String(), ce.Right.ASCIIDocString())
 }
 
-func (ce *ComparisonExpression) Eval(context Context) (bool, error) {
+func (ce *ComparisonExpression) Eval(context Context) (ExpressionResult, error) {
 	return ce.Left.Compare(context, ce.Right, ce.Op)
 }
 
@@ -101,25 +101,43 @@ func (ce *ComparisonExpression) Clone() Expression {
 }
 
 // Does its best to compare two values
-func compare(context Context, op ComparisonOperator, a ComparisonValue, b ComparisonValue) (bool, error) {
-	av, err := a.Value(context)
+func compare(context Context, op ComparisonOperator, a ComparisonValue, b ComparisonValue) (result ExpressionResult, err error) {
+	var av ExpressionResult
+	av, err = a.Value(context)
 	if err != nil {
-		return false, err
+		return
 	}
-	bv, err := b.Value(context)
+	var bv ExpressionResult
+	bv, err = b.Value(context)
 	if err != nil {
-		return false, err
+		return
 	}
-	ai64, aIsI64 := toInt64(av)
+	return compareResults(av, bv, op)
+}
+
+func compareResults(av ExpressionResult, bv ExpressionResult, op ComparisonOperator) (result ExpressionResult, err error) {
+	ar := av.Value()
+	br := bv.Value()
+	var res bool
+	res, err = compareValues(ar, br, op)
+	if err != nil {
+		return
+	}
+	result = &expressionResult{value: res, confidence: coalesceConfidences(av.Confidence(), bv.Confidence())}
+	return
+}
+
+func compareValues(ar any, br any, op ComparisonOperator) (bool, error) {
+	ai64, aIsI64 := toInt64(ar)
 	if aIsI64 {
-		bi64, bIsI64 := toInt64(bv)
+		bi64, bIsI64 := toInt64(br)
 		if bIsI64 { // They can both safely be int64
 			return compareNumbers(op, ai64, bi64)
 		}
-		switch bv := bv.(type) {
+		switch br := br.(type) {
 		case uint64:
-			if bv <= math.MaxInt64 { // If b is less than the largest possible int64, we can compare them normally
-				return compareNumbers(op, ai64, int64(bv))
+			if br <= math.MaxInt64 { // If b is less than the largest possible int64, we can compare them normally
+				return compareNumbers(op, ai64, int64(br))
 			}
 			// b is definitely larger than a
 			switch op {
@@ -132,13 +150,13 @@ func compare(context Context, op ComparisonOperator, a ComparisonValue, b Compar
 			}
 		}
 	}
-	aUI64, aIsUI64 := toUint64(av)
+	aUI64, aIsUI64 := toUint64(ar)
 	if aIsUI64 {
-		bui64, bIsUI64 := toUint64(bv)
+		bui64, bIsUI64 := toUint64(br)
 		if bIsUI64 {
 			return compareNumbers(op, aUI64, bui64)
 		}
-		switch bv.(type) {
+		switch br.(type) {
 		case int64, int32, int16, int8, int: // Must've been less than zero, so b is definitely less than a
 			switch op {
 			case ComparisonOperatorNotEqual, ComparisonOperatorGreaterThan, ComparisonOperatorGreaterThanOrEqual:
@@ -150,41 +168,41 @@ func compare(context Context, op ComparisonOperator, a ComparisonValue, b Compar
 			}
 		}
 	}
-	switch av := av.(type) {
+	switch ar := ar.(type) {
 	case float32:
-		switch bv := bv.(type) {
+		switch br := br.(type) {
 		case float32:
-			return compareNumbers(op, av, bv)
+			return compareNumbers(op, ar, br)
 		case float64:
-			return compareNumbers(op, av, float32(bv))
+			return compareNumbers(op, ar, float32(br))
 		default:
-			return false, fmt.Errorf("can't compare float32 to %T", bv)
+			return false, fmt.Errorf("can't compare float32 to %T", br)
 		}
 	case float64:
-		switch bv := bv.(type) {
+		switch br := br.(type) {
 		case float32:
-			return compareNumbers(op, av, float64(bv))
+			return compareNumbers(op, ar, float64(br))
 		case float64:
-			return compareNumbers(op, av, bv)
+			return compareNumbers(op, ar, br)
 		default:
-			return false, fmt.Errorf("can't compare float64 to %T", bv)
+			return false, fmt.Errorf("can't compare float64 to %T", br)
 		}
 	case bool:
-		switch bv := bv.(type) {
+		switch br := br.(type) {
 		case bool:
 			switch op {
 			case ComparisonOperatorNotEqual:
-				return av != bv, nil
+				return ar != br, nil
 			case ComparisonOperatorEqual:
-				return av == bv, nil
+				return ar == br, nil
 			default:
 				return false, fmt.Errorf("invalid op on comparison: %s", op.String())
 			}
 		default:
-			return false, fmt.Errorf("invalid type on comparison with bool: %T", bv)
+			return false, fmt.Errorf("invalid type on comparison with bool: %T", br)
 		}
 	default:
-		return false, fmt.Errorf("invalid type on comparison: %T", av)
+		return false, fmt.Errorf("invalid type on comparison: %T", ar)
 	}
 }
 

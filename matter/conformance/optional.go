@@ -54,7 +54,7 @@ func (o *Optional) Eval(context Context) (State, error) {
 	if err != nil {
 		return StateUnknown, err
 	}
-	if t {
+	if t.IsTrue() {
 		return StateOptional, nil
 	}
 	return StateUnknown, nil

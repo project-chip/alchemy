@@ -27,19 +27,20 @@ func (ee *EqualityExpression) Description() string {
 	return fmt.Sprintf("(%s == %s)", ee.Left.Description(), ee.Right.Description())
 }
 
-func (ee *EqualityExpression) Eval(context Context) (bool, error) {
-	l, err := ee.Left.Eval(context)
+func (ee *EqualityExpression) Eval(context Context) (result ExpressionResult, err error) {
+	var l, r ExpressionResult
+	l, err = ee.Left.Eval(context)
 	if err != nil {
-		return false, err
+		return
 	}
-	r, err := ee.Right.Eval(context)
+	r, err = ee.Right.Eval(context)
 	if err != nil {
-		return false, err
+		return
 	}
 	if ee.Not {
-		return l != r, nil
+		return compareResults(l, r, ComparisonOperatorNotEqual)
 	}
-	return l == r, nil
+	return compareResults(l, r, ComparisonOperatorEqual)
 }
 
 func (ee *EqualityExpression) Equal(e Expression) bool {

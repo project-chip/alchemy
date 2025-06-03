@@ -37,7 +37,7 @@ func (m *Mandatory) Eval(context Context) (State, error) {
 	if err != nil {
 		return StateUnknown, err
 	}
-	if t {
+	if t.IsTrue() {
 		return StateMandatory, nil
 	}
 	return StateUnknown, nil
