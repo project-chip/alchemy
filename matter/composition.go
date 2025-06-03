@@ -64,6 +64,17 @@ type DeviceTypeClusterRequirement struct {
 	DeviceTypeRequirement *DeviceTypeRequirement
 }
 
+func (dtcr *DeviceTypeClusterRequirement) Clone() *DeviceTypeClusterRequirement {
+	return &DeviceTypeClusterRequirement{
+		DeviceTypeID:          dtcr.DeviceTypeID,
+		DeviceTypeName:        dtcr.DeviceTypeName,
+		ClusterRequirement:    dtcr.ClusterRequirement,
+		Origin:                dtcr.Origin,
+		DeviceType:            dtcr.DeviceType,
+		DeviceTypeRequirement: dtcr.DeviceTypeRequirement,
+	}
+}
+
 type DeviceTypeElementRequirement struct {
 	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
 	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
@@ -73,6 +84,17 @@ type DeviceTypeElementRequirement struct {
 
 	DeviceType            *DeviceType
 	DeviceTypeRequirement *DeviceTypeRequirement
+}
+
+func (dter *DeviceTypeElementRequirement) Clone() *DeviceTypeElementRequirement {
+	return &DeviceTypeElementRequirement{
+		DeviceTypeID:          dter.DeviceTypeID,
+		DeviceTypeName:        dter.DeviceTypeName,
+		ElementRequirement:    dter.ElementRequirement,
+		Origin:                dter.Origin,
+		DeviceType:            dter.DeviceType,
+		DeviceTypeRequirement: dter.DeviceTypeRequirement,
+	}
 }
 
 type ClusterComposition struct {
@@ -86,4 +108,23 @@ type ClusterComposition struct {
 type ElementComposition struct {
 	ElementRequirement *ElementRequirement
 	State              conformance.ConformanceState
+}
+
+func (dc *DeviceTypeComposition) Clone() *DeviceTypeComposition {
+	clone := &DeviceTypeComposition{
+		DeviceType:             dc.DeviceType,
+		DeviceTypeRequirements: make([]*DeviceTypeRequirement, len(dc.DeviceTypeRequirements)),
+		ClusterRequirements:    make([]*DeviceTypeClusterRequirement, len(dc.ClusterRequirements)),
+		ElementRequirements:    make([]*DeviceTypeElementRequirement, len(dc.ElementRequirements)),
+		ComposedDeviceTypes:    make(map[DeviceTypeRequirementLocation][]*DeviceTypeComposition, len(dc.ComposedDeviceTypes)),
+	}
+	copy(clone.DeviceTypeRequirements, dc.DeviceTypeRequirements)
+	copy(clone.ClusterRequirements, dc.ClusterRequirements)
+	copy(clone.ElementRequirements, dc.ElementRequirements)
+	for location, composedDeviceTypes := range dc.ComposedDeviceTypes {
+		ccdt := make([]*DeviceTypeComposition, len(composedDeviceTypes))
+		copy(ccdt, composedDeviceTypes)
+		clone.ComposedDeviceTypes[location] = ccdt
+	}
+	return clone
 }
