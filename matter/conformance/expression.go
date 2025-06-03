@@ -57,7 +57,7 @@ const (
 
 func coalesceConfidences(et Confidence, oets ...Confidence) (out Confidence) {
 	out = et
-	for oet := range et {
+	for _, oet := range oets {
 		switch oet {
 		case ConfidenceDefinite:
 		case ConfidenceImpossible:

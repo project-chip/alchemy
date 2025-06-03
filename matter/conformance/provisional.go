@@ -15,8 +15,8 @@ func (p *Provisional) Description() string {
 	return "provisional"
 }
 
-func (p *Provisional) Eval(context Context) (State, error) {
-	return StateProvisional, nil
+func (p *Provisional) Eval(context Context) (ConformanceState, error) {
+	return ConformanceState{State: StateProvisional, Confidence: ConfidenceDefinite}, nil
 }
 
 func (p *Provisional) Equal(c Conformance) bool {

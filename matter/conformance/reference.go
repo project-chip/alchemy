@@ -60,13 +60,13 @@ func (re *ReferenceExpression) Eval(context Context) (ExpressionResult, error) {
 			if err != nil {
 				return nil, err
 			}
-			switch cs {
+			switch cs.State {
 			case StateMandatory:
-				return &expressionResult{value: !re.Not, confidence: ConfidenceDefinite}, nil
+				return &expressionResult{value: !re.Not, confidence: cs.Confidence}, nil
 			case StateOptional, StateProvisional, StateDeprecated:
-				return &expressionResult{value: !re.Not, confidence: ConfidencePossible}, nil
+				return &expressionResult{value: !re.Not, confidence: cs.Confidence}, nil
 			case StateDisallowed:
-				return &expressionResult{value: !re.Not, confidence: ConfidenceImpossible}, nil
+				return &expressionResult{value: !re.Not, confidence: cs.Confidence}, nil
 			}
 		}
 	}

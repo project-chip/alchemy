@@ -20,8 +20,8 @@ func (d *Deprecated) Description() string {
 	return "deprecated"
 }
 
-func (d *Deprecated) Eval(context Context) (State, error) {
-	return StateDeprecated, nil
+func (d *Deprecated) Eval(context Context) (ConformanceState, error) {
+	return ConformanceState{State: StateDeprecated, Confidence: ConfidenceDefinite}, nil
 }
 
 func (d *Deprecated) Equal(c Conformance) bool {

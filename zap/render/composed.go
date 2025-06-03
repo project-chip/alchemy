@@ -27,6 +27,23 @@ type ElementComposition struct {
 	State              conformance.State
 }
 
+type hasEndpoint struct {
+	hasEndpoint bool
+	confidence  conformance.Confidence
+}
+
+func (he *hasEndpoint) Confidence() conformance.Confidence {
+	return he.confidence
+}
+
+func (he *hasEndpoint) Value() any {
+	return he.hasEndpoint
+}
+
+func (he *hasEndpoint) IsTrue() bool {
+	return he.hasEndpoint
+}
+
 func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Cluster]*matter.ClusterComposition, err error) {
 	composedClusters = make(map[*matter.Cluster]*matter.ClusterComposition)
 
@@ -56,17 +73,17 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 		},
 	}
 
-	var hasClient, hasServer bool
+	var hasClient, hasServer hasEndpoint
+	hasClient.confidence = conformance.ConfidenceDefinite
+	hasServer.confidence = conformance.ConfidenceDefinite
 
-	slog.Info("composing device type", "name", dc.DeviceType.Name)
 	for cluster, requirements := range servers {
+		if hasServer.confidence == conformance.ConfidenceDefinite && hasServer.hasEndpoint {
+			break
+		}
 		slices.SortFunc(requirements, func(a *matter.DeviceTypeClusterRequirement, b *matter.DeviceTypeClusterRequirement) int {
 			return a.Origin.Compare(b.Origin)
 		})
-		slog.Info("sorted")
-		for _, req := range requirements {
-			slog.Info("sorted", "cluster", cluster.Name, "origin", req.Origin.String())
-		}
 		var firstPassState conformance.State
 		firstPassState, err = getConformanceState(firstContext, requirements, elementRequirements)
 		if err != nil {
@@ -74,17 +91,21 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 			return
 		}
 		switch firstPassState {
-		case conformance.StateMandatory, conformance.StateProvisional, conformance.StateOptional:
-			hasServer = true
+		case conformance.StateMandatory:
+			hasServer.confidence = conformance.ConfidenceDefinite
+			hasServer.hasEndpoint = true
+		case conformance.StateProvisional, conformance.StateOptional:
+			hasServer.confidence = conformance.ConfidencePossible
+			hasServer.hasEndpoint = true
 		}
 	}
 	for cluster, requirements := range clients {
+		if hasClient.confidence == conformance.ConfidenceDefinite && hasClient.hasEndpoint {
+			break
+		}
 		slices.SortFunc(requirements, func(a *matter.DeviceTypeClusterRequirement, b *matter.DeviceTypeClusterRequirement) int {
 			return a.Origin.Compare(b.Origin)
 		})
-		if hasClient {
-			continue
-		}
 		var firstPassState conformance.State
 		firstPassState, err = getConformanceState(firstContext, requirements, elementRequirements)
 		if err != nil {
@@ -92,8 +113,12 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 			return
 		}
 		switch firstPassState {
-		case conformance.StateMandatory, conformance.StateProvisional, conformance.StateOptional:
-			hasClient = true
+		case conformance.StateMandatory:
+			hasClient.confidence = conformance.ConfidenceDefinite
+			hasClient.hasEndpoint = true
+		case conformance.StateProvisional, conformance.StateOptional:
+			hasClient.confidence = conformance.ConfidencePossible
+			hasClient.hasEndpoint = true
 		}
 	}
 
@@ -101,8 +126,8 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 		Values: map[string]any{
 			"Matter":            true,
 			dc.DeviceType.Class: true,
-			"Client":            hasClient,
-			"Server":            hasServer,
+			"Client":            &hasClient,
+			"Server":            &hasServer,
 		},
 	}
 	for cluster, clusterRequirements := range servers {
@@ -139,7 +164,7 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 			if conformance.IsZigbee(req.Conformance) {
 				continue
 			}
-			var conf conformance.State
+			var conf conformance.ConformanceState
 			conf, err = req.Conformance.Eval(cxt)
 			if err != nil {
 				slog.Warn("Error evaluating conformance of element requirement", slog.String("deviceTypeId", dc.DeviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
@@ -179,15 +204,20 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 	switch req.Origin {
 	case matter.RequirementOriginBaseDeviceType, matter.RequirementOriginSubsetDeviceType:
 		// Normally, we do not include clusters from the Base Device Type...
-		var evalState conformance.State
+		var evalState conformance.ConformanceState
 		evalState, err = req.ClusterRequirement.Conformance.Eval(cxt)
 		if err != nil {
 			err = fmt.Errorf("error evaluating conformance of cluster requirement %s: %w", req.ClusterRequirement.ClusterName, err)
 			return
 		}
 		// ...unless the base device requirement is not mandatory, but it evaluates as mandatory in this context
-		if state != conformance.StateMandatory && evalState == conformance.StateMandatory {
-			state = conformance.StateMandatory
+		if state != conformance.StateMandatory && evalState.State == conformance.StateMandatory {
+			switch evalState.Confidence {
+			case conformance.ConfidenceDefinite:
+				state = conformance.StateMandatory
+			case conformance.ConfidencePossible:
+				state = conformance.StateOptional
+			}
 			break
 		}
 		ers := elementRequirements[req.ClusterRequirement.Cluster]

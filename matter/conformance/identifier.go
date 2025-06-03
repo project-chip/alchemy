@@ -41,6 +41,8 @@ func (ie *IdentifierExpression) Eval(context Context) (ExpressionResult, error) 
 			switch v := v.(type) {
 			case bool:
 				return &expressionResult{value: v != ie.Not, confidence: ConfidenceDefinite}, nil
+			case ExpressionResult:
+				return v, nil
 			case Confidence:
 				return &expressionResult{value: !ie.Not, confidence: v}, nil
 			default:
@@ -64,13 +66,13 @@ func (ie *IdentifierExpression) Eval(context Context) (ExpressionResult, error) 
 			if err != nil {
 				return nil, err
 			}
-			switch cs {
+			switch cs.State {
 			case StateMandatory:
-				return &expressionResult{value: !ie.Not, confidence: ConfidenceDefinite}, nil
+				return &expressionResult{value: !ie.Not, confidence: cs.Confidence}, nil
 			case StateOptional, StateProvisional, StateDeprecated:
-				return &expressionResult{value: !ie.Not, confidence: ConfidencePossible}, nil
+				return &expressionResult{value: !ie.Not, confidence: cs.Confidence}, nil
 			case StateDisallowed:
-				return &expressionResult{value: !ie.Not, confidence: ConfidenceImpossible}, nil
+				return &expressionResult{value: !ie.Not, confidence: cs.Confidence}, nil
 			}
 		}
 	}

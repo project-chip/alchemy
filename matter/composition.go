@@ -85,5 +85,5 @@ type ClusterComposition struct {
 
 type ElementComposition struct {
 	ElementRequirement *ElementRequirement
-	State              conformance.State
+	State              conformance.ConformanceState
 }

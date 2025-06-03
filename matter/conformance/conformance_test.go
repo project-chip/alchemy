@@ -42,7 +42,7 @@ func (cts *conformanceTestSuite) run(t *testing.T) {
 			t.Errorf("failed evaluating conformance status %v: %v", test.Context, err)
 			return
 		}
-		if result != test.Expected {
+		if result.State != test.Expected {
 			t.Errorf("failed checking conformance %s (parsed %s) with %v: expected %v, got %v", cts.Conformance, conformance.ASCIIDocString(), test.Context, test.Expected, result)
 		}
 	}

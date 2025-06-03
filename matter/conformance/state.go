@@ -23,3 +23,8 @@ var StateNames = map[State]string{
 func (cs State) String() string {
 	return StateNames[cs]
 }
+
+type ConformanceState struct {
+	State      State
+	Confidence Confidence
+}

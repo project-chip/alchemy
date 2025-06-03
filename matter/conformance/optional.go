@@ -46,18 +46,19 @@ func (o *Optional) Description() string {
 	return s.String()
 }
 
-func (o *Optional) Eval(context Context) (State, error) {
+func (o *Optional) Eval(context Context) (ConformanceState, error) {
 	if o.Expression == nil {
-		return StateOptional, nil
+		return ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}, nil
+
 	}
 	t, err := o.Expression.Eval(context)
 	if err != nil {
-		return StateUnknown, err
+		return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
 	}
 	if t.IsTrue() {
-		return StateOptional, nil
+		return ConformanceState{State: StateOptional, Confidence: t.Confidence()}, nil
 	}
-	return StateUnknown, nil
+	return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
 }
 
 func (o *Optional) Equal(c Conformance) bool {
