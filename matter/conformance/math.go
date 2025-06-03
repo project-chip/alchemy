@@ -63,7 +63,7 @@ func (mv *MathOperation) Description() string {
 	return mv.ASCIIDocString()
 }
 
-func (mv *MathOperation) Value(context Context) (any, error) {
+func (mv *MathOperation) Value(context Context) (ExpressionResult, error) {
 	l, err := mv.Left.Value(context)
 	if err != nil {
 		return nil, err
@@ -74,18 +74,18 @@ func (mv *MathOperation) Value(context Context) (any, error) {
 	}
 	switch mv.Operand {
 	case MathOperandAdd:
-		switch lv := l.(type) {
+		switch lv := l.Value().(type) {
 		case int64:
-			switch rv := r.(type) {
+			switch rv := r.Value().(type) {
 			case int64:
-				return lv + rv, nil
+				return &expressionResult{value: lv + rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not add int64 to %T", rv)
 			}
 		case float64:
-			switch rv := r.(type) {
+			switch rv := r.Value().(type) {
 			case float64:
-				return lv + rv, nil
+				return &expressionResult{value: lv + rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not add float64 to %T", rv)
 			}
@@ -93,18 +93,18 @@ func (mv *MathOperation) Value(context Context) (any, error) {
 			return nil, fmt.Errorf("can not add %T", lv)
 		}
 	case MathOperandSubtract:
-		switch lv := l.(type) {
+		switch lv := l.Value().(type) {
 		case int64:
-			switch rv := r.(type) {
+			switch rv := r.Value().(type) {
 			case int64:
-				return lv - rv, nil
+				return &expressionResult{value: lv - rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not subtract %T from int64", rv)
 			}
 		case float64:
-			switch rv := r.(type) {
+			switch rv := r.Value().(type) {
 			case float64:
-				return lv - rv, nil
+				return &expressionResult{value: lv - rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not subtract %T from float64", rv)
 			}
@@ -112,18 +112,18 @@ func (mv *MathOperation) Value(context Context) (any, error) {
 			return nil, fmt.Errorf("can not subtract from %T", lv)
 		}
 	case MathOperandMultiply:
-		switch lv := l.(type) {
+		switch lv := l.Value().(type) {
 		case int64:
-			switch rv := r.(type) {
+			switch rv := r.Value().(type) {
 			case int64:
-				return lv - rv, nil
+				return &expressionResult{value: lv * rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not multiply %T with int64", rv)
 			}
 		case float64:
-			switch rv := r.(type) {
+			switch rv := r.Value().(type) {
 			case float64:
-				return lv - rv, nil
+				return &expressionResult{value: lv * rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not multiply %T with float64", rv)
 			}
@@ -131,18 +131,18 @@ func (mv *MathOperation) Value(context Context) (any, error) {
 			return nil, fmt.Errorf("can not multiply %T", lv)
 		}
 	case MathOperandDivide:
-		switch lv := l.(type) {
+		switch lv := l.Value().(type) {
 		case int64:
-			switch rv := r.(type) {
+			switch rv := r.Value().(type) {
 			case int64:
-				return lv / rv, nil
+				return &expressionResult{value: lv / rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not divide int64 by %T", rv)
 			}
 		case float64:
-			switch rv := r.(type) {
+			switch rv := r.Value().(type) {
 			case float64:
-				return lv / rv, nil
+				return &expressionResult{value: lv / rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not divide float64 by %T", rv)
 			}
@@ -154,14 +154,14 @@ func (mv *MathOperation) Value(context Context) (any, error) {
 	}
 }
 
-func (mv *MathOperation) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+func (mv *MathOperation) Compare(context Context, other ComparisonValue, op ComparisonOperator) (ExpressionResult, error) {
 	v, err := mv.Value(context)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	cv, ok := v.(ComparisonValue)
 	if !ok {
-		return false, fmt.Errorf("can not convert math value of type %T to ComparisonValue", v)
+		return nil, fmt.Errorf("can not convert math value of type %T to ComparisonValue", v)
 	}
 	return compare(context, op, cv, other)
 }

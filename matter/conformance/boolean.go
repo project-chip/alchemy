@@ -19,29 +19,29 @@ func (bv BooleanValue) Description() string {
 	return bv.raw
 }
 
-func (bv *BooleanValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+func (bv *BooleanValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (result ExpressionResult, err error) {
 	if bv == nil {
-		return false, fmt.Errorf("can not compare nil value")
+		err = fmt.Errorf("can not compare nil value")
+		return
 	}
 	if other == nil {
-		return false, fmt.Errorf("can not compare to nil value")
+		err = fmt.Errorf("can not compare to nil value")
+		return
 	}
-	ore, ok := other.(*BooleanValue)
-	if !ok {
-		return false, fmt.Errorf("can not compare to non-boolean value")
+	var val ExpressionResult
+	val, err = other.Value(context)
+	if err != nil {
+		return
 	}
-	switch op {
-	case ComparisonOperatorEqual:
-		return bv.Boolean == ore.Boolean, nil
-	case ComparisonOperatorNotEqual:
-		return bv.Boolean != ore.Boolean, nil
-	default:
-		return false, fmt.Errorf("invalid operator: %s", op.String())
-	}
+	return compareResults(&expressionResult{value: bv.Boolean, confidence: ConfidenceDefinite}, val, op)
 }
 
-func (bv BooleanValue) Value(context Context) (any, error) {
-	return bv.Boolean, nil
+func (bv *BooleanValue) Value(context Context) (ExpressionResult, error) {
+	return &expressionResult{value: bv.Boolean, confidence: ConfidenceDefinite}, nil
+}
+
+func (bv *BooleanValue) Result() ComparisonValue {
+	return bv
 }
 
 func (bv *BooleanValue) Equal(ofv ComparisonValue) bool {

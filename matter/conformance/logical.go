@@ -139,32 +139,32 @@ func (le *LogicalExpression) Description() string {
 	}
 }
 
-func (le *LogicalExpression) Eval(context Context) (bool, error) {
-	result, err := le.Left.Eval(context)
+func (le *LogicalExpression) Eval(context Context) (ExpressionResult, error) {
+	l, err := le.Left.Eval(context)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	for _, right := range le.Right {
 		r, err := right.Eval(context)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 		switch le.Operand {
 		case "|":
-			result = result || r
+			l = &expressionResult{value: l.IsTrue() || r.IsTrue(), confidence: coalesceConfidences(l.Confidence(), r.Confidence())}
 		case "&":
-			result = result && r
+			l = &expressionResult{value: l.IsTrue() && r.IsTrue(), confidence: coalesceConfidences(l.Confidence(), r.Confidence())}
 		case "^":
-			result = (result || r) && !(result && r)
+			l = &expressionResult{value: (l.IsTrue() || r.IsTrue()) && !(l.IsTrue() && r.IsTrue()), confidence: coalesceConfidences(l.Confidence(), r.Confidence())}
 		default:
-			return false, fmt.Errorf("unknown operand: %s", le.Operand)
+			return nil, fmt.Errorf("unknown operand: %s", le.Operand)
 		}
 
 	}
 	if le.Not {
-		return !result, nil
+		return &expressionResult{value: !l.IsTrue(), confidence: l.Confidence()}, nil
 	}
-	return result, nil
+	return l, nil
 }
 
 func (le *LogicalExpression) Equal(e Expression) bool {

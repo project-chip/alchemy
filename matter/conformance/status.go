@@ -23,29 +23,33 @@ func (scv StatusCodeValue) Description() string {
 	return scv.raw
 }
 
-func (scv *StatusCodeValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+func (scv *StatusCodeValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (ExpressionResult, error) {
+	ov, err := other.Value(context)
+	if err != nil {
+		return nil, err
+	}
 	switch op {
 	case ComparisonOperatorEqual:
-		switch other := other.(type) {
+		switch other := ov.Value().(type) {
 		case *StatusCodeValue:
-			return other.StatusCode == scv.StatusCode, nil
+			return &expressionResult{value: other.StatusCode == scv.StatusCode, confidence: coalesceConfidences(ConfidenceDefinite, ov.Confidence())}, nil
 		default:
-			return false, nil
+			return nil, fmt.Errorf("comparing with non-status code value: %s", op.String())
 		}
 	case ComparisonOperatorNotEqual:
-		switch other := other.(type) {
+		switch other := ov.Value().(type) {
 		case *StatusCodeValue:
-			return other.StatusCode != scv.StatusCode, nil
+			return &expressionResult{value: other.StatusCode != scv.StatusCode, confidence: coalesceConfidences(ConfidenceDefinite, ov.Confidence())}, nil
 		default:
-			return true, nil
+			return nil, fmt.Errorf("comparing with non-status code value: %s", op.String())
 		}
 	default:
-		return false, fmt.Errorf("invalid operator with status code value: %s", op.String())
+		return nil, fmt.Errorf("invalid operator with status code value: %s", op.String())
 	}
 }
 
-func (scv StatusCodeValue) Value(context Context) (any, error) {
-	return nil, nil
+func (scv *StatusCodeValue) Value(context Context) (ExpressionResult, error) {
+	return &expressionResult{value: scv, confidence: ConfidenceDefinite}, nil
 }
 
 func (scv *StatusCodeValue) Equal(ofv ComparisonValue) bool {

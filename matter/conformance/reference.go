@@ -42,15 +42,15 @@ func (re *ReferenceExpression) Description() string {
 	return re.Reference
 }
 
-func (re *ReferenceExpression) Eval(context Context) (bool, error) {
+func (re *ReferenceExpression) Eval(context Context) (ExpressionResult, error) {
 
 	if re.Entity == nil {
-		return false, nil
+		return &expressionResult{confidence: ConfidenceImpossible}, nil
 	}
 	if context.VisitedReferences == nil {
 		context.VisitedReferences = make(map[string]struct{})
 	} else if _, ok := context.VisitedReferences[re.Reference]; ok {
-		return false, nil
+		return &expressionResult{confidence: ConfidenceImpossible}, nil
 	}
 	context.VisitedReferences[re.Reference] = struct{}{}
 	if ref, ok := re.Entity.(HasConformance); ok {
@@ -58,12 +58,19 @@ func (re *ReferenceExpression) Eval(context Context) (bool, error) {
 		if conf != nil {
 			cs, err := conf.Eval(context)
 			if err != nil {
-				return false, err
+				return nil, err
 			}
-			return (cs == StateMandatory || cs == StateOptional || cs == StateProvisional || cs == StateDeprecated) != re.Not, nil
+			switch cs {
+			case StateMandatory:
+				return &expressionResult{value: !re.Not, confidence: ConfidenceDefinite}, nil
+			case StateOptional, StateProvisional, StateDeprecated:
+				return &expressionResult{value: !re.Not, confidence: ConfidencePossible}, nil
+			case StateDisallowed:
+				return &expressionResult{value: !re.Not, confidence: ConfidenceImpossible}, nil
+			}
 		}
 	}
-	return re.Not, nil
+	return &expressionResult{value: re.Not, confidence: ConfidencePossible}, nil
 }
 
 func (re *ReferenceExpression) Equal(e Expression) bool {
@@ -128,7 +135,7 @@ func (ie *ReferenceValue) Description() string {
 	return fmt.Sprintf("the value of %s", ie.Reference)
 }
 
-func (ie *ReferenceValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (bool, error) {
+func (ie *ReferenceValue) Compare(context Context, other ComparisonValue, op ComparisonOperator) (ExpressionResult, error) {
 	return compare(context, op, ie, other)
 }
 
@@ -152,6 +159,6 @@ func (ie *ReferenceValue) Clone() ComparisonValue {
 	return &ReferenceValue{Reference: ie.Reference, Label: ie.Label}
 }
 
-func (ie *ReferenceValue) Value(context Context) (any, error) {
+func (ie *ReferenceValue) Value(context Context) (ExpressionResult, error) {
 	return identifierValue(context, ie.Reference)
 }
