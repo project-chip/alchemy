@@ -331,11 +331,5 @@ func validateFields(spec *Specification, parent types.Entity, fields matter.Fiel
 		}
 
 		validateAccess(spec, f, f.Access)
-		if f.Access.IsFabricScoped() && !matter.IsFabricScopingAllowed(f) {
-			slog.Error("Fabric scoping is not allowed on this entity", matter.LogEntity("entity", f), log.Path("source", f))
-		}
-		if f.Access.IsFabricSensitive() && !matter.IsFabricSensitivityAllowed(f) {
-			slog.Error("Fabric sensitivity is not allowed on this entity", matter.LogEntity("entity", f), log.Path("source", f))
-		}
 	}
 }
