@@ -5,7 +5,7 @@ type Conformance interface {
 	Description() string
 
 	Type() Type
-	Eval(context Context) (State, error)
+	Eval(context Context) (ConformanceState, error)
 	Equal(oc Conformance) bool
 	Clone() Conformance
 }

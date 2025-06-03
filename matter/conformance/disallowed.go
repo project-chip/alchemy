@@ -20,8 +20,8 @@ func (d *Disallowed) Description() string {
 	return "disallowed"
 }
 
-func (d *Disallowed) Eval(context Context) (State, error) {
-	return StateDisallowed, nil
+func (d *Disallowed) Eval(context Context) (ConformanceState, error) {
+	return ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}, nil
 }
 
 func (d *Disallowed) Equal(c Conformance) bool {

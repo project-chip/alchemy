@@ -22,8 +22,8 @@ func (g *Generic) Description() string {
 	return fmt.Sprintf("generic: %s", g.raw)
 }
 
-func (g *Generic) Eval(context Context) (State, error) {
-	return StateUnknown, nil
+func (g *Generic) Eval(context Context) (ConformanceState, error) {
+	return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
 }
 
 func (g *Generic) Equal(c Conformance) bool {

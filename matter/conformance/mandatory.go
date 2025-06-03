@@ -29,18 +29,19 @@ func (m *Mandatory) Description() string {
 	return s.String()
 }
 
-func (m *Mandatory) Eval(context Context) (State, error) {
+func (m *Mandatory) Eval(context Context) (ConformanceState, error) {
 	if m.Expression == nil {
-		return StateMandatory, nil
+		return ConformanceState{State: StateMandatory, Confidence: ConfidenceDefinite}, nil
 	}
 	t, err := m.Expression.Eval(context)
 	if err != nil {
-		return StateUnknown, err
+		return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
+
 	}
 	if t.IsTrue() {
-		return StateMandatory, nil
+		return ConformanceState{State: StateMandatory, Confidence: t.Confidence()}, nil
 	}
-	return StateUnknown, nil
+	return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
 }
 
 func (m *Mandatory) Equal(c Conformance) bool {

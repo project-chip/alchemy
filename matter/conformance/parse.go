@@ -102,7 +102,7 @@ func IsZigbee(conformance Conformance) bool {
 		return false
 	}
 	var err error
-	var withZigbee, withoutZigbee State
+	var withZigbee, withoutZigbee ConformanceState
 	cxt := Context{Values: map[string]any{"Zigbee": true}}
 	withZigbee, err = conformance.Eval(cxt)
 	if err != nil {
@@ -114,7 +114,7 @@ func IsZigbee(conformance Conformance) bool {
 		return false
 	}
 	// If the absence of Zigbee makes this no longer allowed, then we call it a Zigbee only feature
-	if withoutZigbee == StateDisallowed && withZigbee != StateDisallowed {
+	if withoutZigbee.State == StateDisallowed && withZigbee.State != StateDisallowed {
 		return true
 	}
 	return false

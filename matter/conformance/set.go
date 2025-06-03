@@ -57,18 +57,18 @@ func (cs Set) Description() string {
 	return s.String()
 }
 
-func (cs Set) Eval(context Context) (State, error) {
+func (cs Set) Eval(context Context) (ConformanceState, error) {
 	for _, c := range cs {
 		cs, err := c.Eval(context)
 		if err != nil {
-			return StateUnknown, err
+			return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
 		}
-		if cs == StateUnknown {
+		if cs.State == StateUnknown {
 			continue
 		}
 		return cs, nil
 	}
-	return StateDisallowed, nil
+	return ConformanceState{State: StateDisallowed, Confidence: ConfidenceDefinite}, nil
 }
 
 func (cs Set) Equal(c Conformance) bool {
