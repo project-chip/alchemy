@@ -274,9 +274,10 @@ func renderConformanceEntity(parent *etree.Element, entity types.Entity, name st
 }
 
 func writeOptionalParentElement(parent *etree.Element, entity *matter.Field, parentEntity types.Entity) (el *etree.Element) {
-	fieldParent := entity.Parent()
-	if fieldParent != nil && fieldParent != parentEntity {
-		switch fieldParent := fieldParent.(type) {
+	entityParent := entity.Parent()
+	if entityParent != nil && entityParent != parentEntity {
+		switch fieldParent := entityParent.(type) {
+		case *matter.Cluster:
 		case *matter.Event:
 			el = parent.CreateElement("event")
 			el.CreateAttr("name", fieldParent.Name)
