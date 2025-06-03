@@ -46,7 +46,9 @@ func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (
 					dt.ClusterRequirements = append(dt.ClusterRequirements, crs...)
 				}
 			case matter.SectionElementRequirements:
-				dt.ElementRequirements, err = s.toElementRequirements(d)
+				var extraClusterRequirements []*matter.ClusterRequirement
+				dt.ElementRequirements, extraClusterRequirements, err = s.toElementRequirements(d)
+				dt.ClusterRequirements = append(dt.ClusterRequirements, extraClusterRequirements...)
 			case matter.SectionComposedDeviceTypeClusterRequirements:
 				dt.ComposedDeviceTypeClusterRequirements, err = s.toComposedDeviceTypeClusterRequirements(d)
 			case matter.SectionComposedDeviceTypeElementRequirements:
@@ -138,7 +140,9 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 			}
 		}
 		if elementRequirements != nil {
-			baseDeviceType.ElementRequirements, err = elementRequirements.toElementRequirements(d)
+			var extraClusterRequirements []*matter.ClusterRequirement
+			baseDeviceType.ElementRequirements, extraClusterRequirements, err = elementRequirements.toElementRequirements(d)
+			baseDeviceType.ClusterRequirements = append(baseDeviceType.ClusterRequirements, extraClusterRequirements...)
 			if err != nil {
 				return
 			}
@@ -488,7 +492,7 @@ func associateElementRequirement(spec *Specification, dt *matter.DeviceType, er 
 		}
 
 	default:
-		slog.Error("Unexpected entity type", slog.String("entityType", er.Element.String()))
+		slog.Error("Unexpected entity type", slog.String("entityType", er.Element.String()), log.Path("source", er))
 		err = fmt.Errorf("unexpected element type: %s", er.Element.String())
 	}
 	return
