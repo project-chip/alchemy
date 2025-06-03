@@ -149,6 +149,14 @@ func stitchFieldLimit(fs fieldSet, l Limit) {
 			stitchFieldLimit(fs, r)
 		}
 	case *BooleanLimit, *IntLimit, *ExpLimit, *HexLimit, *NullLimit, *PercentLimit, *TemperatureLimit, *ManufacturerLimit:
+	case *MaxOfLimit:
+		for _, l := range l.Maximums {
+			stitchFieldLimit(fs, l)
+		}
+	case *MinOfLimit:
+		for _, l := range l.Minimums {
+			stitchFieldLimit(fs, l)
+		}
 	default:
 		fmt.Printf("unknown field limit type: %T\n", l)
 	}
@@ -167,6 +175,10 @@ type constraintTest struct {
 }
 
 var constraintTests = []constraintTest{
+	{
+		//constraint: " maxOf(<<ref_MinHeatSetpointLimit>>, <<ref_AbsMinHeatSetpointLimit>>) to (minOf(MinHeatSetpointLimit, <<ref_MaxHeatSetpointLimit>>, <<ref_AbsMaxHeatSetpointLimit>>) - <<ref_MinSetpointDeadBand>>)",
+		constraint: "maxOf(<<ref_MinHeatSetpointLimit>>, <<ref_AbsMinHeatSetpointLimit>>) to (minOf(MinHeatSetpointLimit, <<ref_MaxHeatSetpointLimit>>, <<ref_AbsMaxHeatSetpointLimit>>) - <<ref_MinSetpointDeadBand>>)",
+	},
 	{
 		constraint: "HoldTimeMin & min 10",
 		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeInt64, Int64: 10, Format: types.NumberFormatInt},
