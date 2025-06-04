@@ -295,10 +295,10 @@ func renderAttributeRequirement(deviceType *matter.DeviceType, er *matter.Elemen
 
 	renderAttributeAccess(ex, er.Access)
 	renderQuality(ex, er.Quality)
-	err = renderConformanceElement(er.Conformance, ex, nil)
+	err = renderConformanceElement(er.Conformance, ex, er.Cluster)
 	if err != nil {
 		return
 	}
-	err = renderConstraint(er.Constraint, dataType, ex, nil)
+	err = renderConstraint(er.Constraint, dataType, ex, er.Cluster)
 	return
 }

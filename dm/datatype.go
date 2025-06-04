@@ -200,21 +200,21 @@ func renderDataType(f *matter.Field, i *etree.Element) (err error) {
 	i.CreateAttr("type", "list")
 	e := i.CreateElement("entry")
 	e.CreateAttr("type", dataModelName(f.Type.EntryType))
-	err = renderListConstraint(f.Constraint, f.Type.EntryType, e)
+	err = renderListConstraint(f.Constraint, f.Type.EntryType, e, f.Parent())
 	return
 }
 
-func renderListConstraint(c constraint.Constraint, entryType *types.DataType, parent *etree.Element) (err error) {
+func renderListConstraint(c constraint.Constraint, entryType *types.DataType, parent *etree.Element, parentEntity types.Entity) (err error) {
 	switch c := c.(type) {
 	case constraint.Set:
 		for _, c := range c {
-			err = renderListConstraint(c, entryType, parent)
+			err = renderListConstraint(c, entryType, parent, parentEntity)
 			if err != nil {
 				return
 			}
 		}
 	case *constraint.ListConstraint:
-		err = renderConstraint(c.EntryConstraint, entryType, parent, nil)
+		err = renderConstraint(c.EntryConstraint, entryType, parent, parentEntity)
 	}
 	return
 }
