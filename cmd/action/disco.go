@@ -75,6 +75,8 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 		return fmt.Errorf("failed disco-balling: %v", err)
 	}
 
+	templateContext := make(map[string]any)
+
 	var t *raymond.Template
 	if out.Len() > 0 {
 		slog.Info("Setting disco_status to patched")
@@ -84,6 +86,8 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 		if err != nil {
 			return fmt.Errorf("failed saving patch: %v", err)
 		}
+
+		templateContext["diff"] = out.String()
 
 		t, err = templates.LoadDiscoPatchedTemplate()
 		if err != nil {
@@ -102,7 +106,7 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 		}
 	}
 	var comment string
-	comment, err = t.Exec(map[string]any{})
+	comment, err = t.Exec(templateContext)
 	if err != nil {
 		err = fmt.Errorf("error rendering disco comment template: %w", err)
 		return

@@ -3,6 +3,7 @@ package disco
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/errata"
@@ -48,7 +49,7 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 		}
 
 		specBuilder := spec.NewBuilder(specReader.Root)
-		docs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, docs)
+		_, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, docs)
 		if err != nil {
 			return err
 		}
