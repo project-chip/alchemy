@@ -3,7 +3,6 @@ package disco
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/errata"
