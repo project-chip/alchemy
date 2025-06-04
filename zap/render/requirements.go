@@ -352,11 +352,11 @@ func (p *DeviceTypesPatcher) renderAttributeRequirements(spec *spec.Specificatio
 	for _, ra := range ras {
 		rat := ra.Text()
 		attribute, _, required := find.FirstPairFunc(defines, func(a *matter.Field) bool { return strings.EqualFold(rat, defines[a]) })
-		ec := attributes[attribute]
-		if required || ec.State.State != conformance.StateMandatory {
-			delete(defines, attribute)
-		} else {
+		ec, ok := attributes[attribute]
+		if !required || (ok && ec.State.State != conformance.StateMandatory) {
 			root.RemoveChild(ra)
+		} else {
+			delete(defines, attribute)
 		}
 	}
 	for _, ra := range defines {
