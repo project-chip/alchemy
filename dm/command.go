@@ -105,7 +105,7 @@ func renderCommands(cs matter.CommandSet, c *etree.Element) (err error) {
 				return
 			}
 			if !constraint.IsBlankLimit(f.Fallback) {
-				err = renderConstraintLimit(i, i, f.Fallback, f.Type, "default", nil)
+				err = renderConstraintLimit(i, i, f.Fallback, f.Type, "default", cmd)
 				if err != nil {
 					return
 				}

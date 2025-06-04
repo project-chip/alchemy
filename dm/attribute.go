@@ -33,7 +33,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 			return
 		}
 		if !constraint.IsBlankLimit(a.Fallback) {
-			err = renderConstraintLimit(ax, ax, a.Fallback, a.Type, "default", nil)
+			err = renderConstraintLimit(ax, ax, a.Fallback, a.Type, "default", cluster)
 			if err != nil {
 				return
 			}
@@ -48,7 +48,7 @@ func renderAttributes(cluster *matter.Cluster, c *etree.Element) (err error) {
 		if err != nil {
 			return
 		}
-		err = renderConstraint(a.Constraint, a.Type, ax, nil)
+		err = renderConstraint(a.Constraint, a.Type, ax, cluster)
 		if err != nil {
 			return
 		}

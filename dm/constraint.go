@@ -337,6 +337,13 @@ func renderFieldConstraint(parent *etree.Element, entity *matter.Field, ref stri
 		slog.Warn("Unexpected entity type on reference limit", log.Type("type", entity))
 		parent.CreateAttr("reference", ref)
 	}
+	if hasCluster, ok := parentEntity.(interface{ Cluster() *matter.Cluster }); ok {
+		entityCluster := entity.Cluster()
+		parentCluster := hasCluster.Cluster()
+		if entityCluster != nil && parentCluster != nil && entityCluster != parentCluster {
+			parent.CreateAttr("cluster", entityCluster.Name)
+		}
+	}
 	if field != nil {
 		renderConstraintLimit(parent, parent, field, nil, "value", entity.Type.Entity)
 	}
