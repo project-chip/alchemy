@@ -63,8 +63,7 @@ func (p *Filter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (ou
 		for i, ofi := range stats {
 			sameFile = os.SameFile(fi, ofi)
 			if sameFile {
-				stats[i] = stats[len(stats)-1]
-				stats = stats[:len(stats)-1]
+				stats = slices.Delete(stats, i, i)
 				delete(filteredFiles, ofi)
 				break
 			}
@@ -76,8 +75,7 @@ func (p *Filter[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (ou
 			outputs = append(outputs, d)
 		} else if sameFile {
 			outputs = append(outputs, d)
-			if len(stats) <= 1 {
-				stats = nil
+			if len(stats) == 0 {
 				return
 			}
 		}
