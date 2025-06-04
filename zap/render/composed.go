@@ -275,7 +275,7 @@ func (p DeviceTypesPatcher) setEndpointCompositionElement(spec *spec.Specificati
 	}
 	if endpointCompositionElement == nil {
 		endpointCompositionElement = etree.NewElement("endpointComposition")
-		xml.AppendElement(parent, endpointCompositionElement, "clusters", "scope")
+		xml.AppendElement(parent, endpointCompositionElement, "scope")
 	}
 	endpointCompositionElement.Child = nil
 	xml.SetOrCreateSimpleElement(endpointCompositionElement, "compositionType", "tree")
