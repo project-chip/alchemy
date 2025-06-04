@@ -69,6 +69,7 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 
 	var out bytes.Buffer
 	writer := files.NewPatcher[string]("Generating patch file...", &out)
+	writer.Root = githubContext.Workspace
 
 	err = disco.Pipeline(cc, githubContext.Workspace, changedDocs, pipelineOptions, disco.DefaultOptions, nil, writer)
 	if err != nil {
