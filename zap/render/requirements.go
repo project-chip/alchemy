@@ -1,7 +1,6 @@
 package render
 
 import (
-	"fmt"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -108,52 +107,21 @@ func (p *DeviceTypesPatcher) renderClusterInclude(spec *spec.Specification,
 		return
 	}
 
-	if (clusterComposition.Server == conformance.StateUnknown || clusterComposition.Server == conformance.StateDisallowed) && (clusterComposition.Client == conformance.StateUnknown || clusterComposition.Client == conformance.StateDisallowed) {
-		if includeElement != nil {
-			clustersElement.RemoveChild(includeElement)
-		}
-		return
+	var server, client, clientLocked, serverLocked, removeServer, removeClient bool
+	server, serverLocked, removeServer, err = getLockState(clusterComposition.Server)
+	if err != nil {
+		return err
 	}
-
-	var server, client, clientLocked, serverLocked bool
-	switch clusterComposition.Server {
-	case conformance.StateMandatory, conformance.StateProvisional:
-		server = true
-		serverLocked = true
-	case conformance.StateOptional, conformance.StateDeprecated:
-		server = false
-		serverLocked = false
-	case conformance.StateDisallowed, conformance.StateUnknown:
-		server = false
-		serverLocked = true
-		server = false
-		serverLocked = true
-	default:
-		err = fmt.Errorf("unexpected conformance state %s", clusterComposition.Server.String())
-		return
+	client, clientLocked, removeClient, err = getLockState(clusterComposition.Client)
+	if err != nil {
+		return err
 	}
-
-	switch clusterComposition.Client {
-	case conformance.StateMandatory, conformance.StateProvisional:
-		client = true
-		clientLocked = true
-	case conformance.StateOptional, conformance.StateDeprecated:
-		client = false
-		clientLocked = false
-	case conformance.StateDisallowed, conformance.StateUnknown:
-		client = false
-		clientLocked = true
-	default:
-		err = fmt.Errorf("unexpected conformance state %s", clusterComposition.Server.String())
-		return
-	}
-
-	if serverLocked && !server && clientLocked && !client {
+	if (removeClient && removeServer) || (!client && clientLocked && !server && serverLocked) {
 		// This is just completely disallowed; remove it if here
 		if includeElement != nil {
 			clustersElement.RemoveChild(includeElement)
-			return
 		}
+		return
 	}
 
 	errata := errata.GetSDK(clusterDoc.Path.Relative)
@@ -179,11 +147,49 @@ func (p *DeviceTypesPatcher) renderClusterInclude(spec *spec.Specification,
 	includeElement.CreateAttr("clientLocked", strconv.FormatBool(clientLocked))
 	includeElement.CreateAttr("serverLocked", strconv.FormatBool(serverLocked))
 
-	err = p.renderClusterElementRequirements2(spec, includeElement, deviceType, clusterComposition, errata)
+	err = p.renderClusterElementRequirements(spec, includeElement, deviceType, clusterComposition, errata)
 	return
 }
 
-func (p *DeviceTypesPatcher) renderClusterElementRequirements2(spec *spec.Specification,
+func getLockState(state conformance.ConformanceState) (set bool, locked bool, remove bool, err error) {
+	switch state.State {
+	case conformance.StateMandatory:
+		set = true
+		switch state.Confidence {
+		case conformance.ConfidenceDefinite:
+			locked = true
+		case conformance.ConfidencePossible:
+			set = false
+			locked = false
+		case conformance.ConfidenceUnknown:
+			set = false
+			locked = true
+		}
+	case conformance.StateOptional, conformance.StateProvisional, conformance.StateDeprecated:
+		set = false
+	case conformance.StateDisallowed, conformance.StateUnknown:
+		set = false
+		remove = true
+		switch state.Confidence {
+		case conformance.ConfidenceDefinite:
+			locked = true
+		case conformance.ConfidencePossible:
+			locked = false
+		}
+	}
+	switch state.Confidence {
+	case conformance.ConfidenceImpossible:
+		set = false
+		locked = true
+		remove = true
+	case conformance.ConfidenceUnknown:
+		set = false
+		locked = true
+	}
+	return
+}
+
+func (p *DeviceTypesPatcher) renderClusterElementRequirements(spec *spec.Specification,
 	includeElement *etree.Element,
 	deviceType *matter.DeviceType,
 	clusterComposition *matter.ClusterComposition,

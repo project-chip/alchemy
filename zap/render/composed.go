@@ -26,21 +26,21 @@ type ElementComposition struct {
 	State              conformance.State
 }
 
-type hasEndpoint struct {
-	hasEndpoint bool
-	confidence  conformance.Confidence
+type contextBoolean struct {
+	value      bool
+	confidence conformance.Confidence
 }
 
-func (he *hasEndpoint) Confidence() conformance.Confidence {
+func (he *contextBoolean) Confidence() conformance.Confidence {
 	return he.confidence
 }
 
-func (he *hasEndpoint) Value() any {
-	return he.hasEndpoint
+func (he *contextBoolean) Value() any {
+	return he.value
 }
 
-func (he *hasEndpoint) IsTrue() bool {
-	return he.hasEndpoint
+func (he *contextBoolean) IsTrue() bool {
+	return he.value
 }
 
 func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Cluster]*matter.ClusterComposition, err error) {
@@ -67,63 +67,65 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 
 	firstContext := conformance.Context{
 		Values: map[string]any{
-			"Matter":            true,
+			"Matter":            &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
+			"Zigbee":            &contextBoolean{value: false, confidence: conformance.ConfidenceImpossible},
 			dc.DeviceType.Class: true,
 		},
 	}
 
-	var hasClient, hasServer hasEndpoint
+	var hasClient, hasServer contextBoolean
 	hasClient.confidence = conformance.ConfidenceDefinite
 	hasServer.confidence = conformance.ConfidenceDefinite
 
 	for cluster, requirements := range servers {
-		if hasServer.confidence == conformance.ConfidenceDefinite && hasServer.hasEndpoint {
+		if hasServer.confidence == conformance.ConfidenceDefinite && hasServer.value {
 			break
 		}
 		slices.SortFunc(requirements, func(a *matter.DeviceTypeClusterRequirement, b *matter.DeviceTypeClusterRequirement) int {
 			return a.Origin.Compare(b.Origin)
 		})
-		var firstPassState conformance.State
+		var firstPassState conformance.ConformanceState
 		firstPassState, err = getConformanceState(firstContext, requirements, elementRequirements)
 		if err != nil {
 			slog.Warn("Error evaluating conformance of element requirement", slog.String("deviceTypeId", dc.DeviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
 			return
 		}
-		switch firstPassState {
+		switch firstPassState.State {
 		case conformance.StateMandatory:
-			hasServer.confidence = conformance.ConfidenceDefinite
-			hasServer.hasEndpoint = true
+			hasServer.confidence = firstPassState.Confidence
+			hasServer.value = true
 		case conformance.StateProvisional, conformance.StateOptional:
-			hasServer.confidence = conformance.ConfidencePossible
-			hasServer.hasEndpoint = true
+			hasServer.confidence = firstPassState.Confidence
+			hasServer.value = true
 		}
 	}
 	for cluster, requirements := range clients {
-		if hasClient.confidence == conformance.ConfidenceDefinite && hasClient.hasEndpoint {
+		if hasClient.confidence == conformance.ConfidenceDefinite && hasClient.value {
 			break
 		}
 		slices.SortFunc(requirements, func(a *matter.DeviceTypeClusterRequirement, b *matter.DeviceTypeClusterRequirement) int {
 			return a.Origin.Compare(b.Origin)
 		})
-		var firstPassState conformance.State
+		var firstPassState conformance.ConformanceState
 		firstPassState, err = getConformanceState(firstContext, requirements, elementRequirements)
 		if err != nil {
 			slog.Warn("Error evaluating conformance of element requirement", slog.String("deviceTypeId", dc.DeviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
 			return
 		}
-		switch firstPassState {
+		switch firstPassState.State {
 		case conformance.StateMandatory:
-			hasClient.confidence = conformance.ConfidenceDefinite
-			hasClient.hasEndpoint = true
+			hasClient.confidence = firstPassState.Confidence
+			hasClient.value = true
 		case conformance.StateProvisional, conformance.StateOptional:
 			hasClient.confidence = conformance.ConfidencePossible
-			hasClient.hasEndpoint = true
+			hasClient.value = true
 		}
 	}
 
 	cxt := conformance.Context{
 		Values: map[string]any{
-			"Matter":            true,
+			"Matter":            &contextBoolean{value: true, confidence: conformance.ConfidenceDefinite},
+			"Zigbee":            &contextBoolean{value: false, confidence: conformance.ConfidenceImpossible},
 			dc.DeviceType.Class: true,
 			"Client":            &hasClient,
 			"Server":            &hasServer,
@@ -160,14 +162,14 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 				return a.Origin.Compare(b.Origin)
 			})
 			req := ers[len(ers)-1].ElementRequirement
-			if conformance.IsZigbee(req.Conformance) {
-				continue
-			}
 			var conf conformance.ConformanceState
 			conf, err = req.Conformance.Eval(cxt)
 			if err != nil {
 				slog.Warn("Error evaluating conformance of element requirement", slog.String("deviceTypeId", dc.DeviceType.ID.HexString()), slog.String("clusterName", cluster.Name), slog.Any("error", err))
 				return
+			}
+			if conf.Confidence == conformance.ConfidenceImpossible {
+				continue
 			}
 			cc.Elements = append(cc.Elements, &matter.ElementComposition{ElementRequirement: req, State: conf})
 		}
@@ -189,39 +191,32 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 	return
 }
 
-func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.DeviceTypeClusterRequirement, elementRequirements map[*matter.Cluster][]*matter.DeviceTypeElementRequirement) (state conformance.State, err error) {
+func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.DeviceTypeClusterRequirement, elementRequirements map[*matter.Cluster][]*matter.DeviceTypeElementRequirement) (state conformance.ConformanceState, err error) {
 	req := clusterRequirements[len(clusterRequirements)-1]
 
-	if conformance.IsMandatory(req.ClusterRequirement.Conformance) {
+	/*if conformance.IsMandatory(req.ClusterRequirement.Conformance) {
 		state = conformance.StateMandatory
 	} else if conformance.IsDisallowed(req.ClusterRequirement.Conformance) {
 		state = conformance.StateDisallowed
 	} else {
 		state = conformance.StateOptional
+	}*/
+
+	state, err = req.ClusterRequirement.Conformance.Eval(cxt)
+	if err != nil {
+		err = fmt.Errorf("error evaluating conformance of cluster requirement %s: %w", req.ClusterRequirement.ClusterName, err)
+		return
+
 	}
 
 	switch req.Origin {
 	case matter.RequirementOriginBaseDeviceType, matter.RequirementOriginSubsetDeviceType:
 		// Normally, we do not include clusters from the Base Device Type...
-		var evalState conformance.ConformanceState
-		evalState, err = req.ClusterRequirement.Conformance.Eval(cxt)
-		if err != nil {
-			err = fmt.Errorf("error evaluating conformance of cluster requirement %s: %w", req.ClusterRequirement.ClusterName, err)
-			return
-		}
-		// ...unless the base device requirement is not mandatory, but it evaluates as mandatory in this context
-		if state != conformance.StateMandatory && evalState.State == conformance.StateMandatory {
-			switch evalState.Confidence {
-			case conformance.ConfidenceDefinite:
-				state = conformance.StateMandatory
-			case conformance.ConfidencePossible:
-				state = conformance.StateOptional
-			}
-			break
-		}
-		ers := elementRequirements[req.ClusterRequirement.Cluster]
-		// ... or unless there are element requirement for this cluster that are NOT from the base device type
+		// ... unless there are element requirement for this cluster that are NOT from the base device type
+
 		var hasElements bool
+		ers := elementRequirements[req.ClusterRequirement.Cluster]
+
 		for _, er := range ers {
 			switch er.Origin {
 			case matter.RequirementOriginBaseDeviceType, matter.RequirementOriginSubsetDeviceType:
@@ -233,33 +228,44 @@ func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.
 		if hasElements {
 			break
 		}
+		// ...or unless the base device requirement is not mandatory, but it evaluates as mandatory in this context
 
-		state = conformance.StateUnknown
+		if (conformance.IsMandatory(req.ClusterRequirement.Conformance) || state.State != conformance.StateMandatory) && !hasElements {
+			state.State = conformance.StateUnknown
+			state.Confidence = conformance.ConfidenceDefinite
+			return
+		}
+
 		return
 	}
 
 	if req.DeviceTypeRequirement != nil {
-
-		var deviceState conformance.State
-		if conformance.IsMandatory(req.DeviceTypeRequirement.Conformance) {
-			deviceState = conformance.StateMandatory
-		} else if conformance.IsDisallowed(req.DeviceTypeRequirement.Conformance) {
-			deviceState = conformance.StateDisallowed
-		} else {
-			deviceState = conformance.StateOptional
+		var deviceState conformance.ConformanceState
+		deviceState, err = req.DeviceTypeRequirement.Conformance.Eval(cxt)
+		if err != nil {
+			err = fmt.Errorf("error evaluating conformance of device requirement %s: %w", req.ClusterRequirement.ClusterName, err)
+			return
 		}
-		switch deviceState {
+		switch deviceState.State {
 		case conformance.StateMandatory:
+			switch deviceState.Confidence {
+			case conformance.ConfidencePossible, conformance.ConfidenceImpossible:
+				state.Confidence = deviceState.Confidence
+			}
 		case conformance.StateOptional, conformance.StateProvisional:
 			// If the composed device type isn't mandatory, then the cluster is optional
-			state = conformance.StateOptional
+			state.State = deviceState.State
+			switch deviceState.Confidence {
+			case conformance.ConfidencePossible, conformance.ConfidenceImpossible:
+				state.Confidence = deviceState.Confidence
+			}
 		case conformance.StateDeprecated:
-			state = conformance.StateOptional
+			state.State = conformance.StateOptional
 		case conformance.StateDisallowed:
-			state = conformance.StateDisallowed
+			state.State = conformance.StateDisallowed
+			state.Confidence = deviceState.Confidence
 		}
 	}
-
 	return
 }
 
@@ -301,59 +307,10 @@ func (p DeviceTypesPatcher) setEndpointCompositionElement(spec *spec.Specificati
 		if cons != "" {
 			endpoint.CreateAttr("constraint", cons)
 		}
-		endpoint.CreateElement("deviceType").SetText(childDeviceType.DeviceType.ID.HexString())
-		//endpoint.CreateElement("typeName").SetText(childDeviceType.DeviceType.Name)
-		p.renderClusterIncludes(spec, endpoint, childDeviceType)
+		dte := endpoint.CreateElement("deviceType")
+		dte.CreateAttr("id", childDeviceType.DeviceType.ID.HexString())
+		dte.CreateAttr("name", childDeviceType.DeviceType.Name)
+		p.renderClusterIncludes(spec, dte, childDeviceType)
 	}
 	return nil
-}
-
-func (DeviceTypesPatcher) buildComposedDeviceRequirements(deviceType *matter.DeviceType,
-	spec *spec.Specification) (composedDeviceTypes []*matter.DeviceType,
-	composedDeviceTypeRequirements map[*matter.DeviceType]*matter.DeviceTypeRequirement,
-	composedDeviceTypeClusterRequirements map[*matter.DeviceType][]*matter.DeviceTypeClusterRequirement,
-	composedDeviceTypeElementRequirements map[*matter.DeviceType][]*matter.DeviceTypeElementRequirement,
-	err error) {
-	composedDeviceTypeRequirements = make(map[*matter.DeviceType]*matter.DeviceTypeRequirement)
-	for _, dtr := range deviceType.DeviceTypeRequirements {
-		if dtr.DeviceType == nil {
-			continue
-		}
-		dt := dtr.DeviceType
-		composedDeviceTypes = append(composedDeviceTypes, dt)
-		_, ok := composedDeviceTypeRequirements[dt]
-		if ok {
-			slog.Warn("Duplicate composed device type requirement, ignoring...", slog.String("deviceTypeId", deviceType.ID.HexString()), slog.String("deviceTypeName", deviceType.Name), slog.String("composedDeviceTypeId", dt.ID.HexString()), slog.String("composedDeviceTypeName", dt.Name))
-			continue
-		}
-		composedDeviceTypeRequirements[dt] = dtr
-	}
-	composedDeviceTypeClusterRequirements = make(map[*matter.DeviceType][]*matter.DeviceTypeClusterRequirement)
-	for _, cdtr := range deviceType.ComposedDeviceTypeClusterRequirements {
-		if cdtr.DeviceType == nil {
-			continue
-		}
-		dt := cdtr.DeviceType
-		_, ok := composedDeviceTypeRequirements[dt]
-		if !ok {
-			err = fmt.Errorf("unknown composed device type requirement for device type: %s", dt.Name)
-			return
-		}
-		composedDeviceTypeClusterRequirements[dt] = append(composedDeviceTypeClusterRequirements[dt], cdtr)
-	}
-	composedDeviceTypeElementRequirements = make(map[*matter.DeviceType][]*matter.DeviceTypeElementRequirement)
-	for _, cdtr := range deviceType.ComposedDeviceTypeElementRequirements {
-		if cdtr.DeviceType == nil {
-			continue
-		}
-		dt := cdtr.DeviceType
-		_, ok := composedDeviceTypeRequirements[cdtr.DeviceType]
-		if !ok {
-			// Hunh; there's an element requirement for a device type that wasn't in the list of device types; we'll just pretend it was there and optional
-			composedDeviceTypes = append(composedDeviceTypes, dt)
-			composedDeviceTypeRequirements[dt] = &matter.DeviceTypeRequirement{DeviceTypeID: dt.ID.Clone(), DeviceTypeName: dt.Name, Conformance: conformance.Set{&conformance.Optional{}}}
-		}
-		composedDeviceTypeElementRequirements[cdtr.DeviceType] = append(composedDeviceTypeElementRequirements[cdtr.DeviceType], cdtr)
-	}
-	return
 }

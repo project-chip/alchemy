@@ -1,6 +1,7 @@
 package conformance
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/project-chip/alchemy/internal/text"
@@ -46,19 +47,36 @@ func (o *Optional) Description() string {
 	return s.String()
 }
 
-func (o *Optional) Eval(context Context) (ConformanceState, error) {
+func (o *Optional) Eval(context Context) (state ConformanceState, err error) {
 	if o.Expression == nil {
-		return ConformanceState{State: StateOptional, Confidence: ConfidenceDefinite}, nil
+		state.State = StateOptional
+		state.Confidence = ConfidenceDefinite
+		return
 
 	}
-	t, err := o.Expression.Eval(context)
+	var t ExpressionResult
+	t, err = o.Expression.Eval(context)
 	if err != nil {
 		return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
 	}
-	if t.IsTrue() {
-		return ConformanceState{State: StateOptional, Confidence: t.Confidence()}, nil
+	switch t.Confidence() {
+	case ConfidenceDefinite:
+		state.Confidence = ConfidenceDefinite
+		if t.IsTrue() {
+			state.State = StateOptional
+		}
+		return
+	case ConfidenceImpossible:
+		state.Confidence = ConfidenceImpossible
+		return
+	case ConfidencePossible:
+		state.State = StateOptional
+		state.Confidence = ConfidencePossible
+	case ConfidenceUnknown:
+	default:
+		err = fmt.Errorf("unexpected confidence: %v", t.Confidence())
 	}
-	return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
+	return
 }
 
 func (o *Optional) Equal(c Conformance) bool {

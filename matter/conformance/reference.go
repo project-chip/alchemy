@@ -66,11 +66,14 @@ func (re *ReferenceExpression) Eval(context Context) (ExpressionResult, error) {
 			case StateOptional, StateProvisional, StateDeprecated:
 				return &expressionResult{value: !re.Not, confidence: cs.Confidence}, nil
 			case StateDisallowed:
-				return &expressionResult{value: !re.Not, confidence: cs.Confidence}, nil
+				return &expressionResult{value: re.Not, confidence: cs.Confidence}, nil
+			default:
+				return nil, fmt.Errorf("unexpected conformance state evaluating identifier conformance: %s", cs.State.String())
+
 			}
 		}
 	}
-	return &expressionResult{value: re.Not, confidence: ConfidencePossible}, nil
+	return &expressionResult{value: !re.Not, confidence: ConfidencePossible}, nil
 }
 
 func (re *ReferenceExpression) Equal(e Expression) bool {

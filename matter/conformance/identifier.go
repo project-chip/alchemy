@@ -43,10 +43,8 @@ func (ie *IdentifierExpression) Eval(context Context) (ExpressionResult, error) 
 				return &expressionResult{value: v != ie.Not, confidence: ConfidenceDefinite}, nil
 			case ExpressionResult:
 				return v, nil
-			case Confidence:
-				return &expressionResult{value: !ie.Not, confidence: v}, nil
 			default:
-				return &expressionResult{value: !ie.Not, confidence: ConfidenceDefinite}, nil
+				return nil, fmt.Errorf("unexpected context value type: %T", v)
 			}
 		}
 	}
@@ -70,13 +68,15 @@ func (ie *IdentifierExpression) Eval(context Context) (ExpressionResult, error) 
 			case StateMandatory:
 				return &expressionResult{value: !ie.Not, confidence: cs.Confidence}, nil
 			case StateOptional, StateProvisional, StateDeprecated:
-				return &expressionResult{value: !ie.Not, confidence: cs.Confidence}, nil
+				return &expressionResult{value: !ie.Not, confidence: ConfidencePossible}, nil
 			case StateDisallowed:
-				return &expressionResult{value: !ie.Not, confidence: cs.Confidence}, nil
+				return &expressionResult{value: ie.Not, confidence: cs.Confidence}, nil
+			default:
+				return nil, fmt.Errorf("unexpected conformance state evaluating identifier conformance: %s", cs.State.String())
 			}
 		}
 	}
-	return &expressionResult{value: ie.Not, confidence: ConfidencePossible}, nil
+	return &expressionResult{value: !ie.Not, confidence: ConfidencePossible}, nil
 }
 
 func (ie *IdentifierExpression) Equal(e Expression) bool {

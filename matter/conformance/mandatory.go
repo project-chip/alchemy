@@ -1,6 +1,7 @@
 package conformance
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -29,19 +30,35 @@ func (m *Mandatory) Description() string {
 	return s.String()
 }
 
-func (m *Mandatory) Eval(context Context) (ConformanceState, error) {
-	if m.Expression == nil {
-		return ConformanceState{State: StateMandatory, Confidence: ConfidenceDefinite}, nil
-	}
-	t, err := m.Expression.Eval(context)
-	if err != nil {
-		return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
+func (o *Mandatory) Eval(context Context) (state ConformanceState, err error) {
+	if o.Expression == nil {
+		state.State = StateMandatory
+		state.Confidence = ConfidenceDefinite
+		return
 
 	}
-	if t.IsTrue() {
-		return ConformanceState{State: StateMandatory, Confidence: t.Confidence()}, nil
+	var t ExpressionResult
+	t, err = o.Expression.Eval(context)
+	if err != nil {
+		return
 	}
-	return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
+	switch t.Confidence() {
+	case ConfidenceDefinite:
+		state.Confidence = ConfidenceDefinite
+		if t.IsTrue() {
+			state.State = StateMandatory
+		}
+	case ConfidenceImpossible:
+		state.State = StateMandatory
+		state.Confidence = ConfidenceImpossible
+	case ConfidencePossible:
+		state.State = StateMandatory
+		state.Confidence = ConfidencePossible
+	case ConfidenceUnknown:
+	default:
+		err = fmt.Errorf("unexpected confidence: %v", t.Confidence())
+	}
+	return
 }
 
 func (m *Mandatory) Equal(c Conformance) bool {
