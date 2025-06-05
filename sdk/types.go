@@ -55,25 +55,36 @@ func ToUnderlyingType(dt types.BaseDataType) types.BaseDataType {
 	}
 }
 
+func FindBaseType(dataType *types.DataType) types.BaseDataType {
+	switch entity := dataType.Entity.(type) {
+	case *matter.Enum:
+		return entity.BaseDataType()
+	case *matter.Bitmap:
+		return entity.BaseDataType()
+	default:
+		return dataType.BaseType
+	}
+}
+
 func CheckUnderlyingType(field *matter.Field, de types.DataTypeExtreme, dataExtremePurpose types.DataExtremePurpose) (out types.DataTypeExtreme, redundant bool) {
 	out = de
 	switch dataExtremePurpose {
 	case types.DataExtremePurposeMinimum:
-		fieldMinimum := types.Min(ToUnderlyingType(field.Type.BaseType), field.Quality.Has(matter.QualityNullable))
+		fieldMinimum := types.Min(ToUnderlyingType(FindBaseType(field.Type)), field.Quality.Has(matter.QualityNullable))
 		if cmp, ok := de.Compare(fieldMinimum); ok && cmp == -1 {
 			slog.Warn("Field has minimum lower than the range of its data type; overriding", slog.String("name", field.Name), log.Path("source", field), slog.String("specifiedMinimum", de.ZapString(field.Type)), slog.String("fieldMinimum", fieldMinimum.ZapString(field.Type)))
 			out = fieldMinimum
 		}
-		if types.Min(ToUnderlyingType(field.Type.BaseType), false).ValueEquals(out) {
+		if types.Min(ToUnderlyingType(FindBaseType(field.Type)), false).ValueEquals(out) {
 			redundant = true
 		}
 	case types.DataExtremePurposeMaximum:
-		fieldMaximum := types.Max(ToUnderlyingType(field.Type.BaseType), field.Quality.Has(matter.QualityNullable))
+		fieldMaximum := types.Max(ToUnderlyingType(FindBaseType(field.Type)), field.Quality.Has(matter.QualityNullable))
 		if cmp, ok := de.Compare(fieldMaximum); ok && cmp == 1 {
 			slog.Warn("Field has maximum greater than the range of its data type; overriding", slog.String("name", field.Name), log.Path("source", field), slog.String("specifiedMaximum", de.ZapString(field.Type)), slog.String("fieldMaximum", fieldMaximum.ZapString(field.Type)))
 			out = fieldMaximum
 		}
-		if types.Max(ToUnderlyingType(field.Type.BaseType), false).ValueEquals(out) {
+		if types.Max(ToUnderlyingType(FindBaseType(field.Type)), false).ValueEquals(out) {
 			redundant = true
 		}
 	}

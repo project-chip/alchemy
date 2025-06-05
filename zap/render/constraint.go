@@ -40,10 +40,10 @@ func (cr *configuratorRenderer) renderConstraint(el *etree.Element, fs matter.Fi
 		// If that's true of both min and max, or only true of one with the other
 		var minDueToNullable, maxDueToNullable bool
 		if hasNumericMin {
-			minDueToNullable = types.Min(sdk.ToUnderlyingType(f.Type.BaseType), true).ValueEquals(from)
+			minDueToNullable = types.Min(sdk.ToUnderlyingType(sdk.FindBaseType(f.Type)), true).ValueEquals(from)
 		}
 		if hasNumericMax {
-			maxDueToNullable = types.Max(sdk.ToUnderlyingType(f.Type.BaseType), true).ValueEquals(to)
+			maxDueToNullable = types.Max(sdk.ToUnderlyingType(sdk.FindBaseType(f.Type)), true).ValueEquals(to)
 		}
 		if (minDueToNullable && maxDueToNullable) ||
 			(minDueToNullable && !hasNumericMax) ||
