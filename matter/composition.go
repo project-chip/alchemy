@@ -99,8 +99,8 @@ func (dter *DeviceTypeElementRequirement) Clone() *DeviceTypeElementRequirement 
 
 type ClusterComposition struct {
 	Cluster *Cluster
-	Server  conformance.State
-	Client  conformance.State
+	Server  conformance.ConformanceState
+	Client  conformance.ConformanceState
 
 	Elements []*ElementComposition
 }

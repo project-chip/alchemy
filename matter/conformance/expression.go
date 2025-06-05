@@ -49,7 +49,7 @@ func (er *expressionResult) Value() any {
 type Confidence uint8
 
 const (
-	ConfindenceUnknown Confidence = iota
+	ConfidenceUnknown Confidence = iota
 	ConfidenceDefinite
 	ConfidenceImpossible
 	ConfidencePossible

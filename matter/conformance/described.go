@@ -16,7 +16,7 @@ func (d *Described) Description() string {
 }
 
 func (d *Described) Eval(context Context) (ConformanceState, error) {
-	return ConformanceState{State: StateUnknown, Confidence: ConfidenceDefinite}, nil
+	return ConformanceState{State: StateOptional, Confidence: ConfidencePossible}, nil
 }
 
 func (d *Described) Equal(c Conformance) bool {
