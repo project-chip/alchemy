@@ -47,7 +47,7 @@ func (sp *Patcher[T]) Process(cxt context.Context, inputs []*pipeline.Data[T]) (
 			existing = string(eb)
 		}
 
-		if sp.Root != "" {
+		if sp.Root != "" && filepath.IsAbs(path) {
 			path, err = filepath.Rel(sp.Root, path)
 			if err != nil {
 				err = fmt.Errorf("error getting relative patch path: %w", err)
