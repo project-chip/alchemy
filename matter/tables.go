@@ -138,6 +138,7 @@ const (
 	TableTypeEvents
 	TableTypeEventFields
 	TableTypeFeatures
+	TableTypeDeviceTypeRequirements
 )
 
 type Table struct {
@@ -283,6 +284,15 @@ var Tables = map[TableType]Table{
 		},
 		ColumnRenames: map[TableColumn]TableColumn{
 			TableColumnID: TableColumnBit, // Rename ID to Bit
+		},
+	},
+	TableTypeDeviceTypeRequirements: {
+		ColumnOrder: []TableColumn{
+			TableColumnID,
+			TableColumnName,
+			TableColumnConstraint,
+			TableColumnConformance,
+			TableColumnLocation,
 		},
 	},
 }
