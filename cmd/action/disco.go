@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/mailgun/raymond/v2"
 	"github.com/project-chip/alchemy/cmd/action/github"
@@ -88,8 +89,11 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 			return fmt.Errorf("failed saving patch: %v", err)
 		}
 
-		templateContext["diff"] = out.String()
+		diff := out.String()
+		diff = strings.ReplaceAll(diff, "{", "{{")
+		diff = strings.ReplaceAll(diff, "}", "}}")
 
+		templateContext["diff"] = diff
 		t, err = templates.LoadDiscoPatchedTemplate()
 		if err != nil {
 			err = fmt.Errorf("error loading disco patched template: %w", err)
