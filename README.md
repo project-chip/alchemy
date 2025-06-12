@@ -319,12 +319,31 @@ Alchemy-db is provided as a separate binary. It loads up a set of spec docs or Z
 | `--port`                   | 3306                   | The port to bind the MySQL server to |
 | `--raw`                    | false                  | Populates the tables with the raw text of the associated entities,<br/> rather than parsing into an object model first |
 
+#### Building
+
+To build `alchemy-db`:
+- In the root of the alchemy repo, run `go build -tags db -o alchemy-db .`.
+
 #### Examples
 
 ##### Command line to launch, loading from specific paths
+
+To launch `alchemy-db`:
+
 ```console
 alchemy-db --sdk-root=./connectedhomeip/ --spec-root=./connectedhomeip-spec/
 ```
+
+It will then run as a daemon until terminated.
+
+To query, use you favorite MySQL client. On the command line, for example:
+
+
+```console
+mysql -h 127.0.0.1 --skip-ssl
+```
+
+The `--skip-ssl` is because `alchemy-db` runs locally without SSL certificates, as a debug tool, yet modern MySQL versions require SSL on the connection unless otherwise specified.
 
 ##### Semantic tags used across multiple Namespaces
 ```sql
