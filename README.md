@@ -347,6 +347,8 @@ The `--skip-ssl` is because `alchemy-db` runs locally without SSL certificates, 
 
 ##### Semantic tags used across multiple Namespaces
 ```sql
+USE MatterSpec;
+
 SELECT
     t.name AS tag,
     ns.name AS namespace,
