@@ -41,6 +41,8 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			cxt.WriteRune('\n')
 		case *asciidoc.CrossReference:
 			err = renderInternalCrossReference(cxt, el)
+		case *asciidoc.DocumentCrossReference:
+			err = renderDocumentCrossReference(cxt, el)
 		case *asciidoc.AttributeEntry:
 			err = renderAttributeEntry(cxt, el)
 		case *asciidoc.String:
@@ -150,7 +152,15 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			cxt.WriteString("'''\n")
 		case nil:
 		default:
-			err = fmt.Errorf("unknown render element type: %T", el)
+			if source, ok := el.(interface {
+				Origin() (path string, line int)
+			}); ok {
+				path, line := source.Origin()
+				err = fmt.Errorf("unknown render element type: %T (%s:%d)", el, path, line)
+			} else {
+				err = fmt.Errorf("unknown render element type: %T", el)
+
+			}
 		}
 		if err != nil {
 			return
