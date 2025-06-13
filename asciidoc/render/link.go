@@ -41,7 +41,7 @@ func renderImageBlock(cxt Target, ib *asciidoc.BlockImage) (err error) {
 	cxt.EnsureNewLine()
 	cxt.DisableWrap()
 	cxt.WriteString("image::")
-	err = Elements(cxt, "", ib.Path...)
+	err = Elements(cxt, "", ib.ImagePath...)
 	if err != nil {
 		return
 	}
@@ -68,7 +68,7 @@ func renderInlineImage(cxt Target, ib *asciidoc.InlineImage) (err error) {
 	cxt.EnsureNewLine()
 	cxt.DisableWrap()
 	cxt.WriteString("image:")
-	err = Elements(cxt, "", ib.Path...)
+	err = Elements(cxt, "", ib.ImagePath...)
 	if err != nil {
 		return
 	}

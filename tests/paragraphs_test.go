@@ -766,7 +766,7 @@ var shouldReadContentBelowLiteralStyleVerbatim = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "not-an-image-block",
 				},

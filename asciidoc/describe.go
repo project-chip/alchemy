@@ -42,9 +42,9 @@ func Describe(el Element) string {
 	case *Icon:
 		return fmt.Sprintf(" icon %s ", el.Path)
 	case *BlockImage:
-		return fmt.Sprintf(" block image %s ", DescribeSet(el.Path))
+		return fmt.Sprintf(" block image %s ", DescribeSet(el.ImagePath))
 	case *InlineImage:
-		return fmt.Sprintf(" inline image %s ", DescribeSet(el.Path))
+		return fmt.Sprintf(" inline image %s ", DescribeSet(el.ImagePath))
 	case *FileInclude:
 		return "include"
 	case *Italic:
@@ -116,7 +116,7 @@ func Describe(el Element) string {
 	case *CrossReference:
 		return fmt.Sprintf("xref %s", el.ID)
 	case *DocumentCrossReference:
-		return fmt.Sprintf("doc-xref %v", el.Path)
+		return fmt.Sprintf("doc-xref %v", el.ReferencePath)
 	case *TableCell:
 		return fmt.Sprintf("table cell (%d)", len(el.Set))
 	case *TableRow:

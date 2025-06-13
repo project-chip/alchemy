@@ -52,7 +52,7 @@ var inlineImage = &asciidoc.Document{
 							},
 						},
 					},
-					Path: asciidoc.Set{
+					ImagePath: asciidoc.Set{
 						&asciidoc.String{
 							Value: "./images/hvac/media/image4.jpeg",
 						},

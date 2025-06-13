@@ -2020,7 +2020,7 @@ var nestedDocumentShouldUseCounterFromParentDocument = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "foo.jpg",
 				},
@@ -2107,7 +2107,7 @@ var nestedDocumentShouldUseCounterFromParentDocument = &asciidoc.Document{
 											},
 										},
 									},
-									Path: asciidoc.Set{
+									ImagePath: asciidoc.Set{
 										&asciidoc.String{
 											Value: "bar.jpg",
 										},
@@ -2177,7 +2177,7 @@ var nestedDocumentShouldUseCounterFromParentDocument = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "qux.jpg",
 				},

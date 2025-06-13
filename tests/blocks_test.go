@@ -5507,7 +5507,7 @@ var canConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "tiger.svg",
 				},
@@ -5551,7 +5551,7 @@ var convertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure = &asciidoc.D
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.svg",
 				},
@@ -5615,7 +5615,7 @@ var insertsFallbackImageForSvgInsideObjectElementUsingSameDimensions = &asciidoc
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "tiger.svg",
 				},
@@ -5670,7 +5670,7 @@ var detectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "http://example.org/tiger.svg?foo=bar",
 				},
@@ -5734,7 +5734,7 @@ var detectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "http://example.org/tiger-svg",
 				},
@@ -5789,7 +5789,7 @@ var convertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -5853,7 +5853,7 @@ var shouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = &asciidoc.
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -5908,7 +5908,7 @@ var shouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -5954,7 +5954,7 @@ var shouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciidoc.Document
 					Quote: 0,
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -6013,7 +6013,7 @@ var convertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocumen
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -6048,7 +6048,7 @@ var shouldNotThrowExceptionIfSvgToInlineIsEmpty = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "no-such-image.svg",
 				},
@@ -6074,7 +6074,7 @@ var canConvertBlockImageWithAltTextDefinedInMacroContainingSquareBracket = &asci
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6109,7 +6109,7 @@ var altTextInMacroOverridesAltTextAboveMacro = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6146,7 +6146,7 @@ var shouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro = &asci
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6181,7 +6181,7 @@ var shouldSetDirectionCssClassOnImageIfFloatAttributeIsSet = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6216,7 +6216,7 @@ var shouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet = &asciidoc.Docum
 					Quote: 0,
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6251,7 +6251,7 @@ var styleAttributeIsDroppedFromImageMacro = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6286,7 +6286,7 @@ var shouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified = &asciidoc.Do
 					Quote: 1,
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6332,7 +6332,7 @@ var canConvertBlockImageWithLinkToSelf = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "tiger.png",
 				},
@@ -6365,7 +6365,7 @@ var addsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow = &asciid
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6407,7 +6407,7 @@ var canConvertBlockImageWithExplicitCaption = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6434,7 +6434,7 @@ var canAlignImageInDocBookBackend = &asciidoc.Document{
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.UserAttributeReference{
 					Value: "bogus",
 				},
@@ -6461,7 +6461,7 @@ var shouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissing
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.UserAttributeReference{
 					Value: "bogus",
 				},
@@ -6491,7 +6491,7 @@ var dropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLi
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.UserAttributeReference{
 					Value: "bogus",
 				},
@@ -6518,7 +6518,7 @@ var shouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine =
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.CharacterReplacementReference{
 					Value: "blank",
 				},
@@ -6545,7 +6545,7 @@ var droppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDro
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.UserAttributeReference{
 					Value: "bogus",
 				},
@@ -6595,7 +6595,7 @@ var shouldPassThroughImageThatReferencesUri = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "http://asciidoc.org/images/tiger.png",
 				},
@@ -6632,7 +6632,7 @@ var shouldEncodeSpacesInImageTargetIfValueIsAUri = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "tiger.png",
 				},
@@ -6673,7 +6673,7 @@ var embedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet = &asciidoc.Docu
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "dot.gif",
 				},
@@ -6723,7 +6723,7 @@ var embedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg = &asciidoc.Docu
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -6782,7 +6782,7 @@ var shouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded = &asciido
 					Quote: 0,
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -6823,7 +6823,7 @@ var embedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet =
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "unreadable.gif",
 				},
@@ -6864,7 +6864,7 @@ var embedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensio
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "dot",
 				},
@@ -6897,7 +6897,7 @@ var canHandleEmbeddedDataUriImages = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=",
 				},
@@ -6938,7 +6938,7 @@ var cleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeL
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "dot.gif",
 				},
@@ -6979,7 +6979,7 @@ var cleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLeve
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "../..//fixtures/./../../fixtures/dot.gif",
 				},
