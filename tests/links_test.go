@@ -514,7 +514,7 @@ var xrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ReferencePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "tigers",
 				},
@@ -647,7 +647,7 @@ var xrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &asciidoc.
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ReferencePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "tigers",
 				},
@@ -703,7 +703,7 @@ var xrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &asciidoc.
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ReferencePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "tigers",
 				},

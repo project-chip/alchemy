@@ -6,11 +6,11 @@ type BlockImage struct {
 
 	AttributeList
 
-	Path Set
+	ImagePath Set
 }
 
 func NewBlockImage(path Set) *BlockImage {
-	return &BlockImage{Path: path}
+	return &BlockImage{ImagePath: path}
 }
 
 func (BlockImage) Type() ElementType {
@@ -25,17 +25,17 @@ func (a *BlockImage) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Path.Equals(oa.Path)
+	return a.ImagePath.Equals(oa.ImagePath)
 }
 
 type InlineImage struct {
 	AttributeList
 
-	Path Set
+	ImagePath Set
 }
 
 func NewInlineImage(path Set) *InlineImage {
-	return &InlineImage{Path: path}
+	return &InlineImage{ImagePath: path}
 }
 
 func (InlineImage) Type() ElementType {
@@ -50,5 +50,5 @@ func (a *InlineImage) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Path.Equals(oa.Path)
+	return a.ImagePath.Equals(oa.ImagePath)
 }

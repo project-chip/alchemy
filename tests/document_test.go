@@ -2512,7 +2512,7 @@ var shouldReturnEmptyidsTable = &asciidoc.Document{
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "outer.png",
 				},
@@ -2560,7 +2560,7 @@ var shouldReturnEmptyidsTable = &asciidoc.Document{
 								&asciidoc.NewLine{},
 								&asciidoc.BlockImage{
 									AttributeList: nil,
-									Path: asciidoc.Set{
+									ImagePath: asciidoc.Set{
 										&asciidoc.String{
 											Value: "inner.png",
 										},
@@ -2665,7 +2665,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 				},
 				&asciidoc.InlineImage{
 					AttributeList: nil,
-					Path: asciidoc.Set{
+					ImagePath: asciidoc.Set{
 						&asciidoc.String{
 							Value: "tiger.png",
 						},
@@ -2677,7 +2677,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 				},
 				&asciidoc.BlockImage{
 					AttributeList: nil,
-					Path: asciidoc.Set{
+					ImagePath: asciidoc.Set{
 						&asciidoc.String{
 							Value: "tiger.png",
 						},

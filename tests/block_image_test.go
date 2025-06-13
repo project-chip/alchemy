@@ -35,7 +35,7 @@ var blockImage = &asciidoc.Document{
 					},
 				},
 			},
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.String{
 					Value: "./images/lighting/media/image3.png",
 				},

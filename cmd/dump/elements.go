@@ -153,12 +153,12 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 		*/
 		case *asciidoc.InlineImage:
 			fmt.Printf("{image: ")
-			dumpElements(doc, el.Path, indent+1)
+			dumpElements(doc, el.ImagePath, indent+1)
 			fmt.Print("}\n")
 			dumpAttributes(el.Attributes(), indent+1)
 		case *asciidoc.BlockImage:
 			fmt.Printf("{imageblock: ")
-			dumpElements(doc, el.Path, indent+1)
+			dumpElements(doc, el.ImagePath, indent+1)
 			fmt.Print("}\n")
 			dumpAttributes(el.Attributes(), indent+1)
 		case *asciidoc.AttributeReset:

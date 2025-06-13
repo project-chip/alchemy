@@ -7368,7 +7368,7 @@ var shouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBlockIsDrop
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			Path: asciidoc.Set{
+			ImagePath: asciidoc.Set{
 				&asciidoc.UserAttributeReference{
 					Value: "unresolved",
 				},

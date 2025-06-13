@@ -34,11 +34,11 @@ type DocumentCrossReference struct {
 
 	AttributeList
 
-	Path Set
+	ReferencePath Set
 }
 
 func NewDocumentCrossReference(path Set) *DocumentCrossReference {
-	return &DocumentCrossReference{Path: path}
+	return &DocumentCrossReference{ReferencePath: path}
 }
 
 func (DocumentCrossReference) Type() ElementType {
@@ -53,5 +53,5 @@ func (a *DocumentCrossReference) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Path.Equals(oa.Path)
+	return a.ReferencePath.Equals(oa.ReferencePath)
 }
