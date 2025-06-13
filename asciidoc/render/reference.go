@@ -26,3 +26,26 @@ func renderInternalCrossReference(cxt Target, cf *asciidoc.CrossReference) (err 
 	cxt.EndBlock()
 	return
 }
+
+func renderDocumentCrossReference(cxt Target, dcf *asciidoc.DocumentCrossReference) (err error) {
+
+	cxt.StartBlock()
+	cxt.WriteString("xref:")
+	if !dcf.ReferencePath.IsWhitespace() {
+		err = Elements(cxt, "", dcf.ReferencePath...)
+		if err != nil {
+			return
+		}
+	}
+	attributes := dcf.Attributes()
+	if len(attributes) == 0 {
+		cxt.WriteString("[]\n")
+	} else {
+		err = renderAttributes(cxt, attributes, true)
+		if err != nil {
+			return
+		}
+	}
+	cxt.EndBlock()
+	return
+}
