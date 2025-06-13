@@ -2,7 +2,7 @@ IdentifierLimit <- not:'!'? ref:(Identifier) field:(ReferenceField)? {
 	debug("found identifier limit %s\n", string(c.text))
 	rl := &IdentifierLimit{ID:ref.(string)}
 	if not != nil {
-        ic.Not = true
+        rl.Not = true
     }
 	if field != nil {
 		rl.Field = field.(Limit)
