@@ -5,10 +5,11 @@
 > [!TIP]
 > Apply it to your PR by running <kbd>patch < disco.patch</kbd> in the root of your repo.
 
-<a href="{0}"><kbd><br/>&nbsp; 🔽 &nbsp;Download Patch File&nbsp;<br/><br/></kbd></a>
+<a href="{{patch_url}}"><kbd><br/>&nbsp; 🔽 &nbsp;Download Patch File&nbsp;&nbsp;<br/><br/></kbd></a>
 
 <br/>
 
+{{#if diff}}
 <details>
 <summary><b>Disco Ball Suggestions</b></summary>
 
@@ -19,3 +20,6 @@
 ```
 
 </details>
+{{else}}
+<i>Diff omitted due to size; please download the patch above.</i>
+{{/if}}

@@ -23,8 +23,6 @@ func LoadDiscoPatchedTemplate() (*raymond.Template, error) {
 
 		handlebars.RegisterCommonHelpers(t)
 
-		//registerSpecHelpers(t, spec)
-
 		return t, nil
 	})
 	if err != nil {
@@ -44,8 +42,6 @@ func LoadDiscoUnpatchedTemplate() (*raymond.Template, error) {
 		}
 
 		handlebars.RegisterCommonHelpers(t)
-
-		//registerSpecHelpers(t, spec)
 
 		return t, nil
 	})
