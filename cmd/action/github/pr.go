@@ -26,20 +26,29 @@ func GetPRChangedFiles(cxt context.Context, githubContext *githubactions.GitHubC
 
 	owner, repo := githubContext.Repo()
 
-	action.Infof("Fetching PR from: %s/%s\n", owner, repo)
-
-	var files []*github.CommitFile
-	files, _, err = client.PullRequests.ListFiles(cxt, owner, repo, pr.GetNumber(), nil)
-	if err != nil {
-		err = fmt.Errorf("failed listing files in PR: %w", err)
-		return
+	lo := github.ListOptions{
+		PerPage: 100,
 	}
-	for _, file := range files {
-		if *file.Status == "deleted" {
-			continue
+	for {
+		action.Infof("Fetching PR from: %s/%s; page %d\n", owner, repo, lo.Page)
+		var files []*github.CommitFile
+		var resp *github.Response
+		files, resp, err = client.PullRequests.ListFiles(cxt, owner, repo, pr.GetNumber(), &lo)
+		if err != nil {
+			err = fmt.Errorf("failed listing files in PR: %w", err)
+			return
 		}
-		slog.Info("changed file", "file", file)
-		changedFiles = append(changedFiles, *file.Filename)
+		for _, file := range files {
+			if *file.Status == "deleted" {
+				continue
+			}
+			slog.Info("changed file", "file", *file.Filename)
+			changedFiles = append(changedFiles, *file.Filename)
+		}
+		if resp.NextPage == 0 {
+			break
+		}
+		lo.Page = resp.NextPage
 	}
 	return
 }
