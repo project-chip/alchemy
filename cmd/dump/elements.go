@@ -89,6 +89,10 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			dumpElements(doc, el.Elements(), indent+1)
 		case *asciidoc.CrossReference:
 			fmt.Printf("{xref id:%v label %v}\n", el.ID, el.Set)
+		case *asciidoc.DocumentCrossReference:
+			fmt.Printf("{doc xref}\n")
+			dumpAttributes(el.Attributes(), indent+1)
+			dumpElements(doc, el.ReferencePath, indent+1)
 		case asciidoc.SpecialCharacter:
 			fmt.Printf("{sc: %s}\n", el.Character)
 		case *asciidoc.Link:

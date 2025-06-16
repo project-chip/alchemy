@@ -1,16 +1,25 @@
 package asciidoc
 
+type CrossReferenceFormat uint8
+
+const (
+	CrossReferenceFormatNatural CrossReferenceFormat = iota
+	CrossReferenceFormatMacro
+)
+
 type CrossReference struct {
 	position
 	raw
 
+	AttributeList
 	Set
 
-	ID string
+	ID     string
+	Format CrossReferenceFormat
 }
 
-func NewCrossReference(id string) *CrossReference {
-	return &CrossReference{ID: id}
+func NewCrossReference(id string, format CrossReferenceFormat) *CrossReference {
+	return &CrossReference{ID: id, Format: format}
 }
 
 func (CrossReference) Type() ElementType {
@@ -26,6 +35,15 @@ func (a *CrossReference) Equals(o Element) bool {
 		return false
 	}
 	return a.Set.Equals(oa.Set)
+}
+
+func NewCrossReferenceMacro(path Set) AttributableElement {
+	if len(path) == 1 {
+		if s, ok := path[0].(*String); ok {
+			return NewCrossReference(s.Value, CrossReferenceFormatMacro)
+		}
+	}
+	return NewDocumentCrossReference(path)
 }
 
 type DocumentCrossReference struct {

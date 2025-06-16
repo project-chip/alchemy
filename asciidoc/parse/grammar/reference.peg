@@ -1,12 +1,12 @@
 
-CrossReference = InternalCrossReference / DocumentCrossReference
+CrossReference = InternalCrossReference / CrossReferenceMacro
 
 InternalCrossReference = CrossReferenceStart id:(CrossReferenceID) label:(AnySpaces "," label:(AnySpaces CrossReferenceLabel) { return label, nil})? ">>" {
     var lbl asciidoc.Set
     if label != nil {
         lbl = join(label.([]any))
     }
-    return compose(c, asciidoc.NewCrossReference(id.(string)), setElements[*asciidoc.CrossReference](lbl))
+    return compose(c, asciidoc.NewCrossReference(id.(string), asciidoc.CrossReferenceFormatNatural), setElements[*asciidoc.CrossReference](lbl))
 }
 
 CrossReferenceStart = "<<" 
@@ -23,6 +23,9 @@ CrossReferenceLabel = (
     / "{" 
 )+
 
-DocumentCrossReference = "xref:" path:(Path) attributes:(InlineAttributes) {
-    return compose(c, asciidoc.NewDocumentCrossReference(path.(asciidoc.Set)), setAttributes[*asciidoc.DocumentCrossReference](attributes))
+CrossReferenceMacroStart = "xref:"
+
+CrossReferenceMacro = CrossReferenceMacroStart path:(Path) attributes:(InlineAttributes) {
+    debugPosition(c, "matched document cross reference: %s\n", string(c.text))
+    return compose(c, asciidoc.NewCrossReferenceMacro(path.(asciidoc.Set)), setAttributes[asciidoc.AttributableElement](attributes))
 }
