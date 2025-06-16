@@ -369,7 +369,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 		table.DeleteAttribute(asciidoc.AttributeNameID)
 		table.DeleteAttribute(asciidoc.AttributeNameTitle)
 
-		icr := asciidoc.NewCrossReference(newID)
+		icr := asciidoc.NewCrossReference(newID, asciidoc.CrossReferenceFormatNatural)
 		dt.typeCell.SetElements(asciidoc.Set{icr})
 		promoted = true
 	}
