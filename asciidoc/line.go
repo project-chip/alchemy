@@ -54,24 +54,3 @@ func (a EmptyLine) Equals(o Element) bool {
 
 	return a.Text == oa.Text
 }
-
-type ParagraphLine struct {
-	Text string
-}
-
-func (ParagraphLine) Type() ElementType {
-	return ElementTypeInlineLiteral
-}
-
-func NewParagraphLine(text string) ParagraphLine {
-	return ParagraphLine{Text: text}
-}
-
-func (a ParagraphLine) Equals(o Element) bool {
-	oa, ok := o.(ParagraphLine)
-	if !ok {
-		return false
-	}
-
-	return a.Text == oa.Text
-}
