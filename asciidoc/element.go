@@ -2,7 +2,6 @@ package asciidoc
 
 import (
 	"fmt"
-	"log/slog"
 	"strings"
 )
 
@@ -64,26 +63,4 @@ func elementToString(sb *strings.Builder, e any) {
 	default:
 		panic(fmt.Errorf("unexpected element type: %T", e))
 	}
-}
-
-func MergeStrings(els []any) (out Set) {
-	var s strings.Builder
-	for _, e := range els {
-		switch e := e.(type) {
-		case string:
-			s.WriteString(e)
-		case Element:
-			if s.Len() > 0 {
-				out = append(out, NewString(s.String()))
-				s.Reset()
-			}
-			out = append(out, e)
-		default:
-			slog.Warn("unexpected type in string merge", slog.String("type", fmt.Sprintf("%T", e)))
-		}
-	}
-	if s.Len() > 0 {
-		out = append(out, NewString(s.String()))
-	}
-	return
 }
