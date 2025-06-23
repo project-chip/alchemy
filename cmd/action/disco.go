@@ -87,7 +87,6 @@ func (c *Disco) Run(cc *cli.Context) (err error) {
 	} else {
 		slog.Info("Setting disco_status to unpatched")
 		action.SetOutput("disco_status", "unpatched")
-		action.SetOutput("patch_path", "disco.patch")
 		action.SetOutput("template_name", "disco/unpatched")
 	}
 
