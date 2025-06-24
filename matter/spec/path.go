@@ -34,6 +34,7 @@ func NewSpecPath(path string, rootPath string) (asciidoc.Path, error) {
 		return p, err
 	}
 	p.Relative, err = filepath.Rel(r, p.Absolute)
+	p.Relative = filepath.ToSlash(p.Relative)
 	return p, err
 }
 
