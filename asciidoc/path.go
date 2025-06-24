@@ -42,5 +42,6 @@ func NewPath(path string, rootPath string) (p Path, err error) {
 		return
 	}
 	p.Relative, err = filepath.Rel(r, p.Absolute)
+	p.Relative = filepath.ToSlash(p.Relative)
 	return
 }
