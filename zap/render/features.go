@@ -47,8 +47,22 @@ func (cr *configuratorRenderer) generateFeatures(configuratorElement *etree.Elem
 }
 
 func (cr *configuratorRenderer) generateFeaturesXML(configuratorElement *etree.Element, cluster *matter.Cluster) (err error) {
-	features := cluster.Features
-	needFeatures := features != nil && len(features.Bits) > 0
+	var features []*matter.Feature
+
+	if cluster.Features != nil {
+		for feature := range cluster.Features.FeatureBits() {
+			if conformance.IsDisallowed(feature.Conformance()) {
+				continue
+			}
+			bit := matter.ParseNumber(feature.Bit())
+			if !bit.Valid() {
+				continue
+			}
+			features = append(features, feature)
+		}
+	}
+
+	needFeatures := len(features) > 0
 
 	bitmaps := configuratorElement.SelectElements("bitmap")
 
@@ -72,41 +86,36 @@ func (cr *configuratorRenderer) generateFeaturesXML(configuratorElement *etree.E
 	} else {
 		fse.Child = nil
 	}
-	err = cr.renderFeatureElements(cluster, fse, true, cr.configurator.Errata)
+	err = cr.renderFeatureElements(cluster, features, fse, cr.configurator.Errata)
 	return
 }
 
-func (cr *configuratorRenderer) renderFeatureElements(cluster *matter.Cluster, features *etree.Element, excludeDisallowed bool, errata *errata.SDK) (err error) {
-	for _, b := range cluster.Features.Bits {
-		f, ok := b.(*matter.Feature)
-		if !ok {
-			err = fmt.Errorf("feature bits contains non-feature bit %s on cluster %s ", b.Name(), cluster.Name)
+func (cr *configuratorRenderer) renderFeatureElements(cluster *matter.Cluster, features []*matter.Feature, featuresElement *etree.Element, errata *errata.SDK) (err error) {
+	for _, feature := range features {
+
+		bit := matter.ParseNumber(feature.Bit())
+		if !bit.Valid() {
+			err = fmt.Errorf("invalid bit generating feature: %s", feature.Bit())
 			return
 		}
-		if excludeDisallowed && conformance.IsDisallowed(f.Conformance()) {
-			continue
+
+		featureElement := featuresElement.CreateElement("feature")
+		featureElement.CreateAttr("bit", bit.IntString())
+		featureElement.CreateAttr("code", feature.Code)
+		name := errata.OverrideName(feature, feature.Name())
+		featureElement.CreateAttr("name", name)
+		if len(feature.Summary()) > 0 {
+			featureElement.CreateAttr("summary", scrubDescription(feature.Summary()))
 		}
-		bit := matter.ParseNumber(f.Bit())
-		if !bit.Valid() {
-			continue
-		}
-		feature := features.CreateElement("feature")
-		feature.CreateAttr("bit", bit.IntString())
-		feature.CreateAttr("code", f.Code)
-		name := errata.OverrideName(b, f.Name())
-		feature.CreateAttr("name", name)
-		if len(f.Summary()) > 0 {
-			feature.CreateAttr("summary", scrubDescription(f.Summary()))
-		}
-		cr.setProvisional(feature, f)
+		cr.setProvisional(featureElement, feature)
 
 		var conformanceElement *etree.Element
-		conformanceElement, err = dm.CreateConformanceElement(f.Conformance(), nil)
+		conformanceElement, err = dm.CreateConformanceElement(feature.Conformance(), nil)
 		if err != nil {
 			return err
 		}
 		if conformanceElement != nil {
-			feature.AddChild(conformanceElement)
+			featureElement.AddChild(conformanceElement)
 		}
 	}
 	return
