@@ -148,15 +148,15 @@ var attributesTests = parseTests{
 
 	{"attribute with value None without quotes is ignored", "asciidoctor/attributes_test_attribute_with_value_none_without_quotes_is_ignored.adoc", attributeWithValueNoneWithoutQuotesIsIgnored, nil},
 
-	{"role? returns true if role is assigned", "asciidoctor/attributes_test_role?_returns_true_if_role_is_assigned.adoc", roleReturnsTrueIfRoleIsAssigned, nil},
+	{"role? returns true if role is assigned", "asciidoctor/attributes_test_role_returns_true_if_role_is_assigned.adoc", roleReturnsTrueIfRoleIsAssigned, nil},
 
-	{"role? does not return true if role attribute is set on document", "asciidoctor/attributes_test_role?_does_not_return_true_if_role_attribute_is_set_on_document.adoc", roleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument, nil},
+	{"role? does not return true if role attribute is set on document", "asciidoctor/attributes_test_role_does_not_return_true_if_role_attribute_is_set_on_document.adoc", roleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument, nil},
 
-	{"role? can check for exact role name match", "asciidoctor/attributes_test_role?_can_check_for_exact_role_name_match.adoc", roleCanCheckForExactRoleNameMatch, nil},
+	{"role? can check for exact role name match", "asciidoctor/attributes_test_role_can_check_for_exact_role_name_match.adoc", roleCanCheckForExactRoleNameMatch, nil},
 
-	{"has_role? can check for presence of role name", "asciidoctor/attributes_test_has_role?_can_check_for_presence_of_role_name.adoc", hasRoleCanCheckForPresenceOfRoleName, nil},
+	{"has_role? can check for presence of role name", "asciidoctor/attributes_test_has_role_can_check_for_presence_of_role_name.adoc", hasRoleCanCheckForPresenceOfRoleName, nil},
 
-	{"has_role? does not look for role defined as document attribute", "asciidoctor/attributes_test_has_role?_does_not_look_for_role_defined_as_document_attribute.adoc", hasRoleDoesNotLookForRoleDefinedAsDocumentAttribute, nil},
+	{"has_role? does not look for role defined as document attribute", "asciidoctor/attributes_test_has_role_does_not_look_for_role_defined_as_document_attribute.adoc", hasRoleDoesNotLookForRoleDefinedAsDocumentAttribute, nil},
 
 	{"roles returns array of role names", "asciidoctor/attributes_test_roles_returns_array_of_role_names.adoc", rolesReturnsArrayOfRoleNames, nil},
 

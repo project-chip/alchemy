@@ -546,15 +546,15 @@ var listsTests = parseTests{
 
 	{"list item should be the parent of block attached to a list item", "asciidoctor/lists_test_list_item_should_be_the_parent_of_block_attached_to_a_list_item.adoc", listItemShouldBeTheParentOfBlockAttachedToAListItem, nil},
 
-	{"outline? should return true for unordered list", "asciidoctor/lists_test_outline?_should_return_true_for_unordered_list.adoc", outlineShouldReturnTrueForUnorderedList, nil},
+	{"outline? should return true for unordered list", "asciidoctor/lists_test_outline_should_return_true_for_unordered_list.adoc", outlineShouldReturnTrueForUnorderedList, nil},
 
-	{"outline? should return true for ordered list", "asciidoctor/lists_test_outline?_should_return_true_for_ordered_list.adoc", outlineShouldReturnTrueForOrderedList, nil},
+	{"outline? should return true for ordered list", "asciidoctor/lists_test_outline_should_return_true_for_ordered_list.adoc", outlineShouldReturnTrueForOrderedList, nil},
 
-	{"outline? should return false for description list", "asciidoctor/lists_test_outline?_should_return_false_for_description_list.adoc", outlineShouldReturnFalseForDescriptionList, nil},
+	{"outline? should return false for description list", "asciidoctor/lists_test_outline_should_return_false_for_description_list.adoc", outlineShouldReturnFalseForDescriptionList, nil},
 
-	{"simple? should return true for list item with nested outline list", "asciidoctor/lists_test_simple?_should_return_true_for_list_item_with_nested_outline_list.adoc", simpleShouldReturnTrueForListItemWithNestedOutlineList, nil},
+	{"simple? should return true for list item with nested outline list", "asciidoctor/lists_test_simple_should_return_true_for_list_item_with_nested_outline_list.adoc", simpleShouldReturnTrueForListItemWithNestedOutlineList, nil},
 
-	{"simple? should return false for list item with block content", "asciidoctor/lists_test_simple?_should_return_false_for_list_item_with_block_content.adoc", simpleShouldReturnFalseForListItemWithBlockContent, nil},
+	{"simple? should return false for list item with block content", "asciidoctor/lists_test_simple_should_return_false_for_list_item_with_block_content.adoc", simpleShouldReturnFalseForListItemWithBlockContent, nil},
 
 	{"should allow text of ListItem to be assigned", "asciidoctor/lists_test_should_allow_text_of_list_item_to_be_assigned.adoc", shouldAllowTextOfListItemToBeAssigned, nil},
 
