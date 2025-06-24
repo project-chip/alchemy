@@ -504,7 +504,7 @@ var listsTests = parseTests{
 
 	{"escaped callout should not be interpreted as a callout", "asciidoctor/lists_test_escaped_callout_should_not_be_interpreted_as_a_callout.adoc", escapedCalloutShouldNotBeInterpretedAsACallout, nil},
 
-	{"should autonumber <.> callouts", "asciidoctor/lists_test_should_autonumber_<_>_callouts.adoc", shouldAutonumberCallouts, nil},
+	{"should autonumber <.> callouts", "asciidoctor/lists_test_should_autonumber_callouts.adoc", shouldAutonumberCallouts, nil},
 
 	{"should not recognize callouts in middle of line", "asciidoctor/lists_test_should_not_recognize_callouts_in_middle_of_line.adoc", shouldNotRecognizeCalloutsInMiddleOfLine, nil},
 
