@@ -130,7 +130,7 @@ var documentTests = parseTests{
 
 	{"outputs footnotes block in embedded document by default", "asciidoctor/document_test_outputs_footnotes_block_in_embedded_document_by_default.adoc", outputsFootnotesBlockInEmbeddedDocumentByDefault, nil},
 
-	{"should return empty :ids table", "asciidoctor/document_test_should_return_empty_:ids_table.adoc", shouldReturnEmptyidsTable, nil},
+	{"should return empty :ids table", "asciidoctor/document_test_should_return_empty_ids_table.adoc", shouldReturnEmptyidsTable, nil},
 
 	{"honor htmlsyntax attribute in document header if followed by backend attribute", "asciidoctor/document_test_honor_htmlsyntax_attribute_in_document_header_if_followed_by_backend_attribute.adoc", honorHtmlsyntaxAttributeInDocumentHeaderIfFollowedByBackendAttribute, nil},
 
@@ -154,7 +154,7 @@ var documentTests = parseTests{
 
 	{"adds a front and back cover image to DocBook 5 when doctype is book", "asciidoctor/document_test_adds_a_front_and_back_cover_image_to_doc_book_5_when_doctype_is_book.adoc", addsAFrontAndBackCoverImageToDocBook5WhenDoctypeIsBook, nil},
 
-	{"should be able to set backend using :backend option key", "asciidoctor/document_test_should_be_able_to_set_backend_using_:backend_option_key.adoc", shouldBeAbleToSetBackendUsingbackendOptionKey, nil},
+	{"should be able to set backend using :backend option key", "asciidoctor/document_test_should_be_able_to_set_backend_using_backend_option_key.adoc", shouldBeAbleToSetBackendUsingbackendOptionKey, nil},
 
 	{"attribute entry can appear immediately after document title", "asciidoctor/document_test_attribute_entry_can_appear_immediately_after_document_title.adoc", attributeEntryCanAppearImmediatelyAfterDocumentTitle, nil},
 
