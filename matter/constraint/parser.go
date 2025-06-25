@@ -694,9 +694,9 @@ var g = &grammar{
 									},
 									&litMatcher{
 										pos:        position{line: 129, col: 61, offset: 2555},
-										val:        "-",
+										val:        "/",
 										ignoreCase: false,
-										want:       "\"-\"",
+										want:       "\"/\"",
 									},
 								},
 							},

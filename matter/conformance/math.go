@@ -74,16 +74,16 @@ func (mv *MathOperation) Value(context Context) (ExpressionResult, error) {
 	}
 	switch mv.Operand {
 	case MathOperandAdd:
-		switch lv := l.Value().(type) {
+		switch lv := l.Result().(type) {
 		case int64:
-			switch rv := r.Value().(type) {
+			switch rv := r.Result().(type) {
 			case int64:
 				return &expressionResult{value: lv + rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not add int64 to %T", rv)
 			}
 		case float64:
-			switch rv := r.Value().(type) {
+			switch rv := r.Result().(type) {
 			case float64:
 				return &expressionResult{value: lv + rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
@@ -93,16 +93,16 @@ func (mv *MathOperation) Value(context Context) (ExpressionResult, error) {
 			return nil, fmt.Errorf("can not add %T", lv)
 		}
 	case MathOperandSubtract:
-		switch lv := l.Value().(type) {
+		switch lv := l.Result().(type) {
 		case int64:
-			switch rv := r.Value().(type) {
+			switch rv := r.Result().(type) {
 			case int64:
 				return &expressionResult{value: lv - rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not subtract %T from int64", rv)
 			}
 		case float64:
-			switch rv := r.Value().(type) {
+			switch rv := r.Result().(type) {
 			case float64:
 				return &expressionResult{value: lv - rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
@@ -112,16 +112,16 @@ func (mv *MathOperation) Value(context Context) (ExpressionResult, error) {
 			return nil, fmt.Errorf("can not subtract from %T", lv)
 		}
 	case MathOperandMultiply:
-		switch lv := l.Value().(type) {
+		switch lv := l.Result().(type) {
 		case int64:
-			switch rv := r.Value().(type) {
+			switch rv := r.Result().(type) {
 			case int64:
 				return &expressionResult{value: lv * rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not multiply %T with int64", rv)
 			}
 		case float64:
-			switch rv := r.Value().(type) {
+			switch rv := r.Result().(type) {
 			case float64:
 				return &expressionResult{value: lv * rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
@@ -131,16 +131,16 @@ func (mv *MathOperation) Value(context Context) (ExpressionResult, error) {
 			return nil, fmt.Errorf("can not multiply %T", lv)
 		}
 	case MathOperandDivide:
-		switch lv := l.Value().(type) {
+		switch lv := l.Result().(type) {
 		case int64:
-			switch rv := r.Value().(type) {
+			switch rv := r.Result().(type) {
 			case int64:
 				return &expressionResult{value: lv / rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:
 				return nil, fmt.Errorf("can not divide int64 by %T", rv)
 			}
 		case float64:
-			switch rv := r.Value().(type) {
+			switch rv := r.Result().(type) {
 			case float64:
 				return &expressionResult{value: lv / rv, confidence: coalesceConfidences(l.Confidence(), r.Confidence())}, nil
 			default:

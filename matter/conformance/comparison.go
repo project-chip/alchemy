@@ -116,8 +116,8 @@ func compare(context Context, op ComparisonOperator, a ComparisonValue, b Compar
 }
 
 func compareResults(av ExpressionResult, bv ExpressionResult, op ComparisonOperator) (result ExpressionResult, err error) {
-	ar := av.Value()
-	br := bv.Value()
+	ar := av.Result()
+	br := bv.Result()
 	var res bool
 	res, err = compareValues(ar, br, op)
 	if err != nil {
