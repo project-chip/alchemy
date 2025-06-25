@@ -20,7 +20,7 @@ type HasExpression interface {
 
 type ExpressionResult interface {
 	Confidence() Confidence
-	Value() any
+	Result() any
 	IsTrue() bool
 }
 
@@ -42,7 +42,7 @@ func (er *expressionResult) IsTrue() bool {
 	}
 }
 
-func (er *expressionResult) Value() any {
+func (er *expressionResult) Result() any {
 	return er.value
 }
 

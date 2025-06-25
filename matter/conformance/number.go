@@ -34,7 +34,7 @@ func (fv *FloatValue) Compare(context Context, other ComparisonValue, op Compari
 	if err != nil {
 		return nil, err
 	}
-	ore, ok := val.Value().(*FloatValue)
+	ore, ok := val.Result().(*FloatValue)
 	if !ok {
 		return nil, fmt.Errorf("can not compare to non-float value")
 	}
@@ -104,7 +104,7 @@ func (fv *IntValue) Compare(context Context, other ComparisonValue, op Compariso
 	if err != nil {
 		return nil, err
 	}
-	ore, ok := val.Value().(*IntValue)
+	ore, ok := val.Result().(*IntValue)
 	if !ok {
 		return nil, fmt.Errorf("can not compare to non-int value")
 	}
@@ -178,7 +178,7 @@ func (fv *HexValue) Compare(context Context, other ComparisonValue, op Compariso
 	if err != nil {
 		return nil, err
 	}
-	ore, ok := val.Value().(*HexValue)
+	ore, ok := val.Result().(*HexValue)
 	if !ok {
 		return nil, fmt.Errorf("can not compare to non-int value")
 	}

@@ -30,14 +30,14 @@ func (scv *StatusCodeValue) Compare(context Context, other ComparisonValue, op C
 	}
 	switch op {
 	case ComparisonOperatorEqual:
-		switch other := ov.Value().(type) {
+		switch other := ov.Result().(type) {
 		case *StatusCodeValue:
 			return &expressionResult{value: other.StatusCode == scv.StatusCode, confidence: coalesceConfidences(ConfidenceDefinite, ov.Confidence())}, nil
 		default:
 			return nil, fmt.Errorf("comparing with non-status code value: %s", op.String())
 		}
 	case ComparisonOperatorNotEqual:
-		switch other := ov.Value().(type) {
+		switch other := ov.Result().(type) {
 		case *StatusCodeValue:
 			return &expressionResult{value: other.StatusCode != scv.StatusCode, confidence: coalesceConfidences(ConfidenceDefinite, ov.Confidence())}, nil
 		default:

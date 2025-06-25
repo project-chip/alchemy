@@ -47,6 +47,13 @@ type constraintTestContext struct {
 	fields fieldSet
 }
 
+func (cc *constraintTestContext) child(field *field, fields fieldSet) *constraintTestContext {
+	return &constraintTestContext{
+		field:  field,
+		fields: cc.fields,
+	}
+}
+
 func (cc *constraintTestContext) Nullable() bool {
 	if cc.field != nil {
 		return cc.field.Nullable
@@ -65,7 +72,7 @@ func (cc *constraintTestContext) MinEntityValue(entity types.Entity, f Limit) (m
 	switch entity := entity.(type) {
 	case *field:
 		if entity != nil {
-			min = entity.Constraint.Min(cc)
+			min = entity.Constraint.Min(cc.child(entity, cc.fields))
 		}
 	}
 	return
@@ -75,7 +82,7 @@ func (cc *constraintTestContext) MaxEntityValue(entity types.Entity, f Limit) (m
 	switch entity := entity.(type) {
 	case *field:
 		if entity != nil {
-			max = entity.Constraint.Max(cc)
+			max = entity.Constraint.Max(cc.child(entity, cc.fields))
 		}
 	}
 	return
@@ -176,11 +183,19 @@ type constraintTest struct {
 
 var constraintTests = []constraintTest{
 	{
-		//constraint: " maxOf(<<ref_MinHeatSetpointLimit>>, <<ref_AbsMinHeatSetpointLimit>>) to (minOf(MinHeatSetpointLimit, <<ref_MaxHeatSetpointLimit>>, <<ref_AbsMaxHeatSetpointLimit>>) - <<ref_MinSetpointDeadBand>>)",
-		constraint: "maxOf(<<ref_MinHeatSetpointLimit>>, <<ref_AbsMinHeatSetpointLimit>>) to (minOf(MinHeatSetpointLimit, <<ref_MaxHeatSetpointLimit>>, <<ref_AbsMaxHeatSetpointLimit>>) - <<ref_MinSetpointDeadBand>>)",
+		constraint: "0 to (FragmentDuration/2)",
+		asciiDoc:   "0 to (FragmentDuration / 2)",
+		fields: stitchFieldSet(fieldSet{
+			{Name: "FragmentDuration", Type: &types.DataType{BaseType: types.BaseDataTypeUInt16}, Constraint: mustParseConstraint("all")},
+		}),
+		min:    types.NewIntDataTypeExtreme(0, types.NumberFormatInt),
+		max:    types.NewUintDataTypeExtreme(32767, types.NumberFormatInt),
+		zapMin: "0",
+		zapMax: "32767",
 	},
 	{
 		constraint: "HoldTimeMin & min 10",
+		asciiDoc:   "(HoldTimeMin & min 10)",
 		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeInt64, Int64: 10, Format: types.NumberFormatInt},
 		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined},
 		zapMin:     "10",
@@ -190,6 +205,7 @@ var constraintTests = []constraintTest{
 	},
 	{
 		constraint: "Includes `Grid` and `Battery`",
+		asciiDoc:   "Includes (`Grid` and `Battery`)",
 		min:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
 		max:        types.DataTypeExtreme{Type: types.DataTypeExtremeTypeUndefined, Format: types.NumberFormatAuto},
 	},
@@ -301,7 +317,7 @@ var constraintTests = []constraintTest{
 			{Name: "MaxMeasuredValue", Constraint: mustParseConstraint("MinMeasuredValue+1 to 65534")},
 		}),
 		min:      types.NewIntDataTypeExtreme(1, types.NumberFormatInt),
-		max:      types.NewIntDataTypeExtreme(65533, types.NumberFormatInt),
+		max:      types.NewUintDataTypeExtreme(65533, types.NumberFormatAuto),
 		asciiDoc: "1 to (MaxMeasuredValue - 1)",
 		zapMin:   "1",
 		zapMax:   "65533",
@@ -312,7 +328,7 @@ var constraintTests = []constraintTest{
 			{Name: "MinMeasuredValue", Constraint: mustParseConstraint("1 to MaxMeasuredValue-1")},
 			{Name: "MaxMeasuredValue", Constraint: mustParseConstraint("MinMeasuredValue+1 to 65534")},
 		}),
-		min:      types.NewIntDataTypeExtreme(2, types.NumberFormatInt),
+		min:      types.NewUintDataTypeExtreme(2, types.NumberFormatInt),
 		max:      types.NewIntDataTypeExtreme(65534, types.NumberFormatInt),
 		asciiDoc: "(MinMeasuredValue + 1) to 65534",
 		zapMin:   "2",
@@ -337,7 +353,7 @@ var constraintTests = []constraintTest{
 	{
 		constraint: "max 2^62 - 1",
 		asciiDoc:   "max (2^62^ - 1)",
-		max:        types.NewIntDataTypeExtreme(4611686018427387903, types.NumberFormatInt),
+		max:        types.NewUintDataTypeExtreme(4611686018427387903, types.NumberFormatInt),
 		zapMax:     "4611686018427387903",
 	},
 	{
@@ -639,7 +655,7 @@ func TestSuite(t *testing.T) {
 		maxField.Type = ct.dataType
 		max := c.Max(&constraintTestContext{fields: ct.fields, field: maxField})
 		if !max.Equals(ct.max) {
-			t.Errorf("incorrect max value for \"%s\": expected %s, got %s", ct.constraint, ct.max.DataModelString(ct.dataType), max.DataModelString(ct.dataType))
+			t.Errorf("incorrect max value for \"%s\": expected %v, got %v", ct.constraint, ct.max, max)
 		}
 		as := c.ASCIIDocString(ct.dataType)
 		es := ct.constraint

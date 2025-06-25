@@ -13,7 +13,7 @@ Term <- negative:'-'? '(' _ exp:Expression _ ')' {
     return exp, nil
 }
 
-Expression <- left:(ExpressionLimit) _ operand:('+'/'-'/'*'/'-') _ right:Limit {
+Expression <- left:(ExpressionLimit) _ operand:('+'/'-'/'*'/'/') _ right:Limit {
 	debug("found expression %s\n", string(c.text))
 	var val []uint8
 	for _, d := range operand.([]uint8) {
