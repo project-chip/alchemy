@@ -18,7 +18,7 @@
 | *Variable* | *Description* | *Mandatory/Optional* | *Notes/Additional Constraints*
 {{#each features}}
 | {PICS_SF_{{raw this.Code ~}}
-} | {devsup} | {{raw this.Summary}} | {{#if this.Conformance}}{{conformance context.referenceStore cluster this.Conformance}}{{/if}}
+} | {devsup} | {{raw this.Summary}} | {{#if this.Conformance}}{{conformance cluster this.Conformance}}{{/if}}
 {{/each}}
 |===
 
