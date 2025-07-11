@@ -126,9 +126,13 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	} else {
 		ae.RemoveAttr("mustUseTimedWrite")
 	}
-	ae.RemoveAttr("optional")
-	cr.setProvisional(ae, attribute)
 
+	if !conformance.IsMandatory(attribute.Conformance) {
+		ae.CreateAttr("optional", "true")
+	} else {
+		ae.RemoveAttr("optional")
+	}
+	cr.setProvisional(ae, attribute)
 	requiresConformance := cr.generator.options.ConformanceXML && !conformance.IsBlank(attribute.Conformance) && !(conformance.IsMandatory(attribute.Conformance) && !conformance.IsProvisional(attribute.Conformance))
 	requiresPermissions := !cr.configurator.Errata.SuppressAttributePermissions && (needsRead || needsWrite)
 	requiresQuality := cr.requiresQuality(types.EntityTypeAttribute, attribute.Quality)
