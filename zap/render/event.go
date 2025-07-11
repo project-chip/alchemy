@@ -79,7 +79,11 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 	} else {
 		eventElement.RemoveAttr("isFabricSensitive")
 	}
-	eventElement.RemoveAttr("optional")
+	if !conformance.IsMandatory(event.Conformance) {
+		eventElement.CreateAttr("optional", "true")
+	} else {
+		eventElement.RemoveAttr("optional")
+	}
 
 	descriptionElement := eventElement.SelectElement("description")
 	if descriptionElement == nil {
