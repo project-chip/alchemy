@@ -30,7 +30,7 @@ func (c *DataModel) Run(cc *Context) (err error) {
 		return
 	}
 
-	specBuilder := spec.NewBuilder(c.ParserOptions.Root, spec.IgnoreHierarchy(true))
+	specBuilder := spec.NewBuilder(c.ParserOptions.Root, spec.IgnoreHierarchy(c.DataModelOptions.IgnoreHierarchy))
 
 	specFiles, err := pipeline.Start(cc, specParser.Targets)
 	if err != nil {
