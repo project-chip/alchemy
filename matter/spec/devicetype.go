@@ -239,7 +239,6 @@ func (spec *Specification) associateDeviceTypeRequirement(dt *matter.DeviceType)
 		}
 	}
 	referencedClusters := make(map[*matter.Cluster]struct{})
-	buildReferencedClusters(spec.BaseDeviceType, referencedClusters)
 	buildReferencedClusters(dt, referencedClusters)
 	for _, er := range dt.ElementRequirements {
 		err = associateElementRequirement(spec, dt, er, referencedClusters)
@@ -352,7 +351,6 @@ func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.Dev
 	}
 	for _, er := range dt.ComposedDeviceTypeElementRequirements {
 		referencedClusters := make(map[*matter.Cluster]struct{})
-		buildReferencedClusters(spec.BaseDeviceType, referencedClusters)
 		buildReferencedClusters(er.DeviceType, referencedClusters)
 		err = associateElementRequirement(spec, er.DeviceType, er.ElementRequirement, referencedClusters)
 		if err != nil {
@@ -403,6 +401,10 @@ func findDeviceTypeRequirementDeviceType(spec *Specification, id *matter.Number,
 }
 
 func buildReferencedClusters(deviceType *matter.DeviceType, referencedClusters map[*matter.Cluster]struct{}) {
+	parent := deviceType.SubsetDeviceType
+	if parent != nil {
+		buildReferencedClusters(parent, referencedClusters)
+	}
 	for _, rc := range deviceType.ClusterRequirements {
 		if rc.Cluster != nil {
 			referencedClusters[rc.Cluster] = struct{}{}
