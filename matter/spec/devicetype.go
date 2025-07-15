@@ -182,12 +182,16 @@ func (spec *Specification) associateDeviceTypeRequirements() (err error) {
 			return
 		}
 	}
+	for _, dt := range spec.DeviceTypes {
+		err = spec.associateComposedDeviceTypeRequirement(dt)
+		if err != nil {
+			return
+		}
+	}
 	return
 }
 
 func (spec *Specification) associateDeviceTypeRequirement(dt *matter.DeviceType) (err error) {
-	deviceTypes := make(map[*matter.DeviceType]*matter.DeviceTypeRequirement)
-	//deviceTypes[dt] = struct{}{}
 	switch dt.SupersetOf {
 	case "":
 		if dt != spec.BaseDeviceType {
@@ -234,6 +238,21 @@ func (spec *Specification) associateDeviceTypeRequirement(dt *matter.DeviceType)
 			spec.addError(&UnknownElementRequirementClusterError{Requirement: er})
 		}
 	}
+	referencedClusters := make(map[*matter.Cluster]struct{})
+	buildReferencedClusters(spec.BaseDeviceType, referencedClusters)
+	buildReferencedClusters(dt, referencedClusters)
+	for _, er := range dt.ElementRequirements {
+		err = associateElementRequirement(spec, dt, er, referencedClusters)
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (spec *Specification) associateComposedDeviceTypeRequirement(dt *matter.DeviceType) (err error) {
+	deviceTypes := make(map[*matter.DeviceType]*matter.DeviceTypeRequirement)
 	for _, dr := range dt.DeviceTypeRequirements {
 		if dr.DeviceType == nil {
 			dr.DeviceType = findDeviceTypeRequirementDeviceType(spec, dr.DeviceTypeID, dr.DeviceTypeName, dr)
@@ -331,16 +350,10 @@ func (spec *Specification) associateDeviceTypeRequirement(dt *matter.DeviceType)
 			}
 		}
 	}
-	referencedClusters := make(map[*matter.Cluster]struct{})
-	buildReferencedClusters(spec.BaseDeviceType, referencedClusters)
-	buildReferencedClusters(dt, referencedClusters)
-	for _, er := range dt.ElementRequirements {
-		err = associateElementRequirement(spec, dt, er, referencedClusters)
-		if err != nil {
-			return
-		}
-	}
 	for _, er := range dt.ComposedDeviceTypeElementRequirements {
+		referencedClusters := make(map[*matter.Cluster]struct{})
+		buildReferencedClusters(spec.BaseDeviceType, referencedClusters)
+		buildReferencedClusters(er.DeviceType, referencedClusters)
 		err = associateElementRequirement(spec, er.DeviceType, er.ElementRequirement, referencedClusters)
 		if err != nil {
 			return
