@@ -544,7 +544,7 @@ func validateElementRequirement(spec *Specification, dt *matter.DeviceType, er *
 		}
 	case types.EntityTypeEvent:
 		if er.Entity == nil {
-			slog.Error("Element Requirement references unknown event", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("commandName", er.Name))
+			slog.Error("Element Requirement references unknown event", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), slog.String("commandName", er.Name), log.Path("source", er))
 			spec.addError(ElementRequirementUnknownElementError{Requirement: er})
 		}
 	default:
