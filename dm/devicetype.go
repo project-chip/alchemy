@@ -141,18 +141,24 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 				eventRequirements = append(eventRequirements, er)
 			case types.EntityTypeCommand, types.EntityTypeCommandField:
 				var cmd *matter.Command
-				if cr.Cluster == nil {
-					slog.Warn("Missing cluster on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.Name), slog.String("clusterName", cr.ClusterName))
-					break
+				if er.Entity == nil {
 				}
-				for _, c := range cr.Cluster.Commands {
-					if c.Name == er.Name {
-						cmd = c
-						break
+				switch entity := er.Entity.(type) {
+				case *matter.Command:
+					cmd = entity
+				case *matter.Field:
+					parent := entity.Parent()
+					var isCommand bool
+					cmd, isCommand = parent.(*matter.Command)
+					if !isCommand {
+						slog.Warn("Missing parent command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.Name), slog.String("clusterName", cr.ClusterName))
 					}
+				case nil:
+				default:
+					err = fmt.Errorf("unexpected entity type on command or command field requirement: %T", entity)
 				}
 				if cmd == nil {
-					slog.Warn("Unknown command element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.Name))
+					slog.Warn("Unknown command on element requirement", slog.String("deviceType", deviceType.Name), slog.String("commandName", er.Name), slog.String("clusterName", cr.ClusterName))
 					break
 				}
 				var cr *commandRequirement
@@ -249,23 +255,17 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 	if len(eventRequirements) > 0 {
 		erx := clx.CreateElement("events")
 		for _, er := range eventRequirements {
-			ex := erx.CreateElement("event")
-			var code string
-			if er.Cluster != nil {
-				for _, ev := range er.Cluster.Events {
-					if ev.Name == er.Name {
-						code = ev.ID.HexString()
-						break
-					}
+			switch entity := er.Entity.(type) {
+			case *matter.Event:
+				ex := erx.CreateElement("event")
+				ex.CreateAttr("id", entity.ID.HexString())
+				ex.CreateAttr("name", entity.Name)
+				err = renderConformanceElement(er.Conformance, ex, nil)
+				if err != nil {
+					return
 				}
-			}
-			if code != "" {
-				ex.CreateAttr("id", code)
-			}
-			ex.CreateAttr("name", er.Name)
-			err = renderConformanceElement(er.Conformance, ex, nil)
-			if err != nil {
-				return
+			case nil:
+				slog.Warn("Unknown event on element requirement", slog.String("deviceType", deviceType.Name), slog.String("eventName", er.Name), slog.String("clusterName", cr.ClusterName))
 			}
 		}
 	}
