@@ -487,9 +487,9 @@ func crossReferenceToDataType(cr *asciidoc.CrossReference, isArray bool) *types.
 	return dt
 }
 
-type dataTypePattern func(elements []asciidoc.Element) (*types.DataType, bool)
+type dataTypePattern func(row *asciidoc.TableRow, elements []asciidoc.Element) (*types.DataType, bool)
 
-func simpleDataTypePattern(elements []asciidoc.Element) (dt *types.DataType, empty bool) {
+func simpleDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) (dt *types.DataType, empty bool) {
 	if len(elements) != 1 {
 		return
 	}
@@ -512,17 +512,17 @@ func simpleDataTypePattern(elements []asciidoc.Element) (dt *types.DataType, emp
 
 		dt = types.ParseDataType(name, isArray)
 		if dt == nil {
-			slog.Warn("unable to parse data type", slog.String("dataType", el.Value))
+			slog.Warn("unable to parse data type", slog.String("dataType", el.Value), log.Path("source", row))
 		}
 	case *asciidoc.CrossReference:
 		dt = crossReferenceToDataType(el, false)
 	default:
-		slog.Warn("unexpected type in data type cell", log.Type("type", el))
+		slog.Warn("unexpected type in data type cell", log.Type("type", el), log.Path("source", row))
 	}
 	return
 }
 
-func listDataTypePattern(elements []asciidoc.Element) (dt *types.DataType, empty bool) {
+func listDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) (dt *types.DataType, empty bool) {
 	switch len(elements) {
 	case 2:
 		slog.Warn("unexpected number of elements in list data type cell", slog.Int("count", len(elements)))
@@ -539,7 +539,7 @@ func listDataTypePattern(elements []asciidoc.Element) (dt *types.DataType, empty
 		case *asciidoc.CrossReference:
 			return crossReferenceToDataType(el, true), false
 		default:
-			slog.Warn("unexpected type in list data type cell", log.Type("type", el))
+			slog.Warn("unexpected type in list data type cell", log.Type("type", el), log.Path("source", row))
 		}
 	case 4:
 		if !strings.EqualFold(asciidoc.StringValue(elements[1]), "[") {
@@ -550,12 +550,12 @@ func listDataTypePattern(elements []asciidoc.Element) (dt *types.DataType, empty
 		}
 		listTypeElement, ok := elements[0].(*asciidoc.CrossReference)
 		if !ok {
-			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[1]))
+			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[1]), log.Path("source", row))
 			return
 		}
 		listType := crossReferenceToDataType(listTypeElement, false)
 		if !listType.IsArray() {
-			slog.Warn("unexpected non-list type in list data type cell", slog.String("listType", listType.Name), slog.String("id", listTypeElement.ID), log.Type("type", elements[0]))
+			slog.Warn("unexpected non-list type in list data type cell", slog.String("listType", listType.Name), slog.String("id", listTypeElement.ID), log.Type("type", elements[0]), log.Path("source", row))
 			return
 		}
 
@@ -566,11 +566,11 @@ func listDataTypePattern(elements []asciidoc.Element) (dt *types.DataType, empty
 			listType.EntryType = crossReferenceToDataType(el, false)
 			dt = listType
 		default:
-			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[2]))
+			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[2]), log.Path("source", row))
 			return
 		}
 	default:
-		slog.Warn("unexpected number of elements in list data type cell", slog.Int("count", len(elements)))
+		slog.Warn("unexpected number of elements in list data type cell", slog.Int("count", len(elements)), log.Path("source", row))
 	}
 	return
 }
@@ -594,7 +594,7 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 	var dataTypePatterns = []dataTypePattern{simpleDataTypePattern, listDataTypePattern}
 	for _, pattern := range dataTypePatterns {
 		var empty bool
-		dt, empty = pattern(cellElements)
+		dt, empty = pattern(row, cellElements)
 		if dt != nil || empty {
 			return dt, nil
 		}
