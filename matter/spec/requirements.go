@@ -121,8 +121,12 @@ func (s *Section) toDeviceTypeRequirements(d *Doc) (deviceTypeRequirements []*ma
 		return
 	}
 	for row := range ti.Body() {
+		firstCell := row.Cell(0)
+		if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value > 1 {
+			// Some tables include decorative headers, so we skip those
+			continue
+		}
 		dtr := matter.NewDeviceTypeRequirement(row)
-
 		var deviceId string
 		deviceId, err = ti.ReadString(row, matter.TableColumnDeviceID, matter.TableColumnID)
 		if err != nil {
@@ -165,6 +169,11 @@ func (s *Section) toComposedDeviceTypeClusterRequirements(d *Doc) (composedClust
 		return
 	}
 	for row := range ti.Body() {
+		firstCell := row.Cell(0)
+		if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value > 1 {
+			// Some tables include decorative headers, so we skip those
+			continue
+		}
 		var cr matter.DeviceTypeClusterRequirement
 		cr.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
 		if err != nil {
@@ -195,6 +204,11 @@ func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc) (composedEleme
 		return
 	}
 	for row := range ti.Body() {
+		firstCell := row.Cell(0)
+		if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value > 1 {
+			// Some tables include decorative headers, so we skip those
+			continue
+		}
 		var er matter.DeviceTypeElementRequirement
 		er.DeviceTypeID, err = ti.ReadID(row, matter.TableColumnDeviceID)
 		if err != nil {
@@ -279,6 +293,9 @@ func (*Section) toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableR
 	}
 	if cr.Field == "" {
 		cr.Field, err = ti.ReadString(row, matter.TableColumnField)
+		if err != nil {
+			return
+		}
 	}
 	cr.Quality, err = ti.ReadQuality(row, cr.Element, matter.TableColumnQuality)
 	if err != nil {
