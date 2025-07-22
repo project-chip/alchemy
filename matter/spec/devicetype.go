@@ -454,36 +454,63 @@ func associateElementRequirement(spec *Specification, dt *matter.DeviceType, er 
 		slog.Error("Element Requirement references non-required cluster", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), log.Path("source", er))
 		return
 	}
+	cluster := er.Cluster
+	for cluster != nil {
+		er.Entity, err = associateElementRequirementFromCluster(er, dt, cluster)
+		if err != nil {
+			return
+		}
+		if er.Entity != nil {
+			break
+		}
+		if cluster.ParentCluster == nil {
+			if cluster.ClusterClassification.Hierarchy != "Base" {
+				cluster = spec.ClustersByName[cluster.ClusterClassification.Hierarchy]
+			} else {
+				break
+			}
+		} else {
+			cluster = cluster.ParentCluster
+		}
+	}
+	return
+}
+
+func associateElementRequirementFromCluster(er *matter.ElementRequirement, dt *matter.DeviceType, cluster *matter.Cluster) (entity types.Entity, err error) {
 	switch er.Element {
 	case types.EntityTypeAttribute:
 
-		for _, a := range er.Cluster.Attributes {
+		for _, a := range cluster.Attributes {
 			if strings.EqualFold(a.Name, er.Name) {
-				er.Entity = a
-				break
+				entity = a
+				return
 			}
 		}
 	case types.EntityTypeFeature:
-		for _, fb := range er.Cluster.Features.Bits {
+		if cluster.Features == nil {
+			slog.Error("Element Requirement references missing features", slog.String("deviceType", dt.Name), slog.String("clusterId", er.ClusterID.HexString()), slog.String("clusterName", er.ClusterName), log.Path("source", er))
+			return
+		}
+		for _, fb := range cluster.Features.Bits {
 			f, ok := fb.(*matter.Feature)
 			if !ok {
 				continue
 			}
 			if f.Code == er.Name || strings.EqualFold(f.Name(), er.Name) {
-				er.Entity = f
-				break
+				entity = f
+				return
 			}
 		}
 	case types.EntityTypeCommand:
-		for _, cmd := range er.Cluster.Commands {
+		for _, cmd := range cluster.Commands {
 			if strings.EqualFold(cmd.Name, er.Name) {
-				er.Entity = cmd
-				break
+				entity = cmd
+				return
 			}
 		}
 	case types.EntityTypeCommandField:
 		var command *matter.Command
-		for _, cmd := range er.Cluster.Commands {
+		for _, cmd := range cluster.Commands {
 			if strings.EqualFold(cmd.Name, er.Name) {
 				command = cmd
 				break
@@ -494,15 +521,15 @@ func associateElementRequirement(spec *Specification, dt *matter.DeviceType, er 
 		}
 		for _, f := range command.Fields {
 			if strings.EqualFold(f.Name, er.Field) {
-				er.Entity = f
-				break
+				entity = f
+				return
 			}
 		}
 	case types.EntityTypeEvent:
-		for _, e := range er.Cluster.Events {
+		for _, e := range cluster.Events {
 			if strings.EqualFold(e.Name, er.Name) {
-				er.Entity = e
-				break
+				entity = e
+				return
 			}
 		}
 
