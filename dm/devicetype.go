@@ -185,24 +185,13 @@ func renderElementRequirements(deviceType *matter.DeviceType, cr *matter.Cluster
 		erx := clx.CreateElement("features")
 		for _, fr := range featureRequirements {
 			ex := erx.CreateElement("feature")
-			var code string
-
-			featureCode := fr.Name
-			if strings.ContainsRune(featureCode, ' ') {
-				featureCode = matter.Case(featureCode)
+			switch feature := fr.Entity.(type) {
+			case *matter.Feature:
+				ex.CreateAttr("code", feature.Code)
+			case nil:
+				slog.Warn("Unknown feature on element requirement", slog.String("deviceType", deviceType.Name), slog.String("featureName", fr.Name), slog.String("clusterName", cr.ClusterName))
+				continue
 			}
-
-			if fr.Cluster != nil && fr.Cluster.Features != nil {
-				for _, b := range fr.Cluster.Features.Bits {
-					f := b.(*matter.Feature)
-					if f.Code == featureCode {
-						code = f.Code
-						break
-					}
-				}
-			}
-			ex.CreateAttr("code", code)
-			ex.CreateAttr("name", fr.Name)
 			err = renderConformanceElement(fr.Conformance, ex, nil)
 			if err != nil {
 				return
