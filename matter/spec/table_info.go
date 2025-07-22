@@ -447,6 +447,7 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 }
 
 var listDataTypeDefinitionPattern = regexp.MustCompile(`(?:list|List|DataTypeList)\[([^]]+)]`)
+var listDataTypeEntryPattern = regexp.MustCompile(`\[([^]]+)]`)
 var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 
 func crossReferenceToDataType(cr *asciidoc.CrossReference, isArray bool) *types.DataType {
@@ -525,7 +526,35 @@ func simpleDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) 
 func listDataTypePattern(row *asciidoc.TableRow, elements []asciidoc.Element) (dt *types.DataType, empty bool) {
 	switch len(elements) {
 	case 2:
-		slog.Warn("unexpected number of elements in list data type cell", slog.Int("count", len(elements)))
+		listTypeElement, ok := elements[0].(*asciidoc.CrossReference)
+		if !ok {
+			slog.Warn("unexpected type in list data type cell", log.Type("type", elements[1]), log.Path("source", row))
+			return
+		}
+		listType := crossReferenceToDataType(listTypeElement, false)
+		if !listType.IsArray() {
+			slog.Warn("unexpected non-list type in list data type cell", slog.String("listType", listType.Name), slog.String("id", listTypeElement.ID), log.Type("type", elements[0]), log.Path("source", row))
+			return
+		}
+		switch el := elements[1].(type) {
+		case *asciidoc.String:
+			if el.Value == "" {
+				empty = true
+				return
+			}
+			var name string
+			var content = asteriskPattern.ReplaceAllString(el.Value, "")
+			match := listDataTypeEntryPattern.FindStringSubmatch(content)
+			if match != nil {
+				name = match[1]
+				dt = types.ParseDataType(name, true)
+				if dt == nil {
+					slog.Warn("unable to parse data type", slog.String("dataType", el.Value), log.Path("source", row))
+				}
+			}
+		default:
+			slog.Warn("unexpected type in list data type cell", log.Type("type", el), log.Path("source", row))
+		}
 	case 3:
 		if !strings.EqualFold(asciidoc.StringValue(elements[0]), "list[") {
 			return
