@@ -179,7 +179,7 @@ func (s *Section) toComposedDeviceTypeClusterRequirements(d *Doc) (composedClust
 		if err != nil {
 			return
 		}
-		cr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnDeviceName)
+		cr.DeviceTypeName, _, err = ti.ReadName(row, matter.TableColumnDeviceName, matter.TableColumnDevice)
 		if err != nil {
 			return
 		}
