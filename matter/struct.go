@@ -40,7 +40,7 @@ func (s *Struct) Inherit(parent *Struct) {
 	if s.FabricScoping == FabricScopingUnknown {
 		s.FabricScoping = parent.FabricScoping
 	}
-	s.Fields = s.Fields.Inherit(parent.Fields)
+	s.Fields = s.Fields.Inherit(s, parent.Fields)
 }
 
 func (s *Struct) Equals(e types.Entity) bool {

@@ -69,7 +69,7 @@ func (e *Event) Inherit(parent *Event) {
 		e.Conformance = parent.Conformance.CloneSet()
 	}
 	e.Access.Inherit(parent.Access)
-	e.Fields = e.Fields.Inherit(parent.Fields)
+	e.Fields = e.Fields.Inherit(e, parent.Fields)
 }
 
 type EventSet []*Event
