@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func (cr *configuratorRenderer) generateEvents(ce *etree.Element, cluster *matter.Cluster, events map[*matter.Event]struct{}) (err error) {
@@ -29,7 +30,7 @@ func (cr *configuratorRenderer) generateEvents(ce *etree.Element, cluster *matte
 
 		var matchingEvent *matter.Event
 		for e := range events {
-			if conformance.IsZigbee(e.Conformance) || conformance.IsDisallowed(e.Conformance) {
+			if conformance.IsZigbee(e.Conformance) || zap.IsDisallowed(e, e.Conformance) {
 				continue
 			}
 			if e.ID.Equals(eventID) {
@@ -123,7 +124,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 			}
 			f := event.Fields[fieldIndex]
 			fieldIndex++
-			if conformance.IsZigbee(f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+			if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
 				continue
 			}
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {
@@ -137,7 +138,7 @@ func (cr *configuratorRenderer) populateEvent(eventElement *etree.Element, event
 	for fieldIndex < len(event.Fields) {
 		f := event.Fields[fieldIndex]
 		fieldIndex++
-		if conformance.IsZigbee(f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+		if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
 			continue
 		}
 		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeEventField) {

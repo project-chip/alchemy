@@ -17,6 +17,7 @@ import (
 	"github.com/project-chip/alchemy/matter/conformance"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/project-chip/alchemy/matter/types"
+	"github.com/project-chip/alchemy/zap"
 	"github.com/tidwall/pretty"
 )
 
@@ -167,7 +168,7 @@ func (p *ZclPatcher) patchAttributeAccessInterfaceAttributes(o *internal.JSONMap
 			found := false
 			for _, ca := range cluster.Attributes {
 				if ca.Name == as {
-					if conformance.IsZigbee(ca.Conformance) || conformance.IsDisallowed(ca.Conformance) {
+					if conformance.IsZigbee(ca.Conformance) || zap.IsDisallowed(ca, ca.Conformance) {
 						break
 					}
 

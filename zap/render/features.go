@@ -10,6 +10,7 @@ import (
 	"github.com/project-chip/alchemy/internal/xml"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/zap"
 )
 
 func (cr *configuratorRenderer) generateFeatures(configuratorElement *etree.Element, features *matter.Features) (err error) {
@@ -51,7 +52,7 @@ func (cr *configuratorRenderer) generateFeaturesXML(configuratorElement *etree.E
 
 	if cluster.Features != nil {
 		for feature := range cluster.Features.FeatureBits() {
-			if conformance.IsDisallowed(feature.Conformance()) {
+			if conformance.IsZigbee(feature.Conformance()) || zap.IsDisallowed(feature, feature.Conformance()) {
 				continue
 			}
 			bit := matter.ParseNumber(feature.Bit())

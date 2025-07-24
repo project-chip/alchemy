@@ -194,14 +194,6 @@ func Compose(dc *matter.DeviceTypeComposition) (composedClusters map[*matter.Clu
 func getConformanceState(cxt conformance.Context, clusterRequirements []*matter.DeviceTypeClusterRequirement, elementRequirements map[*matter.Cluster][]*matter.DeviceTypeElementRequirement) (state conformance.ConformanceState, err error) {
 	req := clusterRequirements[len(clusterRequirements)-1]
 
-	/*if conformance.IsMandatory(req.ClusterRequirement.Conformance) {
-		state = conformance.StateMandatory
-	} else if conformance.IsDisallowed(req.ClusterRequirement.Conformance) {
-		state = conformance.StateDisallowed
-	} else {
-		state = conformance.StateOptional
-	}*/
-
 	state, err = req.ClusterRequirement.Conformance.Eval(cxt)
 	if err != nil {
 		err = fmt.Errorf("error evaluating conformance of cluster requirement %s: %w", req.ClusterRequirement.ClusterName, err)
