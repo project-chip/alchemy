@@ -184,7 +184,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 			}
 			f := c.Fields[argIndex]
 			argIndex++
-			if conformance.IsZigbee(f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+			if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
 				continue
 			}
 			if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeCommandField) {
@@ -198,7 +198,7 @@ func (cr *configuratorRenderer) populateCommand(ce *etree.Element, cluster *matt
 	for argIndex < len(c.Fields) {
 		f := c.Fields[argIndex]
 		argIndex++
-		if conformance.IsZigbee(f.Conformance) || conformance.IsDisallowed(f.Conformance) {
+		if conformance.IsZigbee(f.Conformance) || zap.IsDisallowed(f, f.Conformance) {
 			continue
 		}
 		if matter.NonGlobalIDInvalidForEntity(f.ID, types.EntityTypeCommandField) {

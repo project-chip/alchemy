@@ -120,7 +120,7 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 			}
 			bit := bm.Bits[bitIndex]
 			bitIndex++
-			if conformance.IsZigbee(bit.Conformance()) || conformance.IsDisallowed(bit.Conformance()) {
+			if conformance.IsZigbee(bit.Conformance()) || zap.IsDisallowed(bit, bit.Conformance()) {
 				continue
 			}
 			err = cr.setBitmapFieldAttributes(be, bit, valFormat)
@@ -133,7 +133,7 @@ func (cr *configuratorRenderer) populateBitmap(ee *etree.Element, bm *matter.Bit
 	for bitIndex < len(bm.Bits) {
 		bit := bm.Bits[bitIndex]
 		bitIndex++
-		if conformance.IsZigbee(bit.Conformance()) || conformance.IsDisallowed(bit.Conformance()) {
+		if conformance.IsZigbee(bit.Conformance()) || zap.IsDisallowed(bit, bit.Conformance()) {
 			continue
 		}
 		if cr.isProvisionalViolation(bit) {

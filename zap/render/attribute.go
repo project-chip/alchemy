@@ -35,7 +35,7 @@ func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *
 				continue
 			}
 
-			if conformance.IsZigbee(a.Conformance) || conformance.IsDisallowed(a.Conformance) {
+			if conformance.IsZigbee(a.Conformance) || zap.IsDisallowed(a, a.Conformance) {
 				continue
 			}
 
@@ -65,7 +65,7 @@ func (cr *configuratorRenderer) generateAttributes(cle *etree.Element, cluster *
 		if conformance.IsDeprecated(a.Conformance) {
 			continue
 		}
-		if conformance.IsDisallowed(a.Conformance) {
+		if zap.IsDisallowed(a, a.Conformance) {
 			continue
 		}
 		if !a.ID.Valid() {
