@@ -103,7 +103,7 @@ func (c *Cluster) Inherit(parent *Cluster) (linkedEntities []types.Entity, err e
 		c.Description = parent.Description
 	}
 
-	c.Attributes = c.Attributes.Inherit(parent.Attributes)
+	c.Attributes = c.Attributes.Inherit(c, parent.Attributes)
 
 	for _, pbm := range parent.Bitmaps {
 		var matching *Bitmap

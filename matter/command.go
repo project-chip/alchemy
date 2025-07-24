@@ -74,7 +74,7 @@ func (c *Command) Inherit(parent *Command) {
 		c.Conformance = parent.Conformance.CloneSet()
 	}
 	c.Access.Inherit(parent.Access)
-	c.Fields = c.Fields.Inherit(parent.Fields)
+	c.Fields = c.Fields.Inherit(c, parent.Fields)
 }
 
 type CommandSet []*Command

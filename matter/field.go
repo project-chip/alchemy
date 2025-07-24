@@ -122,10 +122,10 @@ func (fs FieldSet) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
-func (fs FieldSet) Inherit(parent FieldSet) (nfs FieldSet) {
+func (fs FieldSet) Inherit(parent types.Entity, fields FieldSet) (nfs FieldSet) {
 	nfs = make(FieldSet, len(fs))
 	copy(nfs, fs)
-	for _, pf := range parent {
+	for _, pf := range fields {
 		var matching *Field
 		for _, f := range nfs {
 			if f.ID.Equals(pf.ID) {
@@ -134,7 +134,9 @@ func (fs FieldSet) Inherit(parent FieldSet) (nfs FieldSet) {
 			}
 		}
 		if matching == nil {
-			nfs = append(nfs, pf.Clone())
+			cf := pf.Clone()
+			cf.parent = parent
+			nfs = append(nfs, cf)
 			continue
 		}
 		matching.Inherit(pf)
