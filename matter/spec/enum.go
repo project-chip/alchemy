@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"log/slog"
 	"strings"
 
