@@ -1,6 +1,6 @@
 
 
-EquationTerm = (StatusCodeValue / BooleanValue / ReferenceValue / IdentifierValue / NumberValue / NullValue / '(' _ eq:EquationValue _ ')' { return eq, nil})
+EquationTerm = (StatusCodeValue / BooleanValue / ReferenceValue / NullValue / IdentifierValue / NumberValue /  '(' _ eq:EquationValue _ ')' { return eq, nil})
 
 EquationValue <- _ left:EquationMultiply  rest:( AddOp )* _ {
     if rest == nil {
