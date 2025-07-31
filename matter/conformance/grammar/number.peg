@@ -38,6 +38,6 @@ Digits <- [0-9]+ {
 	return strconv.ParseInt(string(c.text), 10, 64)
 }
 
-NullValue <- "null" {
+NullValue <- "null"i {
 	return NewNullValue(string(c.text)), nil
 }
