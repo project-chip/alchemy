@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/project-chip/alchemy/internal/log"
@@ -20,7 +19,7 @@ func (s *Section) toStatusCodes(d *Doc, pc *parseContext, parent types.Entity) (
 		dt = types.NewDataType(types.BaseDataTypeEnum8, false)
 		slog.Warn("Status code does not declare its derived data type; assuming enum8", log.Element("source", d.Path, s.Base), slog.String("enum", name))
 	} else if !dt.IsEnum() {
-		return nil, fmt.Errorf("unknown status code data type: %s", dt.Name)
+		return nil, newGenericParseError(s.Base, "unknown status code data type: %s", dt.Name)
 	}
 
 	e.Type = dt

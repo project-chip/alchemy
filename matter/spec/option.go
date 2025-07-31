@@ -37,7 +37,7 @@ func (po *ParserOptions) AfterApply() error {
 		return err
 	}
 	if !exists {
-		return fmt.Errorf("spec root %s does not exist", po.Root)
+		return fmt.Errorf("spec root \"%s\" does not exist", po.Root)
 	}
 	return nil
 }

@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/project-chip/alchemy/internal/log"
@@ -20,7 +19,7 @@ func (s *Section) toBitmap(d *Doc, pc *parseContext, parent types.Entity) (bm *m
 		dt = types.NewDataType(types.BaseDataTypeMap8, false)
 		slog.Warn("Bitmap does not declare its derived data type; assuming map8", log.Element("source", d.Path, s.Base), slog.String("bitmap", name))
 	} else if !dt.IsMap() {
-		return nil, fmt.Errorf("unknown bitmap data type: %s", dt.Name)
+		return nil, newGenericParseError(s.Base, "unknown bitmap data type: %s", dt.Name)
 	}
 
 	bm = matter.NewBitmap(s.Base, parent)
@@ -34,7 +33,7 @@ func (s *Section) toBitmap(d *Doc, pc *parseContext, parent types.Entity) (bm *m
 			slog.Warn("no table found for bitmap", log.Element("source", s.Doc.Path, s.Base), slog.String("name", bm.Name))
 			err = nil
 		} else {
-			return nil, fmt.Errorf("failed reading bitmap %s: %w", name, err)
+			return nil, newGenericParseError(s.Base, "failed reading bitmap %s: %w", name, err)
 		}
 	} else {
 		for row := range ti.Body() {

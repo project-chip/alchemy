@@ -24,7 +24,7 @@ func NewSpecPath(path string, rootPath string) (asciidoc.Path, error) {
 	if rootPath == "" {
 		rootPath := deriveSpecPath(p.Absolute)
 		if rootPath == "" {
-			return p, fmt.Errorf("unable to determine root for path %s", p.Absolute)
+			return p, fmt.Errorf("unable to determine root for path \"%s\"", p.Absolute)
 		}
 	}
 	var err error

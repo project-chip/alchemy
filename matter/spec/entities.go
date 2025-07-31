@@ -1,8 +1,6 @@
 package spec
 
 import (
-	"fmt"
-
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/matter/types"
@@ -37,7 +35,7 @@ func (doc *Doc) parseEntities(spec *Specification) error {
 
 		err = top.toEntities(spec, doc, pc)
 		if err != nil {
-			return fmt.Errorf("failed converting doc %s to entities: %w", doc.Path, err)
+			return err
 		}
 
 	}

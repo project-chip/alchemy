@@ -14,7 +14,7 @@ func (s *Section) toStruct(spec *Specification, d *Doc, pc *parseContext, parent
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
-		return nil, fmt.Errorf("failed reading struct %s: %w", name, err)
+		return nil, fmt.Errorf("failed reading struct \"%s\": %w", name, err)
 	}
 	ms = matter.NewStruct(s.Base, parent)
 	ms.Name = name

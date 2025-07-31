@@ -33,7 +33,7 @@ func readString(contents string, path string, rootPath string) (doc *Doc, err er
 func read(b []byte, path string, rootPath string) (doc *Doc, err error) {
 	d, err := parse.Bytes(path, b)
 	if err != nil {
-		return nil, fmt.Errorf("read error in %s: %w", path, err)
+		return nil, fmt.Errorf("read error in \"%s\": %w", path, err)
 	}
 
 	var p asciidoc.Path

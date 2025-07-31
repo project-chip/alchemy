@@ -1,8 +1,6 @@
 package spec
 
 import (
-	"fmt"
-
 	"github.com/project-chip/alchemy/internal/text"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
@@ -15,7 +13,7 @@ func (s *Section) toTypeDef(d *Doc, pc *parseContext, parent types.Entity) (ms *
 
 	dt := s.GetDataType()
 	if (dt == nil) || !dt.BaseType.IsSimple() {
-		return nil, fmt.Errorf("unknown typedef data type: %s", dt.Name)
+		return nil, newGenericParseError(s.Base, "unknown typedef data type: \"%s\"", dt.Name)
 	}
 	ms.Type = dt
 	pc.orderedEntities = append(pc.orderedEntities, ms)

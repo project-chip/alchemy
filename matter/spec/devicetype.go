@@ -64,7 +64,6 @@ func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (
 			default:
 			}
 			if err != nil {
-				err = fmt.Errorf("error reading section in %s: %w", d.Path, err)
 				return
 			}
 		}
@@ -80,7 +79,7 @@ func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (
 func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
 	ti, err := parseFirstTable(doc, s)
 	if err != nil {
-		return nil, fmt.Errorf("failed reading device type ID: %w", err)
+		return nil, newGenericParseError(s.Base, "failed reading device type ID: %w", err)
 	}
 	var deviceTypes []*matter.DeviceType
 	for row := range ti.Body() {
@@ -535,7 +534,7 @@ func associateElementRequirementFromCluster(er *matter.ElementRequirement, dt *m
 
 	default:
 		slog.Error("Unexpected entity type", slog.String("entityType", er.Element.String()), log.Path("source", er))
-		err = fmt.Errorf("unexpected element type: %s", er.Element.String())
+		err = newGenericParseError(er, "unexpected element type: %s", er.Element.String())
 	}
 	return
 }

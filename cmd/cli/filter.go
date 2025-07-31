@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"path/filepath"
 
+	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -79,7 +80,7 @@ func checkSpecErrors[T comparable](cc *Context, s *spec.Specification, filterOpt
 		if ok {
 			errors.Errors = append(errors.Errors, specError)
 		} else {
-			slog.Info("ignoring error in file", "path", path)
+			slog.Warn("ignoring error in file because it did not yield any entities", slog.Any("error", specError), log.Path("source", specError))
 		}
 	}
 

@@ -14,6 +14,7 @@ type ErrorType uint16
 
 const (
 	ErrorTypeUnknown ErrorType = iota
+	ErrorTypeGenericParse
 	ErrorTypeDuplicateEntityID
 	ErrorTypeDuplicateEntityName
 	ErrorTypeUnknownConstraintIdentifier
@@ -70,6 +71,23 @@ func (s *Specification) addError(e Error) {
 		return
 	}
 	s.Errors = append(s.Errors, e)
+}
+
+type GenericParseError struct {
+	error
+	Source log.Source
+}
+
+func (gpe GenericParseError) Type() ErrorType {
+	return ErrorTypeGenericParse
+}
+
+func (gpe GenericParseError) Origin() (path string, line int) {
+	return gpe.Source.Origin()
+}
+
+func newGenericParseError(source log.Source, format string, a ...any) *GenericParseError {
+	return &GenericParseError{error: fmt.Errorf(format, a...), Source: source}
 }
 
 type DuplicateEntityIDError struct {
@@ -480,7 +498,7 @@ func (cf FabricScopedStructNotAllowedError) Origin() (path string, line int) {
 }
 
 func (ddt FabricScopedStructNotAllowedError) Error() string {
-	return fmt.Sprintf("fabric scoped struct not allowed: %s", matter.EntityName(ddt.Entity))
+	return fmt.Sprintf("fabric scoped struct not allowed: \"%s\"", matter.EntityName(ddt.Entity))
 }
 
 type InvalidConformanceError struct {

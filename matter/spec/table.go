@@ -27,7 +27,7 @@ func parseTable(doc *Doc, section *Section, t *asciidoc.Table) (ti *TableInfo, e
 
 	ti, err = ReadTable(doc, t)
 	if err != nil {
-		err = fmt.Errorf("failed mapping table columns for first table in section %s: %w", section.Name, err)
+		err = newGenericParseError(t, "failed mapping table columns for first table in section \"%s\": %w", section.Name, err)
 		return
 	}
 	if len(ti.Rows) < ti.HeaderRowIndex+2 {
@@ -35,7 +35,7 @@ func parseTable(doc *Doc, section *Section, t *asciidoc.Table) (ti *TableInfo, e
 		return
 	}
 	if ti.ColumnMap == nil {
-		err = fmt.Errorf("can't read table without columns")
+		err = newGenericParseError(t, "can't read table without columns")
 	}
 	return
 }
@@ -68,9 +68,9 @@ func (d *Doc) GetHeaderCellString(cell *asciidoc.TableCell) (string, error) {
 		return "", nil
 	}
 	var v strings.Builder
-	err := readRowCellValueElements(d, cellElements, &v)
+	err := readRowCellValueElements(d, cell.Parent, cellElements, &v)
 	if err != nil {
-		return "", fmt.Errorf("error reading table header cell: %w", err)
+		return "", newGenericParseError(cell, "error reading table header cell: %w", err)
 	}
 	return v.String(), nil
 }
@@ -89,7 +89,7 @@ func mapTableColumns(doc *Doc, rows []*asciidoc.TableRow) (headerRow int, column
 		if cellCount == -1 {
 			cellCount = len(tableCells)
 		} else if cellCount != len(tableCells) {
-			return -1, nil, nil, fmt.Errorf("can't map table columns with unequal cell counts between rows; row %d has %d cells, expected %d", i, len(tableCells), cellCount)
+			return -1, nil, nil, newGenericParseError(row, "can't map table columns with unequal cell counts between rows; row %d has %d cells, expected %d", i, len(tableCells), cellCount)
 		}
 		if columnMap != nil { // We've already processed the columns
 			continue
@@ -111,7 +111,7 @@ func mapTableColumns(doc *Doc, rows []*asciidoc.TableRow) (headerRow int, column
 				columnMap = make(ColumnIndex)
 			}
 			if _, ok := columnMap[attributeColumn]; ok {
-				return -1, nil, nil, fmt.Errorf("can't map table columns with duplicate columns")
+				return -1, nil, nil, newGenericParseError(row, "can't map table columns with duplicate columns")
 			}
 			columnMap[attributeColumn] = j
 
