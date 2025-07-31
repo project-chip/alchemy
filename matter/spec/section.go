@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"log/slog"
 	"regexp"
 	"strings"
@@ -32,7 +31,7 @@ func NewSection(doc *Doc, parent any, s *asciidoc.Section) (*Section, error) {
 	ss := &Section{Doc: doc, Parent: parent, Base: s}
 
 	var name strings.Builder
-	err := buildSectionTitle(doc, &name, s.Title...)
+	err := buildSectionTitle(doc, s, &name, s.Title...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +54,7 @@ func NewSection(doc *Doc, parent any, s *asciidoc.Section) (*Section, error) {
 	return ss, nil
 }
 
-func buildSectionTitle(doc *Doc, title *strings.Builder, els ...asciidoc.Element) (err error) {
+func buildSectionTitle(doc *Doc, section *asciidoc.Section, title *strings.Builder, els ...asciidoc.Element) (err error) {
 	for _, e := range els {
 		switch e := e.(type) {
 		case *asciidoc.String:
@@ -74,23 +73,23 @@ func buildSectionTitle(doc *Doc, title *strings.Builder, els ...asciidoc.Element
 			}
 			switch val := attr.(type) {
 			case asciidoc.Set:
-				err = buildSectionTitle(doc, title, val...)
+				err = buildSectionTitle(doc, section, title, val...)
 			case asciidoc.Element:
-				err = buildSectionTitle(doc, title, val)
+				err = buildSectionTitle(doc, section, title, val)
 			default:
-				err = fmt.Errorf("unexpected section title attribute value type: %T", attr)
+				err = newGenericParseError(e, "unexpected section title attribute value type: %T", attr)
 			}
 		case *asciidoc.Link, *asciidoc.LinkMacro:
 		case *asciidoc.Bold:
-			err = buildSectionTitle(doc, title, e.Elements()...)
+			err = buildSectionTitle(doc, section, title, e.Elements()...)
 		default:
-			err = fmt.Errorf("unknown section title component type: %T", e)
+			err = newGenericParseError(section, "unknown section title component type: %T", e)
 		}
 		if err != nil {
 			return
 		}
 		if he, ok := e.(asciidoc.HasElements); ok {
-			err = buildSectionTitle(doc, title, he.Elements()...)
+			err = buildSectionTitle(doc, section, title, he.Elements()...)
 		}
 		if err != nil {
 			return
@@ -460,7 +459,7 @@ func (s *Section) toEntities(spec *Specification, d *Doc, pc *parseContext) (err
 		var looseEntities []types.Entity
 		looseEntities, err = findLooseEntities(spec, d, s, pc, nil)
 		if err != nil {
-			err = fmt.Errorf("error reading section %s: %w", s.Name, err)
+			err = newGenericParseError(s.Base, "error reading section \"%s\": %w", s.Name, err)
 			return
 		}
 		if len(looseEntities) > 0 {

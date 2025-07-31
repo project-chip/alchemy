@@ -28,7 +28,7 @@ func Parse(path asciidoc.Path, specRoot string, attributes ...asciidoc.Attribute
 
 	d, err := parse.Inline(ac, path.Relative, contents)
 	if err != nil {
-		return nil, fmt.Errorf("parse error in %s: %w", path, err)
+		return nil, fmt.Errorf("parse error in \"%s\": %w", path, err)
 	}
 	doc, err := newDoc(d, path)
 	if err != nil {

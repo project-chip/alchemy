@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"log/slog"
 	"strings"
 
@@ -18,7 +17,7 @@ func (s *Section) toClusterRequirements(d *Doc) (clusterRequirements []*matter.C
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			err = fmt.Errorf("error reading cluster requirements table: %w", err)
+			err = newGenericParseError(s.Base, "error reading cluster requirements table: %w", err)
 		}
 		return
 	}
@@ -65,7 +64,8 @@ func (*Section) toClusterRequirement(ti *TableInfo, row *asciidoc.TableRow) (cr 
 	case "client":
 		cr.Interface = matter.InterfaceClient
 	default:
-		err = fmt.Errorf("unknown client/server value: %s", cs)
+		slog.Error("Unknown client/server value", "value", cs, log.Path("source", row))
+		err = newGenericParseError(row, "unknown client/server value: \"%s\"", cs)
 		return
 	}
 	cr.Quality = matter.ParseQuality(q)
@@ -80,7 +80,7 @@ func (s *Section) toElementRequirements(d *Doc) (elementRequirements []*matter.E
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			err = fmt.Errorf("error reading element requirements table: %w", err)
+			err = newGenericParseError(s.Base, "error reading element requirements table: %w", err)
 		}
 		return
 	}
@@ -116,7 +116,7 @@ func (s *Section) toDeviceTypeRequirements(d *Doc) (deviceTypeRequirements []*ma
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			err = fmt.Errorf("error reading element requirements table: %w", err)
+			err = newGenericParseError(s.Base, "error reading element requirements table: %w", err)
 		}
 		return
 	}
@@ -164,7 +164,7 @@ func (s *Section) toComposedDeviceTypeClusterRequirements(d *Doc) (composedClust
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			err = fmt.Errorf("error reading element requirements table: %w", err)
+			err = newGenericParseError(s.Base, "error reading element requirements table: %w", err)
 		}
 		return
 	}
@@ -199,7 +199,7 @@ func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc) (composedEleme
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			err = fmt.Errorf("error reading element requirements table: %w", err)
+			err = newGenericParseError(s.Base, "error reading element requirements table: %w", err)
 		}
 		return
 	}
@@ -276,7 +276,7 @@ func (*Section) toElementRequirement(d *Doc, ti *TableInfo, row *asciidoc.TableR
 	case "":
 		slog.Warn("Blank element in element requirements; treating as a cluster requirement", slog.String("clusterName", cr.ClusterName), log.Path("source", row))
 	default:
-		err = fmt.Errorf("unknown element type: \"%s\"", e)
+		err = newGenericParseError(row, "unknown element type: \"%s\"", e)
 		return
 	}
 

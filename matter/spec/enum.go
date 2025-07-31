@@ -25,7 +25,7 @@ func (s *Section) toEnum(d *Doc, pc *parseContext, parent types.Entity) (e *matt
 		dt = types.NewDataType(types.BaseDataTypeEnum8, false)
 		slog.Warn("Enum does not declare its derived data type; assuming enum8", log.Element("source", d.Path, s.Base), slog.String("enum", name))
 	} else if !dt.IsEnum() {
-		return nil, fmt.Errorf("unknown enum data type: %s", dt.Name)
+		return nil, newGenericParseError(s.Base, "unknown enum data type: \"%s\"", dt.Name)
 	}
 
 	e.Type = dt
@@ -67,7 +67,7 @@ func (s *Section) findEnumValues(e *matter.Enum) (matter.EnumValueSet, error) {
 		return false
 	})
 	if len(tables) == 0 {
-		return nil, fmt.Errorf("no enum field tables found")
+		return nil, newGenericParseError(e, "no enum field tables found")
 	}
 	for _, t := range tables {
 		ti, err := parseTable(s.Doc, s, t)
@@ -132,7 +132,7 @@ func (s *Section) toModeTags(d *Doc, parent types.Entity) (e *matter.Enum, err e
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
-		return nil, fmt.Errorf("failed reading mode tags: %w", err)
+		return nil, newGenericParseError(s.Base, "failed reading mode tags: %w", err)
 	}
 	e = matter.NewEnum(s.Base, parent)
 	e.Name = "ModeTag"

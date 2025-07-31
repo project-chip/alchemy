@@ -134,7 +134,7 @@ func (ti *TableInfo) ReadName(row *asciidoc.TableRow, columns ...matter.TableCol
 			}
 		}
 		var value strings.Builder
-		err = readRowCellValueElements(ti.Doc, cellElements, &value)
+		err = readRowCellValueElements(ti.Doc, row, cellElements, &value)
 		if err != nil {
 			return "", nil, err
 		}
@@ -161,7 +161,7 @@ func (ti *TableInfo) ReadValueByIndex(row *asciidoc.TableRow, offset int) (strin
 		return "", nil
 	}
 	var value strings.Builder
-	err := readRowCellValueElements(ti.Doc, cellElements, &value)
+	err := readRowCellValueElements(ti.Doc, row, cellElements, &value)
 	if err != nil {
 		return "", err
 	}
@@ -365,23 +365,23 @@ func (ti *TableInfo) ReadLocation(row *asciidoc.TableRow, columns ...matter.Tabl
 	case "DescendantEndpoint":
 		relation = matter.DeviceTypeRequirementLocationDescendantEndpoint
 	default:
-		err = fmt.Errorf("unknown relation: %s", rs)
+		err = newGenericParseError(row, "unknown relation: %s", rs)
 	}
 	return
 }
 
-func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder) (err error) {
+func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, els asciidoc.Set, value *strings.Builder) (err error) {
 	for _, el := range els {
 		switch el := el.(type) {
 		case *asciidoc.String:
 			value.WriteString(el.Value)
 		case asciidoc.FormattedTextElement:
-			err = readRowCellValueElements(doc, el.Elements(), value)
+			err = readRowCellValueElements(doc, row, el.Elements(), value)
 		case *asciidoc.Paragraph:
-			err = readRowCellValueElements(doc, el.Elements(), value)
+			err = readRowCellValueElements(doc, row, el.Elements(), value)
 		case *asciidoc.CrossReference:
 			if len(el.Set) > 0 {
-				err = readRowCellValueElements(doc, el.Set, value)
+				err = readRowCellValueElements(doc, row, el.Set, value)
 				if err != nil {
 					return
 				}
@@ -398,14 +398,14 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 			}
 		case *asciidoc.Link:
 			value.WriteString(el.URL.Scheme)
-			err = readRowCellValueElements(doc, el.URL.Path, value)
+			err = readRowCellValueElements(doc, row, el.URL.Path, value)
 		case *asciidoc.LinkMacro:
 			value.WriteString(el.URL.Scheme)
-			err = readRowCellValueElements(doc, el.URL.Path, value)
+			err = readRowCellValueElements(doc, row, el.URL.Path, value)
 		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
-			err = readRowCellValueElements(doc, el.Elements(), &quotedText)
+			err = readRowCellValueElements(doc, row, el.Elements(), &quotedText)
 			if err != nil {
 				return
 			}
@@ -424,20 +424,20 @@ func readRowCellValueElements(doc *Doc, els asciidoc.Set, value *strings.Builder
 			value.WriteString(el.Character)
 		case *asciidoc.InlinePassthrough:
 			value.WriteString("+")
-			err = readRowCellValueElements(doc, el.Elements(), value)
+			err = readRowCellValueElements(doc, row, el.Elements(), value)
 		case *asciidoc.InlineDoublePassthrough:
 			value.WriteString("++")
-			err = readRowCellValueElements(doc, el.Elements(), value)
+			err = readRowCellValueElements(doc, row, el.Elements(), value)
 		case *asciidoc.ThematicBreak:
 		case asciidoc.EmptyLine:
 		case *asciidoc.NewLine:
 			value.WriteString(" ")
 		case asciidoc.HasElements:
-			err = readRowCellValueElements(doc, el.Elements(), value)
+			err = readRowCellValueElements(doc, row, el.Elements(), value)
 		case *asciidoc.LineBreak:
 			value.WriteString(" ")
 		default:
-			return fmt.Errorf("unexpected type in cell: %T", el)
+			return newGenericParseError(row, "unexpected element type in cell: %T", el)
 		}
 		if err != nil {
 			return err
@@ -610,13 +610,13 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 	}
 	i, ok := ti.ColumnMap[column]
 	if !ok {
-		return nil, fmt.Errorf("missing %s column for data type", column)
+		return nil, newGenericParseError(row, "missing %s column for data type", column)
 	}
 	cell := row.Cell(i)
 	cellElements := cell.Elements()
 
 	if len(cellElements) == 0 {
-		return nil, fmt.Errorf("empty %s cell for data type", column)
+		return nil, newGenericParseError(row, "empty %s cell for data type", column)
 	}
 
 	var dt *types.DataType

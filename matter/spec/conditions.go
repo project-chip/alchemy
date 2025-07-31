@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/project-chip/alchemy/internal/log"
@@ -18,7 +17,7 @@ func (s *Section) toConditions(d *Doc, dt *matter.DeviceType) (conditions []*mat
 		if err == ErrNoTableFound {
 			err = nil
 		} else {
-			err = fmt.Errorf("error reading conditions table: %w", err)
+			err = newGenericParseError(s.Base, "error reading conditions table: %w", err)
 		}
 		return
 	}
@@ -34,7 +33,7 @@ func (s *Section) toConditions(d *Doc, dt *matter.DeviceType) (conditions []*mat
 				}
 			}
 			if featureIndex == -1 {
-				err = fmt.Errorf("failed to find tag column in section %s", s.Name)
+				err = newGenericParseError(ti.Element, "failed to find tag column in section %s", s.Name)
 				return
 			}
 		}
@@ -102,7 +101,7 @@ func (s *Section) toBaseDeviceTypeConditions(d *Doc, dt *matter.DeviceType) (con
 			continue
 		}
 		var sb strings.Builder
-		err = readRowCellValueElements(d, row.Set, &sb)
+		err = readRowCellValueElements(d, row, row.Set, &sb)
 		if err != nil {
 			continue
 		}

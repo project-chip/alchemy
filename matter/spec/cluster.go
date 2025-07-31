@@ -86,7 +86,6 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 				err = readClusterClassification(d, clusterGroup.Name, &clusterGroup.ClusterClassification, s)
 			}
 			if err != nil {
-				err = fmt.Errorf("error reading section in %s: %w", d.Path, err)
 				return
 			}
 		}
@@ -109,7 +108,6 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 				err = readClusterClassification(d, c.Name, &c.ClusterClassification, s)
 			}
 			if err != nil {
-				err = fmt.Errorf("error reading section in %s: %w", d.Path, err)
 				return
 			}
 		}
@@ -135,7 +133,6 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 				var looseEntities []types.Entity
 				looseEntities, err = findLooseEntities(spec, d, s, pc, parentEntity)
 				if err != nil {
-					err = fmt.Errorf("error reading section %s: %w", s.Name, err)
 					return
 				}
 				if len(looseEntities) > 0 {
@@ -156,7 +153,6 @@ func (s *Section) toClusters(spec *Specification, d *Doc, pc *parseContext) (err
 				}
 			}
 			if err != nil {
-				err = fmt.Errorf("error reading section in %s: %w", d.Path, err)
 				return
 			}
 		}
@@ -169,19 +165,19 @@ func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, er
 	var ti *TableInfo
 	ti, err = parseFirstTable(doc, s)
 	if err != nil {
-		err = fmt.Errorf("failed reading revision history: %w", err)
+		err = newGenericParseError(s.Base, "failed reading revision history: %w", err)
 		return
 	}
 	for row := range ti.Body() {
 		rev := &matter.Revision{}
 		rev.Number, err = ti.ReadString(row, matter.TableColumnRevision)
 		if err != nil {
-			err = fmt.Errorf("error reading revision column: %w", err)
+			err = newGenericParseError(row, "error reading revision column: %w", err)
 			return
 		}
 		rev.Description, err = ti.ReadValue(row, matter.TableColumnDescription)
 		if err != nil {
-			err = fmt.Errorf("error reading revision description: %w", err)
+			err = newGenericParseError(row, "error reading revision description: %w", err)
 			return
 		}
 		revisions = append(revisions, rev)
@@ -193,7 +189,7 @@ func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, er
 func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 	ti, err := parseFirstTable(doc, s)
 	if err != nil {
-		return nil, fmt.Errorf("failed reading cluster ID: %w", err)
+		return nil, newGenericParseError(s.Base, "failed reading cluster ID: %w", err)
 	}
 	var clusters []*matter.Cluster
 	for row := range ti.Body() {
@@ -237,30 +233,30 @@ func clusterNamesEquivalent(name1 string, name2 string) bool {
 func readClusterClassification(doc *Doc, name string, classification *matter.ClusterClassification, s *Section) error {
 	ti, err := parseFirstTable(doc, s)
 	if err != nil {
-		return fmt.Errorf("failed reading classification: %w", err)
+		return newGenericParseError(s.Base, "failed reading classification: %w", err)
 	}
 	for row := range ti.Body() {
 		classification.Hierarchy, err = ti.ReadString(row, matter.TableColumnHierarchy)
 		if err != nil {
-			return fmt.Errorf("error reading hierarchy column on cluster %s: %w", name, err)
+			return newGenericParseError(row, "error reading hierarchy column on cluster %s: %w", name, err)
 		}
 		classification.Role, err = ti.ReadString(row, matter.TableColumnRole)
 		if err != nil {
-			return fmt.Errorf("error reading role column on cluster %s: %w", name, err)
+			return newGenericParseError(row, "error reading role column on cluster %s: %w", name, err)
 		}
 		classification.Scope, err = ti.ReadString(row, matter.TableColumnScope, matter.TableColumnContext)
 		if err != nil {
-			return fmt.Errorf("error reading scope column on cluster %s: %w", name, err)
+			newGenericParseError(row, "error reading scope column on cluster %s: %w", name, err)
 		}
 		if len(classification.PICS) == 0 {
 			classification.PICS, err = ti.ReadString(row, matter.TableColumnPICS, matter.TableColumnPICSCode)
 			if err != nil {
-				return fmt.Errorf("error reading PICS column on cluster %s: %w", name, err)
+				return newGenericParseError(row, "error reading PICS column on cluster %s: %w", name, err)
 			}
 		}
 		classification.Quality, err = ti.ReadQuality(row, types.EntityTypeCluster, matter.TableColumnQuality)
 		if err != nil {
-			return fmt.Errorf("error reading Quality column on cluster %s: %w", name, err)
+			return newGenericParseError(row, "error reading Quality column on cluster %s: %w", name, err)
 		}
 		tableCells := row.TableCells()
 		for _, ec := range ti.ExtraColumns {
@@ -281,7 +277,7 @@ func readClusterClassification(doc *Doc, name string, classification *matter.Clu
 				}
 			}
 			if err != nil {
-				return fmt.Errorf("error reading extra columns on cluster %s: %w", name, err)
+				return newGenericParseError(row, "error reading extra columns on cluster %s: %w", name, err)
 			}
 		}
 		return nil
