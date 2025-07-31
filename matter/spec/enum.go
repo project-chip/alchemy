@@ -75,7 +75,7 @@ func (s *Section) findEnumValues(e *matter.Enum) (matter.EnumValueSet, error) {
 			return nil, err
 		}
 		var values matter.EnumValueSet
-		for row := range ti.Body() {
+		for row := range ti.ContentRows() {
 			ev := matter.NewEnumValue(row, e)
 			ev.Name, err = ti.ReadValue(row, matter.TableColumnName)
 			if err != nil {
@@ -137,7 +137,7 @@ func (s *Section) toModeTags(d *Doc, parent types.Entity) (e *matter.Enum, err e
 	e = matter.NewEnum(s.Base, parent)
 	e.Name = "ModeTag"
 	e.Type = types.NewDataType(types.BaseDataTypeEnum16, false)
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 		ev := matter.NewEnumValue(s.Base, e)
 		ev.Name, err = ti.ReadString(row, matter.TableColumnName)
 		if err != nil {

@@ -18,7 +18,7 @@ import (
 
 func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.EntityType, parent types.Entity) (fields []*matter.Field, fieldMap map[string]*matter.Field, err error) {
 	fieldMap = make(map[string]*matter.Field)
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 		f := matter.NewField(row, parent, entityType)
 		var name string
 		name, err = ti.ReadValue(row, matter.TableColumnName)
@@ -164,7 +164,7 @@ func findAnonymousEnum(s *Section, field *matter.Field) error {
 	}
 	ae := matter.NewAnonymousEnum(s.Base, field)
 	ae.Type = field.Type
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 		ev := matter.NewEnumValue(s.Base, ae)
 		ev.Conformance = conformance.Set{&conformance.Mandatory{}}
 		ev.Value, err = ti.ReadID(row, matter.TableColumnValue)
@@ -211,7 +211,7 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 	}
 	bm := matter.NewAnonymousBitmap(s.Base, field)
 	bm.Type = field.Type
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 		var bit, name, summary string
 		conf := conformance.Set{&conformance.Mandatory{}}
 		name, err = ti.ReadValue(row, matter.TableColumnName)

@@ -35,7 +35,7 @@ func (s *Section) toNamespace(spec *Specification, d *Doc, pc *parseContext) (er
 		return
 	}
 	ns := matter.NewNamespace(namespaceTable.Element)
-	for row := range namespaceTable.Body() {
+	for row := range namespaceTable.ContentRows() {
 		ns.ID, err = namespaceTable.ReadID(row, matter.TableColumnID)
 		if err != nil {
 			return
@@ -49,7 +49,7 @@ func (s *Section) toNamespace(spec *Specification, d *Doc, pc *parseContext) (er
 		ns.Name = name
 		break
 	}
-	for row := range valuesTable.Body() {
+	for row := range valuesTable.ContentRows() {
 		st := matter.NewSemanticTag(ns, row)
 		st.ID, err = valuesTable.ReadID(row, matter.TableColumnID)
 		if err != nil {

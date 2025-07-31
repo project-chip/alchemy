@@ -168,7 +168,7 @@ func readRevisionHistory(doc *Doc, s *Section) (revisions []*matter.Revision, er
 		err = newGenericParseError(s.Base, "failed reading revision history: %w", err)
 		return
 	}
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 		rev := &matter.Revision{}
 		rev.Number, err = ti.ReadString(row, matter.TableColumnRevision)
 		if err != nil {
@@ -192,7 +192,7 @@ func readClusterIDs(doc *Doc, s *Section) ([]*matter.Cluster, error) {
 		return nil, newGenericParseError(s.Base, "failed reading cluster ID: %w", err)
 	}
 	var clusters []*matter.Cluster
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 		c := matter.NewCluster(s.Base)
 		c.ID, err = ti.ReadID(row, matter.TableColumnID)
 		if err != nil {
@@ -235,7 +235,7 @@ func readClusterClassification(doc *Doc, name string, classification *matter.Clu
 	if err != nil {
 		return newGenericParseError(s.Base, "failed reading classification: %w", err)
 	}
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 		classification.Hierarchy, err = ti.ReadString(row, matter.TableColumnHierarchy)
 		if err != nil {
 			return newGenericParseError(row, "error reading hierarchy column on cluster %s: %w", name, err)

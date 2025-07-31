@@ -81,6 +81,24 @@ func (ti *TableInfo) Body() iter.Seq[*asciidoc.TableRow] {
 	}
 }
 
+func (ti *TableInfo) ContentRows() iter.Seq[*asciidoc.TableRow] {
+	return func(yield func(*asciidoc.TableRow) bool) {
+		for i := ti.HeaderRowIndex + 1; i < len(ti.Rows); i++ {
+			row := ti.Rows[i]
+			if len(row.Set) > 0 {
+				firstCell := row.Cell(0)
+				if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value == len(row.Set) {
+					continue
+				}
+			}
+			if !yield(ti.Rows[i]) {
+				return
+			}
+		}
+
+	}
+}
+
 func (ti *TableInfo) ReadString(row *asciidoc.TableRow, columns ...matter.TableColumn) (string, error) {
 	for _, column := range columns {
 		offset, ok := ti.ColumnMap[column]

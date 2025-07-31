@@ -82,7 +82,7 @@ func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
 		return nil, newGenericParseError(s.Base, "failed reading device type ID: %w", err)
 	}
 	var deviceTypes []*matter.DeviceType
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 		c := matter.NewDeviceType(row)
 		c.ID, err = ti.ReadID(row, matter.TableColumnID)
 		if err != nil {

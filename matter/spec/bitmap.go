@@ -36,7 +36,7 @@ func (s *Section) toBitmap(d *Doc, pc *parseContext, parent types.Entity) (bm *m
 			return nil, newGenericParseError(s.Base, "failed reading bitmap %s: %w", name, err)
 		}
 	} else {
-		for row := range ti.Body() {
+		for row := range ti.ContentRows() {
 			var bit, name, summary string
 			var conf conformance.Set
 			name, err = ti.ReadValue(row, matter.TableColumnName)
