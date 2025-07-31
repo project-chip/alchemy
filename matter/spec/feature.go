@@ -26,7 +26,7 @@ func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Feature
 	}
 	features = matter.NewFeatures(s.Base, nil)
 	featureMap := make(map[string]*matter.Feature)
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 		var bit, code, name, summary string
 		var conf conformance.Set
 		bit, err = ti.ReadString(row, matter.TableColumnBit)

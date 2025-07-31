@@ -35,7 +35,7 @@ func buildList[T types.Entity, L ~[]T](spec *Specification, d *Doc, s *Section, 
 	if err != nil {
 		return nil, err
 	}
-	for row := range ti.Body() {
+	for row := range ti.ContentRows() {
 
 		var name string
 		var xref *asciidoc.CrossReference
