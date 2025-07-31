@@ -346,7 +346,7 @@ func clusterName(cluster *matter.Cluster) string {
 }
 
 func (sp *Builder) resolveHierarchy() {
-	for _, c := range sp.Spec.ClustersByID {
+	for _, c := range sp.Spec.ClustersByName {
 		if c.Hierarchy == "Base" {
 			continue
 		}
