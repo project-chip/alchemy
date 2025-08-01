@@ -3,7 +3,9 @@ package matter
 import (
 	"fmt"
 
+	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/matter/conformance"
+	"github.com/project-chip/alchemy/matter/types"
 )
 
 type DeviceTypeComposition struct {
@@ -54,6 +56,7 @@ func (s RequirementOrigin) String() string {
 }
 
 type DeviceTypeClusterRequirement struct {
+	entity
 	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
 	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
 
@@ -62,6 +65,10 @@ type DeviceTypeClusterRequirement struct {
 
 	DeviceType            *DeviceType
 	DeviceTypeRequirement *DeviceTypeRequirement
+}
+
+func NewDeviceTypeClusterRequirement(parent types.Entity, clusterRequirement *ClusterRequirement, source asciidoc.Element) *DeviceTypeClusterRequirement {
+	return &DeviceTypeClusterRequirement{entity: entity{parent: parent, source: source}, ClusterRequirement: clusterRequirement}
 }
 
 func (dtcr *DeviceTypeClusterRequirement) Clone() *DeviceTypeClusterRequirement {
@@ -76,6 +83,7 @@ func (dtcr *DeviceTypeClusterRequirement) Clone() *DeviceTypeClusterRequirement 
 }
 
 type DeviceTypeElementRequirement struct {
+	entity
 	DeviceTypeID   *Number `json:"deviceTypeId,omitempty"`
 	DeviceTypeName string  `json:"deviceTypeName,omitempty"`
 
@@ -84,6 +92,10 @@ type DeviceTypeElementRequirement struct {
 
 	DeviceType            *DeviceType
 	DeviceTypeRequirement *DeviceTypeRequirement
+}
+
+func NewDeviceTypeElementRequirement(parent types.Entity, elementRequirement *ElementRequirement, source asciidoc.Element) *DeviceTypeElementRequirement {
+	return &DeviceTypeElementRequirement{entity: entity{parent: parent, source: source}, ElementRequirement: elementRequirement}
 }
 
 func (dter *DeviceTypeElementRequirement) Clone() *DeviceTypeElementRequirement {

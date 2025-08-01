@@ -33,6 +33,7 @@ const (
 	SectionClusterRestrictions
 	SectionElementRequirements
 	SectionComposedDeviceTypeClusterRequirements
+	SectionComposedDeviceTypeConditionRequirements
 	SectionComposedDeviceTypeElementRequirements
 	SectionEndpointComposition
 	SectionField
@@ -106,15 +107,16 @@ var sectionTypeStrings = map[Section]string{
 	SectionClusterRequirements:    "ClusterRequirements",
 	SectionClusterRestrictions:    "ClusterRestrictions",
 	SectionElementRequirements:    "ElementRequirements",
-	SectionComposedDeviceTypeClusterRequirements: "ComposedDeviceTypeClusterRequirements",
-	SectionComposedDeviceTypeElementRequirements: "ComposedDeviceTypeElementRequirements",
-	SectionEndpointComposition:                   "EndpointComposition",
-	SectionField:                                 "Field",
-	SectionValue:                                 "Value",
-	SectionBit:                                   "Bit",
-	SectionDerivedClusterNamespace:               "DerivedClusterNamespace",
-	SectionModeTags:                              "ModeTags",
-	SectionGlobalElements:                        "GlobalElements",
+	SectionComposedDeviceTypeClusterRequirements:   "ComposedDeviceTypeClusterRequirements",
+	SectionComposedDeviceTypeConditionRequirements: "ComposedDeviceTypeConditionRequirements",
+	SectionComposedDeviceTypeElementRequirements:   "ComposedDeviceTypeElementRequirements",
+	SectionEndpointComposition:                     "EndpointComposition",
+	SectionField:                                   "Field",
+	SectionValue:                                   "Value",
+	SectionBit:                                     "Bit",
+	SectionDerivedClusterNamespace:                 "DerivedClusterNamespace",
+	SectionModeTags:                                "ModeTags",
+	SectionGlobalElements:                          "GlobalElements",
 }
 
 func (st Section) String() string {
@@ -155,11 +157,12 @@ var sectionTypeNames = map[Section]string{
 	SectionClusterRestrictions:                   "Cluster Restrictions",
 	SectionElementRequirements:                   "Element Requirements",
 	SectionComposedDeviceTypeClusterRequirements: "Cluster Requirements on Composing Device Types",
-	SectionComposedDeviceTypeElementRequirements: "Element Requirements on Composing Device Types",
-	SectionEndpointComposition:                   "Endpoint Composition",
-	SectionField:                                 "Field",
-	SectionDerivedClusterNamespace:               "Derived Cluster Namespace",
-	SectionModeTags:                              "Mode Tags",
+	SectionComposedDeviceTypeConditionRequirements: "Condition Requirements on Composing Device Types",
+	SectionComposedDeviceTypeElementRequirements:   "Element Requirements on Composing Device Types",
+	SectionEndpointComposition:                     "Endpoint Composition",
+	SectionField:                                   "Field",
+	SectionDerivedClusterNamespace:                 "Derived Cluster Namespace",
+	SectionModeTags:                                "Mode Tags",
 }
 
 func SectionTypeName(st Section) string {

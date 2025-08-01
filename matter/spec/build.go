@@ -96,8 +96,14 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 		entities, err = d.Entities()
 		if err != nil {
 			slog.Warn("error building entities", "doc", d.Path, "error", err)
-			continue
+			if pe, isParseError := err.(Error); isParseError {
+				spec.addError(pe)
+			} else {
+				err = nil
+				continue
+			}
 		}
+		spec.Docs[d.Path.Relative] = d
 		for _, m := range entities {
 			switch m := m.(type) {
 			case *matter.ClusterGroup:
@@ -169,7 +175,6 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 				spec.DocRefs[m] = d
 			}
 		}
-		spec.Docs[d.Path.Relative] = d
 	}
 
 	if basicInformationCluster == nil {
