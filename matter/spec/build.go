@@ -76,7 +76,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 		return
 	}
 
-	var basicInformationCluster, bridgedBasicInformationCluster *matter.Cluster
+	var basicInformationCluster, bridgedDeviceBasicInformationCluster *matter.Cluster
 
 	for _, d := range referencedDocs {
 		slog.Debug("building spec", "path", d.Path)
@@ -109,7 +109,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 				case "Basic Information":
 					basicInformationCluster = m
 				case "Bridged Device Basic Information":
-					bridgedBasicInformationCluster = m
+					bridgedDeviceBasicInformationCluster = m
 				}
 				sp.addCluster(d, m)
 			case *matter.DeviceType:
@@ -129,6 +129,10 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 					spec.addError(&DuplicateEntityNameError{Entity: m, Previous: existing})
 				}
 				spec.DeviceTypesByName[m.Name] = m
+				switch m.Name {
+				case "Root Node":
+					spec.RootNodeDeviceType = m
+				}
 			case *matter.Namespace:
 				spec.Namespaces = append(spec.Namespaces, m)
 			case *matter.Bitmap:
@@ -168,6 +172,19 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 		spec.Docs[d.Path.Relative] = d
 	}
 
+	if basicInformationCluster == nil {
+		err = fmt.Errorf("missing Basic Information Cluster in spec")
+		return
+	}
+	if bridgedDeviceBasicInformationCluster == nil {
+		err = fmt.Errorf("missing Bridged Device Basic Information Cluster in spec")
+		return
+	}
+	if spec.RootNodeDeviceType == nil {
+		err = fmt.Errorf("missing Root Node Device Type in spec")
+		return
+	}
+
 	sp.resolveClusterDataTypeReferences(true)
 	sp.resolveGlobalDataTypeReferences()
 	if !sp.ignoreHierarchy {
@@ -182,7 +199,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 
 	sp.resolveConformances()
 	sp.resolveConstraints()
-	err = updateBridgedBasicInformationCluster(spec, basicInformationCluster, bridgedBasicInformationCluster)
+	err = updateBridgedBasicInformationCluster(spec, basicInformationCluster, bridgedDeviceBasicInformationCluster)
 	if err != nil {
 		return
 	}
@@ -369,12 +386,7 @@ func (sp *Builder) resolveHierarchy() {
 }
 
 func updateBridgedBasicInformationCluster(spec *Specification, basicInformationCluster *matter.Cluster, bridgedBasicInformationCluster *matter.Cluster) error {
-	if basicInformationCluster == nil {
-		return fmt.Errorf("missing Basic Information Cluster in spec")
-	}
-	if bridgedBasicInformationCluster == nil {
-		return fmt.Errorf("missing Basic Information Cluster in spec")
-	}
+
 	linkedEntities, err := bridgedBasicInformationCluster.Inherit(basicInformationCluster)
 	if err != nil {
 		return err
