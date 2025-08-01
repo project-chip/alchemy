@@ -22,7 +22,8 @@ type Specification struct {
 	DeviceTypesByID   map[uint64]*matter.DeviceType
 	DeviceTypesByName map[string]*matter.DeviceType
 
-	BaseDeviceType *matter.DeviceType
+	BaseDeviceType     *matter.DeviceType
+	RootNodeDeviceType *matter.DeviceType
 
 	deviceTypeCompositionCache map[*matter.DeviceType]*matter.DeviceTypeComposition
 
