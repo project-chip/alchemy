@@ -121,11 +121,6 @@ func (s *Section) toDeviceTypeRequirements(d *Doc, deviceType *matter.DeviceType
 		return
 	}
 	for row := range ti.ContentRows() {
-		firstCell := row.Cell(0)
-		if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value > 1 {
-			// Some tables include decorative headers, so we skip those
-			continue
-		}
 		dtr := matter.NewDeviceTypeRequirement(deviceType, row)
 		var deviceId string
 		deviceId, err = ti.ReadString(row, matter.TableColumnDeviceID, matter.TableColumnID)
@@ -169,11 +164,6 @@ func (s *Section) toComposedDeviceTypeClusterRequirements(d *Doc, deviceType *ma
 		return
 	}
 	for row := range ti.ContentRows() {
-		firstCell := row.Cell(0)
-		if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value > 1 {
-			// Some tables include decorative headers, so we skip those
-			continue
-		}
 		var cr *matter.ClusterRequirement
 		cr, err = s.toClusterRequirement(deviceType, ti, row)
 		if err != nil {
@@ -237,11 +227,6 @@ func (s *Section) toComposedDeviceTypeElementRequirements(d *Doc, deviceType *ma
 		return
 	}
 	for row := range ti.ContentRows() {
-		firstCell := row.Cell(0)
-		if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value > 1 {
-			// Some tables include decorative headers, so we skip those
-			continue
-		}
 		var er matter.ElementRequirement
 		er, err = s.toElementRequirement(d, ti, row, deviceType)
 		if err != nil {
