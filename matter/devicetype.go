@@ -24,8 +24,9 @@ type DeviceType struct {
 
 	Conditions []*Condition `json:"conditions,omitempty"`
 
-	ClusterRequirements []*ClusterRequirement `json:"clusterRequirements,omitempty"`
-	ElementRequirements []*ElementRequirement `json:"elementRequirements,omitempty"`
+	ClusterRequirements   []*ClusterRequirement   `json:"clusterRequirements,omitempty"`
+	ElementRequirements   []*ElementRequirement   `json:"elementRequirements,omitempty"`
+	ConditionRequirements []*ConditionRequirement `json:"conditionRequirements,omitempty"`
 
 	DeviceTypeRequirements                []*DeviceTypeRequirement        `json:"deviceTypeRequirements,omitempty"`
 	ComposedDeviceTypeClusterRequirements []*DeviceTypeClusterRequirement `json:"composedDeviceTypeClusterRequirements,omitempty"`
@@ -49,8 +50,8 @@ func (dt *DeviceType) Identifier(name string) (types.Entity, bool) {
 	return nil, false
 }
 
-func NewClusterRequirement(source asciidoc.Element) *ClusterRequirement {
-	return &ClusterRequirement{entity: entity{source: source}}
+func NewClusterRequirement(parent *DeviceType, source asciidoc.Element) *ClusterRequirement {
+	return &ClusterRequirement{entity: entity{parent: parent, source: source}}
 }
 
 type ClusterRequirement struct {
@@ -83,8 +84,8 @@ func (cr *ClusterRequirement) Clone() *ClusterRequirement {
 	return cer
 }
 
-func NewElementRequirement(source asciidoc.Element) ElementRequirement {
-	return ElementRequirement{entity: entity{source: source}}
+func NewElementRequirement(parent types.Entity, source asciidoc.Element) ElementRequirement {
+	return ElementRequirement{entity: entity{parent: parent, source: source}}
 }
 
 type ElementRequirement struct {
@@ -130,8 +131,8 @@ func (er *ElementRequirement) Clone() *ElementRequirement {
 	return cer
 }
 
-func NewDeviceTypeRequirement(source asciidoc.Element) *DeviceTypeRequirement {
-	return &DeviceTypeRequirement{entity: entity{source: source}}
+func NewDeviceTypeRequirement(parent *DeviceType, source asciidoc.Element) *DeviceTypeRequirement {
+	return &DeviceTypeRequirement{entity: entity{parent: parent, source: source}}
 }
 
 type DeviceTypeRequirementLocation uint8
@@ -193,22 +194,4 @@ func (dtr *DeviceTypeRequirement) Clone() *DeviceTypeRequirement {
 		cdtr.Conformance = dtr.Conformance.CloneSet()
 	}
 	return cdtr
-}
-
-type Condition struct {
-	entity
-	Feature     string
-	Description string
-}
-
-func NewCondition(source asciidoc.Element, dt *DeviceType) *Condition {
-	return &Condition{entity: entity{source: source, parent: dt}}
-}
-
-func (c *Condition) EntityType() types.EntityType {
-	return types.EntityTypeCondition
-}
-
-func (c *Condition) GetConformance() conformance.Set {
-	return nil
 }

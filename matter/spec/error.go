@@ -32,6 +32,9 @@ const (
 	ErrorTypeComposingDeviceTypeElementRequirementUnknownCluster
 	ErrorTypeComposingDeviceTypeElementRequirementUnknownDeviceType
 	ErrorTypeComposingDeviceTypeElementRequirementUnreferencedDeviceType
+	ErrorTypeConditionRequirementUnknownDeviceType
+	ErrorTypeConditionRequirementUnreferencedDeviceType
+	ErrorTypeConditionRequirementUnknownCondition
 	ErrorTypeClusterReferenceNameMismatch
 	ErrorTypeDeviceTypeReferenceNameMismatch
 	ErrorTypeUnknownBaseCluster
@@ -253,6 +256,54 @@ func (ddt ElementRequirementUnknownElementError) Origin() (path string, line int
 
 func (ddt ElementRequirementUnknownElementError) Error() string {
 	return fmt.Sprintf("element requirement references unknown element: %s %s", ddt.Requirement.Element.String(), ddt.Requirement.Name)
+}
+
+type UnknownConditionRequirementDeviceTypeError struct {
+	Requirement *matter.ConditionRequirement
+}
+
+func (ddt UnknownConditionRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeConditionRequirementUnknownDeviceType
+}
+
+func (ddt UnknownConditionRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnknownConditionRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("condition requirement references unknown device type: %s", ddt.Requirement.DeviceTypeName)
+}
+
+type UnreferencedConditionRequirementDeviceTypeError struct {
+	Requirement *matter.ConditionRequirement
+}
+
+func (ddt UnreferencedConditionRequirementDeviceTypeError) Type() ErrorType {
+	return ErrorTypeConditionRequirementUnreferencedDeviceType
+}
+
+func (ddt UnreferencedConditionRequirementDeviceTypeError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnreferencedConditionRequirementDeviceTypeError) Error() string {
+	return fmt.Sprintf("unreferenced condition requirement device type: %s", ddt.Requirement.DeviceTypeName)
+}
+
+type UnknownConditionRequirementConditionError struct {
+	Requirement *matter.ConditionRequirement
+}
+
+func (ddt UnknownConditionRequirementConditionError) Type() ErrorType {
+	return ErrorTypeConditionRequirementUnknownCondition
+}
+
+func (ddt UnknownConditionRequirementConditionError) Origin() (path string, line int) {
+	return ddt.Requirement.Origin()
+}
+
+func (ddt UnknownConditionRequirementConditionError) Error() string {
+	return fmt.Sprintf("condition requirement references unknown condition: %s", ddt.Requirement.ConditionName)
 }
 
 type UnknownComposingDeviceTypeRequirementDeviceTypeError struct {

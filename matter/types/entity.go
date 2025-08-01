@@ -29,6 +29,7 @@ const (
 	EntityTypeElementRequirement
 	EntityTypeDeviceTypeRequirement
 	EntityTypeClusterRequirement
+	EntityTypeConditionRequirement
 	EntityTypeDef
 	EntityTypeNamespace
 	EntityTypeConstant
@@ -67,6 +68,7 @@ var (
 		EntityTypeElementRequirement:    "elementRequirement",
 		EntityTypeDeviceTypeRequirement: "deviceTypeRequirement",
 		EntityTypeClusterRequirement:    "clusterRequirement",
+		EntityTypeConditionRequirement:  "conditionRequirement",
 		EntityTypeDef:                   "typeDef",
 		EntityTypeNamespace:             "namespace",
 		EntityTypeConstant:              "constant",

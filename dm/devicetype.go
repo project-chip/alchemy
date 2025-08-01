@@ -11,6 +11,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/project-chip/alchemy/asciidoc"
+	"github.com/project-chip/alchemy/internal"
 	"github.com/project-chip/alchemy/matter"
 	"github.com/project-chip/alchemy/matter/types"
 )
@@ -68,6 +69,33 @@ func renderDeviceType(deviceType *matter.DeviceType) (output string, err error) 
 			cx := conditions.CreateElement("condition")
 			cx.CreateAttr("name", condition.Feature)
 			cx.CreateAttr("summary", scrubDescription(condition.Description))
+		}
+	}
+
+	if len(deviceType.ConditionRequirements) > 0 {
+		reqs := make(map[*matter.DeviceType][]*matter.ConditionRequirement)
+		for _, cr := range deviceType.ConditionRequirements {
+			if cr.Condition != nil && cr.DeviceType != nil {
+				reqs[cr.DeviceType] = append(reqs[cr.DeviceType], cr)
+			}
+		}
+		if len(reqs) > 0 {
+			cre := c.CreateElement("conditionRequirements")
+			for dt := range internal.IterateMapAlphabetically(reqs, func(dt *matter.DeviceType) string {
+				return dt.Name
+			}) {
+				dte := cre.CreateElement("deviceType")
+				dte.CreateAttr("id", dt.ID.HexString())
+				dte.CreateAttr("name", dt.Name)
+				for _, cr := range reqs[dt] {
+					cre := dte.CreateElement("conditionRequirement")
+					cre.CreateAttr("name", cr.Condition.Feature)
+					err = renderConformanceElement(cr.Conformance, cre, nil)
+					if err != nil {
+						return
+					}
+				}
+			}
 		}
 	}
 

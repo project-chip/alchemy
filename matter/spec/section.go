@@ -237,6 +237,8 @@ func getSectionType(parent *Section, section *Section) matter.Section {
 			return st
 		}
 		return matter.SectionComposedDeviceTypeClusterRequirements
+	case "condition requirements on composing device types":
+		return matter.SectionComposedDeviceTypeConditionRequirements
 	case "element requirements on composing device types":
 		return matter.SectionComposedDeviceTypeElementRequirements
 	}
