@@ -34,7 +34,7 @@ func Path(name string, source Source) slog.Attr {
 func Element(name string, path fmt.Stringer, element asciidoc.Element) slog.Attr {
 	var arg strings.Builder
 	arg.WriteString(path.String())
-	if hp, ok := element.(asciidoc.HasPosition); ok {
+	if hp, ok := element.(hasPosition); ok {
 		l, _, _ := hp.Position()
 		if l >= 0 {
 			arg.WriteRune(':')
@@ -44,11 +44,15 @@ func Element(name string, path fmt.Stringer, element asciidoc.Element) slog.Attr
 	return slog.String(name, arg.String())
 }
 
+type hasPosition interface {
+	Position() (line int, column int, offset int)
+}
+
 func Elements(name string, path fmt.Stringer, elements asciidoc.Set) slog.Attr {
 	var arg strings.Builder
 	arg.WriteString(path.String())
 	for _, element := range elements {
-		if hp, ok := element.(asciidoc.HasPosition); ok {
+		if hp, ok := element.(hasPosition); ok {
 			l, _, _ := hp.Position()
 			if l >= 0 {
 				arg.WriteRune(':')
@@ -56,7 +60,6 @@ func Elements(name string, path fmt.Stringer, elements asciidoc.Set) slog.Attr {
 				break
 			}
 		}
-
 	}
 	return slog.String(name, arg.String())
 }

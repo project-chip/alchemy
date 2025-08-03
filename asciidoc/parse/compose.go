@@ -69,8 +69,14 @@ func setLines[T asciidoc.HasLines](els any) composeOption[T] {
 	}
 }
 
-func populatePosition(c *current, el asciidoc.HasPosition) asciidoc.HasPosition {
+func populatePosition[T asciidoc.HasPosition](c *current, el T) T {
+	line, col, offset := c.currentPosition()
+	switch any(el).(type) {
+	case *asciidoc.EmptyLine:
+		// Newlines end on the following line, so for logging purposes we shift the line back one
+		line -= 1
+	}
 	el.SetPath(c.parser.filename)
-	el.SetPosition(c.currentPosition())
+	el.SetPosition(line, col, offset)
 	return el
 }

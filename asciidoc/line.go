@@ -35,11 +35,13 @@ type HasLines interface {
 }
 
 type EmptyLine struct {
+	position
+
 	Text string
 }
 
-func NewEmptyLine(text string) EmptyLine {
-	return EmptyLine{Text: text}
+func NewEmptyLine(text string) *EmptyLine {
+	return &EmptyLine{Text: text}
 }
 
 func (EmptyLine) Type() ElementType {
