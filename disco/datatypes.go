@@ -334,7 +334,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 		p := asciidoc.NewParagraph()
 		p.SetElements(asciidoc.Set{se})
 		dataTypeSection.Append(p)
-		bl := asciidoc.NewEmptyLine("")
+		bl := asciidoc.EmptyLine{Text: ""}
 		dataTypeSection.Append(bl)
 		dataTypeSection.Append(table)
 		dataTypeSection.Append(bl)
@@ -384,7 +384,7 @@ func ensureDataTypesSection(top *spec.Section) (*spec.Section, error) {
 	title := asciidoc.NewString(matter.SectionTypeName(matter.SectionDataTypes))
 
 	ts := asciidoc.NewSection(asciidoc.Set{title}, top.Base.Level+1)
-	ts.Append(asciidoc.NewEmptyLine(""))
+	ts.Append(asciidoc.EmptyLine{Text: ""})
 	dataTypesSection, err := spec.NewSection(top.Doc, top, ts)
 	if err != nil {
 		return nil, err

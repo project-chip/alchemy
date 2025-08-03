@@ -119,6 +119,10 @@ func (s *Section) GetASCIISection() *asciidoc.Section {
 	return s.Base
 }
 
+func (s *Section) Position() (line int, column int, offset int) {
+	return s.Base.Position()
+}
+
 func AssignSectionTypes(doc *Doc, top *Section) error {
 	if top.sectionTypesAssigned {
 		return nil
