@@ -55,7 +55,6 @@ func main() {
 	matches := testPattern.FindAllStringSubmatch(string(text), -1)
 	testNames := make(map[string]struct{})
 	for _, match := range matches {
-		fmt.Printf("test: %s\n", match[1])
 		tn := match[1]
 		_, exists := testNames[tn]
 		if exists {
@@ -64,6 +63,8 @@ func main() {
 		tests = append(tests, &adTest{Name: tn, QuotedName: strconv.Quote(tn), Asciidoc: match[2]})
 		testNames[tn] = struct{}{}
 	}
+
+	var workingTests []*adTest
 
 	for _, t := range tests {
 		a := dedent.Dedent(t.Asciidoc)
@@ -81,9 +82,11 @@ func main() {
 			slog.Error("failed creating path", "test", t.Name, "err", err)
 			continue
 		}
+		fmt.Printf("parsing test: %s\n", t.Name)
+
 		parsedDoc, err := parse.Inline(spec.NewPreparseContext(docPath, "."), "test.adoc", strings.NewReader(a))
 		if err != nil {
-			slog.Error("failed creating path", "test", t.Name, "err", err)
+			slog.Error("failed parsing document", "test", t.Name, "err", err)
 			continue
 		}
 
@@ -96,6 +99,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		workingTests = append(workingTests, t)
 	}
 
 	testName = strings.TrimSuffix(testName, "_test")
@@ -103,7 +107,7 @@ func main() {
 	t := adTestGroup{
 		Name:      strcase.ToCamel(testName),
 		ArrayName: strcase.ToLowerCamel(testName),
-		Tests:     tests,
+		Tests:     workingTests,
 	}
 
 	tt := template.New("Asciidoctor Test Template")
@@ -144,12 +148,12 @@ func Test{{.Name}}(t *testing.T) {
 
 var {{.ArrayName}}Tests = parseTests{
 	{{range .Tests}}
-	{ {{.QuotedName}}, "{{.AsciidocPath}}", {{.TestName}} },
+	{{"{"}}{{.QuotedName}}, "{{.AsciidocPath}}", {{.TestName}}, nil },
 	{{end}}
 }
 
 {{range .Tests}}
-var {{.TestName}} = {{.GoObject}}
+var {{.TestName}} = {{.DocObject}}
 {{end}}
 
 `
