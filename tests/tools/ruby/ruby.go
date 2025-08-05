@@ -124,8 +124,10 @@ func main() {
 	tf.Close()
 }
 
+var pointerCommentPattern = regexp.MustCompile(`(?m)\/\/ p[0-9]+$`)
+
 func cleanObjectDump(s string) string {
-	return strings.ReplaceAll(s, "[github.com/project-chip/alchemy/", "[")
+	return pointerCommentPattern.ReplaceAllString(strings.ReplaceAll(s, "[github.com/project-chip/alchemy/", "["), "")
 }
 
 var testTemplate = `package tests
