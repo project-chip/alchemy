@@ -138,9 +138,17 @@ var tablesTests = parseTests{
 
 	{"assigns unique column names for table with implicit column count and colspans in first row", "asciidoctor/tables_test_assigns_unique_column_names_for_table_with_implicit_column_count_and_colspans_in_first_row.adoc", assignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow, nil},
 
-	{"ignores cell with colspan that exceeds colspec", "asciidoctor/tables_test_ignores_cell_with_colspan_that_exceeds_colspec.adoc", ignoresCellWithColspanThatExceedsColspec, nil},
+	{"should drop row but preserve remaining rows after cell with colspan exceeds number of columns", "asciidoctor/tables_test_should_drop_row_but_preserve_remaining_rows_after_cell_with_colspan_exceeds_number_of_columns.adoc", shouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNumberOfColumns, nil},
 
-	{"paragraph and literal repeated content", "asciidoctor/tables_test_paragraph_and_literal_repeated_content.adoc", paragraphAndLiteralRepeatedContent, nil},
+	{"should drop last row if last cell in table has colspan that exceeds specified number of columns", "asciidoctor/tables_test_should_drop_last_row_if_last_cell_in_table_has_colspan_that_exceeds_specified_number_of_columns.adoc", shouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNumberOfColumns, nil},
+
+	{"should drop last row if last cell in table has colspan that exceeds implicit number of columns", "asciidoctor/tables_test_should_drop_last_row_if_last_cell_in_table_has_colspan_that_exceeds_implicit_number_of_columns.adoc", shouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNumberOfColumns, nil},
+
+	{"should take colspan into account when taking cells for row", "asciidoctor/tables_test_should_take_colspan_into_account_when_taking_cells_for_row.adoc", shouldTakeColspanIntoAccountWhenTakingCellsForRow, nil},
+
+	{"should drop incomplete row at end of table and log an error", "asciidoctor/tables_test_should_drop_incomplete_row_at_end_of_table_and_log_an_error.adoc", shouldDropIncompleteRowAtEndOfTableAndLogAnError, nil},
+
+	{"should apply cell style for column to repeated content", "asciidoctor/tables_test_should_apply_cell_style_for_column_to_repeated_content.adoc", shouldApplyCellStyleForColumnToRepeatedContent, nil},
 
 	{"should not split paragraph at line containing only {blank} that is directly adjacent to non-blank lines", "asciidoctor/tables_test_should_not_split_paragraph_at_line_containing_only_{blank}_that_is_directly_adjacent_to_non_blank_lines.adoc", shouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdjacentToNonBlankLines, nil},
 
@@ -171,6 +179,8 @@ var tablesTests = parseTests{
 	{"should preserve leading indentation in contents of AsciiDoc table cell if contents starts with newline", "asciidoctor/tables_test_should_preserve_leading_indentation_in_contents_of_ascii_doc_table_cell_if_contents_starts_with_newline.adoc", shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStartsWithNewline, nil},
 
 	{"preprocessor directive on first line of an AsciiDoc table cell should be processed", "asciidoctor/tables_test_preprocessor_directive_on_first_line_of_an_ascii_doc_table_cell_should_be_processed.adoc", preprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProcessed, nil},
+
+	{"error about unresolved preprocessor directive on first line of an AsciiDoc table cell should have correct cursor", "asciidoctor/tables_test_error_about_unresolved_preprocessor_directive_on_first_line_of_an_ascii_doc_table_cell_should_have_correct_cursor.adoc", errorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldHaveCorrectCursor, nil},
 
 	{"cross reference link in an AsciiDoc table cell should resolve to reference in main document", "asciidoctor/tables_test_cross_reference_link_in_an_ascii_doc_table_cell_should_resolve_to_reference_in_main_document.adoc", crossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocument, nil},
 
@@ -253,7 +263,7 @@ var tablesTests = parseTests{
 
 var convertsSimplePsvTable = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -603,7 +613,7 @@ var convertsSimplePsvTable = &asciidoc.Document{
 
 var shouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -963,7 +973,7 @@ var shouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc.Document{
 
 var shouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -1323,7 +1333,7 @@ var shouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 
 var outputsACaptionOnSimplePsvTable = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -1681,7 +1691,7 @@ var outputsACaptionOnSimplePsvTable = &asciidoc.Document{
 
 var onlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -1810,7 +1820,7 @@ var onlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -1931,7 +1941,7 @@ var onlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -2065,7 +2075,7 @@ var onlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Document{
 
 var usesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -2432,7 +2442,7 @@ var usesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber = &asciido
 
 var disablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2794,7 +2804,7 @@ var disablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Document{
 
 var disablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -3157,13 +3167,13 @@ var disablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciidoc.Document
 
 var disablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
 			Name: "table-caption",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -3521,7 +3531,7 @@ var disablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &asciidoc.D
 
 var ignoresEscapedSeparators = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -3611,7 +3621,7 @@ var ignoresEscapedSeparators = &asciidoc.Document{
 
 var preservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -3924,7 +3934,7 @@ var preservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 
 var shouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -4162,7 +4172,7 @@ var shouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 
 var shouldAutoRecoverWithWarningIfMissingLeadingSeparatorOnFirstCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4198,7 +4208,7 @@ var shouldAutoRecoverWithWarningIfMissingLeadingSeparatorOnFirstCell = &asciidoc
 
 var performsNormalSubstitutionsOnCellContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -4296,7 +4306,7 @@ var performsNormalSubstitutionsOnCellContent = &asciidoc.Document{
 
 var shouldOnlySubstituteSpecialcharsForLiteralTableCells = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -4362,7 +4372,7 @@ var shouldOnlySubstituteSpecialcharsForLiteralTableCells = &asciidoc.Document{
 
 var shouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralTableCells = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -4485,7 +4495,7 @@ var shouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralT
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 			},
@@ -4495,7 +4505,7 @@ var shouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralT
 
 var shouldIgnoreVTableCellStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -4555,7 +4565,7 @@ var shouldIgnoreVTableCellStyle = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4571,7 +4581,7 @@ var shouldIgnoreVTableCellStyle = &asciidoc.Document{
 
 var tableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -4931,7 +4941,7 @@ var tableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &asciidoc.Doc
 
 var doesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -5446,7 +5456,7 @@ var doesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciidoc.Document
 
 var canAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -5944,7 +5954,7 @@ var canAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.Document{
 
 var equallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -6459,7 +6469,7 @@ var equallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookOutput = &a
 
 var shouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6470,7 +6480,7 @@ var shouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutpu
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -6635,7 +6645,7 @@ var shouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutpu
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -6941,7 +6951,7 @@ var shouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutpu
 
 var explicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -7315,7 +7325,7 @@ var explicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asciidoc.Docum
 
 var firstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -7625,7 +7635,7 @@ var firstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 
 var colspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -8006,7 +8016,7 @@ var colspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc.Document{
 
 var tableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -8275,7 +8285,7 @@ var tableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &asciidoc.Doc
 
 var tableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASingleLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -8596,7 +8606,7 @@ var tableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASingleLine = &
 
 var columnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -8895,7 +8905,7 @@ var columnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Document{
 
 var colsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -9042,7 +9052,7 @@ var colsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
 
 var colsAttributeMayIncludeSpaces = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -9341,7 +9351,7 @@ var colsAttributeMayIncludeSpaces = &asciidoc.Document{
 
 var blankColsAttributeShouldBeIgnored = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -9587,7 +9597,7 @@ var blankColsAttributeShouldBeIgnored = &asciidoc.Document{
 
 var emptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -9833,7 +9843,7 @@ var emptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 
 var tableWithHeaderAndFooter = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -10237,7 +10247,7 @@ var tableWithHeaderAndFooter = &asciidoc.Document{
 
 var tableWithHeaderAndFooterDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -10648,7 +10658,7 @@ var tableWithHeaderAndFooterDocbook = &asciidoc.Document{
 
 var shouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -10767,7 +10777,7 @@ var shouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &asciidoc.D
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -10889,7 +10899,7 @@ var shouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &asciidoc.D
 
 var shouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -11025,7 +11035,7 @@ var shouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Document{
 
 var shouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -11161,7 +11171,7 @@ var shouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &asciidoc.Docume
 
 var shouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -11297,7 +11307,7 @@ var shouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.Document{
 
 var shouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -11433,7 +11443,7 @@ var shouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asciidoc.Docum
 
 var tableWithImplicitHeaderRow = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -11516,7 +11526,7 @@ var tableWithImplicitHeaderRow = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -11595,7 +11605,7 @@ var tableWithImplicitHeaderRow = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -11681,7 +11691,7 @@ var tableWithImplicitHeaderRow = &asciidoc.Document{
 
 var tableWithImplicitHeaderRowOnly = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -11764,7 +11774,7 @@ var tableWithImplicitHeaderRowOnly = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 			},
@@ -11774,7 +11784,7 @@ var tableWithImplicitHeaderRowOnly = &asciidoc.Document{
 
 var tableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -11872,7 +11882,7 @@ var tableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -11958,7 +11968,7 @@ var tableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document{
 
 var noImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -12117,7 +12127,7 @@ var noImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -12203,7 +12213,7 @@ var noImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 
 var noImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -12323,7 +12333,7 @@ var noImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -12409,7 +12419,7 @@ var noImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc.Document{
 
 var shouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColumnHasLStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -12556,7 +12566,7 @@ var shouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColumnHasLStyle
 
 var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColumnHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -12659,7 +12669,7 @@ var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColumnHasAStyl
 										},
 									},
 									AttributeList: nil,
-									Indent:        "",
+									Indent:        " ",
 									Marker:        "*",
 									Checklist:     0,
 								},
@@ -12711,7 +12721,7 @@ var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColumnHasAStyl
 
 var shouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderRow = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -12807,7 +12817,9 @@ var shouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderR
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.String{
 									Value: "literal",
 								},
@@ -12859,7 +12871,7 @@ var shouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderR
 
 var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCellHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -12905,7 +12917,7 @@ var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCellHasAStyle 
 										},
 									},
 									AttributeList: nil,
-									Indent:        "",
+									Indent:        " ",
 									Marker:        "*",
 									Checklist:     0,
 								},
@@ -12961,7 +12973,7 @@ var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCellHasAStyle 
 
 var noImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -13035,7 +13047,7 @@ var noImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &asciidoc.D
 									Value: "contains AsciiDoc content",
 								},
 								&asciidoc.NewLine{},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.UnorderedListItem{
@@ -13108,7 +13120,7 @@ var noImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &asciidoc.D
 									Value: "contains no AsciiDoc content",
 								},
 								&asciidoc.NewLine{},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.String{
@@ -13202,14 +13214,14 @@ var noImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &asciidoc.D
 
 var noImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -13288,7 +13300,7 @@ var noImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -13367,7 +13379,7 @@ var noImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -13446,7 +13458,7 @@ var noImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 			},
@@ -13456,7 +13468,7 @@ var noImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 
 var noImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -13554,7 +13566,7 @@ var noImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -13633,7 +13645,7 @@ var noImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -13719,7 +13731,7 @@ var noImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Document{
 
 var stylesNotAppliedToHeaderCells = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -14169,7 +14181,7 @@ var stylesNotAppliedToHeaderCells = &asciidoc.Document{
 
 var shouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -14299,7 +14311,7 @@ var shouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &as
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -14393,7 +14405,7 @@ var shouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &as
 
 var shouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -14626,7 +14638,7 @@ var shouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHeader = &asci
 
 var verticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -14716,7 +14728,7 @@ var verticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
 			},
 			ColumnCount: 3,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -14831,7 +14843,7 @@ var verticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -14954,7 +14966,7 @@ var verticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -15069,7 +15081,7 @@ var verticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 			},
@@ -15079,7 +15091,7 @@ var verticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
 
 var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -15368,7 +15380,7 @@ var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &ascii
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -15524,7 +15536,7 @@ var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &ascii
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -15676,7 +15688,7 @@ var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &ascii
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -15837,7 +15849,7 @@ var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &ascii
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 			},
@@ -15847,7 +15859,7 @@ var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &ascii
 
 var percentagesAsColumnWidths = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -15994,7 +16006,7 @@ var percentagesAsColumnWidths = &asciidoc.Document{
 
 var spansAlignmentsAndStyles = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -16532,7 +16544,7 @@ var spansAlignmentsAndStyles = &asciidoc.Document{
 
 var setsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -16851,7 +16863,7 @@ var setsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciidoc.Document
 
 var supportsRepeatingCells = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -17065,7 +17077,7 @@ var supportsRepeatingCells = &asciidoc.Document{
 
 var calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCellWithColspan = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -17200,7 +17212,7 @@ var calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCellWithCols
 
 var calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWithMixedColspans = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -17407,7 +17419,7 @@ var calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWithMixedCols
 
 var assignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -17532,7 +17544,7 @@ var assignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -17908,9 +17920,9 @@ var assignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow
 	},
 }
 
-var ignoresCellWithColspanThatExceedsColspec = &asciidoc.Document{
+var shouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNumberOfColumns = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -18070,7 +18082,7 @@ var ignoresCellWithColspanThatExceedsColspec = &asciidoc.Document{
 									Value: "C",
 								},
 								&asciidoc.NewLine{},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.String{
@@ -18086,9 +18098,1158 @@ var ignoresCellWithColspanThatExceedsColspec = &asciidoc.Document{
 	},
 }
 
-var paragraphAndLiteralRepeatedContent = &asciidoc.Document{
+var shouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNumberOfColumns = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Table{
+			AttributeList: asciidoc.AttributeList{
+				&asciidoc.TableColumnsAttribute{
+					Columns: []*asciidoc.TableColumn{
+						&asciidoc.TableColumn{
+							Multiplier: asciidoc.Optional[int]{
+								Value: 2,
+								IsSet: true,
+							},
+							HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							Width: asciidoc.Optional[asciidoc.TableColumnWidth]{
+								Value: 1,
+								IsSet: false,
+							},
+							Percentage: asciidoc.Optional[int]{
+								Value: 0,
+								IsSet: false,
+							},
+							Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+								Value: 0,
+								IsSet: false,
+							},
+						},
+					},
+				},
+			},
+			ColumnCount: 2,
+			Set: asciidoc.Set{
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "a",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 2,
+										IsSet: true,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "b",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
+var shouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNumberOfColumns = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Table{
+			AttributeList: nil,
+			ColumnCount:   2,
+			Set: asciidoc.Set{
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "a",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "b",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "c",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 2,
+										IsSet: true,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "d",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
+var shouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Table{
+			AttributeList: asciidoc.AttributeList{
+				&asciidoc.TableColumnsAttribute{
+					Columns: []*asciidoc.TableColumn{
+						&asciidoc.TableColumn{
+							Multiplier: asciidoc.Optional[int]{
+								Value: 1,
+								IsSet: false,
+							},
+							HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							Width: asciidoc.Optional[asciidoc.TableColumnWidth]{
+								Value: 1,
+								IsSet: false,
+							},
+							Percentage: asciidoc.Optional[int]{
+								Value: 0,
+								IsSet: false,
+							},
+							Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+								Value: 0,
+								IsSet: false,
+							},
+						},
+						&asciidoc.TableColumn{
+							Multiplier: asciidoc.Optional[int]{
+								Value: 1,
+								IsSet: false,
+							},
+							HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							Width: asciidoc.Optional[asciidoc.TableColumnWidth]{
+								Value: 1,
+								IsSet: false,
+							},
+							Percentage: asciidoc.Optional[int]{
+								Value: 0,
+								IsSet: false,
+							},
+							Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+								Value: 0,
+								IsSet: false,
+							},
+						},
+						&asciidoc.TableColumn{
+							Multiplier: asciidoc.Optional[int]{
+								Value: 1,
+								IsSet: false,
+							},
+							HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							Width: asciidoc.Optional[asciidoc.TableColumnWidth]{
+								Value: 1,
+								IsSet: false,
+							},
+							Percentage: asciidoc.Optional[int]{
+								Value: 0,
+								IsSet: false,
+							},
+							Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+								Value: 0,
+								IsSet: false,
+							},
+						},
+						&asciidoc.TableColumn{
+							Multiplier: asciidoc.Optional[int]{
+								Value: 1,
+								IsSet: false,
+							},
+							HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							Width: asciidoc.Optional[asciidoc.TableColumnWidth]{
+								Value: 1,
+								IsSet: false,
+							},
+							Percentage: asciidoc.Optional[int]{
+								Value: 0,
+								IsSet: false,
+							},
+							Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+								Value: 0,
+								IsSet: false,
+							},
+						},
+						&asciidoc.TableColumn{
+							Multiplier: asciidoc.Optional[int]{
+								Value: 1,
+								IsSet: false,
+							},
+							HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							Width: asciidoc.Optional[asciidoc.TableColumnWidth]{
+								Value: 1,
+								IsSet: false,
+							},
+							Percentage: asciidoc.Optional[int]{
+								Value: 0,
+								IsSet: false,
+							},
+							Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+								Value: 0,
+								IsSet: false,
+							},
+						},
+						&asciidoc.TableColumn{
+							Multiplier: asciidoc.Optional[int]{
+								Value: 1,
+								IsSet: false,
+							},
+							HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							Width: asciidoc.Optional[asciidoc.TableColumnWidth]{
+								Value: 1,
+								IsSet: false,
+							},
+							Percentage: asciidoc.Optional[int]{
+								Value: 0,
+								IsSet: false,
+							},
+							Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+								Value: 0,
+								IsSet: false,
+							},
+						},
+						&asciidoc.TableColumn{
+							Multiplier: asciidoc.Optional[int]{
+								Value: 1,
+								IsSet: false,
+							},
+							HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							Width: asciidoc.Optional[asciidoc.TableColumnWidth]{
+								Value: 1,
+								IsSet: false,
+							},
+							Percentage: asciidoc.Optional[int]{
+								Value: 0,
+								IsSet: false,
+							},
+							Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+								Value: 0,
+								IsSet: false,
+							},
+						},
+					},
+				},
+			},
+			ColumnCount: 7,
+			Set: asciidoc.Set{
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 2,
+										IsSet: true,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "a",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: nil,
+							Set:    nil,
+							Blank:  true,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 2,
+										IsSet: true,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "b",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: nil,
+							Set:    nil,
+							Blank:  true,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 2,
+										IsSet: true,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "c",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: nil,
+							Set:    nil,
+							Blank:  true,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 2,
+										IsSet: true,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "d",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "e",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "f",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "g",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "h",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "i",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "j",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "k",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
+var shouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Table{
+			AttributeList: asciidoc.AttributeList{
+				&asciidoc.TableColumnsAttribute{
+					Columns: []*asciidoc.TableColumn{
+						&asciidoc.TableColumn{
+							Multiplier: asciidoc.Optional[int]{
+								Value: 2,
+								IsSet: true,
+							},
+							HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+								Value: 0,
+								IsSet: false,
+							},
+							Width: asciidoc.Optional[asciidoc.TableColumnWidth]{
+								Value: 1,
+								IsSet: false,
+							},
+							Percentage: asciidoc.Optional[int]{
+								Value: 0,
+								IsSet: false,
+							},
+							Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+								Value: 0,
+								IsSet: false,
+							},
+						},
+					},
+				},
+			},
+			ColumnCount: 2,
+			Set: asciidoc.Set{
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "a",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "b",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "c",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "d",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "e",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: nil,
+							Set:    nil,
+							Blank:  true,
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
+var shouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -18228,7 +19389,7 @@ var paragraphAndLiteralRepeatedContent = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -18236,7 +19397,7 @@ var paragraphAndLiteralRepeatedContent = &asciidoc.Document{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
-									Value: 3,
+									Value: 2,
 									IsSet: true,
 								},
 								Span: asciidoc.TableCellSpan{
@@ -18365,7 +19526,7 @@ var paragraphAndLiteralRepeatedContent = &asciidoc.Document{
 
 var shouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdjacentToNonBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -18435,7 +19596,7 @@ var shouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdjacentToNonB
 
 var shouldStripTrailingNewlinesWhenSplittingParagraphs = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -18503,7 +19664,7 @@ var shouldStripTrailingNewlinesWhenSplittingParagraphs = &asciidoc.Document{
 
 var basicAsciiDocCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -18557,7 +19718,7 @@ var basicAsciiDocCell = &asciidoc.Document{
 											Value: "content",
 										},
 										&asciidoc.NewLine{},
-										asciidoc.EmptyLine{
+										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.String{
@@ -18578,7 +19739,7 @@ var basicAsciiDocCell = &asciidoc.Document{
 
 var asciiDocTableCellShouldBeWrappedInDivWithClassContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -18632,7 +19793,7 @@ var asciiDocTableCellShouldBeWrappedInDivWithClassContent = &asciidoc.Document{
 
 var doctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -18671,7 +19832,9 @@ var doctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.AttributeEntry{
 									Name: "doctype",
 									Set: asciidoc.Set{
@@ -18680,7 +19843,7 @@ var doctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
 										},
 									},
 								},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.String{
@@ -18698,10 +19861,10 @@ var doctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
 
 var shouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -18712,13 +19875,13 @@ var shouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
@@ -18757,7 +19920,9 @@ var shouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.NewLine{},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -18768,7 +19933,7 @@ var shouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
 													},
 													Level: 0,
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.String{
@@ -18813,10 +19978,10 @@ var shouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
 
 var shouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -18827,13 +19992,13 @@ var shouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &a
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
@@ -18872,7 +20037,9 @@ var shouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &a
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.NewLine{},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -18891,7 +20058,7 @@ var shouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &a
 														},
 													},
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.String{
@@ -18936,7 +20103,7 @@ var shouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &a
 
 var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -18975,12 +20142,14 @@ var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.AttributeEntry{
 									Name: "icons",
 									Set:  nil,
 								},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.Paragraph{
@@ -19004,7 +20173,7 @@ var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi
 
 var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheApi = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -19043,7 +20212,9 @@ var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheA
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.AttributeEntry{
 									Name: "icons",
 									Set: asciidoc.Set{
@@ -19052,7 +20223,7 @@ var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheA
 										},
 									},
 								},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.Paragraph{
@@ -19076,7 +20247,7 @@ var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheA
 
 var shouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
@@ -19085,13 +20256,13 @@ var shouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciid
 		&asciidoc.AttributeReset{
 			Name: "table-caption",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
@@ -19138,8 +20309,10 @@ var shouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciid
 										},
 									},
 									Set: asciidoc.Set{
-										&asciidoc.NewLine{},
-										asciidoc.EmptyLine{
+										&asciidoc.EmptyLine{
+											Text: "",
+										},
+										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
@@ -19152,7 +20325,7 @@ var shouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciid
 											},
 											Level: 1,
 										},
-										asciidoc.EmptyLine{
+										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Paragraph{
@@ -19200,19 +20373,19 @@ var shouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciid
 
 var shouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
 			Name: "sectids",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
@@ -19251,8 +20424,10 @@ var shouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &ascii
 										},
 									},
 									Set: asciidoc.Set{
-										&asciidoc.NewLine{},
-										asciidoc.EmptyLine{
+										&asciidoc.EmptyLine{
+											Text: "",
+										},
+										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
@@ -19265,14 +20440,14 @@ var shouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &ascii
 											},
 											Level: 1,
 										},
-										asciidoc.EmptyLine{
+										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.AttributeEntry{
 											Name: "sectids",
 											Set:  nil,
 										},
-										asciidoc.EmptyLine{
+										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
@@ -19305,13 +20480,13 @@ var shouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &ascii
 
 var shouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
@@ -19350,8 +20525,10 @@ var shouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell
 										},
 									},
 									Set: asciidoc.Set{
-										&asciidoc.NewLine{},
-										asciidoc.EmptyLine{
+										&asciidoc.EmptyLine{
+											Text: "",
+										},
+										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
@@ -19364,14 +20541,14 @@ var shouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell
 											},
 											Level: 1,
 										},
-										asciidoc.EmptyLine{
+										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.AttributeEntry{
 											Name: "sectids",
 											Set:  nil,
 										},
-										asciidoc.EmptyLine{
+										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
@@ -19404,7 +20581,7 @@ var shouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell
 
 var asciiDocContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -19606,7 +20783,7 @@ var asciiDocContent = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -19713,12 +20890,14 @@ var asciiDocContent = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.String{
 									Value: "Link badges ('XHTML 1.1' and 'CSS') in document footers.",
 								},
 								&asciidoc.NewLine{},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.ExampleBlock{
@@ -19864,7 +21043,9 @@ var asciiDocContent = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.String{
 									Value: "These three attributes control which document information",
 								},
@@ -19873,7 +21054,7 @@ var asciiDocContent = &asciidoc.Document{
 									Value: "files will be included in the the header of the output file:",
 								},
 								&asciidoc.NewLine{},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.String{
@@ -19977,7 +21158,7 @@ var asciiDocContent = &asciidoc.Document{
 									},
 								},
 								&asciidoc.NewLine{},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.String{
@@ -20063,7 +21244,7 @@ var asciiDocContent = &asciidoc.Document{
 
 var shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStartsWithNewline = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -20102,7 +21283,9 @@ var shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStart
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.String{
 									Value: "$ command",
 								},
@@ -20158,7 +21341,7 @@ var shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStart
 
 var preprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProcessed = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -20215,15 +21398,189 @@ var preprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProcessed = &as
 	},
 }
 
+var errorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldHaveCorrectCursor = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Table{
+			AttributeList: nil,
+			ColumnCount:   2,
+			Set: asciidoc.Set{
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "A",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "B",
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+				&asciidoc.EmptyLine{
+					Text: "\n",
+				},
+				&asciidoc.TableRow{
+					Set: asciidoc.Set{
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 0,
+									IsSet: false,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "text",
+								},
+							},
+							Blank: false,
+						},
+						&asciidoc.TableCell{
+							Format: &asciidoc.TableCellFormat{
+								Multiplier: asciidoc.Optional[int]{
+									Value: 1,
+									IsSet: false,
+								},
+								Span: asciidoc.TableCellSpan{
+									Column: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+									Row: asciidoc.Optional[int]{
+										Value: 1,
+										IsSet: false,
+									},
+								},
+								HorizontalAlign: asciidoc.Optional[asciidoc.TableCellHorizontalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								VerticalAlign: asciidoc.Optional[asciidoc.TableCellVerticalAlign]{
+									Value: 0,
+									IsSet: false,
+								},
+								Style: asciidoc.Optional[asciidoc.TableCellStyle]{
+									Value: 1,
+									IsSet: true,
+								},
+							},
+							Set: asciidoc.Set{
+								&asciidoc.FileInclude{
+									AttributeList: nil,
+									Set: asciidoc.Set{
+										&asciidoc.String{
+											Value: "does-not-exist.adoc",
+										},
+									},
+								},
+							},
+							Blank: false,
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
 var crossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
@@ -20266,8 +21623,10 @@ var crossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocumen
 											Value: "See ",
 										},
 										&asciidoc.CrossReference{
-											Set: nil,
-											ID:  "_more",
+											AttributeList: nil,
+											Set:           nil,
+											ID:            "_more",
+											Format:        0,
 										},
 									},
 									Blank: false,
@@ -20276,7 +21635,7 @@ var crossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocumen
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -20290,7 +21649,7 @@ var crossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocumen
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -20310,28 +21669,32 @@ var crossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocumen
 
 var shouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "The highest peak in the Front Range is ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "grays-peak",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "grays-peak",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: ", which tops ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "mount-evans",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "mount-evans",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: " by just a few feet.",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -20479,7 +21842,7 @@ var shouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asciidoc.Docum
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -20574,7 +21937,7 @@ var shouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asciidoc.Docum
 
 var shouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -20660,7 +22023,7 @@ var shouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle = &as
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -20710,7 +22073,7 @@ var shouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle = &as
 
 var shouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -20857,7 +22220,7 @@ var shouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle = &as
 
 var shouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -20959,7 +22322,7 @@ var shouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
 
 var footnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -21013,19 +22376,19 @@ var footnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocument = &as
 
 var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
@@ -21064,7 +22427,9 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.NewLine{},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
 												&asciidoc.Listing{
 													AttributeList: asciidoc.AttributeList{
 														&asciidoc.ShorthandAttribute{
@@ -21107,7 +22472,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 								},
 							},
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -21121,7 +22486,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
@@ -21160,7 +22525,9 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.NewLine{},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
 												&asciidoc.Listing{
 													AttributeList: asciidoc.AttributeList{
 														&asciidoc.ShorthandAttribute{
@@ -21203,7 +22570,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 								},
 							},
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -21217,7 +22584,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Listing{
@@ -21277,7 +22644,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 
 var compatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -21316,12 +22683,14 @@ var compatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.AttributeEntry{
 									Name: "compat-mode",
 									Set:  nil,
 								},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.String{
@@ -21339,21 +22708,21 @@ var compatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
 
 var compatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "compat-mode",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "The word 'italic' is emphasized.",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -21463,7 +22832,9 @@ var compatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.String{
 									Value: "The word 'slanted' is emphasized.",
 								},
@@ -21474,7 +22845,7 @@ var compatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -21486,21 +22857,21 @@ var compatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document
 
 var compatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "compat-mode",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "The word 'italic' is emphasized.",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -21610,11 +22981,13 @@ var compatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &asciidoc.Doc
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.AttributeReset{
 									Name: "compat-mode",
 								},
-								asciidoc.EmptyLine{
+								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.String{
@@ -21627,7 +23000,7 @@ var compatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &asciidoc.Doc
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -21639,7 +23012,7 @@ var compatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &asciidoc.Doc
 
 var nestedTable = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -21861,7 +23234,7 @@ var nestedTable = &asciidoc.Document{
 
 var canSetFormatOfNestedTableToPsv = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -21967,7 +23340,9 @@ var canSetFormatOfNestedTableToPsv = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.NewLine{},
+								&asciidoc.EmptyLine{
+									Text: "",
+								},
 								&asciidoc.Paragraph{
 									AttributeList: asciidoc.AttributeList{
 										&asciidoc.NamedAttribute{
@@ -22032,23 +23407,23 @@ var asciiDocTableCellShouldInheritToDirOptionFromParentDocument = &asciidoc.Docu
 
 var asciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
 					Name: "toc",
 					Set:  nil,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
@@ -22087,7 +23462,9 @@ var asciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Do
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.NewLine{},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -22098,7 +23475,7 @@ var asciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Do
 													},
 													Level: 1,
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.String{
@@ -22132,19 +23509,19 @@ var asciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Do
 
 var shouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
@@ -22183,7 +23560,9 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.NewLine{},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -22198,7 +23577,7 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 													Name: "toc",
 													Set:  nil,
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.Section{
@@ -22211,7 +23590,7 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 													},
 													Level: 1,
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.String{
@@ -22245,19 +23624,19 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 
 var shouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
@@ -22296,7 +23675,9 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.NewLine{},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -22311,7 +23692,7 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc
 													Name: "toc",
 													Set:  nil,
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.Section{
@@ -22324,7 +23705,7 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc
 													},
 													Level: 1,
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.String{
@@ -22358,23 +23739,23 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc
 
 var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
 					Name: "toc",
 					Set:  nil,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
@@ -22413,7 +23794,9 @@ var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciid
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.NewLine{},
+												&asciidoc.EmptyLine{
+													Text: "",
+												},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -22432,7 +23815,7 @@ var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciid
 														},
 													},
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.Paragraph{
@@ -22458,7 +23841,7 @@ var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciid
 													},
 													Admonition: 0,
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.Section{
@@ -22471,7 +23854,7 @@ var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciid
 													},
 													Level: 1,
 												},
-												asciidoc.EmptyLine{
+												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.String{
@@ -22505,13 +23888,13 @@ var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciid
 
 var documentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
@@ -22604,7 +23987,7 @@ var documentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &asciidoc.Docume
 
 var cellBackgroundColor = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -22844,14 +24227,14 @@ var cellBackgroundColor = &asciidoc.Document{
 
 var shouldWarnIfTableBlockIsNotTerminated = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "outside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -22866,14 +24249,14 @@ var shouldWarnIfTableBlockIsNotTerminated = &asciidoc.Document{
 			Value: "inside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "still inside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -22885,14 +24268,14 @@ var shouldWarnIfTableBlockIsNotTerminated = &asciidoc.Document{
 
 var shouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "outside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -22920,7 +24303,7 @@ var shouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTabl
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -22935,7 +24318,7 @@ var shouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTabl
 			Value: "|===",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -22947,7 +24330,7 @@ var shouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTabl
 
 var customSeparatorForAnAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -23053,7 +24436,7 @@ var customSeparatorForAnAsciiDocTableCell = &asciidoc.Document{
 
 var tableWithBreakableOptionDocbook5 = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -23241,7 +24624,7 @@ var tableWithBreakableOptionDocbook5 = &asciidoc.Document{
 
 var tableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -23429,7 +24812,7 @@ var tableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 
 var noImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -23477,7 +24860,7 @@ var noImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines = &asciido
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -23497,7 +24880,7 @@ var noImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines = &asciido
 
 var convertsSimpleDsvTable = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -23562,7 +24945,7 @@ var convertsSimpleDsvTable = &asciidoc.Document{
 
 var dsvFormatShorthand = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -23586,7 +24969,7 @@ var dsvFormatShorthand = &asciidoc.Document{
 
 var singleCellInDsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -23606,7 +24989,7 @@ var singleCellInDsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
 
 var shouldTreatTrailingColonAsAnEmptyCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -23634,7 +25017,7 @@ var shouldTreatTrailingColonAsAnEmptyCell = &asciidoc.Document{
 
 var shouldTreatTrailingCommaAsAnEmptyCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -23662,7 +25045,7 @@ var shouldTreatTrailingCommaAsAnEmptyCell = &asciidoc.Document{
 
 var shouldLogErrorButNotCrashIfCellDataHasUnclosedQuote = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -23686,7 +25069,7 @@ var shouldLogErrorButNotCrashIfCellDataHasUnclosedQuote = &asciidoc.Document{
 
 var shouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -23794,28 +25177,28 @@ var shouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "two",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "three\",\"do",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "re",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -23831,7 +25214,7 @@ var shouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
 
 var mixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrappedLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -23904,7 +25287,7 @@ var mixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrappedLines =
 
 var shouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -23977,7 +25360,7 @@ var shouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines = &asciidoc.Document{
 
 var csvFormatShorthand = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -24001,7 +25384,7 @@ var csvFormatShorthand = &asciidoc.Document{
 
 var customCsvSeparator = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -24050,7 +25433,7 @@ var customCsvSeparator = &asciidoc.Document{
 
 var singleCellInCsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -24070,7 +25453,7 @@ var singleCellInCsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
 
 var cellFormattedWithAsciiDocStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -24179,7 +25562,7 @@ var cellFormattedWithAsciiDocStyle = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -24195,7 +25578,7 @@ var cellFormattedWithAsciiDocStyle = &asciidoc.Document{
 
 var shouldStripWhitespaceAroundContentsOfAsciiDocCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -24304,7 +25687,7 @@ var shouldStripWhitespaceAroundContentsOfAsciiDocCell = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
