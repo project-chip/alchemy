@@ -1,0 +1,4 @@
+
+++++
+include::fixtures/unclosed-tag.adoc[tag=a]
+++++

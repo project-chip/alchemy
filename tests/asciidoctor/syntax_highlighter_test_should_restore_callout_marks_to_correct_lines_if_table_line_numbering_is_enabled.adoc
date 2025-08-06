@@ -1,0 +1,16 @@
+
+:source-highlighter: pygments
+:pygments-linenums-mode: table
+
+[source%linenums,ruby]
+----
+from pygments import highlight # <1>
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
+
+code = 'print "Hello World"'
+print(highlight(code, PythonLexer(), HtmlFormatter())) # <2><3>
+----
+<1> Load library
+<2> Highlight source
+<3> Print to stdout

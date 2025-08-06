@@ -1,0 +1,4 @@
+
+----
+include::fixtures/tagged-class-enclosed.rb[tags=*]
+----

@@ -12,107 +12,109 @@ func TestLinks(t *testing.T) {
 
 var linksTests = parseTests{
 
-	{"unescapes square bracket in reftext of anchor macro", "asciidoctor/links_test_unescapes_square_bracket_in_reftext_of_anchor_macro.adoc", unescapesSquareBracketInReftextOfAnchorMacro, nil},
+	{"unescapes square bracket in reftext of anchor macro", "asciidoctor/links_test_unescapes_square_bracket_in_reftext_of_anchor_macro.adoc", linksTestUnescapesSquareBracketInReftextOfAnchorMacro, nil},
 
-	{"xref using angled bracket syntax with label", "asciidoctor/links_test_xref_using_angled_bracket_syntax_with_label.adoc", xrefUsingAngledBracketSyntaxWithLabel, nil},
+	{"xref using angled bracket syntax with label", "asciidoctor/links_test_xref_using_angled_bracket_syntax_with_label.adoc", linksTestXrefUsingAngledBracketSyntaxWithLabel, nil},
 
-	{"xref should use title of target as link text when no explicit reftext is specified", "asciidoctor/links_test_xref_should_use_title_of_target_as_link_text_when_no_explicit_reftext_is_specified.adoc", xrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecified, nil},
+	{"xref should use title of target as link text when no explicit reftext is specified", "asciidoctor/links_test_xref_should_use_title_of_target_as_link_text_when_no_explicit_reftext_is_specified.adoc", linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecified, nil},
 
-	{"xref should use title of target as link text when explicit link text is empty", "asciidoctor/links_test_xref_should_use_title_of_target_as_link_text_when_explicit_link_text_is_empty.adoc", xrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty, nil},
+	{"xref should use title of target as link text when explicit link text is empty", "asciidoctor/links_test_xref_should_use_title_of_target_as_link_text_when_explicit_link_text_is_empty.adoc", linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty, nil},
 
-	{"xref using angled bracket syntax with quoted label", "asciidoctor/links_test_xref_using_angled_bracket_syntax_with_quoted_label.adoc", xrefUsingAngledBracketSyntaxWithQuotedLabel, nil},
+	{"xref using angled bracket syntax with quoted label", "asciidoctor/links_test_xref_using_angled_bracket_syntax_with_quoted_label.adoc", linksTestXrefUsingAngledBracketSyntaxWithQuotedLabel, nil},
 
-	{"xref using angled bracket syntax inline with text", "asciidoctor/links_test_xref_using_angled_bracket_syntax_inline_with_text.adoc", xrefUsingAngledBracketSyntaxInlineWithText, nil},
+	{"xref using angled bracket syntax inline with text", "asciidoctor/links_test_xref_using_angled_bracket_syntax_inline_with_text.adoc", linksTestXrefUsingAngledBracketSyntaxInlineWithText, nil},
 
-	{"xref using angled bracket syntax with multi-line label inline with text", "asciidoctor/links_test_xref_using_angled_bracket_syntax_with_multi_line_label_inline_with_text.adoc", xrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText, nil},
+	{"xref using angled bracket syntax with multi-line label inline with text", "asciidoctor/links_test_xref_using_angled_bracket_syntax_with_multi_line_label_inline_with_text.adoc", linksTestXrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText, nil},
 
-	{"xref with escaped text", "asciidoctor/links_test_xref_with_escaped_text.adoc", xrefWithEscapedText, nil},
+	{"xref with escaped text", "asciidoctor/links_test_xref_with_escaped_text.adoc", linksTestXrefWithEscapedText, nil},
 
-	{"xref using macro syntax", "asciidoctor/links_test_xref_using_macro_syntax.adoc", xrefUsingMacroSyntax, nil},
+	{"xref using macro syntax", "asciidoctor/links_test_xref_using_macro_syntax.adoc", linksTestXrefUsingMacroSyntax, nil},
 
-	{"xref using macro syntax with explicit hash", "asciidoctor/links_test_xref_using_macro_syntax_with_explicit_hash.adoc", xrefUsingMacroSyntaxWithExplicitHash, nil},
+	{"xref using macro syntax with explicit hash", "asciidoctor/links_test_xref_using_macro_syntax_with_explicit_hash.adoc", linksTestXrefUsingMacroSyntaxWithExplicitHash, nil},
 
-	{"xref using macro syntax inline with text", "asciidoctor/links_test_xref_using_macro_syntax_inline_with_text.adoc", xrefUsingMacroSyntaxInlineWithText, nil},
+	{"xref using macro syntax inline with text", "asciidoctor/links_test_xref_using_macro_syntax_inline_with_text.adoc", linksTestXrefUsingMacroSyntaxInlineWithText, nil},
 
-	{"xref using macro syntax with multi-line label inline with text", "asciidoctor/links_test_xref_using_macro_syntax_with_multi_line_label_inline_with_text.adoc", xrefUsingMacroSyntaxWithMultiLineLabelInlineWithText, nil},
+	{"xref using macro syntax with multi-line label inline with text", "asciidoctor/links_test_xref_using_macro_syntax_with_multi_line_label_inline_with_text.adoc", linksTestXrefUsingMacroSyntaxWithMultiLineLabelInlineWithText, nil},
 
-	{"xref using macro syntax with text that ends with an escaped closing bracket", "asciidoctor/links_test_xref_using_macro_syntax_with_text_that_ends_with_an_escaped_closing_bracket.adoc", xrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket, nil},
+	{"xref using macro syntax with text that ends with an escaped closing bracket", "asciidoctor/links_test_xref_using_macro_syntax_with_text_that_ends_with_an_escaped_closing_bracket.adoc", linksTestXrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket, nil},
 
-	{"xref using macro syntax with text that contains an escaped closing bracket", "asciidoctor/links_test_xref_using_macro_syntax_with_text_that_contains_an_escaped_closing_bracket.adoc", xrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket, nil},
+	{"xref using macro syntax with text that contains an escaped closing bracket", "asciidoctor/links_test_xref_using_macro_syntax_with_text_that_contains_an_escaped_closing_bracket.adoc", linksTestXrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket, nil},
 
-	{"unescapes square bracket in reftext used by xref", "asciidoctor/links_test_unescapes_square_bracket_in_reftext_used_by_xref.adoc", unescapesSquareBracketInReftextUsedByXref, nil},
+	{"unescapes square bracket in reftext used by xref", "asciidoctor/links_test_unescapes_square_bracket_in_reftext_used_by_xref.adoc", linksTestUnescapesSquareBracketInReftextUsedByXref, nil},
 
-	{"xref using invalid macro syntax does not create link", "asciidoctor/links_test_xref_using_invalid_macro_syntax_does_not_create_link.adoc", xrefUsingInvalidMacroSyntaxDoesNotCreateLink, nil},
+	{"xref using invalid macro syntax does not create link", "asciidoctor/links_test_xref_using_invalid_macro_syntax_does_not_create_link.adoc", linksTestXrefUsingInvalidMacroSyntaxDoesNotCreateLink, nil},
 
-	{"should not warn if verbose flag is set and reference is found in compat mode", "asciidoctor/links_test_should_not_warn_if_verbose_flag_is_set_and_reference_is_found_in_compat_mode.adoc", shouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode, nil},
+	{"should not warn if verbose flag is set and reference is found in compat mode", "asciidoctor/links_test_should_not_warn_if_verbose_flag_is_set_and_reference_is_found_in_compat_mode.adoc", linksTestShouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode, nil},
 
-	{"should warn and create link if verbose flag is set and reference using # notation is not found", "asciidoctor/links_test_should_warn_and_create_link_if_verbose_flag_is_set_and_reference_using_#_notation_is_not_found.adoc", shouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationIsNotFound, nil},
+	{"should warn and create link if verbose flag is set and reference using # notation is not found", "asciidoctor/links_test_should_warn_and_create_link_if_verbose_flag_is_set_and_reference_using_#_notation_is_not_found.adoc", linksTestShouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationIsNotFound, nil},
 
-	{"should produce an internal anchor from an inter-document xref to file included into current file", "asciidoctor/links_test_should_produce_an_internal_anchor_from_an_inter_document_xref_to_file_included_into_current_file.adoc", shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedIntoCurrentFile, nil},
+	{"should produce an internal anchor from an inter-document xref to file included into current file", "asciidoctor/links_test_should_produce_an_internal_anchor_from_an_inter_document_xref_to_file_included_into_current_file.adoc", linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedIntoCurrentFile, nil},
 
-	{"should produce an internal anchor from an inter-document xref to file included entirely into current file using tags", "asciidoctor/links_test_should_produce_an_internal_anchor_from_an_inter_document_xref_to_file_included_entirely_into_current_file_using_tags.adoc", shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedEntirelyIntoCurrentFileUsingTags, nil},
+	{"should produce an internal anchor from an inter-document xref to file included entirely into current file using tags", "asciidoctor/links_test_should_produce_an_internal_anchor_from_an_inter_document_xref_to_file_included_entirely_into_current_file_using_tags.adoc", linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedEntirelyIntoCurrentFileUsingTags, nil},
 
-	{"should not produce an internal anchor for inter-document xref to file partially included into current file", "asciidoctor/links_test_should_not_produce_an_internal_anchor_for_inter_document_xref_to_file_partially_included_into_current_file.adoc", shouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartiallyIncludedIntoCurrentFile, nil},
+	{"should not produce an internal anchor for inter-document xref to file partially included into current file", "asciidoctor/links_test_should_not_produce_an_internal_anchor_for_inter_document_xref_to_file_partially_included_into_current_file.adoc", linksTestShouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartiallyIncludedIntoCurrentFile, nil},
 
-	{"should produce an internal anchor for inter-document xref to file included fully and partially", "asciidoctor/links_test_should_produce_an_internal_anchor_for_inter_document_xref_to_file_included_fully_and_partially.adoc", shouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndPartially, nil},
+	{"should produce an internal anchor for inter-document xref to file included fully and partially", "asciidoctor/links_test_should_produce_an_internal_anchor_for_inter_document_xref_to_file_included_fully_and_partially.adoc", linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndPartially, nil},
 
-	{"should warn and create link if debug mode is enabled, inter-document xref points to current doc, and reference not found", "asciidoctor/links_test_should_warn_and_create_link_if_debug_mode_is_enabled_inter_document_xref_points_to_current_doc_and_reference_not_found.adoc", shouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsToCurrentDocAndReferenceNotFound, nil},
+	{"should warn and create link if debug mode is enabled, inter-document xref points to current doc, and reference not found", "asciidoctor/links_test_should_warn_and_create_link_if_debug_mode_is_enabled_inter_document_xref_points_to_current_doc_and_reference_not_found.adoc", linksTestShouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsToCurrentDocAndReferenceNotFound, nil},
 
-	{"should use doctitle as fallback link text if inter-document xref points to current doc and no link text is provided", "asciidoctor/links_test_should_use_doctitle_as_fallback_link_text_if_inter_document_xref_points_to_current_doc_and_no_link_text_is_provided.adoc", shouldUseDoctitleAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided, nil},
+	{"should use doctitle as fallback link text if inter-document xref points to current doc and no link text is provided", "asciidoctor/links_test_should_use_doctitle_as_fallback_link_text_if_inter_document_xref_points_to_current_doc_and_no_link_text_is_provided.adoc", linksTestShouldUseDoctitleAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided, nil},
 
-	{"should use doctitle of root document as fallback link text for inter-document xref in AsciiDoc table cell that resolves to current doc", "asciidoctor/links_test_should_use_doctitle_of_root_document_as_fallback_link_text_for_inter_document_xref_in_ascii_doc_table_cell_that_resolves_to_current_doc.adoc", shouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXrefInAsciiDocTableCellThatResolvesToCurrentDoc, nil},
+	{"should use doctitle of root document as fallback link text for inter-document xref in AsciiDoc table cell that resolves to current doc", "asciidoctor/links_test_should_use_doctitle_of_root_document_as_fallback_link_text_for_inter_document_xref_in_ascii_doc_table_cell_that_resolves_to_current_doc.adoc", linksTestShouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXrefInAsciiDocTableCellThatResolvesToCurrentDoc, nil},
 
-	{"should use reftext on document as fallback link text if inter-document xref points to current doc and no link text is provided", "asciidoctor/links_test_should_use_reftext_on_document_as_fallback_link_text_if_inter_document_xref_points_to_current_doc_and_no_link_text_is_provided.adoc", shouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided, nil},
+	{"should use reftext on document as fallback link text if inter-document xref points to current doc and no link text is provided", "asciidoctor/links_test_should_use_reftext_on_document_as_fallback_link_text_if_inter_document_xref_points_to_current_doc_and_no_link_text_is_provided.adoc", linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided, nil},
 
-	{"should use reftext on document as fallback link text if xref points to empty fragment and no link text is provided", "asciidoctor/links_test_should_use_reftext_on_document_as_fallback_link_text_if_xref_points_to_empty_fragment_and_no_link_text_is_provided.adoc", shouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFragmentAndNoLinkTextIsProvided, nil},
+	{"should use reftext on document as fallback link text if xref points to empty fragment and no link text is provided", "asciidoctor/links_test_should_use_reftext_on_document_as_fallback_link_text_if_xref_points_to_empty_fragment_and_no_link_text_is_provided.adoc", linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFragmentAndNoLinkTextIsProvided, nil},
 
-	{"should use fallback link text if inter-document xref points to current doc without header and no link text is provided", "asciidoctor/links_test_should_use_fallback_link_text_if_inter_document_xref_points_to_current_doc_without_header_and_no_link_text_is_provided.adoc", shouldUseFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocWithoutHeaderAndNoLinkTextIsProvided, nil},
+	{"should use fallback link text if inter-document xref points to current doc without header and no link text is provided", "asciidoctor/links_test_should_use_fallback_link_text_if_inter_document_xref_points_to_current_doc_without_header_and_no_link_text_is_provided.adoc", linksTestShouldUseFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocWithoutHeaderAndNoLinkTextIsProvided, nil},
 
-	{"should use fallback link text if fragment of internal xref is empty and no link text is provided", "asciidoctor/links_test_should_use_fallback_link_text_if_fragment_of_internal_xref_is_empty_and_no_link_text_is_provided.adoc", shouldUseFallbackLinkTextIfFragmentOfInternalXrefIsEmptyAndNoLinkTextIsProvided, nil},
+	{"should use fallback link text if fragment of internal xref is empty and no link text is provided", "asciidoctor/links_test_should_use_fallback_link_text_if_fragment_of_internal_xref_is_empty_and_no_link_text_is_provided.adoc", linksTestShouldUseFallbackLinkTextIfFragmentOfInternalXrefIsEmptyAndNoLinkTextIsProvided, nil},
 
-	{"should use document id as linkend for self xref in DocBook backend", "asciidoctor/links_test_should_use_document_id_as_linkend_for_self_xref_in_doc_book_backend.adoc", shouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend, nil},
+	{"should use document id as linkend for self xref in DocBook backend", "asciidoctor/links_test_should_use_document_id_as_linkend_for_self_xref_in_doc_book_backend.adoc", linksTestShouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend, nil},
 
-	{"should auto-generate document id to use as linkend for self xref in DocBook backend", "asciidoctor/links_test_should_auto_generate_document_id_to_use_as_linkend_for_self_xref_in_doc_book_backend.adoc", shouldAutoGenerateDocumentIdToUseAsLinkendForSelfXrefInDocBookBackend, nil},
+	{"should auto-generate document id to use as linkend for self xref in DocBook backend", "asciidoctor/links_test_should_auto_generate_document_id_to_use_as_linkend_for_self_xref_in_doc_book_backend.adoc", linksTestShouldAutoGenerateDocumentIdToUseAsLinkendForSelfXrefInDocBookBackend, nil},
 
-	{"should produce an internal anchor for inter-document xref to file outside of base directory", "asciidoctor/links_test_should_produce_an_internal_anchor_for_inter_document_xref_to_file_outside_of_base_directory.adoc", shouldProduceAnInternalAnchorForInterDocumentXrefToFileOutsideOfBaseDirectory, nil},
+	{"should produce an internal anchor for inter-document xref to file outside of base directory", "asciidoctor/links_test_should_produce_an_internal_anchor_for_inter_document_xref_to_file_outside_of_base_directory.adoc", linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileOutsideOfBaseDirectory, nil},
 
-	{"xref uses title of target as label for forward and backward references in html output", "asciidoctor/links_test_xref_uses_title_of_target_as_label_for_forward_and_backward_references_in_html_output.adoc", xrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOutput, nil},
+	{"xref uses title of target as label for forward and backward references in html output", "asciidoctor/links_test_xref_uses_title_of_target_as_label_for_forward_and_backward_references_in_html_output.adoc", linksTestXrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOutput, nil},
 
-	{"should not fail to resolve broken xref in title of block with ID", "asciidoctor/links_test_should_not_fail_to_resolve_broken_xref_in_title_of_block_with_id.adoc", shouldNotFailToResolveBrokenXrefInTitleOfBlockWithId, nil},
+	{"should not fail to resolve broken xref in title of block with ID", "asciidoctor/links_test_should_not_fail_to_resolve_broken_xref_in_title_of_block_with_id.adoc", linksTestShouldNotFailToResolveBrokenXrefInTitleOfBlockWithId, nil},
 
-	{"should resolve forward xref in title of block with ID", "asciidoctor/links_test_should_resolve_forward_xref_in_title_of_block_with_id.adoc", shouldResolveForwardXrefInTitleOfBlockWithId, nil},
+	{"should resolve forward xref in title of block with ID", "asciidoctor/links_test_should_resolve_forward_xref_in_title_of_block_with_id.adoc", linksTestShouldResolveForwardXrefInTitleOfBlockWithId, nil},
 
-	{"should not fail to resolve broken xref in section title", "asciidoctor/links_test_should_not_fail_to_resolve_broken_xref_in_section_title.adoc", shouldNotFailToResolveBrokenXrefInSectionTitle, nil},
+	{"should not fail to resolve broken xref in section title", "asciidoctor/links_test_should_not_fail_to_resolve_broken_xref_in_section_title.adoc", linksTestShouldNotFailToResolveBrokenXrefInSectionTitle, nil},
 
-	{"should break circular xref reference in section title", "asciidoctor/links_test_should_break_circular_xref_reference_in_section_title.adoc", shouldBreakCircularXrefReferenceInSectionTitle, nil},
+	{"should break circular xref reference in section title", "asciidoctor/links_test_should_break_circular_xref_reference_in_section_title.adoc", linksTestShouldBreakCircularXrefReferenceInSectionTitle, nil},
 
-	{"should drop nested anchor in xreftext", "asciidoctor/links_test_should_drop_nested_anchor_in_xreftext.adoc", shouldDropNestedAnchorInXreftext, nil},
+	{"should drop nested anchor in xreftext", "asciidoctor/links_test_should_drop_nested_anchor_in_xreftext.adoc", linksTestShouldDropNestedAnchorInXreftext, nil},
 
-	{"should not resolve forward xref evaluated during parsing", "asciidoctor/links_test_should_not_resolve_forward_xref_evaluated_during_parsing.adoc", shouldNotResolveForwardXrefEvaluatedDuringParsing, nil},
+	{"should not resolve forward xref evaluated during parsing", "asciidoctor/links_test_should_not_resolve_forward_xref_evaluated_during_parsing.adoc", linksTestShouldNotResolveForwardXrefEvaluatedDuringParsing, nil},
 
-	{"should not resolve forward natural xref evaluated during parsing", "asciidoctor/links_test_should_not_resolve_forward_natural_xref_evaluated_during_parsing.adoc", shouldNotResolveForwardNaturalXrefEvaluatedDuringParsing, nil},
+	{"should not resolve forward natural xref evaluated during parsing", "asciidoctor/links_test_should_not_resolve_forward_natural_xref_evaluated_during_parsing.adoc", linksTestShouldNotResolveForwardNaturalXrefEvaluatedDuringParsing, nil},
 
-	{"should resolve first matching natural xref", "asciidoctor/links_test_should_resolve_first_matching_natural_xref.adoc", shouldResolveFirstMatchingNaturalXref, nil},
+	{"should resolve first matching natural xref", "asciidoctor/links_test_should_resolve_first_matching_natural_xref.adoc", linksTestShouldResolveFirstMatchingNaturalXref, nil},
 
-	{"should not match numeric character references while searching for fragment in xref target", "asciidoctor/links_test_should_not_match_numeric_character_references_while_searching_for_fragment_in_xref_target.adoc", shouldNotMatchNumericCharacterReferencesWhileSearchingForFragmentInXrefTarget, nil},
+	{"should not match numeric character references while searching for fragment in xref target", "asciidoctor/links_test_should_not_match_numeric_character_references_while_searching_for_fragment_in_xref_target.adoc", linksTestShouldNotMatchNumericCharacterReferencesWhileSearchingForFragmentInXrefTarget, nil},
 
-	{"should not match numeric character references in path of interdocument xref", "asciidoctor/links_test_should_not_match_numeric_character_references_in_path_of_interdocument_xref.adoc", shouldNotMatchNumericCharacterReferencesInPathOfInterdocumentXref, nil},
+	{"should not match numeric character references in path of interdocument xref", "asciidoctor/links_test_should_not_match_numeric_character_references_in_path_of_interdocument_xref.adoc", linksTestShouldNotMatchNumericCharacterReferencesInPathOfInterdocumentXref, nil},
 }
 
-var unescapesSquareBracketInReftextOfAnchorMacro = &asciidoc.Document{
+var linksTestUnescapesSquareBracketInReftextOfAnchorMacro = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "see ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "foo",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "foo",
+			Format:        0,
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -122,21 +124,23 @@ var unescapesSquareBracketInReftextOfAnchorMacro = &asciidoc.Document{
 	},
 }
 
-var xrefUsingAngledBracketSyntaxWithLabel = &asciidoc.Document{
+var linksTestXrefUsingAngledBracketSyntaxWithLabel = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.CrossReference{
+			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
 					Value: "About Tigers",
 				},
 			},
-			ID: "tigers",
+			ID:     "tigers",
+			Format: 0,
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -165,17 +169,19 @@ var xrefUsingAngledBracketSyntaxWithLabel = &asciidoc.Document{
 	},
 }
 
-var xrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecified = &asciidoc.Document{
+var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "tigers",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "tigers",
+			Format:        0,
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -204,16 +210,16 @@ var xrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecified = &asci
 	},
 }
 
-var xrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty = &asciidoc.Document{
+var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "<<tigers,>>",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -242,21 +248,23 @@ var xrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty = &asciidoc.
 	},
 }
 
-var xrefUsingAngledBracketSyntaxWithQuotedLabel = &asciidoc.Document{
+var linksTestXrefUsingAngledBracketSyntaxWithQuotedLabel = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.CrossReference{
+			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
 					Value: "\"About Tigers\"",
 				},
 			},
-			ID: "tigers",
+			ID:     "tigers",
+			Format: 0,
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -285,27 +293,29 @@ var xrefUsingAngledBracketSyntaxWithQuotedLabel = &asciidoc.Document{
 	},
 }
 
-var xrefUsingAngledBracketSyntaxInlineWithText = &asciidoc.Document{
+var linksTestXrefUsingAngledBracketSyntaxInlineWithText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "Want to learn ",
 		},
 		&asciidoc.CrossReference{
+			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
 					Value: "about tigers",
 				},
 			},
-			ID: "tigers",
+			ID:     "tigers",
+			Format: 0,
 		},
 		&asciidoc.String{
 			Value: "?",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -334,27 +344,29 @@ var xrefUsingAngledBracketSyntaxInlineWithText = &asciidoc.Document{
 	},
 }
 
-var xrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Document{
+var linksTestXrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "Want to learn ",
 		},
 		&asciidoc.CrossReference{
+			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
 					Value: "about\ntigers",
 				},
 			},
-			ID: "tigers",
+			ID:     "tigers",
+			Format: 0,
 		},
 		&asciidoc.String{
 			Value: "?",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -383,9 +395,9 @@ var xrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Doc
 	},
 }
 
-var xrefWithEscapedText = &asciidoc.Document{
+var linksTestXrefWithEscapedText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -403,7 +415,7 @@ var xrefWithEscapedText = &asciidoc.Document{
 			Value: ">> section for details about tigers.",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -432,16 +444,34 @@ var xrefWithEscapedText = &asciidoc.Document{
 	},
 }
 
-var xrefUsingMacroSyntax = &asciidoc.Document{
+var linksTestXrefUsingMacroSyntax = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
-			Value: "This document has two sections, xref:sect-a[] and xref:sect-b[].",
+			Value: "This document has two sections, ",
+		},
+		&asciidoc.CrossReference{
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "sect-a",
+			Format:        1,
+		},
+		&asciidoc.String{
+			Value: " and ",
+		},
+		&asciidoc.CrossReference{
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "sect-b",
+			Format:        1,
+		},
+		&asciidoc.String{
+			Value: ".",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -460,7 +490,7 @@ var xrefUsingMacroSyntax = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -497,31 +527,32 @@ var xrefUsingMacroSyntax = &asciidoc.Document{
 	},
 }
 
-var xrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
+var linksTestXrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.DocumentCrossReference{
+		&asciidoc.CrossReference{
 			AttributeList: asciidoc.AttributeList{
-				&asciidoc.PositionalAttribute{
-					Offset:      0,
-					ImpliedName: "alt",
-					Val: asciidoc.Set{
-						&asciidoc.String{
-							Value: "About Tigers",
+				&asciidoc.ShorthandAttribute{
+					Style: &asciidoc.ShorthandStyle{
+						Set: asciidoc.Set{
+							&asciidoc.String{
+								Value: "About Tigers",
+							},
 						},
 					},
+					ID:      nil,
+					Roles:   nil,
+					Options: nil,
 				},
 			},
-			ReferencePath: asciidoc.Set{
-				&asciidoc.String{
-					Value: "tigers",
-				},
-			},
+			Set:    nil,
+			ID:     "tigers",
+			Format: 1,
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -550,16 +581,38 @@ var xrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
 	},
 }
 
-var xrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
+var linksTestXrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
-			Value: "Want to learn xref:tigers[about tigers]?",
+			Value: "Want to learn ",
+		},
+		&asciidoc.CrossReference{
+			AttributeList: asciidoc.AttributeList{
+				&asciidoc.ShorthandAttribute{
+					Style: &asciidoc.ShorthandStyle{
+						Set: asciidoc.Set{
+							&asciidoc.String{
+								Value: "about tigers",
+							},
+						},
+					},
+					ID:      nil,
+					Roles:   nil,
+					Options: nil,
+				},
+			},
+			Set:    nil,
+			ID:     "tigers",
+			Format: 1,
+		},
+		&asciidoc.String{
+			Value: "?",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -588,20 +641,38 @@ var xrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
 	},
 }
 
-var xrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Document{
+var linksTestXrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
-			Value: "Want to learn xref:tigers[about",
+			Value: "Want to learn ",
 		},
-		&asciidoc.NewLine{},
+		&asciidoc.CrossReference{
+			AttributeList: asciidoc.AttributeList{
+				&asciidoc.ShorthandAttribute{
+					Style: &asciidoc.ShorthandStyle{
+						Set: asciidoc.Set{
+							&asciidoc.String{
+								Value: "about\ntigers",
+							},
+						},
+					},
+					ID:      nil,
+					Roles:   nil,
+					Options: nil,
+				},
+			},
+			Set:    nil,
+			ID:     "tigers",
+			Format: 1,
+		},
 		&asciidoc.String{
-			Value: "tigers]?",
+			Value: "?",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -630,34 +701,35 @@ var xrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Document{
 	},
 }
 
-var xrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &asciidoc.Document{
+var linksTestXrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.DocumentCrossReference{
+		&asciidoc.CrossReference{
 			AttributeList: asciidoc.AttributeList{
-				&asciidoc.PositionalAttribute{
-					Offset:      0,
-					ImpliedName: "alt",
-					Val: asciidoc.Set{
-						&asciidoc.String{
-							Value: "[tigers\\",
+				&asciidoc.ShorthandAttribute{
+					Style: &asciidoc.ShorthandStyle{
+						Set: asciidoc.Set{
+							&asciidoc.String{
+								Value: "[tigers\\",
+							},
 						},
 					},
+					ID:      nil,
+					Roles:   nil,
+					Options: nil,
 				},
 			},
-			ReferencePath: asciidoc.Set{
-				&asciidoc.String{
-					Value: "tigers",
-				},
-			},
+			Set:    nil,
+			ID:     "tigers",
+			Format: 1,
 		},
 		&asciidoc.String{
 			Value: "]",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -686,34 +758,35 @@ var xrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &asciidoc.
 	},
 }
 
-var xrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &asciidoc.Document{
+var linksTestXrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.DocumentCrossReference{
+		&asciidoc.CrossReference{
 			AttributeList: asciidoc.AttributeList{
-				&asciidoc.PositionalAttribute{
-					Offset:      0,
-					ImpliedName: "alt",
-					Val: asciidoc.Set{
-						&asciidoc.String{
-							Value: "[tigers\\",
+				&asciidoc.ShorthandAttribute{
+					Style: &asciidoc.ShorthandStyle{
+						Set: asciidoc.Set{
+							&asciidoc.String{
+								Value: "[tigers\\",
+							},
 						},
 					},
+					ID:      nil,
+					Roles:   nil,
+					Options: nil,
 				},
 			},
-			ReferencePath: asciidoc.Set{
-				&asciidoc.String{
-					Value: "tigers",
-				},
-			},
+			Set:    nil,
+			ID:     "tigers",
+			Format: 1,
 		},
 		&asciidoc.String{
 			Value: " are cats]",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -742,32 +815,34 @@ var xrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &asciidoc.
 	},
 }
 
-var unescapesSquareBracketInReftextUsedByXref = &asciidoc.Document{
+var linksTestUnescapesSquareBracketInReftextUsedByXref = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "anchor:foo[b[a\\]r]about",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "see ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "foo",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "foo",
+			Format:        0,
 		},
 		&asciidoc.NewLine{},
 	},
 }
 
-var xrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
+var linksTestXrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -786,7 +861,7 @@ var xrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -800,15 +875,17 @@ var xrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "See ",
 				},
 				&asciidoc.CrossReference{
-					Set: nil,
-					ID:  "foobaz",
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "foobaz",
+					Format:        0,
 				},
 				&asciidoc.String{
 					Value: ".",
@@ -825,9 +902,9 @@ var xrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 	},
 }
 
-var shouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &asciidoc.Document{
+var linksTestShouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -840,7 +917,7 @@ var shouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &asciidoc.D
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -854,15 +931,17 @@ var shouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &asciidoc.D
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "See ",
 				},
 				&asciidoc.CrossReference{
-					Set: nil,
-					ID:  "foobar",
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "foobar",
+					Format:        0,
 				},
 				&asciidoc.String{
 					Value: ".",
@@ -879,9 +958,9 @@ var shouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &asciidoc.D
 	},
 }
 
-var shouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationIsNotFound = &asciidoc.Document{
+var linksTestShouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationIsNotFound = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -900,7 +979,7 @@ var shouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationIsNotFound
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -914,7 +993,7 @@ var shouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationIsNotFound
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -932,12 +1011,12 @@ var shouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationIsNotFound
 	},
 }
 
-var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedIntoCurrentFile = &asciidoc.Document{
+var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedIntoCurrentFile = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -948,7 +1027,7 @@ var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedIntoCurren
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -967,21 +1046,21 @@ var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedIntoCurren
 						},
 					},
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "So it begins.",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "Read <<other-chapters.adoc#ch2>> to find out what happens next!",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.FileInclude{
@@ -1011,12 +1090,12 @@ var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedIntoCurren
 	},
 }
 
-var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedEntirelyIntoCurrentFileUsingTags = &asciidoc.Document{
+var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedEntirelyIntoCurrentFileUsingTags = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -1027,7 +1106,7 @@ var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedEntirelyIn
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -1046,21 +1125,21 @@ var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedEntirelyIn
 						},
 					},
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "So it begins.",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "Read <<other-chapters.adoc#ch2>> to find out what happens next!",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.FileInclude{
@@ -1100,12 +1179,12 @@ var shouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedEntirelyIn
 	},
 }
 
-var shouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartiallyIncludedIntoCurrentFile = &asciidoc.Document{
+var linksTestShouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartiallyIncludedIntoCurrentFile = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -1116,7 +1195,7 @@ var shouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartiallyIncludedI
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -1135,21 +1214,21 @@ var shouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartiallyIncludedI
 						},
 					},
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "So it begins.",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "Read <<other-chapters.adoc#ch2,the next chapter>> to find out what happens next!",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.FileInclude{
@@ -1189,12 +1268,12 @@ var shouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartiallyIncludedI
 	},
 }
 
-var shouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndPartially = &asciidoc.Document{
+var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndPartially = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -1205,7 +1284,7 @@ var shouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndParti
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -1224,21 +1303,21 @@ var shouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndParti
 						},
 					},
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "So it begins.",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "Read <<other-chapters.adoc#ch2,the next chapter>> to find out what happens next!",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.FileInclude{
@@ -1249,7 +1328,7 @@ var shouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndParti
 								},
 							},
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.FileInclude{
@@ -1289,9 +1368,9 @@ var shouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndParti
 	},
 }
 
-var shouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsToCurrentDocAndReferenceNotFound = &asciidoc.Document{
+var linksTestShouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsToCurrentDocAndReferenceNotFound = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1310,7 +1389,7 @@ var shouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsToCurrentD
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1324,7 +1403,7 @@ var shouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsToCurrentD
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1342,19 +1421,25 @@ var shouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsToCurrentD
 	},
 }
 
-var shouldUseDoctitleAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided = &asciidoc.Document{
+var linksTestShouldUseDoctitleAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
-					Value: "See xref:test.adoc[]",
+					Value: "See ",
+				},
+				&asciidoc.CrossReference{
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "test.adoc",
+					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
@@ -1368,15 +1453,15 @@ var shouldUseDoctitleAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndN
 	},
 }
 
-var shouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXrefInAsciiDocTableCellThatResolvesToCurrentDoc = &asciidoc.Document{
+var linksTestShouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXrefInAsciiDocTableCellThatResolvesToCurrentDoc = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
@@ -1416,7 +1501,13 @@ var shouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXrefInAscii
 									},
 									Set: asciidoc.Set{
 										&asciidoc.String{
-											Value: "See xref:test.adoc[]",
+											Value: "See ",
+										},
+										&asciidoc.CrossReference{
+											AttributeList: nil,
+											Set:           nil,
+											ID:            "test.adoc",
+											Format:        1,
 										},
 									},
 									Blank: false,
@@ -1436,9 +1527,9 @@ var shouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXrefInAscii
 	},
 }
 
-var shouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided = &asciidoc.Document{
+var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1454,11 +1545,17 @@ var shouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPointsToCurre
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
-					Value: "See xref:test.adoc[]",
+					Value: "See ",
+				},
+				&asciidoc.CrossReference{
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "test.adoc",
+					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
@@ -1472,9 +1569,9 @@ var shouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPointsToCurre
 	},
 }
 
-var shouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFragmentAndNoLinkTextIsProvided = &asciidoc.Document{
+var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFragmentAndNoLinkTextIsProvided = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1490,11 +1587,17 @@ var shouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFragmentAndNo
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
-					Value: "See xref:#[]",
+					Value: "See ",
+				},
+				&asciidoc.CrossReference{
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "#",
+					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
@@ -1508,33 +1611,45 @@ var shouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFragmentAndNo
 	},
 }
 
-var shouldUseFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocWithoutHeaderAndNoLinkTextIsProvided = &asciidoc.Document{
+var linksTestShouldUseFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocWithoutHeaderAndNoLinkTextIsProvided = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
-			Value: "See xref:test.adoc[]",
+			Value: "See ",
+		},
+		&asciidoc.CrossReference{
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "test.adoc",
+			Format:        1,
 		},
 		&asciidoc.NewLine{},
 	},
 }
 
-var shouldUseFallbackLinkTextIfFragmentOfInternalXrefIsEmptyAndNoLinkTextIsProvided = &asciidoc.Document{
+var linksTestShouldUseFallbackLinkTextIfFragmentOfInternalXrefIsEmptyAndNoLinkTextIsProvided = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
-			Value: "See xref:#[]",
+			Value: "See ",
+		},
+		&asciidoc.CrossReference{
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "#",
+			Format:        1,
 		},
 		&asciidoc.NewLine{},
 	},
 }
 
-var shouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc.Document{
+var linksTestShouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1553,11 +1668,17 @@ var shouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc.Document
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
-					Value: "See xref:test.adoc[]",
+					Value: "See ",
+				},
+				&asciidoc.CrossReference{
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "test.adoc",
+					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
@@ -1571,19 +1692,25 @@ var shouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc.Document
 	},
 }
 
-var shouldAutoGenerateDocumentIdToUseAsLinkendForSelfXrefInDocBookBackend = &asciidoc.Document{
+var linksTestShouldAutoGenerateDocumentIdToUseAsLinkendForSelfXrefInDocBookBackend = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
-					Value: "See xref:test.adoc[]",
+					Value: "See ",
+				},
+				&asciidoc.CrossReference{
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "test.adoc",
+					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
@@ -1597,22 +1724,22 @@ var shouldAutoGenerateDocumentIdToUseAsLinkendForSelfXrefInDocBookBackend = &asc
 	},
 }
 
-var shouldProduceAnInternalAnchorForInterDocumentXrefToFileOutsideOfBaseDirectory = &asciidoc.Document{
+var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileOutsideOfBaseDirectory = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "See <<../section-a.adoc#section-a>>.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.FileInclude{
@@ -1634,23 +1761,25 @@ var shouldProduceAnInternalAnchorForInterDocumentXrefToFileOutsideOfBaseDirector
 	},
 }
 
-var xrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOutput = &asciidoc.Document{
+var linksTestXrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.CrossReference{
-					Set: nil,
-					ID:  "_section_b",
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "_section_b",
+					Format:        0,
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1664,12 +1793,14 @@ var xrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOutput = &a
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.CrossReference{
-					Set: nil,
-					ID:  "_section_a",
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "_section_a",
+					Format:        0,
 				},
 				&asciidoc.NewLine{},
 			},
@@ -1683,9 +1814,9 @@ var xrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOutput = &a
 	},
 }
 
-var shouldNotFailToResolveBrokenXrefInTitleOfBlockWithId = &asciidoc.Document{
+var linksTestShouldNotFailToResolveBrokenXrefInTitleOfBlockWithId = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1721,9 +1852,9 @@ var shouldNotFailToResolveBrokenXrefInTitleOfBlockWithId = &asciidoc.Document{
 	},
 }
 
-var shouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
+var linksTestShouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1756,7 +1887,7 @@ var shouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1785,9 +1916,9 @@ var shouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
 	},
 }
 
-var shouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document{
+var linksTestShouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1806,7 +1937,7 @@ var shouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1830,9 +1961,9 @@ var shouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document{
 	},
 }
 
-var shouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document{
+var linksTestShouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1851,7 +1982,7 @@ var shouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1888,9 +2019,9 @@ var shouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document{
 	},
 }
 
-var shouldDropNestedAnchorInXreftext = &asciidoc.Document{
+var linksTestShouldDropNestedAnchorInXreftext = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1909,7 +2040,7 @@ var shouldDropNestedAnchorInXreftext = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1946,9 +2077,9 @@ var shouldDropNestedAnchorInXreftext = &asciidoc.Document{
 	},
 }
 
-var shouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Document{
+var linksTestShouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1967,7 +2098,7 @@ var shouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1981,7 +2112,7 @@ var shouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Document{
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -2018,16 +2149,16 @@ var shouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Document{
 	},
 }
 
-var shouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciidoc.Document{
+var linksTestShouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "idprefix",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2046,7 +2177,7 @@ var shouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciidoc.Documen
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -2060,7 +2191,7 @@ var shouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciidoc.Documen
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -2084,20 +2215,22 @@ var shouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciidoc.Documen
 	},
 }
 
-var shouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
+var linksTestShouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "see ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "Section Title",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "Section Title",
+			Format:        0,
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2116,7 +2249,7 @@ var shouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -2153,16 +2286,16 @@ var shouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
 	},
 }
 
-var shouldNotMatchNumericCharacterReferencesWhileSearchingForFragmentInXrefTarget = &asciidoc.Document{
+var linksTestShouldNotMatchNumericCharacterReferencesWhileSearchingForFragmentInXrefTarget = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "see <<Cub => Tiger>>",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2178,25 +2311,34 @@ var shouldNotMatchNumericCharacterReferencesWhileSearchingForFragmentInXrefTarge
 	},
 }
 
-var shouldNotMatchNumericCharacterReferencesInPathOfInterdocumentXref = &asciidoc.Document{
+var linksTestShouldNotMatchNumericCharacterReferencesInPathOfInterdocumentXref = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
-			Value: "see xref:",
+			Value: "see ",
 		},
-		&asciidoc.CharacterReplacementReference{
-			Value: "cpp",
+		&asciidoc.DocumentCrossReference{
+			AttributeList: asciidoc.AttributeList{
+				&asciidoc.PositionalAttribute{
+					Offset:      0,
+					ImpliedName: "alt",
+					Val: asciidoc.Set{
+						&asciidoc.CharacterReplacementReference{
+							Value: "cpp",
+						},
+					},
+				},
+			},
+			ReferencePath: asciidoc.Set{
+				&asciidoc.CharacterReplacementReference{
+					Value: "cpp",
+				},
+			},
 		},
 		&asciidoc.String{
-			Value: "[",
-		},
-		&asciidoc.CharacterReplacementReference{
-			Value: "cpp",
-		},
-		&asciidoc.String{
-			Value: "].",
+			Value: ".",
 		},
 		&asciidoc.NewLine{},
 	},

@@ -1,0 +1,10 @@
+
+poof
+ifndef::grail[]
+no grail
+ifndef::swallow[]
+or swallow
+endif::[]
+in here
+endif::[]
+gone

@@ -1,0 +1,7 @@
+
+:source-highlighter: highlight.js
+
+[source,html]
+----
+<p>Highlight me!</p>
+----

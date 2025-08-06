@@ -12,564 +12,564 @@ func TestLists(t *testing.T) {
 
 var listsTests = parseTests{
 
-	{"dash elements with no blank lines", "asciidoctor/lists_test_dash_elements_with_no_blank_lines.adoc", dashElementsWithNoBlankLines, nil},
+	{"dash elements with no blank lines", "asciidoctor/lists_test_dash_elements_with_no_blank_lines.adoc", listsTestDashElementsWithNoBlankLines, nil},
 
-	{"dash elements separated by blank lines should merge lists", "asciidoctor/lists_test_dash_elements_separated_by_blank_lines_should_merge_lists.adoc", dashElementsSeparatedByBlankLinesShouldMergeLists, nil},
+	{"dash elements separated by blank lines should merge lists", "asciidoctor/lists_test_dash_elements_separated_by_blank_lines_should_merge_lists.adoc", listsTestDashElementsSeparatedByBlankLinesShouldMergeLists, nil},
 
-	{"dash elements with interspersed line comments should be skipped and not break list", "asciidoctor/lists_test_dash_elements_with_interspersed_line_comments_should_be_skipped_and_not_break_list.adoc", dashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList, nil},
+	{"dash elements with interspersed line comments should be skipped and not break list", "asciidoctor/lists_test_dash_elements_with_interspersed_line_comments_should_be_skipped_and_not_break_list.adoc", listsTestDashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList, nil},
 
-	{"dash elements separated by a line comment offset by blank lines should not merge lists", "asciidoctor/lists_test_dash_elements_separated_by_a_line_comment_offset_by_blank_lines_should_not_merge_lists.adoc", dashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists, nil},
+	{"dash elements separated by a line comment offset by blank lines should not merge lists", "asciidoctor/lists_test_dash_elements_separated_by_a_line_comment_offset_by_blank_lines_should_not_merge_lists.adoc", listsTestDashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists, nil},
 
-	{"dash elements separated by a block title offset by a blank line should not merge lists", "asciidoctor/lists_test_dash_elements_separated_by_a_block_title_offset_by_a_blank_line_should_not_merge_lists.adoc", dashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists, nil},
+	{"dash elements separated by a block title offset by a blank line should not merge lists", "asciidoctor/lists_test_dash_elements_separated_by_a_block_title_offset_by_a_blank_line_should_not_merge_lists.adoc", listsTestDashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists, nil},
 
-	{"dash elements separated by an attribute entry offset by a blank line should not merge lists", "asciidoctor/lists_test_dash_elements_separated_by_an_attribute_entry_offset_by_a_blank_line_should_not_merge_lists.adoc", dashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists, nil},
+	{"dash elements separated by an attribute entry offset by a blank line should not merge lists", "asciidoctor/lists_test_dash_elements_separated_by_an_attribute_entry_offset_by_a_blank_line_should_not_merge_lists.adoc", listsTestDashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists, nil},
 
-	{"a non-indented wrapped line is folded into text of list item", "asciidoctor/lists_test_a_non_indented_wrapped_line_is_folded_into_text_of_list_item.adoc", aNonIndentedWrappedLineIsFoldedIntoTextOfListItem, nil},
+	{"a non-indented wrapped line is folded into text of list item", "asciidoctor/lists_test_a_non_indented_wrapped_line_is_folded_into_text_of_list_item.adoc", listsTestANonIndentedWrappedLineIsFoldedIntoTextOfListItem, nil},
 
-	{"a non-indented wrapped line that resembles a block title is folded into text of list item", "asciidoctor/lists_test_a_non_indented_wrapped_line_that_resembles_a_block_title_is_folded_into_text_of_list_item.adoc", aNonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfListItem, nil},
+	{"a non-indented wrapped line that resembles a block title is folded into text of list item", "asciidoctor/lists_test_a_non_indented_wrapped_line_that_resembles_a_block_title_is_folded_into_text_of_list_item.adoc", listsTestANonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfListItem, nil},
 
-	{"a non-indented wrapped line that resembles an attribute entry is folded into text of list item", "asciidoctor/lists_test_a_non_indented_wrapped_line_that_resembles_an_attribute_entry_is_folded_into_text_of_list_item.adoc", aNonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTextOfListItem, nil},
+	{"a non-indented wrapped line that resembles an attribute entry is folded into text of list item", "asciidoctor/lists_test_a_non_indented_wrapped_line_that_resembles_an_attribute_entry_is_folded_into_text_of_list_item.adoc", listsTestANonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTextOfListItem, nil},
 
-	{"a list item with a nested marker terminates non-indented paragraph for text of list item", "asciidoctor/lists_test_a_list_item_with_a_nested_marker_terminates_non_indented_paragraph_for_text_of_list_item.adoc", aListItemWithANestedMarkerTerminatesNonIndentedParagraphForTextOfListItem, nil},
+	{"a list item with a nested marker terminates non-indented paragraph for text of list item", "asciidoctor/lists_test_a_list_item_with_a_nested_marker_terminates_non_indented_paragraph_for_text_of_list_item.adoc", listsTestAListItemWithANestedMarkerTerminatesNonIndentedParagraphForTextOfListItem, nil},
 
-	{"a list item for a different list terminates non-indented paragraph for text of list item", "asciidoctor/lists_test_a_list_item_for_a_different_list_terminates_non_indented_paragraph_for_text_of_list_item.adoc", aListItemForADifferentListTerminatesNonIndentedParagraphForTextOfListItem, nil},
+	{"a list item for a different list terminates non-indented paragraph for text of list item", "asciidoctor/lists_test_a_list_item_for_a_different_list_terminates_non_indented_paragraph_for_text_of_list_item.adoc", listsTestAListItemForADifferentListTerminatesNonIndentedParagraphForTextOfListItem, nil},
 
-	{"an indented wrapped line is unindented and folded into text of list item", "asciidoctor/lists_test_an_indented_wrapped_line_is_unindented_and_folded_into_text_of_list_item.adoc", anIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem, nil},
+	{"an indented wrapped line is unindented and folded into text of list item", "asciidoctor/lists_test_an_indented_wrapped_line_is_unindented_and_folded_into_text_of_list_item.adoc", listsTestAnIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem, nil},
 
-	{"wrapped list item with hanging indent followed by non-indented line", "asciidoctor/lists_test_wrapped_list_item_with_hanging_indent_followed_by_non_indented_line.adoc", wrappedListItemWithHangingIndentFollowedByNonIndentedLine, nil},
+	{"wrapped list item with hanging indent followed by non-indented line", "asciidoctor/lists_test_wrapped_list_item_with_hanging_indent_followed_by_non_indented_line.adoc", listsTestWrappedListItemWithHangingIndentFollowedByNonIndentedLine, nil},
 
-	{"a list item with a nested marker terminates indented paragraph for text of list item", "asciidoctor/lists_test_a_list_item_with_a_nested_marker_terminates_indented_paragraph_for_text_of_list_item.adoc", aListItemWithANestedMarkerTerminatesIndentedParagraphForTextOfListItem, nil},
+	{"a list item with a nested marker terminates indented paragraph for text of list item", "asciidoctor/lists_test_a_list_item_with_a_nested_marker_terminates_indented_paragraph_for_text_of_list_item.adoc", listsTestAListItemWithANestedMarkerTerminatesIndentedParagraphForTextOfListItem, nil},
 
-	{"a list item for a different list terminates indented paragraph for text of list item", "asciidoctor/lists_test_a_list_item_for_a_different_list_terminates_indented_paragraph_for_text_of_list_item.adoc", aListItemForADifferentListTerminatesIndentedParagraphForTextOfListItem, nil},
+	{"a list item for a different list terminates indented paragraph for text of list item", "asciidoctor/lists_test_a_list_item_for_a_different_list_terminates_indented_paragraph_for_text_of_list_item.adoc", listsTestAListItemForADifferentListTerminatesIndentedParagraphForTextOfListItem, nil},
 
-	{"a literal paragraph offset by blank lines in list content is appended as a literal block", "asciidoctor/lists_test_a_literal_paragraph_offset_by_blank_lines_in_list_content_is_appended_as_a_literal_block.adoc", aLiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALiteralBlock, nil},
+	{"a literal paragraph offset by blank lines in list content is appended as a literal block", "asciidoctor/lists_test_a_literal_paragraph_offset_by_blank_lines_in_list_content_is_appended_as_a_literal_block.adoc", listsTestALiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALiteralBlock, nil},
 
-	{"should escape special characters in all literal paragraphs attached to list item", "asciidoctor/lists_test_should_escape_special_characters_in_all_literal_paragraphs_attached_to_list_item.adoc", shouldEscapeSpecialCharactersInAllLiteralParagraphsAttachedToListItem, nil},
+	{"should escape special characters in all literal paragraphs attached to list item", "asciidoctor/lists_test_should_escape_special_characters_in_all_literal_paragraphs_attached_to_list_item.adoc", listsTestShouldEscapeSpecialCharactersInAllLiteralParagraphsAttachedToListItem, nil},
 
-	{"a literal paragraph offset by a blank line in list content followed by line with continuation is appended as two blocks", "asciidoctor/lists_test_a_literal_paragraph_offset_by_a_blank_line_in_list_content_followed_by_line_with_continuation_is_appended_as_two_blocks.adoc", aLiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithContinuationIsAppendedAsTwoBlocks, nil},
+	{"a literal paragraph offset by a blank line in list content followed by line with continuation is appended as two blocks", "asciidoctor/lists_test_a_literal_paragraph_offset_by_a_blank_line_in_list_content_followed_by_line_with_continuation_is_appended_as_two_blocks.adoc", listsTestALiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithContinuationIsAppendedAsTwoBlocks, nil},
 
-	{"an admonition paragraph attached by a line continuation to a list item with wrapped text should produce admonition", "asciidoctor/lists_test_an_admonition_paragraph_attached_by_a_line_continuation_to_a_list_item_with_wrapped_text_should_produce_admonition.adoc", anAdmonitionParagraphAttachedByALineContinuationToAListItemWithWrappedTextShouldProduceAdmonition, nil},
+	{"an admonition paragraph attached by a line continuation to a list item with wrapped text should produce admonition", "asciidoctor/lists_test_an_admonition_paragraph_attached_by_a_line_continuation_to_a_list_item_with_wrapped_text_should_produce_admonition.adoc", listsTestAnAdmonitionParagraphAttachedByALineContinuationToAListItemWithWrappedTextShouldProduceAdmonition, nil},
 
-	{"paragraph-like blocks attached to an ancestor list item by a list continuation should produce blocks", "asciidoctor/lists_test_paragraph_like_blocks_attached_to_an_ancestor_list_item_by_a_list_continuation_should_produce_blocks.adoc", paragraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationShouldProduceBlocks, nil},
+	{"paragraph-like blocks attached to an ancestor list item by a list continuation should produce blocks", "asciidoctor/lists_test_paragraph_like_blocks_attached_to_an_ancestor_list_item_by_a_list_continuation_should_produce_blocks.adoc", listsTestParagraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationShouldProduceBlocks, nil},
 
-	{"should not inherit block attributes from previous block when block is attached using a list continuation", "asciidoctor/lists_test_should_not_inherit_block_attributes_from_previous_block_when_block_is_attached_using_a_list_continuation.adoc", shouldNotInheritBlockAttributesFromPreviousBlockWhenBlockIsAttachedUsingAListContinuation, nil},
+	{"should not inherit block attributes from previous block when block is attached using a list continuation", "asciidoctor/lists_test_should_not_inherit_block_attributes_from_previous_block_when_block_is_attached_using_a_list_continuation.adoc", listsTestShouldNotInheritBlockAttributesFromPreviousBlockWhenBlockIsAttachedUsingAListContinuation, nil},
 
-	{"should continue to parse blocks attached by a list continuation after block is dropped", "asciidoctor/lists_test_should_continue_to_parse_blocks_attached_by_a_list_continuation_after_block_is_dropped.adoc", shouldContinueToParseBlocksAttachedByAListContinuationAfterBlockIsDropped, nil},
+	{"should continue to parse blocks attached by a list continuation after block is dropped", "asciidoctor/lists_test_should_continue_to_parse_blocks_attached_by_a_list_continuation_after_block_is_dropped.adoc", listsTestShouldContinueToParseBlocksAttachedByAListContinuationAfterBlockIsDropped, nil},
 
-	{"appends line as paragraph if attached by continuation following line comment", "asciidoctor/lists_test_appends_line_as_paragraph_if_attached_by_continuation_following_line_comment.adoc", appendsLineAsParagraphIfAttachedByContinuationFollowingLineComment, nil},
+	{"appends line as paragraph if attached by continuation following line comment", "asciidoctor/lists_test_appends_line_as_paragraph_if_attached_by_continuation_following_line_comment.adoc", listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingLineComment, nil},
 
-	{"a literal paragraph with a line that appears as a list item that is followed by a continuation should create two blocks", "asciidoctor/lists_test_a_literal_paragraph_with_a_line_that_appears_as_a_list_item_that_is_followed_by_a_continuation_should_create_two_blocks.adoc", aLiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByAContinuationShouldCreateTwoBlocks, nil},
+	{"a literal paragraph with a line that appears as a list item that is followed by a continuation should create two blocks", "asciidoctor/lists_test_a_literal_paragraph_with_a_line_that_appears_as_a_list_item_that_is_followed_by_a_continuation_should_create_two_blocks.adoc", listsTestALiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByAContinuationShouldCreateTwoBlocks, nil},
 
-	{"consecutive literal paragraph offset by blank lines in list content are appended as a literal blocks", "asciidoctor/lists_test_consecutive_literal_paragraph_offset_by_blank_lines_in_list_content_are_appended_as_a_literal_blocks.adoc", consecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppendedAsALiteralBlocks, nil},
+	{"consecutive literal paragraph offset by blank lines in list content are appended as a literal blocks", "asciidoctor/lists_test_consecutive_literal_paragraph_offset_by_blank_lines_in_list_content_are_appended_as_a_literal_blocks.adoc", listsTestConsecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppendedAsALiteralBlocks, nil},
 
-	{"a literal paragraph without a trailing blank line consumes following list items", "asciidoctor/lists_test_a_literal_paragraph_without_a_trailing_blank_line_consumes_following_list_items.adoc", aLiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItems, nil},
+	{"a literal paragraph without a trailing blank line consumes following list items", "asciidoctor/lists_test_a_literal_paragraph_without_a_trailing_blank_line_consumes_following_list_items.adoc", listsTestALiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItems, nil},
 
-	{"asterisk elements with no blank lines", "asciidoctor/lists_test_asterisk_elements_with_no_blank_lines.adoc", asteriskElementsWithNoBlankLines, nil},
+	{"asterisk elements with no blank lines", "asciidoctor/lists_test_asterisk_elements_with_no_blank_lines.adoc", listsTestAsteriskElementsWithNoBlankLines, nil},
 
-	{"asterisk elements separated by blank lines should merge lists", "asciidoctor/lists_test_asterisk_elements_separated_by_blank_lines_should_merge_lists.adoc", asteriskElementsSeparatedByBlankLinesShouldMergeLists, nil},
+	{"asterisk elements separated by blank lines should merge lists", "asciidoctor/lists_test_asterisk_elements_separated_by_blank_lines_should_merge_lists.adoc", listsTestAsteriskElementsSeparatedByBlankLinesShouldMergeLists, nil},
 
-	{"asterisk elements with interspersed line comments should be skipped and not break list", "asciidoctor/lists_test_asterisk_elements_with_interspersed_line_comments_should_be_skipped_and_not_break_list.adoc", asteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList, nil},
+	{"asterisk elements with interspersed line comments should be skipped and not break list", "asciidoctor/lists_test_asterisk_elements_with_interspersed_line_comments_should_be_skipped_and_not_break_list.adoc", listsTestAsteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList, nil},
 
-	{"asterisk elements separated by a line comment offset by blank lines should not merge lists", "asciidoctor/lists_test_asterisk_elements_separated_by_a_line_comment_offset_by_blank_lines_should_not_merge_lists.adoc", asteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists, nil},
+	{"asterisk elements separated by a line comment offset by blank lines should not merge lists", "asciidoctor/lists_test_asterisk_elements_separated_by_a_line_comment_offset_by_blank_lines_should_not_merge_lists.adoc", listsTestAsteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists, nil},
 
-	{"asterisk elements separated by a block title offset by a blank line should not merge lists", "asciidoctor/lists_test_asterisk_elements_separated_by_a_block_title_offset_by_a_blank_line_should_not_merge_lists.adoc", asteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists, nil},
+	{"asterisk elements separated by a block title offset by a blank line should not merge lists", "asciidoctor/lists_test_asterisk_elements_separated_by_a_block_title_offset_by_a_blank_line_should_not_merge_lists.adoc", listsTestAsteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists, nil},
 
-	{"asterisk elements separated by an attribute entry offset by a blank line should not merge lists", "asciidoctor/lists_test_asterisk_elements_separated_by_an_attribute_entry_offset_by_a_blank_line_should_not_merge_lists.adoc", asteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists, nil},
+	{"asterisk elements separated by an attribute entry offset by a blank line should not merge lists", "asciidoctor/lists_test_asterisk_elements_separated_by_an_attribute_entry_offset_by_a_blank_line_should_not_merge_lists.adoc", listsTestAsteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists, nil},
 
-	{"list should terminate before next lower section heading", "asciidoctor/lists_test_list_should_terminate_before_next_lower_section_heading.adoc", listShouldTerminateBeforeNextLowerSectionHeading, nil},
+	{"list should terminate before next lower section heading", "asciidoctor/lists_test_list_should_terminate_before_next_lower_section_heading.adoc", listsTestListShouldTerminateBeforeNextLowerSectionHeading, nil},
 
-	{"list should terminate before next lower section heading with implicit id", "asciidoctor/lists_test_list_should_terminate_before_next_lower_section_heading_with_implicit_id.adoc", listShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId, nil},
+	{"list should terminate before next lower section heading with implicit id", "asciidoctor/lists_test_list_should_terminate_before_next_lower_section_heading_with_implicit_id.adoc", listsTestListShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId, nil},
 
-	{"should not find section title immediately below last list item", "asciidoctor/lists_test_should_not_find_section_title_immediately_below_last_list_item.adoc", shouldNotFindSectionTitleImmediatelyBelowLastListItem, nil},
+	{"should not find section title immediately below last list item", "asciidoctor/lists_test_should_not_find_section_title_immediately_below_last_list_item.adoc", listsTestShouldNotFindSectionTitleImmediatelyBelowLastListItem, nil},
 
-	{"quoted text", "asciidoctor/lists_test_quoted_text.adoc", quotedText, nil},
+	{"quoted text", "asciidoctor/lists_test_quoted_text.adoc", listsTestQuotedText, nil},
 
-	{"attribute substitutions", "asciidoctor/lists_test_attribute_substitutions.adoc", attributeSubstitutions, nil},
+	{"attribute substitutions", "asciidoctor/lists_test_attribute_substitutions.adoc", listsTestAttributeSubstitutions, nil},
 
-	{"leading dot is treated as text not block title", "asciidoctor/lists_test_leading_dot_is_treated_as_text_not_block_title.adoc", leadingDotIsTreatedAsTextNotBlockTitle, nil},
+	{"leading dot is treated as text not block title", "asciidoctor/lists_test_leading_dot_is_treated_as_text_not_block_title.adoc", listsTestLeadingDotIsTreatedAsTextNotBlockTitle, nil},
 
-	{"word ending sentence on continuing line not treated as a list item", "asciidoctor/lists_test_word_ending_sentence_on_continuing_line_not_treated_as_a_list_item.adoc", wordEndingSentenceOnContinuingLineNotTreatedAsAListItem, nil},
+	{"word ending sentence on continuing line not treated as a list item", "asciidoctor/lists_test_word_ending_sentence_on_continuing_line_not_treated_as_a_list_item.adoc", listsTestWordEndingSentenceOnContinuingLineNotTreatedAsAListItem, nil},
 
-	{"should discover anchor at start of unordered list item text and register it as a reference", "asciidoctor/lists_test_should_discover_anchor_at_start_of_unordered_list_item_text_and_register_it_as_a_reference.adoc", shouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAReference, nil},
+	{"should discover anchor at start of unordered list item text and register it as a reference", "asciidoctor/lists_test_should_discover_anchor_at_start_of_unordered_list_item_text_and_register_it_as_a_reference.adoc", listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAReference, nil},
 
-	{"should discover anchor at start of ordered list item text and register it as a reference", "asciidoctor/lists_test_should_discover_anchor_at_start_of_ordered_list_item_text_and_register_it_as_a_reference.adoc", shouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsAReference, nil},
+	{"should discover anchor at start of ordered list item text and register it as a reference", "asciidoctor/lists_test_should_discover_anchor_at_start_of_ordered_list_item_text_and_register_it_as_a_reference.adoc", listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsAReference, nil},
 
-	{"should discover anchor at start of callout list item text and register it as a reference", "asciidoctor/lists_test_should_discover_anchor_at_start_of_callout_list_item_text_and_register_it_as_a_reference.adoc", shouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsAReference, nil},
+	{"should discover anchor at start of callout list item text and register it as a reference", "asciidoctor/lists_test_should_discover_anchor_at_start_of_callout_list_item_text_and_register_it_as_a_reference.adoc", listsTestShouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsAReference, nil},
 
-	{"asterisk element mixed with dash elements should be nested", "asciidoctor/lists_test_asterisk_element_mixed_with_dash_elements_should_be_nested.adoc", asteriskElementMixedWithDashElementsShouldBeNested, nil},
+	{"asterisk element mixed with dash elements should be nested", "asciidoctor/lists_test_asterisk_element_mixed_with_dash_elements_should_be_nested.adoc", listsTestAsteriskElementMixedWithDashElementsShouldBeNested, nil},
 
-	{"dash element mixed with asterisks elements should be nested", "asciidoctor/lists_test_dash_element_mixed_with_asterisks_elements_should_be_nested.adoc", dashElementMixedWithAsterisksElementsShouldBeNested, nil},
+	{"dash element mixed with asterisks elements should be nested", "asciidoctor/lists_test_dash_element_mixed_with_asterisks_elements_should_be_nested.adoc", listsTestDashElementMixedWithAsterisksElementsShouldBeNested, nil},
 
-	{"lines prefixed with alternating list markers separated by blank lines should be nested", "asciidoctor/lists_test_lines_prefixed_with_alternating_list_markers_separated_by_blank_lines_should_be_nested.adoc", linesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldBeNested, nil},
+	{"lines prefixed with alternating list markers separated by blank lines should be nested", "asciidoctor/lists_test_lines_prefixed_with_alternating_list_markers_separated_by_blank_lines_should_be_nested.adoc", listsTestLinesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldBeNested, nil},
 
-	{"nested elements (2) with asterisks", "asciidoctor/lists_test_nested_elements_(2)_with_asterisks.adoc", nestedElements2WithAsterisks, nil},
+	{"nested elements (2) with asterisks", "asciidoctor/lists_test_nested_elements_(2)_with_asterisks.adoc", listsTestNestedElements2WithAsterisks, nil},
 
-	{"nested elements (3) with asterisks", "asciidoctor/lists_test_nested_elements_(3)_with_asterisks.adoc", nestedElements3WithAsterisks, nil},
+	{"nested elements (3) with asterisks", "asciidoctor/lists_test_nested_elements_(3)_with_asterisks.adoc", listsTestNestedElements3WithAsterisks, nil},
 
-	{"nested elements (4) with asterisks", "asciidoctor/lists_test_nested_elements_(4)_with_asterisks.adoc", nestedElements4WithAsterisks, nil},
+	{"nested elements (4) with asterisks", "asciidoctor/lists_test_nested_elements_(4)_with_asterisks.adoc", listsTestNestedElements4WithAsterisks, nil},
 
-	{"nested elements (5) with asterisks", "asciidoctor/lists_test_nested_elements_(5)_with_asterisks.adoc", nestedElements5WithAsterisks, nil},
+	{"nested elements (5) with asterisks", "asciidoctor/lists_test_nested_elements_(5)_with_asterisks.adoc", listsTestNestedElements5WithAsterisks, nil},
 
-	{"level of unordered list should match section level", "asciidoctor/lists_test_level_of_unordered_list_should_match_section_level.adoc", levelOfUnorderedListShouldMatchSectionLevel, nil},
+	{"level of unordered list should match section level", "asciidoctor/lists_test_level_of_unordered_list_should_match_section_level.adoc", listsTestLevelOfUnorderedListShouldMatchSectionLevel, nil},
 
-	{"does not recognize lists with repeating unicode bullets", "asciidoctor/lists_test_does_not_recognize_lists_with_repeating_unicode_bullets.adoc", doesNotRecognizeListsWithRepeatingUnicodeBullets, nil},
+	{"does not recognize lists with repeating unicode bullets", "asciidoctor/lists_test_does_not_recognize_lists_with_repeating_unicode_bullets.adoc", listsTestDoesNotRecognizeListsWithRepeatingUnicodeBullets, nil},
 
-	{"nested ordered elements (3)", "asciidoctor/lists_test_nested_ordered_elements_(3).adoc", nestedOrderedElements3, nil},
+	{"nested ordered elements (3)", "asciidoctor/lists_test_nested_ordered_elements_(3).adoc", listsTestNestedOrderedElements3, nil},
 
-	{"level of ordered list should match section level", "asciidoctor/lists_test_level_of_ordered_list_should_match_section_level.adoc", levelOfOrderedListShouldMatchSectionLevel, nil},
+	{"level of ordered list should match section level", "asciidoctor/lists_test_level_of_ordered_list_should_match_section_level.adoc", listsTestLevelOfOrderedListShouldMatchSectionLevel, nil},
 
-	{"nested unordered inside ordered elements", "asciidoctor/lists_test_nested_unordered_inside_ordered_elements.adoc", nestedUnorderedInsideOrderedElements, nil},
+	{"nested unordered inside ordered elements", "asciidoctor/lists_test_nested_unordered_inside_ordered_elements.adoc", listsTestNestedUnorderedInsideOrderedElements, nil},
 
-	{"nested ordered inside unordered elements", "asciidoctor/lists_test_nested_ordered_inside_unordered_elements.adoc", nestedOrderedInsideUnorderedElements, nil},
+	{"nested ordered inside unordered elements", "asciidoctor/lists_test_nested_ordered_inside_unordered_elements.adoc", listsTestNestedOrderedInsideUnorderedElements, nil},
 
-	{"three levels of alternating unordered and ordered elements", "asciidoctor/lists_test_three_levels_of_alternating_unordered_and_ordered_elements.adoc", threeLevelsOfAlternatingUnorderedAndOrderedElements, nil},
+	{"three levels of alternating unordered and ordered elements", "asciidoctor/lists_test_three_levels_of_alternating_unordered_and_ordered_elements.adoc", listsTestThreeLevelsOfAlternatingUnorderedAndOrderedElements, nil},
 
-	{"lines with alternating markers of unordered and ordered list types separated by blank lines should be nested", "asciidoctor/lists_test_lines_with_alternating_markers_of_unordered_and_ordered_list_types_separated_by_blank_lines_should_be_nested.adoc", linesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedByBlankLinesShouldBeNested, nil},
+	{"lines with alternating markers of unordered and ordered list types separated by blank lines should be nested", "asciidoctor/lists_test_lines_with_alternating_markers_of_unordered_and_ordered_list_types_separated_by_blank_lines_should_be_nested.adoc", listsTestLinesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedByBlankLinesShouldBeNested, nil},
 
-	{"list item with literal content should not consume nested list of different type", "asciidoctor/lists_test_list_item_with_literal_content_should_not_consume_nested_list_of_different_type.adoc", listItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType, nil},
+	{"list item with literal content should not consume nested list of different type", "asciidoctor/lists_test_list_item_with_literal_content_should_not_consume_nested_list_of_different_type.adoc", listsTestListItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType, nil},
 
-	{"nested list item does not eat the title of the following detached block", "asciidoctor/lists_test_nested_list_item_does_not_eat_the_title_of_the_following_detached_block.adoc", nestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock, nil},
+	{"nested list item does not eat the title of the following detached block", "asciidoctor/lists_test_nested_list_item_does_not_eat_the_title_of_the_following_detached_block.adoc", listsTestNestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock, nil},
 
-	{"lines with alternating markers of bulleted and description list types separated by blank lines should be nested", "asciidoctor/lists_test_lines_with_alternating_markers_of_bulleted_and_description_list_types_separated_by_blank_lines_should_be_nested.adoc", linesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparatedByBlankLinesShouldBeNested, nil},
+	{"lines with alternating markers of bulleted and description list types separated by blank lines should be nested", "asciidoctor/lists_test_lines_with_alternating_markers_of_bulleted_and_description_list_types_separated_by_blank_lines_should_be_nested.adoc", listsTestLinesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparatedByBlankLinesShouldBeNested, nil},
 
-	{"nested ordered with attribute inside unordered elements", "asciidoctor/lists_test_nested_ordered_with_attribute_inside_unordered_elements.adoc", nestedOrderedWithAttributeInsideUnorderedElements, nil},
+	{"nested ordered with attribute inside unordered elements", "asciidoctor/lists_test_nested_ordered_with_attribute_inside_unordered_elements.adoc", listsTestNestedOrderedWithAttributeInsideUnorderedElements, nil},
 
-	{"adjacent list continuation line attaches following paragraph", "asciidoctor/lists_test_adjacent_list_continuation_line_attaches_following_paragraph.adoc", adjacentListContinuationLineAttachesFollowingParagraph, nil},
+	{"adjacent list continuation line attaches following paragraph", "asciidoctor/lists_test_adjacent_list_continuation_line_attaches_following_paragraph.adoc", listsTestAdjacentListContinuationLineAttachesFollowingParagraph, nil},
 
-	{"adjacent list continuation line attaches following block", "asciidoctor/lists_test_adjacent_list_continuation_line_attaches_following_block.adoc", adjacentListContinuationLineAttachesFollowingBlock, nil},
+	{"adjacent list continuation line attaches following block", "asciidoctor/lists_test_adjacent_list_continuation_line_attaches_following_block.adoc", listsTestAdjacentListContinuationLineAttachesFollowingBlock, nil},
 
-	{"adjacent list continuation line attaches following block with block attributes", "asciidoctor/lists_test_adjacent_list_continuation_line_attaches_following_block_with_block_attributes.adoc", adjacentListContinuationLineAttachesFollowingBlockWithBlockAttributes, nil},
+	{"adjacent list continuation line attaches following block with block attributes", "asciidoctor/lists_test_adjacent_list_continuation_line_attaches_following_block_with_block_attributes.adoc", listsTestAdjacentListContinuationLineAttachesFollowingBlockWithBlockAttributes, nil},
 
-	{"trailing block attribute line attached by continuation should not create block", "asciidoctor/lists_test_trailing_block_attribute_line_attached_by_continuation_should_not_create_block.adoc", trailingBlockAttributeLineAttachedByContinuationShouldNotCreateBlock, nil},
+	{"trailing block attribute line attached by continuation should not create block", "asciidoctor/lists_test_trailing_block_attribute_line_attached_by_continuation_should_not_create_block.adoc", listsTestTrailingBlockAttributeLineAttachedByContinuationShouldNotCreateBlock, nil},
 
-	{"trailing block title line attached by continuation should not create block", "asciidoctor/lists_test_trailing_block_title_line_attached_by_continuation_should_not_create_block.adoc", trailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock, nil},
+	{"trailing block title line attached by continuation should not create block", "asciidoctor/lists_test_trailing_block_title_line_attached_by_continuation_should_not_create_block.adoc", listsTestTrailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock, nil},
 
-	{"consecutive blocks in list continuation attach to list item", "asciidoctor/lists_test_consecutive_blocks_in_list_continuation_attach_to_list_item.adoc", consecutiveBlocksInListContinuationAttachToListItem, nil},
+	{"consecutive blocks in list continuation attach to list item", "asciidoctor/lists_test_consecutive_blocks_in_list_continuation_attach_to_list_item.adoc", listsTestConsecutiveBlocksInListContinuationAttachToListItem, nil},
 
-	{"list item with hanging indent followed by block attached by list continuation", "asciidoctor/lists_test_list_item_with_hanging_indent_followed_by_block_attached_by_list_continuation.adoc", listItemWithHangingIndentFollowedByBlockAttachedByListContinuation, nil},
+	{"list item with hanging indent followed by block attached by list continuation", "asciidoctor/lists_test_list_item_with_hanging_indent_followed_by_block_attached_by_list_continuation.adoc", listsTestListItemWithHangingIndentFollowedByBlockAttachedByListContinuation, nil},
 
-	{"list item paragraph in list item and nested list item", "asciidoctor/lists_test_list_item_paragraph_in_list_item_and_nested_list_item.adoc", listItemParagraphInListItemAndNestedListItem, nil},
+	{"list item paragraph in list item and nested list item", "asciidoctor/lists_test_list_item_paragraph_in_list_item_and_nested_list_item.adoc", listsTestListItemParagraphInListItemAndNestedListItem, nil},
 
-	{"trailing list continuations should attach to list items at respective levels", "asciidoctor/lists_test_trailing_list_continuations_should_attach_to_list_items_at_respective_levels.adoc", trailingListContinuationsShouldAttachToListItemsAtRespectiveLevels, nil},
+	{"trailing list continuations should attach to list items at respective levels", "asciidoctor/lists_test_trailing_list_continuations_should_attach_to_list_items_at_respective_levels.adoc", listsTestTrailingListContinuationsShouldAttachToListItemsAtRespectiveLevels, nil},
 
-	{"trailing list continuations should attach to list items of different types at respective levels", "asciidoctor/lists_test_trailing_list_continuations_should_attach_to_list_items_of_different_types_at_respective_levels.adoc", trailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtRespectiveLevels, nil},
+	{"trailing list continuations should attach to list items of different types at respective levels", "asciidoctor/lists_test_trailing_list_continuations_should_attach_to_list_items_of_different_types_at_respective_levels.adoc", listsTestTrailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtRespectiveLevels, nil},
 
-	{"repeated list continuations should attach to list items at respective levels", "asciidoctor/lists_test_repeated_list_continuations_should_attach_to_list_items_at_respective_levels.adoc", repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels, nil},
+	{"repeated list continuations should attach to list items at respective levels", "asciidoctor/lists_test_repeated_list_continuations_should_attach_to_list_items_at_respective_levels.adoc", listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels, nil},
 
-	{"repeated list continuations attached directly to list item should attach to list items at respective levels", "asciidoctor/lists_test_repeated_list_continuations_attached_directly_to_list_item_should_attach_to_list_items_at_respective_levels.adoc", repeatedListContinuationsAttachedDirectlyToListItemShouldAttachToListItemsAtRespectiveLevels, nil},
+	{"repeated list continuations attached directly to list item should attach to list items at respective levels", "asciidoctor/lists_test_repeated_list_continuations_attached_directly_to_list_item_should_attach_to_list_items_at_respective_levels.adoc", listsTestRepeatedListContinuationsAttachedDirectlyToListItemShouldAttachToListItemsAtRespectiveLevels, nil},
 
-	{"repeated list continuations should attach to list items at respective levels ignoring blank lines", "asciidoctor/lists_test_repeated_list_continuations_should_attach_to_list_items_at_respective_levels_ignoring_blank_lines.adoc", repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsIgnoringBlankLines, nil},
+	{"repeated list continuations should attach to list items at respective levels ignoring blank lines", "asciidoctor/lists_test_repeated_list_continuations_should_attach_to_list_items_at_respective_levels_ignoring_blank_lines.adoc", listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsIgnoringBlankLines, nil},
 
-	{"trailing list continuations should ignore preceding blank lines", "asciidoctor/lists_test_trailing_list_continuations_should_ignore_preceding_blank_lines.adoc", trailingListContinuationsShouldIgnorePrecedingBlankLines, nil},
+	{"trailing list continuations should ignore preceding blank lines", "asciidoctor/lists_test_trailing_list_continuations_should_ignore_preceding_blank_lines.adoc", listsTestTrailingListContinuationsShouldIgnorePrecedingBlankLines, nil},
 
-	{"indented outline list item with different marker offset by a blank line should be recognized as a nested list", "asciidoctor/lists_test_indented_outline_list_item_with_different_marker_offset_by_a_blank_line_should_be_recognized_as_a_nested_list.adoc", indentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldBeRecognizedAsANestedList, nil},
+	{"indented outline list item with different marker offset by a blank line should be recognized as a nested list", "asciidoctor/lists_test_indented_outline_list_item_with_different_marker_offset_by_a_blank_line_should_be_recognized_as_a_nested_list.adoc", listsTestIndentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldBeRecognizedAsANestedList, nil},
 
-	{"indented description list item inside outline list item offset by a blank line should be recognized as a nested list", "asciidoctor/lists_test_indented_description_list_item_inside_outline_list_item_offset_by_a_blank_line_should_be_recognized_as_a_nested_list.adoc", indentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineShouldBeRecognizedAsANestedList, nil},
+	{"indented description list item inside outline list item offset by a blank line should be recognized as a nested list", "asciidoctor/lists_test_indented_description_list_item_inside_outline_list_item_offset_by_a_blank_line_should_be_recognized_as_a_nested_list.adoc", listsTestIndentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineShouldBeRecognizedAsANestedList, nil},
 
-	{"consecutive list continuation lines are folded", "asciidoctor/lists_test_consecutive_list_continuation_lines_are_folded.adoc", consecutiveListContinuationLinesAreFolded, nil},
+	{"consecutive list continuation lines are folded", "asciidoctor/lists_test_consecutive_list_continuation_lines_are_folded.adoc", listsTestConsecutiveListContinuationLinesAreFolded, nil},
 
-	{"should warn if unterminated block is detected in list item", "asciidoctor/lists_test_should_warn_if_unterminated_block_is_detected_in_list_item.adoc", shouldWarnIfUnterminatedBlockIsDetectedInListItem, nil},
+	{"should warn if unterminated block is detected in list item", "asciidoctor/lists_test_should_warn_if_unterminated_block_is_detected_in_list_item.adoc", listsTestShouldWarnIfUnterminatedBlockIsDetectedInListItem, nil},
 
-	{"dot elements with no blank lines", "asciidoctor/lists_test_dot_elements_with_no_blank_lines.adoc", dotElementsWithNoBlankLines, nil},
+	{"dot elements with no blank lines", "asciidoctor/lists_test_dot_elements_with_no_blank_lines.adoc", listsTestDotElementsWithNoBlankLines, nil},
 
-	{"should represent explicit role attribute as style class", "asciidoctor/lists_test_should_represent_explicit_role_attribute_as_style_class.adoc", shouldRepresentExplicitRoleAttributeAsStyleClass, nil},
+	{"should represent explicit role attribute as style class", "asciidoctor/lists_test_should_represent_explicit_role_attribute_as_style_class.adoc", listsTestShouldRepresentExplicitRoleAttributeAsStyleClass, nil},
 
-	{"should base list style on marker length rather than list depth", "asciidoctor/lists_test_should_base_list_style_on_marker_length_rather_than_list_depth.adoc", shouldBaseListStyleOnMarkerLengthRatherThanListDepth, nil},
+	{"should base list style on marker length rather than list depth", "asciidoctor/lists_test_should_base_list_style_on_marker_length_rather_than_list_depth.adoc", listsTestShouldBaseListStyleOnMarkerLengthRatherThanListDepth, nil},
 
-	{"should allow list style to be specified explicitly when using markers with implicit style", "asciidoctor/lists_test_should_allow_list_style_to_be_specified_explicitly_when_using_markers_with_implicit_style.adoc", shouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImplicitStyle, nil},
+	{"should allow list style to be specified explicitly when using markers with implicit style", "asciidoctor/lists_test_should_allow_list_style_to_be_specified_explicitly_when_using_markers_with_implicit_style.adoc", listsTestShouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImplicitStyle, nil},
 
-	{"should represent custom numbering and explicit role attribute as style classes", "asciidoctor/lists_test_should_represent_custom_numbering_and_explicit_role_attribute_as_style_classes.adoc", shouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasses, nil},
+	{"should represent custom numbering and explicit role attribute as style classes", "asciidoctor/lists_test_should_represent_custom_numbering_and_explicit_role_attribute_as_style_classes.adoc", listsTestShouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasses, nil},
 
-	{"should set reversed attribute on list if reversed option is set", "asciidoctor/lists_test_should_set_reversed_attribute_on_list_if_reversed_option_is_set.adoc", shouldSetReversedAttributeOnListIfReversedOptionIsSet, nil},
+	{"should set reversed attribute on list if reversed option is set", "asciidoctor/lists_test_should_set_reversed_attribute_on_list_if_reversed_option_is_set.adoc", listsTestShouldSetReversedAttributeOnListIfReversedOptionIsSet, nil},
 
-	{"should represent implicit role attribute as style class", "asciidoctor/lists_test_should_represent_implicit_role_attribute_as_style_class.adoc", shouldRepresentImplicitRoleAttributeAsStyleClass, nil},
+	{"should represent implicit role attribute as style class", "asciidoctor/lists_test_should_represent_implicit_role_attribute_as_style_class.adoc", listsTestShouldRepresentImplicitRoleAttributeAsStyleClass, nil},
 
-	{"should represent custom numbering and implicit role attribute as style classes", "asciidoctor/lists_test_should_represent_custom_numbering_and_implicit_role_attribute_as_style_classes.adoc", shouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasses, nil},
+	{"should represent custom numbering and implicit role attribute as style classes", "asciidoctor/lists_test_should_represent_custom_numbering_and_implicit_role_attribute_as_style_classes.adoc", listsTestShouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasses, nil},
 
-	{"dot elements separated by blank lines should merge lists", "asciidoctor/lists_test_dot_elements_separated_by_blank_lines_should_merge_lists.adoc", dotElementsSeparatedByBlankLinesShouldMergeLists, nil},
+	{"dot elements separated by blank lines should merge lists", "asciidoctor/lists_test_dot_elements_separated_by_blank_lines_should_merge_lists.adoc", listsTestDotElementsSeparatedByBlankLinesShouldMergeLists, nil},
 
-	{"dot elements with interspersed line comments should be skipped and not break list", "asciidoctor/lists_test_dot_elements_with_interspersed_line_comments_should_be_skipped_and_not_break_list.adoc", dotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList, nil},
+	{"dot elements with interspersed line comments should be skipped and not break list", "asciidoctor/lists_test_dot_elements_with_interspersed_line_comments_should_be_skipped_and_not_break_list.adoc", listsTestDotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList, nil},
 
-	{"dot elements separated by line comment offset by blank lines should not merge lists", "asciidoctor/lists_test_dot_elements_separated_by_line_comment_offset_by_blank_lines_should_not_merge_lists.adoc", dotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLists, nil},
+	{"dot elements separated by line comment offset by blank lines should not merge lists", "asciidoctor/lists_test_dot_elements_separated_by_line_comment_offset_by_blank_lines_should_not_merge_lists.adoc", listsTestDotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLists, nil},
 
-	{"dot elements separated by a block title offset by a blank line should not merge lists", "asciidoctor/lists_test_dot_elements_separated_by_a_block_title_offset_by_a_blank_line_should_not_merge_lists.adoc", dotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists, nil},
+	{"dot elements separated by a block title offset by a blank line should not merge lists", "asciidoctor/lists_test_dot_elements_separated_by_a_block_title_offset_by_a_blank_line_should_not_merge_lists.adoc", listsTestDotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists, nil},
 
-	{"dot elements separated by an attribute entry offset by a blank line should not merge lists", "asciidoctor/lists_test_dot_elements_separated_by_an_attribute_entry_offset_by_a_blank_line_should_not_merge_lists.adoc", dotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists, nil},
+	{"dot elements separated by an attribute entry offset by a blank line should not merge lists", "asciidoctor/lists_test_dot_elements_separated_by_an_attribute_entry_offset_by_a_blank_line_should_not_merge_lists.adoc", listsTestDotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists, nil},
 
-	{"should use start number in docbook5 backend", "asciidoctor/lists_test_should_use_start_number_in_docbook_5_backend.adoc", shouldUseStartNumberInDocbook5Backend, nil},
+	{"should use start number in docbook5 backend", "asciidoctor/lists_test_should_use_start_number_in_docbook_5_backend.adoc", listsTestShouldUseStartNumberInDocbook5Backend, nil},
 
-	{"should warn if explicit uppercase roman numerals in list are out of sequence", "asciidoctor/lists_test_should_warn_if_explicit_uppercase_roman_numerals_in_list_are_out_of_sequence.adoc", shouldWarnIfExplicitUppercaseRomanNumeralsInListAreOutOfSequence, nil},
+	{"should warn if explicit uppercase roman numerals in list are out of sequence", "asciidoctor/lists_test_should_warn_if_explicit_uppercase_roman_numerals_in_list_are_out_of_sequence.adoc", listsTestShouldWarnIfExplicitUppercaseRomanNumeralsInListAreOutOfSequence, nil},
 
-	{"should warn if explicit lowercase roman numerals in list are out of sequence", "asciidoctor/lists_test_should_warn_if_explicit_lowercase_roman_numerals_in_list_are_out_of_sequence.adoc", shouldWarnIfExplicitLowercaseRomanNumeralsInListAreOutOfSequence, nil},
+	{"should warn if explicit lowercase roman numerals in list are out of sequence", "asciidoctor/lists_test_should_warn_if_explicit_lowercase_roman_numerals_in_list_are_out_of_sequence.adoc", listsTestShouldWarnIfExplicitLowercaseRomanNumeralsInListAreOutOfSequence, nil},
 
-	{"should not parse a bare dlist delimiter as a dlist", "asciidoctor/lists_test_should_not_parse_a_bare_dlist_delimiter_as_a_dlist.adoc", shouldNotParseABareDlistDelimiterAsADlist, nil},
+	{"should not parse a bare dlist delimiter as a dlist", "asciidoctor/lists_test_should_not_parse_a_bare_dlist_delimiter_as_a_dlist.adoc", listsTestShouldNotParseABareDlistDelimiterAsADlist, nil},
 
-	{"should parse sibling items using same rules", "asciidoctor/lists_test_should_parse_sibling_items_using_same_rules.adoc", shouldParseSiblingItemsUsingSameRules, nil},
+	{"should parse sibling items using same rules", "asciidoctor/lists_test_should_parse_sibling_items_using_same_rules.adoc", listsTestShouldParseSiblingItemsUsingSameRules, nil},
 
-	{"should allow term to end with a semicolon when using double semicolon delimiter", "asciidoctor/lists_test_should_allow_term_to_end_with_a_semicolon_when_using_double_semicolon_delimiter.adoc", shouldAllowTermToEndWithASemicolonWhenUsingDoubleSemicolonDelimiter, nil},
+	{"should allow term to end with a semicolon when using double semicolon delimiter", "asciidoctor/lists_test_should_allow_term_to_end_with_a_semicolon_when_using_double_semicolon_delimiter.adoc", listsTestShouldAllowTermToEndWithASemicolonWhenUsingDoubleSemicolonDelimiter, nil},
 
-	{"single-line indented adjacent elements", "asciidoctor/lists_test_single_line_indented_adjacent_elements.adoc", singleLineIndentedAdjacentElements, nil},
+	{"single-line indented adjacent elements", "asciidoctor/lists_test_single_line_indented_adjacent_elements.adoc", listsTestSingleLineIndentedAdjacentElements, nil},
 
-	{"single-line elements separated by blank line should create a single list", "asciidoctor/lists_test_single_line_elements_separated_by_blank_line_should_create_a_single_list.adoc", singleLineElementsSeparatedByBlankLineShouldCreateASingleList, nil},
+	{"single-line elements separated by blank line should create a single list", "asciidoctor/lists_test_single_line_elements_separated_by_blank_line_should_create_a_single_list.adoc", listsTestSingleLineElementsSeparatedByBlankLineShouldCreateASingleList, nil},
 
-	{"a line comment between elements should divide them into separate lists", "asciidoctor/lists_test_a_line_comment_between_elements_should_divide_them_into_separate_lists.adoc", aLineCommentBetweenElementsShouldDivideThemIntoSeparateLists, nil},
+	{"a line comment between elements should divide them into separate lists", "asciidoctor/lists_test_a_line_comment_between_elements_should_divide_them_into_separate_lists.adoc", listsTestALineCommentBetweenElementsShouldDivideThemIntoSeparateLists, nil},
 
-	{"a ruler between elements should divide them into separate lists", "asciidoctor/lists_test_a_ruler_between_elements_should_divide_them_into_separate_lists.adoc", aRulerBetweenElementsShouldDivideThemIntoSeparateLists, nil},
+	{"a ruler between elements should divide them into separate lists", "asciidoctor/lists_test_a_ruler_between_elements_should_divide_them_into_separate_lists.adoc", listsTestARulerBetweenElementsShouldDivideThemIntoSeparateLists, nil},
 
-	{"a block title between elements should divide them into separate lists", "asciidoctor/lists_test_a_block_title_between_elements_should_divide_them_into_separate_lists.adoc", aBlockTitleBetweenElementsShouldDivideThemIntoSeparateLists, nil},
+	{"a block title between elements should divide them into separate lists", "asciidoctor/lists_test_a_block_title_between_elements_should_divide_them_into_separate_lists.adoc", listsTestABlockTitleBetweenElementsShouldDivideThemIntoSeparateLists, nil},
 
-	{"multi-line elements with paragraph content", "asciidoctor/lists_test_multi_line_elements_with_paragraph_content.adoc", multiLineElementsWithParagraphContent, nil},
+	{"multi-line elements with paragraph content", "asciidoctor/lists_test_multi_line_elements_with_paragraph_content.adoc", listsTestMultiLineElementsWithParagraphContent, nil},
 
-	{"multi-line elements with indented paragraph content", "asciidoctor/lists_test_multi_line_elements_with_indented_paragraph_content.adoc", multiLineElementsWithIndentedParagraphContent, nil},
+	{"multi-line elements with indented paragraph content", "asciidoctor/lists_test_multi_line_elements_with_indented_paragraph_content.adoc", listsTestMultiLineElementsWithIndentedParagraphContent, nil},
 
-	{"multi-line elements with indented paragraph content that includes comment lines", "asciidoctor/lists_test_multi_line_elements_with_indented_paragraph_content_that_includes_comment_lines.adoc", multiLineElementsWithIndentedParagraphContentThatIncludesCommentLines, nil},
+	{"multi-line elements with indented paragraph content that includes comment lines", "asciidoctor/lists_test_multi_line_elements_with_indented_paragraph_content_that_includes_comment_lines.adoc", listsTestMultiLineElementsWithIndentedParagraphContentThatIncludesCommentLines, nil},
 
-	{"should not strip comment line in literal paragraph block attached to list item", "asciidoctor/lists_test_should_not_strip_comment_line_in_literal_paragraph_block_attached_to_list_item.adoc", shouldNotStripCommentLineInLiteralParagraphBlockAttachedToListItem, nil},
+	{"should not strip comment line in literal paragraph block attached to list item", "asciidoctor/lists_test_should_not_strip_comment_line_in_literal_paragraph_block_attached_to_list_item.adoc", listsTestShouldNotStripCommentLineInLiteralParagraphBlockAttachedToListItem, nil},
 
-	{"multi-line element with paragraph starting with multiple dashes should not be seen as list", "asciidoctor/lists_test_multi_line_element_with_paragraph_starting_with_multiple_dashes_should_not_be_seen_as_list.adoc", multiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeSeenAsList, nil},
+	{"multi-line element with paragraph starting with multiple dashes should not be seen as list", "asciidoctor/lists_test_multi_line_element_with_paragraph_starting_with_multiple_dashes_should_not_be_seen_as_list.adoc", listsTestMultiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeSeenAsList, nil},
 
-	{"multi-line element with multiple terms", "asciidoctor/lists_test_multi_line_element_with_multiple_terms.adoc", multiLineElementWithMultipleTerms, nil},
+	{"multi-line element with multiple terms", "asciidoctor/lists_test_multi_line_element_with_multiple_terms.adoc", listsTestMultiLineElementWithMultipleTerms, nil},
 
-	{"consecutive terms share same varlistentry in docbook", "asciidoctor/lists_test_consecutive_terms_share_same_varlistentry_in_docbook.adoc", consecutiveTermsShareSameVarlistentryInDocbook, nil},
+	{"consecutive terms share same varlistentry in docbook", "asciidoctor/lists_test_consecutive_terms_share_same_varlistentry_in_docbook.adoc", listsTestConsecutiveTermsShareSameVarlistentryInDocbook, nil},
 
-	{"multi-line elements with blank line before paragraph content", "asciidoctor/lists_test_multi_line_elements_with_blank_line_before_paragraph_content.adoc", multiLineElementsWithBlankLineBeforeParagraphContent, nil},
+	{"multi-line elements with blank line before paragraph content", "asciidoctor/lists_test_multi_line_elements_with_blank_line_before_paragraph_content.adoc", listsTestMultiLineElementsWithBlankLineBeforeParagraphContent, nil},
 
-	{"multi-line elements with paragraph and literal content", "asciidoctor/lists_test_multi_line_elements_with_paragraph_and_literal_content.adoc", multiLineElementsWithParagraphAndLiteralContent, nil},
+	{"multi-line elements with paragraph and literal content", "asciidoctor/lists_test_multi_line_elements_with_paragraph_and_literal_content.adoc", listsTestMultiLineElementsWithParagraphAndLiteralContent, nil},
 
-	{"mixed single and multi-line adjacent elements", "asciidoctor/lists_test_mixed_single_and_multi_line_adjacent_elements.adoc", mixedSingleAndMultiLineAdjacentElements, nil},
+	{"mixed single and multi-line adjacent elements", "asciidoctor/lists_test_mixed_single_and_multi_line_adjacent_elements.adoc", listsTestMixedSingleAndMultiLineAdjacentElements, nil},
 
-	{"should discover anchor at start of description term text and register it as a reference", "asciidoctor/lists_test_should_discover_anchor_at_start_of_description_term_text_and_register_it_as_a_reference.adoc", shouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsAReference, nil},
+	{"should discover anchor at start of description term text and register it as a reference", "asciidoctor/lists_test_should_discover_anchor_at_start_of_description_term_text_and_register_it_as_a_reference.adoc", listsTestShouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsAReference, nil},
 
-	{"missing space before term does not produce description list", "asciidoctor/lists_test_missing_space_before_term_does_not_produce_description_list.adoc", missingSpaceBeforeTermDoesNotProduceDescriptionList, nil},
+	{"missing space before term does not produce description list", "asciidoctor/lists_test_missing_space_before_term_does_not_produce_description_list.adoc", listsTestMissingSpaceBeforeTermDoesNotProduceDescriptionList, nil},
 
-	{"literal block inside description list", "asciidoctor/lists_test_literal_block_inside_description_list.adoc", literalBlockInsideDescriptionList, nil},
+	{"literal block inside description list", "asciidoctor/lists_test_literal_block_inside_description_list.adoc", listsTestLiteralBlockInsideDescriptionList, nil},
 
-	{"literal block inside description list with trailing line continuation", "asciidoctor/lists_test_literal_block_inside_description_list_with_trailing_line_continuation.adoc", literalBlockInsideDescriptionListWithTrailingLineContinuation, nil},
+	{"literal block inside description list with trailing line continuation", "asciidoctor/lists_test_literal_block_inside_description_list_with_trailing_line_continuation.adoc", listsTestLiteralBlockInsideDescriptionListWithTrailingLineContinuation, nil},
 
-	{"multiple listing blocks inside description list", "asciidoctor/lists_test_multiple_listing_blocks_inside_description_list.adoc", multipleListingBlocksInsideDescriptionList, nil},
+	{"multiple listing blocks inside description list", "asciidoctor/lists_test_multiple_listing_blocks_inside_description_list.adoc", listsTestMultipleListingBlocksInsideDescriptionList, nil},
 
-	{"open block inside description list", "asciidoctor/lists_test_open_block_inside_description_list.adoc", openBlockInsideDescriptionList, nil},
+	{"open block inside description list", "asciidoctor/lists_test_open_block_inside_description_list.adoc", listsTestOpenBlockInsideDescriptionList, nil},
 
-	{"paragraph attached by a list continuation on either side in a description list", "asciidoctor/lists_test_paragraph_attached_by_a_list_continuation_on_either_side_in_a_description_list.adoc", paragraphAttachedByAListContinuationOnEitherSideInADescriptionList, nil},
+	{"paragraph attached by a list continuation on either side in a description list", "asciidoctor/lists_test_paragraph_attached_by_a_list_continuation_on_either_side_in_a_description_list.adoc", listsTestParagraphAttachedByAListContinuationOnEitherSideInADescriptionList, nil},
 
-	{"paragraph attached by a list continuation on either side to a multi-line element in a description list", "asciidoctor/lists_test_paragraph_attached_by_a_list_continuation_on_either_side_to_a_multi_line_element_in_a_description_list.adoc", paragraphAttachedByAListContinuationOnEitherSideToAMultiLineElementInADescriptionList, nil},
+	{"paragraph attached by a list continuation on either side to a multi-line element in a description list", "asciidoctor/lists_test_paragraph_attached_by_a_list_continuation_on_either_side_to_a_multi_line_element_in_a_description_list.adoc", listsTestParagraphAttachedByAListContinuationOnEitherSideToAMultiLineElementInADescriptionList, nil},
 
-	{"should continue to parse subsequent blocks attached to list item after first block is dropped", "asciidoctor/lists_test_should_continue_to_parse_subsequent_blocks_attached_to_list_item_after_first_block_is_dropped.adoc", shouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBlockIsDropped, nil},
+	{"should continue to parse subsequent blocks attached to list item after first block is dropped", "asciidoctor/lists_test_should_continue_to_parse_subsequent_blocks_attached_to_list_item_after_first_block_is_dropped.adoc", listsTestShouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBlockIsDropped, nil},
 
-	{"verse paragraph inside a description list", "asciidoctor/lists_test_verse_paragraph_inside_a_description_list.adoc", verseParagraphInsideADescriptionList, nil},
+	{"verse paragraph inside a description list", "asciidoctor/lists_test_verse_paragraph_inside_a_description_list.adoc", listsTestVerseParagraphInsideADescriptionList, nil},
 
-	{"list inside a description list", "asciidoctor/lists_test_list_inside_a_description_list.adoc", listInsideADescriptionList, nil},
+	{"list inside a description list", "asciidoctor/lists_test_list_inside_a_description_list.adoc", listsTestListInsideADescriptionList, nil},
 
-	{"list inside a description list offset by blank lines", "asciidoctor/lists_test_list_inside_a_description_list_offset_by_blank_lines.adoc", listInsideADescriptionListOffsetByBlankLines, nil},
+	{"list inside a description list offset by blank lines", "asciidoctor/lists_test_list_inside_a_description_list_offset_by_blank_lines.adoc", listsTestListInsideADescriptionListOffsetByBlankLines, nil},
 
-	{"should only grab one line following last item if item has no inline description", "asciidoctor/lists_test_should_only_grab_one_line_following_last_item_if_item_has_no_inline_description.adoc", shouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription, nil},
+	{"should only grab one line following last item if item has no inline description", "asciidoctor/lists_test_should_only_grab_one_line_following_last_item_if_item_has_no_inline_description.adoc", listsTestShouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription, nil},
 
-	{"should only grab one literal line following last item if item has no inline description", "asciidoctor/lists_test_should_only_grab_one_literal_line_following_last_item_if_item_has_no_inline_description.adoc", shouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescription, nil},
+	{"should only grab one literal line following last item if item has no inline description", "asciidoctor/lists_test_should_only_grab_one_literal_line_following_last_item_if_item_has_no_inline_description.adoc", listsTestShouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescription, nil},
 
-	{"should append subsequent paragraph literals to list item as block content", "asciidoctor/lists_test_should_append_subsequent_paragraph_literals_to_list_item_as_block_content.adoc", shouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent, nil},
+	{"should append subsequent paragraph literals to list item as block content", "asciidoctor/lists_test_should_append_subsequent_paragraph_literals_to_list_item_as_block_content.adoc", listsTestShouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent, nil},
 
-	{"should not match comment line that looks like description list term", "asciidoctor/lists_test_should_not_match_comment_line_that_looks_like_description_list_term.adoc", shouldNotMatchCommentLineThatLooksLikeDescriptionListTerm, nil},
+	{"should not match comment line that looks like description list term", "asciidoctor/lists_test_should_not_match_comment_line_that_looks_like_description_list_term.adoc", listsTestShouldNotMatchCommentLineThatLooksLikeDescriptionListTerm, nil},
 
-	{"should not match comment line following list that looks like description list term", "asciidoctor/lists_test_should_not_match_comment_line_following_list_that_looks_like_description_list_term.adoc", shouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListTerm, nil},
+	{"should not match comment line following list that looks like description list term", "asciidoctor/lists_test_should_not_match_comment_line_following_list_that_looks_like_description_list_term.adoc", listsTestShouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListTerm, nil},
 
-	{"should not match comment line that looks like sibling description list term", "asciidoctor/lists_test_should_not_match_comment_line_that_looks_like_sibling_description_list_term.adoc", shouldNotMatchCommentLineThatLooksLikeSiblingDescriptionListTerm, nil},
+	{"should not match comment line that looks like sibling description list term", "asciidoctor/lists_test_should_not_match_comment_line_that_looks_like_sibling_description_list_term.adoc", listsTestShouldNotMatchCommentLineThatLooksLikeSiblingDescriptionListTerm, nil},
 
-	{"should not hang on description list item in list that begins with ///", "asciidoctor/lists_test_should_not_hang_on_description_list_item_in_list_that_begins_with.adoc", shouldNotHangOnDescriptionListItemInListThatBeginsWith, nil},
+	{"should not hang on description list item in list that begins with ///", "asciidoctor/lists_test_should_not_hang_on_description_list_item_in_list_that_begins_with.adoc", listsTestShouldNotHangOnDescriptionListItemInListThatBeginsWith, nil},
 
-	{"should not hang on sibling description list item that begins with ///", "asciidoctor/lists_test_should_not_hang_on_sibling_description_list_item_that_begins_with.adoc", shouldNotHangOnSiblingDescriptionListItemThatBeginsWith, nil},
+	{"should not hang on sibling description list item that begins with ///", "asciidoctor/lists_test_should_not_hang_on_sibling_description_list_item_that_begins_with.adoc", listsTestShouldNotHangOnSiblingDescriptionListItemThatBeginsWith, nil},
 
-	{"should skip dlist term that begins with // unless it begins with ///", "asciidoctor/lists_test_should_skip_dlist_term_that_begins_with____unless_it_begins_with.adoc", shouldSkipDlistTermThatBeginsWithUnlessItBeginsWith, nil},
+	{"should skip dlist term that begins with // unless it begins with ///", "asciidoctor/lists_test_should_skip_dlist_term_that_begins_with____unless_it_begins_with.adoc", listsTestShouldSkipDlistTermThatBeginsWithUnlessItBeginsWith, nil},
 
-	{"more than 4 consecutive colons should become part of description list term", "asciidoctor/lists_test_more_than_4_consecutive_colons_should_become_part_of_description_list_term.adoc", moreThan4ConsecutiveColonsShouldBecomePartOfDescriptionListTerm, nil},
+	{"more than 4 consecutive colons should become part of description list term", "asciidoctor/lists_test_more_than_4_consecutive_colons_should_become_part_of_description_list_term.adoc", listsTestMoreThan4ConsecutiveColonsShouldBecomePartOfDescriptionListTerm, nil},
 
-	{"text method of dd node should return nil if dd node only contains blocks", "asciidoctor/lists_test_text_method_of_dd_node_should_return_nil_if_dd_node_only_contains_blocks.adoc", textMethodOfDdNodeShouldReturnNilIfDdNodeOnlyContainsBlocks, nil},
+	{"text method of dd node should return nil if dd node only contains blocks", "asciidoctor/lists_test_text_method_of_dd_node_should_return_nil_if_dd_node_only_contains_blocks.adoc", listsTestTextMethodOfDdNodeShouldReturnNilIfDdNodeOnlyContainsBlocks, nil},
 
-	{"should not parse a nested dlist delimiter without a term as a dlist", "asciidoctor/lists_test_should_not_parse_a_nested_dlist_delimiter_without_a_term_as_a_dlist.adoc", shouldNotParseANestedDlistDelimiterWithoutATermAsADlist, nil},
+	{"should not parse a nested dlist delimiter without a term as a dlist", "asciidoctor/lists_test_should_not_parse_a_nested_dlist_delimiter_without_a_term_as_a_dlist.adoc", listsTestShouldNotParseANestedDlistDelimiterWithoutATermAsADlist, nil},
 
-	{"should not parse a nested indented dlist delimiter without a term as a dlist", "asciidoctor/lists_test_should_not_parse_a_nested_indented_dlist_delimiter_without_a_term_as_a_dlist.adoc", shouldNotParseANestedIndentedDlistDelimiterWithoutATermAsADlist, nil},
+	{"should not parse a nested indented dlist delimiter without a term as a dlist", "asciidoctor/lists_test_should_not_parse_a_nested_indented_dlist_delimiter_without_a_term_as_a_dlist.adoc", listsTestShouldNotParseANestedIndentedDlistDelimiterWithoutATermAsADlist, nil},
 
-	{"single-line adjacent nested elements", "asciidoctor/lists_test_single_line_adjacent_nested_elements.adoc", singleLineAdjacentNestedElements, nil},
+	{"single-line adjacent nested elements", "asciidoctor/lists_test_single_line_adjacent_nested_elements.adoc", listsTestSingleLineAdjacentNestedElements, nil},
 
-	{"single-line adjacent maximum nested elements", "asciidoctor/lists_test_single_line_adjacent_maximum_nested_elements.adoc", singleLineAdjacentMaximumNestedElements, nil},
+	{"single-line adjacent maximum nested elements", "asciidoctor/lists_test_single_line_adjacent_maximum_nested_elements.adoc", listsTestSingleLineAdjacentMaximumNestedElements, nil},
 
-	{"single-line nested elements separated by blank line at top level", "asciidoctor/lists_test_single_line_nested_elements_separated_by_blank_line_at_top_level.adoc", singleLineNestedElementsSeparatedByBlankLineAtTopLevel, nil},
+	{"single-line nested elements separated by blank line at top level", "asciidoctor/lists_test_single_line_nested_elements_separated_by_blank_line_at_top_level.adoc", listsTestSingleLineNestedElementsSeparatedByBlankLineAtTopLevel, nil},
 
-	{"single-line nested elements separated by blank line at nested level", "asciidoctor/lists_test_single_line_nested_elements_separated_by_blank_line_at_nested_level.adoc", singleLineNestedElementsSeparatedByBlankLineAtNestedLevel, nil},
+	{"single-line nested elements separated by blank line at nested level", "asciidoctor/lists_test_single_line_nested_elements_separated_by_blank_line_at_nested_level.adoc", listsTestSingleLineNestedElementsSeparatedByBlankLineAtNestedLevel, nil},
 
-	{"single-line adjacent nested elements with alternate delimiters", "asciidoctor/lists_test_single_line_adjacent_nested_elements_with_alternate_delimiters.adoc", singleLineAdjacentNestedElementsWithAlternateDelimiters, nil},
+	{"single-line adjacent nested elements with alternate delimiters", "asciidoctor/lists_test_single_line_adjacent_nested_elements_with_alternate_delimiters.adoc", listsTestSingleLineAdjacentNestedElementsWithAlternateDelimiters, nil},
 
-	{"multi-line adjacent nested elements", "asciidoctor/lists_test_multi_line_adjacent_nested_elements.adoc", multiLineAdjacentNestedElements, nil},
+	{"multi-line adjacent nested elements", "asciidoctor/lists_test_multi_line_adjacent_nested_elements.adoc", listsTestMultiLineAdjacentNestedElements, nil},
 
-	{"multi-line nested elements separated by blank line at nested level repeated", "asciidoctor/lists_test_multi_line_nested_elements_separated_by_blank_line_at_nested_level_repeated.adoc", multiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated, nil},
+	{"multi-line nested elements separated by blank line at nested level repeated", "asciidoctor/lists_test_multi_line_nested_elements_separated_by_blank_line_at_nested_level_repeated.adoc", listsTestMultiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated, nil},
 
-	{"multi-line element with indented nested element", "asciidoctor/lists_test_multi_line_element_with_indented_nested_element.adoc", multiLineElementWithIndentedNestedElement, nil},
+	{"multi-line element with indented nested element", "asciidoctor/lists_test_multi_line_element_with_indented_nested_element.adoc", listsTestMultiLineElementWithIndentedNestedElement, nil},
 
-	{"mixed single and multi-line elements with indented nested elements", "asciidoctor/lists_test_mixed_single_and_multi_line_elements_with_indented_nested_elements.adoc", mixedSingleAndMultiLineElementsWithIndentedNestedElements, nil},
+	{"mixed single and multi-line elements with indented nested elements", "asciidoctor/lists_test_mixed_single_and_multi_line_elements_with_indented_nested_elements.adoc", listsTestMixedSingleAndMultiLineElementsWithIndentedNestedElements, nil},
 
-	{"multi-line elements with first paragraph folded to text with adjacent nested element", "asciidoctor/lists_test_multi_line_elements_with_first_paragraph_folded_to_text_with_adjacent_nested_element.adoc", multiLineElementsWithFirstParagraphFoldedToTextWithAdjacentNestedElement, nil},
+	{"multi-line elements with first paragraph folded to text with adjacent nested element", "asciidoctor/lists_test_multi_line_elements_with_first_paragraph_folded_to_text_with_adjacent_nested_element.adoc", listsTestMultiLineElementsWithFirstParagraphFoldedToTextWithAdjacentNestedElement, nil},
 
-	{"nested dlist attached by list continuation should not consume detached paragraph", "asciidoctor/lists_test_nested_dlist_attached_by_list_continuation_should_not_consume_detached_paragraph.adoc", nestedDlistAttachedByListContinuationShouldNotConsumeDetachedParagraph, nil},
+	{"nested dlist attached by list continuation should not consume detached paragraph", "asciidoctor/lists_test_nested_dlist_attached_by_list_continuation_should_not_consume_detached_paragraph.adoc", listsTestNestedDlistAttachedByListContinuationShouldNotConsumeDetachedParagraph, nil},
 
-	{"nested dlist with attached block offset by empty line", "asciidoctor/lists_test_nested_dlist_with_attached_block_offset_by_empty_line.adoc", nestedDlistWithAttachedBlockOffsetByEmptyLine, nil},
+	{"nested dlist with attached block offset by empty line", "asciidoctor/lists_test_nested_dlist_with_attached_block_offset_by_empty_line.adoc", listsTestNestedDlistWithAttachedBlockOffsetByEmptyLine, nil},
 
-	{"should convert glossary list with proper semantics", "asciidoctor/lists_test_should_convert_glossary_list_with_proper_semantics.adoc", shouldConvertGlossaryListWithProperSemantics, nil},
+	{"should convert glossary list with proper semantics", "asciidoctor/lists_test_should_convert_glossary_list_with_proper_semantics.adoc", listsTestShouldConvertGlossaryListWithProperSemantics, nil},
 
-	{"consecutive glossary terms should share same glossentry element in docbook", "asciidoctor/lists_test_consecutive_glossary_terms_should_share_same_glossentry_element_in_docbook.adoc", consecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook, nil},
+	{"consecutive glossary terms should share same glossentry element in docbook", "asciidoctor/lists_test_consecutive_glossary_terms_should_share_same_glossentry_element_in_docbook.adoc", listsTestConsecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook, nil},
 
-	{"should convert horizontal list with proper markup", "asciidoctor/lists_test_should_convert_horizontal_list_with_proper_markup.adoc", shouldConvertHorizontalListWithProperMarkup, nil},
+	{"should convert horizontal list with proper markup", "asciidoctor/lists_test_should_convert_horizontal_list_with_proper_markup.adoc", listsTestShouldConvertHorizontalListWithProperMarkup, nil},
 
-	{"should set col widths of item and label if specified", "asciidoctor/lists_test_should_set_col_widths_of_item_and_label_if_specified.adoc", shouldSetColWidthsOfItemAndLabelIfSpecified, nil},
+	{"should set col widths of item and label if specified", "asciidoctor/lists_test_should_set_col_widths_of_item_and_label_if_specified.adoc", listsTestShouldSetColWidthsOfItemAndLabelIfSpecified, nil},
 
-	{"should set col widths of item and label in docbook if specified", "asciidoctor/lists_test_should_set_col_widths_of_item_and_label_in_docbook_if_specified.adoc", shouldSetColWidthsOfItemAndLabelInDocbookIfSpecified, nil},
+	{"should set col widths of item and label in docbook if specified", "asciidoctor/lists_test_should_set_col_widths_of_item_and_label_in_docbook_if_specified.adoc", listsTestShouldSetColWidthsOfItemAndLabelInDocbookIfSpecified, nil},
 
-	{"should add strong class to label if strong option is set", "asciidoctor/lists_test_should_add_strong_class_to_label_if_strong_option_is_set.adoc", shouldAddStrongClassToLabelIfStrongOptionIsSet, nil},
+	{"should add strong class to label if strong option is set", "asciidoctor/lists_test_should_add_strong_class_to_label_if_strong_option_is_set.adoc", listsTestShouldAddStrongClassToLabelIfStrongOptionIsSet, nil},
 
-	{"consecutive terms in horizontal list should share same cell", "asciidoctor/lists_test_consecutive_terms_in_horizontal_list_should_share_same_cell.adoc", consecutiveTermsInHorizontalListShouldShareSameCell, nil},
+	{"consecutive terms in horizontal list should share same cell", "asciidoctor/lists_test_consecutive_terms_in_horizontal_list_should_share_same_cell.adoc", listsTestConsecutiveTermsInHorizontalListShouldShareSameCell, nil},
 
-	{"consecutive terms in horizontal list should share same entry in docbook", "asciidoctor/lists_test_consecutive_terms_in_horizontal_list_should_share_same_entry_in_docbook.adoc", consecutiveTermsInHorizontalListShouldShareSameEntryInDocbook, nil},
+	{"consecutive terms in horizontal list should share same entry in docbook", "asciidoctor/lists_test_consecutive_terms_in_horizontal_list_should_share_same_entry_in_docbook.adoc", listsTestConsecutiveTermsInHorizontalListShouldShareSameEntryInDocbook, nil},
 
-	{"should convert horizontal list in docbook with proper markup", "asciidoctor/lists_test_should_convert_horizontal_list_in_docbook_with_proper_markup.adoc", shouldConvertHorizontalListInDocbookWithProperMarkup, nil},
+	{"should convert horizontal list in docbook with proper markup", "asciidoctor/lists_test_should_convert_horizontal_list_in_docbook_with_proper_markup.adoc", listsTestShouldConvertHorizontalListInDocbookWithProperMarkup, nil},
 
-	{"should convert qanda list in HTML with proper semantics", "asciidoctor/lists_test_should_convert_qanda_list_in_html_with_proper_semantics.adoc", shouldConvertQandaListInHtmlWithProperSemantics, nil},
+	{"should convert qanda list in HTML with proper semantics", "asciidoctor/lists_test_should_convert_qanda_list_in_html_with_proper_semantics.adoc", listsTestShouldConvertQandaListInHtmlWithProperSemantics, nil},
 
-	{"should convert qanda list in DocBook with proper semantics", "asciidoctor/lists_test_should_convert_qanda_list_in_doc_book_with_proper_semantics.adoc", shouldConvertQandaListInDocBookWithProperSemantics, nil},
+	{"should convert qanda list in DocBook with proper semantics", "asciidoctor/lists_test_should_convert_qanda_list_in_doc_book_with_proper_semantics.adoc", listsTestShouldConvertQandaListInDocBookWithProperSemantics, nil},
 
-	{"consecutive questions should share same question element in docbook", "asciidoctor/lists_test_consecutive_questions_should_share_same_question_element_in_docbook.adoc", consecutiveQuestionsShouldShareSameQuestionElementInDocbook, nil},
+	{"consecutive questions should share same question element in docbook", "asciidoctor/lists_test_consecutive_questions_should_share_same_question_element_in_docbook.adoc", listsTestConsecutiveQuestionsShouldShareSameQuestionElementInDocbook, nil},
 
-	{"should convert bibliography list with proper semantics", "asciidoctor/lists_test_should_convert_bibliography_list_with_proper_semantics.adoc", shouldConvertBibliographyListWithProperSemantics, nil},
+	{"should convert bibliography list with proper semantics", "asciidoctor/lists_test_should_convert_bibliography_list_with_proper_semantics.adoc", listsTestShouldConvertBibliographyListWithProperSemantics, nil},
 
-	{"should convert bibliography list with proper semantics to DocBook", "asciidoctor/lists_test_should_convert_bibliography_list_with_proper_semantics_to_doc_book.adoc", shouldConvertBibliographyListWithProperSemanticsToDocBook, nil},
+	{"should convert bibliography list with proper semantics to DocBook", "asciidoctor/lists_test_should_convert_bibliography_list_with_proper_semantics_to_doc_book.adoc", listsTestShouldConvertBibliographyListWithProperSemanticsToDocBook, nil},
 
-	{"should warn if a bibliography ID is already in use", "asciidoctor/lists_test_should_warn_if_a_bibliography_id_is_already_in_use.adoc", shouldWarnIfABibliographyIdIsAlreadyInUse, nil},
+	{"should warn if a bibliography ID is already in use", "asciidoctor/lists_test_should_warn_if_a_bibliography_id_is_already_in_use.adoc", listsTestShouldWarnIfABibliographyIdIsAlreadyInUse, nil},
 
-	{"should automatically add bibliography style to top-level lists in bibliography section", "asciidoctor/lists_test_should_automatically_add_bibliography_style_to_top_level_lists_in_bibliography_section.adoc", shouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliographySection, nil},
+	{"should automatically add bibliography style to top-level lists in bibliography section", "asciidoctor/lists_test_should_automatically_add_bibliography_style_to_top_level_lists_in_bibliography_section.adoc", listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliographySection, nil},
 
-	{"should not recognize bibliography anchor that begins with a digit", "asciidoctor/lists_test_should_not_recognize_bibliography_anchor_that_begins_with_a_digit.adoc", shouldNotRecognizeBibliographyAnchorThatBeginsWithADigit, nil},
+	{"should not recognize bibliography anchor that begins with a digit", "asciidoctor/lists_test_should_not_recognize_bibliography_anchor_that_begins_with_a_digit.adoc", listsTestShouldNotRecognizeBibliographyAnchorThatBeginsWithADigit, nil},
 
-	{"should recognize bibliography anchor that contains a digit but does not start with one", "asciidoctor/lists_test_should_recognize_bibliography_anchor_that_contains_a_digit_but_does_not_start_with_one.adoc", shouldRecognizeBibliographyAnchorThatContainsADigitButDoesNotStartWithOne, nil},
+	{"should recognize bibliography anchor that contains a digit but does not start with one", "asciidoctor/lists_test_should_recognize_bibliography_anchor_that_contains_a_digit_but_does_not_start_with_one.adoc", listsTestShouldRecognizeBibliographyAnchorThatContainsADigitButDoesNotStartWithOne, nil},
 
-	{"should catalog bibliography anchors in bibliography list", "asciidoctor/lists_test_should_catalog_bibliography_anchors_in_bibliography_list.adoc", shouldCatalogBibliographyAnchorsInBibliographyList, nil},
+	{"should catalog bibliography anchors in bibliography list", "asciidoctor/lists_test_should_catalog_bibliography_anchors_in_bibliography_list.adoc", listsTestShouldCatalogBibliographyAnchorsInBibliographyList, nil},
 
-	{"should use reftext from bibliography anchor at xref and entry", "asciidoctor/lists_test_should_use_reftext_from_bibliography_anchor_at_xref_and_entry.adoc", shouldUseReftextFromBibliographyAnchorAtXrefAndEntry, nil},
+	{"should use reftext from bibliography anchor at xref and entry", "asciidoctor/lists_test_should_use_reftext_from_bibliography_anchor_at_xref_and_entry.adoc", listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry, nil},
 
-	{"should assign reftext of bibliography anchor to xreflabel in DocBook backend", "asciidoctor/lists_test_should_assign_reftext_of_bibliography_anchor_to_xreflabel_in_doc_book_backend.adoc", shouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend, nil},
+	{"should assign reftext of bibliography anchor to xreflabel in DocBook backend", "asciidoctor/lists_test_should_assign_reftext_of_bibliography_anchor_to_xreflabel_in_doc_book_backend.adoc", listsTestShouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend, nil},
 
-	{"folds text from subsequent line", "asciidoctor/lists_test_folds_text_from_subsequent_line.adoc", foldsTextFromSubsequentLine, nil},
+	{"folds text from subsequent line", "asciidoctor/lists_test_folds_text_from_subsequent_line.adoc", listsTestFoldsTextFromSubsequentLine, nil},
 
-	{"folds text from first line after blank lines", "asciidoctor/lists_test_folds_text_from_first_line_after_blank_lines.adoc", foldsTextFromFirstLineAfterBlankLines, nil},
+	{"folds text from first line after blank lines", "asciidoctor/lists_test_folds_text_from_first_line_after_blank_lines.adoc", listsTestFoldsTextFromFirstLineAfterBlankLines, nil},
 
-	{"folds text from first line after blank line and immediately preceding next item", "asciidoctor/lists_test_folds_text_from_first_line_after_blank_line_and_immediately_preceding_next_item.adoc", foldsTextFromFirstLineAfterBlankLineAndImmediatelyPrecedingNextItem, nil},
+	{"folds text from first line after blank line and immediately preceding next item", "asciidoctor/lists_test_folds_text_from_first_line_after_blank_line_and_immediately_preceding_next_item.adoc", listsTestFoldsTextFromFirstLineAfterBlankLineAndImmediatelyPrecedingNextItem, nil},
 
-	{"paragraph offset by blank lines does not break list if label does not have inline text", "asciidoctor/lists_test_paragraph_offset_by_blank_lines_does_not_break_list_if_label_does_not_have_inline_text.adoc", paragraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInlineText, nil},
+	{"paragraph offset by blank lines does not break list if label does not have inline text", "asciidoctor/lists_test_paragraph_offset_by_blank_lines_does_not_break_list_if_label_does_not_have_inline_text.adoc", listsTestParagraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInlineText, nil},
 
-	{"folds text from first line after comment line", "asciidoctor/lists_test_folds_text_from_first_line_after_comment_line.adoc", foldsTextFromFirstLineAfterCommentLine, nil},
+	{"folds text from first line after comment line", "asciidoctor/lists_test_folds_text_from_first_line_after_comment_line.adoc", listsTestFoldsTextFromFirstLineAfterCommentLine, nil},
 
-	{"folds text from line following comment line offset by blank line", "asciidoctor/lists_test_folds_text_from_line_following_comment_line_offset_by_blank_line.adoc", foldsTextFromLineFollowingCommentLineOffsetByBlankLine, nil},
+	{"folds text from line following comment line offset by blank line", "asciidoctor/lists_test_folds_text_from_line_following_comment_line_offset_by_blank_line.adoc", listsTestFoldsTextFromLineFollowingCommentLineOffsetByBlankLine, nil},
 
-	{"folds text from subsequent indented line", "asciidoctor/lists_test_folds_text_from_subsequent_indented_line.adoc", foldsTextFromSubsequentIndentedLine, nil},
+	{"folds text from subsequent indented line", "asciidoctor/lists_test_folds_text_from_subsequent_indented_line.adoc", listsTestFoldsTextFromSubsequentIndentedLine, nil},
 
-	{"folds text from indented line after blank line", "asciidoctor/lists_test_folds_text_from_indented_line_after_blank_line.adoc", foldsTextFromIndentedLineAfterBlankLine, nil},
+	{"folds text from indented line after blank line", "asciidoctor/lists_test_folds_text_from_indented_line_after_blank_line.adoc", listsTestFoldsTextFromIndentedLineAfterBlankLine, nil},
 
-	{"folds text that looks like ruler offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_ruler_offset_by_blank_line.adoc", foldsTextThatLooksLikeRulerOffsetByBlankLine, nil},
+	{"folds text that looks like ruler offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_ruler_offset_by_blank_line.adoc", listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLine, nil},
 
-	{"folds text that looks like ruler offset by blank line and line comment", "asciidoctor/lists_test_folds_text_that_looks_like_ruler_offset_by_blank_line_and_line_comment.adoc", foldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment, nil},
+	{"folds text that looks like ruler offset by blank line and line comment", "asciidoctor/lists_test_folds_text_that_looks_like_ruler_offset_by_blank_line_and_line_comment.adoc", listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment, nil},
 
-	{"folds text that looks like ruler and the line following it offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_ruler_and_the_line_following_it_offset_by_blank_line.adoc", foldsTextThatLooksLikeRulerAndTheLineFollowingItOffsetByBlankLine, nil},
+	{"folds text that looks like ruler and the line following it offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_ruler_and_the_line_following_it_offset_by_blank_line.adoc", listsTestFoldsTextThatLooksLikeRulerAndTheLineFollowingItOffsetByBlankLine, nil},
 
-	{"folds text that looks like title offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_title_offset_by_blank_line.adoc", foldsTextThatLooksLikeTitleOffsetByBlankLine, nil},
+	{"folds text that looks like title offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_title_offset_by_blank_line.adoc", listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLine, nil},
 
-	{"folds text that looks like title offset by blank line and line comment", "asciidoctor/lists_test_folds_text_that_looks_like_title_offset_by_blank_line_and_line_comment.adoc", foldsTextThatLooksLikeTitleOffsetByBlankLineAndLineComment, nil},
+	{"folds text that looks like title offset by blank line and line comment", "asciidoctor/lists_test_folds_text_that_looks_like_title_offset_by_blank_line_and_line_comment.adoc", listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLineAndLineComment, nil},
 
-	{"folds text that looks like admonition offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_admonition_offset_by_blank_line.adoc", foldsTextThatLooksLikeAdmonitionOffsetByBlankLine, nil},
+	{"folds text that looks like admonition offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_admonition_offset_by_blank_line.adoc", listsTestFoldsTextThatLooksLikeAdmonitionOffsetByBlankLine, nil},
 
-	{"folds text that looks like section title offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_section_title_offset_by_blank_line.adoc", foldsTextThatLooksLikeSectionTitleOffsetByBlankLine, nil},
+	{"folds text that looks like section title offset by blank line", "asciidoctor/lists_test_folds_text_that_looks_like_section_title_offset_by_blank_line.adoc", listsTestFoldsTextThatLooksLikeSectionTitleOffsetByBlankLine, nil},
 
-	{"folds text of first literal line offset by blank line appends subsequent literals offset by blank line as blocks", "asciidoctor/lists_test_folds_text_of_first_literal_line_offset_by_blank_line_appends_subsequent_literals_offset_by_blank_line_as_blocks.adoc", foldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLiteralsOffsetByBlankLineAsBlocks, nil},
+	{"folds text of first literal line offset by blank line appends subsequent literals offset by blank line as blocks", "asciidoctor/lists_test_folds_text_of_first_literal_line_offset_by_blank_line_appends_subsequent_literals_offset_by_blank_line_as_blocks.adoc", listsTestFoldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLiteralsOffsetByBlankLineAsBlocks, nil},
 
-	{"folds text of subsequent line and appends following literal line offset by blank line as block if term has no inline description", "asciidoctor/lists_test_folds_text_of_subsequent_line_and_appends_following_literal_line_offset_by_blank_line_as_block_if_term_has_no_inline_description.adoc", foldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlankLineAsBlockIfTermHasNoInlineDescription, nil},
+	{"folds text of subsequent line and appends following literal line offset by blank line as block if term has no inline description", "asciidoctor/lists_test_folds_text_of_subsequent_line_and_appends_following_literal_line_offset_by_blank_line_as_block_if_term_has_no_inline_description.adoc", listsTestFoldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlankLineAsBlockIfTermHasNoInlineDescription, nil},
 
-	{"appends literal line attached by continuation as block if item has no inline description", "asciidoctor/lists_test_appends_literal_line_attached_by_continuation_as_block_if_item_has_no_inline_description.adoc", appendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescription, nil},
+	{"appends literal line attached by continuation as block if item has no inline description", "asciidoctor/lists_test_appends_literal_line_attached_by_continuation_as_block_if_item_has_no_inline_description.adoc", listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescription, nil},
 
-	{"appends literal line attached by continuation as block if item has no inline description followed by ruler", "asciidoctor/lists_test_appends_literal_line_attached_by_continuation_as_block_if_item_has_no_inline_description_followed_by_ruler.adoc", appendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler, nil},
+	{"appends literal line attached by continuation as block if item has no inline description followed by ruler", "asciidoctor/lists_test_appends_literal_line_attached_by_continuation_as_block_if_item_has_no_inline_description_followed_by_ruler.adoc", listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler, nil},
 
-	{"appends line attached by continuation as block if item has no inline description followed by ruler", "asciidoctor/lists_test_appends_line_attached_by_continuation_as_block_if_item_has_no_inline_description_followed_by_ruler.adoc", appendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler, nil},
+	{"appends line attached by continuation as block if item has no inline description followed by ruler", "asciidoctor/lists_test_appends_line_attached_by_continuation_as_block_if_item_has_no_inline_description_followed_by_ruler.adoc", listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler, nil},
 
-	{"appends line attached by continuation as block if item has no inline description followed by block", "asciidoctor/lists_test_appends_line_attached_by_continuation_as_block_if_item_has_no_inline_description_followed_by_block.adoc", appendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByBlock, nil},
+	{"appends line attached by continuation as block if item has no inline description followed by block", "asciidoctor/lists_test_appends_line_attached_by_continuation_as_block_if_item_has_no_inline_description_followed_by_block.adoc", listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByBlock, nil},
 
-	{"appends block attached by continuation but not subsequent block not attached by continuation", "asciidoctor/lists_test_appends_block_attached_by_continuation_but_not_subsequent_block_not_attached_by_continuation.adoc", appendsBlockAttachedByContinuationButNotSubsequentBlockNotAttachedByContinuation, nil},
+	{"appends block attached by continuation but not subsequent block not attached by continuation", "asciidoctor/lists_test_appends_block_attached_by_continuation_but_not_subsequent_block_not_attached_by_continuation.adoc", listsTestAppendsBlockAttachedByContinuationButNotSubsequentBlockNotAttachedByContinuation, nil},
 
-	{"appends list if item has no inline description", "asciidoctor/lists_test_appends_list_if_item_has_no_inline_description.adoc", appendsListIfItemHasNoInlineDescription, nil},
+	{"appends list if item has no inline description", "asciidoctor/lists_test_appends_list_if_item_has_no_inline_description.adoc", listsTestAppendsListIfItemHasNoInlineDescription, nil},
 
-	{"appends list to first term when followed immediately by second term", "asciidoctor/lists_test_appends_list_to_first_term_when_followed_immediately_by_second_term.adoc", appendsListToFirstTermWhenFollowedImmediatelyBySecondTerm, nil},
+	{"appends list to first term when followed immediately by second term", "asciidoctor/lists_test_appends_list_to_first_term_when_followed_immediately_by_second_term.adoc", listsTestAppendsListToFirstTermWhenFollowedImmediatelyBySecondTerm, nil},
 
-	{"appends indented list to first term that is adjacent to second term", "asciidoctor/lists_test_appends_indented_list_to_first_term_that_is_adjacent_to_second_term.adoc", appendsIndentedListToFirstTermThatIsAdjacentToSecondTerm, nil},
+	{"appends indented list to first term that is adjacent to second term", "asciidoctor/lists_test_appends_indented_list_to_first_term_that_is_adjacent_to_second_term.adoc", listsTestAppendsIndentedListToFirstTermThatIsAdjacentToSecondTerm, nil},
 
-	{"appends indented list to first term that is attached by a continuation and adjacent to second term", "asciidoctor/lists_test_appends_indented_list_to_first_term_that_is_attached_by_a_continuation_and_adjacent_to_second_term.adoc", appendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjacentToSecondTerm, nil},
+	{"appends indented list to first term that is attached by a continuation and adjacent to second term", "asciidoctor/lists_test_appends_indented_list_to_first_term_that_is_attached_by_a_continuation_and_adjacent_to_second_term.adoc", listsTestAppendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjacentToSecondTerm, nil},
 
-	{"appends list and paragraph block when line following list attached by continuation", "asciidoctor/lists_test_appends_list_and_paragraph_block_when_line_following_list_attached_by_continuation.adoc", appendsListAndParagraphBlockWhenLineFollowingListAttachedByContinuation, nil},
+	{"appends list and paragraph block when line following list attached by continuation", "asciidoctor/lists_test_appends_list_and_paragraph_block_when_line_following_list_attached_by_continuation.adoc", listsTestAppendsListAndParagraphBlockWhenLineFollowingListAttachedByContinuation, nil},
 
-	{"first continued line associated with nested list item and second continued line associated with term", "asciidoctor/lists_test_first_continued_line_associated_with_nested_list_item_and_second_continued_line_associated_with_term.adoc", firstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLineAssociatedWithTerm, nil},
+	{"first continued line associated with nested list item and second continued line associated with term", "asciidoctor/lists_test_first_continued_line_associated_with_nested_list_item_and_second_continued_line_associated_with_term.adoc", listsTestFirstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLineAssociatedWithTerm, nil},
 
-	{"literal line attached by continuation swallows adjacent line that looks like term", "asciidoctor/lists_test_literal_line_attached_by_continuation_swallows_adjacent_line_that_looks_like_term.adoc", literalLineAttachedByContinuationSwallowsAdjacentLineThatLooksLikeTerm, nil},
+	{"literal line attached by continuation swallows adjacent line that looks like term", "asciidoctor/lists_test_literal_line_attached_by_continuation_swallows_adjacent_line_that_looks_like_term.adoc", listsTestLiteralLineAttachedByContinuationSwallowsAdjacentLineThatLooksLikeTerm, nil},
 
-	{"line attached by continuation is appended as paragraph if term has no inline description", "asciidoctor/lists_test_line_attached_by_continuation_is_appended_as_paragraph_if_term_has_no_inline_description.adoc", lineAttachedByContinuationIsAppendedAsParagraphIfTermHasNoInlineDescription, nil},
+	{"line attached by continuation is appended as paragraph if term has no inline description", "asciidoctor/lists_test_line_attached_by_continuation_is_appended_as_paragraph_if_term_has_no_inline_description.adoc", listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasNoInlineDescription, nil},
 
-	{"attached paragraph does not break on adjacent nested description list term", "asciidoctor/lists_test_attached_paragraph_does_not_break_on_adjacent_nested_description_list_term.adoc", attachedParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm, nil},
+	{"attached paragraph does not break on adjacent nested description list term", "asciidoctor/lists_test_attached_paragraph_does_not_break_on_adjacent_nested_description_list_term.adoc", listsTestAttachedParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm, nil},
 
-	{"attached paragraph is terminated by adjacent sibling description list term", "asciidoctor/lists_test_attached_paragraph_is_terminated_by_adjacent_sibling_description_list_term.adoc", attachedParagraphIsTerminatedByAdjacentSiblingDescriptionListTerm, nil},
+	{"attached paragraph is terminated by adjacent sibling description list term", "asciidoctor/lists_test_attached_paragraph_is_terminated_by_adjacent_sibling_description_list_term.adoc", listsTestAttachedParagraphIsTerminatedByAdjacentSiblingDescriptionListTerm, nil},
 
-	{"attached styled paragraph does not break on adjacent nested description list term", "asciidoctor/lists_test_attached_styled_paragraph_does_not_break_on_adjacent_nested_description_list_term.adoc", attachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm, nil},
+	{"attached styled paragraph does not break on adjacent nested description list term", "asciidoctor/lists_test_attached_styled_paragraph_does_not_break_on_adjacent_nested_description_list_term.adoc", listsTestAttachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm, nil},
 
-	{"appends line as paragraph if attached by continuation following blank line and line comment when term has no inline description", "asciidoctor/lists_test_appends_line_as_paragraph_if_attached_by_continuation_following_blank_line_and_line_comment_when_term_has_no_inline_description.adoc", appendsLineAsParagraphIfAttachedByContinuationFollowingBlankLineAndLineCommentWhenTermHasNoInlineDescription, nil},
+	{"appends line as paragraph if attached by continuation following blank line and line comment when term has no inline description", "asciidoctor/lists_test_appends_line_as_paragraph_if_attached_by_continuation_following_blank_line_and_line_comment_when_term_has_no_inline_description.adoc", listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingBlankLineAndLineCommentWhenTermHasNoInlineDescription, nil},
 
-	{"line attached by continuation offset by blank line is appended as paragraph if term has no inline description", "asciidoctor/lists_test_line_attached_by_continuation_offset_by_blank_line_is_appended_as_paragraph_if_term_has_no_inline_description.adoc", lineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasNoInlineDescription, nil},
+	{"line attached by continuation offset by blank line is appended as paragraph if term has no inline description", "asciidoctor/lists_test_line_attached_by_continuation_offset_by_blank_line_is_appended_as_paragraph_if_term_has_no_inline_description.adoc", listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasNoInlineDescription, nil},
 
-	{"delimited block breaks list even when term has no inline description", "asciidoctor/lists_test_delimited_block_breaks_list_even_when_term_has_no_inline_description.adoc", delimitedBlockBreaksListEvenWhenTermHasNoInlineDescription, nil},
+	{"delimited block breaks list even when term has no inline description", "asciidoctor/lists_test_delimited_block_breaks_list_even_when_term_has_no_inline_description.adoc", listsTestDelimitedBlockBreaksListEvenWhenTermHasNoInlineDescription, nil},
 
-	{"block attribute line above delimited block that breaks a dlist is not duplicated", "asciidoctor/lists_test_block_attribute_line_above_delimited_block_that_breaks_a_dlist_is_not_duplicated.adoc", blockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicated, nil},
+	{"block attribute line above delimited block that breaks a dlist is not duplicated", "asciidoctor/lists_test_block_attribute_line_above_delimited_block_that_breaks_a_dlist_is_not_duplicated.adoc", listsTestBlockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicated, nil},
 
-	{"block attribute line above paragraph breaks list even when term has no inline description", "asciidoctor/lists_test_block_attribute_line_above_paragraph_breaks_list_even_when_term_has_no_inline_description.adoc", blockAttributeLineAboveParagraphBreaksListEvenWhenTermHasNoInlineDescription, nil},
+	{"block attribute line above paragraph breaks list even when term has no inline description", "asciidoctor/lists_test_block_attribute_line_above_paragraph_breaks_list_even_when_term_has_no_inline_description.adoc", listsTestBlockAttributeLineAboveParagraphBreaksListEvenWhenTermHasNoInlineDescription, nil},
 
-	{"block attribute line above paragraph that breaks a dlist is not duplicated", "asciidoctor/lists_test_block_attribute_line_above_paragraph_that_breaks_a_dlist_is_not_duplicated.adoc", blockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated, nil},
+	{"block attribute line above paragraph that breaks a dlist is not duplicated", "asciidoctor/lists_test_block_attribute_line_above_paragraph_that_breaks_a_dlist_is_not_duplicated.adoc", listsTestBlockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated, nil},
 
-	{"block anchor line breaks list even when term has no inline description", "asciidoctor/lists_test_block_anchor_line_breaks_list_even_when_term_has_no_inline_description.adoc", blockAnchorLineBreaksListEvenWhenTermHasNoInlineDescription, nil},
+	{"block anchor line breaks list even when term has no inline description", "asciidoctor/lists_test_block_anchor_line_breaks_list_even_when_term_has_no_inline_description.adoc", listsTestBlockAnchorLineBreaksListEvenWhenTermHasNoInlineDescription, nil},
 
-	{"block attribute lines above nested horizontal list does not break list", "asciidoctor/lists_test_block_attribute_lines_above_nested_horizontal_list_does_not_break_list.adoc", blockAttributeLinesAboveNestedHorizontalListDoesNotBreakList, nil},
+	{"block attribute lines above nested horizontal list does not break list", "asciidoctor/lists_test_block_attribute_lines_above_nested_horizontal_list_does_not_break_list.adoc", listsTestBlockAttributeLinesAboveNestedHorizontalListDoesNotBreakList, nil},
 
-	{"block attribute lines above nested list with style does not break list", "asciidoctor/lists_test_block_attribute_lines_above_nested_list_with_style_does_not_break_list.adoc", blockAttributeLinesAboveNestedListWithStyleDoesNotBreakList, nil},
+	{"block attribute lines above nested list with style does not break list", "asciidoctor/lists_test_block_attribute_lines_above_nested_list_with_style_does_not_break_list.adoc", listsTestBlockAttributeLinesAboveNestedListWithStyleDoesNotBreakList, nil},
 
-	{"multiple block attribute lines above nested list does not break list", "asciidoctor/lists_test_multiple_block_attribute_lines_above_nested_list_does_not_break_list.adoc", multipleBlockAttributeLinesAboveNestedListDoesNotBreakList, nil},
+	{"multiple block attribute lines above nested list does not break list", "asciidoctor/lists_test_multiple_block_attribute_lines_above_nested_list_does_not_break_list.adoc", listsTestMultipleBlockAttributeLinesAboveNestedListDoesNotBreakList, nil},
 
-	{"multiple block attribute lines separated by empty line above nested list does not break list", "asciidoctor/lists_test_multiple_block_attribute_lines_separated_by_empty_line_above_nested_list_does_not_break_list.adoc", multipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakList, nil},
+	{"multiple block attribute lines separated by empty line above nested list does not break list", "asciidoctor/lists_test_multiple_block_attribute_lines_separated_by_empty_line_above_nested_list_does_not_break_list.adoc", listsTestMultipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakList, nil},
 
-	{"folds text from inline description and subsequent line", "asciidoctor/lists_test_folds_text_from_inline_description_and_subsequent_line.adoc", foldsTextFromInlineDescriptionAndSubsequentLine, nil},
+	{"folds text from inline description and subsequent line", "asciidoctor/lists_test_folds_text_from_inline_description_and_subsequent_line.adoc", listsTestFoldsTextFromInlineDescriptionAndSubsequentLine, nil},
 
-	{"folds text from inline description and subsequent lines", "asciidoctor/lists_test_folds_text_from_inline_description_and_subsequent_lines.adoc", foldsTextFromInlineDescriptionAndSubsequentLines, nil},
+	{"folds text from inline description and subsequent lines", "asciidoctor/lists_test_folds_text_from_inline_description_and_subsequent_lines.adoc", listsTestFoldsTextFromInlineDescriptionAndSubsequentLines, nil},
 
-	{"folds text from inline description and line following comment line", "asciidoctor/lists_test_folds_text_from_inline_description_and_line_following_comment_line.adoc", foldsTextFromInlineDescriptionAndLineFollowingCommentLine, nil},
+	{"folds text from inline description and line following comment line", "asciidoctor/lists_test_folds_text_from_inline_description_and_line_following_comment_line.adoc", listsTestFoldsTextFromInlineDescriptionAndLineFollowingCommentLine, nil},
 
-	{"folds text from inline description and subsequent indented line", "asciidoctor/lists_test_folds_text_from_inline_description_and_subsequent_indented_line.adoc", foldsTextFromInlineDescriptionAndSubsequentIndentedLine, nil},
+	{"folds text from inline description and subsequent indented line", "asciidoctor/lists_test_folds_text_from_inline_description_and_subsequent_indented_line.adoc", listsTestFoldsTextFromInlineDescriptionAndSubsequentIndentedLine, nil},
 
-	{"appends literal line offset by blank line as block if item has inline description", "asciidoctor/lists_test_appends_literal_line_offset_by_blank_line_as_block_if_item_has_inline_description.adoc", appendsLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription, nil},
+	{"appends literal line offset by blank line as block if item has inline description", "asciidoctor/lists_test_appends_literal_line_offset_by_blank_line_as_block_if_item_has_inline_description.adoc", listsTestAppendsLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription, nil},
 
-	{"appends literal line offset by blank line as block and appends line after continuation as block if item has inline description", "asciidoctor/lists_test_appends_literal_line_offset_by_blank_line_as_block_and_appends_line_after_continuation_as_block_if_item_has_inline_description.adoc", appendsLiteralLineOffsetByBlankLineAsBlockAndAppendsLineAfterContinuationAsBlockIfItemHasInlineDescription, nil},
+	{"appends literal line offset by blank line as block and appends line after continuation as block if item has inline description", "asciidoctor/lists_test_appends_literal_line_offset_by_blank_line_as_block_and_appends_line_after_continuation_as_block_if_item_has_inline_description.adoc", listsTestAppendsLiteralLineOffsetByBlankLineAsBlockAndAppendsLineAfterContinuationAsBlockIfItemHasInlineDescription, nil},
 
-	{"appends line after continuation as block and literal line offset by blank line as block if item has inline description", "asciidoctor/lists_test_appends_line_after_continuation_as_block_and_literal_line_offset_by_blank_line_as_block_if_item_has_inline_description.adoc", appendsLineAfterContinuationAsBlockAndLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription, nil},
+	{"appends line after continuation as block and literal line offset by blank line as block if item has inline description", "asciidoctor/lists_test_appends_line_after_continuation_as_block_and_literal_line_offset_by_blank_line_as_block_if_item_has_inline_description.adoc", listsTestAppendsLineAfterContinuationAsBlockAndLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription, nil},
 
-	{"appends list if item has inline description", "asciidoctor/lists_test_appends_list_if_item_has_inline_description.adoc", appendsListIfItemHasInlineDescription, nil},
+	{"appends list if item has inline description", "asciidoctor/lists_test_appends_list_if_item_has_inline_description.adoc", listsTestAppendsListIfItemHasInlineDescription, nil},
 
-	{"appends literal line attached by continuation as block if item has inline description followed by ruler", "asciidoctor/lists_test_appends_literal_line_attached_by_continuation_as_block_if_item_has_inline_description_followed_by_ruler.adoc", appendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescriptionFollowedByRuler, nil},
+	{"appends literal line attached by continuation as block if item has inline description followed by ruler", "asciidoctor/lists_test_appends_literal_line_attached_by_continuation_as_block_if_item_has_inline_description_followed_by_ruler.adoc", listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescriptionFollowedByRuler, nil},
 
-	{"line offset by blank line breaks list if term has inline description", "asciidoctor/lists_test_line_offset_by_blank_line_breaks_list_if_term_has_inline_description.adoc", lineOffsetByBlankLineBreaksListIfTermHasInlineDescription, nil},
+	{"line offset by blank line breaks list if term has inline description", "asciidoctor/lists_test_line_offset_by_blank_line_breaks_list_if_term_has_inline_description.adoc", listsTestLineOffsetByBlankLineBreaksListIfTermHasInlineDescription, nil},
 
-	{"nested term with description does not consume following heading", "asciidoctor/lists_test_nested_term_with_description_does_not_consume_following_heading.adoc", nestedTermWithDescriptionDoesNotConsumeFollowingHeading, nil},
+	{"nested term with description does not consume following heading", "asciidoctor/lists_test_nested_term_with_description_does_not_consume_following_heading.adoc", listsTestNestedTermWithDescriptionDoesNotConsumeFollowingHeading, nil},
 
-	{"line attached by continuation is appended as paragraph if term has inline description followed by detached paragraph", "asciidoctor/lists_test_line_attached_by_continuation_is_appended_as_paragraph_if_term_has_inline_description_followed_by_detached_paragraph.adoc", lineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedParagraph, nil},
+	{"line attached by continuation is appended as paragraph if term has inline description followed by detached paragraph", "asciidoctor/lists_test_line_attached_by_continuation_is_appended_as_paragraph_if_term_has_inline_description_followed_by_detached_paragraph.adoc", listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedParagraph, nil},
 
-	{"line attached by continuation is appended as paragraph if term has inline description followed by detached block", "asciidoctor/lists_test_line_attached_by_continuation_is_appended_as_paragraph_if_term_has_inline_description_followed_by_detached_block.adoc", lineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedBlock, nil},
+	{"line attached by continuation is appended as paragraph if term has inline description followed by detached block", "asciidoctor/lists_test_line_attached_by_continuation_is_appended_as_paragraph_if_term_has_inline_description_followed_by_detached_block.adoc", listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedBlock, nil},
 
-	{"line attached by continuation offset by line comment is appended as paragraph if term has inline description", "asciidoctor/lists_test_line_attached_by_continuation_offset_by_line_comment_is_appended_as_paragraph_if_term_has_inline_description.adoc", lineAttachedByContinuationOffsetByLineCommentIsAppendedAsParagraphIfTermHasInlineDescription, nil},
+	{"line attached by continuation offset by line comment is appended as paragraph if term has inline description", "asciidoctor/lists_test_line_attached_by_continuation_offset_by_line_comment_is_appended_as_paragraph_if_term_has_inline_description.adoc", listsTestLineAttachedByContinuationOffsetByLineCommentIsAppendedAsParagraphIfTermHasInlineDescription, nil},
 
-	{"line attached by continuation offset by blank line is appended as paragraph if term has inline description", "asciidoctor/lists_test_line_attached_by_continuation_offset_by_blank_line_is_appended_as_paragraph_if_term_has_inline_description.adoc", lineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasInlineDescription, nil},
+	{"line attached by continuation offset by blank line is appended as paragraph if term has inline description", "asciidoctor/lists_test_line_attached_by_continuation_offset_by_blank_line_is_appended_as_paragraph_if_term_has_inline_description.adoc", listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasInlineDescription, nil},
 
-	{"line comment offset by blank line divides lists because item has text", "asciidoctor/lists_test_line_comment_offset_by_blank_line_divides_lists_because_item_has_text.adoc", lineCommentOffsetByBlankLineDividesListsBecauseItemHasText, nil},
+	{"line comment offset by blank line divides lists because item has text", "asciidoctor/lists_test_line_comment_offset_by_blank_line_divides_lists_because_item_has_text.adoc", listsTestLineCommentOffsetByBlankLineDividesListsBecauseItemHasText, nil},
 
-	{"ruler offset by blank line divides lists because item has text", "asciidoctor/lists_test_ruler_offset_by_blank_line_divides_lists_because_item_has_text.adoc", rulerOffsetByBlankLineDividesListsBecauseItemHasText, nil},
+	{"ruler offset by blank line divides lists because item has text", "asciidoctor/lists_test_ruler_offset_by_blank_line_divides_lists_because_item_has_text.adoc", listsTestRulerOffsetByBlankLineDividesListsBecauseItemHasText, nil},
 
-	{"block title offset by blank line divides lists and becomes title of second list because item has text", "asciidoctor/lists_test_block_title_offset_by_blank_line_divides_lists_and_becomes_title_of_second_list_because_item_has_text.adoc", blockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListBecauseItemHasText, nil},
+	{"block title offset by blank line divides lists and becomes title of second list because item has text", "asciidoctor/lists_test_block_title_offset_by_blank_line_divides_lists_and_becomes_title_of_second_list_because_item_has_text.adoc", listsTestBlockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListBecauseItemHasText, nil},
 
-	{"does not recognize callout list denoted by markers that only have a trailing bracket", "asciidoctor/lists_test_does_not_recognize_callout_list_denoted_by_markers_that_only_have_a_trailing_bracket.adoc", doesNotRecognizeCalloutListDenotedByMarkersThatOnlyHaveATrailingBracket, nil},
+	{"does not recognize callout list denoted by markers that only have a trailing bracket", "asciidoctor/lists_test_does_not_recognize_callout_list_denoted_by_markers_that_only_have_a_trailing_bracket.adoc", listsTestDoesNotRecognizeCalloutListDenotedByMarkersThatOnlyHaveATrailingBracket, nil},
 
-	{"should not hang if obsolete callout list is found inside list item", "asciidoctor/lists_test_should_not_hang_if_obsolete_callout_list_is_found_inside_list_item.adoc", shouldNotHangIfObsoleteCalloutListIsFoundInsideListItem, nil},
+	{"should not hang if obsolete callout list is found inside list item", "asciidoctor/lists_test_should_not_hang_if_obsolete_callout_list_is_found_inside_list_item.adoc", listsTestShouldNotHangIfObsoleteCalloutListIsFoundInsideListItem, nil},
 
-	{"should not hang if obsolete callout list is found inside dlist item", "asciidoctor/lists_test_should_not_hang_if_obsolete_callout_list_is_found_inside_dlist_item.adoc", shouldNotHangIfObsoleteCalloutListIsFoundInsideDlistItem, nil},
+	{"should not hang if obsolete callout list is found inside dlist item", "asciidoctor/lists_test_should_not_hang_if_obsolete_callout_list_is_found_inside_dlist_item.adoc", listsTestShouldNotHangIfObsoleteCalloutListIsFoundInsideDlistItem, nil},
 
-	{"should recognize auto-numberd callout list inside list", "asciidoctor/lists_test_should_recognize_auto_numberd_callout_list_inside_list.adoc", shouldRecognizeAutoNumberdCalloutListInsideList, nil},
+	{"should recognize auto-numberd callout list inside list", "asciidoctor/lists_test_should_recognize_auto_numberd_callout_list_inside_list.adoc", listsTestShouldRecognizeAutoNumberdCalloutListInsideList, nil},
 
-	{"listing block with sequential callouts followed by adjacent callout list", "asciidoctor/lists_test_listing_block_with_sequential_callouts_followed_by_adjacent_callout_list.adoc", listingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList, nil},
+	{"listing block with sequential callouts followed by adjacent callout list", "asciidoctor/lists_test_listing_block_with_sequential_callouts_followed_by_adjacent_callout_list.adoc", listsTestListingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList, nil},
 
-	{"listing block with sequential callouts followed by non-adjacent callout list", "asciidoctor/lists_test_listing_block_with_sequential_callouts_followed_by_non_adjacent_callout_list.adoc", listingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList, nil},
+	{"listing block with sequential callouts followed by non-adjacent callout list", "asciidoctor/lists_test_listing_block_with_sequential_callouts_followed_by_non_adjacent_callout_list.adoc", listsTestListingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList, nil},
 
-	{"listing block with a callout that refers to two different lines", "asciidoctor/lists_test_listing_block_with_a_callout_that_refers_to_two_different_lines.adoc", listingBlockWithACalloutThatRefersToTwoDifferentLines, nil},
+	{"listing block with a callout that refers to two different lines", "asciidoctor/lists_test_listing_block_with_a_callout_that_refers_to_two_different_lines.adoc", listsTestListingBlockWithACalloutThatRefersToTwoDifferentLines, nil},
 
-	{"source block with non-sequential callouts followed by adjacent callout list", "asciidoctor/lists_test_source_block_with_non_sequential_callouts_followed_by_adjacent_callout_list.adoc", sourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList, nil},
+	{"source block with non-sequential callouts followed by adjacent callout list", "asciidoctor/lists_test_source_block_with_non_sequential_callouts_followed_by_adjacent_callout_list.adoc", listsTestSourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList, nil},
 
-	{"two listing blocks can share the same callout list", "asciidoctor/lists_test_two_listing_blocks_can_share_the_same_callout_list.adoc", twoListingBlocksCanShareTheSameCalloutList, nil},
+	{"two listing blocks can share the same callout list", "asciidoctor/lists_test_two_listing_blocks_can_share_the_same_callout_list.adoc", listsTestTwoListingBlocksCanShareTheSameCalloutList, nil},
 
-	{"two listing blocks each followed by an adjacent callout list", "asciidoctor/lists_test_two_listing_blocks_each_followed_by_an_adjacent_callout_list.adoc", twoListingBlocksEachFollowedByAnAdjacentCalloutList, nil},
+	{"two listing blocks each followed by an adjacent callout list", "asciidoctor/lists_test_two_listing_blocks_each_followed_by_an_adjacent_callout_list.adoc", listsTestTwoListingBlocksEachFollowedByAnAdjacentCalloutList, nil},
 
-	{"callout list retains block content", "asciidoctor/lists_test_callout_list_retains_block_content.adoc", calloutListRetainsBlockContent, nil},
+	{"callout list retains block content", "asciidoctor/lists_test_callout_list_retains_block_content.adoc", listsTestCalloutListRetainsBlockContent, nil},
 
-	{"callout list retains block content when converted to DocBook", "asciidoctor/lists_test_callout_list_retains_block_content_when_converted_to_doc_book.adoc", calloutListRetainsBlockContentWhenConvertedToDocBook, nil},
+	{"callout list retains block content when converted to DocBook", "asciidoctor/lists_test_callout_list_retains_block_content_when_converted_to_doc_book.adoc", listsTestCalloutListRetainsBlockContentWhenConvertedToDocBook, nil},
 
-	{"escaped callout should not be interpreted as a callout", "asciidoctor/lists_test_escaped_callout_should_not_be_interpreted_as_a_callout.adoc", escapedCalloutShouldNotBeInterpretedAsACallout, nil},
+	{"escaped callout should not be interpreted as a callout", "asciidoctor/lists_test_escaped_callout_should_not_be_interpreted_as_a_callout.adoc", listsTestEscapedCalloutShouldNotBeInterpretedAsACallout, nil},
 
-	{"should autonumber <.> callouts", "asciidoctor/lists_test_should_autonumber_callouts.adoc", shouldAutonumberCallouts, nil},
+	{"should autonumber <.> callouts", "asciidoctor/lists_test_should_autonumber___callouts.adoc", listsTestShouldAutonumberCallouts, nil},
 
-	{"should not recognize callouts in middle of line", "asciidoctor/lists_test_should_not_recognize_callouts_in_middle_of_line.adoc", shouldNotRecognizeCalloutsInMiddleOfLine, nil},
+	{"should not recognize callouts in middle of line", "asciidoctor/lists_test_should_not_recognize_callouts_in_middle_of_line.adoc", listsTestShouldNotRecognizeCalloutsInMiddleOfLine, nil},
 
-	{"should allow multiple callouts on the same line", "asciidoctor/lists_test_should_allow_multiple_callouts_on_the_same_line.adoc", shouldAllowMultipleCalloutsOnTheSameLine, nil},
+	{"should allow multiple callouts on the same line", "asciidoctor/lists_test_should_allow_multiple_callouts_on_the_same_line.adoc", listsTestShouldAllowMultipleCalloutsOnTheSameLine, nil},
 
-	{"should allow XML comment-style callouts", "asciidoctor/lists_test_should_allow_xml_comment_style_callouts.adoc", shouldAllowXmlCommentStyleCallouts, nil},
+	{"should allow XML comment-style callouts", "asciidoctor/lists_test_should_allow_xml_comment_style_callouts.adoc", listsTestShouldAllowXmlCommentStyleCallouts, nil},
 
-	{"should not allow callouts with half an XML comment", "asciidoctor/lists_test_should_not_allow_callouts_with_half_an_xml_comment.adoc", shouldNotAllowCalloutsWithHalfAnXmlComment, nil},
+	{"should not allow callouts with half an XML comment", "asciidoctor/lists_test_should_not_allow_callouts_with_half_an_xml_comment.adoc", listsTestShouldNotAllowCalloutsWithHalfAnXmlComment, nil},
 
-	{"should not recognize callouts in an indented description list paragraph", "asciidoctor/lists_test_should_not_recognize_callouts_in_an_indented_description_list_paragraph.adoc", shouldNotRecognizeCalloutsInAnIndentedDescriptionListParagraph, nil},
+	{"should not recognize callouts in an indented description list paragraph", "asciidoctor/lists_test_should_not_recognize_callouts_in_an_indented_description_list_paragraph.adoc", listsTestShouldNotRecognizeCalloutsInAnIndentedDescriptionListParagraph, nil},
 
-	{"should not recognize callouts in an indented outline list paragraph", "asciidoctor/lists_test_should_not_recognize_callouts_in_an_indented_outline_list_paragraph.adoc", shouldNotRecognizeCalloutsInAnIndentedOutlineListParagraph, nil},
+	{"should not recognize callouts in an indented outline list paragraph", "asciidoctor/lists_test_should_not_recognize_callouts_in_an_indented_outline_list_paragraph.adoc", listsTestShouldNotRecognizeCalloutsInAnIndentedOutlineListParagraph, nil},
 
-	{"should warn if numbers in callout list are out of sequence", "asciidoctor/lists_test_should_warn_if_numbers_in_callout_list_are_out_of_sequence.adoc", shouldWarnIfNumbersInCalloutListAreOutOfSequence, nil},
+	{"should warn if numbers in callout list are out of sequence", "asciidoctor/lists_test_should_warn_if_numbers_in_callout_list_are_out_of_sequence.adoc", listsTestShouldWarnIfNumbersInCalloutListAreOutOfSequence, nil},
 
-	{"should preserve line comment chars that precede callout number if icons is not set", "asciidoctor/lists_test_should_preserve_line_comment_chars_that_precede_callout_number_if_icons_is_not_set.adoc", shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet, nil},
+	{"should preserve line comment chars that precede callout number if icons is not set", "asciidoctor/lists_test_should_preserve_line_comment_chars_that_precede_callout_number_if_icons_is_not_set.adoc", listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet, nil},
 
-	{"should remove line comment chars that precede callout number if icons is font", "asciidoctor/lists_test_should_remove_line_comment_chars_that_precede_callout_number_if_icons_is_font.adoc", shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont, nil},
+	{"should remove line comment chars that precede callout number if icons is font", "asciidoctor/lists_test_should_remove_line_comment_chars_that_precede_callout_number_if_icons_is_font.adoc", listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont, nil},
 
-	{"should allow line comment chars that precede callout number to be specified", "asciidoctor/lists_test_should_allow_line_comment_chars_that_precede_callout_number_to_be_specified.adoc", shouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified, nil},
+	{"should allow line comment chars that precede callout number to be specified", "asciidoctor/lists_test_should_allow_line_comment_chars_that_precede_callout_number_to_be_specified.adoc", listsTestShouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified, nil},
 
-	{"should allow line comment chars preceding callout number to be configurable when source-highlighter is coderay", "asciidoctor/lists_test_should_allow_line_comment_chars_preceding_callout_number_to_be_configurable_when_source_highlighter_is_coderay.adoc", shouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWhenSourceHighlighterIsCoderay, nil},
+	{"should allow line comment chars preceding callout number to be configurable when source-highlighter is coderay", "asciidoctor/lists_test_should_allow_line_comment_chars_preceding_callout_number_to_be_configurable_when_source_highlighter_is_coderay.adoc", listsTestShouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWhenSourceHighlighterIsCoderay, nil},
 
-	{"should not eat whitespace before callout number if line-comment attribute is empty", "asciidoctor/lists_test_should_not_eat_whitespace_before_callout_number_if_line_comment_attribute_is_empty.adoc", shouldNotEatWhitespaceBeforeCalloutNumberIfLineCommentAttributeIsEmpty, nil},
+	{"should not eat whitespace before callout number if line-comment attribute is empty", "asciidoctor/lists_test_should_not_eat_whitespace_before_callout_number_if_line_comment_attribute_is_empty.adoc", listsTestShouldNotEatWhitespaceBeforeCalloutNumberIfLineCommentAttributeIsEmpty, nil},
 
-	{"literal block with callouts", "asciidoctor/lists_test_literal_block_with_callouts.adoc", literalBlockWithCallouts, nil},
+	{"literal block with callouts", "asciidoctor/lists_test_literal_block_with_callouts.adoc", listsTestLiteralBlockWithCallouts, nil},
 
-	{"callout list with icons enabled", "asciidoctor/lists_test_callout_list_with_icons_enabled.adoc", calloutListWithIconsEnabled, nil},
+	{"callout list with icons enabled", "asciidoctor/lists_test_callout_list_with_icons_enabled.adoc", listsTestCalloutListWithIconsEnabled, nil},
 
-	{"callout list with font-based icons enabled", "asciidoctor/lists_test_callout_list_with_font_based_icons_enabled.adoc", calloutListWithFontBasedIconsEnabled, nil},
+	{"callout list with font-based icons enabled", "asciidoctor/lists_test_callout_list_with_font_based_icons_enabled.adoc", listsTestCalloutListWithFontBasedIconsEnabled, nil},
 
-	{"should create checklist if at least one item has checkbox syntax", "asciidoctor/lists_test_should_create_checklist_if_at_least_one_item_has_checkbox_syntax.adoc", shouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax, nil},
+	{"should create checklist if at least one item has checkbox syntax", "asciidoctor/lists_test_should_create_checklist_if_at_least_one_item_has_checkbox_syntax.adoc", listsTestShouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax, nil},
 
-	{"should create checklist with font icons if at least one item has checkbox syntax and icons attribute is font", "asciidoctor/lists_test_should_create_checklist_with_font_icons_if_at_least_one_item_has_checkbox_syntax_and_icons_attribute_is_font.adoc", shouldCreateChecklistWithFontIconsIfAtLeastOneItemHasCheckboxSyntaxAndIconsAttributeIsFont, nil},
+	{"should create checklist with font icons if at least one item has checkbox syntax and icons attribute is font", "asciidoctor/lists_test_should_create_checklist_with_font_icons_if_at_least_one_item_has_checkbox_syntax_and_icons_attribute_is_font.adoc", listsTestShouldCreateChecklistWithFontIconsIfAtLeastOneItemHasCheckboxSyntaxAndIconsAttributeIsFont, nil},
 
-	{"should create interactive checklist if interactive option is set even with icons attribute is font", "asciidoctor/lists_test_should_create_interactive_checklist_if_interactive_option_is_set_even_with_icons_attribute_is_font.adoc", shouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIconsAttributeIsFont, nil},
+	{"should create interactive checklist if interactive option is set even with icons attribute is font", "asciidoctor/lists_test_should_create_interactive_checklist_if_interactive_option_is_set_even_with_icons_attribute_is_font.adoc", listsTestShouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIconsAttributeIsFont, nil},
 
-	{"content should return items in list", "asciidoctor/lists_test_content_should_return_items_in_list.adoc", contentShouldReturnItemsInList, nil},
+	{"content should return items in list", "asciidoctor/lists_test_content_should_return_items_in_list.adoc", listsTestContentShouldReturnItemsInList, nil},
 
-	{"list item should be the parent of block attached to a list item", "asciidoctor/lists_test_list_item_should_be_the_parent_of_block_attached_to_a_list_item.adoc", listItemShouldBeTheParentOfBlockAttachedToAListItem, nil},
+	{"list item should be the parent of block attached to a list item", "asciidoctor/lists_test_list_item_should_be_the_parent_of_block_attached_to_a_list_item.adoc", listsTestListItemShouldBeTheParentOfBlockAttachedToAListItem, nil},
 
-	{"outline? should return true for unordered list", "asciidoctor/lists_test_outline_should_return_true_for_unordered_list.adoc", outlineShouldReturnTrueForUnorderedList, nil},
+	{"outline? should return true for unordered list", "asciidoctor/lists_test_outline_should_return_true_for_unordered_list.adoc", listsTestOutlineShouldReturnTrueForUnorderedList, nil},
 
-	{"outline? should return true for ordered list", "asciidoctor/lists_test_outline_should_return_true_for_ordered_list.adoc", outlineShouldReturnTrueForOrderedList, nil},
+	{"outline? should return true for ordered list", "asciidoctor/lists_test_outline_should_return_true_for_ordered_list.adoc", listsTestOutlineShouldReturnTrueForOrderedList, nil},
 
-	{"outline? should return false for description list", "asciidoctor/lists_test_outline_should_return_false_for_description_list.adoc", outlineShouldReturnFalseForDescriptionList, nil},
+	{"outline? should return false for description list", "asciidoctor/lists_test_outline_should_return_false_for_description_list.adoc", listsTestOutlineShouldReturnFalseForDescriptionList, nil},
 
-	{"simple? should return true for list item with nested outline list", "asciidoctor/lists_test_simple_should_return_true_for_list_item_with_nested_outline_list.adoc", simpleShouldReturnTrueForListItemWithNestedOutlineList, nil},
+	{"simple? should return true for list item with nested outline list", "asciidoctor/lists_test_simple_should_return_true_for_list_item_with_nested_outline_list.adoc", listsTestSimpleShouldReturnTrueForListItemWithNestedOutlineList, nil},
 
-	{"simple? should return false for list item with block content", "asciidoctor/lists_test_simple_should_return_false_for_list_item_with_block_content.adoc", simpleShouldReturnFalseForListItemWithBlockContent, nil},
+	{"simple? should return false for list item with block content", "asciidoctor/lists_test_simple_should_return_false_for_list_item_with_block_content.adoc", listsTestSimpleShouldReturnFalseForListItemWithBlockContent, nil},
 
-	{"should allow text of ListItem to be assigned", "asciidoctor/lists_test_should_allow_text_of_list_item_to_be_assigned.adoc", shouldAllowTextOfListItemToBeAssigned, nil},
+	{"should allow text of ListItem to be assigned", "asciidoctor/lists_test_should_allow_text_of_list_item_to_be_assigned.adoc", listsTestShouldAllowTextOfListItemToBeAssigned, nil},
 
-	{"id and role assigned to ulist item in model are transmitted to output", "asciidoctor/lists_test_id_and_role_assigned_to_ulist_item_in_model_are_transmitted_to_output.adoc", idAndRoleAssignedToUlistItemInModelAreTransmittedToOutput, nil},
+	{"id and role assigned to ulist item in model are transmitted to output", "asciidoctor/lists_test_id_and_role_assigned_to_ulist_item_in_model_are_transmitted_to_output.adoc", listsTestIdAndRoleAssignedToUlistItemInModelAreTransmittedToOutput, nil},
 
-	{"id and role assigned to olist item in model are transmitted to output", "asciidoctor/lists_test_id_and_role_assigned_to_olist_item_in_model_are_transmitted_to_output.adoc", idAndRoleAssignedToOlistItemInModelAreTransmittedToOutput, nil},
+	{"id and role assigned to olist item in model are transmitted to output", "asciidoctor/lists_test_id_and_role_assigned_to_olist_item_in_model_are_transmitted_to_output.adoc", listsTestIdAndRoleAssignedToOlistItemInModelAreTransmittedToOutput, nil},
 
-	{"should allow API control over substitutions applied to ListItem text", "asciidoctor/lists_test_should_allow_api_control_over_substitutions_applied_to_list_item_text.adoc", shouldAllowApiControlOverSubstitutionsAppliedToListItemText, nil},
+	{"should allow API control over substitutions applied to ListItem text", "asciidoctor/lists_test_should_allow_api_control_over_substitutions_applied_to_list_item_text.adoc", listsTestShouldAllowApiControlOverSubstitutionsAppliedToListItemText, nil},
 
-	{"should set lineno to line number in source where list starts", "asciidoctor/lists_test_should_set_lineno_to_line_number_in_source_where_list_starts.adoc", shouldSetLinenoToLineNumberInSourceWhereListStarts, nil},
+	{"should set lineno to line number in source where list starts", "asciidoctor/lists_test_should_set_lineno_to_line_number_in_source_where_list_starts.adoc", listsTestShouldSetLinenoToLineNumberInSourceWhereListStarts, nil},
 }
 
-var dashElementsWithNoBlankLines = &asciidoc.Document{
+var listsTestDashElementsWithNoBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -580,7 +580,7 @@ var dashElementsWithNoBlankLines = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -619,9 +619,9 @@ var dashElementsWithNoBlankLines = &asciidoc.Document{
 	},
 }
 
-var dashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
+var listsTestDashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -632,7 +632,7 @@ var dashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -646,7 +646,7 @@ var dashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -660,10 +660,10 @@ var dashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -680,15 +680,15 @@ var dashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 	},
 }
 
-var dashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asciidoc.Document{
+var listsTestDashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -755,9 +755,9 @@ var dashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &as
 	},
 }
 
-var dashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists = &asciidoc.Document{
+var listsTestDashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -768,7 +768,7 @@ var dashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists = &
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -793,13 +793,13 @@ var dashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists = &
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.SingleLineComment{
 			Value: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -816,9 +816,9 @@ var dashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists = &
 	},
 }
 
-var dashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
+var listsTestDashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -829,7 +829,7 @@ var dashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &a
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -854,7 +854,7 @@ var dashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &a
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -879,15 +879,15 @@ var dashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &a
 	},
 }
 
-var dashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
+var listsTestDashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -912,7 +912,7 @@ var dashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists
 					Marker:        "-",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.AttributeEntry{
@@ -945,9 +945,9 @@ var dashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists
 	},
 }
 
-var aNonIndentedWrappedLineIsFoldedIntoTextOfListItem = &asciidoc.Document{
+var listsTestANonIndentedWrappedLineIsFoldedIntoTextOfListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -958,7 +958,7 @@ var aNonIndentedWrappedLineIsFoldedIntoTextOfListItem = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1001,15 +1001,15 @@ var aNonIndentedWrappedLineIsFoldedIntoTextOfListItem = &asciidoc.Document{
 	},
 }
 
-var aNonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfListItem = &asciidoc.Document{
+var listsTestANonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -1060,15 +1060,15 @@ var aNonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfListItem = 
 	},
 }
 
-var aNonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTextOfListItem = &asciidoc.Document{
+var listsTestANonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTextOfListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -1119,9 +1119,9 @@ var aNonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTextOfListIt
 	},
 }
 
-var aListItemWithANestedMarkerTerminatesNonIndentedParagraphForTextOfListItem = &asciidoc.Document{
+var listsTestAListItemWithANestedMarkerTerminatesNonIndentedParagraphForTextOfListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1153,15 +1153,15 @@ var aListItemWithANestedMarkerTerminatesNonIndentedParagraphForTextOfListItem = 
 	},
 }
 
-var aListItemForADifferentListTerminatesNonIndentedParagraphForTextOfListItem = &asciidoc.Document{
+var listsTestAListItemForADifferentListTerminatesNonIndentedParagraphForTextOfListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -1189,7 +1189,7 @@ var aListItemForADifferentListTerminatesNonIndentedParagraphForTextOfListItem = 
 					Indent:        "",
 					Marker:        ".",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1203,7 +1203,7 @@ var aListItemForADifferentListTerminatesNonIndentedParagraphForTextOfListItem = 
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -1236,9 +1236,9 @@ var aListItemForADifferentListTerminatesNonIndentedParagraphForTextOfListItem = 
 	},
 }
 
-var anIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem = &asciidoc.Document{
+var listsTestAnIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1249,7 +1249,7 @@ var anIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem = &asciidoc.Doc
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1292,15 +1292,15 @@ var anIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem = &asciidoc.Doc
 	},
 }
 
-var wrappedListItemWithHangingIndentFollowedByNonIndentedLine = &asciidoc.Document{
+var listsTestWrappedListItemWithHangingIndentFollowedByNonIndentedLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -1344,9 +1344,9 @@ var wrappedListItemWithHangingIndentFollowedByNonIndentedLine = &asciidoc.Docume
 	},
 }
 
-var aListItemWithANestedMarkerTerminatesIndentedParagraphForTextOfListItem = &asciidoc.Document{
+var listsTestAListItemWithANestedMarkerTerminatesIndentedParagraphForTextOfListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1378,15 +1378,15 @@ var aListItemWithANestedMarkerTerminatesIndentedParagraphForTextOfListItem = &as
 	},
 }
 
-var aListItemForADifferentListTerminatesIndentedParagraphForTextOfListItem = &asciidoc.Document{
+var listsTestAListItemForADifferentListTerminatesIndentedParagraphForTextOfListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -1414,7 +1414,7 @@ var aListItemForADifferentListTerminatesIndentedParagraphForTextOfListItem = &as
 					Indent:        "",
 					Marker:        ".",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1428,7 +1428,7 @@ var aListItemForADifferentListTerminatesIndentedParagraphForTextOfListItem = &as
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -1461,9 +1461,9 @@ var aListItemForADifferentListTerminatesIndentedParagraphForTextOfListItem = &as
 	},
 }
 
-var aLiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALiteralBlock = &asciidoc.Document{
+var listsTestALiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALiteralBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1474,7 +1474,7 @@ var aLiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALiteralBlock = 
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1488,14 +1488,14 @@ var aLiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALiteralBlock = 
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "  literal",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1523,9 +1523,9 @@ var aLiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALiteralBlock = 
 	},
 }
 
-var shouldEscapeSpecialCharactersInAllLiteralParagraphsAttachedToListItem = &asciidoc.Document{
+var listsTestShouldEscapeSpecialCharactersInAllLiteralParagraphsAttachedToListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1539,21 +1539,21 @@ var shouldEscapeSpecialCharactersInAllLiteralParagraphsAttachedToListItem = &asc
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "  <code>text</code>",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "  more <code>text</code>",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1570,9 +1570,9 @@ var shouldEscapeSpecialCharactersInAllLiteralParagraphsAttachedToListItem = &asc
 	},
 }
 
-var aLiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithContinuationIsAppendedAsTwoBlocks = &asciidoc.Document{
+var listsTestALiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithContinuationIsAppendedAsTwoBlocks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1583,7 +1583,7 @@ var aLiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithContinuati
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1597,7 +1597,7 @@ var aLiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithContinuati
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1610,7 +1610,7 @@ var aLiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithContinuati
 			Value: "para",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1638,9 +1638,9 @@ var aLiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithContinuati
 	},
 }
 
-var anAdmonitionParagraphAttachedByALineContinuationToAListItemWithWrappedTextShouldProduceAdmonition = &asciidoc.Document{
+var listsTestAnAdmonitionParagraphAttachedByALineContinuationToAListItemWithWrappedTextShouldProduceAdmonition = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1673,9 +1673,9 @@ var anAdmonitionParagraphAttachedByALineContinuationToAListItemWithWrappedTextSh
 	},
 }
 
-var paragraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationShouldProduceBlocks = &asciidoc.Document{
+var listsTestParagraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationShouldProduceBlocks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1700,7 +1700,7 @@ var paragraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationShouldProd
 			Marker:        "**",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LineBreak{},
@@ -1715,7 +1715,7 @@ var paragraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationShouldProd
 			},
 			Admonition: 1,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1740,7 +1740,7 @@ var paragraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationShouldProd
 			Marker:        "**",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ListContinuation{
@@ -1751,9 +1751,9 @@ var paragraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationShouldProd
 	},
 }
 
-var shouldNotInheritBlockAttributesFromPreviousBlockWhenBlockIsAttachedUsingAListContinuation = &asciidoc.Document{
+var listsTestShouldNotInheritBlockAttributesFromPreviousBlockWhenBlockIsAttachedUsingAListContinuation = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1790,9 +1790,9 @@ var shouldNotInheritBlockAttributesFromPreviousBlockWhenBlockIsAttachedUsingALis
 	},
 }
 
-var shouldContinueToParseBlocksAttachedByAListContinuationAfterBlockIsDropped = &asciidoc.Document{
+var listsTestShouldContinueToParseBlocksAttachedByAListContinuationAfterBlockIsDropped = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1843,9 +1843,9 @@ var shouldContinueToParseBlocksAttachedByAListContinuationAfterBlockIsDropped = 
 	},
 }
 
-var appendsLineAsParagraphIfAttachedByContinuationFollowingLineComment = &asciidoc.Document{
+var listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingLineComment = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1869,7 +1869,7 @@ var appendsLineAsParagraphIfAttachedByContinuationFollowingLineComment = &asciid
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1886,9 +1886,9 @@ var appendsLineAsParagraphIfAttachedByContinuationFollowingLineComment = &asciid
 	},
 }
 
-var aLiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByAContinuationShouldCreateTwoBlocks = &asciidoc.Document{
+var listsTestALiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByAContinuationShouldCreateTwoBlocks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1924,7 +1924,7 @@ var aLiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByAContinuatio
 			Indent:        "",
 			Marker:        ".",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1941,9 +1941,9 @@ var aLiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByAContinuatio
 	},
 }
 
-var consecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppendedAsALiteralBlocks = &asciidoc.Document{
+var listsTestConsecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppendedAsALiteralBlocks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1954,7 +1954,7 @@ var consecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppendedAsALite
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1968,14 +1968,14 @@ var consecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppendedAsALite
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "  literal",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1986,7 +1986,7 @@ var consecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppendedAsALite
 			Value: "  literal",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2014,9 +2014,9 @@ var consecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppendedAsALite
 	},
 }
 
-var aLiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItems = &asciidoc.Document{
+var listsTestALiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItems = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2027,7 +2027,7 @@ var aLiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItems = &asci
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2041,7 +2041,7 @@ var aLiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItems = &asci
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2073,9 +2073,9 @@ var aLiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItems = &asci
 	},
 }
 
-var asteriskElementsWithNoBlankLines = &asciidoc.Document{
+var listsTestAsteriskElementsWithNoBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2086,7 +2086,7 @@ var asteriskElementsWithNoBlankLines = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2125,9 +2125,9 @@ var asteriskElementsWithNoBlankLines = &asciidoc.Document{
 	},
 }
 
-var asteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
+var listsTestAsteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2138,7 +2138,7 @@ var asteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2152,7 +2152,7 @@ var asteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2166,10 +2166,10 @@ var asteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2186,15 +2186,15 @@ var asteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 	},
 }
 
-var asteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asciidoc.Document{
+var listsTestAsteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -2261,9 +2261,9 @@ var asteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList =
 	},
 }
 
-var asteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists = &asciidoc.Document{
+var listsTestAsteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2274,7 +2274,7 @@ var asteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2299,13 +2299,13 @@ var asteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.SingleLineComment{
 			Value: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2322,9 +2322,9 @@ var asteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists
 	},
 }
 
-var asteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
+var listsTestAsteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2335,7 +2335,7 @@ var asteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists 
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2360,7 +2360,7 @@ var asteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists 
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2385,15 +2385,15 @@ var asteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists 
 	},
 }
 
-var asteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
+var listsTestAsteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -2418,7 +2418,7 @@ var asteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeL
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.AttributeEntry{
@@ -2451,9 +2451,9 @@ var asteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeL
 	},
 }
 
-var listShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Document{
+var listsTestListShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2464,7 +2464,7 @@ var listShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2497,7 +2497,7 @@ var listShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Document{
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2513,9 +2513,9 @@ var listShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Document{
 	},
 }
 
-var listShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &asciidoc.Document{
+var listsTestListShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2526,7 +2526,7 @@ var listShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &asciidoc.D
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2559,7 +2559,7 @@ var listShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &asciidoc.D
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2582,9 +2582,9 @@ var listShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &asciidoc.D
 	},
 }
 
-var shouldNotFindSectionTitleImmediatelyBelowLastListItem = &asciidoc.Document{
+var listsTestShouldNotFindSectionTitleImmediatelyBelowLastListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2616,9 +2616,9 @@ var shouldNotFindSectionTitleImmediatelyBelowLastListItem = &asciidoc.Document{
 	},
 }
 
-var quotedText = &asciidoc.Document{
+var listsTestQuotedText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2629,7 +2629,7 @@ var quotedText = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2701,9 +2701,9 @@ var quotedText = &asciidoc.Document{
 	},
 }
 
-var attributeSubstitutions = &asciidoc.Document{
+var listsTestAttributeSubstitutions = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2722,7 +2722,7 @@ var attributeSubstitutions = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2762,9 +2762,9 @@ var attributeSubstitutions = &asciidoc.Document{
 	},
 }
 
-var leadingDotIsTreatedAsTextNotBlockTitle = &asciidoc.Document{
+var listsTestLeadingDotIsTreatedAsTextNotBlockTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2803,9 +2803,9 @@ var leadingDotIsTreatedAsTextNotBlockTitle = &asciidoc.Document{
 	},
 }
 
-var wordEndingSentenceOnContinuingLineNotTreatedAsAListItem = &asciidoc.Document{
+var listsTestWordEndingSentenceOnContinuingLineNotTreatedAsAListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -2835,30 +2835,34 @@ var wordEndingSentenceOnContinuingLineNotTreatedAsAListItem = &asciidoc.Document
 	},
 }
 
-var shouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAReference = &asciidoc.Document{
+var listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAReference = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "The highest peak in the Front Range is ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "grays-peak",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "grays-peak",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: ", which tops ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "mount-evans",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "mount-evans",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: " by just a few feet.",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -2925,17 +2929,19 @@ var shouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAReference 
 	},
 }
 
-var shouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsAReference = &asciidoc.Document{
+var listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsAReference = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "This is a cross-reference to ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "step-2",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "step-2",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: ".",
@@ -2945,14 +2951,16 @@ var shouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsAReference = 
 			Value: "This is a cross-reference to ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "step-4",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "step-4",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: ".",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -3014,23 +3022,25 @@ var shouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsAReference = 
 	},
 }
 
-var shouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsAReference = &asciidoc.Document{
+var listsTestShouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsAReference = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "This is a cross-reference to ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "url-mapping",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "url-mapping",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: ".",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3095,9 +3105,9 @@ var shouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsAReference = 
 	},
 }
 
-var asteriskElementMixedWithDashElementsShouldBeNested = &asciidoc.Document{
+var listsTestAsteriskElementMixedWithDashElementsShouldBeNested = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3108,7 +3118,7 @@ var asteriskElementMixedWithDashElementsShouldBeNested = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3147,9 +3157,9 @@ var asteriskElementMixedWithDashElementsShouldBeNested = &asciidoc.Document{
 	},
 }
 
-var dashElementMixedWithAsterisksElementsShouldBeNested = &asciidoc.Document{
+var listsTestDashElementMixedWithAsterisksElementsShouldBeNested = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3160,7 +3170,7 @@ var dashElementMixedWithAsterisksElementsShouldBeNested = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3199,9 +3209,9 @@ var dashElementMixedWithAsterisksElementsShouldBeNested = &asciidoc.Document{
 	},
 }
 
-var linesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldBeNested = &asciidoc.Document{
+var listsTestLinesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldBeNested = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3212,7 +3222,7 @@ var linesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldBeNested =
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3226,7 +3236,7 @@ var linesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldBeNested =
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3240,10 +3250,10 @@ var linesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldBeNested =
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3260,9 +3270,9 @@ var linesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldBeNested =
 	},
 }
 
-var nestedElements2WithAsterisks = &asciidoc.Document{
+var listsTestNestedElements2WithAsterisks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3273,7 +3283,7 @@ var nestedElements2WithAsterisks = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3312,9 +3322,9 @@ var nestedElements2WithAsterisks = &asciidoc.Document{
 	},
 }
 
-var nestedElements3WithAsterisks = &asciidoc.Document{
+var listsTestNestedElements3WithAsterisks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3325,7 +3335,7 @@ var nestedElements3WithAsterisks = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3375,9 +3385,9 @@ var nestedElements3WithAsterisks = &asciidoc.Document{
 	},
 }
 
-var nestedElements4WithAsterisks = &asciidoc.Document{
+var listsTestNestedElements4WithAsterisks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3388,7 +3398,7 @@ var nestedElements4WithAsterisks = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3449,9 +3459,9 @@ var nestedElements4WithAsterisks = &asciidoc.Document{
 	},
 }
 
-var nestedElements5WithAsterisks = &asciidoc.Document{
+var listsTestNestedElements5WithAsterisks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3462,7 +3472,7 @@ var nestedElements5WithAsterisks = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3534,15 +3544,15 @@ var nestedElements5WithAsterisks = &asciidoc.Document{
 	},
 }
 
-var levelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
+var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -3600,13 +3610,13 @@ var levelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.UnorderedListItem{
@@ -3639,9 +3649,9 @@ var levelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 	},
 }
 
-var doesNotRecognizeListsWithRepeatingUnicodeBullets = &asciidoc.Document{
+var listsTestDoesNotRecognizeListsWithRepeatingUnicodeBullets = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3652,7 +3662,7 @@ var doesNotRecognizeListsWithRepeatingUnicodeBullets = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -3688,9 +3698,9 @@ var doesNotRecognizeListsWithRepeatingUnicodeBullets = &asciidoc.Document{
 	},
 }
 
-var nestedOrderedElements3 = &asciidoc.Document{
+var listsTestNestedOrderedElements3 = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3701,7 +3711,7 @@ var nestedOrderedElements3 = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -3747,15 +3757,15 @@ var nestedOrderedElements3 = &asciidoc.Document{
 	},
 }
 
-var levelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
+var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -3808,13 +3818,13 @@ var levelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Indent:        "",
 					Marker:        ".",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.OrderedListItem{
@@ -3846,9 +3856,9 @@ var levelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 	},
 }
 
-var nestedUnorderedInsideOrderedElements = &asciidoc.Document{
+var listsTestNestedUnorderedInsideOrderedElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3859,7 +3869,7 @@ var nestedUnorderedInsideOrderedElements = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -3896,9 +3906,9 @@ var nestedUnorderedInsideOrderedElements = &asciidoc.Document{
 	},
 }
 
-var nestedOrderedInsideUnorderedElements = &asciidoc.Document{
+var listsTestNestedOrderedInsideUnorderedElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3909,7 +3919,7 @@ var nestedOrderedInsideUnorderedElements = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3947,15 +3957,15 @@ var nestedOrderedInsideUnorderedElements = &asciidoc.Document{
 	},
 }
 
-var threeLevelsOfAlternatingUnorderedAndOrderedElements = &asciidoc.Document{
+var listsTestThreeLevelsOfAlternatingUnorderedAndOrderedElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -4012,9 +4022,9 @@ var threeLevelsOfAlternatingUnorderedAndOrderedElements = &asciidoc.Document{
 	},
 }
 
-var linesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedByBlankLinesShouldBeNested = &asciidoc.Document{
+var listsTestLinesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedByBlankLinesShouldBeNested = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4025,7 +4035,7 @@ var linesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedByBlankLin
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4039,7 +4049,7 @@ var linesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedByBlankLin
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -4052,10 +4062,10 @@ var linesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedByBlankLin
 			Indent:        "",
 			Marker:        ".",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4072,9 +4082,9 @@ var linesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedByBlankLin
 	},
 }
 
-var listItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType = &asciidoc.Document{
+var listsTestListItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4085,7 +4095,7 @@ var listItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType = &ascii
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4099,7 +4109,7 @@ var listItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType = &ascii
 			Marker:        "-",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4114,7 +4124,7 @@ var listItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType = &ascii
 			Value: "  hungry",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -4130,9 +4140,9 @@ var listItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType = &ascii
 	},
 }
 
-var nestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asciidoc.Document{
+var listsTestNestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4143,7 +4153,7 @@ var nestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asciidoc.Docu
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4179,7 +4189,7 @@ var nestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asciidoc.Docu
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -4203,9 +4213,9 @@ var nestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asciidoc.Docu
 	},
 }
 
-var linesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparatedByBlankLinesShouldBeNested = &asciidoc.Document{
+var listsTestLinesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparatedByBlankLinesShouldBeNested = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4216,7 +4226,7 @@ var linesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparatedByBlank
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4230,14 +4240,14 @@ var linesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparatedByBlank
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "term1:: def1",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4254,9 +4264,9 @@ var linesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparatedByBlank
 	},
 }
 
-var nestedOrderedWithAttributeInsideUnorderedElements = &asciidoc.Document{
+var listsTestNestedOrderedWithAttributeInsideUnorderedElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4267,7 +4277,7 @@ var nestedOrderedWithAttributeInsideUnorderedElements = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4309,9 +4319,9 @@ var nestedOrderedWithAttributeInsideUnorderedElements = &asciidoc.Document{
 	},
 }
 
-var adjacentListContinuationLineAttachesFollowingParagraph = &asciidoc.Document{
+var listsTestAdjacentListContinuationLineAttachesFollowingParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4322,7 +4332,7 @@ var adjacentListContinuationLineAttachesFollowingParagraph = &asciidoc.Document{
 			Value: "=====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4358,9 +4368,9 @@ var adjacentListContinuationLineAttachesFollowingParagraph = &asciidoc.Document{
 	},
 }
 
-var adjacentListContinuationLineAttachesFollowingBlock = &asciidoc.Document{
+var listsTestAdjacentListContinuationLineAttachesFollowingBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4371,7 +4381,7 @@ var adjacentListContinuationLineAttachesFollowingBlock = &asciidoc.Document{
 			Value: "=====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4413,9 +4423,9 @@ var adjacentListContinuationLineAttachesFollowingBlock = &asciidoc.Document{
 	},
 }
 
-var adjacentListContinuationLineAttachesFollowingBlockWithBlockAttributes = &asciidoc.Document{
+var listsTestAdjacentListContinuationLineAttachesFollowingBlockWithBlockAttributes = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4426,7 +4436,7 @@ var adjacentListContinuationLineAttachesFollowingBlockWithBlockAttributes = &asc
 			Value: "=====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4469,7 +4479,7 @@ var adjacentListContinuationLineAttachesFollowingBlockWithBlockAttributes = &asc
 				"5.times { print \"Odelay!\" }",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4486,9 +4496,9 @@ var adjacentListContinuationLineAttachesFollowingBlockWithBlockAttributes = &asc
 	},
 }
 
-var trailingBlockAttributeLineAttachedByContinuationShouldNotCreateBlock = &asciidoc.Document{
+var listsTestTrailingBlockAttributeLineAttachedByContinuationShouldNotCreateBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4499,7 +4509,7 @@ var trailingBlockAttributeLineAttachedByContinuationShouldNotCreateBlock = &asci
 			Value: "=====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4519,7 +4529,7 @@ var trailingBlockAttributeLineAttachedByContinuationShouldNotCreateBlock = &asci
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4536,9 +4546,9 @@ var trailingBlockAttributeLineAttachedByContinuationShouldNotCreateBlock = &asci
 	},
 }
 
-var trailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock = &asciidoc.Document{
+var listsTestTrailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4549,7 +4559,7 @@ var trailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock = &asciidoc
 			Value: "=====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4569,7 +4579,7 @@ var trailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock = &asciidoc
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4586,9 +4596,9 @@ var trailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock = &asciidoc
 	},
 }
 
-var consecutiveBlocksInListContinuationAttachToListItem = &asciidoc.Document{
+var listsTestConsecutiveBlocksInListContinuationAttachToListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4599,7 +4609,7 @@ var consecutiveBlocksInListContinuationAttachToListItem = &asciidoc.Document{
 			Value: "=====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -4656,15 +4666,15 @@ var consecutiveBlocksInListContinuationAttachToListItem = &asciidoc.Document{
 	},
 }
 
-var listItemWithHangingIndentFollowedByBlockAttachedByListContinuation = &asciidoc.Document{
+var listsTestListItemWithHangingIndentFollowedByBlockAttachedByListContinuation = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -4695,7 +4705,7 @@ var listItemWithHangingIndentFollowedByBlockAttachedByListContinuation = &asciid
 					Indent:        "",
 					Marker:        ".",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -4719,15 +4729,15 @@ var listItemWithHangingIndentFollowedByBlockAttachedByListContinuation = &asciid
 	},
 }
 
-var listItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
+var listsTestListItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -4746,7 +4756,7 @@ var listItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
 					Indent:        "",
 					Marker:        ".",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -4766,7 +4776,7 @@ var listItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -4790,15 +4800,15 @@ var listItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
 	},
 }
 
-var trailingListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciidoc.Document{
+var listsTestTrailingListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -4841,7 +4851,7 @@ var trailingListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciid
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -4850,7 +4860,7 @@ var trailingListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciid
 					Value: "paragraph for list item 1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -4874,15 +4884,15 @@ var trailingListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciid
 	},
 }
 
-var trailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtRespectiveLevels = &asciidoc.Document{
+var listsTestTrailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtRespectiveLevels = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -4917,7 +4927,7 @@ var trailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtRespective
 					Marker:        "**",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -4926,7 +4936,7 @@ var trailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtRespective
 					Value: "numbered 1.1 paragraph",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -4935,7 +4945,7 @@ var trailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtRespective
 					Value: "bullet 1 paragraph",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -4960,15 +4970,15 @@ var trailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtRespective
 	},
 }
 
-var repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciidoc.Document{
+var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -4981,7 +4991,7 @@ var repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciid
 					Indent:        "",
 					Marker:        ".",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -5028,7 +5038,7 @@ var repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciid
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -5037,7 +5047,7 @@ var repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciid
 					Value: "paragraph for list item 1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -5061,115 +5071,15 @@ var repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciid
 	},
 }
 
-var repeatedListContinuationsAttachedDirectlyToListItemShouldAttachToListItemsAtRespectiveLevels = &asciidoc.Document{
+var listsTestRepeatedListContinuationsAttachedDirectlyToListItemShouldAttachToListItemsAtRespectiveLevels = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
-					Text: "",
-				},
-				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
-						&asciidoc.String{
-							Value: "list item 1",
-						},
-						&asciidoc.NewLine{},
-						&asciidoc.LineBreak{},
-					},
-					AttributeList: nil,
-					Indent:        "",
-					Marker:        ".",
-				},
-				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
-						&asciidoc.String{
-							Value: "nested list item 1",
-						},
-						&asciidoc.NewLine{},
-						&asciidoc.LineBreak{},
-						&asciidoc.NewLine{},
-						&asciidoc.String{
-							Value: "--",
-						},
-						&asciidoc.NewLine{},
-						&asciidoc.String{
-							Value: "open block for nested list item 1",
-						},
-						&asciidoc.NewLine{},
-						&asciidoc.String{
-							Value: "--",
-						},
-						&asciidoc.NewLine{},
-						&asciidoc.LineBreak{},
-					},
-					AttributeList: nil,
-					Indent:        "",
-					Marker:        "*",
-					Checklist:     0,
-				},
-				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
-						&asciidoc.String{
-							Value: "nested list item 2",
-						},
-						&asciidoc.NewLine{},
-						&asciidoc.LineBreak{},
-						&asciidoc.NewLine{},
-						&asciidoc.String{
-							Value: "paragraph for nested list item 2",
-						},
-					},
-					AttributeList: nil,
-					Indent:        "",
-					Marker:        "*",
-					Checklist:     0,
-				},
-				asciidoc.EmptyLine{
-					Text: "",
-				},
-				&asciidoc.LineBreak{},
-				&asciidoc.NewLine{},
-				&asciidoc.String{
-					Value: "paragraph for list item 1",
-				},
-				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
-					Text: "",
-				},
-				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
-						&asciidoc.String{
-							Value: "list item 2",
-						},
-					},
-					AttributeList: nil,
-					Indent:        "",
-					Marker:        ".",
-				},
-			},
-			Title: asciidoc.Set{
-				&asciidoc.String{
-					Value: "Lists",
-				},
-			},
-			Level: 1,
-		},
-	},
-}
-
-var repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsIgnoringBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
-			Text: "",
-		},
-		&asciidoc.Section{
-			AttributeList: nil,
-			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -5228,10 +5138,7 @@ var repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsIgnoringBl
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
-					Text: "",
-				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -5240,7 +5147,7 @@ var repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsIgnoringBl
 					Value: "paragraph for list item 1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -5264,15 +5171,118 @@ var repeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsIgnoringBl
 	},
 }
 
-var trailingListContinuationsShouldIgnorePrecedingBlankLines = &asciidoc.Document{
+var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsIgnoringBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.OrderedListItem{
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "list item 1",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.LineBreak{},
+					},
+					AttributeList: nil,
+					Indent:        "",
+					Marker:        ".",
+				},
+				&asciidoc.UnorderedListItem{
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "nested list item 1",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.LineBreak{},
+						&asciidoc.NewLine{},
+						&asciidoc.String{
+							Value: "--",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.String{
+							Value: "open block for nested list item 1",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.String{
+							Value: "--",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.LineBreak{},
+					},
+					AttributeList: nil,
+					Indent:        "",
+					Marker:        "*",
+					Checklist:     0,
+				},
+				&asciidoc.UnorderedListItem{
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "nested list item 2",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.LineBreak{},
+						&asciidoc.NewLine{},
+						&asciidoc.String{
+							Value: "paragraph for nested list item 2",
+						},
+					},
+					AttributeList: nil,
+					Indent:        "",
+					Marker:        "*",
+					Checklist:     0,
+				},
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.LineBreak{},
+				&asciidoc.NewLine{},
+				&asciidoc.String{
+					Value: "paragraph for list item 1",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.OrderedListItem{
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "list item 2",
+						},
+					},
+					AttributeList: nil,
+					Indent:        "",
+					Marker:        ".",
+				},
+			},
+			Title: asciidoc.Set{
+				&asciidoc.String{
+					Value: "Lists",
+				},
+			},
+			Level: 1,
+		},
+	},
+}
+
+var listsTestTrailingListContinuationsShouldIgnorePrecedingBlankLines = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Section{
+			AttributeList: nil,
+			Set: asciidoc.Set{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -5322,10 +5332,10 @@ var trailingListContinuationsShouldIgnorePrecedingBlankLines = &asciidoc.Documen
 					Marker:        "***",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -5334,10 +5344,10 @@ var trailingListContinuationsShouldIgnorePrecedingBlankLines = &asciidoc.Documen
 					Value: "bullet 1.1 paragraph",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -5346,7 +5356,7 @@ var trailingListContinuationsShouldIgnorePrecedingBlankLines = &asciidoc.Documen
 					Value: "bullet 1 paragraph",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -5371,9 +5381,9 @@ var trailingListContinuationsShouldIgnorePrecedingBlankLines = &asciidoc.Documen
 	},
 }
 
-var indentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldBeRecognizedAsANestedList = &asciidoc.Document{
+var listsTestIndentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldBeRecognizedAsANestedList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -5387,7 +5397,7 @@ var indentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldBeRecogniz
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -5406,7 +5416,7 @@ var indentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldBeRecogniz
 			Indent:        "  ",
 			Marker:        ".",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -5425,7 +5435,7 @@ var indentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldBeRecogniz
 			Indent:        "  ",
 			Marker:        ".",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -5442,9 +5452,9 @@ var indentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldBeRecogniz
 	},
 }
 
-var indentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineShouldBeRecognizedAsANestedList = &asciidoc.Document{
+var listsTestIndentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineShouldBeRecognizedAsANestedList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -5458,7 +5468,7 @@ var indentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineShouldBeRe
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -5471,7 +5481,7 @@ var indentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineShouldBeRe
 			Value: "attached paragraph",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -5484,7 +5494,7 @@ var indentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineShouldBeRe
 			Value: "attached paragraph",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -5501,9 +5511,9 @@ var indentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineShouldBeRe
 	},
 }
 
-var consecutiveListContinuationLinesAreFolded = &asciidoc.Document{
+var listsTestConsecutiveListContinuationLinesAreFolded = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -5514,7 +5524,7 @@ var consecutiveListContinuationLinesAreFolded = &asciidoc.Document{
 			Value: "=====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -5558,9 +5568,9 @@ var consecutiveListContinuationLinesAreFolded = &asciidoc.Document{
 	},
 }
 
-var shouldWarnIfUnterminatedBlockIsDetectedInListItem = &asciidoc.Document{
+var listsTestShouldWarnIfUnterminatedBlockIsDetectedInListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -5598,9 +5608,9 @@ var shouldWarnIfUnterminatedBlockIsDetectedInListItem = &asciidoc.Document{
 	},
 }
 
-var dotElementsWithNoBlankLines = &asciidoc.Document{
+var listsTestDotElementsWithNoBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -5611,7 +5621,7 @@ var dotElementsWithNoBlankLines = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -5647,9 +5657,9 @@ var dotElementsWithNoBlankLines = &asciidoc.Document{
 	},
 }
 
-var shouldRepresentExplicitRoleAttributeAsStyleClass = &asciidoc.Document{
+var listsTestShouldRepresentExplicitRoleAttributeAsStyleClass = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -5695,9 +5705,9 @@ var shouldRepresentExplicitRoleAttributeAsStyleClass = &asciidoc.Document{
 	},
 }
 
-var shouldBaseListStyleOnMarkerLengthRatherThanListDepth = &asciidoc.Document{
+var listsTestShouldBaseListStyleOnMarkerLengthRatherThanListDepth = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -5733,9 +5743,9 @@ var shouldBaseListStyleOnMarkerLengthRatherThanListDepth = &asciidoc.Document{
 	},
 }
 
-var shouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImplicitStyle = &asciidoc.Document{
+var listsTestShouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImplicitStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -5784,9 +5794,9 @@ var shouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImplicitStyle
 	},
 }
 
-var shouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasses = &asciidoc.Document{
+var listsTestShouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasses = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -5844,9 +5854,9 @@ var shouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasses = &asci
 	},
 }
 
-var shouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.Document{
+var listsTestShouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -5916,9 +5926,9 @@ var shouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.Document{
 	},
 }
 
-var shouldRepresentImplicitRoleAttributeAsStyleClass = &asciidoc.Document{
+var listsTestShouldRepresentImplicitRoleAttributeAsStyleClass = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -5969,9 +5979,9 @@ var shouldRepresentImplicitRoleAttributeAsStyleClass = &asciidoc.Document{
 	},
 }
 
-var shouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasses = &asciidoc.Document{
+var listsTestShouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasses = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6028,9 +6038,9 @@ var shouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasses = &asci
 	},
 }
 
-var dotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
+var listsTestDotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6041,7 +6051,7 @@ var dotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6054,7 +6064,7 @@ var dotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 			Indent:        "",
 			Marker:        ".",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6067,10 +6077,10 @@ var dotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 			Indent:        "",
 			Marker:        ".",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6086,15 +6096,15 @@ var dotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
 	},
 }
 
-var dotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asciidoc.Document{
+var listsTestDotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -6158,9 +6168,9 @@ var dotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asc
 	},
 }
 
-var dotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLists = &asciidoc.Document{
+var listsTestDotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6171,7 +6181,7 @@ var dotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLists = &as
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6194,13 +6204,13 @@ var dotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLists = &as
 			Indent:        "",
 			Marker:        ".",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.SingleLineComment{
 			Value: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6216,9 +6226,9 @@ var dotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLists = &as
 	},
 }
 
-var dotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
+var listsTestDotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6229,7 +6239,7 @@ var dotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &as
 			Value: "====",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6252,7 +6262,7 @@ var dotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &as
 			Indent:        "",
 			Marker:        ".",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6276,15 +6286,15 @@ var dotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &as
 	},
 }
 
-var dotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
+var listsTestDotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -6307,7 +6317,7 @@ var dotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists 
 					Indent:        "",
 					Marker:        ".",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.AttributeEntry{
@@ -6339,15 +6349,15 @@ var dotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists 
 	},
 }
 
-var shouldUseStartNumberInDocbook5Backend = &asciidoc.Document{
+var listsTestShouldUseStartNumberInDocbook5Backend = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
@@ -6391,9 +6401,9 @@ var shouldUseStartNumberInDocbook5Backend = &asciidoc.Document{
 	},
 }
 
-var shouldWarnIfExplicitUppercaseRomanNumeralsInListAreOutOfSequence = &asciidoc.Document{
+var listsTestShouldWarnIfExplicitUppercaseRomanNumeralsInListAreOutOfSequence = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6419,9 +6429,9 @@ var shouldWarnIfExplicitUppercaseRomanNumeralsInListAreOutOfSequence = &asciidoc
 	},
 }
 
-var shouldWarnIfExplicitLowercaseRomanNumeralsInListAreOutOfSequence = &asciidoc.Document{
+var listsTestShouldWarnIfExplicitLowercaseRomanNumeralsInListAreOutOfSequence = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -6447,9 +6457,9 @@ var shouldWarnIfExplicitLowercaseRomanNumeralsInListAreOutOfSequence = &asciidoc
 	},
 }
 
-var shouldNotParseABareDlistDelimiterAsADlist = &asciidoc.Document{
+var listsTestShouldNotParseABareDlistDelimiterAsADlist = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6463,9 +6473,9 @@ var shouldNotParseABareDlistDelimiterAsADlist = &asciidoc.Document{
 	},
 }
 
-var shouldParseSiblingItemsUsingSameRules = &asciidoc.Document{
+var listsTestShouldParseSiblingItemsUsingSameRules = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6479,9 +6489,9 @@ var shouldParseSiblingItemsUsingSameRules = &asciidoc.Document{
 	},
 }
 
-var shouldAllowTermToEndWithASemicolonWhenUsingDoubleSemicolonDelimiter = &asciidoc.Document{
+var listsTestShouldAllowTermToEndWithASemicolonWhenUsingDoubleSemicolonDelimiter = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6491,9 +6501,9 @@ var shouldAllowTermToEndWithASemicolonWhenUsingDoubleSemicolonDelimiter = &ascii
 	},
 }
 
-var singleLineIndentedAdjacentElements = &asciidoc.Document{
+var listsTestSingleLineIndentedAdjacentElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6507,16 +6517,16 @@ var singleLineIndentedAdjacentElements = &asciidoc.Document{
 	},
 }
 
-var singleLineElementsSeparatedByBlankLineShouldCreateASingleList = &asciidoc.Document{
+var listsTestSingleLineElementsSeparatedByBlankLineShouldCreateASingleList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "term1:: def1",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6526,22 +6536,22 @@ var singleLineElementsSeparatedByBlankLineShouldCreateASingleList = &asciidoc.Do
 	},
 }
 
-var aLineCommentBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
+var listsTestALineCommentBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "term1:: def1",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.SingleLineComment{
 			Value: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6551,22 +6561,22 @@ var aLineCommentBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Doc
 	},
 }
 
-var aRulerBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
+var listsTestARulerBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "term1:: def1",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6576,16 +6586,16 @@ var aRulerBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
 	},
 }
 
-var aBlockTitleBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
+var listsTestABlockTitleBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "term1:: def1",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -6609,9 +6619,9 @@ var aBlockTitleBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Docu
 	},
 }
 
-var multiLineElementsWithParagraphContent = &asciidoc.Document{
+var listsTestMultiLineElementsWithParagraphContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6653,9 +6663,9 @@ var multiLineElementsWithParagraphContent = &asciidoc.Document{
 	},
 }
 
-var multiLineElementsWithIndentedParagraphContent = &asciidoc.Document{
+var listsTestMultiLineElementsWithIndentedParagraphContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6697,9 +6707,9 @@ var multiLineElementsWithIndentedParagraphContent = &asciidoc.Document{
 	},
 }
 
-var multiLineElementsWithIndentedParagraphContentThatIncludesCommentLines = &asciidoc.Document{
+var listsTestMultiLineElementsWithIndentedParagraphContentThatIncludesCommentLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6751,9 +6761,9 @@ var multiLineElementsWithIndentedParagraphContentThatIncludesCommentLines = &asc
 	},
 }
 
-var shouldNotStripCommentLineInLiteralParagraphBlockAttachedToListItem = &asciidoc.Document{
+var listsTestShouldNotStripCommentLineInLiteralParagraphBlockAttachedToListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6786,9 +6796,9 @@ var shouldNotStripCommentLineInLiteralParagraphBlockAttachedToListItem = &asciid
 	},
 }
 
-var multiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeSeenAsList = &asciidoc.Document{
+var listsTestMultiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeSeenAsList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6820,7 +6830,7 @@ var multiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeSeenAsList
 			Marker:        "--",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6844,9 +6854,9 @@ var multiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeSeenAsList
 	},
 }
 
-var multiLineElementWithMultipleTerms = &asciidoc.Document{
+var listsTestMultiLineElementWithMultipleTerms = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6874,9 +6884,9 @@ var multiLineElementWithMultipleTerms = &asciidoc.Document{
 	},
 }
 
-var consecutiveTermsShareSameVarlistentryInDocbook = &asciidoc.Document{
+var listsTestConsecutiveTermsShareSameVarlistentryInDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6898,7 +6908,7 @@ var consecutiveTermsShareSameVarlistentryInDocbook = &asciidoc.Document{
 			Value: "description",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -6908,9 +6918,9 @@ var consecutiveTermsShareSameVarlistentryInDocbook = &asciidoc.Document{
 	},
 }
 
-var multiLineElementsWithBlankLineBeforeParagraphContent = &asciidoc.Document{
+var listsTestMultiLineElementsWithBlankLineBeforeParagraphContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6954,9 +6964,9 @@ var multiLineElementsWithBlankLineBeforeParagraphContent = &asciidoc.Document{
 	},
 }
 
-var multiLineElementsWithParagraphAndLiteralContent = &asciidoc.Document{
+var listsTestMultiLineElementsWithParagraphAndLiteralContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -6977,14 +6987,14 @@ var multiLineElementsWithParagraphAndLiteralContent = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "  literal",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7008,9 +7018,9 @@ var multiLineElementsWithParagraphAndLiteralContent = &asciidoc.Document{
 	},
 }
 
-var mixedSingleAndMultiLineAdjacentElements = &asciidoc.Document{
+var listsTestMixedSingleAndMultiLineAdjacentElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7038,30 +7048,34 @@ var mixedSingleAndMultiLineAdjacentElements = &asciidoc.Document{
 	},
 }
 
-var shouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsAReference = &asciidoc.Document{
+var listsTestShouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsAReference = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "The highest peak in the Front Range is ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "grays-peak",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "grays-peak",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: ", which tops ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "mount-evans",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "mount-evans",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: " by just a few feet.",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Anchor{
@@ -7087,9 +7101,9 @@ var shouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsAReference = 
 	},
 }
 
-var missingSpaceBeforeTermDoesNotProduceDescriptionList = &asciidoc.Document{
+var listsTestMissingSpaceBeforeTermDoesNotProduceDescriptionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7103,9 +7117,9 @@ var missingSpaceBeforeTermDoesNotProduceDescriptionList = &asciidoc.Document{
 	},
 }
 
-var literalBlockInsideDescriptionList = &asciidoc.Document{
+var listsTestLiteralBlockInsideDescriptionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7140,9 +7154,9 @@ var literalBlockInsideDescriptionList = &asciidoc.Document{
 	},
 }
 
-var literalBlockInsideDescriptionListWithTrailingLineContinuation = &asciidoc.Document{
+var listsTestLiteralBlockInsideDescriptionListWithTrailingLineContinuation = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7179,9 +7193,9 @@ var literalBlockInsideDescriptionListWithTrailingLineContinuation = &asciidoc.Do
 	},
 }
 
-var multipleListingBlocksInsideDescriptionList = &asciidoc.Document{
+var listsTestMultipleListingBlocksInsideDescriptionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7230,9 +7244,9 @@ var multipleListingBlocksInsideDescriptionList = &asciidoc.Document{
 	},
 }
 
-var openBlockInsideDescriptionList = &asciidoc.Document{
+var listsTestOpenBlockInsideDescriptionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7259,7 +7273,7 @@ var openBlockInsideDescriptionList = &asciidoc.Document{
 					Value: "Open block as description of term.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -7275,9 +7289,9 @@ var openBlockInsideDescriptionList = &asciidoc.Document{
 	},
 }
 
-var paragraphAttachedByAListContinuationOnEitherSideInADescriptionList = &asciidoc.Document{
+var listsTestParagraphAttachedByAListContinuationOnEitherSideInADescriptionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7299,9 +7313,9 @@ var paragraphAttachedByAListContinuationOnEitherSideInADescriptionList = &asciid
 	},
 }
 
-var paragraphAttachedByAListContinuationOnEitherSideToAMultiLineElementInADescriptionList = &asciidoc.Document{
+var listsTestParagraphAttachedByAListContinuationOnEitherSideToAMultiLineElementInADescriptionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7337,9 +7351,9 @@ var paragraphAttachedByAListContinuationOnEitherSideToAMultiLineElementInADescri
 	},
 }
 
-var shouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBlockIsDropped = &asciidoc.Document{
+var listsTestShouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBlockIsDropped = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7350,7 +7364,7 @@ var shouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBlockIsDrop
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7383,9 +7397,9 @@ var shouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBlockIsDrop
 	},
 }
 
-var verseParagraphInsideADescriptionList = &asciidoc.Document{
+var listsTestVerseParagraphInsideADescriptionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7417,7 +7431,7 @@ var verseParagraphInsideADescriptionList = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7427,9 +7441,9 @@ var verseParagraphInsideADescriptionList = &asciidoc.Document{
 	},
 }
 
-var listInsideADescriptionList = &asciidoc.Document{
+var listsTestListInsideADescriptionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7479,9 +7493,9 @@ var listInsideADescriptionList = &asciidoc.Document{
 	},
 }
 
-var listInsideADescriptionListOffsetByBlankLines = &asciidoc.Document{
+var listsTestListInsideADescriptionListOffsetByBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7525,7 +7539,7 @@ var listInsideADescriptionListOffsetByBlankLines = &asciidoc.Document{
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7535,9 +7549,9 @@ var listInsideADescriptionListOffsetByBlankLines = &asciidoc.Document{
 	},
 }
 
-var shouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription = &asciidoc.Document{
+var listsTestShouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7559,7 +7573,7 @@ var shouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription = &asciid
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7581,14 +7595,14 @@ var shouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription = &asciid
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "A new paragraph",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7598,9 +7612,9 @@ var shouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription = &asciid
 	},
 }
 
-var shouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescription = &asciidoc.Document{
+var listsTestShouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7622,7 +7636,7 @@ var shouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescription = 
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7644,14 +7658,14 @@ var shouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescription = 
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "A new paragraph",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7661,9 +7675,9 @@ var shouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescription = 
 	},
 }
 
-var shouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &asciidoc.Document{
+var listsTestShouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7685,7 +7699,7 @@ var shouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &asciidoc.
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7707,14 +7721,14 @@ var shouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &asciidoc.
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "  literal",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7724,22 +7738,22 @@ var shouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &asciidoc.
 	},
 }
 
-var shouldNotMatchCommentLineThatLooksLikeDescriptionListTerm = &asciidoc.Document{
+var listsTestShouldNotMatchCommentLineThatLooksLikeDescriptionListTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "before",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.SingleLineComment{
 			Value: "key:: val",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7749,9 +7763,9 @@ var shouldNotMatchCommentLineThatLooksLikeDescriptionListTerm = &asciidoc.Docume
 	},
 }
 
-var shouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListTerm = &asciidoc.Document{
+var listsTestShouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -7765,7 +7779,7 @@ var shouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListTerm = &as
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.SingleLineComment{
@@ -7774,7 +7788,7 @@ var shouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListTerm = &as
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -7792,16 +7806,16 @@ var shouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListTerm = &as
 	},
 }
 
-var shouldNotMatchCommentLineThatLooksLikeSiblingDescriptionListTerm = &asciidoc.Document{
+var listsTestShouldNotMatchCommentLineThatLooksLikeSiblingDescriptionListTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "before",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7811,7 +7825,7 @@ var shouldNotMatchCommentLineThatLooksLikeSiblingDescriptionListTerm = &asciidoc
 		&asciidoc.SingleLineComment{
 			Value: "yin:: yang",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7821,9 +7835,9 @@ var shouldNotMatchCommentLineThatLooksLikeSiblingDescriptionListTerm = &asciidoc
 	},
 }
 
-var shouldNotHangOnDescriptionListItemInListThatBeginsWith = &asciidoc.Document{
+var listsTestShouldNotHangOnDescriptionListItemInListThatBeginsWith = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -7848,9 +7862,9 @@ var shouldNotHangOnDescriptionListItemInListThatBeginsWith = &asciidoc.Document{
 	},
 }
 
-var shouldNotHangOnSiblingDescriptionListItemThatBeginsWith = &asciidoc.Document{
+var listsTestShouldNotHangOnSiblingDescriptionListItemThatBeginsWith = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7875,9 +7889,9 @@ var shouldNotHangOnSiblingDescriptionListItemThatBeginsWith = &asciidoc.Document
 	},
 }
 
-var shouldSkipDlistTermThatBeginsWithUnlessItBeginsWith = &asciidoc.Document{
+var listsTestShouldSkipDlistTermThatBeginsWithUnlessItBeginsWith = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7895,7 +7909,7 @@ var shouldSkipDlistTermThatBeginsWithUnlessItBeginsWith = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7916,9 +7930,9 @@ var shouldSkipDlistTermThatBeginsWithUnlessItBeginsWith = &asciidoc.Document{
 	},
 }
 
-var moreThan4ConsecutiveColonsShouldBecomePartOfDescriptionListTerm = &asciidoc.Document{
+var listsTestMoreThan4ConsecutiveColonsShouldBecomePartOfDescriptionListTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7928,9 +7942,9 @@ var moreThan4ConsecutiveColonsShouldBecomePartOfDescriptionListTerm = &asciidoc.
 	},
 }
 
-var textMethodOfDdNodeShouldReturnNilIfDdNodeOnlyContainsBlocks = &asciidoc.Document{
+var listsTestTextMethodOfDdNodeShouldReturnNilIfDdNodeOnlyContainsBlocks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7953,9 +7967,9 @@ var textMethodOfDdNodeShouldReturnNilIfDdNodeOnlyContainsBlocks = &asciidoc.Docu
 	},
 }
 
-var shouldNotParseANestedDlistDelimiterWithoutATermAsADlist = &asciidoc.Document{
+var listsTestShouldNotParseANestedDlistDelimiterWithoutATermAsADlist = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -7976,9 +7990,9 @@ var shouldNotParseANestedDlistDelimiterWithoutATermAsADlist = &asciidoc.Document
 	},
 }
 
-var shouldNotParseANestedIndentedDlistDelimiterWithoutATermAsADlist = &asciidoc.Document{
+var listsTestShouldNotParseANestedIndentedDlistDelimiterWithoutATermAsADlist = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8003,9 +8017,9 @@ var shouldNotParseANestedIndentedDlistDelimiterWithoutATermAsADlist = &asciidoc.
 	},
 }
 
-var singleLineAdjacentNestedElements = &asciidoc.Document{
+var listsTestSingleLineAdjacentNestedElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8023,9 +8037,9 @@ var singleLineAdjacentNestedElements = &asciidoc.Document{
 	},
 }
 
-var singleLineAdjacentMaximumNestedElements = &asciidoc.Document{
+var listsTestSingleLineAdjacentMaximumNestedElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8051,23 +8065,23 @@ var singleLineAdjacentMaximumNestedElements = &asciidoc.Document{
 	},
 }
 
-var singleLineNestedElementsSeparatedByBlankLineAtTopLevel = &asciidoc.Document{
+var listsTestSingleLineNestedElementsSeparatedByBlankLineAtTopLevel = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "term1:: def1",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "label1::: detail1",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8077,9 +8091,9 @@ var singleLineNestedElementsSeparatedByBlankLineAtTopLevel = &asciidoc.Document{
 	},
 }
 
-var singleLineNestedElementsSeparatedByBlankLineAtNestedLevel = &asciidoc.Document{
+var listsTestSingleLineNestedElementsSeparatedByBlankLineAtNestedLevel = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8090,7 +8104,7 @@ var singleLineNestedElementsSeparatedByBlankLineAtNestedLevel = &asciidoc.Docume
 			Value: "label1::: detail1",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8104,9 +8118,9 @@ var singleLineNestedElementsSeparatedByBlankLineAtNestedLevel = &asciidoc.Docume
 	},
 }
 
-var singleLineAdjacentNestedElementsWithAlternateDelimiters = &asciidoc.Document{
+var listsTestSingleLineAdjacentNestedElementsWithAlternateDelimiters = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8124,9 +8138,9 @@ var singleLineAdjacentNestedElementsWithAlternateDelimiters = &asciidoc.Document
 	},
 }
 
-var multiLineAdjacentNestedElements = &asciidoc.Document{
+var listsTestMultiLineAdjacentNestedElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8186,9 +8200,9 @@ var multiLineAdjacentNestedElements = &asciidoc.Document{
 	},
 }
 
-var multiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = &asciidoc.Document{
+var listsTestMultiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8246,7 +8260,7 @@ var multiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = &asciidoc
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8256,9 +8270,9 @@ var multiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = &asciidoc
 	},
 }
 
-var multiLineElementWithIndentedNestedElement = &asciidoc.Document{
+var listsTestMultiLineElementWithIndentedNestedElement = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8318,9 +8332,9 @@ var multiLineElementWithIndentedNestedElement = &asciidoc.Document{
 	},
 }
 
-var mixedSingleAndMultiLineElementsWithIndentedNestedElements = &asciidoc.Document{
+var listsTestMixedSingleAndMultiLineElementsWithIndentedNestedElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8352,9 +8366,9 @@ var mixedSingleAndMultiLineElementsWithIndentedNestedElements = &asciidoc.Docume
 	},
 }
 
-var multiLineElementsWithFirstParagraphFoldedToTextWithAdjacentNestedElement = &asciidoc.Document{
+var listsTestMultiLineElementsWithFirstParagraphFoldedToTextWithAdjacentNestedElement = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8386,9 +8400,9 @@ var multiLineElementsWithFirstParagraphFoldedToTextWithAdjacentNestedElement = &
 	},
 }
 
-var nestedDlistAttachedByListContinuationShouldNotConsumeDetachedParagraph = &asciidoc.Document{
+var listsTestNestedDlistAttachedByListContinuationShouldNotConsumeDetachedParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8401,7 +8415,7 @@ var nestedDlistAttachedByListContinuationShouldNotConsumeDetachedParagraph = &as
 			Value: "nested term::: text",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8411,9 +8425,9 @@ var nestedDlistAttachedByListContinuationShouldNotConsumeDetachedParagraph = &as
 	},
 }
 
-var nestedDlistWithAttachedBlockOffsetByEmptyLine = &asciidoc.Document{
+var listsTestNestedDlistWithAttachedBlockOffsetByEmptyLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8450,9 +8464,9 @@ var nestedDlistWithAttachedBlockOffsetByEmptyLine = &asciidoc.Document{
 	},
 }
 
-var shouldConvertGlossaryListWithProperSemantics = &asciidoc.Document{
+var listsTestShouldConvertGlossaryListWithProperSemantics = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8485,9 +8499,9 @@ var shouldConvertGlossaryListWithProperSemantics = &asciidoc.Document{
 	},
 }
 
-var consecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook = &asciidoc.Document{
+var listsTestConsecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8522,7 +8536,7 @@ var consecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook = &asciido
 			Value: "description",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8532,9 +8546,9 @@ var consecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook = &asciido
 	},
 }
 
-var shouldConvertHorizontalListWithProperMarkup = &asciidoc.Document{
+var listsTestShouldConvertHorizontalListWithProperMarkup = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8566,7 +8580,7 @@ var shouldConvertHorizontalListWithProperMarkup = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8576,9 +8590,9 @@ var shouldConvertHorizontalListWithProperMarkup = &asciidoc.Document{
 	},
 }
 
-var shouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
+var listsTestShouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8625,9 +8639,9 @@ var shouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
 	},
 }
 
-var shouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Document{
+var listsTestShouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8674,9 +8688,9 @@ var shouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Document{
 	},
 }
 
-var shouldAddStrongClassToLabelIfStrongOptionIsSet = &asciidoc.Document{
+var listsTestShouldAddStrongClassToLabelIfStrongOptionIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8714,9 +8728,9 @@ var shouldAddStrongClassToLabelIfStrongOptionIsSet = &asciidoc.Document{
 	},
 }
 
-var consecutiveTermsInHorizontalListShouldShareSameCell = &asciidoc.Document{
+var listsTestConsecutiveTermsInHorizontalListShouldShareSameCell = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8751,7 +8765,7 @@ var consecutiveTermsInHorizontalListShouldShareSameCell = &asciidoc.Document{
 			Value: "description",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8761,9 +8775,9 @@ var consecutiveTermsInHorizontalListShouldShareSameCell = &asciidoc.Document{
 	},
 }
 
-var consecutiveTermsInHorizontalListShouldShareSameEntryInDocbook = &asciidoc.Document{
+var listsTestConsecutiveTermsInHorizontalListShouldShareSameEntryInDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8798,7 +8812,7 @@ var consecutiveTermsInHorizontalListShouldShareSameEntryInDocbook = &asciidoc.Do
 			Value: "description",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8808,9 +8822,9 @@ var consecutiveTermsInHorizontalListShouldShareSameEntryInDocbook = &asciidoc.Do
 	},
 }
 
-var shouldConvertHorizontalListInDocbookWithProperMarkup = &asciidoc.Document{
+var listsTestShouldConvertHorizontalListInDocbookWithProperMarkup = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8849,7 +8863,7 @@ var shouldConvertHorizontalListInDocbookWithProperMarkup = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -8859,9 +8873,9 @@ var shouldConvertHorizontalListInDocbookWithProperMarkup = &asciidoc.Document{
 	},
 }
 
-var shouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Document{
+var listsTestShouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8928,9 +8942,9 @@ var shouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Document{
 	},
 }
 
-var shouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Document{
+var listsTestShouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -8997,9 +9011,9 @@ var shouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Document{
 	},
 }
 
-var consecutiveQuestionsShouldShareSameQuestionElementInDocbook = &asciidoc.Document{
+var listsTestConsecutiveQuestionsShouldShareSameQuestionElementInDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -9034,7 +9048,7 @@ var consecutiveQuestionsShouldShareSameQuestionElementInDocbook = &asciidoc.Docu
 			Value: "response",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -9044,9 +9058,9 @@ var consecutiveQuestionsShouldShareSameQuestionElementInDocbook = &asciidoc.Docu
 	},
 }
 
-var shouldConvertBibliographyListWithProperSemantics = &asciidoc.Document{
+var listsTestShouldConvertBibliographyListWithProperSemantics = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -9124,9 +9138,9 @@ var shouldConvertBibliographyListWithProperSemantics = &asciidoc.Document{
 	},
 }
 
-var shouldConvertBibliographyListWithProperSemanticsToDocBook = &asciidoc.Document{
+var listsTestShouldConvertBibliographyListWithProperSemanticsToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -9204,9 +9218,9 @@ var shouldConvertBibliographyListWithProperSemanticsToDocBook = &asciidoc.Docume
 	},
 }
 
-var shouldWarnIfABibliographyIdIsAlreadyInUse = &asciidoc.Document{
+var listsTestShouldWarnIfABibliographyIdIsAlreadyInUse = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -9291,9 +9305,9 @@ var shouldWarnIfABibliographyIdIsAlreadyInUse = &asciidoc.Document{
 	},
 }
 
-var shouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliographySection = &asciidoc.Document{
+var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliographySection = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -9312,7 +9326,7 @@ var shouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliographySection 
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -9382,7 +9396,7 @@ var shouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliographySection 
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -9433,9 +9447,9 @@ var shouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliographySection 
 	},
 }
 
-var shouldNotRecognizeBibliographyAnchorThatBeginsWithADigit = &asciidoc.Document{
+var listsTestShouldNotRecognizeBibliographyAnchorThatBeginsWithADigit = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -9476,9 +9490,9 @@ var shouldNotRecognizeBibliographyAnchorThatBeginsWithADigit = &asciidoc.Documen
 	},
 }
 
-var shouldRecognizeBibliographyAnchorThatContainsADigitButDoesNotStartWithOne = &asciidoc.Document{
+var listsTestShouldRecognizeBibliographyAnchorThatContainsADigitButDoesNotStartWithOne = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -9526,29 +9540,31 @@ var shouldRecognizeBibliographyAnchorThatContainsADigitButDoesNotStartWithOne = 
 	},
 }
 
-var shouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Document{
+var listsTestShouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "Please read ",
 				},
 				&asciidoc.CrossReference{
-					Set: nil,
-					ID:  "Fowler_1997",
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "Fowler_1997",
+					Format:        0,
 				},
 				&asciidoc.String{
 					Value: ".",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -9567,7 +9583,7 @@ var shouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Document{
 						},
 					},
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.UnorderedListItem{
@@ -9618,23 +9634,25 @@ var shouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Document{
 	},
 }
 
-var shouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Document{
+var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "Begin with ",
 				},
 				&asciidoc.CrossReference{
-					Set: nil,
-					ID:  "TMMM",
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "TMMM",
+					Format:        0,
 				},
 				&asciidoc.String{
 					Value: ".",
@@ -9644,14 +9662,16 @@ var shouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Document{
 					Value: "Then move on to ",
 				},
 				&asciidoc.CrossReference{
-					Set: nil,
-					ID:  "Fowler_1997",
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "Fowler_1997",
+					Format:        0,
 				},
 				&asciidoc.String{
 					Value: ".",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -9670,7 +9690,7 @@ var shouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Document{
 						},
 					},
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.UnorderedListItem{
@@ -9754,9 +9774,9 @@ var shouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Document{
 	},
 }
 
-var shouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend = &asciidoc.Document{
+var listsTestShouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -9808,15 +9828,15 @@ var shouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend = &asciid
 	},
 }
 
-var foldsTextFromSubsequentLine = &asciidoc.Document{
+var listsTestFoldsTextFromSubsequentLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -9848,15 +9868,15 @@ var foldsTextFromSubsequentLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextFromFirstLineAfterBlankLines = &asciidoc.Document{
+var listsTestFoldsTextFromFirstLineAfterBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -9890,15 +9910,15 @@ var foldsTextFromFirstLineAfterBlankLines = &asciidoc.Document{
 	},
 }
 
-var foldsTextFromFirstLineAfterBlankLineAndImmediatelyPrecedingNextItem = &asciidoc.Document{
+var listsTestFoldsTextFromFirstLineAfterBlankLineAndImmediatelyPrecedingNextItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -9935,15 +9955,15 @@ var foldsTextFromFirstLineAfterBlankLineAndImmediatelyPrecedingNextItem = &ascii
 	},
 }
 
-var paragraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInlineText = &asciidoc.Document{
+var listsTestParagraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInlineText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -9965,7 +9985,7 @@ var paragraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInlineText = &a
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -9983,15 +10003,15 @@ var paragraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInlineText = &a
 	},
 }
 
-var foldsTextFromFirstLineAfterCommentLine = &asciidoc.Document{
+var listsTestFoldsTextFromFirstLineAfterCommentLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10027,15 +10047,15 @@ var foldsTextFromFirstLineAfterCommentLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextFromLineFollowingCommentLineOffsetByBlankLine = &asciidoc.Document{
+var listsTestFoldsTextFromLineFollowingCommentLineOffsetByBlankLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10072,15 +10092,15 @@ var foldsTextFromLineFollowingCommentLineOffsetByBlankLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextFromSubsequentIndentedLine = &asciidoc.Document{
+var listsTestFoldsTextFromSubsequentIndentedLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10112,15 +10132,15 @@ var foldsTextFromSubsequentIndentedLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextFromIndentedLineAfterBlankLine = &asciidoc.Document{
+var listsTestFoldsTextFromIndentedLineAfterBlankLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10153,15 +10173,15 @@ var foldsTextFromIndentedLineAfterBlankLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextThatLooksLikeRulerOffsetByBlankLine = &asciidoc.Document{
+var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10194,15 +10214,15 @@ var foldsTextThatLooksLikeRulerOffsetByBlankLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment = &asciidoc.Document{
+var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10238,15 +10258,15 @@ var foldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment = &asciidoc.Docum
 	},
 }
 
-var foldsTextThatLooksLikeRulerAndTheLineFollowingItOffsetByBlankLine = &asciidoc.Document{
+var listsTestFoldsTextThatLooksLikeRulerAndTheLineFollowingItOffsetByBlankLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10283,15 +10303,15 @@ var foldsTextThatLooksLikeRulerAndTheLineFollowingItOffsetByBlankLine = &asciido
 	},
 }
 
-var foldsTextThatLooksLikeTitleOffsetByBlankLine = &asciidoc.Document{
+var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10324,15 +10344,15 @@ var foldsTextThatLooksLikeTitleOffsetByBlankLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextThatLooksLikeTitleOffsetByBlankLineAndLineComment = &asciidoc.Document{
+var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLineAndLineComment = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10378,15 +10398,15 @@ var foldsTextThatLooksLikeTitleOffsetByBlankLineAndLineComment = &asciidoc.Docum
 	},
 }
 
-var foldsTextThatLooksLikeAdmonitionOffsetByBlankLine = &asciidoc.Document{
+var listsTestFoldsTextThatLooksLikeAdmonitionOffsetByBlankLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10425,15 +10445,15 @@ var foldsTextThatLooksLikeAdmonitionOffsetByBlankLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextThatLooksLikeSectionTitleOffsetByBlankLine = &asciidoc.Document{
+var listsTestFoldsTextThatLooksLikeSectionTitleOffsetByBlankLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10466,15 +10486,15 @@ var foldsTextThatLooksLikeSectionTitleOffsetByBlankLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLiteralsOffsetByBlankLineAsBlocks = &asciidoc.Document{
+var listsTestFoldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLiteralsOffsetByBlankLineAsBlocks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10496,17 +10516,17 @@ var foldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLiteralsOffsetB
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "  literal",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -10524,15 +10544,15 @@ var foldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLiteralsOffsetB
 	},
 }
 
-var foldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlankLineAsBlockIfTermHasNoInlineDescription = &asciidoc.Document{
+var listsTestFoldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlankLineAsBlockIfTermHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10553,14 +10573,14 @@ var foldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlankLineAsBl
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "  literal",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -10578,15 +10598,15 @@ var foldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlankLineAsBl
 	},
 }
 
-var appendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescription = &asciidoc.Document{
+var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10620,15 +10640,15 @@ var appendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescription 
 	},
 }
 
-var appendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler = &asciidoc.Document{
+var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10651,7 +10671,7 @@ var appendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionF
 					Value: "  literal",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.ThematicBreak{
@@ -10668,15 +10688,15 @@ var appendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionF
 	},
 }
 
-var appendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler = &asciidoc.Document{
+var listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10699,7 +10719,7 @@ var appendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowed
 					Value: "para",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.ThematicBreak{
@@ -10716,15 +10736,15 @@ var appendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowed
 	},
 }
 
-var appendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByBlock = &asciidoc.Document{
+var listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10747,7 +10767,7 @@ var appendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowed
 					Value: "para",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LiteralBlock{
@@ -10771,15 +10791,15 @@ var appendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowed
 	},
 }
 
-var appendsBlockAttachedByContinuationButNotSubsequentBlockNotAttachedByContinuation = &asciidoc.Document{
+var listsTestAppendsBlockAttachedByContinuationButNotSubsequentBlockNotAttachedByContinuation = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10829,15 +10849,15 @@ var appendsBlockAttachedByContinuationButNotSubsequentBlockNotAttachedByContinua
 	},
 }
 
-var appendsListIfItemHasNoInlineDescription = &asciidoc.Document{
+var listsTestAppendsListIfItemHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10892,15 +10912,15 @@ var appendsListIfItemHasNoInlineDescription = &asciidoc.Document{
 	},
 }
 
-var appendsListToFirstTermWhenFollowedImmediatelyBySecondTerm = &asciidoc.Document{
+var listsTestAppendsListToFirstTermWhenFollowedImmediatelyBySecondTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10959,15 +10979,15 @@ var appendsListToFirstTermWhenFollowedImmediatelyBySecondTerm = &asciidoc.Docume
 	},
 }
 
-var appendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciidoc.Document{
+var listsTestAppendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -10988,7 +11008,7 @@ var appendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciidoc.Documen
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -11032,7 +11052,7 @@ var appendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciidoc.Documen
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -11050,15 +11070,15 @@ var appendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciidoc.Documen
 	},
 }
 
-var appendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjacentToSecondTerm = &asciidoc.Document{
+var listsTestAppendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjacentToSecondTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11122,7 +11142,7 @@ var appendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjacentToSeco
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -11140,15 +11160,15 @@ var appendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjacentToSeco
 	},
 }
 
-var appendsListAndParagraphBlockWhenLineFollowingListAttachedByContinuation = &asciidoc.Document{
+var listsTestAppendsListAndParagraphBlockWhenLineFollowingListAttachedByContinuation = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11192,7 +11212,7 @@ var appendsListAndParagraphBlockWhenLineFollowingListAttachedByContinuation = &a
 					Marker:        "*",
 					Checklist:     0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -11212,15 +11232,15 @@ var appendsListAndParagraphBlockWhenLineFollowingListAttachedByContinuation = &a
 	},
 }
 
-var firstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLineAssociatedWithTerm = &asciidoc.Document{
+var listsTestFirstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLineAssociatedWithTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11247,7 +11267,7 @@ var firstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLineAssociat
 					Value: "nested list para",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -11267,15 +11287,15 @@ var firstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLineAssociat
 	},
 }
 
-var literalLineAttachedByContinuationSwallowsAdjacentLineThatLooksLikeTerm = &asciidoc.Document{
+var listsTestLiteralLineAttachedByContinuationSwallowsAdjacentLineThatLooksLikeTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11330,15 +11350,15 @@ var literalLineAttachedByContinuationSwallowsAdjacentLineThatLooksLikeTerm = &as
 	},
 }
 
-var lineAttachedByContinuationIsAppendedAsParagraphIfTermHasNoInlineDescription = &asciidoc.Document{
+var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11372,9 +11392,9 @@ var lineAttachedByContinuationIsAppendedAsParagraphIfTermHasNoInlineDescription 
 	},
 }
 
-var attachedParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = &asciidoc.Document{
+var listsTestAttachedParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -11394,9 +11414,9 @@ var attachedParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = &asciidoc
 	},
 }
 
-var attachedParagraphIsTerminatedByAdjacentSiblingDescriptionListTerm = &asciidoc.Document{
+var listsTestAttachedParagraphIsTerminatedByAdjacentSiblingDescriptionListTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -11416,9 +11436,9 @@ var attachedParagraphIsTerminatedByAdjacentSiblingDescriptionListTerm = &asciido
 	},
 }
 
-var attachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = &asciidoc.Document{
+var listsTestAttachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -11457,15 +11477,15 @@ var attachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = &as
 	},
 }
 
-var appendsLineAsParagraphIfAttachedByContinuationFollowingBlankLineAndLineCommentWhenTermHasNoInlineDescription = &asciidoc.Document{
+var listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingBlankLineAndLineCommentWhenTermHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11504,15 +11524,15 @@ var appendsLineAsParagraphIfAttachedByContinuationFollowingBlankLineAndLineComme
 	},
 }
 
-var lineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasNoInlineDescription = &asciidoc.Document{
+var listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11547,15 +11567,15 @@ var lineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasNoI
 	},
 }
 
-var delimitedBlockBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Document{
+var listsTestDelimitedBlockBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11595,15 +11615,15 @@ var delimitedBlockBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Docum
 	},
 }
 
-var blockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicated = &asciidoc.Document{
+var listsTestBlockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicated = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -11646,15 +11666,15 @@ var blockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicated = &asci
 	},
 }
 
-var blockAttributeLineAboveParagraphBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Document{
+var listsTestBlockAttributeLineAboveParagraphBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11690,15 +11710,15 @@ var blockAttributeLineAboveParagraphBreaksListEvenWhenTermHasNoInlineDescription
 	},
 }
 
-var blockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated = &asciidoc.Document{
+var listsTestBlockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -11741,15 +11761,15 @@ var blockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated = &asciidoc.
 	},
 }
 
-var blockAnchorLineBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Document{
+var listsTestBlockAnchorLineBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -11786,9 +11806,9 @@ var blockAnchorLineBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Docu
 	},
 }
 
-var blockAttributeLinesAboveNestedHorizontalListDoesNotBreakList = &asciidoc.Document{
+var listsTestBlockAttributeLinesAboveNestedHorizontalListDoesNotBreakList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -11814,7 +11834,7 @@ var blockAttributeLinesAboveNestedHorizontalListDoesNotBreakList = &asciidoc.Doc
 			Value: "  BSD::: OpenBSD",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -11839,9 +11859,9 @@ var blockAttributeLinesAboveNestedHorizontalListDoesNotBreakList = &asciidoc.Doc
 	},
 }
 
-var blockAttributeLinesAboveNestedListWithStyleDoesNotBreakList = &asciidoc.Document{
+var listsTestBlockAttributeLinesAboveNestedListWithStyleDoesNotBreakList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -11910,9 +11930,9 @@ var blockAttributeLinesAboveNestedListWithStyleDoesNotBreakList = &asciidoc.Docu
 	},
 }
 
-var multipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &asciidoc.Document{
+var listsTestMultipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -11958,7 +11978,7 @@ var multipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &asciidoc.Docum
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -11983,9 +12003,9 @@ var multipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &asciidoc.Docum
 	},
 }
 
-var multipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakList = &asciidoc.Document{
+var listsTestMultipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -12004,7 +12024,7 @@ var multipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakLi
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -12025,7 +12045,7 @@ var multipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakLi
 			Set:        asciidoc.Set{},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -12036,7 +12056,7 @@ var multipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakLi
 			Value: "  BSD::: OpenBSD",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -12061,15 +12081,15 @@ var multipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakLi
 	},
 }
 
-var foldsTextFromInlineDescriptionAndSubsequentLine = &asciidoc.Document{
+var listsTestFoldsTextFromInlineDescriptionAndSubsequentLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12091,15 +12111,15 @@ var foldsTextFromInlineDescriptionAndSubsequentLine = &asciidoc.Document{
 	},
 }
 
-var foldsTextFromInlineDescriptionAndSubsequentLines = &asciidoc.Document{
+var listsTestFoldsTextFromInlineDescriptionAndSubsequentLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12125,15 +12145,15 @@ var foldsTextFromInlineDescriptionAndSubsequentLines = &asciidoc.Document{
 	},
 }
 
-var foldsTextFromInlineDescriptionAndLineFollowingCommentLine = &asciidoc.Document{
+var listsTestFoldsTextFromInlineDescriptionAndLineFollowingCommentLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12158,15 +12178,15 @@ var foldsTextFromInlineDescriptionAndLineFollowingCommentLine = &asciidoc.Docume
 	},
 }
 
-var foldsTextFromInlineDescriptionAndSubsequentIndentedLine = &asciidoc.Document{
+var listsTestFoldsTextFromInlineDescriptionAndSubsequentIndentedLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12188,22 +12208,22 @@ var foldsTextFromInlineDescriptionAndSubsequentIndentedLine = &asciidoc.Document
 	},
 }
 
-var appendsLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription = &asciidoc.Document{
+var listsTestAppendsLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "term1:: def1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12221,22 +12241,22 @@ var appendsLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription = &asci
 	},
 }
 
-var appendsLiteralLineOffsetByBlankLineAsBlockAndAppendsLineAfterContinuationAsBlockIfItemHasInlineDescription = &asciidoc.Document{
+var listsTestAppendsLiteralLineOffsetByBlankLineAsBlockAndAppendsLineAfterContinuationAsBlockIfItemHasInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "term1:: def1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12260,15 +12280,15 @@ var appendsLiteralLineOffsetByBlankLineAsBlockAndAppendsLineAfterContinuationAsB
 	},
 }
 
-var appendsLineAfterContinuationAsBlockAndLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription = &asciidoc.Document{
+var listsTestAppendsLineAfterContinuationAsBlockAndLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12281,7 +12301,7 @@ var appendsLineAfterContinuationAsBlockAndLiteralLineOffsetByBlankLineAsBlockIfI
 					Value: "para",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12299,22 +12319,22 @@ var appendsLineAfterContinuationAsBlockAndLiteralLineOffsetByBlankLineAsBlockIfI
 	},
 }
 
-var appendsListIfItemHasInlineDescription = &asciidoc.Document{
+var listsTestAppendsListIfItemHasInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "term1:: def1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -12361,15 +12381,15 @@ var appendsListIfItemHasInlineDescription = &asciidoc.Document{
 	},
 }
 
-var appendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescriptionFollowedByRuler = &asciidoc.Document{
+var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescriptionFollowedByRuler = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12382,7 +12402,7 @@ var appendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescriptionFol
 					Value: "  literal",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.ThematicBreak{
@@ -12399,22 +12419,22 @@ var appendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescriptionFol
 	},
 }
 
-var lineOffsetByBlankLineBreaksListIfTermHasInlineDescription = &asciidoc.Document{
+var listsTestLineOffsetByBlankLineBreaksListIfTermHasInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "term1:: def1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12432,15 +12452,15 @@ var lineOffsetByBlankLineBreaksListIfTermHasInlineDescription = &asciidoc.Docume
 	},
 }
 
-var nestedTermWithDescriptionDoesNotConsumeFollowingHeading = &asciidoc.Document{
+var listsTestNestedTermWithDescriptionDoesNotConsumeFollowingHeading = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
@@ -12473,7 +12493,7 @@ var nestedTermWithDescriptionDoesNotConsumeFollowingHeading = &asciidoc.Document
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12495,15 +12515,15 @@ var nestedTermWithDescriptionDoesNotConsumeFollowingHeading = &asciidoc.Document
 	},
 }
 
-var lineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedParagraph = &asciidoc.Document{
+var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12516,7 +12536,7 @@ var lineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFol
 					Value: "para",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12534,15 +12554,15 @@ var lineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFol
 	},
 }
 
-var lineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedBlock = &asciidoc.Document{
+var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12555,7 +12575,7 @@ var lineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFol
 					Value: "para",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.SidebarBlock{
@@ -12582,15 +12602,15 @@ var lineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFol
 	},
 }
 
-var lineAttachedByContinuationOffsetByLineCommentIsAppendedAsParagraphIfTermHasInlineDescription = &asciidoc.Document{
+var listsTestLineAttachedByContinuationOffsetByLineCommentIsAppendedAsParagraphIfTermHasInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12617,22 +12637,22 @@ var lineAttachedByContinuationOffsetByLineCommentIsAppendedAsParagraphIfTermHasI
 	},
 }
 
-var lineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasInlineDescription = &asciidoc.Document{
+var listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasInlineDescription = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "term1:: def1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LineBreak{},
@@ -12652,28 +12672,28 @@ var lineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasInl
 	},
 }
 
-var lineCommentOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Document{
+var listsTestLineCommentOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "term1:: def1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.SingleLineComment{
 					Value: "",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12691,28 +12711,28 @@ var lineCommentOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Docum
 	},
 }
 
-var rulerOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Document{
+var listsTestRulerOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "term1:: def1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.ThematicBreak{
 					AttributeList: nil,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12730,22 +12750,22 @@ var rulerOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Document{
 	},
 }
 
-var blockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListBecauseItemHasText = &asciidoc.Document{
+var listsTestBlockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListBecauseItemHasText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "term1:: def1",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -12761,7 +12781,7 @@ var blockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListBecauseIte
 					Set:        asciidoc.Set{},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -12779,9 +12799,9 @@ var blockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListBecauseIte
 	},
 }
 
-var doesNotRecognizeCalloutListDenotedByMarkersThatOnlyHaveATrailingBracket = &asciidoc.Document{
+var listsTestDoesNotRecognizeCalloutListDenotedByMarkersThatOnlyHaveATrailingBracket = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -12801,9 +12821,9 @@ var doesNotRecognizeCalloutListDenotedByMarkersThatOnlyHaveATrailingBracket = &a
 	},
 }
 
-var shouldNotHangIfObsoleteCalloutListIsFoundInsideListItem = &asciidoc.Document{
+var listsTestShouldNotHangIfObsoleteCalloutListIsFoundInsideListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -12824,9 +12844,9 @@ var shouldNotHangIfObsoleteCalloutListIsFoundInsideListItem = &asciidoc.Document
 	},
 }
 
-var shouldNotHangIfObsoleteCalloutListIsFoundInsideDlistItem = &asciidoc.Document{
+var listsTestShouldNotHangIfObsoleteCalloutListIsFoundInsideDlistItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -12847,9 +12867,9 @@ var shouldNotHangIfObsoleteCalloutListIsFoundInsideDlistItem = &asciidoc.Documen
 	},
 }
 
-var shouldRecognizeAutoNumberdCalloutListInsideList = &asciidoc.Document{
+var listsTestShouldRecognizeAutoNumberdCalloutListInsideList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -12880,9 +12900,9 @@ var shouldRecognizeAutoNumberdCalloutListInsideList = &asciidoc.Document{
 	},
 }
 
-var listingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList = &asciidoc.Document{
+var listsTestListingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -12934,9 +12954,9 @@ var listingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList = &asciidoc.
 	},
 }
 
-var listingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList = &asciidoc.Document{
+var listsTestListingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -12973,14 +12993,14 @@ var listingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList = &asciid
 				"puts doc.convert # <3>",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "Paragraph.",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -12998,9 +13018,9 @@ var listingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList = &asciid
 	},
 }
 
-var listingBlockWithACalloutThatRefersToTwoDifferentLines = &asciidoc.Document{
+var listsTestListingBlockWithACalloutThatRefersToTwoDifferentLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13048,9 +13068,9 @@ var listingBlockWithACalloutThatRefersToTwoDifferentLines = &asciidoc.Document{
 	},
 }
 
-var sourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList = &asciidoc.Document{
+var listsTestSourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13102,9 +13122,9 @@ var sourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList = &asciido
 	},
 }
 
-var twoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
+var listsTestTwoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13146,7 +13166,7 @@ var twoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 				"require 'asciidoctor' # <1>",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13189,7 +13209,7 @@ var twoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 				"puts doc.convert # <3>",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -13207,9 +13227,9 @@ var twoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 	},
 }
 
-var twoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Document{
+var listsTestTwoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13255,7 +13275,7 @@ var twoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Document{
 			Value: "<1> Describe the first line",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13309,9 +13329,9 @@ var twoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Document{
 	},
 }
 
-var calloutListRetainsBlockContent = &asciidoc.Document{
+var listsTestCalloutListRetainsBlockContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13395,9 +13415,9 @@ var calloutListRetainsBlockContent = &asciidoc.Document{
 	},
 }
 
-var calloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Document{
+var listsTestCalloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13481,9 +13501,9 @@ var calloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Document{
 	},
 }
 
-var escapedCalloutShouldNotBeInterpretedAsACallout = &asciidoc.Document{
+var listsTestEscapedCalloutShouldNotBeInterpretedAsACallout = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13522,9 +13542,9 @@ var escapedCalloutShouldNotBeInterpretedAsACallout = &asciidoc.Document{
 	},
 }
 
-var shouldAutonumberCallouts = &asciidoc.Document{
+var listsTestShouldAutonumberCallouts = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13576,9 +13596,9 @@ var shouldAutonumberCallouts = &asciidoc.Document{
 	},
 }
 
-var shouldNotRecognizeCalloutsInMiddleOfLine = &asciidoc.Document{
+var listsTestShouldNotRecognizeCalloutsInMiddleOfLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13616,9 +13636,9 @@ var shouldNotRecognizeCalloutsInMiddleOfLine = &asciidoc.Document{
 	},
 }
 
-var shouldAllowMultipleCalloutsOnTheSameLine = &asciidoc.Document{
+var listsTestShouldAllowMultipleCalloutsOnTheSameLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13683,9 +13703,9 @@ var shouldAllowMultipleCalloutsOnTheSameLine = &asciidoc.Document{
 	},
 }
 
-var shouldAllowXmlCommentStyleCallouts = &asciidoc.Document{
+var listsTestShouldAllowXmlCommentStyleCallouts = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13734,9 +13754,9 @@ var shouldAllowXmlCommentStyleCallouts = &asciidoc.Document{
 	},
 }
 
-var shouldNotAllowCalloutsWithHalfAnXmlComment = &asciidoc.Document{
+var listsTestShouldNotAllowCalloutsWithHalfAnXmlComment = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13753,9 +13773,9 @@ var shouldNotAllowCalloutsWithHalfAnXmlComment = &asciidoc.Document{
 	},
 }
 
-var shouldNotRecognizeCalloutsInAnIndentedDescriptionListParagraph = &asciidoc.Document{
+var listsTestShouldNotRecognizeCalloutsInAnIndentedDescriptionListParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
@@ -13773,7 +13793,7 @@ var shouldNotRecognizeCalloutsInAnIndentedDescriptionListParagraph = &asciidoc.D
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -13783,9 +13803,9 @@ var shouldNotRecognizeCalloutsInAnIndentedDescriptionListParagraph = &asciidoc.D
 	},
 }
 
-var shouldNotRecognizeCalloutsInAnIndentedOutlineListParagraph = &asciidoc.Document{
+var listsTestShouldNotRecognizeCalloutsInAnIndentedOutlineListParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -13803,7 +13823,7 @@ var shouldNotRecognizeCalloutsInAnIndentedOutlineListParagraph = &asciidoc.Docum
 			Marker:        "*",
 			Checklist:     0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -13813,9 +13833,9 @@ var shouldNotRecognizeCalloutsInAnIndentedOutlineListParagraph = &asciidoc.Docum
 	},
 }
 
-var shouldWarnIfNumbersInCalloutListAreOutOfSequence = &asciidoc.Document{
+var listsTestShouldWarnIfNumbersInCalloutListAreOutOfSequence = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13845,9 +13865,9 @@ var shouldWarnIfNumbersInCalloutListAreOutOfSequence = &asciidoc.Document{
 	},
 }
 
-var shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asciidoc.Document{
+var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13886,7 +13906,7 @@ var shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asc
 			Value: "<1> Ruby",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13925,7 +13945,7 @@ var shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asc
 			Value: "<1> Groovy",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -13965,7 +13985,7 @@ var shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asc
 			Value: "<1> Clojure",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -14007,9 +14027,9 @@ var shouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asc
 	},
 }
 
-var shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciidoc.Document{
+var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -14048,7 +14068,7 @@ var shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciido
 			Value: "<1> Ruby",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -14087,7 +14107,7 @@ var shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciido
 			Value: "<1> Groovy",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -14127,7 +14147,7 @@ var shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciido
 			Value: "<1> Clojure",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -14169,9 +14189,9 @@ var shouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciido
 	},
 }
 
-var shouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified = &asciidoc.Document{
+var listsTestShouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -14227,9 +14247,9 @@ var shouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified = &asciidoc
 	},
 }
 
-var shouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWhenSourceHighlighterIsCoderay = &asciidoc.Document{
+var listsTestShouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWhenSourceHighlighterIsCoderay = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -14281,9 +14301,9 @@ var shouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWhenSourceH
 	},
 }
 
-var shouldNotEatWhitespaceBeforeCalloutNumberIfLineCommentAttributeIsEmpty = &asciidoc.Document{
+var listsTestShouldNotEatWhitespaceBeforeCalloutNumberIfLineCommentAttributeIsEmpty = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -14307,9 +14327,9 @@ var shouldNotEatWhitespaceBeforeCalloutNumberIfLineCommentAttributeIsEmpty = &as
 	},
 }
 
-var literalBlockWithCallouts = &asciidoc.Document{
+var listsTestLiteralBlockWithCallouts = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -14323,10 +14343,10 @@ var literalBlockWithCallouts = &asciidoc.Document{
 				"Violets are blue <2>",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -14340,9 +14360,9 @@ var literalBlockWithCallouts = &asciidoc.Document{
 	},
 }
 
-var calloutListWithIconsEnabled = &asciidoc.Document{
+var listsTestCalloutListWithIconsEnabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -14394,9 +14414,9 @@ var calloutListWithIconsEnabled = &asciidoc.Document{
 	},
 }
 
-var calloutListWithFontBasedIconsEnabled = &asciidoc.Document{
+var listsTestCalloutListWithFontBasedIconsEnabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -14439,9 +14459,9 @@ var calloutListWithFontBasedIconsEnabled = &asciidoc.Document{
 	},
 }
 
-var shouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax = &asciidoc.Document{
+var listsTestShouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14502,9 +14522,9 @@ var shouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax = &asciidoc.Document{
 	},
 }
 
-var shouldCreateChecklistWithFontIconsIfAtLeastOneItemHasCheckboxSyntaxAndIconsAttributeIsFont = &asciidoc.Document{
+var listsTestShouldCreateChecklistWithFontIconsIfAtLeastOneItemHasCheckboxSyntaxAndIconsAttributeIsFont = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14543,9 +14563,9 @@ var shouldCreateChecklistWithFontIconsIfAtLeastOneItemHasCheckboxSyntaxAndIconsA
 	},
 }
 
-var shouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIconsAttributeIsFont = &asciidoc.Document{
+var listsTestShouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIconsAttributeIsFont = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -14556,7 +14576,7 @@ var shouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIconsAttribu
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14599,9 +14619,9 @@ var shouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIconsAttribu
 	},
 }
 
-var contentShouldReturnItemsInList = &asciidoc.Document{
+var listsTestContentShouldReturnItemsInList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14640,9 +14660,9 @@ var contentShouldReturnItemsInList = &asciidoc.Document{
 	},
 }
 
-var listItemShouldBeTheParentOfBlockAttachedToAListItem = &asciidoc.Document{
+var listsTestListItemShouldBeTheParentOfBlockAttachedToAListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14671,9 +14691,9 @@ var listItemShouldBeTheParentOfBlockAttachedToAListItem = &asciidoc.Document{
 	},
 }
 
-var outlineShouldReturnTrueForUnorderedList = &asciidoc.Document{
+var listsTestOutlineShouldReturnTrueForUnorderedList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14712,9 +14732,9 @@ var outlineShouldReturnTrueForUnorderedList = &asciidoc.Document{
 	},
 }
 
-var outlineShouldReturnTrueForOrderedList = &asciidoc.Document{
+var listsTestOutlineShouldReturnTrueForOrderedList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -14750,9 +14770,9 @@ var outlineShouldReturnTrueForOrderedList = &asciidoc.Document{
 	},
 }
 
-var outlineShouldReturnFalseForDescriptionList = &asciidoc.Document{
+var listsTestOutlineShouldReturnFalseForDescriptionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14791,9 +14811,9 @@ var outlineShouldReturnFalseForDescriptionList = &asciidoc.Document{
 	},
 }
 
-var simpleShouldReturnTrueForListItemWithNestedOutlineList = &asciidoc.Document{
+var listsTestSimpleShouldReturnTrueForListItemWithNestedOutlineList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14854,9 +14874,9 @@ var simpleShouldReturnTrueForListItemWithNestedOutlineList = &asciidoc.Document{
 	},
 }
 
-var simpleShouldReturnFalseForListItemWithBlockContent = &asciidoc.Document{
+var listsTestSimpleShouldReturnFalseForListItemWithBlockContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14907,9 +14927,9 @@ var simpleShouldReturnFalseForListItemWithBlockContent = &asciidoc.Document{
 	},
 }
 
-var shouldAllowTextOfListItemToBeAssigned = &asciidoc.Document{
+var listsTestShouldAllowTextOfListItemToBeAssigned = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14948,9 +14968,9 @@ var shouldAllowTextOfListItemToBeAssigned = &asciidoc.Document{
 	},
 }
 
-var idAndRoleAssignedToUlistItemInModelAreTransmittedToOutput = &asciidoc.Document{
+var listsTestIdAndRoleAssignedToUlistItemInModelAreTransmittedToOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -14989,9 +15009,9 @@ var idAndRoleAssignedToUlistItemInModelAreTransmittedToOutput = &asciidoc.Docume
 	},
 }
 
-var idAndRoleAssignedToOlistItemInModelAreTransmittedToOutput = &asciidoc.Document{
+var listsTestIdAndRoleAssignedToOlistItemInModelAreTransmittedToOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
@@ -15027,9 +15047,9 @@ var idAndRoleAssignedToOlistItemInModelAreTransmittedToOutput = &asciidoc.Docume
 	},
 }
 
-var shouldAllowApiControlOverSubstitutionsAppliedToListItemText = &asciidoc.Document{
+var listsTestShouldAllowApiControlOverSubstitutionsAppliedToListItemText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -15099,9 +15119,9 @@ var shouldAllowApiControlOverSubstitutionsAppliedToListItemText = &asciidoc.Docu
 	},
 }
 
-var shouldSetLinenoToLineNumberInSourceWhereListStarts = &asciidoc.Document{
+var listsTestShouldSetLinenoToLineNumberInSourceWhereListStarts = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{

@@ -1,0 +1,8 @@
+.lines
+        ****
+        captured
+
+        also captured
+        ****
+
+        not captured

@@ -1,0 +1,3 @@
+
+:name-of-tag: snippetA
+include::fixtures/include-file.adoc[tag={name-of-tag}]

@@ -1,0 +1,4 @@
+
+++++
+include::fixtures/include-file.adoc[tags=no-such-tag-b;no-such-tag-a]
+++++

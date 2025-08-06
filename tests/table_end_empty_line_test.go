@@ -579,7 +579,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 			},

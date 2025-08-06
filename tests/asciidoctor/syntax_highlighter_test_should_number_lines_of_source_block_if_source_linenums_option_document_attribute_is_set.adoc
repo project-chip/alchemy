@@ -1,0 +1,8 @@
+
+:source-highlighter: coderay
+:source-linenums-option:
+
+[source,ruby]
+----
+puts 'Hello, World!'
+----

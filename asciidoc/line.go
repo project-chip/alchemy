@@ -44,12 +44,12 @@ func NewEmptyLine(text string) *EmptyLine {
 	return &EmptyLine{Text: text}
 }
 
-func (EmptyLine) Type() ElementType {
+func (*EmptyLine) Type() ElementType {
 	return ElementTypeBlock
 }
 
-func (a EmptyLine) Equals(o Element) bool {
-	oa, ok := o.(EmptyLine)
+func (a *EmptyLine) Equals(o Element) bool {
+	oa, ok := o.(*EmptyLine)
 	if !ok {
 		return false
 	}

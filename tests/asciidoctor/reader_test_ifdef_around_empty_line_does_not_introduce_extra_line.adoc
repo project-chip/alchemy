@@ -1,0 +1,6 @@
+
+before
+ifdef::no-such-attribute[]
+
+endif::[]
+after

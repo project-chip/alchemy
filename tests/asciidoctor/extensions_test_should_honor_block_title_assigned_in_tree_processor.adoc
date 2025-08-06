@@ -1,0 +1,8 @@
+
+= Document Title
+:!example-caption:
+
+.Old block title
+====
+example block content
+====

@@ -1,0 +1,8 @@
+
+---
+title: Document Title
+tags: [ first, second ]
+= Document Title
+Author Name
+
+preamble

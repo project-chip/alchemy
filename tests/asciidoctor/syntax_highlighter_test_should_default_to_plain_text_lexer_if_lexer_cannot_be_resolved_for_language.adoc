@@ -1,0 +1,9 @@
+
+:source-highlighter: rouge
+
+[source,lolcode]
+----
+CAN HAS STDIO?
+PLZ OPEN FILE "LOLCATS.TXT"?
+KTHXBYE
+----

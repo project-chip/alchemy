@@ -1,0 +1,11 @@
+
+[source,ruby]
+----
+filters = [
+HTML::Pipeline::AsciiDocFilter,
+HTML::Pipeline::SanitizationFilter,
+HTML::Pipeline::SyntaxHighlightFilter
+]
+
+puts HTML::Pipeline.new(filters, {}).call(input)[:output]
+----

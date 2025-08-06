@@ -1,0 +1,4 @@
+
+ifeval::[{rings} == 1]
+One ring to rule them all!
+endif::[]

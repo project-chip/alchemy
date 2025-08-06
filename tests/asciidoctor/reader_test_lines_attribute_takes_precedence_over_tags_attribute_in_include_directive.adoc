@@ -1,0 +1,5 @@
+
+[source, xml]
+----
+include::fixtures/basic-docinfo.xml[lines=2..3, indent=0]
+----

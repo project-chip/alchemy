@@ -1,0 +1,531 @@
+package tests
+
+import (
+	"testing"
+
+	"github.com/project-chip/alchemy/asciidoc"
+)
+
+func TestManpage(t *testing.T) {
+	manpageTests.run(t)
+}
+
+var manpageTests = parseTests{
+
+	{"should set proper manpage-related attributes", "asciidoctor/manpage_test_should_set_proper_manpage_related_attributes.adoc", manpageTestShouldSetProperManpageRelatedAttributes, nil},
+
+	{"should substitute attributes in manname and manpurpose in NAME section", "asciidoctor/manpage_test_should_substitute_attributes_in_manname_and_manpurpose_in_name_section.adoc", manpageTestShouldSubstituteAttributesInMannameAndManpurposeInNameSection, nil},
+
+	{"should not parse NAME section if manname and manpurpose attributes are set", "asciidoctor/manpage_test_should_not_parse_name_section_if_manname_and_manpurpose_attributes_are_set.adoc", manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet, nil},
+
+	{"should normalize whitespace and skip line comments before and inside NAME section", "asciidoctor/manpage_test_should_normalize_whitespace_and_skip_line_comments_before_and_inside_name_section.adoc", manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSection, nil},
+
+	{"should parse malformed document with warnings", "asciidoctor/manpage_test_should_parse_malformed_document_with_warnings.adoc", manpageTestShouldParseMalformedDocumentWithWarnings, nil},
+
+	{"should warn if first section is not name section", "asciidoctor/manpage_test_should_warn_if_first_section_is_not_name_section.adoc", manpageTestShouldWarnIfFirstSectionIsNotNameSection, nil},
+
+	{"should preserve hard line breaks in verse block", "asciidoctor/manpage_test_should_preserve_hard_line_breaks_in_verse_block.adoc", manpageTestShouldPreserveHardLineBreaksInVerseBlock, nil},
+}
+
+var manpageTestShouldSetProperManpageRelatedAttributes = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Section{
+			AttributeList: nil,
+			Set: asciidoc.Set{
+				&asciidoc.String{
+					Value: "Author Name",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.AttributeEntry{
+					Name: "doctype",
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "manpage",
+						},
+					},
+				},
+				&asciidoc.String{
+					Value: ":man manual: Foo Bar Manual",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.String{
+					Value: ":man source: Foo Bar 1.0",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.Section{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+						&asciidoc.String{
+							Value: "foo-bar - puts the foo in your bar",
+						},
+						&asciidoc.NewLine{},
+					},
+					Title: asciidoc.Set{
+						&asciidoc.String{
+							Value: "NAME",
+						},
+					},
+					Level: 1,
+				},
+			},
+			Title: asciidoc.Set{
+				&asciidoc.String{
+					Value: "foo\\--<bar> (1)",
+				},
+			},
+			Level: 0,
+		},
+	},
+}
+
+var manpageTestShouldSubstituteAttributesInMannameAndManpurposeInNameSection = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Section{
+			AttributeList: nil,
+			Set: asciidoc.Set{
+				&asciidoc.String{
+					Value: "Author Name",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.AttributeEntry{
+					Name: "doctype",
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "manpage",
+						},
+					},
+				},
+				&asciidoc.String{
+					Value: ":man manual: Foo Bar Manual",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.String{
+					Value: ":man source: Foo Bar 1.0",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.Section{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+						&asciidoc.UserAttributeReference{
+							Value: "cmdname",
+						},
+						&asciidoc.String{
+							Value: " - ",
+						},
+						&asciidoc.UserAttributeReference{
+							Value: "cmdname",
+						},
+						&asciidoc.String{
+							Value: " puts the foo in your bar",
+						},
+						&asciidoc.NewLine{},
+					},
+					Title: asciidoc.Set{
+						&asciidoc.String{
+							Value: "NAME",
+						},
+					},
+					Level: 1,
+				},
+			},
+			Title: asciidoc.Set{
+				&asciidoc.String{
+					Value: "{cmdname} (1)",
+				},
+			},
+			Level: 0,
+		},
+	},
+}
+
+var manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Section{
+			AttributeList: nil,
+			Set: asciidoc.Set{
+				&asciidoc.String{
+					Value: "Author Name",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.AttributeEntry{
+					Name: "doctype",
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "manpage",
+						},
+					},
+				},
+				&asciidoc.String{
+					Value: ":man manual: Foo Bar Manual",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.String{
+					Value: ":man source: Foo Bar 1.0",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.Section{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+						&asciidoc.Bold{
+							AttributeList: nil,
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "foobar",
+								},
+							},
+						},
+						&asciidoc.String{
+							Value: " [",
+						},
+						&asciidoc.Italic{
+							AttributeList: nil,
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "OPTIONS",
+								},
+							},
+						},
+						&asciidoc.String{
+							Value: "]...",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+					},
+					Title: asciidoc.Set{
+						&asciidoc.String{
+							Value: "SYNOPSIS",
+						},
+					},
+					Level: 1,
+				},
+				&asciidoc.Section{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+						&asciidoc.String{
+							Value: "When you need to put some foo on the bar.",
+						},
+						&asciidoc.NewLine{},
+					},
+					Title: asciidoc.Set{
+						&asciidoc.String{
+							Value: "DESCRIPTION",
+						},
+					},
+					Level: 1,
+				},
+			},
+			Title: asciidoc.Set{
+				&asciidoc.String{
+					Value: "foobar (1)",
+				},
+			},
+			Level: 0,
+		},
+	},
+}
+
+var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSection = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Section{
+			AttributeList: nil,
+			Set: asciidoc.Set{
+				&asciidoc.String{
+					Value: "Author Name",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.AttributeEntry{
+					Name: "doctype",
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "manpage",
+						},
+					},
+				},
+				&asciidoc.String{
+					Value: ":man manual: Foo Bar Manual",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.String{
+					Value: ":man source: Foo Bar 1.0",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.SingleLineComment{
+					Value: " this is the name section",
+				},
+				&asciidoc.Section{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+						&asciidoc.SingleLineComment{
+							Value: " it follows the form `name - description`",
+						},
+						&asciidoc.String{
+							Value: "foobar - puts some foo",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.String{
+							Value: " on the bar",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.SingleLineComment{
+							Value: " a little bit of this, a little bit of that",
+						},
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+					},
+					Title: asciidoc.Set{
+						&asciidoc.String{
+							Value: "NAME",
+						},
+					},
+					Level: 1,
+				},
+				&asciidoc.Section{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+						&asciidoc.Bold{
+							AttributeList: nil,
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "foobar",
+								},
+							},
+						},
+						&asciidoc.String{
+							Value: " [",
+						},
+						&asciidoc.Italic{
+							AttributeList: nil,
+							Set: asciidoc.Set{
+								&asciidoc.String{
+									Value: "OPTIONS",
+								},
+							},
+						},
+						&asciidoc.String{
+							Value: "]...",
+						},
+						&asciidoc.NewLine{},
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+					},
+					Title: asciidoc.Set{
+						&asciidoc.String{
+							Value: "SYNOPSIS",
+						},
+					},
+					Level: 1,
+				},
+				&asciidoc.Section{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+						&asciidoc.String{
+							Value: "When you need to put some foo on the bar.",
+						},
+						&asciidoc.NewLine{},
+					},
+					Title: asciidoc.Set{
+						&asciidoc.String{
+							Value: "DESCRIPTION",
+						},
+					},
+					Level: 1,
+				},
+			},
+			Title: asciidoc.Set{
+				&asciidoc.String{
+					Value: "foobar (1)",
+				},
+			},
+			Level: 0,
+		},
+	},
+}
+
+var manpageTestShouldParseMalformedDocumentWithWarnings = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Section{
+			AttributeList: nil,
+			Set: asciidoc.Set{
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.Section{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+						&asciidoc.String{
+							Value: "command - does stuff",
+						},
+						&asciidoc.NewLine{},
+					},
+					Title: asciidoc.Set{
+						&asciidoc.String{
+							Value: "Name",
+						},
+					},
+					Level: 1,
+				},
+			},
+			Title: asciidoc.Set{
+				&asciidoc.String{
+					Value: "command",
+				},
+			},
+			Level: 0,
+		},
+	},
+}
+
+var manpageTestShouldWarnIfFirstSectionIsNotNameSection = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.Section{
+			AttributeList: nil,
+			Set: asciidoc.Set{
+				&asciidoc.EmptyLine{
+					Text: "",
+				},
+				&asciidoc.Section{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.EmptyLine{
+							Text: "",
+						},
+						&asciidoc.String{
+							Value: "Does stuff.",
+						},
+						&asciidoc.NewLine{},
+					},
+					Title: asciidoc.Set{
+						&asciidoc.String{
+							Value: "Synopsis",
+						},
+					},
+					Level: 1,
+				},
+			},
+			Title: asciidoc.Set{
+				&asciidoc.String{
+					Value: "command(1)",
+				},
+			},
+			Level: 0,
+		},
+	},
+}
+
+var manpageTestShouldPreserveHardLineBreaksInVerseBlock = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.Paragraph{
+			AttributeList: asciidoc.AttributeList{
+				&asciidoc.TitleAttribute{
+					Val: asciidoc.Set{
+						&asciidoc.String{
+							Value: "lines",
+						},
+					},
+				},
+			},
+			Set: asciidoc.Set{
+				&asciidoc.String{
+					Value: "      [verse]",
+				},
+				&asciidoc.NewLine{},
+				&asciidoc.String{
+					Value: "      ",
+				},
+				&asciidoc.Italic{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "command",
+						},
+					},
+				},
+				&asciidoc.String{
+					Value: " [",
+				},
+				&asciidoc.Italic{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "OPTION",
+						},
+					},
+				},
+				&asciidoc.String{
+					Value: "]... ",
+				},
+				&asciidoc.Italic{
+					AttributeList: nil,
+					Set: asciidoc.Set{
+						&asciidoc.String{
+							Value: "FILE",
+						},
+					},
+				},
+				&asciidoc.String{
+					Value: "...",
+				},
+				&asciidoc.NewLine{},
+			},
+			Admonition: 0,
+		},
+	},
+}

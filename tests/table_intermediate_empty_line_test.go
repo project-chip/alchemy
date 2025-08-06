@@ -101,7 +101,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
@@ -198,7 +198,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n    ",
 				},
 				&asciidoc.TableRow{
@@ -256,7 +256,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{

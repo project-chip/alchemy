@@ -1,0 +1,4 @@
+
+include::fixtures/{no-such-file}[opts=optional]
+
+trailing content

@@ -1,0 +1,4 @@
+
+ifeval::['{asciidoctor-version}' == '{asciidoctor-version}']
+Of course it's the same!
+endif::[]

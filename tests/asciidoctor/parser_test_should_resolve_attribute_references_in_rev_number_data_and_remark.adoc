@@ -1,0 +1,4 @@
+
+= Document Title
+Author Name
+{project-version}, {release-date}: {release-summary}

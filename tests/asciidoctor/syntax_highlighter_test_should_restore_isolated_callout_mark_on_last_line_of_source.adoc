@@ -1,0 +1,11 @@
+
+:source-highlighter: rouge
+
+[source%linenums,ruby]
+----
+require 'app'
+
+launch_app
+# <1>
+----
+<1> Profit.

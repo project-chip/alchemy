@@ -1,0 +1,8 @@
+.split Asciidoctor::LF
+        --
+        This is one paragraph inside the block.
+
+        This is another paragraph inside the block.
+        --
+
+        This is a paragraph outside the block.

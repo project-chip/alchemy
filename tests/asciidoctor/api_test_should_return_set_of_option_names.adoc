@@ -1,0 +1,5 @@
+
+[%compact%reversed]
+. three
+. two
+. one

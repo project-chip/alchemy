@@ -1,0 +1,3 @@
+
+Joe Cool
+:page-layout: post

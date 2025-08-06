@@ -1,0 +1,6 @@
+
+before
+
+include::lorem-ipsum.txt[]
+
+after

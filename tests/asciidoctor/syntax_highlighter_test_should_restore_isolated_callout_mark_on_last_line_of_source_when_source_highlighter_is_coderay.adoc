@@ -1,0 +1,11 @@
+
+:source-highlighter: coderay
+
+[source,ruby,linenums]
+----
+require 'app'
+
+launch_app
+# <1>
+----
+<1> Profit.

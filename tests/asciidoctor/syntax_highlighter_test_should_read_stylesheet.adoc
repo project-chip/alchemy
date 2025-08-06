@@ -1,0 +1,7 @@
+
+:source-highlighter: highlight.js
+
+[source,ruby]
+----
+puts 'Hello, World!'
+----

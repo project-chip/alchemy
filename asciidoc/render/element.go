@@ -19,7 +19,7 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 		switch el := e.(type) {
 		case *asciidoc.AlchemyEscape:
 			err = renderEscape(cxt, el)
-		case asciidoc.EmptyLine:
+		case *asciidoc.EmptyLine:
 			cxt.EnsureNewLine()
 			cxt.WriteRune('\n')
 		case *asciidoc.NewLine:
@@ -36,9 +36,6 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			}
 		case *asciidoc.Table:
 			err = renderTable(cxt, el)
-		case *asciidoc.EmptyLine:
-			cxt.EnsureNewLine()
-			cxt.WriteRune('\n')
 		case *asciidoc.CrossReference:
 			err = renderInternalCrossReference(cxt, el)
 		case *asciidoc.DocumentCrossReference:

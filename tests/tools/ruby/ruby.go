@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"go/format"
 	"log/slog"
 	"os"
 	"path"
@@ -15,6 +17,7 @@ import (
 	"github.com/lithammer/dedent"
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/parse"
+	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/matter/spec"
 	"github.com/sanity-io/litter"
 )
@@ -43,92 +46,121 @@ func init() {
 }
 
 func main() {
-	text, err := os.ReadFile(os.Args[1])
+	testPaths, err := paths.Expand(os.Args[1:])
 	if err != nil {
 		panic(err)
 	}
-
-	testName := filepath.Base(os.Args[1])
-	testName = strings.TrimSuffix(testName, filepath.Ext(testName))
-
-	var tests []*adTest
-	matches := testPattern.FindAllStringSubmatch(string(text), -1)
-	testNames := make(map[string]struct{})
-	for _, match := range matches {
-		tn := match[1]
-		_, exists := testNames[tn]
-		if exists {
-			continue
-		}
-		tests = append(tests, &adTest{Name: tn, QuotedName: strconv.Quote(tn), Asciidoc: match[2]})
-		testNames[tn] = struct{}{}
-	}
-
-	var workingTests []*adTest
-
-	for _, t := range tests {
-		a := dedent.Dedent(t.Asciidoc)
-		doc, err := parse.Reader("", strings.NewReader(a))
-		if err != nil {
-			slog.Error("failed parsing", "test", t.Name, "err", err)
-			continue
-		}
-		name := strings.ReplaceAll(t.Name, ",", "")
-		name = strings.ReplaceAll(name, "/", " ")
-		name = strings.ReplaceAll(name, "\"", " ")
-
-		docPath, err := asciidoc.NewPath("test.adoc", ".")
-		if err != nil {
-			slog.Error("failed creating path", "test", t.Name, "err", err)
-			continue
-		}
-		fmt.Printf("parsing test: %s\n", t.Name)
-
-		parsedDoc, err := parse.Inline(spec.NewPreparseContext(docPath, "."), "test.adoc", strings.NewReader(a))
-		if err != nil {
-			slog.Error("failed parsing document", "test", t.Name, "err", err)
-			continue
-		}
-
-		t.TestName = strcase.ToLowerCamel(name)
-		t.DocObject = cleanObjectDump(litter.Sdump(doc))
-		t.ParsedDocObject = cleanObjectDump(litter.Sdump(parsedDoc))
-		t.AsciidocPath = path.Join("asciidoctor/", testName+"_"+strcase.ToSnakeWithIgnore(name, ",")+".adoc")
-		renderedDocPath := path.Join("tests/asciidoctor/", testName+"_"+strcase.ToSnakeWithIgnore(name, ",")+".adoc")
-		err = os.WriteFile(renderedDocPath, []byte(a), os.ModeAppend|0644)
+	for _, testPath := range testPaths {
+		text, err := os.ReadFile(testPath)
 		if err != nil {
 			panic(err)
 		}
-		workingTests = append(workingTests, t)
-	}
 
-	testName = strings.TrimSuffix(testName, "_test")
+		testName := filepath.Base(testPath)
+		testName = strings.TrimSuffix(testName, filepath.Ext(testName))
 
-	t := adTestGroup{
-		Name:      strcase.ToCamel(testName),
-		ArrayName: strcase.ToLowerCamel(testName),
-		Tests:     workingTests,
-	}
+		var tests []*adTest
+		matches := testPattern.FindAllStringSubmatch(string(text), -1)
+		testNames := make(map[string]struct{})
+		for _, match := range matches {
+			tn := match[1]
+			_, exists := testNames[tn]
+			if exists {
+				continue
+			}
+			tests = append(tests, &adTest{Name: tn, QuotedName: strconv.Quote(tn), Asciidoc: match[2]})
+			testNames[tn] = struct{}{}
+		}
 
-	tt := template.New("Asciidoctor Test Template")
-	tt, err = tt.Parse(testTemplate)
-	if err != nil {
-		panic(err)
-	}
+		var workingTests []*adTest
 
-	tf, err := os.Create(path.Join("tests/", testName+"_test.go"))
+		for _, t := range tests {
+			a := dedent.Dedent(t.Asciidoc)
+			doc, err := parse.Reader("", strings.NewReader(a))
+			if err != nil {
+				slog.Error("failed parsing", "test", t.Name, "err", err)
+				continue
+			}
+			name := strings.ReplaceAll(t.Name, ",", "")
+			name = strings.ReplaceAll(name, "/", " ")
+			name = strings.ReplaceAll(name, "\"", " ")
 
-	if err != nil {
-		panic(err)
+			docPath, err := asciidoc.NewPath("test.adoc", ".")
+			if err != nil {
+				slog.Error("failed creating path", "test", t.Name, "err", err)
+				continue
+			}
+			fmt.Printf("parsing test: %s\n", t.Name)
+
+			parsedDoc, err := parse.Inline(spec.NewPreparseContext(docPath, "."), "test.adoc", strings.NewReader(a))
+			if err != nil {
+				slog.Error("failed parsing document", "test", t.Name, "err", err)
+				continue
+			}
+
+			t.TestName = strcase.ToLowerCamel(testName + " " + name)
+			t.DocObject = cleanObjectDump(litter.Sdump(doc))
+			t.ParsedDocObject = cleanObjectDump(litter.Sdump(parsedDoc))
+			fileName := testName + "_" + cleanFileName(strcase.ToSnakeWithIgnore(name, ",")) + ".adoc"
+			t.AsciidocPath = path.Join("asciidoctor/", fileName)
+			renderedDocPath := path.Join("tests/asciidoctor/", fileName)
+			err = os.WriteFile(renderedDocPath, []byte(a), os.ModeAppend|0644)
+			if err != nil {
+				panic(err)
+			}
+			workingTests = append(workingTests, t)
+		}
+
+		if len(workingTests) == 0 {
+			continue
+		}
+
+		testName = strings.TrimSuffix(testName, "_test")
+
+		t := adTestGroup{
+			Name:      strcase.ToCamel(testName),
+			ArrayName: strcase.ToLowerCamel(testName),
+			Tests:     workingTests,
+		}
+
+		tt := template.New("Asciidoctor Test Template")
+		tt, err = tt.Parse(testTemplate)
+		if err != nil {
+			panic(err)
+		}
+
+		out := new(bytes.Buffer)
+
+		err = tt.Execute(out, t)
+		if err != nil {
+			panic(err)
+		}
+
+		tf, err := os.Create(path.Join("tests/", testName+"_test.go"))
+
+		if err != nil {
+			panic(err)
+		}
+
+		var formatted []byte
+		formatted, err = format.Source(out.Bytes())
+		if err != nil {
+			panic(err)
+		}
+
+		tf.Write(formatted)
+		tf.Close()
+
 	}
-	err = tt.Execute(tf, t)
-	if err != nil {
-		panic(err)
-	}
-	tf.Close()
 }
 
 var pointerCommentPattern = regexp.MustCompile(`(?m)\/\/ p[0-9]+$`)
+
+var invalidFilenameChars = strings.NewReplacer("\\", "", "/", "", ":", "", "*", "", "?", "", "\"", "", "<", "", ">", "", "|", "")
+
+func cleanFileName(path string) string {
+	return invalidFilenameChars.Replace(path)
+}
 
 func cleanObjectDump(s string) string {
 	return pointerCommentPattern.ReplaceAllString(strings.ReplaceAll(s, "[github.com/project-chip/alchemy/", "["), "")

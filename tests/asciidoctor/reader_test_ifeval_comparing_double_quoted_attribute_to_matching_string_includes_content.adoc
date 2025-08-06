@@ -1,0 +1,4 @@
+
+ifeval::["{gem}" == "asciidoctor"]
+Asciidoctor it is!
+endif::[]

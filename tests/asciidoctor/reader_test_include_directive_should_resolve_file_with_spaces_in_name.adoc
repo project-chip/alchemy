@@ -1,0 +1,5 @@
+
+:target: not-a-file.adoc + \
+http://example.org/team.adoc
+
+include::{target}[]

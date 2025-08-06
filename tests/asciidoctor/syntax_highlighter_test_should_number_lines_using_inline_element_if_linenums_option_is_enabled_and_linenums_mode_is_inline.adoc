@@ -1,0 +1,8 @@
+
+:rouge-linenums-mode: inline
+
+[source%linenums,ruby]
+----
+puts 'Hello, world!'
+puts 'Goodbye, world!'
+----

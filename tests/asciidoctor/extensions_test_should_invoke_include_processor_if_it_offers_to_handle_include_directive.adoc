@@ -1,0 +1,9 @@
+
+include::skip-me.adoc[]
+line after skip
+
+include::include-file.adoc[]
+
+include::fixtures/grandchild-include.adoc[]
+
+last line

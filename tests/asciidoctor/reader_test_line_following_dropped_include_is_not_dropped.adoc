@@ -1,0 +1,3 @@
+
+include::{foodir}/include-file.adoc[]
+yo

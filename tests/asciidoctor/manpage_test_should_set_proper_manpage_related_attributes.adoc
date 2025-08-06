@@ -1,0 +1,10 @@
+
+= foo\--<bar> (1)
+Author Name
+:doctype: manpage
+:man manual: Foo Bar Manual
+:man source: Foo Bar 1.0
+
+== NAME
+
+foo-bar - puts the foo in your bar

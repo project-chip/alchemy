@@ -1,0 +1,4 @@
+
+ifdef::holygrail+swallow[]
+Our quest is complete!
+endif::holygrail+swallow[]

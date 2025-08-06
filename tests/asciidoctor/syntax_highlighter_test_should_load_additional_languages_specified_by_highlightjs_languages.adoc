@@ -1,0 +1,8 @@
+
+:source-highlighter: highlight.js
+:highlightjs-languages: yaml, scilab
+
+[source,yaml]
+----
+key: value
+----

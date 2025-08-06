@@ -4,7 +4,7 @@ import "github.com/project-chip/alchemy/asciidoc"
 
 var tableSpecialCharacter = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{

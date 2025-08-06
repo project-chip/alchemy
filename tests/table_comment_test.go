@@ -467,7 +467,7 @@ var tableComment = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.SingleLineComment{
@@ -643,10 +643,10 @@ var tableComment = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 			},

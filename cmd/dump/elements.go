@@ -26,7 +26,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			continue
 		}
 		switch el := e.(type) {
-		case asciidoc.EmptyLine:
+		case *asciidoc.EmptyLine:
 			fmt.Print("{empty}\n")
 		case *asciidoc.NewLine:
 			fmt.Printf("{newline%s}\n", dumpPosition(el))
