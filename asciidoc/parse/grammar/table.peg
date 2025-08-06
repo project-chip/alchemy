@@ -133,7 +133,7 @@ TableCellInlineContent = content:(TableCellInlineContentElement)* EndOfFile {
     return trim(mergeStrings(flat(content.([]any)))), nil 
 }
 
-TableCellInlineContentElement =(
+TableCellInlineContentElement = (
     FormattedText /
     Icon / 
     InlineImage / 
@@ -145,7 +145,7 @@ TableCellInlineContentElement =(
     NakedInlineTableCellText /
     CharacterClassInline /
     NewLine 
-    ) 
+) 
 
 TableEnd = NewLine !"\\" "|===" "="* AnySpaces &EndOfLine  
 
@@ -259,7 +259,7 @@ BlockTableElement = !InitialTableCellDelimiter AnySpaces  element:(BlockElement)
 }
 
 
-NakedInlineTableCellText = ([A-Za-z ] !TableCellDelimiter !TableEnd)+ { 
+NakedInlineTableCellText = (!URLScheme !LinkMacro !InlineImageDelimiter !CrossReferenceMacroStart [A-Za-z ] !TableCellDelimiter !TableEnd)+ { 
     debugPosition(c, "TABLE: matched naked inline table cell text: %s\n", string(c.text))
     return asciidoc.NewString(string(c.text)), nil
 }
