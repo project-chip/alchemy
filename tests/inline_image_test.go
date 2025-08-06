@@ -4,7 +4,7 @@ import "github.com/project-chip/alchemy/asciidoc"
 
 var inlineImage = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -62,7 +62,7 @@ var inlineImage = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 	},

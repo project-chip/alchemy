@@ -139,7 +139,7 @@ func renderPreParsedDoc(els asciidoc.Set) (string, error) {
 			sb.WriteString(el.Value)
 		case *asciidoc.NewLine:
 			sb.WriteRune('\n')
-		case asciidoc.EmptyLine:
+		case *asciidoc.EmptyLine:
 			sb.WriteRune('\n')
 		case *asciidoc.CharacterReplacementReference:
 			sb.WriteString(el.ReplacementValue())

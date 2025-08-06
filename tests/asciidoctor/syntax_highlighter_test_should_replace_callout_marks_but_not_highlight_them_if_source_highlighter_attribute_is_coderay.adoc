@@ -1,0 +1,17 @@
+
+:source-highlighter: coderay
+
+[source, ruby]
+----
+require 'coderay' # <1>
+
+html = CodeRay.scan("puts 'Hello, world!'", :ruby).div line_numbers: :table # <2>
+puts html # <3> <4>
+exit 0 # <5><6>
+----
+<1> Load library
+<2> Highlight source
+<3> Print to stdout
+<4> Redirect to a file to capture output
+<5> Exit program
+<6> Reports success

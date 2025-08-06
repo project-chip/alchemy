@@ -1,0 +1,7 @@
+
+* foo
+ ** yin
+  *** zen
+ ** yang
+* bar
+* baz

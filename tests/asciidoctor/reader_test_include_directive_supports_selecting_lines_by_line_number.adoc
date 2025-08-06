@@ -1,0 +1,4 @@
+
+++++
+include::fixtures/include-file.adoc[lines=]
+++++

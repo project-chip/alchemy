@@ -1,0 +1,13 @@
+
+:source-highlighter: pygments
+:pygments-style: monokai
+
+[source,python]
+----
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
+
+source = 'print "Hello World"'
+print(highlight(source, PythonLexer(), HtmlFormatter()))
+----

@@ -12,91 +12,91 @@ func TestParagraphs(t *testing.T) {
 
 var paragraphsTests = parseTests{
 
-	{"should treat plain text separated by blank lines as paragraphs", "asciidoctor/paragraphs_test_should_treat_plain_text_separated_by_blank_lines_as_paragraphs.adoc", shouldTreatPlainTextSeparatedByBlankLinesAsParagraphs, nil},
+	{"should treat plain text separated by blank lines as paragraphs", "asciidoctor/paragraphs_test_should_treat_plain_text_separated_by_blank_lines_as_paragraphs.adoc", paragraphsTestShouldTreatPlainTextSeparatedByBlankLinesAsParagraphs, nil},
 
-	{"should associate block title with paragraph", "asciidoctor/paragraphs_test_should_associate_block_title_with_paragraph.adoc", shouldAssociateBlockTitleWithParagraph, nil},
+	{"should associate block title with paragraph", "asciidoctor/paragraphs_test_should_associate_block_title_with_paragraph.adoc", paragraphsTestShouldAssociateBlockTitleWithParagraph, nil},
 
-	{"no duplicate block before next section", "asciidoctor/paragraphs_test_no_duplicate_block_before_next_section.adoc", noDuplicateBlockBeforeNextSection, nil},
+	{"no duplicate block before next section", "asciidoctor/paragraphs_test_no_duplicate_block_before_next_section.adoc", paragraphsTestNoDuplicateBlockBeforeNextSection, nil},
 
-	{"does not treat wrapped line as a list item", "asciidoctor/paragraphs_test_does_not_treat_wrapped_line_as_a_list_item.adoc", doesNotTreatWrappedLineAsAListItem, nil},
+	{"does not treat wrapped line as a list item", "asciidoctor/paragraphs_test_does_not_treat_wrapped_line_as_a_list_item.adoc", paragraphsTestDoesNotTreatWrappedLineAsAListItem, nil},
 
-	{"does not treat wrapped line as a block title", "asciidoctor/paragraphs_test_does_not_treat_wrapped_line_as_a_block_title.adoc", doesNotTreatWrappedLineAsABlockTitle, nil},
+	{"does not treat wrapped line as a block title", "asciidoctor/paragraphs_test_does_not_treat_wrapped_line_as_a_block_title.adoc", paragraphsTestDoesNotTreatWrappedLineAsABlockTitle, nil},
 
-	{"interprets normal paragraph style as normal paragraph", "asciidoctor/paragraphs_test_interprets_normal_paragraph_style_as_normal_paragraph.adoc", interpretsNormalParagraphStyleAsNormalParagraph, nil},
+	{"interprets normal paragraph style as normal paragraph", "asciidoctor/paragraphs_test_interprets_normal_paragraph_style_as_normal_paragraph.adoc", paragraphsTestInterpretsNormalParagraphStyleAsNormalParagraph, nil},
 
-	{"removes indentation from literal paragraph marked as normal", "asciidoctor/paragraphs_test_removes_indentation_from_literal_paragraph_marked_as_normal.adoc", removesIndentationFromLiteralParagraphMarkedAsNormal, nil},
+	{"removes indentation from literal paragraph marked as normal", "asciidoctor/paragraphs_test_removes_indentation_from_literal_paragraph_marked_as_normal.adoc", paragraphsTestRemovesIndentationFromLiteralParagraphMarkedAsNormal, nil},
 
-	{"normal paragraph terminates at block attribute list", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_block_attribute_list.adoc", normalParagraphTerminatesAtBlockAttributeList, nil},
+	{"normal paragraph terminates at block attribute list", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_block_attribute_list.adoc", paragraphsTestNormalParagraphTerminatesAtBlockAttributeList, nil},
 
-	{"normal paragraph terminates at block delimiter", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_block_delimiter.adoc", normalParagraphTerminatesAtBlockDelimiter, nil},
+	{"normal paragraph terminates at block delimiter", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_block_delimiter.adoc", paragraphsTestNormalParagraphTerminatesAtBlockDelimiter, nil},
 
-	{"normal paragraph terminates at list continuation", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_list_continuation.adoc", normalParagraphTerminatesAtListContinuation, nil},
+	{"normal paragraph terminates at list continuation", "asciidoctor/paragraphs_test_normal_paragraph_terminates_at_list_continuation.adoc", paragraphsTestNormalParagraphTerminatesAtListContinuation, nil},
 
-	{"normal style turns literal paragraph into normal paragraph", "asciidoctor/paragraphs_test_normal_style_turns_literal_paragraph_into_normal_paragraph.adoc", normalStyleTurnsLiteralParagraphIntoNormalParagraph, nil},
+	{"normal style turns literal paragraph into normal paragraph", "asciidoctor/paragraphs_test_normal_style_turns_literal_paragraph_into_normal_paragraph.adoc", paragraphsTestNormalStyleTurnsLiteralParagraphIntoNormalParagraph, nil},
 
-	{"automatically promotes index terms in DocBook output if indexterm-promotion-option is set", "asciidoctor/paragraphs_test_automatically_promotes_index_terms_in_doc_book_output_if_indexterm_promotion_option_is_set.adoc", automaticallyPromotesIndexTermsInDocBookOutputIfIndextermPromotionOptionIsSet, nil},
+	{"automatically promotes index terms in DocBook output if indexterm-promotion-option is set", "asciidoctor/paragraphs_test_automatically_promotes_index_terms_in_doc_book_output_if_indexterm_promotion_option_is_set.adoc", paragraphsTestAutomaticallyPromotesIndexTermsInDocBookOutputIfIndextermPromotionOptionIsSet, nil},
 
-	{"does not automatically promote index terms in DocBook output if indexterm-promotion-option is not set", "asciidoctor/paragraphs_test_does_not_automatically_promote_index_terms_in_doc_book_output_if_indexterm_promotion_option_is_not_set.adoc", doesNotAutomaticallyPromoteIndexTermsInDocBookOutputIfIndextermPromotionOptionIsNotSet, nil},
+	{"does not automatically promote index terms in DocBook output if indexterm-promotion-option is not set", "asciidoctor/paragraphs_test_does_not_automatically_promote_index_terms_in_doc_book_output_if_indexterm_promotion_option_is_not_set.adoc", paragraphsTestDoesNotAutomaticallyPromoteIndexTermsInDocBookOutputIfIndextermPromotionOptionIsNotSet, nil},
 
-	{"normal paragraph should honor explicit subs list", "asciidoctor/paragraphs_test_normal_paragraph_should_honor_explicit_subs_list.adoc", normalParagraphShouldHonorExplicitSubsList, nil},
+	{"normal paragraph should honor explicit subs list", "asciidoctor/paragraphs_test_normal_paragraph_should_honor_explicit_subs_list.adoc", paragraphsTestNormalParagraphShouldHonorExplicitSubsList, nil},
 
-	{"normal paragraph should honor specialchars shorthand", "asciidoctor/paragraphs_test_normal_paragraph_should_honor_specialchars_shorthand.adoc", normalParagraphShouldHonorSpecialcharsShorthand, nil},
+	{"normal paragraph should honor specialchars shorthand", "asciidoctor/paragraphs_test_normal_paragraph_should_honor_specialchars_shorthand.adoc", paragraphsTestNormalParagraphShouldHonorSpecialcharsShorthand, nil},
 
-	{"should add a hardbreak at end of each line when hardbreaks option is set", "asciidoctor/paragraphs_test_should_add_a_hardbreak_at_end_of_each_line_when_hardbreaks_option_is_set.adoc", shouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet, nil},
+	{"should add a hardbreak at end of each line when hardbreaks option is set", "asciidoctor/paragraphs_test_should_add_a_hardbreak_at_end_of_each_line_when_hardbreaks_option_is_set.adoc", paragraphsTestShouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet, nil},
 
-	{"should be able to toggle hardbreaks by setting hardbreaks-option on document", "asciidoctor/paragraphs_test_should_be_able_to_toggle_hardbreaks_by_setting_hardbreaks_option_on_document.adoc", shouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocument, nil},
+	{"should be able to toggle hardbreaks by setting hardbreaks-option on document", "asciidoctor/paragraphs_test_should_be_able_to_toggle_hardbreaks_by_setting_hardbreaks_option_on_document.adoc", paragraphsTestShouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocument, nil},
 
-	{"single-line literal paragraphs", "asciidoctor/paragraphs_test_single_line_literal_paragraphs.adoc", singleLineLiteralParagraphs, nil},
+	{"single-line literal paragraphs", "asciidoctor/paragraphs_test_single_line_literal_paragraphs.adoc", paragraphsTestSingleLineLiteralParagraphs, nil},
 
-	{"multi-line literal paragraph", "asciidoctor/paragraphs_test_multi_line_literal_paragraph.adoc", multiLineLiteralParagraph, nil},
+	{"multi-line literal paragraph", "asciidoctor/paragraphs_test_multi_line_literal_paragraph.adoc", paragraphsTestMultiLineLiteralParagraph, nil},
 
-	{"literal paragraph", "asciidoctor/paragraphs_test_literal_paragraph.adoc", literalParagraph, nil},
+	{"literal paragraph", "asciidoctor/paragraphs_test_literal_paragraph.adoc", paragraphsTestLiteralParagraph, nil},
 
-	{"should read content below literal style verbatim", "asciidoctor/paragraphs_test_should_read_content_below_literal_style_verbatim.adoc", shouldReadContentBelowLiteralStyleVerbatim, nil},
+	{"should read content below literal style verbatim", "asciidoctor/paragraphs_test_should_read_content_below_literal_style_verbatim.adoc", paragraphsTestShouldReadContentBelowLiteralStyleVerbatim, nil},
 
-	{"listing paragraph", "asciidoctor/paragraphs_test_listing_paragraph.adoc", listingParagraph, nil},
+	{"listing paragraph", "asciidoctor/paragraphs_test_listing_paragraph.adoc", paragraphsTestListingParagraph, nil},
 
-	{"source paragraph", "asciidoctor/paragraphs_test_source_paragraph.adoc", sourceParagraph, nil},
+	{"source paragraph", "asciidoctor/paragraphs_test_source_paragraph.adoc", paragraphsTestSourceParagraph, nil},
 
-	{"source code paragraph with language", "asciidoctor/paragraphs_test_source_code_paragraph_with_language.adoc", sourceCodeParagraphWithLanguage, nil},
+	{"source code paragraph with language", "asciidoctor/paragraphs_test_source_code_paragraph_with_language.adoc", paragraphsTestSourceCodeParagraphWithLanguage, nil},
 
-	{"literal paragraph terminates at block attribute list", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_block_attribute_list.adoc", literalParagraphTerminatesAtBlockAttributeList, nil},
+	{"literal paragraph terminates at block attribute list", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_block_attribute_list.adoc", paragraphsTestLiteralParagraphTerminatesAtBlockAttributeList, nil},
 
-	{"literal paragraph terminates at block delimiter", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_block_delimiter.adoc", literalParagraphTerminatesAtBlockDelimiter, nil},
+	{"literal paragraph terminates at block delimiter", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_block_delimiter.adoc", paragraphsTestLiteralParagraphTerminatesAtBlockDelimiter, nil},
 
-	{"literal paragraph terminates at list continuation", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_list_continuation.adoc", literalParagraphTerminatesAtListContinuation, nil},
+	{"literal paragraph terminates at list continuation", "asciidoctor/paragraphs_test_literal_paragraph_terminates_at_list_continuation.adoc", paragraphsTestLiteralParagraphTerminatesAtListContinuation, nil},
 
-	{"single-line quote paragraph", "asciidoctor/paragraphs_test_single_line_quote_paragraph.adoc", singleLineQuoteParagraph, nil},
+	{"single-line quote paragraph", "asciidoctor/paragraphs_test_single_line_quote_paragraph.adoc", paragraphsTestSingleLineQuoteParagraph, nil},
 
-	{"quote paragraph terminates at list continuation", "asciidoctor/paragraphs_test_quote_paragraph_terminates_at_list_continuation.adoc", quoteParagraphTerminatesAtListContinuation, nil},
+	{"quote paragraph terminates at list continuation", "asciidoctor/paragraphs_test_quote_paragraph_terminates_at_list_continuation.adoc", paragraphsTestQuoteParagraphTerminatesAtListContinuation, nil},
 
-	{"verse paragraph", "asciidoctor/paragraphs_test_verse_paragraph.adoc", verseParagraph, nil},
+	{"verse paragraph", "asciidoctor/paragraphs_test_verse_paragraph.adoc", paragraphsTestVerseParagraph, nil},
 
-	{"quote paragraph should honor explicit subs list", "asciidoctor/paragraphs_test_quote_paragraph_should_honor_explicit_subs_list.adoc", quoteParagraphShouldHonorExplicitSubsList, nil},
+	{"quote paragraph should honor explicit subs list", "asciidoctor/paragraphs_test_quote_paragraph_should_honor_explicit_subs_list.adoc", paragraphsTestQuoteParagraphShouldHonorExplicitSubsList, nil},
 
-	{"note multiline syntax", "asciidoctor/paragraphs_test_note_multiline_syntax.adoc", noteMultilineSyntax, nil},
+	{"note multiline syntax", "asciidoctor/paragraphs_test_note_multiline_syntax.adoc", paragraphsTestNoteMultilineSyntax, nil},
 
-	{"should wrap text in simpara for styled paragraphs when converted to DocBook", "asciidoctor/paragraphs_test_should_wrap_text_in_simpara_for_styled_paragraphs_when_converted_to_doc_book.adoc", shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook, nil},
+	{"should wrap text in simpara for styled paragraphs when converted to DocBook", "asciidoctor/paragraphs_test_should_wrap_text_in_simpara_for_styled_paragraphs_when_converted_to_doc_book.adoc", paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook, nil},
 
-	{"should convert open paragraph to open block", "asciidoctor/paragraphs_test_should_convert_open_paragraph_to_open_block.adoc", shouldConvertOpenParagraphToOpenBlock, nil},
+	{"should convert open paragraph to open block", "asciidoctor/paragraphs_test_should_convert_open_paragraph_to_open_block.adoc", paragraphsTestShouldConvertOpenParagraphToOpenBlock, nil},
 
-	{"should wrap text in simpara for styled paragraphs with title when converted to DocBook", "asciidoctor/paragraphs_test_should_wrap_text_in_simpara_for_styled_paragraphs_with_title_when_converted_to_doc_book.adoc", shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook, nil},
+	{"should wrap text in simpara for styled paragraphs with title when converted to DocBook", "asciidoctor/paragraphs_test_should_wrap_text_in_simpara_for_styled_paragraphs_with_title_when_converted_to_doc_book.adoc", paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook, nil},
 
-	{"should output nil and warn if first block is not a paragraph", "asciidoctor/paragraphs_test_should_output_nil_and_warn_if_first_block_is_not_a_paragraph.adoc", shouldOutputNilAndWarnIfFirstBlockIsNotAParagraph, nil},
+	{"should output nil and warn if first block is not a paragraph", "asciidoctor/paragraphs_test_should_output_nil_and_warn_if_first_block_is_not_a_paragraph.adoc", paragraphsTestShouldOutputNilAndWarnIfFirstBlockIsNotAParagraph, nil},
 
-	{"should log debug message if paragraph style is unknown and debug level is enabled", "asciidoctor/paragraphs_test_should_log_debug_message_if_paragraph_style_is_unknown_and_debug_level_is_enabled.adoc", shouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsEnabled, nil},
+	{"should log debug message if paragraph style is unknown and debug level is enabled", "asciidoctor/paragraphs_test_should_log_debug_message_if_paragraph_style_is_unknown_and_debug_level_is_enabled.adoc", paragraphsTestShouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsEnabled, nil},
 }
 
-var shouldTreatPlainTextSeparatedByBlankLinesAsParagraphs = &asciidoc.Document{
+var paragraphsTestShouldTreatPlainTextSeparatedByBlankLinesAsParagraphs = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "Plain text for the win!",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -106,9 +106,9 @@ var shouldTreatPlainTextSeparatedByBlankLinesAsParagraphs = &asciidoc.Document{
 	},
 }
 
-var shouldAssociateBlockTitleWithParagraph = &asciidoc.Document{
+var paragraphsTestShouldAssociateBlockTitleWithParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -129,7 +129,7 @@ var shouldAssociateBlockTitleWithParagraph = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -139,42 +139,42 @@ var shouldAssociateBlockTitleWithParagraph = &asciidoc.Document{
 	},
 }
 
-var noDuplicateBlockBeforeNextSection = &asciidoc.Document{
+var paragraphsTestNoDuplicateBlockBeforeNextSection = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "Preamble",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "Paragraph 1",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "Paragraph 2",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -188,7 +188,7 @@ var noDuplicateBlockBeforeNextSection = &asciidoc.Document{
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -214,9 +214,9 @@ var noDuplicateBlockBeforeNextSection = &asciidoc.Document{
 	},
 }
 
-var doesNotTreatWrappedLineAsAListItem = &asciidoc.Document{
+var paragraphsTestDoesNotTreatWrappedLineAsAListItem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -236,9 +236,9 @@ var doesNotTreatWrappedLineAsAListItem = &asciidoc.Document{
 	},
 }
 
-var doesNotTreatWrappedLineAsABlockTitle = &asciidoc.Document{
+var paragraphsTestDoesNotTreatWrappedLineAsABlockTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -261,9 +261,9 @@ var doesNotTreatWrappedLineAsABlockTitle = &asciidoc.Document{
 	},
 }
 
-var interpretsNormalParagraphStyleAsNormalParagraph = &asciidoc.Document{
+var paragraphsTestInterpretsNormalParagraphStyleAsNormalParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -296,9 +296,9 @@ var interpretsNormalParagraphStyleAsNormalParagraph = &asciidoc.Document{
 	},
 }
 
-var removesIndentationFromLiteralParagraphMarkedAsNormal = &asciidoc.Document{
+var paragraphsTestRemovesIndentationFromLiteralParagraphMarkedAsNormal = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -335,9 +335,9 @@ var removesIndentationFromLiteralParagraphMarkedAsNormal = &asciidoc.Document{
 	},
 }
 
-var normalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
+var paragraphsTestNormalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -370,9 +370,9 @@ var normalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
 	},
 }
 
-var normalParagraphTerminatesAtBlockDelimiter = &asciidoc.Document{
+var paragraphsTestNormalParagraphTerminatesAtBlockDelimiter = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -395,9 +395,9 @@ var normalParagraphTerminatesAtBlockDelimiter = &asciidoc.Document{
 	},
 }
 
-var normalParagraphTerminatesAtListContinuation = &asciidoc.Document{
+var paragraphsTestNormalParagraphTerminatesAtListContinuation = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -409,9 +409,9 @@ var normalParagraphTerminatesAtListContinuation = &asciidoc.Document{
 	},
 }
 
-var normalStyleTurnsLiteralParagraphIntoNormalParagraph = &asciidoc.Document{
+var paragraphsTestNormalStyleTurnsLiteralParagraphIntoNormalParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -444,9 +444,9 @@ var normalStyleTurnsLiteralParagraphIntoNormalParagraph = &asciidoc.Document{
 	},
 }
 
-var automaticallyPromotesIndexTermsInDocBookOutputIfIndextermPromotionOptionIsSet = &asciidoc.Document{
+var paragraphsTestAutomaticallyPromotesIndexTermsInDocBookOutputIfIndextermPromotionOptionIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -472,9 +472,9 @@ var automaticallyPromotesIndexTermsInDocBookOutputIfIndextermPromotionOptionIsSe
 	},
 }
 
-var doesNotAutomaticallyPromoteIndexTermsInDocBookOutputIfIndextermPromotionOptionIsNotSet = &asciidoc.Document{
+var paragraphsTestDoesNotAutomaticallyPromoteIndexTermsInDocBookOutputIfIndextermPromotionOptionIsNotSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -496,9 +496,9 @@ var doesNotAutomaticallyPromoteIndexTermsInDocBookOutputIfIndextermPromotionOpti
 	},
 }
 
-var normalParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
+var paragraphsTestNormalParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -535,9 +535,9 @@ var normalParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
 	},
 }
 
-var normalParagraphShouldHonorSpecialcharsShorthand = &asciidoc.Document{
+var paragraphsTestNormalParagraphShouldHonorSpecialcharsShorthand = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -574,9 +574,9 @@ var normalParagraphShouldHonorSpecialcharsShorthand = &asciidoc.Document{
 	},
 }
 
-var shouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet = &asciidoc.Document{
+var paragraphsTestShouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -615,16 +615,16 @@ var shouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet = &asciidoc.Docu
 	},
 }
 
-var shouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocument = &asciidoc.Document{
+var paragraphsTestShouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "hardbreaks-option",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -639,13 +639,13 @@ var shouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocument = &asciido
 			Value: "so",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
 			Name: "hardbreaks",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -655,30 +655,30 @@ var shouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocument = &asciido
 	},
 }
 
-var singleLineLiteralParagraphs = &asciidoc.Document{
+var paragraphsTestSingleLineLiteralParagraphs = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "you know what?",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: " LITERALS",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: " ARE LITERALLY",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -688,16 +688,16 @@ var singleLineLiteralParagraphs = &asciidoc.Document{
 	},
 }
 
-var multiLineLiteralParagraph = &asciidoc.Document{
+var paragraphsTestMultiLineLiteralParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "Install instructions:",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -708,7 +708,7 @@ var multiLineLiteralParagraph = &asciidoc.Document{
 			Value: " gem install asciidoctor",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -718,9 +718,9 @@ var multiLineLiteralParagraph = &asciidoc.Document{
 	},
 }
 
-var literalParagraph = &asciidoc.Document{
+var paragraphsTestLiteralParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -749,9 +749,9 @@ var literalParagraph = &asciidoc.Document{
 	},
 }
 
-var shouldReadContentBelowLiteralStyleVerbatim = &asciidoc.Document{
+var paragraphsTestShouldReadContentBelowLiteralStyleVerbatim = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -775,9 +775,9 @@ var shouldReadContentBelowLiteralStyleVerbatim = &asciidoc.Document{
 	},
 }
 
-var listingParagraph = &asciidoc.Document{
+var paragraphsTestListingParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -806,9 +806,9 @@ var listingParagraph = &asciidoc.Document{
 	},
 }
 
-var sourceParagraph = &asciidoc.Document{
+var paragraphsTestSourceParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -837,9 +837,9 @@ var sourceParagraph = &asciidoc.Document{
 	},
 }
 
-var sourceCodeParagraphWithLanguage = &asciidoc.Document{
+var paragraphsTestSourceCodeParagraphWithLanguage = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -877,9 +877,9 @@ var sourceCodeParagraphWithLanguage = &asciidoc.Document{
 	},
 }
 
-var literalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
+var paragraphsTestLiteralParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -912,9 +912,9 @@ var literalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
 	},
 }
 
-var literalParagraphTerminatesAtBlockDelimiter = &asciidoc.Document{
+var paragraphsTestLiteralParagraphTerminatesAtBlockDelimiter = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -937,9 +937,9 @@ var literalParagraphTerminatesAtBlockDelimiter = &asciidoc.Document{
 	},
 }
 
-var literalParagraphTerminatesAtListContinuation = &asciidoc.Document{
+var paragraphsTestLiteralParagraphTerminatesAtListContinuation = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -951,9 +951,9 @@ var literalParagraphTerminatesAtListContinuation = &asciidoc.Document{
 	},
 }
 
-var singleLineQuoteParagraph = &asciidoc.Document{
+var paragraphsTestSingleLineQuoteParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -982,9 +982,9 @@ var singleLineQuoteParagraph = &asciidoc.Document{
 	},
 }
 
-var quoteParagraphTerminatesAtListContinuation = &asciidoc.Document{
+var paragraphsTestQuoteParagraphTerminatesAtListContinuation = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1015,9 +1015,9 @@ var quoteParagraphTerminatesAtListContinuation = &asciidoc.Document{
 	},
 }
 
-var verseParagraph = &asciidoc.Document{
+var paragraphsTestVerseParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1051,9 +1051,9 @@ var verseParagraph = &asciidoc.Document{
 	},
 }
 
-var quoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
+var paragraphsTestQuoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1096,16 +1096,17 @@ var quoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
 	},
 }
 
-var noteMultilineSyntax = &asciidoc.Document{
+var paragraphsTestNoteMultilineSyntax = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.IfDef{
 			Attributes: asciidoc.AttributeNames{
 				"asciidoctor-version",
 			},
-			Union: 0,
+			Union:  0,
+			Inline: false,
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
@@ -1151,9 +1152,9 @@ var noteMultilineSyntax = &asciidoc.Document{
 	},
 }
 
-var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc.Document{
+var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1167,7 +1168,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1194,7 +1195,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -1220,7 +1221,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
 					},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1231,10 +1232,10 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
 			},
 			Level: 0,
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -1260,13 +1261,13 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
 					},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Paragraph{
@@ -1292,7 +1293,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
 							},
 							Admonition: 0,
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Paragraph{
@@ -1318,7 +1319,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
 							},
 							Admonition: 0,
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Paragraph{
@@ -1344,7 +1345,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
 							},
 							Admonition: 0,
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Paragraph{
@@ -1389,9 +1390,9 @@ var shouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc
 	},
 }
 
-var shouldConvertOpenParagraphToOpenBlock = &asciidoc.Document{
+var paragraphsTestShouldConvertOpenParagraphToOpenBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1420,9 +1421,9 @@ var shouldConvertOpenParagraphToOpenBlock = &asciidoc.Document{
 	},
 }
 
-var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = &asciidoc.Document{
+var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1436,7 +1437,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1463,7 +1464,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -1496,7 +1497,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
 					},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -1507,10 +1508,10 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
 			},
 			Level: 0,
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -1543,13 +1544,13 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
 					},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Paragraph{
@@ -1582,7 +1583,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
 							},
 							Admonition: 0,
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Paragraph{
@@ -1615,7 +1616,7 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
 							},
 							Admonition: 0,
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Paragraph{
@@ -1667,9 +1668,9 @@ var shouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = 
 	},
 }
 
-var shouldOutputNilAndWarnIfFirstBlockIsNotAParagraph = &asciidoc.Document{
+var paragraphsTestShouldOutputNilAndWarnIfFirstBlockIsNotAParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1698,9 +1699,9 @@ var shouldOutputNilAndWarnIfFirstBlockIsNotAParagraph = &asciidoc.Document{
 	},
 }
 
-var shouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsEnabled = &asciidoc.Document{
+var paragraphsTestShouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsEnabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{

@@ -1,0 +1,4 @@
+
+ifdef::holygrail[]
+There is a holy grail!
+endif::holygrail[]

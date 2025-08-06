@@ -4,7 +4,7 @@ import "github.com/project-chip/alchemy/asciidoc"
 
 var blockImage = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -41,7 +41,7 @@ var blockImage = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 	},

@@ -185,7 +185,7 @@ func getColumnCount(table *asciidoc.Table, els []any) (columnCount int, err erro
 				}
 				lastChild := children[len(children)-1]
 				switch lastChild.(type) {
-				case *asciidoc.NewLine, asciidoc.EmptyLine:
+				case *asciidoc.NewLine, *asciidoc.EmptyLine:
 					return
 				}
 			}
@@ -278,7 +278,7 @@ func parseInlineCell(tc *asciidoc.TableCell) error {
 		return fmt.Errorf("unexpected type for table cell set: %T", vals)
 	}
 	if len(els) > 0 {
-		if _, ok := els[0].(asciidoc.EmptyLine); ok {
+		if _, ok := els[0].(*asciidoc.EmptyLine); ok {
 			// If the first character is a new line, the parser will interpret that as an empty line, since it thinks there's nothing before it
 			els[0] = &asciidoc.NewLine{}
 		}
@@ -312,7 +312,7 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 		return fmt.Errorf("unexpected type for table cell set: %T", vals)
 	}
 	if len(els) > 0 {
-		if _, ok := els[0].(asciidoc.EmptyLine); ok {
+		if _, ok := els[0].(*asciidoc.EmptyLine); ok {
 			// If the first character is a new line, the parser will interpret that as an empty line, since it thinks there's nothing before it
 			els[0] = &asciidoc.NewLine{}
 		}

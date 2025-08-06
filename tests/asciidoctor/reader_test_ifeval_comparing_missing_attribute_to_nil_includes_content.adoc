@@ -1,0 +1,4 @@
+
+ifeval::['{foo}' == '']
+No foo for you!
+endif::[]

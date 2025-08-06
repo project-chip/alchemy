@@ -1,0 +1,6 @@
+
+[,html]
+----
+<meta name="description" content="The dangerous and thrilling adventures of an open source documentation team.">
+<script>alert("Do your worst!")</script>
+----

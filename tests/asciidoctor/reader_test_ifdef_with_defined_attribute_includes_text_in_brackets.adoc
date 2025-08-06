@@ -1,0 +1,4 @@
+
+On our quest we go...
+ifdef::holygrail[There is a holy grail!]
+There was much rejoicing.

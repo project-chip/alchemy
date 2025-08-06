@@ -1,0 +1,13 @@
+
+[wrap]
+--
+[foo=bar]
+====
+content
+====
+
+[baz=qux]
+====
+content
+====
+--

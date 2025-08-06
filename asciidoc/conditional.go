@@ -227,7 +227,7 @@ func (a *IfEval) Equals(o Element) bool {
 	if !ok {
 		return false
 	}
-	if a.Left.Equals(oa.Left) {
+	if !a.Left.Equals(oa.Left) {
 		return false
 	}
 	if a.Operator != oa.Operator {

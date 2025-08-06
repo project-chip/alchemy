@@ -14,7 +14,7 @@ var inlineAdmonition = &asciidoc.Document{
 			},
 			Admonition: 2,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -27,7 +27,7 @@ var inlineAdmonition = &asciidoc.Document{
 			},
 			Admonition: 1,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{

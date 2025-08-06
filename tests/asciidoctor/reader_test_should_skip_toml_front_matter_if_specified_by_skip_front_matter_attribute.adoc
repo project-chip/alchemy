@@ -1,0 +1,5 @@
+.chop
+        layout = 'post'
+        title = 'Document Title'
+        author = 'username'
+        tags = ['first', 'second']

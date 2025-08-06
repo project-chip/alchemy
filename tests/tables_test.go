@@ -12,256 +12,256 @@ func TestTables(t *testing.T) {
 
 var tablesTests = parseTests{
 
-	{"converts simple psv table", "asciidoctor/tables_test_converts_simple_psv_table.adoc", convertsSimplePsvTable, nil},
+	{"converts simple psv table", "asciidoctor/tables_test_converts_simple_psv_table.adoc", tablesTestConvertsSimplePsvTable, nil},
 
-	{"should add direction CSS class if float attribute is set on table", "asciidoctor/tables_test_should_add_direction_css_class_if_float_attribute_is_set_on_table.adoc", shouldAddDirectionCssClassIfFloatAttributeIsSetOnTable, nil},
+	{"should add direction CSS class if float attribute is set on table", "asciidoctor/tables_test_should_add_direction_css_class_if_float_attribute_is_set_on_table.adoc", tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable, nil},
 
-	{"should set stripes class if stripes option is set", "asciidoctor/tables_test_should_set_stripes_class_if_stripes_option_is_set.adoc", shouldSetStripesClassIfStripesOptionIsSet, nil},
+	{"should set stripes class if stripes option is set", "asciidoctor/tables_test_should_set_stripes_class_if_stripes_option_is_set.adoc", tablesTestShouldSetStripesClassIfStripesOptionIsSet, nil},
 
-	{"outputs a caption on simple psv table", "asciidoctor/tables_test_outputs_a_caption_on_simple_psv_table.adoc", outputsACaptionOnSimplePsvTable, nil},
+	{"outputs a caption on simple psv table", "asciidoctor/tables_test_outputs_a_caption_on_simple_psv_table.adoc", tablesTestOutputsACaptionOnSimplePsvTable, nil},
 
-	{"only increments table counter for tables that have a title", "asciidoctor/tables_test_only_increments_table_counter_for_tables_that_have_a_title.adoc", onlyIncrementsTableCounterForTablesThatHaveATitle, nil},
+	{"only increments table counter for tables that have a title", "asciidoctor/tables_test_only_increments_table_counter_for_tables_that_have_a_title.adoc", tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle, nil},
 
-	{"uses explicit caption in front of title in place of default caption and number", "asciidoctor/tables_test_uses_explicit_caption_in_front_of_title_in_place_of_default_caption_and_number.adoc", usesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber, nil},
+	{"uses explicit caption in front of title in place of default caption and number", "asciidoctor/tables_test_uses_explicit_caption_in_front_of_title_in_place_of_default_caption_and_number.adoc", tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber, nil},
 
-	{"disables caption when caption attribute on table is empty", "asciidoctor/tables_test_disables_caption_when_caption_attribute_on_table_is_empty.adoc", disablesCaptionWhenCaptionAttributeOnTableIsEmpty, nil},
+	{"disables caption when caption attribute on table is empty", "asciidoctor/tables_test_disables_caption_when_caption_attribute_on_table_is_empty.adoc", tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty, nil},
 
-	{"disables caption when caption attribute on table is empty string", "asciidoctor/tables_test_disables_caption_when_caption_attribute_on_table_is_empty_string.adoc", disablesCaptionWhenCaptionAttributeOnTableIsEmptyString, nil},
+	{"disables caption when caption attribute on table is empty string", "asciidoctor/tables_test_disables_caption_when_caption_attribute_on_table_is_empty_string.adoc", tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString, nil},
 
-	{"disables caption on table when table-caption document attribute is unset", "asciidoctor/tables_test_disables_caption_on_table_when_table_caption_document_attribute_is_unset.adoc", disablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset, nil},
+	{"disables caption on table when table-caption document attribute is unset", "asciidoctor/tables_test_disables_caption_on_table_when_table_caption_document_attribute_is_unset.adoc", tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset, nil},
 
-	{"ignores escaped separators", "asciidoctor/tables_test_ignores_escaped_separators.adoc", ignoresEscapedSeparators, nil},
+	{"ignores escaped separators", "asciidoctor/tables_test_ignores_escaped_separators.adoc", tablesTestIgnoresEscapedSeparators, nil},
 
-	{"preserves escaped delimiters at the end of the line", "asciidoctor/tables_test_preserves_escaped_delimiters_at_the_end_of_the_line.adoc", preservesEscapedDelimitersAtTheEndOfTheLine, nil},
+	{"preserves escaped delimiters at the end of the line", "asciidoctor/tables_test_preserves_escaped_delimiters_at_the_end_of_the_line.adoc", tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine, nil},
 
-	{"should treat trailing pipe as an empty cell", "asciidoctor/tables_test_should_treat_trailing_pipe_as_an_empty_cell.adoc", shouldTreatTrailingPipeAsAnEmptyCell, nil},
+	{"should treat trailing pipe as an empty cell", "asciidoctor/tables_test_should_treat_trailing_pipe_as_an_empty_cell.adoc", tablesTestShouldTreatTrailingPipeAsAnEmptyCell, nil},
 
-	{"should auto recover with warning if missing leading separator on first cell", "asciidoctor/tables_test_should_auto_recover_with_warning_if_missing_leading_separator_on_first_cell.adoc", shouldAutoRecoverWithWarningIfMissingLeadingSeparatorOnFirstCell, nil},
+	{"should auto recover with warning if missing leading separator on first cell", "asciidoctor/tables_test_should_auto_recover_with_warning_if_missing_leading_separator_on_first_cell.adoc", tablesTestShouldAutoRecoverWithWarningIfMissingLeadingSeparatorOnFirstCell, nil},
 
-	{"performs normal substitutions on cell content", "asciidoctor/tables_test_performs_normal_substitutions_on_cell_content.adoc", performsNormalSubstitutionsOnCellContent, nil},
+	{"performs normal substitutions on cell content", "asciidoctor/tables_test_performs_normal_substitutions_on_cell_content.adoc", tablesTestPerformsNormalSubstitutionsOnCellContent, nil},
 
-	{"should only substitute specialchars for literal table cells", "asciidoctor/tables_test_should_only_substitute_specialchars_for_literal_table_cells.adoc", shouldOnlySubstituteSpecialcharsForLiteralTableCells, nil},
+	{"should only substitute specialchars for literal table cells", "asciidoctor/tables_test_should_only_substitute_specialchars_for_literal_table_cells.adoc", tablesTestShouldOnlySubstituteSpecialcharsForLiteralTableCells, nil},
 
-	{"should preserving leading spaces but not leading newlines or trailing spaces in literal table cells", "asciidoctor/tables_test_should_preserving_leading_spaces_but_not_leading_newlines_or_trailing_spaces_in_literal_table_cells.adoc", shouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralTableCells, nil},
+	{"should preserving leading spaces but not leading newlines or trailing spaces in literal table cells", "asciidoctor/tables_test_should_preserving_leading_spaces_but_not_leading_newlines_or_trailing_spaces_in_literal_table_cells.adoc", tablesTestShouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralTableCells, nil},
 
-	{"should ignore v table cell style", "asciidoctor/tables_test_should_ignore_v_table_cell_style.adoc", shouldIgnoreVTableCellStyle, nil},
+	{"should ignore v table cell style", "asciidoctor/tables_test_should_ignore_v_table_cell_style.adoc", tablesTestShouldIgnoreVTableCellStyle, nil},
 
-	{"table and column width not assigned when autowidth option is specified", "asciidoctor/tables_test_table_and_column_width_not_assigned_when_autowidth_option_is_specified.adoc", tableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified, nil},
+	{"table and column width not assigned when autowidth option is specified", "asciidoctor/tables_test_table_and_column_width_not_assigned_when_autowidth_option_is_specified.adoc", tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified, nil},
 
-	{"does not assign column width for autowidth columns in HTML output", "asciidoctor/tables_test_does_not_assign_column_width_for_autowidth_columns_in_html_output.adoc", doesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput, nil},
+	{"does not assign column width for autowidth columns in HTML output", "asciidoctor/tables_test_does_not_assign_column_width_for_autowidth_columns_in_html_output.adoc", tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput, nil},
 
-	{"can assign autowidth to all columns even when table has a width", "asciidoctor/tables_test_can_assign_autowidth_to_all_columns_even_when_table_has_a_width.adoc", canAssignAutowidthToAllColumnsEvenWhenTableHasAWidth, nil},
+	{"can assign autowidth to all columns even when table has a width", "asciidoctor/tables_test_can_assign_autowidth_to_all_columns_even_when_table_has_a_width.adoc", tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth, nil},
 
-	{"equally distributes remaining column width to autowidth columns in DocBook output", "asciidoctor/tables_test_equally_distributes_remaining_column_width_to_autowidth_columns_in_doc_book_output.adoc", equallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookOutput, nil},
+	{"equally distributes remaining column width to autowidth columns in DocBook output", "asciidoctor/tables_test_equally_distributes_remaining_column_width_to_autowidth_columns_in_doc_book_output.adoc", tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookOutput, nil},
 
-	{"should compute column widths based on pagewidth when width is set on table in DocBook output", "asciidoctor/tables_test_should_compute_column_widths_based_on_pagewidth_when_width_is_set_on_table_in_doc_book_output.adoc", shouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutput, nil},
+	{"should compute column widths based on pagewidth when width is set on table in DocBook output", "asciidoctor/tables_test_should_compute_column_widths_based_on_pagewidth_when_width_is_set_on_table_in_doc_book_output.adoc", tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutput, nil},
 
-	{"explicit table width is used even when autowidth option is specified", "asciidoctor/tables_test_explicit_table_width_is_used_even_when_autowidth_option_is_specified.adoc", explicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified, nil},
+	{"explicit table width is used even when autowidth option is specified", "asciidoctor/tables_test_explicit_table_width_is_used_even_when_autowidth_option_is_specified.adoc", tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified, nil},
 
-	{"first row sets number of columns when not specified", "asciidoctor/tables_test_first_row_sets_number_of_columns_when_not_specified.adoc", firstRowSetsNumberOfColumnsWhenNotSpecified, nil},
+	{"first row sets number of columns when not specified", "asciidoctor/tables_test_first_row_sets_number_of_columns_when_not_specified.adoc", tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified, nil},
 
-	{"colspec attribute using asterisk syntax sets number of columns", "asciidoctor/tables_test_colspec_attribute_using_asterisk_syntax_sets_number_of_columns.adoc", colspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns, nil},
+	{"colspec attribute using asterisk syntax sets number of columns", "asciidoctor/tables_test_colspec_attribute_using_asterisk_syntax_sets_number_of_columns.adoc", tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns, nil},
 
-	{"table with explicit column count can have multiple rows on a single line", "asciidoctor/tables_test_table_with_explicit_column_count_can_have_multiple_rows_on_a_single_line.adoc", tableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine, nil},
+	{"table with explicit column count can have multiple rows on a single line", "asciidoctor/tables_test_table_with_explicit_column_count_can_have_multiple_rows_on_a_single_line.adoc", tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine, nil},
 
-	{"table with explicit deprecated colspec syntax can have multiple rows on a single line", "asciidoctor/tables_test_table_with_explicit_deprecated_colspec_syntax_can_have_multiple_rows_on_a_single_line.adoc", tableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASingleLine, nil},
+	{"table with explicit deprecated colspec syntax can have multiple rows on a single line", "asciidoctor/tables_test_table_with_explicit_deprecated_colspec_syntax_can_have_multiple_rows_on_a_single_line.adoc", tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASingleLine, nil},
 
-	{"columns are added for empty records in colspec attribute", "asciidoctor/tables_test_columns_are_added_for_empty_records_in_colspec_attribute.adoc", columnsAreAddedForEmptyRecordsInColspecAttribute, nil},
+	{"columns are added for empty records in colspec attribute", "asciidoctor/tables_test_columns_are_added_for_empty_records_in_colspec_attribute.adoc", tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute, nil},
 
-	{"cols may be separated by semi-colon instead of comma", "asciidoctor/tables_test_cols_may_be_separated_by_semi_colon_instead_of_comma.adoc", colsMayBeSeparatedBySemiColonInsteadOfComma, nil},
+	{"cols may be separated by semi-colon instead of comma", "asciidoctor/tables_test_cols_may_be_separated_by_semi_colon_instead_of_comma.adoc", tablesTestColsMayBeSeparatedBySemiColonInsteadOfComma, nil},
 
-	{"cols attribute may include spaces", "asciidoctor/tables_test_cols_attribute_may_include_spaces.adoc", colsAttributeMayIncludeSpaces, nil},
+	{"cols attribute may include spaces", "asciidoctor/tables_test_cols_attribute_may_include_spaces.adoc", tablesTestColsAttributeMayIncludeSpaces, nil},
 
-	{"blank cols attribute should be ignored", "asciidoctor/tables_test_blank_cols_attribute_should_be_ignored.adoc", blankColsAttributeShouldBeIgnored, nil},
+	{"blank cols attribute should be ignored", "asciidoctor/tables_test_blank_cols_attribute_should_be_ignored.adoc", tablesTestBlankColsAttributeShouldBeIgnored, nil},
 
-	{"empty cols attribute should be ignored", "asciidoctor/tables_test_empty_cols_attribute_should_be_ignored.adoc", emptyColsAttributeShouldBeIgnored, nil},
+	{"empty cols attribute should be ignored", "asciidoctor/tables_test_empty_cols_attribute_should_be_ignored.adoc", tablesTestEmptyColsAttributeShouldBeIgnored, nil},
 
-	{"table with header and footer", "asciidoctor/tables_test_table_with_header_and_footer.adoc", tableWithHeaderAndFooter, nil},
+	{"table with header and footer", "asciidoctor/tables_test_table_with_header_and_footer.adoc", tablesTestTableWithHeaderAndFooter, nil},
 
-	{"table with header and footer docbook", "asciidoctor/tables_test_table_with_header_and_footer_docbook.adoc", tableWithHeaderAndFooterDocbook, nil},
+	{"table with header and footer docbook", "asciidoctor/tables_test_table_with_header_and_footer_docbook.adoc", tablesTestTableWithHeaderAndFooterDocbook, nil},
 
-	{"should set horizontal and vertical alignment when converting to DocBook", "asciidoctor/tables_test_should_set_horizontal_and_vertical_alignment_when_converting_to_doc_book.adoc", shouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook, nil},
+	{"should set horizontal and vertical alignment when converting to DocBook", "asciidoctor/tables_test_should_set_horizontal_and_vertical_alignment_when_converting_to_doc_book.adoc", tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook, nil},
 
-	{"should preserve frame value ends when converting to HTML", "asciidoctor/tables_test_should_preserve_frame_value_ends_when_converting_to_html.adoc", shouldPreserveFrameValueEndsWhenConvertingToHtml, nil},
+	{"should preserve frame value ends when converting to HTML", "asciidoctor/tables_test_should_preserve_frame_value_ends_when_converting_to_html.adoc", tablesTestShouldPreserveFrameValueEndsWhenConvertingToHtml, nil},
 
-	{"should normalize frame value topbot as ends when converting to HTML", "asciidoctor/tables_test_should_normalize_frame_value_topbot_as_ends_when_converting_to_html.adoc", shouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml, nil},
+	{"should normalize frame value topbot as ends when converting to HTML", "asciidoctor/tables_test_should_normalize_frame_value_topbot_as_ends_when_converting_to_html.adoc", tablesTestShouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml, nil},
 
-	{"should preserve frame value topbot when converting to DocBook", "asciidoctor/tables_test_should_preserve_frame_value_topbot_when_converting_to_doc_book.adoc", shouldPreserveFrameValueTopbotWhenConvertingToDocBook, nil},
+	{"should preserve frame value topbot when converting to DocBook", "asciidoctor/tables_test_should_preserve_frame_value_topbot_when_converting_to_doc_book.adoc", tablesTestShouldPreserveFrameValueTopbotWhenConvertingToDocBook, nil},
 
-	{"should convert frame value ends to topbot when converting to DocBook", "asciidoctor/tables_test_should_convert_frame_value_ends_to_topbot_when_converting_to_doc_book.adoc", shouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook, nil},
+	{"should convert frame value ends to topbot when converting to DocBook", "asciidoctor/tables_test_should_convert_frame_value_ends_to_topbot_when_converting_to_doc_book.adoc", tablesTestShouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook, nil},
 
-	{"table with implicit header row", "asciidoctor/tables_test_table_with_implicit_header_row.adoc", tableWithImplicitHeaderRow, nil},
+	{"table with implicit header row", "asciidoctor/tables_test_table_with_implicit_header_row.adoc", tablesTestTableWithImplicitHeaderRow, nil},
 
-	{"table with implicit header row only", "asciidoctor/tables_test_table_with_implicit_header_row_only.adoc", tableWithImplicitHeaderRowOnly, nil},
+	{"table with implicit header row only", "asciidoctor/tables_test_table_with_implicit_header_row_only.adoc", tablesTestTableWithImplicitHeaderRowOnly, nil},
 
-	{"table with implicit header row when other options set", "asciidoctor/tables_test_table_with_implicit_header_row_when_other_options_set.adoc", tableWithImplicitHeaderRowWhenOtherOptionsSet, nil},
+	{"table with implicit header row when other options set", "asciidoctor/tables_test_table_with_implicit_header_row_when_other_options_set.adoc", tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet, nil},
 
-	{"no implicit header row if second line not blank", "asciidoctor/tables_test_no_implicit_header_row_if_second_line_not_blank.adoc", noImplicitHeaderRowIfSecondLineNotBlank, nil},
+	{"no implicit header row if second line not blank", "asciidoctor/tables_test_no_implicit_header_row_if_second_line_not_blank.adoc", tablesTestNoImplicitHeaderRowIfSecondLineNotBlank, nil},
 
-	{"no implicit header row if cell in first line spans multiple lines", "asciidoctor/tables_test_no_implicit_header_row_if_cell_in_first_line_spans_multiple_lines.adoc", noImplicitHeaderRowIfCellInFirstLineSpansMultipleLines, nil},
+	{"no implicit header row if cell in first line spans multiple lines", "asciidoctor/tables_test_no_implicit_header_row_if_cell_in_first_line_spans_multiple_lines.adoc", tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines, nil},
 
-	{"should format first cell as literal if there is no implicit header row and column has l style", "asciidoctor/tables_test_should_format_first_cell_as_literal_if_there_is_no_implicit_header_row_and_column_has_l_style.adoc", shouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColumnHasLStyle, nil},
+	{"should format first cell as literal if there is no implicit header row and column has l style", "asciidoctor/tables_test_should_format_first_cell_as_literal_if_there_is_no_implicit_header_row_and_column_has_l_style.adoc", tablesTestShouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColumnHasLStyle, nil},
 
-	{"should format first cell as AsciiDoc if there is no implicit header row and column has a style", "asciidoctor/tables_test_should_format_first_cell_as_ascii_doc_if_there_is_no_implicit_header_row_and_column_has_a_style.adoc", shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColumnHasAStyle, nil},
+	{"should format first cell as AsciiDoc if there is no implicit header row and column has a style", "asciidoctor/tables_test_should_format_first_cell_as_ascii_doc_if_there_is_no_implicit_header_row_and_column_has_a_style.adoc", tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColumnHasAStyle, nil},
 
-	{"should interpret leading indent if first cell is AsciiDoc and there is no implicit header row", "asciidoctor/tables_test_should_interpret_leading_indent_if_first_cell_is_ascii_doc_and_there_is_no_implicit_header_row.adoc", shouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderRow, nil},
+	{"should interpret leading indent if first cell is AsciiDoc and there is no implicit header row", "asciidoctor/tables_test_should_interpret_leading_indent_if_first_cell_is_ascii_doc_and_there_is_no_implicit_header_row.adoc", tablesTestShouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderRow, nil},
 
-	{"should format first cell as AsciiDoc if there is no implicit header row and cell has a style", "asciidoctor/tables_test_should_format_first_cell_as_ascii_doc_if_there_is_no_implicit_header_row_and_cell_has_a_style.adoc", shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCellHasAStyle, nil},
+	{"should format first cell as AsciiDoc if there is no implicit header row and cell has a style", "asciidoctor/tables_test_should_format_first_cell_as_ascii_doc_if_there_is_no_implicit_header_row_and_cell_has_a_style.adoc", tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCellHasAStyle, nil},
 
-	{"no implicit header row if AsciiDoc cell in first line spans multiple lines", "asciidoctor/tables_test_no_implicit_header_row_if_ascii_doc_cell_in_first_line_spans_multiple_lines.adoc", noImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines, nil},
+	{"no implicit header row if AsciiDoc cell in first line spans multiple lines", "asciidoctor/tables_test_no_implicit_header_row_if_ascii_doc_cell_in_first_line_spans_multiple_lines.adoc", tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines, nil},
 
-	{"no implicit header row if first line blank", "asciidoctor/tables_test_no_implicit_header_row_if_first_line_blank.adoc", noImplicitHeaderRowIfFirstLineBlank, nil},
+	{"no implicit header row if first line blank", "asciidoctor/tables_test_no_implicit_header_row_if_first_line_blank.adoc", tablesTestNoImplicitHeaderRowIfFirstLineBlank, nil},
 
-	{"no implicit header row if noheader option is specified", "asciidoctor/tables_test_no_implicit_header_row_if_noheader_option_is_specified.adoc", noImplicitHeaderRowIfNoheaderOptionIsSpecified, nil},
+	{"no implicit header row if noheader option is specified", "asciidoctor/tables_test_no_implicit_header_row_if_noheader_option_is_specified.adoc", tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified, nil},
 
-	{"styles not applied to header cells", "asciidoctor/tables_test_styles_not_applied_to_header_cells.adoc", stylesNotAppliedToHeaderCells, nil},
+	{"styles not applied to header cells", "asciidoctor/tables_test_styles_not_applied_to_header_cells.adoc", tablesTestStylesNotAppliedToHeaderCells, nil},
 
-	{"should apply text formatting to cells in implicit header row when column has a style", "asciidoctor/tables_test_should_apply_text_formatting_to_cells_in_implicit_header_row_when_column_has_a_style.adoc", shouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle, nil},
+	{"should apply text formatting to cells in implicit header row when column has a style", "asciidoctor/tables_test_should_apply_text_formatting_to_cells_in_implicit_header_row_when_column_has_a_style.adoc", tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle, nil},
 
-	{"should apply style and text formatting to cells in first row if no implicit header", "asciidoctor/tables_test_should_apply_style_and_text_formatting_to_cells_in_first_row_if_no_implicit_header.adoc", shouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHeader, nil},
+	{"should apply style and text formatting to cells in first row if no implicit header", "asciidoctor/tables_test_should_apply_style_and_text_formatting_to_cells_in_first_row_if_no_implicit_header.adoc", tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHeader, nil},
 
-	{"vertical table headers use th element instead of header class", "asciidoctor/tables_test_vertical_table_headers_use_th_element_instead_of_header_class.adoc", verticalTableHeadersUseThElementInsteadOfHeaderClass, nil},
+	{"vertical table headers use th element instead of header class", "asciidoctor/tables_test_vertical_table_headers_use_th_element_instead_of_header_class.adoc", tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass, nil},
 
-	{"supports horizontal and vertical source data with blank lines and table header", "asciidoctor/tables_test_supports_horizontal_and_vertical_source_data_with_blank_lines_and_table_header.adoc", supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader, nil},
+	{"supports horizontal and vertical source data with blank lines and table header", "asciidoctor/tables_test_supports_horizontal_and_vertical_source_data_with_blank_lines_and_table_header.adoc", tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader, nil},
 
-	{"percentages as column widths", "asciidoctor/tables_test_percentages_as_column_widths.adoc", percentagesAsColumnWidths, nil},
+	{"percentages as column widths", "asciidoctor/tables_test_percentages_as_column_widths.adoc", tablesTestPercentagesAsColumnWidths, nil},
 
-	{"spans, alignments and styles", "asciidoctor/tables_test_spans_alignments_and_styles.adoc", spansAlignmentsAndStyles, nil},
+	{"spans, alignments and styles", "asciidoctor/tables_test_spans_alignments_and_styles.adoc", tablesTestSpansAlignmentsAndStyles, nil},
 
-	{"sets up columns correctly if first row has cell that spans columns", "asciidoctor/tables_test_sets_up_columns_correctly_if_first_row_has_cell_that_spans_columns.adoc", setsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns, nil},
+	{"sets up columns correctly if first row has cell that spans columns", "asciidoctor/tables_test_sets_up_columns_correctly_if_first_row_has_cell_that_spans_columns.adoc", tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns, nil},
 
-	{"supports repeating cells", "asciidoctor/tables_test_supports_repeating_cells.adoc", supportsRepeatingCells, nil},
+	{"supports repeating cells", "asciidoctor/tables_test_supports_repeating_cells.adoc", tablesTestSupportsRepeatingCells, nil},
 
-	{"calculates colnames correctly when using implicit column count and single cell with colspan", "asciidoctor/tables_test_calculates_colnames_correctly_when_using_implicit_column_count_and_single_cell_with_colspan.adoc", calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCellWithColspan, nil},
+	{"calculates colnames correctly when using implicit column count and single cell with colspan", "asciidoctor/tables_test_calculates_colnames_correctly_when_using_implicit_column_count_and_single_cell_with_colspan.adoc", tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCellWithColspan, nil},
 
-	{"calculates colnames correctly when using implicit column count and cells with mixed colspans", "asciidoctor/tables_test_calculates_colnames_correctly_when_using_implicit_column_count_and_cells_with_mixed_colspans.adoc", calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWithMixedColspans, nil},
+	{"calculates colnames correctly when using implicit column count and cells with mixed colspans", "asciidoctor/tables_test_calculates_colnames_correctly_when_using_implicit_column_count_and_cells_with_mixed_colspans.adoc", tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWithMixedColspans, nil},
 
-	{"assigns unique column names for table with implicit column count and colspans in first row", "asciidoctor/tables_test_assigns_unique_column_names_for_table_with_implicit_column_count_and_colspans_in_first_row.adoc", assignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow, nil},
+	{"assigns unique column names for table with implicit column count and colspans in first row", "asciidoctor/tables_test_assigns_unique_column_names_for_table_with_implicit_column_count_and_colspans_in_first_row.adoc", tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow, nil},
 
-	{"should drop row but preserve remaining rows after cell with colspan exceeds number of columns", "asciidoctor/tables_test_should_drop_row_but_preserve_remaining_rows_after_cell_with_colspan_exceeds_number_of_columns.adoc", shouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNumberOfColumns, nil},
+	{"should drop row but preserve remaining rows after cell with colspan exceeds number of columns", "asciidoctor/tables_test_should_drop_row_but_preserve_remaining_rows_after_cell_with_colspan_exceeds_number_of_columns.adoc", tablesTestShouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNumberOfColumns, nil},
 
-	{"should drop last row if last cell in table has colspan that exceeds specified number of columns", "asciidoctor/tables_test_should_drop_last_row_if_last_cell_in_table_has_colspan_that_exceeds_specified_number_of_columns.adoc", shouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNumberOfColumns, nil},
+	{"should drop last row if last cell in table has colspan that exceeds specified number of columns", "asciidoctor/tables_test_should_drop_last_row_if_last_cell_in_table_has_colspan_that_exceeds_specified_number_of_columns.adoc", tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNumberOfColumns, nil},
 
-	{"should drop last row if last cell in table has colspan that exceeds implicit number of columns", "asciidoctor/tables_test_should_drop_last_row_if_last_cell_in_table_has_colspan_that_exceeds_implicit_number_of_columns.adoc", shouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNumberOfColumns, nil},
+	{"should drop last row if last cell in table has colspan that exceeds implicit number of columns", "asciidoctor/tables_test_should_drop_last_row_if_last_cell_in_table_has_colspan_that_exceeds_implicit_number_of_columns.adoc", tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNumberOfColumns, nil},
 
-	{"should take colspan into account when taking cells for row", "asciidoctor/tables_test_should_take_colspan_into_account_when_taking_cells_for_row.adoc", shouldTakeColspanIntoAccountWhenTakingCellsForRow, nil},
+	{"should take colspan into account when taking cells for row", "asciidoctor/tables_test_should_take_colspan_into_account_when_taking_cells_for_row.adoc", tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow, nil},
 
-	{"should drop incomplete row at end of table and log an error", "asciidoctor/tables_test_should_drop_incomplete_row_at_end_of_table_and_log_an_error.adoc", shouldDropIncompleteRowAtEndOfTableAndLogAnError, nil},
+	{"should drop incomplete row at end of table and log an error", "asciidoctor/tables_test_should_drop_incomplete_row_at_end_of_table_and_log_an_error.adoc", tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError, nil},
 
-	{"should apply cell style for column to repeated content", "asciidoctor/tables_test_should_apply_cell_style_for_column_to_repeated_content.adoc", shouldApplyCellStyleForColumnToRepeatedContent, nil},
+	{"should apply cell style for column to repeated content", "asciidoctor/tables_test_should_apply_cell_style_for_column_to_repeated_content.adoc", tablesTestShouldApplyCellStyleForColumnToRepeatedContent, nil},
 
-	{"should not split paragraph at line containing only {blank} that is directly adjacent to non-blank lines", "asciidoctor/tables_test_should_not_split_paragraph_at_line_containing_only_{blank}_that_is_directly_adjacent_to_non_blank_lines.adoc", shouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdjacentToNonBlankLines, nil},
+	{"should not split paragraph at line containing only {blank} that is directly adjacent to non-blank lines", "asciidoctor/tables_test_should_not_split_paragraph_at_line_containing_only_{blank}_that_is_directly_adjacent_to_non_blank_lines.adoc", tablesTestShouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdjacentToNonBlankLines, nil},
 
-	{"should strip trailing newlines when splitting paragraphs", "asciidoctor/tables_test_should_strip_trailing_newlines_when_splitting_paragraphs.adoc", shouldStripTrailingNewlinesWhenSplittingParagraphs, nil},
+	{"should strip trailing newlines when splitting paragraphs", "asciidoctor/tables_test_should_strip_trailing_newlines_when_splitting_paragraphs.adoc", tablesTestShouldStripTrailingNewlinesWhenSplittingParagraphs, nil},
 
-	{"basic AsciiDoc cell", "asciidoctor/tables_test_basic_ascii_doc_cell.adoc", basicAsciiDocCell, nil},
+	{"basic AsciiDoc cell", "asciidoctor/tables_test_basic_ascii_doc_cell.adoc", tablesTestBasicAsciiDocCell, nil},
 
-	{"AsciiDoc table cell should be wrapped in div with class \"content\"", "asciidoctor/tables_test_ascii_doc_table_cell_should_be_wrapped_in_div_with_class__content.adoc", asciiDocTableCellShouldBeWrappedInDivWithClassContent, nil},
+	{"AsciiDoc table cell should be wrapped in div with class \"content\"", "asciidoctor/tables_test_ascii_doc_table_cell_should_be_wrapped_in_div_with_class__content.adoc", tablesTestAsciiDocTableCellShouldBeWrappedInDivWithClassContent, nil},
 
-	{"doctype can be set in AsciiDoc table cell", "asciidoctor/tables_test_doctype_can_be_set_in_ascii_doc_table_cell.adoc", doctypeCanBeSetInAsciiDocTableCell, nil},
+	{"doctype can be set in AsciiDoc table cell", "asciidoctor/tables_test_doctype_can_be_set_in_ascii_doc_table_cell.adoc", tablesTestDoctypeCanBeSetInAsciiDocTableCell, nil},
 
-	{"should reset doctype to default in AsciiDoc table cell", "asciidoctor/tables_test_should_reset_doctype_to_default_in_ascii_doc_table_cell.adoc", shouldResetDoctypeToDefaultInAsciiDocTableCell, nil},
+	{"should reset doctype to default in AsciiDoc table cell", "asciidoctor/tables_test_should_reset_doctype_to_default_in_ascii_doc_table_cell.adoc", tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell, nil},
 
-	{"should update doctype-related attributes in AsciiDoc table cell when doctype is set", "asciidoctor/tables_test_should_update_doctype_related_attributes_in_ascii_doc_table_cell_when_doctype_is_set.adoc", shouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet, nil},
+	{"should update doctype-related attributes in AsciiDoc table cell when doctype is set", "asciidoctor/tables_test_should_update_doctype_related_attributes_in_ascii_doc_table_cell_when_doctype_is_set.adoc", tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet, nil},
 
-	{"should not allow AsciiDoc table cell to set a document attribute that was hard set by the API", "asciidoctor/tables_test_should_not_allow_ascii_doc_table_cell_to_set_a_document_attribute_that_was_hard_set_by_the_api.adoc", shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi, nil},
+	{"should not allow AsciiDoc table cell to set a document attribute that was hard set by the API", "asciidoctor/tables_test_should_not_allow_ascii_doc_table_cell_to_set_a_document_attribute_that_was_hard_set_by_the_api.adoc", tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi, nil},
 
-	{"should not allow AsciiDoc table cell to set a document attribute that was hard unset by the API", "asciidoctor/tables_test_should_not_allow_ascii_doc_table_cell_to_set_a_document_attribute_that_was_hard_unset_by_the_api.adoc", shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheApi, nil},
+	{"should not allow AsciiDoc table cell to set a document attribute that was hard unset by the API", "asciidoctor/tables_test_should_not_allow_ascii_doc_table_cell_to_set_a_document_attribute_that_was_hard_unset_by_the_api.adoc", tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheApi, nil},
 
-	{"should keep attribute unset in AsciiDoc table cell if unset in parent document", "asciidoctor/tables_test_should_keep_attribute_unset_in_ascii_doc_table_cell_if_unset_in_parent_document.adoc", shouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument, nil},
+	{"should keep attribute unset in AsciiDoc table cell if unset in parent document", "asciidoctor/tables_test_should_keep_attribute_unset_in_ascii_doc_table_cell_if_unset_in_parent_document.adoc", tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument, nil},
 
-	{"should allow attribute unset in parent document to be set in AsciiDoc table cell", "asciidoctor/tables_test_should_allow_attribute_unset_in_parent_document_to_be_set_in_ascii_doc_table_cell.adoc", shouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell, nil},
+	{"should allow attribute unset in parent document to be set in AsciiDoc table cell", "asciidoctor/tables_test_should_allow_attribute_unset_in_parent_document_to_be_set_in_ascii_doc_table_cell.adoc", tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell, nil},
 
-	{"should not allow locked attribute unset in parent document to be set in AsciiDoc table cell", "asciidoctor/tables_test_should_not_allow_locked_attribute_unset_in_parent_document_to_be_set_in_ascii_doc_table_cell.adoc", shouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell, nil},
+	{"should not allow locked attribute unset in parent document to be set in AsciiDoc table cell", "asciidoctor/tables_test_should_not_allow_locked_attribute_unset_in_parent_document_to_be_set_in_ascii_doc_table_cell.adoc", tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell, nil},
 
-	{"AsciiDoc content", "asciidoctor/tables_test_ascii_doc_content.adoc", asciiDocContent, nil},
+	{"AsciiDoc content", "asciidoctor/tables_test_ascii_doc_content.adoc", tablesTestAsciiDocContent, nil},
 
-	{"should preserve leading indentation in contents of AsciiDoc table cell if contents starts with newline", "asciidoctor/tables_test_should_preserve_leading_indentation_in_contents_of_ascii_doc_table_cell_if_contents_starts_with_newline.adoc", shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStartsWithNewline, nil},
+	{"should preserve leading indentation in contents of AsciiDoc table cell if contents starts with newline", "asciidoctor/tables_test_should_preserve_leading_indentation_in_contents_of_ascii_doc_table_cell_if_contents_starts_with_newline.adoc", tablesTestShouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStartsWithNewline, nil},
 
-	{"preprocessor directive on first line of an AsciiDoc table cell should be processed", "asciidoctor/tables_test_preprocessor_directive_on_first_line_of_an_ascii_doc_table_cell_should_be_processed.adoc", preprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProcessed, nil},
+	{"preprocessor directive on first line of an AsciiDoc table cell should be processed", "asciidoctor/tables_test_preprocessor_directive_on_first_line_of_an_ascii_doc_table_cell_should_be_processed.adoc", tablesTestPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProcessed, nil},
 
-	{"error about unresolved preprocessor directive on first line of an AsciiDoc table cell should have correct cursor", "asciidoctor/tables_test_error_about_unresolved_preprocessor_directive_on_first_line_of_an_ascii_doc_table_cell_should_have_correct_cursor.adoc", errorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldHaveCorrectCursor, nil},
+	{"error about unresolved preprocessor directive on first line of an AsciiDoc table cell should have correct cursor", "asciidoctor/tables_test_error_about_unresolved_preprocessor_directive_on_first_line_of_an_ascii_doc_table_cell_should_have_correct_cursor.adoc", tablesTestErrorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldHaveCorrectCursor, nil},
 
-	{"cross reference link in an AsciiDoc table cell should resolve to reference in main document", "asciidoctor/tables_test_cross_reference_link_in_an_ascii_doc_table_cell_should_resolve_to_reference_in_main_document.adoc", crossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocument, nil},
+	{"cross reference link in an AsciiDoc table cell should resolve to reference in main document", "asciidoctor/tables_test_cross_reference_link_in_an_ascii_doc_table_cell_should_resolve_to_reference_in_main_document.adoc", tablesTestCrossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocument, nil},
 
-	{"should discover anchor at start of cell and register it as a reference", "asciidoctor/tables_test_should_discover_anchor_at_start_of_cell_and_register_it_as_a_reference.adoc", shouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference, nil},
+	{"should discover anchor at start of cell and register it as a reference", "asciidoctor/tables_test_should_discover_anchor_at_start_of_cell_and_register_it_as_a_reference.adoc", tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference, nil},
 
-	{"should catalog anchor at start of cell in implicit header row when column has a style", "asciidoctor/tables_test_should_catalog_anchor_at_start_of_cell_in_implicit_header_row_when_column_has_a_style.adoc", shouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle, nil},
+	{"should catalog anchor at start of cell in implicit header row when column has a style", "asciidoctor/tables_test_should_catalog_anchor_at_start_of_cell_in_implicit_header_row_when_column_has_a_style.adoc", tablesTestShouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle, nil},
 
-	{"should catalog anchor at start of cell in explicit header row when column has a style", "asciidoctor/tables_test_should_catalog_anchor_at_start_of_cell_in_explicit_header_row_when_column_has_a_style.adoc", shouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle, nil},
+	{"should catalog anchor at start of cell in explicit header row when column has a style", "asciidoctor/tables_test_should_catalog_anchor_at_start_of_cell_in_explicit_header_row_when_column_has_a_style.adoc", tablesTestShouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle, nil},
 
-	{"should catalog anchor at start of cell in first row", "asciidoctor/tables_test_should_catalog_anchor_at_start_of_cell_in_first_row.adoc", shouldCatalogAnchorAtStartOfCellInFirstRow, nil},
+	{"should catalog anchor at start of cell in first row", "asciidoctor/tables_test_should_catalog_anchor_at_start_of_cell_in_first_row.adoc", tablesTestShouldCatalogAnchorAtStartOfCellInFirstRow, nil},
 
-	{"footnotes should not be shared between an AsciiDoc table cell and the main document", "asciidoctor/tables_test_footnotes_should_not_be_shared_between_an_ascii_doc_table_cell_and_the_main_document.adoc", footnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocument, nil},
+	{"footnotes should not be shared between an AsciiDoc table cell and the main document", "asciidoctor/tables_test_footnotes_should_not_be_shared_between_an_ascii_doc_table_cell_and_the_main_document.adoc", tablesTestFootnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocument, nil},
 
-	{"callout numbers should be globally unique, including AsciiDoc table cells", "asciidoctor/tables_test_callout_numbers_should_be_globally_unique_including_ascii_doc_table_cells.adoc", calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells, nil},
+	{"callout numbers should be globally unique, including AsciiDoc table cells", "asciidoctor/tables_test_callout_numbers_should_be_globally_unique_including_ascii_doc_table_cells.adoc", tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells, nil},
 
-	{"compat mode can be activated in AsciiDoc table cell", "asciidoctor/tables_test_compat_mode_can_be_activated_in_ascii_doc_table_cell.adoc", compatModeCanBeActivatedInAsciiDocTableCell, nil},
+	{"compat mode can be activated in AsciiDoc table cell", "asciidoctor/tables_test_compat_mode_can_be_activated_in_ascii_doc_table_cell.adoc", tablesTestCompatModeCanBeActivatedInAsciiDocTableCell, nil},
 
-	{"compat mode in AsciiDoc table cell inherits from parent document", "asciidoctor/tables_test_compat_mode_in_ascii_doc_table_cell_inherits_from_parent_document.adoc", compatModeInAsciiDocTableCellInheritsFromParentDocument, nil},
+	{"compat mode in AsciiDoc table cell inherits from parent document", "asciidoctor/tables_test_compat_mode_in_ascii_doc_table_cell_inherits_from_parent_document.adoc", tablesTestCompatModeInAsciiDocTableCellInheritsFromParentDocument, nil},
 
-	{"compat mode in AsciiDoc table cell can be unset if set in parent document", "asciidoctor/tables_test_compat_mode_in_ascii_doc_table_cell_can_be_unset_if_set_in_parent_document.adoc", compatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument, nil},
+	{"compat mode in AsciiDoc table cell can be unset if set in parent document", "asciidoctor/tables_test_compat_mode_in_ascii_doc_table_cell_can_be_unset_if_set_in_parent_document.adoc", tablesTestCompatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument, nil},
 
-	{"nested table", "asciidoctor/tables_test_nested_table.adoc", nestedTable, nil},
+	{"nested table", "asciidoctor/tables_test_nested_table.adoc", tablesTestNestedTable, nil},
 
-	{"can set format of nested table to psv", "asciidoctor/tables_test_can_set_format_of_nested_table_to_psv.adoc", canSetFormatOfNestedTableToPsv, nil},
+	{"can set format of nested table to psv", "asciidoctor/tables_test_can_set_format_of_nested_table_to_psv.adoc", tablesTestCanSetFormatOfNestedTableToPsv, nil},
 
-	{"AsciiDoc table cell should inherit to_dir option from parent document", "asciidoctor/tables_test_ascii_doc_table_cell_should_inherit_to_dir_option_from_parent_document.adoc", asciiDocTableCellShouldInheritToDirOptionFromParentDocument, nil},
+	{"AsciiDoc table cell should inherit to_dir option from parent document", "asciidoctor/tables_test_ascii_doc_table_cell_should_inherit_to_dir_option_from_parent_document.adoc", tablesTestAsciiDocTableCellShouldInheritToDirOptionFromParentDocument, nil},
 
-	{"AsciiDoc table cell should not inherit toc setting from parent document", "asciidoctor/tables_test_ascii_doc_table_cell_should_not_inherit_toc_setting_from_parent_document.adoc", asciiDocTableCellShouldNotInheritTocSettingFromParentDocument, nil},
+	{"AsciiDoc table cell should not inherit toc setting from parent document", "asciidoctor/tables_test_ascii_doc_table_cell_should_not_inherit_toc_setting_from_parent_document.adoc", tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument, nil},
 
-	{"should be able to enable toc in an AsciiDoc table cell", "asciidoctor/tables_test_should_be_able_to_enable_toc_in_an_ascii_doc_table_cell.adoc", shouldBeAbleToEnableTocInAnAsciiDocTableCell, nil},
+	{"should be able to enable toc in an AsciiDoc table cell", "asciidoctor/tables_test_should_be_able_to_enable_toc_in_an_ascii_doc_table_cell.adoc", tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell, nil},
 
-	{"should be able to enable toc in an AsciiDoc table cell even if hard unset by API", "asciidoctor/tables_test_should_be_able_to_enable_toc_in_an_ascii_doc_table_cell_even_if_hard_unset_by_api.adoc", shouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi, nil},
+	{"should be able to enable toc in an AsciiDoc table cell even if hard unset by API", "asciidoctor/tables_test_should_be_able_to_enable_toc_in_an_ascii_doc_table_cell_even_if_hard_unset_by_api.adoc", tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi, nil},
 
-	{"should be able to enable toc in both outer document and in an AsciiDoc table cell", "asciidoctor/tables_test_should_be_able_to_enable_toc_in_both_outer_document_and_in_an_ascii_doc_table_cell.adoc", shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell, nil},
+	{"should be able to enable toc in both outer document and in an AsciiDoc table cell", "asciidoctor/tables_test_should_be_able_to_enable_toc_in_both_outer_document_and_in_an_ascii_doc_table_cell.adoc", tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell, nil},
 
-	{"document in an AsciiDoc table cell should not see doctitle of parent", "asciidoctor/tables_test_document_in_an_ascii_doc_table_cell_should_not_see_doctitle_of_parent.adoc", documentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent, nil},
+	{"document in an AsciiDoc table cell should not see doctitle of parent", "asciidoctor/tables_test_document_in_an_ascii_doc_table_cell_should_not_see_doctitle_of_parent.adoc", tablesTestDocumentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent, nil},
 
-	{"cell background color", "asciidoctor/tables_test_cell_background_color.adoc", cellBackgroundColor, nil},
+	{"cell background color", "asciidoctor/tables_test_cell_background_color.adoc", tablesTestCellBackgroundColor, nil},
 
-	{"should warn if table block is not terminated", "asciidoctor/tables_test_should_warn_if_table_block_is_not_terminated.adoc", shouldWarnIfTableBlockIsNotTerminated, nil},
+	{"should warn if table block is not terminated", "asciidoctor/tables_test_should_warn_if_table_block_is_not_terminated.adoc", tablesTestShouldWarnIfTableBlockIsNotTerminated, nil},
 
-	{"should show correct line number in warning about unterminated block inside AsciiDoc table cell", "asciidoctor/tables_test_should_show_correct_line_number_in_warning_about_unterminated_block_inside_ascii_doc_table_cell.adoc", shouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTableCell, nil},
+	{"should show correct line number in warning about unterminated block inside AsciiDoc table cell", "asciidoctor/tables_test_should_show_correct_line_number_in_warning_about_unterminated_block_inside_ascii_doc_table_cell.adoc", tablesTestShouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTableCell, nil},
 
-	{"custom separator for an AsciiDoc table cell", "asciidoctor/tables_test_custom_separator_for_an_ascii_doc_table_cell.adoc", customSeparatorForAnAsciiDocTableCell, nil},
+	{"custom separator for an AsciiDoc table cell", "asciidoctor/tables_test_custom_separator_for_an_ascii_doc_table_cell.adoc", tablesTestCustomSeparatorForAnAsciiDocTableCell, nil},
 
-	{"table with breakable option docbook 5", "asciidoctor/tables_test_table_with_breakable_option_docbook_5.adoc", tableWithBreakableOptionDocbook5, nil},
+	{"table with breakable option docbook 5", "asciidoctor/tables_test_table_with_breakable_option_docbook_5.adoc", tablesTestTableWithBreakableOptionDocbook5, nil},
 
-	{"table with unbreakable option docbook 5", "asciidoctor/tables_test_table_with_unbreakable_option_docbook_5.adoc", tableWithUnbreakableOptionDocbook5, nil},
+	{"table with unbreakable option docbook 5", "asciidoctor/tables_test_table_with_unbreakable_option_docbook_5.adoc", tablesTestTableWithUnbreakableOptionDocbook5, nil},
 
-	{"no implicit header row if cell in first line is quoted and spans multiple lines", "asciidoctor/tables_test_no_implicit_header_row_if_cell_in_first_line_is_quoted_and_spans_multiple_lines.adoc", noImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines, nil},
+	{"no implicit header row if cell in first line is quoted and spans multiple lines", "asciidoctor/tables_test_no_implicit_header_row_if_cell_in_first_line_is_quoted_and_spans_multiple_lines.adoc", tablesTestNoImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines, nil},
 
-	{"converts simple dsv table", "asciidoctor/tables_test_converts_simple_dsv_table.adoc", convertsSimpleDsvTable, nil},
+	{"converts simple dsv table", "asciidoctor/tables_test_converts_simple_dsv_table.adoc", tablesTestConvertsSimpleDsvTable, nil},
 
-	{"dsv format shorthand", "asciidoctor/tables_test_dsv_format_shorthand.adoc", dsvFormatShorthand, nil},
+	{"dsv format shorthand", "asciidoctor/tables_test_dsv_format_shorthand.adoc", tablesTestDsvFormatShorthand, nil},
 
-	{"single cell in DSV table should only produce single row", "asciidoctor/tables_test_single_cell_in_dsv_table_should_only_produce_single_row.adoc", singleCellInDsvTableShouldOnlyProduceSingleRow, nil},
+	{"single cell in DSV table should only produce single row", "asciidoctor/tables_test_single_cell_in_dsv_table_should_only_produce_single_row.adoc", tablesTestSingleCellInDsvTableShouldOnlyProduceSingleRow, nil},
 
-	{"should treat trailing colon as an empty cell", "asciidoctor/tables_test_should_treat_trailing_colon_as_an_empty_cell.adoc", shouldTreatTrailingColonAsAnEmptyCell, nil},
+	{"should treat trailing colon as an empty cell", "asciidoctor/tables_test_should_treat_trailing_colon_as_an_empty_cell.adoc", tablesTestShouldTreatTrailingColonAsAnEmptyCell, nil},
 
-	{"should treat trailing comma as an empty cell", "asciidoctor/tables_test_should_treat_trailing_comma_as_an_empty_cell.adoc", shouldTreatTrailingCommaAsAnEmptyCell, nil},
+	{"should treat trailing comma as an empty cell", "asciidoctor/tables_test_should_treat_trailing_comma_as_an_empty_cell.adoc", tablesTestShouldTreatTrailingCommaAsAnEmptyCell, nil},
 
-	{"should log error but not crash if cell data has unclosed quote", "asciidoctor/tables_test_should_log_error_but_not_crash_if_cell_data_has_unclosed_quote.adoc", shouldLogErrorButNotCrashIfCellDataHasUnclosedQuote, nil},
+	{"should log error but not crash if cell data has unclosed quote", "asciidoctor/tables_test_should_log_error_but_not_crash_if_cell_data_has_unclosed_quote.adoc", tablesTestShouldLogErrorButNotCrashIfCellDataHasUnclosedQuote, nil},
 
-	{"should preserve newlines in quoted CSV values", "asciidoctor/tables_test_should_preserve_newlines_in_quoted_csv_values.adoc", shouldPreserveNewlinesInQuotedCsvValues, nil},
+	{"should preserve newlines in quoted CSV values", "asciidoctor/tables_test_should_preserve_newlines_in_quoted_csv_values.adoc", tablesTestShouldPreserveNewlinesInQuotedCsvValues, nil},
 
-	{"mixed unquoted records and quoted records with escaped quotes, commas, and wrapped lines", "asciidoctor/tables_test_mixed_unquoted_records_and_quoted_records_with_escaped_quotes_commas_and_wrapped_lines.adoc", mixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrappedLines, nil},
+	{"mixed unquoted records and quoted records with escaped quotes, commas, and wrapped lines", "asciidoctor/tables_test_mixed_unquoted_records_and_quoted_records_with_escaped_quotes_commas_and_wrapped_lines.adoc", tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrappedLines, nil},
 
-	{"should allow quotes around a CSV value to be on their own lines", "asciidoctor/tables_test_should_allow_quotes_around_a_csv_value_to_be_on_their_own_lines.adoc", shouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines, nil},
+	{"should allow quotes around a CSV value to be on their own lines", "asciidoctor/tables_test_should_allow_quotes_around_a_csv_value_to_be_on_their_own_lines.adoc", tablesTestShouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines, nil},
 
-	{"csv format shorthand", "asciidoctor/tables_test_csv_format_shorthand.adoc", csvFormatShorthand, nil},
+	{"csv format shorthand", "asciidoctor/tables_test_csv_format_shorthand.adoc", tablesTestCsvFormatShorthand, nil},
 
-	{"custom csv separator", "asciidoctor/tables_test_custom_csv_separator.adoc", customCsvSeparator, nil},
+	{"custom csv separator", "asciidoctor/tables_test_custom_csv_separator.adoc", tablesTestCustomCsvSeparator, nil},
 
-	{"single cell in CSV table should only produce single row", "asciidoctor/tables_test_single_cell_in_csv_table_should_only_produce_single_row.adoc", singleCellInCsvTableShouldOnlyProduceSingleRow, nil},
+	{"single cell in CSV table should only produce single row", "asciidoctor/tables_test_single_cell_in_csv_table_should_only_produce_single_row.adoc", tablesTestSingleCellInCsvTableShouldOnlyProduceSingleRow, nil},
 
-	{"cell formatted with AsciiDoc style", "asciidoctor/tables_test_cell_formatted_with_ascii_doc_style.adoc", cellFormattedWithAsciiDocStyle, nil},
+	{"cell formatted with AsciiDoc style", "asciidoctor/tables_test_cell_formatted_with_ascii_doc_style.adoc", tablesTestCellFormattedWithAsciiDocStyle, nil},
 
-	{"should strip whitespace around contents of AsciiDoc cell", "asciidoctor/tables_test_should_strip_whitespace_around_contents_of_ascii_doc_cell.adoc", shouldStripWhitespaceAroundContentsOfAsciiDocCell, nil},
+	{"should strip whitespace around contents of AsciiDoc cell", "asciidoctor/tables_test_should_strip_whitespace_around_contents_of_ascii_doc_cell.adoc", tablesTestShouldStripWhitespaceAroundContentsOfAsciiDocCell, nil},
 }
 
-var convertsSimplePsvTable = &asciidoc.Document{
+var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -611,7 +611,7 @@ var convertsSimplePsvTable = &asciidoc.Document{
 	},
 }
 
-var shouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc.Document{
+var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -971,7 +971,7 @@ var shouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc.Document{
 	},
 }
 
-var shouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
+var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -1331,7 +1331,7 @@ var shouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 	},
 }
 
-var outputsACaptionOnSimplePsvTable = &asciidoc.Document{
+var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -1689,7 +1689,7 @@ var outputsACaptionOnSimplePsvTable = &asciidoc.Document{
 	},
 }
 
-var onlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Document{
+var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -2073,7 +2073,7 @@ var onlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Document{
 	},
 }
 
-var usesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber = &asciidoc.Document{
+var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -2440,7 +2440,7 @@ var usesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber = &asciido
 	},
 }
 
-var disablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Document{
+var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -2802,7 +2802,7 @@ var disablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Document{
 	},
 }
 
-var disablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciidoc.Document{
+var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -3165,7 +3165,7 @@ var disablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciidoc.Document
 	},
 }
 
-var disablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &asciidoc.Document{
+var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -3529,7 +3529,7 @@ var disablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &asciidoc.D
 	},
 }
 
-var ignoresEscapedSeparators = &asciidoc.Document{
+var tablesTestIgnoresEscapedSeparators = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -3619,7 +3619,7 @@ var ignoresEscapedSeparators = &asciidoc.Document{
 	},
 }
 
-var preservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
+var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -3932,7 +3932,7 @@ var preservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 	},
 }
 
-var shouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
+var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -4170,7 +4170,7 @@ var shouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 	},
 }
 
-var shouldAutoRecoverWithWarningIfMissingLeadingSeparatorOnFirstCell = &asciidoc.Document{
+var tablesTestShouldAutoRecoverWithWarningIfMissingLeadingSeparatorOnFirstCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -4206,7 +4206,7 @@ var shouldAutoRecoverWithWarningIfMissingLeadingSeparatorOnFirstCell = &asciidoc
 	},
 }
 
-var performsNormalSubstitutionsOnCellContent = &asciidoc.Document{
+var tablesTestPerformsNormalSubstitutionsOnCellContent = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -4304,7 +4304,7 @@ var performsNormalSubstitutionsOnCellContent = &asciidoc.Document{
 	},
 }
 
-var shouldOnlySubstituteSpecialcharsForLiteralTableCells = &asciidoc.Document{
+var tablesTestShouldOnlySubstituteSpecialcharsForLiteralTableCells = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -4370,7 +4370,7 @@ var shouldOnlySubstituteSpecialcharsForLiteralTableCells = &asciidoc.Document{
 	},
 }
 
-var shouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralTableCells = &asciidoc.Document{
+var tablesTestShouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralTableCells = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -4503,7 +4503,7 @@ var shouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralT
 	},
 }
 
-var shouldIgnoreVTableCellStyle = &asciidoc.Document{
+var tablesTestShouldIgnoreVTableCellStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -4579,7 +4579,7 @@ var shouldIgnoreVTableCellStyle = &asciidoc.Document{
 	},
 }
 
-var tableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &asciidoc.Document{
+var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -4939,7 +4939,7 @@ var tableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &asciidoc.Doc
 	},
 }
 
-var doesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciidoc.Document{
+var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -5454,7 +5454,7 @@ var doesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciidoc.Document
 	},
 }
 
-var canAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.Document{
+var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -5952,7 +5952,7 @@ var canAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.Document{
 	},
 }
 
-var equallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookOutput = &asciidoc.Document{
+var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -6467,7 +6467,7 @@ var equallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookOutput = &a
 	},
 }
 
-var shouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutput = &asciidoc.Document{
+var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -6949,7 +6949,7 @@ var shouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutpu
 	},
 }
 
-var explicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asciidoc.Document{
+var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -7323,7 +7323,7 @@ var explicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asciidoc.Docum
 	},
 }
 
-var firstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
+var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -7633,7 +7633,7 @@ var firstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 	},
 }
 
-var colspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc.Document{
+var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -8014,7 +8014,7 @@ var colspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc.Document{
 	},
 }
 
-var tableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &asciidoc.Document{
+var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -8283,7 +8283,7 @@ var tableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &asciidoc.Doc
 	},
 }
 
-var tableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASingleLine = &asciidoc.Document{
+var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASingleLine = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -8604,7 +8604,7 @@ var tableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASingleLine = &
 	},
 }
 
-var columnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Document{
+var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -8903,7 +8903,7 @@ var columnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Document{
 	},
 }
 
-var colsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
+var tablesTestColsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -9050,7 +9050,7 @@ var colsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
 	},
 }
 
-var colsAttributeMayIncludeSpaces = &asciidoc.Document{
+var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -9349,7 +9349,7 @@ var colsAttributeMayIncludeSpaces = &asciidoc.Document{
 	},
 }
 
-var blankColsAttributeShouldBeIgnored = &asciidoc.Document{
+var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -9595,7 +9595,7 @@ var blankColsAttributeShouldBeIgnored = &asciidoc.Document{
 	},
 }
 
-var emptyColsAttributeShouldBeIgnored = &asciidoc.Document{
+var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -9841,7 +9841,7 @@ var emptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 	},
 }
 
-var tableWithHeaderAndFooter = &asciidoc.Document{
+var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -10245,7 +10245,7 @@ var tableWithHeaderAndFooter = &asciidoc.Document{
 	},
 }
 
-var tableWithHeaderAndFooterDocbook = &asciidoc.Document{
+var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -10656,7 +10656,7 @@ var tableWithHeaderAndFooterDocbook = &asciidoc.Document{
 	},
 }
 
-var shouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &asciidoc.Document{
+var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -10897,7 +10897,7 @@ var shouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &asciidoc.D
 	},
 }
 
-var shouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Document{
+var tablesTestShouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -11033,7 +11033,7 @@ var shouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Document{
 	},
 }
 
-var shouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &asciidoc.Document{
+var tablesTestShouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -11169,7 +11169,7 @@ var shouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &asciidoc.Docume
 	},
 }
 
-var shouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.Document{
+var tablesTestShouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -11305,7 +11305,7 @@ var shouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.Document{
 	},
 }
 
-var shouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asciidoc.Document{
+var tablesTestShouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -11441,7 +11441,7 @@ var shouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asciidoc.Docum
 	},
 }
 
-var tableWithImplicitHeaderRow = &asciidoc.Document{
+var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -11689,7 +11689,7 @@ var tableWithImplicitHeaderRow = &asciidoc.Document{
 	},
 }
 
-var tableWithImplicitHeaderRowOnly = &asciidoc.Document{
+var tablesTestTableWithImplicitHeaderRowOnly = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -11782,7 +11782,7 @@ var tableWithImplicitHeaderRowOnly = &asciidoc.Document{
 	},
 }
 
-var tableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document{
+var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -11966,7 +11966,7 @@ var tableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document{
 	},
 }
 
-var noImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
+var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -12211,7 +12211,7 @@ var noImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 	},
 }
 
-var noImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc.Document{
+var tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -12417,7 +12417,7 @@ var noImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc.Document{
 	},
 }
 
-var shouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColumnHasLStyle = &asciidoc.Document{
+var tablesTestShouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColumnHasLStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -12564,7 +12564,7 @@ var shouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColumnHasLStyle
 	},
 }
 
-var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColumnHasAStyle = &asciidoc.Document{
+var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColumnHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -12719,7 +12719,7 @@ var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColumnHasAStyl
 	},
 }
 
-var shouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderRow = &asciidoc.Document{
+var tablesTestShouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderRow = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -12817,9 +12817,7 @@ var shouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderR
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "literal",
 								},
@@ -12869,7 +12867,7 @@ var shouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderR
 	},
 }
 
-var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCellHasAStyle = &asciidoc.Document{
+var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCellHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -12971,7 +12969,7 @@ var shouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCellHasAStyle 
 	},
 }
 
-var noImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &asciidoc.Document{
+var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -13212,7 +13210,7 @@ var noImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &asciidoc.D
 	},
 }
 
-var noImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
+var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -13466,7 +13464,7 @@ var noImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 	},
 }
 
-var noImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Document{
+var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -13729,7 +13727,7 @@ var noImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Document{
 	},
 }
 
-var stylesNotAppliedToHeaderCells = &asciidoc.Document{
+var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -14179,7 +14177,7 @@ var stylesNotAppliedToHeaderCells = &asciidoc.Document{
 	},
 }
 
-var shouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
+var tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -14403,7 +14401,7 @@ var shouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &as
 	},
 }
 
-var shouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHeader = &asciidoc.Document{
+var tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -14636,7 +14634,7 @@ var shouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHeader = &asci
 	},
 }
 
-var verticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
+var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -15089,7 +15087,7 @@ var verticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
 	},
 }
 
-var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &asciidoc.Document{
+var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -15857,7 +15855,7 @@ var supportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &ascii
 	},
 }
 
-var percentagesAsColumnWidths = &asciidoc.Document{
+var tablesTestPercentagesAsColumnWidths = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -16004,7 +16002,7 @@ var percentagesAsColumnWidths = &asciidoc.Document{
 	},
 }
 
-var spansAlignmentsAndStyles = &asciidoc.Document{
+var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -16542,7 +16540,7 @@ var spansAlignmentsAndStyles = &asciidoc.Document{
 	},
 }
 
-var setsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciidoc.Document{
+var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -16861,7 +16859,7 @@ var setsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciidoc.Document
 	},
 }
 
-var supportsRepeatingCells = &asciidoc.Document{
+var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -17075,7 +17073,7 @@ var supportsRepeatingCells = &asciidoc.Document{
 	},
 }
 
-var calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCellWithColspan = &asciidoc.Document{
+var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCellWithColspan = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -17210,7 +17208,7 @@ var calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCellWithCols
 	},
 }
 
-var calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWithMixedColspans = &asciidoc.Document{
+var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWithMixedColspans = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -17417,7 +17415,7 @@ var calculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWithMixedCols
 	},
 }
 
-var assignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow = &asciidoc.Document{
+var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -17920,7 +17918,7 @@ var assignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow
 	},
 }
 
-var shouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNumberOfColumns = &asciidoc.Document{
+var tablesTestShouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNumberOfColumns = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -18098,7 +18096,7 @@ var shouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNumberOfColu
 	},
 }
 
-var shouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNumberOfColumns = &asciidoc.Document{
+var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNumberOfColumns = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -18219,7 +18217,7 @@ var shouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNumberOfColu
 	},
 }
 
-var shouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNumberOfColumns = &asciidoc.Document{
+var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNumberOfColumns = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -18385,7 +18383,7 @@ var shouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNumberOfColum
 	},
 }
 
-var shouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Document{
+var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -19005,7 +19003,7 @@ var shouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Document{
 	},
 }
 
-var shouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Document{
+var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -19247,7 +19245,7 @@ var shouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Document{
 	},
 }
 
-var shouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Document{
+var tablesTestShouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -19524,7 +19522,7 @@ var shouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Document{
 	},
 }
 
-var shouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdjacentToNonBlankLines = &asciidoc.Document{
+var tablesTestShouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdjacentToNonBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -19594,7 +19592,7 @@ var shouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdjacentToNonB
 	},
 }
 
-var shouldStripTrailingNewlinesWhenSplittingParagraphs = &asciidoc.Document{
+var tablesTestShouldStripTrailingNewlinesWhenSplittingParagraphs = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -19662,7 +19660,7 @@ var shouldStripTrailingNewlinesWhenSplittingParagraphs = &asciidoc.Document{
 	},
 }
 
-var basicAsciiDocCell = &asciidoc.Document{
+var tablesTestBasicAsciiDocCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -19737,7 +19735,7 @@ var basicAsciiDocCell = &asciidoc.Document{
 	},
 }
 
-var asciiDocTableCellShouldBeWrappedInDivWithClassContent = &asciidoc.Document{
+var tablesTestAsciiDocTableCellShouldBeWrappedInDivWithClassContent = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -19791,7 +19789,7 @@ var asciiDocTableCellShouldBeWrappedInDivWithClassContent = &asciidoc.Document{
 	},
 }
 
-var doctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
+var tablesTestDoctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -19832,9 +19830,7 @@ var doctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.AttributeEntry{
 									Name: "doctype",
 									Set: asciidoc.Set{
@@ -19859,7 +19855,7 @@ var doctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
 	},
 }
 
-var shouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -19920,9 +19916,7 @@ var shouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
+												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -19976,7 +19970,7 @@ var shouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
 	},
 }
 
-var shouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &asciidoc.Document{
+var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20037,9 +20031,7 @@ var shouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &a
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
+												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -20101,7 +20093,7 @@ var shouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &a
 	},
 }
 
-var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi = &asciidoc.Document{
+var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20142,9 +20134,7 @@ var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.AttributeEntry{
 									Name: "icons",
 									Set:  nil,
@@ -20171,7 +20161,7 @@ var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi
 	},
 }
 
-var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheApi = &asciidoc.Document{
+var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheApi = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20212,9 +20202,7 @@ var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheA
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.AttributeEntry{
 									Name: "icons",
 									Set: asciidoc.Set{
@@ -20245,7 +20233,7 @@ var shouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheA
 	},
 }
 
-var shouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciidoc.Document{
+var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20309,9 +20297,7 @@ var shouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciid
 										},
 									},
 									Set: asciidoc.Set{
-										&asciidoc.EmptyLine{
-											Text: "",
-										},
+										&asciidoc.NewLine{},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
@@ -20371,7 +20357,7 @@ var shouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciid
 	},
 }
 
-var shouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20424,9 +20410,7 @@ var shouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &ascii
 										},
 									},
 									Set: asciidoc.Set{
-										&asciidoc.EmptyLine{
-											Text: "",
-										},
+										&asciidoc.NewLine{},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
@@ -20478,7 +20462,7 @@ var shouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &ascii
 	},
 }
 
-var shouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20525,9 +20509,7 @@ var shouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell
 										},
 									},
 									Set: asciidoc.Set{
-										&asciidoc.EmptyLine{
-											Text: "",
-										},
+										&asciidoc.NewLine{},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
@@ -20579,7 +20561,7 @@ var shouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell
 	},
 }
 
-var asciiDocContent = &asciidoc.Document{
+var tablesTestAsciiDocContent = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -20890,9 +20872,7 @@ var asciiDocContent = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "Link badges ('XHTML 1.1' and 'CSS') in document footers.",
 								},
@@ -21043,9 +21023,7 @@ var asciiDocContent = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "These three attributes control which document information",
 								},
@@ -21242,7 +21220,7 @@ var asciiDocContent = &asciidoc.Document{
 	},
 }
 
-var shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStartsWithNewline = &asciidoc.Document{
+var tablesTestShouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStartsWithNewline = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -21283,9 +21261,7 @@ var shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStart
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "$ command",
 								},
@@ -21339,7 +21315,7 @@ var shouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStart
 	},
 }
 
-var preprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProcessed = &asciidoc.Document{
+var tablesTestPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProcessed = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -21398,7 +21374,7 @@ var preprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProcessed = &as
 	},
 }
 
-var errorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldHaveCorrectCursor = &asciidoc.Document{
+var tablesTestErrorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldHaveCorrectCursor = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -21572,7 +21548,7 @@ var errorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellSho
 	},
 }
 
-var crossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocument = &asciidoc.Document{
+var tablesTestCrossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -21667,7 +21643,7 @@ var crossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocumen
 	},
 }
 
-var shouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asciidoc.Document{
+var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -21935,7 +21911,7 @@ var shouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asciidoc.Docum
 	},
 }
 
-var shouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
+var tablesTestShouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22071,7 +22047,7 @@ var shouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle = &as
 	},
 }
 
-var shouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
+var tablesTestShouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22218,7 +22194,7 @@ var shouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle = &as
 	},
 }
 
-var shouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
+var tablesTestShouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22320,7 +22296,7 @@ var shouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
 	},
 }
 
-var footnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocument = &asciidoc.Document{
+var tablesTestFootnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22374,7 +22350,7 @@ var footnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocument = &as
 	},
 }
 
-var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.Document{
+var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22427,9 +22403,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
+												&asciidoc.NewLine{},
 												&asciidoc.Listing{
 													AttributeList: asciidoc.AttributeList{
 														&asciidoc.ShorthandAttribute{
@@ -22525,9 +22499,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
+												&asciidoc.NewLine{},
 												&asciidoc.Listing{
 													AttributeList: asciidoc.AttributeList{
 														&asciidoc.ShorthandAttribute{
@@ -22642,7 +22614,7 @@ var calloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.
 	},
 }
 
-var compatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
+var tablesTestCompatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22683,9 +22655,7 @@ var compatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.AttributeEntry{
 									Name: "compat-mode",
 									Set:  nil,
@@ -22706,7 +22676,7 @@ var compatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
 	},
 }
 
-var compatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document{
+var tablesTestCompatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22832,9 +22802,7 @@ var compatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "The word 'slanted' is emphasized.",
 								},
@@ -22855,7 +22823,7 @@ var compatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document
 	},
 }
 
-var compatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &asciidoc.Document{
+var tablesTestCompatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22981,9 +22949,7 @@ var compatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &asciidoc.Doc
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.AttributeReset{
 									Name: "compat-mode",
 								},
@@ -23010,7 +22976,7 @@ var compatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &asciidoc.Doc
 	},
 }
 
-var nestedTable = &asciidoc.Document{
+var tablesTestNestedTable = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -23232,7 +23198,7 @@ var nestedTable = &asciidoc.Document{
 	},
 }
 
-var canSetFormatOfNestedTableToPsv = &asciidoc.Document{
+var tablesTestCanSetFormatOfNestedTableToPsv = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -23340,9 +23306,7 @@ var canSetFormatOfNestedTableToPsv = &asciidoc.Document{
 								},
 							},
 							Set: asciidoc.Set{
-								&asciidoc.EmptyLine{
-									Text: "",
-								},
+								&asciidoc.NewLine{},
 								&asciidoc.Paragraph{
 									AttributeList: asciidoc.AttributeList{
 										&asciidoc.NamedAttribute{
@@ -23380,7 +23344,7 @@ var canSetFormatOfNestedTableToPsv = &asciidoc.Document{
 	},
 }
 
-var asciiDocTableCellShouldInheritToDirOptionFromParentDocument = &asciidoc.Document{
+var tablesTestAsciiDocTableCellShouldInheritToDirOptionFromParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.String{
 			Value: ", parse: true, to_dir: testdir",
@@ -23405,7 +23369,7 @@ var asciiDocTableCellShouldInheritToDirOptionFromParentDocument = &asciidoc.Docu
 	},
 }
 
-var asciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Document{
+var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -23462,9 +23426,7 @@ var asciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Do
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
+												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -23507,7 +23469,7 @@ var asciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Do
 	},
 }
 
-var shouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -23560,9 +23522,7 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
+												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -23622,7 +23582,7 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 	},
 }
 
-var shouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc.Document{
+var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -23675,9 +23635,7 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
+												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -23737,7 +23695,7 @@ var shouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc
 	},
 }
 
-var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -23794,9 +23752,7 @@ var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciid
 												},
 											},
 											Set: asciidoc.Set{
-												&asciidoc.EmptyLine{
-													Text: "",
-												},
+												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
 													Set:           nil,
@@ -23886,7 +23842,7 @@ var shouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciid
 	},
 }
 
-var documentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &asciidoc.Document{
+var tablesTestDocumentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -23985,7 +23941,7 @@ var documentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &asciidoc.Docume
 	},
 }
 
-var cellBackgroundColor = &asciidoc.Document{
+var tablesTestCellBackgroundColor = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24225,7 +24181,7 @@ var cellBackgroundColor = &asciidoc.Document{
 	},
 }
 
-var shouldWarnIfTableBlockIsNotTerminated = &asciidoc.Document{
+var tablesTestShouldWarnIfTableBlockIsNotTerminated = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24266,7 +24222,7 @@ var shouldWarnIfTableBlockIsNotTerminated = &asciidoc.Document{
 	},
 }
 
-var shouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTableCell = &asciidoc.Document{
+var tablesTestShouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24328,7 +24284,7 @@ var shouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTabl
 	},
 }
 
-var customSeparatorForAnAsciiDocTableCell = &asciidoc.Document{
+var tablesTestCustomSeparatorForAnAsciiDocTableCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24434,7 +24390,7 @@ var customSeparatorForAnAsciiDocTableCell = &asciidoc.Document{
 	},
 }
 
-var tableWithBreakableOptionDocbook5 = &asciidoc.Document{
+var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24622,7 +24578,7 @@ var tableWithBreakableOptionDocbook5 = &asciidoc.Document{
 	},
 }
 
-var tableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
+var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24810,7 +24766,7 @@ var tableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 	},
 }
 
-var noImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines = &asciidoc.Document{
+var tablesTestNoImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24878,7 +24834,7 @@ var noImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines = &asciido
 	},
 }
 
-var convertsSimpleDsvTable = &asciidoc.Document{
+var tablesTestConvertsSimpleDsvTable = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24943,7 +24899,7 @@ var convertsSimpleDsvTable = &asciidoc.Document{
 	},
 }
 
-var dsvFormatShorthand = &asciidoc.Document{
+var tablesTestDsvFormatShorthand = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24967,7 +24923,7 @@ var dsvFormatShorthand = &asciidoc.Document{
 	},
 }
 
-var singleCellInDsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
+var tablesTestSingleCellInDsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -24987,7 +24943,7 @@ var singleCellInDsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
 	},
 }
 
-var shouldTreatTrailingColonAsAnEmptyCell = &asciidoc.Document{
+var tablesTestShouldTreatTrailingColonAsAnEmptyCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25015,7 +24971,7 @@ var shouldTreatTrailingColonAsAnEmptyCell = &asciidoc.Document{
 	},
 }
 
-var shouldTreatTrailingCommaAsAnEmptyCell = &asciidoc.Document{
+var tablesTestShouldTreatTrailingCommaAsAnEmptyCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25043,7 +24999,7 @@ var shouldTreatTrailingCommaAsAnEmptyCell = &asciidoc.Document{
 	},
 }
 
-var shouldLogErrorButNotCrashIfCellDataHasUnclosedQuote = &asciidoc.Document{
+var tablesTestShouldLogErrorButNotCrashIfCellDataHasUnclosedQuote = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25067,7 +25023,7 @@ var shouldLogErrorButNotCrashIfCellDataHasUnclosedQuote = &asciidoc.Document{
 	},
 }
 
-var shouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
+var tablesTestShouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25212,7 +25168,7 @@ var shouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
 	},
 }
 
-var mixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrappedLines = &asciidoc.Document{
+var tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrappedLines = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25285,7 +25241,7 @@ var mixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrappedLines =
 	},
 }
 
-var shouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines = &asciidoc.Document{
+var tablesTestShouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25358,7 +25314,7 @@ var shouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines = &asciidoc.Document{
 	},
 }
 
-var csvFormatShorthand = &asciidoc.Document{
+var tablesTestCsvFormatShorthand = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25382,7 +25338,7 @@ var csvFormatShorthand = &asciidoc.Document{
 	},
 }
 
-var customCsvSeparator = &asciidoc.Document{
+var tablesTestCustomCsvSeparator = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25431,7 +25387,7 @@ var customCsvSeparator = &asciidoc.Document{
 	},
 }
 
-var singleCellInCsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
+var tablesTestSingleCellInCsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25451,7 +25407,7 @@ var singleCellInCsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
 	},
 }
 
-var cellFormattedWithAsciiDocStyle = &asciidoc.Document{
+var tablesTestCellFormattedWithAsciiDocStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -25576,7 +25532,7 @@ var cellFormattedWithAsciiDocStyle = &asciidoc.Document{
 	},
 }
 
-var shouldStripWhitespaceAroundContentsOfAsciiDocCell = &asciidoc.Document{
+var tablesTestShouldStripWhitespaceAroundContentsOfAsciiDocCell = &asciidoc.Document{
 	Set: asciidoc.Set{
 		&asciidoc.EmptyLine{
 			Text: "",

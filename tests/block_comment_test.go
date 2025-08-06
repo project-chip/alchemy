@@ -4,7 +4,7 @@ import "github.com/project-chip/alchemy/asciidoc"
 
 var blockComment = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.MultiLineComment{

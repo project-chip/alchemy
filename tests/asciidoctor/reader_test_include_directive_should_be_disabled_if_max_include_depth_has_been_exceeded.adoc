@@ -1,0 +1,4 @@
+.lines
+        ////
+        include::fixtures/no-such-file.adoc[]
+        ////

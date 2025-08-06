@@ -1,0 +1,6 @@
+
+ifndef::grail[]
+ifndef::grail[]
+not here
+endif::grail[]
+endif::grail[]

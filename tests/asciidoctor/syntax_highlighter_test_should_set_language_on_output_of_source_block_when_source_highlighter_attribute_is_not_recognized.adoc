@@ -1,0 +1,7 @@
+
+:source-highlighter: unknown
+
+[source, ruby]
+----
+puts 'Hello, World!'
+----

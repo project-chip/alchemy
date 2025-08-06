@@ -1,0 +1,5 @@
+
+[indent=0]
+----
+include::fixtures/tagged-class.rb[tags=bark;!bark-other]
+----

@@ -1,0 +1,5 @@
+
+[.rolename]
+snippet::{gist-ns}12345[mode=edit]
+
+following paragraph

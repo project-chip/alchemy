@@ -1,0 +1,14 @@
+
+= foobar (1)
+Author Name
+:doctype: manpage
+:man manual: Foo Bar Manual
+:man source: Foo Bar 1.0
+
+== SYNOPSIS
+
+*foobar* [_OPTIONS_]...
+
+== DESCRIPTION
+
+When you need to put some foo on the bar.

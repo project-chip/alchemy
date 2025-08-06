@@ -1,0 +1,5 @@
+
+= Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application
+David Heinemeier Hansson <david@37signals.com>
+
+Getting Real details the business, design, programming, and marketing principles of 37signals.

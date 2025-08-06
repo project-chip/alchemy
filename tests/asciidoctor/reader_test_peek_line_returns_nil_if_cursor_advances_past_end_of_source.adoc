@@ -1,0 +1,4 @@
+
+ifdef::foobar[]
+swallowed content
+endif::foobar[]

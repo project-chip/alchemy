@@ -481,7 +481,7 @@ func (s *Section) GetDataType() *types.DataType {
 	var dts string
 	for _, el := range s.Elements() {
 		switch el := el.(type) {
-		case asciidoc.EmptyLine:
+		case *asciidoc.EmptyLine:
 		case *asciidoc.String:
 			match := dataTypeDefinitionPattern.FindStringSubmatch(el.Value)
 			if match != nil {

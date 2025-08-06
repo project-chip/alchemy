@@ -1,0 +1,12 @@
+
+= Document Title
+Author Name
+
+== Section One
+
+Sample paragraph
+
+.Related
+****
+Sidebar content
+****

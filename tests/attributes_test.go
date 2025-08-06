@@ -12,198 +12,198 @@ func TestAttributes(t *testing.T) {
 
 var attributesTests = parseTests{
 
-	{"creates an attribute by fusing a legacy multi-line value", "asciidoctor/attributes_test_creates_an_attribute_by_fusing_a_legacy_multi_line_value.adoc", createsAnAttributeByFusingALegacyMultiLineValue, nil},
+	{"creates an attribute by fusing a legacy multi-line value", "asciidoctor/attributes_test_creates_an_attribute_by_fusing_a_legacy_multi_line_value.adoc", attributesTestCreatesAnAttributeByFusingALegacyMultiLineValue, nil},
 
-	{"creates an attribute by fusing a multi-line value", "asciidoctor/attributes_test_creates_an_attribute_by_fusing_a_multi_line_value.adoc", createsAnAttributeByFusingAMultiLineValue, nil},
+	{"creates an attribute by fusing a multi-line value", "asciidoctor/attributes_test_creates_an_attribute_by_fusing_a_multi_line_value.adoc", attributesTestCreatesAnAttributeByFusingAMultiLineValue, nil},
 
-	{"honors line break characters in multi-line values", "asciidoctor/attributes_test_honors_line_break_characters_in_multi_line_values.adoc", honorsLineBreakCharactersInMultiLineValues, nil},
+	{"honors line break characters in multi-line values", "asciidoctor/attributes_test_honors_line_break_characters_in_multi_line_values.adoc", attributesTestHonorsLineBreakCharactersInMultiLineValues, nil},
 
-	{"should allow pass macro to surround a multi-line value that contains line breaks", "asciidoctor/attributes_test_should_allow_pass_macro_to_surround_a_multi_line_value_that_contains_line_breaks.adoc", shouldAllowPassMacroToSurroundAMultiLineValueThatContainsLineBreaks, nil},
+	{"should allow pass macro to surround a multi-line value that contains line breaks", "asciidoctor/attributes_test_should_allow_pass_macro_to_surround_a_multi_line_value_that_contains_line_breaks.adoc", attributesTestShouldAllowPassMacroToSurroundAMultiLineValueThatContainsLineBreaks, nil},
 
-	{"performs attribute substitution on attribute value", "asciidoctor/attributes_test_performs_attribute_substitution_on_attribute_value.adoc", performsAttributeSubstitutionOnAttributeValue, nil},
+	{"performs attribute substitution on attribute value", "asciidoctor/attributes_test_performs_attribute_substitution_on_attribute_value.adoc", attributesTestPerformsAttributeSubstitutionOnAttributeValue, nil},
 
-	{"resolves attributes inside attribute value within header", "asciidoctor/attributes_test_resolves_attributes_inside_attribute_value_within_header.adoc", resolvesAttributesInsideAttributeValueWithinHeader, nil},
+	{"resolves attributes inside attribute value within header", "asciidoctor/attributes_test_resolves_attributes_inside_attribute_value_within_header.adoc", attributesTestResolvesAttributesInsideAttributeValueWithinHeader, nil},
 
-	{"resolves attributes and pass macro inside attribute value outside header", "asciidoctor/attributes_test_resolves_attributes_and_pass_macro_inside_attribute_value_outside_header.adoc", resolvesAttributesAndPassMacroInsideAttributeValueOutsideHeader, nil},
+	{"resolves attributes and pass macro inside attribute value outside header", "asciidoctor/attributes_test_resolves_attributes_and_pass_macro_inside_attribute_value_outside_header.adoc", attributesTestResolvesAttributesAndPassMacroInsideAttributeValueOutsideHeader, nil},
 
-	{"should handle multibyte characters when limiting attribute value size", "asciidoctor/attributes_test_should_handle_multibyte_characters_when_limiting_attribute_value_size.adoc", shouldHandleMultibyteCharactersWhenLimitingAttributeValueSize, nil},
+	{"should handle multibyte characters when limiting attribute value size", "asciidoctor/attributes_test_should_handle_multibyte_characters_when_limiting_attribute_value_size.adoc", attributesTestShouldHandleMultibyteCharactersWhenLimitingAttributeValueSize, nil},
 
-	{"should not mangle multibyte characters when limiting attribute value size", "asciidoctor/attributes_test_should_not_mangle_multibyte_characters_when_limiting_attribute_value_size.adoc", shouldNotMangleMultibyteCharactersWhenLimitingAttributeValueSize, nil},
+	{"should not mangle multibyte characters when limiting attribute value size", "asciidoctor/attributes_test_should_not_mangle_multibyte_characters_when_limiting_attribute_value_size.adoc", attributesTestShouldNotMangleMultibyteCharactersWhenLimitingAttributeValueSize, nil},
 
-	{"resolves user-home attribute if safe mode is less than SERVER", "asciidoctor/attributes_test_resolves_user_home_attribute_if_safe_mode_is_less_than_server.adoc", resolvesUserHomeAttributeIfSafeModeIsLessThanServer, nil},
+	{"resolves user-home attribute if safe mode is less than SERVER", "asciidoctor/attributes_test_resolves_user_home_attribute_if_safe_mode_is_less_than_server.adoc", attributesTestResolvesUserHomeAttributeIfSafeModeIsLessThanServer, nil},
 
-	{"user-home attribute resolves to . if safe mode is SERVER or greater", "asciidoctor/attributes_test_user_home_attribute_resolves_to___if_safe_mode_is_server_or_greater.adoc", userHomeAttributeResolvesToIfSafeModeIsServerOrGreater, nil},
+	{"user-home attribute resolves to . if safe mode is SERVER or greater", "asciidoctor/attributes_test_user_home_attribute_resolves_to___if_safe_mode_is_server_or_greater.adoc", attributesTestUserHomeAttributeResolvesToIfSafeModeIsServerOrGreater, nil},
 
-	{"user-home attribute can be overridden by API if safe mode is less than SERVER", "asciidoctor/attributes_test_user_home_attribute_can_be_overridden_by_api_if_safe_mode_is_less_than_server.adoc", userHomeAttributeCanBeOverriddenByApiIfSafeModeIsLessThanServer, nil},
+	{"user-home attribute can be overridden by API if safe mode is less than SERVER", "asciidoctor/attributes_test_user_home_attribute_can_be_overridden_by_api_if_safe_mode_is_less_than_server.adoc", attributesTestUserHomeAttributeCanBeOverriddenByApiIfSafeModeIsLessThanServer, nil},
 
-	{"user-home attribute can be overridden by API if safe mode is SERVER or greater", "asciidoctor/attributes_test_user_home_attribute_can_be_overridden_by_api_if_safe_mode_is_server_or_greater.adoc", userHomeAttributeCanBeOverriddenByApiIfSafeModeIsServerOrGreater, nil},
+	{"user-home attribute can be overridden by API if safe mode is SERVER or greater", "asciidoctor/attributes_test_user_home_attribute_can_be_overridden_by_api_if_safe_mode_is_server_or_greater.adoc", attributesTestUserHomeAttributeCanBeOverriddenByApiIfSafeModeIsServerOrGreater, nil},
 
-	{"should not recognize pass macro with invalid substitution list in attribute value", "asciidoctor/attributes_test_should_not_recognize_pass_macro_with_invalid_substitution_list_in_attribute_value.adoc", shouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue, nil},
+	{"should not recognize pass macro with invalid substitution list in attribute value", "asciidoctor/attributes_test_should_not_recognize_pass_macro_with_invalid_substitution_list_in_attribute_value.adoc", attributesTestShouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue, nil},
 
-	{"attribute set via API overrides attribute set in document", "asciidoctor/attributes_test_attribute_set_via_api_overrides_attribute_set_in_document.adoc", attributeSetViaApiOverridesAttributeSetInDocument, nil},
+	{"attribute set via API overrides attribute set in document", "asciidoctor/attributes_test_attribute_set_via_api_overrides_attribute_set_in_document.adoc", attributesTestAttributeSetViaApiOverridesAttributeSetInDocument, nil},
 
-	{"backend and doctype attributes are set by default in custom configuration", "asciidoctor/attributes_test_backend_and_doctype_attributes_are_set_by_default_in_custom_configuration.adoc", backendAndDoctypeAttributesAreSetByDefaultInCustomConfiguration, nil},
+	{"backend and doctype attributes are set by default in custom configuration", "asciidoctor/attributes_test_backend_and_doctype_attributes_are_set_by_default_in_custom_configuration.adoc", attributesTestBackendAndDoctypeAttributesAreSetByDefaultInCustomConfiguration, nil},
 
-	{"backend attributes are updated if backend attribute is defined in document and safe mode is less than SERVER", "asciidoctor/attributes_test_backend_attributes_are_updated_if_backend_attribute_is_defined_in_document_and_safe_mode_is_less_than_server.adoc", backendAttributesAreUpdatedIfBackendAttributeIsDefinedInDocumentAndSafeModeIsLessThanServer, nil},
+	{"backend attributes are updated if backend attribute is defined in document and safe mode is less than SERVER", "asciidoctor/attributes_test_backend_attributes_are_updated_if_backend_attribute_is_defined_in_document_and_safe_mode_is_less_than_server.adoc", attributesTestBackendAttributesAreUpdatedIfBackendAttributeIsDefinedInDocumentAndSafeModeIsLessThanServer, nil},
 
-	{"backend attributes defined in document options overrides backend attribute in document", "asciidoctor/attributes_test_backend_attributes_defined_in_document_options_overrides_backend_attribute_in_document.adoc", backendAttributesDefinedInDocumentOptionsOverridesBackendAttributeInDocument, nil},
+	{"backend attributes defined in document options overrides backend attribute in document", "asciidoctor/attributes_test_backend_attributes_defined_in_document_options_overrides_backend_attribute_in_document.adoc", attributesTestBackendAttributesDefinedInDocumentOptionsOverridesBackendAttributeInDocument, nil},
 
-	{"set_attribute should set attribute if key is not locked", "asciidoctor/attributes_test_set_attribute_should_set_attribute_if_key_is_not_locked.adoc", setAttributeShouldSetAttributeIfKeyIsNotLocked, nil},
+	{"set_attribute should set attribute if key is not locked", "asciidoctor/attributes_test_set_attribute_should_set_attribute_if_key_is_not_locked.adoc", attributesTestSetAttributeShouldSetAttributeIfKeyIsNotLocked, nil},
 
-	{"convert properly with simple names", "asciidoctor/attributes_test_convert_properly_with_simple_names.adoc", convertProperlyWithSimpleNames, nil},
+	{"convert properly with simple names", "asciidoctor/attributes_test_convert_properly_with_simple_names.adoc", attributesTestConvertProperlyWithSimpleNames, nil},
 
-	{"convert properly with single character name", "asciidoctor/attributes_test_convert_properly_with_single_character_name.adoc", convertProperlyWithSingleCharacterName, nil},
+	{"convert properly with single character name", "asciidoctor/attributes_test_convert_properly_with_single_character_name.adoc", attributesTestConvertProperlyWithSingleCharacterName, nil},
 
-	{"ignores lines with bad attributes if attribute-missing is drop-line", "asciidoctor/attributes_test_ignores_lines_with_bad_attributes_if_attribute_missing_is_drop_line.adoc", ignoresLinesWithBadAttributesIfAttributeMissingIsDropLine, nil},
+	{"ignores lines with bad attributes if attribute-missing is drop-line", "asciidoctor/attributes_test_ignores_lines_with_bad_attributes_if_attribute_missing_is_drop_line.adoc", attributesTestIgnoresLinesWithBadAttributesIfAttributeMissingIsDropLine, nil},
 
-	{"attribute value gets interpreted when converting", "asciidoctor/attributes_test_attribute_value_gets_interpreted_when_converting.adoc", attributeValueGetsInterpretedWhenConverting, nil},
+	{"attribute value gets interpreted when converting", "asciidoctor/attributes_test_attribute_value_gets_interpreted_when_converting.adoc", attributesTestAttributeValueGetsInterpretedWhenConverting, nil},
 
-	{"should not drop line with reference to missing attribute by default", "asciidoctor/attributes_test_should_not_drop_line_with_reference_to_missing_attribute_by_default.adoc", shouldNotDropLineWithReferenceToMissingAttributeByDefault, nil},
+	{"should not drop line with reference to missing attribute by default", "asciidoctor/attributes_test_should_not_drop_line_with_reference_to_missing_attribute_by_default.adoc", attributesTestShouldNotDropLineWithReferenceToMissingAttributeByDefault, nil},
 
-	{"should drop line with attribute unassignment by default", "asciidoctor/attributes_test_should_drop_line_with_attribute_unassignment_by_default.adoc", shouldDropLineWithAttributeUnassignmentByDefault, nil},
+	{"should drop line with attribute unassignment by default", "asciidoctor/attributes_test_should_drop_line_with_attribute_unassignment_by_default.adoc", attributesTestShouldDropLineWithAttributeUnassignmentByDefault, nil},
 
-	{"should not drop line with attribute unassignment if attribute-undefined is drop", "asciidoctor/attributes_test_should_not_drop_line_with_attribute_unassignment_if_attribute_undefined_is_drop.adoc", shouldNotDropLineWithAttributeUnassignmentIfAttributeUndefinedIsDrop, nil},
+	{"should not drop line with attribute unassignment if attribute-undefined is drop", "asciidoctor/attributes_test_should_not_drop_line_with_attribute_unassignment_if_attribute_undefined_is_drop.adoc", attributesTestShouldNotDropLineWithAttributeUnassignmentIfAttributeUndefinedIsDrop, nil},
 
-	{"should drop line that only contains attribute assignment", "asciidoctor/attributes_test_should_drop_line_that_only_contains_attribute_assignment.adoc", shouldDropLineThatOnlyContainsAttributeAssignment, nil},
+	{"should drop line that only contains attribute assignment", "asciidoctor/attributes_test_should_drop_line_that_only_contains_attribute_assignment.adoc", attributesTestShouldDropLineThatOnlyContainsAttributeAssignment, nil},
 
-	{"should drop line that only contains unresolved attribute when attribute-missing is drop", "asciidoctor/attributes_test_should_drop_line_that_only_contains_unresolved_attribute_when_attribute_missing_is_drop.adoc", shouldDropLineThatOnlyContainsUnresolvedAttributeWhenAttributeMissingIsDrop, nil},
+	{"should drop line that only contains unresolved attribute when attribute-missing is drop", "asciidoctor/attributes_test_should_drop_line_that_only_contains_unresolved_attribute_when_attribute_missing_is_drop.adoc", attributesTestShouldDropLineThatOnlyContainsUnresolvedAttributeWhenAttributeMissingIsDrop, nil},
 
-	{"substitutes inside unordered list items", "asciidoctor/attributes_test_substitutes_inside_unordered_list_items.adoc", substitutesInsideUnorderedListItems, nil},
+	{"substitutes inside unordered list items", "asciidoctor/attributes_test_substitutes_inside_unordered_list_items.adoc", attributesTestSubstitutesInsideUnorderedListItems, nil},
 
-	{"interpolates author attribute inside attribute entry in header", "asciidoctor/attributes_test_interpolates_author_attribute_inside_attribute_entry_in_header.adoc", interpolatesAuthorAttributeInsideAttributeEntryInHeader, nil},
+	{"interpolates author attribute inside attribute entry in header", "asciidoctor/attributes_test_interpolates_author_attribute_inside_attribute_entry_in_header.adoc", attributesTestInterpolatesAuthorAttributeInsideAttributeEntryInHeader, nil},
 
-	{"interpolates revinfo attribute inside attribute entry in header", "asciidoctor/attributes_test_interpolates_revinfo_attribute_inside_attribute_entry_in_header.adoc", interpolatesRevinfoAttributeInsideAttributeEntryInHeader, nil},
+	{"interpolates revinfo attribute inside attribute entry in header", "asciidoctor/attributes_test_interpolates_revinfo_attribute_inside_attribute_entry_in_header.adoc", attributesTestInterpolatesRevinfoAttributeInsideAttributeEntryInHeader, nil},
 
-	{"attribute entries can resolve previously defined attributes", "asciidoctor/attributes_test_attribute_entries_can_resolve_previously_defined_attributes.adoc", attributeEntriesCanResolvePreviouslyDefinedAttributes, nil},
+	{"attribute entries can resolve previously defined attributes", "asciidoctor/attributes_test_attribute_entries_can_resolve_previously_defined_attributes.adoc", attributesTestAttributeEntriesCanResolvePreviouslyDefinedAttributes, nil},
 
-	{"should warn if unterminated block comment is detected in document header", "asciidoctor/attributes_test_should_warn_if_unterminated_block_comment_is_detected_in_document_header.adoc", shouldWarnIfUnterminatedBlockCommentIsDetectedInDocumentHeader, nil},
+	{"should warn if unterminated block comment is detected in document header", "asciidoctor/attributes_test_should_warn_if_unterminated_block_comment_is_detected_in_document_header.adoc", attributesTestShouldWarnIfUnterminatedBlockCommentIsDetectedInDocumentHeader, nil},
 
-	{"substitutes inside block title", "asciidoctor/attributes_test_substitutes_inside_block_title.adoc", substitutesInsideBlockTitle, nil},
+	{"substitutes inside block title", "asciidoctor/attributes_test_substitutes_inside_block_title.adoc", attributesTestSubstitutesInsideBlockTitle, nil},
 
-	{"sets attribute until it is deleted", "asciidoctor/attributes_test_sets_attribute_until_it_is_deleted.adoc", setsAttributeUntilItIsDeleted, nil},
+	{"sets attribute until it is deleted", "asciidoctor/attributes_test_sets_attribute_until_it_is_deleted.adoc", attributesTestSetsAttributeUntilItIsDeleted, nil},
 
-	{"should allow compat-mode to be set and unset in middle of document", "asciidoctor/attributes_test_should_allow_compat_mode_to_be_set_and_unset_in_middle_of_document.adoc", shouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument, nil},
+	{"should allow compat-mode to be set and unset in middle of document", "asciidoctor/attributes_test_should_allow_compat_mode_to_be_set_and_unset_in_middle_of_document.adoc", attributesTestShouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument, nil},
 
-	{"does not disturb attribute-looking things escaped with backslash", "asciidoctor/attributes_test_does_not_disturb_attribute_looking_things_escaped_with_backslash.adoc", doesNotDisturbAttributeLookingThingsEscapedWithBackslash, nil},
+	{"does not disturb attribute-looking things escaped with backslash", "asciidoctor/attributes_test_does_not_disturb_attribute_looking_things_escaped_with_backslash.adoc", attributesTestDoesNotDisturbAttributeLookingThingsEscapedWithBackslash, nil},
 
-	{"does not substitute attributes inside literal blocks", "asciidoctor/attributes_test_does_not_substitute_attributes_inside_literal_blocks.adoc", doesNotSubstituteAttributesInsideLiteralBlocks, nil},
+	{"does not substitute attributes inside literal blocks", "asciidoctor/attributes_test_does_not_substitute_attributes_inside_literal_blocks.adoc", attributesTestDoesNotSubstituteAttributesInsideLiteralBlocks, nil},
 
-	{"does not show docdir and shows relative docfile if safe mode is SERVER or greater", "asciidoctor/attributes_test_does_not_show_docdir_and_shows_relative_docfile_if_safe_mode_is_server_or_greater.adoc", doesNotShowDocdirAndShowsRelativeDocfileIfSafeModeIsServerOrGreater, nil},
+	{"does not show docdir and shows relative docfile if safe mode is SERVER or greater", "asciidoctor/attributes_test_does_not_show_docdir_and_shows_relative_docfile_if_safe_mode_is_server_or_greater.adoc", attributesTestDoesNotShowDocdirAndShowsRelativeDocfileIfSafeModeIsServerOrGreater, nil},
 
-	{"shows absolute docdir and docfile paths if safe mode is less than SERVER", "asciidoctor/attributes_test_shows_absolute_docdir_and_docfile_paths_if_safe_mode_is_less_than_server.adoc", showsAbsoluteDocdirAndDocfilePathsIfSafeModeIsLessThanServer, nil},
+	{"shows absolute docdir and docfile paths if safe mode is less than SERVER", "asciidoctor/attributes_test_shows_absolute_docdir_and_docfile_paths_if_safe_mode_is_less_than_server.adoc", attributesTestShowsAbsoluteDocdirAndDocfilePathsIfSafeModeIsLessThanServer, nil},
 
-	{"assigns attribute defined in attribute reference with set prefix and value", "asciidoctor/attributes_test_assigns_attribute_defined_in_attribute_reference_with_set_prefix_and_value.adoc", assignsAttributeDefinedInAttributeReferenceWithSetPrefixAndValue, nil},
+	{"assigns attribute defined in attribute reference with set prefix and value", "asciidoctor/attributes_test_assigns_attribute_defined_in_attribute_reference_with_set_prefix_and_value.adoc", attributesTestAssignsAttributeDefinedInAttributeReferenceWithSetPrefixAndValue, nil},
 
-	{"creates counter", "asciidoctor/attributes_test_creates_counter.adoc", createsCounter, nil},
+	{"creates counter", "asciidoctor/attributes_test_creates_counter.adoc", attributesTestCreatesCounter, nil},
 
-	{"can seed counter to start at A", "asciidoctor/attributes_test_can_seed_counter_to_start_at_a.adoc", canSeedCounterToStartAtA, nil},
+	{"can seed counter to start at A", "asciidoctor/attributes_test_can_seed_counter_to_start_at_a.adoc", attributesTestCanSeedCounterToStartAtA, nil},
 
-	{"increments counter with positive numeric value", "asciidoctor/attributes_test_increments_counter_with_positive_numeric_value.adoc", incrementsCounterWithPositiveNumericValue, nil},
+	{"increments counter with positive numeric value", "asciidoctor/attributes_test_increments_counter_with_positive_numeric_value.adoc", attributesTestIncrementsCounterWithPositiveNumericValue, nil},
 
-	{"increments counter with negative numeric value", "asciidoctor/attributes_test_increments_counter_with_negative_numeric_value.adoc", incrementsCounterWithNegativeNumericValue, nil},
+	{"increments counter with negative numeric value", "asciidoctor/attributes_test_increments_counter_with_negative_numeric_value.adoc", attributesTestIncrementsCounterWithNegativeNumericValue, nil},
 
-	{"increments counter with ASCII character value", "asciidoctor/attributes_test_increments_counter_with_ascii_character_value.adoc", incrementsCounterWithAsciiCharacterValue, nil},
+	{"increments counter with ASCII character value", "asciidoctor/attributes_test_increments_counter_with_ascii_character_value.adoc", attributesTestIncrementsCounterWithAsciiCharacterValue, nil},
 
-	{"increments counter with non-ASCII character value", "asciidoctor/attributes_test_increments_counter_with_non_ascii_character_value.adoc", incrementsCounterWithNonAsciiCharacterValue, nil},
+	{"increments counter with non-ASCII character value", "asciidoctor/attributes_test_increments_counter_with_non_ascii_character_value.adoc", attributesTestIncrementsCounterWithNonAsciiCharacterValue, nil},
 
-	{"increments counter with emoji character value", "asciidoctor/attributes_test_increments_counter_with_emoji_character_value.adoc", incrementsCounterWithEmojiCharacterValue, nil},
+	{"increments counter with emoji character value", "asciidoctor/attributes_test_increments_counter_with_emoji_character_value.adoc", attributesTestIncrementsCounterWithEmojiCharacterValue, nil},
 
-	{"increments counter with multi-character value", "asciidoctor/attributes_test_increments_counter_with_multi_character_value.adoc", incrementsCounterWithMultiCharacterValue, nil},
+	{"increments counter with multi-character value", "asciidoctor/attributes_test_increments_counter_with_multi_character_value.adoc", attributesTestIncrementsCounterWithMultiCharacterValue, nil},
 
-	{"counter uses 0 as seed value if seed attribute is nil", "asciidoctor/attributes_test_counter_uses_0_as_seed_value_if_seed_attribute_is_nil.adoc", counterUses0AsSeedValueIfSeedAttributeIsNil, nil},
+	{"counter uses 0 as seed value if seed attribute is nil", "asciidoctor/attributes_test_counter_uses_0_as_seed_value_if_seed_attribute_is_nil.adoc", attributesTestCounterUses0AsSeedValueIfSeedAttributeIsNil, nil},
 
-	{"counter value can be reset by attribute entry", "asciidoctor/attributes_test_counter_value_can_be_reset_by_attribute_entry.adoc", counterValueCanBeResetByAttributeEntry, nil},
+	{"counter value can be reset by attribute entry", "asciidoctor/attributes_test_counter_value_can_be_reset_by_attribute_entry.adoc", attributesTestCounterValueCanBeResetByAttributeEntry, nil},
 
-	{"counter value can be advanced by attribute entry", "asciidoctor/attributes_test_counter_value_can_be_advanced_by_attribute_entry.adoc", counterValueCanBeAdvancedByAttributeEntry, nil},
+	{"counter value can be advanced by attribute entry", "asciidoctor/attributes_test_counter_value_can_be_advanced_by_attribute_entry.adoc", attributesTestCounterValueCanBeAdvancedByAttributeEntry, nil},
 
-	{"nested document should use counter from parent document", "asciidoctor/attributes_test_nested_document_should_use_counter_from_parent_document.adoc", nestedDocumentShouldUseCounterFromParentDocument, nil},
+	{"nested document should use counter from parent document", "asciidoctor/attributes_test_nested_document_should_use_counter_from_parent_document.adoc", attributesTestNestedDocumentShouldUseCounterFromParentDocument, nil},
 
-	{"should not allow counter to modify locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_to_modify_locked_attribute.adoc", shouldNotAllowCounterToModifyLockedAttribute, nil},
+	{"should not allow counter to modify locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_to_modify_locked_attribute.adoc", attributesTestShouldNotAllowCounterToModifyLockedAttribute, nil},
 
-	{"should not allow counter2 to modify locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_2_to_modify_locked_attribute.adoc", shouldNotAllowCounter2ToModifyLockedAttribute, nil},
+	{"should not allow counter2 to modify locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_2_to_modify_locked_attribute.adoc", attributesTestShouldNotAllowCounter2ToModifyLockedAttribute, nil},
 
-	{"should not allow counter to modify built-in locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_to_modify_built_in_locked_attribute.adoc", shouldNotAllowCounterToModifyBuiltInLockedAttribute, nil},
+	{"should not allow counter to modify built-in locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_to_modify_built_in_locked_attribute.adoc", attributesTestShouldNotAllowCounterToModifyBuiltInLockedAttribute, nil},
 
-	{"should not allow counter2 to modify built-in locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_2_to_modify_built_in_locked_attribute.adoc", shouldNotAllowCounter2ToModifyBuiltInLockedAttribute, nil},
+	{"should not allow counter2 to modify built-in locked attribute", "asciidoctor/attributes_test_should_not_allow_counter_2_to_modify_built_in_locked_attribute.adoc", attributesTestShouldNotAllowCounter2ToModifyBuiltInLockedAttribute, nil},
 
-	{"parses named attribute with valid name", "asciidoctor/attributes_test_parses_named_attribute_with_valid_name.adoc", parsesNamedAttributeWithValidName, nil},
+	{"parses named attribute with valid name", "asciidoctor/attributes_test_parses_named_attribute_with_valid_name.adoc", attributesTestParsesNamedAttributeWithValidName, nil},
 
-	{"does not parse named attribute if name is invalid", "asciidoctor/attributes_test_does_not_parse_named_attribute_if_name_is_invalid.adoc", doesNotParseNamedAttributeIfNameIsInvalid, nil},
+	{"does not parse named attribute if name is invalid", "asciidoctor/attributes_test_does_not_parse_named_attribute_if_name_is_invalid.adoc", attributesTestDoesNotParseNamedAttributeIfNameIsInvalid, nil},
 
-	{"positional attributes assigned to block", "asciidoctor/attributes_test_positional_attributes_assigned_to_block.adoc", positionalAttributesAssignedToBlock, nil},
+	{"positional attributes assigned to block", "asciidoctor/attributes_test_positional_attributes_assigned_to_block.adoc", attributesTestPositionalAttributesAssignedToBlock, nil},
 
-	{"normal substitutions are performed on single-quoted positional attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_on_single_quoted_positional_attribute.adoc", normalSubstitutionsArePerformedOnSingleQuotedPositionalAttribute, nil},
+	{"normal substitutions are performed on single-quoted positional attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_on_single_quoted_positional_attribute.adoc", attributesTestNormalSubstitutionsArePerformedOnSingleQuotedPositionalAttribute, nil},
 
-	{"normal substitutions are performed on single-quoted named attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_on_single_quoted_named_attribute.adoc", normalSubstitutionsArePerformedOnSingleQuotedNamedAttribute, nil},
+	{"normal substitutions are performed on single-quoted named attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_on_single_quoted_named_attribute.adoc", attributesTestNormalSubstitutionsArePerformedOnSingleQuotedNamedAttribute, nil},
 
-	{"normal substitutions are performed once on single-quoted named title attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_once_on_single_quoted_named_title_attribute.adoc", normalSubstitutionsArePerformedOnceOnSingleQuotedNamedTitleAttribute, nil},
+	{"normal substitutions are performed once on single-quoted named title attribute", "asciidoctor/attributes_test_normal_substitutions_are_performed_once_on_single_quoted_named_title_attribute.adoc", attributesTestNormalSubstitutionsArePerformedOnceOnSingleQuotedNamedTitleAttribute, nil},
 
-	{"attribute list may not begin with space", "asciidoctor/attributes_test_attribute_list_may_not_begin_with_space.adoc", attributeListMayNotBeginWithSpace, nil},
+	{"attribute list may not begin with space", "asciidoctor/attributes_test_attribute_list_may_not_begin_with_space.adoc", attributesTestAttributeListMayNotBeginWithSpace, nil},
 
-	{"attribute list may begin with comma", "asciidoctor/attributes_test_attribute_list_may_begin_with_comma.adoc", attributeListMayBeginWithComma, nil},
+	{"attribute list may begin with comma", "asciidoctor/attributes_test_attribute_list_may_begin_with_comma.adoc", attributesTestAttributeListMayBeginWithComma, nil},
 
-	{"first attribute in list may be double quoted", "asciidoctor/attributes_test_first_attribute_in_list_may_be_double_quoted.adoc", firstAttributeInListMayBeDoubleQuoted, nil},
+	{"first attribute in list may be double quoted", "asciidoctor/attributes_test_first_attribute_in_list_may_be_double_quoted.adoc", attributesTestFirstAttributeInListMayBeDoubleQuoted, nil},
 
-	{"first attribute in list may be single quoted", "asciidoctor/attributes_test_first_attribute_in_list_may_be_single_quoted.adoc", firstAttributeInListMayBeSingleQuoted, nil},
+	{"first attribute in list may be single quoted", "asciidoctor/attributes_test_first_attribute_in_list_may_be_single_quoted.adoc", attributesTestFirstAttributeInListMayBeSingleQuoted, nil},
 
-	{"attribute with value None without quotes is ignored", "asciidoctor/attributes_test_attribute_with_value_none_without_quotes_is_ignored.adoc", attributeWithValueNoneWithoutQuotesIsIgnored, nil},
+	{"attribute with value None without quotes is ignored", "asciidoctor/attributes_test_attribute_with_value_none_without_quotes_is_ignored.adoc", attributesTestAttributeWithValueNoneWithoutQuotesIsIgnored, nil},
 
-	{"role? returns true if role is assigned", "asciidoctor/attributes_test_role_returns_true_if_role_is_assigned.adoc", roleReturnsTrueIfRoleIsAssigned, nil},
+	{"role? returns true if role is assigned", "asciidoctor/attributes_test_role_returns_true_if_role_is_assigned.adoc", attributesTestRoleReturnsTrueIfRoleIsAssigned, nil},
 
-	{"role? does not return true if role attribute is set on document", "asciidoctor/attributes_test_role_does_not_return_true_if_role_attribute_is_set_on_document.adoc", roleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument, nil},
+	{"role? does not return true if role attribute is set on document", "asciidoctor/attributes_test_role_does_not_return_true_if_role_attribute_is_set_on_document.adoc", attributesTestRoleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument, nil},
 
-	{"role? can check for exact role name match", "asciidoctor/attributes_test_role_can_check_for_exact_role_name_match.adoc", roleCanCheckForExactRoleNameMatch, nil},
+	{"role? can check for exact role name match", "asciidoctor/attributes_test_role_can_check_for_exact_role_name_match.adoc", attributesTestRoleCanCheckForExactRoleNameMatch, nil},
 
-	{"has_role? can check for presence of role name", "asciidoctor/attributes_test_has_role_can_check_for_presence_of_role_name.adoc", hasRoleCanCheckForPresenceOfRoleName, nil},
+	{"has_role? can check for presence of role name", "asciidoctor/attributes_test_has_role_can_check_for_presence_of_role_name.adoc", attributesTestHasRoleCanCheckForPresenceOfRoleName, nil},
 
-	{"has_role? does not look for role defined as document attribute", "asciidoctor/attributes_test_has_role_does_not_look_for_role_defined_as_document_attribute.adoc", hasRoleDoesNotLookForRoleDefinedAsDocumentAttribute, nil},
+	{"has_role? does not look for role defined as document attribute", "asciidoctor/attributes_test_has_role_does_not_look_for_role_defined_as_document_attribute.adoc", attributesTestHasRoleDoesNotLookForRoleDefinedAsDocumentAttribute, nil},
 
-	{"roles returns array of role names", "asciidoctor/attributes_test_roles_returns_array_of_role_names.adoc", rolesReturnsArrayOfRoleNames, nil},
+	{"roles returns array of role names", "asciidoctor/attributes_test_roles_returns_array_of_role_names.adoc", attributesTestRolesReturnsArrayOfRoleNames, nil},
 
-	{"roles returns empty array if role attribute is not set", "asciidoctor/attributes_test_roles_returns_empty_array_if_role_attribute_is_not_set.adoc", rolesReturnsEmptyArrayIfRoleAttributeIsNotSet, nil},
+	{"roles returns empty array if role attribute is not set", "asciidoctor/attributes_test_roles_returns_empty_array_if_role_attribute_is_not_set.adoc", attributesTestRolesReturnsEmptyArrayIfRoleAttributeIsNotSet, nil},
 
-	{"roles= sets the role attribute on the node", "asciidoctor/attributes_test_roles=_sets_the_role_attribute_on_the_node.adoc", rolesSetsTheRoleAttributeOnTheNode, nil},
+	{"roles= sets the role attribute on the node", "asciidoctor/attributes_test_roles=_sets_the_role_attribute_on_the_node.adoc", attributesTestRolesSetsTheRoleAttributeOnTheNode, nil},
 
-	{"id, role and options attributes can be specified on block style using shorthand syntax", "asciidoctor/attributes_test_id_role_and_options_attributes_can_be_specified_on_block_style_using_shorthand_syntax.adoc", idRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax, nil},
+	{"id, role and options attributes can be specified on block style using shorthand syntax", "asciidoctor/attributes_test_id_role_and_options_attributes_can_be_specified_on_block_style_using_shorthand_syntax.adoc", attributesTestIdRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax, nil},
 
-	{"id, role and options attributes can be specified using shorthand syntax on block style using multiple block attribute lines", "asciidoctor/attributes_test_id_role_and_options_attributes_can_be_specified_using_shorthand_syntax_on_block_style_using_multiple_block_attribute_lines.adoc", idRoleAndOptionsAttributesCanBeSpecifiedUsingShorthandSyntaxOnBlockStyleUsingMultipleBlockAttributeLines, nil},
+	{"id, role and options attributes can be specified using shorthand syntax on block style using multiple block attribute lines", "asciidoctor/attributes_test_id_role_and_options_attributes_can_be_specified_using_shorthand_syntax_on_block_style_using_multiple_block_attribute_lines.adoc", attributesTestIdRoleAndOptionsAttributesCanBeSpecifiedUsingShorthandSyntaxOnBlockStyleUsingMultipleBlockAttributeLines, nil},
 
-	{"multiple roles and options can be specified in block style using shorthand syntax", "asciidoctor/attributes_test_multiple_roles_and_options_can_be_specified_in_block_style_using_shorthand_syntax.adoc", multipleRolesAndOptionsCanBeSpecifiedInBlockStyleUsingShorthandSyntax, nil},
+	{"multiple roles and options can be specified in block style using shorthand syntax", "asciidoctor/attributes_test_multiple_roles_and_options_can_be_specified_in_block_style_using_shorthand_syntax.adoc", attributesTestMultipleRolesAndOptionsCanBeSpecifiedInBlockStyleUsingShorthandSyntax, nil},
 
-	{"options specified using shorthand syntax on block style across multiple lines should be additive", "asciidoctor/attributes_test_options_specified_using_shorthand_syntax_on_block_style_across_multiple_lines_should_be_additive.adoc", optionsSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive, nil},
+	{"options specified using shorthand syntax on block style across multiple lines should be additive", "asciidoctor/attributes_test_options_specified_using_shorthand_syntax_on_block_style_across_multiple_lines_should_be_additive.adoc", attributesTestOptionsSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive, nil},
 
-	{"roles specified using shorthand syntax on block style across multiple lines should be additive", "asciidoctor/attributes_test_roles_specified_using_shorthand_syntax_on_block_style_across_multiple_lines_should_be_additive.adoc", rolesSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive, nil},
+	{"roles specified using shorthand syntax on block style across multiple lines should be additive", "asciidoctor/attributes_test_roles_specified_using_shorthand_syntax_on_block_style_across_multiple_lines_should_be_additive.adoc", attributesTestRolesSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive, nil},
 
-	{"setting a role using the role attribute replaces any existing roles", "asciidoctor/attributes_test_setting_a_role_using_the_role_attribute_replaces_any_existing_roles.adoc", settingARoleUsingTheRoleAttributeReplacesAnyExistingRoles, nil},
+	{"setting a role using the role attribute replaces any existing roles", "asciidoctor/attributes_test_setting_a_role_using_the_role_attribute_replaces_any_existing_roles.adoc", attributesTestSettingARoleUsingTheRoleAttributeReplacesAnyExistingRoles, nil},
 
-	{"setting a role using the shorthand syntax on block style should not clear the ID", "asciidoctor/attributes_test_setting_a_role_using_the_shorthand_syntax_on_block_style_should_not_clear_the_id.adoc", settingARoleUsingTheShorthandSyntaxOnBlockStyleShouldNotClearTheId, nil},
+	{"setting a role using the shorthand syntax on block style should not clear the ID", "asciidoctor/attributes_test_setting_a_role_using_the_shorthand_syntax_on_block_style_should_not_clear_the_id.adoc", attributesTestSettingARoleUsingTheShorthandSyntaxOnBlockStyleShouldNotClearTheId, nil},
 
-	{"a role can be added using add_role when the node has no roles", "asciidoctor/attributes_test_a_role_can_be_added_using_add_role_when_the_node_has_no_roles.adoc", aRoleCanBeAddedUsingAddRoleWhenTheNodeHasNoRoles, nil},
+	{"a role can be added using add_role when the node has no roles", "asciidoctor/attributes_test_a_role_can_be_added_using_add_role_when_the_node_has_no_roles.adoc", attributesTestARoleCanBeAddedUsingAddRoleWhenTheNodeHasNoRoles, nil},
 
-	{"a role is not added using add_role if the node already has that role", "asciidoctor/attributes_test_a_role_is_not_added_using_add_role_if_the_node_already_has_that_role.adoc", aRoleIsNotAddedUsingAddRoleIfTheNodeAlreadyHasThatRole, nil},
+	{"a role is not added using add_role if the node already has that role", "asciidoctor/attributes_test_a_role_is_not_added_using_add_role_if_the_node_already_has_that_role.adoc", attributesTestARoleIsNotAddedUsingAddRoleIfTheNodeAlreadyHasThatRole, nil},
 
-	{"an existing role can be removed using remove_role", "asciidoctor/attributes_test_an_existing_role_can_be_removed_using_remove_role.adoc", anExistingRoleCanBeRemovedUsingRemoveRole, nil},
+	{"an existing role can be removed using remove_role", "asciidoctor/attributes_test_an_existing_role_can_be_removed_using_remove_role.adoc", attributesTestAnExistingRoleCanBeRemovedUsingRemoveRole, nil},
 
-	{"roles are removed when last role is removed using remove_role", "asciidoctor/attributes_test_roles_are_removed_when_last_role_is_removed_using_remove_role.adoc", rolesAreRemovedWhenLastRoleIsRemovedUsingRemoveRole, nil},
+	{"roles are removed when last role is removed using remove_role", "asciidoctor/attributes_test_roles_are_removed_when_last_role_is_removed_using_remove_role.adoc", attributesTestRolesAreRemovedWhenLastRoleIsRemovedUsingRemoveRole, nil},
 
-	{"roles are not changed when a non-existent role is removed using remove_role", "asciidoctor/attributes_test_roles_are_not_changed_when_a_non_existent_role_is_removed_using_remove_role.adoc", rolesAreNotChangedWhenANonExistentRoleIsRemovedUsingRemoveRole, nil},
+	{"roles are not changed when a non-existent role is removed using remove_role", "asciidoctor/attributes_test_roles_are_not_changed_when_a_non_existent_role_is_removed_using_remove_role.adoc", attributesTestRolesAreNotChangedWhenANonExistentRoleIsRemovedUsingRemoveRole, nil},
 
-	{"roles are not changed when using remove_role if the node has no roles", "asciidoctor/attributes_test_roles_are_not_changed_when_using_remove_role_if_the_node_has_no_roles.adoc", rolesAreNotChangedWhenUsingRemoveRoleIfTheNodeHasNoRoles, nil},
+	{"roles are not changed when using remove_role if the node has no roles", "asciidoctor/attributes_test_roles_are_not_changed_when_using_remove_role_if_the_node_has_no_roles.adoc", attributesTestRolesAreNotChangedWhenUsingRemoveRoleIfTheNodeHasNoRoles, nil},
 
-	{"id and role attributes can be specified on section style using shorthand syntax", "asciidoctor/attributes_test_id_and_role_attributes_can_be_specified_on_section_style_using_shorthand_syntax.adoc", idAndRoleAttributesCanBeSpecifiedOnSectionStyleUsingShorthandSyntax, nil},
+	{"id and role attributes can be specified on section style using shorthand syntax", "asciidoctor/attributes_test_id_and_role_attributes_can_be_specified_on_section_style_using_shorthand_syntax.adoc", attributesTestIdAndRoleAttributesCanBeSpecifiedOnSectionStyleUsingShorthandSyntax, nil},
 
-	{"id attribute specified using shorthand syntax should not create a special section", "asciidoctor/attributes_test_id_attribute_specified_using_shorthand_syntax_should_not_create_a_special_section.adoc", idAttributeSpecifiedUsingShorthandSyntaxShouldNotCreateASpecialSection, nil},
+	{"id attribute specified using shorthand syntax should not create a special section", "asciidoctor/attributes_test_id_attribute_specified_using_shorthand_syntax_should_not_create_a_special_section.adoc", attributesTestIdAttributeSpecifiedUsingShorthandSyntaxShouldNotCreateASpecialSection, nil},
 
-	{"Block attributes are additive", "asciidoctor/attributes_test_block_attributes_are_additive.adoc", blockAttributesAreAdditive, nil},
+	{"Block attributes are additive", "asciidoctor/attributes_test_block_attributes_are_additive.adoc", attributesTestBlockAttributesAreAdditive, nil},
 
-	{"Last wins for id attribute", "asciidoctor/attributes_test_last_wins_for_id_attribute.adoc", lastWinsForIdAttribute, nil},
+	{"Last wins for id attribute", "asciidoctor/attributes_test_last_wins_for_id_attribute.adoc", attributesTestLastWinsForIdAttribute, nil},
 
-	{"trailing block attributes transfer to the following section", "asciidoctor/attributes_test_trailing_block_attributes_transfer_to_the_following_section.adoc", trailingBlockAttributesTransferToTheFollowingSection, nil},
+	{"trailing block attributes transfer to the following section", "asciidoctor/attributes_test_trailing_block_attributes_transfer_to_the_following_section.adoc", attributesTestTrailingBlockAttributesTransferToTheFollowingSection, nil},
 }
 
-var createsAnAttributeByFusingALegacyMultiLineValue = &asciidoc.Document{
+var attributesTestCreatesAnAttributeByFusingALegacyMultiLineValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -227,9 +227,9 @@ var createsAnAttributeByFusingALegacyMultiLineValue = &asciidoc.Document{
 	},
 }
 
-var createsAnAttributeByFusingAMultiLineValue = &asciidoc.Document{
+var attributesTestCreatesAnAttributeByFusingAMultiLineValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -251,9 +251,9 @@ var createsAnAttributeByFusingAMultiLineValue = &asciidoc.Document{
 	},
 }
 
-var honorsLineBreakCharactersInMultiLineValues = &asciidoc.Document{
+var attributesTestHonorsLineBreakCharactersInMultiLineValues = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -275,9 +275,9 @@ var honorsLineBreakCharactersInMultiLineValues = &asciidoc.Document{
 	},
 }
 
-var shouldAllowPassMacroToSurroundAMultiLineValueThatContainsLineBreaks = &asciidoc.Document{
+var attributesTestShouldAllowPassMacroToSurroundAMultiLineValueThatContainsLineBreaks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -305,9 +305,9 @@ var shouldAllowPassMacroToSurroundAMultiLineValueThatContainsLineBreaks = &ascii
 	},
 }
 
-var performsAttributeSubstitutionOnAttributeValue = &asciidoc.Document{
+var attributesTestPerformsAttributeSubstitutionOnAttributeValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -326,9 +326,9 @@ var performsAttributeSubstitutionOnAttributeValue = &asciidoc.Document{
 	},
 }
 
-var resolvesAttributesInsideAttributeValueWithinHeader = &asciidoc.Document{
+var attributesTestResolvesAttributesInsideAttributeValueWithinHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -350,7 +350,7 @@ var resolvesAttributesInsideAttributeValueWithinHeader = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -368,22 +368,22 @@ var resolvesAttributesInsideAttributeValueWithinHeader = &asciidoc.Document{
 	},
 }
 
-var resolvesAttributesAndPassMacroInsideAttributeValueOutsideHeader = &asciidoc.Document{
+var attributesTestResolvesAttributesAndPassMacroInsideAttributeValueOutsideHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "content",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.AttributeEntry{
@@ -417,9 +417,9 @@ var resolvesAttributesAndPassMacroInsideAttributeValueOutsideHeader = &asciidoc.
 	},
 }
 
-var shouldHandleMultibyteCharactersWhenLimitingAttributeValueSize = &asciidoc.Document{
+var attributesTestShouldHandleMultibyteCharactersWhenLimitingAttributeValueSize = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -430,7 +430,7 @@ var shouldHandleMultibyteCharactersWhenLimitingAttributeValueSize = &asciidoc.Do
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -440,9 +440,9 @@ var shouldHandleMultibyteCharactersWhenLimitingAttributeValueSize = &asciidoc.Do
 	},
 }
 
-var shouldNotMangleMultibyteCharactersWhenLimitingAttributeValueSize = &asciidoc.Document{
+var attributesTestShouldNotMangleMultibyteCharactersWhenLimitingAttributeValueSize = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -453,7 +453,7 @@ var shouldNotMangleMultibyteCharactersWhenLimitingAttributeValueSize = &asciidoc
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -463,9 +463,9 @@ var shouldNotMangleMultibyteCharactersWhenLimitingAttributeValueSize = &asciidoc
 	},
 }
 
-var resolvesUserHomeAttributeIfSafeModeIsLessThanServer = &asciidoc.Document{
+var attributesTestResolvesUserHomeAttributeIfSafeModeIsLessThanServer = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -476,7 +476,7 @@ var resolvesUserHomeAttributeIfSafeModeIsLessThanServer = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -486,9 +486,9 @@ var resolvesUserHomeAttributeIfSafeModeIsLessThanServer = &asciidoc.Document{
 	},
 }
 
-var userHomeAttributeResolvesToIfSafeModeIsServerOrGreater = &asciidoc.Document{
+var attributesTestUserHomeAttributeResolvesToIfSafeModeIsServerOrGreater = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -499,7 +499,7 @@ var userHomeAttributeResolvesToIfSafeModeIsServerOrGreater = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -509,9 +509,9 @@ var userHomeAttributeResolvesToIfSafeModeIsServerOrGreater = &asciidoc.Document{
 	},
 }
 
-var userHomeAttributeCanBeOverriddenByApiIfSafeModeIsLessThanServer = &asciidoc.Document{
+var attributesTestUserHomeAttributeCanBeOverriddenByApiIfSafeModeIsLessThanServer = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -527,9 +527,9 @@ var userHomeAttributeCanBeOverriddenByApiIfSafeModeIsLessThanServer = &asciidoc.
 	},
 }
 
-var userHomeAttributeCanBeOverriddenByApiIfSafeModeIsServerOrGreater = &asciidoc.Document{
+var attributesTestUserHomeAttributeCanBeOverriddenByApiIfSafeModeIsServerOrGreater = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -545,9 +545,9 @@ var userHomeAttributeCanBeOverriddenByApiIfSafeModeIsServerOrGreater = &asciidoc
 	},
 }
 
-var shouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue = &asciidoc.Document{
+var attributesTestShouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -558,7 +558,8 @@ var shouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue = &as
 			Attributes: asciidoc.AttributeNames{
 				"holygrail",
 			},
-			Union: 0,
+			Union:  0,
+			Inline: false,
 		},
 		&asciidoc.String{
 			Value: "The holy grail has been found!",
@@ -570,7 +571,7 @@ var shouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue = &as
 			},
 			Union: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
@@ -580,7 +581,8 @@ var shouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue = &as
 			Attributes: asciidoc.AttributeNames{
 				"holygrail",
 			},
-			Union: 0,
+			Union:  0,
+			Inline: false,
 		},
 		&asciidoc.String{
 			Value: "Buggers! What happened to the grail?",
@@ -595,9 +597,9 @@ var shouldNotRecognizePassMacroWithInvalidSubstitutionListInAttributeValue = &as
 	},
 }
 
-var attributeSetViaApiOverridesAttributeSetInDocument = &asciidoc.Document{
+var attributesTestAttributeSetViaApiOverridesAttributeSetInDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -607,7 +609,7 @@ var attributeSetViaApiOverridesAttributeSetInDocument = &asciidoc.Document{
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -625,9 +627,9 @@ var attributeSetViaApiOverridesAttributeSetInDocument = &asciidoc.Document{
 	},
 }
 
-var backendAndDoctypeAttributesAreSetByDefaultInCustomConfiguration = &asciidoc.Document{
+var attributesTestBackendAndDoctypeAttributesAreSetByDefaultInCustomConfiguration = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -637,7 +639,7 @@ var backendAndDoctypeAttributesAreSetByDefaultInCustomConfiguration = &asciidoc.
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -655,9 +657,9 @@ var backendAndDoctypeAttributesAreSetByDefaultInCustomConfiguration = &asciidoc.
 	},
 }
 
-var backendAttributesAreUpdatedIfBackendAttributeIsDefinedInDocumentAndSafeModeIsLessThanServer = &asciidoc.Document{
+var attributesTestBackendAttributesAreUpdatedIfBackendAttributeIsDefinedInDocumentAndSafeModeIsLessThanServer = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -683,7 +685,7 @@ var backendAttributesAreUpdatedIfBackendAttributeIsDefinedInDocumentAndSafeModeI
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -701,9 +703,9 @@ var backendAttributesAreUpdatedIfBackendAttributeIsDefinedInDocumentAndSafeModeI
 	},
 }
 
-var backendAttributesDefinedInDocumentOptionsOverridesBackendAttributeInDocument = &asciidoc.Document{
+var attributesTestBackendAttributesDefinedInDocumentOptionsOverridesBackendAttributeInDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -714,7 +716,7 @@ var backendAttributesDefinedInDocumentOptionsOverridesBackendAttributeInDocument
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -724,9 +726,9 @@ var backendAttributesDefinedInDocumentOptionsOverridesBackendAttributeInDocument
 	},
 }
 
-var setAttributeShouldSetAttributeIfKeyIsNotLocked = &asciidoc.Document{
+var attributesTestSetAttributeShouldSetAttributeIfKeyIsNotLocked = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -776,9 +778,9 @@ var setAttributeShouldSetAttributeIfKeyIsNotLocked = &asciidoc.Document{
 	},
 }
 
-var convertProperlyWithSimpleNames = &asciidoc.Document{
+var attributesTestConvertProperlyWithSimpleNames = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -789,7 +791,7 @@ var convertProperlyWithSimpleNames = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -799,7 +801,7 @@ var convertProperlyWithSimpleNames = &asciidoc.Document{
 			Value: "He-Man",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -812,9 +814,9 @@ var convertProperlyWithSimpleNames = &asciidoc.Document{
 	},
 }
 
-var convertProperlyWithSingleCharacterName = &asciidoc.Document{
+var attributesTestConvertProperlyWithSingleCharacterName = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -829,7 +831,7 @@ var convertProperlyWithSingleCharacterName = &asciidoc.Document{
 			Value: ":My frog: Tanglefoot",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -845,9 +847,9 @@ var convertProperlyWithSingleCharacterName = &asciidoc.Document{
 	},
 }
 
-var ignoresLinesWithBadAttributesIfAttributeMissingIsDropLine = &asciidoc.Document{
+var attributesTestIgnoresLinesWithBadAttributesIfAttributeMissingIsDropLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -858,7 +860,7 @@ var ignoresLinesWithBadAttributesIfAttributeMissingIsDropLine = &asciidoc.Docume
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -879,9 +881,9 @@ var ignoresLinesWithBadAttributesIfAttributeMissingIsDropLine = &asciidoc.Docume
 	},
 }
 
-var attributeValueGetsInterpretedWhenConverting = &asciidoc.Document{
+var attributesTestAttributeValueGetsInterpretedWhenConverting = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -892,7 +894,7 @@ var attributeValueGetsInterpretedWhenConverting = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -912,9 +914,9 @@ var attributeValueGetsInterpretedWhenConverting = &asciidoc.Document{
 	},
 }
 
-var shouldNotDropLineWithReferenceToMissingAttributeByDefault = &asciidoc.Document{
+var attributesTestShouldNotDropLineWithReferenceToMissingAttributeByDefault = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -934,16 +936,16 @@ var shouldNotDropLineWithReferenceToMissingAttributeByDefault = &asciidoc.Docume
 	},
 }
 
-var shouldDropLineWithAttributeUnassignmentByDefault = &asciidoc.Document{
+var attributesTestShouldDropLineWithAttributeUnassignmentByDefault = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "a",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -957,9 +959,9 @@ var shouldDropLineWithAttributeUnassignmentByDefault = &asciidoc.Document{
 	},
 }
 
-var shouldNotDropLineWithAttributeUnassignmentIfAttributeUndefinedIsDrop = &asciidoc.Document{
+var attributesTestShouldNotDropLineWithAttributeUnassignmentIfAttributeUndefinedIsDrop = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -974,7 +976,7 @@ var shouldNotDropLineWithAttributeUnassignmentIfAttributeUndefinedIsDrop = &asci
 			Name: "a",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -988,9 +990,9 @@ var shouldNotDropLineWithAttributeUnassignmentIfAttributeUndefinedIsDrop = &asci
 	},
 }
 
-var shouldDropLineThatOnlyContainsAttributeAssignment = &asciidoc.Document{
+var attributesTestShouldDropLineThatOnlyContainsAttributeAssignment = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1008,9 +1010,9 @@ var shouldDropLineThatOnlyContainsAttributeAssignment = &asciidoc.Document{
 	},
 }
 
-var shouldDropLineThatOnlyContainsUnresolvedAttributeWhenAttributeMissingIsDrop = &asciidoc.Document{
+var attributesTestShouldDropLineThatOnlyContainsUnresolvedAttributeWhenAttributeMissingIsDrop = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1028,9 +1030,9 @@ var shouldDropLineThatOnlyContainsUnresolvedAttributeWhenAttributeMissingIsDrop 
 	},
 }
 
-var substitutesInsideUnorderedListItems = &asciidoc.Document{
+var attributesTestSubstitutesInsideUnorderedListItems = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1056,7 +1058,7 @@ var substitutesInsideUnorderedListItems = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1074,9 +1076,9 @@ var substitutesInsideUnorderedListItems = &asciidoc.Document{
 	},
 }
 
-var interpolatesAuthorAttributeInsideAttributeEntryInHeader = &asciidoc.Document{
+var attributesTestInterpolatesAuthorAttributeInsideAttributeEntryInHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1094,7 +1096,7 @@ var interpolatesAuthorAttributeInsideAttributeEntryInHeader = &asciidoc.Document
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1112,9 +1114,9 @@ var interpolatesAuthorAttributeInsideAttributeEntryInHeader = &asciidoc.Document
 	},
 }
 
-var interpolatesRevinfoAttributeInsideAttributeEntryInHeader = &asciidoc.Document{
+var attributesTestInterpolatesRevinfoAttributeInsideAttributeEntryInHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1136,7 +1138,7 @@ var interpolatesRevinfoAttributeInsideAttributeEntryInHeader = &asciidoc.Documen
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1154,9 +1156,9 @@ var interpolatesRevinfoAttributeInsideAttributeEntryInHeader = &asciidoc.Documen
 	},
 }
 
-var attributeEntriesCanResolvePreviouslyDefinedAttributes = &asciidoc.Document{
+var attributesTestAttributeEntriesCanResolvePreviouslyDefinedAttributes = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1194,7 +1196,7 @@ var attributeEntriesCanResolvePreviouslyDefinedAttributes = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -1207,7 +1209,7 @@ var attributeEntriesCanResolvePreviouslyDefinedAttributes = &asciidoc.Document{
 					Value: "a2",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -1231,9 +1233,9 @@ var attributeEntriesCanResolvePreviouslyDefinedAttributes = &asciidoc.Document{
 	},
 }
 
-var shouldWarnIfUnterminatedBlockCommentIsDetectedInDocumentHeader = &asciidoc.Document{
+var attributesTestShouldWarnIfUnterminatedBlockCommentIsDetectedInDocumentHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1259,7 +1261,7 @@ var shouldWarnIfUnterminatedBlockCommentIsDetectedInDocumentHeader = &asciidoc.D
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1277,9 +1279,9 @@ var shouldWarnIfUnterminatedBlockCommentIsDetectedInDocumentHeader = &asciidoc.D
 	},
 }
 
-var substitutesInsideBlockTitle = &asciidoc.Document{
+var attributesTestSubstitutesInsideBlockTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1290,7 +1292,7 @@ var substitutesInsideBlockTitle = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1326,9 +1328,9 @@ var substitutesInsideBlockTitle = &asciidoc.Document{
 	},
 }
 
-var setsAttributeUntilItIsDeleted = &asciidoc.Document{
+var attributesTestSetsAttributeUntilItIsDeleted = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1339,7 +1341,7 @@ var setsAttributeUntilItIsDeleted = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1352,13 +1354,13 @@ var setsAttributeUntilItIsDeleted = &asciidoc.Document{
 			Value: ".",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
 			Name: "foo",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1374,9 +1376,9 @@ var setsAttributeUntilItIsDeleted = &asciidoc.Document{
 	},
 }
 
-var shouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument = &asciidoc.Document{
+var attributesTestShouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1387,7 +1389,7 @@ var shouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1412,13 +1414,13 @@ var shouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
 			Name: "compat-mode",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1443,14 +1445,14 @@ var shouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "compat-mode",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1478,9 +1480,9 @@ var shouldAllowCompatModeToBeSetAndUnsetInMiddleOfDocument = &asciidoc.Document{
 	},
 }
 
-var doesNotDisturbAttributeLookingThingsEscapedWithBackslash = &asciidoc.Document{
+var attributesTestDoesNotDisturbAttributeLookingThingsEscapedWithBackslash = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1491,7 +1493,7 @@ var doesNotDisturbAttributeLookingThingsEscapedWithBackslash = &asciidoc.Documen
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -1507,9 +1509,9 @@ var doesNotDisturbAttributeLookingThingsEscapedWithBackslash = &asciidoc.Documen
 	},
 }
 
-var doesNotSubstituteAttributesInsideLiteralBlocks = &asciidoc.Document{
+var attributesTestDoesNotSubstituteAttributesInsideLiteralBlocks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1520,7 +1522,7 @@ var doesNotSubstituteAttributesInsideLiteralBlocks = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -1537,9 +1539,9 @@ var doesNotSubstituteAttributesInsideLiteralBlocks = &asciidoc.Document{
 	},
 }
 
-var doesNotShowDocdirAndShowsRelativeDocfileIfSafeModeIsServerOrGreater = &asciidoc.Document{
+var attributesTestDoesNotShowDocdirAndShowsRelativeDocfileIfSafeModeIsServerOrGreater = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1573,9 +1575,9 @@ var doesNotShowDocdirAndShowsRelativeDocfileIfSafeModeIsServerOrGreater = &ascii
 	},
 }
 
-var showsAbsoluteDocdirAndDocfilePathsIfSafeModeIsLessThanServer = &asciidoc.Document{
+var attributesTestShowsAbsoluteDocdirAndDocfilePathsIfSafeModeIsLessThanServer = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -1609,9 +1611,9 @@ var showsAbsoluteDocdirAndDocfilePathsIfSafeModeIsLessThanServer = &asciidoc.Doc
 	},
 }
 
-var assignsAttributeDefinedInAttributeReferenceWithSetPrefixAndValue = &asciidoc.Document{
+var attributesTestAssignsAttributeDefinedInAttributeReferenceWithSetPrefixAndValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1626,7 +1628,7 @@ var assignsAttributeDefinedInAttributeReferenceWithSetPrefixAndValue = &asciidoc
 			Name: "foo",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1643,9 +1645,9 @@ var assignsAttributeDefinedInAttributeReferenceWithSetPrefixAndValue = &asciidoc
 	},
 }
 
-var createsCounter = &asciidoc.Document{
+var attributesTestCreatesCounter = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1656,7 +1658,7 @@ var createsCounter = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Counter{
@@ -1668,9 +1670,9 @@ var createsCounter = &asciidoc.Document{
 	},
 }
 
-var canSeedCounterToStartAtA = &asciidoc.Document{
+var attributesTestCanSeedCounterToStartAtA = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1681,7 +1683,7 @@ var canSeedCounterToStartAtA = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Counter{
@@ -1693,9 +1695,9 @@ var canSeedCounterToStartAtA = &asciidoc.Document{
 	},
 }
 
-var incrementsCounterWithPositiveNumericValue = &asciidoc.Document{
+var attributesTestIncrementsCounterWithPositiveNumericValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -1724,9 +1726,9 @@ var incrementsCounterWithPositiveNumericValue = &asciidoc.Document{
 	},
 }
 
-var incrementsCounterWithNegativeNumericValue = &asciidoc.Document{
+var attributesTestIncrementsCounterWithNegativeNumericValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -1755,9 +1757,9 @@ var incrementsCounterWithNegativeNumericValue = &asciidoc.Document{
 	},
 }
 
-var incrementsCounterWithAsciiCharacterValue = &asciidoc.Document{
+var attributesTestIncrementsCounterWithAsciiCharacterValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -1786,9 +1788,9 @@ var incrementsCounterWithAsciiCharacterValue = &asciidoc.Document{
 	},
 }
 
-var incrementsCounterWithNonAsciiCharacterValue = &asciidoc.Document{
+var attributesTestIncrementsCounterWithNonAsciiCharacterValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -1817,9 +1819,9 @@ var incrementsCounterWithNonAsciiCharacterValue = &asciidoc.Document{
 	},
 }
 
-var incrementsCounterWithEmojiCharacterValue = &asciidoc.Document{
+var attributesTestIncrementsCounterWithEmojiCharacterValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -1848,9 +1850,9 @@ var incrementsCounterWithEmojiCharacterValue = &asciidoc.Document{
 	},
 }
 
-var incrementsCounterWithMultiCharacterValue = &asciidoc.Document{
+var attributesTestIncrementsCounterWithMultiCharacterValue = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -1879,16 +1881,16 @@ var incrementsCounterWithMultiCharacterValue = &asciidoc.Document{
 	},
 }
 
-var counterUses0AsSeedValueIfSeedAttributeIsNil = &asciidoc.Document{
+var attributesTestCounterUses0AsSeedValueIfSeedAttributeIsNil = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "mycounter",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Counter{
@@ -1897,7 +1899,7 @@ var counterUses0AsSeedValueIfSeedAttributeIsNil = &asciidoc.Document{
 			Display:      true,
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -1907,16 +1909,16 @@ var counterUses0AsSeedValueIfSeedAttributeIsNil = &asciidoc.Document{
 	},
 }
 
-var counterValueCanBeResetByAttributeEntry = &asciidoc.Document{
+var attributesTestCounterValueCanBeResetByAttributeEntry = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "mycounter",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1944,13 +1946,13 @@ var counterValueCanBeResetByAttributeEntry = &asciidoc.Document{
 			Display:      true,
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
 			Name: "mycounter",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1965,9 +1967,9 @@ var counterValueCanBeResetByAttributeEntry = &asciidoc.Document{
 	},
 }
 
-var counterValueCanBeAdvancedByAttributeEntry = &asciidoc.Document{
+var attributesTestCounterValueCanBeAdvancedByAttributeEntry = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1979,7 +1981,7 @@ var counterValueCanBeAdvancedByAttributeEntry = &asciidoc.Document{
 			Display:      true,
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1990,7 +1992,7 @@ var counterValueCanBeAdvancedByAttributeEntry = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2005,9 +2007,9 @@ var counterValueCanBeAdvancedByAttributeEntry = &asciidoc.Document{
 	},
 }
 
-var nestedDocumentShouldUseCounterFromParentDocument = &asciidoc.Document{
+var attributesTestNestedDocumentShouldUseCounterFromParentDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -2026,7 +2028,7 @@ var nestedDocumentShouldUseCounterFromParentDocument = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -2159,12 +2161,12 @@ var nestedDocumentShouldUseCounterFromParentDocument = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -2186,9 +2188,9 @@ var nestedDocumentShouldUseCounterFromParentDocument = &asciidoc.Document{
 	},
 }
 
-var shouldNotAllowCounterToModifyLockedAttribute = &asciidoc.Document{
+var attributesTestShouldNotAllowCounterToModifyLockedAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2201,9 +2203,9 @@ var shouldNotAllowCounterToModifyLockedAttribute = &asciidoc.Document{
 	},
 }
 
-var shouldNotAllowCounter2ToModifyLockedAttribute = &asciidoc.Document{
+var attributesTestShouldNotAllowCounter2ToModifyLockedAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2216,9 +2218,9 @@ var shouldNotAllowCounter2ToModifyLockedAttribute = &asciidoc.Document{
 	},
 }
 
-var shouldNotAllowCounterToModifyBuiltInLockedAttribute = &asciidoc.Document{
+var attributesTestShouldNotAllowCounterToModifyBuiltInLockedAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Counter{
@@ -2236,9 +2238,9 @@ var shouldNotAllowCounterToModifyBuiltInLockedAttribute = &asciidoc.Document{
 	},
 }
 
-var shouldNotAllowCounter2ToModifyBuiltInLockedAttribute = &asciidoc.Document{
+var attributesTestShouldNotAllowCounter2ToModifyBuiltInLockedAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Counter{
@@ -2253,9 +2255,9 @@ var shouldNotAllowCounter2ToModifyBuiltInLockedAttribute = &asciidoc.Document{
 	},
 }
 
-var parsesNamedAttributeWithValidName = &asciidoc.Document{
+var attributesTestParsesNamedAttributeWithValidName = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2269,9 +2271,9 @@ var parsesNamedAttributeWithValidName = &asciidoc.Document{
 	},
 }
 
-var doesNotParseNamedAttributeIfNameIsInvalid = &asciidoc.Document{
+var attributesTestDoesNotParseNamedAttributeIfNameIsInvalid = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2285,9 +2287,9 @@ var doesNotParseNamedAttributeIfNameIsInvalid = &asciidoc.Document{
 	},
 }
 
-var positionalAttributesAssignedToBlock = &asciidoc.Document{
+var attributesTestPositionalAttributesAssignedToBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2337,9 +2339,9 @@ var positionalAttributesAssignedToBlock = &asciidoc.Document{
 	},
 }
 
-var normalSubstitutionsArePerformedOnSingleQuotedPositionalAttribute = &asciidoc.Document{
+var attributesTestNormalSubstitutionsArePerformedOnSingleQuotedPositionalAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2389,9 +2391,9 @@ var normalSubstitutionsArePerformedOnSingleQuotedPositionalAttribute = &asciidoc
 	},
 }
 
-var normalSubstitutionsArePerformedOnSingleQuotedNamedAttribute = &asciidoc.Document{
+var attributesTestNormalSubstitutionsArePerformedOnSingleQuotedNamedAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2441,9 +2443,9 @@ var normalSubstitutionsArePerformedOnSingleQuotedNamedAttribute = &asciidoc.Docu
 	},
 }
 
-var normalSubstitutionsArePerformedOnceOnSingleQuotedNamedTitleAttribute = &asciidoc.Document{
+var attributesTestNormalSubstitutionsArePerformedOnceOnSingleQuotedNamedTitleAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2469,9 +2471,9 @@ var normalSubstitutionsArePerformedOnceOnSingleQuotedNamedTitleAttribute = &asci
 	},
 }
 
-var attributeListMayNotBeginWithSpace = &asciidoc.Document{
+var attributesTestAttributeListMayNotBeginWithSpace = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2503,9 +2505,9 @@ var attributeListMayNotBeginWithSpace = &asciidoc.Document{
 	},
 }
 
-var attributeListMayBeginWithComma = &asciidoc.Document{
+var attributesTestAttributeListMayBeginWithComma = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2528,9 +2530,9 @@ var attributeListMayBeginWithComma = &asciidoc.Document{
 	},
 }
 
-var firstAttributeInListMayBeDoubleQuoted = &asciidoc.Document{
+var attributesTestFirstAttributeInListMayBeDoubleQuoted = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2589,9 +2591,9 @@ var firstAttributeInListMayBeDoubleQuoted = &asciidoc.Document{
 	},
 }
 
-var firstAttributeInListMayBeSingleQuoted = &asciidoc.Document{
+var attributesTestFirstAttributeInListMayBeSingleQuoted = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2650,9 +2652,9 @@ var firstAttributeInListMayBeSingleQuoted = &asciidoc.Document{
 	},
 }
 
-var attributeWithValueNoneWithoutQuotesIsIgnored = &asciidoc.Document{
+var attributesTestAttributeWithValueNoneWithoutQuotesIsIgnored = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2678,9 +2680,9 @@ var attributeWithValueNoneWithoutQuotesIsIgnored = &asciidoc.Document{
 	},
 }
 
-var roleReturnsTrueIfRoleIsAssigned = &asciidoc.Document{
+var attributesTestRoleReturnsTrueIfRoleIsAssigned = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2706,9 +2708,9 @@ var roleReturnsTrueIfRoleIsAssigned = &asciidoc.Document{
 	},
 }
 
-var roleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument = &asciidoc.Document{
+var attributesTestRoleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2719,7 +2721,7 @@ var roleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2729,9 +2731,9 @@ var roleDoesNotReturnTrueIfRoleAttributeIsSetOnDocument = &asciidoc.Document{
 	},
 }
 
-var roleCanCheckForExactRoleNameMatch = &asciidoc.Document{
+var attributesTestRoleCanCheckForExactRoleNameMatch = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2757,9 +2759,9 @@ var roleCanCheckForExactRoleNameMatch = &asciidoc.Document{
 	},
 }
 
-var hasRoleCanCheckForPresenceOfRoleName = &asciidoc.Document{
+var attributesTestHasRoleCanCheckForPresenceOfRoleName = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2785,9 +2787,9 @@ var hasRoleCanCheckForPresenceOfRoleName = &asciidoc.Document{
 	},
 }
 
-var hasRoleDoesNotLookForRoleDefinedAsDocumentAttribute = &asciidoc.Document{
+var attributesTestHasRoleDoesNotLookForRoleDefinedAsDocumentAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2798,7 +2800,7 @@ var hasRoleDoesNotLookForRoleDefinedAsDocumentAttribute = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2808,9 +2810,9 @@ var hasRoleDoesNotLookForRoleDefinedAsDocumentAttribute = &asciidoc.Document{
 	},
 }
 
-var rolesReturnsArrayOfRoleNames = &asciidoc.Document{
+var attributesTestRolesReturnsArrayOfRoleNames = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2836,9 +2838,9 @@ var rolesReturnsArrayOfRoleNames = &asciidoc.Document{
 	},
 }
 
-var rolesReturnsEmptyArrayIfRoleAttributeIsNotSet = &asciidoc.Document{
+var attributesTestRolesReturnsEmptyArrayIfRoleAttributeIsNotSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2849,7 +2851,7 @@ var rolesReturnsEmptyArrayIfRoleAttributeIsNotSet = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2859,9 +2861,9 @@ var rolesReturnsEmptyArrayIfRoleAttributeIsNotSet = &asciidoc.Document{
 	},
 }
 
-var rolesSetsTheRoleAttributeOnTheNode = &asciidoc.Document{
+var attributesTestRolesSetsTheRoleAttributeOnTheNode = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2872,7 +2874,7 @@ var rolesSetsTheRoleAttributeOnTheNode = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2901,9 +2903,9 @@ var rolesSetsTheRoleAttributeOnTheNode = &asciidoc.Document{
 	},
 }
 
-var idRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax = &asciidoc.Document{
+var attributesTestIdRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2954,9 +2956,9 @@ var idRoleAndOptionsAttributesCanBeSpecifiedOnBlockStyleUsingShorthandSyntax = &
 	},
 }
 
-var idRoleAndOptionsAttributesCanBeSpecifiedUsingShorthandSyntaxOnBlockStyleUsingMultipleBlockAttributeLines = &asciidoc.Document{
+var attributesTestIdRoleAndOptionsAttributesCanBeSpecifiedUsingShorthandSyntaxOnBlockStyleUsingMultipleBlockAttributeLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3012,9 +3014,9 @@ var idRoleAndOptionsAttributesCanBeSpecifiedUsingShorthandSyntaxOnBlockStyleUsin
 	},
 }
 
-var multipleRolesAndOptionsCanBeSpecifiedInBlockStyleUsingShorthandSyntax = &asciidoc.Document{
+var attributesTestMultipleRolesAndOptionsCanBeSpecifiedInBlockStyleUsingShorthandSyntax = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3067,9 +3069,9 @@ var multipleRolesAndOptionsCanBeSpecifiedInBlockStyleUsingShorthandSyntax = &asc
 	},
 }
 
-var optionsSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive = &asciidoc.Document{
+var attributesTestOptionsSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3109,9 +3111,9 @@ var optionsSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeA
 	},
 }
 
-var rolesSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive = &asciidoc.Document{
+var attributesTestRolesSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdditive = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3151,9 +3153,9 @@ var rolesSpecifiedUsingShorthandSyntaxOnBlockStyleAcrossMultipleLinesShouldBeAdd
 	},
 }
 
-var settingARoleUsingTheRoleAttributeReplacesAnyExistingRoles = &asciidoc.Document{
+var attributesTestSettingARoleUsingTheRoleAttributeReplacesAnyExistingRoles = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3202,9 +3204,9 @@ var settingARoleUsingTheRoleAttributeReplacesAnyExistingRoles = &asciidoc.Docume
 	},
 }
 
-var settingARoleUsingTheShorthandSyntaxOnBlockStyleShouldNotClearTheId = &asciidoc.Document{
+var attributesTestSettingARoleUsingTheShorthandSyntaxOnBlockStyleShouldNotClearTheId = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3242,9 +3244,9 @@ var settingARoleUsingTheShorthandSyntaxOnBlockStyleShouldNotClearTheId = &asciid
 	},
 }
 
-var aRoleCanBeAddedUsingAddRoleWhenTheNodeHasNoRoles = &asciidoc.Document{
+var attributesTestARoleCanBeAddedUsingAddRoleWhenTheNodeHasNoRoles = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3275,9 +3277,9 @@ var aRoleCanBeAddedUsingAddRoleWhenTheNodeHasNoRoles = &asciidoc.Document{
 	},
 }
 
-var aRoleIsNotAddedUsingAddRoleIfTheNodeAlreadyHasThatRole = &asciidoc.Document{
+var attributesTestARoleIsNotAddedUsingAddRoleIfTheNodeAlreadyHasThatRole = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3308,9 +3310,9 @@ var aRoleIsNotAddedUsingAddRoleIfTheNodeAlreadyHasThatRole = &asciidoc.Document{
 	},
 }
 
-var anExistingRoleCanBeRemovedUsingRemoveRole = &asciidoc.Document{
+var attributesTestAnExistingRoleCanBeRemovedUsingRemoveRole = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3348,9 +3350,9 @@ var anExistingRoleCanBeRemovedUsingRemoveRole = &asciidoc.Document{
 	},
 }
 
-var rolesAreRemovedWhenLastRoleIsRemovedUsingRemoveRole = &asciidoc.Document{
+var attributesTestRolesAreRemovedWhenLastRoleIsRemovedUsingRemoveRole = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3381,9 +3383,9 @@ var rolesAreRemovedWhenLastRoleIsRemovedUsingRemoveRole = &asciidoc.Document{
 	},
 }
 
-var rolesAreNotChangedWhenANonExistentRoleIsRemovedUsingRemoveRole = &asciidoc.Document{
+var attributesTestRolesAreNotChangedWhenANonExistentRoleIsRemovedUsingRemoveRole = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3414,9 +3416,9 @@ var rolesAreNotChangedWhenANonExistentRoleIsRemovedUsingRemoveRole = &asciidoc.D
 	},
 }
 
-var rolesAreNotChangedWhenUsingRemoveRoleIfTheNodeHasNoRoles = &asciidoc.Document{
+var attributesTestRolesAreNotChangedWhenUsingRemoveRoleIfTheNodeHasNoRoles = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
@@ -3448,9 +3450,9 @@ var rolesAreNotChangedWhenUsingRemoveRoleIfTheNodeHasNoRoles = &asciidoc.Documen
 	},
 }
 
-var idAndRoleAttributesCanBeSpecifiedOnSectionStyleUsingShorthandSyntax = &asciidoc.Document{
+var attributesTestIdAndRoleAttributesCanBeSpecifiedOnSectionStyleUsingShorthandSyntax = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -3498,9 +3500,9 @@ var idAndRoleAttributesCanBeSpecifiedOnSectionStyleUsingShorthandSyntax = &ascii
 	},
 }
 
-var idAttributeSpecifiedUsingShorthandSyntaxShouldNotCreateASpecialSection = &asciidoc.Document{
+var attributesTestIdAttributeSpecifiedUsingShorthandSyntaxShouldNotCreateASpecialSection = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -3519,7 +3521,7 @@ var idAttributeSpecifiedUsingShorthandSyntaxShouldNotCreateASpecialSection = &as
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -3537,9 +3539,9 @@ var idAttributeSpecifiedUsingShorthandSyntaxShouldNotCreateASpecialSection = &as
 	},
 }
 
-var blockAttributesAreAdditive = &asciidoc.Document{
+var attributesTestBlockAttributesAreAdditive = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3574,12 +3576,12 @@ var blockAttributesAreAdditive = &asciidoc.Document{
 	},
 }
 
-var lastWinsForIdAttribute = &asciidoc.Document{
+var attributesTestLastWinsForIdAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.AnchorAttribute{
 					ID: &asciidoc.String{
@@ -3595,14 +3597,14 @@ var lastWinsForIdAttribute = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "paragraph",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -3642,12 +3644,12 @@ var lastWinsForIdAttribute = &asciidoc.Document{
 	},
 }
 
-var trailingBlockAttributesTransferToTheFollowingSection = &asciidoc.Document{
+var attributesTestTrailingBlockAttributesTransferToTheFollowingSection = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.AnchorAttribute{
 					ID: &asciidoc.String{
@@ -3657,14 +3659,14 @@ var trailingBlockAttributesTransferToTheFollowingSection = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "paragraph",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -3682,20 +3684,20 @@ var trailingBlockAttributesTransferToTheFollowingSection = &asciidoc.Document{
 				&asciidoc.SingleLineComment{
 					Value: " try to mess this up!",
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "paragraph",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Paragraph{
@@ -3713,7 +3715,7 @@ var trailingBlockAttributesTransferToTheFollowingSection = &asciidoc.Document{
 							Set:        asciidoc.Set{},
 							Admonition: 0,
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.MultiLineComment{
@@ -3725,7 +3727,7 @@ var trailingBlockAttributesTransferToTheFollowingSection = &asciidoc.Document{
 								"block comment",
 							},
 						},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -3747,7 +3749,7 @@ var trailingBlockAttributesTransferToTheFollowingSection = &asciidoc.Document{
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{

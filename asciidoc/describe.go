@@ -51,7 +51,7 @@ func Describe(el Element) string {
 		return fmt.Sprintf("Italic (%d)", len(el.Set))
 	case *DoubleItalic:
 		return fmt.Sprintf("double italic (%d)", len(el.Set))
-	case EmptyLine:
+	case *EmptyLine:
 		return "empty line"
 	case *Link:
 		return fmt.Sprintf("link %s ", Describe(el.URL))

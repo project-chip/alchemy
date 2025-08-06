@@ -132,7 +132,7 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 			value.WriteString("++")
 			err = readDescription(doc, el.Elements(), value)
 		case *asciidoc.ThematicBreak:
-		case asciidoc.EmptyLine:
+		case *asciidoc.EmptyLine:
 		case *asciidoc.NewLine:
 			value.WriteString(" ")
 		case asciidoc.HasElements:

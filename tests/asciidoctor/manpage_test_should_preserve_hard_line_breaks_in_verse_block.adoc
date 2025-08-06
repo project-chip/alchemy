@@ -1,0 +1,3 @@
+.lines
+      [verse]
+      _command_ [_OPTION_]... _FILE_...

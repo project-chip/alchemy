@@ -1,0 +1,6 @@
+
+= command
+
+== Name
+
+command - does stuff

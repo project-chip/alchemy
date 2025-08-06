@@ -1,0 +1,8 @@
+.chop
+      <div class="openblock wrapper">
+      <div class="content">
+      <div class="paragraph">
+      <p>foobar</p>
+      </div>
+      </div>
+      </div>

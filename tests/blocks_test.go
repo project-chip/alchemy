@@ -12,450 +12,450 @@ func TestBlocks(t *testing.T) {
 
 var blocksTests = parseTests{
 
-	{"horizontal rule between blocks", "asciidoctor/blocks_test_horizontal_rule_between_blocks.adoc", horizontalRuleBetweenBlocks, nil},
+	{"horizontal rule between blocks", "asciidoctor/blocks_test_horizontal_rule_between_blocks.adoc", blocksTestHorizontalRuleBetweenBlocks, nil},
 
-	{"line comment between paragraphs offset by blank lines", "asciidoctor/blocks_test_line_comment_between_paragraphs_offset_by_blank_lines.adoc", lineCommentBetweenParagraphsOffsetByBlankLines, nil},
+	{"line comment between paragraphs offset by blank lines", "asciidoctor/blocks_test_line_comment_between_paragraphs_offset_by_blank_lines.adoc", blocksTestLineCommentBetweenParagraphsOffsetByBlankLines, nil},
 
-	{"adjacent line comment between paragraphs", "asciidoctor/blocks_test_adjacent_line_comment_between_paragraphs.adoc", adjacentLineCommentBetweenParagraphs, nil},
+	{"adjacent line comment between paragraphs", "asciidoctor/blocks_test_adjacent_line_comment_between_paragraphs.adoc", blocksTestAdjacentLineCommentBetweenParagraphs, nil},
 
-	{"comment block between paragraphs offset by blank lines", "asciidoctor/blocks_test_comment_block_between_paragraphs_offset_by_blank_lines.adoc", commentBlockBetweenParagraphsOffsetByBlankLines, nil},
+	{"comment block between paragraphs offset by blank lines", "asciidoctor/blocks_test_comment_block_between_paragraphs_offset_by_blank_lines.adoc", blocksTestCommentBlockBetweenParagraphsOffsetByBlankLines, nil},
 
-	{"comment block between paragraphs offset by blank lines inside delimited block", "asciidoctor/blocks_test_comment_block_between_paragraphs_offset_by_blank_lines_inside_delimited_block.adoc", commentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock, nil},
+	{"comment block between paragraphs offset by blank lines inside delimited block", "asciidoctor/blocks_test_comment_block_between_paragraphs_offset_by_blank_lines_inside_delimited_block.adoc", blocksTestCommentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock, nil},
 
-	{"adjacent comment block between paragraphs", "asciidoctor/blocks_test_adjacent_comment_block_between_paragraphs.adoc", adjacentCommentBlockBetweenParagraphs, nil},
+	{"adjacent comment block between paragraphs", "asciidoctor/blocks_test_adjacent_comment_block_between_paragraphs.adoc", blocksTestAdjacentCommentBlockBetweenParagraphs, nil},
 
-	{"can convert with block comment at end of document with trailing newlines", "asciidoctor/blocks_test_can_convert_with_block_comment_at_end_of_document_with_trailing_newlines.adoc", canConvertWithBlockCommentAtEndOfDocumentWithTrailingNewlines, nil},
+	{"can convert with block comment at end of document with trailing newlines", "asciidoctor/blocks_test_can_convert_with_block_comment_at_end_of_document_with_trailing_newlines.adoc", blocksTestCanConvertWithBlockCommentAtEndOfDocumentWithTrailingNewlines, nil},
 
-	{"trailing newlines after block comment at end of document does not create paragraph", "asciidoctor/blocks_test_trailing_newlines_after_block_comment_at_end_of_document_does_not_create_paragraph.adoc", trailingNewlinesAfterBlockCommentAtEndOfDocumentDoesNotCreateParagraph, nil},
+	{"trailing newlines after block comment at end of document does not create paragraph", "asciidoctor/blocks_test_trailing_newlines_after_block_comment_at_end_of_document_does_not_create_paragraph.adoc", blocksTestTrailingNewlinesAfterBlockCommentAtEndOfDocumentDoesNotCreateParagraph, nil},
 
-	{"line starting with three slashes should not be line comment", "asciidoctor/blocks_test_line_starting_with_three_slashes_should_not_be_line_comment.adoc", lineStartingWithThreeSlashesShouldNotBeLineComment, nil},
+	{"line starting with three slashes should not be line comment", "asciidoctor/blocks_test_line_starting_with_three_slashes_should_not_be_line_comment.adoc", blocksTestLineStartingWithThreeSlashesShouldNotBeLineComment, nil},
 
-	{"preprocessor directives should not be processed within comment block", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_within_comment_block.adoc", preprocessorDirectivesShouldNotBeProcessedWithinCommentBlock, nil},
+	{"preprocessor directives should not be processed within comment block", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_within_comment_block.adoc", blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentBlock, nil},
 
-	{"should warn if unterminated comment block is detected in body", "asciidoctor/blocks_test_should_warn_if_unterminated_comment_block_is_detected_in_body.adoc", shouldWarnIfUnterminatedCommentBlockIsDetectedInBody, nil},
+	{"should warn if unterminated comment block is detected in body", "asciidoctor/blocks_test_should_warn_if_unterminated_comment_block_is_detected_in_body.adoc", blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInBody, nil},
 
-	{"should warn if unterminated comment block is detected inside another block", "asciidoctor/blocks_test_should_warn_if_unterminated_comment_block_is_detected_inside_another_block.adoc", shouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock, nil},
+	{"should warn if unterminated comment block is detected inside another block", "asciidoctor/blocks_test_should_warn_if_unterminated_comment_block_is_detected_inside_another_block.adoc", blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock, nil},
 
-	{"preprocessor directives should not be processed within comment open block", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_within_comment_open_block.adoc", preprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock, nil},
+	{"preprocessor directives should not be processed within comment open block", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_within_comment_open_block.adoc", blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock, nil},
 
-	{"preprocessor directives should not be processed on subsequent lines of a comment paragraph", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_on_subsequent_lines_of_a_comment_paragraph.adoc", preprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagraph, nil},
+	{"preprocessor directives should not be processed on subsequent lines of a comment paragraph", "asciidoctor/blocks_test_preprocessor_directives_should_not_be_processed_on_subsequent_lines_of_a_comment_paragraph.adoc", blocksTestPreprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagraph, nil},
 
-	{"comment style on open block should only skip block", "asciidoctor/blocks_test_comment_style_on_open_block_should_only_skip_block.adoc", commentStyleOnOpenBlockShouldOnlySkipBlock, nil},
+	{"comment style on open block should only skip block", "asciidoctor/blocks_test_comment_style_on_open_block_should_only_skip_block.adoc", blocksTestCommentStyleOnOpenBlockShouldOnlySkipBlock, nil},
 
-	{"comment style on paragraph should only skip paragraph", "asciidoctor/blocks_test_comment_style_on_paragraph_should_only_skip_paragraph.adoc", commentStyleOnParagraphShouldOnlySkipParagraph, nil},
+	{"comment style on paragraph should only skip paragraph", "asciidoctor/blocks_test_comment_style_on_paragraph_should_only_skip_paragraph.adoc", blocksTestCommentStyleOnParagraphShouldOnlySkipParagraph, nil},
 
-	{"comment style on paragraph should not cause adjacent block to be skipped", "asciidoctor/blocks_test_comment_style_on_paragraph_should_not_cause_adjacent_block_to_be_skipped.adoc", commentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped, nil},
+	{"comment style on paragraph should not cause adjacent block to be skipped", "asciidoctor/blocks_test_comment_style_on_paragraph_should_not_cause_adjacent_block_to_be_skipped.adoc", blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped, nil},
 
-	{"should not drop content that follows skipped content inside a delimited block", "asciidoctor/blocks_test_should_not_drop_content_that_follows_skipped_content_inside_a_delimited_block.adoc", shouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock, nil},
+	{"should not drop content that follows skipped content inside a delimited block", "asciidoctor/blocks_test_should_not_drop_content_that_follows_skipped_content_inside_a_delimited_block.adoc", blocksTestShouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock, nil},
 
-	{"should parse sidebar block", "asciidoctor/blocks_test_should_parse_sidebar_block.adoc", shouldParseSidebarBlock, nil},
+	{"should parse sidebar block", "asciidoctor/blocks_test_should_parse_sidebar_block.adoc", blocksTestShouldParseSidebarBlock, nil},
 
-	{"quote block with no attribution", "asciidoctor/blocks_test_quote_block_with_no_attribution.adoc", quoteBlockWithNoAttribution, nil},
+	{"quote block with no attribution", "asciidoctor/blocks_test_quote_block_with_no_attribution.adoc", blocksTestQuoteBlockWithNoAttribution, nil},
 
-	{"quote block with attribution", "asciidoctor/blocks_test_quote_block_with_attribution.adoc", quoteBlockWithAttribution, nil},
+	{"quote block with attribution", "asciidoctor/blocks_test_quote_block_with_attribution.adoc", blocksTestQuoteBlockWithAttribution, nil},
 
-	{"quote block with attribute and id and role shorthand", "asciidoctor/blocks_test_quote_block_with_attribute_and_id_and_role_shorthand.adoc", quoteBlockWithAttributeAndIdAndRoleShorthand, nil},
+	{"quote block with attribute and id and role shorthand", "asciidoctor/blocks_test_quote_block_with_attribute_and_id_and_role_shorthand.adoc", blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand, nil},
 
-	{"setting ID using style shorthand should not reset block style", "asciidoctor/blocks_test_setting_id_using_style_shorthand_should_not_reset_block_style.adoc", settingIdUsingStyleShorthandShouldNotResetBlockStyle, nil},
+	{"setting ID using style shorthand should not reset block style", "asciidoctor/blocks_test_setting_id_using_style_shorthand_should_not_reset_block_style.adoc", blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle, nil},
 
-	{"quote block with complex content", "asciidoctor/blocks_test_quote_block_with_complex_content.adoc", quoteBlockWithComplexContent, nil},
+	{"quote block with complex content", "asciidoctor/blocks_test_quote_block_with_complex_content.adoc", blocksTestQuoteBlockWithComplexContent, nil},
 
-	{"quote block with attribution converted to DocBook", "asciidoctor/blocks_test_quote_block_with_attribution_converted_to_doc_book.adoc", quoteBlockWithAttributionConvertedToDocBook, nil},
+	{"quote block with attribution converted to DocBook", "asciidoctor/blocks_test_quote_block_with_attribution_converted_to_doc_book.adoc", blocksTestQuoteBlockWithAttributionConvertedToDocBook, nil},
 
-	{"epigraph quote block with attribution converted to DocBook", "asciidoctor/blocks_test_epigraph_quote_block_with_attribution_converted_to_doc_book.adoc", epigraphQuoteBlockWithAttributionConvertedToDocBook, nil},
+	{"epigraph quote block with attribution converted to DocBook", "asciidoctor/blocks_test_epigraph_quote_block_with_attribution_converted_to_doc_book.adoc", blocksTestEpigraphQuoteBlockWithAttributionConvertedToDocBook, nil},
 
-	{"markdown-style quote block with single paragraph and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_single_paragraph_and_no_attribution.adoc", markdownStyleQuoteBlockWithSingleParagraphAndNoAttribution, nil},
+	{"markdown-style quote block with single paragraph and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_single_paragraph_and_no_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution, nil},
 
-	{"lazy markdown-style quote block with single paragraph and no attribution", "asciidoctor/blocks_test_lazy_markdown_style_quote_block_with_single_paragraph_and_no_attribution.adoc", lazyMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution, nil},
+	{"lazy markdown-style quote block with single paragraph and no attribution", "asciidoctor/blocks_test_lazy_markdown_style_quote_block_with_single_paragraph_and_no_attribution.adoc", blocksTestLazyMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution, nil},
 
-	{"markdown-style quote block with multiple paragraphs and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_multiple_paragraphs_and_no_attribution.adoc", markdownStyleQuoteBlockWithMultipleParagraphsAndNoAttribution, nil},
+	{"markdown-style quote block with multiple paragraphs and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_multiple_paragraphs_and_no_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithMultipleParagraphsAndNoAttribution, nil},
 
-	{"markdown-style quote block with multiple blocks and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_multiple_blocks_and_no_attribution.adoc", markdownStyleQuoteBlockWithMultipleBlocksAndNoAttribution, nil},
+	{"markdown-style quote block with multiple blocks and no attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_multiple_blocks_and_no_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithMultipleBlocksAndNoAttribution, nil},
 
-	{"markdown-style quote block with single paragraph and attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_single_paragraph_and_attribution.adoc", markdownStyleQuoteBlockWithSingleParagraphAndAttribution, nil},
+	{"markdown-style quote block with single paragraph and attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_single_paragraph_and_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndAttribution, nil},
 
-	{"markdown-style quote block with only attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_only_attribution.adoc", markdownStyleQuoteBlockWithOnlyAttribution, nil},
+	{"markdown-style quote block with only attribution", "asciidoctor/blocks_test_markdown_style_quote_block_with_only_attribution.adoc", blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution, nil},
 
-	{"quoted paragraph-style quote block with attribution", "asciidoctor/blocks_test_quoted_paragraph_style_quote_block_with_attribution.adoc", quotedParagraphStyleQuoteBlockWithAttribution, nil},
+	{"quoted paragraph-style quote block with attribution", "asciidoctor/blocks_test_quoted_paragraph_style_quote_block_with_attribution.adoc", blocksTestQuotedParagraphStyleQuoteBlockWithAttribution, nil},
 
-	{"should parse credit line in quoted paragraph-style quote block like positional block attributes", "asciidoctor/blocks_test_should_parse_credit_line_in_quoted_paragraph_style_quote_block_like_positional_block_attributes.adoc", shouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositionalBlockAttributes, nil},
+	{"should parse credit line in quoted paragraph-style quote block like positional block attributes", "asciidoctor/blocks_test_should_parse_credit_line_in_quoted_paragraph_style_quote_block_like_positional_block_attributes.adoc", blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositionalBlockAttributes, nil},
 
-	{"single-line verse block without attribution", "asciidoctor/blocks_test_single_line_verse_block_without_attribution.adoc", singleLineVerseBlockWithoutAttribution, nil},
+	{"single-line verse block without attribution", "asciidoctor/blocks_test_single_line_verse_block_without_attribution.adoc", blocksTestSingleLineVerseBlockWithoutAttribution, nil},
 
-	{"single-line verse block with attribution", "asciidoctor/blocks_test_single_line_verse_block_with_attribution.adoc", singleLineVerseBlockWithAttribution, nil},
+	{"single-line verse block with attribution", "asciidoctor/blocks_test_single_line_verse_block_with_attribution.adoc", blocksTestSingleLineVerseBlockWithAttribution, nil},
 
-	{"single-line verse block with attribution converted to DocBook", "asciidoctor/blocks_test_single_line_verse_block_with_attribution_converted_to_doc_book.adoc", singleLineVerseBlockWithAttributionConvertedToDocBook, nil},
+	{"single-line verse block with attribution converted to DocBook", "asciidoctor/blocks_test_single_line_verse_block_with_attribution_converted_to_doc_book.adoc", blocksTestSingleLineVerseBlockWithAttributionConvertedToDocBook, nil},
 
-	{"single-line epigraph verse block with attribution converted to DocBook", "asciidoctor/blocks_test_single_line_epigraph_verse_block_with_attribution_converted_to_doc_book.adoc", singleLineEpigraphVerseBlockWithAttributionConvertedToDocBook, nil},
+	{"single-line epigraph verse block with attribution converted to DocBook", "asciidoctor/blocks_test_single_line_epigraph_verse_block_with_attribution_converted_to_doc_book.adoc", blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook, nil},
 
-	{"multi-stanza verse block", "asciidoctor/blocks_test_multi_stanza_verse_block.adoc", multiStanzaVerseBlock, nil},
+	{"multi-stanza verse block", "asciidoctor/blocks_test_multi_stanza_verse_block.adoc", blocksTestMultiStanzaVerseBlock, nil},
 
-	{"verse block does not contain block elements", "asciidoctor/blocks_test_verse_block_does_not_contain_block_elements.adoc", verseBlockDoesNotContainBlockElements, nil},
+	{"verse block does not contain block elements", "asciidoctor/blocks_test_verse_block_does_not_contain_block_elements.adoc", blocksTestVerseBlockDoesNotContainBlockElements, nil},
 
-	{"verse should have normal subs", "asciidoctor/blocks_test_verse_should_have_normal_subs.adoc", verseShouldHaveNormalSubs, nil},
+	{"verse should have normal subs", "asciidoctor/blocks_test_verse_should_have_normal_subs.adoc", blocksTestVerseShouldHaveNormalSubs, nil},
 
-	{"should not recognize callouts in a verse", "asciidoctor/blocks_test_should_not_recognize_callouts_in_a_verse.adoc", shouldNotRecognizeCalloutsInAVerse, nil},
+	{"should not recognize callouts in a verse", "asciidoctor/blocks_test_should_not_recognize_callouts_in_a_verse.adoc", blocksTestShouldNotRecognizeCalloutsInAVerse, nil},
 
-	{"should perform normal subs on a verse block", "asciidoctor/blocks_test_should_perform_normal_subs_on_a_verse_block.adoc", shouldPerformNormalSubsOnAVerseBlock, nil},
+	{"should perform normal subs on a verse block", "asciidoctor/blocks_test_should_perform_normal_subs_on_a_verse_block.adoc", blocksTestShouldPerformNormalSubsOnAVerseBlock, nil},
 
-	{"can convert example block", "asciidoctor/blocks_test_can_convert_example_block.adoc", canConvertExampleBlock, nil},
+	{"can convert example block", "asciidoctor/blocks_test_can_convert_example_block.adoc", blocksTestCanConvertExampleBlock, nil},
 
-	{"assigns sequential numbered caption to example block with title", "asciidoctor/blocks_test_assigns_sequential_numbered_caption_to_example_block_with_title.adoc", assignsSequentialNumberedCaptionToExampleBlockWithTitle, nil},
+	{"assigns sequential numbered caption to example block with title", "asciidoctor/blocks_test_assigns_sequential_numbered_caption_to_example_block_with_title.adoc", blocksTestAssignsSequentialNumberedCaptionToExampleBlockWithTitle, nil},
 
-	{"assigns sequential character caption to example block with title", "asciidoctor/blocks_test_assigns_sequential_character_caption_to_example_block_with_title.adoc", assignsSequentialCharacterCaptionToExampleBlockWithTitle, nil},
+	{"assigns sequential character caption to example block with title", "asciidoctor/blocks_test_assigns_sequential_character_caption_to_example_block_with_title.adoc", blocksTestAssignsSequentialCharacterCaptionToExampleBlockWithTitle, nil},
 
-	{"should increment counter for example even when example-number is locked by the API", "asciidoctor/blocks_test_should_increment_counter_for_example_even_when_example_number_is_locked_by_the_api.adoc", shouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi, nil},
+	{"should increment counter for example even when example-number is locked by the API", "asciidoctor/blocks_test_should_increment_counter_for_example_even_when_example_number_is_locked_by_the_api.adoc", blocksTestShouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi, nil},
 
-	{"should use explicit caption if specified", "asciidoctor/blocks_test_should_use_explicit_caption_if_specified.adoc", shouldUseExplicitCaptionIfSpecified, nil},
+	{"should use explicit caption if specified", "asciidoctor/blocks_test_should_use_explicit_caption_if_specified.adoc", blocksTestShouldUseExplicitCaptionIfSpecified, nil},
 
-	{"automatic caption can be turned off and on and modified", "asciidoctor/blocks_test_automatic_caption_can_be_turned_off_and_on_and_modified.adoc", automaticCaptionCanBeTurnedOffAndOnAndModified, nil},
+	{"automatic caption can be turned off and on and modified", "asciidoctor/blocks_test_automatic_caption_can_be_turned_off_and_on_and_modified.adoc", blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified, nil},
 
-	{"should use explicit caption if specified even if block-specific global caption is disabled", "asciidoctor/blocks_test_should_use_explicit_caption_if_specified_even_if_block_specific_global_caption_is_disabled.adoc", shouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled, nil},
+	{"should use explicit caption if specified even if block-specific global caption is disabled", "asciidoctor/blocks_test_should_use_explicit_caption_if_specified_even_if_block_specific_global_caption_is_disabled.adoc", blocksTestShouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled, nil},
 
-	{"should use global caption if specified even if block-specific global caption is disabled", "asciidoctor/blocks_test_should_use_global_caption_if_specified_even_if_block_specific_global_caption_is_disabled.adoc", shouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled, nil},
+	{"should use global caption if specified even if block-specific global caption is disabled", "asciidoctor/blocks_test_should_use_global_caption_if_specified_even_if_block_specific_global_caption_is_disabled.adoc", blocksTestShouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled, nil},
 
-	{"should not process caption attribute on block that does not support a caption", "asciidoctor/blocks_test_should_not_process_caption_attribute_on_block_that_does_not_support_a_caption.adoc", shouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption, nil},
+	{"should not process caption attribute on block that does not support a caption", "asciidoctor/blocks_test_should_not_process_caption_attribute_on_block_that_does_not_support_a_caption.adoc", blocksTestShouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption, nil},
 
-	{"should create details/summary set if collapsible option is set", "asciidoctor/blocks_test_should_create_details_summary_set_if_collapsible_option_is_set.adoc", shouldCreateDetailsSummarySetIfCollapsibleOptionIsSet, nil},
+	{"should create details/summary set if collapsible option is set", "asciidoctor/blocks_test_should_create_details_summary_set_if_collapsible_option_is_set.adoc", blocksTestShouldCreateDetailsSummarySetIfCollapsibleOptionIsSet, nil},
 
-	{"should open details/summary set if collapsible and open options are set", "asciidoctor/blocks_test_should_open_details_summary_set_if_collapsible_and_open_options_are_set.adoc", shouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet, nil},
+	{"should open details/summary set if collapsible and open options are set", "asciidoctor/blocks_test_should_open_details_summary_set_if_collapsible_and_open_options_are_set.adoc", blocksTestShouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet, nil},
 
-	{"should add default summary element if collapsible option is set and title is not specifed", "asciidoctor/blocks_test_should_add_default_summary_element_if_collapsible_option_is_set_and_title_is_not_specifed.adoc", shouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNotSpecifed, nil},
+	{"should add default summary element if collapsible option is set and title is not specifed", "asciidoctor/blocks_test_should_add_default_summary_element_if_collapsible_option_is_set_and_title_is_not_specifed.adoc", blocksTestShouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNotSpecifed, nil},
 
-	{"should not allow collapsible block to increment example number", "asciidoctor/blocks_test_should_not_allow_collapsible_block_to_increment_example_number.adoc", shouldNotAllowCollapsibleBlockToIncrementExampleNumber, nil},
+	{"should not allow collapsible block to increment example number", "asciidoctor/blocks_test_should_not_allow_collapsible_block_to_increment_example_number.adoc", blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber, nil},
 
-	{"should warn if example block is not terminated", "asciidoctor/blocks_test_should_warn_if_example_block_is_not_terminated.adoc", shouldWarnIfExampleBlockIsNotTerminated, nil},
+	{"should warn if example block is not terminated", "asciidoctor/blocks_test_should_warn_if_example_block_is_not_terminated.adoc", blocksTestShouldWarnIfExampleBlockIsNotTerminated, nil},
 
-	{"caption block-level attribute should be used as caption", "asciidoctor/blocks_test_caption_block_level_attribute_should_be_used_as_caption.adoc", captionBlockLevelAttributeShouldBeUsedAsCaption, nil},
+	{"caption block-level attribute should be used as caption", "asciidoctor/blocks_test_caption_block_level_attribute_should_be_used_as_caption.adoc", blocksTestCaptionBlockLevelAttributeShouldBeUsedAsCaption, nil},
 
-	{"can override caption of admonition block using document attribute", "asciidoctor/blocks_test_can_override_caption_of_admonition_block_using_document_attribute.adoc", canOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute, nil},
+	{"can override caption of admonition block using document attribute", "asciidoctor/blocks_test_can_override_caption_of_admonition_block_using_document_attribute.adoc", blocksTestCanOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute, nil},
 
-	{"blank caption document attribute should not blank admonition block caption", "asciidoctor/blocks_test_blank_caption_document_attribute_should_not_blank_admonition_block_caption.adoc", blankCaptionDocumentAttributeShouldNotBlankAdmonitionBlockCaption, nil},
+	{"blank caption document attribute should not blank admonition block caption", "asciidoctor/blocks_test_blank_caption_document_attribute_should_not_blank_admonition_block_caption.adoc", blocksTestBlankCaptionDocumentAttributeShouldNotBlankAdmonitionBlockCaption, nil},
 
-	{"should separate adjacent paragraphs and listing into blocks", "asciidoctor/blocks_test_should_separate_adjacent_paragraphs_and_listing_into_blocks.adoc", shouldSeparateAdjacentParagraphsAndListingIntoBlocks, nil},
+	{"should separate adjacent paragraphs and listing into blocks", "asciidoctor/blocks_test_should_separate_adjacent_paragraphs_and_listing_into_blocks.adoc", blocksTestShouldSeparateAdjacentParagraphsAndListingIntoBlocks, nil},
 
-	{"should warn if listing block is not terminated", "asciidoctor/blocks_test_should_warn_if_listing_block_is_not_terminated.adoc", shouldWarnIfListingBlockIsNotTerminated, nil},
+	{"should warn if listing block is not terminated", "asciidoctor/blocks_test_should_warn_if_listing_block_is_not_terminated.adoc", blocksTestShouldWarnIfListingBlockIsNotTerminated, nil},
 
-	{"should not crash when converting verbatim block that has no lines", "asciidoctor/blocks_test_should_not_crash_when_converting_verbatim_block_that_has_no_lines.adoc", shouldNotCrashWhenConvertingVerbatimBlockThatHasNoLines, nil},
+	{"should not crash when converting verbatim block that has no lines", "asciidoctor/blocks_test_should_not_crash_when_converting_verbatim_block_that_has_no_lines.adoc", blocksTestShouldNotCrashWhenConvertingVerbatimBlockThatHasNoLines, nil},
 
-	{"should preserve newlines in listing block", "asciidoctor/blocks_test_should_preserve_newlines_in_listing_block.adoc", shouldPreserveNewlinesInListingBlock, nil},
+	{"should preserve newlines in listing block", "asciidoctor/blocks_test_should_preserve_newlines_in_listing_block.adoc", blocksTestShouldPreserveNewlinesInListingBlock, nil},
 
-	{"should preserve newlines in verse block", "asciidoctor/blocks_test_should_preserve_newlines_in_verse_block.adoc", shouldPreserveNewlinesInVerseBlock, nil},
+	{"should preserve newlines in verse block", "asciidoctor/blocks_test_should_preserve_newlines_in_verse_block.adoc", blocksTestShouldPreserveNewlinesInVerseBlock, nil},
 
-	{"should strip leading and trailing blank lines when converting verbatim block", "asciidoctor/blocks_test_should_strip_leading_and_trailing_blank_lines_when_converting_verbatim_block.adoc", shouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock, nil},
+	{"should strip leading and trailing blank lines when converting verbatim block", "asciidoctor/blocks_test_should_strip_leading_and_trailing_blank_lines_when_converting_verbatim_block.adoc", blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock, nil},
 
-	{"should remove block indent if indent attribute is 0", "asciidoctor/blocks_test_should_remove_block_indent_if_indent_attribute_is_0.adoc", shouldRemoveBlockIndentIfIndentAttributeIs0, nil},
+	{"should remove block indent if indent attribute is 0", "asciidoctor/blocks_test_should_remove_block_indent_if_indent_attribute_is_0.adoc", blocksTestShouldRemoveBlockIndentIfIndentAttributeIs0, nil},
 
-	{"should not remove block indent if indent attribute is -1", "asciidoctor/blocks_test_should_not_remove_block_indent_if_indent_attribute_is__1.adoc", shouldNotRemoveBlockIndentIfIndentAttributeIs1, nil},
+	{"should not remove block indent if indent attribute is -1", "asciidoctor/blocks_test_should_not_remove_block_indent_if_indent_attribute_is__1.adoc", blocksTestShouldNotRemoveBlockIndentIfIndentAttributeIs1, nil},
 
-	{"should set block indent to value specified by indent attribute", "asciidoctor/blocks_test_should_set_block_indent_to_value_specified_by_indent_attribute.adoc", shouldSetBlockIndentToValueSpecifiedByIndentAttribute, nil},
+	{"should set block indent to value specified by indent attribute", "asciidoctor/blocks_test_should_set_block_indent_to_value_specified_by_indent_attribute.adoc", blocksTestShouldSetBlockIndentToValueSpecifiedByIndentAttribute, nil},
 
-	{"should set block indent to value specified by indent document attribute", "asciidoctor/blocks_test_should_set_block_indent_to_value_specified_by_indent_document_attribute.adoc", shouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute, nil},
+	{"should set block indent to value specified by indent document attribute", "asciidoctor/blocks_test_should_set_block_indent_to_value_specified_by_indent_document_attribute.adoc", blocksTestShouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute, nil},
 
-	{"literal block should honor nowrap option", "asciidoctor/blocks_test_literal_block_should_honor_nowrap_option.adoc", literalBlockShouldHonorNowrapOption, nil},
+	{"literal block should honor nowrap option", "asciidoctor/blocks_test_literal_block_should_honor_nowrap_option.adoc", blocksTestLiteralBlockShouldHonorNowrapOption, nil},
 
-	{"literal block should set nowrap class if prewrap document attribute is disabled", "asciidoctor/blocks_test_literal_block_should_set_nowrap_class_if_prewrap_document_attribute_is_disabled.adoc", literalBlockShouldSetNowrapClassIfPrewrapDocumentAttributeIsDisabled, nil},
+	{"literal block should set nowrap class if prewrap document attribute is disabled", "asciidoctor/blocks_test_literal_block_should_set_nowrap_class_if_prewrap_document_attribute_is_disabled.adoc", blocksTestLiteralBlockShouldSetNowrapClassIfPrewrapDocumentAttributeIsDisabled, nil},
 
-	{"should preserve guard in front of callout if icons are not enabled", "asciidoctor/blocks_test_should_preserve_guard_in_front_of_callout_if_icons_are_not_enabled.adoc", shouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled, nil},
+	{"should preserve guard in front of callout if icons are not enabled", "asciidoctor/blocks_test_should_preserve_guard_in_front_of_callout_if_icons_are_not_enabled.adoc", blocksTestShouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled, nil},
 
-	{"should preserve guard around callout if icons are not enabled", "asciidoctor/blocks_test_should_preserve_guard_around_callout_if_icons_are_not_enabled.adoc", shouldPreserveGuardAroundCalloutIfIconsAreNotEnabled, nil},
+	{"should preserve guard around callout if icons are not enabled", "asciidoctor/blocks_test_should_preserve_guard_around_callout_if_icons_are_not_enabled.adoc", blocksTestShouldPreserveGuardAroundCalloutIfIconsAreNotEnabled, nil},
 
-	{"literal block should honor explicit subs list", "asciidoctor/blocks_test_literal_block_should_honor_explicit_subs_list.adoc", literalBlockShouldHonorExplicitSubsList, nil},
+	{"literal block should honor explicit subs list", "asciidoctor/blocks_test_literal_block_should_honor_explicit_subs_list.adoc", blocksTestLiteralBlockShouldHonorExplicitSubsList, nil},
 
-	{"should be able to disable callouts for literal block", "asciidoctor/blocks_test_should_be_able_to_disable_callouts_for_literal_block.adoc", shouldBeAbleToDisableCalloutsForLiteralBlock, nil},
+	{"should be able to disable callouts for literal block", "asciidoctor/blocks_test_should_be_able_to_disable_callouts_for_literal_block.adoc", blocksTestShouldBeAbleToDisableCalloutsForLiteralBlock, nil},
 
-	{"listing block should honor explicit subs list", "asciidoctor/blocks_test_listing_block_should_honor_explicit_subs_list.adoc", listingBlockShouldHonorExplicitSubsList, nil},
+	{"listing block should honor explicit subs list", "asciidoctor/blocks_test_listing_block_should_honor_explicit_subs_list.adoc", blocksTestListingBlockShouldHonorExplicitSubsList, nil},
 
-	{"should not mangle array that contains formatted text with role in listing block with quotes sub enabled", "asciidoctor/blocks_test_should_not_mangle_array_that_contains_formatted_text_with_role_in_listing_block_with_quotes_sub_enabled.adoc", shouldNotMangleArrayThatContainsFormattedTextWithRoleInListingBlockWithQuotesSubEnabled, nil},
+	{"should not mangle array that contains formatted text with role in listing block with quotes sub enabled", "asciidoctor/blocks_test_should_not_mangle_array_that_contains_formatted_text_with_role_in_listing_block_with_quotes_sub_enabled.adoc", blocksTestShouldNotMangleArrayThatContainsFormattedTextWithRoleInListingBlockWithQuotesSubEnabled, nil},
 
-	{"first character of block title may be a period if not followed by space", "asciidoctor/blocks_test_first_character_of_block_title_may_be_a_period_if_not_followed_by_space.adoc", firstCharacterOfBlockTitleMayBeAPeriodIfNotFollowedBySpace, nil},
+	{"first character of block title may be a period if not followed by space", "asciidoctor/blocks_test_first_character_of_block_title_may_be_a_period_if_not_followed_by_space.adoc", blocksTestFirstCharacterOfBlockTitleMayBeAPeriodIfNotFollowedBySpace, nil},
 
-	{"listing block without title should generate screen element in docbook", "asciidoctor/blocks_test_listing_block_without_title_should_generate_screen_element_in_docbook.adoc", listingBlockWithoutTitleShouldGenerateScreenElementInDocbook, nil},
+	{"listing block without title should generate screen element in docbook", "asciidoctor/blocks_test_listing_block_without_title_should_generate_screen_element_in_docbook.adoc", blocksTestListingBlockWithoutTitleShouldGenerateScreenElementInDocbook, nil},
 
-	{"listing block with title should generate screen element inside formalpara element in docbook", "asciidoctor/blocks_test_listing_block_with_title_should_generate_screen_element_inside_formalpara_element_in_docbook.adoc", listingBlockWithTitleShouldGenerateScreenElementInsideFormalparaElementInDocbook, nil},
+	{"listing block with title should generate screen element inside formalpara element in docbook", "asciidoctor/blocks_test_listing_block_with_title_should_generate_screen_element_inside_formalpara_element_in_docbook.adoc", blocksTestListingBlockWithTitleShouldGenerateScreenElementInsideFormalparaElementInDocbook, nil},
 
-	{"should not prepend caption to title of listing block with title if listing-caption attribute is not set", "asciidoctor/blocks_test_should_not_prepend_caption_to_title_of_listing_block_with_title_if_listing_caption_attribute_is_not_set.adoc", shouldNotPrependCaptionToTitleOfListingBlockWithTitleIfListingCaptionAttributeIsNotSet, nil},
+	{"should not prepend caption to title of listing block with title if listing-caption attribute is not set", "asciidoctor/blocks_test_should_not_prepend_caption_to_title_of_listing_block_with_title_if_listing_caption_attribute_is_not_set.adoc", blocksTestShouldNotPrependCaptionToTitleOfListingBlockWithTitleIfListingCaptionAttributeIsNotSet, nil},
 
-	{"should prepend caption specified by listing-caption attribute and number to title of listing block with title", "asciidoctor/blocks_test_should_prepend_caption_specified_by_listing_caption_attribute_and_number_to_title_of_listing_block_with_title.adoc", shouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToTitleOfListingBlockWithTitle, nil},
+	{"should prepend caption specified by listing-caption attribute and number to title of listing block with title", "asciidoctor/blocks_test_should_prepend_caption_specified_by_listing_caption_attribute_and_number_to_title_of_listing_block_with_title.adoc", blocksTestShouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToTitleOfListingBlockWithTitle, nil},
 
-	{"should prepend caption specified by caption attribute on listing block even if listing-caption attribute is not set", "asciidoctor/blocks_test_should_prepend_caption_specified_by_caption_attribute_on_listing_block_even_if_listing_caption_attribute_is_not_set.adoc", shouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenIfListingCaptionAttributeIsNotSet, nil},
+	{"should prepend caption specified by caption attribute on listing block even if listing-caption attribute is not set", "asciidoctor/blocks_test_should_prepend_caption_specified_by_caption_attribute_on_listing_block_even_if_listing_caption_attribute_is_not_set.adoc", blocksTestShouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenIfListingCaptionAttributeIsNotSet, nil},
 
-	{"listing block without an explicit style and with a second positional argument should be promoted to a source block", "asciidoctor/blocks_test_listing_block_without_an_explicit_style_and_with_a_second_positional_argument_should_be_promoted_to_a_source_block.adoc", listingBlockWithoutAnExplicitStyleAndWithASecondPositionalArgumentShouldBePromotedToASourceBlock, nil},
+	{"listing block without an explicit style and with a second positional argument should be promoted to a source block", "asciidoctor/blocks_test_listing_block_without_an_explicit_style_and_with_a_second_positional_argument_should_be_promoted_to_a_source_block.adoc", blocksTestListingBlockWithoutAnExplicitStyleAndWithASecondPositionalArgumentShouldBePromotedToASourceBlock, nil},
 
-	{"listing block without an explicit style should be promoted to a source block if source-language is set", "asciidoctor/blocks_test_listing_block_without_an_explicit_style_should_be_promoted_to_a_source_block_if_source_language_is_set.adoc", listingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIfSourceLanguageIsSet, nil},
+	{"listing block without an explicit style should be promoted to a source block if source-language is set", "asciidoctor/blocks_test_listing_block_without_an_explicit_style_should_be_promoted_to_a_source_block_if_source_language_is_set.adoc", blocksTestListingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIfSourceLanguageIsSet, nil},
 
-	{"listing block with an explicit style and a second positional argument should not be promoted to a source block", "asciidoctor/blocks_test_listing_block_with_an_explicit_style_and_a_second_positional_argument_should_not_be_promoted_to_a_source_block.adoc", listingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldNotBePromotedToASourceBlock, nil},
+	{"listing block with an explicit style and a second positional argument should not be promoted to a source block", "asciidoctor/blocks_test_listing_block_with_an_explicit_style_and_a_second_positional_argument_should_not_be_promoted_to_a_source_block.adoc", blocksTestListingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldNotBePromotedToASourceBlock, nil},
 
-	{"listing block with an explicit style should not be promoted to a source block if source-language is set", "asciidoctor/blocks_test_listing_block_with_an_explicit_style_should_not_be_promoted_to_a_source_block_if_source_language_is_set.adoc", listingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLanguageIsSet, nil},
+	{"listing block with an explicit style should not be promoted to a source block if source-language is set", "asciidoctor/blocks_test_listing_block_with_an_explicit_style_should_not_be_promoted_to_a_source_block_if_source_language_is_set.adoc", blocksTestListingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLanguageIsSet, nil},
 
-	{"source block with no title or language should generate screen element in docbook", "asciidoctor/blocks_test_source_block_with_no_title_or_language_should_generate_screen_element_in_docbook.adoc", sourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbook, nil},
+	{"source block with no title or language should generate screen element in docbook", "asciidoctor/blocks_test_source_block_with_no_title_or_language_should_generate_screen_element_in_docbook.adoc", blocksTestSourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbook, nil},
 
-	{"source block with title and no language should generate screen element inside formalpara element for docbook", "asciidoctor/blocks_test_source_block_with_title_and_no_language_should_generate_screen_element_inside_formalpara_element_for_docbook.adoc", sourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInsideFormalparaElementForDocbook, nil},
+	{"source block with title and no language should generate screen element inside formalpara element for docbook", "asciidoctor/blocks_test_source_block_with_title_and_no_language_should_generate_screen_element_inside_formalpara_element_for_docbook.adoc", blocksTestSourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInsideFormalparaElementForDocbook, nil},
 
-	{"can convert open block", "asciidoctor/blocks_test_can_convert_open_block.adoc", canConvertOpenBlock, nil},
+	{"can convert open block", "asciidoctor/blocks_test_can_convert_open_block.adoc", blocksTestCanConvertOpenBlock, nil},
 
-	{"open block can contain another block", "asciidoctor/blocks_test_open_block_can_contain_another_block.adoc", openBlockCanContainAnotherBlock, nil},
+	{"open block can contain another block", "asciidoctor/blocks_test_open_block_can_contain_another_block.adoc", blocksTestOpenBlockCanContainAnotherBlock, nil},
 
-	{"should transfer id and reftext on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_id_and_reftext_on_open_block_to_doc_book_output.adoc", shouldTransferIdAndReftextOnOpenBlockToDocBookOutput, nil},
+	{"should transfer id and reftext on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_id_and_reftext_on_open_block_to_doc_book_output.adoc", blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput, nil},
 
-	{"should transfer id and reftext on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_id_and_reftext_on_open_paragraph_to_doc_book_output.adoc", shouldTransferIdAndReftextOnOpenParagraphToDocBookOutput, nil},
+	{"should transfer id and reftext on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_id_and_reftext_on_open_paragraph_to_doc_book_output.adoc", blocksTestShouldTransferIdAndReftextOnOpenParagraphToDocBookOutput, nil},
 
-	{"should transfer title on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_title_on_open_block_to_doc_book_output.adoc", shouldTransferTitleOnOpenBlockToDocBookOutput, nil},
+	{"should transfer title on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_title_on_open_block_to_doc_book_output.adoc", blocksTestShouldTransferTitleOnOpenBlockToDocBookOutput, nil},
 
-	{"should transfer title on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_title_on_open_paragraph_to_doc_book_output.adoc", shouldTransferTitleOnOpenParagraphToDocBookOutput, nil},
+	{"should transfer title on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_title_on_open_paragraph_to_doc_book_output.adoc", blocksTestShouldTransferTitleOnOpenParagraphToDocBookOutput, nil},
 
-	{"should transfer role on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_role_on_open_block_to_doc_book_output.adoc", shouldTransferRoleOnOpenBlockToDocBookOutput, nil},
+	{"should transfer role on open block to DocBook output", "asciidoctor/blocks_test_should_transfer_role_on_open_block_to_doc_book_output.adoc", blocksTestShouldTransferRoleOnOpenBlockToDocBookOutput, nil},
 
-	{"should transfer role on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_role_on_open_paragraph_to_doc_book_output.adoc", shouldTransferRoleOnOpenParagraphToDocBookOutput, nil},
+	{"should transfer role on open paragraph to DocBook output", "asciidoctor/blocks_test_should_transfer_role_on_open_paragraph_to_doc_book_output.adoc", blocksTestShouldTransferRoleOnOpenParagraphToDocBookOutput, nil},
 
-	{"can parse a passthrough block", "asciidoctor/blocks_test_can_parse_a_passthrough_block.adoc", canParseAPassthroughBlock, nil},
+	{"can parse a passthrough block", "asciidoctor/blocks_test_can_parse_a_passthrough_block.adoc", blocksTestCanParseAPassthroughBlock, nil},
 
-	{"does not perform subs on a passthrough block by default", "asciidoctor/blocks_test_does_not_perform_subs_on_a_passthrough_block_by_default.adoc", doesNotPerformSubsOnAPassthroughBlockByDefault, nil},
+	{"does not perform subs on a passthrough block by default", "asciidoctor/blocks_test_does_not_perform_subs_on_a_passthrough_block_by_default.adoc", blocksTestDoesNotPerformSubsOnAPassthroughBlockByDefault, nil},
 
-	{"does not perform subs on a passthrough block with pass style by default", "asciidoctor/blocks_test_does_not_perform_subs_on_a_passthrough_block_with_pass_style_by_default.adoc", doesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault, nil},
+	{"does not perform subs on a passthrough block with pass style by default", "asciidoctor/blocks_test_does_not_perform_subs_on_a_passthrough_block_with_pass_style_by_default.adoc", blocksTestDoesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault, nil},
 
-	{"passthrough block honors explicit subs list", "asciidoctor/blocks_test_passthrough_block_honors_explicit_subs_list.adoc", passthroughBlockHonorsExplicitSubsList, nil},
+	{"passthrough block honors explicit subs list", "asciidoctor/blocks_test_passthrough_block_honors_explicit_subs_list.adoc", blocksTestPassthroughBlockHonorsExplicitSubsList, nil},
 
-	{"should strip leading and trailing blank lines when converting raw block", "asciidoctor/blocks_test_should_strip_leading_and_trailing_blank_lines_when_converting_raw_block.adoc", shouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock, nil},
+	{"should strip leading and trailing blank lines when converting raw block", "asciidoctor/blocks_test_should_strip_leading_and_trailing_blank_lines_when_converting_raw_block.adoc", blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock, nil},
 
-	{"should not crash when converting stem block that has no lines", "asciidoctor/blocks_test_should_not_crash_when_converting_stem_block_that_has_no_lines.adoc", shouldNotCrashWhenConvertingStemBlockThatHasNoLines, nil},
+	{"should not crash when converting stem block that has no lines", "asciidoctor/blocks_test_should_not_crash_when_converting_stem_block_that_has_no_lines.adoc", blocksTestShouldNotCrashWhenConvertingStemBlockThatHasNoLines, nil},
 
-	{"should return content as empty string for stem or pass block that has no lines", "asciidoctor/blocks_test_should_return_content_as_empty_string_for_stem_or_pass_block_that_has_no_lines.adoc", shouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines, nil},
+	{"should return content as empty string for stem or pass block that has no lines", "asciidoctor/blocks_test_should_return_content_as_empty_string_for_stem_or_pass_block_that_has_no_lines.adoc", blocksTestShouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines, nil},
 
-	{"should not add LaTeX math delimiters around latexmath block content if already present", "asciidoctor/blocks_test_should_not_add_la_te_x_math_delimiters_around_latexmath_block_content_if_already_present.adoc", shouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlreadyPresent, nil},
+	{"should not add LaTeX math delimiters around latexmath block content if already present", "asciidoctor/blocks_test_should_not_add_la_te_x_math_delimiters_around_latexmath_block_content_if_already_present.adoc", blocksTestShouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlreadyPresent, nil},
 
-	{"should display latexmath block in alt of equation in DocBook backend", "asciidoctor/blocks_test_should_display_latexmath_block_in_alt_of_equation_in_doc_book_backend.adoc", shouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend, nil},
+	{"should display latexmath block in alt of equation in DocBook backend", "asciidoctor/blocks_test_should_display_latexmath_block_in_alt_of_equation_in_doc_book_backend.adoc", blocksTestShouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend, nil},
 
-	{"should set autoNumber option for latexmath to none by default", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_none_by_default.adoc", shouldSetAutoNumberOptionForLatexmathToNoneByDefault, nil},
+	{"should set autoNumber option for latexmath to none by default", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_none_by_default.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToNoneByDefault, nil},
 
-	{"should set autoNumber option for latexmath to none if eqnums is set to none", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_none_if_eqnums_is_set_to_none.adoc", shouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone, nil},
+	{"should set autoNumber option for latexmath to none if eqnums is set to none", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_none_if_eqnums_is_set_to_none.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone, nil},
 
-	{"should set autoNumber option for latexmath to AMS if eqnums is set", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_ams_if_eqnums_is_set.adoc", shouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet, nil},
+	{"should set autoNumber option for latexmath to AMS if eqnums is set", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_ams_if_eqnums_is_set.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet, nil},
 
-	{"should set autoNumber option for latexmath to all if eqnums is set to all", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_all_if_eqnums_is_set_to_all.adoc", shouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll, nil},
+	{"should set autoNumber option for latexmath to all if eqnums is set to all", "asciidoctor/blocks_test_should_set_auto_number_option_for_latexmath_to_all_if_eqnums_is_set_to_all.adoc", blocksTestShouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll, nil},
 
-	{"should not split equation in AsciiMath block at single newline", "asciidoctor/blocks_test_should_not_split_equation_in_ascii_math_block_at_single_newline.adoc", shouldNotSplitEquationInAsciiMathBlockAtSingleNewline, nil},
+	{"should not split equation in AsciiMath block at single newline", "asciidoctor/blocks_test_should_not_split_equation_in_ascii_math_block_at_single_newline.adoc", blocksTestShouldNotSplitEquationInAsciiMathBlockAtSingleNewline, nil},
 
-	{"should split equation in AsciiMath block at escaped newline", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_escaped_newline.adoc", shouldSplitEquationInAsciiMathBlockAtEscapedNewline, nil},
+	{"should split equation in AsciiMath block at escaped newline", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_escaped_newline.adoc", blocksTestShouldSplitEquationInAsciiMathBlockAtEscapedNewline, nil},
 
-	{"should split equation in AsciiMath block at sequence of escaped newlines", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_sequence_of_escaped_newlines.adoc", shouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines, nil},
+	{"should split equation in AsciiMath block at sequence of escaped newlines", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_sequence_of_escaped_newlines.adoc", blocksTestShouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines, nil},
 
-	{"should split equation in AsciiMath block at newline sequence and preserve breaks", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_newline_sequence_and_preserve_breaks.adoc", shouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBreaks, nil},
+	{"should split equation in AsciiMath block at newline sequence and preserve breaks", "asciidoctor/blocks_test_should_split_equation_in_ascii_math_block_at_newline_sequence_and_preserve_breaks.adoc", blocksTestShouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBreaks, nil},
 
-	{"should add AsciiMath delimiters around asciimath block content", "asciidoctor/blocks_test_should_add_ascii_math_delimiters_around_asciimath_block_content.adoc", shouldAddAsciiMathDelimitersAroundAsciimathBlockContent, nil},
+	{"should add AsciiMath delimiters around asciimath block content", "asciidoctor/blocks_test_should_add_ascii_math_delimiters_around_asciimath_block_content.adoc", blocksTestShouldAddAsciiMathDelimitersAroundAsciimathBlockContent, nil},
 
-	{"should not add AsciiMath delimiters around asciimath block content if already present", "asciidoctor/blocks_test_should_not_add_ascii_math_delimiters_around_asciimath_block_content_if_already_present.adoc", shouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlreadyPresent, nil},
+	{"should not add AsciiMath delimiters around asciimath block content if already present", "asciidoctor/blocks_test_should_not_add_ascii_math_delimiters_around_asciimath_block_content_if_already_present.adoc", blocksTestShouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlreadyPresent, nil},
 
-	{"should convert contents of asciimath block to MathML in DocBook output if asciimath gem is available", "asciidoctor/blocks_test_should_convert_contents_of_asciimath_block_to_math_ml_in_doc_book_output_if_asciimath_gem_is_available.adoc", shouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIsAvailable, nil},
+	{"should convert contents of asciimath block to MathML in DocBook output if asciimath gem is available", "asciidoctor/blocks_test_should_convert_contents_of_asciimath_block_to_math_ml_in_doc_book_output_if_asciimath_gem_is_available.adoc", blocksTestShouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIsAvailable, nil},
 
-	{"should output title for latexmath block if defined", "asciidoctor/blocks_test_should_output_title_for_latexmath_block_if_defined.adoc", shouldOutputTitleForLatexmathBlockIfDefined, nil},
+	{"should output title for latexmath block if defined", "asciidoctor/blocks_test_should_output_title_for_latexmath_block_if_defined.adoc", blocksTestShouldOutputTitleForLatexmathBlockIfDefined, nil},
 
-	{"should output title for asciimath block if defined", "asciidoctor/blocks_test_should_output_title_for_asciimath_block_if_defined.adoc", shouldOutputTitleForAsciimathBlockIfDefined, nil},
+	{"should output title for asciimath block if defined", "asciidoctor/blocks_test_should_output_title_for_asciimath_block_if_defined.adoc", blocksTestShouldOutputTitleForAsciimathBlockIfDefined, nil},
 
-	{"should add AsciiMath delimiters around stem block content if stem attribute is asciimath, empty, or not set", "asciidoctor/blocks_test_should_add_ascii_math_delimiters_around_stem_block_content_if_stem_attribute_is_asciimath_empty_or_not_set.adoc", shouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeIsAsciimathEmptyOrNotSet, nil},
+	{"should add AsciiMath delimiters around stem block content if stem attribute is asciimath, empty, or not set", "asciidoctor/blocks_test_should_add_ascii_math_delimiters_around_stem_block_content_if_stem_attribute_is_asciimath_empty_or_not_set.adoc", blocksTestShouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeIsAsciimathEmptyOrNotSet, nil},
 
-	{"should add LaTeX math delimiters around stem block content if stem attribute is latexmath, latex, or tex", "asciidoctor/blocks_test_should_add_la_te_x_math_delimiters_around_stem_block_content_if_stem_attribute_is_latexmath_latex_or_tex.adoc", shouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeIsLatexmathLatexOrTex, nil},
+	{"should add LaTeX math delimiters around stem block content if stem attribute is latexmath, latex, or tex", "asciidoctor/blocks_test_should_add_la_te_x_math_delimiters_around_stem_block_content_if_stem_attribute_is_latexmath_latex_or_tex.adoc", blocksTestShouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeIsLatexmathLatexOrTex, nil},
 
-	{"should allow stem style to be set using second positional argument of block attributes", "asciidoctor/blocks_test_should_allow_stem_style_to_be_set_using_second_positional_argument_of_block_attributes.adoc", shouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes, nil},
+	{"should allow stem style to be set using second positional argument of block attributes", "asciidoctor/blocks_test_should_allow_stem_style_to_be_set_using_second_positional_argument_of_block_attributes.adoc", blocksTestShouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes, nil},
 
-	{"should not warn if block style is unknown", "asciidoctor/blocks_test_should_not_warn_if_block_style_is_unknown.adoc", shouldNotWarnIfBlockStyleIsUnknown, nil},
+	{"should not warn if block style is unknown", "asciidoctor/blocks_test_should_not_warn_if_block_style_is_unknown.adoc", blocksTestShouldNotWarnIfBlockStyleIsUnknown, nil},
 
-	{"should log debug message if block style is unknown and debug level is enabled", "asciidoctor/blocks_test_should_log_debug_message_if_block_style_is_unknown_and_debug_level_is_enabled.adoc", shouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled, nil},
+	{"should log debug message if block style is unknown and debug level is enabled", "asciidoctor/blocks_test_should_log_debug_message_if_block_style_is_unknown_and_debug_level_is_enabled.adoc", blocksTestShouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled, nil},
 
-	{"block title above section gets carried over to first block in section", "asciidoctor/blocks_test_block_title_above_section_gets_carried_over_to_first_block_in_section.adoc", blockTitleAboveSectionGetsCarriedOverToFirstBlockInSection, nil},
+	{"block title above section gets carried over to first block in section", "asciidoctor/blocks_test_block_title_above_section_gets_carried_over_to_first_block_in_section.adoc", blocksTestBlockTitleAboveSectionGetsCarriedOverToFirstBlockInSection, nil},
 
-	{"block title above document title demotes document title to a section title", "asciidoctor/blocks_test_block_title_above_document_title_demotes_document_title_to_a_section_title.adoc", blockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle, nil},
+	{"block title above document title demotes document title to a section title", "asciidoctor/blocks_test_block_title_above_document_title_demotes_document_title_to_a_section_title.adoc", blocksTestBlockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle, nil},
 
-	{"block title above document title gets carried over to first block in first section if no preamble", "asciidoctor/blocks_test_block_title_above_document_title_gets_carried_over_to_first_block_in_first_section_if_no_preamble.adoc", blockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPreamble, nil},
+	{"block title above document title gets carried over to first block in first section if no preamble", "asciidoctor/blocks_test_block_title_above_document_title_gets_carried_over_to_first_block_in_first_section_if_no_preamble.adoc", blocksTestBlockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPreamble, nil},
 
-	{"should apply substitutions to a block title in normal order", "asciidoctor/blocks_test_should_apply_substitutions_to_a_block_title_in_normal_order.adoc", shouldApplySubstitutionsToABlockTitleInNormalOrder, nil},
+	{"should apply substitutions to a block title in normal order", "asciidoctor/blocks_test_should_apply_substitutions_to_a_block_title_in_normal_order.adoc", blocksTestShouldApplySubstitutionsToABlockTitleInNormalOrder, nil},
 
-	{"empty attribute list should not appear in output", "asciidoctor/blocks_test_empty_attribute_list_should_not_appear_in_output.adoc", emptyAttributeListShouldNotAppearInOutput, nil},
+	{"empty attribute list should not appear in output", "asciidoctor/blocks_test_empty_attribute_list_should_not_appear_in_output.adoc", blocksTestEmptyAttributeListShouldNotAppearInOutput, nil},
 
-	{"empty block anchor should not appear in output", "asciidoctor/blocks_test_empty_block_anchor_should_not_appear_in_output.adoc", emptyBlockAnchorShouldNotAppearInOutput, nil},
+	{"empty block anchor should not appear in output", "asciidoctor/blocks_test_empty_block_anchor_should_not_appear_in_output.adoc", blocksTestEmptyBlockAnchorShouldNotAppearInOutput, nil},
 
-	{"can convert block image with alt text defined in macro", "asciidoctor/blocks_test_can_convert_block_image_with_alt_text_defined_in_macro.adoc", canConvertBlockImageWithAltTextDefinedInMacro, nil},
+	{"can convert block image with alt text defined in macro", "asciidoctor/blocks_test_can_convert_block_image_with_alt_text_defined_in_macro.adoc", blocksTestCanConvertBlockImageWithAltTextDefinedInMacro, nil},
 
-	{"converts SVG image with alt text using img element when safe mode is secure", "asciidoctor/blocks_test_converts_svg_image_with_alt_text_using_img_element_when_safe_mode_is_secure.adoc", convertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure, nil},
+	{"converts SVG image with alt text using img element when safe mode is secure", "asciidoctor/blocks_test_converts_svg_image_with_alt_text_using_img_element_when_safe_mode_is_secure.adoc", blocksTestConvertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure, nil},
 
-	{"inserts fallback image for SVG inside object element using same dimensions", "asciidoctor/blocks_test_inserts_fallback_image_for_svg_inside_object_element_using_same_dimensions.adoc", insertsFallbackImageForSvgInsideObjectElementUsingSameDimensions, nil},
+	{"inserts fallback image for SVG inside object element using same dimensions", "asciidoctor/blocks_test_inserts_fallback_image_for_svg_inside_object_element_using_same_dimensions.adoc", blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions, nil},
 
-	{"detects SVG image URI that contains a query string", "asciidoctor/blocks_test_detects_svg_image_uri_that_contains_a_query_string.adoc", detectsSvgImageUriThatContainsAQueryString, nil},
+	{"detects SVG image URI that contains a query string", "asciidoctor/blocks_test_detects_svg_image_uri_that_contains_a_query_string.adoc", blocksTestDetectsSvgImageUriThatContainsAQueryString, nil},
 
-	{"detects SVG image when format attribute is svg", "asciidoctor/blocks_test_detects_svg_image_when_format_attribute_is_svg.adoc", detectsSvgImageWhenFormatAttributeIsSvg, nil},
+	{"detects SVG image when format attribute is svg", "asciidoctor/blocks_test_detects_svg_image_when_format_attribute_is_svg.adoc", blocksTestDetectsSvgImageWhenFormatAttributeIsSvg, nil},
 
-	{"converts to inline SVG image when inline option is set on block", "asciidoctor/blocks_test_converts_to_inline_svg_image_when_inline_option_is_set_on_block.adoc", convertsToInlineSvgImageWhenInlineOptionIsSetOnBlock, nil},
+	{"converts to inline SVG image when inline option is set on block", "asciidoctor/blocks_test_converts_to_inline_svg_image_when_inline_option_is_set_on_block.adoc", blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlock, nil},
 
-	{"should ignore link attribute if value is self and image target is inline SVG", "asciidoctor/blocks_test_should_ignore_link_attribute_if_value_is_self_and_image_target_is_inline_svg.adoc", shouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg, nil},
+	{"should ignore link attribute if value is self and image target is inline SVG", "asciidoctor/blocks_test_should_ignore_link_attribute_if_value_is_self_and_image_target_is_inline_svg.adoc", blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg, nil},
 
-	{"should honor percentage width for SVG image with inline option", "asciidoctor/blocks_test_should_honor_percentage_width_for_svg_image_with_inline_option.adoc", shouldHonorPercentageWidthForSvgImageWithInlineOption, nil},
+	{"should honor percentage width for SVG image with inline option", "asciidoctor/blocks_test_should_honor_percentage_width_for_svg_image_with_inline_option.adoc", blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption, nil},
 
-	{"should not crash if explicit width on SVG image block is an integer", "asciidoctor/blocks_test_should_not_crash_if_explicit_width_on_svg_image_block_is_an_integer.adoc", shouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger, nil},
+	{"should not crash if explicit width on SVG image block is an integer", "asciidoctor/blocks_test_should_not_crash_if_explicit_width_on_svg_image_block_is_an_integer.adoc", blocksTestShouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger, nil},
 
-	{"converts to inline SVG image when inline option is set on block and data-uri is set on document", "asciidoctor/blocks_test_converts_to_inline_svg_image_when_inline_option_is_set_on_block_and_data_uri_is_set_on_document.adoc", convertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocument, nil},
+	{"converts to inline SVG image when inline option is set on block and data-uri is set on document", "asciidoctor/blocks_test_converts_to_inline_svg_image_when_inline_option_is_set_on_block_and_data_uri_is_set_on_document.adoc", blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocument, nil},
 
-	{"should not throw exception if SVG to inline is empty", "asciidoctor/blocks_test_should_not_throw_exception_if_svg_to_inline_is_empty.adoc", shouldNotThrowExceptionIfSvgToInlineIsEmpty, nil},
+	{"should not throw exception if SVG to inline is empty", "asciidoctor/blocks_test_should_not_throw_exception_if_svg_to_inline_is_empty.adoc", blocksTestShouldNotThrowExceptionIfSvgToInlineIsEmpty, nil},
 
-	{"can convert block image with alt text defined in macro containing square bracket", "asciidoctor/blocks_test_can_convert_block_image_with_alt_text_defined_in_macro_containing_square_bracket.adoc", canConvertBlockImageWithAltTextDefinedInMacroContainingSquareBracket, nil},
+	{"can convert block image with alt text defined in macro containing square bracket", "asciidoctor/blocks_test_can_convert_block_image_with_alt_text_defined_in_macro_containing_square_bracket.adoc", blocksTestCanConvertBlockImageWithAltTextDefinedInMacroContainingSquareBracket, nil},
 
-	{"alt text in macro overrides alt text above macro", "asciidoctor/blocks_test_alt_text_in_macro_overrides_alt_text_above_macro.adoc", altTextInMacroOverridesAltTextAboveMacro, nil},
+	{"alt text in macro overrides alt text above macro", "asciidoctor/blocks_test_alt_text_in_macro_overrides_alt_text_above_macro.adoc", blocksTestAltTextInMacroOverridesAltTextAboveMacro, nil},
 
-	{"should substitute attribute references in alt text defined in image block macro", "asciidoctor/blocks_test_should_substitute_attribute_references_in_alt_text_defined_in_image_block_macro.adoc", shouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro, nil},
+	{"should substitute attribute references in alt text defined in image block macro", "asciidoctor/blocks_test_should_substitute_attribute_references_in_alt_text_defined_in_image_block_macro.adoc", blocksTestShouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro, nil},
 
-	{"should set direction CSS class on image if float attribute is set", "asciidoctor/blocks_test_should_set_direction_css_class_on_image_if_float_attribute_is_set.adoc", shouldSetDirectionCssClassOnImageIfFloatAttributeIsSet, nil},
+	{"should set direction CSS class on image if float attribute is set", "asciidoctor/blocks_test_should_set_direction_css_class_on_image_if_float_attribute_is_set.adoc", blocksTestShouldSetDirectionCssClassOnImageIfFloatAttributeIsSet, nil},
 
-	{"should set text alignment CSS class on image if align attribute is set", "asciidoctor/blocks_test_should_set_text_alignment_css_class_on_image_if_align_attribute_is_set.adoc", shouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet, nil},
+	{"should set text alignment CSS class on image if align attribute is set", "asciidoctor/blocks_test_should_set_text_alignment_css_class_on_image_if_align_attribute_is_set.adoc", blocksTestShouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet, nil},
 
-	{"style attribute is dropped from image macro", "asciidoctor/blocks_test_style_attribute_is_dropped_from_image_macro.adoc", styleAttributeIsDroppedFromImageMacro, nil},
+	{"style attribute is dropped from image macro", "asciidoctor/blocks_test_style_attribute_is_dropped_from_image_macro.adoc", blocksTestStyleAttributeIsDroppedFromImageMacro, nil},
 
-	{"should auto-generate alt text for block image if alt text is not specified", "asciidoctor/blocks_test_should_auto_generate_alt_text_for_block_image_if_alt_text_is_not_specified.adoc", shouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified, nil},
+	{"should auto-generate alt text for block image if alt text is not specified", "asciidoctor/blocks_test_should_auto_generate_alt_text_for_block_image_if_alt_text_is_not_specified.adoc", blocksTestShouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified, nil},
 
-	{"can convert block image with link to self", "asciidoctor/blocks_test_can_convert_block_image_with_link_to_self.adoc", canConvertBlockImageWithLinkToSelf, nil},
+	{"can convert block image with link to self", "asciidoctor/blocks_test_can_convert_block_image_with_link_to_self.adoc", blocksTestCanConvertBlockImageWithLinkToSelf, nil},
 
-	{"adds rel=noopener attribute to block image with link that targets _blank window", "asciidoctor/blocks_test_adds_rel=noopener_attribute_to_block_image_with_link_that_targets__blank_window.adoc", addsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow, nil},
+	{"adds rel=noopener attribute to block image with link that targets _blank window", "asciidoctor/blocks_test_adds_rel=noopener_attribute_to_block_image_with_link_that_targets__blank_window.adoc", blocksTestAddsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow, nil},
 
-	{"can convert block image with explicit caption", "asciidoctor/blocks_test_can_convert_block_image_with_explicit_caption.adoc", canConvertBlockImageWithExplicitCaption, nil},
+	{"can convert block image with explicit caption", "asciidoctor/blocks_test_can_convert_block_image_with_explicit_caption.adoc", blocksTestCanConvertBlockImageWithExplicitCaption, nil},
 
-	{"can align image in DocBook backend", "asciidoctor/blocks_test_can_align_image_in_doc_book_backend.adoc", canAlignImageInDocBookBackend, nil},
+	{"can align image in DocBook backend", "asciidoctor/blocks_test_can_align_image_in_doc_book_backend.adoc", blocksTestCanAlignImageInDocBookBackend, nil},
 
-	{"should not drop line if image target is missing attribute reference and attribute-missing is drop", "asciidoctor/blocks_test_should_not_drop_line_if_image_target_is_missing_attribute_reference_and_attribute_missing_is_drop.adoc", shouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDrop, nil},
+	{"should not drop line if image target is missing attribute reference and attribute-missing is drop", "asciidoctor/blocks_test_should_not_drop_line_if_image_target_is_missing_attribute_reference_and_attribute_missing_is_drop.adoc", blocksTestShouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDrop, nil},
 
-	{"drops line if image target is missing attribute reference and attribute-missing is drop-line", "asciidoctor/blocks_test_drops_line_if_image_target_is_missing_attribute_reference_and_attribute_missing_is_drop_line.adoc", dropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLine, nil},
+	{"drops line if image target is missing attribute reference and attribute-missing is drop-line", "asciidoctor/blocks_test_drops_line_if_image_target_is_missing_attribute_reference_and_attribute_missing_is_drop_line.adoc", blocksTestDropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLine, nil},
 
-	{"should not drop line if image target resolves to blank and attribute-missing is drop-line", "asciidoctor/blocks_test_should_not_drop_line_if_image_target_resolves_to_blank_and_attribute_missing_is_drop_line.adoc", shouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine, nil},
+	{"should not drop line if image target resolves to blank and attribute-missing is drop-line", "asciidoctor/blocks_test_should_not_drop_line_if_image_target_resolves_to_blank_and_attribute_missing_is_drop_line.adoc", blocksTestShouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine, nil},
 
-	{"dropped image does not break processing of following section and attribute-missing is drop-line", "asciidoctor/blocks_test_dropped_image_does_not_break_processing_of_following_section_and_attribute_missing_is_drop_line.adoc", droppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDropLine, nil},
+	{"dropped image does not break processing of following section and attribute-missing is drop-line", "asciidoctor/blocks_test_dropped_image_does_not_break_processing_of_following_section_and_attribute_missing_is_drop_line.adoc", blocksTestDroppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDropLine, nil},
 
-	{"should pass through image that references uri", "asciidoctor/blocks_test_should_pass_through_image_that_references_uri.adoc", shouldPassThroughImageThatReferencesUri, nil},
+	{"should pass through image that references uri", "asciidoctor/blocks_test_should_pass_through_image_that_references_uri.adoc", blocksTestShouldPassThroughImageThatReferencesUri, nil},
 
-	{"should encode spaces in image target if value is a URI", "asciidoctor/blocks_test_should_encode_spaces_in_image_target_if_value_is_a_uri.adoc", shouldEncodeSpacesInImageTargetIfValueIsAUri, nil},
+	{"should encode spaces in image target if value is a URI", "asciidoctor/blocks_test_should_encode_spaces_in_image_target_if_value_is_a_uri.adoc", blocksTestShouldEncodeSpacesInImageTargetIfValueIsAUri, nil},
 
-	{"embeds base64-encoded data uri for image when data-uri attribute is set", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_for_image_when_data_uri_attribute_is_set.adoc", embedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet, nil},
+	{"embeds base64-encoded data uri for image when data-uri attribute is set", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_for_image_when_data_uri_attribute_is_set.adoc", blocksTestEmbedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet, nil},
 
-	{"embeds SVG image with image/svg+xml mimetype when file extension is .svg", "asciidoctor/blocks_test_embeds_svg_image_with_image_svg+xml_mimetype_when_file_extension_is__svg.adoc", embedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg, nil},
+	{"embeds SVG image with image/svg+xml mimetype when file extension is .svg", "asciidoctor/blocks_test_embeds_svg_image_with_image_svg+xml_mimetype_when_file_extension_is__svg.adoc", blocksTestEmbedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg, nil},
 
-	{"should link to data URI if value of link attribute is self and image is embedded", "asciidoctor/blocks_test_should_link_to_data_uri_if_value_of_link_attribute_is_self_and_image_is_embedded.adoc", shouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded, nil},
+	{"should link to data URI if value of link attribute is self and image is embedded", "asciidoctor/blocks_test_should_link_to_data_uri_if_value_of_link_attribute_is_self_and_image_is_embedded.adoc", blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded, nil},
 
-	{"embeds empty base64-encoded data uri for unreadable image when data-uri attribute is set", "asciidoctor/blocks_test_embeds_empty_base_64_encoded_data_uri_for_unreadable_image_when_data_uri_attribute_is_set.adoc", embedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet, nil},
+	{"embeds empty base64-encoded data uri for unreadable image when data-uri attribute is set", "asciidoctor/blocks_test_embeds_empty_base_64_encoded_data_uri_for_unreadable_image_when_data_uri_attribute_is_set.adoc", blocksTestEmbedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet, nil},
 
-	{"embeds base64-encoded data uri with application/octet-stream mimetype when file extension is missing", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_with_application_octet_stream_mimetype_when_file_extension_is_missing.adoc", embedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensionIsMissing, nil},
+	{"embeds base64-encoded data uri with application/octet-stream mimetype when file extension is missing", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_with_application_octet_stream_mimetype_when_file_extension_is_missing.adoc", blocksTestEmbedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensionIsMissing, nil},
 
-	{"can handle embedded data uri images", "asciidoctor/blocks_test_can_handle_embedded_data_uri_images.adoc", canHandleEmbeddedDataUriImages, nil},
+	{"can handle embedded data uri images", "asciidoctor/blocks_test_can_handle_embedded_data_uri_images.adoc", blocksTestCanHandleEmbeddedDataUriImages, nil},
 
-	{"cleans reference to ancestor directories in imagesdir before reading image if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_in_imagesdir_before_reading_image_if_safe_mode_level_is_at_least_safe.adoc", cleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeLevelIsAtLeastSafe, nil},
+	{"cleans reference to ancestor directories in imagesdir before reading image if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_in_imagesdir_before_reading_image_if_safe_mode_level_is_at_least_safe.adoc", blocksTestCleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeLevelIsAtLeastSafe, nil},
 
-	{"cleans reference to ancestor directories in target before reading image if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_in_target_before_reading_image_if_safe_mode_level_is_at_least_safe.adoc", cleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLevelIsAtLeastSafe, nil},
+	{"cleans reference to ancestor directories in target before reading image if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_in_target_before_reading_image_if_safe_mode_level_is_at_least_safe.adoc", blocksTestCleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLevelIsAtLeastSafe, nil},
 
-	{"should detect and convert video macro", "asciidoctor/blocks_test_should_detect_and_convert_video_macro.adoc", shouldDetectAndConvertVideoMacro, nil},
+	{"should detect and convert video macro", "asciidoctor/blocks_test_should_detect_and_convert_video_macro.adoc", blocksTestShouldDetectAndConvertVideoMacro, nil},
 
-	{"video macro should not use imagesdir attribute to resolve target if target is a URL", "asciidoctor/blocks_test_video_macro_should_not_use_imagesdir_attribute_to_resolve_target_if_target_is_a_url.adoc", videoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl, nil},
+	{"video macro should not use imagesdir attribute to resolve target if target is a URL", "asciidoctor/blocks_test_video_macro_should_not_use_imagesdir_attribute_to_resolve_target_if_target_is_a_url.adoc", blocksTestVideoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl, nil},
 
-	{"video macro should output custom HTML with iframe for vimeo service", "asciidoctor/blocks_test_video_macro_should_output_custom_html_with_iframe_for_vimeo_service.adoc", videoMacroShouldOutputCustomHtmlWithIframeForVimeoService, nil},
+	{"video macro should output custom HTML with iframe for vimeo service", "asciidoctor/blocks_test_video_macro_should_output_custom_html_with_iframe_for_vimeo_service.adoc", blocksTestVideoMacroShouldOutputCustomHtmlWithIframeForVimeoService, nil},
 
-	{"audio macro should not use imagesdir attribute to resolve target if target is a URL", "asciidoctor/blocks_test_audio_macro_should_not_use_imagesdir_attribute_to_resolve_target_if_target_is_a_url.adoc", audioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl, nil},
+	{"audio macro should not use imagesdir attribute to resolve target if target is a URL", "asciidoctor/blocks_test_audio_macro_should_not_use_imagesdir_attribute_to_resolve_target_if_target_is_a_url.adoc", blocksTestAudioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl, nil},
 
-	{"audio macro should honor all options", "asciidoctor/blocks_test_audio_macro_should_honor_all_options.adoc", audioMacroShouldHonorAllOptions, nil},
+	{"audio macro should honor all options", "asciidoctor/blocks_test_audio_macro_should_honor_all_options.adoc", blocksTestAudioMacroShouldHonorAllOptions, nil},
 
-	{"can resolve icon relative to custom iconsdir", "asciidoctor/blocks_test_can_resolve_icon_relative_to_custom_iconsdir.adoc", canResolveIconRelativeToCustomIconsdir, nil},
+	{"can resolve icon relative to custom iconsdir", "asciidoctor/blocks_test_can_resolve_icon_relative_to_custom_iconsdir.adoc", blocksTestCanResolveIconRelativeToCustomIconsdir, nil},
 
-	{"should add file extension to custom icon if not specified", "asciidoctor/blocks_test_should_add_file_extension_to_custom_icon_if_not_specified.adoc", shouldAddFileExtensionToCustomIconIfNotSpecified, nil},
+	{"should add file extension to custom icon if not specified", "asciidoctor/blocks_test_should_add_file_extension_to_custom_icon_if_not_specified.adoc", blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified, nil},
 
-	{"should allow icontype to be specified when using built-in admonition icon", "asciidoctor/blocks_test_should_allow_icontype_to_be_specified_when_using_built_in_admonition_icon.adoc", shouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon, nil},
+	{"should allow icontype to be specified when using built-in admonition icon", "asciidoctor/blocks_test_should_allow_icontype_to_be_specified_when_using_built_in_admonition_icon.adoc", blocksTestShouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon, nil},
 
-	{"embeds base64-encoded data uri of icon when data-uri attribute is set and safe mode level is less than SECURE", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_of_icon_when_data_uri_attribute_is_set_and_safe_mode_level_is_less_than_secure.adoc", embedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsLessThanSecure, nil},
+	{"embeds base64-encoded data uri of icon when data-uri attribute is set and safe mode level is less than SECURE", "asciidoctor/blocks_test_embeds_base_64_encoded_data_uri_of_icon_when_data_uri_attribute_is_set_and_safe_mode_level_is_less_than_secure.adoc", blocksTestEmbedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsLessThanSecure, nil},
 
-	{"should embed base64-encoded data uri of custom icon when data-uri attribute is set", "asciidoctor/blocks_test_should_embed_base_64_encoded_data_uri_of_custom_icon_when_data_uri_attribute_is_set.adoc", shouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet, nil},
+	{"should embed base64-encoded data uri of custom icon when data-uri attribute is set", "asciidoctor/blocks_test_should_embed_base_64_encoded_data_uri_of_custom_icon_when_data_uri_attribute_is_set.adoc", blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet, nil},
 
-	{"does not embed base64-encoded data uri of icon when safe mode level is SECURE or greater", "asciidoctor/blocks_test_does_not_embed_base_64_encoded_data_uri_of_icon_when_safe_mode_level_is_secure_or_greater.adoc", doesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater, nil},
+	{"does not embed base64-encoded data uri of icon when safe mode level is SECURE or greater", "asciidoctor/blocks_test_does_not_embed_base_64_encoded_data_uri_of_icon_when_safe_mode_level_is_secure_or_greater.adoc", blocksTestDoesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater, nil},
 
-	{"cleans reference to ancestor directories before reading icon if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_before_reading_icon_if_safe_mode_level_is_at_least_safe.adoc", cleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeastSafe, nil},
+	{"cleans reference to ancestor directories before reading icon if safe mode level is at least SAFE", "asciidoctor/blocks_test_cleans_reference_to_ancestor_directories_before_reading_icon_if_safe_mode_level_is_at_least_safe.adoc", blocksTestCleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeastSafe, nil},
 
-	{"should import Font Awesome and use font-based icons when value of icons attribute is font", "asciidoctor/blocks_test_should_import_font_awesome_and_use_font_based_icons_when_value_of_icons_attribute_is_font.adoc", shouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont, nil},
+	{"should import Font Awesome and use font-based icons when value of icons attribute is font", "asciidoctor/blocks_test_should_import_font_awesome_and_use_font_based_icons_when_value_of_icons_attribute_is_font.adoc", blocksTestShouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont, nil},
 
-	{"font-based icon should not override icon specified on admonition", "asciidoctor/blocks_test_font_based_icon_should_not_override_icon_specified_on_admonition.adoc", fontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition, nil},
+	{"font-based icon should not override icon specified on admonition", "asciidoctor/blocks_test_font_based_icon_should_not_override_icon_specified_on_admonition.adoc", blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition, nil},
 
-	{"should use http uri scheme for assets when asset-uri-scheme is http", "asciidoctor/blocks_test_should_use_http_uri_scheme_for_assets_when_asset_uri_scheme_is_http.adoc", shouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp, nil},
+	{"should use http uri scheme for assets when asset-uri-scheme is http", "asciidoctor/blocks_test_should_use_http_uri_scheme_for_assets_when_asset_uri_scheme_is_http.adoc", blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp, nil},
 
-	{"should use no uri scheme for assets when asset-uri-scheme is blank", "asciidoctor/blocks_test_should_use_no_uri_scheme_for_assets_when_asset_uri_scheme_is_blank.adoc", shouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank, nil},
+	{"should use no uri scheme for assets when asset-uri-scheme is blank", "asciidoctor/blocks_test_should_use_no_uri_scheme_for_assets_when_asset_uri_scheme_is_blank.adoc", blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank, nil},
 
-	{"restricts access to ancestor directories when safe mode level is at least SAFE", "asciidoctor/blocks_test_restricts_access_to_ancestor_directories_when_safe_mode_level_is_at_least_safe.adoc", restrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe, nil},
+	{"restricts access to ancestor directories when safe mode level is at least SAFE", "asciidoctor/blocks_test_restricts_access_to_ancestor_directories_when_safe_mode_level_is_at_least_safe.adoc", blocksTestRestrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe, nil},
 
-	{"should not recognize fenced code blocks with more than three delimiters", "asciidoctor/blocks_test_should_not_recognize_fenced_code_blocks_with_more_than_three_delimiters.adoc", shouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters, nil},
+	{"should not recognize fenced code blocks with more than three delimiters", "asciidoctor/blocks_test_should_not_recognize_fenced_code_blocks_with_more_than_three_delimiters.adoc", blocksTestShouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters, nil},
 
-	{"should support fenced code blocks with languages", "asciidoctor/blocks_test_should_support_fenced_code_blocks_with_languages.adoc", shouldSupportFencedCodeBlocksWithLanguages, nil},
+	{"should support fenced code blocks with languages", "asciidoctor/blocks_test_should_support_fenced_code_blocks_with_languages.adoc", blocksTestShouldSupportFencedCodeBlocksWithLanguages, nil},
 
-	{"should support fenced code blocks with languages and numbering", "asciidoctor/blocks_test_should_support_fenced_code_blocks_with_languages_and_numbering.adoc", shouldSupportFencedCodeBlocksWithLanguagesAndNumbering, nil},
+	{"should support fenced code blocks with languages and numbering", "asciidoctor/blocks_test_should_support_fenced_code_blocks_with_languages_and_numbering.adoc", blocksTestShouldSupportFencedCodeBlocksWithLanguagesAndNumbering, nil},
 
-	{"should allow source style to be specified on literal block", "asciidoctor/blocks_test_should_allow_source_style_to_be_specified_on_literal_block.adoc", shouldAllowSourceStyleToBeSpecifiedOnLiteralBlock, nil},
+	{"should allow source style to be specified on literal block", "asciidoctor/blocks_test_should_allow_source_style_to_be_specified_on_literal_block.adoc", blocksTestShouldAllowSourceStyleToBeSpecifiedOnLiteralBlock, nil},
 
-	{"should allow source style and language to be specified on literal block", "asciidoctor/blocks_test_should_allow_source_style_and_language_to_be_specified_on_literal_block.adoc", shouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock, nil},
+	{"should allow source style and language to be specified on literal block", "asciidoctor/blocks_test_should_allow_source_style_and_language_to_be_specified_on_literal_block.adoc", blocksTestShouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock, nil},
 
-	{"should make abstract on open block without title a quote block for article", "asciidoctor/blocks_test_should_make_abstract_on_open_block_without_title_a_quote_block_for_article.adoc", shouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle, nil},
+	{"should make abstract on open block without title a quote block for article", "asciidoctor/blocks_test_should_make_abstract_on_open_block_without_title_a_quote_block_for_article.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle, nil},
 
-	{"should make abstract on open block with title a quote block with title for article", "asciidoctor/blocks_test_should_make_abstract_on_open_block_with_title_a_quote_block_with_title_for_article.adoc", shouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle, nil},
+	{"should make abstract on open block with title a quote block with title for article", "asciidoctor/blocks_test_should_make_abstract_on_open_block_with_title_a_quote_block_with_title_for_article.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle, nil},
 
-	{"should allow abstract in document with title if doctype is book", "asciidoctor/blocks_test_should_allow_abstract_in_document_with_title_if_doctype_is_book.adoc", shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook, nil},
+	{"should allow abstract in document with title if doctype is book", "asciidoctor/blocks_test_should_allow_abstract_in_document_with_title_if_doctype_is_book.adoc", blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook, nil},
 
-	{"should not allow abstract as direct child of document if doctype is book", "asciidoctor/blocks_test_should_not_allow_abstract_as_direct_child_of_document_if_doctype_is_book.adoc", shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook, nil},
+	{"should not allow abstract as direct child of document if doctype is book", "asciidoctor/blocks_test_should_not_allow_abstract_as_direct_child_of_document_if_doctype_is_book.adoc", blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook, nil},
 
-	{"should make abstract on open block without title converted to DocBook", "asciidoctor/blocks_test_should_make_abstract_on_open_block_without_title_converted_to_doc_book.adoc", shouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook, nil},
+	{"should make abstract on open block without title converted to DocBook", "asciidoctor/blocks_test_should_make_abstract_on_open_block_without_title_converted_to_doc_book.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook, nil},
 
-	{"should make abstract on open block with title converted to DocBook", "asciidoctor/blocks_test_should_make_abstract_on_open_block_with_title_converted_to_doc_book.adoc", shouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook, nil},
+	{"should make abstract on open block with title converted to DocBook", "asciidoctor/blocks_test_should_make_abstract_on_open_block_with_title_converted_to_doc_book.adoc", blocksTestShouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook, nil},
 
-	{"should allow abstract in document with title if doctype is book converted to DocBook", "asciidoctor/blocks_test_should_allow_abstract_in_document_with_title_if_doctype_is_book_converted_to_doc_book.adoc", shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook, nil},
+	{"should allow abstract in document with title if doctype is book converted to DocBook", "asciidoctor/blocks_test_should_allow_abstract_in_document_with_title_if_doctype_is_book_converted_to_doc_book.adoc", blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook, nil},
 
-	{"should not allow abstract as direct child of document if doctype is book converted to DocBook", "asciidoctor/blocks_test_should_not_allow_abstract_as_direct_child_of_document_if_doctype_is_book_converted_to_doc_book.adoc", shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBook, nil},
+	{"should not allow abstract as direct child of document if doctype is book converted to DocBook", "asciidoctor/blocks_test_should_not_allow_abstract_as_direct_child_of_document_if_doctype_is_book_converted_to_doc_book.adoc", blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBook, nil},
 
-	{"should accept partintro on open block without title", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_without_title.adoc", shouldAcceptPartintroOnOpenBlockWithoutTitle, nil},
+	{"should accept partintro on open block without title", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_without_title.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle, nil},
 
-	{"should accept partintro on open block with title", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_with_title.adoc", shouldAcceptPartintroOnOpenBlockWithTitle, nil},
+	{"should accept partintro on open block with title", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_with_title.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithTitle, nil},
 
-	{"should exclude partintro if not a child of part", "asciidoctor/blocks_test_should_exclude_partintro_if_not_a_child_of_part.adoc", shouldExcludePartintroIfNotAChildOfPart, nil},
+	{"should exclude partintro if not a child of part", "asciidoctor/blocks_test_should_exclude_partintro_if_not_a_child_of_part.adoc", blocksTestShouldExcludePartintroIfNotAChildOfPart, nil},
 
-	{"should not allow partintro unless doctype is book", "asciidoctor/blocks_test_should_not_allow_partintro_unless_doctype_is_book.adoc", shouldNotAllowPartintroUnlessDoctypeIsBook, nil},
+	{"should not allow partintro unless doctype is book", "asciidoctor/blocks_test_should_not_allow_partintro_unless_doctype_is_book.adoc", blocksTestShouldNotAllowPartintroUnlessDoctypeIsBook, nil},
 
-	{"should accept partintro on open block without title converted to DocBook", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_without_title_converted_to_doc_book.adoc", shouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook, nil},
+	{"should accept partintro on open block without title converted to DocBook", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_without_title_converted_to_doc_book.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook, nil},
 
-	{"should accept partintro on open block with title converted to DocBook", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_with_title_converted_to_doc_book.adoc", shouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook, nil},
+	{"should accept partintro on open block with title converted to DocBook", "asciidoctor/blocks_test_should_accept_partintro_on_open_block_with_title_converted_to_doc_book.adoc", blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook, nil},
 
-	{"should exclude partintro if not a child of part converted to DocBook", "asciidoctor/blocks_test_should_exclude_partintro_if_not_a_child_of_part_converted_to_doc_book.adoc", shouldExcludePartintroIfNotAChildOfPartConvertedToDocBook, nil},
+	{"should exclude partintro if not a child of part converted to DocBook", "asciidoctor/blocks_test_should_exclude_partintro_if_not_a_child_of_part_converted_to_doc_book.adoc", blocksTestShouldExcludePartintroIfNotAChildOfPartConvertedToDocBook, nil},
 
-	{"should not allow partintro unless doctype is book converted to DocBook", "asciidoctor/blocks_test_should_not_allow_partintro_unless_doctype_is_book_converted_to_doc_book.adoc", shouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook, nil},
+	{"should not allow partintro unless doctype is book converted to DocBook", "asciidoctor/blocks_test_should_not_allow_partintro_unless_doctype_is_book_converted_to_doc_book.adoc", blocksTestShouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook, nil},
 
-	{"processor should not crash if subs are empty", "asciidoctor/blocks_test_processor_should_not_crash_if_subs_are_empty.adoc", processorShouldNotCrashIfSubsAreEmpty, nil},
+	{"processor should not crash if subs are empty", "asciidoctor/blocks_test_processor_should_not_crash_if_subs_are_empty.adoc", blocksTestProcessorShouldNotCrashIfSubsAreEmpty, nil},
 
-	{"should be able to append subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_append_subs_to_default_block_substitution_list.adoc", shouldBeAbleToAppendSubsToDefaultBlockSubstitutionList, nil},
+	{"should be able to append subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_append_subs_to_default_block_substitution_list.adoc", blocksTestShouldBeAbleToAppendSubsToDefaultBlockSubstitutionList, nil},
 
-	{"should be able to prepend subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_prepend_subs_to_default_block_substitution_list.adoc", shouldBeAbleToPrependSubsToDefaultBlockSubstitutionList, nil},
+	{"should be able to prepend subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_prepend_subs_to_default_block_substitution_list.adoc", blocksTestShouldBeAbleToPrependSubsToDefaultBlockSubstitutionList, nil},
 
-	{"should be able to remove subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_remove_subs_to_default_block_substitution_list.adoc", shouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList, nil},
+	{"should be able to remove subs to default block substitution list", "asciidoctor/blocks_test_should_be_able_to_remove_subs_to_default_block_substitution_list.adoc", blocksTestShouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList, nil},
 
-	{"should be able to prepend, append and remove subs from default block substitution list", "asciidoctor/blocks_test_should_be_able_to_prepend_append_and_remove_subs_from_default_block_substitution_list.adoc", shouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstitutionList, nil},
+	{"should be able to prepend, append and remove subs from default block substitution list", "asciidoctor/blocks_test_should_be_able_to_prepend_append_and_remove_subs_from_default_block_substitution_list.adoc", blocksTestShouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstitutionList, nil},
 
-	{"should be able to set subs then modify them", "asciidoctor/blocks_test_should_be_able_to_set_subs_then_modify_them.adoc", shouldBeAbleToSetSubsThenModifyThem, nil},
+	{"should be able to set subs then modify them", "asciidoctor/blocks_test_should_be_able_to_set_subs_then_modify_them.adoc", blocksTestShouldBeAbleToSetSubsThenModifyThem, nil},
 
-	{"should not recognize block anchor with illegal id characters", "asciidoctor/blocks_test_should_not_recognize_block_anchor_with_illegal_id_characters.adoc", shouldNotRecognizeBlockAnchorWithIllegalIdCharacters, nil},
+	{"should not recognize block anchor with illegal id characters", "asciidoctor/blocks_test_should_not_recognize_block_anchor_with_illegal_id_characters.adoc", blocksTestShouldNotRecognizeBlockAnchorWithIllegalIdCharacters, nil},
 
-	{"should not recognize block anchor that starts with digit", "asciidoctor/blocks_test_should_not_recognize_block_anchor_that_starts_with_digit.adoc", shouldNotRecognizeBlockAnchorThatStartsWithDigit, nil},
+	{"should not recognize block anchor that starts with digit", "asciidoctor/blocks_test_should_not_recognize_block_anchor_that_starts_with_digit.adoc", blocksTestShouldNotRecognizeBlockAnchorThatStartsWithDigit, nil},
 
-	{"should recognize block anchor that starts with colon", "asciidoctor/blocks_test_should_recognize_block_anchor_that_starts_with_colon.adoc", shouldRecognizeBlockAnchorThatStartsWithColon, nil},
+	{"should recognize block anchor that starts with colon", "asciidoctor/blocks_test_should_recognize_block_anchor_that_starts_with_colon.adoc", blocksTestShouldRecognizeBlockAnchorThatStartsWithColon, nil},
 
-	{"should use specified id and reftext when registering block reference", "asciidoctor/blocks_test_should_use_specified_id_and_reftext_when_registering_block_reference.adoc", shouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference, nil},
+	{"should use specified id and reftext when registering block reference", "asciidoctor/blocks_test_should_use_specified_id_and_reftext_when_registering_block_reference.adoc", blocksTestShouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference, nil},
 
-	{"should allow square brackets in block reference text", "asciidoctor/blocks_test_should_allow_square_brackets_in_block_reference_text.adoc", shouldAllowSquareBracketsInBlockReferenceText, nil},
+	{"should allow square brackets in block reference text", "asciidoctor/blocks_test_should_allow_square_brackets_in_block_reference_text.adoc", blocksTestShouldAllowSquareBracketsInBlockReferenceText, nil},
 
-	{"should allow comma in block reference text", "asciidoctor/blocks_test_should_allow_comma_in_block_reference_text.adoc", shouldAllowCommaInBlockReferenceText, nil},
+	{"should allow comma in block reference text", "asciidoctor/blocks_test_should_allow_comma_in_block_reference_text.adoc", blocksTestShouldAllowCommaInBlockReferenceText, nil},
 
-	{"should resolve attribute reference in title using attribute defined at location of block", "asciidoctor/blocks_test_should_resolve_attribute_reference_in_title_using_attribute_defined_at_location_of_block.adoc", shouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock, nil},
+	{"should resolve attribute reference in title using attribute defined at location of block", "asciidoctor/blocks_test_should_resolve_attribute_reference_in_title_using_attribute_defined_at_location_of_block.adoc", blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock, nil},
 
-	{"should substitute attribute references in reftext when registering block reference", "asciidoctor/blocks_test_should_substitute_attribute_references_in_reftext_when_registering_block_reference.adoc", shouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockReference, nil},
+	{"should substitute attribute references in reftext when registering block reference", "asciidoctor/blocks_test_should_substitute_attribute_references_in_reftext_when_registering_block_reference.adoc", blocksTestShouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockReference, nil},
 
-	{"should use specified reftext when registering block reference", "asciidoctor/blocks_test_should_use_specified_reftext_when_registering_block_reference.adoc", shouldUseSpecifiedReftextWhenRegisteringBlockReference, nil},
+	{"should use specified reftext when registering block reference", "asciidoctor/blocks_test_should_use_specified_reftext_when_registering_block_reference.adoc", blocksTestShouldUseSpecifiedReftextWhenRegisteringBlockReference, nil},
 }
 
-var horizontalRuleBetweenBlocks = &asciidoc.Document{
+var blocksTestHorizontalRuleBetweenBlocks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ThematicBreak{
@@ -479,22 +479,22 @@ var horizontalRuleBetweenBlocks = &asciidoc.Document{
 	},
 }
 
-var lineCommentBetweenParagraphsOffsetByBlankLines = &asciidoc.Document{
+var blocksTestLineCommentBetweenParagraphsOffsetByBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "first paragraph",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.SingleLineComment{
 			Value: " line comment",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -504,9 +504,9 @@ var lineCommentBetweenParagraphsOffsetByBlankLines = &asciidoc.Document{
 	},
 }
 
-var adjacentLineCommentBetweenParagraphs = &asciidoc.Document{
+var blocksTestAdjacentLineCommentBetweenParagraphs = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -523,16 +523,16 @@ var adjacentLineCommentBetweenParagraphs = &asciidoc.Document{
 	},
 }
 
-var commentBlockBetweenParagraphsOffsetByBlankLines = &asciidoc.Document{
+var blocksTestCommentBlockBetweenParagraphsOffsetByBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "first paragraph",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.MultiLineComment{
@@ -544,7 +544,7 @@ var commentBlockBetweenParagraphsOffsetByBlankLines = &asciidoc.Document{
 				"block comment",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -554,9 +554,9 @@ var commentBlockBetweenParagraphsOffsetByBlankLines = &asciidoc.Document{
 	},
 }
 
-var commentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock = &asciidoc.Document{
+var blocksTestCommentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -570,7 +570,7 @@ var commentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock = &ascii
 					Value: "first paragraph",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.MultiLineComment{
@@ -582,7 +582,7 @@ var commentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock = &ascii
 						"block comment",
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -594,9 +594,9 @@ var commentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock = &ascii
 	},
 }
 
-var adjacentCommentBlockBetweenParagraphs = &asciidoc.Document{
+var blocksTestAdjacentCommentBlockBetweenParagraphs = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -619,16 +619,16 @@ var adjacentCommentBlockBetweenParagraphs = &asciidoc.Document{
 	},
 }
 
-var canConvertWithBlockCommentAtEndOfDocumentWithTrailingNewlines = &asciidoc.Document{
+var blocksTestCanConvertWithBlockCommentAtEndOfDocumentWithTrailingNewlines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "paragraph",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.MultiLineComment{
@@ -640,25 +640,25 @@ var canConvertWithBlockCommentAtEndOfDocumentWithTrailingNewlines = &asciidoc.Do
 				"block comment",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 	},
 }
 
-var trailingNewlinesAfterBlockCommentAtEndOfDocumentDoesNotCreateParagraph = &asciidoc.Document{
+var blocksTestTrailingNewlinesAfterBlockCommentAtEndOfDocumentDoesNotCreateParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "paragraph",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.MultiLineComment{
@@ -670,18 +670,18 @@ var trailingNewlinesAfterBlockCommentAtEndOfDocumentDoesNotCreateParagraph = &as
 				"block comment",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 	},
 }
 
-var lineStartingWithThreeSlashesShouldNotBeLineComment = &asciidoc.Document{
+var blocksTestLineStartingWithThreeSlashesShouldNotBeLineComment = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -713,16 +713,16 @@ var lineStartingWithThreeSlashesShouldNotBeLineComment = &asciidoc.Document{
 	},
 }
 
-var preprocessorDirectivesShouldNotBeProcessedWithinCommentBlock = &asciidoc.Document{
+var blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "dummy line",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.MultiLineComment{
@@ -734,7 +734,7 @@ var preprocessorDirectivesShouldNotBeProcessedWithinCommentBlock = &asciidoc.Doc
 				"ifdef::asciidoctor[////]",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -744,16 +744,16 @@ var preprocessorDirectivesShouldNotBeProcessedWithinCommentBlock = &asciidoc.Doc
 	},
 }
 
-var shouldWarnIfUnterminatedCommentBlockIsDetectedInBody = &asciidoc.Document{
+var blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInBody = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "before comment block",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -764,7 +764,7 @@ var shouldWarnIfUnterminatedCommentBlockIsDetectedInBody = &asciidoc.Document{
 			Value: "content that has been disabled",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -774,16 +774,16 @@ var shouldWarnIfUnterminatedCommentBlockIsDetectedInBody = &asciidoc.Document{
 	},
 }
 
-var shouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock = &asciidoc.Document{
+var blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "before sidebar block",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.SidebarBlock{
@@ -803,7 +803,7 @@ var shouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock = &asciidoc
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -813,9 +813,9 @@ var shouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock = &asciidoc
 	},
 }
 
-var preprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock = &asciidoc.Document{
+var blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -852,15 +852,15 @@ var preprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock = &asciidoc
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 	},
 }
 
-var preprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagraph = &asciidoc.Document{
+var blocksTestPreprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -890,7 +890,7 @@ var preprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagra
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -900,9 +900,9 @@ var preprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagra
 	},
 }
 
-var commentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
+var blocksTestCommentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -929,7 +929,7 @@ var commentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
 					Value: "skip",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -938,7 +938,7 @@ var commentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -948,9 +948,9 @@ var commentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
 	},
 }
 
-var commentStyleOnParagraphShouldOnlySkipParagraph = &asciidoc.Document{
+var blocksTestCommentStyleOnParagraphShouldOnlySkipParagraph = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -980,7 +980,7 @@ var commentStyleOnParagraphShouldOnlySkipParagraph = &asciidoc.Document{
 			},
 			Admonition: 0,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -990,9 +990,9 @@ var commentStyleOnParagraphShouldOnlySkipParagraph = &asciidoc.Document{
 	},
 }
 
-var commentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &asciidoc.Document{
+var blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -1048,9 +1048,9 @@ var commentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &asciidoc.Do
 	},
 }
 
-var shouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock = &asciidoc.Document{
+var blocksTestShouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -1064,7 +1064,7 @@ var shouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock = &asciid
 					Value: "paragraph",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -1096,7 +1096,7 @@ var shouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock = &asciid
 					},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1108,15 +1108,15 @@ var shouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock = &asciid
 	},
 }
 
-var shouldParseSidebarBlock = &asciidoc.Document{
+var blocksTestShouldParseSidebarBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.SidebarBlock{
@@ -1151,9 +1151,9 @@ var shouldParseSidebarBlock = &asciidoc.Document{
 	},
 }
 
-var quoteBlockWithNoAttribution = &asciidoc.Document{
+var blocksTestQuoteBlockWithNoAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1172,9 +1172,9 @@ var quoteBlockWithNoAttribution = &asciidoc.Document{
 	},
 }
 
-var quoteBlockWithAttribution = &asciidoc.Document{
+var blocksTestQuoteBlockWithAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1224,9 +1224,9 @@ var quoteBlockWithAttribution = &asciidoc.Document{
 	},
 }
 
-var quoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
+var blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1290,9 +1290,9 @@ var quoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
 	},
 }
 
-var settingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.Document{
+var blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1351,9 +1351,9 @@ var settingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.Document{
 	},
 }
 
-var quoteBlockWithComplexContent = &asciidoc.Document{
+var blocksTestQuoteBlockWithComplexContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1367,7 +1367,7 @@ var quoteBlockWithComplexContent = &asciidoc.Document{
 					Value: "A famous quote.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -1393,9 +1393,9 @@ var quoteBlockWithComplexContent = &asciidoc.Document{
 	},
 }
 
-var quoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
+var blocksTestQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1445,9 +1445,9 @@ var quoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 	},
 }
 
-var epigraphQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
+var blocksTestEpigraphQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1499,9 +1499,9 @@ var epigraphQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 	},
 }
 
-var markdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &asciidoc.Document{
+var blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1515,9 +1515,9 @@ var markdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &asciidoc.Docum
 	},
 }
 
-var lazyMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &asciidoc.Document{
+var blocksTestLazyMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1531,9 +1531,9 @@ var lazyMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &asciidoc.D
 	},
 }
 
-var markdownStyleQuoteBlockWithMultipleParagraphsAndNoAttribution = &asciidoc.Document{
+var blocksTestMarkdownStyleQuoteBlockWithMultipleParagraphsAndNoAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1551,9 +1551,9 @@ var markdownStyleQuoteBlockWithMultipleParagraphsAndNoAttribution = &asciidoc.Do
 	},
 }
 
-var markdownStyleQuoteBlockWithMultipleBlocksAndNoAttribution = &asciidoc.Document{
+var blocksTestMarkdownStyleQuoteBlockWithMultipleBlocksAndNoAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1571,9 +1571,9 @@ var markdownStyleQuoteBlockWithMultipleBlocksAndNoAttribution = &asciidoc.Docume
 	},
 }
 
-var markdownStyleQuoteBlockWithSingleParagraphAndAttribution = &asciidoc.Document{
+var blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1591,9 +1591,9 @@ var markdownStyleQuoteBlockWithSingleParagraphAndAttribution = &asciidoc.Documen
 	},
 }
 
-var markdownStyleQuoteBlockWithOnlyAttribution = &asciidoc.Document{
+var blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1648,9 +1648,9 @@ var markdownStyleQuoteBlockWithOnlyAttribution = &asciidoc.Document{
 	},
 }
 
-var quotedParagraphStyleQuoteBlockWithAttribution = &asciidoc.Document{
+var blocksTestQuotedParagraphStyleQuoteBlockWithAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1675,9 +1675,9 @@ var quotedParagraphStyleQuoteBlockWithAttribution = &asciidoc.Document{
 	},
 }
 
-var shouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositionalBlockAttributes = &asciidoc.Document{
+var blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositionalBlockAttributes = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -1732,9 +1732,9 @@ var shouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositionalBlockAttr
 	},
 }
 
-var singleLineVerseBlockWithoutAttribution = &asciidoc.Document{
+var blocksTestSingleLineVerseBlockWithoutAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1766,61 +1766,9 @@ var singleLineVerseBlockWithoutAttribution = &asciidoc.Document{
 	},
 }
 
-var singleLineVerseBlockWithAttribution = &asciidoc.Document{
+var blocksTestSingleLineVerseBlockWithAttribution = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
-			Text: "",
-		},
-		&asciidoc.QuoteBlock{
-			Delimiter: asciidoc.Delimiter{
-				Type:   11,
-				Length: 4,
-			},
-			AttributeList: asciidoc.AttributeList{
-				&asciidoc.ShorthandAttribute{
-					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
-							&asciidoc.String{
-								Value: "verse",
-							},
-						},
-					},
-					ID:      nil,
-					Roles:   nil,
-					Options: nil,
-				},
-				&asciidoc.PositionalAttribute{
-					Offset:      1,
-					ImpliedName: "",
-					Val: asciidoc.Set{
-						&asciidoc.String{
-							Value: "Famous Poet",
-						},
-					},
-				},
-				&asciidoc.PositionalAttribute{
-					Offset:      2,
-					ImpliedName: "",
-					Val: asciidoc.Set{
-						&asciidoc.String{
-							Value: "Famous Poem",
-						},
-					},
-				},
-			},
-			Set: asciidoc.Set{
-				&asciidoc.String{
-					Value: "A famous verse.",
-				},
-				&asciidoc.NewLine{},
-			},
-		},
-	},
-}
-
-var singleLineVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1870,9 +1818,61 @@ var singleLineVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 	},
 }
 
-var singleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
+var blocksTestSingleLineVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
+			Text: "",
+		},
+		&asciidoc.QuoteBlock{
+			Delimiter: asciidoc.Delimiter{
+				Type:   11,
+				Length: 4,
+			},
+			AttributeList: asciidoc.AttributeList{
+				&asciidoc.ShorthandAttribute{
+					Style: &asciidoc.ShorthandStyle{
+						Set: asciidoc.Set{
+							&asciidoc.String{
+								Value: "verse",
+							},
+						},
+					},
+					ID:      nil,
+					Roles:   nil,
+					Options: nil,
+				},
+				&asciidoc.PositionalAttribute{
+					Offset:      1,
+					ImpliedName: "",
+					Val: asciidoc.Set{
+						&asciidoc.String{
+							Value: "Famous Poet",
+						},
+					},
+				},
+				&asciidoc.PositionalAttribute{
+					Offset:      2,
+					ImpliedName: "",
+					Val: asciidoc.Set{
+						&asciidoc.String{
+							Value: "Famous Poem",
+						},
+					},
+				},
+			},
+			Set: asciidoc.Set{
+				&asciidoc.String{
+					Value: "A famous verse.",
+				},
+				&asciidoc.NewLine{},
+			},
+		},
+	},
+}
+
+var blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
+	Set: asciidoc.Set{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1930,9 +1930,9 @@ var singleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Do
 	},
 }
 
-var multiStanzaVerseBlock = &asciidoc.Document{
+var blocksTestMultiStanzaVerseBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -1959,7 +1959,7 @@ var multiStanzaVerseBlock = &asciidoc.Document{
 					Value: "A famous verse.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1971,9 +1971,9 @@ var multiStanzaVerseBlock = &asciidoc.Document{
 	},
 }
 
-var verseBlockDoesNotContainBlockElements = &asciidoc.Document{
+var blocksTestVerseBlockDoesNotContainBlockElements = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2000,7 +2000,7 @@ var verseBlockDoesNotContainBlockElements = &asciidoc.Document{
 					Value: "A famous verse.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.LiteralBlock{
@@ -2018,9 +2018,9 @@ var verseBlockDoesNotContainBlockElements = &asciidoc.Document{
 	},
 }
 
-var verseShouldHaveNormalSubs = &asciidoc.Document{
+var blocksTestVerseShouldHaveNormalSubs = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2052,9 +2052,9 @@ var verseShouldHaveNormalSubs = &asciidoc.Document{
 	},
 }
 
-var shouldNotRecognizeCalloutsInAVerse = &asciidoc.Document{
+var blocksTestShouldNotRecognizeCalloutsInAVerse = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2090,9 +2090,9 @@ var shouldNotRecognizeCalloutsInAVerse = &asciidoc.Document{
 	},
 }
 
-var shouldPerformNormalSubsOnAVerseBlock = &asciidoc.Document{
+var blocksTestShouldPerformNormalSubsOnAVerseBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.QuoteBlock{
@@ -2129,9 +2129,9 @@ var shouldPerformNormalSubsOnAVerseBlock = &asciidoc.Document{
 	},
 }
 
-var canConvertExampleBlock = &asciidoc.Document{
+var blocksTestCanConvertExampleBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2145,7 +2145,7 @@ var canConvertExampleBlock = &asciidoc.Document{
 					Value: "This is an example of an example block.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2157,9 +2157,9 @@ var canConvertExampleBlock = &asciidoc.Document{
 	},
 }
 
-var assignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciidoc.Document{
+var blocksTestAssignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2181,7 +2181,7 @@ var assignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciidoc.Document
 					Value: "Here's how you write AsciiDoc.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2190,7 +2190,7 @@ var assignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciidoc.Document
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2212,7 +2212,7 @@ var assignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciidoc.Document
 					Value: "Here's how you write DocBook.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2224,9 +2224,9 @@ var assignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciidoc.Document
 	},
 }
 
-var assignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciidoc.Document{
+var blocksTestAssignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2237,7 +2237,7 @@ var assignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciidoc.Documen
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2259,7 +2259,7 @@ var assignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciidoc.Documen
 					Value: "Here's how you write AsciiDoc.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2268,7 +2268,7 @@ var assignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciidoc.Documen
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2290,7 +2290,7 @@ var assignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciidoc.Documen
 					Value: "Here's how you write DocBook.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2302,9 +2302,9 @@ var assignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciidoc.Documen
 	},
 }
 
-var shouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi = &asciidoc.Document{
+var blocksTestShouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2326,7 +2326,7 @@ var shouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi = &asc
 					Value: "Here's how you write AsciiDoc.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2335,7 +2335,7 @@ var shouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi = &asc
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2357,7 +2357,7 @@ var shouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi = &asc
 					Value: "Here's how you write DocBook.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2369,9 +2369,9 @@ var shouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi = &asc
 	},
 }
 
-var shouldUseExplicitCaptionIfSpecified = &asciidoc.Document{
+var blocksTestShouldUseExplicitCaptionIfSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2402,7 +2402,7 @@ var shouldUseExplicitCaptionIfSpecified = &asciidoc.Document{
 					Value: "Here's how you write AsciiDoc.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2414,9 +2414,9 @@ var shouldUseExplicitCaptionIfSpecified = &asciidoc.Document{
 	},
 }
 
-var automaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Document{
+var blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2440,14 +2440,14 @@ var automaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Document{
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "caption",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2471,7 +2471,7 @@ var automaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Document{
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
@@ -2485,7 +2485,7 @@ var automaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2512,15 +2512,15 @@ var automaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Document{
 	},
 }
 
-var shouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled = &asciidoc.Document{
+var blocksTestShouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
 			Name: "example-caption",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2551,7 +2551,7 @@ var shouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisable
 					Value: "Here's how you write AsciiDoc.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2563,9 +2563,9 @@ var shouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisable
 	},
 }
 
-var shouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled = &asciidoc.Document{
+var blocksTestShouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
@@ -2579,7 +2579,7 @@ var shouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled 
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2601,7 +2601,7 @@ var shouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled 
 					Value: "Here's how you write AsciiDoc.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2613,9 +2613,9 @@ var shouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled 
 	},
 }
 
-var shouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption = &asciidoc.Document{
+var blocksTestShouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -2651,9 +2651,9 @@ var shouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption = &asciido
 	},
 }
 
-var shouldCreateDetailsSummarySetIfCollapsibleOptionIsSet = &asciidoc.Document{
+var blocksTestShouldCreateDetailsSummarySetIfCollapsibleOptionIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2694,9 +2694,9 @@ var shouldCreateDetailsSummarySetIfCollapsibleOptionIsSet = &asciidoc.Document{
 	},
 }
 
-var shouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet = &asciidoc.Document{
+var blocksTestShouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2744,9 +2744,9 @@ var shouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet = &asciidoc.Doc
 	},
 }
 
-var shouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNotSpecifed = &asciidoc.Document{
+var blocksTestShouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNotSpecifed = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2780,9 +2780,9 @@ var shouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNotSpecifed 
 	},
 }
 
-var shouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc.Document{
+var blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2806,7 +2806,7 @@ var shouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc.Document{
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2844,7 +2844,7 @@ var shouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc.Document{
 				&asciidoc.NewLine{},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ExampleBlock{
@@ -2871,16 +2871,16 @@ var shouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc.Document{
 	},
 }
 
-var shouldWarnIfExampleBlockIsNotTerminated = &asciidoc.Document{
+var blocksTestShouldWarnIfExampleBlockIsNotTerminated = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "outside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2891,14 +2891,14 @@ var shouldWarnIfExampleBlockIsNotTerminated = &asciidoc.Document{
 			Value: "inside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "still inside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2908,9 +2908,9 @@ var shouldWarnIfExampleBlockIsNotTerminated = &asciidoc.Document{
 	},
 }
 
-var captionBlockLevelAttributeShouldBeUsedAsCaption = &asciidoc.Document{
+var blocksTestCaptionBlockLevelAttributeShouldBeUsedAsCaption = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2921,7 +2921,7 @@ var captionBlockLevelAttributeShouldBeUsedAsCaption = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2952,9 +2952,9 @@ var captionBlockLevelAttributeShouldBeUsedAsCaption = &asciidoc.Document{
 	},
 }
 
-var canOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute = &asciidoc.Document{
+var blocksTestCanOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2965,7 +2965,7 @@ var canOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute = &asciidoc.Docume
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -2981,16 +2981,16 @@ var canOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute = &asciidoc.Docume
 	},
 }
 
-var blankCaptionDocumentAttributeShouldNotBlankAdmonitionBlockCaption = &asciidoc.Document{
+var blocksTestBlankCaptionDocumentAttributeShouldNotBlankAdmonitionBlockCaption = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "caption",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -3006,9 +3006,9 @@ var blankCaptionDocumentAttributeShouldNotBlankAdmonitionBlockCaption = &asciido
 	},
 }
 
-var shouldSeparateAdjacentParagraphsAndListingIntoBlocks = &asciidoc.Document{
+var blocksTestShouldSeparateAdjacentParagraphsAndListingIntoBlocks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3032,16 +3032,16 @@ var shouldSeparateAdjacentParagraphsAndListingIntoBlocks = &asciidoc.Document{
 	},
 }
 
-var shouldWarnIfListingBlockIsNotTerminated = &asciidoc.Document{
+var blocksTestShouldWarnIfListingBlockIsNotTerminated = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "outside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3052,14 +3052,14 @@ var shouldWarnIfListingBlockIsNotTerminated = &asciidoc.Document{
 			Value: "inside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "still inside",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3069,9 +3069,9 @@ var shouldWarnIfListingBlockIsNotTerminated = &asciidoc.Document{
 	},
 }
 
-var shouldNotCrashWhenConvertingVerbatimBlockThatHasNoLines = &asciidoc.Document{
+var blocksTestShouldNotCrashWhenConvertingVerbatimBlockThatHasNoLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -3091,9 +3091,9 @@ var shouldNotCrashWhenConvertingVerbatimBlockThatHasNoLines = &asciidoc.Document
 	},
 }
 
-var shouldPreserveNewlinesInListingBlock = &asciidoc.Document{
+var blocksTestShouldPreserveNewlinesInListingBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3113,9 +3113,9 @@ var shouldPreserveNewlinesInListingBlock = &asciidoc.Document{
 	},
 }
 
-var shouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
+var blocksTestShouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -3149,14 +3149,14 @@ var shouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
 							Value: "line one",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "line two",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3170,9 +3170,9 @@ var shouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
 	},
 }
 
-var shouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock = &asciidoc.Document{
+var blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -3205,9 +3205,9 @@ var shouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock = &asciid
 	},
 }
 
-var shouldRemoveBlockIndentIfIndentAttributeIs0 = &asciidoc.Document{
+var blocksTestShouldRemoveBlockIndentIfIndentAttributeIs0 = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3237,9 +3237,9 @@ var shouldRemoveBlockIndentIfIndentAttributeIs0 = &asciidoc.Document{
 	},
 }
 
-var shouldNotRemoveBlockIndentIfIndentAttributeIs1 = &asciidoc.Document{
+var blocksTestShouldNotRemoveBlockIndentIfIndentAttributeIs1 = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3269,9 +3269,9 @@ var shouldNotRemoveBlockIndentIfIndentAttributeIs1 = &asciidoc.Document{
 	},
 }
 
-var shouldSetBlockIndentToValueSpecifiedByIndentAttribute = &asciidoc.Document{
+var blocksTestShouldSetBlockIndentToValueSpecifiedByIndentAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3301,9 +3301,9 @@ var shouldSetBlockIndentToValueSpecifiedByIndentAttribute = &asciidoc.Document{
 	},
 }
 
-var shouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute = &asciidoc.Document{
+var blocksTestShouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -3314,7 +3314,7 @@ var shouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute = &asciidoc.Do
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3356,9 +3356,9 @@ var shouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute = &asciidoc.Do
 	},
 }
 
-var literalBlockShouldHonorNowrapOption = &asciidoc.Document{
+var blocksTestLiteralBlockShouldHonorNowrapOption = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3384,15 +3384,15 @@ var literalBlockShouldHonorNowrapOption = &asciidoc.Document{
 	},
 }
 
-var literalBlockShouldSetNowrapClassIfPrewrapDocumentAttributeIsDisabled = &asciidoc.Document{
+var blocksTestLiteralBlockShouldSetNowrapClassIfPrewrapDocumentAttributeIsDisabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeReset{
 			Name: "prewrap",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3408,9 +3408,9 @@ var literalBlockShouldSetNowrapClassIfPrewrapDocumentAttributeIsDisabled = &asci
 	},
 }
 
-var shouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled = &asciidoc.Document{
+var blocksTestShouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3427,9 +3427,9 @@ var shouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled = &asciidoc.Document
 	},
 }
 
-var shouldPreserveGuardAroundCalloutIfIconsAreNotEnabled = &asciidoc.Document{
+var blocksTestShouldPreserveGuardAroundCalloutIfIconsAreNotEnabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3447,9 +3447,9 @@ var shouldPreserveGuardAroundCalloutIfIconsAreNotEnabled = &asciidoc.Document{
 	},
 }
 
-var literalBlockShouldHonorExplicitSubsList = &asciidoc.Document{
+var blocksTestLiteralBlockShouldHonorExplicitSubsList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3475,9 +3475,9 @@ var literalBlockShouldHonorExplicitSubsList = &asciidoc.Document{
 	},
 }
 
-var shouldBeAbleToDisableCalloutsForLiteralBlock = &asciidoc.Document{
+var blocksTestShouldBeAbleToDisableCalloutsForLiteralBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3503,9 +3503,9 @@ var shouldBeAbleToDisableCalloutsForLiteralBlock = &asciidoc.Document{
 	},
 }
 
-var listingBlockShouldHonorExplicitSubsList = &asciidoc.Document{
+var blocksTestListingBlockShouldHonorExplicitSubsList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3535,9 +3535,9 @@ var listingBlockShouldHonorExplicitSubsList = &asciidoc.Document{
 	},
 }
 
-var shouldNotMangleArrayThatContainsFormattedTextWithRoleInListingBlockWithQuotesSubEnabled = &asciidoc.Document{
+var blocksTestShouldNotMangleArrayThatContainsFormattedTextWithRoleInListingBlockWithQuotesSubEnabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3557,9 +3557,9 @@ var shouldNotMangleArrayThatContainsFormattedTextWithRoleInListingBlockWithQuote
 	},
 }
 
-var firstCharacterOfBlockTitleMayBeAPeriodIfNotFollowedBySpace = &asciidoc.Document{
+var blocksTestFirstCharacterOfBlockTitleMayBeAPeriodIfNotFollowedBySpace = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3581,9 +3581,9 @@ var firstCharacterOfBlockTitleMayBeAPeriodIfNotFollowedBySpace = &asciidoc.Docum
 	},
 }
 
-var listingBlockWithoutTitleShouldGenerateScreenElementInDocbook = &asciidoc.Document{
+var blocksTestListingBlockWithoutTitleShouldGenerateScreenElementInDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3599,9 +3599,9 @@ var listingBlockWithoutTitleShouldGenerateScreenElementInDocbook = &asciidoc.Doc
 	},
 }
 
-var listingBlockWithTitleShouldGenerateScreenElementInsideFormalparaElementInDocbook = &asciidoc.Document{
+var blocksTestListingBlockWithTitleShouldGenerateScreenElementInsideFormalparaElementInDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3625,9 +3625,9 @@ var listingBlockWithTitleShouldGenerateScreenElementInsideFormalparaElementInDoc
 	},
 }
 
-var shouldNotPrependCaptionToTitleOfListingBlockWithTitleIfListingCaptionAttributeIsNotSet = &asciidoc.Document{
+var blocksTestShouldNotPrependCaptionToTitleOfListingBlockWithTitleIfListingCaptionAttributeIsNotSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3651,9 +3651,9 @@ var shouldNotPrependCaptionToTitleOfListingBlockWithTitleIfListingCaptionAttribu
 	},
 }
 
-var shouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToTitleOfListingBlockWithTitle = &asciidoc.Document{
+var blocksTestShouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToTitleOfListingBlockWithTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -3664,7 +3664,7 @@ var shouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToTitleOfList
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3688,9 +3688,9 @@ var shouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToTitleOfList
 	},
 }
 
-var shouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenIfListingCaptionAttributeIsNotSet = &asciidoc.Document{
+var blocksTestShouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenIfListingCaptionAttributeIsNotSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3731,9 +3731,9 @@ var shouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenIfListingCa
 	},
 }
 
-var listingBlockWithoutAnExplicitStyleAndWithASecondPositionalArgumentShouldBePromotedToASourceBlock = &asciidoc.Document{
+var blocksTestListingBlockWithoutAnExplicitStyleAndWithASecondPositionalArgumentShouldBePromotedToASourceBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3753,9 +3753,9 @@ var listingBlockWithoutAnExplicitStyleAndWithASecondPositionalArgumentShouldBePr
 	},
 }
 
-var listingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIfSourceLanguageIsSet = &asciidoc.Document{
+var blocksTestListingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIfSourceLanguageIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -3766,7 +3766,7 @@ var listingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIfSourceLang
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3782,9 +3782,9 @@ var listingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIfSourceLang
 	},
 }
 
-var listingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldNotBePromotedToASourceBlock = &asciidoc.Document{
+var blocksTestListingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldNotBePromotedToASourceBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3822,9 +3822,9 @@ var listingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldNotBePromot
 	},
 }
 
-var listingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLanguageIsSet = &asciidoc.Document{
+var blocksTestListingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLanguageIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -3835,7 +3835,7 @@ var listingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLang
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3864,9 +3864,9 @@ var listingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLang
 	},
 }
 
-var sourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbook = &asciidoc.Document{
+var blocksTestSourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3895,9 +3895,9 @@ var sourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbook = &asci
 	},
 }
 
-var sourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInsideFormalparaElementForDocbook = &asciidoc.Document{
+var blocksTestSourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInsideFormalparaElementForDocbook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -3933,9 +3933,9 @@ var sourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInsideFormalpara
 	},
 }
 
-var canConvertOpenBlock = &asciidoc.Document{
+var blocksTestCanConvertOpenBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -3949,7 +3949,7 @@ var canConvertOpenBlock = &asciidoc.Document{
 					Value: "This is an open block.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -3961,9 +3961,9 @@ var canConvertOpenBlock = &asciidoc.Document{
 	},
 }
 
-var openBlockCanContainAnotherBlock = &asciidoc.Document{
+var blocksTestOpenBlockCanContainAnotherBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -3977,14 +3977,14 @@ var openBlockCanContainAnotherBlock = &asciidoc.Document{
 					Value: "This is an open block.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "It can span multiple lines.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.QuoteBlock{
@@ -4005,23 +4005,25 @@ var openBlockCanContainAnotherBlock = &asciidoc.Document{
 	},
 }
 
-var shouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.Document{
+var blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "Check out that ",
 		},
 		&asciidoc.CrossReference{
-			Set: nil,
-			ID:  "open",
+			AttributeList: nil,
+			Set:           nil,
+			ID:            "open",
+			Format:        0,
 		},
 		&asciidoc.String{
 			Value: "!",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -4046,7 +4048,7 @@ var shouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.Document{
 					Value: "This is an open block.",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -4061,7 +4063,7 @@ var shouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -4071,9 +4073,9 @@ var shouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.Document{
 	},
 }
 
-var shouldTransferIdAndReftextOnOpenParagraphToDocBookOutput = &asciidoc.Document{
+var blocksTestShouldTransferIdAndReftextOnOpenParagraphToDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -4117,9 +4119,9 @@ var shouldTransferIdAndReftextOnOpenParagraphToDocBookOutput = &asciidoc.Documen
 	},
 }
 
-var shouldTransferTitleOnOpenBlockToDocBookOutput = &asciidoc.Document{
+var blocksTestShouldTransferTitleOnOpenBlockToDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -4146,9 +4148,9 @@ var shouldTransferTitleOnOpenBlockToDocBookOutput = &asciidoc.Document{
 	},
 }
 
-var shouldTransferTitleOnOpenParagraphToDocBookOutput = &asciidoc.Document{
+var blocksTestShouldTransferTitleOnOpenParagraphToDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -4172,9 +4174,9 @@ var shouldTransferTitleOnOpenParagraphToDocBookOutput = &asciidoc.Document{
 	},
 }
 
-var shouldTransferRoleOnOpenBlockToDocBookOutput = &asciidoc.Document{
+var blocksTestShouldTransferRoleOnOpenBlockToDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -4212,9 +4214,9 @@ var shouldTransferRoleOnOpenBlockToDocBookOutput = &asciidoc.Document{
 	},
 }
 
-var shouldTransferRoleOnOpenParagraphToDocBookOutput = &asciidoc.Document{
+var blocksTestShouldTransferRoleOnOpenParagraphToDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -4249,9 +4251,9 @@ var shouldTransferRoleOnOpenParagraphToDocBookOutput = &asciidoc.Document{
 	},
 }
 
-var canParseAPassthroughBlock = &asciidoc.Document{
+var blocksTestCanParseAPassthroughBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4267,9 +4269,9 @@ var canParseAPassthroughBlock = &asciidoc.Document{
 	},
 }
 
-var doesNotPerformSubsOnAPassthroughBlockByDefault = &asciidoc.Document{
+var blocksTestDoesNotPerformSubsOnAPassthroughBlockByDefault = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -4280,7 +4282,7 @@ var doesNotPerformSubsOnAPassthroughBlockByDefault = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4298,9 +4300,9 @@ var doesNotPerformSubsOnAPassthroughBlockByDefault = &asciidoc.Document{
 	},
 }
 
-var doesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault = &asciidoc.Document{
+var blocksTestDoesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -4311,7 +4313,7 @@ var doesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault = &asciidoc.Docu
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4342,9 +4344,9 @@ var doesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault = &asciidoc.Docu
 	},
 }
 
-var passthroughBlockHonorsExplicitSubsList = &asciidoc.Document{
+var blocksTestPassthroughBlockHonorsExplicitSubsList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -4355,7 +4357,7 @@ var passthroughBlockHonorsExplicitSubsList = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4382,9 +4384,9 @@ var passthroughBlockHonorsExplicitSubsList = &asciidoc.Document{
 	},
 }
 
-var shouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock = &asciidoc.Document{
+var blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4397,7 +4399,7 @@ var shouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock = &asciidoc.Do
 				"line above",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4416,7 +4418,7 @@ var shouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock = &asciidoc.Do
 				"",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4432,9 +4434,9 @@ var shouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock = &asciidoc.Do
 	},
 }
 
-var shouldNotCrashWhenConvertingStemBlockThatHasNoLines = &asciidoc.Document{
+var blocksTestShouldNotCrashWhenConvertingStemBlockThatHasNoLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4461,9 +4463,9 @@ var shouldNotCrashWhenConvertingStemBlockThatHasNoLines = &asciidoc.Document{
 	},
 }
 
-var shouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines = &asciidoc.Document{
+var blocksTestShouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4492,9 +4494,9 @@ var shouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines = &asciidoc
 	},
 }
 
-var shouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlreadyPresent = &asciidoc.Document{
+var blocksTestShouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlreadyPresent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4523,9 +4525,9 @@ var shouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlreadyPresent =
 	},
 }
 
-var shouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend = &asciidoc.Document{
+var blocksTestShouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4554,9 +4556,9 @@ var shouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend = &asciidoc.Docum
 	},
 }
 
-var shouldSetAutoNumberOptionForLatexmathToNoneByDefault = &asciidoc.Document{
+var blocksTestShouldSetAutoNumberOptionForLatexmathToNoneByDefault = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -4567,7 +4569,7 @@ var shouldSetAutoNumberOptionForLatexmathToNoneByDefault = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4596,9 +4598,9 @@ var shouldSetAutoNumberOptionForLatexmathToNoneByDefault = &asciidoc.Document{
 	},
 }
 
-var shouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone = &asciidoc.Document{
+var blocksTestShouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -4617,7 +4619,7 @@ var shouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone = &asciidoc.D
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4646,9 +4648,9 @@ var shouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone = &asciidoc.D
 	},
 }
 
-var shouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet = &asciidoc.Document{
+var blocksTestShouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -4663,7 +4665,7 @@ var shouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet = &asciidoc.Document
 			Name: "eqnums",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4694,9 +4696,9 @@ var shouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet = &asciidoc.Document
 	},
 }
 
-var shouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll = &asciidoc.Document{
+var blocksTestShouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -4715,7 +4717,7 @@ var shouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll = &asciidoc.Doc
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4744,9 +4746,9 @@ var shouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll = &asciidoc.Doc
 	},
 }
 
-var shouldNotSplitEquationInAsciiMathBlockAtSingleNewline = &asciidoc.Document{
+var blocksTestShouldNotSplitEquationInAsciiMathBlockAtSingleNewline = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4776,9 +4778,9 @@ var shouldNotSplitEquationInAsciiMathBlockAtSingleNewline = &asciidoc.Document{
 	},
 }
 
-var shouldSplitEquationInAsciiMathBlockAtEscapedNewline = &asciidoc.Document{
+var blocksTestShouldSplitEquationInAsciiMathBlockAtEscapedNewline = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4808,9 +4810,9 @@ var shouldSplitEquationInAsciiMathBlockAtEscapedNewline = &asciidoc.Document{
 	},
 }
 
-var shouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines = &asciidoc.Document{
+var blocksTestShouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4841,9 +4843,9 @@ var shouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines = &asciidoc.D
 	},
 }
 
-var shouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBreaks = &asciidoc.Document{
+var blocksTestShouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBreaks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4875,9 +4877,9 @@ var shouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBreaks = &asc
 	},
 }
 
-var shouldAddAsciiMathDelimitersAroundAsciimathBlockContent = &asciidoc.Document{
+var blocksTestShouldAddAsciiMathDelimitersAroundAsciimathBlockContent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4906,9 +4908,9 @@ var shouldAddAsciiMathDelimitersAroundAsciimathBlockContent = &asciidoc.Document
 	},
 }
 
-var shouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlreadyPresent = &asciidoc.Document{
+var blocksTestShouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlreadyPresent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4937,9 +4939,9 @@ var shouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlreadyPresent =
 	},
 }
 
-var shouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIsAvailable = &asciidoc.Document{
+var blocksTestShouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIsAvailable = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4965,7 +4967,7 @@ var shouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIs
 				"x+b/(2a)<+-sqrt((b^2)/(4a^2)-c/a)",
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -4992,9 +4994,9 @@ var shouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIs
 	},
 }
 
-var shouldOutputTitleForLatexmathBlockIfDefined = &asciidoc.Document{
+var blocksTestShouldOutputTitleForLatexmathBlockIfDefined = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -5034,9 +5036,9 @@ var shouldOutputTitleForLatexmathBlockIfDefined = &asciidoc.Document{
 	},
 }
 
-var shouldOutputTitleForAsciimathBlockIfDefined = &asciidoc.Document{
+var blocksTestShouldOutputTitleForAsciimathBlockIfDefined = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -5072,9 +5074,9 @@ var shouldOutputTitleForAsciimathBlockIfDefined = &asciidoc.Document{
 	},
 }
 
-var shouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeIsAsciimathEmptyOrNotSet = &asciidoc.Document{
+var blocksTestShouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeIsAsciimathEmptyOrNotSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -5103,9 +5105,9 @@ var shouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeIsAsciimath
 	},
 }
 
-var shouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeIsLatexmathLatexOrTex = &asciidoc.Document{
+var blocksTestShouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeIsLatexmathLatexOrTex = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -5134,9 +5136,9 @@ var shouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeIsLatexmath
 	},
 }
 
-var shouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes = &asciidoc.Document{
+var blocksTestShouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5147,7 +5149,7 @@ var shouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes = 
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
@@ -5185,9 +5187,9 @@ var shouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes = 
 	},
 }
 
-var shouldNotWarnIfBlockStyleIsUnknown = &asciidoc.Document{
+var blocksTestShouldNotWarnIfBlockStyleIsUnknown = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -5219,9 +5221,9 @@ var shouldNotWarnIfBlockStyleIsUnknown = &asciidoc.Document{
 	},
 }
 
-var shouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled = &asciidoc.Document{
+var blocksTestShouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -5253,9 +5255,9 @@ var shouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled = &asciidoc
 	},
 }
 
-var blockTitleAboveSectionGetsCarriedOverToFirstBlockInSection = &asciidoc.Document{
+var blocksTestBlockTitleAboveSectionGetsCarriedOverToFirstBlockInSection = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -5269,7 +5271,7 @@ var blockTitleAboveSectionGetsCarriedOverToFirstBlockInSection = &asciidoc.Docum
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -5287,9 +5289,9 @@ var blockTitleAboveSectionGetsCarriedOverToFirstBlockInSection = &asciidoc.Docum
 	},
 }
 
-var blockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle = &asciidoc.Document{
+var blocksTestBlockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -5303,7 +5305,7 @@ var blockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle = &asciidoc.
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -5321,9 +5323,9 @@ var blockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle = &asciidoc.
 	},
 }
 
-var blockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPreamble = &asciidoc.Document{
+var blocksTestBlockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPreamble = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5334,7 +5336,7 @@ var blockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPre
 				},
 			},
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
 					Val: asciidoc.Set{
@@ -5345,13 +5347,13 @@ var blockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPre
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -5377,9 +5379,9 @@ var blockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPre
 	},
 }
 
-var shouldApplySubstitutionsToABlockTitleInNormalOrder = &asciidoc.Document{
+var blocksTestShouldApplySubstitutionsToABlockTitleInNormalOrder = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -5415,9 +5417,9 @@ var shouldApplySubstitutionsToABlockTitleInNormalOrder = &asciidoc.Document{
 	},
 }
 
-var emptyAttributeListShouldNotAppearInOutput = &asciidoc.Document{
+var blocksTestEmptyAttributeListShouldNotAppearInOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -5436,9 +5438,9 @@ var emptyAttributeListShouldNotAppearInOutput = &asciidoc.Document{
 	},
 }
 
-var emptyBlockAnchorShouldNotAppearInOutput = &asciidoc.Document{
+var blocksTestEmptyBlockAnchorShouldNotAppearInOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -5461,9 +5463,9 @@ var emptyBlockAnchorShouldNotAppearInOutput = &asciidoc.Document{
 	},
 }
 
-var canConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document{
+var blocksTestCanConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5474,7 +5476,7 @@ var canConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -5516,9 +5518,9 @@ var canConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document{
 	},
 }
 
-var convertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure = &asciidoc.Document{
+var blocksTestConvertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -5560,9 +5562,9 @@ var convertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure = &asciidoc.D
 	},
 }
 
-var insertsFallbackImageForSvgInsideObjectElementUsingSameDimensions = &asciidoc.Document{
+var blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5573,7 +5575,7 @@ var insertsFallbackImageForSvgInsideObjectElementUsingSameDimensions = &asciidoc
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -5624,9 +5626,9 @@ var insertsFallbackImageForSvgInsideObjectElementUsingSameDimensions = &asciidoc
 	},
 }
 
-var detectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
+var blocksTestDetectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5637,7 +5639,7 @@ var detectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -5679,9 +5681,9 @@ var detectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
 	},
 }
 
-var detectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
+var blocksTestDetectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5692,7 +5694,7 @@ var detectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -5743,9 +5745,9 @@ var detectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
 	},
 }
 
-var convertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.Document{
+var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5756,7 +5758,7 @@ var convertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -5798,9 +5800,9 @@ var convertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.Document{
 	},
 }
 
-var shouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = &asciidoc.Document{
+var blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5811,7 +5813,7 @@ var shouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = &asciidoc.
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -5862,9 +5864,9 @@ var shouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = &asciidoc.
 	},
 }
 
-var shouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.Document{
+var blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5875,7 +5877,7 @@ var shouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -5917,9 +5919,9 @@ var shouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.Document{
 	},
 }
 
-var shouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciidoc.Document{
+var blocksTestShouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5930,7 +5932,7 @@ var shouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciidoc.Document
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -5963,9 +5965,9 @@ var shouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciidoc.Document
 	},
 }
 
-var convertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocument = &asciidoc.Document{
+var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocument = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -5980,7 +5982,7 @@ var convertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocumen
 			Name: "data-uri",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6022,9 +6024,9 @@ var convertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocumen
 	},
 }
 
-var shouldNotThrowExceptionIfSvgToInlineIsEmpty = &asciidoc.Document{
+var blocksTestShouldNotThrowExceptionIfSvgToInlineIsEmpty = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6057,9 +6059,9 @@ var shouldNotThrowExceptionIfSvgToInlineIsEmpty = &asciidoc.Document{
 	},
 }
 
-var canConvertBlockImageWithAltTextDefinedInMacroContainingSquareBracket = &asciidoc.Document{
+var blocksTestCanConvertBlockImageWithAltTextDefinedInMacroContainingSquareBracket = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6083,9 +6085,9 @@ var canConvertBlockImageWithAltTextDefinedInMacroContainingSquareBracket = &asci
 	},
 }
 
-var altTextInMacroOverridesAltTextAboveMacro = &asciidoc.Document{
+var blocksTestAltTextInMacroOverridesAltTextAboveMacro = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6118,9 +6120,9 @@ var altTextInMacroOverridesAltTextAboveMacro = &asciidoc.Document{
 	},
 }
 
-var shouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro = &asciidoc.Document{
+var blocksTestShouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6131,7 +6133,7 @@ var shouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro = &asci
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6155,9 +6157,9 @@ var shouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro = &asci
 	},
 }
 
-var shouldSetDirectionCssClassOnImageIfFloatAttributeIsSet = &asciidoc.Document{
+var blocksTestShouldSetDirectionCssClassOnImageIfFloatAttributeIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6190,9 +6192,9 @@ var shouldSetDirectionCssClassOnImageIfFloatAttributeIsSet = &asciidoc.Document{
 	},
 }
 
-var shouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet = &asciidoc.Document{
+var blocksTestShouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6225,9 +6227,9 @@ var shouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet = &asciidoc.Docum
 	},
 }
 
-var styleAttributeIsDroppedFromImageMacro = &asciidoc.Document{
+var blocksTestStyleAttributeIsDroppedFromImageMacro = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6260,9 +6262,9 @@ var styleAttributeIsDroppedFromImageMacro = &asciidoc.Document{
 	},
 }
 
-var shouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified = &asciidoc.Document{
+var blocksTestShouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6295,9 +6297,9 @@ var shouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified = &asciidoc.Do
 	},
 }
 
-var canConvertBlockImageWithLinkToSelf = &asciidoc.Document{
+var blocksTestCanConvertBlockImageWithLinkToSelf = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6308,7 +6310,7 @@ var canConvertBlockImageWithLinkToSelf = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6341,9 +6343,9 @@ var canConvertBlockImageWithLinkToSelf = &asciidoc.Document{
 	},
 }
 
-var addsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow = &asciidoc.Document{
+var blocksTestAddsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6374,9 +6376,9 @@ var addsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow = &asciid
 	},
 }
 
-var canConvertBlockImageWithExplicitCaption = &asciidoc.Document{
+var blocksTestCanConvertBlockImageWithExplicitCaption = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6416,9 +6418,9 @@ var canConvertBlockImageWithExplicitCaption = &asciidoc.Document{
 	},
 }
 
-var canAlignImageInDocBookBackend = &asciidoc.Document{
+var blocksTestCanAlignImageInDocBookBackend = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6429,7 +6431,7 @@ var canAlignImageInDocBookBackend = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6443,9 +6445,9 @@ var canAlignImageInDocBookBackend = &asciidoc.Document{
 	},
 }
 
-var shouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDrop = &asciidoc.Document{
+var blocksTestShouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDrop = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6456,7 +6458,7 @@ var shouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissing
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6473,9 +6475,9 @@ var shouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissing
 	},
 }
 
-var dropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLine = &asciidoc.Document{
+var blocksTestDropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6486,7 +6488,7 @@ var dropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLi
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6500,9 +6502,9 @@ var dropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLi
 	},
 }
 
-var shouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine = &asciidoc.Document{
+var blocksTestShouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6513,7 +6515,7 @@ var shouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine =
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6527,9 +6529,9 @@ var shouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine =
 	},
 }
 
-var droppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDropLine = &asciidoc.Document{
+var blocksTestDroppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDropLine = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6540,7 +6542,7 @@ var droppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDro
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6551,7 +6553,7 @@ var droppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDro
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -6567,9 +6569,9 @@ var droppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDro
 	},
 }
 
-var shouldPassThroughImageThatReferencesUri = &asciidoc.Document{
+var blocksTestShouldPassThroughImageThatReferencesUri = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6580,7 +6582,7 @@ var shouldPassThroughImageThatReferencesUri = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6604,9 +6606,9 @@ var shouldPassThroughImageThatReferencesUri = &asciidoc.Document{
 	},
 }
 
-var shouldEncodeSpacesInImageTargetIfValueIsAUri = &asciidoc.Document{
+var blocksTestShouldEncodeSpacesInImageTargetIfValueIsAUri = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6617,7 +6619,7 @@ var shouldEncodeSpacesInImageTargetIfValueIsAUri = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6641,9 +6643,9 @@ var shouldEncodeSpacesInImageTargetIfValueIsAUri = &asciidoc.Document{
 	},
 }
 
-var embedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet = &asciidoc.Document{
+var blocksTestEmbedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6658,7 +6660,7 @@ var embedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet = &asciidoc.Docu
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6682,9 +6684,9 @@ var embedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet = &asciidoc.Docu
 	},
 }
 
-var embedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg = &asciidoc.Document{
+var blocksTestEmbedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6699,7 +6701,7 @@ var embedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg = &asciidoc.Docu
 			Name: "data-uri",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6732,9 +6734,9 @@ var embedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg = &asciidoc.Docu
 	},
 }
 
-var shouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded = &asciidoc.Document{
+var blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6749,7 +6751,7 @@ var shouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded = &asciido
 			Name: "data-uri",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6791,9 +6793,9 @@ var shouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded = &asciido
 	},
 }
 
-var embedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet = &asciidoc.Document{
+var blocksTestEmbedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6808,7 +6810,7 @@ var embedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet =
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6832,9 +6834,9 @@ var embedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet =
 	},
 }
 
-var embedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensionIsMissing = &asciidoc.Document{
+var blocksTestEmbedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensionIsMissing = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6849,7 +6851,7 @@ var embedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensio
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6873,16 +6875,16 @@ var embedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensio
 	},
 }
 
-var canHandleEmbeddedDataUriImages = &asciidoc.Document{
+var blocksTestCanHandleEmbeddedDataUriImages = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "data-uri",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6906,9 +6908,9 @@ var canHandleEmbeddedDataUriImages = &asciidoc.Document{
 	},
 }
 
-var cleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
+var blocksTestCleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6923,7 +6925,7 @@ var cleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeL
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6947,9 +6949,9 @@ var cleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeL
 	},
 }
 
-var cleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
+var blocksTestCleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -6964,7 +6966,7 @@ var cleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLeve
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -6988,9 +6990,9 @@ var cleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLeve
 	},
 }
 
-var shouldDetectAndConvertVideoMacro = &asciidoc.Document{
+var blocksTestShouldDetectAndConvertVideoMacro = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7001,7 +7003,7 @@ var shouldDetectAndConvertVideoMacro = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7011,9 +7013,9 @@ var shouldDetectAndConvertVideoMacro = &asciidoc.Document{
 	},
 }
 
-var videoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asciidoc.Document{
+var blocksTestVideoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7024,7 +7026,7 @@ var videoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asc
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7045,9 +7047,9 @@ var videoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asc
 	},
 }
 
-var videoMacroShouldOutputCustomHtmlWithIframeForVimeoService = &asciidoc.Document{
+var blocksTestVideoMacroShouldOutputCustomHtmlWithIframeForVimeoService = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7058,7 +7060,7 @@ var videoMacroShouldOutputCustomHtmlWithIframeForVimeoService = &asciidoc.Docume
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7068,9 +7070,9 @@ var videoMacroShouldOutputCustomHtmlWithIframeForVimeoService = &asciidoc.Docume
 	},
 }
 
-var audioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asciidoc.Document{
+var blocksTestAudioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7081,7 +7083,7 @@ var audioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asc
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7102,16 +7104,16 @@ var audioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asc
 	},
 }
 
-var audioMacroShouldHonorAllOptions = &asciidoc.Document{
+var blocksTestAudioMacroShouldHonorAllOptions = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icons",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7140,9 +7142,9 @@ var audioMacroShouldHonorAllOptions = &asciidoc.Document{
 	},
 }
 
-var canResolveIconRelativeToCustomIconsdir = &asciidoc.Document{
+var blocksTestCanResolveIconRelativeToCustomIconsdir = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7157,7 +7159,7 @@ var canResolveIconRelativeToCustomIconsdir = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7186,9 +7188,9 @@ var canResolveIconRelativeToCustomIconsdir = &asciidoc.Document{
 	},
 }
 
-var shouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Document{
+var blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7207,7 +7209,7 @@ var shouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7245,9 +7247,9 @@ var shouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Document{
 	},
 }
 
-var shouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon = &asciidoc.Document{
+var blocksTestShouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7285,9 +7287,9 @@ var shouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon = &asciidoc.D
 	},
 }
 
-var embedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsLessThanSecure = &asciidoc.Document{
+var blocksTestEmbedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsLessThanSecure = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7314,7 +7316,7 @@ var embedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsL
 			Name: "data-uri",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7343,9 +7345,9 @@ var embedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsL
 	},
 }
 
-var shouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet = &asciidoc.Document{
+var blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7372,7 +7374,7 @@ var shouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet = &asci
 			Name: "data-uri",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7410,9 +7412,9 @@ var shouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet = &asci
 	},
 }
 
-var doesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater = &asciidoc.Document{
+var blocksTestDoesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7439,7 +7441,7 @@ var doesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater = &
 			Name: "data-uri",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7468,9 +7470,9 @@ var doesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater = &
 	},
 }
 
-var cleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
+var blocksTestCleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7497,7 +7499,7 @@ var cleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeas
 			Name: "data-uri",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7526,9 +7528,9 @@ var cleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeas
 	},
 }
 
-var shouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont = &asciidoc.Document{
+var blocksTestShouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7539,7 +7541,7 @@ var shouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont =
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7568,9 +7570,9 @@ var shouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont =
 	},
 }
 
-var fontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciidoc.Document{
+var blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7589,7 +7591,7 @@ var fontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciidoc.Document
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7627,9 +7629,9 @@ var fontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciidoc.Document
 	},
 }
 
-var shouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciidoc.Document{
+var blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7656,7 +7658,7 @@ var shouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciidoc.Document
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7669,7 +7671,7 @@ var shouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciidoc.Document
 			},
 			Admonition: 2,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7707,9 +7709,9 @@ var shouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciidoc.Document
 	},
 }
 
-var shouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc.Document{
+var blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -7732,7 +7734,7 @@ var shouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7745,7 +7747,7 @@ var shouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc.Document{
 			},
 			Admonition: 2,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -7783,9 +7785,9 @@ var shouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc.Document{
 	},
 }
 
-var restrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
+var blocksTestRestrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7803,9 +7805,9 @@ var restrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe = &asciid
 	},
 }
 
-var shouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters = &asciidoc.Document{
+var blocksTestShouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7820,7 +7822,7 @@ var shouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters = &asciidoc.Do
 			Value: "````",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7838,9 +7840,9 @@ var shouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters = &asciidoc.Do
 	},
 }
 
-var shouldSupportFencedCodeBlocksWithLanguages = &asciidoc.Document{
+var blocksTestShouldSupportFencedCodeBlocksWithLanguages = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7855,7 +7857,7 @@ var shouldSupportFencedCodeBlocksWithLanguages = &asciidoc.Document{
 			Value: "```",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7873,9 +7875,9 @@ var shouldSupportFencedCodeBlocksWithLanguages = &asciidoc.Document{
 	},
 }
 
-var shouldSupportFencedCodeBlocksWithLanguagesAndNumbering = &asciidoc.Document{
+var blocksTestShouldSupportFencedCodeBlocksWithLanguagesAndNumbering = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7890,7 +7892,7 @@ var shouldSupportFencedCodeBlocksWithLanguagesAndNumbering = &asciidoc.Document{
 			Value: "```",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -7908,9 +7910,9 @@ var shouldSupportFencedCodeBlocksWithLanguagesAndNumbering = &asciidoc.Document{
 	},
 }
 
-var shouldAllowSourceStyleToBeSpecifiedOnLiteralBlock = &asciidoc.Document{
+var blocksTestShouldAllowSourceStyleToBeSpecifiedOnLiteralBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -7939,9 +7941,9 @@ var shouldAllowSourceStyleToBeSpecifiedOnLiteralBlock = &asciidoc.Document{
 	},
 }
 
-var shouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock = &asciidoc.Document{
+var blocksTestShouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -7979,15 +7981,15 @@ var shouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock = &asciidoc.Doc
 	},
 }
 
-var shouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &asciidoc.Document{
+var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
@@ -8014,7 +8016,7 @@ var shouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &asciidoc.D
 							Value: "This article is about stuff.",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8023,13 +8025,13 @@ var shouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &asciidoc.D
 						&asciidoc.NewLine{},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8055,15 +8057,15 @@ var shouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &asciidoc.D
 	},
 }
 
-var shouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle = &asciidoc.Document{
+var blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
@@ -8099,13 +8101,13 @@ var shouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle = &asci
 						&asciidoc.NewLine{},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8131,9 +8133,9 @@ var shouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle = &asci
 	},
 }
 
-var shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.Document{
+var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -8147,7 +8149,7 @@ var shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -8184,9 +8186,9 @@ var shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.Document{
 	},
 }
 
-var shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook = &asciidoc.Document{
+var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -8197,7 +8199,7 @@ var shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook = &asciidoc.Doc
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8226,15 +8228,15 @@ var shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook = &asciidoc.Doc
 	},
 }
 
-var shouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.Document{
+var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
@@ -8261,7 +8263,7 @@ var shouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.Docu
 							Value: "This article is about stuff.",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8281,15 +8283,15 @@ var shouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.Docu
 	},
 }
 
-var shouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Document{
+var blocksTestShouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
@@ -8336,9 +8338,9 @@ var shouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Documen
 	},
 }
 
-var shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook = &asciidoc.Document{
+var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -8352,7 +8354,7 @@ var shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook = &a
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -8389,9 +8391,9 @@ var shouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook = &a
 	},
 }
 
-var shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBook = &asciidoc.Document{
+var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -8402,7 +8404,7 @@ var shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBo
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8431,9 +8433,9 @@ var shouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBo
 	},
 }
 
-var shouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
+var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -8447,7 +8449,7 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -8458,10 +8460,10 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 			},
 			Level: 0,
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
@@ -8488,7 +8490,7 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 							Value: "This is a part intro.",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8497,13 +8499,13 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 						&asciidoc.NewLine{},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8529,9 +8531,9 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 	},
 }
 
-var shouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
+var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -8545,7 +8547,7 @@ var shouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -8556,10 +8558,10 @@ var shouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 			},
 			Level: 0,
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
@@ -8595,13 +8597,13 @@ var shouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 						&asciidoc.NewLine{},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8627,9 +8629,9 @@ var shouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 	},
 }
 
-var shouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
+var blocksTestShouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -8643,7 +8645,7 @@ var shouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -8680,9 +8682,9 @@ var shouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
 	},
 }
 
-var shouldNotAllowPartintroUnlessDoctypeIsBook = &asciidoc.Document{
+var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8711,9 +8713,9 @@ var shouldNotAllowPartintroUnlessDoctypeIsBook = &asciidoc.Document{
 	},
 }
 
-var shouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.Document{
+var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -8727,7 +8729,7 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.D
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -8738,10 +8740,10 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.D
 			},
 			Level: 0,
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
@@ -8768,7 +8770,7 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.D
 							Value: "This is a part intro.",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8777,13 +8779,13 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.D
 						&asciidoc.NewLine{},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8809,9 +8811,9 @@ var shouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.D
 	},
 }
 
-var shouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Document{
+var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -8825,7 +8827,7 @@ var shouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Docu
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -8836,10 +8838,10 @@ var shouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Docu
 			},
 			Level: 0,
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
@@ -8875,13 +8877,13 @@ var shouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Docu
 						&asciidoc.NewLine{},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -8907,9 +8909,9 @@ var shouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Docu
 	},
 }
 
-var shouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &asciidoc.Document{
+var blocksTestShouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -8923,7 +8925,7 @@ var shouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &asciidoc.Docume
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -8960,9 +8962,9 @@ var shouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &asciidoc.Docume
 	},
 }
 
-var shouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook = &asciidoc.Document{
+var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -8991,9 +8993,9 @@ var shouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook = &asciidoc.Doc
 	},
 }
 
-var processorShouldNotCrashIfSubsAreEmpty = &asciidoc.Document{
+var blocksTestProcessorShouldNotCrashIfSubsAreEmpty = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -9019,9 +9021,9 @@ var processorShouldNotCrashIfSubsAreEmpty = &asciidoc.Document{
 	},
 }
 
-var shouldBeAbleToAppendSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
+var blocksTestShouldBeAbleToAppendSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -9032,7 +9034,7 @@ var shouldBeAbleToAppendSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -9058,9 +9060,9 @@ var shouldBeAbleToAppendSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
 	},
 }
 
-var shouldBeAbleToPrependSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
+var blocksTestShouldBeAbleToPrependSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -9071,7 +9073,7 @@ var shouldBeAbleToPrependSubsToDefaultBlockSubstitutionList = &asciidoc.Document
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -9097,9 +9099,9 @@ var shouldBeAbleToPrependSubsToDefaultBlockSubstitutionList = &asciidoc.Document
 	},
 }
 
-var shouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
+var blocksTestShouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -9125,9 +9127,9 @@ var shouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
 	},
 }
 
-var shouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstitutionList = &asciidoc.Document{
+var blocksTestShouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstitutionList = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -9138,7 +9140,7 @@ var shouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstitutionList = &
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.LiteralBlock{
@@ -9164,9 +9166,9 @@ var shouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstitutionList = &
 	},
 }
 
-var shouldBeAbleToSetSubsThenModifyThem = &asciidoc.Document{
+var blocksTestShouldBeAbleToSetSubsThenModifyThem = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -9200,9 +9202,9 @@ var shouldBeAbleToSetSubsThenModifyThem = &asciidoc.Document{
 	},
 }
 
-var shouldNotRecognizeBlockAnchorWithIllegalIdCharacters = &asciidoc.Document{
+var blocksTestShouldNotRecognizeBlockAnchorWithIllegalIdCharacters = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -9222,9 +9224,9 @@ var shouldNotRecognizeBlockAnchorWithIllegalIdCharacters = &asciidoc.Document{
 	},
 }
 
-var shouldNotRecognizeBlockAnchorThatStartsWithDigit = &asciidoc.Document{
+var blocksTestShouldNotRecognizeBlockAnchorThatStartsWithDigit = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -9247,9 +9249,9 @@ var shouldNotRecognizeBlockAnchorThatStartsWithDigit = &asciidoc.Document{
 	},
 }
 
-var shouldRecognizeBlockAnchorThatStartsWithColon = &asciidoc.Document{
+var blocksTestShouldRecognizeBlockAnchorThatStartsWithColon = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
@@ -9275,9 +9277,9 @@ var shouldRecognizeBlockAnchorThatStartsWithColon = &asciidoc.Document{
 	},
 }
 
-var shouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference = &asciidoc.Document{
+var blocksTestShouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -9311,9 +9313,9 @@ var shouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference = &asciidoc.Docu
 	},
 }
 
-var shouldAllowSquareBracketsInBlockReferenceText = &asciidoc.Document{
+var blocksTestShouldAllowSquareBracketsInBlockReferenceText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -9341,9 +9343,9 @@ var shouldAllowSquareBracketsInBlockReferenceText = &asciidoc.Document{
 	},
 }
 
-var shouldAllowCommaInBlockReferenceText = &asciidoc.Document{
+var blocksTestShouldAllowCommaInBlockReferenceText = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
@@ -9377,12 +9379,12 @@ var shouldAllowCommaInBlockReferenceText = &asciidoc.Document{
 	},
 }
 
-var shouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock = &asciidoc.Document{
+var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -9393,21 +9395,23 @@ var shouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "intro paragraph. see ",
 				},
 				&asciidoc.CrossReference{
-					Set: nil,
-					ID:  "free-standing",
+					AttributeList: nil,
+					Set:           nil,
+					ID:            "free-standing",
+					Format:        0,
 				},
 				&asciidoc.String{
 					Value: ".",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.AttributeEntry{
@@ -9418,7 +9422,7 @@ var shouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -9454,7 +9458,7 @@ var shouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock
 					},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -9497,9 +9501,9 @@ var shouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock
 	},
 }
 
-var shouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockReference = &asciidoc.Document{
+var blocksTestShouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockReference = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -9510,7 +9514,7 @@ var shouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockReference = 
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.SidebarBlock{
@@ -9543,9 +9547,9 @@ var shouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockReference = 
 	},
 }
 
-var shouldUseSpecifiedReftextWhenRegisteringBlockReference = &asciidoc.Document{
+var blocksTestShouldUseSpecifiedReftextWhenRegisteringBlockReference = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{

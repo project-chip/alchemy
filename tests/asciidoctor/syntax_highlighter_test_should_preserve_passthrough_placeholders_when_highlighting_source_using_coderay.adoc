@@ -1,0 +1,12 @@
+
+:source-highlighter: coderay
+
+[source,java]
+[subs="specialcharacters,macros,callouts"]
+----
+public class Printer {
+  public static void main(String[] args) {
+    System.pass:quotes[_out_].println("*asterisks* make text pass:quotes[*bold*]");
+  }
+}
+----

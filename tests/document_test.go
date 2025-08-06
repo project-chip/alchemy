@@ -12,178 +12,178 @@ func TestDocument(t *testing.T) {
 
 var documentTests = parseTests{
 
-	{"should be able to disable toc and sectnums in document header in DocBook backend", "asciidoctor/document_test_should_be_able_to_disable_toc_and_sectnums_in_document_header_in_doc_book_backend.adoc", shouldBeAbleToDisableTocAndSectnumsInDocumentHeaderInDocBookBackend, nil},
+	{"should be able to disable toc and sectnums in document header in DocBook backend", "asciidoctor/document_test_should_be_able_to_disable_toc_and_sectnums_in_document_header_in_doc_book_backend.adoc", documentTestShouldBeAbleToDisableTocAndSectnumsInDocumentHeaderInDocBookBackend, nil},
 
-	{"noheader attribute should suppress info element when converting to DocBook", "asciidoctor/document_test_noheader_attribute_should_suppress_info_element_when_converting_to_doc_book.adoc", noheaderAttributeShouldSuppressInfoElementWhenConvertingToDocBook, nil},
+	{"noheader attribute should suppress info element when converting to DocBook", "asciidoctor/document_test_noheader_attribute_should_suppress_info_element_when_converting_to_doc_book.adoc", documentTestNoheaderAttributeShouldSuppressInfoElementWhenConvertingToDocBook, nil},
 
-	{"should be able to disable section numbering using numbered attribute in document header in DocBook backend", "asciidoctor/document_test_should_be_able_to_disable_section_numbering_using_numbered_attribute_in_document_header_in_doc_book_backend.adoc", shouldBeAbleToDisableSectionNumberingUsingNumberedAttributeInDocumentHeaderInDocBookBackend, nil},
+	{"should be able to disable section numbering using numbered attribute in document header in DocBook backend", "asciidoctor/document_test_should_be_able_to_disable_section_numbering_using_numbered_attribute_in_document_header_in_doc_book_backend.adoc", documentTestShouldBeAbleToDisableSectionNumberingUsingNumberedAttributeInDocumentHeaderInDocBookBackend, nil},
 
-	{"convert methods on built-in converter are registered by default", "asciidoctor/document_test_convert_methods_on_built_in_converter_are_registered_by_default.adoc", convertMethodsOnBuiltInConverterAreRegisteredByDefault, nil},
+	{"convert methods on built-in converter are registered by default", "asciidoctor/document_test_convert_methods_on_built_in_converter_are_registered_by_default.adoc", documentTestConvertMethodsOnBuiltInConverterAreRegisteredByDefault, nil},
 
-	{"should not enable compat mode for document with legacy doctitle if compat mode disable by header", "asciidoctor/document_test_should_not_enable_compat_mode_for_document_with_legacy_doctitle_if_compat_mode_disable_by_header.adoc", shouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeDisableByHeader, nil},
+	{"should not enable compat mode for document with legacy doctitle if compat mode disable by header", "asciidoctor/document_test_should_not_enable_compat_mode_for_document_with_legacy_doctitle_if_compat_mode_disable_by_header.adoc", documentTestShouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeDisableByHeader, nil},
 
-	{"should not enable compat mode for document with legacy doctitle if compat mode is locked by API", "asciidoctor/document_test_should_not_enable_compat_mode_for_document_with_legacy_doctitle_if_compat_mode_is_locked_by_api.adoc", shouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeIsLockedByApi, nil},
+	{"should not enable compat mode for document with legacy doctitle if compat mode is locked by API", "asciidoctor/document_test_should_not_enable_compat_mode_for_document_with_legacy_doctitle_if_compat_mode_is_locked_by_api.adoc", documentTestShouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeIsLockedByApi, nil},
 
-	{"should apply max-width to each top-level container", "asciidoctor/document_test_should_apply_max_width_to_each_top_level_container.adoc", shouldApplyMaxWidthToEachTopLevelContainer, nil},
+	{"should apply max-width to each top-level container", "asciidoctor/document_test_should_apply_max_width_to_each_top_level_container.adoc", documentTestShouldApplyMaxWidthToEachTopLevelContainer, nil},
 
-	{"title partition API with default separator", "asciidoctor/document_test_title_partition_api_with_default_separator.adoc", titlePartitionApiWithDefaultSeparator, nil},
+	{"title partition API with default separator", "asciidoctor/document_test_title_partition_api_with_default_separator.adoc", documentTestTitlePartitionApiWithDefaultSeparator, nil},
 
-	{"document with subtitle and custom separator", "asciidoctor/document_test_document_with_subtitle_and_custom_separator.adoc", documentWithSubtitleAndCustomSeparator, nil},
+	{"document with subtitle and custom separator", "asciidoctor/document_test_document_with_subtitle_and_custom_separator.adoc", documentTestDocumentWithSubtitleAndCustomSeparator, nil},
 
-	{"should not honor custom separator for doctitle if attribute is locked by API", "asciidoctor/document_test_should_not_honor_custom_separator_for_doctitle_if_attribute_is_locked_by_api.adoc", shouldNotHonorCustomSeparatorForDoctitleIfAttributeIsLockedByApi, nil},
+	{"should not honor custom separator for doctitle if attribute is locked by API", "asciidoctor/document_test_should_not_honor_custom_separator_for_doctitle_if_attribute_is_locked_by_api.adoc", documentTestShouldNotHonorCustomSeparatorForDoctitleIfAttributeIsLockedByApi, nil},
 
-	{"document with doctitle defined as attribute entry", "asciidoctor/document_test_document_with_doctitle_defined_as_attribute_entry.adoc", documentWithDoctitleDefinedAsAttributeEntry, nil},
+	{"document with doctitle defined as attribute entry", "asciidoctor/document_test_document_with_doctitle_defined_as_attribute_entry.adoc", documentTestDocumentWithDoctitleDefinedAsAttributeEntry, nil},
 
-	{"document with doctitle defined as attribute entry followed by block with title", "asciidoctor/document_test_document_with_doctitle_defined_as_attribute_entry_followed_by_block_with_title.adoc", documentWithDoctitleDefinedAsAttributeEntryFollowedByBlockWithTitle, nil},
+	{"document with doctitle defined as attribute entry followed by block with title", "asciidoctor/document_test_document_with_doctitle_defined_as_attribute_entry_followed_by_block_with_title.adoc", documentTestDocumentWithDoctitleDefinedAsAttributeEntryFollowedByBlockWithTitle, nil},
 
-	{"document with title attribute entry overrides doctitle", "asciidoctor/document_test_document_with_title_attribute_entry_overrides_doctitle.adoc", documentWithTitleAttributeEntryOverridesDoctitle, nil},
+	{"document with title attribute entry overrides doctitle", "asciidoctor/document_test_document_with_title_attribute_entry_overrides_doctitle.adoc", documentTestDocumentWithTitleAttributeEntryOverridesDoctitle, nil},
 
-	{"document with blank title attribute entry overrides doctitle", "asciidoctor/document_test_document_with_blank_title_attribute_entry_overrides_doctitle.adoc", documentWithBlankTitleAttributeEntryOverridesDoctitle, nil},
+	{"document with blank title attribute entry overrides doctitle", "asciidoctor/document_test_document_with_blank_title_attribute_entry_overrides_doctitle.adoc", documentTestDocumentWithBlankTitleAttributeEntryOverridesDoctitle, nil},
 
-	{"document header can reference intrinsic doctitle attribute", "asciidoctor/document_test_document_header_can_reference_intrinsic_doctitle_attribute.adoc", documentHeaderCanReferenceIntrinsicDoctitleAttribute, nil},
+	{"document header can reference intrinsic doctitle attribute", "asciidoctor/document_test_document_header_can_reference_intrinsic_doctitle_attribute.adoc", documentTestDocumentHeaderCanReferenceIntrinsicDoctitleAttribute, nil},
 
-	{"document with title attribute entry overrides doctitle attribute entry", "asciidoctor/document_test_document_with_title_attribute_entry_overrides_doctitle_attribute_entry.adoc", documentWithTitleAttributeEntryOverridesDoctitleAttributeEntry, nil},
+	{"document with title attribute entry overrides doctitle attribute entry", "asciidoctor/document_test_document_with_title_attribute_entry_overrides_doctitle_attribute_entry.adoc", documentTestDocumentWithTitleAttributeEntryOverridesDoctitleAttributeEntry, nil},
 
-	{"document with doctitle attribute entry overrides implicit doctitle", "asciidoctor/document_test_document_with_doctitle_attribute_entry_overrides_implicit_doctitle.adoc", documentWithDoctitleAttributeEntryOverridesImplicitDoctitle, nil},
+	{"document with doctitle attribute entry overrides implicit doctitle", "asciidoctor/document_test_document_with_doctitle_attribute_entry_overrides_implicit_doctitle.adoc", documentTestDocumentWithDoctitleAttributeEntryOverridesImplicitDoctitle, nil},
 
-	{"doctitle attribute entry above header overrides implicit doctitle", "asciidoctor/document_test_doctitle_attribute_entry_above_header_overrides_implicit_doctitle.adoc", doctitleAttributeEntryAboveHeaderOverridesImplicitDoctitle, nil},
+	{"doctitle attribute entry above header overrides implicit doctitle", "asciidoctor/document_test_doctitle_attribute_entry_above_header_overrides_implicit_doctitle.adoc", documentTestDoctitleAttributeEntryAboveHeaderOverridesImplicitDoctitle, nil},
 
-	{"should apply header substitutions to value of the doctitle attribute assigned from implicit doctitle", "asciidoctor/document_test_should_apply_header_substitutions_to_value_of_the_doctitle_attribute_assigned_from_implicit_doctitle.adoc", shouldApplyHeaderSubstitutionsToValueOfTheDoctitleAttributeAssignedFromImplicitDoctitle, nil},
+	{"should apply header substitutions to value of the doctitle attribute assigned from implicit doctitle", "asciidoctor/document_test_should_apply_header_substitutions_to_value_of_the_doctitle_attribute_assigned_from_implicit_doctitle.adoc", documentTestShouldApplyHeaderSubstitutionsToValueOfTheDoctitleAttributeAssignedFromImplicitDoctitle, nil},
 
-	{"should substitute attribute reference in implicit document title for attribute defined earlier in header", "asciidoctor/document_test_should_substitute_attribute_reference_in_implicit_document_title_for_attribute_defined_earlier_in_header.adoc", shouldSubstituteAttributeReferenceInImplicitDocumentTitleForAttributeDefinedEarlierInHeader, nil},
+	{"should substitute attribute reference in implicit document title for attribute defined earlier in header", "asciidoctor/document_test_should_substitute_attribute_reference_in_implicit_document_title_for_attribute_defined_earlier_in_header.adoc", documentTestShouldSubstituteAttributeReferenceInImplicitDocumentTitleForAttributeDefinedEarlierInHeader, nil},
 
-	{"should not warn if implicit document title contains attribute reference for attribute defined later in header", "asciidoctor/document_test_should_not_warn_if_implicit_document_title_contains_attribute_reference_for_attribute_defined_later_in_header.adoc", shouldNotWarnIfImplicitDocumentTitleContainsAttributeReferenceForAttributeDefinedLaterInHeader, nil},
+	{"should not warn if implicit document title contains attribute reference for attribute defined later in header", "asciidoctor/document_test_should_not_warn_if_implicit_document_title_contains_attribute_reference_for_attribute_defined_later_in_header.adoc", documentTestShouldNotWarnIfImplicitDocumentTitleContainsAttributeReferenceForAttributeDefinedLaterInHeader, nil},
 
-	{"should recognize document title when preceded by blank lines", "asciidoctor/document_test_should_recognize_document_title_when_preceded_by_blank_lines.adoc", shouldRecognizeDocumentTitleWhenPrecededByBlankLines, nil},
+	{"should recognize document title when preceded by blank lines", "asciidoctor/document_test_should_recognize_document_title_when_preceded_by_blank_lines.adoc", documentTestShouldRecognizeDocumentTitleWhenPrecededByBlankLines, nil},
 
-	{"should recognize document title when preceded by blank lines introduced by a preprocessor conditional", "asciidoctor/document_test_should_recognize_document_title_when_preceded_by_blank_lines_introduced_by_a_preprocessor_conditional.adoc", shouldRecognizeDocumentTitleWhenPrecededByBlankLinesIntroducedByAPreprocessorConditional, nil},
+	{"should recognize document title when preceded by blank lines introduced by a preprocessor conditional", "asciidoctor/document_test_should_recognize_document_title_when_preceded_by_blank_lines_introduced_by_a_preprocessor_conditional.adoc", documentTestShouldRecognizeDocumentTitleWhenPrecededByBlankLinesIntroducedByAPreprocessorConditional, nil},
 
-	{"should recognize document title when preceded by blank lines after an attribute entry", "asciidoctor/document_test_should_recognize_document_title_when_preceded_by_blank_lines_after_an_attribute_entry.adoc", shouldRecognizeDocumentTitleWhenPrecededByBlankLinesAfterAnAttributeEntry, nil},
+	{"should recognize document title when preceded by blank lines after an attribute entry", "asciidoctor/document_test_should_recognize_document_title_when_preceded_by_blank_lines_after_an_attribute_entry.adoc", documentTestShouldRecognizeDocumentTitleWhenPrecededByBlankLinesAfterAnAttributeEntry, nil},
 
-	{"should recognize document title in include file when preceded by blank lines", "asciidoctor/document_test_should_recognize_document_title_in_include_file_when_preceded_by_blank_lines.adoc", shouldRecognizeDocumentTitleInIncludeFileWhenPrecededByBlankLines, nil},
+	{"should recognize document title in include file when preceded by blank lines", "asciidoctor/document_test_should_recognize_document_title_in_include_file_when_preceded_by_blank_lines.adoc", documentTestShouldRecognizeDocumentTitleInIncludeFileWhenPrecededByBlankLines, nil},
 
-	{"should include specified lines even when leading lines are skipped", "asciidoctor/document_test_should_include_specified_lines_even_when_leading_lines_are_skipped.adoc", shouldIncludeSpecifiedLinesEvenWhenLeadingLinesAreSkipped, nil},
+	{"should include specified lines even when leading lines are skipped", "asciidoctor/document_test_should_include_specified_lines_even_when_leading_lines_are_skipped.adoc", documentTestShouldIncludeSpecifiedLinesEvenWhenLeadingLinesAreSkipped, nil},
 
-	{"document with multiline attribute entry but only one line should not crash", "asciidoctor/document_test_document_with_multiline_attribute_entry_but_only_one_line_should_not_crash.adoc", documentWithMultilineAttributeEntryButOnlyOneLineShouldNotCrash, nil},
+	{"document with multiline attribute entry but only one line should not crash", "asciidoctor/document_test_document_with_multiline_attribute_entry_but_only_one_line_should_not_crash.adoc", documentTestDocumentWithMultilineAttributeEntryButOnlyOneLineShouldNotCrash, nil},
 
-	{"should not choke on empty source", "asciidoctor/document_test_should_not_choke_on_empty_source.adoc", shouldNotChokeOnEmptySource, nil},
+	{"should not choke on empty source", "asciidoctor/document_test_should_not_choke_on_empty_source.adoc", documentTestShouldNotChokeOnEmptySource, nil},
 
-	{"should parse revision line if date is empty", "asciidoctor/document_test_should_parse_revision_line_if_date_is_empty.adoc", shouldParseRevisionLineIfDateIsEmpty, nil},
+	{"should parse revision line if date is empty", "asciidoctor/document_test_should_parse_revision_line_if_date_is_empty.adoc", documentTestShouldParseRevisionLineIfDateIsEmpty, nil},
 
-	{"should include revision history in DocBook output if revdate and revnumber is set", "asciidoctor/document_test_should_include_revision_history_in_doc_book_output_if_revdate_and_revnumber_is_set.adoc", shouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevnumberIsSet, nil},
+	{"should include revision history in DocBook output if revdate and revnumber is set", "asciidoctor/document_test_should_include_revision_history_in_doc_book_output_if_revdate_and_revnumber_is_set.adoc", documentTestShouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevnumberIsSet, nil},
 
-	{"should include revision history in DocBook output if revdate and revremark is set", "asciidoctor/document_test_should_include_revision_history_in_doc_book_output_if_revdate_and_revremark_is_set.adoc", shouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevremarkIsSet, nil},
+	{"should include revision history in DocBook output if revdate and revremark is set", "asciidoctor/document_test_should_include_revision_history_in_doc_book_output_if_revdate_and_revremark_is_set.adoc", documentTestShouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevremarkIsSet, nil},
 
-	{"should not include revision history in DocBook output if revdate is not set", "asciidoctor/document_test_should_not_include_revision_history_in_doc_book_output_if_revdate_is_not_set.adoc", shouldNotIncludeRevisionHistoryInDocBookOutputIfRevdateIsNotSet, nil},
+	{"should not include revision history in DocBook output if revdate is not set", "asciidoctor/document_test_should_not_include_revision_history_in_doc_book_output_if_revdate_is_not_set.adoc", documentTestShouldNotIncludeRevisionHistoryInDocBookOutputIfRevdateIsNotSet, nil},
 
-	{"with metadata to DocBook 5", "asciidoctor/document_test_with_metadata_to_doc_book_5.adoc", withMetadataToDocBook5, nil},
+	{"with metadata to DocBook 5", "asciidoctor/document_test_with_metadata_to_doc_book_5.adoc", documentTestWithMetadataToDocBook5, nil},
 
-	{"with document ID to Docbook 5", "asciidoctor/document_test_with_document_id_to_docbook_5.adoc", withDocumentIdToDocbook5, nil},
+	{"with document ID to Docbook 5", "asciidoctor/document_test_with_document_id_to_docbook_5.adoc", documentTestWithDocumentIdToDocbook5, nil},
 
-	{"with author defined using attribute entry to DocBook", "asciidoctor/document_test_with_author_defined_using_attribute_entry_to_doc_book.adoc", withAuthorDefinedUsingAttributeEntryToDocBook, nil},
+	{"with author defined using attribute entry to DocBook", "asciidoctor/document_test_with_author_defined_using_attribute_entry_to_doc_book.adoc", documentTestWithAuthorDefinedUsingAttributeEntryToDocBook, nil},
 
-	{"should substitute replacements in author names in HTML output", "asciidoctor/document_test_should_substitute_replacements_in_author_names_in_html_output.adoc", shouldSubstituteReplacementsInAuthorNamesInHtmlOutput, nil},
+	{"should substitute replacements in author names in HTML output", "asciidoctor/document_test_should_substitute_replacements_in_author_names_in_html_output.adoc", documentTestShouldSubstituteReplacementsInAuthorNamesInHtmlOutput, nil},
 
-	{"should substitute replacements in author names in DocBook output", "asciidoctor/document_test_should_substitute_replacements_in_author_names_in_doc_book_output.adoc", shouldSubstituteReplacementsInAuthorNamesInDocBookOutput, nil},
+	{"should substitute replacements in author names in DocBook output", "asciidoctor/document_test_should_substitute_replacements_in_author_names_in_doc_book_output.adoc", documentTestShouldSubstituteReplacementsInAuthorNamesInDocBookOutput, nil},
 
-	{"should sanitize content of HTML meta authors tag", "asciidoctor/document_test_should_sanitize_content_of_html_meta_authors_tag.adoc", shouldSanitizeContentOfHtmlMetaAuthorsTag, nil},
+	{"should sanitize content of HTML meta authors tag", "asciidoctor/document_test_should_sanitize_content_of_html_meta_authors_tag.adoc", documentTestShouldSanitizeContentOfHtmlMetaAuthorsTag, nil},
 
-	{"should not double escape ampersand in author attribute", "asciidoctor/document_test_should_not_double_escape_ampersand_in_author_attribute.adoc", shouldNotDoubleEscapeAmpersandInAuthorAttribute, nil},
+	{"should not double escape ampersand in author attribute", "asciidoctor/document_test_should_not_double_escape_ampersand_in_author_attribute.adoc", documentTestShouldNotDoubleEscapeAmpersandInAuthorAttribute, nil},
 
-	{"should include multiple authors in HTML output", "asciidoctor/document_test_should_include_multiple_authors_in_html_output.adoc", shouldIncludeMultipleAuthorsInHtmlOutput, nil},
+	{"should include multiple authors in HTML output", "asciidoctor/document_test_should_include_multiple_authors_in_html_output.adoc", documentTestShouldIncludeMultipleAuthorsInHtmlOutput, nil},
 
-	{"should create authorgroup in DocBook when multiple authors", "asciidoctor/document_test_should_create_authorgroup_in_doc_book_when_multiple_authors.adoc", shouldCreateAuthorgroupInDocBookWhenMultipleAuthors, nil},
+	{"should create authorgroup in DocBook when multiple authors", "asciidoctor/document_test_should_create_authorgroup_in_doc_book_when_multiple_authors.adoc", documentTestShouldCreateAuthorgroupInDocBookWhenMultipleAuthors, nil},
 
-	{"should process author defined by attribute when implicit doctitle is absent", "asciidoctor/document_test_should_process_author_defined_by_attribute_when_implicit_doctitle_is_absent.adoc", shouldProcessAuthorDefinedByAttributeWhenImplicitDoctitleIsAbsent, nil},
+	{"should process author defined by attribute when implicit doctitle is absent", "asciidoctor/document_test_should_process_author_defined_by_attribute_when_implicit_doctitle_is_absent.adoc", documentTestShouldProcessAuthorDefinedByAttributeWhenImplicitDoctitleIsAbsent, nil},
 
-	{"should process author and authorinitials defined by attribute when implicit doctitle is absent", "asciidoctor/document_test_should_process_author_and_authorinitials_defined_by_attribute_when_implicit_doctitle_is_absent.adoc", shouldProcessAuthorAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIsAbsent, nil},
+	{"should process author and authorinitials defined by attribute when implicit doctitle is absent", "asciidoctor/document_test_should_process_author_and_authorinitials_defined_by_attribute_when_implicit_doctitle_is_absent.adoc", documentTestShouldProcessAuthorAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIsAbsent, nil},
 
-	{"should process authors defined by attribute when implicit doctitle is absent", "asciidoctor/document_test_should_process_authors_defined_by_attribute_when_implicit_doctitle_is_absent.adoc", shouldProcessAuthorsDefinedByAttributeWhenImplicitDoctitleIsAbsent, nil},
+	{"should process authors defined by attribute when implicit doctitle is absent", "asciidoctor/document_test_should_process_authors_defined_by_attribute_when_implicit_doctitle_is_absent.adoc", documentTestShouldProcessAuthorsDefinedByAttributeWhenImplicitDoctitleIsAbsent, nil},
 
-	{"should process authors and authorinitials defined by attribute when implicit doctitle is absent", "asciidoctor/document_test_should_process_authors_and_authorinitials_defined_by_attribute_when_implicit_doctitle_is_absent.adoc", shouldProcessAuthorsAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIsAbsent, nil},
+	{"should process authors and authorinitials defined by attribute when implicit doctitle is absent", "asciidoctor/document_test_should_process_authors_and_authorinitials_defined_by_attribute_when_implicit_doctitle_is_absent.adoc", documentTestShouldProcessAuthorsAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIsAbsent, nil},
 
-	{"should set authorcount to 0 if document has no header", "asciidoctor/document_test_should_set_authorcount_to_0_if_document_has_no_header.adoc", shouldSetAuthorcountTo0IfDocumentHasNoHeader, nil},
+	{"should set authorcount to 0 if document has no header", "asciidoctor/document_test_should_set_authorcount_to_0_if_document_has_no_header.adoc", documentTestShouldSetAuthorcountTo0IfDocumentHasNoHeader, nil},
 
-	{"should set authorcount to 0 if author not set by attribute and document starts with level-0 section with style", "asciidoctor/document_test_should_set_authorcount_to_0_if_author_not_set_by_attribute_and_document_starts_with_level_0_section_with_style.adoc", shouldSetAuthorcountTo0IfAuthorNotSetByAttributeAndDocumentStartsWithLevel0SectionWithStyle, nil},
+	{"should set authorcount to 0 if author not set by attribute and document starts with level-0 section with style", "asciidoctor/document_test_should_set_authorcount_to_0_if_author_not_set_by_attribute_and_document_starts_with_level_0_section_with_style.adoc", documentTestShouldSetAuthorcountTo0IfAuthorNotSetByAttributeAndDocumentStartsWithLevel0SectionWithStyle, nil},
 
-	{"with author defined by indexed attribute name", "asciidoctor/document_test_with_author_defined_by_indexed_attribute_name.adoc", withAuthorDefinedByIndexedAttributeName, nil},
+	{"with author defined by indexed attribute name", "asciidoctor/document_test_with_author_defined_by_indexed_attribute_name.adoc", documentTestWithAuthorDefinedByIndexedAttributeName, nil},
 
-	{"with authors defined using attribute entry to DocBook", "asciidoctor/document_test_with_authors_defined_using_attribute_entry_to_doc_book.adoc", withAuthorsDefinedUsingAttributeEntryToDocBook, nil},
+	{"with authors defined using attribute entry to DocBook", "asciidoctor/document_test_with_authors_defined_using_attribute_entry_to_doc_book.adoc", documentTestWithAuthorsDefinedUsingAttributeEntryToDocBook, nil},
 
-	{"should populate copyright element in DocBook output if copyright attribute is defined", "asciidoctor/document_test_should_populate_copyright_element_in_doc_book_output_if_copyright_attribute_is_defined.adoc", shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefined, nil},
+	{"should populate copyright element in DocBook output if copyright attribute is defined", "asciidoctor/document_test_should_populate_copyright_element_in_doc_book_output_if_copyright_attribute_is_defined.adoc", documentTestShouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefined, nil},
 
-	{"should populate copyright element in DocBook output if copyright attribute is defined with year", "asciidoctor/document_test_should_populate_copyright_element_in_doc_book_output_if_copyright_attribute_is_defined_with_year.adoc", shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWithYear, nil},
+	{"should populate copyright element in DocBook output if copyright attribute is defined with year", "asciidoctor/document_test_should_populate_copyright_element_in_doc_book_output_if_copyright_attribute_is_defined_with_year.adoc", documentTestShouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWithYear, nil},
 
-	{"should populate copyright element in DocBook output if copyright attribute is defined with year range", "asciidoctor/document_test_should_populate_copyright_element_in_doc_book_output_if_copyright_attribute_is_defined_with_year_range.adoc", shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWithYearRange, nil},
+	{"should populate copyright element in DocBook output if copyright attribute is defined with year range", "asciidoctor/document_test_should_populate_copyright_element_in_doc_book_output_if_copyright_attribute_is_defined_with_year_range.adoc", documentTestShouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWithYearRange, nil},
 
-	{"with header footer", "asciidoctor/document_test_with_header_footer.adoc", withHeaderFooter, nil},
+	{"with header footer", "asciidoctor/document_test_with_header_footer.adoc", documentTestWithHeaderFooter, nil},
 
-	{"can disable last updated in footer", "asciidoctor/document_test_can_disable_last_updated_in_footer.adoc", canDisableLastUpdatedInFooter, nil},
+	{"can disable last updated in footer", "asciidoctor/document_test_can_disable_last_updated_in_footer.adoc", documentTestCanDisableLastUpdatedInFooter, nil},
 
-	{"parse header only", "asciidoctor/document_test_parse_header_only.adoc", parseHeaderOnly, nil},
+	{"parse header only", "asciidoctor/document_test_parse_header_only.adoc", documentTestParseHeaderOnly, nil},
 
-	{"should parse header only when docytpe is manpage", "asciidoctor/document_test_should_parse_header_only_when_docytpe_is_manpage.adoc", shouldParseHeaderOnlyWhenDocytpeIsManpage, nil},
+	{"should parse header only when docytpe is manpage", "asciidoctor/document_test_should_parse_header_only_when_docytpe_is_manpage.adoc", documentTestShouldParseHeaderOnlyWhenDocytpeIsManpage, nil},
 
-	{"should not warn when parsing header only when docytpe is manpage and body is empty", "asciidoctor/document_test_should_not_warn_when_parsing_header_only_when_docytpe_is_manpage_and_body_is_empty.adoc", shouldNotWarnWhenParsingHeaderOnlyWhenDocytpeIsManpageAndBodyIsEmpty, nil},
+	{"should not warn when parsing header only when docytpe is manpage and body is empty", "asciidoctor/document_test_should_not_warn_when_parsing_header_only_when_docytpe_is_manpage_and_body_is_empty.adoc", documentTestShouldNotWarnWhenParsingHeaderOnlyWhenDocytpeIsManpageAndBodyIsEmpty, nil},
 
-	{"outputs footnotes in footer", "asciidoctor/document_test_outputs_footnotes_in_footer.adoc", outputsFootnotesInFooter, nil},
+	{"outputs footnotes in footer", "asciidoctor/document_test_outputs_footnotes_in_footer.adoc", documentTestOutputsFootnotesInFooter, nil},
 
-	{"outputs footnotes block in embedded document by default", "asciidoctor/document_test_outputs_footnotes_block_in_embedded_document_by_default.adoc", outputsFootnotesBlockInEmbeddedDocumentByDefault, nil},
+	{"outputs footnotes block in embedded document by default", "asciidoctor/document_test_outputs_footnotes_block_in_embedded_document_by_default.adoc", documentTestOutputsFootnotesBlockInEmbeddedDocumentByDefault, nil},
 
-	{"should return empty :ids table", "asciidoctor/document_test_should_return_empty_ids_table.adoc", shouldReturnEmptyidsTable, nil},
+	{"should return empty :ids table", "asciidoctor/document_test_should_return_empty_ids_table.adoc", documentTestShouldReturnEmptyidsTable, nil},
 
-	{"honor htmlsyntax attribute in document header if followed by backend attribute", "asciidoctor/document_test_honor_htmlsyntax_attribute_in_document_header_if_followed_by_backend_attribute.adoc", honorHtmlsyntaxAttributeInDocumentHeaderIfFollowedByBackendAttribute, nil},
+	{"honor htmlsyntax attribute in document header if followed by backend attribute", "asciidoctor/document_test_honor_htmlsyntax_attribute_in_document_header_if_followed_by_backend_attribute.adoc", documentTestHonorHtmlsyntaxAttributeInDocumentHeaderIfFollowedByBackendAttribute, nil},
 
-	{"does not honor htmlsyntax attribute in document header if not followed by backend attribute", "asciidoctor/document_test_does_not_honor_htmlsyntax_attribute_in_document_header_if_not_followed_by_backend_attribute.adoc", doesNotHonorHtmlsyntaxAttributeInDocumentHeaderIfNotFollowedByBackendAttribute, nil},
+	{"does not honor htmlsyntax attribute in document header if not followed by backend attribute", "asciidoctor/document_test_does_not_honor_htmlsyntax_attribute_in_document_header_if_not_followed_by_backend_attribute.adoc", documentTestDoesNotHonorHtmlsyntaxAttributeInDocumentHeaderIfNotFollowedByBackendAttribute, nil},
 
-	{"should close all short tags when htmlsyntax is xml", "asciidoctor/document_test_should_close_all_short_tags_when_htmlsyntax_is_xml.adoc", shouldCloseAllShortTagsWhenHtmlsyntaxIsXml, nil},
+	{"should close all short tags when htmlsyntax is xml", "asciidoctor/document_test_should_close_all_short_tags_when_htmlsyntax_is_xml.adoc", documentTestShouldCloseAllShortTagsWhenHtmlsyntaxIsXml, nil},
 
-	{"xhtml backend should emit elements in proper namespace", "asciidoctor/document_test_xhtml_backend_should_emit_elements_in_proper_namespace.adoc", xhtmlBackendShouldEmitElementsInProperNamespace, nil},
+	{"xhtml backend should emit elements in proper namespace", "asciidoctor/document_test_xhtml_backend_should_emit_elements_in_proper_namespace.adoc", documentTestXhtmlBackendShouldEmitElementsInProperNamespace, nil},
 
-	{"should be able to set doctype to article when converting to DocBook", "asciidoctor/document_test_should_be_able_to_set_doctype_to_article_when_converting_to_doc_book.adoc", shouldBeAbleToSetDoctypeToArticleWhenConvertingToDocBook, nil},
+	{"should be able to set doctype to article when converting to DocBook", "asciidoctor/document_test_should_be_able_to_set_doctype_to_article_when_converting_to_doc_book.adoc", documentTestShouldBeAbleToSetDoctypeToArticleWhenConvertingToDocBook, nil},
 
-	{"should set doctype to article by default for document with no title when converting to DocBook", "asciidoctor/document_test_should_set_doctype_to_article_by_default_for_document_with_no_title_when_converting_to_doc_book.adoc", shouldSetDoctypeToArticleByDefaultForDocumentWithNoTitleWhenConvertingToDocBook, nil},
+	{"should set doctype to article by default for document with no title when converting to DocBook", "asciidoctor/document_test_should_set_doctype_to_article_by_default_for_document_with_no_title_when_converting_to_doc_book.adoc", documentTestShouldSetDoctypeToArticleByDefaultForDocumentWithNoTitleWhenConvertingToDocBook, nil},
 
-	{"should output non-breaking space for source and manual in docbook manpage output if absent from source", "asciidoctor/document_test_should_output_non_breaking_space_for_source_and_manual_in_docbook_manpage_output_if_absent_from_source.adoc", shouldOutputNonBreakingSpaceForSourceAndManualInDocbookManpageOutputIfAbsentFromSource, nil},
+	{"should output non-breaking space for source and manual in docbook manpage output if absent from source", "asciidoctor/document_test_should_output_non_breaking_space_for_source_and_manual_in_docbook_manpage_output_if_absent_from_source.adoc", documentTestShouldOutputNonBreakingSpaceForSourceAndManualInDocbookManpageOutputIfAbsentFromSource, nil},
 
-	{"should apply replacements substitution to value of mantitle attribute used in DocBook output", "asciidoctor/document_test_should_apply_replacements_substitution_to_value_of_mantitle_attribute_used_in_doc_book_output.adoc", shouldApplyReplacementsSubstitutionToValueOfMantitleAttributeUsedInDocBookOutput, nil},
+	{"should apply replacements substitution to value of mantitle attribute used in DocBook output", "asciidoctor/document_test_should_apply_replacements_substitution_to_value_of_mantitle_attribute_used_in_doc_book_output.adoc", documentTestShouldApplyReplacementsSubstitutionToValueOfMantitleAttributeUsedInDocBookOutput, nil},
 
-	{"should be able to set doctype to book when converting to DocBook", "asciidoctor/document_test_should_be_able_to_set_doctype_to_book_when_converting_to_doc_book.adoc", shouldBeAbleToSetDoctypeToBookWhenConvertingToDocBook, nil},
+	{"should be able to set doctype to book when converting to DocBook", "asciidoctor/document_test_should_be_able_to_set_doctype_to_book_when_converting_to_doc_book.adoc", documentTestShouldBeAbleToSetDoctypeToBookWhenConvertingToDocBook, nil},
 
-	{"should be able to set doctype to book for document with no title when converting to DocBook", "asciidoctor/document_test_should_be_able_to_set_doctype_to_book_for_document_with_no_title_when_converting_to_doc_book.adoc", shouldBeAbleToSetDoctypeToBookForDocumentWithNoTitleWhenConvertingToDocBook, nil},
+	{"should be able to set doctype to book for document with no title when converting to DocBook", "asciidoctor/document_test_should_be_able_to_set_doctype_to_book_for_document_with_no_title_when_converting_to_doc_book.adoc", documentTestShouldBeAbleToSetDoctypeToBookForDocumentWithNoTitleWhenConvertingToDocBook, nil},
 
-	{"adds a front and back cover image to DocBook 5 when doctype is book", "asciidoctor/document_test_adds_a_front_and_back_cover_image_to_doc_book_5_when_doctype_is_book.adoc", addsAFrontAndBackCoverImageToDocBook5WhenDoctypeIsBook, nil},
+	{"adds a front and back cover image to DocBook 5 when doctype is book", "asciidoctor/document_test_adds_a_front_and_back_cover_image_to_doc_book_5_when_doctype_is_book.adoc", documentTestAddsAFrontAndBackCoverImageToDocBook5WhenDoctypeIsBook, nil},
 
-	{"should be able to set backend using :backend option key", "asciidoctor/document_test_should_be_able_to_set_backend_using_backend_option_key.adoc", shouldBeAbleToSetBackendUsingbackendOptionKey, nil},
+	{"should be able to set backend using :backend option key", "asciidoctor/document_test_should_be_able_to_set_backend_using_backend_option_key.adoc", documentTestShouldBeAbleToSetBackendUsingbackendOptionKey, nil},
 
-	{"attribute entry can appear immediately after document title", "asciidoctor/document_test_attribute_entry_can_appear_immediately_after_document_title.adoc", attributeEntryCanAppearImmediatelyAfterDocumentTitle, nil},
+	{"attribute entry can appear immediately after document title", "asciidoctor/document_test_attribute_entry_can_appear_immediately_after_document_title.adoc", documentTestAttributeEntryCanAppearImmediatelyAfterDocumentTitle, nil},
 
-	{"attribute entry can appear before author line under document title", "asciidoctor/document_test_attribute_entry_can_appear_before_author_line_under_document_title.adoc", attributeEntryCanAppearBeforeAuthorLineUnderDocumentTitle, nil},
+	{"attribute entry can appear before author line under document title", "asciidoctor/document_test_attribute_entry_can_appear_before_author_line_under_document_title.adoc", documentTestAttributeEntryCanAppearBeforeAuthorLineUnderDocumentTitle, nil},
 
-	{"should parse mantitle and manvolnum from document title for manpage doctype", "asciidoctor/document_test_should_parse_mantitle_and_manvolnum_from_document_title_for_manpage_doctype.adoc", shouldParseMantitleAndManvolnumFromDocumentTitleForManpageDoctype, nil},
+	{"should parse mantitle and manvolnum from document title for manpage doctype", "asciidoctor/document_test_should_parse_mantitle_and_manvolnum_from_document_title_for_manpage_doctype.adoc", documentTestShouldParseMantitleAndManvolnumFromDocumentTitleForManpageDoctype, nil},
 
-	{"should perform attribute substitution on mantitle in manpage doctype", "asciidoctor/document_test_should_perform_attribute_substitution_on_mantitle_in_manpage_doctype.adoc", shouldPerformAttributeSubstitutionOnMantitleInManpageDoctype, nil},
+	{"should perform attribute substitution on mantitle in manpage doctype", "asciidoctor/document_test_should_perform_attribute_substitution_on_mantitle_in_manpage_doctype.adoc", documentTestShouldPerformAttributeSubstitutionOnMantitleInManpageDoctype, nil},
 
-	{"should consume name section as manname and manpurpose for manpage doctype", "asciidoctor/document_test_should_consume_name_section_as_manname_and_manpurpose_for_manpage_doctype.adoc", shouldConsumeNameSectionAsMannameAndManpurposeForManpageDoctype, nil},
+	{"should consume name section as manname and manpurpose for manpage doctype", "asciidoctor/document_test_should_consume_name_section_as_manname_and_manpurpose_for_manpage_doctype.adoc", documentTestShouldConsumeNameSectionAsMannameAndManpurposeForManpageDoctype, nil},
 
-	{"should set docname and outfilesuffix from manname and manvolnum for manpage backend and doctype", "asciidoctor/document_test_should_set_docname_and_outfilesuffix_from_manname_and_manvolnum_for_manpage_backend_and_doctype.adoc", shouldSetDocnameAndOutfilesuffixFromMannameAndManvolnumForManpageBackendAndDoctype, nil},
+	{"should set docname and outfilesuffix from manname and manvolnum for manpage backend and doctype", "asciidoctor/document_test_should_set_docname_and_outfilesuffix_from_manname_and_manvolnum_for_manpage_backend_and_doctype.adoc", documentTestShouldSetDocnameAndOutfilesuffixFromMannameAndManvolnumForManpageBackendAndDoctype, nil},
 
-	{"should mark synopsis as special section in manpage doctype", "asciidoctor/document_test_should_mark_synopsis_as_special_section_in_manpage_doctype.adoc", shouldMarkSynopsisAsSpecialSectionInManpageDoctype, nil},
+	{"should mark synopsis as special section in manpage doctype", "asciidoctor/document_test_should_mark_synopsis_as_special_section_in_manpage_doctype.adoc", documentTestShouldMarkSynopsisAsSpecialSectionInManpageDoctype, nil},
 
-	{"should output special header block in HTML for manpage doctype", "asciidoctor/document_test_should_output_special_header_block_in_html_for_manpage_doctype.adoc", shouldOutputSpecialHeaderBlockInHtmlForManpageDoctype, nil},
+	{"should output special header block in HTML for manpage doctype", "asciidoctor/document_test_should_output_special_header_block_in_html_for_manpage_doctype.adoc", documentTestShouldOutputSpecialHeaderBlockInHtmlForManpageDoctype, nil},
 
-	{"should output special header block in embeddable HTML for manpage doctype", "asciidoctor/document_test_should_output_special_header_block_in_embeddable_html_for_manpage_doctype.adoc", shouldOutputSpecialHeaderBlockInEmbeddableHtmlForManpageDoctype, nil},
+	{"should output special header block in embeddable HTML for manpage doctype", "asciidoctor/document_test_should_output_special_header_block_in_embeddable_html_for_manpage_doctype.adoc", documentTestShouldOutputSpecialHeaderBlockInEmbeddableHtmlForManpageDoctype, nil},
 
-	{"should output all mannames in name section in man page output", "asciidoctor/document_test_should_output_all_mannames_in_name_section_in_man_page_output.adoc", shouldOutputAllMannamesInNameSectionInManPageOutput, nil},
+	{"should output all mannames in name section in man page output", "asciidoctor/document_test_should_output_all_mannames_in_name_section_in_man_page_output.adoc", documentTestShouldOutputAllMannamesInNameSectionInManPageOutput, nil},
 
-	{"allows us to specify a path relative to the current dir", "asciidoctor/document_test_allows_us_to_specify_a_path_relative_to_the_current_dir.adoc", allowsUsToSpecifyAPathRelativeToTheCurrentDir, nil},
+	{"allows us to specify a path relative to the current dir", "asciidoctor/document_test_allows_us_to_specify_a_path_relative_to_the_current_dir.adoc", documentTestAllowsUsToSpecifyAPathRelativeToTheCurrentDir, nil},
 
-	{"should raise an exception when a converter cannot be resolved while parsing", "asciidoctor/document_test_should_raise_an_exception_when_a_converter_cannot_be_resolved_while_parsing.adoc", shouldRaiseAnExceptionWhenAConverterCannotBeResolvedWhileParsing, nil},
+	{"should raise an exception when a converter cannot be resolved while parsing", "asciidoctor/document_test_should_raise_an_exception_when_a_converter_cannot_be_resolved_while_parsing.adoc", documentTestShouldRaiseAnExceptionWhenAConverterCannotBeResolvedWhileParsing, nil},
 }
 
-var shouldBeAbleToDisableTocAndSectnumsInDocumentHeaderInDocBookBackend = &asciidoc.Document{
+var documentTestShouldBeAbleToDisableTocAndSectnumsInDocumentHeaderInDocBookBackend = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -206,9 +206,9 @@ var shouldBeAbleToDisableTocAndSectnumsInDocumentHeaderInDocBookBackend = &ascii
 	},
 }
 
-var noheaderAttributeShouldSuppressInfoElementWhenConvertingToDocBook = &asciidoc.Document{
+var documentTestNoheaderAttributeShouldSuppressInfoElementWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -218,7 +218,7 @@ var noheaderAttributeShouldSuppressInfoElementWhenConvertingToDocBook = &asciido
 					Name: "noheader",
 					Set:  nil,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -236,9 +236,9 @@ var noheaderAttributeShouldSuppressInfoElementWhenConvertingToDocBook = &asciido
 	},
 }
 
-var shouldBeAbleToDisableSectionNumberingUsingNumberedAttributeInDocumentHeaderInDocBookBackend = &asciidoc.Document{
+var documentTestShouldBeAbleToDisableSectionNumberingUsingNumberedAttributeInDocumentHeaderInDocBookBackend = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -258,9 +258,9 @@ var shouldBeAbleToDisableSectionNumberingUsingNumberedAttributeInDocumentHeaderI
 	},
 }
 
-var convertMethodsOnBuiltInConverterAreRegisteredByDefault = &asciidoc.Document{
+var documentTestConvertMethodsOnBuiltInConverterAreRegisteredByDefault = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -271,7 +271,7 @@ var convertMethodsOnBuiltInConverterAreRegisteredByDefault = &asciidoc.Document{
 			Value: "==============",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.InlinePassthrough{
@@ -286,9 +286,9 @@ var convertMethodsOnBuiltInConverterAreRegisteredByDefault = &asciidoc.Document{
 	},
 }
 
-var shouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeDisableByHeader = &asciidoc.Document{
+var documentTestShouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeDisableByHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -302,7 +302,7 @@ var shouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeDisableByH
 		&asciidoc.AttributeReset{
 			Name: "compat-mode",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.InlinePassthrough{
@@ -317,9 +317,9 @@ var shouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeDisableByH
 	},
 }
 
-var shouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeIsLockedByApi = &asciidoc.Document{
+var documentTestShouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeIsLockedByApi = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -330,7 +330,7 @@ var shouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeIsLockedBy
 			Value: "==============",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.InlinePassthrough{
@@ -345,15 +345,15 @@ var shouldNotEnableCompatModeForDocumentWithLegacyDoctitleIfCompatModeIsLockedBy
 	},
 }
 
-var shouldApplyMaxWidthToEachTopLevelContainer = &asciidoc.Document{
+var documentTestShouldApplyMaxWidthToEachTopLevelContainer = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -371,9 +371,9 @@ var shouldApplyMaxWidthToEachTopLevelContainer = &asciidoc.Document{
 	},
 }
 
-var titlePartitionApiWithDefaultSeparator = &asciidoc.Document{
+var documentTestTitlePartitionApiWithDefaultSeparator = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -383,7 +383,7 @@ var titlePartitionApiWithDefaultSeparator = &asciidoc.Document{
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -401,9 +401,9 @@ var titlePartitionApiWithDefaultSeparator = &asciidoc.Document{
 	},
 }
 
-var documentWithSubtitleAndCustomSeparator = &asciidoc.Document{
+var documentTestDocumentWithSubtitleAndCustomSeparator = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -423,7 +423,7 @@ var documentWithSubtitleAndCustomSeparator = &asciidoc.Document{
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -441,9 +441,9 @@ var documentWithSubtitleAndCustomSeparator = &asciidoc.Document{
 	},
 }
 
-var shouldNotHonorCustomSeparatorForDoctitleIfAttributeIsLockedByApi = &asciidoc.Document{
+var documentTestShouldNotHonorCustomSeparatorForDoctitleIfAttributeIsLockedByApi = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -463,7 +463,7 @@ var shouldNotHonorCustomSeparatorForDoctitleIfAttributeIsLockedByApi = &asciidoc
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -481,9 +481,9 @@ var shouldNotHonorCustomSeparatorForDoctitleIfAttributeIsLockedByApi = &asciidoc
 	},
 }
 
-var documentWithDoctitleDefinedAsAttributeEntry = &asciidoc.Document{
+var documentTestDocumentWithDoctitleDefinedAsAttributeEntry = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -494,14 +494,14 @@ var documentWithDoctitleDefinedAsAttributeEntry = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "preamble",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -517,9 +517,9 @@ var documentWithDoctitleDefinedAsAttributeEntry = &asciidoc.Document{
 	},
 }
 
-var documentWithDoctitleDefinedAsAttributeEntryFollowedByBlockWithTitle = &asciidoc.Document{
+var documentTestDocumentWithDoctitleDefinedAsAttributeEntryFollowedByBlockWithTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -530,7 +530,7 @@ var documentWithDoctitleDefinedAsAttributeEntryFollowedByBlockWithTitle = &ascii
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
@@ -554,12 +554,12 @@ var documentWithDoctitleDefinedAsAttributeEntryFollowedByBlockWithTitle = &ascii
 	},
 }
 
-var documentWithTitleAttributeEntryOverridesDoctitle = &asciidoc.Document{
+var documentTestDocumentWithTitleAttributeEntryOverridesDoctitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -570,14 +570,14 @@ var documentWithTitleAttributeEntryOverridesDoctitle = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
 					Value: "doctitle",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -601,26 +601,26 @@ var documentWithTitleAttributeEntryOverridesDoctitle = &asciidoc.Document{
 	},
 }
 
-var documentWithBlankTitleAttributeEntryOverridesDoctitle = &asciidoc.Document{
+var documentTestDocumentWithBlankTitleAttributeEntryOverridesDoctitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
 					Name: "title",
 					Set:  nil,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
 					Value: "doctitle",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -644,9 +644,9 @@ var documentWithBlankTitleAttributeEntryOverridesDoctitle = &asciidoc.Document{
 	},
 }
 
-var documentHeaderCanReferenceIntrinsicDoctitleAttribute = &asciidoc.Document{
+var documentTestDocumentHeaderCanReferenceIntrinsicDoctitleAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -660,7 +660,7 @@ var documentHeaderCanReferenceIntrinsicDoctitleAttribute = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -678,12 +678,12 @@ var documentHeaderCanReferenceIntrinsicDoctitleAttribute = &asciidoc.Document{
 	},
 }
 
-var documentWithTitleAttributeEntryOverridesDoctitleAttributeEntry = &asciidoc.Document{
+var documentTestDocumentWithTitleAttributeEntryOverridesDoctitleAttributeEntry = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -710,7 +710,7 @@ var documentWithTitleAttributeEntryOverridesDoctitleAttributeEntry = &asciidoc.D
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -723,7 +723,7 @@ var documentWithTitleAttributeEntryOverridesDoctitleAttributeEntry = &asciidoc.D
 					Value: "doctitle",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -747,12 +747,12 @@ var documentWithTitleAttributeEntryOverridesDoctitleAttributeEntry = &asciidoc.D
 	},
 }
 
-var documentWithDoctitleAttributeEntryOverridesImplicitDoctitle = &asciidoc.Document{
+var documentTestDocumentWithDoctitleAttributeEntryOverridesImplicitDoctitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -771,7 +771,7 @@ var documentWithDoctitleAttributeEntryOverridesImplicitDoctitle = &asciidoc.Docu
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -784,7 +784,7 @@ var documentWithDoctitleAttributeEntryOverridesImplicitDoctitle = &asciidoc.Docu
 					Value: "doctitle",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -808,9 +808,9 @@ var documentWithDoctitleAttributeEntryOverridesImplicitDoctitle = &asciidoc.Docu
 	},
 }
 
-var doctitleAttributeEntryAboveHeaderOverridesImplicitDoctitle = &asciidoc.Document{
+var documentTestDoctitleAttributeEntryAboveHeaderOverridesImplicitDoctitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -821,17 +821,17 @@ var doctitleAttributeEntryAboveHeaderOverridesImplicitDoctitle = &asciidoc.Docum
 				},
 			},
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
 					Value: "doctitle",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
@@ -855,15 +855,15 @@ var doctitleAttributeEntryAboveHeaderOverridesImplicitDoctitle = &asciidoc.Docum
 	},
 }
 
-var shouldApplyHeaderSubstitutionsToValueOfTheDoctitleAttributeAssignedFromImplicitDoctitle = &asciidoc.Document{
+var documentTestShouldApplyHeaderSubstitutionsToValueOfTheDoctitleAttributeAssignedFromImplicitDoctitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -887,9 +887,9 @@ var shouldApplyHeaderSubstitutionsToValueOfTheDoctitleAttributeAssignedFromImpli
 	},
 }
 
-var shouldSubstituteAttributeReferenceInImplicitDocumentTitleForAttributeDefinedEarlierInHeader = &asciidoc.Document{
+var documentTestShouldSubstituteAttributeReferenceInImplicitDocumentTitleForAttributeDefinedEarlierInHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -903,7 +903,7 @@ var shouldSubstituteAttributeReferenceInImplicitDocumentTitleForAttributeDefined
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -921,9 +921,9 @@ var shouldSubstituteAttributeReferenceInImplicitDocumentTitleForAttributeDefined
 	},
 }
 
-var shouldNotWarnIfImplicitDocumentTitleContainsAttributeReferenceForAttributeDefinedLaterInHeader = &asciidoc.Document{
+var documentTestShouldNotWarnIfImplicitDocumentTitleContainsAttributeReferenceForAttributeDefinedLaterInHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -937,7 +937,7 @@ var shouldNotWarnIfImplicitDocumentTitleContainsAttributeReferenceForAttributeDe
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -955,31 +955,31 @@ var shouldNotWarnIfImplicitDocumentTitleContainsAttributeReferenceForAttributeDe
 	},
 }
 
-var shouldRecognizeDocumentTitleWhenPrecededByBlankLines = &asciidoc.Document{
+var documentTestShouldRecognizeDocumentTitleWhenPrecededByBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "preamble",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -1005,18 +1005,19 @@ var shouldRecognizeDocumentTitleWhenPrecededByBlankLines = &asciidoc.Document{
 	},
 }
 
-var shouldRecognizeDocumentTitleWhenPrecededByBlankLinesIntroducedByAPreprocessorConditional = &asciidoc.Document{
+var documentTestShouldRecognizeDocumentTitleWhenPrecededByBlankLinesIntroducedByAPreprocessorConditional = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.IfDef{
 			Attributes: asciidoc.AttributeNames{
 				"sectids",
 			},
-			Union: 0,
+			Union:  0,
+			Inline: false,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1031,23 +1032,23 @@ var shouldRecognizeDocumentTitleWhenPrecededByBlankLinesIntroducedByAPreprocesso
 			Attributes: nil,
 			Union:      0,
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "preamble",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -1073,9 +1074,9 @@ var shouldRecognizeDocumentTitleWhenPrecededByBlankLinesIntroducedByAPreprocesso
 	},
 }
 
-var shouldRecognizeDocumentTitleWhenPrecededByBlankLinesAfterAnAttributeEntry = &asciidoc.Document{
+var documentTestShouldRecognizeDocumentTitleWhenPrecededByBlankLinesAfterAnAttributeEntry = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1086,26 +1087,26 @@ var shouldRecognizeDocumentTitleWhenPrecededByBlankLinesAfterAnAttributeEntry = 
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "preamble",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -1131,9 +1132,9 @@ var shouldRecognizeDocumentTitleWhenPrecededByBlankLinesAfterAnAttributeEntry = 
 	},
 }
 
-var shouldRecognizeDocumentTitleInIncludeFileWhenPrecededByBlankLines = &asciidoc.Document{
+var documentTestShouldRecognizeDocumentTitleInIncludeFileWhenPrecededByBlankLines = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.FileInclude{
@@ -1147,9 +1148,9 @@ var shouldRecognizeDocumentTitleInIncludeFileWhenPrecededByBlankLines = &asciido
 	},
 }
 
-var shouldIncludeSpecifiedLinesEvenWhenLeadingLinesAreSkipped = &asciidoc.Document{
+var documentTestShouldIncludeSpecifiedLinesEvenWhenLeadingLinesAreSkipped = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.FileInclude{
@@ -1173,15 +1174,15 @@ var shouldIncludeSpecifiedLinesEvenWhenLeadingLinesAreSkipped = &asciidoc.Docume
 	},
 }
 
-var documentWithMultilineAttributeEntryButOnlyOneLineShouldNotCrash = &asciidoc.Document{
+var documentTestDocumentWithMultilineAttributeEntryButOnlyOneLineShouldNotCrash = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1199,12 +1200,12 @@ var documentWithMultilineAttributeEntryButOnlyOneLineShouldNotCrash = &asciidoc.
 	},
 }
 
-var shouldNotChokeOnEmptySource = &asciidoc.Document{
+var documentTestShouldNotChokeOnEmptySource = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
@@ -1245,13 +1246,13 @@ var shouldNotChokeOnEmptySource = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -1277,9 +1278,9 @@ var shouldNotChokeOnEmptySource = &asciidoc.Document{
 	},
 }
 
-var shouldParseRevisionLineIfDateIsEmpty = &asciidoc.Document{
+var documentTestShouldParseRevisionLineIfDateIsEmpty = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1293,7 +1294,7 @@ var shouldParseRevisionLineIfDateIsEmpty = &asciidoc.Document{
 					Value: "v1.0.0,:remark",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1311,9 +1312,9 @@ var shouldParseRevisionLineIfDateIsEmpty = &asciidoc.Document{
 	},
 }
 
-var shouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevnumberIsSet = &asciidoc.Document{
+var documentTestShouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevnumberIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1339,7 +1340,7 @@ var shouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevnumberIsSet = &asc
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1357,9 +1358,9 @@ var shouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevnumberIsSet = &asc
 	},
 }
 
-var shouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevremarkIsSet = &asciidoc.Document{
+var documentTestShouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevremarkIsSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1385,7 +1386,7 @@ var shouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevremarkIsSet = &asc
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1403,9 +1404,9 @@ var shouldIncludeRevisionHistoryInDocBookOutputIfRevdateAndRevremarkIsSet = &asc
 	},
 }
 
-var shouldNotIncludeRevisionHistoryInDocBookOutputIfRevdateIsNotSet = &asciidoc.Document{
+var documentTestShouldNotIncludeRevisionHistoryInDocBookOutputIfRevdateIsNotSet = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1423,7 +1424,7 @@ var shouldNotIncludeRevisionHistoryInDocBookOutputIfRevdateIsNotSet = &asciidoc.
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1441,12 +1442,12 @@ var shouldNotIncludeRevisionHistoryInDocBookOutputIfRevdateIsNotSet = &asciidoc.
 	},
 }
 
-var withMetadataToDocBook5 = &asciidoc.Document{
+var documentTestWithMetadataToDocBook5 = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
@@ -1459,13 +1460,13 @@ var withMetadataToDocBook5 = &asciidoc.Document{
 					Value: ">",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -1491,9 +1492,9 @@ var withMetadataToDocBook5 = &asciidoc.Document{
 	},
 }
 
-var withDocumentIdToDocbook5 = &asciidoc.Document{
+var documentTestWithDocumentIdToDocbook5 = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1506,7 +1507,7 @@ var withDocumentIdToDocbook5 = &asciidoc.Document{
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1524,9 +1525,9 @@ var withDocumentIdToDocbook5 = &asciidoc.Document{
 	},
 }
 
-var withAuthorDefinedUsingAttributeEntryToDocBook = &asciidoc.Document{
+var documentTestWithAuthorDefinedUsingAttributeEntryToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1548,7 +1549,7 @@ var withAuthorDefinedUsingAttributeEntryToDocBook = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1566,9 +1567,9 @@ var withAuthorDefinedUsingAttributeEntryToDocBook = &asciidoc.Document{
 	},
 }
 
-var shouldSubstituteReplacementsInAuthorNamesInHtmlOutput = &asciidoc.Document{
+var documentTestShouldSubstituteReplacementsInAuthorNamesInHtmlOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1584,7 +1585,7 @@ var shouldSubstituteReplacementsInAuthorNamesInHtmlOutput = &asciidoc.Document{
 					Value: ">",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1602,9 +1603,9 @@ var shouldSubstituteReplacementsInAuthorNamesInHtmlOutput = &asciidoc.Document{
 	},
 }
 
-var shouldSubstituteReplacementsInAuthorNamesInDocBookOutput = &asciidoc.Document{
+var documentTestShouldSubstituteReplacementsInAuthorNamesInDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1620,7 +1621,7 @@ var shouldSubstituteReplacementsInAuthorNamesInDocBookOutput = &asciidoc.Documen
 					Value: ">",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1638,9 +1639,9 @@ var shouldSubstituteReplacementsInAuthorNamesInDocBookOutput = &asciidoc.Documen
 	},
 }
 
-var shouldSanitizeContentOfHtmlMetaAuthorsTag = &asciidoc.Document{
+var documentTestShouldSanitizeContentOfHtmlMetaAuthorsTag = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1654,7 +1655,7 @@ var shouldSanitizeContentOfHtmlMetaAuthorsTag = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1672,9 +1673,9 @@ var shouldSanitizeContentOfHtmlMetaAuthorsTag = &asciidoc.Document{
 	},
 }
 
-var shouldNotDoubleEscapeAmpersandInAuthorAttribute = &asciidoc.Document{
+var documentTestShouldNotDoubleEscapeAmpersandInAuthorAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1684,7 +1685,7 @@ var shouldNotDoubleEscapeAmpersandInAuthorAttribute = &asciidoc.Document{
 					Value: "R&D Lab",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -1702,9 +1703,9 @@ var shouldNotDoubleEscapeAmpersandInAuthorAttribute = &asciidoc.Document{
 	},
 }
 
-var shouldIncludeMultipleAuthorsInHtmlOutput = &asciidoc.Document{
+var documentTestShouldIncludeMultipleAuthorsInHtmlOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1726,7 +1727,7 @@ var shouldIncludeMultipleAuthorsInHtmlOutput = &asciidoc.Document{
 					Value: ">",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1744,9 +1745,9 @@ var shouldIncludeMultipleAuthorsInHtmlOutput = &asciidoc.Document{
 	},
 }
 
-var shouldCreateAuthorgroupInDocBookWhenMultipleAuthors = &asciidoc.Document{
+var documentTestShouldCreateAuthorgroupInDocBookWhenMultipleAuthors = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -1768,7 +1769,7 @@ var shouldCreateAuthorgroupInDocBookWhenMultipleAuthors = &asciidoc.Document{
 					Value: ">",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1786,9 +1787,9 @@ var shouldCreateAuthorgroupInDocBookWhenMultipleAuthors = &asciidoc.Document{
 	},
 }
 
-var shouldProcessAuthorDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciidoc.Document{
+var documentTestShouldProcessAuthorDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1799,7 +1800,7 @@ var shouldProcessAuthorDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciido
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -1824,9 +1825,9 @@ var shouldProcessAuthorDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciido
 	},
 }
 
-var shouldProcessAuthorAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciidoc.Document{
+var documentTestShouldProcessAuthorAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1845,7 +1846,7 @@ var shouldProcessAuthorAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIs
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -1870,9 +1871,9 @@ var shouldProcessAuthorAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIs
 	},
 }
 
-var shouldProcessAuthorsDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciidoc.Document{
+var documentTestShouldProcessAuthorsDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1883,7 +1884,7 @@ var shouldProcessAuthorsDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciid
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -1908,9 +1909,9 @@ var shouldProcessAuthorsDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciid
 	},
 }
 
-var shouldProcessAuthorsAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciidoc.Document{
+var documentTestShouldProcessAuthorsAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleIsAbsent = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -1929,7 +1930,7 @@ var shouldProcessAuthorsAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleI
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UserAttributeReference{
@@ -1954,22 +1955,22 @@ var shouldProcessAuthorsAndAuthorinitialsDefinedByAttributeWhenImplicitDoctitleI
 	},
 }
 
-var shouldSetAuthorcountTo0IfDocumentHasNoHeader = &asciidoc.Document{
+var documentTestShouldSetAuthorcountTo0IfDocumentHasNoHeader = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "idprefix",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -1987,9 +1988,9 @@ var shouldSetAuthorcountTo0IfDocumentHasNoHeader = &asciidoc.Document{
 	},
 }
 
-var shouldSetAuthorcountTo0IfAuthorNotSetByAttributeAndDocumentStartsWithLevel0SectionWithStyle = &asciidoc.Document{
+var documentTestShouldSetAuthorcountTo0IfAuthorNotSetByAttributeAndDocumentStartsWithLevel0SectionWithStyle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2000,7 +2001,7 @@ var shouldSetAuthorcountTo0IfAuthorNotSetByAttributeAndDocumentStartsWithLevel0S
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2019,14 +2020,14 @@ var shouldSetAuthorcountTo0IfAuthorNotSetByAttributeAndDocumentStartsWithLevel0S
 				},
 			},
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "content",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
@@ -2037,16 +2038,16 @@ var shouldSetAuthorcountTo0IfAuthorNotSetByAttributeAndDocumentStartsWithLevel0S
 			},
 			Level: 0,
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -2072,9 +2073,9 @@ var shouldSetAuthorcountTo0IfAuthorNotSetByAttributeAndDocumentStartsWithLevel0S
 	},
 }
 
-var withAuthorDefinedByIndexedAttributeName = &asciidoc.Document{
+var documentTestWithAuthorDefinedByIndexedAttributeName = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2088,7 +2089,7 @@ var withAuthorDefinedByIndexedAttributeName = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UserAttributeReference{
@@ -2106,9 +2107,9 @@ var withAuthorDefinedByIndexedAttributeName = &asciidoc.Document{
 	},
 }
 
-var withAuthorsDefinedUsingAttributeEntryToDocBook = &asciidoc.Document{
+var documentTestWithAuthorsDefinedUsingAttributeEntryToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2138,7 +2139,7 @@ var withAuthorsDefinedUsingAttributeEntryToDocBook = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2156,9 +2157,9 @@ var withAuthorsDefinedUsingAttributeEntryToDocBook = &asciidoc.Document{
 	},
 }
 
-var shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefined = &asciidoc.Document{
+var documentTestShouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefined = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2172,7 +2173,7 @@ var shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefined =
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2190,9 +2191,9 @@ var shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefined =
 	},
 }
 
-var shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWithYear = &asciidoc.Document{
+var documentTestShouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWithYear = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2206,7 +2207,7 @@ var shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWi
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2224,9 +2225,9 @@ var shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWi
 	},
 }
 
-var shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWithYearRange = &asciidoc.Document{
+var documentTestShouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWithYearRange = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2240,7 +2241,7 @@ var shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWi
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2258,16 +2259,16 @@ var shouldPopulateCopyrightElementInDocBookOutputIfCopyrightAttributeIsDefinedWi
 	},
 }
 
-var withHeaderFooter = &asciidoc.Document{
+var documentTestWithHeaderFooter = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "nofooter",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2277,15 +2278,15 @@ var withHeaderFooter = &asciidoc.Document{
 	},
 }
 
-var canDisableLastUpdatedInFooter = &asciidoc.Document{
+var documentTestCanDisableLastUpdatedInFooter = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2303,9 +2304,9 @@ var canDisableLastUpdatedInFooter = &asciidoc.Document{
 	},
 }
 
-var parseHeaderOnly = &asciidoc.Document{
+var documentTestParseHeaderOnly = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2323,7 +2324,7 @@ var parseHeaderOnly = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -2341,12 +2342,12 @@ var parseHeaderOnly = &asciidoc.Document{
 	},
 }
 
-var shouldParseHeaderOnlyWhenDocytpeIsManpage = &asciidoc.Document{
+var documentTestShouldParseHeaderOnlyWhenDocytpeIsManpage = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
@@ -2361,13 +2362,13 @@ var shouldParseHeaderOnlyWhenDocytpeIsManpage = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -2393,9 +2394,9 @@ var shouldParseHeaderOnlyWhenDocytpeIsManpage = &asciidoc.Document{
 	},
 }
 
-var shouldNotWarnWhenParsingHeaderOnlyWhenDocytpeIsManpageAndBodyIsEmpty = &asciidoc.Document{
+var documentTestShouldNotWarnWhenParsingHeaderOnlyWhenDocytpeIsManpageAndBodyIsEmpty = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2424,9 +2425,9 @@ var shouldNotWarnWhenParsingHeaderOnlyWhenDocytpeIsManpageAndBodyIsEmpty = &asci
 	},
 }
 
-var outputsFootnotesInFooter = &asciidoc.Document{
+var documentTestOutputsFootnotesInFooter = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -2444,28 +2445,28 @@ var outputsFootnotesInFooter = &asciidoc.Document{
 	},
 }
 
-var outputsFootnotesBlockInEmbeddedDocumentByDefault = &asciidoc.Document{
+var documentTestOutputsFootnotesBlockInEmbeddedDocumentByDefault = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "Content",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -2479,7 +2480,7 @@ var outputsFootnotesBlockInEmbeddedDocumentByDefault = &asciidoc.Document{
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -2505,9 +2506,9 @@ var outputsFootnotesBlockInEmbeddedDocumentByDefault = &asciidoc.Document{
 	},
 }
 
-var shouldReturnEmptyidsTable = &asciidoc.Document{
+var documentTestShouldReturnEmptyidsTable = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.BlockImage{
@@ -2518,7 +2519,7 @@ var shouldReturnEmptyidsTable = &asciidoc.Document{
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
@@ -2576,9 +2577,9 @@ var shouldReturnEmptyidsTable = &asciidoc.Document{
 	},
 }
 
-var honorHtmlsyntaxAttributeInDocumentHeaderIfFollowedByBackendAttribute = &asciidoc.Document{
+var documentTestHonorHtmlsyntaxAttributeInDocumentHeaderIfFollowedByBackendAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2597,7 +2598,7 @@ var honorHtmlsyntaxAttributeInDocumentHeaderIfFollowedByBackendAttribute = &asci
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ThematicBreak{
@@ -2606,9 +2607,9 @@ var honorHtmlsyntaxAttributeInDocumentHeaderIfFollowedByBackendAttribute = &asci
 	},
 }
 
-var doesNotHonorHtmlsyntaxAttributeInDocumentHeaderIfNotFollowedByBackendAttribute = &asciidoc.Document{
+var documentTestDoesNotHonorHtmlsyntaxAttributeInDocumentHeaderIfNotFollowedByBackendAttribute = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
@@ -2627,7 +2628,7 @@ var doesNotHonorHtmlsyntaxAttributeInDocumentHeaderIfNotFollowedByBackendAttribu
 				},
 			},
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ThematicBreak{
@@ -2636,9 +2637,9 @@ var doesNotHonorHtmlsyntaxAttributeInDocumentHeaderIfNotFollowedByBackendAttribu
 	},
 }
 
-var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
+var documentTestShouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -2660,7 +2661,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 					Name: "favicon",
 					Set:  nil,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.InlineImage{
@@ -2672,7 +2673,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 					},
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.BlockImage{
@@ -2683,7 +2684,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
@@ -2708,7 +2709,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 					Marker:        "*",
 					Checklist:     1,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
@@ -2793,7 +2794,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -2837,7 +2838,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 					},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -2850,7 +2851,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 					},
 					Admonition: 1,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.QuoteBlock{
@@ -2897,7 +2898,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 						&asciidoc.NewLine{},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.QuoteBlock{
@@ -2944,7 +2945,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 						&asciidoc.NewLine{},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -2967,14 +2968,14 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 					},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "video::12345[vimeo]",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Paragraph{
@@ -2997,7 +2998,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 					},
 					Admonition: 0,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -3009,7 +3010,7 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 					Value: "two",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.ThematicBreak{
@@ -3026,9 +3027,9 @@ var shouldCloseAllShortTagsWhenHtmlsyntaxIsXml = &asciidoc.Document{
 	},
 }
 
-var xhtmlBackendShouldEmitElementsInProperNamespace = &asciidoc.Document{
+var documentTestXhtmlBackendShouldEmitElementsInProperNamespace = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -3042,7 +3043,7 @@ var xhtmlBackendShouldEmitElementsInProperNamespace = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -3060,32 +3061,32 @@ var xhtmlBackendShouldEmitElementsInProperNamespace = &asciidoc.Document{
 	},
 }
 
-var shouldBeAbleToSetDoctypeToArticleWhenConvertingToDocBook = &asciidoc.Document{
+var documentTestShouldBeAbleToSetDoctypeToArticleWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "preamble",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3111,12 +3112,12 @@ var shouldBeAbleToSetDoctypeToArticleWhenConvertingToDocBook = &asciidoc.Documen
 	},
 }
 
-var shouldSetDoctypeToArticleByDefaultForDocumentWithNoTitleWhenConvertingToDocBook = &asciidoc.Document{
+var documentTestShouldSetDoctypeToArticleByDefaultForDocumentWithNoTitleWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -3135,20 +3136,20 @@ var shouldSetDoctypeToArticleByDefaultForDocumentWithNoTitleWhenConvertingToDocB
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "asciidoctor - Process text",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -3162,14 +3163,14 @@ var shouldSetDoctypeToArticleByDefaultForDocumentWithNoTitleWhenConvertingToDocB
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "some text",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -3183,7 +3184,7 @@ var shouldSetDoctypeToArticleByDefaultForDocumentWithNoTitleWhenConvertingToDocB
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3209,28 +3210,28 @@ var shouldSetDoctypeToArticleByDefaultForDocumentWithNoTitleWhenConvertingToDocB
 	},
 }
 
-var shouldOutputNonBreakingSpaceForSourceAndManualInDocbookManpageOutputIfAbsentFromSource = &asciidoc.Document{
+var documentTestShouldOutputNonBreakingSpaceForSourceAndManualInDocbookManpageOutputIfAbsentFromSource = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "asciidoctor - Process text",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -3244,7 +3245,7 @@ var shouldOutputNonBreakingSpaceForSourceAndManualInDocbookManpageOutputIfAbsent
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3270,12 +3271,12 @@ var shouldOutputNonBreakingSpaceForSourceAndManualInDocbookManpageOutputIfAbsent
 	},
 }
 
-var shouldApplyReplacementsSubstitutionToValueOfMantitleAttributeUsedInDocBookOutput = &asciidoc.Document{
+var documentTestShouldApplyReplacementsSubstitutionToValueOfMantitleAttributeUsedInDocBookOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
@@ -3298,13 +3299,13 @@ var shouldApplyReplacementsSubstitutionToValueOfMantitleAttributeUsedInDocBookOu
 					Value: ":man source: Foo Bar 1.0",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3330,32 +3331,32 @@ var shouldApplyReplacementsSubstitutionToValueOfMantitleAttributeUsedInDocBookOu
 	},
 }
 
-var shouldBeAbleToSetDoctypeToBookWhenConvertingToDocBook = &asciidoc.Document{
+var documentTestShouldBeAbleToSetDoctypeToBookWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "preamble",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3381,12 +3382,12 @@ var shouldBeAbleToSetDoctypeToBookWhenConvertingToDocBook = &asciidoc.Document{
 	},
 }
 
-var shouldBeAbleToSetDoctypeToBookForDocumentWithNoTitleWhenConvertingToDocBook = &asciidoc.Document{
+var documentTestShouldBeAbleToSetDoctypeToBookForDocumentWithNoTitleWhenConvertingToDocBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.String{
@@ -3421,20 +3422,20 @@ var shouldBeAbleToSetDoctypeToBookForDocumentWithNoTitleWhenConvertingToDocBook 
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "eve, islifeform - analyzes an image to determine if it's a picture of a life form",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -3448,7 +3449,7 @@ var shouldBeAbleToSetDoctypeToBookForDocumentWithNoTitleWhenConvertingToDocBook 
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Bold{
@@ -3482,12 +3483,12 @@ var shouldBeAbleToSetDoctypeToBookForDocumentWithNoTitleWhenConvertingToDocBook 
 	},
 }
 
-var addsAFrontAndBackCoverImageToDocBook5WhenDoctypeIsBook = &asciidoc.Document{
+var documentTestAddsAFrontAndBackCoverImageToDocBook5WhenDoctypeIsBook = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -3522,20 +3523,20 @@ var addsAFrontAndBackCoverImageToDocBook5WhenDoctypeIsBook = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
 					Value: "preamble",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3561,9 +3562,9 @@ var addsAFrontAndBackCoverImageToDocBook5WhenDoctypeIsBook = &asciidoc.Document{
 	},
 }
 
-var shouldBeAbleToSetBackendUsingbackendOptionKey = &asciidoc.Document{
+var documentTestShouldBeAbleToSetBackendUsingbackendOptionKey = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
@@ -3583,7 +3584,7 @@ var shouldBeAbleToSetBackendUsingbackendOptionKey = &asciidoc.Document{
 					Value: ":Author Initials: SJR",
 				},
 				&asciidoc.NewLine{},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -3601,9 +3602,9 @@ var shouldBeAbleToSetBackendUsingbackendOptionKey = &asciidoc.Document{
 	},
 }
 
-var attributeEntryCanAppearImmediatelyAfterDocumentTitle = &asciidoc.Document{
+var documentTestAttributeEntryCanAppearImmediatelyAfterDocumentTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3618,7 +3619,7 @@ var attributeEntryCanAppearImmediatelyAfterDocumentTitle = &asciidoc.Document{
 			Name: "toc",
 			Set:  nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3628,9 +3629,9 @@ var attributeEntryCanAppearImmediatelyAfterDocumentTitle = &asciidoc.Document{
 	},
 }
 
-var attributeEntryCanAppearBeforeAuthorLineUnderDocumentTitle = &asciidoc.Document{
+var documentTestAttributeEntryCanAppearBeforeAuthorLineUnderDocumentTitle = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3649,7 +3650,7 @@ var attributeEntryCanAppearBeforeAuthorLineUnderDocumentTitle = &asciidoc.Docume
 			Value: "Dan Allen",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
@@ -3659,12 +3660,12 @@ var attributeEntryCanAppearBeforeAuthorLineUnderDocumentTitle = &asciidoc.Docume
 	},
 }
 
-var shouldParseMantitleAndManvolnumFromDocumentTitleForManpageDoctype = &asciidoc.Document{
+var documentTestShouldParseMantitleAndManvolnumFromDocumentTitleForManpageDoctype = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -3675,13 +3676,13 @@ var shouldParseMantitleAndManvolnumFromDocumentTitleForManpageDoctype = &asciido
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3707,12 +3708,12 @@ var shouldParseMantitleAndManvolnumFromDocumentTitleForManpageDoctype = &asciido
 	},
 }
 
-var shouldPerformAttributeSubstitutionOnMantitleInManpageDoctype = &asciidoc.Document{
+var documentTestShouldPerformAttributeSubstitutionOnMantitleInManpageDoctype = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -3731,13 +3732,13 @@ var shouldPerformAttributeSubstitutionOnMantitleInManpageDoctype = &asciidoc.Doc
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3763,12 +3764,12 @@ var shouldPerformAttributeSubstitutionOnMantitleInManpageDoctype = &asciidoc.Doc
 	},
 }
 
-var shouldConsumeNameSectionAsMannameAndManpurposeForManpageDoctype = &asciidoc.Document{
+var documentTestShouldConsumeNameSectionAsMannameAndManpurposeForManpageDoctype = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -3779,13 +3780,13 @@ var shouldConsumeNameSectionAsMannameAndManpurposeForManpageDoctype = &asciidoc.
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3811,12 +3812,12 @@ var shouldConsumeNameSectionAsMannameAndManpurposeForManpageDoctype = &asciidoc.
 	},
 }
 
-var shouldSetDocnameAndOutfilesuffixFromMannameAndManvolnumForManpageBackendAndDoctype = &asciidoc.Document{
+var documentTestShouldSetDocnameAndOutfilesuffixFromMannameAndManvolnumForManpageBackendAndDoctype = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -3827,13 +3828,13 @@ var shouldSetDocnameAndOutfilesuffixFromMannameAndManvolnumForManpageBackendAndD
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
@@ -3859,12 +3860,12 @@ var shouldSetDocnameAndOutfilesuffixFromMannameAndManvolnumForManpageBackendAndD
 	},
 }
 
-var shouldMarkSynopsisAsSpecialSectionInManpageDoctype = &asciidoc.Document{
+var documentTestShouldMarkSynopsisAsSpecialSectionInManpageDoctype = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -3875,20 +3876,20 @@ var shouldMarkSynopsisAsSpecialSectionInManpageDoctype = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "asciidoctor - converts AsciiDoc source files to HTML, DocBook and other formats",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -3902,7 +3903,7 @@ var shouldMarkSynopsisAsSpecialSectionInManpageDoctype = &asciidoc.Document{
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Bold{
@@ -3936,12 +3937,12 @@ var shouldMarkSynopsisAsSpecialSectionInManpageDoctype = &asciidoc.Document{
 	},
 }
 
-var shouldOutputSpecialHeaderBlockInHtmlForManpageDoctype = &asciidoc.Document{
+var documentTestShouldOutputSpecialHeaderBlockInHtmlForManpageDoctype = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -3952,20 +3953,20 @@ var shouldOutputSpecialHeaderBlockInHtmlForManpageDoctype = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "asciidoctor - converts AsciiDoc source files to HTML, DocBook and other formats",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -3979,7 +3980,7 @@ var shouldOutputSpecialHeaderBlockInHtmlForManpageDoctype = &asciidoc.Document{
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Bold{
@@ -4013,12 +4014,12 @@ var shouldOutputSpecialHeaderBlockInHtmlForManpageDoctype = &asciidoc.Document{
 	},
 }
 
-var shouldOutputSpecialHeaderBlockInEmbeddableHtmlForManpageDoctype = &asciidoc.Document{
+var documentTestShouldOutputSpecialHeaderBlockInEmbeddableHtmlForManpageDoctype = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -4033,20 +4034,20 @@ var shouldOutputSpecialHeaderBlockInEmbeddableHtmlForManpageDoctype = &asciidoc.
 					Name: "showtitle",
 					Set:  nil,
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "asciidoctor - converts AsciiDoc source files to HTML, DocBook and other formats",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -4060,7 +4061,7 @@ var shouldOutputSpecialHeaderBlockInEmbeddableHtmlForManpageDoctype = &asciidoc.
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Bold{
@@ -4094,12 +4095,12 @@ var shouldOutputSpecialHeaderBlockInEmbeddableHtmlForManpageDoctype = &asciidoc.
 	},
 }
 
-var shouldOutputAllMannamesInNameSectionInManPageOutput = &asciidoc.Document{
+var documentTestShouldOutputAllMannamesInNameSectionInManPageOutput = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
 				&asciidoc.AttributeEntry{
@@ -4110,20 +4111,20 @@ var shouldOutputAllMannamesInNameSectionInManPageOutput = &asciidoc.Document{
 						},
 					},
 				},
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{
 							Value: "eve, probe - analyzes an image to determine if it is a picture of a life form",
 						},
 						&asciidoc.NewLine{},
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
@@ -4137,7 +4138,7 @@ var shouldOutputAllMannamesInNameSectionInManPageOutput = &asciidoc.Document{
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Bold{
@@ -4171,15 +4172,15 @@ var shouldOutputAllMannamesInNameSectionInManPageOutput = &asciidoc.Document{
 	},
 }
 
-var allowsUsToSpecifyAPathRelativeToTheCurrentDir = &asciidoc.Document{
+var documentTestAllowsUsToSpecifyAPathRelativeToTheCurrentDir = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.String{
@@ -4197,21 +4198,21 @@ var allowsUsToSpecifyAPathRelativeToTheCurrentDir = &asciidoc.Document{
 	},
 }
 
-var shouldRaiseAnExceptionWhenAConverterCannotBeResolvedWhileParsing = &asciidoc.Document{
+var documentTestShouldRaiseAnExceptionWhenAConverterCannotBeResolvedWhileParsing = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
-		&asciidoc.Section{ // p0
+		&asciidoc.Section{
 			AttributeList: nil,
 			Set: asciidoc.Set{
-				asciidoc.EmptyLine{
+				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
 					Set: asciidoc.Set{
-						asciidoc.EmptyLine{
+						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.String{

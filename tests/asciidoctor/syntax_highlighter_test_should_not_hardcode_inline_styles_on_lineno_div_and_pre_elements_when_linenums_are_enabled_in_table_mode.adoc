@@ -1,0 +1,8 @@
+
+:source-highlighter: pygments
+:pygments-css: inline
+
+[source%linenums,ruby]
+----
+puts 'Hello, World!'
+----

@@ -1,0 +1,12 @@
+.split Asciidoctor::LF
+        = Main Document
+
+        preamble
+
+        :leveloffset: +1
+
+        = Chapter A
+
+        content
+
+        :leveloffset!:

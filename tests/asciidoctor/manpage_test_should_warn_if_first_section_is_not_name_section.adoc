@@ -1,0 +1,6 @@
+
+= command(1)
+
+== Synopsis
+
+Does stuff.

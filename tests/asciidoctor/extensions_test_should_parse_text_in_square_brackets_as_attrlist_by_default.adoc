@@ -1,0 +1,13 @@
+
+[subs=normal]
+++++
+short_attributes:[]
+short_attributes:[value,key=val]
+short_text:[]
+short_text:[[text\]]
+full-attributes:target[]
+full-attributes:target[value,key=val]
+full-text:target[]
+full-text:target[[text\]]
+@target
+++++

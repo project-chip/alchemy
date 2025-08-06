@@ -1,0 +1,9 @@
+
+:source-highlighter: rouge
+
+[source,ruby]
+----
+require 'rouge'
+
+html = Rouge::Formatters::HTML.format(Rouge::Lexers::Ruby.lex('puts "Hello, world!"'))
+----

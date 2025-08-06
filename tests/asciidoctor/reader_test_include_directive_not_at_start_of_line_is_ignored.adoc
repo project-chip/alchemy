@@ -1,0 +1,4 @@
+
+:max-include-depth: 1
+
+include::include-file.adoc[]

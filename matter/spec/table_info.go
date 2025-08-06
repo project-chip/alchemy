@@ -447,7 +447,7 @@ func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, els asciidoc.Set
 			value.WriteString("++")
 			err = readRowCellValueElements(doc, row, el.Elements(), value)
 		case *asciidoc.ThematicBreak:
-		case asciidoc.EmptyLine:
+		case *asciidoc.EmptyLine:
 		case *asciidoc.NewLine:
 			value.WriteString(" ")
 		case asciidoc.HasElements:

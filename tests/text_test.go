@@ -12,25 +12,25 @@ func TestText(t *testing.T) {
 
 var textTests = parseTests{
 
-	{"line breaks", "asciidoctor/text_test_line_breaks.adoc", lineBreaks, nil},
+	{"line breaks", "asciidoctor/text_test_line_breaks.adoc", textTestLineBreaks, nil},
 }
 
-var lineBreaks = &asciidoc.Document{
+var textTestLineBreaks = &asciidoc.Document{
 	Set: asciidoc.Set{
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{
 			Value: "This line is separated by a horizontal rule...",
 		},
 		&asciidoc.NewLine{},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.ThematicBreak{
 			AttributeList: nil,
 		},
-		asciidoc.EmptyLine{
+		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.String{

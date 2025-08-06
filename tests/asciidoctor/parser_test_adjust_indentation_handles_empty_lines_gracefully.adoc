@@ -1,0 +1,7 @@
+
+[#in-use]
+A paragraph with an id.
+
+Another paragraph
+[[in-use]]that uses an id
+which is already in use.

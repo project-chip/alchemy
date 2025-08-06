@@ -1,0 +1,10 @@
+
+poof
+ifdef::swallow[]
+no
+ifdef::swallow[]
+swallow
+endif::swallow[]
+here
+endif::swallow[]
+gone

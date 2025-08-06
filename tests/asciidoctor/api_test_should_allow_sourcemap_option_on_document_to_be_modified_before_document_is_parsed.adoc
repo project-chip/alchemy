@@ -1,0 +1,21 @@
+
+= Document Title
+
+preamble
+
+== Section A
+
+paragraph
+
+--
+Exhibit A::
++
+[#tiger.animal]
+image::tiger.png[Tiger]
+--
+
+image::shoe.png[Shoe]
+
+== Section B
+
+paragraph

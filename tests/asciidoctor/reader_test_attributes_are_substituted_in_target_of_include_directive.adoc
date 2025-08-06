@@ -1,0 +1,5 @@
+
+:fixturesdir: fixtures
+:ext: adoc
+
+include::{fixturesdir}/include-file.{ext}[]

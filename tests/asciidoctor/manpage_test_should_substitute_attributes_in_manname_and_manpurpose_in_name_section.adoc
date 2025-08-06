@@ -1,0 +1,10 @@
+
+= {cmdname} (1)
+Author Name
+:doctype: manpage
+:man manual: Foo Bar Manual
+:man source: Foo Bar 1.0
+
+== NAME
+
+{cmdname} - {cmdname} puts the foo in your bar
