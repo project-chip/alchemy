@@ -39,8 +39,8 @@ func (s *Section) toConditions(d *Doc, dt *matter.DeviceType) (conditions []*mat
 		}
 	}
 	for row := range ti.ContentRows() {
-		c := matter.NewCondition(s.Base, dt)
-		c.Feature, err = ti.ReadStringAtOffset(row, featureIndex)
+		c := matter.NewCondition(row, dt)
+		c.Feature, _, err = ti.ReadNameAtOffset(row, featureIndex)
 		if err != nil {
 			return
 		}
@@ -77,7 +77,7 @@ func (s *Section) toBaseDeviceTypeConditions(d *Doc, dt *matter.DeviceType) (con
 		}
 		for row := range ti.ContentRows() {
 			c := matter.NewCondition(row, dt)
-			c.Feature, err = ti.ReadStringAtOffset(row, tagOffset)
+			c.Feature, _, err = ti.ReadNameAtOffset(row, tagOffset)
 			if err != nil {
 				return
 			}

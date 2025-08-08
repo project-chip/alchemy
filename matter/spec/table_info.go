@@ -140,25 +140,29 @@ func (ti *TableInfo) ReadName(row *asciidoc.TableRow, columns ...matter.TableCol
 		if !ok {
 			continue
 		}
-		cell := row.Cell(offset)
-		cellElements := cell.Children()
-		for _, el := range cellElements {
-			switch el := el.(type) {
-			case *asciidoc.CrossReference:
-				xref = el
-			}
-			if xref != nil {
-				break
-			}
-		}
-		var value strings.Builder
-		err = readRowCellValueElements(ti.Doc, row, cellElements, &value)
-		if err != nil {
-			return "", nil, err
-		}
-		return strings.TrimSpace(value.String()), xref, nil
+		return ti.ReadNameAtOffset(row, offset)
 	}
 	return "", nil, nil
+}
+
+func (ti *TableInfo) ReadNameAtOffset(row *asciidoc.TableRow, offset int) (name string, xref *asciidoc.CrossReference, err error) {
+	cell := row.Cell(offset)
+	cellElements := cell.Children()
+	for _, el := range cellElements {
+		switch el := el.(type) {
+		case *asciidoc.CrossReference:
+			xref = el
+		}
+		if xref != nil {
+			break
+		}
+	}
+	var value strings.Builder
+	err = readRowCellValueElements(ti.Doc, row, cellElements, &value)
+	if err != nil {
+		return "", nil, err
+	}
+	return strings.TrimSpace(value.String()), xref, nil
 }
 
 func (ti *TableInfo) ReadValue(row *asciidoc.TableRow, columns ...matter.TableColumn) (string, error) {
