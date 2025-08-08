@@ -97,7 +97,14 @@ func (cr *configuratorRenderer) populateAttribute(ae *etree.Element, attribute *
 	xml.PrependAttribute(ae, "name", attribute.Name, "side", "code")
 	xml.RemoveElements(ae, "description")
 	define := getDefine(attribute.Name, clusterPrefix, cr.configurator.Errata)
-	xml.SetNonexistentAttr(ae, "define", define)
+
+	defineAttribute := ae.SelectAttr("define")
+	if defineAttribute == nil {
+		ae.CreateAttr("define", define)
+	} else if defineAttribute.Value != define {
+		// Too noisy
+		// slog.Warn("Existing attribute define does not match generated define value", slog.String("clusterName", cluster.Name), slog.String("attributeName", attribute.Name), slog.String("existing", defineAttribute.Value), slog.String("generated", define))
+	}
 	cr.writeAttributeDataType(ae, cluster.Attributes, attribute)
 	if attribute.Quality.Has(matter.QualityNullable) && !cr.generator.options.ExtendedQuality {
 		ae.CreateAttr("isNullable", "true")
