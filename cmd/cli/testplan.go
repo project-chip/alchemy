@@ -38,12 +38,12 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return
 	}
 
-	specFiles, err := pipeline.Start(cc, specParser.Targets)
+	specPaths, err := pipeline.Start(cc, specParser.Targets)
 	if err != nil {
 		return err
 	}
 
-	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specFiles)
+	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specPaths)
 	if err != nil {
 		return err
 	}

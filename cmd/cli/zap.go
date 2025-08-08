@@ -46,14 +46,14 @@ func (z *ZAP) Run(cc *Context) (err error) {
 		return
 	}
 
-	var specFiles pipeline.Paths
-	specFiles, err = pipeline.Start(cc, specParser.Targets)
+	var specPaths pipeline.Paths
+	specPaths, err = pipeline.Start(cc, specParser.Targets)
 	if err != nil {
 		return
 	}
 
 	var specDocs spec.DocSet
-	specDocs, err = pipeline.Parallel(cc, z.ProcessingOptions, specParser, specFiles)
+	specDocs, err = pipeline.Parallel(cc, z.ProcessingOptions, specParser, specPaths)
 	if err != nil {
 		return
 	}
