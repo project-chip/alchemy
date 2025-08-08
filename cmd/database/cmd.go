@@ -33,12 +33,12 @@ func (cmd *Command) Run(cc *cli.Context) (err error) {
 
 	errata.LoadErrataConfig(cmd.ParserOptions.Root)
 
-	specFiles, err := pipeline.Start(cc, specParser.Targets)
+	specPaths, err := pipeline.Start(cc, specParser.Targets)
 	if err != nil {
 		return err
 	}
 
-	specDocs, err := pipeline.Parallel(cc, cmd.ProcessingOptions, specParser, specFiles)
+	specDocs, err := pipeline.Parallel(cc, cmd.ProcessingOptions, specParser, specPaths)
 	if err != nil {
 		return err
 	}

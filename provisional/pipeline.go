@@ -76,14 +76,14 @@ func loadSpec(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, p
 		return
 	}
 
-	var specFiles pipeline.Paths
-	specFiles, err = pipeline.Start(cxt, specParser.Targets)
+	var specPaths pipeline.Paths
+	specPaths, err = pipeline.Start(cxt, specParser.Targets)
 	if err != nil {
 		return
 	}
 
 	var specDocs spec.DocSet
-	specDocs, err = pipeline.Parallel(cxt, pipelineOptions, specParser, specFiles)
+	specDocs, err = pipeline.Parallel(cxt, pipelineOptions, specParser, specPaths)
 	if err != nil {
 		return
 	}
