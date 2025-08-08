@@ -8,8 +8,8 @@ import (
 )
 
 type HasElements interface {
-	SetElements(asciidoc.Set)
-	Elements() asciidoc.Set
+	SetChildren(asciidoc.Elements)
+	Children() asciidoc.Elements
 }
 
 func HexOrDec(s string) (uint64, error) {

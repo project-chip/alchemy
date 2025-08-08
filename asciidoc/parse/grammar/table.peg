@@ -63,7 +63,7 @@ TableInlineIfDef = !TableEnd NewLine AnySpaces ifdef:IfDef NewLine !InitialTable
     if err != nil {
         return nil, err
     }
-    out := append(asciidoc.Set{id}, content.(asciidoc.Set)...)
+    out := append(asciidoc.Elements{id}, content.(asciidoc.Elements)...)
     return append(out, ei), nil
 }
 
@@ -83,7 +83,7 @@ TableInlineIfNDef = !TableEnd NewLine AnySpaces ifndef:IfNDef NewLine !InitialTa
     if err != nil {
         return nil, err
     }
-    out := append(asciidoc.Set{id}, content.(asciidoc.Set)...)
+    out := append(asciidoc.Elements{id}, content.(asciidoc.Elements)...)
     return append(out, ei), nil
 }
 
@@ -103,7 +103,7 @@ TableInlineIfEval = !TableEnd NewLine AnySpaces ifeval:IfEval NewLine !InitialTa
     if err != nil {
         return nil, err
     }
-    out := append(asciidoc.Set{id}, content.(asciidoc.Set)...)
+    out := append(asciidoc.Elements{id}, content.(asciidoc.Elements)...)
     return append(out, ei), nil
 }
 
@@ -174,12 +174,12 @@ TableCellDelimiter = (AdditionalTableCellDelimiter / InitialTableCellDelimiter)
 InitialInlineTableCell = format:(InitialTableCellDelimiter) content:(InlineTableLines) &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter /  NewLine  ) 
     {
     debugPosition(c, "TABLE: matched initial inline table cell \"%s\" (format:%v)\n", string(c.text), format)
-    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](content.(asciidoc.Set)) )
+    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](content.(asciidoc.Elements)) )
 }
 
 AdditionalInlineTableCell =  format:(AdditionalTableCellDelimiter) content:(InlineTableLines) &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter /  NewLine  ) {
     debugPosition(c, "TABLE: matched additional inline table cell \"%s\" (format:%v)\n", string(c.text), format)
-    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](content.(asciidoc.Set)) )
+    return compose(c, newTableCell(format),setElements[*asciidoc.TableCell](content.(asciidoc.Elements)) )
 }
 
 
@@ -190,7 +190,7 @@ InlineTableLines = content:(MultiLineTableCell / InlineTableElements / EmptyCell
 
 EmptyCell = &(TableEnd / TableCellDelimiter /  NewLine) {
     debugPosition(c, "TABLE: empty cell: \"%s\"\n", string(c.text))
-    return asciidoc.Set{}, nil
+    return asciidoc.Elements{}, nil
 }
 
 ValidTableCellPrefix = !TableEnd !TableCellDelimiter !TableMacros
@@ -198,7 +198,7 @@ ValidTableCellPrefix = !TableEnd !TableCellDelimiter !TableMacros
 ValidMultilineTableCellPrefix = !TableMacros
 
 MultiLineTableCell = lines:(InlineTableCellLine)* content:(InlineTableCellLastLine) {
-    var cellLines asciidoc.Set
+    var cellLines asciidoc.Elements
     if lines != nil  {
         debugPosition(c, "TABLE LINES: inline table lines (%d), content (%d): \"%s\"\n", len(lines.([]any)), len(content.([]asciidoc.Element)),  string(c.text))
         cellLines = flat(lines.([]any))
@@ -228,7 +228,7 @@ InlineTableCellIntermediateLine = ValidTableCellPrefix newline:NewLine? ValidMul
 InlineTableCellEmptyLine = ValidTableCellPrefix NewLine AnySpaces &(NewLine) !TableEnd !TableCellDelimiter !TableMacros &(InlineTableCellLine / InlineTableCellLastLine) 
  {
     debugPosition(c, "TABLE: inline table intermediate cell empty line (%d): \"%s\"\n",string(c.text))
-    return asciidoc.Set{populatePosition(c, asciidoc.NewEmptyLine(string(c.text)))}, nil
+    return asciidoc.Elements{populatePosition(c, asciidoc.NewEmptyLine(string(c.text)))}, nil
 }
 
 InlineTableCellLastLine = ValidTableCellPrefix nl:NewLine ValidMultilineTableCellPrefix content:(InlineTableElement)+ &(TableEnd / TableEmptyLines / TableMacros / TableCellDelimiter)

@@ -234,7 +234,7 @@ func quickNormalizeAnchorID(id string) (normalizedID string, normalized bool) {
 	return
 }
 
-func normalizeAnchorID(existingID string, label asciidoc.Set) (id string) {
+func normalizeAnchorID(existingID string, label asciidoc.Elements) (id string) {
 
 	var ref strings.Builder
 	ref.WriteString("ref_")
@@ -250,13 +250,13 @@ func normalizeAnchorID(existingID string, label asciidoc.Set) (id string) {
 	return
 }
 
-func normalizeAnchorLabel(name string, element any) (label asciidoc.Set) {
+func normalizeAnchorLabel(name string, element any) (label asciidoc.Elements) {
 	switch element.(type) {
 	case *asciidoc.Table:
-		label = asciidoc.Set{asciidoc.NewString(strings.TrimSpace(name))}
+		label = asciidoc.Elements{asciidoc.NewString(strings.TrimSpace(name))}
 	default:
 		name = text.TrimCaseInsensitiveSuffix(name, " Type")
-		label = asciidoc.Set{asciidoc.NewString(strings.TrimSpace(matter.StripReferenceSuffixes(name)))}
+		label = asciidoc.Elements{asciidoc.NewString(strings.TrimSpace(matter.StripReferenceSuffixes(name)))}
 	}
 	return
 }
@@ -312,6 +312,6 @@ func disambiguateAnchorSet(conflictedAnchors []*spec.Anchor, newID string, ag *a
 	return
 }
 
-func labelText(label asciidoc.Set) string {
+func labelText(label asciidoc.Elements) string {
 	return strings.TrimSpace(asciidoc.AttributeAsciiDocString(label))
 }

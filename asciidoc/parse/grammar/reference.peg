@@ -2,7 +2,7 @@
 CrossReference = InternalCrossReference / CrossReferenceMacro
 
 InternalCrossReference = CrossReferenceStart id:(CrossReferenceID) label:(AnySpaces "," label:(AnySpaces CrossReferenceLabel) { return label, nil})? ">>" {
-    var lbl asciidoc.Set
+    var lbl asciidoc.Elements
     if label != nil {
         lbl = join(label.([]any))
     }
@@ -27,5 +27,5 @@ CrossReferenceMacroStart = "xref:"
 
 CrossReferenceMacro = CrossReferenceMacroStart path:(Path) attributes:(InlineAttributes) {
     debugPosition(c, "matched document cross reference: %s\n", string(c.text))
-    return compose(c, asciidoc.NewCrossReferenceMacro(path.(asciidoc.Set)), setAttributes[asciidoc.AttributableElement](attributes))
+    return compose(c, asciidoc.NewCrossReferenceMacro(path.(asciidoc.Elements)), setAttributes[asciidoc.AttributableElement](attributes))
 }

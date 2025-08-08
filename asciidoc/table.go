@@ -216,7 +216,7 @@ type TableCell struct {
 	Format *TableCellFormat
 	Parent *TableRow
 
-	Set
+	Elements
 
 	Blank bool
 }
@@ -252,7 +252,7 @@ func (tc *TableCell) Equals(e Element) bool {
 	if otc.Format != nil && !otc.Format.Equals(tc.Format) {
 		return false
 	}
-	if !tc.Set.Equals(otc.Set) {
+	if !tc.Elements.Equals(otc.Elements) {
 		return false
 	}
 	return true
@@ -260,8 +260,8 @@ func (tc *TableCell) Equals(e Element) bool {
 
 type TableCells []*TableCell
 
-func (trs TableCells) Elements() Set {
-	els := make(Set, 0, len(trs))
+func (trs TableCells) Children() Elements {
+	els := make(Elements, 0, len(trs))
 	for _, tr := range trs {
 		els = append(els, tr)
 	}
@@ -277,7 +277,7 @@ func (trs *TableCells) Append(e Element) error {
 	return nil
 }
 
-func (trs *TableCells) SetElements(els Set) error {
+func (trs *TableCells) SetChildren(els Elements) error {
 	ntrs := make([]*TableCell, 0, len(els))
 	for _, e := range els {
 		tr, ok := e.(*TableCell)
@@ -294,7 +294,7 @@ type TableRow struct {
 	position
 	Parent *Table
 
-	Set
+	Elements
 }
 
 func (TableRow) Type() ElementType {
@@ -306,12 +306,12 @@ func (tr *TableRow) Equals(e Element) bool {
 	if !ok {
 		return false
 	}
-	return tr.Set.Equals(otr.Set)
+	return tr.Elements.Equals(otr.Elements)
 }
 
 func (tr *TableRow) TableCells() []*TableCell {
-	tcs := make([]*TableCell, 0, len(tr.Set))
-	for _, el := range tr.Set {
+	tcs := make([]*TableCell, 0, len(tr.Elements))
+	for _, el := range tr.Elements {
 		if tc, ok := el.(*TableCell); ok {
 			tcs = append(tcs, tc)
 		}
@@ -320,13 +320,13 @@ func (tr *TableRow) TableCells() []*TableCell {
 }
 
 func (tr *TableRow) Cell(i int) *TableCell {
-	return tr.Set[i].(*TableCell)
+	return tr.Elements[i].(*TableCell)
 }
 
 type TableRows []*TableRow
 
-func (trs TableRows) Elements() Set {
-	els := make(Set, 0, len(trs))
+func (trs TableRows) Children() Elements {
+	els := make(Elements, 0, len(trs))
 	for _, tr := range trs {
 		els = append(els, tr)
 	}
@@ -342,7 +342,7 @@ func (trs *TableRows) Append(e Element) error {
 	return nil
 }
 
-func (trs *TableRows) SetElements(els Set) error {
+func (trs *TableRows) SetChildren(els Elements) error {
 	ntrs := make([]*TableRow, 0, len(els))
 	for _, e := range els {
 		tr, ok := e.(*TableRow)
@@ -360,7 +360,7 @@ type Table struct {
 	AttributeList
 
 	ColumnCount int
-	Set
+	Elements
 }
 
 func (*Table) Type() ElementType {
@@ -378,12 +378,12 @@ func (t *Table) Equals(e Element) bool {
 	if !t.AttributeList.Equals(ot.AttributeList) {
 		return false
 	}
-	return t.Set.Equals(ot.Set)
+	return t.Elements.Equals(ot.Elements)
 }
 
 func (t *Table) TableRows() []*TableRow {
-	trs := make([]*TableRow, 0, len(t.Set))
-	for _, el := range t.Set {
+	trs := make([]*TableRow, 0, len(t.Elements))
+	for _, el := range t.Elements {
 		if tr, ok := el.(*TableRow); ok {
 			trs = append(trs, tr)
 		}

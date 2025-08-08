@@ -3,7 +3,7 @@ package tests
 import "github.com/project-chip/alchemy/asciidoc"
 
 var blockImage = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -12,7 +12,7 @@ var blockImage = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "image",
 						},
@@ -20,7 +20,7 @@ var blockImage = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "height",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "85",
 						},
@@ -28,14 +28,14 @@ var blockImage = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "167",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "./images/lighting/media/image3.png",
 				},

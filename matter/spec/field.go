@@ -106,7 +106,7 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 }
 
 func (s *Section) mapFields(fieldMap map[string]*matter.Field, pc *parseContext) error {
-	for s := range parse.Skim[*Section](s.Elements()) {
+	for s := range parse.Skim[*Section](s.Children()) {
 		var name string
 		switch s.SecType {
 		case matter.SectionAttribute:
@@ -254,9 +254,9 @@ func findAnonymousBitmap(s *Section, field *matter.Field) error {
 
 func findTagNamespace(s *Section, field *matter.Field) error {
 	var found bool
-	parse.Traverse(s, s.Set, func(ref *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(s, s.Elements, func(ref *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
 		if ref.ID == "ref_StandardNamespaces" {
-			label := buildReferenceName(ref.Set)
+			label := buildReferenceName(ref.Elements)
 			name := strings.TrimSpace(text.TrimCaseInsensitiveSuffix(label, " Namespace"))
 			if len(name) > 0 {
 				field.Type.Name = name

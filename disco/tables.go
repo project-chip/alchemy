@@ -14,11 +14,11 @@ import (
 	"github.com/project-chip/alchemy/matter/types"
 )
 
-func (b *Baller) ensureTableOptions(root asciidoc.HasElements) {
+func (b *Baller) ensureTableOptions(root asciidoc.ParentElement) {
 	if !b.options.NormalizeTableOptions {
 		return
 	}
-	parse.Traverse(root, root.Elements(), func(t *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(root, root.Children(), func(t *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
 		var excludedIndexes []int
 		for i, attr := range t.Attributes() {
 			na, ok := attr.(*asciidoc.NamedAttribute)
@@ -85,10 +85,10 @@ func (b *Baller) appendColumn(ti *spec.TableInfo, column matter.TableColumn, ent
 	if cols != nil {
 		cols.Columns = append(cols.Columns, asciidoc.NewTableColumn())
 	}
-	appendedIndex = len(rows[0].Set)
+	appendedIndex = len(rows[0].Elements)
 	for i, row := range rows {
 		cell := &asciidoc.TableCell{}
-		last := row.Cell(len(row.Set) - 1)
+		last := row.Cell(len(row.Elements) - 1)
 		if i == ti.HeaderRowIndex {
 			if last.Format != nil {
 				cell.Format = asciidoc.NewTableCellFormat()
@@ -234,7 +234,7 @@ func (b *Baller) reorderColumns(cxt *discoContext, section *spec.Section, ti *sp
 		}
 	}
 	for i, row := range rows {
-		newCells := make(asciidoc.Set, index)
+		newCells := make(asciidoc.Elements, index)
 		tableCells := row.TableCells()
 		if len(tableCells) != len(newColumnIndexes) {
 			err = fmt.Errorf("cell length mismatch; row %d has %d cells, expected %d", i, len(tableCells), len(newColumnIndexes))
@@ -248,7 +248,7 @@ func (b *Baller) reorderColumns(cxt *discoContext, section *spec.Section, ti *sp
 			newCells[newIndex] = cell
 		}
 		newCells = slices.Clip(newCells)
-		row.Set = newCells
+		row.Elements = newCells
 	}
 	var cols *asciidoc.TableColumnsAttribute
 	for _, a := range ti.Element.Attributes() {
@@ -274,7 +274,7 @@ func (b *Baller) reorderColumns(cxt *discoContext, section *spec.Section, ti *sp
 
 func setCellString(cell *asciidoc.TableCell, v string) {
 	se := asciidoc.NewString(v)
-	cell.SetElements(asciidoc.Set{se})
+	cell.SetChildren(asciidoc.Elements{se})
 }
 
 func copyCells(rows []*asciidoc.TableRow, headerRowIndex int, fromIndex int, toIndex int, transformer func(s string) string) (err error) {

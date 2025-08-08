@@ -5,7 +5,7 @@ type Bold struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
 func NewBold() *Bold {
@@ -28,7 +28,7 @@ func (b *Bold) Equals(e Element) bool {
 	if !b.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Set.Equals(ob.Set)
+	return b.Elements.Equals(ob.Elements)
 }
 
 type DoubleBold struct {
@@ -36,7 +36,7 @@ type DoubleBold struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
 func NewDoubleBold() *DoubleBold {
@@ -59,5 +59,5 @@ func (b *DoubleBold) Equals(e Element) bool {
 	if !b.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Set.Equals(ob.Set)
+	return b.Elements.Equals(ob.Elements)
 }

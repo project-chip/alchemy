@@ -15,7 +15,7 @@ type Anchor struct {
 	Document      *Doc
 	Source        matter.Source
 	ID            string
-	LabelElements asciidoc.Set
+	LabelElements asciidoc.Elements
 	Element       asciidoc.Element
 	Parent        parse.HasElements
 }
@@ -50,8 +50,8 @@ func (a *Anchor) SyncToDoc(id string) {
 	switch e := a.Element.(type) {
 	case *asciidoc.Anchor:
 		e.ID = a.ID
-		e.Set = make(asciidoc.Set, len(a.LabelElements))
-		copy(e.Set, a.LabelElements)
+		e.Elements = make(asciidoc.Elements, len(a.LabelElements))
+		copy(e.Elements, a.LabelElements)
 	case asciidoc.Attributable:
 		var idAttribute asciidoc.Attribute
 		var refTextAttribute *asciidoc.NamedAttribute
@@ -64,7 +64,7 @@ func (a *Anchor) SyncToDoc(id string) {
 			case *asciidoc.AnchorAttribute:
 				attr.ID = asciidoc.NewString(a.ID)
 				if len(a.LabelElements) > 0 {
-					attr.Label = make(asciidoc.Set, len(a.LabelElements))
+					attr.Label = make(asciidoc.Elements, len(a.LabelElements))
 					copy(attr.Label, a.LabelElements)
 				} else {
 					attr.Label = nil
@@ -82,13 +82,13 @@ func (a *Anchor) SyncToDoc(id string) {
 		if idAttribute != nil {
 			switch idAttribute := idAttribute.(type) {
 			case *asciidoc.ShorthandAttribute:
-				idAttribute.ID.Set = asciidoc.Set{asciidoc.NewString(a.ID)}
+				idAttribute.ID.Elements = asciidoc.Elements{asciidoc.NewString(a.ID)}
 				return
 			case *asciidoc.NamedAttribute:
-				idAttribute.Val = asciidoc.Set{asciidoc.NewString(a.ID)}
+				idAttribute.Val = asciidoc.Elements{asciidoc.NewString(a.ID)}
 				if len(a.LabelElements) > 0 {
 					if refTextAttribute != nil {
-						refTextAttribute.Val = make(asciidoc.Set, len(a.LabelElements))
+						refTextAttribute.Val = make(asciidoc.Elements, len(a.LabelElements))
 						copy(refTextAttribute.Val, a.LabelElements)
 					} else {
 						e.AppendAttribute(asciidoc.NewNamedAttribute(string(asciidoc.AttributeNameReferenceText), a.LabelElements, asciidoc.AttributeQuoteTypeDouble))
@@ -117,12 +117,12 @@ func (doc *Doc) findAnchors() {
 	} else {
 		crossReferences = doc.CrossReferences()
 	}
-	parse.Traverse(doc, doc.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(doc, doc.Children(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
 		var anchor *Anchor
 		var label string
 		switch el := el.(type) {
 		case *asciidoc.Anchor:
-			anchor = NewAnchor(doc, el.ID, el, parent, el.Set...)
+			anchor = NewAnchor(doc, el.ID, el, parent, el.Elements...)
 		case *Section:
 			anchor = doc.makeAnchor(parent, el.Base, crossReferences)
 			if anchor != nil {
@@ -161,7 +161,7 @@ func (doc *Doc) makeAnchor(parent parse.HasElements, element asciidoc.Element, c
 	return a
 }
 
-func getAnchorElements(element asciidoc.Element, crossReferences map[string][]*CrossReference) (id string, labelSet asciidoc.Set) {
+func getAnchorElements(element asciidoc.Element, crossReferences map[string][]*CrossReference) (id string, labelSet asciidoc.Elements) {
 	var idAttr asciidoc.Attribute
 	var refTextAttr *asciidoc.NamedAttribute
 	if wa, ok := element.(asciidoc.Attributable); ok {
@@ -195,7 +195,7 @@ func getAnchorElements(element asciidoc.Element, crossReferences map[string][]*C
 	}
 	switch idAttr := idAttr.(type) {
 	case *asciidoc.ShorthandAttribute:
-		id = asciidoc.AttributeAsciiDocString(idAttr.ID.Set)
+		id = asciidoc.AttributeAsciiDocString(idAttr.ID.Elements)
 	case *asciidoc.AnchorAttribute:
 		id = idAttr.ID.Value
 		labelSet = idAttr.Label

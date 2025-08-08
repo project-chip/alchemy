@@ -24,7 +24,7 @@ type Section struct {
 	SecType              matter.Section
 	sectionTypesAssigned bool
 
-	asciidoc.Set
+	asciidoc.Elements
 }
 
 func NewSection(doc *Doc, parent any, s *asciidoc.Section) (*Section, error) {
@@ -36,10 +36,10 @@ func NewSection(doc *Doc, parent any, s *asciidoc.Section) (*Section, error) {
 		return nil, err
 	}
 	ss.Name = name.String()
-	for _, e := range s.Elements() {
+	for _, e := range s.Children() {
 		switch el := e.(type) {
 		case *asciidoc.AttributeEntry:
-			doc.attributes[el.Name] = el.Elements()
+			doc.attributes[el.Name] = el.Children()
 			ss.Append(e)
 		case *asciidoc.Section:
 			s, err := NewSection(doc, ss, el)
@@ -72,7 +72,7 @@ func buildSectionTitle(doc *Doc, section *asciidoc.Section, title *strings.Build
 				return
 			}
 			switch val := attr.(type) {
-			case asciidoc.Set:
+			case asciidoc.Elements:
 				err = buildSectionTitle(doc, section, title, val...)
 			case asciidoc.Element:
 				err = buildSectionTitle(doc, section, title, val)
@@ -81,15 +81,15 @@ func buildSectionTitle(doc *Doc, section *asciidoc.Section, title *strings.Build
 			}
 		case *asciidoc.Link, *asciidoc.LinkMacro:
 		case *asciidoc.Bold:
-			err = buildSectionTitle(doc, section, title, e.Elements()...)
+			err = buildSectionTitle(doc, section, title, e.Children()...)
 		default:
 			err = newGenericParseError(section, "unknown section title component type: %T", e)
 		}
 		if err != nil {
 			return
 		}
-		if he, ok := e.(asciidoc.HasElements); ok {
-			err = buildSectionTitle(doc, section, title, he.Elements()...)
+		if he, ok := e.(asciidoc.ParentElement); ok {
+			err = buildSectionTitle(doc, section, title, he.Children()...)
 		}
 		if err != nil {
 			return
@@ -99,12 +99,12 @@ func buildSectionTitle(doc *Doc, section *asciidoc.Section, title *strings.Build
 }
 
 func (s *Section) AppendSection(ns *Section) {
-	s.Set.Append(ns)
+	s.Elements.Append(ns)
 }
 
-func (s *Section) SetElements(elements asciidoc.Set) {
-	s.Set.SetElements(elements)
-	s.Base.SetElements(elements)
+func (s *Section) SetChildren(elements asciidoc.Elements) {
+	s.Elements.SetChildren(elements)
+	s.Base.SetChildren(elements)
 }
 
 func (s Section) Type() asciidoc.ElementType {
@@ -147,7 +147,7 @@ func AssignSectionTypes(doc *Doc, top *Section) error {
 	}
 	assignSectionType(doc, top, secType)
 
-	parse.Traverse(top, top.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(top, top.Children(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
 		section, ok := el.(*Section)
 		if !ok {
 			return parse.SearchShouldContinue
@@ -197,7 +197,7 @@ func assignSectionType(doc *Doc, s *Section, sectionType matter.Section) {
 
 func FindSectionByType(top *Section, sectionType matter.Section) *Section {
 	var found *Section
-	parse.Traverse(top, top.Elements(), func(el *Section, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(top, top.Children(), func(el *Section, parent parse.HasElements, index int) parse.SearchShould {
 		if el.SecType == sectionType {
 			found = el
 			return parse.SearchShouldStop
@@ -479,7 +479,7 @@ var dataTypeDefinitionPattern = regexp.MustCompile(`(?:(?:This\s+data\s+type\s+S
 
 func (s *Section) GetDataType() *types.DataType {
 	var dts string
-	for _, el := range s.Elements() {
+	for _, el := range s.Children() {
 		switch el := el.(type) {
 		case *asciidoc.EmptyLine:
 		case *asciidoc.String:
@@ -494,7 +494,7 @@ func (s *Section) GetDataType() *types.DataType {
 		case *asciidoc.CrossReference:
 			switch el.ID {
 			case "ref_DataTypeBitmap", "ref_DataTypeEnum":
-				label := asciidoc.ValueToString(el.Elements())
+				label := asciidoc.ValueToString(el.Children())
 				if len(label) == 0 {
 					continue
 				}
@@ -584,8 +584,8 @@ func findLooseEntities(spec *Specification, doc *Doc, section *Section, pc *pars
 	return
 }
 
-func traverseSections(doc *Doc, parent asciidoc.HasElements, purpose errata.SpecPurpose, callback parse.TraverseCallback[*Section]) (sections []*Section) {
-	parse.Traverse(doc, parent.Elements(), func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
+func traverseSections(doc *Doc, parent asciidoc.ParentElement, purpose errata.SpecPurpose, callback parse.TraverseCallback[*Section]) (sections []*Section) {
+	parse.Traverse(doc, parent.Children(), func(s *Section, parent parse.HasElements, index int) parse.SearchShould {
 		if doc.errata.Spec.IgnoreSection(s.Name, purpose) {
 			return parse.SearchShouldContinue
 		}

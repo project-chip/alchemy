@@ -7,7 +7,7 @@ func renderAnchor(cxt Target, el *asciidoc.Anchor) (err error) {
 	cxt.StartBlock()
 	cxt.WriteString("[[")
 	cxt.WriteString(el.ID)
-	anchorElements := el.Elements()
+	anchorElements := el.Children()
 	if len(anchorElements) > 0 {
 		cxt.WriteString(",")
 		err = Elements(cxt, "", anchorElements...)

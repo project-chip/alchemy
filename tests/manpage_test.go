@@ -28,20 +28,20 @@ var manpageTests = parseTests{
 }
 
 var manpageTestShouldSetProperManpageRelatedAttributes = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "manpage",
 						},
@@ -60,7 +60,7 @@ var manpageTestShouldSetProperManpageRelatedAttributes = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -69,7 +69,7 @@ var manpageTestShouldSetProperManpageRelatedAttributes = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "NAME",
 						},
@@ -77,7 +77,7 @@ var manpageTestShouldSetProperManpageRelatedAttributes = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "foo\\--<bar> (1)",
 				},
@@ -88,20 +88,20 @@ var manpageTestShouldSetProperManpageRelatedAttributes = &asciidoc.Document{
 }
 
 var manpageTestShouldSubstituteAttributesInMannameAndManpurposeInNameSection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "manpage",
 						},
@@ -120,7 +120,7 @@ var manpageTestShouldSubstituteAttributesInMannameAndManpurposeInNameSection = &
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -138,7 +138,7 @@ var manpageTestShouldSubstituteAttributesInMannameAndManpurposeInNameSection = &
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "NAME",
 						},
@@ -146,7 +146,7 @@ var manpageTestShouldSubstituteAttributesInMannameAndManpurposeInNameSection = &
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "{cmdname} (1)",
 				},
@@ -157,20 +157,20 @@ var manpageTestShouldSubstituteAttributesInMannameAndManpurposeInNameSection = &
 }
 
 var manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "manpage",
 						},
@@ -189,13 +189,13 @@ var manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet =
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Bold{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "foobar",
 								},
@@ -206,7 +206,7 @@ var manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet =
 						},
 						&asciidoc.Italic{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "OPTIONS",
 								},
@@ -220,7 +220,7 @@ var manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet =
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "SYNOPSIS",
 						},
@@ -229,7 +229,7 @@ var manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet =
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -238,7 +238,7 @@ var manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet =
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "DESCRIPTION",
 						},
@@ -246,7 +246,7 @@ var manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet =
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "foobar (1)",
 				},
@@ -257,20 +257,20 @@ var manpageTestShouldNotParseNameSectionIfMannameAndManpurposeAttributesAreSet =
 }
 
 var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
 				&asciidoc.NewLine{},
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "manpage",
 						},
@@ -292,7 +292,7 @@ var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSe
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -314,7 +314,7 @@ var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSe
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "NAME",
 						},
@@ -323,13 +323,13 @@ var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSe
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Bold{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "foobar",
 								},
@@ -340,7 +340,7 @@ var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSe
 						},
 						&asciidoc.Italic{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "OPTIONS",
 								},
@@ -354,7 +354,7 @@ var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSe
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "SYNOPSIS",
 						},
@@ -363,7 +363,7 @@ var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSe
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -372,7 +372,7 @@ var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSe
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "DESCRIPTION",
 						},
@@ -380,7 +380,7 @@ var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSe
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "foobar (1)",
 				},
@@ -391,19 +391,19 @@ var manpageTestShouldNormalizeWhitespaceAndSkipLineCommentsBeforeAndInsideNameSe
 }
 
 var manpageTestShouldParseMalformedDocumentWithWarnings = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -412,7 +412,7 @@ var manpageTestShouldParseMalformedDocumentWithWarnings = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Name",
 						},
@@ -420,7 +420,7 @@ var manpageTestShouldParseMalformedDocumentWithWarnings = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "command",
 				},
@@ -431,19 +431,19 @@ var manpageTestShouldParseMalformedDocumentWithWarnings = &asciidoc.Document{
 }
 
 var manpageTestShouldWarnIfFirstSectionIsNotNameSection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -452,7 +452,7 @@ var manpageTestShouldWarnIfFirstSectionIsNotNameSection = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Synopsis",
 						},
@@ -460,7 +460,7 @@ var manpageTestShouldWarnIfFirstSectionIsNotNameSection = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "command(1)",
 				},
@@ -471,18 +471,18 @@ var manpageTestShouldWarnIfFirstSectionIsNotNameSection = &asciidoc.Document{
 }
 
 var manpageTestShouldPreserveHardLineBreaksInVerseBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "lines",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "      [verse]",
 				},
@@ -492,7 +492,7 @@ var manpageTestShouldPreserveHardLineBreaksInVerseBlock = &asciidoc.Document{
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "command",
 						},
@@ -503,7 +503,7 @@ var manpageTestShouldPreserveHardLineBreaksInVerseBlock = &asciidoc.Document{
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "OPTION",
 						},
@@ -514,7 +514,7 @@ var manpageTestShouldPreserveHardLineBreaksInVerseBlock = &asciidoc.Document{
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "FILE",
 						},

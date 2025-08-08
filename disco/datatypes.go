@@ -133,7 +133,7 @@ func (b *Baller) getDataTypes(cxt *discoContext, columnMap spec.ColumnIndex, row
 			}
 		}
 	}
-	for _, el := range section.Elements() {
+	for _, el := range section.Children() {
 		if s, ok := el.(*spec.Section); ok {
 			name := strings.TrimSpace(matter.StripReferenceSuffixes(s.Name))
 
@@ -313,7 +313,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 		}
 
 		var removedTable bool
-		parse.Filter(dt.section, func(parent parse.HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Set, shortCircuit bool) {
+		parse.Filter(dt.section, func(parent parse.HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Elements, shortCircuit bool) {
 			if t, ok := el.(*asciidoc.Table); ok && table == t {
 				removedTable = true
 				remove = true
@@ -328,11 +328,11 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 			return
 		}
 
-		dataTypeSection := asciidoc.NewSection(asciidoc.Set{title}, dataTypesSection.Base.Level+1)
+		dataTypeSection := asciidoc.NewSection(asciidoc.Elements{title}, dataTypesSection.Base.Level+1)
 
 		se := asciidoc.NewString(fmt.Sprintf("This data type is derived from %s", dt.dataType))
 		p := asciidoc.NewParagraph()
-		p.SetElements(asciidoc.Set{se})
+		p.SetChildren(asciidoc.Elements{se})
 		dataTypeSection.Append(p)
 		bl := asciidoc.NewEmptyLine("")
 		dataTypeSection.Append(bl)
@@ -349,7 +349,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 			newID = "ref_" + dt.ref + suffix + ", " + dt.name + suffix
 		}
 
-		dataTypeSection.AppendAttribute(asciidoc.NewNamedAttribute(string(asciidoc.AttributeNameID), asciidoc.Set{asciidoc.NewString(newID)}, asciidoc.AttributeQuoteTypeDouble))
+		dataTypeSection.AppendAttribute(asciidoc.NewNamedAttribute(string(asciidoc.AttributeNameID), asciidoc.Elements{asciidoc.NewString(newID)}, asciidoc.AttributeQuoteTypeDouble))
 
 		var s *spec.Section
 		s, err = spec.NewSection(top.Doc, dataTypesSection, dataTypeSection)
@@ -370,7 +370,7 @@ func (b *Baller) promoteDataType(cxt *discoContext, top *spec.Section, suffix st
 		table.DeleteAttribute(asciidoc.AttributeNameTitle)
 
 		icr := asciidoc.NewCrossReference(newID, asciidoc.CrossReferenceFormatNatural)
-		dt.typeCell.SetElements(asciidoc.Set{icr})
+		dt.typeCell.SetChildren(asciidoc.Elements{icr})
 		promoted = true
 	}
 	return
@@ -383,7 +383,7 @@ func ensureDataTypesSection(top *spec.Section) (*spec.Section, error) {
 	}
 	title := asciidoc.NewString(matter.SectionTypeName(matter.SectionDataTypes))
 
-	ts := asciidoc.NewSection(asciidoc.Set{title}, top.Base.Level+1)
+	ts := asciidoc.NewSection(asciidoc.Elements{title}, top.Base.Level+1)
 	ts.Append(asciidoc.NewEmptyLine(""))
 	dataTypesSection, err := spec.NewSection(top.Doc, top, ts)
 	if err != nil {

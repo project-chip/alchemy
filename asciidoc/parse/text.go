@@ -33,7 +33,7 @@ func toStringBuilder(e any, sb *strings.Builder) {
 	}
 }
 
-func mergeStrings[T any](els []T) (out asciidoc.Set) {
+func mergeStrings[T any](els []T) (out asciidoc.Elements) {
 	var s strings.Builder
 	out = mergeStringsInternal(els, &s)
 	if s.Len() > 0 {
@@ -42,7 +42,7 @@ func mergeStrings[T any](els []T) (out asciidoc.Set) {
 	return
 }
 
-func mergeStringsInternal[T any](els []T, s *strings.Builder) (out asciidoc.Set) {
+func mergeStringsInternal[T any](els []T, s *strings.Builder) (out asciidoc.Elements) {
 	for _, e := range els {
 		switch e := any(e).(type) {
 		case string:
@@ -67,7 +67,7 @@ func mergeStringsInternal[T any](els []T, s *strings.Builder) (out asciidoc.Set)
 	return
 }
 
-func trim(in asciidoc.Set) (out asciidoc.Set) {
+func trim(in asciidoc.Elements) (out asciidoc.Elements) {
 	var first int = -1
 	var last = len(in)
 	for i, e := range in {
@@ -84,7 +84,7 @@ func trim(in asciidoc.Set) (out asciidoc.Set) {
 
 	}
 	if first == -1 { // Every element is a whitespace string
-		out = asciidoc.Set{asciidoc.NewString("")}
+		out = asciidoc.Elements{asciidoc.NewString("")}
 		return
 	}
 
@@ -103,12 +103,12 @@ func trim(in asciidoc.Set) (out asciidoc.Set) {
 	}
 	out = in[first:last]
 	if len(out) == 0 {
-		out = asciidoc.Set{asciidoc.NewString("")}
+		out = asciidoc.Elements{asciidoc.NewString("")}
 	}
 	return
 }
 
-func trimRight(in asciidoc.Set) (out asciidoc.Set) {
+func trimRight(in asciidoc.Elements) (out asciidoc.Elements) {
 	var last = len(in)
 
 	for i := last - 1; i >= 0; i-- {
@@ -125,7 +125,7 @@ func trimRight(in asciidoc.Set) (out asciidoc.Set) {
 		}
 	}
 	if last == 0 {
-		out = asciidoc.Set{asciidoc.NewString("")}
+		out = asciidoc.Elements{asciidoc.NewString("")}
 		return
 	}
 	out = in[0:last]

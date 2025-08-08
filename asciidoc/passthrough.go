@@ -5,7 +5,7 @@ type InlinePassthrough struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
 func NewInlinePassthrough() *InlinePassthrough {
@@ -24,7 +24,7 @@ func (a *InlinePassthrough) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 type InlineDoublePassthrough struct {
@@ -32,7 +32,7 @@ type InlineDoublePassthrough struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
 func NewInlineDoublePassthrough() *InlineDoublePassthrough {
@@ -51,5 +51,5 @@ func (a *InlineDoublePassthrough) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

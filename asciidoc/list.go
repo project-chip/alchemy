@@ -12,7 +12,7 @@ type UnorderedList struct {
 	position
 	raw
 
-	Set
+	Elements
 	AttributeList
 }
 
@@ -24,7 +24,7 @@ type OrderedListItem struct {
 	position
 	raw
 
-	Set
+	Elements
 	AttributeList
 
 	Indent string
@@ -53,14 +53,14 @@ func (a *OrderedListItem) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 type UnorderedListItem struct {
 	position
 	raw
 
-	Set
+	Elements
 	AttributeList
 
 	Indent    string
@@ -91,21 +91,21 @@ func (a *UnorderedListItem) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 type DescriptionListItem struct {
 	position
 	raw
 
-	Set
+	Elements
 	AttributeList
 
 	Marker string
-	Term   Set
+	Term   Elements
 }
 
-func NewDescriptionListItem(marker string, term Set) *DescriptionListItem {
+func NewDescriptionListItem(marker string, term Elements) *DescriptionListItem {
 	return &DescriptionListItem{
 		Marker: marker,
 		Term:   term,
@@ -127,7 +127,7 @@ func (a *DescriptionListItem) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 type AttachedBlock struct {

@@ -6,7 +6,7 @@ func renderEscape(cxt Target, el *asciidoc.AlchemyEscape) (err error) {
 	cxt.FlushWrap()
 	cxt.DisableWrap()
 	cxt.WriteString(":alchemy-escape: ")
-	err = Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Children()...)
 	if err != nil {
 		return
 	}

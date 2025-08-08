@@ -33,7 +33,7 @@ func (doc *Doc) CrossReferences() map[string][]*CrossReference {
 		doc.Unlock()
 		return doc.crossReferences
 	}
-	parse.Traverse(nil, doc.Base.Elements(), func(icr *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(nil, doc.Base.Children(), func(icr *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
 		doc.crossReferences[icr.ID] = append(doc.crossReferences[icr.ID], &CrossReference{Document: doc, Reference: icr, Parent: parent, Source: NewSource(doc, icr)})
 		return parse.SearchShouldContinue
 	})
@@ -48,7 +48,7 @@ func ReferenceName(element any) string {
 	}
 	switch el := element.(type) {
 	case *asciidoc.Anchor:
-		return buildReferenceName(el.Set)
+		return buildReferenceName(el.Elements)
 	case *asciidoc.Section:
 		return buildReferenceName(el.Title)
 	case asciidoc.Attributable:
@@ -61,7 +61,7 @@ func ReferenceName(element any) string {
 	return ""
 }
 
-func buildReferenceName(set asciidoc.Set) string {
+func buildReferenceName(set asciidoc.Elements) string {
 	var val strings.Builder
 
 	for _, el := range set {
@@ -103,7 +103,7 @@ func referenceNameFromAttributes(el asciidoc.Attributable) string {
 				switch v := a.Value().(type) {
 				case string:
 					return v
-				case asciidoc.Set:
+				case asciidoc.Elements:
 					return buildReferenceName(v)
 				default:
 					slog.Warn("unexpected value of section title attribute", slog.String("type", fmt.Sprintf("%T", a.Value())))

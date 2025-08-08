@@ -126,7 +126,7 @@ func renderSelectAttributes(cxt Target, attributes []asciidoc.Attribute, include
 				continue
 			}
 			for _, ta := range titleAttributes {
-				err = renderAttributeTitle(cxt, ta.Value().(asciidoc.Set), include, exclude)
+				err = renderAttributeTitle(cxt, ta.Value().(asciidoc.Elements), include, exclude)
 				if err != nil {
 					return
 				}
@@ -260,7 +260,7 @@ func renderAttributeAnchor(cxt Target, anchor *asciidoc.AnchorAttribute, include
 	return
 }
 
-func renderAttributeTitle(cxt Target, title asciidoc.Set, include AttributeFilter, exclude AttributeFilter) (err error) {
+func renderAttributeTitle(cxt Target, title asciidoc.Elements, include AttributeFilter, exclude AttributeFilter) (err error) {
 	if len(title) > 0 && shouldRenderAttributeType(AttributeFilterTitle, include, exclude) {
 		cxt.EnsureNewLine()
 		cxt.FlushWrap()
@@ -284,7 +284,7 @@ func quoteAttributeValue(val any) (string, error) {
 		return escapeQuotes(val.Value), nil
 	case asciidoc.AttributeReference:
 		return "{" + val.Name() + "}", nil
-	case asciidoc.Set:
+	case asciidoc.Elements:
 		var sb strings.Builder
 		for _, a := range val {
 			s, err := quoteAttributeValue(a)
@@ -307,7 +307,7 @@ func renderNakedAttributeValue(cxt Target, val any) (err error) {
 		cxt.WriteRune('{')
 		cxt.WriteString(val.Name())
 		cxt.WriteRune('}')
-	case asciidoc.Set:
+	case asciidoc.Elements:
 		for _, a := range val {
 			err = renderNakedAttributeValue(cxt, a)
 			if err != nil {
@@ -345,7 +345,7 @@ func renderAttributeEntry(cxt Target, ad *asciidoc.AttributeEntry) (err error) {
 		cxt.WriteRune(':')
 		cxt.WriteString(string(ad.Name))
 		cxt.WriteString(": ")
-		err = Elements(cxt, "", ad.Elements()...)
+		err = Elements(cxt, "", ad.Children()...)
 
 		cxt.WriteRune('\n')
 	}

@@ -16,7 +16,7 @@ import (
 
 var endOfSentencePattern = regexp.MustCompile(`(?m)(\.( |$)|\n\n)`)
 
-func getDescription(doc *Doc, entity types.Entity, els asciidoc.Set) string {
+func getDescription(doc *Doc, entity types.Entity, els asciidoc.Elements) string {
 	var sb strings.Builder
 	readDescription(doc, els, &sb)
 	description := sb.String()
@@ -41,7 +41,7 @@ func getDescription(doc *Doc, entity types.Entity, els asciidoc.Set) string {
 	return description
 }
 
-func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err error) {
+func readDescription(doc *Doc, els asciidoc.Elements, value *strings.Builder) (err error) {
 	var foundNonBlock bool
 	for _, el := range els {
 
@@ -59,11 +59,11 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 		case *asciidoc.String:
 			value.WriteString(el.Value)
 		case asciidoc.FormattedTextElement:
-			err = readDescription(doc, el.Elements(), value)
+			err = readDescription(doc, el.Children(), value)
 		case *asciidoc.CrossReference:
-			if len(el.Set) > 0 {
+			if len(el.Elements) > 0 {
 				var label strings.Builder
-				readDescription(doc, el.Set, &label)
+				readDescription(doc, el.Elements, &label)
 				value.WriteString(strings.TrimSpace(label.String()))
 			} else {
 				var val string
@@ -93,7 +93,7 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 			}
 			if textAttribute != nil {
 				switch val := textAttribute.Value().(type) {
-				case asciidoc.Set:
+				case asciidoc.Elements:
 					readDescription(doc, val, value)
 				default:
 					slog.Warn("Unexpected value type when reading entity description", log.Type("valueType", val), log.Path("source", el))
@@ -108,7 +108,7 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
-			err = readDescription(doc, el.Elements(), &quotedText)
+			err = readDescription(doc, el.Children(), &quotedText)
 			if err != nil {
 				return
 			}
@@ -127,16 +127,16 @@ func readDescription(doc *Doc, els asciidoc.Set, value *strings.Builder) (err er
 			value.WriteString(el.Character)
 		case *asciidoc.InlinePassthrough:
 			value.WriteString("+")
-			err = readDescription(doc, el.Elements(), value)
+			err = readDescription(doc, el.Children(), value)
 		case *asciidoc.InlineDoublePassthrough:
 			value.WriteString("++")
-			err = readDescription(doc, el.Elements(), value)
+			err = readDescription(doc, el.Children(), value)
 		case *asciidoc.ThematicBreak:
 		case *asciidoc.EmptyLine:
 		case *asciidoc.NewLine:
 			value.WriteString(" ")
-		case asciidoc.HasElements:
-			err = readDescription(doc, el.Elements(), value)
+		case asciidoc.ParentElement:
+			err = readDescription(doc, el.Children(), value)
 		case *asciidoc.LineBreak:
 			value.WriteString(" ")
 		default:

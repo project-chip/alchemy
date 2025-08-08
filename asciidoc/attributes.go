@@ -24,7 +24,7 @@ func (al AttributeList) Equals(oal AttributeList) bool {
 	return true
 }
 
-func (al AttributeList) SetAttribute(name AttributeName, value Set) {
+func (al AttributeList) SetAttribute(name AttributeName, value Elements) {
 	for _, a := range al {
 		switch a := a.(type) {
 		case *NamedAttribute:

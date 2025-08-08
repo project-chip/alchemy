@@ -1,6 +1,6 @@
 
 Anchor = !"\\" "[[" id:(CrossReferenceID) label:(AnySpaces "," label:(AnchorLabel) { return label, nil})? "]]" {
-    var lbl asciidoc.Set
+    var lbl asciidoc.Elements
     if label != nil {
         lbl = join(label.([]any))
     }
@@ -9,7 +9,7 @@ Anchor = !"\\" "[[" id:(CrossReferenceID) label:(AnySpaces "," label:(AnchorLabe
 }
 
 AnchorAttribute = !"\\" "[[" id:(CrossReferenceID) label:(AnySpaces "," label:(AnchorLabel) { return label, nil})? "]]" {
-    var lbl asciidoc.Set
+    var lbl asciidoc.Elements
     if label != nil {
         lbl = join(label.([]any))
     }

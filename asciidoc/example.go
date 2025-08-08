@@ -6,7 +6,7 @@ type ExampleBlock struct {
 
 	Delimiter Delimiter
 	AttributeList
-	Set
+	Elements
 }
 
 func NewExampleBlock(delimiter Delimiter) *ExampleBlock {
@@ -28,5 +28,5 @@ func (a *ExampleBlock) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

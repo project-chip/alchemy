@@ -38,7 +38,7 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 	elapsed := time.Since(start)
 
 	switch vals := vals.(type) {
-	case asciidoc.Set:
+	case asciidoc.Elements:
 		//		fmt.Printf("coalescing asciidoc...\n")
 		d, err := setToDoc(vals)
 		if err != nil {
@@ -46,7 +46,7 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 		}
 		if debugParser {
 			fmt.Printf("\n\n\n\n\n\n")
-			dump(0, d.Elements()...)
+			dump(0, d.Children()...)
 			fmt.Printf("elapsed: %s\n", elapsed.String())
 		}
 		return d, nil
@@ -55,8 +55,8 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 	}
 }
 
-func setToDoc(vals asciidoc.Set) (d *asciidoc.Document, err error) {
-	var els asciidoc.Set
+func setToDoc(vals asciidoc.Elements) (d *asciidoc.Document, err error) {
+	var els asciidoc.Elements
 	err = reparseTables(vals)
 	if err != nil {
 		return nil, err

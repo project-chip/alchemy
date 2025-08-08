@@ -6,7 +6,7 @@ type FencedBlock struct {
 
 	Delimiter Delimiter
 	AttributeList
-	Set
+	Elements
 }
 
 func NewFencedBlock(delimiter Delimiter) *FencedBlock {
@@ -28,5 +28,5 @@ func (a *FencedBlock) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

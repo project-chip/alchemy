@@ -249,7 +249,7 @@ func (sp *Builder) getCustomDataType(dataType *types.DataType, cluster *matter.C
 }
 
 func (sp *Builder) getCustomDataTypeFromFieldReference(cluster *matter.Cluster, reference *asciidoc.CrossReference, finder entityFinder) (e types.Entity) {
-	label := strings.TrimSpace(asciidoc.ValueToString(reference.Elements()))
+	label := strings.TrimSpace(asciidoc.ValueToString(reference.Children()))
 	//slog.Info("getCustomDataTypeFromFieldReference", "id", source.ID, "label", label, log.Path("source", source))
 	e = finder.findEntityByReference(reference.ID, label, reference)
 	if e != nil {

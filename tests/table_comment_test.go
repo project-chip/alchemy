@@ -3,13 +3,13 @@ package tests
 import "github.com/project-chip/alchemy/asciidoc"
 
 var tableComment = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   4,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -39,7 +39,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Q",
 								},
@@ -75,7 +75,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Quieter Reporting",
 								},
@@ -111,7 +111,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "attribute data",
 								},
@@ -147,7 +147,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data with fluctuating data rate or where some deltas are meaningless or undesirable to report.",
 								},
@@ -157,7 +157,7 @@ var tableComment = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -187,7 +187,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "S",
 								},
@@ -223,7 +223,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Scene",
 								},
@@ -259,7 +259,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "attribute",
 								},
@@ -295,7 +295,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "The attribute is part of a scene",
 								},
@@ -305,7 +305,7 @@ var tableComment = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -335,7 +335,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "X",
 								},
@@ -371,7 +371,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Nullable",
 								},
@@ -407,7 +407,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "data fields",
 								},
@@ -443,19 +443,19 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "The ",
 								},
 								&asciidoc.CrossReference{
-									Set: nil,
-									ID:  "ref_DataTypes",
+									Elements: nil,
+									ID:       "ref_DataTypes",
 								},
 								&asciidoc.String{
 									Value: " of the data field is ",
 								},
 								&asciidoc.CrossReference{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: " nullable",
 										},
@@ -477,7 +477,7 @@ var tableComment = &asciidoc.Document{
 					Value: " | !_W_           |                    | device type      | The quality _W_ (from those defined above in this table) is disallowed.",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -507,13 +507,13 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "!",
 								},
 								&asciidoc.Italic{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "W",
 										},
@@ -551,7 +551,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "",
 								},
@@ -587,7 +587,7 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "device type",
 								},
@@ -623,13 +623,13 @@ var tableComment = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "The quality ",
 								},
 								&asciidoc.Italic{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "W",
 										},

@@ -116,13 +116,13 @@ var syntaxHighlighterTests = parseTests{
 }
 
 var syntaxHighlighterTestShouldSetSyntaxHighlighterPropertyOnDocumentIfSourceHighlighterIsSetAndBasebackendIsHtml = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -135,7 +135,7 @@ var syntaxHighlighterTestShouldSetSyntaxHighlighterPropertyOnDocumentIfSourceHig
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -148,7 +148,7 @@ var syntaxHighlighterTestShouldSetSyntaxHighlighterPropertyOnDocumentIfSourceHig
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -167,13 +167,13 @@ var syntaxHighlighterTestShouldSetSyntaxHighlighterPropertyOnDocumentIfSourceHig
 }
 
 var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSourceHighlighterIsSetAndBasebackendIsNotHtml = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -186,7 +186,7 @@ var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSource
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -199,7 +199,7 @@ var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSource
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -218,7 +218,7 @@ var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSource
 }
 
 var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSourceHighlighterIsNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -226,7 +226,7 @@ var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSource
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -239,7 +239,7 @@ var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSource
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -258,13 +258,13 @@ var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSource
 }
 
 var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSyntaxHighlighterCannotBeResolved = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "unknown",
 				},
@@ -277,7 +277,7 @@ var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSyntax
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -290,7 +290,7 @@ var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSyntax
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -309,7 +309,7 @@ var syntaxHighlighterTestShouldNotSetSyntaxHighlighterPropertyOnDocumentIfSyntax
 }
 
 var syntaxHighlighterTestShouldSetLanguageOnOutputOfSourceBlockWhenSourceHighlighterAttributeIsNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -317,7 +317,7 @@ var syntaxHighlighterTestShouldSetLanguageOnOutputOfSourceBlockWhenSourceHighlig
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -330,7 +330,7 @@ var syntaxHighlighterTestShouldSetLanguageOnOutputOfSourceBlockWhenSourceHighlig
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -349,13 +349,13 @@ var syntaxHighlighterTestShouldSetLanguageOnOutputOfSourceBlockWhenSourceHighlig
 }
 
 var syntaxHighlighterTestShouldSetLanguageOnOutputOfSourceBlockWhenSourceHighlighterAttributeIsNotRecognized = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "unknown",
 				},
@@ -368,7 +368,7 @@ var syntaxHighlighterTestShouldSetLanguageOnOutputOfSourceBlockWhenSourceHighlig
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -381,7 +381,7 @@ var syntaxHighlighterTestShouldSetLanguageOnOutputOfSourceBlockWhenSourceHighlig
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -400,13 +400,13 @@ var syntaxHighlighterTestShouldSetLanguageOnOutputOfSourceBlockWhenSourceHighlig
 }
 
 var syntaxHighlighterTestShouldHighlightSourceIfSourceHighlighterIsSetEvenIfLanguageIsNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -419,7 +419,7 @@ var syntaxHighlighterTestShouldHighlightSourceIfSourceHighlighterIsSetEvenIfLang
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -445,13 +445,13 @@ var syntaxHighlighterTestShouldHighlightSourceIfSourceHighlighterIsSetEvenIfLang
 }
 
 var syntaxHighlighterTestShouldNotCrashIfSourceBlockHasNoLinesAndSourceHighlighterIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -464,7 +464,7 @@ var syntaxHighlighterTestShouldNotCrashIfSourceBlockHasNoLinesAndSourceHighlight
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -477,7 +477,7 @@ var syntaxHighlighterTestShouldNotCrashIfSourceBlockHasNoLinesAndSourceHighlight
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "text",
 						},
@@ -494,13 +494,13 @@ var syntaxHighlighterTestShouldNotCrashIfSourceBlockHasNoLinesAndSourceHighlight
 }
 
 var syntaxHighlighterTestShouldHighlightSourceInsideAsciiDocTableCellIfSourceHighlighterAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -512,9 +512,9 @@ var syntaxHighlighterTestShouldHighlightSourceInsideAsciiDocTableCellIfSourceHig
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -544,13 +544,13 @@ var syntaxHighlighterTestShouldHighlightSourceInsideAsciiDocTableCellIfSourceHig
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.Listing{
 									AttributeList: asciidoc.AttributeList{
 										&asciidoc.ShorthandAttribute{
 											Style: &asciidoc.ShorthandStyle{
-												Set: asciidoc.Set{
+												Elements: asciidoc.Elements{
 													&asciidoc.String{
 														Value: "source",
 													},
@@ -563,7 +563,7 @@ var syntaxHighlighterTestShouldHighlightSourceInsideAsciiDocTableCellIfSourceHig
 										&asciidoc.PositionalAttribute{
 											Offset:      1,
 											ImpliedName: "",
-											Val: asciidoc.Set{
+											Val: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "ruby",
 												},
@@ -591,7 +591,7 @@ var syntaxHighlighterTestShouldHighlightSourceInsideAsciiDocTableCellIfSourceHig
 }
 
 var syntaxHighlighterTestShouldSetStartingLineNumberInDocBookOutputIfLinenumsOptionIsEnabledAndStartAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -599,7 +599,7 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInDocBookOutputIfLinenumsOpt
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -609,7 +609,7 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInDocBookOutputIfLinenumsOpt
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -620,7 +620,7 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInDocBookOutputIfLinenumsOpt
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "java",
 						},
@@ -628,7 +628,7 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInDocBookOutputIfLinenumsOpt
 				},
 				&asciidoc.NamedAttribute{
 					Name: "start",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "3",
 						},
@@ -652,13 +652,13 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInDocBookOutputIfLinenumsOpt
 }
 
 var syntaxHighlighterTestShouldReadSourceLanguageFromSourceLanguageDocumentAttributeIfNotSpecifiedOnSourceBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -666,7 +666,7 @@ var syntaxHighlighterTestShouldReadSourceLanguageFromSourceLanguageDocumentAttri
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-language",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "ruby",
 				},
@@ -679,7 +679,7 @@ var syntaxHighlighterTestShouldReadSourceLanguageFromSourceLanguageDocumentAttri
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -704,13 +704,13 @@ var syntaxHighlighterTestShouldReadSourceLanguageFromSourceLanguageDocumentAttri
 }
 
 var syntaxHighlighterTestShouldRenameDocumentAttributeNamedLanguageToSourceLanguageWhenCompatModeIsEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "language",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "ruby",
 				},
@@ -727,13 +727,13 @@ var syntaxHighlighterTestShouldRenameDocumentAttributeNamedLanguageToSourceLangu
 }
 
 var syntaxHighlighterTestShouldHighlightSourceIfSourceHighlighterAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -746,7 +746,7 @@ var syntaxHighlighterTestShouldHighlightSourceIfSourceHighlighterAttributeIsSet 
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -759,7 +759,7 @@ var syntaxHighlighterTestShouldHighlightSourceIfSourceHighlighterAttributeIsSet 
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -780,13 +780,13 @@ var syntaxHighlighterTestShouldHighlightSourceIfSourceHighlighterAttributeIsSet 
 }
 
 var syntaxHighlighterTestShouldNotFailIfSourceLanguageIsInvalid = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -799,7 +799,7 @@ var syntaxHighlighterTestShouldNotFailIfSourceLanguageIsInvalid = &asciidoc.Docu
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -812,7 +812,7 @@ var syntaxHighlighterTestShouldNotFailIfSourceLanguageIsInvalid = &asciidoc.Docu
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "n/a",
 						},
@@ -831,13 +831,13 @@ var syntaxHighlighterTestShouldNotFailIfSourceLanguageIsInvalid = &asciidoc.Docu
 }
 
 var syntaxHighlighterTestShouldNumberLinesIfThirdPositionalAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -850,7 +850,7 @@ var syntaxHighlighterTestShouldNumberLinesIfThirdPositionalAttributeIsSet = &asc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -863,7 +863,7 @@ var syntaxHighlighterTestShouldNumberLinesIfThirdPositionalAttributeIsSet = &asc
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -872,7 +872,7 @@ var syntaxHighlighterTestShouldNumberLinesIfThirdPositionalAttributeIsSet = &asc
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "linenums",
 						},
@@ -891,13 +891,13 @@ var syntaxHighlighterTestShouldNumberLinesIfThirdPositionalAttributeIsSet = &asc
 }
 
 var syntaxHighlighterTestShouldNumberLinesIfLinenumsOptionIsSetOnSourceBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -910,7 +910,7 @@ var syntaxHighlighterTestShouldNumberLinesIfLinenumsOptionIsSetOnSourceBlock = &
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -920,7 +920,7 @@ var syntaxHighlighterTestShouldNumberLinesIfLinenumsOptionIsSetOnSourceBlock = &
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -931,7 +931,7 @@ var syntaxHighlighterTestShouldNumberLinesIfLinenumsOptionIsSetOnSourceBlock = &
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -950,21 +950,21 @@ var syntaxHighlighterTestShouldNumberLinesIfLinenumsOptionIsSetOnSourceBlock = &
 }
 
 var syntaxHighlighterTestShouldNumberLinesOfSourceBlockIfSourceLinenumsOptionDocumentAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
 			},
 		},
 		&asciidoc.AttributeEntry{
-			Name: "source-linenums-option",
-			Set:  nil,
+			Name:     "source-linenums-option",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -973,7 +973,7 @@ var syntaxHighlighterTestShouldNumberLinesOfSourceBlockIfSourceLinenumsOptionDoc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -986,7 +986,7 @@ var syntaxHighlighterTestShouldNumberLinesOfSourceBlockIfSourceLinenumsOptionDoc
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1005,13 +1005,13 @@ var syntaxHighlighterTestShouldNumberLinesOfSourceBlockIfSourceLinenumsOptionDoc
 }
 
 var syntaxHighlighterTestShouldSetStartingLineNumberInHtmlOutputIfLinenumsOptionIsEnabledAndStartAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -1019,7 +1019,7 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInHtmlOutputIfLinenumsOption
 		},
 		&asciidoc.AttributeEntry{
 			Name: "coderay-linenums-mode",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "inline",
 				},
@@ -1032,7 +1032,7 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInHtmlOutputIfLinenumsOption
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1042,7 +1042,7 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInHtmlOutputIfLinenumsOption
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -1053,7 +1053,7 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInHtmlOutputIfLinenumsOption
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1061,7 +1061,7 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInHtmlOutputIfLinenumsOption
 				},
 				&asciidoc.NamedAttribute{
 					Name: "start",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "10",
 						},
@@ -1081,13 +1081,13 @@ var syntaxHighlighterTestShouldSetStartingLineNumberInHtmlOutputIfLinenumsOption
 }
 
 var syntaxHighlighterTestShouldReplaceCalloutMarksButNotHighlightThemIfSourceHighlighterAttributeIsCoderay = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -1100,7 +1100,7 @@ var syntaxHighlighterTestShouldReplaceCalloutMarksButNotHighlightThemIfSourceHig
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1113,7 +1113,7 @@ var syntaxHighlighterTestShouldReplaceCalloutMarksButNotHighlightThemIfSourceHig
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1160,13 +1160,13 @@ var syntaxHighlighterTestShouldReplaceCalloutMarksButNotHighlightThemIfSourceHig
 }
 
 var syntaxHighlighterTestShouldSupportAutonumberedCalloutMarksIfSourceHighlighterAttributeIsCoderay = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -1179,7 +1179,7 @@ var syntaxHighlighterTestShouldSupportAutonumberedCalloutMarksIfSourceHighlighte
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1192,7 +1192,7 @@ var syntaxHighlighterTestShouldSupportAutonumberedCalloutMarksIfSourceHighlighte
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1230,13 +1230,13 @@ var syntaxHighlighterTestShouldSupportAutonumberedCalloutMarksIfSourceHighlighte
 }
 
 var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfSourceHighlighterIsCoderayAndTableLineNumberingIsEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -1244,7 +1244,7 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfSourceHighligh
 		},
 		&asciidoc.AttributeEntry{
 			Name: "coderay-linenums-mode",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "table",
 				},
@@ -1257,7 +1257,7 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfSourceHighligh
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1270,7 +1270,7 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfSourceHighligh
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1279,7 +1279,7 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfSourceHighligh
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "numbered",
 						},
@@ -1326,13 +1326,13 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfSourceHighligh
 }
 
 var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSourceWhenSourceHighlighterIsCoderay = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -1345,7 +1345,7 @@ var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSourceWhenS
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1358,7 +1358,7 @@ var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSourceWhenS
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1367,7 +1367,7 @@ var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSourceWhenS
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "linenums",
 						},
@@ -1393,13 +1393,13 @@ var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSourceWhenS
 }
 
 var syntaxHighlighterTestShouldPreservePassthroughPlaceholdersWhenHighlightingSourceUsingCoderay = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -1412,7 +1412,7 @@ var syntaxHighlighterTestShouldPreservePassthroughPlaceholdersWhenHighlightingSo
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1425,7 +1425,7 @@ var syntaxHighlighterTestShouldPreservePassthroughPlaceholdersWhenHighlightingSo
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "java",
 						},
@@ -1433,7 +1433,7 @@ var syntaxHighlighterTestShouldPreservePassthroughPlaceholdersWhenHighlightingSo
 				},
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "specialcharacters,macros,callouts",
 						},
@@ -1457,13 +1457,13 @@ var syntaxHighlighterTestShouldPreservePassthroughPlaceholdersWhenHighlightingSo
 }
 
 var syntaxHighlighterTestShouldLinkToCodeRayStylesheetIfSourceHighlighterIsCoderayAndLinkcssIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -1476,7 +1476,7 @@ var syntaxHighlighterTestShouldLinkToCodeRayStylesheetIfSourceHighlighterIsCoder
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1489,7 +1489,7 @@ var syntaxHighlighterTestShouldLinkToCodeRayStylesheetIfSourceHighlighterIsCoder
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1510,13 +1510,13 @@ var syntaxHighlighterTestShouldLinkToCodeRayStylesheetIfSourceHighlighterIsCoder
 }
 
 var syntaxHighlighterTestShouldHighlightSourceInlineIfSourceHighlighterAttributeIsCoderayAndCoderayCssIsStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "coderay",
 				},
@@ -1524,7 +1524,7 @@ var syntaxHighlighterTestShouldHighlightSourceInlineIfSourceHighlighterAttribute
 		},
 		&asciidoc.AttributeEntry{
 			Name: "coderay-css",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "style",
 				},
@@ -1537,7 +1537,7 @@ var syntaxHighlighterTestShouldHighlightSourceInlineIfSourceHighlighterAttribute
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1550,7 +1550,7 @@ var syntaxHighlighterTestShouldHighlightSourceInlineIfSourceHighlighterAttribute
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1571,13 +1571,13 @@ var syntaxHighlighterTestShouldHighlightSourceInlineIfSourceHighlighterAttribute
 }
 
 var syntaxHighlighterTestShouldReadStylesheet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "highlight.js",
 				},
@@ -1590,7 +1590,7 @@ var syntaxHighlighterTestShouldReadStylesheet = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1603,7 +1603,7 @@ var syntaxHighlighterTestShouldReadStylesheet = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1622,13 +1622,13 @@ var syntaxHighlighterTestShouldReadStylesheet = &asciidoc.Document{
 }
 
 var syntaxHighlighterTestShouldIncludeRemoteHighlightJsAssetsIfSourceHighlighterAttributeIsHighlightJs = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "highlight.js",
 				},
@@ -1641,7 +1641,7 @@ var syntaxHighlighterTestShouldIncludeRemoteHighlightJsAssetsIfSourceHighlighter
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1654,7 +1654,7 @@ var syntaxHighlighterTestShouldIncludeRemoteHighlightJsAssetsIfSourceHighlighter
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "html",
 						},
@@ -1673,13 +1673,13 @@ var syntaxHighlighterTestShouldIncludeRemoteHighlightJsAssetsIfSourceHighlighter
 }
 
 var syntaxHighlighterTestShouldAddLanguageNoneClassToSourceBlockWhenSourceHighlighterIsHighlightJsAndLanguageIsNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "highlight.js",
 				},
@@ -1692,7 +1692,7 @@ var syntaxHighlighterTestShouldAddLanguageNoneClassToSourceBlockWhenSourceHighli
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1718,13 +1718,13 @@ var syntaxHighlighterTestShouldAddLanguageNoneClassToSourceBlockWhenSourceHighli
 }
 
 var syntaxHighlighterTestShouldLoadAdditionalLanguagesSpecifiedByHighlightjsLanguages = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "highlight.js",
 				},
@@ -1732,7 +1732,7 @@ var syntaxHighlighterTestShouldLoadAdditionalLanguagesSpecifiedByHighlightjsLang
 		},
 		&asciidoc.AttributeEntry{
 			Name: "highlightjs-languages",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "yaml, scilab",
 				},
@@ -1745,7 +1745,7 @@ var syntaxHighlighterTestShouldLoadAdditionalLanguagesSpecifiedByHighlightjsLang
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1758,7 +1758,7 @@ var syntaxHighlighterTestShouldLoadAdditionalLanguagesSpecifiedByHighlightjsLang
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "yaml",
 						},
@@ -1777,7 +1777,7 @@ var syntaxHighlighterTestShouldLoadAdditionalLanguagesSpecifiedByHighlightjsLang
 }
 
 var syntaxHighlighterTestShouldAddLanguageClassesToChildCodeElementWhenSourceHighlighterIsPrettify = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1785,7 +1785,7 @@ var syntaxHighlighterTestShouldAddLanguageClassesToChildCodeElementWhenSourceHig
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1798,7 +1798,7 @@ var syntaxHighlighterTestShouldAddLanguageClassesToChildCodeElementWhenSourceHig
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1817,7 +1817,7 @@ var syntaxHighlighterTestShouldAddLanguageClassesToChildCodeElementWhenSourceHig
 }
 
 var syntaxHighlighterTestShouldSetLinenumsStartIfLinenumsAreEnabledAndStartAttributeIsSetWhenSourceHighlighterIsPrettify = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1825,7 +1825,7 @@ var syntaxHighlighterTestShouldSetLinenumsStartIfLinenumsAreEnabledAndStartAttri
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1835,7 +1835,7 @@ var syntaxHighlighterTestShouldSetLinenumsStartIfLinenumsAreEnabledAndStartAttri
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -1846,7 +1846,7 @@ var syntaxHighlighterTestShouldSetLinenumsStartIfLinenumsAreEnabledAndStartAttri
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1854,7 +1854,7 @@ var syntaxHighlighterTestShouldSetLinenumsStartIfLinenumsAreEnabledAndStartAttri
 				},
 				&asciidoc.NamedAttribute{
 					Name: "start",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "5",
 						},
@@ -1874,7 +1874,7 @@ var syntaxHighlighterTestShouldSetLinenumsStartIfLinenumsAreEnabledAndStartAttri
 }
 
 var syntaxHighlighterTestShouldSetLangAttributeOnPreWhenSourceHighlighterIsHtmlPipeline = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1882,7 +1882,7 @@ var syntaxHighlighterTestShouldSetLangAttributeOnPreWhenSourceHighlighterIsHtmlP
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1895,7 +1895,7 @@ var syntaxHighlighterTestShouldSetLangAttributeOnPreWhenSourceHighlighterIsHtmlP
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1920,13 +1920,13 @@ var syntaxHighlighterTestShouldSetLangAttributeOnPreWhenSourceHighlighterIsHtmlP
 }
 
 var syntaxHighlighterTestShouldSyntaxHighlightSourceIfSourceHighlighterAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "rouge",
 				},
@@ -1939,7 +1939,7 @@ var syntaxHighlighterTestShouldSyntaxHighlightSourceIfSourceHighlighterAttribute
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1952,7 +1952,7 @@ var syntaxHighlighterTestShouldSyntaxHighlightSourceIfSourceHighlighterAttribute
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -1973,7 +1973,7 @@ var syntaxHighlighterTestShouldSyntaxHighlightSourceIfSourceHighlighterAttribute
 }
 
 var syntaxHighlighterTestShouldHighlightSourceUsingAMixedLexerHtmlJavaScript = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1996,7 +1996,7 @@ var syntaxHighlighterTestShouldHighlightSourceUsingAMixedLexerHtmlJavaScript = &
 }
 
 var syntaxHighlighterTestShouldEnableStartInlineForPhpByDefault = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2018,7 +2018,7 @@ var syntaxHighlighterTestShouldEnableStartInlineForPhpByDefault = &asciidoc.Docu
 }
 
 var syntaxHighlighterTestShouldNotEnableStartInlineForPhpIfDisabledUsingCgiStyleOptionOnLanguage = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2040,7 +2040,7 @@ var syntaxHighlighterTestShouldNotEnableStartInlineForPhpIfDisabledUsingCgiStyle
 }
 
 var syntaxHighlighterTestShouldNotEnableStartInlineForPhpIfMixedOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2052,7 +2052,7 @@ var syntaxHighlighterTestShouldNotEnableStartInlineForPhpIfMixedOptionIsSet = &a
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "mixed",
 								},
@@ -2063,7 +2063,7 @@ var syntaxHighlighterTestShouldNotEnableStartInlineForPhpIfMixedOptionIsSet = &a
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "php",
 						},
@@ -2082,13 +2082,13 @@ var syntaxHighlighterTestShouldNotEnableStartInlineForPhpIfMixedOptionIsSet = &a
 }
 
 var syntaxHighlighterTestShouldNotCrashIfSourceHighlighterAttributeIsSetAndSourceBlockDoesNotDefineALanguage = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "rouge",
 				},
@@ -2101,7 +2101,7 @@ var syntaxHighlighterTestShouldNotCrashIfSourceHighlighterAttributeIsSetAndSourc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2126,13 +2126,13 @@ var syntaxHighlighterTestShouldNotCrashIfSourceHighlighterAttributeIsSetAndSourc
 }
 
 var syntaxHighlighterTestShouldDefaultToPlainTextLexerIfLexerCannotBeResolvedForLanguage = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "rouge",
 				},
@@ -2145,7 +2145,7 @@ var syntaxHighlighterTestShouldDefaultToPlainTextLexerIfLexerCannotBeResolvedFor
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2158,7 +2158,7 @@ var syntaxHighlighterTestShouldDefaultToPlainTextLexerIfLexerCannotBeResolvedFor
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "lolcode",
 						},
@@ -2179,7 +2179,7 @@ var syntaxHighlighterTestShouldDefaultToPlainTextLexerIfLexerCannotBeResolvedFor
 }
 
 var syntaxHighlighterTestShouldNumberLinesUsingTableLayoutIfLinenumsOptionIsEnabledAndLinenumsModeIsNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2187,7 +2187,7 @@ var syntaxHighlighterTestShouldNumberLinesUsingTableLayoutIfLinenumsOptionIsEnab
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2197,7 +2197,7 @@ var syntaxHighlighterTestShouldNumberLinesUsingTableLayoutIfLinenumsOptionIsEnab
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -2208,7 +2208,7 @@ var syntaxHighlighterTestShouldNumberLinesUsingTableLayoutIfLinenumsOptionIsEnab
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2228,13 +2228,13 @@ var syntaxHighlighterTestShouldNumberLinesUsingTableLayoutIfLinenumsOptionIsEnab
 }
 
 var syntaxHighlighterTestShouldNumberLinesUsingInlineElementIfLinenumsOptionIsEnabledAndLinenumsModeIsInline = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "rouge-linenums-mode",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "inline",
 				},
@@ -2247,7 +2247,7 @@ var syntaxHighlighterTestShouldNumberLinesUsingInlineElementIfLinenumsOptionIsEn
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2257,7 +2257,7 @@ var syntaxHighlighterTestShouldNumberLinesUsingInlineElementIfLinenumsOptionIsEn
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -2268,7 +2268,7 @@ var syntaxHighlighterTestShouldNumberLinesUsingInlineElementIfLinenumsOptionIsEn
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2288,13 +2288,13 @@ var syntaxHighlighterTestShouldNumberLinesUsingInlineElementIfLinenumsOptionIsEn
 }
 
 var syntaxHighlighterTestShouldGracefullyFallbackToDefaultStyleIfSpecifiedStyleNotRecognized = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "rouge",
 				},
@@ -2302,7 +2302,7 @@ var syntaxHighlighterTestShouldGracefullyFallbackToDefaultStyleIfSpecifiedStyleN
 		},
 		&asciidoc.AttributeEntry{
 			Name: "rouge-style",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "unknown",
 				},
@@ -2315,7 +2315,7 @@ var syntaxHighlighterTestShouldGracefullyFallbackToDefaultStyleIfSpecifiedStyleN
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2328,7 +2328,7 @@ var syntaxHighlighterTestShouldGracefullyFallbackToDefaultStyleIfSpecifiedStyleN
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2347,13 +2347,13 @@ var syntaxHighlighterTestShouldGracefullyFallbackToDefaultStyleIfSpecifiedStyleN
 }
 
 var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSource = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "rouge",
 				},
@@ -2366,7 +2366,7 @@ var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSource = &a
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2376,7 +2376,7 @@ var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSource = &a
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -2387,7 +2387,7 @@ var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSource = &a
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2413,13 +2413,13 @@ var syntaxHighlighterTestShouldRestoreIsolatedCalloutMarkOnLastLineOfSource = &a
 }
 
 var syntaxHighlighterTestShouldNumberAllLinesWhenIsolatedCalloutMarkIsOnLastLineOfSourceAndStartingLineNumberIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "rouge",
 				},
@@ -2432,7 +2432,7 @@ var syntaxHighlighterTestShouldNumberAllLinesWhenIsolatedCalloutMarkIsOnLastLine
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2442,7 +2442,7 @@ var syntaxHighlighterTestShouldNumberAllLinesWhenIsolatedCalloutMarkIsOnLastLine
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -2453,7 +2453,7 @@ var syntaxHighlighterTestShouldNumberAllLinesWhenIsolatedCalloutMarkIsOnLastLine
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2461,7 +2461,7 @@ var syntaxHighlighterTestShouldNumberAllLinesWhenIsolatedCalloutMarkIsOnLastLine
 				},
 				&asciidoc.NamedAttribute{
 					Name: "start",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "5",
 						},
@@ -2488,7 +2488,7 @@ var syntaxHighlighterTestShouldNumberAllLinesWhenIsolatedCalloutMarkIsOnLastLine
 }
 
 var syntaxHighlighterTestShouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2511,7 +2511,7 @@ var syntaxHighlighterTestShouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled
 }
 
 var syntaxHighlighterTestShouldPreserveGuardAroundCalloutIfIconsAreNotEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2531,13 +2531,13 @@ var syntaxHighlighterTestShouldPreserveGuardAroundCalloutIfIconsAreNotEnabled = 
 }
 
 var syntaxHighlighterTestShouldReadStylesheetForSpecifiedStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "pygments",
 				},
@@ -2545,7 +2545,7 @@ var syntaxHighlighterTestShouldReadStylesheetForSpecifiedStyle = &asciidoc.Docum
 		},
 		&asciidoc.AttributeEntry{
 			Name: "pygments-style",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "monokai",
 				},
@@ -2558,7 +2558,7 @@ var syntaxHighlighterTestShouldReadStylesheetForSpecifiedStyle = &asciidoc.Docum
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2571,7 +2571,7 @@ var syntaxHighlighterTestShouldReadStylesheetForSpecifiedStyle = &asciidoc.Docum
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "python",
 						},
@@ -2595,13 +2595,13 @@ var syntaxHighlighterTestShouldReadStylesheetForSpecifiedStyle = &asciidoc.Docum
 }
 
 var syntaxHighlighterTestShouldEmbedStylesheetForPygmentsStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "pygments",
 				},
@@ -2609,7 +2609,7 @@ var syntaxHighlighterTestShouldEmbedStylesheetForPygmentsStyle = &asciidoc.Docum
 		},
 		&asciidoc.AttributeEntry{
 			Name: "pygments-style",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "monokai",
 				},
@@ -2622,7 +2622,7 @@ var syntaxHighlighterTestShouldEmbedStylesheetForPygmentsStyle = &asciidoc.Docum
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2635,7 +2635,7 @@ var syntaxHighlighterTestShouldEmbedStylesheetForPygmentsStyle = &asciidoc.Docum
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "python",
 						},
@@ -2659,13 +2659,13 @@ var syntaxHighlighterTestShouldEmbedStylesheetForPygmentsStyle = &asciidoc.Docum
 }
 
 var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfTableLineNumberingIsEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "pygments",
 				},
@@ -2673,7 +2673,7 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfTableLineNumbe
 		},
 		&asciidoc.AttributeEntry{
 			Name: "pygments-linenums-mode",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "table",
 				},
@@ -2686,7 +2686,7 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfTableLineNumbe
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2696,7 +2696,7 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfTableLineNumbe
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -2707,7 +2707,7 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfTableLineNumbe
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2743,13 +2743,13 @@ var syntaxHighlighterTestShouldRestoreCalloutMarksToCorrectLinesIfTableLineNumbe
 }
 
 var syntaxHighlighterTestShouldNotHardcodeInlineStylesOnLinenoDivAndPreElementsWhenLinenumsAreEnabledInTableMode = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "pygments",
 				},
@@ -2757,7 +2757,7 @@ var syntaxHighlighterTestShouldNotHardcodeInlineStylesOnLinenoDivAndPreElementsW
 		},
 		&asciidoc.AttributeEntry{
 			Name: "pygments-css",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "inline",
 				},
@@ -2770,7 +2770,7 @@ var syntaxHighlighterTestShouldNotHardcodeInlineStylesOnLinenoDivAndPreElementsW
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2780,7 +2780,7 @@ var syntaxHighlighterTestShouldNotHardcodeInlineStylesOnLinenoDivAndPreElementsW
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -2791,7 +2791,7 @@ var syntaxHighlighterTestShouldNotHardcodeInlineStylesOnLinenoDivAndPreElementsW
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2810,13 +2810,13 @@ var syntaxHighlighterTestShouldNotHardcodeInlineStylesOnLinenoDivAndPreElementsW
 }
 
 var syntaxHighlighterTestShouldLineHighlightSpecifiedLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "pygments",
 				},
@@ -2829,7 +2829,7 @@ var syntaxHighlighterTestShouldLineHighlightSpecifiedLines = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2842,7 +2842,7 @@ var syntaxHighlighterTestShouldLineHighlightSpecifiedLines = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2850,7 +2850,7 @@ var syntaxHighlighterTestShouldLineHighlightSpecifiedLines = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "highlight",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "1..2",
 						},

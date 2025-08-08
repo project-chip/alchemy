@@ -3,7 +3,7 @@
 OrderedListItem = marker:(OrderedListMarker)  value:(ListItemValue) {
      debugPosition(c, "found ordered list item: %v\n", marker)
      m := marker.(listMarker)
-    return compose(c, asciidoc.NewOrderedListItem(m.indent, m.marker), setElements[*asciidoc.OrderedListItem](value.(asciidoc.Set)))
+    return compose(c, asciidoc.NewOrderedListItem(m.indent, m.marker), setElements[*asciidoc.OrderedListItem](value.(asciidoc.Elements)))
 }
 
 

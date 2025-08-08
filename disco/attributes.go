@@ -118,7 +118,7 @@ func (b *Baller) linkIndexTables(cxt *discoContext, section *subSection) error {
 			spec.NewAnchor(cxt.doc, id, s.Base, section.section, label...).SyncToDoc(id)
 		}
 		icr := asciidoc.NewCrossReference(id, asciidoc.CrossReferenceFormatNatural)
-		cell.SetElements(asciidoc.Set{icr})
+		cell.SetChildren(asciidoc.Elements{icr})
 	}
 
 	return nil

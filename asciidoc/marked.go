@@ -5,7 +5,7 @@ type Marked struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
 func NewMarked() *Marked {
@@ -28,7 +28,7 @@ func (b *Marked) Equals(e Element) bool {
 	if !b.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Set.Equals(ob.Set)
+	return b.Elements.Equals(ob.Elements)
 }
 
 type DoubleMarked struct {
@@ -36,7 +36,7 @@ type DoubleMarked struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
 func NewDoubleMarked() *DoubleMarked {
@@ -59,5 +59,5 @@ func (b *DoubleMarked) Equals(e Element) bool {
 	if !b.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Set.Equals(ob.Set)
+	return b.Elements.Equals(ob.Elements)
 }

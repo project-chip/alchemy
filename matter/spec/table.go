@@ -42,7 +42,7 @@ func parseTable(doc *Doc, section *Section, t *asciidoc.Table) (ti *TableInfo, e
 
 func FindFirstTable(section *Section) *asciidoc.Table {
 	var table *asciidoc.Table
-	parse.SkimFunc(section.Elements(), func(t *asciidoc.Table) bool {
+	parse.SkimFunc(section.Children(), func(t *asciidoc.Table) bool {
 		table = t
 		return true
 	})
@@ -50,7 +50,7 @@ func FindFirstTable(section *Section) *asciidoc.Table {
 }
 
 func RenderTableCell(cell *asciidoc.TableCell) (string, error) {
-	cellElements := cell.Elements()
+	cellElements := cell.Children()
 	if len(cellElements) == 0 {
 		return "", nil
 	}
@@ -63,7 +63,7 @@ func RenderTableCell(cell *asciidoc.TableCell) (string, error) {
 }
 
 func (d *Doc) GetHeaderCellString(cell *asciidoc.TableCell) (string, error) {
-	cellElements := cell.Elements()
+	cellElements := cell.Children()
 	if len(cellElements) == 0 {
 		return "", nil
 	}

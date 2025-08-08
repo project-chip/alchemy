@@ -45,7 +45,7 @@ func (b *Baller) fixConformanceCells(cxt *discoContext, section *subSection, row
 
 func disambiguateConformance(cxt *discoContext) (err error) {
 	globalChoices := make(map[string]string)
-	parse.Traverse(cxt.doc, cxt.doc.Elements(), func(table *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(cxt.doc, cxt.doc.Children(), func(table *asciidoc.Table, parent parse.HasElements, index int) parse.SearchShould {
 		ti, ok := cxt.parsed.tableCache[table]
 		if !ok {
 

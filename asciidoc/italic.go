@@ -5,12 +5,12 @@ type Italic struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
-func NewItalic(elements Set) *Italic {
+func NewItalic(elements Elements) *Italic {
 	return &Italic{
-		Set: elements,
+		Elements: elements,
 	}
 }
 
@@ -30,7 +30,7 @@ func (a *Italic) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 type DoubleItalic struct {
@@ -38,12 +38,12 @@ type DoubleItalic struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
-func NewDoubleItalic(elements Set) *DoubleItalic {
+func NewDoubleItalic(elements Elements) *DoubleItalic {
 	return &DoubleItalic{
-		Set: elements,
+		Elements: elements,
 	}
 }
 
@@ -63,5 +63,5 @@ func (a *DoubleItalic) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

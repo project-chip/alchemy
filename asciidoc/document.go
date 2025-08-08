@@ -1,7 +1,7 @@
 package asciidoc
 
 type Document struct {
-	Set
+	Elements
 }
 
 func (Document) Type() ElementType {
@@ -13,5 +13,5 @@ func (a *Document) Equals(o Element) bool {
 	if !ok {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

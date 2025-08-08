@@ -2,9 +2,9 @@ package parse
 
 import "github.com/project-chip/alchemy/asciidoc"
 
-func buildDoc(els asciidoc.Set) (d *asciidoc.Document) {
+func buildDoc(els asciidoc.Elements) (d *asciidoc.Document) {
 	d = &asciidoc.Document{}
-	var current asciidoc.HasElements
+	var current asciidoc.ParentElement
 	current = d
 	var lastSection *asciidoc.Section
 	for _, el := range els {

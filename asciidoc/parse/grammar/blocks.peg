@@ -67,7 +67,7 @@ BlockAttributes = AnchorAttribute / BlockTitle / Attributes / ShorthandAttribute
 
 BlockTitle = BeginningOfLine "." ![ .] content:(BlockTitleContent) {
     debugPosition(c, "matched block title!: %s\n", string(c.text))
-    els, err := coalesce(content.(asciidoc.Set))
+    els, err := coalesce(content.(asciidoc.Elements))
     if err != nil {
         return nil, err
     }

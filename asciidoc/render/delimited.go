@@ -21,7 +21,7 @@ func renderDelimitedLines(cxt Target, el asciidoc.HasLines, delimiter asciidoc.D
 	return
 }
 
-func renderDelimitedElements(cxt Target, el asciidoc.HasElements, delimiter asciidoc.Delimiter) (err error) {
+func renderDelimitedElements(cxt Target, el asciidoc.ParentElement, delimiter asciidoc.Delimiter) (err error) {
 	cxt.FlushWrap()
 	if ae, ok := el.(asciidoc.Attributable); ok {
 		err = renderAttributes(cxt, ae.Attributes(), false)
@@ -32,7 +32,7 @@ func renderDelimitedElements(cxt Target, el asciidoc.HasElements, delimiter asci
 	cxt.DisableWrap()
 	renderDelimiter(cxt, delimiter)
 	cxt.EnableWrap()
-	err = Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Children()...)
 	if err != nil {
 		return
 	}

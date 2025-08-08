@@ -2,21 +2,21 @@ package asciidoc
 
 import "unicode"
 
-type Set []Element
+type Elements []Element
 
-func (s Set) Elements() Set {
+func (s Elements) Children() Elements {
 	return s
 }
 
-func (s *Set) Append(e ...Element) {
+func (s *Elements) Append(e ...Element) {
 	*s = append(*s, e...)
 }
 
-func (s *Set) SetElements(els Set) {
+func (s *Elements) SetChildren(els Elements) {
 	*s = els
 }
 
-func (s Set) Equals(o Set) bool {
+func (s Elements) Equals(o Elements) bool {
 	if len(s) != len(o) {
 		return false
 	}
@@ -29,7 +29,7 @@ func (s Set) Equals(o Set) bool {
 	return true
 }
 
-func (s Set) IsWhitespace() bool {
+func (s Elements) IsWhitespace() bool {
 	if len(s) == 0 {
 		return true
 	}

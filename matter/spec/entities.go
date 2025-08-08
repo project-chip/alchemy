@@ -27,7 +27,7 @@ func (doc *Doc) parseEntities(spec *Specification) error {
 	pc := &parseContext{
 		entitiesByElement: make(map[asciidoc.Attributable][]types.Entity),
 	}
-	for top := range parse.Skim[*Section](doc.Elements()) {
+	for top := range parse.Skim[*Section](doc.Children()) {
 		err := AssignSectionTypes(doc, top)
 		if err != nil {
 			return err

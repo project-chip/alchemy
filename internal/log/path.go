@@ -48,7 +48,7 @@ type hasPosition interface {
 	Position() (line int, column int, offset int)
 }
 
-func Elements(name string, path fmt.Stringer, elements asciidoc.Set) slog.Attr {
+func Elements(name string, path fmt.Stringer, elements asciidoc.Elements) slog.Attr {
 	var arg strings.Builder
 	arg.WriteString(path.String())
 	for _, element := range elements {

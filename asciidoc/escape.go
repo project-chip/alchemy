@@ -4,7 +4,7 @@ type AlchemyEscape struct {
 	position
 	raw
 
-	Set
+	Elements
 	LineList
 }
 

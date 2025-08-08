@@ -8,11 +8,11 @@ import (
 type ShorthandStyle struct {
 	attribute
 
-	Set
+	Elements
 }
 
 func NewShorthandStyle(value ...Element) *ShorthandStyle {
-	return &ShorthandStyle{Set: value}
+	return &ShorthandStyle{Elements: value}
 }
 
 func (sa *ShorthandStyle) Equals(osa Element) bool {
@@ -20,7 +20,7 @@ func (sa *ShorthandStyle) Equals(osa Element) bool {
 		if osa == nil {
 			return sa == nil
 		}
-		return sa.Set.Equals(osa.Set)
+		return sa.Elements.Equals(osa.Elements)
 	}
 	return false
 }
@@ -28,11 +28,11 @@ func (sa *ShorthandStyle) Equals(osa Element) bool {
 type ShorthandID struct {
 	attribute
 
-	Set
+	Elements
 }
 
 func NewShorthandID(value ...Element) *ShorthandID {
-	return &ShorthandID{Set: value}
+	return &ShorthandID{Elements: value}
 }
 
 func (sa *ShorthandID) Equals(osa Element) bool {
@@ -40,7 +40,7 @@ func (sa *ShorthandID) Equals(osa Element) bool {
 		if osa == nil {
 			return sa == nil
 		}
-		return sa.Set.Equals(osa.Set)
+		return sa.Elements.Equals(osa.Elements)
 	}
 	return false
 }
@@ -48,11 +48,11 @@ func (sa *ShorthandID) Equals(osa Element) bool {
 type ShorthandRole struct {
 	attribute
 
-	Set
+	Elements
 }
 
 func NewShorthandRole(value ...Element) *ShorthandRole {
-	return &ShorthandRole{Set: value}
+	return &ShorthandRole{Elements: value}
 }
 
 func (sa *ShorthandRole) Equals(osa Element) bool {
@@ -60,7 +60,7 @@ func (sa *ShorthandRole) Equals(osa Element) bool {
 		if osa == nil {
 			return sa == nil
 		}
-		return sa.Set.Equals(osa.Set)
+		return sa.Elements.Equals(osa.Elements)
 	}
 	return false
 }
@@ -68,11 +68,11 @@ func (sa *ShorthandRole) Equals(osa Element) bool {
 type ShorthandOption struct {
 	attribute
 
-	Set
+	Elements
 }
 
 func NewShorthandOption(value ...Element) *ShorthandOption {
-	return &ShorthandOption{Set: value}
+	return &ShorthandOption{Elements: value}
 }
 
 func (sa *ShorthandOption) Equals(osa Element) bool {
@@ -80,7 +80,7 @@ func (sa *ShorthandOption) Equals(osa Element) bool {
 		if osa == nil {
 			return sa == nil
 		}
-		eq := sa.Set.Equals(osa.Set)
+		eq := sa.Elements.Equals(osa.Elements)
 		return eq
 	}
 	return false
@@ -146,7 +146,7 @@ func (ta *ShorthandAttribute) Equals(oa Attribute) bool {
 }
 
 func (na *ShorthandAttribute) SetValue(v any) error {
-	if _, ok := v.(Set); ok {
+	if _, ok := v.(Elements); ok {
 		return nil
 	}
 	return fmt.Errorf("invalid type for ShorthandAttribute: %T", v)
@@ -155,22 +155,22 @@ func (na *ShorthandAttribute) SetValue(v any) error {
 func (na *ShorthandAttribute) AsciiDocString() string {
 	var s strings.Builder
 	if na.Style != nil {
-		s.WriteString(AttributeAsciiDocString(na.Style.Set))
+		s.WriteString(AttributeAsciiDocString(na.Style.Elements))
 	}
 	if na.ID != nil {
 		s.WriteRune('#')
-		s.WriteString(AttributeAsciiDocString(na.ID.Set))
+		s.WriteString(AttributeAsciiDocString(na.ID.Elements))
 	}
 	if len(na.Roles) > 0 {
 		for _, r := range na.Roles {
 			s.WriteRune('.')
-			s.WriteString(AttributeAsciiDocString(r.Set))
+			s.WriteString(AttributeAsciiDocString(r.Elements))
 		}
 	}
 	if len(na.Options) > 0 {
 		for _, o := range na.Options {
 			s.WriteRune('%')
-			s.WriteString(AttributeAsciiDocString(o.Set))
+			s.WriteString(AttributeAsciiDocString(o.Elements))
 		}
 	}
 	return s.String()
@@ -209,11 +209,11 @@ func parseShorthandAttribute(pa *PositionalAttribute) *ShorthandAttribute {
 	}
 }
 
-func parseShorthandAttributeValues(els Set) (style *ShorthandStyle, id *ShorthandID, roles []*ShorthandRole, options []*ShorthandOption) {
+func parseShorthandAttributeValues(els Elements) (style *ShorthandStyle, id *ShorthandID, roles []*ShorthandRole, options []*ShorthandOption) {
 	if len(els) == 0 {
 		return
 	}
-	var currentShorthand HasElements
+	var currentShorthand ParentElement
 	for _, el := range els {
 		switch el := el.(type) {
 		case *String:
@@ -243,19 +243,19 @@ func parseShorthandAttributeValues(els Set) (style *ShorthandStyle, id *Shorthan
 				switch cs := currentShorthand.(type) {
 				case nil:
 				case *ShorthandStyle:
-					if len(cs.Set) > 0 {
+					if len(cs.Elements) > 0 {
 						style = cs
 					}
 				case *ShorthandID:
-					if len(cs.Set) > 0 {
+					if len(cs.Elements) > 0 {
 						id = cs
 					}
 				case *ShorthandRole:
-					if len(cs.Set) > 0 {
+					if len(cs.Elements) > 0 {
 						roles = append(roles, cs)
 					}
 				case *ShorthandOption:
-					if len(cs.Set) > 0 {
+					if len(cs.Elements) > 0 {
 						options = append(options, cs)
 					}
 				}
@@ -279,19 +279,19 @@ func parseShorthandAttributeValues(els Set) (style *ShorthandStyle, id *Shorthan
 	switch cs := currentShorthand.(type) {
 	case nil:
 	case *ShorthandStyle:
-		if len(cs.Set) > 0 {
+		if len(cs.Elements) > 0 {
 			style = cs
 		}
 	case *ShorthandID:
-		if len(cs.Set) > 0 {
+		if len(cs.Elements) > 0 {
 			id = cs
 		}
 	case *ShorthandRole:
-		if len(cs.Set) > 0 {
+		if len(cs.Elements) > 0 {
 			roles = append(roles, cs)
 		}
 	case *ShorthandOption:
-		if len(cs.Set) > 0 {
+		if len(cs.Elements) > 0 {
 			options = append(options, cs)
 		}
 	}

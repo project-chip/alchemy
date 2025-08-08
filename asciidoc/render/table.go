@@ -254,7 +254,7 @@ func offsetsForRow(cells []*tableCell) (offsets []int) {
 
 func renderTableSubElements(cxt Target, t *asciidoc.Table, tbl *table) (err error) {
 	var rowCount = 0
-	for _, row := range t.Elements() {
+	for _, row := range t.Children() {
 		tr := &tableRow{}
 		switch row := row.(type) {
 		case *asciidoc.TableRow:
@@ -262,7 +262,7 @@ func renderTableSubElements(cxt Target, t *asciidoc.Table, tbl *table) (err erro
 			rowCount++
 			for _, c := range row.TableCells() {
 				renderContext := cxt.Subtarget()
-				err = Elements(renderContext, "", c.Elements()...)
+				err = Elements(renderContext, "", c.Children()...)
 				if err != nil {
 					return
 				}

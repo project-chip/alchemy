@@ -100,7 +100,7 @@ var linksTests = parseTests{
 }
 
 var linksTestUnescapesSquareBracketInReftextOfAnchorMacro = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -109,7 +109,7 @@ var linksTestUnescapesSquareBracketInReftextOfAnchorMacro = &asciidoc.Document{
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "foo",
 			Format:        0,
 		},
@@ -125,13 +125,13 @@ var linksTestUnescapesSquareBracketInReftextOfAnchorMacro = &asciidoc.Document{
 }
 
 var linksTestXrefUsingAngledBracketSyntaxWithLabel = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "About Tigers",
 				},
@@ -148,7 +148,7 @@ var linksTestXrefUsingAngledBracketSyntaxWithLabel = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -158,8 +158,8 @@ var linksTestXrefUsingAngledBracketSyntaxWithLabel = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -170,13 +170,13 @@ var linksTestXrefUsingAngledBracketSyntaxWithLabel = &asciidoc.Document{
 }
 
 var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "tigers",
 			Format:        0,
 		},
@@ -189,7 +189,7 @@ var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecifie
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -199,8 +199,8 @@ var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecifie
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -211,7 +211,7 @@ var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenNoExplicitReftextIsSpecifie
 }
 
 var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -227,7 +227,7 @@ var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty = &
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -237,8 +237,8 @@ var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty = &
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -249,13 +249,13 @@ var linksTestXrefShouldUseTitleOfTargetAsLinkTextWhenExplicitLinkTextIsEmpty = &
 }
 
 var linksTestXrefUsingAngledBracketSyntaxWithQuotedLabel = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "\"About Tigers\"",
 				},
@@ -272,7 +272,7 @@ var linksTestXrefUsingAngledBracketSyntaxWithQuotedLabel = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -282,8 +282,8 @@ var linksTestXrefUsingAngledBracketSyntaxWithQuotedLabel = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -294,7 +294,7 @@ var linksTestXrefUsingAngledBracketSyntaxWithQuotedLabel = &asciidoc.Document{
 }
 
 var linksTestXrefUsingAngledBracketSyntaxInlineWithText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -303,7 +303,7 @@ var linksTestXrefUsingAngledBracketSyntaxInlineWithText = &asciidoc.Document{
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "about tigers",
 				},
@@ -323,7 +323,7 @@ var linksTestXrefUsingAngledBracketSyntaxInlineWithText = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -333,8 +333,8 @@ var linksTestXrefUsingAngledBracketSyntaxInlineWithText = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -345,7 +345,7 @@ var linksTestXrefUsingAngledBracketSyntaxInlineWithText = &asciidoc.Document{
 }
 
 var linksTestXrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -354,7 +354,7 @@ var linksTestXrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText = &asc
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "about\ntigers",
 				},
@@ -374,7 +374,7 @@ var linksTestXrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText = &asc
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -384,8 +384,8 @@ var linksTestXrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText = &asc
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -396,7 +396,7 @@ var linksTestXrefUsingAngledBracketSyntaxWithMultiLineLabelInlineWithText = &asc
 }
 
 var linksTestXrefWithEscapedText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -405,7 +405,7 @@ var linksTestXrefWithEscapedText = &asciidoc.Document{
 		},
 		&asciidoc.Monospace{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "+[tigers]+",
 				},
@@ -423,7 +423,7 @@ var linksTestXrefWithEscapedText = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -433,8 +433,8 @@ var linksTestXrefWithEscapedText = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -445,7 +445,7 @@ var linksTestXrefWithEscapedText = &asciidoc.Document{
 }
 
 var linksTestXrefUsingMacroSyntax = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -454,7 +454,7 @@ var linksTestXrefUsingMacroSyntax = &asciidoc.Document{
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "sect-a",
 			Format:        1,
 		},
@@ -463,7 +463,7 @@ var linksTestXrefUsingMacroSyntax = &asciidoc.Document{
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "sect-b",
 			Format:        1,
 		},
@@ -479,7 +479,7 @@ var linksTestXrefUsingMacroSyntax = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "sect-a",
 							},
@@ -489,12 +489,12 @@ var linksTestXrefUsingMacroSyntax = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section A",
 				},
@@ -506,7 +506,7 @@ var linksTestXrefUsingMacroSyntax = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "sect-b",
 							},
@@ -516,8 +516,8 @@ var linksTestXrefUsingMacroSyntax = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section B",
 				},
@@ -528,7 +528,7 @@ var linksTestXrefUsingMacroSyntax = &asciidoc.Document{
 }
 
 var linksTestXrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -536,7 +536,7 @@ var linksTestXrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "About Tigers",
 							},
@@ -547,9 +547,9 @@ var linksTestXrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set:    nil,
-			ID:     "tigers",
-			Format: 1,
+			Elements: nil,
+			ID:       "tigers",
+			Format:   1,
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.EmptyLine{
@@ -560,7 +560,7 @@ var linksTestXrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -570,8 +570,8 @@ var linksTestXrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -582,7 +582,7 @@ var linksTestXrefUsingMacroSyntaxWithExplicitHash = &asciidoc.Document{
 }
 
 var linksTestXrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -593,7 +593,7 @@ var linksTestXrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "about tigers",
 							},
@@ -604,9 +604,9 @@ var linksTestXrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set:    nil,
-			ID:     "tigers",
-			Format: 1,
+			Elements: nil,
+			ID:       "tigers",
+			Format:   1,
 		},
 		&asciidoc.String{
 			Value: "?",
@@ -620,7 +620,7 @@ var linksTestXrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -630,8 +630,8 @@ var linksTestXrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -642,7 +642,7 @@ var linksTestXrefUsingMacroSyntaxInlineWithText = &asciidoc.Document{
 }
 
 var linksTestXrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -653,7 +653,7 @@ var linksTestXrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Do
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "about\ntigers",
 							},
@@ -664,9 +664,9 @@ var linksTestXrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Do
 					Options: nil,
 				},
 			},
-			Set:    nil,
-			ID:     "tigers",
-			Format: 1,
+			Elements: nil,
+			ID:       "tigers",
+			Format:   1,
 		},
 		&asciidoc.String{
 			Value: "?",
@@ -680,7 +680,7 @@ var linksTestXrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Do
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -690,8 +690,8 @@ var linksTestXrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Do
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -702,7 +702,7 @@ var linksTestXrefUsingMacroSyntaxWithMultiLineLabelInlineWithText = &asciidoc.Do
 }
 
 var linksTestXrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -710,7 +710,7 @@ var linksTestXrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "[tigers\\",
 							},
@@ -721,9 +721,9 @@ var linksTestXrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &
 					Options: nil,
 				},
 			},
-			Set:    nil,
-			ID:     "tigers",
-			Format: 1,
+			Elements: nil,
+			ID:       "tigers",
+			Format:   1,
 		},
 		&asciidoc.String{
 			Value: "]",
@@ -737,7 +737,7 @@ var linksTestXrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -747,8 +747,8 @@ var linksTestXrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -759,7 +759,7 @@ var linksTestXrefUsingMacroSyntaxWithTextThatEndsWithAnEscapedClosingBracket = &
 }
 
 var linksTestXrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -767,7 +767,7 @@ var linksTestXrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "[tigers\\",
 							},
@@ -778,9 +778,9 @@ var linksTestXrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &
 					Options: nil,
 				},
 			},
-			Set:    nil,
-			ID:     "tigers",
-			Format: 1,
+			Elements: nil,
+			ID:       "tigers",
+			Format:   1,
 		},
 		&asciidoc.String{
 			Value: " are cats]",
@@ -794,7 +794,7 @@ var linksTestXrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "tigers",
 							},
@@ -804,8 +804,8 @@ var linksTestXrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tigers",
 				},
@@ -816,7 +816,7 @@ var linksTestXrefUsingMacroSyntaxWithTextThatContainsAnEscapedClosingBracket = &
 }
 
 var linksTestUnescapesSquareBracketInReftextUsedByXref = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -832,7 +832,7 @@ var linksTestUnescapesSquareBracketInReftextUsedByXref = &asciidoc.Document{
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "foo",
 			Format:        0,
 		},
@@ -841,7 +841,7 @@ var linksTestUnescapesSquareBracketInReftextUsedByXref = &asciidoc.Document{
 }
 
 var linksTestXrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -850,7 +850,7 @@ var linksTestXrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "foobar",
 							},
@@ -860,12 +860,12 @@ var linksTestXrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foobar",
 				},
@@ -874,7 +874,7 @@ var linksTestXrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -883,7 +883,7 @@ var linksTestXrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "foobaz",
 					Format:        0,
 				},
@@ -892,7 +892,7 @@ var linksTestXrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section B",
 				},
@@ -903,7 +903,7 @@ var linksTestXrefUsingInvalidMacroSyntaxDoesNotCreateLink = &asciidoc.Document{
 }
 
 var linksTestShouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -916,12 +916,12 @@ var linksTestShouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &a
 					Label: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foobar",
 				},
@@ -930,7 +930,7 @@ var linksTestShouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &a
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -939,7 +939,7 @@ var linksTestShouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &a
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "foobar",
 					Format:        0,
 				},
@@ -948,7 +948,7 @@ var linksTestShouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &a
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section B",
 				},
@@ -959,7 +959,7 @@ var linksTestShouldNotWarnIfVerboseFlagIsSetAndReferenceIsFoundInCompatMode = &a
 }
 
 var linksTestShouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationIsNotFound = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -968,7 +968,7 @@ var linksTestShouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationI
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "foobar",
 							},
@@ -978,12 +978,12 @@ var linksTestShouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationI
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foobar",
 				},
@@ -992,7 +992,7 @@ var linksTestShouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationI
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1001,7 +1001,7 @@ var linksTestShouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationI
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section B",
 				},
@@ -1012,16 +1012,16 @@ var linksTestShouldWarnAndCreateLinkIfVerboseFlagIsSetAndReferenceUsingNotationI
 }
 
 var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedIntoCurrentFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -1035,7 +1035,7 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedI
 						&asciidoc.ShorthandAttribute{
 							Style: nil,
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "ch1",
 									},
@@ -1045,7 +1045,7 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedI
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -1065,14 +1065,14 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedI
 						},
 						&asciidoc.FileInclude{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "other-chapters.adoc",
 								},
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -1080,7 +1080,7 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedI
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book Title",
 				},
@@ -1091,16 +1091,16 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedI
 }
 
 var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedEntirelyIntoCurrentFileUsingTags = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -1114,7 +1114,7 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedE
 						&asciidoc.ShorthandAttribute{
 							Style: nil,
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "ch1",
 									},
@@ -1124,7 +1124,7 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedE
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -1146,7 +1146,7 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedE
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.NamedAttribute{
 									Name: "tags",
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "**",
 										},
@@ -1154,14 +1154,14 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedE
 									Quote: 0,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "other-chapters.adoc",
 								},
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -1169,7 +1169,7 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedE
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book Title",
 				},
@@ -1180,16 +1180,16 @@ var linksTestShouldProduceAnInternalAnchorFromAnInterDocumentXrefToFileIncludedE
 }
 
 var linksTestShouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartiallyIncludedIntoCurrentFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -1203,7 +1203,7 @@ var linksTestShouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartially
 						&asciidoc.ShorthandAttribute{
 							Style: nil,
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "ch1",
 									},
@@ -1213,7 +1213,7 @@ var linksTestShouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartially
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -1235,7 +1235,7 @@ var linksTestShouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartially
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.NamedAttribute{
 									Name: "tags",
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "ch2",
 										},
@@ -1243,14 +1243,14 @@ var linksTestShouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartially
 									Quote: 0,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "other-chapters.adoc",
 								},
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -1258,7 +1258,7 @@ var linksTestShouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartially
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book Title",
 				},
@@ -1269,16 +1269,16 @@ var linksTestShouldNotProduceAnInternalAnchorForInterDocumentXrefToFilePartially
 }
 
 var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFullyAndPartially = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -1292,7 +1292,7 @@ var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFull
 						&asciidoc.ShorthandAttribute{
 							Style: nil,
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "ch1",
 									},
@@ -1302,7 +1302,7 @@ var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFull
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -1322,7 +1322,7 @@ var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFull
 						},
 						&asciidoc.FileInclude{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "other-chapters.adoc",
 								},
@@ -1335,7 +1335,7 @@ var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFull
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.NamedAttribute{
 									Name: "tag",
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "ch2-noid",
 										},
@@ -1343,14 +1343,14 @@ var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFull
 									Quote: 0,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "other-chapters.adoc",
 								},
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -1358,7 +1358,7 @@ var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFull
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book Title",
 				},
@@ -1369,7 +1369,7 @@ var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileIncludedFull
 }
 
 var linksTestShouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsToCurrentDocAndReferenceNotFound = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1378,7 +1378,7 @@ var linksTestShouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsT
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "foobar",
 							},
@@ -1388,12 +1388,12 @@ var linksTestShouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsT
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foobar",
 				},
@@ -1402,7 +1402,7 @@ var linksTestShouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsT
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1411,7 +1411,7 @@ var linksTestShouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsT
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section B",
 				},
@@ -1422,13 +1422,13 @@ var linksTestShouldWarnAndCreateLinkIfDebugModeIsEnabledInterDocumentXrefPointsT
 }
 
 var linksTestShouldUseDoctitleAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1437,13 +1437,13 @@ var linksTestShouldUseDoctitleAsFallbackLinkTextIfInterDocumentXrefPointsToCurre
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "test.adoc",
 					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Links & Stuff at https://example.org",
 				},
@@ -1454,22 +1454,22 @@ var linksTestShouldUseDoctitleAsFallbackLinkTextIfInterDocumentXrefPointsToCurre
 }
 
 var linksTestShouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXrefInAsciiDocTableCellThatResolvesToCurrentDoc = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
 					AttributeList: nil,
 					ColumnCount:   1,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableRow{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableCell{
 									Format: &asciidoc.TableCellFormat{
 										Multiplier: asciidoc.Optional[int]{
@@ -1499,13 +1499,13 @@ var linksTestShouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXr
 											IsSet: true,
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "See ",
 										},
 										&asciidoc.CrossReference{
 											AttributeList: nil,
-											Set:           nil,
+											Elements:      nil,
 											ID:            "test.adoc",
 											Format:        1,
 										},
@@ -1517,7 +1517,7 @@ var linksTestShouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXr
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -1528,7 +1528,7 @@ var linksTestShouldUseDoctitleOfRootDocumentAsFallbackLinkTextForInterDocumentXr
 }
 
 var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocAndNoLinkTextIsProvided = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1536,7 +1536,7 @@ var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPoin
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "reftext",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Links and Stuff",
 						},
@@ -1544,7 +1544,7 @@ var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPoin
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1553,13 +1553,13 @@ var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPoin
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "test.adoc",
 					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Links & Stuff",
 				},
@@ -1570,7 +1570,7 @@ var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfInterDocumentXrefPoin
 }
 
 var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFragmentAndNoLinkTextIsProvided = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1578,7 +1578,7 @@ var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFrag
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "reftext",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Links and Stuff",
 						},
@@ -1586,7 +1586,7 @@ var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFrag
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1595,13 +1595,13 @@ var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFrag
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "#",
 					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Links & Stuff",
 				},
@@ -1612,7 +1612,7 @@ var linksTestShouldUseReftextOnDocumentAsFallbackLinkTextIfXrefPointsToEmptyFrag
 }
 
 var linksTestShouldUseFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocWithoutHeaderAndNoLinkTextIsProvided = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1621,7 +1621,7 @@ var linksTestShouldUseFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocWitho
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "test.adoc",
 			Format:        1,
 		},
@@ -1630,7 +1630,7 @@ var linksTestShouldUseFallbackLinkTextIfInterDocumentXrefPointsToCurrentDocWitho
 }
 
 var linksTestShouldUseFallbackLinkTextIfFragmentOfInternalXrefIsEmptyAndNoLinkTextIsProvided = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1639,7 +1639,7 @@ var linksTestShouldUseFallbackLinkTextIfFragmentOfInternalXrefIsEmptyAndNoLinkTe
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "#",
 			Format:        1,
 		},
@@ -1648,7 +1648,7 @@ var linksTestShouldUseFallbackLinkTextIfFragmentOfInternalXrefIsEmptyAndNoLinkTe
 }
 
 var linksTestShouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1657,7 +1657,7 @@ var linksTestShouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "docid",
 							},
@@ -1667,7 +1667,7 @@ var linksTestShouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1676,13 +1676,13 @@ var linksTestShouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "test.adoc",
 					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -1693,13 +1693,13 @@ var linksTestShouldUseDocumentIdAsLinkendForSelfXrefInDocBookBackend = &asciidoc
 }
 
 var linksTestShouldAutoGenerateDocumentIdToUseAsLinkendForSelfXrefInDocBookBackend = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1708,13 +1708,13 @@ var linksTestShouldAutoGenerateDocumentIdToUseAsLinkendForSelfXrefInDocBookBacke
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "test.adoc",
 					Format:        1,
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -1725,13 +1725,13 @@ var linksTestShouldAutoGenerateDocumentIdToUseAsLinkendForSelfXrefInDocBookBacke
 }
 
 var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileOutsideOfBaseDirectory = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1744,14 +1744,14 @@ var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileOutsideOfBas
 				},
 				&asciidoc.FileInclude{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "../section-a.adoc",
 						},
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -1762,19 +1762,19 @@ var linksTestShouldProduceAnInternalAnchorForInterDocumentXrefToFileOutsideOfBas
 }
 
 var linksTestXrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "_section_b",
 					Format:        0,
 				},
@@ -1783,7 +1783,7 @@ var linksTestXrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOu
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section A",
 				},
@@ -1792,19 +1792,19 @@ var linksTestXrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOu
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "_section_a",
 					Format:        0,
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section B",
 				},
@@ -1815,7 +1815,7 @@ var linksTestXrefUsesTitleOfTargetAsLabelForForwardAndBackwardReferencesInHtmlOu
 }
 
 var linksTestShouldNotFailToResolveBrokenXrefInTitleOfBlockWithId = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1824,7 +1824,7 @@ var linksTestShouldNotFailToResolveBrokenXrefInTitleOfBlockWithId = &asciidoc.Do
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "p1",
 							},
@@ -1834,14 +1834,14 @@ var linksTestShouldNotFailToResolveBrokenXrefInTitleOfBlockWithId = &asciidoc.Do
 					Options: nil,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "<<DNE>>",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph text",
 				},
@@ -1853,7 +1853,7 @@ var linksTestShouldNotFailToResolveBrokenXrefInTitleOfBlockWithId = &asciidoc.Do
 }
 
 var linksTestShouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1862,7 +1862,7 @@ var linksTestShouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "p1",
 							},
@@ -1872,14 +1872,14 @@ var linksTestShouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
 					Options: nil,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "<<conclusion>>",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph text",
 				},
@@ -1895,7 +1895,7 @@ var linksTestShouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "conclusion",
 							},
@@ -1905,8 +1905,8 @@ var linksTestShouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Conclusion",
 				},
@@ -1917,7 +1917,7 @@ var linksTestShouldResolveForwardXrefInTitleOfBlockWithId = &asciidoc.Document{
 }
 
 var linksTestShouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1926,7 +1926,7 @@ var linksTestShouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "s1",
 							},
@@ -1936,12 +1936,12 @@ var linksTestShouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "<<DNE>>",
 				},
@@ -1950,8 +1950,8 @@ var linksTestShouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set:           nil,
-			Title: asciidoc.Set{
+			Elements:      nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "<<s1>>",
 				},
@@ -1962,7 +1962,7 @@ var linksTestShouldNotFailToResolveBrokenXrefInSectionTitle = &asciidoc.Document
 }
 
 var linksTestShouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1971,7 +1971,7 @@ var linksTestShouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "a",
 							},
@@ -1981,12 +1981,12 @@ var linksTestShouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A <<b>>",
 				},
@@ -1998,7 +1998,7 @@ var linksTestShouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "b",
 							},
@@ -2008,8 +2008,8 @@ var linksTestShouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "B <<a>>",
 				},
@@ -2020,7 +2020,7 @@ var linksTestShouldBreakCircularXrefReferenceInSectionTitle = &asciidoc.Document
 }
 
 var linksTestShouldDropNestedAnchorInXreftext = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2029,7 +2029,7 @@ var linksTestShouldDropNestedAnchorInXreftext = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "a",
 							},
@@ -2039,12 +2039,12 @@ var linksTestShouldDropNestedAnchorInXreftext = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "See <<b>>",
 				},
@@ -2056,7 +2056,7 @@ var linksTestShouldDropNestedAnchorInXreftext = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "b",
 							},
@@ -2066,8 +2066,8 @@ var linksTestShouldDropNestedAnchorInXreftext = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Consult https://google.com[Google]",
 				},
@@ -2078,7 +2078,7 @@ var linksTestShouldDropNestedAnchorInXreftext = &asciidoc.Document{
 }
 
 var linksTestShouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2087,7 +2087,7 @@ var linksTestShouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Docum
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "s1",
 							},
@@ -2097,12 +2097,12 @@ var linksTestShouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Docum
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "<<forward>>",
 				},
@@ -2111,12 +2111,12 @@ var linksTestShouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Docum
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "<<s1>>",
 				},
@@ -2128,7 +2128,7 @@ var linksTestShouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Docum
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "forward",
 							},
@@ -2138,8 +2138,8 @@ var linksTestShouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Docum
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Forward",
 				},
@@ -2150,13 +2150,13 @@ var linksTestShouldNotResolveForwardXrefEvaluatedDuringParsing = &asciidoc.Docum
 }
 
 var linksTestShouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "idprefix",
-			Set:  nil,
+			Name:     "idprefix",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -2166,7 +2166,7 @@ var linksTestShouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciido
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "s1",
 							},
@@ -2176,12 +2176,12 @@ var linksTestShouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciido
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "<<Forward>>",
 				},
@@ -2190,12 +2190,12 @@ var linksTestShouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciido
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "<<s1>>",
 				},
@@ -2204,8 +2204,8 @@ var linksTestShouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciido
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set:           nil,
-			Title: asciidoc.Set{
+			Elements:      nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Forward",
 				},
@@ -2216,7 +2216,7 @@ var linksTestShouldNotResolveForwardNaturalXrefEvaluatedDuringParsing = &asciido
 }
 
 var linksTestShouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2225,7 +2225,7 @@ var linksTestShouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "Section Title",
 			Format:        0,
 		},
@@ -2238,7 +2238,7 @@ var linksTestShouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "s1",
 							},
@@ -2248,12 +2248,12 @@ var linksTestShouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section Title",
 				},
@@ -2265,7 +2265,7 @@ var linksTestShouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "s2",
 							},
@@ -2275,8 +2275,8 @@ var linksTestShouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section Title",
 				},
@@ -2287,7 +2287,7 @@ var linksTestShouldResolveFirstMatchingNaturalXref = &asciidoc.Document{
 }
 
 var linksTestShouldNotMatchNumericCharacterReferencesWhileSearchingForFragmentInXrefTarget = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2300,8 +2300,8 @@ var linksTestShouldNotMatchNumericCharacterReferencesWhileSearchingForFragmentIn
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set:           nil,
-			Title: asciidoc.Set{
+			Elements:      nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Cub => Tiger",
 				},
@@ -2312,7 +2312,7 @@ var linksTestShouldNotMatchNumericCharacterReferencesWhileSearchingForFragmentIn
 }
 
 var linksTestShouldNotMatchNumericCharacterReferencesInPathOfInterdocumentXref = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2324,14 +2324,14 @@ var linksTestShouldNotMatchNumericCharacterReferencesInPathOfInterdocumentXref =
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.CharacterReplacementReference{
 							Value: "cpp",
 						},
 					},
 				},
 			},
-			ReferencePath: asciidoc.Set{
+			ReferencePath: asciidoc.Elements{
 				&asciidoc.CharacterReplacementReference{
 					Value: "cpp",
 				},

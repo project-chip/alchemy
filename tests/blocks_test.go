@@ -454,7 +454,7 @@ var blocksTests = parseTests{
 }
 
 var blocksTestHorizontalRuleBetweenBlocks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -465,7 +465,7 @@ var blocksTestHorizontalRuleBetweenBlocks = &asciidoc.Document{
 					ID:    nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "fancy",
 								},
@@ -480,7 +480,7 @@ var blocksTestHorizontalRuleBetweenBlocks = &asciidoc.Document{
 }
 
 var blocksTestLineCommentBetweenParagraphsOffsetByBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -505,7 +505,7 @@ var blocksTestLineCommentBetweenParagraphsOffsetByBlankLines = &asciidoc.Documen
 }
 
 var blocksTestAdjacentLineCommentBetweenParagraphs = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -524,7 +524,7 @@ var blocksTestAdjacentLineCommentBetweenParagraphs = &asciidoc.Document{
 }
 
 var blocksTestCommentBlockBetweenParagraphsOffsetByBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -555,7 +555,7 @@ var blocksTestCommentBlockBetweenParagraphsOffsetByBlankLines = &asciidoc.Docume
 }
 
 var blocksTestCommentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -565,7 +565,7 @@ var blocksTestCommentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBloc
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first paragraph",
 				},
@@ -595,7 +595,7 @@ var blocksTestCommentBlockBetweenParagraphsOffsetByBlankLinesInsideDelimitedBloc
 }
 
 var blocksTestAdjacentCommentBlockBetweenParagraphs = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -620,7 +620,7 @@ var blocksTestAdjacentCommentBlockBetweenParagraphs = &asciidoc.Document{
 }
 
 var blocksTestCanConvertWithBlockCommentAtEndOfDocumentWithTrailingNewlines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -650,7 +650,7 @@ var blocksTestCanConvertWithBlockCommentAtEndOfDocumentWithTrailingNewlines = &a
 }
 
 var blocksTestTrailingNewlinesAfterBlockCommentAtEndOfDocumentDoesNotCreateParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -680,21 +680,21 @@ var blocksTestTrailingNewlinesAfterBlockCommentAtEndOfDocumentDoesNotCreateParag
 }
 
 var blocksTestLineStartingWithThreeSlashesShouldNotBeLineComment = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "sample title",
 						},
 					},
 				},
 			},
-			Set:        asciidoc.Set{},
+			Elements:   asciidoc.Elements{},
 			Admonition: 0,
 		},
 		&asciidoc.MultiLineComment{
@@ -714,7 +714,7 @@ var blocksTestLineStartingWithThreeSlashesShouldNotBeLineComment = &asciidoc.Doc
 }
 
 var blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -745,7 +745,7 @@ var blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentBlock = &as
 }
 
 var blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInBody = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -775,7 +775,7 @@ var blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInBody = &asciidoc.D
 }
 
 var blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -792,7 +792,7 @@ var blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock =
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "////",
 				},
@@ -814,7 +814,7 @@ var blocksTestShouldWarnIfUnterminatedCommentBlockIsDetectedInsideAnotherBlock =
 }
 
 var blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -822,7 +822,7 @@ var blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "comment",
 							},
@@ -837,7 +837,7 @@ var blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock =
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first line of comment",
 				},
@@ -859,7 +859,7 @@ var blocksTestPreprocessorDirectivesShouldNotBeProcessedWithinCommentOpenBlock =
 }
 
 var blocksTestPreprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfACommentParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -867,7 +867,7 @@ var blocksTestPreprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfAComm
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "comment",
 							},
@@ -878,7 +878,7 @@ var blocksTestPreprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfAComm
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first line of content",
 				},
@@ -901,7 +901,7 @@ var blocksTestPreprocessorDirectivesShouldNotBeProcessedOnSubsequentLinesOfAComm
 }
 
 var blocksTestCommentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -909,7 +909,7 @@ var blocksTestCommentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "comment",
 							},
@@ -924,7 +924,7 @@ var blocksTestCommentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "skip",
 				},
@@ -949,7 +949,7 @@ var blocksTestCommentStyleOnOpenBlockShouldOnlySkipBlock = &asciidoc.Document{
 }
 
 var blocksTestCommentStyleOnParagraphShouldOnlySkipParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -957,7 +957,7 @@ var blocksTestCommentStyleOnParagraphShouldOnlySkipParagraph = &asciidoc.Documen
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "comment",
 							},
@@ -968,7 +968,7 @@ var blocksTestCommentStyleOnParagraphShouldOnlySkipParagraph = &asciidoc.Documen
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "skip",
 				},
@@ -991,7 +991,7 @@ var blocksTestCommentStyleOnParagraphShouldOnlySkipParagraph = &asciidoc.Documen
 }
 
 var blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -999,7 +999,7 @@ var blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &a
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "comment",
 							},
@@ -1010,7 +1010,7 @@ var blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &a
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "skip",
 				},
@@ -1026,7 +1026,7 @@ var blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &a
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "example",
 							},
@@ -1037,7 +1037,7 @@ var blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &a
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "not this text",
 				},
@@ -1049,7 +1049,7 @@ var blocksTestCommentStyleOnParagraphShouldNotCauseAdjacentBlockToBeSkipped = &a
 }
 
 var blocksTestShouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1059,7 +1059,7 @@ var blocksTestShouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph",
 				},
@@ -1071,14 +1071,14 @@ var blocksTestShouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "comment",
 									},
 								},
 							},
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "idname",
 									},
@@ -1088,7 +1088,7 @@ var blocksTestShouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "skip",
 						},
@@ -1109,13 +1109,13 @@ var blocksTestShouldNotDropContentThatFollowsSkippedContentInsideADelimitedBlock
 }
 
 var blocksTestShouldParseSidebarBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1126,14 +1126,14 @@ var blocksTestShouldParseSidebarBlock = &asciidoc.Document{
 					},
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Sidebar",
 								},
 							},
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Content goes here",
 						},
@@ -1141,7 +1141,7 @@ var blocksTestShouldParseSidebarBlock = &asciidoc.Document{
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section",
 				},
@@ -1152,7 +1152,7 @@ var blocksTestShouldParseSidebarBlock = &asciidoc.Document{
 }
 
 var blocksTestQuoteBlockWithNoAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1162,7 +1162,7 @@ var blocksTestQuoteBlockWithNoAttribution = &asciidoc.Document{
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous quote.",
 				},
@@ -1173,7 +1173,7 @@ var blocksTestQuoteBlockWithNoAttribution = &asciidoc.Document{
 }
 
 var blocksTestQuoteBlockWithAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1185,7 +1185,7 @@ var blocksTestQuoteBlockWithAttribution = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "quote",
 							},
@@ -1198,7 +1198,7 @@ var blocksTestQuoteBlockWithAttribution = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Person",
 						},
@@ -1207,14 +1207,14 @@ var blocksTestQuoteBlockWithAttribution = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Book (1999)",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous quote.",
 				},
@@ -1225,7 +1225,7 @@ var blocksTestQuoteBlockWithAttribution = &asciidoc.Document{
 }
 
 var blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1237,14 +1237,14 @@ var blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "quote",
 							},
 						},
 					},
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "justice-to-all",
 							},
@@ -1252,7 +1252,7 @@ var blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
 					},
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "solidarity",
 								},
@@ -1264,7 +1264,7 @@ var blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Martin Luther King",
 						},
@@ -1273,14 +1273,14 @@ var blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Jr.",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Injustice anywhere is a threat to justice everywhere.",
 				},
@@ -1291,7 +1291,7 @@ var blocksTestQuoteBlockWithAttributeAndIdAndRoleShorthand = &asciidoc.Document{
 }
 
 var blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1303,7 +1303,7 @@ var blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.D
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "quote",
 							},
@@ -1316,7 +1316,7 @@ var blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.D
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "#justice-to-all.solidarity",
 						},
@@ -1325,7 +1325,7 @@ var blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.D
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Martin Luther King",
 						},
@@ -1334,14 +1334,14 @@ var blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.D
 				&asciidoc.PositionalAttribute{
 					Offset:      3,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Jr.",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Injustice anywhere is a threat to justice everywhere.",
 				},
@@ -1352,7 +1352,7 @@ var blocksTestSettingIdUsingStyleShorthandShouldNotResetBlockStyle = &asciidoc.D
 }
 
 var blocksTestQuoteBlockWithComplexContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1362,7 +1362,7 @@ var blocksTestQuoteBlockWithComplexContent = &asciidoc.Document{
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous quote.",
 				},
@@ -1372,10 +1372,10 @@ var blocksTestQuoteBlockWithComplexContent = &asciidoc.Document{
 				},
 				&asciidoc.Paragraph{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.Italic{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "That",
 								},
@@ -1394,7 +1394,7 @@ var blocksTestQuoteBlockWithComplexContent = &asciidoc.Document{
 }
 
 var blocksTestQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1406,7 +1406,7 @@ var blocksTestQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "quote",
 							},
@@ -1419,7 +1419,7 @@ var blocksTestQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Person",
 						},
@@ -1428,14 +1428,14 @@ var blocksTestQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Book (1999)",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous quote.",
 				},
@@ -1446,7 +1446,7 @@ var blocksTestQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
 }
 
 var blocksTestEpigraphQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1461,7 +1461,7 @@ var blocksTestEpigraphQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Do
 					ID:    nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "epigraph",
 								},
@@ -1473,7 +1473,7 @@ var blocksTestEpigraphQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Do
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Person",
 						},
@@ -1482,14 +1482,14 @@ var blocksTestEpigraphQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Do
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Book (1999)",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous quote.",
 				},
@@ -1500,7 +1500,7 @@ var blocksTestEpigraphQuoteBlockWithAttributionConvertedToDocBook = &asciidoc.Do
 }
 
 var blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1516,7 +1516,7 @@ var blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &asci
 }
 
 var blocksTestLazyMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1532,7 +1532,7 @@ var blocksTestLazyMarkdownStyleQuoteBlockWithSingleParagraphAndNoAttribution = &
 }
 
 var blocksTestMarkdownStyleQuoteBlockWithMultipleParagraphsAndNoAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1552,7 +1552,7 @@ var blocksTestMarkdownStyleQuoteBlockWithMultipleParagraphsAndNoAttribution = &a
 }
 
 var blocksTestMarkdownStyleQuoteBlockWithMultipleBlocksAndNoAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1572,7 +1572,7 @@ var blocksTestMarkdownStyleQuoteBlockWithMultipleBlocksAndNoAttribution = &ascii
 }
 
 var blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1592,7 +1592,7 @@ var blocksTestMarkdownStyleQuoteBlockWithSingleParagraphAndAttribution = &asciid
 }
 
 var blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1605,7 +1605,7 @@ var blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution = &asciidoc.Document{
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Thomas Jefferson, ",
 				},
@@ -1614,7 +1614,7 @@ var blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution = &asciidoc.Document{
 						&asciidoc.PositionalAttribute{
 							Offset:      0,
 							ImpliedName: "alt",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "The Papers of Thomas Jefferson",
 								},
@@ -1623,7 +1623,7 @@ var blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution = &asciidoc.Document{
 						&asciidoc.PositionalAttribute{
 							Offset:      1,
 							ImpliedName: "",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Volume 11",
 								},
@@ -1632,7 +1632,7 @@ var blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution = &asciidoc.Document{
 					},
 					URL: asciidoc.URL{
 						Scheme: "https://",
-						Path: asciidoc.Set{
+						Path: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "jeffersonpapers.princeton.edu/selected-documents/james-madison-1",
 							},
@@ -1649,7 +1649,7 @@ var blocksTestMarkdownStyleQuoteBlockWithOnlyAttribution = &asciidoc.Document{
 }
 
 var blocksTestQuotedParagraphStyleQuoteBlockWithAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1662,7 +1662,7 @@ var blocksTestQuotedParagraphStyleQuoteBlockWithAttribution = &asciidoc.Document
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Famous Person, Famous Source, Volume 1 (1999)",
 				},
@@ -1676,7 +1676,7 @@ var blocksTestQuotedParagraphStyleQuoteBlockWithAttribution = &asciidoc.Document
 }
 
 var blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositionalBlockAttributes = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1689,7 +1689,7 @@ var blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositiona
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Thomas Jefferson, ",
 				},
@@ -1698,7 +1698,7 @@ var blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositiona
 						&asciidoc.PositionalAttribute{
 							Offset:      0,
 							ImpliedName: "alt",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "The Papers of Thomas Jefferson",
 								},
@@ -1707,7 +1707,7 @@ var blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositiona
 						&asciidoc.PositionalAttribute{
 							Offset:      1,
 							ImpliedName: "",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Volume 11",
 								},
@@ -1716,7 +1716,7 @@ var blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositiona
 					},
 					URL: asciidoc.URL{
 						Scheme: "https://",
-						Path: asciidoc.Set{
+						Path: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "jeffersonpapers.princeton.edu/selected-documents/james-madison-1",
 							},
@@ -1733,7 +1733,7 @@ var blocksTestShouldParseCreditLineInQuotedParagraphStyleQuoteBlockLikePositiona
 }
 
 var blocksTestSingleLineVerseBlockWithoutAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1745,7 +1745,7 @@ var blocksTestSingleLineVerseBlockWithoutAttribution = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -1756,7 +1756,7 @@ var blocksTestSingleLineVerseBlockWithoutAttribution = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous verse.",
 				},
@@ -1767,7 +1767,7 @@ var blocksTestSingleLineVerseBlockWithoutAttribution = &asciidoc.Document{
 }
 
 var blocksTestSingleLineVerseBlockWithAttribution = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1779,7 +1779,7 @@ var blocksTestSingleLineVerseBlockWithAttribution = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -1792,7 +1792,7 @@ var blocksTestSingleLineVerseBlockWithAttribution = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Poet",
 						},
@@ -1801,14 +1801,14 @@ var blocksTestSingleLineVerseBlockWithAttribution = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Poem",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous verse.",
 				},
@@ -1819,7 +1819,7 @@ var blocksTestSingleLineVerseBlockWithAttribution = &asciidoc.Document{
 }
 
 var blocksTestSingleLineVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1831,7 +1831,7 @@ var blocksTestSingleLineVerseBlockWithAttributionConvertedToDocBook = &asciidoc.
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -1844,7 +1844,7 @@ var blocksTestSingleLineVerseBlockWithAttributionConvertedToDocBook = &asciidoc.
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Poet",
 						},
@@ -1853,14 +1853,14 @@ var blocksTestSingleLineVerseBlockWithAttributionConvertedToDocBook = &asciidoc.
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Poem",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous verse.",
 				},
@@ -1871,7 +1871,7 @@ var blocksTestSingleLineVerseBlockWithAttributionConvertedToDocBook = &asciidoc.
 }
 
 var blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1883,7 +1883,7 @@ var blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &a
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -1892,7 +1892,7 @@ var blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &a
 					ID: nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "epigraph",
 								},
@@ -1904,7 +1904,7 @@ var blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &a
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Poet",
 						},
@@ -1913,14 +1913,14 @@ var blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &a
 				&asciidoc.PositionalAttribute{
 					Offset:      2,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Famous Poem",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous verse.",
 				},
@@ -1931,7 +1931,7 @@ var blocksTestSingleLineEpigraphVerseBlockWithAttributionConvertedToDocBook = &a
 }
 
 var blocksTestMultiStanzaVerseBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1943,7 +1943,7 @@ var blocksTestMultiStanzaVerseBlock = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -1954,7 +1954,7 @@ var blocksTestMultiStanzaVerseBlock = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous verse.",
 				},
@@ -1972,7 +1972,7 @@ var blocksTestMultiStanzaVerseBlock = &asciidoc.Document{
 }
 
 var blocksTestVerseBlockDoesNotContainBlockElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1984,7 +1984,7 @@ var blocksTestVerseBlockDoesNotContainBlockElements = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -1995,7 +1995,7 @@ var blocksTestVerseBlockDoesNotContainBlockElements = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous verse.",
 				},
@@ -2019,7 +2019,7 @@ var blocksTestVerseBlockDoesNotContainBlockElements = &asciidoc.Document{
 }
 
 var blocksTestVerseShouldHaveNormalSubs = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2031,7 +2031,7 @@ var blocksTestVerseShouldHaveNormalSubs = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -2042,7 +2042,7 @@ var blocksTestVerseShouldHaveNormalSubs = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famous verse",
 				},
@@ -2053,7 +2053,7 @@ var blocksTestVerseShouldHaveNormalSubs = &asciidoc.Document{
 }
 
 var blocksTestShouldNotRecognizeCalloutsInAVerse = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2065,7 +2065,7 @@ var blocksTestShouldNotRecognizeCalloutsInAVerse = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -2076,7 +2076,7 @@ var blocksTestShouldNotRecognizeCalloutsInAVerse = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "La la la <1>",
 				},
@@ -2091,7 +2091,7 @@ var blocksTestShouldNotRecognizeCalloutsInAVerse = &asciidoc.Document{
 }
 
 var blocksTestShouldPerformNormalSubsOnAVerseBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2103,7 +2103,7 @@ var blocksTestShouldPerformNormalSubsOnAVerseBlock = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -2114,10 +2114,10 @@ var blocksTestShouldPerformNormalSubsOnAVerseBlock = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "GET /groups/link:#group-id[\\{group-id\\}]",
 						},
@@ -2130,7 +2130,7 @@ var blocksTestShouldPerformNormalSubsOnAVerseBlock = &asciidoc.Document{
 }
 
 var blocksTestCanConvertExampleBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2140,7 +2140,7 @@ var blocksTestCanConvertExampleBlock = &asciidoc.Document{
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is an example of an example block.",
 				},
@@ -2158,7 +2158,7 @@ var blocksTestCanConvertExampleBlock = &asciidoc.Document{
 }
 
 var blocksTestAssignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2169,14 +2169,14 @@ var blocksTestAssignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciido
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Writing Docs with AsciiDoc",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Here's how you write AsciiDoc.",
 				},
@@ -2200,14 +2200,14 @@ var blocksTestAssignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciido
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Writing Docs with DocBook",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Here's how you write DocBook.",
 				},
@@ -2225,13 +2225,13 @@ var blocksTestAssignsSequentialNumberedCaptionToExampleBlockWithTitle = &asciido
 }
 
 var blocksTestAssignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "example-number",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "@",
 				},
@@ -2247,14 +2247,14 @@ var blocksTestAssignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciid
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Writing Docs with AsciiDoc",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Here's how you write AsciiDoc.",
 				},
@@ -2278,14 +2278,14 @@ var blocksTestAssignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciid
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Writing Docs with DocBook",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Here's how you write DocBook.",
 				},
@@ -2303,7 +2303,7 @@ var blocksTestAssignsSequentialCharacterCaptionToExampleBlockWithTitle = &asciid
 }
 
 var blocksTestShouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByTheApi = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2314,14 +2314,14 @@ var blocksTestShouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByThe
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Writing Docs with AsciiDoc",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Here's how you write AsciiDoc.",
 				},
@@ -2345,14 +2345,14 @@ var blocksTestShouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByThe
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Writing Docs with DocBook",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Here's how you write DocBook.",
 				},
@@ -2370,7 +2370,7 @@ var blocksTestShouldIncrementCounterForExampleEvenWhenExampleNumberIsLockedByThe
 }
 
 var blocksTestShouldUseExplicitCaptionIfSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2382,7 +2382,7 @@ var blocksTestShouldUseExplicitCaptionIfSpecified = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "caption",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Look! ",
 						},
@@ -2390,14 +2390,14 @@ var blocksTestShouldUseExplicitCaptionIfSpecified = &asciidoc.Document{
 					Quote: 2,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Writing Docs with AsciiDoc",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Here's how you write AsciiDoc.",
 				},
@@ -2415,7 +2415,7 @@ var blocksTestShouldUseExplicitCaptionIfSpecified = &asciidoc.Document{
 }
 
 var blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2426,14 +2426,14 @@ var blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Documen
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "first example",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "an example",
 				},
@@ -2444,8 +2444,8 @@ var blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Documen
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "caption",
-			Set:  nil,
+			Name:     "caption",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -2457,14 +2457,14 @@ var blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Documen
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "second example",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "another example",
 				},
@@ -2479,7 +2479,7 @@ var blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Documen
 		},
 		&asciidoc.AttributeEntry{
 			Name: "example-caption",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Exhibit",
 				},
@@ -2495,14 +2495,14 @@ var blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Documen
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "third example",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "yet another example",
 				},
@@ -2513,7 +2513,7 @@ var blocksTestAutomaticCaptionCanBeTurnedOffAndOnAndModified = &asciidoc.Documen
 }
 
 var blocksTestShouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2531,7 +2531,7 @@ var blocksTestShouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptio
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "caption",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Look! ",
 						},
@@ -2539,14 +2539,14 @@ var blocksTestShouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptio
 					Quote: 2,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Writing Docs with AsciiDoc",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Here's how you write AsciiDoc.",
 				},
@@ -2564,7 +2564,7 @@ var blocksTestShouldUseExplicitCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptio
 }
 
 var blocksTestShouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionIsDisabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2573,7 +2573,7 @@ var blocksTestShouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionI
 		},
 		&asciidoc.AttributeEntry{
 			Name: "caption",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Look!{sp}",
 				},
@@ -2589,14 +2589,14 @@ var blocksTestShouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionI
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Writing Docs with AsciiDoc",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Here's how you write AsciiDoc.",
 				},
@@ -2614,7 +2614,7 @@ var blocksTestShouldUseGlobalCaptionIfSpecifiedEvenIfBlockSpecificGlobalCaptionI
 }
 
 var blocksTestShouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2622,7 +2622,7 @@ var blocksTestShouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption 
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "caption",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Look! ",
 						},
@@ -2630,7 +2630,7 @@ var blocksTestShouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption 
 					Quote: 2,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "No caption here",
 						},
@@ -2641,7 +2641,7 @@ var blocksTestShouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption 
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "content",
 				},
@@ -2652,7 +2652,7 @@ var blocksTestShouldNotProcessCaptionAttributeOnBlockThatDoesNotSupportACaption 
 }
 
 var blocksTestShouldCreateDetailsSummarySetIfCollapsibleOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2663,7 +2663,7 @@ var blocksTestShouldCreateDetailsSummarySetIfCollapsibleOptionIsSet = &asciidoc.
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Toggle Me",
 						},
@@ -2675,7 +2675,7 @@ var blocksTestShouldCreateDetailsSummarySetIfCollapsibleOptionIsSet = &asciidoc.
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "collapsible",
 								},
@@ -2684,7 +2684,7 @@ var blocksTestShouldCreateDetailsSummarySetIfCollapsibleOptionIsSet = &asciidoc.
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This content is revealed when the user clicks the words \"Toggle Me\".",
 				},
@@ -2695,7 +2695,7 @@ var blocksTestShouldCreateDetailsSummarySetIfCollapsibleOptionIsSet = &asciidoc.
 }
 
 var blocksTestShouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2706,7 +2706,7 @@ var blocksTestShouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet = &as
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Toggle Me",
 						},
@@ -2718,14 +2718,14 @@ var blocksTestShouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet = &as
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "collapsible",
 								},
 							},
 						},
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "open",
 								},
@@ -2734,7 +2734,7 @@ var blocksTestShouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet = &as
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This content is revealed when the user clicks the words \"Toggle Me\".",
 				},
@@ -2745,7 +2745,7 @@ var blocksTestShouldOpenDetailsSummarySetIfCollapsibleAndOpenOptionsAreSet = &as
 }
 
 var blocksTestShouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNotSpecifed = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2761,7 +2761,7 @@ var blocksTestShouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNo
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "collapsible",
 								},
@@ -2770,7 +2770,7 @@ var blocksTestShouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNo
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This content is revealed when the user clicks the words \"Details\".",
 				},
@@ -2781,7 +2781,7 @@ var blocksTestShouldAddDefaultSummaryElementIfCollapsibleOptionIsSetAndTitleIsNo
 }
 
 var blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2792,14 +2792,14 @@ var blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Before",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "before",
 				},
@@ -2816,7 +2816,7 @@ var blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Show Me The Goods",
 						},
@@ -2828,7 +2828,7 @@ var blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "collapsible",
 								},
@@ -2837,7 +2837,7 @@ var blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This content is revealed when the user clicks the words \"Show Me The Goods\".",
 				},
@@ -2854,14 +2854,14 @@ var blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "After",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "after",
 				},
@@ -2872,7 +2872,7 @@ var blocksTestShouldNotAllowCollapsibleBlockToIncrementExampleNumber = &asciidoc
 }
 
 var blocksTestShouldWarnIfExampleBlockIsNotTerminated = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2909,13 +2909,13 @@ var blocksTestShouldWarnIfExampleBlockIsNotTerminated = &asciidoc.Document{
 }
 
 var blocksTestCaptionBlockLevelAttributeShouldBeUsedAsCaption = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "tip-caption",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Pro Tip",
 				},
@@ -2928,7 +2928,7 @@ var blocksTestCaptionBlockLevelAttributeShouldBeUsedAsCaption = &asciidoc.Docume
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "caption",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Pro Tip",
 						},
@@ -2936,12 +2936,12 @@ var blocksTestCaptionBlockLevelAttributeShouldBeUsedAsCaption = &asciidoc.Docume
 					Quote: 2,
 				},
 			},
-			Set:        asciidoc.Set{},
+			Elements:   asciidoc.Elements{},
 			Admonition: 0,
 		},
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Override the caption of an admonition block using an attribute entry",
 				},
@@ -2953,13 +2953,13 @@ var blocksTestCaptionBlockLevelAttributeShouldBeUsedAsCaption = &asciidoc.Docume
 }
 
 var blocksTestCanOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "tip-caption",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Pro Tip",
 				},
@@ -2970,7 +2970,7 @@ var blocksTestCanOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute = &ascii
 		},
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Override the caption of an admonition block using an attribute entry",
 				},
@@ -2982,20 +2982,20 @@ var blocksTestCanOverrideCaptionOfAdmonitionBlockUsingDocumentAttribute = &ascii
 }
 
 var blocksTestBlankCaptionDocumentAttributeShouldNotBlankAdmonitionBlockCaption = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "caption",
-			Set:  nil,
+			Name:     "caption",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Override the caption of an admonition block using an attribute entry",
 				},
@@ -3007,7 +3007,7 @@ var blocksTestBlankCaptionDocumentAttributeShouldNotBlankAdmonitionBlockCaption 
 }
 
 var blocksTestShouldSeparateAdjacentParagraphsAndListingIntoBlocks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3033,7 +3033,7 @@ var blocksTestShouldSeparateAdjacentParagraphsAndListingIntoBlocks = &asciidoc.D
 }
 
 var blocksTestShouldWarnIfListingBlockIsNotTerminated = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3070,7 +3070,7 @@ var blocksTestShouldWarnIfListingBlockIsNotTerminated = &asciidoc.Document{
 }
 
 var blocksTestShouldNotCrashWhenConvertingVerbatimBlockThatHasNoLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3092,7 +3092,7 @@ var blocksTestShouldNotCrashWhenConvertingVerbatimBlockThatHasNoLines = &asciido
 }
 
 var blocksTestShouldPreserveNewlinesInListingBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3114,7 +3114,7 @@ var blocksTestShouldPreserveNewlinesInListingBlock = &asciidoc.Document{
 }
 
 var blocksTestShouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3124,7 +3124,7 @@ var blocksTestShouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.QuoteBlock{
 					Delimiter: asciidoc.Delimiter{
 						Type:   11,
@@ -3133,7 +3133,7 @@ var blocksTestShouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "verse",
 									},
@@ -3144,7 +3144,7 @@ var blocksTestShouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "line one",
 						},
@@ -3171,7 +3171,7 @@ var blocksTestShouldPreserveNewlinesInVerseBlock = &asciidoc.Document{
 }
 
 var blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3179,7 +3179,7 @@ var blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "attributes+",
 						},
@@ -3206,7 +3206,7 @@ var blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingVerbatimBlock
 }
 
 var blocksTestShouldRemoveBlockIndentIfIndentAttributeIs0 = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3214,7 +3214,7 @@ var blocksTestShouldRemoveBlockIndentIfIndentAttributeIs0 = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "indent",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "0",
 						},
@@ -3238,7 +3238,7 @@ var blocksTestShouldRemoveBlockIndentIfIndentAttributeIs0 = &asciidoc.Document{
 }
 
 var blocksTestShouldNotRemoveBlockIndentIfIndentAttributeIs1 = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3246,7 +3246,7 @@ var blocksTestShouldNotRemoveBlockIndentIfIndentAttributeIs1 = &asciidoc.Documen
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "indent",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "-1",
 						},
@@ -3270,7 +3270,7 @@ var blocksTestShouldNotRemoveBlockIndentIfIndentAttributeIs1 = &asciidoc.Documen
 }
 
 var blocksTestShouldSetBlockIndentToValueSpecifiedByIndentAttribute = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3278,7 +3278,7 @@ var blocksTestShouldSetBlockIndentToValueSpecifiedByIndentAttribute = &asciidoc.
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "indent",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "1",
 						},
@@ -3302,13 +3302,13 @@ var blocksTestShouldSetBlockIndentToValueSpecifiedByIndentAttribute = &asciidoc.
 }
 
 var blocksTestShouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-indent",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "1",
 				},
@@ -3321,7 +3321,7 @@ var blocksTestShouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute = &a
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -3334,7 +3334,7 @@ var blocksTestShouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute = &a
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -3357,7 +3357,7 @@ var blocksTestShouldSetBlockIndentToValueSpecifiedByIndentDocumentAttribute = &a
 }
 
 var blocksTestLiteralBlockShouldHonorNowrapOption = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3365,7 +3365,7 @@ var blocksTestLiteralBlockShouldHonorNowrapOption = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nowrap",
 						},
@@ -3385,7 +3385,7 @@ var blocksTestLiteralBlockShouldHonorNowrapOption = &asciidoc.Document{
 }
 
 var blocksTestLiteralBlockShouldSetNowrapClassIfPrewrapDocumentAttributeIsDisabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3409,7 +3409,7 @@ var blocksTestLiteralBlockShouldSetNowrapClassIfPrewrapDocumentAttributeIsDisabl
 }
 
 var blocksTestShouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3428,7 +3428,7 @@ var blocksTestShouldPreserveGuardInFrontOfCalloutIfIconsAreNotEnabled = &asciido
 }
 
 var blocksTestShouldPreserveGuardAroundCalloutIfIconsAreNotEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3448,7 +3448,7 @@ var blocksTestShouldPreserveGuardAroundCalloutIfIconsAreNotEnabled = &asciidoc.D
 }
 
 var blocksTestLiteralBlockShouldHonorExplicitSubsList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3456,7 +3456,7 @@ var blocksTestLiteralBlockShouldHonorExplicitSubsList = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "verbatim,quotes",
 						},
@@ -3476,7 +3476,7 @@ var blocksTestLiteralBlockShouldHonorExplicitSubsList = &asciidoc.Document{
 }
 
 var blocksTestShouldBeAbleToDisableCalloutsForLiteralBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3484,7 +3484,7 @@ var blocksTestShouldBeAbleToDisableCalloutsForLiteralBlock = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "specialcharacters",
 						},
@@ -3504,7 +3504,7 @@ var blocksTestShouldBeAbleToDisableCalloutsForLiteralBlock = &asciidoc.Document{
 }
 
 var blocksTestListingBlockShouldHonorExplicitSubsList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3512,7 +3512,7 @@ var blocksTestListingBlockShouldHonorExplicitSubsList = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "specialcharacters,quotes",
 						},
@@ -3536,7 +3536,7 @@ var blocksTestListingBlockShouldHonorExplicitSubsList = &asciidoc.Document{
 }
 
 var blocksTestShouldNotMangleArrayThatContainsFormattedTextWithRoleInListingBlockWithQuotesSubEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3558,7 +3558,7 @@ var blocksTestShouldNotMangleArrayThatContainsFormattedTextWithRoleInListingBloc
 }
 
 var blocksTestFirstCharacterOfBlockTitleMayBeAPeriodIfNotFollowedBySpace = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3582,7 +3582,7 @@ var blocksTestFirstCharacterOfBlockTitleMayBeAPeriodIfNotFollowedBySpace = &asci
 }
 
 var blocksTestListingBlockWithoutTitleShouldGenerateScreenElementInDocbook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3600,14 +3600,14 @@ var blocksTestListingBlockWithoutTitleShouldGenerateScreenElementInDocbook = &as
 }
 
 var blocksTestListingBlockWithTitleShouldGenerateScreenElementInsideFormalparaElementInDocbook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "title",
 						},
@@ -3626,14 +3626,14 @@ var blocksTestListingBlockWithTitleShouldGenerateScreenElementInsideFormalparaEl
 }
 
 var blocksTestShouldNotPrependCaptionToTitleOfListingBlockWithTitleIfListingCaptionAttributeIsNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "title",
 						},
@@ -3652,13 +3652,13 @@ var blocksTestShouldNotPrependCaptionToTitleOfListingBlockWithTitleIfListingCapt
 }
 
 var blocksTestShouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToTitleOfListingBlockWithTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "listing-caption",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Listing",
 				},
@@ -3670,7 +3670,7 @@ var blocksTestShouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToT
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "title",
 						},
@@ -3689,7 +3689,7 @@ var blocksTestShouldPrependCaptionSpecifiedByListingCaptionAttributeAndNumberToT
 }
 
 var blocksTestShouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenIfListingCaptionAttributeIsNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3697,7 +3697,7 @@ var blocksTestShouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenI
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "caption",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Listing ",
 						},
@@ -3713,7 +3713,7 @@ var blocksTestShouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenI
 					Quote: 2,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Behold!",
 						},
@@ -3732,7 +3732,7 @@ var blocksTestShouldPrependCaptionSpecifiedByCaptionAttributeOnListingBlockEvenI
 }
 
 var blocksTestListingBlockWithoutAnExplicitStyleAndWithASecondPositionalArgumentShouldBePromotedToASourceBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3754,13 +3754,13 @@ var blocksTestListingBlockWithoutAnExplicitStyleAndWithASecondPositionalArgument
 }
 
 var blocksTestListingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIfSourceLanguageIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-language",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "ruby",
 				},
@@ -3783,7 +3783,7 @@ var blocksTestListingBlockWithoutAnExplicitStyleShouldBePromotedToASourceBlockIf
 }
 
 var blocksTestListingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldNotBePromotedToASourceBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3791,7 +3791,7 @@ var blocksTestListingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldN
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "listing",
 							},
@@ -3804,7 +3804,7 @@ var blocksTestListingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldN
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -3823,13 +3823,13 @@ var blocksTestListingBlockWithAnExplicitStyleAndASecondPositionalArgumentShouldN
 }
 
 var blocksTestListingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIfSourceLanguageIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-language",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "ruby",
 				},
@@ -3842,7 +3842,7 @@ var blocksTestListingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIf
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "listing",
 							},
@@ -3865,7 +3865,7 @@ var blocksTestListingBlockWithAnExplicitStyleShouldNotBePromotedToASourceBlockIf
 }
 
 var blocksTestSourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3873,7 +3873,7 @@ var blocksTestSourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbo
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -3896,7 +3896,7 @@ var blocksTestSourceBlockWithNoTitleOrLanguageShouldGenerateScreenElementInDocbo
 }
 
 var blocksTestSourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInsideFormalparaElementForDocbook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3904,7 +3904,7 @@ var blocksTestSourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInside
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -3915,7 +3915,7 @@ var blocksTestSourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInside
 					Options: nil,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "title",
 						},
@@ -3934,7 +3934,7 @@ var blocksTestSourceBlockWithTitleAndNoLanguageShouldGenerateScreenElementInside
 }
 
 var blocksTestCanConvertOpenBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3944,7 +3944,7 @@ var blocksTestCanConvertOpenBlock = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is an open block.",
 				},
@@ -3962,7 +3962,7 @@ var blocksTestCanConvertOpenBlock = &asciidoc.Document{
 }
 
 var blocksTestOpenBlockCanContainAnotherBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3972,7 +3972,7 @@ var blocksTestOpenBlockCanContainAnotherBlock = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is an open block.",
 				},
@@ -3993,7 +3993,7 @@ var blocksTestOpenBlockCanContainAnotherBlock = &asciidoc.Document{
 						Length: 4,
 					},
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "It can hold great quotes like this one.",
 						},
@@ -4006,7 +4006,7 @@ var blocksTestOpenBlockCanContainAnotherBlock = &asciidoc.Document{
 }
 
 var blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4015,7 +4015,7 @@ var blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.D
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "open",
 			Format:        0,
 		},
@@ -4032,7 +4032,7 @@ var blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.D
 					ID: &asciidoc.String{
 						Value: "open",
 					},
-					Label: asciidoc.Set{
+					Label: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Open Block",
 						},
@@ -4043,7 +4043,7 @@ var blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.D
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is an open block.",
 				},
@@ -4053,7 +4053,7 @@ var blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.D
 				},
 				&asciidoc.Paragraph{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "An open block can have other blocks inside of it.",
 						},
@@ -4074,7 +4074,7 @@ var blocksTestShouldTransferIdAndReftextOnOpenBlockToDocBookOutput = &asciidoc.D
 }
 
 var blocksTestShouldTransferIdAndReftextOnOpenParagraphToDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4082,14 +4082,14 @@ var blocksTestShouldTransferIdAndReftextOnOpenParagraphToDocBookOutput = &asciid
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "open",
 							},
 						},
 					},
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "openpara",
 							},
@@ -4100,7 +4100,7 @@ var blocksTestShouldTransferIdAndReftextOnOpenParagraphToDocBookOutput = &asciid
 				},
 				&asciidoc.NamedAttribute{
 					Name: "reftext",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Open Paragraph",
 						},
@@ -4108,7 +4108,7 @@ var blocksTestShouldTransferIdAndReftextOnOpenParagraphToDocBookOutput = &asciid
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is an open paragraph.",
 				},
@@ -4120,14 +4120,14 @@ var blocksTestShouldTransferIdAndReftextOnOpenParagraphToDocBookOutput = &asciid
 }
 
 var blocksTestShouldTransferTitleOnOpenBlockToDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Behold the open",
 						},
@@ -4138,7 +4138,7 @@ var blocksTestShouldTransferTitleOnOpenBlockToDocBookOutput = &asciidoc.Document
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is an open block with a title.",
 				},
@@ -4149,21 +4149,21 @@ var blocksTestShouldTransferTitleOnOpenBlockToDocBookOutput = &asciidoc.Document
 }
 
 var blocksTestShouldTransferTitleOnOpenParagraphToDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Behold the open",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is an open paragraph with a title.",
 				},
@@ -4175,7 +4175,7 @@ var blocksTestShouldTransferTitleOnOpenParagraphToDocBookOutput = &asciidoc.Docu
 }
 
 var blocksTestShouldTransferRoleOnOpenBlockToDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4186,7 +4186,7 @@ var blocksTestShouldTransferRoleOnOpenBlockToDocBookOutput = &asciidoc.Document{
 					ID:    nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "container",
 								},
@@ -4200,7 +4200,7 @@ var blocksTestShouldTransferRoleOnOpenBlockToDocBookOutput = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is an open block.",
 				},
@@ -4215,7 +4215,7 @@ var blocksTestShouldTransferRoleOnOpenBlockToDocBookOutput = &asciidoc.Document{
 }
 
 var blocksTestShouldTransferRoleOnOpenParagraphToDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4226,7 +4226,7 @@ var blocksTestShouldTransferRoleOnOpenParagraphToDocBookOutput = &asciidoc.Docum
 					ID:    nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "container",
 								},
@@ -4236,7 +4236,7 @@ var blocksTestShouldTransferRoleOnOpenParagraphToDocBookOutput = &asciidoc.Docum
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is an open block.",
 				},
@@ -4252,7 +4252,7 @@ var blocksTestShouldTransferRoleOnOpenParagraphToDocBookOutput = &asciidoc.Docum
 }
 
 var blocksTestCanParseAPassthroughBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4270,13 +4270,13 @@ var blocksTestCanParseAPassthroughBlock = &asciidoc.Document{
 }
 
 var blocksTestDoesNotPerformSubsOnAPassthroughBlockByDefault = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "type",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "passthrough",
 				},
@@ -4301,13 +4301,13 @@ var blocksTestDoesNotPerformSubsOnAPassthroughBlockByDefault = &asciidoc.Documen
 }
 
 var blocksTestDoesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "type",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "passthrough",
 				},
@@ -4320,7 +4320,7 @@ var blocksTestDoesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault = &asc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "pass",
 							},
@@ -4345,13 +4345,13 @@ var blocksTestDoesNotPerformSubsOnAPassthroughBlockWithPassStyleByDefault = &asc
 }
 
 var blocksTestPassthroughBlockHonorsExplicitSubsList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "type",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "passthrough",
 				},
@@ -4364,7 +4364,7 @@ var blocksTestPassthroughBlockHonorsExplicitSubsList = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "attributes,quotes,macros",
 						},
@@ -4385,7 +4385,7 @@ var blocksTestPassthroughBlockHonorsExplicitSubsList = &asciidoc.Document{
 }
 
 var blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4435,7 +4435,7 @@ var blocksTestShouldStripLeadingAndTrailingBlankLinesWhenConvertingRawBlock = &a
 }
 
 var blocksTestShouldNotCrashWhenConvertingStemBlockThatHasNoLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4443,7 +4443,7 @@ var blocksTestShouldNotCrashWhenConvertingStemBlockThatHasNoLines = &asciidoc.Do
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "stem",
 							},
@@ -4464,7 +4464,7 @@ var blocksTestShouldNotCrashWhenConvertingStemBlockThatHasNoLines = &asciidoc.Do
 }
 
 var blocksTestShouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4472,7 +4472,7 @@ var blocksTestShouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "latexmath",
 							},
@@ -4495,7 +4495,7 @@ var blocksTestShouldReturnContentAsEmptyStringForStemOrPassBlockThatHasNoLines =
 }
 
 var blocksTestShouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlreadyPresent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4503,7 +4503,7 @@ var blocksTestShouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlread
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "latexmath",
 							},
@@ -4526,7 +4526,7 @@ var blocksTestShouldNotAddLaTeXMathDelimitersAroundLatexmathBlockContentIfAlread
 }
 
 var blocksTestShouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4534,7 +4534,7 @@ var blocksTestShouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend = &asci
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "latexmath",
 							},
@@ -4557,13 +4557,13 @@ var blocksTestShouldDisplayLatexmathBlockInAltOfEquationInDocBookBackend = &asci
 }
 
 var blocksTestShouldSetAutoNumberOptionForLatexmathToNoneByDefault = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "stem",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "latexmath",
 				},
@@ -4576,7 +4576,7 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToNoneByDefault = &asciidoc.D
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "stem",
 							},
@@ -4599,13 +4599,13 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToNoneByDefault = &asciidoc.D
 }
 
 var blocksTestShouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "stem",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "latexmath",
 				},
@@ -4613,7 +4613,7 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone = &
 		},
 		&asciidoc.AttributeEntry{
 			Name: "eqnums",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "none",
 				},
@@ -4626,7 +4626,7 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone = &
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "stem",
 							},
@@ -4649,21 +4649,21 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToNoneIfEqnumsIsSetToNone = &
 }
 
 var blocksTestShouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "stem",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "latexmath",
 				},
 			},
 		},
 		&asciidoc.AttributeEntry{
-			Name: "eqnums",
-			Set:  nil,
+			Name:     "eqnums",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -4672,7 +4672,7 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet = &asciido
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "stem",
 							},
@@ -4697,13 +4697,13 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToAmsIfEqnumsIsSet = &asciido
 }
 
 var blocksTestShouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "stem",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "latexmath",
 				},
@@ -4711,7 +4711,7 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll = &as
 		},
 		&asciidoc.AttributeEntry{
 			Name: "eqnums",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "all",
 				},
@@ -4724,7 +4724,7 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll = &as
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "stem",
 							},
@@ -4747,7 +4747,7 @@ var blocksTestShouldSetAutoNumberOptionForLatexmathToAllIfEqnumsIsSetToAll = &as
 }
 
 var blocksTestShouldNotSplitEquationInAsciiMathBlockAtSingleNewline = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4755,7 +4755,7 @@ var blocksTestShouldNotSplitEquationInAsciiMathBlockAtSingleNewline = &asciidoc.
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "asciimath",
 							},
@@ -4779,7 +4779,7 @@ var blocksTestShouldNotSplitEquationInAsciiMathBlockAtSingleNewline = &asciidoc.
 }
 
 var blocksTestShouldSplitEquationInAsciiMathBlockAtEscapedNewline = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4787,7 +4787,7 @@ var blocksTestShouldSplitEquationInAsciiMathBlockAtEscapedNewline = &asciidoc.Do
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "asciimath",
 							},
@@ -4811,7 +4811,7 @@ var blocksTestShouldSplitEquationInAsciiMathBlockAtEscapedNewline = &asciidoc.Do
 }
 
 var blocksTestShouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4819,7 +4819,7 @@ var blocksTestShouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines = &
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "asciimath",
 							},
@@ -4844,7 +4844,7 @@ var blocksTestShouldSplitEquationInAsciiMathBlockAtSequenceOfEscapedNewlines = &
 }
 
 var blocksTestShouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBreaks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4852,7 +4852,7 @@ var blocksTestShouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBre
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "asciimath",
 							},
@@ -4878,7 +4878,7 @@ var blocksTestShouldSplitEquationInAsciiMathBlockAtNewlineSequenceAndPreserveBre
 }
 
 var blocksTestShouldAddAsciiMathDelimitersAroundAsciimathBlockContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4886,7 +4886,7 @@ var blocksTestShouldAddAsciiMathDelimitersAroundAsciimathBlockContent = &asciido
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "asciimath",
 							},
@@ -4909,7 +4909,7 @@ var blocksTestShouldAddAsciiMathDelimitersAroundAsciimathBlockContent = &asciido
 }
 
 var blocksTestShouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlreadyPresent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4917,7 +4917,7 @@ var blocksTestShouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlread
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "asciimath",
 							},
@@ -4940,7 +4940,7 @@ var blocksTestShouldNotAddAsciiMathDelimitersAroundAsciimathBlockContentIfAlread
 }
 
 var blocksTestShouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsciimathGemIsAvailable = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4948,7 +4948,7 @@ var blocksTestShouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsci
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "asciimath",
 							},
@@ -4974,7 +4974,7 @@ var blocksTestShouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsci
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "asciimath",
 							},
@@ -4995,14 +4995,14 @@ var blocksTestShouldConvertContentsOfAsciimathBlockToMathMlInDocBookOutputIfAsci
 }
 
 var blocksTestShouldOutputTitleForLatexmathBlockIfDefined = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "The Lorenz Equations",
 						},
@@ -5010,7 +5010,7 @@ var blocksTestShouldOutputTitleForLatexmathBlockIfDefined = &asciidoc.Document{
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "latexmath",
 							},
@@ -5037,14 +5037,14 @@ var blocksTestShouldOutputTitleForLatexmathBlockIfDefined = &asciidoc.Document{
 }
 
 var blocksTestShouldOutputTitleForAsciimathBlockIfDefined = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.StemBlock{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Simple fraction",
 						},
@@ -5052,7 +5052,7 @@ var blocksTestShouldOutputTitleForAsciimathBlockIfDefined = &asciidoc.Document{
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "asciimath",
 							},
@@ -5075,7 +5075,7 @@ var blocksTestShouldOutputTitleForAsciimathBlockIfDefined = &asciidoc.Document{
 }
 
 var blocksTestShouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeIsAsciimathEmptyOrNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5083,7 +5083,7 @@ var blocksTestShouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeI
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "stem",
 							},
@@ -5106,7 +5106,7 @@ var blocksTestShouldAddAsciiMathDelimitersAroundStemBlockContentIfStemAttributeI
 }
 
 var blocksTestShouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeIsLatexmathLatexOrTex = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5114,7 +5114,7 @@ var blocksTestShouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeI
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "stem",
 							},
@@ -5137,13 +5137,13 @@ var blocksTestShouldAddLaTeXMathDelimitersAroundStemBlockContentIfStemAttributeI
 }
 
 var blocksTestShouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAttributes = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "stem",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "latexmath",
 				},
@@ -5156,7 +5156,7 @@ var blocksTestShouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAtt
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "stem",
 							},
@@ -5169,7 +5169,7 @@ var blocksTestShouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAtt
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "asciimath",
 						},
@@ -5188,7 +5188,7 @@ var blocksTestShouldAllowStemStyleToBeSetUsingSecondPositionalArgumentOfBlockAtt
 }
 
 var blocksTestShouldNotWarnIfBlockStyleIsUnknown = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5196,7 +5196,7 @@ var blocksTestShouldNotWarnIfBlockStyleIsUnknown = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "foo",
 							},
@@ -5211,7 +5211,7 @@ var blocksTestShouldNotWarnIfBlockStyleIsUnknown = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bar",
 				},
@@ -5222,7 +5222,7 @@ var blocksTestShouldNotWarnIfBlockStyleIsUnknown = &asciidoc.Document{
 }
 
 var blocksTestShouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5230,7 +5230,7 @@ var blocksTestShouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "foo",
 							},
@@ -5245,7 +5245,7 @@ var blocksTestShouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled =
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bar",
 				},
@@ -5256,21 +5256,21 @@ var blocksTestShouldLogDebugMessageIfBlockStyleIsUnknownAndDebugLevelIsEnabled =
 }
 
 var blocksTestBlockTitleAboveSectionGetsCarriedOverToFirstBlockInSection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Title",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -5279,7 +5279,7 @@ var blocksTestBlockTitleAboveSectionGetsCarriedOverToFirstBlockInSection = &asci
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section",
 				},
@@ -5290,21 +5290,21 @@ var blocksTestBlockTitleAboveSectionGetsCarriedOverToFirstBlockInSection = &asci
 }
 
 var blocksTestBlockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Block title",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -5313,7 +5313,7 @@ var blocksTestBlockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle = 
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section Title",
 				},
@@ -5324,13 +5324,13 @@ var blocksTestBlockTitleAboveDocumentTitleDemotesDocumentTitleToASectionTitle = 
 }
 
 var blocksTestBlockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSectionIfNoPreamble = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "doctype",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "book",
 				},
@@ -5339,20 +5339,20 @@ var blocksTestBlockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSect
 		&asciidoc.Section{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Block title",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -5361,7 +5361,7 @@ var blocksTestBlockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSect
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First Section",
 						},
@@ -5369,7 +5369,7 @@ var blocksTestBlockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSect
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -5380,14 +5380,14 @@ var blocksTestBlockTitleAboveDocumentTitleGetsCarriedOverToFirstBlockInFirstSect
 }
 
 var blocksTestShouldApplySubstitutionsToABlockTitleInNormalOrder = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.UserAttributeReference{
 							Value: "link-url",
 						},
@@ -5406,7 +5406,7 @@ var blocksTestShouldApplySubstitutionsToABlockTitleInNormalOrder = &asciidoc.Doc
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "The one and only!",
 				},
@@ -5418,7 +5418,7 @@ var blocksTestShouldApplySubstitutionsToABlockTitleInNormalOrder = &asciidoc.Doc
 }
 
 var blocksTestEmptyAttributeListShouldNotAppearInOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5428,7 +5428,7 @@ var blocksTestEmptyAttributeListShouldNotAppearInOutput = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Block content",
 				},
@@ -5439,7 +5439,7 @@ var blocksTestEmptyAttributeListShouldNotAppearInOutput = &asciidoc.Document{
 }
 
 var blocksTestEmptyBlockAnchorShouldNotAppearInOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5453,7 +5453,7 @@ var blocksTestEmptyBlockAnchorShouldNotAppearInOutput = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Block content",
 				},
@@ -5464,13 +5464,13 @@ var blocksTestEmptyBlockAnchorShouldNotAppearInOutput = &asciidoc.Document{
 }
 
 var blocksTestCanConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images",
 				},
@@ -5484,7 +5484,7 @@ var blocksTestCanConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -5493,7 +5493,7 @@ var blocksTestCanConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
@@ -5502,14 +5502,14 @@ var blocksTestCanConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%interactive",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "tiger.svg",
 				},
@@ -5519,7 +5519,7 @@ var blocksTestCanConvertBlockImageWithAltTextDefinedInMacro = &asciidoc.Document
 }
 
 var blocksTestConvertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5528,7 +5528,7 @@ var blocksTestConvertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure = &
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -5537,7 +5537,7 @@ var blocksTestConvertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure = &
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
@@ -5546,14 +5546,14 @@ var blocksTestConvertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure = &
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%interactive",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.svg",
 				},
@@ -5563,13 +5563,13 @@ var blocksTestConvertsSvgImageWithAltTextUsingImgElementWhenSafeModeIsSecure = &
 }
 
 var blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images",
 				},
@@ -5583,7 +5583,7 @@ var blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions =
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -5592,7 +5592,7 @@ var blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions =
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
@@ -5600,7 +5600,7 @@ var blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions =
 				},
 				&asciidoc.NamedAttribute{
 					Name: "fallback",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "tiger.png",
 						},
@@ -5610,14 +5610,14 @@ var blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions =
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%interactive",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "tiger.svg",
 				},
@@ -5627,13 +5627,13 @@ var blocksTestInsertsFallbackImageForSvgInsideObjectElementUsingSameDimensions =
 }
 
 var blocksTestDetectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images",
 				},
@@ -5647,7 +5647,7 @@ var blocksTestDetectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -5656,7 +5656,7 @@ var blocksTestDetectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
@@ -5665,14 +5665,14 @@ var blocksTestDetectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%interactive",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "http://example.org/tiger.svg?foo=bar",
 				},
@@ -5682,13 +5682,13 @@ var blocksTestDetectsSvgImageUriThatContainsAQueryString = &asciidoc.Document{
 }
 
 var blocksTestDetectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images",
 				},
@@ -5702,7 +5702,7 @@ var blocksTestDetectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -5711,7 +5711,7 @@ var blocksTestDetectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
@@ -5719,7 +5719,7 @@ var blocksTestDetectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "format",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "svg",
 						},
@@ -5729,14 +5729,14 @@ var blocksTestDetectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%interactive",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "http://example.org/tiger-svg",
 				},
@@ -5746,13 +5746,13 @@ var blocksTestDetectsSvgImageWhenFormatAttributeIsSvg = &asciidoc.Document{
 }
 
 var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -5766,7 +5766,7 @@ var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.D
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -5775,7 +5775,7 @@ var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.D
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
@@ -5784,14 +5784,14 @@ var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.D
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%inline",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -5801,13 +5801,13 @@ var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlock = &asciidoc.D
 }
 
 var blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -5821,7 +5821,7 @@ var blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = 
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -5830,7 +5830,7 @@ var blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = 
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
@@ -5838,7 +5838,7 @@ var blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = 
 				},
 				&asciidoc.NamedAttribute{
 					Name: "link",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "self",
 						},
@@ -5848,14 +5848,14 @@ var blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = 
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%inline",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -5865,13 +5865,13 @@ var blocksTestShouldIgnoreLinkAttributeIfValueIsSelfAndImageTargetIsInlineSvg = 
 }
 
 var blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -5885,7 +5885,7 @@ var blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Circle",
 						},
@@ -5894,7 +5894,7 @@ var blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "50%",
 						},
@@ -5902,7 +5902,7 @@ var blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.
 				},
 				&asciidoc.NamedAttribute{
 					Name: "opts",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "inline",
 						},
@@ -5910,7 +5910,7 @@ var blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.
 					Quote: 0,
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -5920,13 +5920,13 @@ var blocksTestShouldHonorPercentageWidthForSvgImageWithInlineOption = &asciidoc.
 }
 
 var blocksTestShouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -5940,7 +5940,7 @@ var blocksTestShouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciido
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Circle",
 						},
@@ -5948,7 +5948,7 @@ var blocksTestShouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciido
 				},
 				&asciidoc.NamedAttribute{
 					Name: "opts",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "inline",
 						},
@@ -5956,7 +5956,7 @@ var blocksTestShouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciido
 					Quote: 0,
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -5966,21 +5966,21 @@ var blocksTestShouldNotCrashIfExplicitWidthOnSvgImageBlockIsAnInteger = &asciido
 }
 
 var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSetOnDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
 			},
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -5990,7 +5990,7 @@ var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSe
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -5999,7 +5999,7 @@ var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSe
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
@@ -6008,14 +6008,14 @@ var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSe
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%inline",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -6025,7 +6025,7 @@ var blocksTestConvertsToInlineSvgImageWhenInlineOptionIsSetOnBlockAndDataUriIsSe
 }
 
 var blocksTestShouldNotThrowExceptionIfSvgToInlineIsEmpty = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6034,7 +6034,7 @@ var blocksTestShouldNotThrowExceptionIfSvgToInlineIsEmpty = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Alt Text",
 						},
@@ -6043,14 +6043,14 @@ var blocksTestShouldNotThrowExceptionIfSvgToInlineIsEmpty = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%inline",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "no-such-image.svg",
 				},
@@ -6060,7 +6060,7 @@ var blocksTestShouldNotThrowExceptionIfSvgToInlineIsEmpty = &asciidoc.Document{
 }
 
 var blocksTestCanConvertBlockImageWithAltTextDefinedInMacroContainingSquareBracket = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6069,14 +6069,14 @@ var blocksTestCanConvertBlockImageWithAltTextDefinedInMacroContainingSquareBrack
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6086,7 +6086,7 @@ var blocksTestCanConvertBlockImageWithAltTextDefinedInMacroContainingSquareBrack
 }
 
 var blocksTestAltTextInMacroOverridesAltTextAboveMacro = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6095,7 +6095,7 @@ var blocksTestAltTextInMacroOverridesAltTextAboveMacro = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -6104,14 +6104,14 @@ var blocksTestAltTextInMacroOverridesAltTextAboveMacro = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Alt Text",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6121,13 +6121,13 @@ var blocksTestAltTextInMacroOverridesAltTextAboveMacro = &asciidoc.Document{
 }
 
 var blocksTestShouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMacro = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "alt-text",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tiger",
 				},
@@ -6141,14 +6141,14 @@ var blocksTestShouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMac
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.UserAttributeReference{
 							Value: "alt-text",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6158,7 +6158,7 @@ var blocksTestShouldSubstituteAttributeReferencesInAltTextDefinedInImageBlockMac
 }
 
 var blocksTestShouldSetDirectionCssClassOnImageIfFloatAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6167,7 +6167,7 @@ var blocksTestShouldSetDirectionCssClassOnImageIfFloatAttributeIsSet = &asciidoc
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -6175,7 +6175,7 @@ var blocksTestShouldSetDirectionCssClassOnImageIfFloatAttributeIsSet = &asciidoc
 				},
 				&asciidoc.NamedAttribute{
 					Name: "float",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "left",
 						},
@@ -6183,7 +6183,7 @@ var blocksTestShouldSetDirectionCssClassOnImageIfFloatAttributeIsSet = &asciidoc
 					Quote: 0,
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6193,7 +6193,7 @@ var blocksTestShouldSetDirectionCssClassOnImageIfFloatAttributeIsSet = &asciidoc
 }
 
 var blocksTestShouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6202,7 +6202,7 @@ var blocksTestShouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet = &asci
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -6210,7 +6210,7 @@ var blocksTestShouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet = &asci
 				},
 				&asciidoc.NamedAttribute{
 					Name: "align",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "center",
 						},
@@ -6218,7 +6218,7 @@ var blocksTestShouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet = &asci
 					Quote: 0,
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6228,7 +6228,7 @@ var blocksTestShouldSetTextAlignmentCssClassOnImageIfAlignAttributeIsSet = &asci
 }
 
 var blocksTestStyleAttributeIsDroppedFromImageMacro = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6237,7 +6237,7 @@ var blocksTestStyleAttributeIsDroppedFromImageMacro = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -6245,7 +6245,7 @@ var blocksTestStyleAttributeIsDroppedFromImageMacro = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "style",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "value",
 						},
@@ -6253,7 +6253,7 @@ var blocksTestStyleAttributeIsDroppedFromImageMacro = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6263,7 +6263,7 @@ var blocksTestStyleAttributeIsDroppedFromImageMacro = &asciidoc.Document{
 }
 
 var blocksTestShouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6272,7 +6272,7 @@ var blocksTestShouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified = &a
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -6280,7 +6280,7 @@ var blocksTestShouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified = &a
 				},
 				&asciidoc.NamedAttribute{
 					Name: "link",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "http://en.wikipedia.org/wiki/Tiger",
 						},
@@ -6288,7 +6288,7 @@ var blocksTestShouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified = &a
 					Quote: 1,
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6298,13 +6298,13 @@ var blocksTestShouldAutoGenerateAltTextForBlockImageIfAltTextIsNotSpecified = &a
 }
 
 var blocksTestCanConvertBlockImageWithLinkToSelf = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "img",
 				},
@@ -6318,7 +6318,7 @@ var blocksTestCanConvertBlockImageWithLinkToSelf = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -6326,7 +6326,7 @@ var blocksTestCanConvertBlockImageWithLinkToSelf = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "link",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "self",
 						},
@@ -6334,7 +6334,7 @@ var blocksTestCanConvertBlockImageWithLinkToSelf = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "tiger.png",
 				},
@@ -6344,7 +6344,7 @@ var blocksTestCanConvertBlockImageWithLinkToSelf = &asciidoc.Document{
 }
 
 var blocksTestAddsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6353,21 +6353,21 @@ var blocksTestAddsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
 					},
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "The AsciiDoc Tiger",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6377,7 +6377,7 @@ var blocksTestAddsRelnoopenerAttributeToBlockImageWithLinkThatTargetsBlankWindow
 }
 
 var blocksTestCanConvertBlockImageWithExplicitCaption = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6386,7 +6386,7 @@ var blocksTestCanConvertBlockImageWithExplicitCaption = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -6394,7 +6394,7 @@ var blocksTestCanConvertBlockImageWithExplicitCaption = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "caption",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Voila! ",
 						},
@@ -6402,14 +6402,14 @@ var blocksTestCanConvertBlockImageWithExplicitCaption = &asciidoc.Document{
 					Quote: 2,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "The AsciiDoc Tiger",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/tiger.png",
 				},
@@ -6419,13 +6419,13 @@ var blocksTestCanConvertBlockImageWithExplicitCaption = &asciidoc.Document{
 }
 
 var blocksTestCanAlignImageInDocBookBackend = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "attribute-missing",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "skip",
 				},
@@ -6436,7 +6436,7 @@ var blocksTestCanAlignImageInDocBookBackend = &asciidoc.Document{
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.UserAttributeReference{
 					Value: "bogus",
 				},
@@ -6446,13 +6446,13 @@ var blocksTestCanAlignImageInDocBookBackend = &asciidoc.Document{
 }
 
 var blocksTestShouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDrop = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "attribute-missing",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "drop",
 				},
@@ -6463,7 +6463,7 @@ var blocksTestShouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttrib
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.UserAttributeReference{
 					Value: "bogus",
 				},
@@ -6476,13 +6476,13 @@ var blocksTestShouldNotDropLineIfImageTargetIsMissingAttributeReferenceAndAttrib
 }
 
 var blocksTestDropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissingIsDropLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "attribute-missing",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "drop-line",
 				},
@@ -6493,7 +6493,7 @@ var blocksTestDropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissi
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.UserAttributeReference{
 					Value: "bogus",
 				},
@@ -6503,13 +6503,13 @@ var blocksTestDropsLineIfImageTargetIsMissingAttributeReferenceAndAttributeMissi
 }
 
 var blocksTestShouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIsDropLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "attribute-missing",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "drop-line",
 				},
@@ -6520,7 +6520,7 @@ var blocksTestShouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIs
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.CharacterReplacementReference{
 					Value: "blank",
 				},
@@ -6530,13 +6530,13 @@ var blocksTestShouldNotDropLineIfImageTargetResolvesToBlankAndAttributeMissingIs
 }
 
 var blocksTestDroppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMissingIsDropLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "attribute-missing",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "drop-line",
 				},
@@ -6547,7 +6547,7 @@ var blocksTestDroppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMi
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.UserAttributeReference{
 					Value: "bogus",
 				},
@@ -6558,8 +6558,8 @@ var blocksTestDroppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMi
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set:           nil,
-			Title: asciidoc.Set{
+			Elements:      nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section Title",
 				},
@@ -6570,13 +6570,13 @@ var blocksTestDroppedImageDoesNotBreakProcessingOfFollowingSectionAndAttributeMi
 }
 
 var blocksTestShouldPassThroughImageThatReferencesUri = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images",
 				},
@@ -6590,14 +6590,14 @@ var blocksTestShouldPassThroughImageThatReferencesUri = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "http://asciidoc.org/images/tiger.png",
 				},
@@ -6607,13 +6607,13 @@ var blocksTestShouldPassThroughImageThatReferencesUri = &asciidoc.Document{
 }
 
 var blocksTestShouldEncodeSpacesInImageTargetIfValueIsAUri = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images",
 				},
@@ -6627,14 +6627,14 @@ var blocksTestShouldEncodeSpacesInImageTargetIfValueIsAUri = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "tiger.png",
 				},
@@ -6644,17 +6644,17 @@ var blocksTestShouldEncodeSpacesInImageTargetIfValueIsAUri = &asciidoc.Document{
 }
 
 var blocksTestEmbedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -6668,14 +6668,14 @@ var blocksTestEmbedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet = &asc
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Dot",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "dot.gif",
 				},
@@ -6685,21 +6685,21 @@ var blocksTestEmbedsBase64EncodedDataUriForImageWhenDataUriAttributeIsSet = &asc
 }
 
 var blocksTestEmbedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
 			},
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -6709,7 +6709,7 @@ var blocksTestEmbedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg = &asc
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -6718,14 +6718,14 @@ var blocksTestEmbedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg = &asc
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -6735,21 +6735,21 @@ var blocksTestEmbedsSvgImageWithImageSvgxmlMimetypeWhenFileExtensionIsSvg = &asc
 }
 
 var blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
 			},
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -6759,7 +6759,7 @@ var blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded 
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -6768,7 +6768,7 @@ var blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded 
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "100",
 						},
@@ -6776,7 +6776,7 @@ var blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded 
 				},
 				&asciidoc.NamedAttribute{
 					Name: "link",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "self",
 						},
@@ -6784,7 +6784,7 @@ var blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded 
 					Quote: 0,
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "circle.svg",
 				},
@@ -6794,17 +6794,17 @@ var blocksTestShouldLinkToDataUriIfValueOfLinkAttributeIsSelfAndImageIsEmbedded 
 }
 
 var blocksTestEmbedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -6818,14 +6818,14 @@ var blocksTestEmbedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttrib
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Dot",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "unreadable.gif",
 				},
@@ -6835,17 +6835,17 @@ var blocksTestEmbedsEmptyBase64EncodedDataUriForUnreadableImageWhenDataUriAttrib
 }
 
 var blocksTestEmbedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFileExtensionIsMissing = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -6859,14 +6859,14 @@ var blocksTestEmbedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFi
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Dot",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "dot",
 				},
@@ -6876,13 +6876,13 @@ var blocksTestEmbedsBase64EncodedDataUriWithApplicationOctetStreamMimetypeWhenFi
 }
 
 var blocksTestCanHandleEmbeddedDataUriImages = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -6892,14 +6892,14 @@ var blocksTestCanHandleEmbeddedDataUriImages = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Dot",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=",
 				},
@@ -6909,17 +6909,17 @@ var blocksTestCanHandleEmbeddedDataUriImages = &asciidoc.Document{
 }
 
 var blocksTestCleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageIfSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "../..//fixtures/./../../fixtures",
 				},
@@ -6933,14 +6933,14 @@ var blocksTestCleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageI
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Dot",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "dot.gif",
 				},
@@ -6950,17 +6950,17 @@ var blocksTestCleansReferenceToAncestorDirectoriesInImagesdirBeforeReadingImageI
 }
 
 var blocksTestCleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "./",
 				},
@@ -6974,14 +6974,14 @@ var blocksTestCleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSa
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Dot",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "../..//fixtures/./../../fixtures/dot.gif",
 				},
@@ -6991,13 +6991,13 @@ var blocksTestCleansReferenceToAncestorDirectoriesInTargetBeforeReadingImageIfSa
 }
 
 var blocksTestShouldDetectAndConvertVideoMacro = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "assets",
 				},
@@ -7014,13 +7014,13 @@ var blocksTestShouldDetectAndConvertVideoMacro = &asciidoc.Document{
 }
 
 var blocksTestVideoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "assets",
 				},
@@ -7036,7 +7036,7 @@ var blocksTestVideoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsA
 			AttributeList: nil,
 			URL: asciidoc.URL{
 				Scheme: "http://",
-				Path: asciidoc.Set{
+				Path: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "example.org/videos/cats-vs-dogs.avi",
 					},
@@ -7048,13 +7048,13 @@ var blocksTestVideoMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsA
 }
 
 var blocksTestVideoMacroShouldOutputCustomHtmlWithIframeForVimeoService = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "assets",
 				},
@@ -7071,13 +7071,13 @@ var blocksTestVideoMacroShouldOutputCustomHtmlWithIframeForVimeoService = &ascii
 }
 
 var blocksTestAudioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsAUrl = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "imagesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "assets",
 				},
@@ -7093,7 +7093,7 @@ var blocksTestAudioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsA
 			AttributeList: nil,
 			URL: asciidoc.URL{
 				Scheme: "http://",
-				Path: asciidoc.Set{
+				Path: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "example.org/podcast.mp3",
 					},
@@ -7105,13 +7105,13 @@ var blocksTestAudioMacroShouldNotUseImagesdirAttributeToResolveTargetIfTargetIsA
 }
 
 var blocksTestAudioMacroShouldHonorAllOptions = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "icons",
-			Set:  nil,
+			Name:     "icons",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -7120,7 +7120,7 @@ var blocksTestAudioMacroShouldHonorAllOptions = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7131,7 +7131,7 @@ var blocksTestAudioMacroShouldHonorAllOptions = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "You can use icons for admonitions by setting the 'icons' attribute.",
 				},
@@ -7143,17 +7143,17 @@ var blocksTestAudioMacroShouldHonorAllOptions = &asciidoc.Document{
 }
 
 var blocksTestCanResolveIconRelativeToCustomIconsdir = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "icons",
-			Set:  nil,
+			Name:     "icons",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "iconsdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "icons",
 				},
@@ -7166,7 +7166,7 @@ var blocksTestCanResolveIconRelativeToCustomIconsdir = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7177,7 +7177,7 @@ var blocksTestCanResolveIconRelativeToCustomIconsdir = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "You can use icons for admonitions by setting the 'icons' attribute.",
 				},
@@ -7189,13 +7189,13 @@ var blocksTestCanResolveIconRelativeToCustomIconsdir = &asciidoc.Document{
 }
 
 var blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icons",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "font",
 				},
@@ -7203,7 +7203,7 @@ var blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Docum
 		},
 		&asciidoc.AttributeEntry{
 			Name: "iconsdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/icons",
 				},
@@ -7216,7 +7216,7 @@ var blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Docum
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7228,7 +7228,7 @@ var blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Docum
 				},
 				&asciidoc.NamedAttribute{
 					Name: "icon",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "a",
 						},
@@ -7236,7 +7236,7 @@ var blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Docum
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Override the icon of an admonition block using an attribute",
 				},
@@ -7248,7 +7248,7 @@ var blocksTestShouldAddFileExtensionToCustomIconIfNotSpecified = &asciidoc.Docum
 }
 
 var blocksTestShouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7256,7 +7256,7 @@ var blocksTestShouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon = &
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7268,7 +7268,7 @@ var blocksTestShouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon = &
 				},
 				&asciidoc.NamedAttribute{
 					Name: "icon",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "hint",
 						},
@@ -7276,7 +7276,7 @@ var blocksTestShouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon = &
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Set the icontype using either the icontype attribute on the icons attribute.",
 				},
@@ -7288,17 +7288,17 @@ var blocksTestShouldAllowIcontypeToBeSpecifiedWhenUsingBuiltInAdmonitionIcon = &
 }
 
 var blocksTestEmbedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeModeLevelIsLessThanSecure = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "icons",
-			Set:  nil,
+			Name:     "icons",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "iconsdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -7306,15 +7306,15 @@ var blocksTestEmbedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeMo
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icontype",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "gif",
 				},
 			},
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -7323,7 +7323,7 @@ var blocksTestEmbedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeMo
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7334,7 +7334,7 @@ var blocksTestEmbedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeMo
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "You can use icons for admonitions by setting the 'icons' attribute.",
 				},
@@ -7346,17 +7346,17 @@ var blocksTestEmbedsBase64EncodedDataUriOfIconWhenDataUriAttributeIsSetAndSafeMo
 }
 
 var blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "icons",
-			Set:  nil,
+			Name:     "icons",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "iconsdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -7364,15 +7364,15 @@ var blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsS
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icontype",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "gif",
 				},
 			},
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -7381,7 +7381,7 @@ var blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsS
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7393,7 +7393,7 @@ var blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsS
 				},
 				&asciidoc.NamedAttribute{
 					Name: "icon",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "tip",
 						},
@@ -7401,7 +7401,7 @@ var blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsS
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "You can set a custom icon using the icon attribute on the block.",
 				},
@@ -7413,17 +7413,17 @@ var blocksTestShouldEmbedBase64EncodedDataUriOfCustomIconWhenDataUriAttributeIsS
 }
 
 var blocksTestDoesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrGreater = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "icons",
-			Set:  nil,
+			Name:     "icons",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "iconsdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -7431,15 +7431,15 @@ var blocksTestDoesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrG
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icontype",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "gif",
 				},
 			},
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -7448,7 +7448,7 @@ var blocksTestDoesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrG
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7459,7 +7459,7 @@ var blocksTestDoesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrG
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "You can use icons for admonitions by setting the 'icons' attribute.",
 				},
@@ -7471,17 +7471,17 @@ var blocksTestDoesNotEmbedBase64EncodedDataUriOfIconWhenSafeModeLevelIsSecureOrG
 }
 
 var blocksTestCleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "icons",
-			Set:  nil,
+			Name:     "icons",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "iconsdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "../fixtures",
 				},
@@ -7489,15 +7489,15 @@ var blocksTestCleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLev
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icontype",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "gif",
 				},
 			},
 		},
 		&asciidoc.AttributeEntry{
-			Name: "data-uri",
-			Set:  nil,
+			Name:     "data-uri",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -7506,7 +7506,7 @@ var blocksTestCleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLev
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7517,7 +7517,7 @@ var blocksTestCleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLev
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "You can use icons for admonitions by setting the 'icons' attribute.",
 				},
@@ -7529,13 +7529,13 @@ var blocksTestCleansReferenceToAncestorDirectoriesBeforeReadingIconIfSafeModeLev
 }
 
 var blocksTestShouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttributeIsFont = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icons",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "font",
 				},
@@ -7548,7 +7548,7 @@ var blocksTestShouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttribu
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7559,7 +7559,7 @@ var blocksTestShouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttribu
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "You can use icons for admonitions by setting the 'icons' attribute.",
 				},
@@ -7571,13 +7571,13 @@ var blocksTestShouldImportFontAwesomeAndUseFontBasedIconsWhenValueOfIconsAttribu
 }
 
 var blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icons",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "font",
 				},
@@ -7585,7 +7585,7 @@ var blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciido
 		},
 		&asciidoc.AttributeEntry{
 			Name: "iconsdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "images/icons",
 				},
@@ -7598,7 +7598,7 @@ var blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciido
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "TIP",
 							},
@@ -7610,7 +7610,7 @@ var blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciido
 				},
 				&asciidoc.NamedAttribute{
 					Name: "icon",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "a.png",
 						},
@@ -7618,7 +7618,7 @@ var blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciido
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Override the icon of an admonition block using an attribute",
 				},
@@ -7630,13 +7630,13 @@ var blocksTestFontBasedIconShouldNotOverrideIconSpecifiedOnAdmonition = &asciido
 }
 
 var blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "asset-uri-scheme",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "http",
 				},
@@ -7644,7 +7644,7 @@ var blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciido
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icons",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "font",
 				},
@@ -7652,7 +7652,7 @@ var blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciido
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "highlightjs",
 				},
@@ -7663,7 +7663,7 @@ var blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciido
 		},
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "You can control the URI scheme used for assets with the asset-uri-scheme attribute",
 				},
@@ -7678,7 +7678,7 @@ var blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciido
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -7691,14 +7691,14 @@ var blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciido
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "puts \"AsciiDoc, FTW!\"",
 				},
@@ -7710,17 +7710,17 @@ var blocksTestShouldUseHttpUriSchemeForAssetsWhenAssetUriSchemeIsHttp = &asciido
 }
 
 var blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "asset-uri-scheme",
-			Set:  nil,
+			Name:     "asset-uri-scheme",
+			Elements: nil,
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icons",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "font",
 				},
@@ -7728,7 +7728,7 @@ var blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc
 		},
 		&asciidoc.AttributeEntry{
 			Name: "source-highlighter",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "highlightjs",
 				},
@@ -7739,7 +7739,7 @@ var blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc
 		},
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "You can control the URI scheme used for assets with the asset-uri-scheme attribute",
 				},
@@ -7754,7 +7754,7 @@ var blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -7767,14 +7767,14 @@ var blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "puts \"AsciiDoc, FTW!\"",
 				},
@@ -7786,7 +7786,7 @@ var blocksTestShouldUseNoUriSchemeForAssetsWhenAssetUriSchemeIsBlank = &asciidoc
 }
 
 var blocksTestRestrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7806,7 +7806,7 @@ var blocksTestRestrictsAccessToAncestorDirectoriesWhenSafeModeLevelIsAtLeastSafe
 }
 
 var blocksTestShouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7841,7 +7841,7 @@ var blocksTestShouldNotRecognizeFencedCodeBlocksWithMoreThanThreeDelimiters = &a
 }
 
 var blocksTestShouldSupportFencedCodeBlocksWithLanguages = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7876,7 +7876,7 @@ var blocksTestShouldSupportFencedCodeBlocksWithLanguages = &asciidoc.Document{
 }
 
 var blocksTestShouldSupportFencedCodeBlocksWithLanguagesAndNumbering = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7911,7 +7911,7 @@ var blocksTestShouldSupportFencedCodeBlocksWithLanguagesAndNumbering = &asciidoc
 }
 
 var blocksTestShouldAllowSourceStyleToBeSpecifiedOnLiteralBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7919,7 +7919,7 @@ var blocksTestShouldAllowSourceStyleToBeSpecifiedOnLiteralBlock = &asciidoc.Docu
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -7942,7 +7942,7 @@ var blocksTestShouldAllowSourceStyleToBeSpecifiedOnLiteralBlock = &asciidoc.Docu
 }
 
 var blocksTestShouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7950,7 +7950,7 @@ var blocksTestShouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock = &as
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -7963,7 +7963,7 @@ var blocksTestShouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock = &as
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "js",
 						},
@@ -7982,13 +7982,13 @@ var blocksTestShouldAllowSourceStyleAndLanguageToBeSpecifiedOnLiteralBlock = &as
 }
 
 var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -7996,7 +7996,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -8011,7 +8011,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &
 						Type:   7,
 						Length: 2,
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This article is about stuff.",
 						},
@@ -8030,7 +8030,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -8039,7 +8039,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section One",
 						},
@@ -8047,7 +8047,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Article",
 				},
@@ -8058,20 +8058,20 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleAQuoteBlockForArticle = &
 }
 
 var blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArticle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "My abstract",
 								},
@@ -8079,7 +8079,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArtic
 						},
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -8094,7 +8094,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArtic
 						Type:   7,
 						Length: 2,
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This article is about stuff.",
 						},
@@ -8106,7 +8106,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArtic
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -8115,7 +8115,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArtic
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section One",
 						},
@@ -8123,7 +8123,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArtic
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Article",
 				},
@@ -8134,16 +8134,16 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleAQuoteBlockWithTitleForArtic
 }
 
 var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -8156,7 +8156,7 @@ var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -8167,7 +8167,7 @@ var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Abstract for book with title is valid",
 						},
@@ -8176,7 +8176,7 @@ var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.
 					Admonition: 0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -8187,13 +8187,13 @@ var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBook = &asciidoc.
 }
 
 var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "doctype",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "book",
 				},
@@ -8206,7 +8206,7 @@ var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook = &as
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "abstract",
 							},
@@ -8217,7 +8217,7 @@ var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook = &as
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Abstract for book without title is invalid.",
 				},
@@ -8229,13 +8229,13 @@ var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBook = &as
 }
 
 var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -8243,7 +8243,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asc
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -8258,7 +8258,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asc
 						Type:   7,
 						Length: 2,
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This article is about stuff.",
 						},
@@ -8273,7 +8273,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asc
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Article",
 				},
@@ -8284,20 +8284,20 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithoutTitleConvertedToDocBook = &asc
 }
 
 var blocksTestShouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "My abstract",
 								},
@@ -8305,7 +8305,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook = &asciid
 						},
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -8320,7 +8320,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook = &asciid
 						Type:   7,
 						Length: 2,
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This article is about stuff.",
 						},
@@ -8328,7 +8328,7 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook = &asciid
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Article",
 				},
@@ -8339,16 +8339,16 @@ var blocksTestShouldMakeAbstractOnOpenBlockWithTitleConvertedToDocBook = &asciid
 }
 
 var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -8361,7 +8361,7 @@ var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDo
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -8372,7 +8372,7 @@ var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDo
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Abstract for book with title is valid",
 						},
@@ -8381,7 +8381,7 @@ var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDo
 					Admonition: 0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -8392,13 +8392,13 @@ var blocksTestShouldAllowAbstractInDocumentWithTitleIfDoctypeIsBookConvertedToDo
 }
 
 var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "doctype",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "book",
 				},
@@ -8411,7 +8411,7 @@ var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConver
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "abstract",
 							},
@@ -8422,7 +8422,7 @@ var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConver
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Abstract for book is invalid.",
 				},
@@ -8434,16 +8434,16 @@ var blocksTestShouldNotAllowAbstractAsDirectChildOfDocumentIfDoctypeIsBookConver
 }
 
 var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -8453,7 +8453,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -8462,7 +8462,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -8470,7 +8470,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -8485,7 +8485,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 						Type:   7,
 						Length: 2,
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This is a part intro.",
 						},
@@ -8504,7 +8504,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -8513,7 +8513,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -8521,7 +8521,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Part 1",
 				},
@@ -8532,16 +8532,16 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitle = &asciidoc.Document{
 }
 
 var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -8551,7 +8551,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -8560,14 +8560,14 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Intro title",
 								},
@@ -8575,7 +8575,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 						},
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -8590,7 +8590,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 						Type:   7,
 						Length: 2,
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This is a part intro with a title.",
 						},
@@ -8602,7 +8602,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -8611,7 +8611,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -8619,7 +8619,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Part 1",
 				},
@@ -8630,16 +8630,16 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitle = &asciidoc.Document{
 }
 
 var blocksTestShouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -8652,7 +8652,7 @@ var blocksTestShouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -8663,7 +8663,7 @@ var blocksTestShouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "part intro paragraph",
 						},
@@ -8672,7 +8672,7 @@ var blocksTestShouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
 					Admonition: 0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -8683,7 +8683,7 @@ var blocksTestShouldExcludePartintroIfNotAChildOfPart = &asciidoc.Document{
 }
 
 var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8691,7 +8691,7 @@ var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBook = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "partintro",
 							},
@@ -8702,7 +8702,7 @@ var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBook = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "part intro paragraph",
 				},
@@ -8714,16 +8714,16 @@ var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBook = &asciidoc.Document{
 }
 
 var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -8733,7 +8733,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -8742,7 +8742,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -8750,7 +8750,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -8765,7 +8765,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &
 						Type:   7,
 						Length: 2,
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This is a part intro.",
 						},
@@ -8784,7 +8784,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -8793,7 +8793,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -8801,7 +8801,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Part 1",
 				},
@@ -8812,16 +8812,16 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithoutTitleConvertedToDocBook = &
 }
 
 var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -8831,7 +8831,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asc
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -8840,14 +8840,14 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asc
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OpenBlock{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Intro title",
 								},
@@ -8855,7 +8855,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asc
 						},
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -8870,7 +8870,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asc
 						Type:   7,
 						Length: 2,
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This is a part intro with a title.",
 						},
@@ -8882,7 +8882,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asc
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -8891,7 +8891,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asc
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -8899,7 +8899,7 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asc
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Part 1",
 				},
@@ -8910,16 +8910,16 @@ var blocksTestShouldAcceptPartintroOnOpenBlockWithTitleConvertedToDocBook = &asc
 }
 
 var blocksTestShouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -8932,7 +8932,7 @@ var blocksTestShouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &ascii
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -8943,7 +8943,7 @@ var blocksTestShouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &ascii
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "part intro paragraph",
 						},
@@ -8952,7 +8952,7 @@ var blocksTestShouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &ascii
 					Admonition: 0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -8963,7 +8963,7 @@ var blocksTestShouldExcludePartintroIfNotAChildOfPartConvertedToDocBook = &ascii
 }
 
 var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8971,7 +8971,7 @@ var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook = &as
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "partintro",
 							},
@@ -8982,7 +8982,7 @@ var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook = &as
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "part intro paragraph",
 				},
@@ -8994,7 +8994,7 @@ var blocksTestShouldNotAllowPartintroUnlessDoctypeIsBookConvertedToDocBook = &as
 }
 
 var blocksTestProcessorShouldNotCrashIfSubsAreEmpty = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9002,7 +9002,7 @@ var blocksTestProcessorShouldNotCrashIfSubsAreEmpty = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: ",",
 						},
@@ -9022,13 +9022,13 @@ var blocksTestProcessorShouldNotCrashIfSubsAreEmpty = &asciidoc.Document{
 }
 
 var blocksTestShouldBeAbleToAppendSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "application",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Asciidoctor",
 				},
@@ -9041,7 +9041,7 @@ var blocksTestShouldBeAbleToAppendSubsToDefaultBlockSubstitutionList = &asciidoc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "+attributes,+macros",
 						},
@@ -9061,13 +9061,13 @@ var blocksTestShouldBeAbleToAppendSubsToDefaultBlockSubstitutionList = &asciidoc
 }
 
 var blocksTestShouldBeAbleToPrependSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "application",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Asciidoctor",
 				},
@@ -9080,7 +9080,7 @@ var blocksTestShouldBeAbleToPrependSubsToDefaultBlockSubstitutionList = &asciido
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "attributes+",
 						},
@@ -9100,7 +9100,7 @@ var blocksTestShouldBeAbleToPrependSubsToDefaultBlockSubstitutionList = &asciido
 }
 
 var blocksTestShouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9108,7 +9108,7 @@ var blocksTestShouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList = &asciidoc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "-quotes,-replacements",
 						},
@@ -9116,7 +9116,7 @@ var blocksTestShouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList = &asciidoc
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "content",
 				},
@@ -9128,13 +9128,13 @@ var blocksTestShouldBeAbleToRemoveSubsToDefaultBlockSubstitutionList = &asciidoc
 }
 
 var blocksTestShouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstitutionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "application",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "asciidoctor",
 				},
@@ -9147,7 +9147,7 @@ var blocksTestShouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstituti
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "attributes+,-verbatim,+specialcharacters,+macros",
 						},
@@ -9167,7 +9167,7 @@ var blocksTestShouldBeAbleToPrependAppendAndRemoveSubsFromDefaultBlockSubstituti
 }
 
 var blocksTestShouldBeAbleToSetSubsThenModifyThem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9175,7 +9175,7 @@ var blocksTestShouldBeAbleToSetSubsThenModifyThem = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "verbatim,-callouts",
 						},
@@ -9183,10 +9183,10 @@ var blocksTestShouldBeAbleToSetSubsThenModifyThem = &asciidoc.Document{
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "hey now",
 						},
@@ -9203,7 +9203,7 @@ var blocksTestShouldBeAbleToSetSubsThenModifyThem = &asciidoc.Document{
 }
 
 var blocksTestShouldNotRecognizeBlockAnchorWithIllegalIdCharacters = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9225,7 +9225,7 @@ var blocksTestShouldNotRecognizeBlockAnchorWithIllegalIdCharacters = &asciidoc.D
 }
 
 var blocksTestShouldNotRecognizeBlockAnchorThatStartsWithDigit = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9239,7 +9239,7 @@ var blocksTestShouldNotRecognizeBlockAnchorThatStartsWithDigit = &asciidoc.Docum
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "see how they run",
 				},
@@ -9250,7 +9250,7 @@ var blocksTestShouldNotRecognizeBlockAnchorThatStartsWithDigit = &asciidoc.Docum
 }
 
 var blocksTestShouldRecognizeBlockAnchorThatStartsWithColon = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9267,7 +9267,7 @@ var blocksTestShouldRecognizeBlockAnchorThatStartsWithColon = &asciidoc.Document
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "content",
 				},
@@ -9278,7 +9278,7 @@ var blocksTestShouldRecognizeBlockAnchorThatStartsWithColon = &asciidoc.Document
 }
 
 var blocksTestShouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9288,14 +9288,14 @@ var blocksTestShouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference = &asc
 					ID: &asciidoc.String{
 						Value: "debian",
 					},
-					Label: asciidoc.Set{
+					Label: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Debian Install",
 						},
 					},
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Installation on Debian",
 						},
@@ -9314,7 +9314,7 @@ var blocksTestShouldUseSpecifiedIdAndReftextWhenRegisteringBlockReference = &asc
 }
 
 var blocksTestShouldAllowSquareBracketsInBlockReferenceText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9325,7 +9325,7 @@ var blocksTestShouldAllowSquareBracketsInBlockReferenceText = &asciidoc.Document
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Installation on Debian",
 						},
@@ -9344,7 +9344,7 @@ var blocksTestShouldAllowSquareBracketsInBlockReferenceText = &asciidoc.Document
 }
 
 var blocksTestShouldAllowCommaInBlockReferenceText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9354,14 +9354,14 @@ var blocksTestShouldAllowCommaInBlockReferenceText = &asciidoc.Document{
 					ID: &asciidoc.String{
 						Value: "debian",
 					},
-					Label: asciidoc.Set{
+					Label: asciidoc.Elements{
 						&asciidoc.String{
 							Value: " Debian, Ubuntu",
 						},
 					},
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Installation on Debian",
 						},
@@ -9380,16 +9380,16 @@ var blocksTestShouldAllowCommaInBlockReferenceText = &asciidoc.Document{
 }
 
 var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocationOfBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "foo",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "baz",
 						},
@@ -9403,7 +9403,7 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "free-standing",
 					Format:        0,
 				},
@@ -9416,7 +9416,7 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 				},
 				&asciidoc.AttributeEntry{
 					Name: "foo",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bar",
 						},
@@ -9428,7 +9428,7 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 				&asciidoc.Paragraph{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "foo is ",
 								},
@@ -9440,7 +9440,7 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 						&asciidoc.ShorthandAttribute{
 							Style: nil,
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "formal-para",
 									},
@@ -9450,7 +9450,7 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "paragraph with title",
 						},
@@ -9465,14 +9465,14 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "discrete",
 									},
 								},
 							},
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "free-standing",
 									},
@@ -9482,8 +9482,8 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 							Options: nil,
 						},
 					},
-					Set: nil,
-					Title: asciidoc.Set{
+					Elements: nil,
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "foo is still {foo}",
 						},
@@ -9491,7 +9491,7 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -9502,13 +9502,13 @@ var blocksTestShouldResolveAttributeReferenceInTitleUsingAttributeDefinedAtLocat
 }
 
 var blocksTestShouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockReference = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "label-tiger",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Tiger",
 				},
@@ -9527,7 +9527,7 @@ var blocksTestShouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockRe
 					ID: &asciidoc.String{
 						Value: "tiger-evolution",
 					},
-					Label: asciidoc.Set{
+					Label: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Evolution of the ",
 						},
@@ -9537,7 +9537,7 @@ var blocksTestShouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockRe
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Information about the evolution of the tiger.",
 				},
@@ -9548,7 +9548,7 @@ var blocksTestShouldSubstituteAttributeReferencesInReftextWhenRegisteringBlockRe
 }
 
 var blocksTestShouldUseSpecifiedReftextWhenRegisteringBlockReference = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9562,7 +9562,7 @@ var blocksTestShouldUseSpecifiedReftextWhenRegisteringBlockReference = &asciidoc
 				},
 				&asciidoc.NamedAttribute{
 					Name: "reftext",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Debian Install",
 						},
@@ -9570,7 +9570,7 @@ var blocksTestShouldUseSpecifiedReftextWhenRegisteringBlockReference = &asciidoc
 					Quote: 2,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Installation on Debian",
 						},

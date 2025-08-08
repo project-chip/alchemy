@@ -9,7 +9,7 @@ func renderParagraph(cxt Target, p *asciidoc.Paragraph) (err error) {
 		return
 	}
 	renderAdmonition(cxt, p.Admonition)
-	err = Elements(cxt, "", p.Elements()...)
+	err = Elements(cxt, "", p.Children()...)
 	return
 }
 

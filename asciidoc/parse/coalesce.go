@@ -8,13 +8,13 @@ import (
 )
 
 type coalesceState struct {
-	inlineElements  asciidoc.Set
+	inlineElements  asciidoc.Elements
 	text            []*asciidoc.String
 	admonition      *asciidoc.Admonition
 	blockAttributes *asciidoc.BlockAttributes
 }
 
-func coalesce(els asciidoc.Set) (out asciidoc.Set, err error) {
+func coalesce(els asciidoc.Elements) (out asciidoc.Elements, err error) {
 	if len(els) < 2 { // Single element doesn't need coalescing
 		return els, nil
 	}
@@ -44,24 +44,24 @@ func coalesce(els asciidoc.Set) (out asciidoc.Set, err error) {
 			continue
 		}
 
-		if hasElements, ok := el.(asciidoc.HasElements); ok {
-			var els asciidoc.Set
-			els, err = coalesce(hasElements.Elements())
+		if hasElements, ok := el.(asciidoc.ParentElement); ok {
+			var els asciidoc.Elements
+			els, err = coalesce(hasElements.Children())
 			if err != nil {
 				return
 			}
-			hasElements.SetElements(els)
+			hasElements.SetChildren(els)
 		}
 
 		if hasChild, ok := el.(asciidoc.HasChild); ok {
 			child := hasChild.Child()
-			if hasElements, ok := child.(asciidoc.HasElements); ok {
-				var els asciidoc.Set
-				els, err = coalesce(hasElements.Elements())
+			if hasElements, ok := child.(asciidoc.ParentElement); ok {
+				var els asciidoc.Elements
+				els, err = coalesce(hasElements.Children())
 				if err != nil {
 					return
 				}
-				hasElements.SetElements(els)
+				hasElements.SetChildren(els)
 			}
 		}
 
@@ -110,7 +110,7 @@ func (cs *coalesceState) flushText() {
 	cs.text = nil
 }
 
-func (cs *coalesceState) flushInline(out asciidoc.Set) asciidoc.Set {
+func (cs *coalesceState) flushInline(out asciidoc.Elements) asciidoc.Elements {
 	if len(cs.inlineElements) == 0 {
 		return out
 	}
@@ -129,7 +129,7 @@ func (cs *coalesceState) flushInline(out asciidoc.Set) asciidoc.Set {
 			return e == cs.blockAttributes
 		})
 		if bsIndex >= 0 {
-			cs.inlineElements.SetElements(slices.Delete(cs.inlineElements, bsIndex, bsIndex+1))
+			cs.inlineElements.SetChildren(slices.Delete(cs.inlineElements, bsIndex, bsIndex+1))
 		}
 		cs.blockAttributes = nil
 	}
@@ -145,7 +145,7 @@ func (cs *coalesceState) flushInline(out asciidoc.Set) asciidoc.Set {
 		cs.admonition = nil
 	}
 
-	p.Set = cs.inlineElements
+	p.Elements = cs.inlineElements
 	out = append(out, p)
 	cs.inlineElements = nil
 	return out

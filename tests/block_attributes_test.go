@@ -3,12 +3,12 @@ package tests
 import "github.com/project-chip/alchemy/asciidoc"
 
 var blockAttributes = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "role",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "lead",
 						},
@@ -16,7 +16,7 @@ var blockAttributes = &asciidoc.Document{
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is a demonstration of ",
 				},

@@ -18,8 +18,8 @@ func Inline(context PreParseContext, path string, reader io.Reader, opts ...Opti
 		slog.Error("error parsing file", slog.String("path", path), slog.Any("error", err))
 		return nil, err
 	}
-	var set asciidoc.Set
-	set, ok := vals.(asciidoc.Set)
+	var set asciidoc.Elements
+	set, ok := vals.(asciidoc.Elements)
 	if !ok {
 		return nil, fmt.Errorf("unexpected type in UnifiedParse: %T", vals)
 	}
@@ -28,11 +28,11 @@ func Inline(context PreParseContext, path string, reader io.Reader, opts ...Opti
 	var lastTableCell *asciidoc.TableCell
 	var addToCell bool
 
-	parse.Filter(&set, func(parent parse.HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Set, shortCircuit bool) {
+	parse.Filter(&set, func(parent parse.HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Elements, shortCircuit bool) {
 		switch el := el.(type) {
 		case *asciidoc.AttributeEntry:
 			if !suppress {
-				context.Set(string(el.Name), el.Set)
+				context.Set(string(el.Name), el.Elements)
 			}
 			remove = true
 		case *asciidoc.AttributeReset:
@@ -78,11 +78,11 @@ func Inline(context PreParseContext, path string, reader io.Reader, opts ...Opti
 			addToCell = false
 		case *asciidoc.InlineIfDef:
 			if el.Eval(context) {
-				replace = el.Set
+				replace = el.Elements
 			}
 		case *asciidoc.InlineIfNDef:
 			if el.Eval(context) {
-				replace = el.Set
+				replace = el.Elements
 			}
 		case *asciidoc.TableCell:
 			lastTableCell = el
@@ -121,9 +121,9 @@ func Inline(context PreParseContext, path string, reader io.Reader, opts ...Opti
 	return
 }
 
-func newIncludeFile(context PreParseContext, parent parse.HasElements, include *asciidoc.FileInclude) (elements asciidoc.Set, err error) {
+func newIncludeFile(context PreParseContext, parent parse.HasElements, include *asciidoc.FileInclude) (elements asciidoc.Elements, err error) {
 	rawPathWriter := asciidoc.NewWriter(nil)
-	err = preparseElements(context, asciidoc.NewReader(include.Set), rawPathWriter)
+	err = preparseElements(context, asciidoc.NewReader(include.Elements), rawPathWriter)
 
 	if err != nil {
 		return
@@ -160,6 +160,6 @@ func newIncludeFile(context PreParseContext, parent parse.HasElements, include *
 	if err != nil {
 		return
 	}
-	elements = doc.Elements()
+	elements = doc.Children()
 	return
 }

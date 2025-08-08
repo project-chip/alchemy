@@ -8,7 +8,7 @@ import (
 
 type attributeValue struct {
 	quote asciidoc.AttributeQuoteType
-	value asciidoc.Set
+	value asciidoc.Elements
 }
 
 func extractAttributes(els []any, out []asciidoc.Attribute) ([]asciidoc.Attribute, error) {

@@ -27,7 +27,7 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 		case *asciidoc.Section:
 			err = renderSection(cxt, el)
 			if err == nil {
-				err = Elements(cxt, "", el.Elements()...)
+				err = Elements(cxt, "", el.Children()...)
 			}
 		case *asciidoc.Paragraph:
 			err = renderParagraph(cxt, el)
@@ -90,11 +90,11 @@ func Elements(cxt Target, prefix string, elementList ...asciidoc.Element) (err e
 			err = renderInlineImage(cxt, el)
 		case *asciidoc.InlinePassthrough:
 			cxt.WriteString("+")
-			err = Elements(cxt, "", el.Elements()...)
+			err = Elements(cxt, "", el.Children()...)
 			cxt.WriteString("+")
 		case *asciidoc.InlineDoublePassthrough:
 			cxt.WriteString("++")
-			err = Elements(cxt, "", el.Elements()...)
+			err = Elements(cxt, "", el.Children()...)
 			cxt.WriteString("++")
 		case *asciidoc.AttributeReset:
 			renderAttributeReset(cxt, el)

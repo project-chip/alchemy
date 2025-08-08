@@ -13,15 +13,15 @@ var multipleSpacesPattern = regexp.MustCompile(`([\w.?!,\(\)\-":]) {2,}([\w.?!,\
 var lowercaseHexPattern = regexp.MustCompile(`(\b0x[0-9a-f]*[a-f][0-9a-f]*\b)`)
 var lowercasePattern = regexp.MustCompile(`[a-f]+`)
 
-func precleanStrings(doc asciidoc.HasElements) {
-	parse.Traverse(doc, doc.Elements(), func(t *asciidoc.String, parent parse.HasElements, index int) parse.SearchShould {
+func precleanStrings(doc asciidoc.ParentElement) {
+	parse.Traverse(doc, doc.Children(), func(t *asciidoc.String, parent parse.HasElements, index int) parse.SearchShould {
 		t.Value = strings.ReplaceAll(t.Value, "\t", "  ")
 		return parse.SearchShouldContinue
 	})
 }
 
-func (b *Baller) postCleanUpStrings(root asciidoc.HasElements) {
-	parse.Traverse(root, root.Elements(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
+func (b *Baller) postCleanUpStrings(root asciidoc.ParentElement) {
+	parse.Traverse(root, root.Children(), func(el any, parent parse.HasElements, index int) parse.SearchShould {
 		switch el := el.(type) {
 		case *asciidoc.Monospace, *asciidoc.DoubleMonospace:
 			return parse.SearchShouldSkip
@@ -34,7 +34,7 @@ func (b *Baller) postCleanUpStrings(root asciidoc.HasElements) {
 		}
 		return parse.SearchShouldContinue
 	})
-	parse.Traverse(root, root.Elements(), func(t *asciidoc.String, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(root, root.Children(), func(t *asciidoc.String, parent parse.HasElements, index int) parse.SearchShould {
 		if b.options.RemoveExtraSpaces {
 			t.Value = multipleSpacesPattern.ReplaceAllString(t.Value, "$1 $2")
 		}

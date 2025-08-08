@@ -71,7 +71,7 @@ func (h *Host) indexClusterRevisionsModel(cluster *matter.Cluster, parent *secti
 
 func (h *Host) indexCluster(cxt context.Context, doc *spec.Doc, ds *sectionInfo, top *spec.Section) error {
 	ci := &sectionInfo{id: h.nextID(clusterTable), parent: ds, values: &dbRow{}}
-	for s := range parse.Skim[*spec.Section](top.Elements()) {
+	for s := range parse.Skim[*spec.Section](top.Children()) {
 		var err error
 		switch s.SecType {
 		case matter.SectionClusterID:
@@ -93,7 +93,7 @@ func (h *Host) indexCluster(cxt context.Context, doc *spec.Doc, ds *sectionInfo,
 			return err
 		}
 	}
-	for s := range parse.Skim[*spec.Section](top.Elements()) {
+	for s := range parse.Skim[*spec.Section](top.Children()) {
 		var err error
 		switch s.SecType {
 		case matter.SectionAttributes:

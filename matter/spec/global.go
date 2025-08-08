@@ -16,7 +16,7 @@ type globalCommandFactory struct {
 
 func (cf *globalCommandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	return func(yield func(*Section) bool) {
-		parse.Traverse(d, d.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
+		parse.Traverse(d, d.Children(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
 			if s.SecType != matter.SectionCommand {
 				return parse.SearchShouldContinue
 			}
@@ -30,7 +30,7 @@ func (cf *globalCommandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] 
 
 func (s *Section) toGlobalElements(spec *Specification, d *Doc, pc *parseContext, parent types.Entity) (entities []types.Entity, err error) {
 	var commandsTable *asciidoc.Table
-	parse.SkimFunc(s.Elements(), func(t *asciidoc.Table) bool {
+	parse.SkimFunc(s.Children(), func(t *asciidoc.Table) bool {
 		for _, a := range t.AttributeList.Attributes() {
 			switch a := a.(type) {
 			case *asciidoc.TitleAttribute:
@@ -57,7 +57,7 @@ func (s *Section) toGlobalElements(spec *Specification, d *Doc, pc *parseContext
 	}
 
 	// The definnition of global commands is frequently elsewhere, so let's scan the doc for other commmand sections
-	parse.Traverse(d, d.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(d, d.Children(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
 		switch sec.SecType {
 		case matter.SectionCommand:
 			commandName := text.TrimCaseInsensitiveSuffix(sec.Name, " Command")

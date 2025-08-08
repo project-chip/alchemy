@@ -3,14 +3,14 @@ package tests
 import "github.com/project-chip/alchemy/asciidoc"
 
 var inlineImage = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Priority Scheme of Pump Operation and Control",
 						},
@@ -23,13 +23,13 @@ var inlineImage = &asciidoc.Document{
 					Label: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.InlineImage{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.PositionalAttribute{
 							Offset:      0,
 							ImpliedName: "alt",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Priority Scheme of Pump Operation and Control.jpg",
 								},
@@ -37,7 +37,7 @@ var inlineImage = &asciidoc.Document{
 						},
 						&asciidoc.NamedAttribute{
 							Name: "height",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "524",
 								},
@@ -45,14 +45,14 @@ var inlineImage = &asciidoc.Document{
 						},
 						&asciidoc.NamedAttribute{
 							Name: "width",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "576",
 								},
 							},
 						},
 					},
-					ImagePath: asciidoc.Set{
+					ImagePath: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "./images/hvac/media/image4.jpeg",
 						},

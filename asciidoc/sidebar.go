@@ -7,7 +7,7 @@ type SidebarBlock struct {
 	Delimiter Delimiter
 	AttributeList
 
-	Set
+	Elements
 }
 
 func NewSidebarBlock(delimiter Delimiter) *SidebarBlock {
@@ -29,5 +29,5 @@ func (a *SidebarBlock) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

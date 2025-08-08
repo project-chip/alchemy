@@ -568,7 +568,7 @@ var listsTests = parseTests{
 }
 
 var listsTestDashElementsWithNoBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -584,7 +584,7 @@ var listsTestDashElementsWithNoBlankLines = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -595,7 +595,7 @@ var listsTestDashElementsWithNoBlankLines = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -606,7 +606,7 @@ var listsTestDashElementsWithNoBlankLines = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -620,7 +620,7 @@ var listsTestDashElementsWithNoBlankLines = &asciidoc.Document{
 }
 
 var listsTestDashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -636,7 +636,7 @@ var listsTestDashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Docum
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -650,7 +650,7 @@ var listsTestDashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Docum
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -667,7 +667,7 @@ var listsTestDashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Docum
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -681,18 +681,18 @@ var listsTestDashElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Docum
 }
 
 var listsTestDashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -711,7 +711,7 @@ var listsTestDashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakL
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Boo",
 						},
@@ -734,7 +734,7 @@ var listsTestDashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakL
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Blech",
 						},
@@ -745,7 +745,7 @@ var listsTestDashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakL
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -756,7 +756,7 @@ var listsTestDashElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakL
 }
 
 var listsTestDashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -772,7 +772,7 @@ var listsTestDashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMerge
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -783,7 +783,7 @@ var listsTestDashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMerge
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -803,7 +803,7 @@ var listsTestDashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMerge
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -817,7 +817,7 @@ var listsTestDashElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMerge
 }
 
 var listsTestDashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -833,7 +833,7 @@ var listsTestDashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeL
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -844,7 +844,7 @@ var listsTestDashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeL
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -858,14 +858,14 @@ var listsTestDashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeL
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Also",
 						},
@@ -880,18 +880,18 @@ var listsTestDashElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeL
 }
 
 var listsTestDashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -902,7 +902,7 @@ var listsTestDashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotM
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Boo",
 						},
@@ -917,14 +917,14 @@ var listsTestDashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotM
 				},
 				&asciidoc.AttributeEntry{
 					Name: "foo",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bar",
 						},
 					},
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Blech",
 						},
@@ -935,7 +935,7 @@ var listsTestDashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotM
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -946,7 +946,7 @@ var listsTestDashElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotM
 }
 
 var listsTestANonIndentedWrappedLineIsFoldedIntoTextOfListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -962,7 +962,7 @@ var listsTestANonIndentedWrappedLineIsFoldedIntoTextOfListItem = &asciidoc.Docum
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -977,7 +977,7 @@ var listsTestANonIndentedWrappedLineIsFoldedIntoTextOfListItem = &asciidoc.Docum
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -988,7 +988,7 @@ var listsTestANonIndentedWrappedLineIsFoldedIntoTextOfListItem = &asciidoc.Docum
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -1002,18 +1002,18 @@ var listsTestANonIndentedWrappedLineIsFoldedIntoTextOfListItem = &asciidoc.Docum
 }
 
 var listsTestANonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -1028,7 +1028,7 @@ var listsTestANonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfLi
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Boo",
 						},
@@ -1039,7 +1039,7 @@ var listsTestANonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfLi
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Blech",
 						},
@@ -1050,7 +1050,7 @@ var listsTestANonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfLi
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -1061,18 +1061,18 @@ var listsTestANonIndentedWrappedLineThatResemblesABlockTitleIsFoldedIntoTextOfLi
 }
 
 var listsTestANonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTextOfListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -1087,7 +1087,7 @@ var listsTestANonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTex
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Boo",
 						},
@@ -1098,7 +1098,7 @@ var listsTestANonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTex
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Blech",
 						},
@@ -1109,7 +1109,7 @@ var listsTestANonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTex
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -1120,12 +1120,12 @@ var listsTestANonIndentedWrappedLineThatResemblesAnAttributeEntryIsFoldedIntoTex
 }
 
 var listsTestAListItemWithANestedMarkerTerminatesNonIndentedParagraphForTextOfListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -1140,7 +1140,7 @@ var listsTestAListItemWithANestedMarkerTerminatesNonIndentedParagraphForTextOfLi
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -1154,18 +1154,18 @@ var listsTestAListItemWithANestedMarkerTerminatesNonIndentedParagraphForTextOfLi
 }
 
 var listsTestAListItemForADifferentListTerminatesNonIndentedParagraphForTextOfListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -1180,7 +1180,7 @@ var listsTestAListItemForADifferentListTerminatesNonIndentedParagraphForTextOfLi
 					Checklist:     0,
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -1193,7 +1193,7 @@ var listsTestAListItemForADifferentListTerminatesNonIndentedParagraphForTextOfLi
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Example 1",
 				},
@@ -1202,12 +1202,12 @@ var listsTestAListItemForADifferentListTerminatesNonIndentedParagraphForTextOfLi
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Item",
 						},
@@ -1226,7 +1226,7 @@ var listsTestAListItemForADifferentListTerminatesNonIndentedParagraphForTextOfLi
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Example 2",
 				},
@@ -1237,7 +1237,7 @@ var listsTestAListItemForADifferentListTerminatesNonIndentedParagraphForTextOfLi
 }
 
 var listsTestAnIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1253,7 +1253,7 @@ var listsTestAnIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem = &asc
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -1268,7 +1268,7 @@ var listsTestAnIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem = &asc
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -1279,7 +1279,7 @@ var listsTestAnIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem = &asc
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -1293,18 +1293,18 @@ var listsTestAnIndentedWrappedLineIsUnindentedAndFoldedIntoTextOfListItem = &asc
 }
 
 var listsTestWrappedListItemWithHangingIndentFollowedByNonIndentedLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 1",
 						},
@@ -1323,7 +1323,7 @@ var listsTestWrappedListItemWithHangingIndentFollowedByNonIndentedLine = &asciid
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 2",
 						},
@@ -1334,7 +1334,7 @@ var listsTestWrappedListItemWithHangingIndentFollowedByNonIndentedLine = &asciid
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -1345,12 +1345,12 @@ var listsTestWrappedListItemWithHangingIndentFollowedByNonIndentedLine = &asciid
 }
 
 var listsTestAListItemWithANestedMarkerTerminatesIndentedParagraphForTextOfListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -1365,7 +1365,7 @@ var listsTestAListItemWithANestedMarkerTerminatesIndentedParagraphForTextOfListI
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -1379,18 +1379,18 @@ var listsTestAListItemWithANestedMarkerTerminatesIndentedParagraphForTextOfListI
 }
 
 var listsTestAListItemForADifferentListTerminatesIndentedParagraphForTextOfListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -1405,7 +1405,7 @@ var listsTestAListItemForADifferentListTerminatesIndentedParagraphForTextOfListI
 					Checklist:     0,
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -1418,7 +1418,7 @@ var listsTestAListItemForADifferentListTerminatesIndentedParagraphForTextOfListI
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Example 1",
 				},
@@ -1427,12 +1427,12 @@ var listsTestAListItemForADifferentListTerminatesIndentedParagraphForTextOfListI
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Item",
 						},
@@ -1451,7 +1451,7 @@ var listsTestAListItemForADifferentListTerminatesIndentedParagraphForTextOfListI
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Example 2",
 				},
@@ -1462,7 +1462,7 @@ var listsTestAListItemForADifferentListTerminatesIndentedParagraphForTextOfListI
 }
 
 var listsTestALiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALiteralBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1478,7 +1478,7 @@ var listsTestALiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALitera
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -1499,7 +1499,7 @@ var listsTestALiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALitera
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -1510,7 +1510,7 @@ var listsTestALiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALitera
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -1524,12 +1524,12 @@ var listsTestALiteralParagraphOffsetByBlankLinesInListContentIsAppendedAsALitera
 }
 
 var listsTestShouldEscapeSpecialCharactersInAllLiteralParagraphsAttachedToListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first item",
 				},
@@ -1557,7 +1557,7 @@ var listsTestShouldEscapeSpecialCharactersInAllLiteralParagraphsAttachedToListIt
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "second item",
 				},
@@ -1571,7 +1571,7 @@ var listsTestShouldEscapeSpecialCharactersInAllLiteralParagraphsAttachedToListIt
 }
 
 var listsTestALiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithContinuationIsAppendedAsTwoBlocks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1587,7 +1587,7 @@ var listsTestALiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithC
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -1614,7 +1614,7 @@ var listsTestALiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithC
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -1625,7 +1625,7 @@ var listsTestALiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithC
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -1639,12 +1639,12 @@ var listsTestALiteralParagraphOffsetByABlankLineInListContentFollowedByLineWithC
 }
 
 var listsTestAnAdmonitionParagraphAttachedByALineContinuationToAListItemWithWrappedTextShouldProduceAdmonition = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first-line text",
 				},
@@ -1657,7 +1657,7 @@ var listsTestAnAdmonitionParagraphAttachedByALineContinuationToAListItemWithWrap
 				&asciidoc.NewLine{},
 				&asciidoc.Paragraph{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This is a note.",
 						},
@@ -1674,12 +1674,12 @@ var listsTestAnAdmonitionParagraphAttachedByALineContinuationToAListItemWithWrap
 }
 
 var listsTestParagraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationShouldProduceBlocks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "parent",
 				},
@@ -1690,7 +1690,7 @@ var listsTestParagraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationS
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "child",
 				},
@@ -1707,7 +1707,7 @@ var listsTestParagraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationS
 		&asciidoc.NewLine{},
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is a note.",
 				},
@@ -1719,7 +1719,7 @@ var listsTestParagraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationS
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "another parent",
 				},
@@ -1730,7 +1730,7 @@ var listsTestParagraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationS
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "another child",
 				},
@@ -1752,12 +1752,12 @@ var listsTestParagraphLikeBlocksAttachedToAnAncestorListItemByAListContinuationS
 }
 
 var listsTestShouldNotInheritBlockAttributesFromPreviousBlockWhenBlockIsAttachedUsingAListContinuation = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "complex list item",
 				},
@@ -1791,12 +1791,12 @@ var listsTestShouldNotInheritBlockAttributesFromPreviousBlockWhenBlockIsAttached
 }
 
 var listsTestShouldContinueToParseBlocksAttachedByAListContinuationAfterBlockIsDropped = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item",
 				},
@@ -1830,7 +1830,7 @@ var listsTestShouldContinueToParseBlocksAttachedByAListContinuationAfterBlockIsD
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "example",
 				},
@@ -1844,12 +1844,12 @@ var listsTestShouldContinueToParseBlocksAttachedByAListContinuationAfterBlockIsD
 }
 
 var listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingLineComment = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "list item 1",
 				},
@@ -1873,7 +1873,7 @@ var listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingLineComment 
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "list item 2",
 				},
@@ -1887,12 +1887,12 @@ var listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingLineComment 
 }
 
 var listsTestALiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByAContinuationShouldCreateTwoBlocks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -1909,7 +1909,7 @@ var listsTestALiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByACo
 			Checklist:     0,
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "still literal",
 				},
@@ -1928,7 +1928,7 @@ var listsTestALiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByACo
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Bar",
 				},
@@ -1942,7 +1942,7 @@ var listsTestALiteralParagraphWithALineThatAppearsAsAListItemThatIsFollowedByACo
 }
 
 var listsTestConsecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppendedAsALiteralBlocks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1958,7 +1958,7 @@ var listsTestConsecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppend
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -1990,7 +1990,7 @@ var listsTestConsecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppend
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -2001,7 +2001,7 @@ var listsTestConsecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppend
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -2015,7 +2015,7 @@ var listsTestConsecutiveLiteralParagraphOffsetByBlankLinesInListContentAreAppend
 }
 
 var listsTestALiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItems = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2031,7 +2031,7 @@ var listsTestALiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItem
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -2049,7 +2049,7 @@ var listsTestALiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItem
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -2060,7 +2060,7 @@ var listsTestALiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItem
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -2074,7 +2074,7 @@ var listsTestALiteralParagraphWithoutATrailingBlankLineConsumesFollowingListItem
 }
 
 var listsTestAsteriskElementsWithNoBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2090,7 +2090,7 @@ var listsTestAsteriskElementsWithNoBlankLines = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -2101,7 +2101,7 @@ var listsTestAsteriskElementsWithNoBlankLines = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -2112,7 +2112,7 @@ var listsTestAsteriskElementsWithNoBlankLines = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -2126,7 +2126,7 @@ var listsTestAsteriskElementsWithNoBlankLines = &asciidoc.Document{
 }
 
 var listsTestAsteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2142,7 +2142,7 @@ var listsTestAsteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.D
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -2156,7 +2156,7 @@ var listsTestAsteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.D
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -2173,7 +2173,7 @@ var listsTestAsteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.D
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -2187,18 +2187,18 @@ var listsTestAsteriskElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.D
 }
 
 var listsTestAsteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -2217,7 +2217,7 @@ var listsTestAsteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBr
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Boo",
 						},
@@ -2240,7 +2240,7 @@ var listsTestAsteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBr
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Blech",
 						},
@@ -2251,7 +2251,7 @@ var listsTestAsteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBr
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -2262,7 +2262,7 @@ var listsTestAsteriskElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBr
 }
 
 var listsTestAsteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2278,7 +2278,7 @@ var listsTestAsteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotM
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -2289,7 +2289,7 @@ var listsTestAsteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotM
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -2309,7 +2309,7 @@ var listsTestAsteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotM
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -2323,7 +2323,7 @@ var listsTestAsteriskElementsSeparatedByALineCommentOffsetByBlankLinesShouldNotM
 }
 
 var listsTestAsteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2339,7 +2339,7 @@ var listsTestAsteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMe
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -2350,7 +2350,7 @@ var listsTestAsteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMe
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -2364,14 +2364,14 @@ var listsTestAsteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMe
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Also",
 						},
@@ -2386,18 +2386,18 @@ var listsTestAsteriskElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMe
 }
 
 var listsTestAsteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -2408,7 +2408,7 @@ var listsTestAsteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShould
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Boo",
 						},
@@ -2423,14 +2423,14 @@ var listsTestAsteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShould
 				},
 				&asciidoc.AttributeEntry{
 					Name: "foo",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bar",
 						},
 					},
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Blech",
 						},
@@ -2441,7 +2441,7 @@ var listsTestAsteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShould
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -2452,7 +2452,7 @@ var listsTestAsteriskElementsSeparatedByAnAttributeEntryOffsetByABlankLineShould
 }
 
 var listsTestListShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2468,7 +2468,7 @@ var listsTestListShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Docume
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first",
 				},
@@ -2483,7 +2483,7 @@ var listsTestListShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Docume
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "second",
 				},
@@ -2502,8 +2502,8 @@ var listsTestListShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Docume
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set:           nil,
-			Title: asciidoc.Set{
+			Elements:      nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section",
 				},
@@ -2514,7 +2514,7 @@ var listsTestListShouldTerminateBeforeNextLowerSectionHeading = &asciidoc.Docume
 }
 
 var listsTestListShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2530,7 +2530,7 @@ var listsTestListShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &a
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first",
 				},
@@ -2545,7 +2545,7 @@ var listsTestListShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &a
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "second",
 				},
@@ -2571,8 +2571,8 @@ var listsTestListShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &a
 					Label: nil,
 				},
 			},
-			Set: nil,
-			Title: asciidoc.Set{
+			Elements: nil,
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section",
 				},
@@ -2583,12 +2583,12 @@ var listsTestListShouldTerminateBeforeNextLowerSectionHeadingWithImplicitId = &a
 }
 
 var listsTestShouldNotFindSectionTitleImmediatelyBelowLastListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first",
 				},
@@ -2599,7 +2599,7 @@ var listsTestShouldNotFindSectionTitleImmediatelyBelowLastListItem = &asciidoc.D
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "second",
 				},
@@ -2617,7 +2617,7 @@ var listsTestShouldNotFindSectionTitleImmediatelyBelowLastListItem = &asciidoc.D
 }
 
 var listsTestQuotedText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2633,13 +2633,13 @@ var listsTestQuotedText = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "I am ",
 				},
 				&asciidoc.Bold{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "strong",
 						},
@@ -2655,13 +2655,13 @@ var listsTestQuotedText = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "I am ",
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "stressed",
 						},
@@ -2677,13 +2677,13 @@ var listsTestQuotedText = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "I am ",
 				},
 				&asciidoc.Monospace{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "flexible",
 						},
@@ -2702,7 +2702,7 @@ var listsTestQuotedText = &asciidoc.Document{
 }
 
 var listsTestAttributeSubstitutions = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2716,7 +2716,7 @@ var listsTestAttributeSubstitutions = &asciidoc.Document{
 		&asciidoc.NewLine{},
 		&asciidoc.AttributeEntry{
 			Name: "foo",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bar",
 				},
@@ -2726,7 +2726,7 @@ var listsTestAttributeSubstitutions = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "side a ",
 				},
@@ -2743,7 +2743,7 @@ var listsTestAttributeSubstitutions = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Take me to a ",
 				},
@@ -2763,12 +2763,12 @@ var listsTestAttributeSubstitutions = &asciidoc.Document{
 }
 
 var listsTestLeadingDotIsTreatedAsTextNotBlockTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: ".first",
 				},
@@ -2779,7 +2779,7 @@ var listsTestLeadingDotIsTreatedAsTextNotBlockTitle = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: ".second",
 				},
@@ -2790,7 +2790,7 @@ var listsTestLeadingDotIsTreatedAsTextNotBlockTitle = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: ".third",
 				},
@@ -2804,12 +2804,12 @@ var listsTestLeadingDotIsTreatedAsTextNotBlockTitle = &asciidoc.Document{
 }
 
 var listsTestWordEndingSentenceOnContinuingLineNotTreatedAsAListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "This is the story about",
 				},
@@ -2823,7 +2823,7 @@ var listsTestWordEndingSentenceOnContinuingLineNotTreatedAsAListItem = &asciidoc
 			Marker:        "A.",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "And it ends here.",
 				},
@@ -2836,7 +2836,7 @@ var listsTestWordEndingSentenceOnContinuingLineNotTreatedAsAListItem = &asciidoc
 }
 
 var listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAReference = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2845,7 +2845,7 @@ var listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAR
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "grays-peak",
 			Format:        0,
 		},
@@ -2854,7 +2854,7 @@ var listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAR
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "mount-evans",
 			Format:        0,
 		},
@@ -2866,10 +2866,10 @@ var listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAR
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Anchor{
 					ID: "mount-evans",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Mount Evans",
 						},
@@ -2885,10 +2885,10 @@ var listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAR
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Anchor{
 					ID: "grays-peak",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Grays Peak",
 						},
@@ -2905,7 +2905,7 @@ var listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAR
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Longs Peak is a 14,259-foot high, prominent mountain summit in the northern Front Range of the Rocky Mountains.",
 				},
@@ -2916,7 +2916,7 @@ var listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAR
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Pikes Peak is the highest summit of the southern Front Range of the Rocky Mountains at 14,115 feet.",
 				},
@@ -2930,7 +2930,7 @@ var listsTestShouldDiscoverAnchorAtStartOfUnorderedListItemTextAndRegisterItAsAR
 }
 
 var listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsAReference = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2939,7 +2939,7 @@ var listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsARef
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "step-2",
 			Format:        0,
 		},
@@ -2952,7 +2952,7 @@ var listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsARef
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "step-4",
 			Format:        0,
 		},
@@ -2964,7 +2964,7 @@ var listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsARef
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Ordered list, item 1, without anchor",
 				},
@@ -2974,10 +2974,10 @@ var listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsARef
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Anchor{
 					ID: "step-2",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Step 2",
 						},
@@ -2992,7 +2992,7 @@ var listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsARef
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Ordered list, item 3, without anchor",
 				},
@@ -3002,10 +3002,10 @@ var listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsARef
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Anchor{
 					ID: "step-4",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Step 4",
 						},
@@ -3023,7 +3023,7 @@ var listsTestShouldDiscoverAnchorAtStartOfOrderedListItemTextAndRegisterItAsARef
 }
 
 var listsTestShouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsAReference = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3032,7 +3032,7 @@ var listsTestShouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsARef
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "url-mapping",
 			Format:        0,
 		},
@@ -3047,7 +3047,7 @@ var listsTestShouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsARef
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -3060,7 +3060,7 @@ var listsTestShouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsARef
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -3088,7 +3088,7 @@ var listsTestShouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsARef
 		},
 		&asciidoc.Anchor{
 			ID: "url-mapping",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "url mapping",
 				},
@@ -3106,7 +3106,7 @@ var listsTestShouldDiscoverAnchorAtStartOfCalloutListItemTextAndRegisterItAsARef
 }
 
 var listsTestAsteriskElementMixedWithDashElementsShouldBeNested = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3122,7 +3122,7 @@ var listsTestAsteriskElementMixedWithDashElementsShouldBeNested = &asciidoc.Docu
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3133,7 +3133,7 @@ var listsTestAsteriskElementMixedWithDashElementsShouldBeNested = &asciidoc.Docu
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3144,7 +3144,7 @@ var listsTestAsteriskElementMixedWithDashElementsShouldBeNested = &asciidoc.Docu
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3158,7 +3158,7 @@ var listsTestAsteriskElementMixedWithDashElementsShouldBeNested = &asciidoc.Docu
 }
 
 var listsTestDashElementMixedWithAsterisksElementsShouldBeNested = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3174,7 +3174,7 @@ var listsTestDashElementMixedWithAsterisksElementsShouldBeNested = &asciidoc.Doc
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3185,7 +3185,7 @@ var listsTestDashElementMixedWithAsterisksElementsShouldBeNested = &asciidoc.Doc
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3196,7 +3196,7 @@ var listsTestDashElementMixedWithAsterisksElementsShouldBeNested = &asciidoc.Doc
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3210,7 +3210,7 @@ var listsTestDashElementMixedWithAsterisksElementsShouldBeNested = &asciidoc.Doc
 }
 
 var listsTestLinesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldBeNested = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3226,7 +3226,7 @@ var listsTestLinesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldB
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3240,7 +3240,7 @@ var listsTestLinesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldB
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3257,7 +3257,7 @@ var listsTestLinesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldB
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3271,7 +3271,7 @@ var listsTestLinesPrefixedWithAlternatingListMarkersSeparatedByBlankLinesShouldB
 }
 
 var listsTestNestedElements2WithAsterisks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3287,7 +3287,7 @@ var listsTestNestedElements2WithAsterisks = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3298,7 +3298,7 @@ var listsTestNestedElements2WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3309,7 +3309,7 @@ var listsTestNestedElements2WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3323,7 +3323,7 @@ var listsTestNestedElements2WithAsterisks = &asciidoc.Document{
 }
 
 var listsTestNestedElements3WithAsterisks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3339,7 +3339,7 @@ var listsTestNestedElements3WithAsterisks = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3350,7 +3350,7 @@ var listsTestNestedElements3WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3361,7 +3361,7 @@ var listsTestNestedElements3WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Snoo",
 				},
@@ -3372,7 +3372,7 @@ var listsTestNestedElements3WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3386,7 +3386,7 @@ var listsTestNestedElements3WithAsterisks = &asciidoc.Document{
 }
 
 var listsTestNestedElements4WithAsterisks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3402,7 +3402,7 @@ var listsTestNestedElements4WithAsterisks = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3413,7 +3413,7 @@ var listsTestNestedElements4WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3424,7 +3424,7 @@ var listsTestNestedElements4WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Snoo",
 				},
@@ -3435,7 +3435,7 @@ var listsTestNestedElements4WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Froo",
 				},
@@ -3446,7 +3446,7 @@ var listsTestNestedElements4WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3460,7 +3460,7 @@ var listsTestNestedElements4WithAsterisks = &asciidoc.Document{
 }
 
 var listsTestNestedElements5WithAsterisks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3476,7 +3476,7 @@ var listsTestNestedElements5WithAsterisks = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3487,7 +3487,7 @@ var listsTestNestedElements5WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3498,7 +3498,7 @@ var listsTestNestedElements5WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Snoo",
 				},
@@ -3509,7 +3509,7 @@ var listsTestNestedElements5WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Froo",
 				},
@@ -3520,7 +3520,7 @@ var listsTestNestedElements5WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Groo",
 				},
@@ -3531,7 +3531,7 @@ var listsTestNestedElements5WithAsterisks = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3545,18 +3545,18 @@ var listsTestNestedElements5WithAsterisks = &asciidoc.Document{
 }
 
 var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 1.1",
 						},
@@ -3567,7 +3567,7 @@ var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 2.1",
 						},
@@ -3578,7 +3578,7 @@ var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 3.1",
 						},
@@ -3589,7 +3589,7 @@ var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 2.2",
 						},
@@ -3600,7 +3600,7 @@ var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 1.2",
 						},
@@ -3615,12 +3615,12 @@ var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.UnorderedListItem{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "item 1.1",
 								},
@@ -3631,7 +3631,7 @@ var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 							Checklist:     0,
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Nested Section",
 						},
@@ -3639,7 +3639,7 @@ var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Level: 2,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Parent Section",
 				},
@@ -3650,7 +3650,7 @@ var listsTestLevelOfUnorderedListShouldMatchSectionLevel = &asciidoc.Document{
 }
 
 var listsTestDoesNotRecognizeListsWithRepeatingUnicodeBullets = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3666,7 +3666,7 @@ var listsTestDoesNotRecognizeListsWithRepeatingUnicodeBullets = &asciidoc.Docume
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3676,7 +3676,7 @@ var listsTestDoesNotRecognizeListsWithRepeatingUnicodeBullets = &asciidoc.Docume
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3686,7 +3686,7 @@ var listsTestDoesNotRecognizeListsWithRepeatingUnicodeBullets = &asciidoc.Docume
 			Marker:        "..",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3699,7 +3699,7 @@ var listsTestDoesNotRecognizeListsWithRepeatingUnicodeBullets = &asciidoc.Docume
 }
 
 var listsTestNestedOrderedElements3 = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3715,7 +3715,7 @@ var listsTestNestedOrderedElements3 = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3725,7 +3725,7 @@ var listsTestNestedOrderedElements3 = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3735,7 +3735,7 @@ var listsTestNestedOrderedElements3 = &asciidoc.Document{
 			Marker:        "..",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Snoo",
 				},
@@ -3745,7 +3745,7 @@ var listsTestNestedOrderedElements3 = &asciidoc.Document{
 			Marker:        "...",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3758,18 +3758,18 @@ var listsTestNestedOrderedElements3 = &asciidoc.Document{
 }
 
 var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 1.1",
 						},
@@ -3779,7 +3779,7 @@ var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Marker:        ".",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 2.1",
 						},
@@ -3789,7 +3789,7 @@ var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Marker:        "..",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 3.1",
 						},
@@ -3799,7 +3799,7 @@ var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Marker:        "...",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 2.2",
 						},
@@ -3809,7 +3809,7 @@ var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Marker:        "..",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 1.2",
 						},
@@ -3823,12 +3823,12 @@ var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.OrderedListItem{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "item 1.1",
 								},
@@ -3838,7 +3838,7 @@ var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 							Marker:        ".",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Nested Section",
 						},
@@ -3846,7 +3846,7 @@ var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 					Level: 2,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Parent Section",
 				},
@@ -3857,7 +3857,7 @@ var listsTestLevelOfOrderedListShouldMatchSectionLevel = &asciidoc.Document{
 }
 
 var listsTestNestedUnorderedInsideOrderedElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3873,7 +3873,7 @@ var listsTestNestedUnorderedInsideOrderedElements = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3883,7 +3883,7 @@ var listsTestNestedUnorderedInsideOrderedElements = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3894,7 +3894,7 @@ var listsTestNestedUnorderedInsideOrderedElements = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3907,7 +3907,7 @@ var listsTestNestedUnorderedInsideOrderedElements = &asciidoc.Document{
 }
 
 var listsTestNestedOrderedInsideUnorderedElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3923,7 +3923,7 @@ var listsTestNestedOrderedInsideUnorderedElements = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -3934,7 +3934,7 @@ var listsTestNestedOrderedInsideUnorderedElements = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -3944,7 +3944,7 @@ var listsTestNestedOrderedInsideUnorderedElements = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -3958,18 +3958,18 @@ var listsTestNestedOrderedInsideUnorderedElements = &asciidoc.Document{
 }
 
 var listsTestThreeLevelsOfAlternatingUnorderedAndOrderedElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 1",
 						},
@@ -3980,7 +3980,7 @@ var listsTestThreeLevelsOfAlternatingUnorderedAndOrderedElements = &asciidoc.Doc
 					Checklist:     0,
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "numbered 1.1",
 						},
@@ -3990,7 +3990,7 @@ var listsTestThreeLevelsOfAlternatingUnorderedAndOrderedElements = &asciidoc.Doc
 					Marker:        ".",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 1.1.1",
 						},
@@ -4001,7 +4001,7 @@ var listsTestThreeLevelsOfAlternatingUnorderedAndOrderedElements = &asciidoc.Doc
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 2",
 						},
@@ -4012,7 +4012,7 @@ var listsTestThreeLevelsOfAlternatingUnorderedAndOrderedElements = &asciidoc.Doc
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -4023,7 +4023,7 @@ var listsTestThreeLevelsOfAlternatingUnorderedAndOrderedElements = &asciidoc.Doc
 }
 
 var listsTestLinesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedByBlankLinesShouldBeNested = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4039,7 +4039,7 @@ var listsTestLinesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedB
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -4053,7 +4053,7 @@ var listsTestLinesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedB
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -4069,7 +4069,7 @@ var listsTestLinesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedB
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -4083,7 +4083,7 @@ var listsTestLinesWithAlternatingMarkersOfUnorderedAndOrderedListTypesSeparatedB
 }
 
 var listsTestListItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4099,7 +4099,7 @@ var listsTestListItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bullet",
 				},
@@ -4128,7 +4128,7 @@ var listsTestListItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "numbered",
 				},
@@ -4141,7 +4141,7 @@ var listsTestListItemWithLiteralContentShouldNotConsumeNestedListOfDifferentType
 }
 
 var listsTestNestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4157,7 +4157,7 @@ var listsTestNestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asci
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bullet",
 				},
@@ -4168,7 +4168,7 @@ var listsTestNestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asci
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "nested bullet 1",
 				},
@@ -4179,7 +4179,7 @@ var listsTestNestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asci
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "nested bullet 2",
 				},
@@ -4195,7 +4195,7 @@ var listsTestNestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asci
 		&asciidoc.LiteralBlock{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Title",
 						},
@@ -4214,7 +4214,7 @@ var listsTestNestedListItemDoesNotEatTheTitleOfTheFollowingDetachedBlock = &asci
 }
 
 var listsTestLinesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparatedByBlankLinesShouldBeNested = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4230,7 +4230,7 @@ var listsTestLinesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparat
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -4251,7 +4251,7 @@ var listsTestLinesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparat
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -4265,7 +4265,7 @@ var listsTestLinesWithAlternatingMarkersOfBulletedAndDescriptionListTypesSeparat
 }
 
 var listsTestNestedOrderedWithAttributeInsideUnorderedElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4281,7 +4281,7 @@ var listsTestNestedOrderedWithAttributeInsideUnorderedElements = &asciidoc.Docum
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -4296,7 +4296,7 @@ var listsTestNestedOrderedWithAttributeInsideUnorderedElements = &asciidoc.Docum
 			Checklist:     0,
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -4306,7 +4306,7 @@ var listsTestNestedOrderedWithAttributeInsideUnorderedElements = &asciidoc.Docum
 			Marker:        ".",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -4320,7 +4320,7 @@ var listsTestNestedOrderedWithAttributeInsideUnorderedElements = &asciidoc.Docum
 }
 
 var listsTestAdjacentListContinuationLineAttachesFollowingParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4336,7 +4336,7 @@ var listsTestAdjacentListContinuationLineAttachesFollowingParagraph = &asciidoc.
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item one, paragraph one",
 				},
@@ -4355,7 +4355,7 @@ var listsTestAdjacentListContinuationLineAttachesFollowingParagraph = &asciidoc.
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item two",
 				},
@@ -4369,7 +4369,7 @@ var listsTestAdjacentListContinuationLineAttachesFollowingParagraph = &asciidoc.
 }
 
 var listsTestAdjacentListContinuationLineAttachesFollowingBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4385,7 +4385,7 @@ var listsTestAdjacentListContinuationLineAttachesFollowingBlock = &asciidoc.Docu
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item one, paragraph one",
 				},
@@ -4409,7 +4409,7 @@ var listsTestAdjacentListContinuationLineAttachesFollowingBlock = &asciidoc.Docu
 		},
 		&asciidoc.ListContinuation{
 			ChildElement: &asciidoc.UnorderedListItem{
-				Set: asciidoc.Set{
+				Elements: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "Item two",
 					},
@@ -4424,7 +4424,7 @@ var listsTestAdjacentListContinuationLineAttachesFollowingBlock = &asciidoc.Docu
 }
 
 var listsTestAdjacentListContinuationLineAttachesFollowingBlockWithBlockAttributes = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4440,7 +4440,7 @@ var listsTestAdjacentListContinuationLineAttachesFollowingBlockWithBlockAttribut
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item one, paragraph one",
 				},
@@ -4452,8 +4452,8 @@ var listsTestAdjacentListContinuationLineAttachesFollowingBlockWithBlockAttribut
 				},
 				&asciidoc.NewLine{},
 				&asciidoc.Anchor{
-					ID:  "beck",
-					Set: nil,
+					ID:       "beck",
+					Elements: nil,
 				},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -4483,7 +4483,7 @@ var listsTestAdjacentListContinuationLineAttachesFollowingBlockWithBlockAttribut
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item two",
 				},
@@ -4497,7 +4497,7 @@ var listsTestAdjacentListContinuationLineAttachesFollowingBlockWithBlockAttribut
 }
 
 var listsTestTrailingBlockAttributeLineAttachedByContinuationShouldNotCreateBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4513,7 +4513,7 @@ var listsTestTrailingBlockAttributeLineAttachedByContinuationShouldNotCreateBloc
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item one, paragraph one",
 				},
@@ -4533,7 +4533,7 @@ var listsTestTrailingBlockAttributeLineAttachedByContinuationShouldNotCreateBloc
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item two",
 				},
@@ -4547,7 +4547,7 @@ var listsTestTrailingBlockAttributeLineAttachedByContinuationShouldNotCreateBloc
 }
 
 var listsTestTrailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4563,7 +4563,7 @@ var listsTestTrailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock = 
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item one, paragraph one",
 				},
@@ -4583,7 +4583,7 @@ var listsTestTrailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock = 
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item two",
 				},
@@ -4597,7 +4597,7 @@ var listsTestTrailingBlockTitleLineAttachedByContinuationShouldNotCreateBlock = 
 }
 
 var listsTestConsecutiveBlocksInListContinuationAttachToListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4613,7 +4613,7 @@ var listsTestConsecutiveBlocksInListContinuationAttachToListItem = &asciidoc.Doc
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item one, paragraph one",
 				},
@@ -4643,7 +4643,7 @@ var listsTestConsecutiveBlocksInListContinuationAttachToListItem = &asciidoc.Doc
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item one, quote block",
 				},
@@ -4652,7 +4652,7 @@ var listsTestConsecutiveBlocksInListContinuationAttachToListItem = &asciidoc.Doc
 		},
 		&asciidoc.ListContinuation{
 			ChildElement: &asciidoc.UnorderedListItem{
-				Set: asciidoc.Set{
+				Elements: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "Item two",
 					},
@@ -4667,18 +4667,18 @@ var listsTestConsecutiveBlocksInListContinuationAttachToListItem = &asciidoc.Doc
 }
 
 var listsTestListItemWithHangingIndentFollowedByBlockAttachedByListContinuation = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 1",
 						},
@@ -4709,7 +4709,7 @@ var listsTestListItemWithHangingIndentFollowedByBlockAttachedByListContinuation 
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 2",
 						},
@@ -4719,7 +4719,7 @@ var listsTestListItemWithHangingIndentFollowedByBlockAttachedByListContinuation 
 					Marker:        ".",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -4730,18 +4730,18 @@ var listsTestListItemWithHangingIndentFollowedByBlockAttachedByListContinuation 
 }
 
 var listsTestListItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 1",
 						},
@@ -4760,7 +4760,7 @@ var listsTestListItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nested list item",
 						},
@@ -4780,7 +4780,7 @@ var listsTestListItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 2",
 						},
@@ -4790,7 +4790,7 @@ var listsTestListItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
 					Marker:        ".",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -4801,18 +4801,18 @@ var listsTestListItemParagraphInListItemAndNestedListItem = &asciidoc.Document{
 }
 
 var listsTestTrailingListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 1",
 						},
@@ -4824,7 +4824,7 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 					Marker:        ".",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nested list item 1",
 						},
@@ -4835,7 +4835,7 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nested list item 2",
 						},
@@ -4864,7 +4864,7 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 2",
 						},
@@ -4874,7 +4874,7 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 					Marker:        ".",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -4885,18 +4885,18 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 }
 
 var listsTestTrailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtRespectiveLevels = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 1",
 						},
@@ -4907,7 +4907,7 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtR
 					Checklist:     0,
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "numbered 1.1",
 						},
@@ -4917,7 +4917,7 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtR
 					Marker:        ".",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 1.1.1",
 						},
@@ -4949,7 +4949,7 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtR
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 2",
 						},
@@ -4960,7 +4960,7 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtR
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -4971,18 +4971,18 @@ var listsTestTrailingListContinuationsShouldAttachToListItemsOfDifferentTypesAtR
 }
 
 var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 1",
 						},
@@ -4995,7 +4995,7 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nested list item 1",
 						},
@@ -5022,7 +5022,7 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nested list item 2",
 						},
@@ -5051,7 +5051,7 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 2",
 						},
@@ -5061,7 +5061,7 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 					Marker:        ".",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -5072,18 +5072,18 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevels 
 }
 
 var listsTestRepeatedListContinuationsAttachedDirectlyToListItemShouldAttachToListItemsAtRespectiveLevels = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 1",
 						},
@@ -5095,7 +5095,7 @@ var listsTestRepeatedListContinuationsAttachedDirectlyToListItemShouldAttachToLi
 					Marker:        ".",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nested list item 1",
 						},
@@ -5122,7 +5122,7 @@ var listsTestRepeatedListContinuationsAttachedDirectlyToListItemShouldAttachToLi
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nested list item 2",
 						},
@@ -5151,7 +5151,7 @@ var listsTestRepeatedListContinuationsAttachedDirectlyToListItemShouldAttachToLi
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 2",
 						},
@@ -5161,7 +5161,7 @@ var listsTestRepeatedListContinuationsAttachedDirectlyToListItemShouldAttachToLi
 					Marker:        ".",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -5172,18 +5172,18 @@ var listsTestRepeatedListContinuationsAttachedDirectlyToListItemShouldAttachToLi
 }
 
 var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsIgnoringBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 1",
 						},
@@ -5195,7 +5195,7 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsI
 					Marker:        ".",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nested list item 1",
 						},
@@ -5222,7 +5222,7 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsI
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "nested list item 2",
 						},
@@ -5254,7 +5254,7 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsI
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "list item 2",
 						},
@@ -5264,7 +5264,7 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsI
 					Marker:        ".",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -5275,18 +5275,18 @@ var listsTestRepeatedListContinuationsShouldAttachToListItemsAtRespectiveLevelsI
 }
 
 var listsTestTrailingListContinuationsShouldIgnorePrecedingBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 1",
 						},
@@ -5297,7 +5297,7 @@ var listsTestTrailingListContinuationsShouldIgnorePrecedingBlankLines = &asciido
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 1.1",
 						},
@@ -5308,7 +5308,7 @@ var listsTestTrailingListContinuationsShouldIgnorePrecedingBlankLines = &asciido
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 1.1.1",
 						},
@@ -5360,7 +5360,7 @@ var listsTestTrailingListContinuationsShouldIgnorePrecedingBlankLines = &asciido
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bullet 2",
 						},
@@ -5371,7 +5371,7 @@ var listsTestTrailingListContinuationsShouldIgnorePrecedingBlankLines = &asciido
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -5382,12 +5382,12 @@ var listsTestTrailingListContinuationsShouldIgnorePrecedingBlankLines = &asciido
 }
 
 var listsTestIndentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldBeRecognizedAsANestedList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item 1",
 				},
@@ -5401,7 +5401,7 @@ var listsTestIndentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldB
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item 1.1",
 				},
@@ -5420,7 +5420,7 @@ var listsTestIndentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldB
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item 1.2",
 				},
@@ -5439,7 +5439,7 @@ var listsTestIndentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldB
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item 2",
 				},
@@ -5453,12 +5453,12 @@ var listsTestIndentedOutlineListItemWithDifferentMarkerOffsetByABlankLineShouldB
 }
 
 var listsTestIndentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineShouldBeRecognizedAsANestedList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item 1",
 				},
@@ -5498,7 +5498,7 @@ var listsTestIndentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineS
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item 2",
 				},
@@ -5512,7 +5512,7 @@ var listsTestIndentedDescriptionListItemInsideOutlineListItemOffsetByABlankLineS
 }
 
 var listsTestConsecutiveListContinuationLinesAreFolded = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5528,7 +5528,7 @@ var listsTestConsecutiveListContinuationLinesAreFolded = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item one, paragraph one",
 				},
@@ -5551,7 +5551,7 @@ var listsTestConsecutiveListContinuationLinesAreFolded = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Item two",
 				},
@@ -5569,12 +5569,12 @@ var listsTestConsecutiveListContinuationLinesAreFolded = &asciidoc.Document{
 }
 
 var listsTestShouldWarnIfUnterminatedBlockIsDetectedInListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item",
 				},
@@ -5595,7 +5595,7 @@ var listsTestShouldWarnIfUnterminatedBlockIsDetectedInListItem = &asciidoc.Docum
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "swallowed item",
 				},
@@ -5609,7 +5609,7 @@ var listsTestShouldWarnIfUnterminatedBlockIsDetectedInListItem = &asciidoc.Docum
 }
 
 var listsTestDotElementsWithNoBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5625,7 +5625,7 @@ var listsTestDotElementsWithNoBlankLines = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -5635,7 +5635,7 @@ var listsTestDotElementsWithNoBlankLines = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -5645,7 +5645,7 @@ var listsTestDotElementsWithNoBlankLines = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -5658,12 +5658,12 @@ var listsTestDotElementsWithNoBlankLines = &asciidoc.Document{
 }
 
 var listsTestShouldRepresentExplicitRoleAttributeAsStyleClass = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Once",
 				},
@@ -5671,7 +5671,7 @@ var listsTestShouldRepresentExplicitRoleAttributeAsStyleClass = &asciidoc.Docume
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "role",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "dry",
 						},
@@ -5683,7 +5683,7 @@ var listsTestShouldRepresentExplicitRoleAttributeAsStyleClass = &asciidoc.Docume
 			Marker: ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Again",
 				},
@@ -5693,7 +5693,7 @@ var listsTestShouldRepresentExplicitRoleAttributeAsStyleClass = &asciidoc.Docume
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Refactor!",
 				},
@@ -5706,12 +5706,12 @@ var listsTestShouldRepresentExplicitRoleAttributeAsStyleClass = &asciidoc.Docume
 }
 
 var listsTestShouldBaseListStyleOnMarkerLengthRatherThanListDepth = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "parent",
 				},
@@ -5721,7 +5721,7 @@ var listsTestShouldBaseListStyleOnMarkerLengthRatherThanListDepth = &asciidoc.Do
 			Marker:        "...",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "child",
 				},
@@ -5731,7 +5731,7 @@ var listsTestShouldBaseListStyleOnMarkerLengthRatherThanListDepth = &asciidoc.Do
 			Marker:        "..",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "grandchild",
 				},
@@ -5744,12 +5744,12 @@ var listsTestShouldBaseListStyleOnMarkerLengthRatherThanListDepth = &asciidoc.Do
 }
 
 var listsTestShouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImplicitStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "1",
 				},
@@ -5757,7 +5757,7 @@ var listsTestShouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImpl
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "loweralpha",
 							},
@@ -5772,7 +5772,7 @@ var listsTestShouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImpl
 			Marker: "i)",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "2",
 				},
@@ -5782,7 +5782,7 @@ var listsTestShouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImpl
 			Marker:        "ii)",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "3",
 				},
@@ -5795,12 +5795,12 @@ var listsTestShouldAllowListStyleToBeSpecifiedExplicitlyWhenUsingMarkersWithImpl
 }
 
 var listsTestShouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasses = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Once",
 				},
@@ -5808,7 +5808,7 @@ var listsTestShouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasse
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "loweralpha",
 							},
@@ -5820,7 +5820,7 @@ var listsTestShouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasse
 				},
 				&asciidoc.NamedAttribute{
 					Name: "role",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "dry",
 						},
@@ -5832,7 +5832,7 @@ var listsTestShouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasse
 			Marker: ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Again",
 				},
@@ -5842,7 +5842,7 @@ var listsTestShouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasse
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Refactor!",
 				},
@@ -5855,12 +5855,12 @@ var listsTestShouldRepresentCustomNumberingAndExplicitRoleAttributeAsStyleClasse
 }
 
 var listsTestShouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -5872,7 +5872,7 @@ var listsTestShouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.D
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "reversed",
 								},
@@ -5882,7 +5882,7 @@ var listsTestShouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.D
 				},
 				&asciidoc.NamedAttribute{
 					Name: "start",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "3",
 						},
@@ -5894,7 +5894,7 @@ var listsTestShouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.D
 			Marker: ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -5904,7 +5904,7 @@ var listsTestShouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.D
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -5914,7 +5914,7 @@ var listsTestShouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.D
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "blast off!",
 				},
@@ -5927,12 +5927,12 @@ var listsTestShouldSetReversedAttributeOnListIfReversedOptionIsSet = &asciidoc.D
 }
 
 var listsTestShouldRepresentImplicitRoleAttributeAsStyleClass = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Once",
 				},
@@ -5943,7 +5943,7 @@ var listsTestShouldRepresentImplicitRoleAttributeAsStyleClass = &asciidoc.Docume
 					ID:    nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "dry",
 								},
@@ -5957,7 +5957,7 @@ var listsTestShouldRepresentImplicitRoleAttributeAsStyleClass = &asciidoc.Docume
 			Marker: ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Again",
 				},
@@ -5967,7 +5967,7 @@ var listsTestShouldRepresentImplicitRoleAttributeAsStyleClass = &asciidoc.Docume
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Refactor!",
 				},
@@ -5980,12 +5980,12 @@ var listsTestShouldRepresentImplicitRoleAttributeAsStyleClass = &asciidoc.Docume
 }
 
 var listsTestShouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasses = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Once",
 				},
@@ -5993,7 +5993,7 @@ var listsTestShouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasse
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "loweralpha",
 							},
@@ -6002,7 +6002,7 @@ var listsTestShouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasse
 					ID: nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "dry",
 								},
@@ -6016,7 +6016,7 @@ var listsTestShouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasse
 			Marker: ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Again",
 				},
@@ -6026,7 +6026,7 @@ var listsTestShouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasse
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Refactor!",
 				},
@@ -6039,7 +6039,7 @@ var listsTestShouldRepresentCustomNumberingAndImplicitRoleAttributeAsStyleClasse
 }
 
 var listsTestDotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6055,7 +6055,7 @@ var listsTestDotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Docume
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -6068,7 +6068,7 @@ var listsTestDotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Docume
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -6084,7 +6084,7 @@ var listsTestDotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Docume
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -6097,18 +6097,18 @@ var listsTestDotElementsSeparatedByBlankLinesShouldMergeLists = &asciidoc.Docume
 }
 
 var listsTestDotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -6126,7 +6126,7 @@ var listsTestDotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakLi
 					Marker:        ".",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Boo",
 						},
@@ -6148,7 +6148,7 @@ var listsTestDotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakLi
 					Marker:        ".",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Blech",
 						},
@@ -6158,7 +6158,7 @@ var listsTestDotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakLi
 					Marker:        ".",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -6169,7 +6169,7 @@ var listsTestDotElementsWithInterspersedLineCommentsShouldBeSkippedAndNotBreakLi
 }
 
 var listsTestDotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6185,7 +6185,7 @@ var listsTestDotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLi
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -6195,7 +6195,7 @@ var listsTestDotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLi
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -6214,7 +6214,7 @@ var listsTestDotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLi
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
@@ -6227,7 +6227,7 @@ var listsTestDotElementsSeparatedByLineCommentOffsetByBlankLinesShouldNotMergeLi
 }
 
 var listsTestDotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6243,7 +6243,7 @@ var listsTestDotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLi
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Foo",
 				},
@@ -6253,7 +6253,7 @@ var listsTestDotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLi
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Boo",
 				},
@@ -6266,14 +6266,14 @@ var listsTestDotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLi
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Blech",
 				},
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Also",
 						},
@@ -6287,18 +6287,18 @@ var listsTestDotElementsSeparatedByABlockTitleOffsetByABlankLineShouldNotMergeLi
 }
 
 var listsTestDotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMergeLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Foo",
 						},
@@ -6308,7 +6308,7 @@ var listsTestDotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMe
 					Marker:        ".",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Boo",
 						},
@@ -6322,14 +6322,14 @@ var listsTestDotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMe
 				},
 				&asciidoc.AttributeEntry{
 					Name: "foo",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bar",
 						},
 					},
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Blech",
 						},
@@ -6339,7 +6339,7 @@ var listsTestDotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMe
 					Marker:        ".",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -6350,18 +6350,18 @@ var listsTestDotElementsSeparatedByAnAttributeEntryOffsetByABlankLineShouldNotMe
 }
 
 var listsTestShouldUseStartNumberInDocbook5Backend = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 7",
 						},
@@ -6369,7 +6369,7 @@ var listsTestShouldUseStartNumberInDocbook5Backend = &asciidoc.Document{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.NamedAttribute{
 							Name: "start",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "7",
 								},
@@ -6381,7 +6381,7 @@ var listsTestShouldUseStartNumberInDocbook5Backend = &asciidoc.Document{
 					Marker: ".",
 				},
 				&asciidoc.OrderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "item 8",
 						},
@@ -6391,7 +6391,7 @@ var listsTestShouldUseStartNumberInDocbook5Backend = &asciidoc.Document{
 					Marker:        ".",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -6402,12 +6402,12 @@ var listsTestShouldUseStartNumberInDocbook5Backend = &asciidoc.Document{
 }
 
 var listsTestShouldWarnIfExplicitUppercaseRomanNumeralsInListAreOutOfSequence = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -6417,7 +6417,7 @@ var listsTestShouldWarnIfExplicitUppercaseRomanNumeralsInListAreOutOfSequence = 
 			Marker:        "I)",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -6430,12 +6430,12 @@ var listsTestShouldWarnIfExplicitUppercaseRomanNumeralsInListAreOutOfSequence = 
 }
 
 var listsTestShouldWarnIfExplicitLowercaseRomanNumeralsInListAreOutOfSequence = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -6445,7 +6445,7 @@ var listsTestShouldWarnIfExplicitLowercaseRomanNumeralsInListAreOutOfSequence = 
 			Marker:        "i)",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -6458,7 +6458,7 @@ var listsTestShouldWarnIfExplicitLowercaseRomanNumeralsInListAreOutOfSequence = 
 }
 
 var listsTestShouldNotParseABareDlistDelimiterAsADlist = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6474,7 +6474,7 @@ var listsTestShouldNotParseABareDlistDelimiterAsADlist = &asciidoc.Document{
 }
 
 var listsTestShouldParseSiblingItemsUsingSameRules = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6490,7 +6490,7 @@ var listsTestShouldParseSiblingItemsUsingSameRules = &asciidoc.Document{
 }
 
 var listsTestShouldAllowTermToEndWithASemicolonWhenUsingDoubleSemicolonDelimiter = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6502,7 +6502,7 @@ var listsTestShouldAllowTermToEndWithASemicolonWhenUsingDoubleSemicolonDelimiter
 }
 
 var listsTestSingleLineIndentedAdjacentElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6518,7 +6518,7 @@ var listsTestSingleLineIndentedAdjacentElements = &asciidoc.Document{
 }
 
 var listsTestSingleLineElementsSeparatedByBlankLineShouldCreateASingleList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6537,7 +6537,7 @@ var listsTestSingleLineElementsSeparatedByBlankLineShouldCreateASingleList = &as
 }
 
 var listsTestALineCommentBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6562,7 +6562,7 @@ var listsTestALineCommentBetweenElementsShouldDivideThemIntoSeparateLists = &asc
 }
 
 var listsTestARulerBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6587,7 +6587,7 @@ var listsTestARulerBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.
 }
 
 var listsTestABlockTitleBetweenElementsShouldDivideThemIntoSeparateLists = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6601,14 +6601,14 @@ var listsTestABlockTitleBetweenElementsShouldDivideThemIntoSeparateLists = &asci
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Some more",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term2:: def2",
 				},
@@ -6620,12 +6620,12 @@ var listsTestABlockTitleBetweenElementsShouldDivideThemIntoSeparateLists = &asci
 }
 
 var listsTestMultiLineElementsWithParagraphContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "def1",
@@ -6633,7 +6633,7 @@ var listsTestMultiLineElementsWithParagraphContent = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6643,7 +6643,7 @@ var listsTestMultiLineElementsWithParagraphContent = &asciidoc.Document{
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "def2",
@@ -6651,7 +6651,7 @@ var listsTestMultiLineElementsWithParagraphContent = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6664,12 +6664,12 @@ var listsTestMultiLineElementsWithParagraphContent = &asciidoc.Document{
 }
 
 var listsTestMultiLineElementsWithIndentedParagraphContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: " def1",
@@ -6677,7 +6677,7 @@ var listsTestMultiLineElementsWithIndentedParagraphContent = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6687,7 +6687,7 @@ var listsTestMultiLineElementsWithIndentedParagraphContent = &asciidoc.Document{
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  def2",
@@ -6695,7 +6695,7 @@ var listsTestMultiLineElementsWithIndentedParagraphContent = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6708,12 +6708,12 @@ var listsTestMultiLineElementsWithIndentedParagraphContent = &asciidoc.Document{
 }
 
 var listsTestMultiLineElementsWithIndentedParagraphContentThatIncludesCommentLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: " def1",
@@ -6721,7 +6721,7 @@ var listsTestMultiLineElementsWithIndentedParagraphContentThatIncludesCommentLin
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6734,7 +6734,7 @@ var listsTestMultiLineElementsWithIndentedParagraphContentThatIncludesCommentLin
 			Value: " comment",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  def2",
@@ -6742,7 +6742,7 @@ var listsTestMultiLineElementsWithIndentedParagraphContentThatIncludesCommentLin
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6762,18 +6762,18 @@ var listsTestMultiLineElementsWithIndentedParagraphContentThatIncludesCommentLin
 }
 
 var listsTestShouldNotStripCommentLineInLiteralParagraphBlockAttachedToListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.LineBreak{},
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6797,12 +6797,12 @@ var listsTestShouldNotStripCommentLineInLiteralParagraphBlockAttachedToListItem 
 }
 
 var listsTestMultiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeSeenAsList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  def1",
@@ -6810,7 +6810,7 @@ var listsTestMultiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeS
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6820,7 +6820,7 @@ var listsTestMultiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeS
 			},
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "and a note",
 				},
@@ -6834,7 +6834,7 @@ var listsTestMultiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeS
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  def2",
@@ -6842,7 +6842,7 @@ var listsTestMultiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeS
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6855,12 +6855,12 @@ var listsTestMultiLineElementWithParagraphStartingWithMultipleDashesShouldNotBeS
 }
 
 var listsTestMultiLineElementWithMultipleTerms = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "term2::",
@@ -6868,7 +6868,7 @@ var listsTestMultiLineElementWithMultipleTerms = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6885,12 +6885,12 @@ var listsTestMultiLineElementWithMultipleTerms = &asciidoc.Document{
 }
 
 var listsTestConsecutiveTermsShareSameVarlistentryInDocbook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "alt term::",
@@ -6898,7 +6898,7 @@ var listsTestConsecutiveTermsShareSameVarlistentryInDocbook = &asciidoc.Document
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6919,12 +6919,12 @@ var listsTestConsecutiveTermsShareSameVarlistentryInDocbook = &asciidoc.Document
 }
 
 var listsTestMultiLineElementsWithBlankLineBeforeParagraphContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -6933,7 +6933,7 @@ var listsTestMultiLineElementsWithBlankLineBeforeParagraphContent = &asciidoc.Do
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6943,7 +6943,7 @@ var listsTestMultiLineElementsWithBlankLineBeforeParagraphContent = &asciidoc.Do
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -6952,7 +6952,7 @@ var listsTestMultiLineElementsWithBlankLineBeforeParagraphContent = &asciidoc.Do
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6965,12 +6965,12 @@ var listsTestMultiLineElementsWithBlankLineBeforeParagraphContent = &asciidoc.Do
 }
 
 var listsTestMultiLineElementsWithParagraphAndLiteralContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "def1",
@@ -6978,7 +6978,7 @@ var listsTestMultiLineElementsWithParagraphAndLiteralContent = &asciidoc.Documen
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -6998,7 +6998,7 @@ var listsTestMultiLineElementsWithParagraphAndLiteralContent = &asciidoc.Documen
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  def2",
@@ -7006,7 +7006,7 @@ var listsTestMultiLineElementsWithParagraphAndLiteralContent = &asciidoc.Documen
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7019,7 +7019,7 @@ var listsTestMultiLineElementsWithParagraphAndLiteralContent = &asciidoc.Documen
 }
 
 var listsTestMixedSingleAndMultiLineAdjacentElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7028,7 +7028,7 @@ var listsTestMixedSingleAndMultiLineAdjacentElements = &asciidoc.Document{
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "def2",
@@ -7036,7 +7036,7 @@ var listsTestMixedSingleAndMultiLineAdjacentElements = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7049,7 +7049,7 @@ var listsTestMixedSingleAndMultiLineAdjacentElements = &asciidoc.Document{
 }
 
 var listsTestShouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsAReference = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7058,7 +7058,7 @@ var listsTestShouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsARef
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "grays-peak",
 			Format:        0,
 		},
@@ -7067,7 +7067,7 @@ var listsTestShouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsARef
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "mount-evans",
 			Format:        0,
 		},
@@ -7080,7 +7080,7 @@ var listsTestShouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsARef
 		},
 		&asciidoc.Anchor{
 			ID: "mount-evans",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Mount Evans",
 				},
@@ -7091,8 +7091,8 @@ var listsTestShouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsARef
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.Anchor{
-			ID:  "grays-peak",
-			Set: nil,
+			ID:       "grays-peak",
+			Elements: nil,
 		},
 		&asciidoc.String{
 			Value: "Grays Peak:: 14,278 feet",
@@ -7102,7 +7102,7 @@ var listsTestShouldDiscoverAnchorAtStartOfDescriptionTermTextAndRegisterItAsARef
 }
 
 var listsTestMissingSpaceBeforeTermDoesNotProduceDescriptionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7118,18 +7118,18 @@ var listsTestMissingSpaceBeforeTermDoesNotProduceDescriptionList = &asciidoc.Doc
 }
 
 var listsTestLiteralBlockInsideDescriptionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.LineBreak{},
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7155,18 +7155,18 @@ var listsTestLiteralBlockInsideDescriptionList = &asciidoc.Document{
 }
 
 var listsTestLiteralBlockInsideDescriptionListWithTrailingLineContinuation = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.LineBreak{},
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7194,18 +7194,18 @@ var listsTestLiteralBlockInsideDescriptionListWithTrailingLineContinuation = &as
 }
 
 var listsTestMultipleListingBlocksInsideDescriptionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.LineBreak{},
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7245,18 +7245,18 @@ var listsTestMultipleListingBlocksInsideDescriptionList = &asciidoc.Document{
 }
 
 var listsTestOpenBlockInsideDescriptionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.LineBreak{},
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7268,7 +7268,7 @@ var listsTestOpenBlockInsideDescriptionList = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Open block as description of term.",
 				},
@@ -7290,7 +7290,7 @@ var listsTestOpenBlockInsideDescriptionList = &asciidoc.Document{
 }
 
 var listsTestParagraphAttachedByAListContinuationOnEitherSideInADescriptionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7314,12 +7314,12 @@ var listsTestParagraphAttachedByAListContinuationOnEitherSideInADescriptionList 
 }
 
 var listsTestParagraphAttachedByAListContinuationOnEitherSideToAMultiLineElementInADescriptionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "def1",
@@ -7327,7 +7327,7 @@ var listsTestParagraphAttachedByAListContinuationOnEitherSideToAMultiLineElement
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7352,13 +7352,13 @@ var listsTestParagraphAttachedByAListContinuationOnEitherSideToAMultiLineElement
 }
 
 var listsTestShouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBlockIsDropped = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "attribute-missing",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "drop-line",
 				},
@@ -7368,13 +7368,13 @@ var listsTestShouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBl
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.LineBreak{},
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7382,7 +7382,7 @@ var listsTestShouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBl
 		},
 		&asciidoc.BlockImage{
 			AttributeList: nil,
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.UserAttributeReference{
 					Value: "unresolved",
 				},
@@ -7398,7 +7398,7 @@ var listsTestShouldContinueToParseSubsequentBlocksAttachedToListItemAfterFirstBl
 }
 
 var listsTestVerseParagraphInsideADescriptionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7412,7 +7412,7 @@ var listsTestVerseParagraphInsideADescriptionList = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -7423,7 +7423,7 @@ var listsTestVerseParagraphInsideADescriptionList = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "la la la",
 				},
@@ -7442,12 +7442,12 @@ var listsTestVerseParagraphInsideADescriptionList = &asciidoc.Document{
 }
 
 var listsTestListInsideADescriptionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "* level 1",
@@ -7455,7 +7455,7 @@ var listsTestListInsideADescriptionList = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7465,7 +7465,7 @@ var listsTestListInsideADescriptionList = &asciidoc.Document{
 			},
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "level 2",
 				},
@@ -7476,7 +7476,7 @@ var listsTestListInsideADescriptionList = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "level 1",
 				},
@@ -7494,12 +7494,12 @@ var listsTestListInsideADescriptionList = &asciidoc.Document{
 }
 
 var listsTestListInsideADescriptionListOffsetByBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -7508,7 +7508,7 @@ var listsTestListInsideADescriptionListOffsetByBlankLines = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7518,7 +7518,7 @@ var listsTestListInsideADescriptionListOffsetByBlankLines = &asciidoc.Document{
 			},
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "level 2",
 				},
@@ -7529,7 +7529,7 @@ var listsTestListInsideADescriptionListOffsetByBlankLines = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "level 1",
 				},
@@ -7550,12 +7550,12 @@ var listsTestListInsideADescriptionListOffsetByBlankLines = &asciidoc.Document{
 }
 
 var listsTestShouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -7564,7 +7564,7 @@ var listsTestShouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription 
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7577,7 +7577,7 @@ var listsTestShouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription 
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -7586,7 +7586,7 @@ var listsTestShouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription 
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7613,12 +7613,12 @@ var listsTestShouldOnlyGrabOneLineFollowingLastItemIfItemHasNoInlineDescription 
 }
 
 var listsTestShouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -7627,7 +7627,7 @@ var listsTestShouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescr
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7640,7 +7640,7 @@ var listsTestShouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescr
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -7649,7 +7649,7 @@ var listsTestShouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescr
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7676,12 +7676,12 @@ var listsTestShouldOnlyGrabOneLiteralLineFollowingLastItemIfItemHasNoInlineDescr
 }
 
 var listsTestShouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -7690,7 +7690,7 @@ var listsTestShouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7703,7 +7703,7 @@ var listsTestShouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -7712,7 +7712,7 @@ var listsTestShouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7739,7 +7739,7 @@ var listsTestShouldAppendSubsequentParagraphLiteralsToListItemAsBlockContent = &
 }
 
 var listsTestShouldNotMatchCommentLineThatLooksLikeDescriptionListTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7764,12 +7764,12 @@ var listsTestShouldNotMatchCommentLineThatLooksLikeDescriptionListTerm = &asciid
 }
 
 var listsTestShouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item",
 				},
@@ -7787,7 +7787,7 @@ var listsTestShouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListT
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -7796,7 +7796,7 @@ var listsTestShouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListT
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section",
 				},
@@ -7807,7 +7807,7 @@ var listsTestShouldNotMatchCommentLineFollowingListThatLooksLikeDescriptionListT
 }
 
 var listsTestShouldNotMatchCommentLineThatLooksLikeSiblingDescriptionListTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7836,12 +7836,12 @@ var listsTestShouldNotMatchCommentLineThatLooksLikeSiblingDescriptionListTerm = 
 }
 
 var listsTestShouldNotHangOnDescriptionListItemInListThatBeginsWith = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "a",
 				},
@@ -7863,12 +7863,12 @@ var listsTestShouldNotHangOnDescriptionListItemInListThatBeginsWith = &asciidoc.
 }
 
 var listsTestShouldNotHangOnSiblingDescriptionListItemThatBeginsWith = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "///b::",
@@ -7876,7 +7876,7 @@ var listsTestShouldNotHangOnSiblingDescriptionListItemThatBeginsWith = &asciidoc
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "a",
 				},
@@ -7890,12 +7890,12 @@ var listsTestShouldNotHangOnSiblingDescriptionListItemThatBeginsWith = &asciidoc
 }
 
 var listsTestShouldSkipDlistTermThatBeginsWithUnlessItBeginsWith = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "//ignored term:: def",
@@ -7903,7 +7903,7 @@ var listsTestShouldSkipDlistTermThatBeginsWithUnlessItBeginsWith = &asciidoc.Doc
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "category a",
 				},
@@ -7913,7 +7913,7 @@ var listsTestShouldSkipDlistTermThatBeginsWithUnlessItBeginsWith = &asciidoc.Doc
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "///term:: def",
@@ -7921,7 +7921,7 @@ var listsTestShouldSkipDlistTermThatBeginsWithUnlessItBeginsWith = &asciidoc.Doc
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "category b",
 				},
@@ -7931,7 +7931,7 @@ var listsTestShouldSkipDlistTermThatBeginsWithUnlessItBeginsWith = &asciidoc.Doc
 }
 
 var listsTestMoreThan4ConsecutiveColonsShouldBecomePartOfDescriptionListTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7943,18 +7943,18 @@ var listsTestMoreThan4ConsecutiveColonsShouldBecomePartOfDescriptionListTerm = &
 }
 
 var listsTestTextMethodOfDdNodeShouldReturnNilIfDdNodeOnlyContainsBlocks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.LineBreak{},
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -7968,12 +7968,12 @@ var listsTestTextMethodOfDdNodeShouldReturnNilIfDdNodeOnlyContainsBlocks = &asci
 }
 
 var listsTestShouldNotParseANestedDlistDelimiterWithoutATermAsADlist = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: ";;",
@@ -7981,7 +7981,7 @@ var listsTestShouldNotParseANestedDlistDelimiterWithoutATermAsADlist = &asciidoc
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "t",
 				},
@@ -7991,12 +7991,12 @@ var listsTestShouldNotParseANestedDlistDelimiterWithoutATermAsADlist = &asciidoc
 }
 
 var listsTestShouldNotParseANestedIndentedDlistDelimiterWithoutATermAsADlist = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "desc",
@@ -8004,7 +8004,7 @@ var listsTestShouldNotParseANestedIndentedDlistDelimiterWithoutATermAsADlist = &
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "t",
 				},
@@ -8018,7 +8018,7 @@ var listsTestShouldNotParseANestedIndentedDlistDelimiterWithoutATermAsADlist = &
 }
 
 var listsTestSingleLineAdjacentNestedElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8038,7 +8038,7 @@ var listsTestSingleLineAdjacentNestedElements = &asciidoc.Document{
 }
 
 var listsTestSingleLineAdjacentMaximumNestedElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8066,7 +8066,7 @@ var listsTestSingleLineAdjacentMaximumNestedElements = &asciidoc.Document{
 }
 
 var listsTestSingleLineNestedElementsSeparatedByBlankLineAtTopLevel = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8092,7 +8092,7 @@ var listsTestSingleLineNestedElementsSeparatedByBlankLineAtTopLevel = &asciidoc.
 }
 
 var listsTestSingleLineNestedElementsSeparatedByBlankLineAtNestedLevel = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8119,7 +8119,7 @@ var listsTestSingleLineNestedElementsSeparatedByBlankLineAtNestedLevel = &asciid
 }
 
 var listsTestSingleLineAdjacentNestedElementsWithAlternateDelimiters = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8139,12 +8139,12 @@ var listsTestSingleLineAdjacentNestedElementsWithAlternateDelimiters = &asciidoc
 }
 
 var listsTestMultiLineAdjacentNestedElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "def1",
@@ -8152,7 +8152,7 @@ var listsTestMultiLineAdjacentNestedElements = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -8162,7 +8162,7 @@ var listsTestMultiLineAdjacentNestedElements = &asciidoc.Document{
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "detail1",
@@ -8170,7 +8170,7 @@ var listsTestMultiLineAdjacentNestedElements = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        ":::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "label",
 				},
@@ -8180,7 +8180,7 @@ var listsTestMultiLineAdjacentNestedElements = &asciidoc.Document{
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "def2",
@@ -8188,7 +8188,7 @@ var listsTestMultiLineAdjacentNestedElements = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -8201,12 +8201,12 @@ var listsTestMultiLineAdjacentNestedElements = &asciidoc.Document{
 }
 
 var listsTestMultiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "def1",
@@ -8214,7 +8214,7 @@ var listsTestMultiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = 
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -8224,7 +8224,7 @@ var listsTestMultiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = 
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -8233,7 +8233,7 @@ var listsTestMultiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = 
 			},
 			AttributeList: nil,
 			Marker:        ":::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "label",
 				},
@@ -8243,7 +8243,7 @@ var listsTestMultiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = 
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "detail2",
@@ -8251,7 +8251,7 @@ var listsTestMultiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = 
 			},
 			AttributeList: nil,
 			Marker:        ":::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "label",
 				},
@@ -8271,12 +8271,12 @@ var listsTestMultiLineNestedElementsSeparatedByBlankLineAtNestedLevelRepeated = 
 }
 
 var listsTestMultiLineElementWithIndentedNestedElement = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  def1",
@@ -8284,7 +8284,7 @@ var listsTestMultiLineElementWithIndentedNestedElement = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -8294,7 +8294,7 @@ var listsTestMultiLineElementWithIndentedNestedElement = &asciidoc.Document{
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "   detail1",
@@ -8302,7 +8302,7 @@ var listsTestMultiLineElementWithIndentedNestedElement = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        ";;",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "  label",
 				},
@@ -8312,7 +8312,7 @@ var listsTestMultiLineElementWithIndentedNestedElement = &asciidoc.Document{
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  def2",
@@ -8320,7 +8320,7 @@ var listsTestMultiLineElementWithIndentedNestedElement = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -8333,7 +8333,7 @@ var listsTestMultiLineElementWithIndentedNestedElement = &asciidoc.Document{
 }
 
 var listsTestMixedSingleAndMultiLineElementsWithIndentedNestedElements = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8342,7 +8342,7 @@ var listsTestMixedSingleAndMultiLineElementsWithIndentedNestedElements = &asciid
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "   detail1",
@@ -8350,7 +8350,7 @@ var listsTestMixedSingleAndMultiLineElementsWithIndentedNestedElements = &asciid
 			},
 			AttributeList: nil,
 			Marker:        ":::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "  label",
 				},
@@ -8367,7 +8367,7 @@ var listsTestMixedSingleAndMultiLineElementsWithIndentedNestedElements = &asciid
 }
 
 var listsTestMultiLineElementsWithFirstParagraphFoldedToTextWithAdjacentNestedElement = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8380,7 +8380,7 @@ var listsTestMultiLineElementsWithFirstParagraphFoldedToTextWithAdjacentNestedEl
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "detail1",
@@ -8388,7 +8388,7 @@ var listsTestMultiLineElementsWithFirstParagraphFoldedToTextWithAdjacentNestedEl
 			},
 			AttributeList: nil,
 			Marker:        ":::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "label",
 				},
@@ -8401,7 +8401,7 @@ var listsTestMultiLineElementsWithFirstParagraphFoldedToTextWithAdjacentNestedEl
 }
 
 var listsTestNestedDlistAttachedByListContinuationShouldNotConsumeDetachedParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8426,12 +8426,12 @@ var listsTestNestedDlistAttachedByListContinuationShouldNotConsumeDetachedParagr
 }
 
 var listsTestNestedDlistWithAttachedBlockOffsetByEmptyLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.NewLine{},
 				&asciidoc.String{
@@ -8440,7 +8440,7 @@ var listsTestNestedDlistWithAttachedBlockOffsetByEmptyLine = &asciidoc.Document{
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "category",
 				},
@@ -8453,7 +8453,7 @@ var listsTestNestedDlistWithAttachedBlockOffsetByEmptyLine = &asciidoc.Document{
 					Type:   7,
 					Length: 2,
 				},
-				Set: asciidoc.Set{
+				Elements: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "def 1",
 					},
@@ -8465,7 +8465,7 @@ var listsTestNestedDlistWithAttachedBlockOffsetByEmptyLine = &asciidoc.Document{
 }
 
 var listsTestShouldConvertGlossaryListWithProperSemantics = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8473,7 +8473,7 @@ var listsTestShouldConvertGlossaryListWithProperSemantics = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "glossary",
 							},
@@ -8484,7 +8484,7 @@ var listsTestShouldConvertGlossaryListWithProperSemantics = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term 1:: def 1",
 				},
@@ -8500,12 +8500,12 @@ var listsTestShouldConvertGlossaryListWithProperSemantics = &asciidoc.Document{
 }
 
 var listsTestConsecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "alt term::",
@@ -8514,7 +8514,7 @@ var listsTestConsecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "glossary",
 							},
@@ -8526,7 +8526,7 @@ var listsTestConsecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook =
 				},
 			},
 			Marker: "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -8547,7 +8547,7 @@ var listsTestConsecutiveGlossaryTermsShouldShareSameGlossentryElementInDocbook =
 }
 
 var listsTestShouldConvertHorizontalListWithProperMarkup = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8555,7 +8555,7 @@ var listsTestShouldConvertHorizontalListWithProperMarkup = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "horizontal",
 							},
@@ -8566,7 +8566,7 @@ var listsTestShouldConvertHorizontalListWithProperMarkup = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first term:: description",
 				},
@@ -8591,7 +8591,7 @@ var listsTestShouldConvertHorizontalListWithProperMarkup = &asciidoc.Document{
 }
 
 var listsTestShouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8599,7 +8599,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "horizontal",
 							},
@@ -8611,7 +8611,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "labelwidth",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "25",
 						},
@@ -8620,7 +8620,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "itemwidth",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "75",
 						},
@@ -8628,7 +8628,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term:: def",
 				},
@@ -8640,7 +8640,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelIfSpecified = &asciidoc.Document{
 }
 
 var listsTestShouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8648,7 +8648,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Do
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "horizontal",
 							},
@@ -8660,7 +8660,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Do
 				},
 				&asciidoc.NamedAttribute{
 					Name: "labelwidth",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "25",
 						},
@@ -8669,7 +8669,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Do
 				},
 				&asciidoc.NamedAttribute{
 					Name: "itemwidth",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "75",
 						},
@@ -8677,7 +8677,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Do
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term:: def",
 				},
@@ -8689,7 +8689,7 @@ var listsTestShouldSetColWidthsOfItemAndLabelInDocbookIfSpecified = &asciidoc.Do
 }
 
 var listsTestShouldAddStrongClassToLabelIfStrongOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8697,7 +8697,7 @@ var listsTestShouldAddStrongClassToLabelIfStrongOptionIsSet = &asciidoc.Document
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "horizontal",
 							},
@@ -8709,7 +8709,7 @@ var listsTestShouldAddStrongClassToLabelIfStrongOptionIsSet = &asciidoc.Document
 				},
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "strong",
 						},
@@ -8717,7 +8717,7 @@ var listsTestShouldAddStrongClassToLabelIfStrongOptionIsSet = &asciidoc.Document
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term:: def",
 				},
@@ -8729,12 +8729,12 @@ var listsTestShouldAddStrongClassToLabelIfStrongOptionIsSet = &asciidoc.Document
 }
 
 var listsTestConsecutiveTermsInHorizontalListShouldShareSameCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "alt term::",
@@ -8743,7 +8743,7 @@ var listsTestConsecutiveTermsInHorizontalListShouldShareSameCell = &asciidoc.Doc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "horizontal",
 							},
@@ -8755,7 +8755,7 @@ var listsTestConsecutiveTermsInHorizontalListShouldShareSameCell = &asciidoc.Doc
 				},
 			},
 			Marker: "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -8776,12 +8776,12 @@ var listsTestConsecutiveTermsInHorizontalListShouldShareSameCell = &asciidoc.Doc
 }
 
 var listsTestConsecutiveTermsInHorizontalListShouldShareSameEntryInDocbook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "alt term::",
@@ -8790,7 +8790,7 @@ var listsTestConsecutiveTermsInHorizontalListShouldShareSameEntryInDocbook = &as
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "horizontal",
 							},
@@ -8802,7 +8802,7 @@ var listsTestConsecutiveTermsInHorizontalListShouldShareSameEntryInDocbook = &as
 				},
 			},
 			Marker: "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "term",
 				},
@@ -8823,14 +8823,14 @@ var listsTestConsecutiveTermsInHorizontalListShouldShareSameEntryInDocbook = &as
 }
 
 var listsTestShouldConvertHorizontalListInDocbookWithProperMarkup = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Terms",
 						},
@@ -8838,7 +8838,7 @@ var listsTestShouldConvertHorizontalListInDocbookWithProperMarkup = &asciidoc.Do
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "horizontal",
 							},
@@ -8849,7 +8849,7 @@ var listsTestShouldConvertHorizontalListInDocbookWithProperMarkup = &asciidoc.Do
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first term:: description",
 				},
@@ -8874,12 +8874,12 @@ var listsTestShouldConvertHorizontalListInDocbookWithProperMarkup = &asciidoc.Do
 }
 
 var listsTestShouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "        Answer 1.",
@@ -8888,7 +8888,7 @@ var listsTestShouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Documen
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "qanda",
 							},
@@ -8900,7 +8900,7 @@ var listsTestShouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Documen
 				},
 			},
 			Marker: "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Question ",
 				},
@@ -8910,7 +8910,7 @@ var listsTestShouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Documen
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "        Answer 2.",
@@ -8918,7 +8918,7 @@ var listsTestShouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Documen
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Question ",
 				},
@@ -8931,7 +8931,7 @@ var listsTestShouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Documen
 		&asciidoc.NewLine{},
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A note about Answer 2.",
 				},
@@ -8943,12 +8943,12 @@ var listsTestShouldConvertQandaListInHtmlWithProperSemantics = &asciidoc.Documen
 }
 
 var listsTestShouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "        Answer 1.",
@@ -8957,7 +8957,7 @@ var listsTestShouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Docu
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "qanda",
 							},
@@ -8969,7 +8969,7 @@ var listsTestShouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Docu
 				},
 			},
 			Marker: "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Question ",
 				},
@@ -8979,7 +8979,7 @@ var listsTestShouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Docu
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "        Answer 2.",
@@ -8987,7 +8987,7 @@ var listsTestShouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Docu
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Question ",
 				},
@@ -9000,7 +9000,7 @@ var listsTestShouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Docu
 		&asciidoc.NewLine{},
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A note about Answer 2.",
 				},
@@ -9012,12 +9012,12 @@ var listsTestShouldConvertQandaListInDocBookWithProperSemantics = &asciidoc.Docu
 }
 
 var listsTestConsecutiveQuestionsShouldShareSameQuestionElementInDocbook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "follow-up question::",
@@ -9026,7 +9026,7 @@ var listsTestConsecutiveQuestionsShouldShareSameQuestionElementInDocbook = &asci
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "qanda",
 							},
@@ -9038,7 +9038,7 @@ var listsTestConsecutiveQuestionsShouldShareSameQuestionElementInDocbook = &asci
 				},
 			},
 			Marker: "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "question",
 				},
@@ -9059,18 +9059,18 @@ var listsTestConsecutiveQuestionsShouldShareSameQuestionElementInDocbook = &asci
 }
 
 var listsTestShouldConvertBibliographyListWithProperSemantics = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "[",
 				},
 				&asciidoc.Anchor{
-					ID:  "taoup",
-					Set: nil,
+					ID:       "taoup",
+					Elements: nil,
 				},
 				&asciidoc.String{
 					Value: "] Eric Steven Raymond. _The Art of Unix",
@@ -9083,7 +9083,7 @@ var listsTestShouldConvertBibliographyListWithProperSemantics = &asciidoc.Docume
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "bibliography",
 							},
@@ -9099,13 +9099,13 @@ var listsTestShouldConvertBibliographyListWithProperSemantics = &asciidoc.Docume
 			Checklist: 0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "[",
 				},
 				&asciidoc.Anchor{
-					ID:  "walsh-muellner",
-					Set: nil,
+					ID:       "walsh-muellner",
+					Elements: nil,
 				},
 				&asciidoc.String{
 					Value: "] Norman Walsh & Leonard Muellner.",
@@ -9116,7 +9116,7 @@ var listsTestShouldConvertBibliographyListWithProperSemantics = &asciidoc.Docume
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "DocBook - The Definitive Guide",
 						},
@@ -9139,18 +9139,18 @@ var listsTestShouldConvertBibliographyListWithProperSemantics = &asciidoc.Docume
 }
 
 var listsTestShouldConvertBibliographyListWithProperSemanticsToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "[",
 				},
 				&asciidoc.Anchor{
-					ID:  "taoup",
-					Set: nil,
+					ID:       "taoup",
+					Elements: nil,
 				},
 				&asciidoc.String{
 					Value: "] Eric Steven Raymond. _The Art of Unix",
@@ -9163,7 +9163,7 @@ var listsTestShouldConvertBibliographyListWithProperSemanticsToDocBook = &asciid
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "bibliography",
 							},
@@ -9179,13 +9179,13 @@ var listsTestShouldConvertBibliographyListWithProperSemanticsToDocBook = &asciid
 			Checklist: 0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "[",
 				},
 				&asciidoc.Anchor{
-					ID:  "walsh-muellner",
-					Set: nil,
+					ID:       "walsh-muellner",
+					Elements: nil,
 				},
 				&asciidoc.String{
 					Value: "] Norman Walsh & Leonard Muellner.",
@@ -9196,7 +9196,7 @@ var listsTestShouldConvertBibliographyListWithProperSemanticsToDocBook = &asciid
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "DocBook - The Definitive Guide",
 						},
@@ -9219,25 +9219,25 @@ var listsTestShouldConvertBibliographyListWithProperSemanticsToDocBook = &asciid
 }
 
 var listsTestShouldWarnIfABibliographyIdIsAlreadyInUse = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "[",
 				},
 				&asciidoc.Anchor{
-					ID:  "Fowler",
-					Set: nil,
+					ID:       "Fowler",
+					Elements: nil,
 				},
 				&asciidoc.String{
 					Value: "] Fowler M. ",
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Analysis Patterns: Reusable Object Models",
 						},
@@ -9254,7 +9254,7 @@ var listsTestShouldWarnIfABibliographyIdIsAlreadyInUse = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "bibliography",
 							},
@@ -9270,20 +9270,20 @@ var listsTestShouldWarnIfABibliographyIdIsAlreadyInUse = &asciidoc.Document{
 			Checklist: 0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "[",
 				},
 				&asciidoc.Anchor{
-					ID:  "Fowler",
-					Set: nil,
+					ID:       "Fowler",
+					Elements: nil,
 				},
 				&asciidoc.String{
 					Value: "] Fowler M. ",
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Analysis Patterns: Reusable Object Models",
 						},
@@ -9306,7 +9306,7 @@ var listsTestShouldWarnIfABibliographyIdIsAlreadyInUse = &asciidoc.Document{
 }
 
 var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliographySection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9314,7 +9314,7 @@ var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliograph
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "bibliography",
 							},
@@ -9325,18 +9325,18 @@ var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliograph
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "[",
 						},
 						&asciidoc.Anchor{
-							ID:  "taoup",
-							Set: nil,
+							ID:       "taoup",
+							Elements: nil,
 						},
 						&asciidoc.String{
 							Value: "] Eric Steven Raymond. _The Art of Unix",
@@ -9348,7 +9348,7 @@ var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliograph
 					},
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Books",
 								},
@@ -9360,13 +9360,13 @@ var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliograph
 					Checklist: 0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "[",
 						},
 						&asciidoc.Anchor{
-							ID:  "walsh-muellner",
-							Set: nil,
+							ID:       "walsh-muellner",
+							Elements: nil,
 						},
 						&asciidoc.String{
 							Value: "] Norman Walsh & Leonard Muellner.",
@@ -9377,7 +9377,7 @@ var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliograph
 						},
 						&asciidoc.Italic{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "DocBook - The Definitive Guide",
 								},
@@ -9400,20 +9400,20 @@ var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliograph
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "[",
 						},
 						&asciidoc.Anchor{
-							ID:  "doc-writer",
-							Set: nil,
+							ID:       "doc-writer",
+							Elements: nil,
 						},
 						&asciidoc.String{
 							Value: "] Doc Writer. ",
 						},
 						&asciidoc.Italic{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Documentation As Code",
 								},
@@ -9425,7 +9425,7 @@ var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliograph
 					},
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Periodicals",
 								},
@@ -9437,7 +9437,7 @@ var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliograph
 					Checklist: 0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Bibliography",
 				},
@@ -9448,18 +9448,18 @@ var listsTestShouldAutomaticallyAddBibliographyStyleToTopLevelListsInBibliograph
 }
 
 var listsTestShouldNotRecognizeBibliographyAnchorThatBeginsWithADigit = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "[[[1984]]] George Orwell. ",
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "1984",
 						},
@@ -9472,7 +9472,7 @@ var listsTestShouldNotRecognizeBibliographyAnchorThatBeginsWithADigit = &asciido
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "bibliography",
 							},
@@ -9491,25 +9491,25 @@ var listsTestShouldNotRecognizeBibliographyAnchorThatBeginsWithADigit = &asciido
 }
 
 var listsTestShouldRecognizeBibliographyAnchorThatContainsADigitButDoesNotStartWithOne = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "[",
 				},
 				&asciidoc.Anchor{
-					ID:  "_1984",
-					Set: nil,
+					ID:       "_1984",
+					Elements: nil,
 				},
 				&asciidoc.String{
 					Value: "] George Orwell. ",
 				},
 				&asciidoc.DoubleItalic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "1984",
 						},
@@ -9522,7 +9522,7 @@ var listsTestShouldRecognizeBibliographyAnchorThatContainsADigitButDoesNotStartW
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "bibliography",
 							},
@@ -9541,13 +9541,13 @@ var listsTestShouldRecognizeBibliographyAnchorThatContainsADigitButDoesNotStartW
 }
 
 var listsTestShouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -9556,7 +9556,7 @@ var listsTestShouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Docu
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "Fowler_1997",
 					Format:        0,
 				},
@@ -9571,7 +9571,7 @@ var listsTestShouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Docu
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "bibliography",
 									},
@@ -9582,25 +9582,25 @@ var listsTestShouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Docu
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.UnorderedListItem{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "[",
 								},
 								&asciidoc.Anchor{
-									ID:  "Fowler_1997",
-									Set: nil,
+									ID:       "Fowler_1997",
+									Elements: nil,
 								},
 								&asciidoc.String{
 									Value: "] Fowler M. ",
 								},
 								&asciidoc.Italic{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Analysis Patterns: Reusable Object Models",
 										},
@@ -9616,7 +9616,7 @@ var listsTestShouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Docu
 							Checklist:     0,
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "References",
 						},
@@ -9624,7 +9624,7 @@ var listsTestShouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Docu
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Article Title",
 				},
@@ -9635,13 +9635,13 @@ var listsTestShouldCatalogBibliographyAnchorsInBibliographyList = &asciidoc.Docu
 }
 
 var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -9650,7 +9650,7 @@ var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Do
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "TMMM",
 					Format:        0,
 				},
@@ -9663,7 +9663,7 @@ var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Do
 				},
 				&asciidoc.CrossReference{
 					AttributeList: nil,
-					Set:           nil,
+					Elements:      nil,
 					ID:            "Fowler_1997",
 					Format:        0,
 				},
@@ -9678,7 +9678,7 @@ var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Do
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "bibliography",
 									},
@@ -9689,25 +9689,25 @@ var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Do
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.UnorderedListItem{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "[",
 								},
 								&asciidoc.Anchor{
-									ID:  "TMMM",
-									Set: nil,
+									ID:       "TMMM",
+									Elements: nil,
 								},
 								&asciidoc.String{
 									Value: "] Brooks F. ",
 								},
 								&asciidoc.Italic{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "The Mythical Man-Month",
 										},
@@ -9723,13 +9723,13 @@ var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Do
 							Checklist:     0,
 						},
 						&asciidoc.UnorderedListItem{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "[",
 								},
 								&asciidoc.Anchor{
 									ID: "Fowler_1997",
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "1",
 										},
@@ -9740,7 +9740,7 @@ var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Do
 								},
 								&asciidoc.Italic{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Analysis Patterns: Reusable Object Models",
 										},
@@ -9756,7 +9756,7 @@ var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Do
 							Checklist:     0,
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "References",
 						},
@@ -9764,7 +9764,7 @@ var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Do
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Article Title",
 				},
@@ -9775,18 +9775,18 @@ var listsTestShouldUseReftextFromBibliographyAnchorAtXrefAndEntry = &asciidoc.Do
 }
 
 var listsTestShouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "[",
 				},
 				&asciidoc.Anchor{
 					ID: "Fowler_1997",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "1",
 						},
@@ -9797,7 +9797,7 @@ var listsTestShouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend 
 				},
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Analysis Patterns: Reusable Object Models",
 						},
@@ -9810,7 +9810,7 @@ var listsTestShouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend 
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "bibliography",
 							},
@@ -9829,18 +9829,18 @@ var listsTestShouldAssignReftextOfBibliographyAnchorToXreflabelInDocBookBackend 
 }
 
 var listsTestFoldsTextFromSubsequentLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "def1",
@@ -9848,7 +9848,7 @@ var listsTestFoldsTextFromSubsequentLine = &asciidoc.Document{
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -9858,7 +9858,7 @@ var listsTestFoldsTextFromSubsequentLine = &asciidoc.Document{
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -9869,18 +9869,18 @@ var listsTestFoldsTextFromSubsequentLine = &asciidoc.Document{
 }
 
 var listsTestFoldsTextFromFirstLineAfterBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
@@ -9890,7 +9890,7 @@ var listsTestFoldsTextFromFirstLineAfterBlankLines = &asciidoc.Document{
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -9900,7 +9900,7 @@ var listsTestFoldsTextFromFirstLineAfterBlankLines = &asciidoc.Document{
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -9911,18 +9911,18 @@ var listsTestFoldsTextFromFirstLineAfterBlankLines = &asciidoc.Document{
 }
 
 var listsTestFoldsTextFromFirstLineAfterBlankLineAndImmediatelyPrecedingNextItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -9931,7 +9931,7 @@ var listsTestFoldsTextFromFirstLineAfterBlankLineAndImmediatelyPrecedingNextItem
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -9945,7 +9945,7 @@ var listsTestFoldsTextFromFirstLineAfterBlankLineAndImmediatelyPrecedingNextItem
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -9956,18 +9956,18 @@ var listsTestFoldsTextFromFirstLineAfterBlankLineAndImmediatelyPrecedingNextItem
 }
 
 var listsTestParagraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInlineText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -9976,7 +9976,7 @@ var listsTestParagraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInline
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -9993,7 +9993,7 @@ var listsTestParagraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInline
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10004,18 +10004,18 @@ var listsTestParagraphOffsetByBlankLinesDoesNotBreakListIfLabelDoesNotHaveInline
 }
 
 var listsTestFoldsTextFromFirstLineAfterCommentLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "// comment",
@@ -10023,7 +10023,7 @@ var listsTestFoldsTextFromFirstLineAfterCommentLine = &asciidoc.Document{
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10037,7 +10037,7 @@ var listsTestFoldsTextFromFirstLineAfterCommentLine = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10048,18 +10048,18 @@ var listsTestFoldsTextFromFirstLineAfterCommentLine = &asciidoc.Document{
 }
 
 var listsTestFoldsTextFromLineFollowingCommentLineOffsetByBlankLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10068,7 +10068,7 @@ var listsTestFoldsTextFromLineFollowingCommentLineOffsetByBlankLine = &asciidoc.
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10082,7 +10082,7 @@ var listsTestFoldsTextFromLineFollowingCommentLineOffsetByBlankLine = &asciidoc.
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10093,18 +10093,18 @@ var listsTestFoldsTextFromLineFollowingCommentLineOffsetByBlankLine = &asciidoc.
 }
 
 var listsTestFoldsTextFromSubsequentIndentedLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "  def1",
@@ -10112,7 +10112,7 @@ var listsTestFoldsTextFromSubsequentIndentedLine = &asciidoc.Document{
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10122,7 +10122,7 @@ var listsTestFoldsTextFromSubsequentIndentedLine = &asciidoc.Document{
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10133,18 +10133,18 @@ var listsTestFoldsTextFromSubsequentIndentedLine = &asciidoc.Document{
 }
 
 var listsTestFoldsTextFromIndentedLineAfterBlankLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10153,7 +10153,7 @@ var listsTestFoldsTextFromIndentedLineAfterBlankLine = &asciidoc.Document{
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10163,7 +10163,7 @@ var listsTestFoldsTextFromIndentedLineAfterBlankLine = &asciidoc.Document{
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10174,18 +10174,18 @@ var listsTestFoldsTextFromIndentedLineAfterBlankLine = &asciidoc.Document{
 }
 
 var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10194,7 +10194,7 @@ var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLine = &asciidoc.Document{
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10204,7 +10204,7 @@ var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLine = &asciidoc.Document{
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10215,18 +10215,18 @@ var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLine = &asciidoc.Document{
 }
 
 var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10235,7 +10235,7 @@ var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment = &ascii
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10248,7 +10248,7 @@ var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment = &ascii
 					AttributeList: nil,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10259,18 +10259,18 @@ var listsTestFoldsTextThatLooksLikeRulerOffsetByBlankLineAndLineComment = &ascii
 }
 
 var listsTestFoldsTextThatLooksLikeRulerAndTheLineFollowingItOffsetByBlankLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10279,7 +10279,7 @@ var listsTestFoldsTextThatLooksLikeRulerAndTheLineFollowingItOffsetByBlankLine =
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10293,7 +10293,7 @@ var listsTestFoldsTextThatLooksLikeRulerAndTheLineFollowingItOffsetByBlankLine =
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10304,18 +10304,18 @@ var listsTestFoldsTextThatLooksLikeRulerAndTheLineFollowingItOffsetByBlankLine =
 }
 
 var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10324,7 +10324,7 @@ var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLine = &asciidoc.Document{
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10334,7 +10334,7 @@ var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLine = &asciidoc.Document{
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10345,18 +10345,18 @@ var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLine = &asciidoc.Document{
 }
 
 var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLineAndLineComment = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10365,7 +10365,7 @@ var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLineAndLineComment = &ascii
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10377,18 +10377,18 @@ var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLineAndLineComment = &ascii
 				&asciidoc.Paragraph{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "def1",
 								},
 							},
 						},
 					},
-					Set:        asciidoc.Set{},
+					Elements:   asciidoc.Elements{},
 					Admonition: 0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10399,23 +10399,23 @@ var listsTestFoldsTextThatLooksLikeTitleOffsetByBlankLineAndLineComment = &ascii
 }
 
 var listsTestFoldsTextThatLooksLikeAdmonitionOffsetByBlankLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.Paragraph{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "def1",
 								},
@@ -10425,7 +10425,7 @@ var listsTestFoldsTextThatLooksLikeAdmonitionOffsetByBlankLine = &asciidoc.Docum
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10435,7 +10435,7 @@ var listsTestFoldsTextThatLooksLikeAdmonitionOffsetByBlankLine = &asciidoc.Docum
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10446,18 +10446,18 @@ var listsTestFoldsTextThatLooksLikeAdmonitionOffsetByBlankLine = &asciidoc.Docum
 }
 
 var listsTestFoldsTextThatLooksLikeSectionTitleOffsetByBlankLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10466,7 +10466,7 @@ var listsTestFoldsTextThatLooksLikeSectionTitleOffsetByBlankLine = &asciidoc.Doc
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10476,7 +10476,7 @@ var listsTestFoldsTextThatLooksLikeSectionTitleOffsetByBlankLine = &asciidoc.Doc
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10487,18 +10487,18 @@ var listsTestFoldsTextThatLooksLikeSectionTitleOffsetByBlankLine = &asciidoc.Doc
 }
 
 var listsTestFoldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLiteralsOffsetByBlankLineAsBlocks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10507,7 +10507,7 @@ var listsTestFoldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLitera
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10534,7 +10534,7 @@ var listsTestFoldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLitera
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10545,18 +10545,18 @@ var listsTestFoldsTextOfFirstLiteralLineOffsetByBlankLineAppendsSubsequentLitera
 }
 
 var listsTestFoldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlankLineAsBlockIfTermHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "def1",
@@ -10564,7 +10564,7 @@ var listsTestFoldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlan
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10588,7 +10588,7 @@ var listsTestFoldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlan
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10599,24 +10599,24 @@ var listsTestFoldsTextOfSubsequentLineAndAppendsFollowingLiteralLineOffsetByBlan
 }
 
 var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10630,7 +10630,7 @@ var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDes
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10641,24 +10641,24 @@ var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDes
 }
 
 var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10678,7 +10678,7 @@ var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDes
 					AttributeList: nil,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10689,24 +10689,24 @@ var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasNoInlineDes
 }
 
 var listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByRuler = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10726,7 +10726,7 @@ var listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptio
 					AttributeList: nil,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10737,24 +10737,24 @@ var listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptio
 }
 
 var listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptionFollowedByBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10781,7 +10781,7 @@ var listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptio
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10792,24 +10792,24 @@ var listsTestAppendsLineAttachedByContinuationAsBlockIfItemHasNoInlineDescriptio
 }
 
 var listsTestAppendsBlockAttachedByContinuationButNotSubsequentBlockNotAttachedByContinuation = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10839,7 +10839,7 @@ var listsTestAppendsBlockAttachedByContinuationButNotSubsequentBlockNotAttachedB
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10850,18 +10850,18 @@ var listsTestAppendsBlockAttachedByContinuationButNotSubsequentBlockNotAttachedB
 }
 
 var listsTestAppendsListIfItemHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10870,7 +10870,7 @@ var listsTestAppendsListIfItemHasNoInlineDescription = &asciidoc.Document{
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10880,7 +10880,7 @@ var listsTestAppendsListIfItemHasNoInlineDescription = &asciidoc.Document{
 					},
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "two",
 						},
@@ -10891,7 +10891,7 @@ var listsTestAppendsListIfItemHasNoInlineDescription = &asciidoc.Document{
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "three",
 						},
@@ -10902,7 +10902,7 @@ var listsTestAppendsListIfItemHasNoInlineDescription = &asciidoc.Document{
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10913,18 +10913,18 @@ var listsTestAppendsListIfItemHasNoInlineDescription = &asciidoc.Document{
 }
 
 var listsTestAppendsListToFirstTermWhenFollowedImmediatelyBySecondTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -10933,7 +10933,7 @@ var listsTestAppendsListToFirstTermWhenFollowedImmediatelyBySecondTerm = &asciid
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -10943,7 +10943,7 @@ var listsTestAppendsListToFirstTermWhenFollowedImmediatelyBySecondTerm = &asciid
 					},
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "two",
 						},
@@ -10954,7 +10954,7 @@ var listsTestAppendsListToFirstTermWhenFollowedImmediatelyBySecondTerm = &asciid
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "three",
 						},
@@ -10969,7 +10969,7 @@ var listsTestAppendsListToFirstTermWhenFollowedImmediatelyBySecondTerm = &asciid
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -10980,18 +10980,18 @@ var listsTestAppendsListToFirstTermWhenFollowedImmediatelyBySecondTerm = &asciid
 }
 
 var listsTestAppendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "  description 1",
@@ -10999,7 +10999,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciido
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "label ",
 						},
@@ -11012,7 +11012,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciido
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "one",
 						},
@@ -11023,7 +11023,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciido
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "two",
 						},
@@ -11034,7 +11034,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciido
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "three",
 						},
@@ -11060,7 +11060,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciido
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11071,18 +11071,18 @@ var listsTestAppendsIndentedListToFirstTermThatIsAdjacentToSecondTerm = &asciido
 }
 
 var listsTestAppendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjacentToSecondTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "  description 1",
@@ -11090,7 +11090,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjac
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "label ",
 						},
@@ -11102,7 +11102,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjac
 				&asciidoc.LineBreak{},
 				&asciidoc.NewLine{},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "one",
 						},
@@ -11113,7 +11113,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjac
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "two",
 						},
@@ -11124,7 +11124,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjac
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "three",
 						},
@@ -11150,7 +11150,7 @@ var listsTestAppendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjac
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11161,18 +11161,18 @@ var listsTestAppendsIndentedListToFirstTermThatIsAttachedByAContinuationAndAdjac
 }
 
 var listsTestAppendsListAndParagraphBlockWhenLineFollowingListAttachedByContinuation = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -11181,7 +11181,7 @@ var listsTestAppendsListAndParagraphBlockWhenLineFollowingListAttachedByContinua
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -11191,7 +11191,7 @@ var listsTestAppendsListAndParagraphBlockWhenLineFollowingListAttachedByContinua
 					},
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "two",
 						},
@@ -11202,7 +11202,7 @@ var listsTestAppendsListAndParagraphBlockWhenLineFollowingListAttachedByContinua
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "three",
 						},
@@ -11222,7 +11222,7 @@ var listsTestAppendsListAndParagraphBlockWhenLineFollowingListAttachedByContinua
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11233,18 +11233,18 @@ var listsTestAppendsListAndParagraphBlockWhenLineFollowingListAttachedByContinua
 }
 
 var listsTestFirstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLineAssociatedWithTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "* one",
@@ -11252,7 +11252,7 @@ var listsTestFirstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLin
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -11277,7 +11277,7 @@ var listsTestFirstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLin
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11288,24 +11288,24 @@ var listsTestFirstContinuedLineAssociatedWithNestedListItemAndSecondContinuedLin
 }
 
 var listsTestLiteralLineAttachedByContinuationSwallowsAdjacentLineThatLooksLikeTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -11319,13 +11319,13 @@ var listsTestLiteralLineAttachedByContinuationSwallowsAdjacentLineThatLooksLikeT
 				},
 				&asciidoc.NewLine{},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        ":::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "notnestedterm",
 						},
@@ -11340,7 +11340,7 @@ var listsTestLiteralLineAttachedByContinuationSwallowsAdjacentLineThatLooksLikeT
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11351,24 +11351,24 @@ var listsTestLiteralLineAttachedByContinuationSwallowsAdjacentLineThatLooksLikeT
 }
 
 var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -11382,7 +11382,7 @@ var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasNoInlineDes
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11393,7 +11393,7 @@ var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasNoInlineDes
 }
 
 var listsTestAttachedParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -11415,7 +11415,7 @@ var listsTestAttachedParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = 
 }
 
 var listsTestAttachedParagraphIsTerminatedByAdjacentSiblingDescriptionListTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -11437,7 +11437,7 @@ var listsTestAttachedParagraphIsTerminatedByAdjacentSiblingDescriptionListTerm =
 }
 
 var listsTestAttachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListTerm = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -11451,7 +11451,7 @@ var listsTestAttachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListT
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "quote",
 							},
@@ -11462,7 +11462,7 @@ var listsTestAttachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListT
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "more description",
 				},
@@ -11478,18 +11478,18 @@ var listsTestAttachedStyledParagraphDoesNotBreakOnAdjacentNestedDescriptionListT
 }
 
 var listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingBlankLineAndLineCommentWhenTermHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.String{
@@ -11498,7 +11498,7 @@ var listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingBlankLineAnd
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -11514,7 +11514,7 @@ var listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingBlankLineAnd
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11525,25 +11525,25 @@ var listsTestAppendsLineAsParagraphIfAttachedByContinuationFollowingBlankLineAnd
 }
 
 var listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -11557,7 +11557,7 @@ var listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfT
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11568,18 +11568,18 @@ var listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfT
 }
 
 var listsTestDelimitedBlockBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "====",
@@ -11587,7 +11587,7 @@ var listsTestDelimitedBlockBreaksListEvenWhenTermHasNoInlineDescription = &ascii
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -11605,7 +11605,7 @@ var listsTestDelimitedBlockBreaksListEvenWhenTermHasNoInlineDescription = &ascii
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11616,13 +11616,13 @@ var listsTestDelimitedBlockBreaksListEvenWhenTermHasNoInlineDescription = &ascii
 }
 
 var listsTestBlockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicated = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -11637,7 +11637,7 @@ var listsTestBlockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicate
 							ID:    nil,
 							Roles: []*asciidoc.ShorthandRole{
 								&asciidoc.ShorthandRole{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "rolename",
 										},
@@ -11656,7 +11656,7 @@ var listsTestBlockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicate
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11667,18 +11667,18 @@ var listsTestBlockAttributeLineAboveDelimitedBlockThatBreaksADlistIsNotDuplicate
 }
 
 var listsTestBlockAttributeLineAboveParagraphBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "[verse]",
@@ -11686,7 +11686,7 @@ var listsTestBlockAttributeLineAboveParagraphBreaksListEvenWhenTermHasNoInlineDe
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -11700,7 +11700,7 @@ var listsTestBlockAttributeLineAboveParagraphBreaksListEvenWhenTermHasNoInlineDe
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11711,13 +11711,13 @@ var listsTestBlockAttributeLineAboveParagraphBreaksListEvenWhenTermHasNoInlineDe
 }
 
 var listsTestBlockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -11732,7 +11732,7 @@ var listsTestBlockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated = &
 							ID:    nil,
 							Roles: []*asciidoc.ShorthandRole{
 								&asciidoc.ShorthandRole{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "rolename",
 										},
@@ -11742,7 +11742,7 @@ var listsTestBlockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated = &
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "detached",
 						},
@@ -11751,7 +11751,7 @@ var listsTestBlockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated = &
 					Admonition: 0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11762,27 +11762,27 @@ var listsTestBlockAttributeLineAboveParagraphThatBreaksADlistIsNotDuplicated = &
 }
 
 var listsTestBlockAnchorLineBreaksListEvenWhenTermHasNoInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.Anchor{
-							ID:  "id",
-							Set: nil,
+							ID:       "id",
+							Elements: nil,
 						},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -11796,7 +11796,7 @@ var listsTestBlockAnchorLineBreaksListEvenWhenTermHasNoInlineDescription = &asci
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -11807,12 +11807,12 @@ var listsTestBlockAnchorLineBreaksListEvenWhenTermHasNoInlineDescription = &asci
 }
 
 var listsTestBlockAttributeLinesAboveNestedHorizontalListDoesNotBreakList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "[horizontal]",
@@ -11820,7 +11820,7 @@ var listsTestBlockAttributeLinesAboveNestedHorizontalListDoesNotBreakList = &asc
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Operating Systems",
 				},
@@ -11838,7 +11838,7 @@ var listsTestBlockAttributeLinesAboveNestedHorizontalListDoesNotBreakList = &asc
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  PaaS::: OpenShift",
@@ -11846,7 +11846,7 @@ var listsTestBlockAttributeLinesAboveNestedHorizontalListDoesNotBreakList = &asc
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Cloud Providers",
 				},
@@ -11860,12 +11860,12 @@ var listsTestBlockAttributeLinesAboveNestedHorizontalListDoesNotBreakList = &asc
 }
 
 var listsTestBlockAttributeLinesAboveNestedListWithStyleDoesNotBreakList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "* get groceries",
@@ -11873,14 +11873,14 @@ var listsTestBlockAttributeLinesAboveNestedListWithStyleDoesNotBreakList = &asci
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "TODO List",
 				},
 			},
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "[square]",
@@ -11888,14 +11888,14 @@ var listsTestBlockAttributeLinesAboveNestedListWithStyleDoesNotBreakList = &asci
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Grocery List",
 				},
 			},
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bread",
 				},
@@ -11906,7 +11906,7 @@ var listsTestBlockAttributeLinesAboveNestedListWithStyleDoesNotBreakList = &asci
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "milk",
 				},
@@ -11917,7 +11917,7 @@ var listsTestBlockAttributeLinesAboveNestedListWithStyleDoesNotBreakList = &asci
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "lettuce",
 				},
@@ -11931,21 +11931,21 @@ var listsTestBlockAttributeLinesAboveNestedListWithStyleDoesNotBreakList = &asci
 }
 
 var listsTestMultipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.Anchor{
-					ID:  "variants",
-					Set: nil,
+					ID:       "variants",
+					Elements: nil,
 				},
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Operating Systems",
 				},
@@ -11955,7 +11955,7 @@ var listsTestMultipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &ascii
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "horizontal",
 							},
@@ -11966,7 +11966,7 @@ var listsTestMultipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &ascii
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "  Linux::: Fedora",
 				},
@@ -11982,7 +11982,7 @@ var listsTestMultipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &ascii
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  PaaS::: OpenShift",
@@ -11990,7 +11990,7 @@ var listsTestMultipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &ascii
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Cloud Providers",
 				},
@@ -12004,21 +12004,21 @@ var listsTestMultipleBlockAttributeLinesAboveNestedListDoesNotBreakList = &ascii
 }
 
 var listsTestMultipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesNotBreakList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.Anchor{
-					ID:  "variants",
-					Set: nil,
+					ID:       "variants",
+					Elements: nil,
 				},
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Operating Systems",
 				},
@@ -12031,7 +12031,7 @@ var listsTestMultipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesN
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "horizontal",
 							},
@@ -12042,7 +12042,7 @@ var listsTestMultipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesN
 					Options: nil,
 				},
 			},
-			Set:        asciidoc.Set{},
+			Elements:   asciidoc.Elements{},
 			Admonition: 0,
 		},
 		&asciidoc.EmptyLine{
@@ -12060,7 +12060,7 @@ var listsTestMultipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesN
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  PaaS::: OpenShift",
@@ -12068,7 +12068,7 @@ var listsTestMultipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesN
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Cloud Providers",
 				},
@@ -12082,13 +12082,13 @@ var listsTestMultipleBlockAttributeLinesSeparatedByEmptyLineAboveNestedListDoesN
 }
 
 var listsTestFoldsTextFromInlineDescriptionAndSubsequentLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12101,7 +12101,7 @@ var listsTestFoldsTextFromInlineDescriptionAndSubsequentLine = &asciidoc.Documen
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12112,13 +12112,13 @@ var listsTestFoldsTextFromInlineDescriptionAndSubsequentLine = &asciidoc.Documen
 }
 
 var listsTestFoldsTextFromInlineDescriptionAndSubsequentLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12135,7 +12135,7 @@ var listsTestFoldsTextFromInlineDescriptionAndSubsequentLines = &asciidoc.Docume
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12146,13 +12146,13 @@ var listsTestFoldsTextFromInlineDescriptionAndSubsequentLines = &asciidoc.Docume
 }
 
 var listsTestFoldsTextFromInlineDescriptionAndLineFollowingCommentLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12168,7 +12168,7 @@ var listsTestFoldsTextFromInlineDescriptionAndLineFollowingCommentLine = &asciid
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12179,13 +12179,13 @@ var listsTestFoldsTextFromInlineDescriptionAndLineFollowingCommentLine = &asciid
 }
 
 var listsTestFoldsTextFromInlineDescriptionAndSubsequentIndentedLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12198,7 +12198,7 @@ var listsTestFoldsTextFromInlineDescriptionAndSubsequentIndentedLine = &asciidoc
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "List",
 				},
@@ -12209,13 +12209,13 @@ var listsTestFoldsTextFromInlineDescriptionAndSubsequentIndentedLine = &asciidoc
 }
 
 var listsTestAppendsLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12231,7 +12231,7 @@ var listsTestAppendsLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescriptio
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12242,13 +12242,13 @@ var listsTestAppendsLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescriptio
 }
 
 var listsTestAppendsLiteralLineOffsetByBlankLineAsBlockAndAppendsLineAfterContinuationAsBlockIfItemHasInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12270,7 +12270,7 @@ var listsTestAppendsLiteralLineOffsetByBlankLineAsBlockAndAppendsLineAfterContin
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12281,13 +12281,13 @@ var listsTestAppendsLiteralLineOffsetByBlankLineAsBlockAndAppendsLineAfterContin
 }
 
 var listsTestAppendsLineAfterContinuationAsBlockAndLiteralLineOffsetByBlankLineAsBlockIfItemHasInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12309,7 +12309,7 @@ var listsTestAppendsLineAfterContinuationAsBlockAndLiteralLineOffsetByBlankLineA
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12320,13 +12320,13 @@ var listsTestAppendsLineAfterContinuationAsBlockAndLiteralLineOffsetByBlankLineA
 }
 
 var listsTestAppendsListIfItemHasInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12338,7 +12338,7 @@ var listsTestAppendsListIfItemHasInlineDescription = &asciidoc.Document{
 					Text: "",
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "one",
 						},
@@ -12349,7 +12349,7 @@ var listsTestAppendsListIfItemHasInlineDescription = &asciidoc.Document{
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "two",
 						},
@@ -12360,7 +12360,7 @@ var listsTestAppendsListIfItemHasInlineDescription = &asciidoc.Document{
 					Checklist:     0,
 				},
 				&asciidoc.UnorderedListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "three",
 						},
@@ -12371,7 +12371,7 @@ var listsTestAppendsListIfItemHasInlineDescription = &asciidoc.Document{
 					Checklist:     0,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12382,13 +12382,13 @@ var listsTestAppendsListIfItemHasInlineDescription = &asciidoc.Document{
 }
 
 var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescriptionFollowedByRuler = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12409,7 +12409,7 @@ var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescr
 					AttributeList: nil,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12420,13 +12420,13 @@ var listsTestAppendsLiteralLineAttachedByContinuationAsBlockIfItemHasInlineDescr
 }
 
 var listsTestLineOffsetByBlankLineBreaksListIfTermHasInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12442,7 +12442,7 @@ var listsTestLineOffsetByBlankLineBreaksListIfTermHasInlineDescription = &asciid
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12453,18 +12453,18 @@ var listsTestLineOffsetByBlankLineBreaksListIfTermHasInlineDescription = &asciid
 }
 
 var listsTestNestedTermWithDescriptionDoesNotConsumeFollowingHeading = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "  def",
@@ -12472,14 +12472,14 @@ var listsTestNestedTermWithDescriptionDoesNotConsumeFollowingHeading = &asciidoc
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
 					},
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.String{
 							Value: "    nesteddef",
@@ -12487,7 +12487,7 @@ var listsTestNestedTermWithDescriptionDoesNotConsumeFollowingHeading = &asciidoc
 					},
 					AttributeList: nil,
 					Marker:        ";;",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "  nestedterm",
 						},
@@ -12505,7 +12505,7 @@ var listsTestNestedTermWithDescriptionDoesNotConsumeFollowingHeading = &asciidoc
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12516,13 +12516,13 @@ var listsTestNestedTermWithDescriptionDoesNotConsumeFollowingHeading = &asciidoc
 }
 
 var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12544,7 +12544,7 @@ var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescr
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12555,13 +12555,13 @@ var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescr
 }
 
 var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescriptionFollowedByDetachedBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12584,7 +12584,7 @@ var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescr
 						Length: 4,
 					},
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "detached",
 						},
@@ -12592,7 +12592,7 @@ var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescr
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12603,13 +12603,13 @@ var listsTestLineAttachedByContinuationIsAppendedAsParagraphIfTermHasInlineDescr
 }
 
 var listsTestLineAttachedByContinuationOffsetByLineCommentIsAppendedAsParagraphIfTermHasInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12627,7 +12627,7 @@ var listsTestLineAttachedByContinuationOffsetByLineCommentIsAppendedAsParagraphI
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12638,13 +12638,13 @@ var listsTestLineAttachedByContinuationOffsetByLineCommentIsAppendedAsParagraphI
 }
 
 var listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfTermHasInlineDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12662,7 +12662,7 @@ var listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfT
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12673,13 +12673,13 @@ var listsTestLineAttachedByContinuationOffsetByBlankLineIsAppendedAsParagraphIfT
 }
 
 var listsTestLineCommentOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12701,7 +12701,7 @@ var listsTestLineCommentOffsetByBlankLineDividesListsBecauseItemHasText = &ascii
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12712,13 +12712,13 @@ var listsTestLineCommentOffsetByBlankLineDividesListsBecauseItemHasText = &ascii
 }
 
 var listsTestRulerOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12740,7 +12740,7 @@ var listsTestRulerOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Do
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12751,13 +12751,13 @@ var listsTestRulerOffsetByBlankLineDividesListsBecauseItemHasText = &asciidoc.Do
 }
 
 var listsTestBlockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListBecauseItemHasText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -12771,14 +12771,14 @@ var listsTestBlockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListB
 				&asciidoc.Paragraph{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "title",
 								},
 							},
 						},
 					},
-					Set:        asciidoc.Set{},
+					Elements:   asciidoc.Elements{},
 					Admonition: 0,
 				},
 				&asciidoc.EmptyLine{
@@ -12789,7 +12789,7 @@ var listsTestBlockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListB
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Lists",
 				},
@@ -12800,7 +12800,7 @@ var listsTestBlockTitleOffsetByBlankLineDividesListsAndBecomesTitleOfSecondListB
 }
 
 var listsTestDoesNotRecognizeCalloutListDenotedByMarkersThatOnlyHaveATrailingBracket = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -12822,12 +12822,12 @@ var listsTestDoesNotRecognizeCalloutListDenotedByMarkersThatOnlyHaveATrailingBra
 }
 
 var listsTestShouldNotHangIfObsoleteCalloutListIsFoundInsideListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "foo",
 				},
@@ -12845,12 +12845,12 @@ var listsTestShouldNotHangIfObsoleteCalloutListIsFoundInsideListItem = &asciidoc
 }
 
 var listsTestShouldNotHangIfObsoleteCalloutListIsFoundInsideDlistItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "1> bar",
@@ -12858,7 +12858,7 @@ var listsTestShouldNotHangIfObsoleteCalloutListIsFoundInsideDlistItem = &asciido
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "foo",
 				},
@@ -12868,7 +12868,7 @@ var listsTestShouldNotHangIfObsoleteCalloutListIsFoundInsideDlistItem = &asciido
 }
 
 var listsTestShouldRecognizeAutoNumberdCalloutListInsideList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -12883,7 +12883,7 @@ var listsTestShouldRecognizeAutoNumberdCalloutListInsideList = &asciidoc.Documen
 			},
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "foo",
 				},
@@ -12901,7 +12901,7 @@ var listsTestShouldRecognizeAutoNumberdCalloutListInsideList = &asciidoc.Documen
 }
 
 var listsTestListingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -12909,7 +12909,7 @@ var listsTestListingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList = &
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -12922,7 +12922,7 @@ var listsTestListingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList = &
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -12955,7 +12955,7 @@ var listsTestListingBlockWithSequentialCalloutsFollowedByAdjacentCalloutList = &
 }
 
 var listsTestListingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -12963,7 +12963,7 @@ var listsTestListingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList 
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -12976,7 +12976,7 @@ var listsTestListingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList 
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13019,7 +13019,7 @@ var listsTestListingBlockWithSequentialCalloutsFollowedByNonAdjacentCalloutList 
 }
 
 var listsTestListingBlockWithACalloutThatRefersToTwoDifferentLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13027,7 +13027,7 @@ var listsTestListingBlockWithACalloutThatRefersToTwoDifferentLines = &asciidoc.D
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13040,7 +13040,7 @@ var listsTestListingBlockWithACalloutThatRefersToTwoDifferentLines = &asciidoc.D
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13069,7 +13069,7 @@ var listsTestListingBlockWithACalloutThatRefersToTwoDifferentLines = &asciidoc.D
 }
 
 var listsTestSourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13077,7 +13077,7 @@ var listsTestSourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13090,7 +13090,7 @@ var listsTestSourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList =
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13123,14 +13123,14 @@ var listsTestSourceBlockWithNonSequentialCalloutsFollowedByAdjacentCalloutList =
 }
 
 var listsTestTwoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Import library",
 						},
@@ -13138,7 +13138,7 @@ var listsTestTwoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13151,7 +13151,7 @@ var listsTestTwoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13172,7 +13172,7 @@ var listsTestTwoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Use library",
 						},
@@ -13180,7 +13180,7 @@ var listsTestTwoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13193,7 +13193,7 @@ var listsTestTwoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13228,14 +13228,14 @@ var listsTestTwoListingBlocksCanShareTheSameCalloutList = &asciidoc.Document{
 }
 
 var listsTestTwoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Import library",
 						},
@@ -13243,7 +13243,7 @@ var listsTestTwoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Doc
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13256,7 +13256,7 @@ var listsTestTwoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Doc
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13281,7 +13281,7 @@ var listsTestTwoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Doc
 		&asciidoc.Listing{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Use library",
 						},
@@ -13289,7 +13289,7 @@ var listsTestTwoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Doc
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13302,7 +13302,7 @@ var listsTestTwoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Doc
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13330,7 +13330,7 @@ var listsTestTwoListingBlocksEachFollowedByAnAdjacentCalloutList = &asciidoc.Doc
 }
 
 var listsTestCalloutListRetainsBlockContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13338,7 +13338,7 @@ var listsTestCalloutListRetainsBlockContent = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13351,7 +13351,7 @@ var listsTestCalloutListRetainsBlockContent = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13381,7 +13381,7 @@ var listsTestCalloutListRetainsBlockContent = &asciidoc.Document{
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Scans the lines for known blocks",
 				},
@@ -13392,7 +13392,7 @@ var listsTestCalloutListRetainsBlockContent = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Converts the lines into blocks",
 				},
@@ -13416,7 +13416,7 @@ var listsTestCalloutListRetainsBlockContent = &asciidoc.Document{
 }
 
 var listsTestCalloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13424,7 +13424,7 @@ var listsTestCalloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Do
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13437,7 +13437,7 @@ var listsTestCalloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Do
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13467,7 +13467,7 @@ var listsTestCalloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Do
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Scans the lines for known blocks",
 				},
@@ -13478,7 +13478,7 @@ var listsTestCalloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Do
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Converts the lines into blocks",
 				},
@@ -13502,7 +13502,7 @@ var listsTestCalloutListRetainsBlockContentWhenConvertedToDocBook = &asciidoc.Do
 }
 
 var listsTestEscapedCalloutShouldNotBeInterpretedAsACallout = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13510,7 +13510,7 @@ var listsTestEscapedCalloutShouldNotBeInterpretedAsACallout = &asciidoc.Document
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13523,7 +13523,7 @@ var listsTestEscapedCalloutShouldNotBeInterpretedAsACallout = &asciidoc.Document
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "text",
 						},
@@ -13543,7 +13543,7 @@ var listsTestEscapedCalloutShouldNotBeInterpretedAsACallout = &asciidoc.Document
 }
 
 var listsTestShouldAutonumberCallouts = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13551,7 +13551,7 @@ var listsTestShouldAutonumberCallouts = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13564,7 +13564,7 @@ var listsTestShouldAutonumberCallouts = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13597,7 +13597,7 @@ var listsTestShouldAutonumberCallouts = &asciidoc.Document{
 }
 
 var listsTestShouldNotRecognizeCalloutsInMiddleOfLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13605,7 +13605,7 @@ var listsTestShouldNotRecognizeCalloutsInMiddleOfLine = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13618,7 +13618,7 @@ var listsTestShouldNotRecognizeCalloutsInMiddleOfLine = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13637,7 +13637,7 @@ var listsTestShouldNotRecognizeCalloutsInMiddleOfLine = &asciidoc.Document{
 }
 
 var listsTestShouldAllowMultipleCalloutsOnTheSameLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13645,7 +13645,7 @@ var listsTestShouldAllowMultipleCalloutsOnTheSameLine = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13658,7 +13658,7 @@ var listsTestShouldAllowMultipleCalloutsOnTheSameLine = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13704,7 +13704,7 @@ var listsTestShouldAllowMultipleCalloutsOnTheSameLine = &asciidoc.Document{
 }
 
 var listsTestShouldAllowXmlCommentStyleCallouts = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13712,7 +13712,7 @@ var listsTestShouldAllowXmlCommentStyleCallouts = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13725,7 +13725,7 @@ var listsTestShouldAllowXmlCommentStyleCallouts = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "xml",
 						},
@@ -13755,7 +13755,7 @@ var listsTestShouldAllowXmlCommentStyleCallouts = &asciidoc.Document{
 }
 
 var listsTestShouldNotAllowCalloutsWithHalfAnXmlComment = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13774,12 +13774,12 @@ var listsTestShouldNotAllowCalloutsWithHalfAnXmlComment = &asciidoc.Document{
 }
 
 var listsTestShouldNotRecognizeCalloutsInAnIndentedDescriptionListParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "  bar <1>",
@@ -13787,7 +13787,7 @@ var listsTestShouldNotRecognizeCalloutsInAnIndentedDescriptionListParagraph = &a
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "foo",
 				},
@@ -13804,12 +13804,12 @@ var listsTestShouldNotRecognizeCalloutsInAnIndentedDescriptionListParagraph = &a
 }
 
 var listsTestShouldNotRecognizeCalloutsInAnIndentedOutlineListParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "foo",
 				},
@@ -13834,7 +13834,7 @@ var listsTestShouldNotRecognizeCalloutsInAnIndentedOutlineListParagraph = &ascii
 }
 
 var listsTestShouldWarnIfNumbersInCalloutListAreOutOfSequence = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13866,7 +13866,7 @@ var listsTestShouldWarnIfNumbersInCalloutListAreOutOfSequence = &asciidoc.Docume
 }
 
 var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13874,7 +13874,7 @@ var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotS
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13887,7 +13887,7 @@ var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotS
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -13913,7 +13913,7 @@ var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotS
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13926,7 +13926,7 @@ var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotS
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "groovy",
 						},
@@ -13952,7 +13952,7 @@ var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotS
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -13965,7 +13965,7 @@ var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotS
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "clojure",
 						},
@@ -13992,7 +13992,7 @@ var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotS
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -14005,7 +14005,7 @@ var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotS
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "haskell",
 						},
@@ -14028,7 +14028,7 @@ var listsTestShouldPreserveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsNotS
 }
 
 var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14036,7 +14036,7 @@ var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -14049,7 +14049,7 @@ var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont =
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -14075,7 +14075,7 @@ var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -14088,7 +14088,7 @@ var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont =
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "groovy",
 						},
@@ -14114,7 +14114,7 @@ var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -14127,7 +14127,7 @@ var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont =
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "clojure",
 						},
@@ -14154,7 +14154,7 @@ var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -14167,7 +14167,7 @@ var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont =
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "haskell",
 						},
@@ -14190,7 +14190,7 @@ var listsTestShouldRemoveLineCommentCharsThatPrecedeCalloutNumberIfIconsIsFont =
 }
 
 var listsTestShouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14198,7 +14198,7 @@ var listsTestShouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified = 
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -14211,7 +14211,7 @@ var listsTestShouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified = 
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "erlang",
 						},
@@ -14219,7 +14219,7 @@ var listsTestShouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified = 
 				},
 				&asciidoc.NamedAttribute{
 					Name: "line-comment",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "%",
 						},
@@ -14248,7 +14248,7 @@ var listsTestShouldAllowLineCommentCharsThatPrecedeCalloutNumberToBeSpecified = 
 }
 
 var listsTestShouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWhenSourceHighlighterIsCoderay = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14256,7 +14256,7 @@ var listsTestShouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWh
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -14269,7 +14269,7 @@ var listsTestShouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWh
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "html",
 						},
@@ -14277,7 +14277,7 @@ var listsTestShouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWh
 				},
 				&asciidoc.NamedAttribute{
 					Name: "line-comment",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "-#",
 						},
@@ -14302,7 +14302,7 @@ var listsTestShouldAllowLineCommentCharsPrecedingCalloutNumberToBeConfigurableWh
 }
 
 var listsTestShouldNotEatWhitespaceBeforeCalloutNumberIfLineCommentAttributeIsEmpty = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14328,7 +14328,7 @@ var listsTestShouldNotEatWhitespaceBeforeCalloutNumberIfLineCommentAttributeIsEm
 }
 
 var listsTestLiteralBlockWithCallouts = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14361,7 +14361,7 @@ var listsTestLiteralBlockWithCallouts = &asciidoc.Document{
 }
 
 var listsTestCalloutListWithIconsEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14369,7 +14369,7 @@ var listsTestCalloutListWithIconsEnabled = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -14382,7 +14382,7 @@ var listsTestCalloutListWithIconsEnabled = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -14415,7 +14415,7 @@ var listsTestCalloutListWithIconsEnabled = &asciidoc.Document{
 }
 
 var listsTestCalloutListWithFontBasedIconsEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14423,7 +14423,7 @@ var listsTestCalloutListWithFontBasedIconsEnabled = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -14460,12 +14460,12 @@ var listsTestCalloutListWithFontBasedIconsEnabled = &asciidoc.Document{
 }
 
 var listsTestShouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "todo",
 				},
@@ -14476,7 +14476,7 @@ var listsTestShouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax = &asciidoc.
 			Checklist:     1,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "done",
 				},
@@ -14487,7 +14487,7 @@ var listsTestShouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax = &asciidoc.
 			Checklist:     2,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "another todo",
 				},
@@ -14498,7 +14498,7 @@ var listsTestShouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax = &asciidoc.
 			Checklist:     1,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "another done",
 				},
@@ -14509,7 +14509,7 @@ var listsTestShouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax = &asciidoc.
 			Checklist:     2,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "plain",
 				},
@@ -14523,12 +14523,12 @@ var listsTestShouldCreateChecklistIfAtLeastOneItemHasCheckboxSyntax = &asciidoc.
 }
 
 var listsTestShouldCreateChecklistWithFontIconsIfAtLeastOneItemHasCheckboxSyntaxAndIconsAttributeIsFont = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "todo",
 				},
@@ -14539,7 +14539,7 @@ var listsTestShouldCreateChecklistWithFontIconsIfAtLeastOneItemHasCheckboxSyntax
 			Checklist:     1,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "done",
 				},
@@ -14550,7 +14550,7 @@ var listsTestShouldCreateChecklistWithFontIconsIfAtLeastOneItemHasCheckboxSyntax
 			Checklist:     2,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "plain",
 				},
@@ -14564,13 +14564,13 @@ var listsTestShouldCreateChecklistWithFontIconsIfAtLeastOneItemHasCheckboxSyntax
 }
 
 var listsTestShouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIconsAttributeIsFont = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "icons",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "font",
 				},
@@ -14580,7 +14580,7 @@ var listsTestShouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIco
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "todo",
 				},
@@ -14592,7 +14592,7 @@ var listsTestShouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIco
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "interactive",
 								},
@@ -14606,7 +14606,7 @@ var listsTestShouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIco
 			Checklist: 1,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "done",
 				},
@@ -14620,12 +14620,12 @@ var listsTestShouldCreateInteractiveChecklistIfInteractiveOptionIsSetEvenWithIco
 }
 
 var listsTestContentShouldReturnItemsInList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -14636,7 +14636,7 @@ var listsTestContentShouldReturnItemsInList = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -14647,7 +14647,7 @@ var listsTestContentShouldReturnItemsInList = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -14661,12 +14661,12 @@ var listsTestContentShouldReturnItemsInList = &asciidoc.Document{
 }
 
 var listsTestListItemShouldBeTheParentOfBlockAttachedToAListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "list item 1",
 				},
@@ -14692,12 +14692,12 @@ var listsTestListItemShouldBeTheParentOfBlockAttachedToAListItem = &asciidoc.Doc
 }
 
 var listsTestOutlineShouldReturnTrueForUnorderedList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -14708,7 +14708,7 @@ var listsTestOutlineShouldReturnTrueForUnorderedList = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -14719,7 +14719,7 @@ var listsTestOutlineShouldReturnTrueForUnorderedList = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -14733,12 +14733,12 @@ var listsTestOutlineShouldReturnTrueForUnorderedList = &asciidoc.Document{
 }
 
 var listsTestOutlineShouldReturnTrueForOrderedList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -14748,7 +14748,7 @@ var listsTestOutlineShouldReturnTrueForOrderedList = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -14758,7 +14758,7 @@ var listsTestOutlineShouldReturnTrueForOrderedList = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -14771,12 +14771,12 @@ var listsTestOutlineShouldReturnTrueForOrderedList = &asciidoc.Document{
 }
 
 var listsTestOutlineShouldReturnFalseForDescriptionList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -14787,7 +14787,7 @@ var listsTestOutlineShouldReturnFalseForDescriptionList = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -14798,7 +14798,7 @@ var listsTestOutlineShouldReturnFalseForDescriptionList = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -14812,12 +14812,12 @@ var listsTestOutlineShouldReturnFalseForDescriptionList = &asciidoc.Document{
 }
 
 var listsTestSimpleShouldReturnTrueForListItemWithNestedOutlineList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -14828,7 +14828,7 @@ var listsTestSimpleShouldReturnTrueForListItemWithNestedOutlineList = &asciidoc.
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "more about one",
 				},
@@ -14839,7 +14839,7 @@ var listsTestSimpleShouldReturnTrueForListItemWithNestedOutlineList = &asciidoc.
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "and more",
 				},
@@ -14850,7 +14850,7 @@ var listsTestSimpleShouldReturnTrueForListItemWithNestedOutlineList = &asciidoc.
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -14861,7 +14861,7 @@ var listsTestSimpleShouldReturnTrueForListItemWithNestedOutlineList = &asciidoc.
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -14875,12 +14875,12 @@ var listsTestSimpleShouldReturnTrueForListItemWithNestedOutlineList = &asciidoc.
 }
 
 var listsTestSimpleShouldReturnFalseForListItemWithBlockContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -14903,7 +14903,7 @@ var listsTestSimpleShouldReturnFalseForListItemWithBlockContent = &asciidoc.Docu
 			},
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -14914,7 +14914,7 @@ var listsTestSimpleShouldReturnFalseForListItemWithBlockContent = &asciidoc.Docu
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -14928,12 +14928,12 @@ var listsTestSimpleShouldReturnFalseForListItemWithBlockContent = &asciidoc.Docu
 }
 
 var listsTestShouldAllowTextOfListItemToBeAssigned = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -14944,7 +14944,7 @@ var listsTestShouldAllowTextOfListItemToBeAssigned = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -14955,7 +14955,7 @@ var listsTestShouldAllowTextOfListItemToBeAssigned = &asciidoc.Document{
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -14969,12 +14969,12 @@ var listsTestShouldAllowTextOfListItemToBeAssigned = &asciidoc.Document{
 }
 
 var listsTestIdAndRoleAssignedToUlistItemInModelAreTransmittedToOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -14985,7 +14985,7 @@ var listsTestIdAndRoleAssignedToUlistItemInModelAreTransmittedToOutput = &asciid
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -14996,7 +14996,7 @@ var listsTestIdAndRoleAssignedToUlistItemInModelAreTransmittedToOutput = &asciid
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -15010,12 +15010,12 @@ var listsTestIdAndRoleAssignedToUlistItemInModelAreTransmittedToOutput = &asciid
 }
 
 var listsTestIdAndRoleAssignedToOlistItemInModelAreTransmittedToOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -15025,7 +15025,7 @@ var listsTestIdAndRoleAssignedToOlistItemInModelAreTransmittedToOutput = &asciid
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -15035,7 +15035,7 @@ var listsTestIdAndRoleAssignedToOlistItemInModelAreTransmittedToOutput = &asciid
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -15048,15 +15048,15 @@ var listsTestIdAndRoleAssignedToOlistItemInModelAreTransmittedToOutput = &asciid
 }
 
 var listsTestShouldAllowApiControlOverSubstitutionsAppliedToListItemText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Bold{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "one",
 						},
@@ -15069,10 +15069,10 @@ var listsTestShouldAllowApiControlOverSubstitutionsAppliedToListItemText = &asci
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "two",
 						},
@@ -15085,10 +15085,10 @@ var listsTestShouldAllowApiControlOverSubstitutionsAppliedToListItemText = &asci
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Monospace{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "three",
 						},
@@ -15101,10 +15101,10 @@ var listsTestShouldAllowApiControlOverSubstitutionsAppliedToListItemText = &asci
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Marked{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "four",
 						},
@@ -15120,12 +15120,12 @@ var listsTestShouldAllowApiControlOverSubstitutionsAppliedToListItemText = &asci
 }
 
 var listsTestShouldSetLinenoToLineNumberInSourceWhereListStarts = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bullet 1",
 				},
@@ -15136,7 +15136,7 @@ var listsTestShouldSetLinenoToLineNumberInSourceWhereListStarts = &asciidoc.Docu
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bullet 1.1",
 				},
@@ -15147,7 +15147,7 @@ var listsTestShouldSetLinenoToLineNumberInSourceWhereListStarts = &asciidoc.Docu
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bullet 1.1.1",
 				},
@@ -15158,7 +15158,7 @@ var listsTestShouldSetLinenoToLineNumberInSourceWhereListStarts = &asciidoc.Docu
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bullet 2",
 				},

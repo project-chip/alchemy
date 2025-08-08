@@ -15,7 +15,7 @@ import (
 func (s *Section) toNamespace(spec *Specification, d *Doc, pc *parseContext) (err error) {
 	var namespaceTable *TableInfo
 	var valuesTable *TableInfo
-	parse.SkimFunc(s.Elements(), func(t *asciidoc.Table) bool {
+	parse.SkimFunc(s.Children(), func(t *asciidoc.Table) bool {
 		ti, err := ReadTable(d, t)
 		if err != nil {
 			return true

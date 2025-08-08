@@ -5,12 +5,12 @@ type Monospace struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
-func NewMonospace(elements Set) *Monospace {
+func NewMonospace(elements Elements) *Monospace {
 	return &Monospace{
-		Set: elements,
+		Elements: elements,
 	}
 }
 
@@ -30,7 +30,7 @@ func (b *Monospace) Equals(e Element) bool {
 	if !b.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Set.Equals(ob.Set)
+	return b.Elements.Equals(ob.Elements)
 }
 
 type DoubleMonospace struct {
@@ -38,12 +38,12 @@ type DoubleMonospace struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
-func NewDoubleMonospace(elements Set) *DoubleMonospace {
+func NewDoubleMonospace(elements Elements) *DoubleMonospace {
 	return &DoubleMonospace{
-		Set: elements,
+		Elements: elements,
 	}
 }
 
@@ -63,5 +63,5 @@ func (b *DoubleMonospace) Equals(e Element) bool {
 	if !b.AttributeList.Equals(ob.AttributeList) {
 		return false
 	}
-	return b.Set.Equals(ob.Set)
+	return b.Elements.Equals(ob.Elements)
 }

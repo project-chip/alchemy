@@ -85,9 +85,9 @@ func (ti *TableInfo) ContentRows() iter.Seq[*asciidoc.TableRow] {
 	return func(yield func(*asciidoc.TableRow) bool) {
 		for i := ti.HeaderRowIndex + 1; i < len(ti.Rows); i++ {
 			row := ti.Rows[i]
-			if len(row.Set) > 0 {
+			if len(row.Elements) > 0 {
 				firstCell := row.Cell(0)
-				if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value == len(row.Set) {
+				if firstCell.Format.Span.Column.IsSet && firstCell.Format.Span.Column.Value == len(row.Elements) {
 					continue
 				}
 			}
@@ -141,7 +141,7 @@ func (ti *TableInfo) ReadName(row *asciidoc.TableRow, columns ...matter.TableCol
 			continue
 		}
 		cell := row.Cell(offset)
-		cellElements := cell.Elements()
+		cellElements := cell.Children()
 		for _, el := range cellElements {
 			switch el := el.(type) {
 			case *asciidoc.CrossReference:
@@ -174,7 +174,7 @@ func (ti *TableInfo) ReadValue(row *asciidoc.TableRow, columns ...matter.TableCo
 
 func (ti *TableInfo) ReadValueByIndex(row *asciidoc.TableRow, offset int) (string, error) {
 	cell := row.Cell(offset)
-	cellElements := cell.Elements()
+	cellElements := cell.Children()
 	if len(cellElements) == 0 {
 		return "", nil
 	}
@@ -186,7 +186,7 @@ func (ti *TableInfo) ReadValueByIndex(row *asciidoc.TableRow, offset int) (strin
 	return strings.TrimSpace(value.String()), nil
 }
 
-type CellRenderer func(cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element)
+type CellRenderer func(cellElements asciidoc.Elements, sb *strings.Builder) (source asciidoc.Element)
 
 func (ti *TableInfo) RenderColumn(row *asciidoc.TableRow, renderer CellRenderer, columns ...matter.TableColumn) (value string, source asciidoc.Element, ok bool) {
 	for _, column := range columns {
@@ -196,7 +196,7 @@ func (ti *TableInfo) RenderColumn(row *asciidoc.TableRow, renderer CellRenderer,
 			continue
 		}
 		cell := row.Cell(offset)
-		cellElements := cell.Elements()
+		cellElements := cell.Children()
 		if len(cellElements) == 0 {
 			ok = false
 			return
@@ -235,7 +235,7 @@ func (ti *TableInfo) ReadConformance(row *asciidoc.TableRow, column matter.Table
 	return conf
 }
 
-func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {
+func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Elements, sb *strings.Builder) (source asciidoc.Element) {
 	for _, el := range cellElements {
 		switch v := el.(type) {
 		case *asciidoc.String:
@@ -243,9 +243,9 @@ func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Set, sb *strings.
 		case *asciidoc.CrossReference:
 			sb.WriteString("<<")
 			sb.WriteString(v.ID)
-			if !v.Set.IsWhitespace() {
+			if !v.Elements.IsWhitespace() {
 				sb.WriteString(",")
-				ti.buildRowConformance(v.Set, sb)
+				ti.buildRowConformance(v.Elements, sb)
 			}
 			sb.WriteString(">>")
 		case *asciidoc.SpecialCharacter:
@@ -268,8 +268,8 @@ func (ti *TableInfo) buildRowConformance(cellElements asciidoc.Set, sb *strings.
 			}
 		case *asciidoc.NewLine:
 			sb.WriteRune(' ')
-		case asciidoc.HasElements:
-			ti.buildRowConformance(v.Elements(), sb)
+		case asciidoc.ParentElement:
+			ti.buildRowConformance(v.Children(), sb)
 		default:
 			slog.Warn("unknown conformance value element", log.Element("source", ti.Doc.Path, el), "type", fmt.Sprintf("%T", el))
 		}
@@ -307,7 +307,7 @@ func (ti *TableInfo) ReadFallback(row *asciidoc.TableRow, columns ...matter.Tabl
 	return l
 }
 
-func (ti *TableInfo) buildConstraintValue(els asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {
+func (ti *TableInfo) buildConstraintValue(els asciidoc.Elements, sb *strings.Builder) (source asciidoc.Element) {
 	for _, el := range els {
 		switch v := el.(type) {
 		case *asciidoc.String:
@@ -315,14 +315,14 @@ func (ti *TableInfo) buildConstraintValue(els asciidoc.Set, sb *strings.Builder)
 		case *asciidoc.CrossReference:
 			sb.WriteString("<<")
 			sb.WriteString(v.ID)
-			if !v.Set.IsWhitespace() {
+			if !v.Elements.IsWhitespace() {
 				sb.WriteString(",")
-				ti.buildConstraintValue(v.Set, sb)
+				ti.buildConstraintValue(v.Elements, sb)
 			}
 			sb.WriteString(">>")
 		case *asciidoc.Superscript:
 			var qt strings.Builder
-			ti.buildConstraintValue(v.Elements(), &qt)
+			ti.buildConstraintValue(v.Children(), &qt)
 			val := qt.String()
 			if val == "*" { // We ignore asterisks here
 				continue
@@ -335,10 +335,10 @@ func (ti *TableInfo) buildConstraintValue(els asciidoc.Set, sb *strings.Builder)
 			sb.WriteRune(' ')
 		case *asciidoc.Monospace:
 			sb.WriteRune('`')
-			ti.buildConstraintValue(v.Elements(), sb)
+			ti.buildConstraintValue(v.Children(), sb)
 			sb.WriteRune('`')
-		case asciidoc.HasElements:
-			ti.buildConstraintValue(v.Elements(), sb)
+		case asciidoc.ParentElement:
+			ti.buildConstraintValue(v.Children(), sb)
 		case asciidoc.AttributeReference:
 			sb.WriteString(fmt.Sprintf("{%s}", v.Name()))
 		default:
@@ -388,18 +388,18 @@ func (ti *TableInfo) ReadLocation(row *asciidoc.TableRow, columns ...matter.Tabl
 	return
 }
 
-func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, els asciidoc.Set, value *strings.Builder) (err error) {
+func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, els asciidoc.Elements, value *strings.Builder) (err error) {
 	for _, el := range els {
 		switch el := el.(type) {
 		case *asciidoc.String:
 			value.WriteString(el.Value)
 		case asciidoc.FormattedTextElement:
-			err = readRowCellValueElements(doc, row, el.Elements(), value)
+			err = readRowCellValueElements(doc, row, el.Children(), value)
 		case *asciidoc.Paragraph:
-			err = readRowCellValueElements(doc, row, el.Elements(), value)
+			err = readRowCellValueElements(doc, row, el.Children(), value)
 		case *asciidoc.CrossReference:
-			if len(el.Set) > 0 {
-				err = readRowCellValueElements(doc, row, el.Set, value)
+			if len(el.Elements) > 0 {
+				err = readRowCellValueElements(doc, row, el.Elements, value)
 				if err != nil {
 					return
 				}
@@ -423,7 +423,7 @@ func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, els asciidoc.Set
 		case *asciidoc.Superscript:
 			// In the special case of superscript elements, we do checks to make sure it's not an asterisk or a footnote, which should be ignored
 			var quotedText strings.Builder
-			err = readRowCellValueElements(doc, row, el.Elements(), &quotedText)
+			err = readRowCellValueElements(doc, row, el.Children(), &quotedText)
 			if err != nil {
 				return
 			}
@@ -442,16 +442,16 @@ func readRowCellValueElements(doc *Doc, row *asciidoc.TableRow, els asciidoc.Set
 			value.WriteString(el.Character)
 		case *asciidoc.InlinePassthrough:
 			value.WriteString("+")
-			err = readRowCellValueElements(doc, row, el.Elements(), value)
+			err = readRowCellValueElements(doc, row, el.Children(), value)
 		case *asciidoc.InlineDoublePassthrough:
 			value.WriteString("++")
-			err = readRowCellValueElements(doc, row, el.Elements(), value)
+			err = readRowCellValueElements(doc, row, el.Children(), value)
 		case *asciidoc.ThematicBreak:
 		case *asciidoc.EmptyLine:
 		case *asciidoc.NewLine:
 			value.WriteString(" ")
-		case asciidoc.HasElements:
-			err = readRowCellValueElements(doc, row, el.Elements(), value)
+		case asciidoc.ParentElement:
+			err = readRowCellValueElements(doc, row, el.Children(), value)
 		case *asciidoc.LineBreak:
 			value.WriteString(" ")
 		default:
@@ -471,8 +471,8 @@ var asteriskPattern = regexp.MustCompile(`\^[0-9]+\^\s*$`)
 func crossReferenceToDataType(cr *asciidoc.CrossReference, isArray bool) *types.DataType {
 	var dt *types.DataType
 	id := cr.ID
-	if len(cr.Set) > 0 {
-		id = strings.TrimSpace(asciidoc.AttributeAsciiDocString(cr.Set))
+	if len(cr.Elements) > 0 {
+		id = strings.TrimSpace(asciidoc.AttributeAsciiDocString(cr.Elements))
 	}
 	id = strings.TrimPrefix(id, "ref_")
 	id = strings.TrimPrefix(id, "DataType")
@@ -631,7 +631,7 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 		return nil, newGenericParseError(row, "missing %s column for data type", column)
 	}
 	cell := row.Cell(i)
-	cellElements := cell.Elements()
+	cellElements := cell.Children()
 
 	if len(cellElements) == 0 {
 		return nil, newGenericParseError(row, "empty %s cell for data type", column)
@@ -651,14 +651,14 @@ func (ti *TableInfo) ReadDataType(row *asciidoc.TableRow, column matter.TableCol
 	return dt, nil
 }
 
-func buildDataTypeString(d *Doc, cellElements asciidoc.Set, sb *strings.Builder) (source asciidoc.Element) {
+func buildDataTypeString(d *Doc, cellElements asciidoc.Elements, sb *strings.Builder) (source asciidoc.Element) {
 	for _, el := range cellElements {
 		switch v := el.(type) {
 		case *asciidoc.String:
 			sb.WriteString(v.Value)
 		case *asciidoc.CrossReference:
-			if len(v.Set) > 0 {
-				buildDataTypeString(d, v.Set, sb)
+			if len(v.Elements) > 0 {
+				buildDataTypeString(d, v.Elements, sb)
 			} else {
 				var name string
 				anchor := d.FindAnchor(v.ID, v)
@@ -678,7 +678,7 @@ func buildDataTypeString(d *Doc, cellElements asciidoc.Set, sb *strings.Builder)
 			source = el
 		case *asciidoc.SpecialCharacter:
 		case *asciidoc.Paragraph:
-			source = buildDataTypeString(d, v.Elements(), sb)
+			source = buildDataTypeString(d, v.Children(), sb)
 		default:
 			slog.Warn("unknown data type value element", log.Element("source", d.Path, el), "type", fmt.Sprintf("%T", v))
 		}

@@ -16,7 +16,7 @@ var loggerTests = parseTests{
 }
 
 var loggerTestProvidesAccessToLoggerViaStaticLoggerMethod = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25,7 +25,7 @@ var loggerTestProvidesAccessToLoggerViaStaticLoggerMethod = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "first",
 							},
@@ -35,7 +35,7 @@ var loggerTestProvidesAccessToLoggerViaStaticLoggerMethod = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first paragraph",
 				},
@@ -51,7 +51,7 @@ var loggerTestProvidesAccessToLoggerViaStaticLoggerMethod = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "first",
 							},
@@ -61,7 +61,7 @@ var loggerTestProvidesAccessToLoggerViaStaticLoggerMethod = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "another first paragraph",
 				},

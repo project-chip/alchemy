@@ -8,7 +8,7 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 )
 
-func join[T any](els []T) (out asciidoc.Set) {
+func join[T any](els []T) (out asciidoc.Elements) {
 	var s strings.Builder
 	for _, e := range els {
 		switch e := any(e).(type) {
@@ -28,7 +28,7 @@ func join[T any](els []T) (out asciidoc.Set) {
 			out = append(out, e)
 		case []asciidoc.Element:
 			out = append(out, e...)
-		case asciidoc.Set:
+		case asciidoc.Elements:
 			out = append(out, e...)
 		case []any:
 			out = append(out, join(e)...)

@@ -1,10 +1,10 @@
 
 BlockImage = "image::" path:(Path) attributes:(InlineAttributes) AnySpaces  {
-    return compose(c, asciidoc.NewBlockImage(path.(asciidoc.Set)), setAttributes[*asciidoc.BlockImage](attributes))
+    return compose(c, asciidoc.NewBlockImage(path.(asciidoc.Elements)), setAttributes[*asciidoc.BlockImage](attributes))
 }
 
 InlineImage = InlineImageDelimiter !":" path:(Path) attributes:(InlineAttributes)  {
-    return compose(c, asciidoc.NewInlineImage(path.(asciidoc.Set)), setAttributes[*asciidoc.InlineImage](attributes))
+    return compose(c, asciidoc.NewInlineImage(path.(asciidoc.Elements)), setAttributes[*asciidoc.InlineImage](attributes))
 }
 
 InlineImageDelimiter = "image:"

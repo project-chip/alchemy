@@ -38,13 +38,13 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 				return fmt.Errorf("error opening doc %s: %w", f, err)
 			}
 
-			for top := range parse.Skim[*spec.Section](doc.Elements()) {
+			for top := range parse.Skim[*spec.Section](doc.Children()) {
 				err := spec.AssignSectionTypes(doc, top)
 				if err != nil {
 					return err
 				}
 			}
-			dumpElements(doc, doc.Elements(), 0)
+			dumpElements(doc, doc.Children(), 0)
 		} else if d.Json {
 			err = errata.LoadErrataConfig(d.Root)
 			if err != nil {
@@ -84,13 +84,13 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 			if err != nil {
 				return fmt.Errorf("error parsing %s: %w", f, err)
 			}
-			dumpElements(doc, doc.Elements(), 0)
+			dumpElements(doc, doc.Children(), 0)
 		} else {
 			doc, err := spec.ReadFile(f, ".")
 			if err != nil {
 				return fmt.Errorf("error opening doc %s: %w", f, err)
 			}
-			dumpElements(doc, doc.Base.Elements(), 0)
+			dumpElements(doc, doc.Base.Children(), 0)
 		}
 	}
 	return nil

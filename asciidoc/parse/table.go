@@ -57,7 +57,7 @@ func parseTable(attributes any, els any) (table *asciidoc.Table, err error) {
 	return
 }
 
-func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Set, err error) {
+func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Elements, err error) {
 	cellIndex := 0
 	var currentTableRow *asciidoc.TableRow
 	colSkip := make(map[int]int)
@@ -112,7 +112,7 @@ func parseTableRows(table *asciidoc.Table, elements []any) (rows asciidoc.Set, e
 			}
 		case asciidoc.Element:
 			rows = append(rows, el)
-		case asciidoc.Set:
+		case asciidoc.Elements:
 			rows = append(rows, el...)
 		default:
 			err = fmt.Errorf("unexpected type in table elements: %T", el)
@@ -179,7 +179,7 @@ func getColumnCount(table *asciidoc.Table, els []any) (columnCount int, err erro
 				} else {
 					columnCount++
 				}
-				children := cell.Elements()
+				children := cell.Children()
 				if len(children) == 0 {
 					continue
 				}
@@ -203,7 +203,7 @@ func newTableCell(format any) *asciidoc.TableCell {
 	return asciidoc.NewTableCell(nil)
 }
 
-func reparseTables(els asciidoc.Set) (err error) {
+func reparseTables(els asciidoc.Elements) (err error) {
 
 	for _, el := range els {
 		switch el := el.(type) {
@@ -230,7 +230,7 @@ func reparseTable(table *asciidoc.Table) (err error) {
 
 		}
 	}
-	for _, e := range table.Elements() {
+	for _, e := range table.Children() {
 		switch e := e.(type) {
 		case *asciidoc.TableRow:
 			for i, c := range e.TableCells() {
@@ -260,7 +260,7 @@ func reparseTable(table *asciidoc.Table) (err error) {
 }
 
 func parseInlineCell(tc *asciidoc.TableCell) error {
-	val, err := renderPreParsedDoc(tc.Elements())
+	val, err := renderPreParsedDoc(tc.Children())
 	if err != nil {
 		return err
 	}
@@ -273,7 +273,7 @@ func parseInlineCell(tc *asciidoc.TableCell) error {
 	if err != nil {
 		return err
 	}
-	els, ok := vals.(asciidoc.Set)
+	els, ok := vals.(asciidoc.Elements)
 	if !ok {
 		return fmt.Errorf("unexpected type for table cell set: %T", vals)
 	}
@@ -289,12 +289,12 @@ func parseInlineCell(tc *asciidoc.TableCell) error {
 		return err
 	}
 
-	tc.SetElements(els)
+	tc.SetChildren(els)
 	return nil
 }
 
 func parseBlockCell(tc *asciidoc.TableCell) error {
-	val, err := renderPreParsedDoc(tc.Elements())
+	val, err := renderPreParsedDoc(tc.Children())
 	if err != nil {
 		return err
 	}
@@ -307,7 +307,7 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 	if err != nil {
 		return err
 	}
-	els, ok := vals.(asciidoc.Set)
+	els, ok := vals.(asciidoc.Elements)
 	if !ok {
 		return fmt.Errorf("unexpected type for table cell set: %T", vals)
 	}
@@ -321,6 +321,6 @@ func parseBlockCell(tc *asciidoc.TableCell) error {
 	if err != nil {
 		return err
 	}
-	tc.SetElements(els)
+	tc.SetChildren(els)
 	return nil
 }

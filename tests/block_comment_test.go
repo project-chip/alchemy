@@ -3,7 +3,7 @@ package tests
 import "github.com/project-chip/alchemy/asciidoc"
 
 var blockComment = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
