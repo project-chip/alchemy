@@ -27,7 +27,7 @@ func dump(indent int, els ...asciidoc.Element) {
 				fmt.Printf(" (format: %s)", v.Format.AsciiDocString())
 			}
 			fmt.Printf("\n")
-			dump(indent+1, v.Elements()...)
+			dump(indent+1, v.Children()...)
 		case asciidoc.Element:
 			fmt.Printf("[%s]", asciidoc.Describe(v))
 			if hp, ok := v.(asciidoc.HasPosition); ok {
@@ -41,8 +41,8 @@ func dump(indent int, els ...asciidoc.Element) {
 				dump(indent+2, section.Title...)
 			}
 			dumpAttributes(v, indent+1)
-			if es, ok := v.(asciidoc.HasElements); ok {
-				dump(indent+1, es.Elements()...)
+			if es, ok := v.(asciidoc.ParentElement); ok {
+				dump(indent+1, es.Children()...)
 			}
 			if es, ok := v.(asciidoc.HasChild); ok {
 				dump(indent+1, es.Child())
@@ -64,7 +64,7 @@ func dump(indent int, els ...asciidoc.Element) {
 func dumpAttributeEntry(el *asciidoc.AttributeEntry, indent int) {
 	fmt.Print(strings.Repeat("\t", indent))
 	fmt.Printf("attribute definition %s:\n", el.Name)
-	dump(indent+1, el.Elements()...)
+	dump(indent+1, el.Children()...)
 
 }
 
@@ -91,7 +91,7 @@ func dumpAttributes(el asciidoc.Element, indent int) {
 			fmt.Printf(" (name: %s)", a.Name)
 		case *asciidoc.AnchorAttribute:
 			fmt.Printf(" (anchor: %s)\n", a.ID.Value)
-			dump(indent+1, a.Label.Elements()...)
+			dump(indent+1, a.Label.Children()...)
 			continue
 		case *asciidoc.PositionalAttribute:
 			fmt.Printf(" (position: %d)", a.Offset)
@@ -113,7 +113,7 @@ func dumpAttributes(el asciidoc.Element, indent int) {
 		case []asciidoc.Element:
 			fmt.Println()
 			dump(indent+2, v...)
-		case asciidoc.Set:
+		case asciidoc.Elements:
 			fmt.Println()
 			dump(indent+2, v...)
 		case *asciidoc.String:

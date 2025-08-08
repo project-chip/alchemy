@@ -30,12 +30,12 @@ var invokerTests = parseTests{
 }
 
 var invokerTestShouldAllowOptionsToBePassedAsFirstArgumentOfConstructor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "second",
 				},
@@ -45,7 +45,7 @@ var invokerTestShouldAllowOptionsToBePassedAsFirstArgumentOfConstructor = &ascii
 			Marker:        "2.",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "third",
 				},
@@ -58,7 +58,7 @@ var invokerTestShouldAllowOptionsToBePassedAsFirstArgumentOfConstructor = &ascii
 }
 
 var invokerTestShouldChangeLevelOnLoggerWhenLogLevelIsSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -67,7 +67,7 @@ var invokerTestShouldChangeLevelOnLoggerWhenLogLevelIsSpecified = &asciidoc.Docu
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "install",
 			Format:        0,
 		},
@@ -76,7 +76,7 @@ var invokerTestShouldChangeLevelOnLoggerWhenLogLevelIsSpecified = &asciidoc.Docu
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "download",
 				},
@@ -86,13 +86,13 @@ var invokerTestShouldChangeLevelOnLoggerWhenLogLevelIsSpecified = &asciidoc.Docu
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "install",
 				},
 				&asciidoc.Anchor{
-					ID:  "install",
-					Set: nil,
+					ID:       "install",
+					Elements: nil,
 				},
 			},
 			AttributeList: nil,
@@ -100,7 +100,7 @@ var invokerTestShouldChangeLevelOnLoggerWhenLogLevelIsSpecified = &asciidoc.Docu
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "run",
 				},
@@ -113,7 +113,7 @@ var invokerTestShouldChangeLevelOnLoggerWhenLogLevelIsSpecified = &asciidoc.Docu
 }
 
 var invokerTestShouldNotLogWhenLogLevelAndQAreBothSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -122,7 +122,7 @@ var invokerTestShouldNotLogWhenLogLevelAndQAreBothSpecified = &asciidoc.Document
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "install",
 			Format:        0,
 		},
@@ -131,7 +131,7 @@ var invokerTestShouldNotLogWhenLogLevelAndQAreBothSpecified = &asciidoc.Document
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "download",
 				},
@@ -141,13 +141,13 @@ var invokerTestShouldNotLogWhenLogLevelAndQAreBothSpecified = &asciidoc.Document
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "install",
 				},
 				&asciidoc.Anchor{
-					ID:  "install",
-					Set: nil,
+					ID:       "install",
+					Elements: nil,
 				},
 			},
 			AttributeList: nil,
@@ -155,7 +155,7 @@ var invokerTestShouldNotLogWhenLogLevelAndQAreBothSpecified = &asciidoc.Document
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "run",
 				},
@@ -168,7 +168,7 @@ var invokerTestShouldNotLogWhenLogLevelAndQAreBothSpecified = &asciidoc.Document
 }
 
 var invokerTestShouldUseSpecifiedLogLevelWhenLogLevelAndVAreBothSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -177,7 +177,7 @@ var invokerTestShouldUseSpecifiedLogLevelWhenLogLevelAndVAreBothSpecified = &asc
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "install",
 			Format:        0,
 		},
@@ -186,7 +186,7 @@ var invokerTestShouldUseSpecifiedLogLevelWhenLogLevelAndVAreBothSpecified = &asc
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "download",
 				},
@@ -196,13 +196,13 @@ var invokerTestShouldUseSpecifiedLogLevelWhenLogLevelAndVAreBothSpecified = &asc
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "install",
 				},
 				&asciidoc.Anchor{
-					ID:  "install",
-					Set: nil,
+					ID:       "install",
+					Elements: nil,
 				},
 			},
 			AttributeList: nil,
@@ -210,7 +210,7 @@ var invokerTestShouldUseSpecifiedLogLevelWhenLogLevelAndVAreBothSpecified = &asc
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "run",
 				},
@@ -223,12 +223,12 @@ var invokerTestShouldUseSpecifiedLogLevelWhenLogLevelAndVAreBothSpecified = &asc
 }
 
 var invokerTestShouldEnableScriptWarningsIfWFlagIsSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "second",
 				},
@@ -238,7 +238,7 @@ var invokerTestShouldEnableScriptWarningsIfWFlagIsSpecified = &asciidoc.Document
 			Marker:        "2.",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "third",
 				},
@@ -251,7 +251,7 @@ var invokerTestShouldEnableScriptWarningsIfWFlagIsSpecified = &asciidoc.Document
 }
 
 var invokerTestShouldNotFailToCheckLogLevelWhenQFlagIsSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -260,7 +260,7 @@ var invokerTestShouldNotFailToCheckLogLevelWhenQFlagIsSpecified = &asciidoc.Docu
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "install",
 			Format:        0,
 		},
@@ -269,7 +269,7 @@ var invokerTestShouldNotFailToCheckLogLevelWhenQFlagIsSpecified = &asciidoc.Docu
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "download",
 				},
@@ -279,13 +279,13 @@ var invokerTestShouldNotFailToCheckLogLevelWhenQFlagIsSpecified = &asciidoc.Docu
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "install",
 				},
 				&asciidoc.Anchor{
-					ID:  "install",
-					Set: nil,
+					ID:       "install",
+					Elements: nil,
 				},
 			},
 			AttributeList: nil,
@@ -293,7 +293,7 @@ var invokerTestShouldNotFailToCheckLogLevelWhenQFlagIsSpecified = &asciidoc.Docu
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "run",
 				},
@@ -306,12 +306,12 @@ var invokerTestShouldNotFailToCheckLogLevelWhenQFlagIsSpecified = &asciidoc.Docu
 }
 
 var invokerTestShouldReturnNonZeroExitCodeIfFailureLevelIsReached = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "second",
 				},
@@ -321,7 +321,7 @@ var invokerTestShouldReturnNonZeroExitCodeIfFailureLevelIsReached = &asciidoc.Do
 			Marker:        "2.",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "third",
 				},
@@ -334,13 +334,13 @@ var invokerTestShouldReturnNonZeroExitCodeIfFailureLevelIsReached = &asciidoc.Do
 }
 
 var invokerTestShouldReportUsageIfNoInputFileGiven = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Andrew Stanton",
 				},
@@ -351,7 +351,7 @@ var invokerTestShouldReportUsageIfNoInputFileGiven = &asciidoc.Document{
 				&asciidoc.NewLine{},
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "manpage",
 						},
@@ -359,7 +359,7 @@ var invokerTestShouldReportUsageIfNoInputFileGiven = &asciidoc.Document{
 				},
 				&asciidoc.AttributeEntry{
 					Name: "manmanual",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "EVE",
 						},
@@ -367,7 +367,7 @@ var invokerTestShouldReportUsageIfNoInputFileGiven = &asciidoc.Document{
 				},
 				&asciidoc.AttributeEntry{
 					Name: "mansource",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "EVE",
 						},
@@ -378,7 +378,7 @@ var invokerTestShouldReportUsageIfNoInputFileGiven = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -390,7 +390,7 @@ var invokerTestShouldReportUsageIfNoInputFileGiven = &asciidoc.Document{
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "NAME",
 						},
@@ -399,13 +399,13 @@ var invokerTestShouldReportUsageIfNoInputFileGiven = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Bold{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "eve",
 								},
@@ -416,7 +416,7 @@ var invokerTestShouldReportUsageIfNoInputFileGiven = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "SYNOPSIS",
 						},
@@ -424,7 +424,7 @@ var invokerTestShouldReportUsageIfNoInputFileGiven = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "eve(1)",
 				},

@@ -5,10 +5,10 @@ type URL struct {
 	raw
 
 	Scheme string
-	Path   Set
+	Path   Elements
 }
 
-func NewURL(scheme string, path Set) URL {
+func NewURL(scheme string, path Elements) URL {
 	return URL{Scheme: scheme, Path: path}
 }
 

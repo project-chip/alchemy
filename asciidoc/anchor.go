@@ -9,10 +9,10 @@ type AnchorAttribute struct {
 	attribute
 
 	ID    *String `json:"id"`
-	Label Set
+	Label Elements
 }
 
-func NewAnchorAttribute(id *String, label Set) *AnchorAttribute {
+func NewAnchorAttribute(id *String, label Elements) *AnchorAttribute {
 	return &AnchorAttribute{ID: id, Label: label}
 }
 
@@ -66,7 +66,7 @@ type Anchor struct {
 	position
 
 	ID string
-	Set
+	Elements
 }
 
 func (Anchor) Type() ElementType {
@@ -89,9 +89,9 @@ func (a *Anchor) Equals(o Element) bool {
 	if oa.ID != a.ID {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
-func NewAnchor(id string, label Set) *Anchor {
-	return &Anchor{ID: id, Set: label}
+func NewAnchor(id string, label Elements) *Anchor {
+	return &Anchor{ID: id, Elements: label}
 }

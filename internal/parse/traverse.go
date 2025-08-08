@@ -15,9 +15,9 @@ const (
 	SearchShouldSkip
 )
 
-func FindAll[T any](parent asciidoc.HasElements) iter.Seq[T] {
+func FindAll[T any](parent asciidoc.ParentElement) iter.Seq[T] {
 	return func(yield func(T) bool) {
-		traverse(parent, parent.Elements(), func(el T, parent HasElements, index int) SearchShould {
+		traverse(parent, parent.Children(), func(el T, parent HasElements, index int) SearchShould {
 			if !yield(el) {
 				return SearchShouldStop
 			}
@@ -26,16 +26,16 @@ func FindAll[T any](parent asciidoc.HasElements) iter.Seq[T] {
 	}
 }
 
-func FindFirst[T any](parent asciidoc.HasElements) T {
+func FindFirst[T any](parent asciidoc.ParentElement) T {
 	var found T
-	traverse(parent, parent.Elements(), func(el T, parent HasElements, index int) SearchShould {
+	traverse(parent, parent.Children(), func(el T, parent HasElements, index int) SearchShould {
 		found = el
 		return SearchShouldStop
 	})
 	return found
 }
 
-func Skim[T any](elements asciidoc.Set) iter.Seq[T] {
+func Skim[T any](elements asciidoc.Elements) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for _, e := range elements {
 			if el, ok := e.(T); ok {
@@ -47,7 +47,7 @@ func Skim[T any](elements asciidoc.Set) iter.Seq[T] {
 	}
 }
 
-func SkimList[T any](elements asciidoc.Set) []T {
+func SkimList[T any](elements asciidoc.Elements) []T {
 	var list []T
 	for e := range Skim[T](elements) {
 		list = append(list, e)
@@ -55,7 +55,7 @@ func SkimList[T any](elements asciidoc.Set) []T {
 	return list
 }
 
-func SkimFunc[T any](elements asciidoc.Set, callback func(t T) bool) bool {
+func SkimFunc[T any](elements asciidoc.Elements, callback func(t T) bool) bool {
 	for _, e := range elements {
 		var shortCircuit bool
 		if el, ok := e.(T); ok {
@@ -68,9 +68,9 @@ func SkimFunc[T any](elements asciidoc.Set, callback func(t T) bool) bool {
 	return false
 }
 
-func Filter(parent HasElements, callback func(parent HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Set, shortCircuit bool)) (shortCircuit bool) {
+func Filter(parent HasElements, callback func(parent HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Elements, shortCircuit bool)) (shortCircuit bool) {
 	i := 0
-	els := parent.Elements()
+	els := parent.Children()
 	var altered bool
 	for i < len(els) {
 		e := els[i]
@@ -82,9 +82,9 @@ func Filter(parent HasElements, callback func(parent HasElements, el asciidoc.El
 			break
 		}
 		var remove bool
-		var replace asciidoc.Set
+		var replace asciidoc.Elements
 		remove, replace, shortCircuit = callback(parent, e)
-		var empty asciidoc.Set
+		var empty asciidoc.Elements
 		if len(replace) > 0 {
 			els = slices.Delete(els, i, i+1)
 			els = slices.Insert(els, i, replace...)
@@ -100,18 +100,18 @@ func Filter(parent HasElements, callback func(parent HasElements, el asciidoc.El
 		}
 	}
 	if altered {
-		parent.SetElements(els)
+		parent.SetChildren(els)
 	}
 	return
 }
 
 type TraverseCallback[T any] func(el T, parent HasElements, index int) SearchShould
 
-func Traverse[T any](parent HasElements, els asciidoc.Set, callback TraverseCallback[T]) {
+func Traverse[T any](parent HasElements, els asciidoc.Elements, callback TraverseCallback[T]) {
 	traverse(parent, els, callback)
 }
 
-func traverse[T any](parent HasElements, els asciidoc.Set, callback TraverseCallback[T]) SearchShould {
+func traverse[T any](parent HasElements, els asciidoc.Elements, callback TraverseCallback[T]) SearchShould {
 
 	for i, e := range els {
 		var shortCircuit SearchShould
@@ -127,7 +127,7 @@ func traverse[T any](parent HasElements, els asciidoc.Set, callback TraverseCall
 		}
 
 		if he, ok := e.(HasElements); ok {
-			shortCircuit = traverse(he, he.Elements(), callback)
+			shortCircuit = traverse(he, he.Children(), callback)
 		}
 		if shortCircuit == SearchShouldStop {
 			return shortCircuit

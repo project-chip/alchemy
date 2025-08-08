@@ -7,7 +7,7 @@ type OpenBlock struct {
 	AttributeList
 
 	Delimiter Delimiter
-	Set
+	Elements
 }
 
 func NewOpenBlock(delimiter Delimiter) *OpenBlock {
@@ -29,5 +29,5 @@ func (a *OpenBlock) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

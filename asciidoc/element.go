@@ -22,11 +22,14 @@ type Element interface {
 	Equals(o Element) bool
 }
 
-type HasElements interface {
+type Parent interface {
+	Children() Elements
+	SetChildren(e Elements)
+}
+type ParentElement interface {
 	Element
-	Elements() Set
+	Parent
 	Append(e ...Element)
-	SetElements(e Set)
 }
 
 type HasChild interface {
@@ -50,7 +53,7 @@ func elementToString(sb *strings.Builder, e any) {
 		for _, ee := range e {
 			elementToString(sb, ee)
 		}
-	case Set:
+	case Elements:
 		for _, ee := range e {
 			elementToString(sb, ee)
 		}

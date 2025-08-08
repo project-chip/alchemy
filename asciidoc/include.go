@@ -5,7 +5,7 @@ type FileInclude struct {
 	position
 	raw
 
-	Set
+	Elements
 }
 
 func NewFileInclude() *FileInclude {
@@ -24,5 +24,5 @@ func (a *FileInclude) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

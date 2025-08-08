@@ -38,13 +38,13 @@ var preambleTests = parseTests{
 }
 
 var preambleTestTitleAndSingleParagraphPreambleBeforeSection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -57,7 +57,7 @@ var preambleTestTitleAndSingleParagraphPreambleBeforeSection = &asciidoc.Documen
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -66,7 +66,7 @@ var preambleTestTitleAndSingleParagraphPreambleBeforeSection = &asciidoc.Documen
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First Section",
 						},
@@ -74,7 +74,7 @@ var preambleTestTitleAndSingleParagraphPreambleBeforeSection = &asciidoc.Documen
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Title",
 				},
@@ -85,16 +85,16 @@ var preambleTestTitleAndSingleParagraphPreambleBeforeSection = &asciidoc.Documen
 }
 
 var preambleTestTitleOfPrefaceIsBlankByDefaultInDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -112,7 +112,7 @@ var preambleTestTitleOfPrefaceIsBlankByDefaultInDocBookOutput = &asciidoc.Docume
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -121,7 +121,7 @@ var preambleTestTitleOfPrefaceIsBlankByDefaultInDocBookOutput = &asciidoc.Docume
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First Section",
 						},
@@ -129,7 +129,7 @@ var preambleTestTitleOfPrefaceIsBlankByDefaultInDocBookOutput = &asciidoc.Docume
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -140,16 +140,16 @@ var preambleTestTitleOfPrefaceIsBlankByDefaultInDocBookOutput = &asciidoc.Docume
 }
 
 var preambleTestPrefaceTitleAttributeIsAssignedAsTitleOfPrefaceInDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -157,7 +157,7 @@ var preambleTestPrefaceTitleAttributeIsAssignedAsTitleOfPrefaceInDocBookOutput =
 				},
 				&asciidoc.AttributeEntry{
 					Name: "preface-title",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Preface",
 						},
@@ -175,7 +175,7 @@ var preambleTestPrefaceTitleAttributeIsAssignedAsTitleOfPrefaceInDocBookOutput =
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -184,7 +184,7 @@ var preambleTestPrefaceTitleAttributeIsAssignedAsTitleOfPrefaceInDocBookOutput =
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First Section",
 						},
@@ -192,7 +192,7 @@ var preambleTestPrefaceTitleAttributeIsAssignedAsTitleOfPrefaceInDocBookOutput =
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -203,13 +203,13 @@ var preambleTestPrefaceTitleAttributeIsAssignedAsTitleOfPrefaceInDocBookOutput =
 }
 
 var preambleTestTitleAndMultiParagraphPreambleBeforeSection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -229,7 +229,7 @@ var preambleTestTitleAndMultiParagraphPreambleBeforeSection = &asciidoc.Document
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -238,7 +238,7 @@ var preambleTestTitleAndMultiParagraphPreambleBeforeSection = &asciidoc.Document
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First Section",
 						},
@@ -246,7 +246,7 @@ var preambleTestTitleAndMultiParagraphPreambleBeforeSection = &asciidoc.Document
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Title",
 				},
@@ -257,13 +257,13 @@ var preambleTestTitleAndMultiParagraphPreambleBeforeSection = &asciidoc.Document
 }
 
 var preambleTestShouldNotWrapContentInPreambleIfDocumentHasTitleButNoSections = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -272,7 +272,7 @@ var preambleTestShouldNotWrapContentInPreambleIfDocumentHasTitleButNoSections = 
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Title",
 				},
@@ -283,19 +283,19 @@ var preambleTestShouldNotWrapContentInPreambleIfDocumentHasTitleButNoSections = 
 }
 
 var preambleTestTitleAndSectionWithoutPreamble = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -304,7 +304,7 @@ var preambleTestTitleAndSectionWithoutPreamble = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First Section",
 						},
@@ -312,7 +312,7 @@ var preambleTestTitleAndSectionWithoutPreamble = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Title",
 				},
@@ -323,7 +323,7 @@ var preambleTestTitleAndSectionWithoutPreamble = &asciidoc.Document{
 }
 
 var preambleTestNoTitleWithPreambleAndSection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -336,7 +336,7 @@ var preambleTestNoTitleWithPreambleAndSection = &asciidoc.Document{
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -345,7 +345,7 @@ var preambleTestNoTitleWithPreambleAndSection = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "First Section",
 				},
@@ -356,16 +356,16 @@ var preambleTestNoTitleWithPreambleAndSection = &asciidoc.Document{
 }
 
 var preambleTestPreambleInBookDoctype = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -382,7 +382,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -391,7 +391,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -399,7 +399,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -410,7 +410,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "It was a dark and stormy night...",
 						},
@@ -423,7 +423,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -435,7 +435,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Scene One",
 						},
@@ -443,7 +443,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Chapter One",
 				},
@@ -452,7 +452,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -460,7 +460,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -471,7 +471,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "They couldn't believe their eyes when...",
 						},
@@ -484,7 +484,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -493,7 +493,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Scene One",
 						},
@@ -501,7 +501,7 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Chapter Two",
 				},
@@ -512,20 +512,20 @@ var preambleTestPreambleInBookDoctype = &asciidoc.Document{
 }
 
 var preambleTestShouldOutputTableOfContentsInPreambleIfTocPlacementAttributeValueIsPreamble = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
-					Name: "toc",
-					Set:  nil,
+					Name:     "toc",
+					Elements: nil,
 				},
 				&asciidoc.AttributeEntry{
 					Name: "toc-placement",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "preamble",
 						},
@@ -543,7 +543,7 @@ var preambleTestShouldOutputTableOfContentsInPreambleIfTocPlacementAttributeValu
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -555,7 +555,7 @@ var preambleTestShouldOutputTableOfContentsInPreambleIfTocPlacementAttributeValu
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section One",
 						},
@@ -564,7 +564,7 @@ var preambleTestShouldOutputTableOfContentsInPreambleIfTocPlacementAttributeValu
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -573,7 +573,7 @@ var preambleTestShouldOutputTableOfContentsInPreambleIfTocPlacementAttributeValu
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section Two",
 						},
@@ -581,7 +581,7 @@ var preambleTestShouldOutputTableOfContentsInPreambleIfTocPlacementAttributeValu
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Article",
 				},
@@ -592,13 +592,13 @@ var preambleTestShouldOutputTableOfContentsInPreambleIfTocPlacementAttributeValu
 }
 
 var preambleTestShouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -606,7 +606,7 @@ var preambleTestShouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocB
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -617,7 +617,7 @@ var preambleTestShouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocB
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This is the abstract.",
 						},
@@ -630,8 +630,8 @@ var preambleTestShouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocB
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set:           nil,
-					Title: asciidoc.Set{
+					Elements:      nil,
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Fin",
 						},
@@ -639,7 +639,7 @@ var preambleTestShouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocB
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -650,13 +650,13 @@ var preambleTestShouldMoveAbstractInImplicitPrefaceToInfoTagWhenConvertingToDocB
 }
 
 var preambleTestShouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -664,7 +664,7 @@ var preambleTestShouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -675,7 +675,7 @@ var preambleTestShouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -687,7 +687,7 @@ var preambleTestShouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Abstract",
 						},
@@ -696,8 +696,8 @@ var preambleTestShouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set:           nil,
-					Title: asciidoc.Set{
+					Elements:      nil,
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Fin",
 						},
@@ -705,7 +705,7 @@ var preambleTestShouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -716,16 +716,16 @@ var preambleTestShouldMoveAbstractAsFirstSectionToInfoTagWhenConvertingToDocBook
 }
 
 var preambleTestShouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -738,7 +738,7 @@ var preambleTestShouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBo
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "preface",
 									},
@@ -749,7 +749,7 @@ var preambleTestShouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBo
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -757,7 +757,7 @@ var preambleTestShouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBo
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.ShorthandAttribute{
 									Style: &asciidoc.ShorthandStyle{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "abstract",
 											},
@@ -768,7 +768,7 @@ var preambleTestShouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBo
 									Options: nil,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "This is the abstract.",
 								},
@@ -780,7 +780,7 @@ var preambleTestShouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBo
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Preface",
 						},
@@ -789,8 +789,8 @@ var preambleTestShouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBo
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set:           nil,
-					Title: asciidoc.Set{
+					Elements:      nil,
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Fin",
 						},
@@ -798,7 +798,7 @@ var preambleTestShouldMoveAbstractInPrefaceSectionToInfoTagWhenConvertingToDocBo
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},

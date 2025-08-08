@@ -16,7 +16,7 @@ func renderOrderedListElement(cxt Target, el *asciidoc.OrderedListItem) (err err
 	cxt.WriteString(el.Marker)
 	cxt.WriteString(" ")
 	cxt.EnableWrap()
-	err = Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Children()...)
 	return
 }
 
@@ -33,7 +33,7 @@ func renderUnorderedListElement(cxt Target, el *asciidoc.UnorderedListItem) (err
 	cxt.WriteString(el.Marker)
 	cxt.WriteString(" ")
 	cxt.EnableWrap()
-	err = Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Children()...)
 	return
 }
 
@@ -51,7 +51,7 @@ func renderDescriptionListItem(cxt Target, el *asciidoc.DescriptionListItem) (er
 	cxt.WriteString(el.Marker)
 	cxt.WriteRune(' ')
 	cxt.EnableWrap()
-	err = Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Children()...)
 	if err != nil {
 		return
 	}

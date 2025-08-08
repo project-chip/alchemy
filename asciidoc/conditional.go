@@ -77,7 +77,7 @@ type InlineIfDef struct {
 	position
 	raw
 
-	Set
+	Elements
 
 	Attributes AttributeNames
 	Union      ConditionalUnion
@@ -100,7 +100,7 @@ func (a *InlineIfDef) Equals(o Element) bool {
 	if !a.Attributes.Equals(oa.Attributes) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 func (a *InlineIfDef) Eval(cc ConditionalContext) bool {
@@ -111,7 +111,7 @@ type InlineIfNDef struct {
 	position
 	raw
 
-	Set
+	Elements
 
 	Attributes AttributeNames
 	Union      ConditionalUnion
@@ -134,7 +134,7 @@ func (a *InlineIfNDef) Equals(o Element) bool {
 	if !a.Attributes.Equals(oa.Attributes) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 func (a *InlineIfNDef) Eval(cc ConditionalContext) bool {
@@ -245,7 +245,7 @@ type IfDefBlock struct {
 	raw
 
 	Attributes AttributeNames
-	Set
+	Elements
 	Union ConditionalUnion
 }
 
@@ -265,7 +265,7 @@ func (a *IfDefBlock) Equals(o Element) bool {
 	if !a.Attributes.Equals(oa.Attributes) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 func (a *IfDefBlock) Eval(cc ConditionalContext) bool {
@@ -305,7 +305,7 @@ type IfNDefBlock struct {
 	raw
 
 	Attributes AttributeNames
-	Set
+	Elements
 	Union ConditionalUnion
 }
 
@@ -325,7 +325,7 @@ func (a *IfNDefBlock) Equals(o Element) bool {
 	if !a.Attributes.Equals(oa.Attributes) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 func (a *IfNDefBlock) Eval(cc ConditionalContext) bool {
@@ -334,7 +334,7 @@ func (a *IfNDefBlock) Eval(cc ConditionalContext) bool {
 
 type IfEvalValue struct {
 	Quote AttributeQuoteType
-	Value Set
+	Value Elements
 }
 
 func (iev IfEvalValue) Equals(oiev IfEvalValue) bool {
@@ -396,7 +396,7 @@ type IfEvalBlock struct {
 	raw
 
 	Attributes AttributeNames
-	Set
+	Elements
 
 	Left     IfEvalValue
 	Operator ConditionalOperator
@@ -425,7 +425,7 @@ func (a *IfEvalBlock) Equals(o Element) bool {
 	if !a.Right.Equals(oa.Right) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 func (a *IfEvalBlock) Eval(cc ConditionalContext) (bool, error) {

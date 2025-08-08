@@ -8,7 +8,7 @@ import (
 	"github.com/project-chip/alchemy/matter/spec"
 )
 
-func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
+func dumpElements(doc *spec.Doc, els asciidoc.Elements, indent int) {
 
 	for _, e := range els {
 		fmt.Print(strings.Repeat("\t", indent))
@@ -22,7 +22,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			dumpElements(doc, as.Base.Title, indent+2)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, as.Elements(), indent+2)
+			dumpElements(doc, as.Children(), indent+2)
 			continue
 		}
 		switch el := e.(type) {
@@ -38,13 +38,13 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 		dumpElements(doc, el.Elements, indent+1)*/
 		case *asciidoc.AttributeEntry:
 			fmt.Printf("{attrib%s}: %s", dumpPosition(el), el.Name)
-			dumpElements(doc, el.Elements(), indent+1)
+			dumpElements(doc, el.Children(), indent+1)
 			fmt.Print("\n")
 		case *asciidoc.Paragraph:
 			fmt.Printf("{para%s}: ", dumpPosition(el))
 			fmt.Print("\n")
 			dumpAttributes(el.Attributes(), indent+1)
-			dumpElements(doc, el.Elements(), indent+1)
+			dumpElements(doc, el.Children(), indent+1)
 		case *asciidoc.Section:
 			fmt.Printf("{sec %d%s}:\n", el.Level, dumpPosition(el))
 			dumpAttributes(el.Attributes(), indent+1)
@@ -53,7 +53,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			dumpElements(doc, el.Title, indent+2)
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el.Elements(), indent+2)
+			dumpElements(doc, el.Children(), indent+2)
 		case *asciidoc.String:
 			fmt.Print("{str}: ", snippet(el.Value))
 			fmt.Print("\n")
@@ -65,7 +65,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			}
 			fmt.Print(strings.Repeat("\t", indent+1))
 			fmt.Printf("{body:}\n")
-			dumpElements(doc, el.Elements(), indent+2)
+			dumpElements(doc, el.Children(), indent+2)
 		case *asciidoc.Table:
 			fmt.Printf("{tab%s}:\n", dumpPosition(el))
 			dumpAttributes(el.Attributes(), indent+1)
@@ -82,13 +82,13 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 		case *asciidoc.OrderedListItem:
 			fmt.Print("{ole}:\n")
 			dumpAttributes(el.Attributes(), indent+1)
-			dumpElements(doc, el.Elements(), indent+1)
+			dumpElements(doc, el.Children(), indent+1)
 		case *asciidoc.UnorderedListItem:
 			fmt.Printf("{uole bs=%s cl=%v}:\n", el.Marker, el.Checklist)
 			dumpAttributes(el.Attributes(), indent+1)
-			dumpElements(doc, el.Elements(), indent+1)
+			dumpElements(doc, el.Children(), indent+1)
 		case *asciidoc.CrossReference:
-			fmt.Printf("{xref id:%v label %v}\n", el.ID, el.Set)
+			fmt.Printf("{xref id:%v label %v}\n", el.ID, el.Elements)
 		case *asciidoc.DocumentCrossReference:
 			fmt.Printf("{doc xref}\n")
 			dumpAttributes(el.Attributes(), indent+1)
@@ -108,7 +108,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 		case *asciidoc.FileInclude:
 			fmt.Printf("{include:\n")
 			dumpAttributes(el.Attributes(), indent+1)
-			dumpElements(doc, el.Elements(), indent+1)
+			dumpElements(doc, el.Children(), indent+1)
 			fmt.Print(strings.Repeat("\t", indent))
 			fmt.Print("}\n")
 		/*case *asciidoc.DocumentHeader:
@@ -181,9 +181,9 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 			fmt.Print("\n")
 		case *asciidoc.Anchor:
 			fmt.Printf("{anchor \"%s\"", el.ID)
-			if len(el.Set) > 0 {
+			if len(el.Elements) > 0 {
 				fmt.Print("\n")
-				dumpElements(doc, el.Set, indent+1)
+				dumpElements(doc, el.Elements, indent+1)
 			}
 			fmt.Print("}\n")
 		/*case *asciidoc.ListElements:
@@ -191,7 +191,7 @@ func dumpElements(doc *spec.Doc, els asciidoc.Set, indent int) {
 		dumpElements(doc, el.Elements, indent+1)*/
 		case *asciidoc.ListContinuation:
 			fmt.Printf("{list con}\n")
-			dumpElements(doc, asciidoc.Set{el.Child()}, indent+1)
+			dumpElements(doc, asciidoc.Elements{el.Child()}, indent+1)
 		case *asciidoc.CharacterReplacementReference:
 			fmt.Printf("{predef %s}\n", el.Name())
 		default:

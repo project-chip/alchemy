@@ -74,7 +74,7 @@ var extensionsTests = parseTests{
 }
 
 var extensionsTestShouldNotActivateRegistryIfNoExtensionGroupsAreRegistered = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -87,7 +87,7 @@ var extensionsTestShouldNotActivateRegistryIfNoExtensionGroupsAreRegistered = &a
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -96,7 +96,7 @@ var extensionsTestShouldNotActivateRegistryIfNoExtensionGroupsAreRegistered = &a
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -107,7 +107,7 @@ var extensionsTestShouldNotActivateRegistryIfNoExtensionGroupsAreRegistered = &a
 }
 
 var extensionsTestShouldInvokeIncludeProcessorToProcessIncludeDirective = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -120,7 +120,7 @@ var extensionsTestShouldInvokeIncludeProcessorToProcessIncludeDirective = &ascii
 		},
 		&asciidoc.FileInclude{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "lorem-ipsum.txt",
 				},
@@ -137,13 +137,13 @@ var extensionsTestShouldInvokeIncludeProcessorToProcessIncludeDirective = &ascii
 }
 
 var extensionsTestShouldInvokeIncludeProcessorIfItOffersToHandleIncludeDirective = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.FileInclude{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "skip-me.adoc",
 				},
@@ -158,7 +158,7 @@ var extensionsTestShouldInvokeIncludeProcessorIfItOffersToHandleIncludeDirective
 		},
 		&asciidoc.FileInclude{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "include-file.adoc",
 				},
@@ -169,7 +169,7 @@ var extensionsTestShouldInvokeIncludeProcessorIfItOffersToHandleIncludeDirective
 		},
 		&asciidoc.FileInclude{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures/grandchild-include.adoc",
 				},
@@ -186,13 +186,13 @@ var extensionsTestShouldInvokeIncludeProcessorIfItOffersToHandleIncludeDirective
 }
 
 var extensionsTestShouldInvokeTreeProcessorsAfterParsingDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Doc Writer",
 				},
@@ -205,7 +205,7 @@ var extensionsTestShouldInvokeTreeProcessorsAfterParsingDocument = &asciidoc.Doc
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -216,13 +216,13 @@ var extensionsTestShouldInvokeTreeProcessorsAfterParsingDocument = &asciidoc.Doc
 }
 
 var extensionsTestShouldAllowTreeProcessorToReplaceTree = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Doc Writer",
 				},
@@ -235,7 +235,7 @@ var extensionsTestShouldAllowTreeProcessorToReplaceTree = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Original Document",
 				},
@@ -246,13 +246,13 @@ var extensionsTestShouldAllowTreeProcessorToReplaceTree = &asciidoc.Document{
 }
 
 var extensionsTestShouldHonorBlockTitleAssignedInTreeProcessor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeReset{
 					Name: "example-caption",
 				},
@@ -266,14 +266,14 @@ var extensionsTestShouldHonorBlockTitleAssignedInTreeProcessor = &asciidoc.Docum
 					},
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Old block title",
 								},
 							},
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "example block content",
 						},
@@ -281,7 +281,7 @@ var extensionsTestShouldHonorBlockTitleAssignedInTreeProcessor = &asciidoc.Docum
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -292,12 +292,12 @@ var extensionsTestShouldHonorBlockTitleAssignedInTreeProcessor = &asciidoc.Docum
 }
 
 var extensionsTestShouldInvokePostprocessorsAfterConvertingDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -308,7 +308,7 @@ var extensionsTestShouldInvokePostprocessorsAfterConvertingDocument = &asciidoc.
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -319,7 +319,7 @@ var extensionsTestShouldInvokePostprocessorsAfterConvertingDocument = &asciidoc.
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -333,7 +333,7 @@ var extensionsTestShouldInvokePostprocessorsAfterConvertingDocument = &asciidoc.
 }
 
 var extensionsTestShouldYieldToDocumentProcessorBlockIfBlockHasNonZeroArity = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -345,7 +345,7 @@ var extensionsTestShouldYieldToDocumentProcessorBlockIfBlockHasNonZeroArity = &a
 }
 
 var extensionsTestShouldInvokeProcessorForCustomBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -353,7 +353,7 @@ var extensionsTestShouldInvokeProcessorForCustomBlock = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "yell",
 							},
@@ -364,7 +364,7 @@ var extensionsTestShouldInvokeProcessorForCustomBlock = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Hi there!",
 				},
@@ -379,7 +379,7 @@ var extensionsTestShouldInvokeProcessorForCustomBlock = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "yell",
 							},
@@ -391,7 +391,7 @@ var extensionsTestShouldInvokeProcessorForCustomBlock = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "chars",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "aeiou",
 						},
@@ -399,7 +399,7 @@ var extensionsTestShouldInvokeProcessorForCustomBlock = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Hi there!",
 				},
@@ -411,16 +411,16 @@ var extensionsTestShouldInvokeProcessorForCustomBlock = &asciidoc.Document{
 }
 
 var extensionsTestShouldInvokeProcessorForCustomBlockInAnAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -450,13 +450,13 @@ var extensionsTestShouldInvokeProcessorForCustomBlockInAnAsciiDocTableCell = &as
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.Paragraph{
 									AttributeList: asciidoc.AttributeList{
 										&asciidoc.ShorthandAttribute{
 											Style: &asciidoc.ShorthandStyle{
-												Set: asciidoc.Set{
+												Elements: asciidoc.Elements{
 													&asciidoc.String{
 														Value: "yell",
 													},
@@ -467,7 +467,7 @@ var extensionsTestShouldInvokeProcessorForCustomBlockInAnAsciiDocTableCell = &as
 											Options: nil,
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Hi there!",
 										},
@@ -485,7 +485,7 @@ var extensionsTestShouldInvokeProcessorForCustomBlockInAnAsciiDocTableCell = &as
 }
 
 var extensionsTestShouldYieldToSyntaxProcessorBlockIfBlockHasNonZeroArity = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -493,7 +493,7 @@ var extensionsTestShouldYieldToSyntaxProcessorBlockIfBlockHasNonZeroArity = &asc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "eval",
 							},
@@ -516,7 +516,7 @@ var extensionsTestShouldYieldToSyntaxProcessorBlockIfBlockHasNonZeroArity = &asc
 }
 
 var extensionsTestShouldPassCloakedContextInAttributesPassedToProcessMethodOfCustomBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -528,7 +528,7 @@ var extensionsTestShouldPassCloakedContextInAttributesPassedToProcessMethodOfCus
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "custom",
 							},
@@ -539,7 +539,7 @@ var extensionsTestShouldPassCloakedContextInAttributesPassedToProcessMethodOfCus
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "sidebar",
 				},
@@ -550,7 +550,7 @@ var extensionsTestShouldPassCloakedContextInAttributesPassedToProcessMethodOfCus
 }
 
 var extensionsTestShouldAllowExtensionToPromoteParagraphToCompoundBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -558,7 +558,7 @@ var extensionsTestShouldAllowExtensionToPromoteParagraphToCompoundBlock = &ascii
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "ex",
 							},
@@ -569,7 +569,7 @@ var extensionsTestShouldAllowExtensionToPromoteParagraphToCompoundBlock = &ascii
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "example",
 				},
@@ -581,7 +581,7 @@ var extensionsTestShouldAllowExtensionToPromoteParagraphToCompoundBlock = &ascii
 }
 
 var extensionsTestShouldDropBlockMacroLineIfTargetReferencesMissingAttributeAndAttributeMissingIsDropLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -592,7 +592,7 @@ var extensionsTestShouldDropBlockMacroLineIfTargetReferencesMissingAttributeAndA
 					ID:    nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "rolename",
 								},
@@ -602,7 +602,7 @@ var extensionsTestShouldDropBlockMacroLineIfTargetReferencesMissingAttributeAndA
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "snippet::",
 				},
@@ -627,16 +627,16 @@ var extensionsTestShouldDropBlockMacroLineIfTargetReferencesMissingAttributeAndA
 }
 
 var extensionsTestShouldInvokeProcessorForCustomBlockMacroInAnAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -666,7 +666,7 @@ var extensionsTestShouldInvokeProcessorForCustomBlockMacroInAnAsciiDocTableCell 
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "message::hi[]",
 								},
@@ -681,7 +681,7 @@ var extensionsTestShouldInvokeProcessorForCustomBlockMacroInAnAsciiDocTableCell 
 }
 
 var extensionsTestShouldFailToConvertIfNameOfBlockMacroIsIllegal = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -700,7 +700,7 @@ var extensionsTestShouldFailToConvertIfNameOfBlockMacroIsIllegal = &asciidoc.Doc
 }
 
 var extensionsTestShouldParseTextInSquareBracketsAsAttrlistByDefault = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -708,7 +708,7 @@ var extensionsTestShouldParseTextInSquareBracketsAsAttrlistByDefault = &asciidoc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "normal",
 						},
@@ -736,14 +736,14 @@ var extensionsTestShouldParseTextInSquareBracketsAsAttrlistByDefault = &asciidoc
 }
 
 var extensionsTestShouldPreferAttributesParsedFromInlineMacroOverDefaultAttributes = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "unused title",
 						},
@@ -751,7 +751,7 @@ var extensionsTestShouldPreferAttributesParsedFromInlineMacroOverDefaultAttribut
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "skip-me",
 							},
@@ -762,7 +762,7 @@ var extensionsTestShouldPreferAttributesParsedFromInlineMacroOverDefaultAttribut
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "not shown",
 				},
@@ -779,7 +779,7 @@ var extensionsTestShouldPreferAttributesParsedFromInlineMacroOverDefaultAttribut
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "shown",
 				},
@@ -790,14 +790,14 @@ var extensionsTestShouldPreferAttributesParsedFromInlineMacroOverDefaultAttribut
 }
 
 var extensionsTestShouldNotInvokeProcessMethodOrCarryOverAttributesIfBlockProcessorDeclaresSkipContentModel = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "unused title",
 						},
@@ -805,7 +805,7 @@ var extensionsTestShouldNotInvokeProcessMethodOrCarryOverAttributesIfBlockProces
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "ignore",
 							},
@@ -816,7 +816,7 @@ var extensionsTestShouldNotInvokeProcessMethodOrCarryOverAttributesIfBlockProces
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "not shown",
 				},
@@ -833,7 +833,7 @@ var extensionsTestShouldNotInvokeProcessMethodOrCarryOverAttributesIfBlockProces
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "shown",
 				},
@@ -844,14 +844,14 @@ var extensionsTestShouldNotInvokeProcessMethodOrCarryOverAttributesIfBlockProces
 }
 
 var extensionsTestShouldPassAttributesByValueToBlockProcessor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "title",
 						},
@@ -859,7 +859,7 @@ var extensionsTestShouldPassAttributesByValueToBlockProcessor = &asciidoc.Docume
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "foo",
 							},
@@ -870,7 +870,7 @@ var extensionsTestShouldPassAttributesByValueToBlockProcessor = &asciidoc.Docume
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "content",
 				},
@@ -882,14 +882,14 @@ var extensionsTestShouldPassAttributesByValueToBlockProcessor = &asciidoc.Docume
 }
 
 var extensionsTestShouldAllowExtensionToReplaceCustomBlockWithASection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OpenBlock{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section Title",
 						},
@@ -897,7 +897,7 @@ var extensionsTestShouldAllowExtensionToReplaceCustomBlockWithASection = &asciid
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "sect",
 							},
@@ -912,7 +912,7 @@ var extensionsTestShouldAllowExtensionToReplaceCustomBlockWithASection = &asciid
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "a",
 				},
@@ -930,7 +930,7 @@ var extensionsTestShouldAllowExtensionToReplaceCustomBlockWithASection = &asciid
 }
 
 var extensionsTestCanUseParseContentToAppendBlocksToCurrentParent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -945,7 +945,7 @@ var extensionsTestCanUseParseContentToAppendBlocksToCurrentParent = &asciidoc.Do
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "csv",
 							},
@@ -975,7 +975,7 @@ var extensionsTestCanUseParseContentToAppendBlocksToCurrentParent = &asciidoc.Do
 }
 
 var extensionsTestShouldIgnoreReturnValueOfCustomBlockIfValueIsParent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -983,7 +983,7 @@ var extensionsTestShouldIgnoreReturnValueOfCustomBlockIfValueIsParent = &asciido
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "unwrap",
 							},
@@ -998,7 +998,7 @@ var extensionsTestShouldIgnoreReturnValueOfCustomBlockIfValueIsParent = &asciido
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "a",
 				},
@@ -1023,7 +1023,7 @@ var extensionsTestShouldIgnoreReturnValueOfCustomBlockIfValueIsParent = &asciido
 }
 
 var extensionsTestShouldIgnoreReturnValueOfCustomBlockMacroIfValueIsParent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1035,7 +1035,7 @@ var extensionsTestShouldIgnoreReturnValueOfCustomBlockMacroIfValueIsParent = &as
 }
 
 var extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1043,7 +1043,7 @@ var extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks = &asc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "wrap",
 							},
@@ -1058,7 +1058,7 @@ var extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks = &asc
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.ExampleBlock{
 					Delimiter: asciidoc.Delimiter{
 						Type:   3,
@@ -1067,7 +1067,7 @@ var extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks = &asc
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.NamedAttribute{
 							Name: "foo",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "bar",
 								},
@@ -1075,7 +1075,7 @@ var extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks = &asc
 							Quote: 0,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "content",
 						},
@@ -1093,7 +1093,7 @@ var extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks = &asc
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.NamedAttribute{
 							Name: "baz",
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "qux",
 								},
@@ -1101,7 +1101,7 @@ var extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks = &asc
 							Quote: 0,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "content",
 						},
@@ -1114,13 +1114,13 @@ var extensionsTestParseContentShouldNotShareAttributesBetweenParsedBlocks = &asc
 }
 
 var extensionsTestCanUseParseAttributesToParseAttrlist = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "foo",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bar",
 				},
@@ -1133,7 +1133,7 @@ var extensionsTestCanUseParseAttributesToParseAttrlist = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "attrs",
 							},
@@ -1148,7 +1148,7 @@ var extensionsTestCanUseParseAttributesToParseAttrlist = &asciidoc.Document{
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "a,b,c,key=val",
 				},
@@ -1159,24 +1159,24 @@ var extensionsTestCanUseParseAttributesToParseAttrlist = &asciidoc.Document{
 }
 
 var extensionsTestCreateSectionShouldSetUpAllSectionProperties = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
 					},
 				},
 				&asciidoc.AttributeEntry{
-					Name: "sectnums",
-					Set:  nil,
+					Name:     "sectnums",
+					Elements: nil,
 				},
 				&asciidoc.EmptyLine{
 					Text: "",
@@ -1186,7 +1186,7 @@ var extensionsTestCreateSectionShouldSetUpAllSectionProperties = &asciidoc.Docum
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -1197,13 +1197,13 @@ var extensionsTestCreateSectionShouldSetUpAllSectionProperties = &asciidoc.Docum
 }
 
 var extensionsTestShouldAddDocinfoToDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1212,7 +1212,7 @@ var extensionsTestShouldAddDocinfoToDocument = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -1223,13 +1223,13 @@ var extensionsTestShouldAddDocinfoToDocument = &asciidoc.Document{
 }
 
 var extensionsTestShouldAddMultipleDocinfoToDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1238,7 +1238,7 @@ var extensionsTestShouldAddMultipleDocinfoToDocument = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -1249,21 +1249,21 @@ var extensionsTestShouldAddMultipleDocinfoToDocument = &asciidoc.Document{
 }
 
 var extensionsTestShouldNotAssignCaptionOnImageBlockIfTitleIsNotSetOnCustomBlockMacro = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Cat in Sink?",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "cat_in_sink::30[]",
 				},

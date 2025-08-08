@@ -58,7 +58,7 @@ func (cf *commandFactory) Details(spec *Specification, d *Doc, s *Section, pc *p
 }
 
 func readCommand(pc *parseContext, spec *Specification, d *Doc, s *Section, c *matter.Command) (err error) {
-	c.Description = getDescription(d, c, s.Elements())
+	c.Description = getDescription(d, c, s.Children())
 
 	c.Name = CanonicalName(c.Name)
 
@@ -95,7 +95,7 @@ func (cf *commandFactory) EntityName(s *Section) string {
 
 func (cf *commandFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	return func(yield func(*Section) bool) {
-		parse.SkimFunc(s.Elements(), func(s *Section) bool {
+		parse.SkimFunc(s.Children(), func(s *Section) bool {
 			if s.SecType != matter.SectionCommand {
 				return false
 			}

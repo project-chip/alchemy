@@ -8,7 +8,7 @@ func renderFormattedText(cxt Target, el asciidoc.BlockElement, wrapper string) (
 		return
 	}
 	cxt.WriteString(wrapper)
-	err = Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Children()...)
 	cxt.WriteString(wrapper)
 	return
 }

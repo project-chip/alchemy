@@ -4,7 +4,7 @@ UnorderedListItem = marker:(UnorderedListMarker) checklist:(Checklist)? value:(L
     cl, _ := checklist.(asciidoc.Checklist)
     debug("found unordered list item: %s\n", marker.(listMarker).marker)
     m := marker.(listMarker)
-    return compose(c, asciidoc.NewUnorderedListItem(m.indent, m.marker, cl), setElements[*asciidoc.UnorderedListItem](value.(asciidoc.Set)))
+    return compose(c, asciidoc.NewUnorderedListItem(m.indent, m.marker, cl), setElements[*asciidoc.UnorderedListItem](value.(asciidoc.Elements)))
 }
 
 

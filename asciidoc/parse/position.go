@@ -7,7 +7,7 @@ func copyPosition[T asciidoc.HasPosition](source any, element T) T {
 	case asciidoc.HasPosition:
 		element.SetPath(source.Path())
 		element.SetPosition(source.Position())
-	case asciidoc.Set:
+	case asciidoc.Elements:
 		if len(source) > 0 {
 			return copyPosition(source[0], element)
 		}

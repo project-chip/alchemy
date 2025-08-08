@@ -47,7 +47,7 @@ func (b *Baller) disco(cxt context.Context, doc *spec.Doc) error {
 
 	precleanStrings(doc)
 
-	for top := range parse.Skim[*spec.Section](doc.Elements()) {
+	for top := range parse.Skim[*spec.Section](doc.Children()) {
 		err := spec.AssignSectionTypes(doc, top)
 		if err != nil {
 			return err

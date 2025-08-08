@@ -18,9 +18,9 @@ func renderInternalCrossReference(cxt Target, cf *asciidoc.CrossReference) (err 
 	case asciidoc.CrossReferenceFormatNatural:
 		cxt.WriteString("<<")
 		cxt.WriteString(id)
-		if !cf.Set.IsWhitespace() {
+		if !cf.Elements.IsWhitespace() {
 			cxt.WriteString(",")
-			err = Elements(cxt, "", cf.Elements()...)
+			err = Elements(cxt, "", cf.Children()...)
 			if err != nil {
 				return
 			}

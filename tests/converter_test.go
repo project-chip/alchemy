@@ -28,13 +28,13 @@ var converterTests = parseTests{
 }
 
 var converterTestShouldSetHamlFormatToHtml5ForHtml5Backend = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
@@ -44,7 +44,7 @@ var converterTestShouldSetHamlFormatToHtml5ForHtml5Backend = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -62,14 +62,14 @@ var converterTestShouldSetHamlFormatToHtml5ForHtml5Backend = &asciidoc.Document{
 							},
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.TitleAttribute{
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Related",
 										},
 									},
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Sidebar content",
 								},
@@ -77,7 +77,7 @@ var converterTestShouldSetHamlFormatToHtml5ForHtml5Backend = &asciidoc.Document{
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section One",
 						},
@@ -85,7 +85,7 @@ var converterTestShouldSetHamlFormatToHtml5ForHtml5Backend = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -96,18 +96,18 @@ var converterTestShouldSetHamlFormatToHtml5ForHtml5Backend = &asciidoc.Document{
 }
 
 var converterTestShouldUseBuiltInGlobalCacheToCacheTemplates = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "chop",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "      <div class=\"openblock wrapper\">",
 				},
@@ -143,13 +143,13 @@ var converterTestShouldUseBuiltInGlobalCacheToCacheTemplates = &asciidoc.Documen
 }
 
 var converterTestShouldLoadErbTemplatesUsingErubiTemplateIfErubyIsSetToErubi = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
@@ -159,7 +159,7 @@ var converterTestShouldLoadErbTemplatesUsingErubiTemplateIfErubyIsSetToErubi = &
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -177,14 +177,14 @@ var converterTestShouldLoadErbTemplatesUsingErubiTemplateIfErubyIsSetToErubi = &
 							},
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.TitleAttribute{
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Related",
 										},
 									},
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Sidebar content",
 								},
@@ -192,7 +192,7 @@ var converterTestShouldLoadErbTemplatesUsingErubiTemplateIfErubyIsSetToErubi = &
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section One",
 						},
@@ -200,7 +200,7 @@ var converterTestShouldLoadErbTemplatesUsingErubiTemplateIfErubyIsSetToErubi = &
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -211,28 +211,28 @@ var converterTestShouldLoadErbTemplatesUsingErubiTemplateIfErubyIsSetToErubi = &
 }
 
 var converterTestShouldBeAbleToOverrideTheOutlineUsingACustomTemplate = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "toc",
-			Set:  nil,
+			Name:     "toc",
+			Elements: nil,
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section One",
 						},
@@ -241,12 +241,12 @@ var converterTestShouldBeAbleToOverrideTheOutlineUsingACustomTemplate = &asciido
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section Two",
 						},
@@ -255,8 +255,8 @@ var converterTestShouldBeAbleToOverrideTheOutlineUsingACustomTemplate = &asciido
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set:           nil,
-					Title: asciidoc.Set{
+					Elements:      nil,
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section Three",
 						},
@@ -264,7 +264,7 @@ var converterTestShouldBeAbleToOverrideTheOutlineUsingACustomTemplate = &asciido
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -275,13 +275,13 @@ var converterTestShouldBeAbleToOverrideTheOutlineUsingACustomTemplate = &asciido
 }
 
 var converterTestShouldNotExposeIncludedMethodOnConverterClass = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -294,7 +294,7 @@ var converterTestShouldNotExposeIncludedMethodOnConverterClass = &asciidoc.Docum
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -303,7 +303,7 @@ var converterTestShouldNotExposeIncludedMethodOnConverterClass = &asciidoc.Docum
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section",
 						},
@@ -311,7 +311,7 @@ var converterTestShouldNotExposeIncludedMethodOnConverterClass = &asciidoc.Docum
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -322,13 +322,13 @@ var converterTestShouldNotExposeIncludedMethodOnConverterClass = &asciidoc.Docum
 }
 
 var converterTestShouldUseSpecifiedConverterForSpecifiedBackend = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -341,7 +341,7 @@ var converterTestShouldUseSpecifiedConverterForSpecifiedBackend = &asciidoc.Docu
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -350,7 +350,7 @@ var converterTestShouldUseSpecifiedConverterForSpecifiedBackend = &asciidoc.Docu
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section",
 						},
@@ -358,7 +358,7 @@ var converterTestShouldUseSpecifiedConverterForSpecifiedBackend = &asciidoc.Docu
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -369,13 +369,13 @@ var converterTestShouldUseSpecifiedConverterForSpecifiedBackend = &asciidoc.Docu
 }
 
 var converterTestShouldGetConverterFromSpecifiedConverterFactory = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -388,7 +388,7 @@ var converterTestShouldGetConverterFromSpecifiedConverterFactory = &asciidoc.Doc
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -397,7 +397,7 @@ var converterTestShouldGetConverterFromSpecifiedConverterFactory = &asciidoc.Doc
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section",
 						},
@@ -405,7 +405,7 @@ var converterTestShouldGetConverterFromSpecifiedConverterFactory = &asciidoc.Doc
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},

@@ -34,7 +34,7 @@ func (p Renderer) Process(cxt context.Context, input *pipeline.Data[InputDocumen
 		renderContext = NewUnwrappedTarget(cxt)
 	}
 
-	err = Elements(renderContext, "", doc.Elements()...)
+	err = Elements(renderContext, "", doc.Children()...)
 	if err != nil {
 		return
 	}

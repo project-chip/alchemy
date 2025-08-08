@@ -12,6 +12,6 @@ const (
 
 type FormattedTextElement interface {
 	Element
-	HasElements
+	ParentElement
 	TextFormat() TextFormat
 }

@@ -16,7 +16,7 @@ var textTests = parseTests{
 }
 
 var textTestLineBreaks = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},

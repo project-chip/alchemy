@@ -30,7 +30,7 @@ func dumpAttributes(attributes []asciidoc.Attribute, indent int) {
 			fmt.Print(v)
 		/*case asciidoc.Options:
 		dumpAttributeVals(v, indent+1)*/
-		case asciidoc.Set:
+		case asciidoc.Elements:
 			dumpElements(nil, v, indent+1)
 		case []any:
 			dumpAttributeVals(v, indent+1)

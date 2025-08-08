@@ -5,7 +5,7 @@ type Superscript struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 }
 
 func NewSuperscript() *Superscript {
@@ -24,5 +24,5 @@ func (a *Superscript) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

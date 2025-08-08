@@ -1,10 +1,10 @@
 
 DescriptionListItem = inlineAnchor:(AnchorAttribute)? term:(DescriptionListTerm) marker:(DescriptionListMarker) whitespace:(_ { return asciidoc.NewString(string(c.text)), nil } / NewLine)+ value:(DescriptionListItemValue) {
     debugPosition(c, "found description list item: %s\n", marker.(string))
-    dli := asciidoc.NewDescriptionListItem(marker.(string), term.(asciidoc.Set))
+    dli := asciidoc.NewDescriptionListItem(marker.(string), term.(asciidoc.Elements))
     values := cast[any, asciidoc.Element](whitespace.([]any))
-    values = append(values, value.(asciidoc.Set)...) 
-    cos := []composeOption[*asciidoc.DescriptionListItem]{setElements[*asciidoc.DescriptionListItem](asciidoc.Set(values))}
+    values = append(values, value.(asciidoc.Elements)...) 
+    cos := []composeOption[*asciidoc.DescriptionListItem]{setElements[*asciidoc.DescriptionListItem](asciidoc.Elements(values))}
     if inlineAnchor != nil {
         cos = append(cos, setAttributes[*asciidoc.DescriptionListItem](inlineAnchor))
     }

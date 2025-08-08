@@ -103,5 +103,5 @@ func addProvisionalConformance(doc *spec.Doc, e types.Entity, source asciidoc.El
 
 func setCellString(cell *asciidoc.TableCell, v string) {
 	se := asciidoc.NewString(v)
-	cell.SetElements(asciidoc.Set{se})
+	cell.SetChildren(asciidoc.Elements{se})
 }

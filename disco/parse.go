@@ -215,7 +215,7 @@ func findSubsections(dp *docParse, parent *subSection, childPatterns ...subSecti
 		subSectionNames[subSectionName] = i
 	}
 	var i int
-	for ss := range parse.Skim[*spec.Section](parent.section.Elements()) {
+	for ss := range parse.Skim[*spec.Section](parent.section.Children()) {
 		name := text.TrimCaseInsensitiveSuffix(ss.Name, childPattern.suffix)
 		var ok bool
 		if _, ok = subSectionNames[name]; !ok {

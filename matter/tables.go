@@ -102,7 +102,7 @@ func (tc TableColumn) String() string {
 	return fmt.Sprintf("unknown table column name: %d", tc)
 }
 
-var AllowedTableAttributes = map[asciidoc.AttributeName]asciidoc.Set{
+var AllowedTableAttributes = map[asciidoc.AttributeName]asciidoc.Elements{
 	"id":      nil,
 	"title":   nil,
 	"valign":  {asciidoc.NewString("middle")},

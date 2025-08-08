@@ -19,7 +19,7 @@ func cast[F any, T any](in []F) (out []T) {
 	return
 }
 
-func flat(els []any) (out asciidoc.Set) {
+func flat(els []any) (out asciidoc.Elements) {
 	for _, e := range els {
 		switch e := e.(type) {
 		case []any:
@@ -31,13 +31,13 @@ func flat(els []any) (out asciidoc.Set) {
 	return
 }
 
-func flatAppend(e any, list asciidoc.Set) asciidoc.Set {
+func flatAppend(e any, list asciidoc.Elements) asciidoc.Elements {
 	switch e := e.(type) {
 	case asciidoc.Element:
 		list = append(list, e)
 	case []asciidoc.Element:
 		list = append(list, e...)
-	case asciidoc.Set:
+	case asciidoc.Elements:
 		list = append(list, e...)
 	case string:
 		list = append(list, asciidoc.NewString(e))

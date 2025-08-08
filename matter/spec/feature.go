@@ -63,7 +63,7 @@ func (s *Section) toFeatures(d *Doc, pc *parseContext) (features *matter.Feature
 		featureMap[name] = f
 	}
 
-	for s := range parse.Skim[*Section](s.Elements()) {
+	for s := range parse.Skim[*Section](s.Children()) {
 		switch s.SecType {
 		case matter.SectionFeature:
 

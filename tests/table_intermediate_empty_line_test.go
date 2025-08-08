@@ -3,13 +3,13 @@ package tests
 import "github.com/project-chip/alchemy/asciidoc"
 
 var tableIntermediateEmptyLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -39,7 +39,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Cell in column 1, row 1",
 								},
@@ -58,7 +58,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -88,7 +88,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Cell in column 1, row 2",
 								},
@@ -105,7 +105,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -135,7 +135,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Cell in column 1, row 3",
 								},
@@ -149,7 +149,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -179,7 +179,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Cell in column 1, row 4",
 								},
@@ -202,7 +202,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 					Text: "\n    ",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -232,7 +232,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Cell in column 1, row 5",
 								},
@@ -260,7 +260,7 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -290,13 +290,13 @@ var tableIntermediateEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Cell in column 1, row 6, with a xref: ",
 								},
 								&asciidoc.CrossReference{
-									Set: nil,
-									ID:  "ref_Ref",
+									Elements: nil,
+									ID:       "ref_Ref",
 								},
 							},
 							Blank: false,

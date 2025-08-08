@@ -44,7 +44,7 @@ func (cf *eventFactory) New(spec *Specification, d *Doc, s *Section, ti *TableIn
 }
 
 func (cf *eventFactory) Details(spec *Specification, d *Doc, s *Section, pc *parseContext, e *matter.Event) (err error) {
-	e.Description = getDescription(d, e, s.Set)
+	e.Description = getDescription(d, e, s.Elements)
 	var ti *TableInfo
 	ti, err = parseFirstTable(d, s)
 	if err != nil {
@@ -88,7 +88,7 @@ func (cf *eventFactory) EntityName(s *Section) string {
 
 func (cf *eventFactory) Children(d *Doc, s *Section) iter.Seq[*Section] {
 	return func(yield func(*Section) bool) {
-		parse.SkimFunc(s.Elements(), func(s *Section) bool {
+		parse.SkimFunc(s.Children(), func(s *Section) bool {
 			if s.SecType != matter.SectionEvent {
 				return false
 			}

@@ -7,7 +7,7 @@ type QuoteBlock struct {
 	Delimiter Delimiter
 	AttributeList
 
-	Set
+	Elements
 }
 
 func NewQuoteBlock(delimiter Delimiter) *QuoteBlock {
@@ -29,5 +29,5 @@ func (a *QuoteBlock) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

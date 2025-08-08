@@ -21,7 +21,7 @@ func buildTree(specRoot string, docs []*Doc) error {
 		path := doc.Path
 		docPaths[path.Absolute] = doc
 
-		parse.Traverse(doc, doc.Elements(), func(link *asciidoc.FileInclude, parent parse.HasElements, index int) parse.SearchShould {
+		parse.Traverse(doc, doc.Children(), func(link *asciidoc.FileInclude, parent parse.HasElements, index int) parse.SearchShould {
 			tree[doc] = append(tree[doc], link)
 			return parse.SearchShouldContinue
 		})
@@ -30,7 +30,7 @@ func buildTree(specRoot string, docs []*Doc) error {
 	for doc, children := range tree {
 		for _, link := range children {
 			var p strings.Builder
-			buildDataTypeString(doc, link.Set, &p)
+			buildDataTypeString(doc, link.Elements, &p)
 			linkFullPath := filepath.Join(doc.Path.Dir(), p.String())
 			linkPath, err := asciidoc.NewPath(linkFullPath, specRoot)
 			if err != nil {

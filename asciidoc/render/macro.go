@@ -5,7 +5,7 @@ import "github.com/project-chip/alchemy/asciidoc"
 func renderFileInclude(cxt Target, el *asciidoc.FileInclude) (err error) {
 	cxt.StartBlock()
 	cxt.WriteString("include::")
-	err = Elements(cxt, "", el.Elements()...)
+	err = Elements(cxt, "", el.Children()...)
 	if err != nil {
 		return
 	}

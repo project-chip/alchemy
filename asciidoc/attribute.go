@@ -10,7 +10,7 @@ type AttributeEntry struct {
 	raw
 
 	Name AttributeName
-	Set
+	Elements
 }
 
 func NewAttributeEntry(name string) *AttributeEntry {
@@ -29,7 +29,7 @@ func (uar *AttributeEntry) Equals(e Element) bool {
 	if uar.Name != ouar.Name {
 		return false
 	}
-	return uar.Set.Equals(ouar.Set)
+	return uar.Elements.Equals(ouar.Elements)
 }
 
 type AttributeReset struct {
@@ -79,12 +79,12 @@ type NamedAttribute struct {
 
 	Name AttributeName
 
-	Val Set
+	Val Elements
 
 	Quote AttributeQuoteType
 }
 
-func NewNamedAttribute(name string, value Set, quoteType AttributeQuoteType) Attribute {
+func NewNamedAttribute(name string, value Elements, quoteType AttributeQuoteType) Attribute {
 	return &NamedAttribute{Name: AttributeName(name), Val: value, Quote: quoteType}
 }
 
@@ -93,7 +93,7 @@ func (na *NamedAttribute) Value() any {
 }
 
 func (na *NamedAttribute) SetValue(v any) error {
-	if v, ok := v.(Set); ok {
+	if v, ok := v.(Elements); ok {
 		na.Val = v
 		return nil
 	}
@@ -135,10 +135,10 @@ type PositionalAttribute struct {
 	Offset      int
 	ImpliedName AttributeName
 
-	Val Set
+	Val Elements
 }
 
-func NewPositionalAttribute(value Set) Attribute {
+func NewPositionalAttribute(value Elements) Attribute {
 	return &PositionalAttribute{Val: value}
 }
 
@@ -147,7 +147,7 @@ func (pa *PositionalAttribute) Value() any {
 }
 
 func (na *PositionalAttribute) SetValue(v any) error {
-	if v, ok := v.(Set); ok {
+	if v, ok := v.(Elements); ok {
 		na.Val = v
 		return nil
 	}
@@ -180,10 +180,10 @@ func (na *PositionalAttribute) AsciiDocString() string {
 type TitleAttribute struct {
 	attribute
 
-	Val Set
+	Val Elements
 }
 
-func NewTitleAttribute(value Set) Attribute {
+func NewTitleAttribute(value Elements) Attribute {
 	return &TitleAttribute{Val: value}
 }
 
@@ -192,7 +192,7 @@ func (ta *TitleAttribute) Value() any {
 }
 
 func (na *TitleAttribute) SetValue(v any) error {
-	if v, ok := v.(Set); ok {
+	if v, ok := v.(Elements); ok {
 		na.Val = v
 		return nil
 	}
@@ -258,7 +258,7 @@ func NewAttributeReference(name string) AttributeReference {
 type Attributable interface {
 	Attributes() []Attribute
 	GetAttributeByName(name AttributeName) *NamedAttribute
-	SetAttribute(name AttributeName, value Set)
+	SetAttribute(name AttributeName, value Elements)
 	SetAttributes(as ...Attribute)
 	DeleteAttribute(name AttributeName)
 	AppendAttribute(as ...Attribute)
@@ -273,7 +273,7 @@ type AttributableElement interface {
 type BlockElement interface {
 	Element
 	Attributable
-	HasElements
+	ParentElement
 }
 
 var characterReplacementAttributes = map[string]string{
@@ -336,7 +336,7 @@ func isCharacterReplacement(s string) bool {
 	return ok
 }
 
-func AttributeAsciiDocString(val Set) string {
+func AttributeAsciiDocString(val Elements) string {
 	var sb strings.Builder
 	for _, e := range val {
 		attributeAsciiDocStringElement(&sb, e)

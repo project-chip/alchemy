@@ -12,7 +12,7 @@ type CrossReference struct {
 	raw
 
 	AttributeList
-	Set
+	Elements
 
 	ID     string
 	Format CrossReferenceFormat
@@ -34,10 +34,10 @@ func (a *CrossReference) Equals(o Element) bool {
 	if a.ID != oa.ID {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
-func NewCrossReferenceMacro(path Set) AttributableElement {
+func NewCrossReferenceMacro(path Elements) AttributableElement {
 	if len(path) == 1 {
 		if s, ok := path[0].(*String); ok {
 			return NewCrossReference(s.Value, CrossReferenceFormatMacro)
@@ -52,10 +52,10 @@ type DocumentCrossReference struct {
 
 	AttributeList
 
-	ReferencePath Set
+	ReferencePath Elements
 }
 
-func NewDocumentCrossReference(path Set) *DocumentCrossReference {
+func NewDocumentCrossReference(path Elements) *DocumentCrossReference {
 	return &DocumentCrossReference{ReferencePath: path}
 }
 

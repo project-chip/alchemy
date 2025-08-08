@@ -3,12 +3,12 @@ package tests
 import "github.com/project-chip/alchemy/asciidoc"
 
 var tableIndentedCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "header",
 						},
@@ -17,7 +17,7 @@ var tableIndentedCell = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "valign",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "middle",
 						},
@@ -26,9 +26,9 @@ var tableIndentedCell = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 7,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -58,7 +58,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "ID",
 								},
@@ -94,7 +94,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Name",
 								},
@@ -130,7 +130,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Type",
 								},
@@ -166,7 +166,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Constraint",
 								},
@@ -202,7 +202,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Quality",
 								},
@@ -238,7 +238,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Default",
 								},
@@ -274,7 +274,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Conformance",
 								},
@@ -284,7 +284,7 @@ var tableIndentedCell = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -314,7 +314,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -350,7 +350,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "LoadAdjustment",
 								},
@@ -386,7 +386,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "int8",
 								},
@@ -422,7 +422,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "0 to 100",
 								},
@@ -458,7 +458,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "",
 								},
@@ -494,7 +494,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "",
 								},
@@ -530,7 +530,7 @@ var tableIndentedCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "M",
 								},

@@ -88,7 +88,7 @@ var paragraphsTests = parseTests{
 }
 
 var paragraphsTestShouldTreatPlainTextSeparatedByBlankLinesAsParagraphs = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -107,21 +107,21 @@ var paragraphsTestShouldTreatPlainTextSeparatedByBlankLinesAsParagraphs = &ascii
 }
 
 var paragraphsTestShouldAssociateBlockTitleWithParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Titled",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Paragraph.",
 				},
@@ -140,13 +140,13 @@ var paragraphsTestShouldAssociateBlockTitleWithParagraph = &asciidoc.Document{
 }
 
 var paragraphsTestNoDuplicateBlockBeforeNextSection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -159,7 +159,7 @@ var paragraphsTestNoDuplicateBlockBeforeNextSection = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -178,7 +178,7 @@ var paragraphsTestNoDuplicateBlockBeforeNextSection = &asciidoc.Document{
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First Section",
 						},
@@ -187,7 +187,7 @@ var paragraphsTestNoDuplicateBlockBeforeNextSection = &asciidoc.Document{
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -196,7 +196,7 @@ var paragraphsTestNoDuplicateBlockBeforeNextSection = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Second Section",
 						},
@@ -204,7 +204,7 @@ var paragraphsTestNoDuplicateBlockBeforeNextSection = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Title",
 				},
@@ -215,7 +215,7 @@ var paragraphsTestNoDuplicateBlockBeforeNextSection = &asciidoc.Document{
 }
 
 var paragraphsTestDoesNotTreatWrappedLineAsAListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -224,7 +224,7 @@ var paragraphsTestDoesNotTreatWrappedLineAsAListItem = &asciidoc.Document{
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "wrapped line",
 				},
@@ -237,7 +237,7 @@ var paragraphsTestDoesNotTreatWrappedLineAsAListItem = &asciidoc.Document{
 }
 
 var paragraphsTestDoesNotTreatWrappedLineAsABlockTitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -248,21 +248,21 @@ var paragraphsTestDoesNotTreatWrappedLineAsABlockTitle = &asciidoc.Document{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "wrapped line",
 						},
 					},
 				},
 			},
-			Set:        asciidoc.Set{},
+			Elements:   asciidoc.Elements{},
 			Admonition: 0,
 		},
 	},
 }
 
 var paragraphsTestInterpretsNormalParagraphStyleAsNormalParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -270,7 +270,7 @@ var paragraphsTestInterpretsNormalParagraphStyleAsNormalParagraph = &asciidoc.Do
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "normal",
 							},
@@ -281,7 +281,7 @@ var paragraphsTestInterpretsNormalParagraphStyleAsNormalParagraph = &asciidoc.Do
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Normal paragraph.",
 				},
@@ -297,7 +297,7 @@ var paragraphsTestInterpretsNormalParagraphStyleAsNormalParagraph = &asciidoc.Do
 }
 
 var paragraphsTestRemovesIndentationFromLiteralParagraphMarkedAsNormal = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -305,7 +305,7 @@ var paragraphsTestRemovesIndentationFromLiteralParagraphMarkedAsNormal = &asciid
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "normal",
 							},
@@ -316,7 +316,7 @@ var paragraphsTestRemovesIndentationFromLiteralParagraphMarkedAsNormal = &asciid
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "  Normal paragraph.",
 				},
@@ -336,7 +336,7 @@ var paragraphsTestRemovesIndentationFromLiteralParagraphMarkedAsNormal = &asciid
 }
 
 var paragraphsTestNormalParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -348,7 +348,7 @@ var paragraphsTestNormalParagraphTerminatesAtBlockAttributeList = &asciidoc.Docu
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "literal",
 							},
@@ -359,7 +359,7 @@ var paragraphsTestNormalParagraphTerminatesAtBlockAttributeList = &asciidoc.Docu
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "literal text",
 				},
@@ -371,7 +371,7 @@ var paragraphsTestNormalParagraphTerminatesAtBlockAttributeList = &asciidoc.Docu
 }
 
 var paragraphsTestNormalParagraphTerminatesAtBlockDelimiter = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -385,7 +385,7 @@ var paragraphsTestNormalParagraphTerminatesAtBlockDelimiter = &asciidoc.Document
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "text in open block",
 				},
@@ -396,7 +396,7 @@ var paragraphsTestNormalParagraphTerminatesAtBlockDelimiter = &asciidoc.Document
 }
 
 var paragraphsTestNormalParagraphTerminatesAtListContinuation = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -410,7 +410,7 @@ var paragraphsTestNormalParagraphTerminatesAtListContinuation = &asciidoc.Docume
 }
 
 var paragraphsTestNormalStyleTurnsLiteralParagraphIntoNormalParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -418,7 +418,7 @@ var paragraphsTestNormalStyleTurnsLiteralParagraphIntoNormalParagraph = &asciido
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "normal",
 							},
@@ -429,7 +429,7 @@ var paragraphsTestNormalStyleTurnsLiteralParagraphIntoNormalParagraph = &asciido
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: " normal paragraph,",
 				},
@@ -445,7 +445,7 @@ var paragraphsTestNormalStyleTurnsLiteralParagraphIntoNormalParagraph = &asciido
 }
 
 var paragraphsTestAutomaticallyPromotesIndexTermsInDocBookOutputIfIndextermPromotionOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -473,7 +473,7 @@ var paragraphsTestAutomaticallyPromotesIndexTermsInDocBookOutputIfIndextermPromo
 }
 
 var paragraphsTestDoesNotAutomaticallyPromoteIndexTermsInDocBookOutputIfIndextermPromotionOptionIsNotSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -497,7 +497,7 @@ var paragraphsTestDoesNotAutomaticallyPromoteIndexTermsInDocBookOutputIfIndexter
 }
 
 var paragraphsTestNormalParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -505,7 +505,7 @@ var paragraphsTestNormalParagraphShouldHonorExplicitSubsList = &asciidoc.Documen
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "specialcharacters",
 						},
@@ -513,10 +513,10 @@ var paragraphsTestNormalParagraphShouldHonorExplicitSubsList = &asciidoc.Documen
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Bold{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						asciidoc.SpecialCharacter{
 							Character: "<",
 						},
@@ -536,7 +536,7 @@ var paragraphsTestNormalParagraphShouldHonorExplicitSubsList = &asciidoc.Documen
 }
 
 var paragraphsTestNormalParagraphShouldHonorSpecialcharsShorthand = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -544,7 +544,7 @@ var paragraphsTestNormalParagraphShouldHonorSpecialcharsShorthand = &asciidoc.Do
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "specialchars",
 						},
@@ -552,10 +552,10 @@ var paragraphsTestNormalParagraphShouldHonorSpecialcharsShorthand = &asciidoc.Do
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Bold{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						asciidoc.SpecialCharacter{
 							Character: "<",
 						},
@@ -575,7 +575,7 @@ var paragraphsTestNormalParagraphShouldHonorSpecialcharsShorthand = &asciidoc.Do
 }
 
 var paragraphsTestShouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -587,7 +587,7 @@ var paragraphsTestShouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet = 
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "hardbreaks",
 								},
@@ -596,7 +596,7 @@ var paragraphsTestShouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet = 
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "read",
 				},
@@ -616,13 +616,13 @@ var paragraphsTestShouldAddAHardbreakAtEndOfEachLineWhenHardbreaksOptionIsSet = 
 }
 
 var paragraphsTestShouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "hardbreaks-option",
-			Set:  nil,
+			Name:     "hardbreaks-option",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -656,7 +656,7 @@ var paragraphsTestShouldBeAbleToToggleHardbreaksBySettingHardbreaksOptionOnDocum
 }
 
 var paragraphsTestSingleLineLiteralParagraphs = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -689,7 +689,7 @@ var paragraphsTestSingleLineLiteralParagraphs = &asciidoc.Document{
 }
 
 var paragraphsTestMultiLineLiteralParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -719,7 +719,7 @@ var paragraphsTestMultiLineLiteralParagraph = &asciidoc.Document{
 }
 
 var paragraphsTestLiteralParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -727,7 +727,7 @@ var paragraphsTestLiteralParagraph = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "literal",
 							},
@@ -738,7 +738,7 @@ var paragraphsTestLiteralParagraph = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "this text is literally literal",
 				},
@@ -750,7 +750,7 @@ var paragraphsTestLiteralParagraph = &asciidoc.Document{
 }
 
 var paragraphsTestShouldReadContentBelowLiteralStyleVerbatim = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -759,14 +759,14 @@ var paragraphsTestShouldReadContentBelowLiteralStyleVerbatim = &asciidoc.Documen
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "literal",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "not-an-image-block",
 				},
@@ -776,7 +776,7 @@ var paragraphsTestShouldReadContentBelowLiteralStyleVerbatim = &asciidoc.Documen
 }
 
 var paragraphsTestListingParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -784,7 +784,7 @@ var paragraphsTestListingParagraph = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "listing",
 							},
@@ -795,7 +795,7 @@ var paragraphsTestListingParagraph = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "this text is a listing",
 				},
@@ -807,7 +807,7 @@ var paragraphsTestListingParagraph = &asciidoc.Document{
 }
 
 var paragraphsTestSourceParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -815,7 +815,7 @@ var paragraphsTestSourceParagraph = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -826,7 +826,7 @@ var paragraphsTestSourceParagraph = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "use the source, luke!",
 				},
@@ -838,7 +838,7 @@ var paragraphsTestSourceParagraph = &asciidoc.Document{
 }
 
 var paragraphsTestSourceCodeParagraphWithLanguage = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -846,7 +846,7 @@ var paragraphsTestSourceCodeParagraphWithLanguage = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -859,14 +859,14 @@ var paragraphsTestSourceCodeParagraphWithLanguage = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "perl",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "die 'zomg perl is tough';",
 				},
@@ -878,7 +878,7 @@ var paragraphsTestSourceCodeParagraphWithLanguage = &asciidoc.Document{
 }
 
 var paragraphsTestLiteralParagraphTerminatesAtBlockAttributeList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -890,7 +890,7 @@ var paragraphsTestLiteralParagraphTerminatesAtBlockAttributeList = &asciidoc.Doc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "normal",
 							},
@@ -901,7 +901,7 @@ var paragraphsTestLiteralParagraphTerminatesAtBlockAttributeList = &asciidoc.Doc
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "normal text",
 				},
@@ -913,7 +913,7 @@ var paragraphsTestLiteralParagraphTerminatesAtBlockAttributeList = &asciidoc.Doc
 }
 
 var paragraphsTestLiteralParagraphTerminatesAtBlockDelimiter = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -927,7 +927,7 @@ var paragraphsTestLiteralParagraphTerminatesAtBlockDelimiter = &asciidoc.Documen
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "normal text",
 				},
@@ -938,7 +938,7 @@ var paragraphsTestLiteralParagraphTerminatesAtBlockDelimiter = &asciidoc.Documen
 }
 
 var paragraphsTestLiteralParagraphTerminatesAtListContinuation = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -952,7 +952,7 @@ var paragraphsTestLiteralParagraphTerminatesAtListContinuation = &asciidoc.Docum
 }
 
 var paragraphsTestSingleLineQuoteParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -960,7 +960,7 @@ var paragraphsTestSingleLineQuoteParagraph = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "quote",
 							},
@@ -971,7 +971,7 @@ var paragraphsTestSingleLineQuoteParagraph = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Famous quote.",
 				},
@@ -983,7 +983,7 @@ var paragraphsTestSingleLineQuoteParagraph = &asciidoc.Document{
 }
 
 var paragraphsTestQuoteParagraphTerminatesAtListContinuation = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -991,7 +991,7 @@ var paragraphsTestQuoteParagraphTerminatesAtListContinuation = &asciidoc.Documen
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "quote",
 							},
@@ -1002,7 +1002,7 @@ var paragraphsTestQuoteParagraphTerminatesAtListContinuation = &asciidoc.Documen
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A famouse quote.",
 				},
@@ -1016,7 +1016,7 @@ var paragraphsTestQuoteParagraphTerminatesAtListContinuation = &asciidoc.Documen
 }
 
 var paragraphsTestVerseParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1024,7 +1024,7 @@ var paragraphsTestVerseParagraph = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "verse",
 							},
@@ -1035,10 +1035,10 @@ var paragraphsTestVerseParagraph = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Italic{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "GET /groups/link:#group-id[\\{group-id\\}]",
 						},
@@ -1052,7 +1052,7 @@ var paragraphsTestVerseParagraph = &asciidoc.Document{
 }
 
 var paragraphsTestQuoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1060,7 +1060,7 @@ var paragraphsTestQuoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "subs",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "specialcharacters",
 						},
@@ -1069,7 +1069,7 @@ var paragraphsTestQuoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document
 				},
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "quote",
 							},
@@ -1080,10 +1080,10 @@ var paragraphsTestQuoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.Bold{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Hey Jude",
 						},
@@ -1097,7 +1097,7 @@ var paragraphsTestQuoteParagraphShouldHonorExplicitSubsList = &asciidoc.Document
 }
 
 var paragraphsTestNoteMultilineSyntax = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1112,7 +1112,7 @@ var paragraphsTestNoteMultilineSyntax = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "sidebar",
 							},
@@ -1123,7 +1123,7 @@ var paragraphsTestNoteMultilineSyntax = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "First line of sidebar.",
 				},
@@ -1153,16 +1153,16 @@ var paragraphsTestNoteMultilineSyntax = &asciidoc.Document{
 }
 
 var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -1172,7 +1172,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -1183,7 +1183,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "preface",
 							},
@@ -1194,7 +1194,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1202,7 +1202,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -1213,7 +1213,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "An abstract for the book.",
 						},
@@ -1225,7 +1225,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "About this book",
 				},
@@ -1234,7 +1234,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1242,7 +1242,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -1253,7 +1253,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "An intro to this part.",
 						},
@@ -1266,7 +1266,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -1274,7 +1274,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.ShorthandAttribute{
 									Style: &asciidoc.ShorthandStyle{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "sidebar",
 											},
@@ -1285,7 +1285,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 									Options: nil,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Just a side note.",
 								},
@@ -1300,7 +1300,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.ShorthandAttribute{
 									Style: &asciidoc.ShorthandStyle{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "example",
 											},
@@ -1311,7 +1311,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 									Options: nil,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "As you can see here.",
 								},
@@ -1326,7 +1326,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.ShorthandAttribute{
 									Style: &asciidoc.ShorthandStyle{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "quote",
 											},
@@ -1337,7 +1337,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 									Options: nil,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Wise words from a wise person.",
 								},
@@ -1352,7 +1352,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.ShorthandAttribute{
 									Style: &asciidoc.ShorthandStyle{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "open",
 											},
@@ -1363,7 +1363,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 									Options: nil,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Make it what you want.",
 								},
@@ -1372,7 +1372,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 							Admonition: 0,
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -1380,7 +1380,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Part 1",
 				},
@@ -1391,7 +1391,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWhenConvertedToDocBo
 }
 
 var paragraphsTestShouldConvertOpenParagraphToOpenBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1399,7 +1399,7 @@ var paragraphsTestShouldConvertOpenParagraphToOpenBlock = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "open",
 							},
@@ -1410,7 +1410,7 @@ var paragraphsTestShouldConvertOpenParagraphToOpenBlock = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Make it what you want.",
 				},
@@ -1422,16 +1422,16 @@ var paragraphsTestShouldConvertOpenParagraphToOpenBlock = &asciidoc.Document{
 }
 
 var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvertedToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -1441,7 +1441,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book",
 				},
@@ -1452,7 +1452,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "preface",
 							},
@@ -1463,7 +1463,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1471,7 +1471,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "abstract",
 									},
@@ -1482,14 +1482,14 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 							Options: nil,
 						},
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Abstract title",
 								},
 							},
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "An abstract for the book.",
 						},
@@ -1501,7 +1501,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "About this book",
 				},
@@ -1510,7 +1510,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1518,7 +1518,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.ShorthandAttribute{
 							Style: &asciidoc.ShorthandStyle{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "partintro",
 									},
@@ -1529,14 +1529,14 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 							Options: nil,
 						},
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Part intro title",
 								},
 							},
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "An intro to this part.",
 						},
@@ -1549,7 +1549,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -1557,7 +1557,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.ShorthandAttribute{
 									Style: &asciidoc.ShorthandStyle{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "sidebar",
 											},
@@ -1568,14 +1568,14 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 									Options: nil,
 								},
 								&asciidoc.TitleAttribute{
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Sidebar title",
 										},
 									},
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Just a side note.",
 								},
@@ -1590,7 +1590,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.ShorthandAttribute{
 									Style: &asciidoc.ShorthandStyle{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "example",
 											},
@@ -1601,14 +1601,14 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 									Options: nil,
 								},
 								&asciidoc.TitleAttribute{
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Example title",
 										},
 									},
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "As you can see here.",
 								},
@@ -1623,7 +1623,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.ShorthandAttribute{
 									Style: &asciidoc.ShorthandStyle{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "quote",
 											},
@@ -1634,14 +1634,14 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 									Options: nil,
 								},
 								&asciidoc.TitleAttribute{
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Quote title",
 										},
 									},
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Wise words from a wise person.",
 								},
@@ -1650,7 +1650,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 							Admonition: 0,
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -1658,7 +1658,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Part 1",
 				},
@@ -1669,7 +1669,7 @@ var paragraphsTestShouldWrapTextInSimparaForStyledParagraphsWithTitleWhenConvert
 }
 
 var paragraphsTestShouldOutputNilAndWarnIfFirstBlockIsNotAParagraph = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1677,7 +1677,7 @@ var paragraphsTestShouldOutputNilAndWarnIfFirstBlockIsNotAParagraph = &asciidoc.
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "foo",
 							},
@@ -1688,7 +1688,7 @@ var paragraphsTestShouldOutputNilAndWarnIfFirstBlockIsNotAParagraph = &asciidoc.
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bar",
 				},
@@ -1700,7 +1700,7 @@ var paragraphsTestShouldOutputNilAndWarnIfFirstBlockIsNotAParagraph = &asciidoc.
 }
 
 var paragraphsTestShouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsEnabled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1708,7 +1708,7 @@ var paragraphsTestShouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsE
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "foo",
 							},
@@ -1719,7 +1719,7 @@ var paragraphsTestShouldLogDebugMessageIfParagraphStyleIsUnknownAndDebugLevelIsE
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bar",
 				},

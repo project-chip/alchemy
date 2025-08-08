@@ -59,17 +59,17 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 			if anchor.ID != xref.Reference.ID {
 				xref.SyncToDoc(anchor.ID)
 			}
-			if len(xref.Reference.Set) > 0 {
+			if len(xref.Reference.Elements) > 0 {
 				// If the cross reference has a label that's the same as the one we generated for the anchor, remove it
-				refText := labelText(xref.Reference.Set)
+				refText := labelText(xref.Reference.Elements)
 				if anchorLabel == refText {
-					xref.Reference.Set = nil
+					xref.Reference.Elements = nil
 				}
 			}
 		}
 	}
 	if an.options.NormalizeAnchors {
-		parse.Traverse(nil, doc.Base.Elements(), func(el asciidoc.Element, parent parse.HasElements, index int) parse.SearchShould {
+		parse.Traverse(nil, doc.Base.Children(), func(el asciidoc.Element, parent parse.HasElements, index int) parse.SearchShould {
 			switch el := el.(type) {
 			case *asciidoc.CrossReference:
 				normalizeCrossReference(doc, el)
@@ -86,7 +86,7 @@ func (an AnchorNormalizer) rewriteCrossReferences(doc *spec.Doc) {
 }
 
 func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, parent parse.HasElements, index int) {
-	if len(icr.Set) > 0 {
+	if len(icr.Elements) > 0 {
 		return
 	}
 	anchor := doc.FindAnchor(icr.ID, icr)
@@ -98,7 +98,7 @@ func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, pa
 		return
 	}
 	sectionName := section.Name()
-	elements := parent.Elements()
+	elements := parent.Children()
 	if index >= len(elements)-1 {
 		return
 	}
@@ -120,7 +120,7 @@ func removeCrossReferenceStutter(doc *spec.Doc, icr *asciidoc.CrossReference, pa
 }
 
 func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *spec.Doc, table *asciidoc.Table) {
-	parse.Traverse(table, table.Set, func(icr *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
+	parse.Traverse(table, table.Elements, func(icr *asciidoc.CrossReference, parent parse.HasElements, index int) parse.SearchShould {
 		normalizeCrossReference(doc, icr)
 		return parse.SearchShouldContinue
 	})
@@ -128,7 +128,7 @@ func (an AnchorNormalizer) normalizeTypeCrossReferencesInTable(doc *spec.Doc, ta
 }
 
 func normalizeCrossReference(doc *spec.Doc, icr *asciidoc.CrossReference) {
-	if len(icr.Set) > 0 {
+	if len(icr.Elements) > 0 {
 		// Don't touch existing labels
 		return
 	}
@@ -153,8 +153,8 @@ func normalizeCrossReference(doc *spec.Doc, icr *asciidoc.CrossReference) {
 	}
 	normalizedLabel := normalizeAnchorLabel(section.Name(), section)
 	if labelText(normalizedLabel) != section.Name() {
-		icr.Set = normalizedLabel
-		slog.Debug("Added label to type xref in table", matter.LogEntity("type", entity), "label", labelText(icr.Set))
+		icr.Elements = normalizedLabel
+		slog.Debug("Added label to type xref in table", matter.LogEntity("type", entity), "label", labelText(icr.Elements))
 	}
 
 }

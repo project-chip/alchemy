@@ -41,16 +41,16 @@ func setAttributes[T asciidoc.AttributableElement](attributes any) composeOption
 	}
 }
 
-func setElements[T asciidoc.HasElements](els any) composeOption[T] {
+func setElements[T asciidoc.ParentElement](els any) composeOption[T] {
 	return func(t T) error {
 		if els == nil {
 			return nil
 		}
-		as, ok := els.(asciidoc.Set)
+		as, ok := els.(asciidoc.Elements)
 		if !ok {
 			return fmt.Errorf("non-element list passed to setElements: %T", els)
 		}
-		t.SetElements(as)
+		t.SetChildren(as)
 		return nil
 	}
 }

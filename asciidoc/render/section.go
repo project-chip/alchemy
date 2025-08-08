@@ -16,7 +16,7 @@ func renderSection(cxt Target, s *asciidoc.Section) (err error) {
 	return
 }
 
-func renderSectionTitle(cxt Target, title asciidoc.Set, level int) (err error) {
+func renderSectionTitle(cxt Target, title asciidoc.Elements, level int) (err error) {
 	cxt.DisableWrap()
 	cxt.WriteString(strings.Repeat("=", level))
 	cxt.WriteRune(' ')

@@ -21,13 +21,13 @@ type PreParseContext interface {
 	ShouldIncludeFile(path asciidoc.Path) bool
 }
 
-func preParseReaderToSet(context PreParseContext, path string, reader io.Reader) (asciidoc.Set, error) {
+func preParseReaderToSet(context PreParseContext, path string, reader io.Reader) (asciidoc.Elements, error) {
 	vals, err := ParseReader(path, reader, Entrypoint("PreParse"))
 	if err != nil {
 		slog.Error("error preparsing file", slog.String("path", path), slog.Any("error", err))
 		return nil, err
 	}
-	set, ok := vals.(asciidoc.Set)
+	set, ok := vals.(asciidoc.Elements)
 	if ok {
 		result := asciidoc.NewWriter(nil)
 		err = preparseElements(context, asciidoc.NewReader(set), result)
@@ -47,30 +47,30 @@ func preparseElements(context PreParseContext, r *asciidoc.Reader, w *asciidoc.W
 		}
 		switch el := el.(type) {
 		case *asciidoc.AttributeEntry:
-			context.Set(string(el.Name), el.Set)
+			context.Set(string(el.Name), el.Elements)
 		case *asciidoc.AttributeReset:
 			context.Unset(string(el.Name))
 		case *asciidoc.UserAttributeReference:
 			err = renderReference(context, asciidoc.AttributeName(el.Name()), w)
 		case *asciidoc.IfDefBlock:
 			if el.Eval(context) {
-				err = preparseElements(context, asciidoc.NewReader(el.Set), w)
+				err = preparseElements(context, asciidoc.NewReader(el.Elements), w)
 			}
 		case *asciidoc.IfNDefBlock:
 			if el.Eval(context) {
-				err = preparseElements(context, asciidoc.NewReader(el.Set), w)
+				err = preparseElements(context, asciidoc.NewReader(el.Elements), w)
 			}
 		case *asciidoc.IfEvalBlock:
 			var include bool
 			include, err = el.Eval(context)
 			if err == nil && include {
-				err = preparseElements(context, asciidoc.NewReader(el.Set), w)
+				err = preparseElements(context, asciidoc.NewReader(el.Elements), w)
 			}
 		case *asciidoc.Counter:
 			err = renderCounter(context, el, w)
 		case *asciidoc.FileInclude:
 			rawPathWriter := asciidoc.NewWriter(nil)
-			err = preparseElements(context, asciidoc.NewReader(el.Set), rawPathWriter)
+			err = preparseElements(context, asciidoc.NewReader(el.Elements), rawPathWriter)
 
 			if err != nil {
 				return
@@ -123,7 +123,7 @@ func renderReference(context PreParseContext, name asciidoc.AttributeName, w *as
 		w.Write(asciidoc.NewString(a))
 	case *asciidoc.String:
 		w.Write(a)
-	case asciidoc.Set:
+	case asciidoc.Elements:
 		return preparseElements(context, asciidoc.NewReader(a), w)
 	default:
 		return fmt.Errorf("unknown type rendering reference: %T", a)
@@ -131,7 +131,7 @@ func renderReference(context PreParseContext, name asciidoc.AttributeName, w *as
 	return nil
 }
 
-func renderPreParsedDoc(els asciidoc.Set) (string, error) {
+func renderPreParsedDoc(els asciidoc.Elements) (string, error) {
 	var sb strings.Builder
 	for _, el := range els {
 		switch el := el.(type) {

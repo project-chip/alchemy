@@ -2,10 +2,10 @@ package asciidoc
 
 type Reader struct {
 	index int
-	set   Set
+	set   Elements
 }
 
-func NewReader(set Set) *Reader {
+func NewReader(set Elements) *Reader {
 	return &Reader{
 		set: set,
 	}

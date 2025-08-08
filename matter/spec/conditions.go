@@ -101,7 +101,7 @@ func (s *Section) toBaseDeviceTypeConditions(d *Doc, dt *matter.DeviceType) (con
 			continue
 		}
 		var sb strings.Builder
-		err = readRowCellValueElements(d, row, row.Set, &sb)
+		err = readRowCellValueElements(d, row, row.Elements, &sb)
 		if err != nil {
 			continue
 		}

@@ -6,10 +6,10 @@ type BlockImage struct {
 
 	AttributeList
 
-	ImagePath Set
+	ImagePath Elements
 }
 
-func NewBlockImage(path Set) *BlockImage {
+func NewBlockImage(path Elements) *BlockImage {
 	return &BlockImage{ImagePath: path}
 }
 
@@ -31,10 +31,10 @@ func (a *BlockImage) Equals(o Element) bool {
 type InlineImage struct {
 	AttributeList
 
-	ImagePath Set
+	ImagePath Elements
 }
 
-func NewInlineImage(path Set) *InlineImage {
+func NewInlineImage(path Elements) *InlineImage {
 	return &InlineImage{ImagePath: path}
 }
 

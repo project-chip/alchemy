@@ -41,7 +41,7 @@ func reorderSection(sec *spec.Section, sectionOrder []matter.Section) error {
 	}
 	sections := divyUpSection(sec, validSectionTypes)
 
-	newOrder := make(asciidoc.Set, 0, len(sec.Elements()))
+	newOrder := make(asciidoc.Elements, 0, len(sec.Children()))
 	for _, st := range sectionOrder {
 		if els, ok := sections[st]; ok {
 
@@ -53,14 +53,14 @@ func reorderSection(sec *spec.Section, sectionOrder []matter.Section) error {
 		return fmt.Errorf("non-empty section list after reordering")
 	}
 
-	sec.SetElements(newOrder)
+	sec.SetChildren(newOrder)
 	return nil
 }
 
-func divyUpSection(sec *spec.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Set {
-	sections := make(map[matter.Section]asciidoc.Set)
+func divyUpSection(sec *spec.Section, validSectionTypes map[matter.Section]struct{}) map[matter.Section]asciidoc.Elements {
+	sections := make(map[matter.Section]asciidoc.Elements)
 	lastSectionType := matter.SectionPrefix
-	for _, e := range sec.Elements() {
+	for _, e := range sec.Children() {
 		switch el := e.(type) {
 		case *spec.Section:
 			if el.SecType != matter.SectionUnknown {

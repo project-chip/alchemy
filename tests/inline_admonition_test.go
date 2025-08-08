@@ -3,10 +3,10 @@ package tests
 import "github.com/project-chip/alchemy/asciidoc"
 
 var inlineAdmonition = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "If you want the output to look familiar, copy (or link) the AsciiDoc stylesheet, asciiasciidoc.css, to the output directory.",
 				},
@@ -19,7 +19,7 @@ var inlineAdmonition = &asciidoc.Document{
 		},
 		&asciidoc.Paragraph{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Items marked with TODO are either not yet supported or work in progress.",
 				},
@@ -31,7 +31,7 @@ var inlineAdmonition = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "If the lock already has an Aliro Reader configuration defined,",
 				},
@@ -40,7 +40,7 @@ var inlineAdmonition = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "If the lock already has an Aliro Reader configuration defined,",
 				},
@@ -60,7 +60,7 @@ var inlineAdmonition = &asciidoc.Document{
 				&asciidoc.NewLine{},
 				&asciidoc.Paragraph{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "This avoids accidentally overwriting values that were just set by a different administrator.",
 						},

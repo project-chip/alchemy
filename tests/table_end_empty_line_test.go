@@ -3,12 +3,12 @@ package tests
 import "github.com/project-chip/alchemy/asciidoc"
 
 var tableEndEmptyLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "header",
 						},
@@ -17,7 +17,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "valign",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "middle",
 						},
@@ -26,9 +26,9 @@ var tableEndEmptyLine = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 5,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -58,7 +58,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "ID",
 								},
@@ -94,7 +94,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Name",
 								},
@@ -130,7 +130,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Priority",
 								},
@@ -166,7 +166,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Access",
 								},
@@ -202,7 +202,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Conformance",
 								},
@@ -212,7 +212,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -242,7 +242,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "0x00",
 								},
@@ -278,7 +278,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "RemainingScreenTimeExpired",
 								},
@@ -314,7 +314,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "INFO",
 								},
@@ -350,7 +350,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "V",
 								},
@@ -386,7 +386,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "ST",
 								},
@@ -396,7 +396,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -426,7 +426,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "0x01",
 								},
@@ -462,7 +462,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "EnteringBlockContentTimeWindow",
 								},
@@ -498,7 +498,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "INFO",
 								},
@@ -534,7 +534,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "V",
 								},
@@ -570,7 +570,7 @@ var tableEndEmptyLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "BTW",
 								},

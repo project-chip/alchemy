@@ -53,7 +53,7 @@ type Paragraph struct {
 	position
 
 	AttributeList
-	Set
+	Elements
 
 	Admonition AdmonitionType
 }
@@ -77,5 +77,5 @@ func (a *Paragraph) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }

@@ -224,18 +224,18 @@ var readerTests = parseTests{
 }
 
 var readerTestShouldPrepareLinesFromArrayData = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "lines",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "        This is one paragraph.",
 				},
@@ -254,18 +254,18 @@ var readerTestShouldPrepareLinesFromArrayData = &asciidoc.Document{
 }
 
 var readerTestReadLinesUntilUntilBlankLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "lines",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "        This is one paragraph.",
 				},
@@ -284,7 +284,7 @@ var readerTestReadLinesUntilUntilBlankLine = &asciidoc.Document{
 }
 
 var readerTestReadLinesUntilUntilBlankLinePreservingLastLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.String{
 			Value: ".split Asciidoctor::LF",
 		},
@@ -304,7 +304,7 @@ var readerTestReadLinesUntilUntilBlankLinePreservingLastLine = &asciidoc.Documen
 }
 
 var readerTestReadLinesUntilUntilConditionIsTrue = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.String{
 			Value: ".split Asciidoctor::LF",
 		},
@@ -339,7 +339,7 @@ var readerTestReadLinesUntilUntilConditionIsTrue = &asciidoc.Document{
 }
 
 var readerTestReadLinesUntilUntilConditionIsTrueTakingLastLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.String{
 			Value: ".split Asciidoctor::LF",
 		},
@@ -374,7 +374,7 @@ var readerTestReadLinesUntilUntilConditionIsTrueTakingLastLine = &asciidoc.Docum
 }
 
 var readerTestReadLinesUntilUntilConditionIsTrueTakingAndPreservingLastLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.String{
 			Value: ".split Asciidoctor::LF",
 		},
@@ -409,18 +409,18 @@ var readerTestReadLinesUntilUntilConditionIsTrueTakingAndPreservingLastLine = &a
 }
 
 var readerTestReadLinesUntilTerminator = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "lines",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "        ****",
 				},
@@ -454,18 +454,18 @@ var readerTestReadLinesUntilTerminator = &asciidoc.Document{
 }
 
 var readerTestShouldFlagReaderAsUnterminatedIfReaderReachesEndOfSourceWithoutFindingTerminator = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "lines",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "        ****",
 				},
@@ -495,7 +495,7 @@ var readerTestShouldFlagReaderAsUnterminatedIfReaderReachesEndOfSourceWithoutFin
 }
 
 var readerTestShouldNotSkipFrontMatterByDefault = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -523,7 +523,7 @@ var readerTestShouldNotSkipFrontMatterByDefault = &asciidoc.Document{
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
@@ -536,7 +536,7 @@ var readerTestShouldNotSkipFrontMatterByDefault = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -547,7 +547,7 @@ var readerTestShouldNotSkipFrontMatterByDefault = &asciidoc.Document{
 }
 
 var readerTestShouldNotSkipFrontMatterIfEndingDelimiterIsNotFound = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -564,7 +564,7 @@ var readerTestShouldNotSkipFrontMatterIfEndingDelimiterIsNotFound = &asciidoc.Do
 		&asciidoc.NewLine{},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
@@ -577,7 +577,7 @@ var readerTestShouldNotSkipFrontMatterIfEndingDelimiterIsNotFound = &asciidoc.Do
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -588,18 +588,18 @@ var readerTestShouldNotSkipFrontMatterIfEndingDelimiterIsNotFound = &asciidoc.Do
 }
 
 var readerTestShouldSkipFrontMatterIfSpecifiedBySkipFrontMatterAttribute = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "chop",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "        layout: post",
 				},
@@ -623,18 +623,18 @@ var readerTestShouldSkipFrontMatterIfSpecifiedBySkipFrontMatterAttribute = &asci
 }
 
 var readerTestShouldSkipTomlFrontMatterIfSpecifiedBySkipFrontMatterAttribute = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "chop",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "        layout = 'post'",
 				},
@@ -658,7 +658,7 @@ var readerTestShouldSkipTomlFrontMatterIfSpecifiedBySkipFrontMatterAttribute = &
 }
 
 var readerTestShouldNotTrackIncludeInCatalogForNonAsciiDocIncludeFiles = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -676,13 +676,13 @@ var readerTestShouldNotTrackIncludeInCatalogForNonAsciiDocIncludeFiles = &asciid
 }
 
 var readerTestIncludeDirectiveShouldResolveFileWithSpacesInName = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "target",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "not-a-file.adoc + \\",
 				},
@@ -692,7 +692,7 @@ var readerTestIncludeDirectiveShouldResolveFileWithSpacesInName = &asciidoc.Docu
 			AttributeList: nil,
 			URL: asciidoc.URL{
 				Scheme: "http://",
-				Path: asciidoc.Set{
+				Path: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "example.org/team.adoc",
 					},
@@ -705,7 +705,7 @@ var readerTestIncludeDirectiveShouldResolveFileWithSpacesInName = &asciidoc.Docu
 		},
 		&asciidoc.FileInclude{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.UserAttributeReference{
 					Value: "target",
 				},
@@ -715,7 +715,7 @@ var readerTestIncludeDirectiveShouldResolveFileWithSpacesInName = &asciidoc.Docu
 }
 
 var readerTestIncludeDirectiveShouldResolveFileRelativeToCurrentInclude = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -733,7 +733,7 @@ var readerTestIncludeDirectiveShouldResolveFileRelativeToCurrentInclude = &ascii
 }
 
 var readerTestShouldFailToReadIncludeFileIfNotUtf8EncodedAndEncodingIsNotSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -751,7 +751,7 @@ var readerTestShouldFailToReadIncludeFileIfNotUtf8EncodedAndEncodingIsNotSpecifi
 }
 
 var readerTestShouldIgnoreEncodingAttributeIfValueIsNotAValidEncoding = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -769,7 +769,7 @@ var readerTestShouldIgnoreEncodingAttributeIfValueIsNotAValidEncoding = &asciido
 }
 
 var readerTestShouldUseEncodingSpecifiedByEncodingAttributeWhenReadingIncludeFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -787,7 +787,7 @@ var readerTestShouldUseEncodingSpecifiedByEncodingAttributeWhenReadingIncludeFil
 }
 
 var readerTestUnresolvedTargetReferencedByIncludeDirectiveIsSkippedWhenOptionalOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -795,7 +795,7 @@ var readerTestUnresolvedTargetReferencedByIncludeDirectiveIsSkippedWhenOptionalO
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "opts",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "optional",
 						},
@@ -803,7 +803,7 @@ var readerTestUnresolvedTargetReferencedByIncludeDirectiveIsSkippedWhenOptionalO
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures/",
 				},
@@ -823,7 +823,7 @@ var readerTestUnresolvedTargetReferencedByIncludeDirectiveIsSkippedWhenOptionalO
 }
 
 var readerTestShouldSkipIncludeDirectiveThatReferencesMissingFileIfOptionalOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -831,7 +831,7 @@ var readerTestShouldSkipIncludeDirectiveThatReferencesMissingFileIfOptionalOptio
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "opts",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "optional",
 						},
@@ -839,7 +839,7 @@ var readerTestShouldSkipIncludeDirectiveThatReferencesMissingFileIfOptionalOptio
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures/no-such-file.adoc",
 				},
@@ -856,13 +856,13 @@ var readerTestShouldSkipIncludeDirectiveThatReferencesMissingFileIfOptionalOptio
 }
 
 var readerTestShouldReplaceIncludeDirectiveThatReferencesMissingFileWithMessage = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.FileInclude{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures/no-such-file.adoc",
 				},
@@ -879,7 +879,7 @@ var readerTestShouldReplaceIncludeDirectiveThatReferencesMissingFileWithMessage 
 }
 
 var readerTestNestedIncludeDirectivesAreResolvedRelativeToCurrentFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -897,7 +897,7 @@ var readerTestNestedIncludeDirectivesAreResolvedRelativeToCurrentFile = &asciido
 }
 
 var readerTestIncludeDirectiveSupportsSelectingLinesByLineNumber = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -915,7 +915,7 @@ var readerTestIncludeDirectiveSupportsSelectingLinesByLineNumber = &asciidoc.Doc
 }
 
 var readerTestIncludeDirectiveIgnoresLinesAttributeWithInvalidRange = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -933,7 +933,7 @@ var readerTestIncludeDirectiveIgnoresLinesAttributeWithInvalidRange = &asciidoc.
 }
 
 var readerTestIncludeDirectiveSupportsSelectingLinesByTagInFileThatHasCrlfLineEndings = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -951,7 +951,7 @@ var readerTestIncludeDirectiveSupportsSelectingLinesByTagInFileThatHasCrlfLineEn
 }
 
 var readerTestIncludeDirectiveSkipsLinesInsideTagWhichIsNegated = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -969,7 +969,7 @@ var readerTestIncludeDirectiveSkipsLinesInsideTagWhichIsNegated = &asciidoc.Docu
 }
 
 var readerTestIncludeDirectiveSelectsAllLinesWithoutATagDirectiveWhenValueIsDoubleAsterisk = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -987,7 +987,7 @@ var readerTestIncludeDirectiveSelectsAllLinesWithoutATagDirectiveWhenValueIsDoub
 }
 
 var readerTestIncludeDirectiveSelectsAllLinesExceptLinesInsideTagWhichIsNegatedWhenValueStartsWithDoubleAsterisk = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1005,7 +1005,7 @@ var readerTestIncludeDirectiveSelectsAllLinesExceptLinesInsideTagWhichIsNegatedW
 }
 
 var readerTestIncludeDirectiveSelectsAllLinesIncludingLinesInsideNestedTagsExceptLinesInsideTagWhichIsNegatedWhenValueStartsWithDoubleAsterisk = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1023,7 +1023,7 @@ var readerTestIncludeDirectiveSelectsAllLinesIncludingLinesInsideNestedTagsExcep
 }
 
 var readerTestIncludeDirectiveSelectsAllLinesOutsideOfTagsWhenValueIsDoubleAsteriskFollowedByNegatedWildcard = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1041,7 +1041,7 @@ var readerTestIncludeDirectiveSelectsAllLinesOutsideOfTagsWhenValueIsDoubleAster
 }
 
 var readerTestIncludeDirectiveSkipsAllTaggedRegionsWhenValueOfTagsAttributeIsNegatedWildcard = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1059,7 +1059,7 @@ var readerTestIncludeDirectiveSkipsAllTaggedRegionsWhenValueOfTagsAttributeIsNeg
 }
 
 var readerTestIncludeDirectiveSelectsAllLinesExceptForLinesContainingTagDirectiveIfValueIsDoubleAsteriskFollowedByNestedTagNames = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1077,7 +1077,7 @@ var readerTestIncludeDirectiveSelectsAllLinesExceptForLinesContainingTagDirectiv
 }
 
 var readerTestIncludeDirectiveSelectsAllLinesExceptForLinesContainingTagDirectiveWhenValueIsDoubleAsteriskFollowedByOuterTagName = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1095,7 +1095,7 @@ var readerTestIncludeDirectiveSelectsAllLinesExceptForLinesContainingTagDirectiv
 }
 
 var readerTestIncludeDirectiveSelectsAllLinesInsideUnspecifiedTagsWhenValueIsNegatedDoubleAsteriskFollowedByNegatedTags = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1113,7 +1113,7 @@ var readerTestIncludeDirectiveSelectsAllLinesInsideUnspecifiedTagsWhenValueIsNeg
 }
 
 var readerTestIncludeDirectiveSelectsAllLinesExceptTagWhichIsNegatedWhenValueOnlyContainsNegatedTag = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1131,7 +1131,7 @@ var readerTestIncludeDirectiveSelectsAllLinesExceptTagWhichIsNegatedWhenValueOnl
 }
 
 var readerTestIncludeDirectiveSelectsAllLinesExceptTagsWhichAreNegatedWhenValueOnlyContainsNegatedTags = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1149,7 +1149,7 @@ var readerTestIncludeDirectiveSelectsAllLinesExceptTagsWhichAreNegatedWhenValueO
 }
 
 var readerTestShouldRecognizeTagWildcardIfNotAtStartOfTagsList = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1167,7 +1167,7 @@ var readerTestShouldRecognizeTagWildcardIfNotAtStartOfTagsList = &asciidoc.Docum
 }
 
 var readerTestIncludeDirectiveSelectsLinesBetweenTagsWhenValueOfTagsAttributeIsWildcard = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1185,7 +1185,7 @@ var readerTestIncludeDirectiveSelectsLinesBetweenTagsWhenValueOfTagsAttributeIsW
 }
 
 var readerTestIncludeDirectiveSelectsLinesInsideTagsWhenValueOfTagsAttributeIsWildcardAndTagSurroundsContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1203,7 +1203,7 @@ var readerTestIncludeDirectiveSelectsLinesInsideTagsWhenValueOfTagsAttributeIsWi
 }
 
 var readerTestIncludeDirectiveSelectsLinesInsideAllTagsExceptTagWhichIsNegatedWhenValueOfTagsAttributeIsWildcardFollowedByNegatedTag = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1221,7 +1221,7 @@ var readerTestIncludeDirectiveSelectsLinesInsideAllTagsExceptTagWhichIsNegatedWh
 }
 
 var readerTestIncludeDirectiveIncludesRegionsOutsideTagsAndInsideSpecifiedTagsWhenValueBeginsWithNegatedWildcard = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1239,7 +1239,7 @@ var readerTestIncludeDirectiveIncludesRegionsOutsideTagsAndInsideSpecifiedTagsWh
 }
 
 var readerTestIncludeDirectiveSelectsLinesInsideTagExceptForLinesInsideNestedTagsWhenTagIsPrecededByNegatedDoubleAsteriskAndNegatedWildcard = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1257,7 +1257,7 @@ var readerTestIncludeDirectiveSelectsLinesInsideTagExceptForLinesInsideNestedTag
 }
 
 var readerTestIncludeDirectiveDoesNotSelectLinesInsideTagThatHasBeenIncludedThenExcluded = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1275,7 +1275,7 @@ var readerTestIncludeDirectiveDoesNotSelectLinesInsideTagThatHasBeenIncludedThen
 }
 
 var readerTestIncludeDirectiveSelectsLinesInsideSpecifiedTagAndIgnoresLinesInsideANegatedTag = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1283,7 +1283,7 @@ var readerTestIncludeDirectiveSelectsLinesInsideSpecifiedTagAndIgnoresLinesInsid
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "indent",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "0",
 						},
@@ -1303,7 +1303,7 @@ var readerTestIncludeDirectiveSelectsLinesInsideSpecifiedTagAndIgnoresLinesInsid
 }
 
 var readerTestShouldNotWarnIfSpecifiedNegatedTagIsNotFoundInIncludeFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1321,7 +1321,7 @@ var readerTestShouldNotWarnIfSpecifiedNegatedTagIsNotFoundInIncludeFile = &ascii
 }
 
 var readerTestShouldWarnIfSpecifiedTagsAreNotFoundInIncludeFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1339,7 +1339,7 @@ var readerTestShouldWarnIfSpecifiedTagsAreNotFoundInIncludeFile = &asciidoc.Docu
 }
 
 var readerTestShouldNotWarnIfSpecifiedNegatedTagsAreNotFoundInIncludeFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1357,7 +1357,7 @@ var readerTestShouldNotWarnIfSpecifiedNegatedTagsAreNotFoundInIncludeFile = &asc
 }
 
 var readerTestShouldWarnIfSpecifiedTagInIncludeFileIsNotClosed = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1375,7 +1375,7 @@ var readerTestShouldWarnIfSpecifiedTagInIncludeFileIsNotClosed = &asciidoc.Docum
 }
 
 var readerTestShouldWarnIfEndTagInIncludedFileIsMismatched = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1393,7 +1393,7 @@ var readerTestShouldWarnIfEndTagInIncludedFileIsMismatched = &asciidoc.Document{
 }
 
 var readerTestShouldWarnIfUnexpectedEndTagIsFoundInIncludedFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1411,7 +1411,7 @@ var readerTestShouldWarnIfUnexpectedEndTagIsFoundInIncludedFile = &asciidoc.Docu
 }
 
 var readerTestLinesAttributeTakesPrecedenceOverTagsAttributeInIncludeDirective = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1419,7 +1419,7 @@ var readerTestLinesAttributeTakesPrecedenceOverTagsAttributeInIncludeDirective =
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -1432,7 +1432,7 @@ var readerTestLinesAttributeTakesPrecedenceOverTagsAttributeInIncludeDirective =
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "xml",
 						},
@@ -1451,13 +1451,13 @@ var readerTestLinesAttributeTakesPrecedenceOverTagsAttributeInIncludeDirective =
 }
 
 var readerTestShouldSubstituteAttributeReferencesInAttrlist = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "name-of-tag",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "snippetA",
 				},
@@ -1467,7 +1467,7 @@ var readerTestShouldSubstituteAttributeReferencesInAttrlist = &asciidoc.Document
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "tag",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.UserAttributeReference{
 							Value: "name-of-tag",
 						},
@@ -1475,7 +1475,7 @@ var readerTestShouldSubstituteAttributeReferencesInAttrlist = &asciidoc.Document
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures/include-file.adoc",
 				},
@@ -1485,7 +1485,7 @@ var readerTestShouldSubstituteAttributeReferencesInAttrlist = &asciidoc.Document
 }
 
 var readerTestShouldFallBackToBuiltInIncludeDirectiveBehaviorWhenNotHandledByIncludeProcessor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.String{
 			Value: ".split Asciidoctor::LF",
 		},
@@ -1533,13 +1533,13 @@ var readerTestShouldFallBackToBuiltInIncludeDirectiveBehaviorWhenNotHandledByInc
 }
 
 var readerTestAttributesAreSubstitutedInTargetOfIncludeDirective = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "fixturesdir",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "fixtures",
 				},
@@ -1547,7 +1547,7 @@ var readerTestAttributesAreSubstitutedInTargetOfIncludeDirective = &asciidoc.Doc
 		},
 		&asciidoc.AttributeEntry{
 			Name: "ext",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "adoc",
 				},
@@ -1558,7 +1558,7 @@ var readerTestAttributesAreSubstitutedInTargetOfIncludeDirective = &asciidoc.Doc
 		},
 		&asciidoc.FileInclude{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.UserAttributeReference{
 					Value: "fixturesdir",
 				},
@@ -1574,13 +1574,13 @@ var readerTestAttributesAreSubstitutedInTargetOfIncludeDirective = &asciidoc.Doc
 }
 
 var readerTestLineFollowingDroppedIncludeIsNotDropped = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.FileInclude{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.UserAttributeReference{
 					Value: "foodir",
 				},
@@ -1597,7 +1597,7 @@ var readerTestLineFollowingDroppedIncludeIsNotDropped = &asciidoc.Document{
 }
 
 var readerTestEscapedIncludeDirectiveIsLeftUnprocessed = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1613,13 +1613,13 @@ var readerTestEscapedIncludeDirectiveIsLeftUnprocessed = &asciidoc.Document{
 }
 
 var readerTestIncludeDirectiveNotAtStartOfLineIsIgnored = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "max-include-depth",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "1",
 				},
@@ -1630,7 +1630,7 @@ var readerTestIncludeDirectiveNotAtStartOfLineIsIgnored = &asciidoc.Document{
 		},
 		&asciidoc.FileInclude{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "include-file.adoc",
 				},
@@ -1640,18 +1640,18 @@ var readerTestIncludeDirectiveNotAtStartOfLineIsIgnored = &asciidoc.Document{
 }
 
 var readerTestIncludeDirectiveShouldBeDisabledIfMaxIncludeDepthHasBeenExceeded = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "lines",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "        ////",
 				},
@@ -1671,18 +1671,18 @@ var readerTestIncludeDirectiveShouldBeDisabledIfMaxIncludeDepthHasBeenExceeded =
 }
 
 var readerTestSkipCommentLinesShouldNotProcessLinesRead = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "lines",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "        ////",
 				},
@@ -1702,7 +1702,7 @@ var readerTestSkipCommentLinesShouldNotProcessLinesRead = &asciidoc.Document{
 }
 
 var readerTestProcessLineReturnsNilIfCursorAdvanced = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1727,7 +1727,7 @@ var readerTestProcessLineReturnsNilIfCursorAdvanced = &asciidoc.Document{
 }
 
 var readerTestPeekLineAdvancesCursorToNextConditionalLineOfContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1752,7 +1752,7 @@ var readerTestPeekLineAdvancesCursorToNextConditionalLineOfContent = &asciidoc.D
 }
 
 var readerTestPeekLinesShouldPreprocessLinesIfDirectIsFalse = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1768,7 +1768,7 @@ var readerTestPeekLinesShouldPreprocessLinesIfDirectIsFalse = &asciidoc.Document
 }
 
 var readerTestPeekLinesShouldNotPreprocessLinesIfDirectIsTrue = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1784,7 +1784,7 @@ var readerTestPeekLinesShouldNotPreprocessLinesIfDirectIsTrue = &asciidoc.Docume
 }
 
 var readerTestPeekLinesShouldNotPreventSubsequentPreprocessingOfPeekedLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1800,7 +1800,7 @@ var readerTestPeekLinesShouldNotPreventSubsequentPreprocessingOfPeekedLines = &a
 }
 
 var readerTestProcessLineReturnsLineIfCursorNotAdvanced = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1829,7 +1829,7 @@ var readerTestProcessLineReturnsLineIfCursorNotAdvanced = &asciidoc.Document{
 }
 
 var readerTestPeekLineDoesNotAdvanceCursorWhenOnARegularContentLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1858,7 +1858,7 @@ var readerTestPeekLineDoesNotAdvanceCursorWhenOnARegularContentLine = &asciidoc.
 }
 
 var readerTestPeekLineReturnsNilIfCursorAdvancesPastEndOfSource = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1883,7 +1883,7 @@ var readerTestPeekLineReturnsNilIfCursorAdvancesPastEndOfSource = &asciidoc.Docu
 }
 
 var readerTestPeekLineReturnsNilIfContentsOfSkippedConditionalIsEmptyLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1907,7 +1907,7 @@ var readerTestPeekLineReturnsNilIfContentsOfSkippedConditionalIsEmptyLine = &asc
 }
 
 var readerTestIfdefWithDefinedAttributeIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1932,7 +1932,7 @@ var readerTestIfdefWithDefinedAttributeIncludesContent = &asciidoc.Document{
 }
 
 var readerTestIfdefWithDefinedAttributeIncludesTextInBrackets = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1952,7 +1952,7 @@ var readerTestIfdefWithDefinedAttributeIncludesTextInBrackets = &asciidoc.Docume
 }
 
 var readerTestIfdefAttributeNameIsNotCaseSensitive = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1977,7 +1977,7 @@ var readerTestIfdefAttributeNameIsNotCaseSensitive = &asciidoc.Document{
 }
 
 var readerTestIfndefWithDefinedAttributeDoesNotIncludeTextInBrackets = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1997,7 +1997,7 @@ var readerTestIfndefWithDefinedAttributeDoesNotIncludeTextInBrackets = &asciidoc
 }
 
 var readerTestIncludeWithNonMatchingNestedExclude = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2043,7 +2043,7 @@ var readerTestIncludeWithNonMatchingNestedExclude = &asciidoc.Document{
 }
 
 var readerTestNestedExcludesWithSameCondition = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2081,7 +2081,7 @@ var readerTestNestedExcludesWithSameCondition = &asciidoc.Document{
 }
 
 var readerTestIncludeWithNestedExcludeOfInvertedCondition = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2127,7 +2127,7 @@ var readerTestIncludeWithNestedExcludeOfInvertedCondition = &asciidoc.Document{
 }
 
 var readerTestExcludeWithMatchingNestedExclude = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2181,7 +2181,7 @@ var readerTestExcludeWithMatchingNestedExclude = &asciidoc.Document{
 }
 
 var readerTestExcludeWithNestedIncludeUsingShorthandEnd = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2231,7 +2231,7 @@ var readerTestExcludeWithNestedIncludeUsingShorthandEnd = &asciidoc.Document{
 }
 
 var readerTestIfdefWithOneAlternativeAttributeSetIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2258,7 +2258,7 @@ var readerTestIfdefWithOneAlternativeAttributeSetIncludesContent = &asciidoc.Doc
 }
 
 var readerTestIfdefWithNoAlternativeAttributesSetDoesNotIncludeContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2285,7 +2285,7 @@ var readerTestIfdefWithNoAlternativeAttributesSetDoesNotIncludeContent = &asciid
 }
 
 var readerTestIfdefWithAllRequiredAttributesSetIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2305,7 +2305,7 @@ var readerTestIfdefWithAllRequiredAttributesSetIncludesContent = &asciidoc.Docum
 }
 
 var readerTestIfdefWithMissingRequiredAttributesDoesNotIncludeContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2325,7 +2325,7 @@ var readerTestIfdefWithMissingRequiredAttributesDoesNotIncludeContent = &asciido
 }
 
 var readerTestIfndefWithUndefinedAttributeIncludesBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2350,7 +2350,7 @@ var readerTestIfndefWithUndefinedAttributeIncludesBlock = &asciidoc.Document{
 }
 
 var readerTestIfndefWithOneAlternativeAttributeSetDoesNotIncludeContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2377,7 +2377,7 @@ var readerTestIfndefWithOneAlternativeAttributeSetDoesNotIncludeContent = &ascii
 }
 
 var readerTestIfndefWithBothAlternativeAttributesSetDoesNotIncludeContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2404,7 +2404,7 @@ var readerTestIfndefWithBothAlternativeAttributesSetDoesNotIncludeContent = &asc
 }
 
 var readerTestIfndefWithNoAlternativeAttributesSetIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2431,7 +2431,7 @@ var readerTestIfndefWithNoAlternativeAttributesSetIncludesContent = &asciidoc.Do
 }
 
 var readerTestIfndefWithNoRequiredAttributesSetIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2451,7 +2451,7 @@ var readerTestIfndefWithNoRequiredAttributesSetIncludesContent = &asciidoc.Docum
 }
 
 var readerTestIfndefWithAllRequiredAttributesSetDoesNotIncludeContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2471,7 +2471,7 @@ var readerTestIfndefWithAllRequiredAttributesSetDoesNotIncludeContent = &asciido
 }
 
 var readerTestIfndefWithAtLeastOneRequiredAttributesSetDoesNotIncludeContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2491,7 +2491,7 @@ var readerTestIfndefWithAtLeastOneRequiredAttributesSetDoesNotIncludeContent = &
 }
 
 var readerTestIfdefAroundEmptyLineDoesNotIntroduceExtraLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2521,7 +2521,7 @@ var readerTestIfdefAroundEmptyLineDoesNotIntroduceExtraLine = &asciidoc.Document
 }
 
 var readerTestShouldLogWarningIfEndifIsMismatched = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2546,7 +2546,7 @@ var readerTestShouldLogWarningIfEndifIsMismatched = &asciidoc.Document{
 }
 
 var readerTestShouldLogWarningIfEndifContainsText = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2569,7 +2569,7 @@ var readerTestShouldLogWarningIfEndifContainsText = &asciidoc.Document{
 }
 
 var readerTestEscapedIfdefIsUnescapedAndIgnored = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2589,14 +2589,14 @@ var readerTestEscapedIfdefIsUnescapedAndIgnored = &asciidoc.Document{
 }
 
 var readerTestIfevalComparingMissingAttributeToNilIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.IfEval{
 			Left: asciidoc.IfEvalValue{
 				Quote: 1,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.UserAttributeReference{
 						Value: "foo",
 					},
@@ -2621,14 +2621,14 @@ var readerTestIfevalComparingMissingAttributeToNilIncludesContent = &asciidoc.Do
 }
 
 var readerTestIfevalComparingMissingAttributeTo0DropsContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.IfEval{
 			Left: asciidoc.IfEvalValue{
 				Quote: 0,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.UserAttributeReference{
 						Value: "leveloffset",
 					},
@@ -2640,7 +2640,7 @@ var readerTestIfevalComparingMissingAttributeTo0DropsContent = &asciidoc.Documen
 			Operator: 1,
 			Right: asciidoc.IfEvalValue{
 				Quote: 0,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "0",
 					},
@@ -2660,14 +2660,14 @@ var readerTestIfevalComparingMissingAttributeTo0DropsContent = &asciidoc.Documen
 }
 
 var readerTestIfevalComparingDoubleQuotedAttributeToMatchingStringIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.IfEval{
 			Left: asciidoc.IfEvalValue{
 				Quote: 2,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.UserAttributeReference{
 						Value: "gem",
 					},
@@ -2676,7 +2676,7 @@ var readerTestIfevalComparingDoubleQuotedAttributeToMatchingStringIncludesConten
 			Operator: 1,
 			Right: asciidoc.IfEvalValue{
 				Quote: 2,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "asciidoctor",
 					},
@@ -2696,14 +2696,14 @@ var readerTestIfevalComparingDoubleQuotedAttributeToMatchingStringIncludesConten
 }
 
 var readerTestIfevalComparingSingleQuotedAttributeToMatchingStringIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.IfEval{
 			Left: asciidoc.IfEvalValue{
 				Quote: 1,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.UserAttributeReference{
 						Value: "gem",
 					},
@@ -2712,7 +2712,7 @@ var readerTestIfevalComparingSingleQuotedAttributeToMatchingStringIncludesConten
 			Operator: 1,
 			Right: asciidoc.IfEvalValue{
 				Quote: 1,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "asciidoctor",
 					},
@@ -2732,14 +2732,14 @@ var readerTestIfevalComparingSingleQuotedAttributeToMatchingStringIncludesConten
 }
 
 var readerTestIfevalComparingQuotedAttributeToNonMatchingStringDropsContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.IfEval{
 			Left: asciidoc.IfEvalValue{
 				Quote: 1,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.UserAttributeReference{
 						Value: "gem",
 					},
@@ -2748,7 +2748,7 @@ var readerTestIfevalComparingQuotedAttributeToNonMatchingStringDropsContent = &a
 			Operator: 1,
 			Right: asciidoc.IfEvalValue{
 				Quote: 1,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "asciidoctor",
 					},
@@ -2768,14 +2768,14 @@ var readerTestIfevalComparingQuotedAttributeToNonMatchingStringDropsContent = &a
 }
 
 var readerTestIfevalComparingAttributeToSelfIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.IfEval{
 			Left: asciidoc.IfEvalValue{
 				Quote: 1,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.UserAttributeReference{
 						Value: "asciidoctor-version",
 					},
@@ -2784,7 +2784,7 @@ var readerTestIfevalComparingAttributeToSelfIncludesContent = &asciidoc.Document
 			Operator: 1,
 			Right: asciidoc.IfEvalValue{
 				Quote: 1,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.UserAttributeReference{
 						Value: "asciidoctor-version",
 					},
@@ -2804,14 +2804,14 @@ var readerTestIfevalComparingAttributeToSelfIncludesContent = &asciidoc.Document
 }
 
 var readerTestIfevalMatchingNumericEqualityIncludesContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.IfEval{
 			Left: asciidoc.IfEvalValue{
 				Quote: 0,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.UserAttributeReference{
 						Value: "rings",
 					},
@@ -2823,7 +2823,7 @@ var readerTestIfevalMatchingNumericEqualityIncludesContent = &asciidoc.Document{
 			Operator: 1,
 			Right: asciidoc.IfEvalValue{
 				Quote: 0,
-				Value: asciidoc.Set{
+				Value: asciidoc.Elements{
 					&asciidoc.String{
 						Value: "1",
 					},
@@ -2843,7 +2843,7 @@ var readerTestIfevalMatchingNumericEqualityIncludesContent = &asciidoc.Document{
 }
 
 var readerTestShouldWarnIfIfevalHasTarget = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2859,7 +2859,7 @@ var readerTestShouldWarnIfIfevalHasTarget = &asciidoc.Document{
 }
 
 var readerTestShouldWarnIfIfevalHasInvalidExpression = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2875,7 +2875,7 @@ var readerTestShouldWarnIfIfevalHasInvalidExpression = &asciidoc.Document{
 }
 
 var readerTestShouldWarnIfIfevalIsMissingExpression = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2891,7 +2891,7 @@ var readerTestShouldWarnIfIfevalIsMissingExpression = &asciidoc.Document{
 }
 
 var readerTestIfdefWithNoTargetIsIgnored = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2907,7 +2907,7 @@ var readerTestIfdefWithNoTargetIsIgnored = &asciidoc.Document{
 }
 
 var readerTestShouldNotWarnAboutInvalidIfdefPreprocessorDirectiveIfAlreadySkipping = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2942,7 +2942,7 @@ var readerTestShouldNotWarnAboutInvalidIfdefPreprocessorDirectiveIfAlreadySkippi
 }
 
 var readerTestShouldNotWarnAboutInvalidIfevalPreprocessorDirectiveIfAlreadySkipping = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},

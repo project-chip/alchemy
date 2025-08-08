@@ -17,7 +17,7 @@ type DeviceTypeSet pipeline.Map[string, *pipeline.Data[[]*matter.DeviceType]]
 func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (err error) {
 	var deviceTypes []*matter.DeviceType
 
-	for s := range parse.Skim[*Section](s.Elements()) {
+	for s := range parse.Skim[*Section](s.Children()) {
 		switch s.SecType {
 		case matter.SectionClassification:
 			deviceTypes, err = readDeviceTypeIDs(d, s)
@@ -31,7 +31,7 @@ func (s *Section) toDeviceTypes(spec *Specification, d *Doc, pc *parseContext) (
 		return
 	}
 
-	description := getDescription(d, deviceTypes[0], s.Elements())
+	description := getDescription(d, deviceTypes[0], s.Children())
 
 	for _, dt := range deviceTypes {
 		dt.Description = description
@@ -113,13 +113,13 @@ func readDeviceTypeIDs(doc *Doc, s *Section) ([]*matter.DeviceType, error) {
 }
 
 func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) {
-	for top := range parse.Skim[*Section](d.Elements()) {
+	for top := range parse.Skim[*Section](d.Children()) {
 		err = AssignSectionTypes(d, top)
 		if err != nil {
 			return
 		}
 		var baseClusterRequirements, elementRequirements *Section
-		parse.Traverse(top, top.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
+		parse.Traverse(top, top.Children(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
 			switch sec.SecType {
 			case matter.SectionClusterRequirements:
 				baseClusterRequirements = sec
@@ -148,7 +148,7 @@ func (d *Doc) toBaseDeviceType() (baseDeviceType *matter.DeviceType, err error) 
 				return
 			}
 		}
-		parse.Traverse(top, top.Elements(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
+		parse.Traverse(top, top.Children(), func(sec *Section, parent parse.HasElements, index int) parse.SearchShould {
 			switch sec.SecType {
 
 			case matter.SectionConditions:

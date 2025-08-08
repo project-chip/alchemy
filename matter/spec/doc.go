@@ -19,7 +19,7 @@ type Doc struct {
 	Path asciidoc.Path
 
 	Base *asciidoc.Document
-	asciidoc.Set
+	asciidoc.Elements
 
 	docType matter.DocType
 
@@ -57,10 +57,10 @@ func newDoc(d *asciidoc.Document, path asciidoc.Path) (*Doc, error) {
 		referenceIndex: newReferenceIndex(),
 	}
 	doc.errata = errata.GetErrata(path.Relative)
-	for _, e := range d.Elements() {
+	for _, e := range d.Children() {
 		switch el := e.(type) {
 		case *asciidoc.AttributeEntry:
-			doc.attributes[el.Name] = el.Elements()
+			doc.attributes[el.Name] = el.Children()
 			doc.Append(e)
 		case *asciidoc.Section:
 			s, err := NewSection(doc, doc, el)

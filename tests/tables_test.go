@@ -262,16 +262,16 @@ var tablesTests = parseTests{
 }
 
 var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -301,7 +301,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -337,7 +337,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -373,7 +373,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -383,7 +383,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -413,7 +413,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -449,7 +449,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -485,7 +485,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -495,7 +495,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -525,7 +525,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -561,7 +561,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -597,7 +597,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -612,7 +612,7 @@ var tablesTestConvertsSimplePsvTable = &asciidoc.Document{
 }
 
 var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -620,7 +620,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "float",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "left",
 						},
@@ -629,9 +629,9 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -661,7 +661,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -697,7 +697,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -733,7 +733,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -743,7 +743,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -773,7 +773,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -809,7 +809,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -845,7 +845,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -855,7 +855,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -885,7 +885,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -921,7 +921,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -957,7 +957,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -972,7 +972,7 @@ var tablesTestShouldAddDirectionCssClassIfFloatAttributeIsSetOnTable = &asciidoc
 }
 
 var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -980,7 +980,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "stripes",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "odd",
 						},
@@ -989,9 +989,9 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1021,7 +1021,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -1057,7 +1057,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -1093,7 +1093,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -1103,7 +1103,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1133,7 +1133,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -1169,7 +1169,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -1205,7 +1205,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -1215,7 +1215,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1245,7 +1245,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -1281,7 +1281,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -1317,7 +1317,7 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -1332,14 +1332,14 @@ var tablesTestShouldSetStripesClassIfStripesOptionIsSet = &asciidoc.Document{
 }
 
 var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Simple psv table",
 						},
@@ -1347,9 +1347,9 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1379,7 +1379,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -1415,7 +1415,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -1451,7 +1451,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -1461,7 +1461,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1491,7 +1491,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -1527,7 +1527,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -1563,7 +1563,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -1573,7 +1573,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1603,7 +1603,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -1639,7 +1639,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -1675,7 +1675,7 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -1690,14 +1690,14 @@ var tablesTestOutputsACaptionOnSimplePsvTable = &asciidoc.Document{
 }
 
 var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First numbered table",
 						},
@@ -1705,9 +1705,9 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1737,7 +1737,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -1773,7 +1773,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -1809,7 +1809,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -1826,9 +1826,9 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1858,7 +1858,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "4",
 								},
@@ -1894,7 +1894,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "5",
 								},
@@ -1930,7 +1930,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "6",
 								},
@@ -1947,7 +1947,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Second numbered table",
 						},
@@ -1955,9 +1955,9 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1987,7 +1987,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "7",
 								},
@@ -2023,7 +2023,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "8",
 								},
@@ -2059,7 +2059,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "9",
 								},
@@ -2074,7 +2074,7 @@ var tablesTestOnlyIncrementsTableCounterForTablesThatHaveATitle = &asciidoc.Docu
 }
 
 var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2082,7 +2082,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "caption",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "All the Data. ",
 						},
@@ -2090,7 +2090,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 					Quote: 2,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Simple psv table",
 						},
@@ -2098,9 +2098,9 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -2130,7 +2130,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -2166,7 +2166,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -2202,7 +2202,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -2212,7 +2212,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -2242,7 +2242,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -2278,7 +2278,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -2314,7 +2314,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -2324,7 +2324,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -2354,7 +2354,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -2390,7 +2390,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -2426,7 +2426,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -2441,7 +2441,7 @@ var tablesTestUsesExplicitCaptionInFrontOfTitleInPlaceOfDefaultCaptionAndNumber 
 }
 
 var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2452,7 +2452,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Simple psv table",
 						},
@@ -2460,9 +2460,9 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -2492,7 +2492,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -2528,7 +2528,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -2564,7 +2564,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -2574,7 +2574,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -2604,7 +2604,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -2640,7 +2640,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -2676,7 +2676,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -2686,7 +2686,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -2716,7 +2716,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -2752,7 +2752,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -2788,7 +2788,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -2803,7 +2803,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmpty = &asciidoc.Docu
 }
 
 var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2815,7 +2815,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 					Quote: 2,
 				},
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Simple psv table",
 						},
@@ -2823,9 +2823,9 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -2855,7 +2855,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -2891,7 +2891,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -2927,7 +2927,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -2937,7 +2937,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -2967,7 +2967,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -3003,7 +3003,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -3039,7 +3039,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -3049,7 +3049,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3079,7 +3079,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -3115,7 +3115,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -3151,7 +3151,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -3166,7 +3166,7 @@ var tablesTestDisablesCaptionWhenCaptionAttributeOnTableIsEmptyString = &asciido
 }
 
 var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3179,7 +3179,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Simple psv table",
 						},
@@ -3187,9 +3187,9 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3219,7 +3219,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -3255,7 +3255,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -3291,7 +3291,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -3301,7 +3301,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3331,7 +3331,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -3367,7 +3367,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -3403,7 +3403,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -3413,7 +3413,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3443,7 +3443,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -3479,7 +3479,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -3515,7 +3515,7 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -3530,16 +3530,16 @@ var tablesTestDisablesCaptionOnTableWhenTableCaptionDocumentAttributeIsUnset = &
 }
 
 var tablesTestIgnoresEscapedSeparators = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3569,7 +3569,7 @@ var tablesTestIgnoresEscapedSeparators = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A \\| here",
 								},
@@ -3605,7 +3605,7 @@ var tablesTestIgnoresEscapedSeparators = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a \\| there",
 								},
@@ -3620,7 +3620,7 @@ var tablesTestIgnoresEscapedSeparators = &asciidoc.Document{
 }
 
 var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3632,7 +3632,7 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "header",
 								},
@@ -3698,9 +3698,9 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3730,7 +3730,7 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -3766,7 +3766,7 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B\\|",
 								},
@@ -3776,7 +3776,7 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3806,7 +3806,7 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A1",
 								},
@@ -3842,7 +3842,7 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B1\\|",
 								},
@@ -3852,7 +3852,7 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3882,7 +3882,7 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A2",
 								},
@@ -3918,7 +3918,7 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B2\\|",
 								},
@@ -3933,16 +3933,16 @@ var tablesTestPreservesEscapedDelimitersAtTheEndOfTheLine = &asciidoc.Document{
 }
 
 var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3972,7 +3972,7 @@ var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A1",
 								},
@@ -4008,13 +4008,13 @@ var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set:   asciidoc.Set{},
-							Blank: false,
+							Elements: asciidoc.Elements{},
+							Blank:    false,
 						},
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -4044,7 +4044,7 @@ var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B1",
 								},
@@ -4080,7 +4080,7 @@ var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B2",
 								},
@@ -4090,7 +4090,7 @@ var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -4120,7 +4120,7 @@ var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C1",
 								},
@@ -4156,7 +4156,7 @@ var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C2",
 								},
@@ -4171,7 +4171,7 @@ var tablesTestShouldTreatTrailingPipeAsAnEmptyCell = &asciidoc.Document{
 }
 
 var tablesTestShouldAutoRecoverWithWarningIfMissingLeadingSeparatorOnFirstCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4207,13 +4207,13 @@ var tablesTestShouldAutoRecoverWithWarningIfMissingLeadingSeparatorOnFirstCell =
 }
 
 var tablesTestPerformsNormalSubstitutionsOnCellContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "show_title",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Cool new show",
 				},
@@ -4222,9 +4222,9 @@ var tablesTestPerformsNormalSubstitutionsOnCellContent = &asciidoc.Document{
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -4254,7 +4254,7 @@ var tablesTestPerformsNormalSubstitutionsOnCellContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.UserAttributeReference{
 									Value: "show_title",
 								},
@@ -4290,7 +4290,7 @@ var tablesTestPerformsNormalSubstitutionsOnCellContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Coming soon...",
 								},
@@ -4305,16 +4305,16 @@ var tablesTestPerformsNormalSubstitutionsOnCellContent = &asciidoc.Document{
 }
 
 var tablesTestShouldOnlySubstituteSpecialcharsForLiteralTableCells = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -4344,7 +4344,7 @@ var tablesTestShouldOnlySubstituteSpecialcharsForLiteralTableCells = &asciidoc.D
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "one",
 								},
@@ -4371,7 +4371,7 @@ var tablesTestShouldOnlySubstituteSpecialcharsForLiteralTableCells = &asciidoc.D
 }
 
 var tablesTestShouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpacesInLiteralTableCells = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4409,9 +4409,9 @@ var tablesTestShouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpaces
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -4441,7 +4441,7 @@ var tablesTestShouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpaces
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "  one",
@@ -4486,7 +4486,7 @@ var tablesTestShouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpaces
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "normal",
 								},
@@ -4504,7 +4504,7 @@ var tablesTestShouldPreservingLeadingSpacesButNotLeadingNewlinesOrTrailingSpaces
 }
 
 var tablesTestShouldIgnoreVTableCellStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4541,7 +4541,7 @@ var tablesTestShouldIgnoreVTableCellStyle = &asciidoc.Document{
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "|===",
 				},
@@ -4580,7 +4580,7 @@ var tablesTestShouldIgnoreVTableCellStyle = &asciidoc.Document{
 }
 
 var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -4588,7 +4588,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "autowidth",
 						},
@@ -4597,9 +4597,9 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -4629,7 +4629,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -4665,7 +4665,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -4701,7 +4701,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -4711,7 +4711,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -4741,7 +4741,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -4777,7 +4777,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -4813,7 +4813,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -4823,7 +4823,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -4853,7 +4853,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -4889,7 +4889,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -4925,7 +4925,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -4940,7 +4940,7 @@ var tablesTestTableAndColumnWidthNotAssignedWhenAutowidthOptionIsSpecified = &as
 }
 
 var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5004,9 +5004,9 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 				},
 			},
 			ColumnCount: 4,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -5036,7 +5036,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -5072,7 +5072,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -5108,7 +5108,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -5144,7 +5144,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "D",
 								},
@@ -5154,7 +5154,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -5184,7 +5184,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -5220,7 +5220,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -5256,7 +5256,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -5292,7 +5292,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "d",
 								},
@@ -5302,7 +5302,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -5332,7 +5332,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -5368,7 +5368,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -5404,7 +5404,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -5440,7 +5440,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "4",
 								},
@@ -5455,7 +5455,7 @@ var tablesTestDoesNotAssignColumnWidthForAutowidthColumnsInHtmlOutput = &asciido
 }
 
 var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -5493,7 +5493,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 				},
 				&asciidoc.NamedAttribute{
 					Name: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "50%",
 						},
@@ -5502,9 +5502,9 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 				},
 			},
 			ColumnCount: 4,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -5534,7 +5534,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -5570,7 +5570,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -5606,7 +5606,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -5642,7 +5642,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "D",
 								},
@@ -5652,7 +5652,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -5682,7 +5682,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -5718,7 +5718,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -5754,7 +5754,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -5790,7 +5790,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "d",
 								},
@@ -5800,7 +5800,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -5830,7 +5830,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -5866,7 +5866,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -5902,7 +5902,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -5938,7 +5938,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "4",
 								},
@@ -5953,7 +5953,7 @@ var tablesTestCanAssignAutowidthToAllColumnsEvenWhenTableHasAWidth = &asciidoc.D
 }
 
 var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6017,9 +6017,9 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 				},
 			},
 			ColumnCount: 4,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -6049,7 +6049,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -6085,7 +6085,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -6121,7 +6121,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -6157,7 +6157,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "D",
 								},
@@ -6167,7 +6167,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -6197,7 +6197,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -6233,7 +6233,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -6269,7 +6269,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -6305,7 +6305,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "d",
 								},
@@ -6315,7 +6315,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -6345,7 +6345,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -6381,7 +6381,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -6417,7 +6417,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -6453,7 +6453,7 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "4",
 								},
@@ -6468,13 +6468,13 @@ var tablesTestEquallyDistributesRemainingColumnWidthToAutowidthColumnsInDocBookO
 }
 
 var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDocBookOutput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "pagewidth",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "500",
 				},
@@ -6487,7 +6487,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "50%",
 						},
@@ -6496,9 +6496,9 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 				},
 			},
 			ColumnCount: 4,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -6528,7 +6528,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -6564,7 +6564,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -6600,7 +6600,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -6636,7 +6636,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "D",
 								},
@@ -6649,7 +6649,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -6679,7 +6679,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -6715,7 +6715,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -6751,7 +6751,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -6787,7 +6787,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "d",
 								},
@@ -6797,7 +6797,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -6827,7 +6827,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -6863,7 +6863,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -6899,7 +6899,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -6935,7 +6935,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "4",
 								},
@@ -6950,7 +6950,7 @@ var tablesTestShouldComputeColumnWidthsBasedOnPagewidthWhenWidthIsSetOnTableInDo
 }
 
 var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -6962,7 +6962,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "autowidth",
 								},
@@ -6972,7 +6972,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 				},
 				&asciidoc.NamedAttribute{
 					Name: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "75%",
 						},
@@ -6981,9 +6981,9 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -7013,7 +7013,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -7049,7 +7049,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -7085,7 +7085,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -7095,7 +7095,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -7125,7 +7125,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -7161,7 +7161,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -7197,7 +7197,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -7207,7 +7207,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -7237,7 +7237,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -7273,7 +7273,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -7309,7 +7309,7 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -7324,16 +7324,16 @@ var tablesTestExplicitTableWidthIsUsedEvenWhenAutowidthOptionIsSpecified = &asci
 }
 
 var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   4,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -7363,7 +7363,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "first",
 								},
@@ -7399,7 +7399,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "second",
 								},
@@ -7435,7 +7435,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "third",
 								},
@@ -7471,7 +7471,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "fourth",
 								},
@@ -7481,7 +7481,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -7511,7 +7511,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -7547,7 +7547,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -7583,7 +7583,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -7619,7 +7619,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "4",
 								},
@@ -7634,7 +7634,7 @@ var tablesTestFirstRowSetsNumberOfColumnsWhenNotSpecified = &asciidoc.Document{
 }
 
 var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -7672,9 +7672,9 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -7704,7 +7704,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -7740,7 +7740,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -7776,7 +7776,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -7786,7 +7786,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -7816,7 +7816,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -7852,7 +7852,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -7888,7 +7888,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -7898,7 +7898,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -7928,7 +7928,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -7964,7 +7964,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -8000,7 +8000,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -8015,7 +8015,7 @@ var tablesTestColspecAttributeUsingAsteriskSyntaxSetsNumberOfColumns = &asciidoc
 }
 
 var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8053,9 +8053,9 @@ var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &as
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -8085,7 +8085,7 @@ var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "one",
 								},
@@ -8121,7 +8121,7 @@ var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "two",
 								},
@@ -8157,7 +8157,7 @@ var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -8167,7 +8167,7 @@ var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &as
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -8197,7 +8197,7 @@ var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -8233,7 +8233,7 @@ var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -8269,7 +8269,7 @@ var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -8284,7 +8284,7 @@ var tablesTestTableWithExplicitColumnCountCanHaveMultipleRowsOnASingleLine = &as
 }
 
 var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASingleLine = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8374,9 +8374,9 @@ var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASing
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -8406,7 +8406,7 @@ var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASing
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "one",
 								},
@@ -8442,7 +8442,7 @@ var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASing
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "two",
 								},
@@ -8478,7 +8478,7 @@ var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASing
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -8488,7 +8488,7 @@ var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASing
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -8518,7 +8518,7 @@ var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASing
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -8554,7 +8554,7 @@ var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASing
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -8590,7 +8590,7 @@ var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASing
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -8605,7 +8605,7 @@ var tablesTestTableWithExplicitDeprecatedColspecSyntaxCanHaveMultipleRowsOnASing
 }
 
 var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8669,9 +8669,9 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -8701,7 +8701,7 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "one",
 								},
@@ -8737,7 +8737,7 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "two",
 								},
@@ -8747,7 +8747,7 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -8777,7 +8777,7 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -8813,7 +8813,7 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -8823,7 +8823,7 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -8853,7 +8853,7 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -8889,7 +8889,7 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -8904,7 +8904,7 @@ var tablesTestColumnsAreAddedForEmptyRecordsInColspecAttribute = &asciidoc.Docum
 }
 
 var tablesTestColsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -8968,9 +8968,9 @@ var tablesTestColsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9000,7 +9000,7 @@ var tablesTestColsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "strong",
 								},
@@ -9036,7 +9036,7 @@ var tablesTestColsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "mono",
 								},
@@ -9051,7 +9051,7 @@ var tablesTestColsMayBeSeparatedBySemiColonInsteadOfComma = &asciidoc.Document{
 }
 
 var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9115,9 +9115,9 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9147,7 +9147,7 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "one",
 								},
@@ -9183,7 +9183,7 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "two",
 								},
@@ -9193,7 +9193,7 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9223,7 +9223,7 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -9259,7 +9259,7 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -9269,7 +9269,7 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9299,7 +9299,7 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -9335,7 +9335,7 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -9350,7 +9350,7 @@ var tablesTestColsAttributeMayIncludeSpaces = &asciidoc.Document{
 }
 
 var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9361,9 +9361,9 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9393,7 +9393,7 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "one",
 								},
@@ -9429,7 +9429,7 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "two",
 								},
@@ -9439,7 +9439,7 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9469,7 +9469,7 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -9505,7 +9505,7 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -9515,7 +9515,7 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9545,7 +9545,7 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -9581,7 +9581,7 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -9596,7 +9596,7 @@ var tablesTestBlankColsAttributeShouldBeIgnored = &asciidoc.Document{
 }
 
 var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9607,9 +9607,9 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9639,7 +9639,7 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "one",
 								},
@@ -9675,7 +9675,7 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "two",
 								},
@@ -9685,7 +9685,7 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9715,7 +9715,7 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -9751,7 +9751,7 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -9761,7 +9761,7 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9791,7 +9791,7 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -9827,7 +9827,7 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -9842,7 +9842,7 @@ var tablesTestEmptyColsAttributeShouldBeIgnored = &asciidoc.Document{
 }
 
 var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -9850,7 +9850,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "header,footer",
 						},
@@ -9859,9 +9859,9 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9891,7 +9891,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item",
 								},
@@ -9927,7 +9927,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Quantity",
 								},
@@ -9937,7 +9937,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -9967,7 +9967,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item 1",
 								},
@@ -10003,7 +10003,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -10013,7 +10013,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10043,7 +10043,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item 2",
 								},
@@ -10079,7 +10079,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -10089,7 +10089,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10119,7 +10119,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item 3",
 								},
@@ -10155,7 +10155,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -10165,7 +10165,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10195,7 +10195,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Total",
 								},
@@ -10231,7 +10231,7 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "6",
 								},
@@ -10246,14 +10246,14 @@ var tablesTestTableWithHeaderAndFooter = &asciidoc.Document{
 }
 
 var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Table with header, body and footer",
 						},
@@ -10261,7 +10261,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "header,footer",
 						},
@@ -10270,9 +10270,9 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10302,7 +10302,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item",
 								},
@@ -10338,7 +10338,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Quantity",
 								},
@@ -10348,7 +10348,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10378,7 +10378,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item 1",
 								},
@@ -10414,7 +10414,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -10424,7 +10424,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10454,7 +10454,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item 2",
 								},
@@ -10490,7 +10490,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -10500,7 +10500,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10530,7 +10530,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item 3",
 								},
@@ -10566,7 +10566,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -10576,7 +10576,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10606,7 +10606,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Total",
 								},
@@ -10642,7 +10642,7 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "6",
 								},
@@ -10657,16 +10657,16 @@ var tablesTestTableWithHeaderAndFooterDocbook = &asciidoc.Document{
 }
 
 var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10696,7 +10696,7 @@ var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -10732,7 +10732,7 @@ var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -10768,7 +10768,7 @@ var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -10781,7 +10781,7 @@ var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10811,7 +10811,7 @@ var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A1",
 								},
@@ -10847,7 +10847,7 @@ var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B1",
 								},
@@ -10883,7 +10883,7 @@ var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C1",
 								},
@@ -10898,7 +10898,7 @@ var tablesTestShouldSetHorizontalAndVerticalAlignmentWhenConvertingToDocBook = &
 }
 
 var tablesTestShouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -10906,7 +10906,7 @@ var tablesTestShouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Docum
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "frame",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ends",
 						},
@@ -10915,9 +10915,9 @@ var tablesTestShouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Docum
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -10947,7 +10947,7 @@ var tablesTestShouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -10983,7 +10983,7 @@ var tablesTestShouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -11019,7 +11019,7 @@ var tablesTestShouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -11034,7 +11034,7 @@ var tablesTestShouldPreserveFrameValueEndsWhenConvertingToHtml = &asciidoc.Docum
 }
 
 var tablesTestShouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -11042,7 +11042,7 @@ var tablesTestShouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &ascii
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "frame",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "topbot",
 						},
@@ -11051,9 +11051,9 @@ var tablesTestShouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &ascii
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -11083,7 +11083,7 @@ var tablesTestShouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &ascii
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -11119,7 +11119,7 @@ var tablesTestShouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &ascii
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -11155,7 +11155,7 @@ var tablesTestShouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &ascii
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -11170,7 +11170,7 @@ var tablesTestShouldNormalizeFrameValueTopbotAsEndsWhenConvertingToHtml = &ascii
 }
 
 var tablesTestShouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -11178,7 +11178,7 @@ var tablesTestShouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "frame",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "topbot",
 						},
@@ -11187,9 +11187,9 @@ var tablesTestShouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -11219,7 +11219,7 @@ var tablesTestShouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -11255,7 +11255,7 @@ var tablesTestShouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -11291,7 +11291,7 @@ var tablesTestShouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -11306,7 +11306,7 @@ var tablesTestShouldPreserveFrameValueTopbotWhenConvertingToDocBook = &asciidoc.
 }
 
 var tablesTestShouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -11314,7 +11314,7 @@ var tablesTestShouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asci
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "frame",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ends",
 						},
@@ -11323,9 +11323,9 @@ var tablesTestShouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asci
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -11355,7 +11355,7 @@ var tablesTestShouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -11391,7 +11391,7 @@ var tablesTestShouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -11427,7 +11427,7 @@ var tablesTestShouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -11442,16 +11442,16 @@ var tablesTestShouldConvertFrameValueEndsToTopbotWhenConvertingToDocBook = &asci
 }
 
 var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -11481,7 +11481,7 @@ var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 1",
 								},
@@ -11517,7 +11517,7 @@ var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 2",
 								},
@@ -11530,7 +11530,7 @@ var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -11560,7 +11560,7 @@ var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data A1",
 								},
@@ -11596,7 +11596,7 @@ var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data B1",
 								},
@@ -11609,7 +11609,7 @@ var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -11639,7 +11639,7 @@ var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data A2",
 								},
@@ -11675,7 +11675,7 @@ var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data B2",
 								},
@@ -11690,16 +11690,16 @@ var tablesTestTableWithImplicitHeaderRow = &asciidoc.Document{
 }
 
 var tablesTestTableWithImplicitHeaderRowOnly = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -11729,7 +11729,7 @@ var tablesTestTableWithImplicitHeaderRowOnly = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 1",
 								},
@@ -11765,7 +11765,7 @@ var tablesTestTableWithImplicitHeaderRowOnly = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 2",
 								},
@@ -11783,7 +11783,7 @@ var tablesTestTableWithImplicitHeaderRowOnly = &asciidoc.Document{
 }
 
 var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -11795,7 +11795,7 @@ var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "autowidth",
 								},
@@ -11805,9 +11805,9 @@ var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -11837,7 +11837,7 @@ var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 1",
 								},
@@ -11873,7 +11873,7 @@ var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 2",
 								},
@@ -11886,7 +11886,7 @@ var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -11916,7 +11916,7 @@ var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data A1",
 								},
@@ -11952,7 +11952,7 @@ var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data B1",
 								},
@@ -11967,16 +11967,16 @@ var tablesTestTableWithImplicitHeaderRowWhenOtherOptionsSet = &asciidoc.Document
 }
 
 var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12006,7 +12006,7 @@ var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 1",
 								},
@@ -12042,7 +12042,7 @@ var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 2",
 								},
@@ -12052,7 +12052,7 @@ var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12082,7 +12082,7 @@ var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data A1",
 								},
@@ -12118,7 +12118,7 @@ var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data B1",
 								},
@@ -12131,7 +12131,7 @@ var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12161,7 +12161,7 @@ var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data A2",
 								},
@@ -12197,7 +12197,7 @@ var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data B2",
 								},
@@ -12212,7 +12212,7 @@ var tablesTestNoImplicitHeaderRowIfSecondLineNotBlank = &asciidoc.Document{
 }
 
 var tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -12250,9 +12250,9 @@ var tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12282,7 +12282,7 @@ var tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A1",
 								},
@@ -12324,7 +12324,7 @@ var tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B1",
 								},
@@ -12337,7 +12337,7 @@ var tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12367,7 +12367,7 @@ var tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A2",
 								},
@@ -12403,7 +12403,7 @@ var tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B2",
 								},
@@ -12418,7 +12418,7 @@ var tablesTestNoImplicitHeaderRowIfCellInFirstLineSpansMultipleLines = &asciidoc
 }
 
 var tablesTestShouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColumnHasLStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -12482,9 +12482,9 @@ var tablesTestShouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColum
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12514,7 +12514,7 @@ var tablesTestShouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "literal",
 								},
@@ -12550,7 +12550,7 @@ var tablesTestShouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "normal",
 								},
@@ -12565,7 +12565,7 @@ var tablesTestShouldFormatFirstCellAsLiteralIfThereIsNoImplicitHeaderRowAndColum
 }
 
 var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColumnHasAStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -12629,9 +12629,9 @@ var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColu
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12661,9 +12661,9 @@ var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.UnorderedListItem{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "list",
 										},
@@ -12705,7 +12705,7 @@ var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "normal",
 								},
@@ -12720,7 +12720,7 @@ var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndColu
 }
 
 var tablesTestShouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImplicitHeaderRow = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -12784,9 +12784,9 @@ var tablesTestShouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImpli
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12816,7 +12816,7 @@ var tablesTestShouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImpli
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "literal",
@@ -12853,7 +12853,7 @@ var tablesTestShouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImpli
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "normal",
 								},
@@ -12868,16 +12868,16 @@ var tablesTestShouldInterpretLeadingIndentIfFirstCellIsAsciiDocAndThereIsNoImpli
 }
 
 var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCellHasAStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12907,9 +12907,9 @@ var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCell
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.UnorderedListItem{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "list",
 										},
@@ -12925,7 +12925,7 @@ var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCell
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -12955,7 +12955,7 @@ var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCell
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "normal",
 								},
@@ -12970,7 +12970,7 @@ var tablesTestShouldFormatFirstCellAsAsciiDocIfThereIsNoImplicitHeaderRowAndCell
 }
 
 var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13008,9 +13008,9 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13040,7 +13040,7 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "contains AsciiDoc content",
 								},
@@ -13049,7 +13049,7 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 									Text: "",
 								},
 								&asciidoc.UnorderedListItem{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "a",
 										},
@@ -13060,7 +13060,7 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 									Checklist:     0,
 								},
 								&asciidoc.UnorderedListItem{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "b",
 										},
@@ -13071,7 +13071,7 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 									Checklist:     0,
 								},
 								&asciidoc.UnorderedListItem{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "c",
 										},
@@ -13113,7 +13113,7 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "contains no AsciiDoc content",
 								},
@@ -13130,7 +13130,7 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13160,7 +13160,7 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A2",
 								},
@@ -13196,7 +13196,7 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B2",
 								},
@@ -13211,19 +13211,19 @@ var tablesTestNoImplicitHeaderRowIfAsciiDocCellInFirstLineSpansMultipleLines = &
 }
 
 var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13253,7 +13253,7 @@ var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 1",
 								},
@@ -13289,7 +13289,7 @@ var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 2",
 								},
@@ -13302,7 +13302,7 @@ var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13332,7 +13332,7 @@ var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data A1",
 								},
@@ -13368,7 +13368,7 @@ var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data B1",
 								},
@@ -13381,7 +13381,7 @@ var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13411,7 +13411,7 @@ var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data A2",
 								},
@@ -13447,7 +13447,7 @@ var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data B2",
 								},
@@ -13465,7 +13465,7 @@ var tablesTestNoImplicitHeaderRowIfFirstLineBlank = &asciidoc.Document{
 }
 
 var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13477,7 +13477,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "noheader",
 								},
@@ -13487,9 +13487,9 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13519,7 +13519,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 1",
 								},
@@ -13555,7 +13555,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Column 2",
 								},
@@ -13568,7 +13568,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13598,7 +13598,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data A1",
 								},
@@ -13634,7 +13634,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data B1",
 								},
@@ -13647,7 +13647,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13677,7 +13677,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data A2",
 								},
@@ -13713,7 +13713,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Data B2",
 								},
@@ -13728,7 +13728,7 @@ var tablesTestNoImplicitHeaderRowIfNoheaderOptionIsSpecified = &asciidoc.Documen
 }
 
 var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -13818,7 +13818,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "header,footer",
 						},
@@ -13827,9 +13827,9 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13859,7 +13859,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Name",
 								},
@@ -13895,7 +13895,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Occupation",
 								},
@@ -13931,7 +13931,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Website",
 								},
@@ -13941,7 +13941,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -13971,7 +13971,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Octocat",
 								},
@@ -14007,7 +14007,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Social coding",
 								},
@@ -14043,12 +14043,12 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Link{
 									AttributeList: nil,
 									URL: asciidoc.URL{
 										Scheme: "https://",
-										Path: asciidoc.Set{
+										Path: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "github.com",
 											},
@@ -14061,7 +14061,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -14091,7 +14091,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Name",
 								},
@@ -14127,7 +14127,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Occupation",
 								},
@@ -14163,7 +14163,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Website",
 								},
@@ -14178,7 +14178,7 @@ var tablesTestStylesNotAppliedToHeaderCells = &asciidoc.Document{
 }
 
 var tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14216,9 +14216,9 @@ var tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAS
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -14248,13 +14248,13 @@ var tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAS
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: " ",
 								},
 								&asciidoc.Italic{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "foo",
 										},
@@ -14295,10 +14295,10 @@ var tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAS
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Bold{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "bar",
 										},
@@ -14313,7 +14313,7 @@ var tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAS
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -14343,9 +14343,9 @@ var tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAS
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.UnorderedListItem{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "list item",
 										},
@@ -14387,7 +14387,7 @@ var tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAS
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "paragraph",
 								},
@@ -14402,7 +14402,7 @@ var tablesTestShouldApplyTextFormattingToCellsInImplicitHeaderRowWhenColumnHasAS
 }
 
 var tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHeader = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14466,9 +14466,9 @@ var tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHead
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -14498,10 +14498,10 @@ var tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHead
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Italic{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "strong",
 										},
@@ -14539,10 +14539,10 @@ var tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHead
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Bold{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "emphasis",
 										},
@@ -14554,7 +14554,7 @@ var tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHead
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -14584,7 +14584,7 @@ var tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHead
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "strong",
 								},
@@ -14620,7 +14620,7 @@ var tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHead
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "emphasis",
 								},
@@ -14635,7 +14635,7 @@ var tablesTestShouldApplyStyleAndTextFormattingToCellsInFirstRowIfNoImplicitHead
 }
 
 var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -14725,12 +14725,12 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -14760,7 +14760,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Name",
 								},
@@ -14796,7 +14796,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Occupation",
 								},
@@ -14832,7 +14832,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Website",
 								},
@@ -14845,7 +14845,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -14875,7 +14875,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Octocat",
 								},
@@ -14911,7 +14911,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Social coding",
 								},
@@ -14947,12 +14947,12 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Link{
 									AttributeList: nil,
 									URL: asciidoc.URL{
 										Scheme: "https://",
-										Path: asciidoc.Set{
+										Path: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "github.com",
 											},
@@ -14968,7 +14968,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -14998,7 +14998,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Name",
 								},
@@ -15034,7 +15034,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Occupation",
 								},
@@ -15070,7 +15070,7 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Website",
 								},
@@ -15088,14 +15088,14 @@ var tablesTestVerticalTableHeadersUseThElementInsteadOfHeaderClass = &asciidoc.D
 }
 
 var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeader = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Horizontal and vertical source data",
 						},
@@ -15103,7 +15103,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 				},
 				&asciidoc.NamedAttribute{
 					Name: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "80%",
 						},
@@ -15220,7 +15220,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 				},
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "header",
 						},
@@ -15229,9 +15229,9 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 				},
 			},
 			ColumnCount: 4,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -15261,7 +15261,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Date",
 								},
@@ -15297,7 +15297,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Duration",
 								},
@@ -15333,7 +15333,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Avg HR",
 								},
@@ -15369,7 +15369,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Notes",
 								},
@@ -15382,7 +15382,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -15412,7 +15412,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "22-Aug-08",
 								},
@@ -15448,7 +15448,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "10:24",
 								},
@@ -15484,7 +15484,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "157",
 								},
@@ -15520,7 +15520,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "Worked out MSHR (max sustainable heart rate) by going hard",
@@ -15538,7 +15538,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -15568,7 +15568,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "22-Aug-08",
 								},
@@ -15604,7 +15604,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "23:03",
 								},
@@ -15640,7 +15640,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "152",
 								},
@@ -15676,7 +15676,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "Back-to-back with previous interval.",
@@ -15690,7 +15690,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -15720,7 +15720,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "24-Aug-08",
 								},
@@ -15756,7 +15756,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "40:00",
 								},
@@ -15792,7 +15792,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "145",
 								},
@@ -15828,7 +15828,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "Moderately hard interspersed with 3x 3min intervals (2 min",
@@ -15856,7 +15856,7 @@ var tablesTestSupportsHorizontalAndVerticalSourceDataWithBlankLinesAndTableHeade
 }
 
 var tablesTestPercentagesAsColumnWidths = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -15920,9 +15920,9 @@ var tablesTestPercentagesAsColumnWidths = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -15952,7 +15952,7 @@ var tablesTestPercentagesAsColumnWidths = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "column A",
 								},
@@ -15988,7 +15988,7 @@ var tablesTestPercentagesAsColumnWidths = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "column B",
 								},
@@ -16003,7 +16003,7 @@ var tablesTestPercentagesAsColumnWidths = &asciidoc.Document{
 }
 
 var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -16119,7 +16119,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "25%",
 						},
@@ -16128,9 +16128,9 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 4,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16160,7 +16160,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -16196,7 +16196,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -16232,7 +16232,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "3",
 								},
@@ -16268,7 +16268,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "4",
 								},
@@ -16278,7 +16278,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16308,7 +16308,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "5",
 								},
@@ -16344,7 +16344,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "6",
 								},
@@ -16352,9 +16352,9 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
@@ -16385,7 +16385,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "7",
 								},
@@ -16395,7 +16395,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16425,7 +16425,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "8",
 								},
@@ -16433,9 +16433,9 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
@@ -16466,7 +16466,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "9",
 								},
@@ -16474,14 +16474,14 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16511,7 +16511,7 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "10",
 								},
@@ -16519,19 +16519,19 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 					},
 				},
@@ -16541,16 +16541,16 @@ var tablesTestSpansAlignmentsAndStyles = &asciidoc.Document{
 }
 
 var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16580,7 +16580,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "AAA",
 								},
@@ -16588,9 +16588,9 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
@@ -16621,7 +16621,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "CCC",
 								},
@@ -16631,7 +16631,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16661,7 +16661,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "AAA",
 								},
@@ -16697,7 +16697,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "BBB",
 								},
@@ -16733,7 +16733,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "CCC",
 								},
@@ -16743,7 +16743,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16773,7 +16773,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "AAA",
 								},
@@ -16809,7 +16809,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "BBB",
 								},
@@ -16845,7 +16845,7 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "CCC",
 								},
@@ -16860,16 +16860,16 @@ var tablesTestSetsUpColumnsCorrectlyIfFirstRowHasCellThatSpansColumns = &asciido
 }
 
 var tablesTestSupportsRepeatingCells = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16899,7 +16899,7 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -16909,7 +16909,7 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16939,7 +16939,7 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -16949,7 +16949,7 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -16979,7 +16979,7 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "2",
 								},
@@ -16989,7 +16989,7 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17019,7 +17019,7 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -17029,7 +17029,7 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17059,7 +17059,7 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -17074,16 +17074,16 @@ var tablesTestSupportsRepeatingCells = &asciidoc.Document{
 }
 
 var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCellWithColspan = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17113,7 +17113,7 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCe
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Two Columns",
 								},
@@ -17121,14 +17121,14 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCe
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17158,7 +17158,7 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCe
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "One Column",
 								},
@@ -17194,7 +17194,7 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCe
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "One Column",
 								},
@@ -17209,16 +17209,16 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndSingleCe
 }
 
 var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWithMixedColspans = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17248,7 +17248,7 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWit
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Two Columns",
 								},
@@ -17256,9 +17256,9 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWit
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
@@ -17289,7 +17289,7 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWit
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "One Column",
 								},
@@ -17299,7 +17299,7 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWit
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17329,7 +17329,7 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWit
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "One Column",
 								},
@@ -17365,7 +17365,7 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWit
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "One Column",
 								},
@@ -17401,7 +17401,7 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWit
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "One Column",
 								},
@@ -17416,16 +17416,16 @@ var tablesTestCalculatesColnamesCorrectlyWhenUsingImplicitColumnCountAndCellsWit
 }
 
 var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspansInFirstRow = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   5,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17455,8 +17455,8 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set:   asciidoc.Set{},
-							Blank: false,
+							Elements: asciidoc.Elements{},
+							Blank:    false,
 						},
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
@@ -17487,7 +17487,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Node 0",
 								},
@@ -17495,9 +17495,9 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
@@ -17528,7 +17528,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Node 1",
 								},
@@ -17536,9 +17536,9 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 					},
 				},
@@ -17546,7 +17546,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17576,7 +17576,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Host processes",
 								},
@@ -17612,7 +17612,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Core 0",
 								},
@@ -17648,7 +17648,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Core 1",
 								},
@@ -17684,7 +17684,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Core 4",
 								},
@@ -17720,7 +17720,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Core 5",
 								},
@@ -17730,7 +17730,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17760,7 +17760,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Guest processes",
 								},
@@ -17796,7 +17796,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Core 2",
 								},
@@ -17832,7 +17832,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Core 3",
 								},
@@ -17868,7 +17868,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Core 6",
 								},
@@ -17904,7 +17904,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Core 7",
 								},
@@ -17919,7 +17919,7 @@ var tablesTestAssignsUniqueColumnNamesForTableWithImplicitColumnCountAndColspans
 }
 
 var tablesTestShouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNumberOfColumns = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -17957,9 +17957,9 @@ var tablesTestShouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNu
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -17989,7 +17989,7 @@ var tablesTestShouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -17997,19 +17997,19 @@ var tablesTestShouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNu
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -18039,7 +18039,7 @@ var tablesTestShouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -18075,7 +18075,7 @@ var tablesTestShouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNu
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "C",
 								},
@@ -18097,7 +18097,7 @@ var tablesTestShouldDropRowButPreserveRemainingRowsAfterCellWithColspanExceedsNu
 }
 
 var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNumberOfColumns = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -18135,9 +18135,9 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNu
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -18167,7 +18167,7 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -18203,7 +18203,7 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -18218,16 +18218,16 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsSpecifiedNu
 }
 
 var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNumberOfColumns = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -18257,7 +18257,7 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -18293,7 +18293,7 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -18303,7 +18303,7 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNum
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -18333,7 +18333,7 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -18369,7 +18369,7 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "d",
 								},
@@ -18384,7 +18384,7 @@ var tablesTestShouldDropLastRowIfLastCellInTableHasColspanThatExceedsImplicitNum
 }
 
 var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -18578,9 +18578,9 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 				},
 			},
 			ColumnCount: 7,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -18610,7 +18610,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -18618,9 +18618,9 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
@@ -18651,7 +18651,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -18659,9 +18659,9 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
@@ -18692,7 +18692,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -18700,9 +18700,9 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
@@ -18733,7 +18733,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "d",
 								},
@@ -18743,7 +18743,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -18773,7 +18773,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "e",
 								},
@@ -18809,7 +18809,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "f",
 								},
@@ -18845,7 +18845,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "g",
 								},
@@ -18881,7 +18881,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "h",
 								},
@@ -18917,7 +18917,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "i",
 								},
@@ -18953,7 +18953,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "j",
 								},
@@ -18989,7 +18989,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "k",
 								},
@@ -19004,7 +19004,7 @@ var tablesTestShouldTakeColspanIntoAccountWhenTakingCellsForRow = &asciidoc.Docu
 }
 
 var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -19042,9 +19042,9 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19074,7 +19074,7 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -19110,7 +19110,7 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -19120,7 +19120,7 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19150,7 +19150,7 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -19186,7 +19186,7 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "d",
 								},
@@ -19196,7 +19196,7 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19226,7 +19226,7 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "e",
 								},
@@ -19234,9 +19234,9 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 					},
 				},
@@ -19246,7 +19246,7 @@ var tablesTestShouldDropIncompleteRowAtEndOfTableAndLogAnError = &asciidoc.Docum
 }
 
 var tablesTestShouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -19310,9 +19310,9 @@ var tablesTestShouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Documen
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19342,7 +19342,7 @@ var tablesTestShouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Documen
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Paragraphs",
 								},
@@ -19378,7 +19378,7 @@ var tablesTestShouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Documen
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Literal",
 								},
@@ -19391,7 +19391,7 @@ var tablesTestShouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Documen
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19421,7 +19421,7 @@ var tablesTestShouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Documen
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "The discussion about what is good,",
 								},
@@ -19511,9 +19511,9 @@ var tablesTestShouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Documen
 							Blank: false,
 						},
 						&asciidoc.TableCell{
-							Format: nil,
-							Set:    nil,
-							Blank:  true,
+							Format:   nil,
+							Elements: nil,
+							Blank:    true,
 						},
 					},
 				},
@@ -19523,16 +19523,16 @@ var tablesTestShouldApplyCellStyleForColumnToRepeatedContent = &asciidoc.Documen
 }
 
 var tablesTestShouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdjacentToNonBlankLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19562,7 +19562,7 @@ var tablesTestShouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdja
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "paragraph",
 								},
@@ -19593,16 +19593,16 @@ var tablesTestShouldNotSplitParagraphAtLineContainingOnlyblankThatIsDirectlyAdja
 }
 
 var tablesTestShouldStripTrailingNewlinesWhenSplittingParagraphs = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19632,7 +19632,7 @@ var tablesTestShouldStripTrailingNewlinesWhenSplittingParagraphs = &asciidoc.Doc
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "first wrapped",
 								},
@@ -19661,16 +19661,16 @@ var tablesTestShouldStripTrailingNewlinesWhenSplittingParagraphs = &asciidoc.Doc
 }
 
 var tablesTestBasicAsciiDocCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19700,14 +19700,14 @@ var tablesTestBasicAsciiDocCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.OpenBlock{
 									AttributeList: nil,
 									Delimiter: asciidoc.Delimiter{
 										Type:   7,
 										Length: 2,
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.Admonition{
 											AdmonitionType: 1,
 											AttributeList:  nil,
@@ -19736,16 +19736,16 @@ var tablesTestBasicAsciiDocCell = &asciidoc.Document{
 }
 
 var tablesTestAsciiDocTableCellShouldBeWrappedInDivWithClassContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19775,7 +19775,7 @@ var tablesTestAsciiDocTableCellShouldBeWrappedInDivWithClassContent = &asciidoc.
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "AsciiDoc table cell",
 								},
@@ -19790,16 +19790,16 @@ var tablesTestAsciiDocTableCellShouldBeWrappedInDivWithClassContent = &asciidoc.
 }
 
 var tablesTestDoctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -19829,11 +19829,11 @@ var tablesTestDoctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.AttributeEntry{
 									Name: "doctype",
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "inline",
 										},
@@ -19856,16 +19856,16 @@ var tablesTestDoctypeCanBeSetInAsciiDocTableCell = &asciidoc.Document{
 }
 
 var tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "book",
 						},
@@ -19876,16 +19876,16 @@ var tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Documen
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
 							AttributeList: nil,
 							ColumnCount:   1,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableRow{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
 												Multiplier: asciidoc.Optional[int]{
@@ -19915,12 +19915,12 @@ var tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Documen
 													IsSet: true,
 												},
 											},
-											Set: asciidoc.Set{
+											Elements: asciidoc.Elements{
 												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Set:           nil,
-													Title: asciidoc.Set{
+													Elements:      nil,
+													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "AsciiDoc Table Cell",
 														},
@@ -19952,7 +19952,7 @@ var tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Documen
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -19960,7 +19960,7 @@ var tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Documen
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Book Title",
 				},
@@ -19971,16 +19971,16 @@ var tablesTestShouldResetDoctypeToDefaultInAsciiDocTableCell = &asciidoc.Documen
 }
 
 var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctypeIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "doctype",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "article",
 						},
@@ -19991,16 +19991,16 @@ var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctype
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
 							AttributeList: nil,
 							ColumnCount:   1,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableRow{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
 												Multiplier: asciidoc.Optional[int]{
@@ -20030,12 +20030,12 @@ var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctype
 													IsSet: true,
 												},
 											},
-											Set: asciidoc.Set{
+											Elements: asciidoc.Elements{
 												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Set:           nil,
-													Title: asciidoc.Set{
+													Elements:      nil,
+													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "AsciiDoc Table Cell",
 														},
@@ -20044,7 +20044,7 @@ var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctype
 												},
 												&asciidoc.AttributeEntry{
 													Name: "doctype",
-													Set: asciidoc.Set{
+													Elements: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "book",
 														},
@@ -20075,7 +20075,7 @@ var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctype
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Chapter 1",
 						},
@@ -20083,7 +20083,7 @@ var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctype
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -20094,16 +20094,16 @@ var tablesTestShouldUpdateDoctypeRelatedAttributesInAsciiDocTableCellWhenDoctype
 }
 
 var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardSetByTheApi = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -20133,18 +20133,18 @@ var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardS
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.AttributeEntry{
-									Name: "icons",
-									Set:  nil,
+									Name:     "icons",
+									Elements: nil,
 								},
 								&asciidoc.EmptyLine{
 									Text: "",
 								},
 								&asciidoc.Paragraph{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "This admonition does not have a font-based icon.",
 										},
@@ -20162,16 +20162,16 @@ var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardS
 }
 
 var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardUnsetByTheApi = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -20201,11 +20201,11 @@ var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardU
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.AttributeEntry{
 									Name: "icons",
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "font",
 										},
@@ -20216,7 +20216,7 @@ var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardU
 								},
 								&asciidoc.Paragraph{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "This admonition does not have a font-based icon.",
 										},
@@ -20234,7 +20234,7 @@ var tablesTestShouldNotAllowAsciiDocTableCellToSetADocumentAttributeThatWasHardU
 }
 
 var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -20249,14 +20249,14 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
 					AttributeList: asciidoc.AttributeList{
 						&asciidoc.TitleAttribute{
-							Val: asciidoc.Set{
+							Val: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Outer Table",
 								},
@@ -20264,9 +20264,9 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 						},
 					},
 					ColumnCount: 1,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableRow{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableCell{
 									Format: &asciidoc.TableCellFormat{
 										Multiplier: asciidoc.Optional[int]{
@@ -20296,15 +20296,15 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 											IsSet: true,
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.NewLine{},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
-											Set:           nil,
-											Title: asciidoc.Set{
+											Elements:      nil,
+											Title: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "Inner Heading",
 												},
@@ -20317,14 +20317,14 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 										&asciidoc.Paragraph{
 											AttributeList: asciidoc.AttributeList{
 												&asciidoc.TitleAttribute{
-													Val: asciidoc.Set{
+													Val: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Inner Table",
 														},
 													},
 												},
 											},
-											Set: asciidoc.Set{
+											Elements: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "!===",
 												},
@@ -20347,7 +20347,7 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Outer Heading",
 				},
@@ -20358,7 +20358,7 @@ var tablesTestShouldKeepAttributeUnsetInAsciiDocTableCellIfUnsetInParentDocument
 }
 
 var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -20370,16 +20370,16 @@ var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCel
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
 					AttributeList: nil,
 					ColumnCount:   1,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableRow{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableCell{
 									Format: &asciidoc.TableCellFormat{
 										Multiplier: asciidoc.Optional[int]{
@@ -20409,15 +20409,15 @@ var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCel
 											IsSet: true,
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.NewLine{},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
-											Set:           nil,
-											Title: asciidoc.Set{
+											Elements:      nil,
+											Title: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "No ID",
 												},
@@ -20428,16 +20428,16 @@ var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCel
 											Text: "",
 										},
 										&asciidoc.AttributeEntry{
-											Name: "sectids",
-											Set:  nil,
+											Name:     "sectids",
+											Elements: nil,
 										},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
-											Set:           nil,
-											Title: asciidoc.Set{
+											Elements:      nil,
+											Title: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "Has ID",
 												},
@@ -20452,7 +20452,7 @@ var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCel
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "No ID",
 				},
@@ -20463,22 +20463,22 @@ var tablesTestShouldAllowAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCel
 }
 
 var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
 					AttributeList: nil,
 					ColumnCount:   1,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableRow{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableCell{
 									Format: &asciidoc.TableCellFormat{
 										Multiplier: asciidoc.Optional[int]{
@@ -20508,15 +20508,15 @@ var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDo
 											IsSet: true,
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.NewLine{},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
-											Set:           nil,
-											Title: asciidoc.Set{
+											Elements:      nil,
+											Title: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "No ID",
 												},
@@ -20527,16 +20527,16 @@ var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDo
 											Text: "",
 										},
 										&asciidoc.AttributeEntry{
-											Name: "sectids",
-											Set:  nil,
+											Name:     "sectids",
+											Elements: nil,
 										},
 										&asciidoc.EmptyLine{
 											Text: "",
 										},
 										&asciidoc.Section{
 											AttributeList: nil,
-											Set:           nil,
-											Title: asciidoc.Set{
+											Elements:      nil,
+											Title: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "Has ID",
 												},
@@ -20551,7 +20551,7 @@ var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDo
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "No ID",
 				},
@@ -20562,7 +20562,7 @@ var tablesTestShouldNotAllowLockedAttributeUnsetInParentDocumentToBeSetInAsciiDo
 }
 
 var tablesTestAsciiDocContent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -20652,9 +20652,9 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -20684,7 +20684,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Name",
 								},
@@ -20720,7 +20720,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Backends",
 								},
@@ -20756,7 +20756,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Description",
 								},
@@ -20769,7 +20769,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -20799,7 +20799,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "badges",
 								},
@@ -20835,7 +20835,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "xhtml11, html5",
 								},
@@ -20871,7 +20871,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "Link badges ('XHTML 1.1' and 'CSS') in document footers.",
@@ -20888,7 +20888,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									AttributeList: asciidoc.AttributeList{
 										&asciidoc.ShorthandAttribute{
 											Style: &asciidoc.ShorthandStyle{
-												Set: asciidoc.Set{
+												Elements: asciidoc.Elements{
 													&asciidoc.String{
 														Value: "NOTE",
 													},
@@ -20899,7 +20899,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 											Options: nil,
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "The path names of images, icons and scripts are relative path",
 										},
@@ -20916,7 +20916,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -20946,10 +20946,10 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Anchor{
-									ID:  "X97",
-									Set: nil,
+									ID:       "X97",
+									Elements: nil,
 								},
 								&asciidoc.String{
 									Value: " docinfo, docinfo1, docinfo2",
@@ -20986,7 +20986,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "All backends",
 								},
@@ -21022,7 +21022,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "These three attributes control which document information",
@@ -21040,7 +21040,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								},
 								&asciidoc.Monospace{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										asciidoc.SpecialCharacter{
 											Character: "<",
 										},
@@ -21070,7 +21070,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								},
 								&asciidoc.Monospace{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "docinfo.",
 										},
@@ -21091,7 +21091,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								},
 								&asciidoc.Monospace{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "docinfo.",
 										},
@@ -21111,7 +21111,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								},
 								&asciidoc.Monospace{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										asciidoc.SpecialCharacter{
 											Character: "<",
 										},
@@ -21144,7 +21144,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								},
 								&asciidoc.Monospace{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										asciidoc.SpecialCharacter{
 											Character: "<",
 										},
@@ -21165,7 +21165,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								},
 								&asciidoc.Monospace{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										asciidoc.SpecialCharacter{
 											Character: "<",
 										},
@@ -21182,7 +21182,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								},
 								&asciidoc.Monospace{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: ".html",
 										},
@@ -21193,7 +21193,7 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 								},
 								&asciidoc.Monospace{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: ".xml",
 										},
@@ -21221,16 +21221,16 @@ var tablesTestAsciiDocContent = &asciidoc.Document{
 }
 
 var tablesTestShouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfContentsStartsWithNewline = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -21260,7 +21260,7 @@ var tablesTestShouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfCon
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "$ command",
@@ -21271,7 +21271,7 @@ var tablesTestShouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfCon
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -21301,7 +21301,7 @@ var tablesTestShouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfCon
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: " paragraph",
 								},
@@ -21316,16 +21316,16 @@ var tablesTestShouldPreserveLeadingIndentationInContentsOfAsciiDocTableCellIfCon
 }
 
 var tablesTestPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProcessed = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -21355,10 +21355,10 @@ var tablesTestPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProce
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.FileInclude{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "fixtures/include-file.adoc",
 										},
@@ -21375,16 +21375,16 @@ var tablesTestPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldBeProce
 }
 
 var tablesTestErrorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTableCellShouldHaveCorrectCursor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -21414,7 +21414,7 @@ var tablesTestErrorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTa
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "A",
 								},
@@ -21450,7 +21450,7 @@ var tablesTestErrorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTa
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "B",
 								},
@@ -21463,7 +21463,7 @@ var tablesTestErrorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTa
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -21493,7 +21493,7 @@ var tablesTestErrorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTa
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "text",
 								},
@@ -21529,10 +21529,10 @@ var tablesTestErrorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTa
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.FileInclude{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "does-not-exist.adoc",
 										},
@@ -21549,22 +21549,22 @@ var tablesTestErrorAboutUnresolvedPreprocessorDirectiveOnFirstLineOfAnAsciiDocTa
 }
 
 var tablesTestCrossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInMainDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Table{
 					AttributeList: nil,
 					ColumnCount:   1,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableRow{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableCell{
 									Format: &asciidoc.TableCellFormat{
 										Multiplier: asciidoc.Optional[int]{
@@ -21594,13 +21594,13 @@ var tablesTestCrossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInM
 											IsSet: true,
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "See ",
 										},
 										&asciidoc.CrossReference{
 											AttributeList: nil,
-											Set:           nil,
+											Elements:      nil,
 											ID:            "_more",
 											Format:        0,
 										},
@@ -21615,7 +21615,7 @@ var tablesTestCrossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInM
 					Text: "",
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Some",
 				},
@@ -21624,7 +21624,7 @@ var tablesTestCrossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInM
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -21633,7 +21633,7 @@ var tablesTestCrossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInM
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "More",
 				},
@@ -21644,7 +21644,7 @@ var tablesTestCrossReferenceLinkInAnAsciiDocTableCellShouldResolveToReferenceInM
 }
 
 var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -21653,7 +21653,7 @@ var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asci
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "grays-peak",
 			Format:        0,
 		},
@@ -21662,7 +21662,7 @@ var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asci
 		},
 		&asciidoc.CrossReference{
 			AttributeList: nil,
-			Set:           nil,
+			Elements:      nil,
 			ID:            "mount-evans",
 			Format:        0,
 		},
@@ -21733,9 +21733,9 @@ var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asci
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -21765,10 +21765,10 @@ var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Anchor{
 									ID: "mount-evans",
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Mount Evans",
 										},
@@ -21809,7 +21809,7 @@ var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "14,271 feet",
 								},
@@ -21822,7 +21822,7 @@ var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asci
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -21852,10 +21852,10 @@ var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asci
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Anchor{
 									ID: "grays-peak",
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Grays Peak",
 										},
@@ -21897,7 +21897,7 @@ var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asci
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "14,278 feet",
 								},
@@ -21912,7 +21912,7 @@ var tablesTestShouldDiscoverAnchorAtStartOfCellAndRegisterItAsAReference = &asci
 }
 
 var tablesTestShouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -21950,9 +21950,9 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAS
 				},
 			},
 			ColumnCount: 1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -21982,10 +21982,10 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAS
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Anchor{
 									ID: "foo",
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Foo",
 										},
@@ -22003,7 +22003,7 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAS
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22033,7 +22033,7 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAS
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: " AsciiDoc",
 								},
@@ -22048,7 +22048,7 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInImplicitHeaderRowWhenColumnHasAS
 }
 
 var tablesTestShouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -22060,7 +22060,7 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAS
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "header",
 								},
@@ -22100,9 +22100,9 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAS
 				},
 			},
 			ColumnCount: 1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22132,10 +22132,10 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAS
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Anchor{
 									ID: "foo",
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Foo",
 										},
@@ -22150,7 +22150,7 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAS
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22180,7 +22180,7 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAS
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: " AsciiDoc",
 								},
@@ -22195,16 +22195,16 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInExplicitHeaderRowWhenColumnHasAS
 }
 
 var tablesTestShouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22234,10 +22234,10 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Anchor{
 									ID: "foo",
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Foo",
 										},
@@ -22252,7 +22252,7 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22282,7 +22282,7 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "bar",
 								},
@@ -22297,16 +22297,16 @@ var tablesTestShouldCatalogAnchorAtStartOfCellInFirstRow = &asciidoc.Document{
 }
 
 var tablesTestFootnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22336,7 +22336,7 @@ var tablesTestFootnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocu
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "AsciiDoc footnote:[A lightweight markup language.]",
 								},
@@ -22351,28 +22351,28 @@ var tablesTestFootnotesShouldNotBeSharedBetweenAnAsciiDocTableCellAndTheMainDocu
 }
 
 var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
 							AttributeList: nil,
 							ColumnCount:   1,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableRow{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
 												Multiplier: asciidoc.Optional[int]{
@@ -22402,13 +22402,13 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 													IsSet: true,
 												},
 											},
-											Set: asciidoc.Set{
+											Elements: asciidoc.Elements{
 												&asciidoc.NewLine{},
 												&asciidoc.Listing{
 													AttributeList: asciidoc.AttributeList{
 														&asciidoc.ShorthandAttribute{
 															Style: &asciidoc.ShorthandStyle{
-																Set: asciidoc.Set{
+																Elements: asciidoc.Elements{
 																	&asciidoc.String{
 																		Value: "source",
 																	},
@@ -22421,7 +22421,7 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 														&asciidoc.PositionalAttribute{
 															Offset:      1,
 															ImpliedName: "",
-															Val: asciidoc.Set{
+															Val: asciidoc.Elements{
 																&asciidoc.String{
 																	Value: "yaml",
 																},
@@ -22450,7 +22450,7 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section 1",
 						},
@@ -22459,16 +22459,16 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
 							AttributeList: nil,
 							ColumnCount:   1,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableRow{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
 												Multiplier: asciidoc.Optional[int]{
@@ -22498,13 +22498,13 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 													IsSet: true,
 												},
 											},
-											Set: asciidoc.Set{
+											Elements: asciidoc.Elements{
 												&asciidoc.NewLine{},
 												&asciidoc.Listing{
 													AttributeList: asciidoc.AttributeList{
 														&asciidoc.ShorthandAttribute{
 															Style: &asciidoc.ShorthandStyle{
-																Set: asciidoc.Set{
+																Elements: asciidoc.Elements{
 																	&asciidoc.String{
 																		Value: "source",
 																	},
@@ -22517,7 +22517,7 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 														&asciidoc.PositionalAttribute{
 															Offset:      1,
 															ImpliedName: "",
-															Val: asciidoc.Set{
+															Val: asciidoc.Elements{
 																&asciidoc.String{
 																	Value: "yaml",
 																},
@@ -22546,7 +22546,7 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section 2",
 						},
@@ -22555,7 +22555,7 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -22563,7 +22563,7 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 							AttributeList: asciidoc.AttributeList{
 								&asciidoc.ShorthandAttribute{
 									Style: &asciidoc.ShorthandStyle{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "source",
 											},
@@ -22576,7 +22576,7 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 								&asciidoc.PositionalAttribute{
 									Offset:      1,
 									ImpliedName: "",
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "yaml",
 										},
@@ -22596,7 +22596,7 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section 3",
 						},
@@ -22604,7 +22604,7 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -22615,16 +22615,16 @@ var tablesTestCalloutNumbersShouldBeGloballyUniqueIncludingAsciiDocTableCells = 
 }
 
 var tablesTestCompatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22654,11 +22654,11 @@ var tablesTestCompatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.AttributeEntry{
-									Name: "compat-mode",
-									Set:  nil,
+									Name:     "compat-mode",
+									Elements: nil,
 								},
 								&asciidoc.EmptyLine{
 									Text: "",
@@ -22677,13 +22677,13 @@ var tablesTestCompatModeCanBeActivatedInAsciiDocTableCell = &asciidoc.Document{
 }
 
 var tablesTestCompatModeInAsciiDocTableCellInheritsFromParentDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "compat-mode",
-			Set:  nil,
+			Name:     "compat-mode",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22729,9 +22729,9 @@ var tablesTestCompatModeInAsciiDocTableCellInheritsFromParentDocument = &asciido
 				},
 			},
 			ColumnCount: 1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22761,7 +22761,7 @@ var tablesTestCompatModeInAsciiDocTableCellInheritsFromParentDocument = &asciido
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "The word 'oblique' is emphasized.",
 								},
@@ -22771,7 +22771,7 @@ var tablesTestCompatModeInAsciiDocTableCellInheritsFromParentDocument = &asciido
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22801,7 +22801,7 @@ var tablesTestCompatModeInAsciiDocTableCellInheritsFromParentDocument = &asciido
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "The word 'slanted' is emphasized.",
@@ -22824,13 +22824,13 @@ var tablesTestCompatModeInAsciiDocTableCellInheritsFromParentDocument = &asciido
 }
 
 var tablesTestCompatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "compat-mode",
-			Set:  nil,
+			Name:     "compat-mode",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -22876,9 +22876,9 @@ var tablesTestCompatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &as
 				},
 			},
 			ColumnCount: 1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22908,7 +22908,7 @@ var tablesTestCompatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &as
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "The word 'oblique' is emphasized.",
 								},
@@ -22918,7 +22918,7 @@ var tablesTestCompatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &as
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -22948,7 +22948,7 @@ var tablesTestCompatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &as
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.AttributeReset{
 									Name: "compat-mode",
@@ -22977,7 +22977,7 @@ var tablesTestCompatModeInAsciiDocTableCellCanBeUnsetIfSetInParentDocument = &as
 }
 
 var tablesTestNestedTable = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -23041,9 +23041,9 @@ var tablesTestNestedTable = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -23073,7 +23073,7 @@ var tablesTestNestedTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Normal cell",
 								},
@@ -23109,7 +23109,7 @@ var tablesTestNestedTable = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Cell with nested table",
 								},
@@ -23173,7 +23173,7 @@ var tablesTestNestedTable = &asciidoc.Document{
 											},
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "!===",
 										},
@@ -23199,7 +23199,7 @@ var tablesTestNestedTable = &asciidoc.Document{
 }
 
 var tablesTestCanSetFormatOfNestedTableToPsv = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -23237,9 +23237,9 @@ var tablesTestCanSetFormatOfNestedTableToPsv = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -23269,7 +23269,7 @@ var tablesTestCanSetFormatOfNestedTableToPsv = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "normal cell",
 								},
@@ -23305,13 +23305,13 @@ var tablesTestCanSetFormatOfNestedTableToPsv = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.Paragraph{
 									AttributeList: asciidoc.AttributeList{
 										&asciidoc.NamedAttribute{
 											Name: "format",
-											Val: asciidoc.Set{
+											Val: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "psv",
 												},
@@ -23319,7 +23319,7 @@ var tablesTestCanSetFormatOfNestedTableToPsv = &asciidoc.Document{
 											Quote: 0,
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "!===",
 										},
@@ -23345,7 +23345,7 @@ var tablesTestCanSetFormatOfNestedTableToPsv = &asciidoc.Document{
 }
 
 var tablesTestAsciiDocTableCellShouldInheritToDirOptionFromParentDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.String{
 			Value: ", parse: true, to_dir: testdir",
 		},
@@ -23370,32 +23370,32 @@ var tablesTestAsciiDocTableCellShouldInheritToDirOptionFromParentDocument = &asc
 }
 
 var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
-					Name: "toc",
-					Set:  nil,
+					Name:     "toc",
+					Elements: nil,
 				},
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
 							AttributeList: nil,
 							ColumnCount:   1,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableRow{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
 												Multiplier: asciidoc.Optional[int]{
@@ -23425,12 +23425,12 @@ var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &a
 													IsSet: true,
 												},
 											},
-											Set: asciidoc.Set{
+											Elements: asciidoc.Elements{
 												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Set:           nil,
-													Title: asciidoc.Set{
+													Elements:      nil,
+													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Section in Nested Document",
 														},
@@ -23451,7 +23451,7 @@ var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &a
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section",
 						},
@@ -23459,7 +23459,7 @@ var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &a
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -23470,28 +23470,28 @@ var tablesTestAsciiDocTableCellShouldNotInheritTocSettingFromParentDocument = &a
 }
 
 var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
 							AttributeList: nil,
 							ColumnCount:   1,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableRow{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
 												Multiplier: asciidoc.Optional[int]{
@@ -23521,12 +23521,12 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 													IsSet: true,
 												},
 											},
-											Set: asciidoc.Set{
+											Elements: asciidoc.Elements{
 												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Set:           nil,
-													Title: asciidoc.Set{
+													Elements:      nil,
+													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Subdocument Title",
 														},
@@ -23534,16 +23534,16 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 													Level: 0,
 												},
 												&asciidoc.AttributeEntry{
-													Name: "toc",
-													Set:  nil,
+													Name:     "toc",
+													Elements: nil,
 												},
 												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Set:           nil,
-													Title: asciidoc.Set{
+													Elements:      nil,
+													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Subdocument Section A",
 														},
@@ -23564,7 +23564,7 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section A",
 						},
@@ -23572,7 +23572,7 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -23583,28 +23583,28 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCell = &asciidoc.Document{
 }
 
 var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
 							AttributeList: nil,
 							ColumnCount:   1,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableRow{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
 												Multiplier: asciidoc.Optional[int]{
@@ -23634,12 +23634,12 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi =
 													IsSet: true,
 												},
 											},
-											Set: asciidoc.Set{
+											Elements: asciidoc.Elements{
 												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Set:           nil,
-													Title: asciidoc.Set{
+													Elements:      nil,
+													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Subdocument Title",
 														},
@@ -23647,16 +23647,16 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi =
 													Level: 0,
 												},
 												&asciidoc.AttributeEntry{
-													Name: "toc",
-													Set:  nil,
+													Name:     "toc",
+													Elements: nil,
 												},
 												&asciidoc.EmptyLine{
 													Text: "",
 												},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Set:           nil,
-													Title: asciidoc.Set{
+													Elements:      nil,
+													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Subdocument Section A",
 														},
@@ -23677,7 +23677,7 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi =
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section A",
 						},
@@ -23685,7 +23685,7 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi =
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -23696,32 +23696,32 @@ var tablesTestShouldBeAbleToEnableTocInAnAsciiDocTableCellEvenIfHardUnsetByApi =
 }
 
 var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
-					Name: "toc",
-					Set:  nil,
+					Name:     "toc",
+					Elements: nil,
 				},
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Table{
 							AttributeList: nil,
 							ColumnCount:   1,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableRow{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.TableCell{
 											Format: &asciidoc.TableCellFormat{
 												Multiplier: asciidoc.Optional[int]{
@@ -23751,12 +23751,12 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 													IsSet: true,
 												},
 											},
-											Set: asciidoc.Set{
+											Elements: asciidoc.Elements{
 												&asciidoc.NewLine{},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Set:           nil,
-													Title: asciidoc.Set{
+													Elements:      nil,
+													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Subdocument Title",
 														},
@@ -23765,7 +23765,7 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 												},
 												&asciidoc.AttributeEntry{
 													Name: "toc",
-													Set: asciidoc.Set{
+													Elements: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "macro",
 														},
@@ -23779,7 +23779,7 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 														&asciidoc.ShorthandAttribute{
 															Style: nil,
 															ID: &asciidoc.ShorthandID{
-																Set: asciidoc.Set{
+																Elements: asciidoc.Elements{
 																	&asciidoc.String{
 																		Value: "table-cell-toc",
 																	},
@@ -23789,7 +23789,7 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 															Options: nil,
 														},
 													},
-													Set: asciidoc.Set{
+													Elements: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "toc::[]",
 														},
@@ -23802,8 +23802,8 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 												},
 												&asciidoc.Section{
 													AttributeList: nil,
-													Set:           nil,
-													Title: asciidoc.Set{
+													Elements:      nil,
+													Title: asciidoc.Elements{
 														&asciidoc.String{
 															Value: "Subdocument Section A",
 														},
@@ -23824,7 +23824,7 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 							},
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section A",
 						},
@@ -23832,7 +23832,7 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -23843,13 +23843,13 @@ var tablesTestShouldBeAbleToEnableTocInBothOuterDocumentAndInAnAsciiDocTableCell
 }
 
 var tablesTestDocumentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -23887,9 +23887,9 @@ var tablesTestDocumentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &ascii
 						},
 					},
 					ColumnCount: 1,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableRow{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.TableCell{
 									Format: &asciidoc.TableCellFormat{
 										Multiplier: asciidoc.Optional[int]{
@@ -23919,7 +23919,7 @@ var tablesTestDocumentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &ascii
 											IsSet: false,
 										},
 									},
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "AsciiDoc content",
 										},
@@ -23931,7 +23931,7 @@ var tablesTestDocumentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &ascii
 					},
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -23942,7 +23942,7 @@ var tablesTestDocumentInAnAsciiDocTableCellShouldNotSeeDoctitleOfParent = &ascii
 }
 
 var tablesTestCellBackgroundColor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -24006,7 +24006,7 @@ var tablesTestCellBackgroundColor = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "header",
 						},
@@ -24015,9 +24015,9 @@ var tablesTestCellBackgroundColor = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -24047,7 +24047,7 @@ var tablesTestCellBackgroundColor = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "{set:cellbgcolor:green}green",
 								},
@@ -24083,7 +24083,7 @@ var tablesTestCellBackgroundColor = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "{set:cellbgcolor!}",
 								},
@@ -24097,7 +24097,7 @@ var tablesTestCellBackgroundColor = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -24127,7 +24127,7 @@ var tablesTestCellBackgroundColor = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "{set:cellbgcolor:red}red",
 								},
@@ -24163,7 +24163,7 @@ var tablesTestCellBackgroundColor = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "{set:cellbgcolor!}",
 								},
@@ -24182,7 +24182,7 @@ var tablesTestCellBackgroundColor = &asciidoc.Document{
 }
 
 var tablesTestShouldWarnIfTableBlockIsNotTerminated = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -24223,7 +24223,7 @@ var tablesTestShouldWarnIfTableBlockIsNotTerminated = &asciidoc.Document{
 }
 
 var tablesTestShouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -24235,7 +24235,7 @@ var tablesTestShouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAs
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "list item",
 				},
@@ -24285,7 +24285,7 @@ var tablesTestShouldShowCorrectLineNumberInWarningAboutUnterminatedBlockInsideAs
 }
 
 var tablesTestCustomSeparatorForAnAsciiDocTableCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -24349,7 +24349,7 @@ var tablesTestCustomSeparatorForAnAsciiDocTableCell = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "separator",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "!",
 						},
@@ -24357,7 +24357,7 @@ var tablesTestCustomSeparatorForAnAsciiDocTableCell = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "|===",
 				},
@@ -24391,14 +24391,14 @@ var tablesTestCustomSeparatorForAnAsciiDocTableCell = &asciidoc.Document{
 }
 
 var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Table with breakable",
 						},
@@ -24410,7 +24410,7 @@ var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "breakable",
 								},
@@ -24420,9 +24420,9 @@ var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -24452,7 +24452,7 @@ var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item",
 								},
@@ -24488,7 +24488,7 @@ var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Quantity",
 								},
@@ -24498,7 +24498,7 @@ var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -24528,7 +24528,7 @@ var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item 1",
 								},
@@ -24564,7 +24564,7 @@ var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -24579,14 +24579,14 @@ var tablesTestTableWithBreakableOptionDocbook5 = &asciidoc.Document{
 }
 
 var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Table with unbreakable",
 						},
@@ -24598,7 +24598,7 @@ var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "unbreakable",
 								},
@@ -24608,9 +24608,9 @@ var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -24640,7 +24640,7 @@ var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item",
 								},
@@ -24676,7 +24676,7 @@ var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Quantity",
 								},
@@ -24686,7 +24686,7 @@ var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 					},
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -24716,7 +24716,7 @@ var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "Item 1",
 								},
@@ -24752,7 +24752,7 @@ var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -24767,7 +24767,7 @@ var tablesTestTableWithUnbreakableOptionDocbook5 = &asciidoc.Document{
 }
 
 var tablesTestNoImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -24804,7 +24804,7 @@ var tablesTestNoImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines 
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: ",===",
 				},
@@ -24835,7 +24835,7 @@ var tablesTestNoImplicitHeaderRowIfCellInFirstLineIsQuotedAndSpansMultipleLines 
 }
 
 var tablesTestConvertsSimpleDsvTable = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -24843,7 +24843,7 @@ var tablesTestConvertsSimpleDsvTable = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "width",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "75%",
 						},
@@ -24852,7 +24852,7 @@ var tablesTestConvertsSimpleDsvTable = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "format",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "dsv",
 						},
@@ -24860,7 +24860,7 @@ var tablesTestConvertsSimpleDsvTable = &asciidoc.Document{
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "|===",
 				},
@@ -24900,7 +24900,7 @@ var tablesTestConvertsSimpleDsvTable = &asciidoc.Document{
 }
 
 var tablesTestDsvFormatShorthand = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -24924,7 +24924,7 @@ var tablesTestDsvFormatShorthand = &asciidoc.Document{
 }
 
 var tablesTestSingleCellInDsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -24944,7 +24944,7 @@ var tablesTestSingleCellInDsvTableShouldOnlyProduceSingleRow = &asciidoc.Documen
 }
 
 var tablesTestShouldTreatTrailingColonAsAnEmptyCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -24972,7 +24972,7 @@ var tablesTestShouldTreatTrailingColonAsAnEmptyCell = &asciidoc.Document{
 }
 
 var tablesTestShouldTreatTrailingCommaAsAnEmptyCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25000,7 +25000,7 @@ var tablesTestShouldTreatTrailingCommaAsAnEmptyCell = &asciidoc.Document{
 }
 
 var tablesTestShouldLogErrorButNotCrashIfCellDataHasUnclosedQuote = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25024,7 +25024,7 @@ var tablesTestShouldLogErrorButNotCrashIfCellDataHasUnclosedQuote = &asciidoc.Do
 }
 
 var tablesTestShouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25113,7 +25113,7 @@ var tablesTestShouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: ",===",
 				},
@@ -25169,7 +25169,7 @@ var tablesTestShouldPreserveNewlinesInQuotedCsvValues = &asciidoc.Document{
 }
 
 var tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrappedLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25177,7 +25177,7 @@ var tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrap
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "format",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "csv",
 						},
@@ -25186,7 +25186,7 @@ var tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrap
 				},
 				&asciidoc.NamedAttribute{
 					Name: "options",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "header",
 						},
@@ -25194,7 +25194,7 @@ var tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrap
 					Quote: 2,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "|===",
 				},
@@ -25242,7 +25242,7 @@ var tablesTestMixedUnquotedRecordsAndQuotedRecordsWithEscapedQuotesCommasAndWrap
 }
 
 var tablesTestShouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25279,7 +25279,7 @@ var tablesTestShouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines = &asciidoc.Do
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: ",===",
 				},
@@ -25315,7 +25315,7 @@ var tablesTestShouldAllowQuotesAroundACsvValueToBeOnTheirOwnLines = &asciidoc.Do
 }
 
 var tablesTestCsvFormatShorthand = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25339,7 +25339,7 @@ var tablesTestCsvFormatShorthand = &asciidoc.Document{
 }
 
 var tablesTestCustomCsvSeparator = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25347,7 +25347,7 @@ var tablesTestCustomCsvSeparator = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.NamedAttribute{
 					Name: "format",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "csv",
 						},
@@ -25356,7 +25356,7 @@ var tablesTestCustomCsvSeparator = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "separator",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: ";",
 						},
@@ -25364,7 +25364,7 @@ var tablesTestCustomCsvSeparator = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "|===",
 				},
@@ -25388,7 +25388,7 @@ var tablesTestCustomCsvSeparator = &asciidoc.Document{
 }
 
 var tablesTestSingleCellInCsvTableShouldOnlyProduceSingleRow = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25408,7 +25408,7 @@ var tablesTestSingleCellInCsvTableShouldOnlyProduceSingleRow = &asciidoc.Documen
 }
 
 var tablesTestCellFormattedWithAsciiDocStyle = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25498,7 +25498,7 @@ var tablesTestCellFormattedWithAsciiDocStyle = &asciidoc.Document{
 				},
 				&asciidoc.NamedAttribute{
 					Name: "separator",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: ";",
 						},
@@ -25506,7 +25506,7 @@ var tablesTestCellFormattedWithAsciiDocStyle = &asciidoc.Document{
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: ",===",
 				},
@@ -25533,7 +25533,7 @@ var tablesTestCellFormattedWithAsciiDocStyle = &asciidoc.Document{
 }
 
 var tablesTestShouldStripWhitespaceAroundContentsOfAsciiDocCell = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -25623,7 +25623,7 @@ var tablesTestShouldStripWhitespaceAroundContentsOfAsciiDocCell = &asciidoc.Docu
 				},
 				&asciidoc.NamedAttribute{
 					Name: "separator",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: ";",
 						},
@@ -25631,7 +25631,7 @@ var tablesTestShouldStripWhitespaceAroundContentsOfAsciiDocCell = &asciidoc.Docu
 					Quote: 0,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: ",===",
 				},

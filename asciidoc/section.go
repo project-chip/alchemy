@@ -10,13 +10,13 @@ type Section struct {
 	child
 
 	AttributeList
-	Set
+	Elements
 
-	Title Set
+	Title Elements
 	Level int
 }
 
-func NewSection(title Set, level int) *Section {
+func NewSection(title Elements, level int) *Section {
 	return &Section{Title: title, Level: level}
 }
 
@@ -49,7 +49,7 @@ func (a *Section) Equals(o Element) bool {
 	if !a.AttributeList.Equals(oa.AttributeList) {
 		return false
 	}
-	return a.Set.Equals(oa.Set)
+	return a.Elements.Equals(oa.Elements)
 }
 
 func (s Section) Name() string {

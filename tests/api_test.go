@@ -142,7 +142,7 @@ var apiTests = parseTests{
 }
 
 var apiTestShouldLoadInputFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -165,7 +165,7 @@ var apiTestShouldLoadInputFile = &asciidoc.Document{
 }
 
 var apiTestShouldLoadInputString = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -188,7 +188,7 @@ var apiTestShouldLoadInputString = &asciidoc.Document{
 }
 
 var apiTestShouldLoadInputStringArray = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -211,18 +211,18 @@ var apiTestShouldLoadInputStringArray = &asciidoc.Document{
 }
 
 var apiTestShouldLoadNilInput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.Paragraph{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "chop",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "      <div class=\"paragraph\">",
 				},
@@ -242,7 +242,7 @@ var apiTestShouldLoadNilInput = &asciidoc.Document{
 }
 
 var apiTestRenderMethodOnNodeIsAliasedToConvertMethod = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -254,7 +254,7 @@ var apiTestRenderMethodOnNodeIsAliasedToConvertMethod = &asciidoc.Document{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "list item",
 				},
@@ -268,16 +268,16 @@ var apiTestRenderMethodOnNodeIsAliasedToConvertMethod = &asciidoc.Document{
 }
 
 var apiTestContentMethodOnInlineNodeIsAliasedToTextMethod = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "foo",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "bar",
 						},
@@ -295,7 +295,7 @@ var apiTestContentMethodOnInlineNodeIsAliasedToTextMethod = &asciidoc.Document{
 				},
 				&asciidoc.AttributeEntry{
 					Name: "foo",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "baz",
 						},
@@ -309,7 +309,7 @@ var apiTestContentMethodOnInlineNodeIsAliasedToTextMethod = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -320,13 +320,13 @@ var apiTestContentMethodOnInlineNodeIsAliasedToTextMethod = &asciidoc.Document{
 }
 
 var apiTestShouldTrackFileAndLineInformationWithBlocksIfSourcemapOptionIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "conditional-attribute",
-			Set:  nil,
+			Name:     "conditional-attribute",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -364,13 +364,13 @@ var apiTestShouldTrackFileAndLineInformationWithBlocksIfSourcemapOptionIsSet = &
 }
 
 var apiTestShouldAssignCorrectLinenoForMultiLineParagraphInsideAConditionalPreprocessorDirective = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "conditional-attribute",
-			Set:  nil,
+			Name:     "conditional-attribute",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -412,12 +412,12 @@ var apiTestShouldAssignCorrectLinenoForMultiLineParagraphInsideAConditionalPrepr
 }
 
 var apiTestShouldAssignCorrectSourceLocationToBlocksThatFollowADetachedListContinuation = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "parent",
 				},
@@ -428,7 +428,7 @@ var apiTestShouldAssignCorrectSourceLocationToBlocksThatFollowADetachedListConti
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "child",
 				},
@@ -456,7 +456,7 @@ var apiTestShouldAssignCorrectSourceLocationToBlocksThatFollowADetachedListConti
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "sidebar outside list",
 				},
@@ -467,19 +467,19 @@ var apiTestShouldAssignCorrectSourceLocationToBlocksThatFollowADetachedListConti
 }
 
 var apiTestShouldAssignCorrectSourceLocationIfSectionOccursOnLastLineOfInput = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -491,7 +491,7 @@ var apiTestShouldAssignCorrectSourceLocationIfSectionOccursOnLastLineOfInput = &
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section A",
 						},
@@ -500,8 +500,8 @@ var apiTestShouldAssignCorrectSourceLocationIfSectionOccursOnLastLineOfInput = &
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set:           nil,
-					Title: asciidoc.Set{
+					Elements:      nil,
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section B",
 						},
@@ -509,7 +509,7 @@ var apiTestShouldAssignCorrectSourceLocationIfSectionOccursOnLastLineOfInput = &
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -520,13 +520,13 @@ var apiTestShouldAssignCorrectSourceLocationIfSectionOccursOnLastLineOfInput = &
 }
 
 var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParsed = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -539,7 +539,7 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -556,15 +556,15 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 								Type:   7,
 								Length: 2,
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.DescriptionListItem{
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.NewLine{},
 										&asciidoc.LineBreak{},
 									},
 									AttributeList: nil,
 									Marker:        "::",
-									Term: asciidoc.Set{
+									Term: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Exhibit A",
 										},
@@ -575,7 +575,7 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 										&asciidoc.PositionalAttribute{
 											Offset:      0,
 											ImpliedName: "alt",
-											Val: asciidoc.Set{
+											Val: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "Tiger",
 												},
@@ -584,14 +584,14 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 										&asciidoc.PositionalAttribute{
 											Offset:      0,
 											ImpliedName: "alt",
-											Val: asciidoc.Set{
+											Val: asciidoc.Elements{
 												&asciidoc.String{
 													Value: "#tiger.animal",
 												},
 											},
 										},
 									},
-									ImagePath: asciidoc.Set{
+									ImagePath: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "tiger.png",
 										},
@@ -607,14 +607,14 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 								&asciidoc.PositionalAttribute{
 									Offset:      0,
 									ImpliedName: "alt",
-									Val: asciidoc.Set{
+									Val: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "Shoe",
 										},
 									},
 								},
 							},
-							ImagePath: asciidoc.Set{
+							ImagePath: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "shoe.png",
 								},
@@ -624,7 +624,7 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 							Text: "",
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section A",
 						},
@@ -633,7 +633,7 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -642,7 +642,7 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section B",
 						},
@@ -650,7 +650,7 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -661,12 +661,12 @@ var apiTestShouldAllowSourcemapOptionOnDocumentToBeModifiedBeforeDocumentIsParse
 }
 
 var apiTestFindByShouldReturnAnEmptyArrayIfNoMatchesAreFound = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "foo",
 				},
@@ -677,7 +677,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfNoMatchesAreFound = &asciidoc.Documen
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "yin",
 				},
@@ -688,7 +688,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfNoMatchesAreFound = &asciidoc.Documen
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "zen",
 				},
@@ -699,7 +699,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfNoMatchesAreFound = &asciidoc.Documen
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "yang",
 				},
@@ -710,7 +710,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfNoMatchesAreFound = &asciidoc.Documen
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bar",
 				},
@@ -721,7 +721,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfNoMatchesAreFound = &asciidoc.Documen
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "baz",
 				},
@@ -735,7 +735,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfNoMatchesAreFound = &asciidoc.Documen
 }
 
 var apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocumentsSelectorOptionIsTrue = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -754,7 +754,7 @@ var apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocuments
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "footer",
 								},
@@ -794,9 +794,9 @@ var apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocuments
 				},
 			},
 			ColumnCount: 2,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -826,7 +826,7 @@ var apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocuments
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "paragraph in nested document (body)",
@@ -863,7 +863,7 @@ var apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocuments
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "normal table cell",
 								},
@@ -876,7 +876,7 @@ var apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocuments
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -906,7 +906,7 @@ var apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocuments
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "paragraph in nested document (foot)",
@@ -943,7 +943,7 @@ var apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocuments
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "normal table cell",
 								},
@@ -965,16 +965,16 @@ var apiTestFindByShouldDiscoverBlocksInsideAsciiDocTableCellsIfTraverseDocuments
 }
 
 var apiTestFindByShouldReturnInnerDocumentOfAsciiDocTableCellIfTraverseDocumentsSelectorOptionIsTrue = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1004,7 +1004,7 @@ var apiTestFindByShouldReturnInnerDocumentOfAsciiDocTableCellIfTraverseDocuments
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "paragraph in nested document",
 								},
@@ -1019,16 +1019,16 @@ var apiTestFindByShouldReturnInnerDocumentOfAsciiDocTableCellIfTraverseDocuments
 }
 
 var apiTestFindByShouldMatchTableCells = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   3,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1058,7 +1058,7 @@ var apiTestFindByShouldMatchTableCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -1094,7 +1094,7 @@ var apiTestFindByShouldMatchTableCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "b",
 								},
@@ -1130,7 +1130,7 @@ var apiTestFindByShouldMatchTableCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "c",
 								},
@@ -1143,7 +1143,7 @@ var apiTestFindByShouldMatchTableCells = &asciidoc.Document{
 					Text: "\n",
 				},
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -1173,7 +1173,7 @@ var apiTestFindByShouldMatchTableCells = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "1",
 								},
@@ -1213,10 +1213,10 @@ var apiTestFindByShouldMatchTableCells = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.Paragraph{
 									AttributeList: nil,
-									Set: asciidoc.Set{
+									Elements: asciidoc.Elements{
 										&asciidoc.String{
 											Value: "2, as it goes.",
 										},
@@ -1255,7 +1255,7 @@ var apiTestFindByShouldMatchTableCells = &asciidoc.Document{
 									IsSet: true,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.NewLine{},
 								&asciidoc.String{
 									Value: "3",
@@ -1279,12 +1279,12 @@ var apiTestFindByShouldMatchTableCells = &asciidoc.Document{
 }
 
 var apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -1292,7 +1292,7 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria = &asciidoc.Doc
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "square",
 							},
@@ -1308,7 +1308,7 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria = &asciidoc.Doc
 			Checklist: 0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -1319,7 +1319,7 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria = &asciidoc.Doc
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -1339,7 +1339,7 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria = &asciidoc.Doc
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "apples",
 				},
@@ -1350,7 +1350,7 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria = &asciidoc.Doc
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "bananas",
 				},
@@ -1361,7 +1361,7 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria = &asciidoc.Doc
 			Checklist:     0,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "pears",
 				},
@@ -1375,7 +1375,7 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchStyleCriteria = &asciidoc.Doc
 }
 
 var apiTestFindByShouldReturnArrayOfBlocksThatMatchRoleCriteria = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1384,7 +1384,7 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchRoleCriteria = &asciidoc.Docu
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Tiger",
 						},
@@ -1393,14 +1393,14 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchRoleCriteria = &asciidoc.Docu
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "#tiger.animal",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "tiger.png",
 				},
@@ -1414,14 +1414,14 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchRoleCriteria = &asciidoc.Docu
 				&asciidoc.PositionalAttribute{
 					Offset:      0,
 					ImpliedName: "alt",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Shoe",
 						},
 					},
 				},
 			},
-			ImagePath: asciidoc.Set{
+			ImagePath: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "shoe.png",
 				},
@@ -1431,13 +1431,13 @@ var apiTestFindByShouldReturnArrayOfBlocksThatMatchRoleCriteria = &asciidoc.Docu
 }
 
 var apiTestFindByShouldReturnTheDocumentTitleSectionIfContextSelectorIssection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1450,7 +1450,7 @@ var apiTestFindByShouldReturnTheDocumentTitleSectionIfContextSelectorIssection =
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -1459,7 +1459,7 @@ var apiTestFindByShouldReturnTheDocumentTitleSectionIfContextSelectorIssection =
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Section One",
 						},
@@ -1467,7 +1467,7 @@ var apiTestFindByShouldReturnTheDocumentTitleSectionIfContextSelectorIssection =
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -1478,13 +1478,13 @@ var apiTestFindByShouldReturnTheDocumentTitleSectionIfContextSelectorIssection =
 }
 
 var apiTestFindByShouldOnlyReturnResultsForWhichTheBlockArgumentYieldsTrue = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1497,7 +1497,7 @@ var apiTestFindByShouldOnlyReturnResultsForWhichTheBlockArgumentYieldsTrue = &as
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -1506,7 +1506,7 @@ var apiTestFindByShouldOnlyReturnResultsForWhichTheBlockArgumentYieldsTrue = &as
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Subsection",
 						},
@@ -1514,7 +1514,7 @@ var apiTestFindByShouldOnlyReturnResultsForWhichTheBlockArgumentYieldsTrue = &as
 					Level: 2,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section",
 				},
@@ -1525,7 +1525,7 @@ var apiTestFindByShouldOnlyReturnResultsForWhichTheBlockArgumentYieldsTrue = &as
 }
 
 var apiTestFindByShouldRejectNodeAndItsChildrenIfBlockReturnsreject = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1542,7 +1542,7 @@ var apiTestFindByShouldRejectNodeAndItsChildrenIfBlockReturnsreject = &asciidoc.
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph 2",
 				},
@@ -1551,13 +1551,13 @@ var apiTestFindByShouldRejectNodeAndItsChildrenIfBlockReturnsreject = &asciidoc.
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -1580,7 +1580,7 @@ var apiTestFindByShouldRejectNodeAndItsChildrenIfBlockReturnsreject = &asciidoc.
 }
 
 var apiTestFindByShouldRejectNodeMatchedByIdSelectorIfBlockReturnsreject = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1591,7 +1591,7 @@ var apiTestFindByShouldRejectNodeMatchedByIdSelectorIfBlockReturnsreject = &asci
 					ID:    nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "rolename",
 								},
@@ -1601,7 +1601,7 @@ var apiTestFindByShouldRejectNodeMatchedByIdSelectorIfBlockReturnsreject = &asci
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph 1",
 				},
@@ -1617,7 +1617,7 @@ var apiTestFindByShouldRejectNodeMatchedByIdSelectorIfBlockReturnsreject = &asci
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "idname",
 							},
@@ -1625,7 +1625,7 @@ var apiTestFindByShouldRejectNodeMatchedByIdSelectorIfBlockReturnsreject = &asci
 					},
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "rolename",
 								},
@@ -1635,7 +1635,7 @@ var apiTestFindByShouldRejectNodeMatchedByIdSelectorIfBlockReturnsreject = &asci
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph 2",
 				},
@@ -1647,7 +1647,7 @@ var apiTestFindByShouldRejectNodeMatchedByIdSelectorIfBlockReturnsreject = &asci
 }
 
 var apiTestFindByShouldAcceptNodeMatchedByIdSelectorIfBlockReturnsprune = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1658,7 +1658,7 @@ var apiTestFindByShouldAcceptNodeMatchedByIdSelectorIfBlockReturnsprune = &ascii
 					ID:    nil,
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "rolename",
 								},
@@ -1668,7 +1668,7 @@ var apiTestFindByShouldAcceptNodeMatchedByIdSelectorIfBlockReturnsprune = &ascii
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph 1",
 				},
@@ -1688,7 +1688,7 @@ var apiTestFindByShouldAcceptNodeMatchedByIdSelectorIfBlockReturnsprune = &ascii
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "idname",
 							},
@@ -1696,7 +1696,7 @@ var apiTestFindByShouldAcceptNodeMatchedByIdSelectorIfBlockReturnsprune = &ascii
 					},
 					Roles: []*asciidoc.ShorthandRole{
 						&asciidoc.ShorthandRole{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "rolename",
 								},
@@ -1706,7 +1706,7 @@ var apiTestFindByShouldAcceptNodeMatchedByIdSelectorIfBlockReturnsprune = &ascii
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph 2",
 				},
@@ -1717,7 +1717,7 @@ var apiTestFindByShouldAcceptNodeMatchedByIdSelectorIfBlockReturnsprune = &ascii
 }
 
 var apiTestFindByShouldAcceptNodeButRejectItsChildrenIfBlockReturnsprune = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1727,7 +1727,7 @@ var apiTestFindByShouldAcceptNodeButRejectItsChildrenIfBlockReturnsprune = &asci
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph 2",
 				},
@@ -1736,13 +1736,13 @@ var apiTestFindByShouldAcceptNodeButRejectItsChildrenIfBlockReturnsprune = &asci
 					Text: "",
 				},
 				&asciidoc.DescriptionListItem{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.NewLine{},
 						&asciidoc.LineBreak{},
 					},
 					AttributeList: nil,
 					Marker:        "::",
-					Term: asciidoc.Set{
+					Term: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "term",
 						},
@@ -1758,7 +1758,7 @@ var apiTestFindByShouldAcceptNodeButRejectItsChildrenIfBlockReturnsprune = &asci
 }
 
 var apiTestFindByShouldStopLookingForBlocksWhenStopIterationIsRaised = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1775,7 +1775,7 @@ var apiTestFindByShouldStopLookingForBlocksWhenStopIterationIsRaised = &asciidoc
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph 2",
 				},
@@ -1789,7 +1789,7 @@ var apiTestFindByShouldStopLookingForBlocksWhenStopIterationIsRaised = &asciidoc
 						Length: 4,
 					},
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "paragraph 3",
 						},
@@ -1809,7 +1809,7 @@ var apiTestFindByShouldStopLookingForBlocksWhenStopIterationIsRaised = &asciidoc
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item",
 				},
@@ -1829,7 +1829,7 @@ var apiTestFindByShouldStopLookingForBlocksWhenStopIterationIsRaised = &asciidoc
 }
 
 var apiTestFindByShouldStopLookingForBlocksWhenFilterBlockReturnsstopDirective = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -1846,7 +1846,7 @@ var apiTestFindByShouldStopLookingForBlocksWhenFilterBlockReturnsstopDirective =
 				Length: 4,
 			},
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "paragraph 2",
 				},
@@ -1860,7 +1860,7 @@ var apiTestFindByShouldStopLookingForBlocksWhenFilterBlockReturnsstopDirective =
 						Length: 4,
 					},
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "paragraph 3",
 						},
@@ -1880,7 +1880,7 @@ var apiTestFindByShouldStopLookingForBlocksWhenFilterBlockReturnsstopDirective =
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "item",
 				},
@@ -1900,13 +1900,13 @@ var apiTestFindByShouldStopLookingForBlocksWhenFilterBlockReturnsstopDirective =
 }
 
 var apiTestFindByShouldOnlyReturnOneResultWhenMatchingById = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1922,7 +1922,7 @@ var apiTestFindByShouldOnlyReturnOneResultWhenMatchingById = &asciidoc.Document{
 						&asciidoc.ShorthandAttribute{
 							Style: nil,
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "subsection",
 									},
@@ -1932,7 +1932,7 @@ var apiTestFindByShouldOnlyReturnOneResultWhenMatchingById = &asciidoc.Document{
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -1941,7 +1941,7 @@ var apiTestFindByShouldOnlyReturnOneResultWhenMatchingById = &asciidoc.Document{
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Subsection",
 						},
@@ -1949,7 +1949,7 @@ var apiTestFindByShouldOnlyReturnOneResultWhenMatchingById = &asciidoc.Document{
 					Level: 2,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section",
 				},
@@ -1960,13 +1960,13 @@ var apiTestFindByShouldOnlyReturnOneResultWhenMatchingById = &asciidoc.Document{
 }
 
 var apiTestFindByShouldStopSeekingOnceMatchIsFound = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -1982,7 +1982,7 @@ var apiTestFindByShouldStopSeekingOnceMatchIsFound = &asciidoc.Document{
 						&asciidoc.ShorthandAttribute{
 							Style: nil,
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "subsection",
 									},
@@ -1992,7 +1992,7 @@ var apiTestFindByShouldStopSeekingOnceMatchIsFound = &asciidoc.Document{
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -2001,7 +2001,7 @@ var apiTestFindByShouldStopSeekingOnceMatchIsFound = &asciidoc.Document{
 								&asciidoc.ShorthandAttribute{
 									Style: nil,
 									ID: &asciidoc.ShorthandID{
-										Set: asciidoc.Set{
+										Elements: asciidoc.Elements{
 											&asciidoc.String{
 												Value: "last",
 											},
@@ -2011,7 +2011,7 @@ var apiTestFindByShouldStopSeekingOnceMatchIsFound = &asciidoc.Document{
 									Options: nil,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "content",
 								},
@@ -2020,7 +2020,7 @@ var apiTestFindByShouldStopSeekingOnceMatchIsFound = &asciidoc.Document{
 							Admonition: 0,
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Subsection",
 						},
@@ -2028,7 +2028,7 @@ var apiTestFindByShouldStopSeekingOnceMatchIsFound = &asciidoc.Document{
 					Level: 2,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section",
 				},
@@ -2039,13 +2039,13 @@ var apiTestFindByShouldStopSeekingOnceMatchIsFound = &asciidoc.Document{
 }
 
 var apiTestFindByShouldReturnAnEmptyArrayIfTheIdCriteriaMatchesButTheBlockArgumentYieldsFalse = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2061,7 +2061,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfTheIdCriteriaMatchesButTheBlockArgume
 						&asciidoc.ShorthandAttribute{
 							Style: nil,
 							ID: &asciidoc.ShorthandID{
-								Set: asciidoc.Set{
+								Elements: asciidoc.Elements{
 									&asciidoc.String{
 										Value: "subsection",
 									},
@@ -2071,7 +2071,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfTheIdCriteriaMatchesButTheBlockArgume
 							Options: nil,
 						},
 					},
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
@@ -2080,7 +2080,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfTheIdCriteriaMatchesButTheBlockArgume
 						},
 						&asciidoc.NewLine{},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Subsection",
 						},
@@ -2088,7 +2088,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfTheIdCriteriaMatchesButTheBlockArgume
 					Level: 2,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Section",
 				},
@@ -2099,7 +2099,7 @@ var apiTestFindByShouldReturnAnEmptyArrayIfTheIdCriteriaMatchesButTheBlockArgume
 }
 
 var apiTestFindByShouldNotCrashIfDlistEntryDoesNotHaveDescription = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2107,7 +2107,7 @@ var apiTestFindByShouldNotCrashIfDlistEntryDoesNotHaveDescription = &asciidoc.Do
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2120,7 +2120,7 @@ var apiTestFindByShouldNotCrashIfDlistEntryDoesNotHaveDescription = &asciidoc.Do
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2139,7 +2139,7 @@ var apiTestFindByShouldNotCrashIfDlistEntryDoesNotHaveDescription = &asciidoc.Do
 }
 
 var apiTestCanSubstituteAnExtendedSyntaxHighlighterFactoryImplementationUsingThesyntaxHighlightersOption = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2147,7 +2147,7 @@ var apiTestCanSubstituteAnExtendedSyntaxHighlighterFactoryImplementationUsingThe
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2160,7 +2160,7 @@ var apiTestCanSubstituteAnExtendedSyntaxHighlighterFactoryImplementationUsingThe
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2179,13 +2179,13 @@ var apiTestCanSubstituteAnExtendedSyntaxHighlighterFactoryImplementationUsingThe
 }
 
 var apiTestRenderFileIsAliasedToConvertFile = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2194,7 +2194,7 @@ var apiTestRenderFileIsAliasedToConvertFile = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -2205,13 +2205,13 @@ var apiTestRenderFileIsAliasedToConvertFile = &asciidoc.Document{
 }
 
 var apiTestShouldEmbedRemoteStylesheetByDefaultIfSafeModeIsLessThanSecureAndAllowUriReadIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2220,7 +2220,7 @@ var apiTestShouldEmbedRemoteStylesheetByDefaultIfSafeModeIsLessThanSecureAndAllo
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -2231,13 +2231,13 @@ var apiTestShouldEmbedRemoteStylesheetByDefaultIfSafeModeIsLessThanSecureAndAllo
 }
 
 var apiTestShouldNotAllowLinkcssBeUnsetFromDocumentIfSafeModeIsSecureOrGreater = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeReset{
 					Name: "linkcss",
 				},
@@ -2249,7 +2249,7 @@ var apiTestShouldNotAllowLinkcssBeUnsetFromDocumentIfSafeModeIsSecureOrGreater =
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -2260,13 +2260,13 @@ var apiTestShouldNotAllowLinkcssBeUnsetFromDocumentIfSafeModeIsSecureOrGreater =
 }
 
 var apiTestShouldEmbedDefaultStylesheetIfLinkcssIsUnsetFromApiAndSafeModeIsSecureOrGreater = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2275,7 +2275,7 @@ var apiTestShouldEmbedDefaultStylesheetIfLinkcssIsUnsetFromApiAndSafeModeIsSecur
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -2286,13 +2286,13 @@ var apiTestShouldEmbedDefaultStylesheetIfLinkcssIsUnsetFromApiAndSafeModeIsSecur
 }
 
 var apiTestShouldEmbedDefaultStylesheetIfSafeModeIsLessThanSecureAndLinkcssIsUnsetFromApi = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2301,7 +2301,7 @@ var apiTestShouldEmbedDefaultStylesheetIfSafeModeIsLessThanSecureAndLinkcssIsUns
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -2312,13 +2312,13 @@ var apiTestShouldEmbedDefaultStylesheetIfSafeModeIsLessThanSecureAndLinkcssIsUns
 }
 
 var apiTestShouldLinkToCustomStylesheetIfSpecifiedInStylesheetAttribute = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2327,7 +2327,7 @@ var apiTestShouldLinkToCustomStylesheetIfSpecifiedInStylesheetAttribute = &ascii
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -2338,13 +2338,13 @@ var apiTestShouldLinkToCustomStylesheetIfSpecifiedInStylesheetAttribute = &ascii
 }
 
 var apiTestShouldResolveCustomStylesheetRelativeToStylesdir = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2353,7 +2353,7 @@ var apiTestShouldResolveCustomStylesheetRelativeToStylesdir = &asciidoc.Document
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -2364,13 +2364,13 @@ var apiTestShouldResolveCustomStylesheetRelativeToStylesdir = &asciidoc.Document
 }
 
 var apiTestShouldResolveCustomStylesheetToEmbedRelativeToStylesdir = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2379,7 +2379,7 @@ var apiTestShouldResolveCustomStylesheetToEmbedRelativeToStylesdir = &asciidoc.D
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -2390,13 +2390,13 @@ var apiTestShouldResolveCustomStylesheetToEmbedRelativeToStylesdir = &asciidoc.D
 }
 
 var apiTestShouldEmbedCustomStylesheetInRemoteStylesdirIfSafeModeIsLessThanSecureAndAllowUriReadIsSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2405,7 +2405,7 @@ var apiTestShouldEmbedCustomStylesheetInRemoteStylesdirIfSafeModeIsLessThanSecur
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -2416,7 +2416,7 @@ var apiTestShouldEmbedCustomStylesheetInRemoteStylesdirIfSafeModeIsLessThanSecur
 }
 
 var apiTestShouldRespectOutfilesuffixSoftSetFromApi = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2424,7 +2424,7 @@ var apiTestShouldRespectOutfilesuffixSoftSetFromApi = &asciidoc.Document{
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "source",
 							},
@@ -2437,7 +2437,7 @@ var apiTestShouldRespectOutfilesuffixSoftSetFromApi = &asciidoc.Document{
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -2456,13 +2456,13 @@ var apiTestShouldRespectOutfilesuffixSoftSetFromApi = &asciidoc.Document{
 }
 
 var apiTestWithNoAuthor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -2471,7 +2471,7 @@ var apiTestWithNoAuthor = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application",
 				},
@@ -2482,13 +2482,13 @@ var apiTestWithNoAuthor = &asciidoc.Document{
 }
 
 var apiTestWithOneAuthor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "David Heinemeier Hansson <",
 				},
@@ -2507,7 +2507,7 @@ var apiTestWithOneAuthor = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application",
 				},
@@ -2518,13 +2518,13 @@ var apiTestWithOneAuthor = &asciidoc.Document{
 }
 
 var apiTestWithTwoAuthors = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "David Heinemeier Hansson <",
 				},
@@ -2549,7 +2549,7 @@ var apiTestWithTwoAuthors = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application",
 				},
@@ -2560,16 +2560,16 @@ var apiTestWithTwoAuthors = &asciidoc.Document{
 }
 
 var apiTestWithAuthorsAsAttributes = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.AttributeEntry{
 					Name: "author_1",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "David Heinemeier Hansson",
 						},
@@ -2577,7 +2577,7 @@ var apiTestWithAuthorsAsAttributes = &asciidoc.Document{
 				},
 				&asciidoc.AttributeEntry{
 					Name: "email_1",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "david@37signals.com",
 						},
@@ -2585,7 +2585,7 @@ var apiTestWithAuthorsAsAttributes = &asciidoc.Document{
 				},
 				&asciidoc.AttributeEntry{
 					Name: "author_2",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Jason Fried",
 						},
@@ -2593,7 +2593,7 @@ var apiTestWithAuthorsAsAttributes = &asciidoc.Document{
 				},
 				&asciidoc.AttributeEntry{
 					Name: "email_2",
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "jason@37signals.com",
 						},
@@ -2607,7 +2607,7 @@ var apiTestWithAuthorsAsAttributes = &asciidoc.Document{
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application",
 				},
@@ -2618,16 +2618,16 @@ var apiTestWithAuthorsAsAttributes = &asciidoc.Document{
 }
 
 var apiTestShouldNotCrashIfNilCellTextIsPassedToCellConstructor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -2657,7 +2657,7 @@ var apiTestShouldNotCrashIfNilCellTextIsPassedToCellConstructor = &asciidoc.Docu
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -2672,12 +2672,12 @@ var apiTestShouldNotCrashIfNilCellTextIsPassedToCellConstructor = &asciidoc.Docu
 }
 
 var apiTestShouldSetOptionOnNodeWhenSetOptionIsCalled = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -2687,7 +2687,7 @@ var apiTestShouldSetOptionOnNodeWhenSetOptionIsCalled = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -2697,7 +2697,7 @@ var apiTestShouldSetOptionOnNodeWhenSetOptionIsCalled = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -2710,12 +2710,12 @@ var apiTestShouldSetOptionOnNodeWhenSetOptionIsCalled = &asciidoc.Document{
 }
 
 var apiTestEnabledOptionsShouldReturnAllOptionsWhichAreSet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "code",
 				},
@@ -2727,7 +2727,7 @@ var apiTestEnabledOptionsShouldReturnAllOptionsWhichAreSet = &asciidoc.Document{
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "interactive",
 								},
@@ -2741,7 +2741,7 @@ var apiTestEnabledOptionsShouldReturnAllOptionsWhichAreSet = &asciidoc.Document{
 			Checklist: 2,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "test",
 				},
@@ -2752,7 +2752,7 @@ var apiTestEnabledOptionsShouldReturnAllOptionsWhichAreSet = &asciidoc.Document{
 			Checklist:     1,
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "profit",
 				},
@@ -2766,12 +2766,12 @@ var apiTestEnabledOptionsShouldReturnAllOptionsWhichAreSet = &asciidoc.Document{
 }
 
 var apiTestShouldAppendOptionToExistingOptions = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -2783,7 +2783,7 @@ var apiTestShouldAppendOptionToExistingOptions = &asciidoc.Document{
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "fancy",
 								},
@@ -2796,7 +2796,7 @@ var apiTestShouldAppendOptionToExistingOptions = &asciidoc.Document{
 			Marker: ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -2806,7 +2806,7 @@ var apiTestShouldAppendOptionToExistingOptions = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -2819,12 +2819,12 @@ var apiTestShouldAppendOptionToExistingOptions = &asciidoc.Document{
 }
 
 var apiTestShouldNotAppendOptionIfOptionIsAlreadySet = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -2836,7 +2836,7 @@ var apiTestShouldNotAppendOptionIfOptionIsAlreadySet = &asciidoc.Document{
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "reversed",
 								},
@@ -2849,7 +2849,7 @@ var apiTestShouldNotAppendOptionIfOptionIsAlreadySet = &asciidoc.Document{
 			Marker: ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -2859,7 +2859,7 @@ var apiTestShouldNotAppendOptionIfOptionIsAlreadySet = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -2872,12 +2872,12 @@ var apiTestShouldNotAppendOptionIfOptionIsAlreadySet = &asciidoc.Document{
 }
 
 var apiTestShouldReturnSetOfOptionNames = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "three",
 				},
@@ -2889,14 +2889,14 @@ var apiTestShouldReturnSetOfOptionNames = &asciidoc.Document{
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "compact",
 								},
 							},
 						},
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "reversed",
 								},
@@ -2909,7 +2909,7 @@ var apiTestShouldReturnSetOfOptionNames = &asciidoc.Document{
 			Marker: ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "two",
 				},
@@ -2919,7 +2919,7 @@ var apiTestShouldReturnSetOfOptionNames = &asciidoc.Document{
 			Marker:        ".",
 		},
 		&asciidoc.OrderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "one",
 				},
@@ -2932,7 +2932,7 @@ var apiTestShouldReturnSetOfOptionNames = &asciidoc.Document{
 }
 
 var apiTestShouldSetLinenumsOptionIfLinenumsEnabledOnSourceBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2954,7 +2954,7 @@ var apiTestShouldSetLinenumsOptionIfLinenumsEnabledOnSourceBlock = &asciidoc.Doc
 }
 
 var apiTestShouldSetLinenumsOptionIfLinenumsEnabledOnFencedCodeBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2974,7 +2974,7 @@ var apiTestShouldSetLinenumsOptionIfLinenumsEnabledOnFencedCodeBlock = &asciidoc
 }
 
 var apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnSourceBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -2986,7 +2986,7 @@ var apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnSourceBlock =
 					Roles: nil,
 					Options: []*asciidoc.ShorthandOption{
 						&asciidoc.ShorthandOption{
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "linenums",
 								},
@@ -2997,7 +2997,7 @@ var apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnSourceBlock =
 				&asciidoc.PositionalAttribute{
 					Offset:      1,
 					ImpliedName: "",
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "ruby",
 						},
@@ -3016,13 +3016,13 @@ var apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnSourceBlock =
 }
 
 var apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnFencedCodeBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
-			Name: "source-linenums-option",
-			Set:  nil,
+			Name:     "source-linenums-option",
+			Elements: nil,
 		},
 		&asciidoc.EmptyLine{
 			Text: "",
@@ -3043,16 +3043,16 @@ var apiTestShouldNotSetLinenumsAttributeIfLinenumsOptionIsEnabledOnFencedCodeBlo
 }
 
 var apiTestTableColumnShouldNotBeABlockOrInline = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3082,7 +3082,7 @@ var apiTestTableColumnShouldNotBeABlockOrInline = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -3097,16 +3097,16 @@ var apiTestTableColumnShouldNotBeABlockOrInline = &asciidoc.Document{
 }
 
 var apiTestTableCellShouldBeABlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Table{
 			AttributeList: nil,
 			ColumnCount:   1,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.TableRow{
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.TableCell{
 							Format: &asciidoc.TableCellFormat{
 								Multiplier: asciidoc.Optional[int]{
@@ -3136,7 +3136,7 @@ var apiTestTableCellShouldBeABlock = &asciidoc.Document{
 									IsSet: false,
 								},
 							},
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "a",
 								},
@@ -3151,7 +3151,7 @@ var apiTestTableCellShouldBeABlock = &asciidoc.Document{
 }
 
 var apiTestNextAdjacentBlockShouldReturnNextBlock = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3170,7 +3170,7 @@ var apiTestNextAdjacentBlockShouldReturnNextBlock = &asciidoc.Document{
 }
 
 var apiTestNextAdjacentBlockShouldReturnNextSiblingOfParentIfCalledOnLastSibling = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3180,7 +3180,7 @@ var apiTestNextAdjacentBlockShouldReturnNextSiblingOfParentIfCalledOnLastSibling
 				Type:   7,
 				Length: 2,
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first",
 				},
@@ -3198,12 +3198,12 @@ var apiTestNextAdjacentBlockShouldReturnNextSiblingOfParentIfCalledOnLastSibling
 }
 
 var apiTestNextAdjacentBlockShouldReturnNextSiblingOfListIfCalledOnLastItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.UnorderedListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first",
 				},
@@ -3224,12 +3224,12 @@ var apiTestNextAdjacentBlockShouldReturnNextSiblingOfListIfCalledOnLastItem = &a
 }
 
 var apiTestNextAdjacentBlockShouldReturnNextItemInDlistIfCalledOnLastBlockOfListItem = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "desc",
@@ -3237,7 +3237,7 @@ var apiTestNextAdjacentBlockShouldReturnNextItemInDlistIfCalledOnLastBlockOfList
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "first",
 				},
@@ -3253,7 +3253,7 @@ var apiTestNextAdjacentBlockShouldReturnNextItemInDlistIfCalledOnLastBlockOfList
 			Text: "",
 		},
 		&asciidoc.DescriptionListItem{
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.NewLine{},
 				&asciidoc.String{
 					Value: "desc",
@@ -3261,7 +3261,7 @@ var apiTestNextAdjacentBlockShouldReturnNextItemInDlistIfCalledOnLastBlockOfList
 			},
 			AttributeList: nil,
 			Marker:        "::",
-			Term: asciidoc.Set{
+			Term: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "second",
 				},
@@ -3271,25 +3271,25 @@ var apiTestNextAdjacentBlockShouldReturnNextItemInDlistIfCalledOnLastBlockOfList
 }
 
 var apiTestShouldReturnTrueWhenSectionsIsCalledOnADocumentOrSectionThatHasSections = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set: asciidoc.Set{
+					Elements: asciidoc.Elements{
 						&asciidoc.EmptyLine{
 							Text: "",
 						},
 						&asciidoc.Section{
 							AttributeList: nil,
-							Set: asciidoc.Set{
+							Elements: asciidoc.Elements{
 								&asciidoc.EmptyLine{
 									Text: "",
 								},
@@ -3298,7 +3298,7 @@ var apiTestShouldReturnTrueWhenSectionsIsCalledOnADocumentOrSectionThatHasSectio
 								},
 								&asciidoc.NewLine{},
 							},
-							Title: asciidoc.Set{
+							Title: asciidoc.Elements{
 								&asciidoc.String{
 									Value: "First subsection",
 								},
@@ -3306,7 +3306,7 @@ var apiTestShouldReturnTrueWhenSectionsIsCalledOnADocumentOrSectionThatHasSectio
 							Level: 2,
 						},
 					},
-					Title: asciidoc.Set{
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First Section",
 						},
@@ -3314,7 +3314,7 @@ var apiTestShouldReturnTrueWhenSectionsIsCalledOnADocumentOrSectionThatHasSectio
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -3325,13 +3325,13 @@ var apiTestShouldReturnTrueWhenSectionsIsCalledOnADocumentOrSectionThatHasSectio
 }
 
 var apiTestShouldReturnFalseWhenSectionsIsCalledOnADocumentWithNoSections = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
@@ -3340,7 +3340,7 @@ var apiTestShouldReturnFalseWhenSectionsIsCalledOnADocumentWithNoSections = &asc
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -3351,20 +3351,20 @@ var apiTestShouldReturnFalseWhenSectionsIsCalledOnADocumentWithNoSections = &asc
 }
 
 var apiTestShouldReturnFalseWhenSectionsIsCalledOnASectionWithNoSections = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.EmptyLine{
 					Text: "",
 				},
 				&asciidoc.Section{
 					AttributeList: nil,
-					Set:           nil,
-					Title: asciidoc.Set{
+					Elements:      nil,
+					Title: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "First Section",
 						},
@@ -3372,7 +3372,7 @@ var apiTestShouldReturnFalseWhenSectionsIsCalledOnASectionWithNoSections = &asci
 					Level: 1,
 				},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -3383,7 +3383,7 @@ var apiTestShouldReturnFalseWhenSectionsIsCalledOnASectionWithNoSections = &asci
 }
 
 var apiTestShouldReturnFalseWhenSectionsIsCalledOnAnythingThatIsNotASection = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -3394,14 +3394,14 @@ var apiTestShouldReturnFalseWhenSectionsIsCalledOnAnythingThatIsNotASection = &a
 			},
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.TitleAttribute{
-					Val: asciidoc.Set{
+					Val: asciidoc.Elements{
 						&asciidoc.String{
 							Value: "Title",
 						},
 					},
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "I'm not section!",
 				},
@@ -3415,7 +3415,7 @@ var apiTestShouldReturnFalseWhenSectionsIsCalledOnAnythingThatIsNotASection = &a
 			AttributeList: asciidoc.AttributeList{
 				&asciidoc.ShorthandAttribute{
 					Style: &asciidoc.ShorthandStyle{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "NOTE",
 							},
@@ -3426,7 +3426,7 @@ var apiTestShouldReturnFalseWhenSectionsIsCalledOnAnythingThatIsNotASection = &a
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "I'm not a section either!",
 				},

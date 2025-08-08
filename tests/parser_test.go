@@ -56,7 +56,7 @@ var parserTests = parseTests{
 }
 
 var parserTestParseNameWithMoreThan3PartsInAuthorAttribute = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -66,7 +66,7 @@ var parserTestParseNameWithMoreThan3PartsInAuthorAttribute = &asciidoc.Document{
 		&asciidoc.NewLine{},
 		&asciidoc.AttributeEntry{
 			Name: "authorinitials",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "JCVD",
 				},
@@ -76,13 +76,13 @@ var parserTestParseNameWithMoreThan3PartsInAuthorAttribute = &asciidoc.Document{
 }
 
 var parserTestUseExplicitAuthorinitialsIfSetAfterAuthorAttribute = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.AttributeEntry{
 			Name: "author",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Jean-Claude Van Damme",
 				},
@@ -90,7 +90,7 @@ var parserTestUseExplicitAuthorinitialsIfSetAfterAuthorAttribute = &asciidoc.Doc
 		},
 		&asciidoc.AttributeEntry{
 			Name: "authorinitials",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "JCVD",
 				},
@@ -100,7 +100,7 @@ var parserTestUseExplicitAuthorinitialsIfSetAfterAuthorAttribute = &asciidoc.Doc
 }
 
 var parserTestUseImplicitAuthorsIfValueOfAuthorsAttributeMatchesComputedValue = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -110,7 +110,7 @@ var parserTestUseImplicitAuthorsIfValueOfAuthorsAttributeMatchesComputedValue = 
 		&asciidoc.NewLine{},
 		&asciidoc.AttributeEntry{
 			Name: "authors",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Doc Writer, Junior Writer",
 				},
@@ -120,7 +120,7 @@ var parserTestUseImplicitAuthorsIfValueOfAuthorsAttributeMatchesComputedValue = 
 }
 
 var parserTestReplaceImplicitAuthorsIfValueOfAuthorsAttributeDoesNotMatchComputedValue = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -130,7 +130,7 @@ var parserTestReplaceImplicitAuthorsIfValueOfAuthorsAttributeDoesNotMatchCompute
 		&asciidoc.NewLine{},
 		&asciidoc.AttributeEntry{
 			Name: "authors",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Stuart Rackham; Dan Allen; Sarah White",
 				},
@@ -140,7 +140,7 @@ var parserTestReplaceImplicitAuthorsIfValueOfAuthorsAttributeDoesNotMatchCompute
 }
 
 var parserTestSetsAuthorcountTo0IfDocumentHasNoAuthors = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -150,7 +150,7 @@ var parserTestSetsAuthorcountTo0IfDocumentHasNoAuthors = &asciidoc.Document{
 		&asciidoc.NewLine{},
 		&asciidoc.AttributeEntry{
 			Name: "author_2",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Danger Mouse",
 				},
@@ -160,7 +160,7 @@ var parserTestSetsAuthorcountTo0IfDocumentHasNoAuthors = &asciidoc.Document{
 }
 
 var parserTestParseRevNumberDateRemark = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -176,7 +176,7 @@ var parserTestParseRevNumberDateRemark = &asciidoc.Document{
 }
 
 var parserTestParseRevNumberDataAndRemarkAsAttributeReferences = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -207,13 +207,13 @@ var parserTestParseRevNumberDataAndRemarkAsAttributeReferences = &asciidoc.Docum
 }
 
 var parserTestShouldResolveAttributeReferencesInRevNumberDataAndRemark = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
 		&asciidoc.Section{
 			AttributeList: nil,
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Author Name",
 				},
@@ -235,7 +235,7 @@ var parserTestShouldResolveAttributeReferencesInRevNumberDataAndRemark = &asciid
 				},
 				&asciidoc.NewLine{},
 			},
-			Title: asciidoc.Set{
+			Title: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "Document Title",
 				},
@@ -246,7 +246,7 @@ var parserTestShouldResolveAttributeReferencesInRevNumberDataAndRemark = &asciid
 }
 
 var parserTestParseRevDate = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -262,7 +262,7 @@ var parserTestParseRevDate = &asciidoc.Document{
 }
 
 var parserTestParseRevNumberWithTrailingComma = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -278,7 +278,7 @@ var parserTestParseRevNumberWithTrailingComma = &asciidoc.Document{
 }
 
 var parserTestParseRevNumber = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -294,7 +294,7 @@ var parserTestParseRevNumber = &asciidoc.Document{
 }
 
 var parserTestTreatsArbitraryTextOnRevLineAsRevdate = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -310,7 +310,7 @@ var parserTestTreatsArbitraryTextOnRevLineAsRevdate = &asciidoc.Document{
 }
 
 var parserTestParseRevDateRemark = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -326,7 +326,7 @@ var parserTestParseRevDateRemark = &asciidoc.Document{
 }
 
 var parserTestShouldNotMistakeAttributeEntryAsRevRemark = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -336,7 +336,7 @@ var parserTestShouldNotMistakeAttributeEntryAsRevRemark = &asciidoc.Document{
 		&asciidoc.NewLine{},
 		&asciidoc.AttributeEntry{
 			Name: "page-layout",
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "post",
 				},
@@ -346,7 +346,7 @@ var parserTestShouldNotMistakeAttributeEntryAsRevRemark = &asciidoc.Document{
 }
 
 var parserTestParseRevRemarkOnly = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -362,7 +362,7 @@ var parserTestParseRevRemarkOnly = &asciidoc.Document{
 }
 
 var parserTestSkipLineCommentsBeforeAuthor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -380,7 +380,7 @@ var parserTestSkipLineCommentsBeforeAuthor = &asciidoc.Document{
 }
 
 var parserTestSkipBlockCommentBeforeAuthor = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -402,7 +402,7 @@ var parserTestSkipBlockCommentBeforeAuthor = &asciidoc.Document{
 }
 
 var parserTestSkipBlockCommentBeforeRev = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -428,7 +428,7 @@ var parserTestSkipBlockCommentBeforeRev = &asciidoc.Document{
 }
 
 var parserTestBreakHeaderAtLineWithThreeForwardSlashes = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -451,7 +451,7 @@ var parserTestBreakHeaderAtLineWithThreeForwardSlashes = &asciidoc.Document{
 }
 
 var parserTestExpandsTabsToSpaces = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -475,7 +475,7 @@ var parserTestExpandsTabsToSpaces = &asciidoc.Document{
 }
 
 var parserTestAdjustIndentationHandlesEmptyLinesGracefully = &asciidoc.Document{
-	Set: asciidoc.Set{
+	Elements: asciidoc.Elements{
 		&asciidoc.EmptyLine{
 			Text: "",
 		},
@@ -484,7 +484,7 @@ var parserTestAdjustIndentationHandlesEmptyLinesGracefully = &asciidoc.Document{
 				&asciidoc.ShorthandAttribute{
 					Style: nil,
 					ID: &asciidoc.ShorthandID{
-						Set: asciidoc.Set{
+						Elements: asciidoc.Elements{
 							&asciidoc.String{
 								Value: "in-use",
 							},
@@ -494,7 +494,7 @@ var parserTestAdjustIndentationHandlesEmptyLinesGracefully = &asciidoc.Document{
 					Options: nil,
 				},
 			},
-			Set: asciidoc.Set{
+			Elements: asciidoc.Elements{
 				&asciidoc.String{
 					Value: "A paragraph with an id.",
 				},
@@ -510,8 +510,8 @@ var parserTestAdjustIndentationHandlesEmptyLinesGracefully = &asciidoc.Document{
 		},
 		&asciidoc.NewLine{},
 		&asciidoc.Anchor{
-			ID:  "in-use",
-			Set: nil,
+			ID:       "in-use",
+			Elements: nil,
 		},
 		&asciidoc.String{
 			Value: "that uses an id",

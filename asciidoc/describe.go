@@ -22,9 +22,9 @@ func Describe(el Element) string {
 	case *CharacterReplacementReference:
 		return fmt.Sprintf("character replacement %s", el.Name())
 	case *Bold:
-		return fmt.Sprintf("bold (%d)", len(el.Set))
+		return fmt.Sprintf("bold (%d)", len(el.Elements))
 	case *DoubleBold:
-		return fmt.Sprintf("double bold (%d)", len(el.Set))
+		return fmt.Sprintf("double bold (%d)", len(el.Elements))
 	case *ThematicBreak:
 		return "thematic break"
 	case *PageBreak:
@@ -48,9 +48,9 @@ func Describe(el Element) string {
 	case *FileInclude:
 		return "include"
 	case *Italic:
-		return fmt.Sprintf("Italic (%d)", len(el.Set))
+		return fmt.Sprintf("Italic (%d)", len(el.Elements))
 	case *DoubleItalic:
-		return fmt.Sprintf("double italic (%d)", len(el.Set))
+		return fmt.Sprintf("double italic (%d)", len(el.Elements))
 	case *EmptyLine:
 		return "empty line"
 	case *Link:
@@ -68,17 +68,17 @@ func Describe(el Element) string {
 	case *LiteralBlock:
 		return "literal"
 	case *Marked:
-		return fmt.Sprintf("marked (%d)", len(el.Set))
+		return fmt.Sprintf("marked (%d)", len(el.Elements))
 	case *DoubleMarked:
-		return fmt.Sprintf("double marked (%d)", len(el.Set))
+		return fmt.Sprintf("double marked (%d)", len(el.Elements))
 	case *Monospace:
-		return fmt.Sprintf("monospace (%d)", len(el.Set))
+		return fmt.Sprintf("monospace (%d)", len(el.Elements))
 	case *DoubleMonospace:
-		return fmt.Sprintf("double monospace (%d)", len(el.Set))
+		return fmt.Sprintf("double monospace (%d)", len(el.Elements))
 	case *Subscript:
-		return fmt.Sprintf("subscript (%d)", len(el.Set))
+		return fmt.Sprintf("subscript (%d)", len(el.Elements))
 	case *Superscript:
-		return fmt.Sprintf("superscript (%d)", len(el.Set))
+		return fmt.Sprintf("superscript (%d)", len(el.Elements))
 
 	case *OpenBlock:
 		return "open"
@@ -105,7 +105,7 @@ func Describe(el Element) string {
 		if el.Admonition != AdmonitionTypeNone {
 			s += "(" + Describe(el.Admonition) + ") "
 		}
-		return s + fmt.Sprintf("(%d elements)", len(el.Set))
+		return s + fmt.Sprintf("(%d elements)", len(el.Elements))
 	case *StemBlock:
 		return "stem"
 	case *QuoteBlock:
@@ -118,11 +118,11 @@ func Describe(el Element) string {
 	case *DocumentCrossReference:
 		return fmt.Sprintf("doc-xref %v", el.ReferencePath)
 	case *TableCell:
-		return fmt.Sprintf("table cell (%d)", len(el.Set))
+		return fmt.Sprintf("table cell (%d)", len(el.Elements))
 	case *TableRow:
 		return fmt.Sprintf("table row (%d)", len(el.TableCells()))
 	case *Table:
-		return fmt.Sprintf("table (%d)", len(el.Set))
+		return fmt.Sprintf("table (%d)", len(el.Elements))
 	case SpecialCharacter:
 		return fmt.Sprintf("SpecialCharacter %s", el.Character)
 	case URL:
@@ -171,8 +171,8 @@ func Describe(el Element) string {
 		}
 		return s
 	case *Anchor:
-		if len(el.Set) > 0 {
-			return fmt.Sprintf("anchor [%s] (%v)", el.ID, el.Set)
+		if len(el.Elements) > 0 {
+			return fmt.Sprintf("anchor [%s] (%v)", el.ID, el.Elements)
 		}
 		return fmt.Sprintf("anchor [%s]", el.ID)
 	default:
@@ -180,7 +180,7 @@ func Describe(el Element) string {
 	}
 }
 
-func DescribeSet(el Set) string {
+func DescribeSet(el Elements) string {
 	var sb strings.Builder
 	for _, e := range el {
 		sb.WriteString(Describe(e))
