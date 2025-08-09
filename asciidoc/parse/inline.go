@@ -3,7 +3,6 @@ package parse
 import (
 	"fmt"
 	"io"
-	"log/slog"
 	"os"
 
 	"github.com/project-chip/alchemy/asciidoc"
@@ -12,23 +11,17 @@ import (
 )
 
 func Inline(context PreParseContext, path string, reader io.Reader, opts ...Option) (doc *asciidoc.Document, err error) {
-	var vals any
-	vals, err = ParseReader(path, reader, opts...)
+	var elements asciidoc.Elements
+	elements, err = Elements(path, reader, opts...)
 	if err != nil {
-		slog.Error("error parsing file", slog.String("path", path), slog.Any("error", err))
-		return nil, err
-	}
-	var set asciidoc.Elements
-	set, ok := vals.(asciidoc.Elements)
-	if !ok {
-		return nil, fmt.Errorf("unexpected type in UnifiedParse: %T", vals)
+		return
 	}
 	var suppressStack internal.Stack[bool]
 	var suppress bool
 	var lastTableCell *asciidoc.TableCell
 	var addToCell bool
 
-	parse.Filter(&set, func(parent parse.HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Elements, shortCircuit bool) {
+	parse.Filter(&elements, func(parent parse.HasElements, el asciidoc.Element) (remove bool, replace asciidoc.Elements, shortCircuit bool) {
 		switch el := el.(type) {
 		case *asciidoc.AttributeEntry:
 			if !suppress {
@@ -117,7 +110,7 @@ func Inline(context PreParseContext, path string, reader io.Reader, opts ...Opti
 	if err != nil {
 		return
 	}
-	doc, err = setToDoc(set)
+	doc, err = setToDoc(elements)
 	return
 }
 
