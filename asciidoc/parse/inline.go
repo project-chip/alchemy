@@ -123,7 +123,7 @@ func Inline(context PreParseContext, path string, reader io.Reader, opts ...Opti
 
 func newIncludeFile(context PreParseContext, parent parse.HasElements, include *asciidoc.FileInclude) (elements asciidoc.Elements, err error) {
 	rawPathWriter := asciidoc.NewWriter(nil)
-	err = preparseElements(context, asciidoc.NewReader(include.Elements), rawPathWriter)
+	err = preparseElements(context, include.Elements, rawPathWriter)
 
 	if err != nil {
 		return
