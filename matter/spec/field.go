@@ -32,6 +32,8 @@ func (d *Doc) readFields(spec *Specification, ti *TableInfo, entityType types.En
 			if !conformance.IsDeprecated(f.Conformance) && !conformance.IsDisallowed(f.Conformance) {
 				// Clusters inheriting from other clusters don't supply type information, nor do attributes that are deprecated or disallowed
 				slog.Debug("error reading field data type", slog.String("path", d.Path.String()), slog.String("name", name), slog.Any("error", err))
+				return
+			} else {
 				err = nil
 			}
 		}

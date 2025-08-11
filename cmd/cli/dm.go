@@ -3,7 +3,6 @@ package cli
 import (
 	"github.com/project-chip/alchemy/cmd/common"
 	"github.com/project-chip/alchemy/dm"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter/spec"
@@ -20,49 +19,31 @@ type DataModel struct {
 }
 
 func (c *DataModel) Run(cc *Context) (err error) {
-	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions)
+
+	var specification *spec.Specification
+	var specDocs spec.DocSet
+	specification, specDocs, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, c.ASCIIDocAttributes.ToList())
+
 	if err != nil {
 		return err
 	}
 
-	err = errata.LoadErrataConfig(c.ParserOptions.Root)
+	specDocs, err = filterSpecDocs(cc, specDocs, specification, c.FilterOptions, c.ProcessingOptions)
 	if err != nil {
 		return
 	}
 
-	specBuilder := spec.NewBuilder(c.ParserOptions.Root, spec.IgnoreHierarchy(c.DataModelOptions.IgnoreHierarchy))
-
-	specPaths, err := pipeline.Start(cc, specParser.Targets)
-	if err != nil {
-		return err
-	}
-
-	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specPaths)
-	if err != nil {
-		return err
-	}
-
-	specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, specDocs)
-	if err != nil {
-		return err
-	}
-
-	specDocs, err = filterSpecDocs(cc, specDocs, specBuilder.Spec, c.FilterOptions, c.ProcessingOptions)
+	specDocs, err = filterSpecErrors(cc, specDocs, specification, c.FilterOptions, c.ProcessingOptions)
 	if err != nil {
 		return
 	}
 
-	specDocs, err = filterSpecErrors(cc, specDocs, specBuilder.Spec, c.FilterOptions, c.ProcessingOptions)
+	err = checkSpecErrors(cc, specification, c.FilterOptions, specDocs)
 	if err != nil {
 		return
 	}
 
-	err = checkSpecErrors(cc, specBuilder.Spec, c.FilterOptions, specDocs)
-	if err != nil {
-		return
-	}
-
-	dataModelRenderer := dm.NewRenderer(c.DmRoot, specBuilder.Spec)
+	dataModelRenderer := dm.NewRenderer(c.DmRoot, specification)
 
 	dataModelDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, dataModelRenderer, specDocs)
 	if err != nil {

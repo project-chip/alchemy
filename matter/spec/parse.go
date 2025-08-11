@@ -10,7 +10,7 @@ import (
 	"github.com/project-chip/alchemy/internal/pipeline"
 )
 
-func Parse(path asciidoc.Path, specRoot string, attributes ...asciidoc.AttributeName) (*Doc, error) {
+func ParseFile(path asciidoc.Path, specRoot string, attributes ...asciidoc.AttributeName) (*Doc, error) {
 	ac := &preparseContext{
 		docPath:  path,
 		rootPath: specRoot,
@@ -64,7 +64,7 @@ func (p Parser) Process(cxt context.Context, input *pipeline.Data[struct{}], ind
 		return
 	}
 	var doc *Doc
-	doc, err = Parse(path, p.options.Root, p.attributes...)
+	doc, err = ParseFile(path, p.options.Root, p.attributes...)
 	if err != nil {
 		return
 	}

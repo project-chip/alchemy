@@ -110,7 +110,7 @@ func Inline(context PreParseContext, path string, reader io.Reader, opts ...Opti
 	if err != nil {
 		return
 	}
-	doc, err = setToDoc(elements)
+	doc, err = elementsToDoc(elements)
 	return
 }
 

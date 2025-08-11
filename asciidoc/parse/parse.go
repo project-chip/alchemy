@@ -40,7 +40,7 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 	switch vals := vals.(type) {
 	case asciidoc.Elements:
 		//		fmt.Printf("coalescing asciidoc...\n")
-		d, err := setToDoc(vals)
+		d, err := elementsToDoc(vals)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +55,7 @@ func Bytes(path string, b []byte) (*asciidoc.Document, error) {
 	}
 }
 
-func setToDoc(vals asciidoc.Elements) (d *asciidoc.Document, err error) {
+func elementsToDoc(vals asciidoc.Elements) (d *asciidoc.Document, err error) {
 	var els asciidoc.Elements
 	err = reparseTables(vals)
 	if err != nil {

@@ -21,16 +21,16 @@ type PreParseContext interface {
 	ShouldIncludeFile(path asciidoc.Path) bool
 }
 
-func preParseReaderToSet(context PreParseContext, path string, reader io.Reader) (asciidoc.Elements, error) {
+func preParseReaderToElements(context PreParseContext, path string, reader io.Reader) (asciidoc.Elements, error) {
 	vals, err := ParseReader(path, reader, Entrypoint("PreParse"))
 	if err != nil {
 		slog.Error("error preparsing file", slog.String("path", path), slog.Any("error", err))
 		return nil, err
 	}
-	set, ok := vals.(asciidoc.Elements)
+	elements, ok := vals.(asciidoc.Elements)
 	if ok {
 		result := asciidoc.NewWriter(nil)
-		err = preparseElements(context, set, result)
+		err = preparseElements(context, elements, result)
 		if err != nil {
 			return nil, err
 		}
@@ -102,11 +102,11 @@ func includeFile(context PreParseContext, path string, w *asciidoc.Writer) error
 		slog.Error("error reading file for preparse", slog.String("path", path), slog.Any("error", err))
 		return err
 	}
-	set, err := preParseReaderToSet(context, path, file)
+	elements, err := preParseReaderToElements(context, path, file)
 	if err != nil {
 		return err
 	}
-	return preparseElements(context, set, w)
+	return preparseElements(context, elements, w)
 }
 
 func renderReference(context PreParseContext, name asciidoc.AttributeName, w *asciidoc.Writer) error {
