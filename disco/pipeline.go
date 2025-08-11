@@ -30,35 +30,11 @@ func Pipeline(cxt context.Context, specRoot string, docPaths []string, pipelineO
 
 	if specRoot != "" {
 
-		specTargeter := spec.Targeter(specRoot)
-
-		var inputs pipeline.Paths
-		inputs, err = pipeline.Start(cxt, specTargeter)
+		_, docs, err = spec.Read(cxt, pipelineOptions, specRoot, docPaths)
 		if err != nil {
 			return err
 		}
 
-		specReader, err := spec.NewReader("Reading spec docs", specRoot)
-		if err != nil {
-			return err
-		}
-		docs, err = pipeline.Parallel(cxt, pipelineOptions, specReader, inputs)
-		if err != nil {
-			return err
-		}
-
-		specBuilder := spec.NewBuilder(specReader.Root)
-		_, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, docs)
-		if err != nil {
-			return err
-		}
-		if len(docPaths) > 0 {
-			filter := paths.NewIncludeFilter[*spec.Doc](specRoot, docPaths)
-			docs, err = pipeline.Collective(cxt, pipelineOptions, filter, docs)
-			if err != nil {
-				return err
-			}
-		}
 	} else if len(docPaths) > 0 {
 		var inputs pipeline.Paths
 		inputs, err = pipeline.Start(cxt, paths.NewTargeter(docPaths...))

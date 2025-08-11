@@ -6,7 +6,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/asciidoc/render"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/pipeline"
 	"github.com/project-chip/alchemy/matter"
@@ -55,45 +54,11 @@ func Pipeline(cxt context.Context, baseRoot string, headRoot string, docPaths []
 
 func loadSpecs(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, specRoot string) (baseSpec *spec.Specification, inProgressSpec *spec.Specification, err error) {
 	parserOptions := spec.ParserOptions{Inline: true, Root: specRoot}
-	baseSpec, err = loadSpec(cxt, pipelineOptions, parserOptions)
+	baseSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, []asciidoc.AttributeName{})
+
 	if err != nil {
 		return
 	}
-	inProgressSpec, err = loadSpec(cxt, pipelineOptions, parserOptions, "in-progress")
-	return
-}
-
-func loadSpec(cxt context.Context, pipelineOptions pipeline.ProcessingOptions, parserOptions spec.ParserOptions, attributes ...asciidoc.AttributeName) (s *spec.Specification, err error) {
-
-	var specParser spec.Parser
-	specParser, err = spec.NewParser(attributes, parserOptions)
-	if err != nil {
-		return
-	}
-
-	err = errata.LoadErrataConfig(parserOptions.Root)
-	if err != nil {
-		return
-	}
-
-	var specPaths pipeline.Paths
-	specPaths, err = pipeline.Start(cxt, specParser.Targets)
-	if err != nil {
-		return
-	}
-
-	var specDocs spec.DocSet
-	specDocs, err = pipeline.Parallel(cxt, pipelineOptions, specParser, specPaths)
-	if err != nil {
-		return
-	}
-
-	specBuilder := spec.NewBuilder(parserOptions.Root)
-	specDocs, err = pipeline.Collective(cxt, pipelineOptions, &specBuilder, specDocs)
-	if err != nil {
-		return
-	}
-
-	s = specBuilder.Spec
+	inProgressSpec, _, err = spec.Parse(cxt, parserOptions, pipelineOptions, []asciidoc.AttributeName{"in-progress"})
 	return
 }

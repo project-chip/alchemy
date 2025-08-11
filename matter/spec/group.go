@@ -23,7 +23,7 @@ func NewDocGroup(root string) *DocGroup {
 	}
 }
 
-func setSpec(d *Doc, si *Specification, docGroup *DocGroup) {
+func setDocGroup(d *Doc, docGroup *DocGroup) {
 	if d.group != nil {
 		if d.group.Root != docGroup.Root && d.Path.Base() != "matter-defines.adoc" {
 			slog.Warn("multiple doc group roots", "path", d.Path.String(), "root", d.group.Root, "newRoot", docGroup.Root)
@@ -31,10 +31,17 @@ func setSpec(d *Doc, si *Specification, docGroup *DocGroup) {
 		return
 	}
 	docGroup.Docs = append(docGroup.Docs, d)
-	d.spec = si
 	d.group = docGroup
 	for _, c := range d.children {
-		setSpec(c, si, docGroup)
+		setDocGroup(c, docGroup)
+	}
+}
+
+func setSpec(d *Doc, si *Specification) {
+
+	d.spec = si
+	for _, c := range d.children {
+		setSpec(c, si)
 	}
 }
 

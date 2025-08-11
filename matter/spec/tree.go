@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"path/filepath"
@@ -9,7 +10,38 @@ import (
 	"github.com/project-chip/alchemy/asciidoc"
 	"github.com/project-chip/alchemy/internal/log"
 	"github.com/project-chip/alchemy/internal/parse"
+	"github.com/project-chip/alchemy/internal/pipeline"
 )
+
+type DocumentGrouper struct {
+	specRoot string
+}
+
+func NewDocumentGrouper(specRoot string) *DocumentGrouper {
+	b := &DocumentGrouper{
+		specRoot: specRoot,
+	}
+	return b
+}
+
+func (dg DocumentGrouper) Name() string {
+	return "Grouping spec documents"
+}
+
+func (dg *DocumentGrouper) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (outputs []*pipeline.Data[*DocGroup], err error) {
+	docs := make([]*Doc, 0, len(inputs))
+	for _, i := range inputs {
+		docs = append(docs, i.Content)
+	}
+
+	buildTree(dg.specRoot, docs)
+
+	docGroups := buildDocumentGroups(docs)
+	for _, g := range docGroups {
+		outputs = append(outputs, pipeline.NewData(g.Root, g))
+	}
+	return
+}
 
 func buildTree(specRoot string, docs []*Doc) error {
 

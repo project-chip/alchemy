@@ -36,30 +36,11 @@ func (c *Command) Run(cc *cli.Context) (err error) {
 		return
 	}
 
-	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions)
-	if err != nil {
-		return err
-	}
-
-	err = errata.LoadErrataConfig(c.ParserOptions.Root)
+	var specDocs spec.DocSet
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
-	}
-
-	specFiles, err := pipeline.Start(cc, spec.Targeter(c.ParserOptions.Root))
-	if err != nil {
-		return err
-	}
-
-	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specFiles)
-	if err != nil {
-		return err
-	}
-
-	specBuilder := spec.NewBuilder(c.ParserOptions.Root)
-	specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, specDocs)
-	if err != nil {
-		return err
 	}
 
 	xmlPaths, err := pipeline.Start(cc, paths.NewTargeter(filepath.Join(c.SdkRoot, "src/app/zap-templates/zcl/data-model/chip/*.xml")))
@@ -121,7 +102,7 @@ func (c *Command) Run(cc *cli.Context) (err error) {
 	})
 
 	var diffs []*compare.ClusterDifferences
-	diffs, err = compare.Entities(specBuilder.Spec, specEntityMap, zapEntityMap)
+	diffs, err = compare.Entities(specification, specEntityMap, zapEntityMap)
 	if err != nil {
 		return
 	}

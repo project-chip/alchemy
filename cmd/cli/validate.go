@@ -35,8 +35,13 @@ func (c *Validate) Run(cc *Context) (err error) {
 		return err
 	}
 
+	docGroups, err := pipeline.Collective(cc, c.ProcessingOptions, spec.NewDocumentGrouper(c.ParserOptions.Root), specDocs)
+	if err != nil {
+		return err
+	}
+
 	specBuilder := spec.NewBuilder(c.ParserOptions.Root)
-	_, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, specDocs)
+	_, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, docGroups)
 	if err != nil {
 		return err
 	}

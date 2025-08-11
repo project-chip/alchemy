@@ -6,7 +6,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/cmd/common"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/parse"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -28,30 +27,11 @@ type TestPlan struct {
 
 func (c *TestPlan) Run(cc *Context) (err error) {
 
-	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions)
-	if err != nil {
-		return err
-	}
-
-	err = errata.LoadErrataConfig(c.ParserOptions.Root)
+	var specDocs spec.DocSet
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
-	}
-
-	specPaths, err := pipeline.Start(cc, specParser.Targets)
-	if err != nil {
-		return err
-	}
-
-	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specPaths)
-	if err != nil {
-		return err
-	}
-
-	specBuilder := spec.NewBuilder(c.ParserOptions.Root)
-	specDocs, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, specDocs)
-	if err != nil {
-		return err
 	}
 
 	var appClusterIndexes spec.DocSet
@@ -76,17 +56,17 @@ func (c *TestPlan) Run(cc *Context) (err error) {
 		return err
 	}
 
-	specDocs, err = filterSpecDocs(cc, specDocs, specBuilder.Spec, c.FilterOptions, c.ProcessingOptions)
+	specDocs, err = filterSpecDocs(cc, specDocs, specification, c.FilterOptions, c.ProcessingOptions)
 	if err != nil {
 		return
 	}
 
-	specDocs, err = filterSpecErrors(cc, specDocs, specBuilder.Spec, c.FilterOptions, c.ProcessingOptions)
+	specDocs, err = filterSpecErrors(cc, specDocs, specification, c.FilterOptions, c.ProcessingOptions)
 	if err != nil {
 		return
 	}
 
-	err = checkSpecErrors(cc, specBuilder.Spec, c.FilterOptions, specDocs)
+	err = checkSpecErrors(cc, specification, c.FilterOptions, specDocs)
 	if err != nil {
 		return
 	}

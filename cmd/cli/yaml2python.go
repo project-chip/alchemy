@@ -6,7 +6,6 @@ import (
 
 	"github.com/project-chip/alchemy/asciidoc/render"
 	"github.com/project-chip/alchemy/cmd/common"
-	"github.com/project-chip/alchemy/errata"
 	"github.com/project-chip/alchemy/internal/files"
 	"github.com/project-chip/alchemy/internal/paths"
 	"github.com/project-chip/alchemy/internal/pipeline"
@@ -59,12 +58,8 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 		return
 	}
 
-	specParser, err := spec.NewParser(c.ASCIIDocAttributes.ToList(), c.ParserOptions)
-	if err != nil {
-		return
-	}
-
-	err = errata.LoadErrataConfig(c.ParserOptions.Root)
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, c.ParserOptions, c.ProcessingOptions, c.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}
@@ -81,23 +76,7 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 		return
 	}
 
-	specPaths, err := pipeline.Start(cc, specParser.Targets)
-	if err != nil {
-		return
-	}
-
-	specDocs, err := pipeline.Parallel(cc, c.ProcessingOptions, specParser, specPaths)
-	if err != nil {
-		return
-	}
-
-	specBuilder := spec.NewBuilder(c.ParserOptions.Root)
-	_, err = pipeline.Collective(cc, c.ProcessingOptions, &specBuilder, specDocs)
-	if err != nil {
-		return
-	}
-
-	err = spec.PatchSpecForSdk(specBuilder.Spec)
+	err = spec.PatchSpecForSdk(specification)
 	if err != nil {
 		return
 	}
@@ -107,14 +86,14 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 		return
 	}
 
-	converter := yaml.NewYamlTestConverter(specBuilder.Spec, c.SDKOptions.SdkRoot, picsLabels)
+	converter := yaml.NewYamlTestConverter(specification, c.SDKOptions.SdkRoot, picsLabels)
 
 	testplans, err := pipeline.Parallel(cc, c.ProcessingOptions, converter, tests)
 	if err != nil {
 		return
 	}
 
-	generator := testscript.NewTestScriptConverter(specBuilder.Spec, c.SDKOptions.SdkRoot, picsLabels)
+	generator := testscript.NewTestScriptConverter(specification, c.SDKOptions.SdkRoot, picsLabels)
 
 	var testscripts pipeline.Map[string, *pipeline.Data[*testscript.Test]]
 	testscripts, err = pipeline.Parallel(cc, c.ProcessingOptions, generator, testplans)
@@ -122,7 +101,7 @@ func (c *Yaml2Python) Run(cc *Context) (err error) {
 		return
 	}
 
-	renderer := python.NewPythonTestRenderer(specBuilder.Spec, c.SDKOptions.SdkRoot, picsLabels, c.GeneratorOptions.ToOptions()...)
+	renderer := python.NewPythonTestRenderer(specification, c.SDKOptions.SdkRoot, picsLabels, c.GeneratorOptions.ToOptions()...)
 	var scripts pipeline.StringSet
 	scripts, err = pipeline.Parallel(cc, c.ProcessingOptions, renderer, testscripts)
 	if err != nil {

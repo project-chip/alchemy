@@ -55,7 +55,7 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 				return fmt.Errorf("error resolving doc path %s: %w", f, err)
 			}
 
-			doc, err := spec.Parse(path, d.Root, d.ASCIIDocAttributes.ToList()...)
+			doc, err := spec.ParseFile(path, d.Root, d.ASCIIDocAttributes.ToList()...)
 			if err != nil {
 				return fmt.Errorf("error opening doc %s: %w", f, err)
 			}
@@ -80,7 +80,7 @@ func (d *Command) Run(cc *cli.Context) (err error) {
 			if err != nil {
 				return fmt.Errorf("error resolving doc path %s: %w", f, err)
 			}
-			doc, err := spec.Parse(path, d.Root, d.ASCIIDocAttributes.ToList()...)
+			doc, err := spec.ParseFile(path, d.Root, d.ASCIIDocAttributes.ToList()...)
 			if err != nil {
 				return fmt.Errorf("error parsing %s: %w", f, err)
 			}

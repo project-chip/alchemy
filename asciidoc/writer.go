@@ -1,23 +1,23 @@
 package asciidoc
 
 type Writer struct {
-	set Elements
+	elements Elements
 }
 
 func NewWriter(set Elements) *Writer {
 	return &Writer{
-		set: set,
+		elements: set,
 	}
 }
 
 func (r *Writer) Write(el Element) {
-	r.set = append(r.set, el)
+	r.elements = append(r.elements, el)
 }
 
 func (r *Writer) WriteSet(el Elements) {
-	r.set = append(r.set, el...)
+	r.elements = append(r.elements, el...)
 }
 
 func (r *Writer) Set() Elements {
-	return r.set
+	return r.elements
 }

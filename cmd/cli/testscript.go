@@ -49,8 +49,13 @@ func (cmd *TestScript) Run(cc *Context) (err error) {
 		return
 	}
 
+	docGroups, err := pipeline.Collective(cc, cmd.ProcessingOptions, spec.NewDocumentGrouper(cmd.ParserOptions.Root), specDocs)
+	if err != nil {
+		return err
+	}
+
 	specBuilder := spec.NewBuilder(cmd.ParserOptions.Root)
-	specDocs, err = pipeline.Collective(cc, cmd.ProcessingOptions, &specBuilder, specDocs)
+	specDocs, err = pipeline.Collective(cc, cmd.ProcessingOptions, &specBuilder, docGroups)
 	if err != nil {
 		return
 	}

@@ -28,43 +28,19 @@ type ZAP struct {
 
 func (z *ZAP) Run(cc *Context) (err error) {
 
-	asciiSettings := z.ASCIIDocAttributes.ToList()
-
 	err = sdk.CheckAlchemyVersion(z.SdkRoot)
 	if err != nil {
 		return
 	}
 
-	var specParser spec.Parser
-	specParser, err = spec.NewParser(asciiSettings, z.ParserOptions)
-	if err != nil {
-		return
-	}
-
-	err = errata.LoadErrataConfig(z.ParserOptions.Root)
-	if err != nil {
-		return
-	}
-
-	var specPaths pipeline.Paths
-	specPaths, err = pipeline.Start(cc, specParser.Targets)
-	if err != nil {
-		return
-	}
-
 	var specDocs spec.DocSet
-	specDocs, err = pipeline.Parallel(cc, z.ProcessingOptions, specParser, specPaths)
+	var specification *spec.Specification
+	specification, _, err = spec.Parse(cc, z.ParserOptions, z.ProcessingOptions, z.ASCIIDocAttributes.ToList())
 	if err != nil {
 		return
 	}
 
-	specBuilder := spec.NewBuilder(z.ParserOptions.Root)
-	specDocs, err = pipeline.Collective(cc, z.ProcessingOptions, &specBuilder, specDocs)
-	if err != nil {
-		return
-	}
-
-	err = spec.PatchSpecForSdk(specBuilder.Spec)
+	err = spec.PatchSpecForSdk(specification)
 	if err != nil {
 		return
 	}
@@ -99,7 +75,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 		return
 	}
 
-	specDocs, err = filterSpecDocs(cc, specDocs, specBuilder.Spec, z.FilterOptions, z.ProcessingOptions)
+	specDocs, err = filterSpecDocs(cc, specDocs, specification, z.FilterOptions, z.ProcessingOptions)
 	if err != nil {
 		return
 	}
@@ -111,14 +87,14 @@ func (z *ZAP) Run(cc *Context) (err error) {
 	}
 
 	if clusters.Size() > 0 {
-		dependencyTracer := render.NewDependencyTracer(specBuilder.Spec)
+		dependencyTracer := render.NewDependencyTracer(specification)
 
 		clusters, err = pipeline.Collective(cc, z.ProcessingOptions, dependencyTracer, clusters)
 		if err != nil {
 			return
 		}
 
-		clusters, err = filterSpecErrors(cc, clusters, specBuilder.Spec, z.FilterOptions, z.ProcessingOptions)
+		clusters, err = filterSpecErrors(cc, clusters, specification, z.FilterOptions, z.ProcessingOptions)
 		if err != nil {
 			return
 		}
@@ -127,20 +103,20 @@ func (z *ZAP) Run(cc *Context) (err error) {
 	}
 
 	if deviceTypes.Size() > 0 {
-		deviceTypes, err = filterSpecErrors(cc, deviceTypes, specBuilder.Spec, z.FilterOptions, z.ProcessingOptions)
+		deviceTypes, err = filterSpecErrors(cc, deviceTypes, specification, z.FilterOptions, z.ProcessingOptions)
 		if err != nil {
 			return
 		}
 	}
 
 	if namespaces.Size() > 0 {
-		namespaces, err = filterSpecErrors(cc, namespaces, specBuilder.Spec, z.FilterOptions, z.ProcessingOptions)
+		namespaces, err = filterSpecErrors(cc, namespaces, specification, z.FilterOptions, z.ProcessingOptions)
 		if err != nil {
 			return
 		}
 	}
 
-	err = checkSpecErrors(cc, specBuilder.Spec, z.FilterOptions, clusters, deviceTypes, namespaces)
+	err = checkSpecErrors(cc, specification, z.FilterOptions, clusters, deviceTypes, namespaces)
 	if err != nil {
 		return
 	}
@@ -152,7 +128,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 	if clusters.Size() > 0 {
 
 		var templateGenerator *render.TemplateGenerator
-		templateGenerator, err = render.NewTemplateGenerator(specBuilder.Spec, z.ProcessingOptions, z.SdkRoot, z.TemplateOptions)
+		templateGenerator, err = render.NewTemplateGenerator(specification, z.ProcessingOptions, z.SdkRoot, z.TemplateOptions)
 		if err != nil {
 			return
 		}
@@ -162,7 +138,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 		}
 		clusterAliases = templateGenerator.ClusterAliases
 
-		globalObjectRenderer := render.NewGlobalObjectsRenderer(specBuilder.Spec, z.SdkRoot, templateGenerator)
+		globalObjectRenderer := render.NewGlobalObjectsRenderer(specification, z.SdkRoot, templateGenerator)
 		globalObjectFiles, err = pipeline.Collective(cc, z.ProcessingOptions, globalObjectRenderer, globalObjectDependencies)
 		if err != nil {
 			return
@@ -174,7 +150,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 
 	if deviceTypes.Size() > 0 {
 
-		deviceTypePatcher := render.NewDeviceTypesPatcher(z.SdkRoot, specBuilder.Spec, clusterAliases, z.TemplateOptions)
+		deviceTypePatcher := render.NewDeviceTypesPatcher(z.SdkRoot, specification, clusterAliases, z.TemplateOptions)
 		patchedDeviceTypes, err = pipeline.Collective(cc, z.ProcessingOptions, deviceTypePatcher, deviceTypes)
 		if err != nil {
 			return
@@ -183,7 +159,7 @@ func (z *ZAP) Run(cc *Context) (err error) {
 
 	if namespaces.Size() > 0 {
 
-		namespacePatcher := render.NewNamespacePatcher(z.SdkRoot, specBuilder.Spec)
+		namespacePatcher := render.NewNamespacePatcher(z.SdkRoot, specification)
 		patchedNamespaces, err = pipeline.Collective(cc, z.ProcessingOptions, namespacePatcher, namespaces)
 		if err != nil {
 			return
@@ -198,13 +174,13 @@ func (z *ZAP) Run(cc *Context) (err error) {
 			return
 		}
 
-		zclPatcher := render.NewZclPatcher(z.SdkRoot, specBuilder.Spec, zapTemplateDocs)
+		zclPatcher := render.NewZclPatcher(z.SdkRoot, specification, zapTemplateDocs)
 		zclJson, err = pipeline.Collective(cc, z.ProcessingOptions, zclPatcher, clusters)
 		if err != nil {
 			return
 		}
 
-		provisionalPatcher := render.NewIndexFilesPatcher(z.SdkRoot, specBuilder.Spec)
+		provisionalPatcher := render.NewIndexFilesPatcher(z.SdkRoot, specification)
 		indexDocs, err = pipeline.Collective(cc, z.ProcessingOptions, provisionalPatcher, zapTemplateDocs)
 		if err != nil {
 			return

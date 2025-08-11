@@ -40,8 +40,8 @@ func (sp Builder) Name() string {
 	return "Building spec"
 }
 
-func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (outputs []*pipeline.Data[*Doc], err error) {
-	docs := make([]*Doc, 0, len(inputs))
+func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*DocGroup]) (outputs []*pipeline.Data[*Doc], err error) {
+	docs := make([]*DocGroup, 0, len(inputs))
 	for _, i := range inputs {
 		docs = append(docs, i.Content)
 	}
@@ -53,20 +53,23 @@ func (sp *Builder) Process(cxt context.Context, inputs []*pipeline.Data[*Doc]) (
 	return
 }
 
-func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
-
-	err = buildTree(sp.specRoot, docs)
-	if err != nil {
-		return
-	}
+func (sp *Builder) buildSpec(docGroups []*DocGroup) (referencedDocs []*Doc, err error) {
 
 	sp.Spec = newSpec(sp.specRoot)
 	spec := sp.Spec
 
-	docGroups := buildDocumentGroups(docs, sp.Spec)
+	/*err = buildTree(sp.specRoot, docs)
+	if err != nil {
+		return
+	}
+
+	docGroups := buildDocumentGroups(docs)*/
 
 	for _, dg := range docGroups {
 		referencedDocs = append(referencedDocs, dg.Docs...)
+		for _, d := range dg.Docs {
+			setSpec(d, sp.Spec)
+		}
 	}
 
 	indexCrossReferences(referencedDocs)
@@ -220,7 +223,7 @@ func (sp *Builder) buildSpec(docs []*Doc) (referencedDocs []*Doc, err error) {
 	return
 }
 
-func buildDocumentGroups(docs []*Doc, spec *Specification) (docGroups []*DocGroup) {
+func buildDocumentGroups(docs []*Doc) (docGroups []*DocGroup) {
 	for _, d := range docs {
 		if len(d.parents) > 0 {
 			continue
@@ -239,9 +242,11 @@ func buildDocumentGroups(docs []*Doc, spec *Specification) (docGroups []*DocGrou
 			continue
 		}
 
+		slog.Info("doc group", "path", d.Path.Relative)
 		dg := NewDocGroup(d.Path.Relative)
 		docGroups = append(docGroups, dg)
-		setSpec(d, spec, dg)
+		setDocGroup(d, dg)
+		//setSpec(d, spec, dg)
 	}
 	return
 }
